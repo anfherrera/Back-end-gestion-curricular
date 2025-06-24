@@ -8,6 +8,6 @@ public class GestionCurricularApplication {
 
 	public static void main(String[] args) {
 		SpringApplication.run(GestionCurricularApplication.class, args);
-	} //hola t kiero
-//quemas
+	}
+
 }
