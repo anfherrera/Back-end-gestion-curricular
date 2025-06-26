@@ -22,5 +22,7 @@ public class SolicitudReingresoEntity extends SolicitudEntity {
     private String ruta_pazysalvo_academico;
     @Column(nullable = false, length = 100)
     private String ruta_pazysalvo_financiero;
+    @Column(columnDefinition = "TINYINT", length = 1)
+    private boolean esValido;
     
 }

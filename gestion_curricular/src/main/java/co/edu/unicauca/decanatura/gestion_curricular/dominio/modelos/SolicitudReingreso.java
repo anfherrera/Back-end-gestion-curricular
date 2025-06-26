@@ -14,5 +14,6 @@ public class SolicitudReingreso extends Solicitud {
     private String ruta_PM_FO_4_FOR_17;
     private String ruta_pazysalvo_academico;
     private String ruta_pazysalvo_financiero;
+    private boolean esValido;
     
 }

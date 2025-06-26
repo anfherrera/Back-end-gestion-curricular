@@ -4,7 +4,8 @@ import java.util.Date;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.InheritanceType;
-import jakarta.persistence.JoinColumn;
+// import jakarta.persistence.JoinColumn;
+// import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -38,7 +39,7 @@ public class SolicitudEntity {
     @OneToOne(fetch = FetchType.EAGER, cascade = {CascadeType.PERSIST }, mappedBy = "objSolicitud")
     private EstadoSolicitudEntity objEstadoSolicitud;
 
-    @OneToOne
-    @JoinColumn(name = "idfkUsuario", referencedColumnName = "idUsuario", nullable = false)
-    private UsuarioEntity objUsuario;
+    // @ManyToOne(cascade = { CascadeType.PERSIST })
+    // @JoinColumn(name = "idfkUsuario", nullable = false)
+    // private UsuarioEntity objUsuario;
 }

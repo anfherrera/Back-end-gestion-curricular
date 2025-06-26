@@ -1,0 +1,27 @@
+package co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output;
+
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.CursoOfertadoVerano;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Enums.GrupoCursoVerano;
+
+import java.util.List;
+
+public interface GestionarCursoOfertadoVeranoGatewayIntPort {
+
+    CursoOfertadoVerano crearCurso(CursoOfertadoVerano curso);
+    
+    CursoOfertadoVerano actualizarCurso(CursoOfertadoVerano curso);
+    
+    boolean eliminarCurso(Integer idCurso);
+    
+    CursoOfertadoVerano obtenerCursoPorId(Integer idCurso);
+    
+    List<CursoOfertadoVerano> buscarPorGrupo(GrupoCursoVerano grupo);
+    
+    List<CursoOfertadoVerano> buscarPorMateria(Integer idMateria);
+    
+    List<CursoOfertadoVerano> buscarPorDocente(Integer idDocente);
+    
+    Integer contarPorSalon(String salon);
+    
+    List<CursoOfertadoVerano> listarTodos();
+}

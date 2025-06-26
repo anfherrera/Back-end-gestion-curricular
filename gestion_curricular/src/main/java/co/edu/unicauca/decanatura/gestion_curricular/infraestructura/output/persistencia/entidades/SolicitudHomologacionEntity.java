@@ -19,4 +19,6 @@ public class SolicitudHomologacionEntity extends SolicitudEntity {
     private String ruta_PM_FO_4_FOR_27;
     @Column(length = 100)
     private String ruta_contenido_programatico; //Es nulleable
+    @Column(columnDefinition = "TINYINT", length = 1)
+    private boolean esValido;
 }

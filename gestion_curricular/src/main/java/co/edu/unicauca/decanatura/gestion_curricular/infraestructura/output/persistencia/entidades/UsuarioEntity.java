@@ -1,23 +1,27 @@
 package co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.entidades;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinTable;
+import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 
 
 @Entity
 @Table(name = "Usuarios")
 @Data
-@NoArgsConstructor
 @AllArgsConstructor
 public class UsuarioEntity {
 
@@ -42,5 +46,12 @@ public class UsuarioEntity {
     @ManyToOne(cascade = { CascadeType.PERSIST })
     @JoinColumn(name = "idfkPrograma", nullable = false)
     private ProgramaEntity objPrograma;
+	@ManyToMany(fetch = FetchType.EAGER)
+	@JoinTable(name = "usuarioSolicitudes", joinColumns = @JoinColumn(name = "idUsuario"), inverseJoinColumns = @JoinColumn(name = "idSolicitud"))
+    private List<SolicitudEntity> solicitudes;
+
+    public UsuarioEntity(){
+        this.solicitudes = new ArrayList<SolicitudEntity>();
+    }
     
 }

@@ -18,4 +18,5 @@ public class SolicitudPazYSalvo extends Solicitud {
     private String ruta_formato_PP_H;
     private String ruta_comprobante_pago;
     private String rute_trabajo_grado;
+    private boolean esValido;
 }

@@ -30,5 +30,7 @@ public class SolicitudPazYSalvoEntity extends SolicitudEntity {
     private String ruta_comprobante_pago;
     @Column(nullable = false, length = 100)
     private String rute_trabajo_grado;
+    @Column(columnDefinition = "TINYINT", length = 1)
+    private boolean esValido;
     
 }
