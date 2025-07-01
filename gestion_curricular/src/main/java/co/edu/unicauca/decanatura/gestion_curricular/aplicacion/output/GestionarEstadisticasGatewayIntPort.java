@@ -8,12 +8,10 @@ import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Estadistica
 public interface GestionarEstadisticasGatewayIntPort {
     Estadistica crearEstadistica(Estadistica estadistica);
     Estadistica actualizarEstadistica(Estadistica estadistica);
-    Estadistica eliminarEstadistica(Integer idEstadistica);
+    Boolean eliminarEstadistica(Integer idEstadistica);
     Estadistica obtenerEstadisticaPorId(Integer idEstadistica);
-    Estadistica obtenerEstadisticaPorNomre(String nombreEstadistica);
-    List<Estadistica> obtenerEstadisticasPorPrograma(Integer idPrograma);
-    List<Estadistica> obtenerEstadisticasPorSolicitud(Integer idSolicitud);
-    List<Estadistica> obeterEstadisiticasPorPeriodo(Date fechaInicio, Date fechaFin);
-
+    Estadistica obtenerEstadisticasSolicitudPeriodoYPrograma(Integer idEstadistica, String proceso, Date fechaInicio, Date fechaFin, Integer idPrograma);
+    Estadistica obtenerEstadisticasSolicitudPeriodoEstadoYPrograma(Integer idEstadistica, String proceso, Date fechaInicio, Date fechaFin, Integer idEstado, Integer idPrograma);
+    List<Estadistica> obtenerEstadisticasPeriodoEstadoYPrograma( Date fechaInicio, Date fechaFin, Integer idPrograma);
 
 }

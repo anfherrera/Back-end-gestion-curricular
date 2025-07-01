@@ -10,7 +10,7 @@ public interface CursoOfertadoVeranoRepositoryInt extends JpaRepository<CursoOfe
 
     // Consulta JPQL: listar cursos por grupo
     @Query("SELECT c FROM CursoOfertadoVeranoEntity c WHERE c.grupo = :grupo")
-    List<CursoOfertadoVeranoEntity> buscarPorGrupo(@Param("grupo") co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.entidades.Enums.GrupoCursoVerano grupo);
+    List<CursoOfertadoVeranoEntity> buscarPorGrupo(@Param("grupo") co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.entidades.Enums.GrupoCursoVeranoEntity grupo);
 
     // Consulta JPQL: listar cursos por materia
     @Query("SELECT c FROM CursoOfertadoVeranoEntity c WHERE c.objMateria.id_materia = :idMateria")

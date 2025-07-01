@@ -12,6 +12,8 @@ public interface GestionarMateriasIntPort {
 
     Materia obtenerMateriaPorId(Integer idMateria);
 
+    Materia obtenerMateriaPorCodigo(String codigo);
+
     boolean existeMateriaPorCodigo(String codigo);
 
     List<Materia> buscarPorNombreParcial(String nombreParcial);

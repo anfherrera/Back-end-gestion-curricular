@@ -21,11 +21,11 @@ public class MateriaEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "idMateria")
     private Integer id_materia;
-    @Column(nullable = false, length = 12)
+    @Column(nullable = false, unique =  true, length = 12)
     private String codigo;
     @Column(nullable = false, length = 100)
     private String nombre;
-    @Column(nullable = false, length = 2) 
+    @Column(nullable = false,length = 2) 
     private Integer creditos;
     
 }

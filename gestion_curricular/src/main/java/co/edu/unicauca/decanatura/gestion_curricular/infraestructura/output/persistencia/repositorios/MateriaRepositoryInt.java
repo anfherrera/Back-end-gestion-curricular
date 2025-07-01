@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface MateriaRepositoryInt extends JpaRepository<MateriaEntity, Integer> {
 
@@ -21,4 +22,7 @@ public interface MateriaRepositoryInt extends JpaRepository<MateriaEntity, Integ
     // Consulta JPQL: listar materias por número exacto de créditos
     @Query("SELECT m FROM MateriaEntity m WHERE m.creditos = :creditos")
     List<MateriaEntity> buscarPorCreditos(@Param("creditos") Integer creditos);
+
+    @Query("SELECT m FROM MateriaEntity m WHERE m.codigo = :codigo")
+    Optional<MateriaEntity> buscarPorCodigo(@Param("codigo") String codigo);
 }

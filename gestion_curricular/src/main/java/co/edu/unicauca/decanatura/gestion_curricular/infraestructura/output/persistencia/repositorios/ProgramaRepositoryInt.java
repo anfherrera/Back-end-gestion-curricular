@@ -7,8 +7,13 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.util.List;
+import java.util.Set;
 
 public interface ProgramaRepositoryInt extends JpaRepository<ProgramaEntity, Integer> {
+
+    // Se utiliza set para obtener nombres de los programas sin duplicados
+    @Query("SELECT p.nombre_programa FROM ProgramaEntity p")
+    Set<String> buscarNombresProgramas();
 
     // Consulta nativa: contar programas por código
     @Query(value = "SELECT COUNT(*) FROM programas WHERE codigo = ?1", nativeQuery = true)

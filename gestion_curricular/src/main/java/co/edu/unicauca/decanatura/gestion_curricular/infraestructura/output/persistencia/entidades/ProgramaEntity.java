@@ -25,9 +25,9 @@ public class ProgramaEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "idPrograma")
     private Integer id_programa;
-    @Column(nullable = false, length = 12)
+    @Column(nullable = false, unique = true, length = 12)
     private String codigo;
-    @Column(nullable = false, length = 100)
+    @Column(nullable = false, unique = true, length = 100)
     private String nombre_programa;
 
     @OneToMany(fetch = FetchType.LAZY, cascade = { CascadeType.PERSIST }, mappedBy = "objPrograma")

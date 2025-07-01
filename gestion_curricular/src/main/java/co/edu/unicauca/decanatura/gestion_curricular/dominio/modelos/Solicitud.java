@@ -1,14 +1,14 @@
 package co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos;
 
 import java.util.Date;
+import java.util.HashSet;
+import java.util.Set;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 
 @Data
 @AllArgsConstructor
-@NoArgsConstructor
 public class Solicitud {
 
     
@@ -17,5 +17,11 @@ public class Solicitud {
     private Date fecha_registro_solicitud;
 
     private EstadoSolicitud objEstadoSolicitud;
-    private Usuario objUsuario;
+
+    private Set<Usuario> usuarios;
+
+    public Solicitud() {
+        this.usuarios = new HashSet<Usuario>();
+    }
+    
 }

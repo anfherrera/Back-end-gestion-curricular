@@ -2,7 +2,7 @@ package co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.per
 
 import java.util.Date;
 
-import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.entidades.Enums.TipoDocumento;
+import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.entidades.Enums.TipoDocumentoEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -23,7 +23,7 @@ public class SolicitudEcaesEntity extends SolicitudEntity {
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private TipoDocumento tipoDocumento;
+    private TipoDocumentoEntity tipoDocumento;
     @Column(nullable = false, length = 100)
     private String numero_documento;
     @Column(nullable = false)

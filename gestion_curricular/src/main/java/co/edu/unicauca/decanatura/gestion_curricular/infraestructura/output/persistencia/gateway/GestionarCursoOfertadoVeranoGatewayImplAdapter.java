@@ -1,0 +1,122 @@
+package co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.gateway;
+
+import java.util.Date;
+import java.util.List;
+import java.util.Optional;
+
+import org.modelmapper.ModelMapper;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.GestionarCursoOfertadoVeranoGatewayIntPort;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.CursoOfertadoVerano;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.EstadoCursoOfertado;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Enums.GrupoCursoVerano;
+import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.entidades.CursoOfertadoVeranoEntity;
+import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.entidades.EstadoCursoOfertadoEntity;
+import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.entidades.Enums.GrupoCursoVeranoEntity;
+import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.repositorios.CursoOfertadoVeranoRepositoryInt;
+
+
+@Service
+@Transactional
+public class GestionarCursoOfertadoVeranoGatewayImplAdapter implements GestionarCursoOfertadoVeranoGatewayIntPort {
+
+    private final CursoOfertadoVeranoRepositoryInt cursoRepository;
+    private final ModelMapper cursoMapper;
+
+    public GestionarCursoOfertadoVeranoGatewayImplAdapter(CursoOfertadoVeranoRepositoryInt cursoRepository, ModelMapper cursoMapper) {
+        this.cursoRepository = cursoRepository;
+        this.cursoMapper = cursoMapper;
+    }
+
+    @Override
+    public CursoOfertadoVerano crearCurso(CursoOfertadoVerano curso) {
+        CursoOfertadoVeranoEntity cursoEntity = cursoMapper.map(curso, CursoOfertadoVeranoEntity.class);
+        EstadoCursoOfertadoEntity estadoCurso = new EstadoCursoOfertadoEntity();
+        estadoCurso.setFecha_registro_estado(new Date());
+        estadoCurso.setObjCursoOfertadoVerano(cursoEntity);
+        cursoEntity.setObjEstadoCursoOfertado(estadoCurso);
+        CursoOfertadoVeranoEntity saved = cursoRepository.save(cursoEntity);
+        return cursoMapper.map(saved, CursoOfertadoVerano.class);
+    }
+
+    @Override
+    public CursoOfertadoVerano actualizarCurso(CursoOfertadoVerano curso, EstadoCursoOfertado estadoCurso) {
+        cursoRepository.findById(curso.getId_curso())
+            .orElseThrow(() -> new RuntimeException("Curso no encontrado con ID: " + curso.getId_curso()));
+
+        CursoOfertadoVeranoEntity cursoEntity = cursoMapper.map(curso, CursoOfertadoVeranoEntity.class);
+        EstadoCursoOfertadoEntity estadoCursoEntity = null;
+        if(estadoCurso != null) {
+            estadoCursoEntity = cursoMapper.map(estadoCurso, EstadoCursoOfertadoEntity.class);
+
+        } else {
+            estadoCursoEntity = new EstadoCursoOfertadoEntity();
+        }
+
+            estadoCursoEntity.setFecha_registro_estado(new Date());
+            estadoCursoEntity.setObjCursoOfertadoVerano(cursoEntity);
+            cursoEntity.setObjEstadoCursoOfertado(estadoCursoEntity);
+
+        CursoOfertadoVeranoEntity cursoGuardado = cursoRepository.save(cursoEntity);
+        return cursoMapper.map(cursoGuardado, CursoOfertadoVerano.class);
+    }
+
+    @Override
+    public boolean eliminarCurso(Integer idCurso) {
+        Optional<CursoOfertadoVeranoEntity> entityOpt = cursoRepository.findById(idCurso);
+        if (entityOpt.isPresent()) {
+            cursoRepository.deleteById(idCurso);
+            return true;
+        }
+        return false;
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public CursoOfertadoVerano obtenerCursoPorId(Integer idCurso) {
+        return cursoRepository.findById(idCurso)
+            .map(entity -> cursoMapper.map(entity, CursoOfertadoVerano.class))
+            .orElse(null);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<CursoOfertadoVerano> buscarPorGrupo(GrupoCursoVerano grupo) {
+        GrupoCursoVeranoEntity grupoEntity = cursoMapper.map(grupo, GrupoCursoVeranoEntity.class);
+        return cursoRepository.buscarPorGrupo(grupoEntity).stream()
+            .map(entity -> cursoMapper.map(entity, CursoOfertadoVerano.class))
+            .toList();
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<CursoOfertadoVerano> buscarPorMateria(Integer idMateria) {
+        return cursoRepository.buscarPorMateria(idMateria).stream()
+            .map(entity -> cursoMapper.map(entity, CursoOfertadoVerano.class))
+            .toList();
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<CursoOfertadoVerano> buscarPorDocente(Integer idDocente) {
+        return cursoRepository.buscarPorDocente(idDocente).stream()
+            .map(entity -> cursoMapper.map(entity, CursoOfertadoVerano.class))
+            .toList();
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Integer contarPorSalon(String salon) {
+        return cursoRepository.contarPorSalon(salon);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<CursoOfertadoVerano> listarTodos() {
+        return cursoRepository.findAll().stream()
+            .map(entity -> cursoMapper.map(entity, CursoOfertadoVerano.class))
+            .toList();
+    }
+}

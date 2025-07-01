@@ -8,6 +8,7 @@ import org.springframework.data.repository.query.Param;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
 public interface EstadoSolicitudRepositoryInt extends JpaRepository<EstadoSolicitudEntity, Integer> {
 
@@ -21,7 +22,7 @@ public interface EstadoSolicitudRepositoryInt extends JpaRepository<EstadoSolici
 
     // Consulta JPQL: obtener estado por solicitud
     @Query("SELECT e FROM EstadoSolicitudEntity e WHERE e.objSolicitud.id_solicitud = :idSolicitud")
-    EstadoSolicitudEntity buscarPorSolicitud(@Param("idSolicitud") Integer idSolicitud);
+    Optional<EstadoSolicitudEntity> buscarPorSolicitud(@Param("idSolicitud") Integer idSolicitud);
 
     // Consulta nativa: contar cuántos estados están en un estado específico
     @Query(value = "SELECT COUNT(*) FROM estados WHERE estado_actual = ?1", nativeQuery = true)

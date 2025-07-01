@@ -13,11 +13,12 @@ import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
+
 @Entity
-@Table(name = "EstadosSolicitudes")
+@Table(name = "EstadosCursos")
 @Data
 @AllArgsConstructor
-public class EstadoSolicitudEntity {
+public class EstadoCursoOfertadoEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "idEstado")
@@ -28,11 +29,10 @@ public class EstadoSolicitudEntity {
     private Date fecha_registro_estado;
 
     @OneToOne
-    @JoinColumn(name = "idfkSolicitud", referencedColumnName = "idSolicitud", nullable = false)
-    private SolicitudEntity objSolicitud;
+    @JoinColumn(name = "idfkCurso", referencedColumnName = "idCurso", nullable = false)
+    private CursoOfertadoVeranoEntity objCursoOfertadoVerano;
 
-    public EstadoSolicitudEntity(){
-        this.estado_actual = "Enviado";
+    public EstadoCursoOfertadoEntity(){
+        this.estado_actual = "Preinscripcion";
     }
-    
 }
