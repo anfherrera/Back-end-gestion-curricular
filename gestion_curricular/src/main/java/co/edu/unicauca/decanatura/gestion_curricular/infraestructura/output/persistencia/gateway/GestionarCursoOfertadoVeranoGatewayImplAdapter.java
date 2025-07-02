@@ -3,6 +3,7 @@ package co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.per
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
@@ -14,8 +15,10 @@ import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.EstadoCurso
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Enums.GrupoCursoVerano;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.entidades.CursoOfertadoVeranoEntity;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.entidades.EstadoCursoOfertadoEntity;
+import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.entidades.UsuarioEntity;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.entidades.Enums.GrupoCursoVeranoEntity;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.repositorios.CursoOfertadoVeranoRepositoryInt;
+import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.repositorios.UsuarioRepositoryInt;
 
 
 @Service
@@ -23,10 +26,12 @@ import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.pers
 public class GestionarCursoOfertadoVeranoGatewayImplAdapter implements GestionarCursoOfertadoVeranoGatewayIntPort {
 
     private final CursoOfertadoVeranoRepositoryInt cursoRepository;
+    private final UsuarioRepositoryInt usuarioRepository;
     private final ModelMapper cursoMapper;
 
-    public GestionarCursoOfertadoVeranoGatewayImplAdapter(CursoOfertadoVeranoRepositoryInt cursoRepository, ModelMapper cursoMapper) {
+    public GestionarCursoOfertadoVeranoGatewayImplAdapter(CursoOfertadoVeranoRepositoryInt cursoRepository, UsuarioRepositoryInt usuarioRepository, ModelMapper cursoMapper) {
         this.cursoRepository = cursoRepository;
+        this.usuarioRepository = usuarioRepository;
         this.cursoMapper = cursoMapper;
     }
 
@@ -118,5 +123,49 @@ public class GestionarCursoOfertadoVeranoGatewayImplAdapter implements Gestionar
         return cursoRepository.findAll().stream()
             .map(entity -> cursoMapper.map(entity, CursoOfertadoVerano.class))
             .toList();
+    }
+
+    @Override
+    public CursoOfertadoVerano asociarUsuarioCurso(Integer idUsuario, Integer idCurso) {
+        Set<UsuarioEntity> usuariosEntitySet = null;
+        CursoOfertadoVeranoEntity cursoOfertadoVeranoEntityGuardado = null;
+        Optional<UsuarioEntity> usuarioEntityOptional = usuarioRepository.findById(idUsuario);
+        Optional<CursoOfertadoVeranoEntity> cursoEntityOptional = cursoRepository.findById(idCurso);
+            if(usuarioEntityOptional != null && cursoEntityOptional != null) {
+            UsuarioEntity usuarioEntity = usuarioEntityOptional.get();
+            CursoOfertadoVeranoEntity cursoEntity = cursoEntityOptional.get();
+
+            usuariosEntitySet = cursoEntity.getEstudiantesInscritos();
+            usuariosEntitySet.add(usuarioEntity);
+            cursoEntity.setEstudiantesInscritos(usuariosEntitySet);
+            
+            cursoOfertadoVeranoEntityGuardado = cursoRepository.save(cursoEntity);
+        }
+        
+
+
+        return cursoMapper.map(cursoOfertadoVeranoEntityGuardado, CursoOfertadoVerano.class);
+    }
+
+    @Override
+    public CursoOfertadoVerano desasociarUsuarioCurso(Integer idUsuario, Integer idCurso) {
+        Set<UsuarioEntity> usuariosEntitySet = null;
+        CursoOfertadoVeranoEntity cursoOfertadoVeranoEntityGuardado = null;
+        Optional<UsuarioEntity> usuarioEntityOptional = usuarioRepository.findById(idUsuario);
+        Optional<CursoOfertadoVeranoEntity> cursoEntityOptional = cursoRepository.findById(idCurso);
+            if(usuarioEntityOptional != null && cursoEntityOptional != null) {
+            UsuarioEntity usuarioEntity = usuarioEntityOptional.get();
+            CursoOfertadoVeranoEntity cursoEntity = cursoEntityOptional.get();
+
+            usuariosEntitySet = cursoEntity.getEstudiantesInscritos();
+            usuariosEntitySet.remove(usuarioEntity);
+            cursoEntity.setEstudiantesInscritos(usuariosEntitySet);
+            
+            cursoOfertadoVeranoEntityGuardado = cursoRepository.save(cursoEntity);
+        }
+        
+
+
+        return cursoMapper.map(cursoOfertadoVeranoEntityGuardado, CursoOfertadoVerano.class);
     }
 }

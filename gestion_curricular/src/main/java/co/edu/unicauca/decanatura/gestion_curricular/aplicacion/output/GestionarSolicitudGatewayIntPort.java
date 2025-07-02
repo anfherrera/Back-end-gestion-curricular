@@ -37,6 +37,14 @@ public interface GestionarSolicitudGatewayIntPort {
     // Verifica si existe una solicitud con cierto nombre
     boolean existeSolicitudPorNombre(String nombreSolicitud);
 
+    Integer contarSolicitudPorNombreYCurso(String nombreSolicitud, Integer idCurso);
+
+    Integer contarSolicitudPorNombreCursoEstado(String nombreSolicitud, Integer idCurso, String estadoActual);
+
+    List<Solicitud> buscarSolicitudPorNombreCurso(String nombreSolicitud, Integer idCurso);
+
+    List<Solicitud> buscarSolicitudPorNombreCursoEstado(String nombreSolicitud, Integer idCurso, String estadoActual);
+
     // Contar total de solicitudes
     Integer contarSolicitudes();
 

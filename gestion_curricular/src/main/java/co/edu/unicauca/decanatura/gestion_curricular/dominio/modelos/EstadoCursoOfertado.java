@@ -13,6 +13,6 @@ public class EstadoCursoOfertado {
     private CursoOfertadoVerano objCursoOfertadoVerano;
 
     public EstadoCursoOfertado(){
-        this.estado_actual = "Preinscripcion";
+        this.estado_actual = "Abierto";
     }
 }

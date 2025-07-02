@@ -25,4 +25,8 @@ public interface GestionarCursoOfertadoVeranoGatewayIntPort {
     Integer contarPorSalon(String salon);
     
     List<CursoOfertadoVerano> listarTodos();
+
+    CursoOfertadoVerano asociarUsuarioCurso(Integer idUsuario, Integer idCurso);
+
+    CursoOfertadoVerano desasociarUsuarioCurso(Integer idUsuario, Integer idCurso);
 }

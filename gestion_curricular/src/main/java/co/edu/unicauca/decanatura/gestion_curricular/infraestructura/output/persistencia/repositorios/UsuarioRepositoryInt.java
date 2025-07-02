@@ -38,4 +38,7 @@ public interface UsuarioRepositoryInt extends JpaRepository<UsuarioEntity, Integ
     // Traer todos los usuarios con sus solicitudes (para evitar lazy loading)
     @Query("SELECT DISTINCT u FROM UsuarioEntity u LEFT JOIN FETCH u.solicitudes")
     List<UsuarioEntity> listarConSolicitudes();
+
+    @Query(value = "SELECT * FROM usuariosolicitudes us LEFT JOIN usuarios ON us.idUsuario = usuarios.idUsuario WHERE us.idSolicitud = :idSolicitud", nativeQuery = true)
+    UsuarioEntity buscarUsuariosPorSolicitud(@Param("idSolicitud") Integer idSolicitud);
 }

@@ -33,6 +33,6 @@ public class EstadoCursoOfertadoEntity {
     private CursoOfertadoVeranoEntity objCursoOfertadoVerano;
 
     public EstadoCursoOfertadoEntity(){
-        this.estado_actual = "Preinscripcion";
+        this.estado_actual = "Abierto";
     }
 }

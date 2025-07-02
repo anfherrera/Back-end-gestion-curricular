@@ -17,8 +17,26 @@ public interface SolicitudRepositoryInt extends JpaRepository<SolicitudEntity, I
     Set<String> buscarNombresSolicitudes();
     
     // Consulta nativa: contar solicitudes con cierto nombre
-    @Query("SELECT COUNT(s) FROM SolicitudEntity s WHERE LOWER(s.nombre_solicitud) LIKE LOWER(CONCAT('%', :nombre, '%'))")
+    @Query("SELECT COUNT(s) FROM SolicitudEntity s WHERE LOWER(s.nombre_solicitud) LIKE LOWER(CONCAT('%', :nombre, '%')) ")
     Integer contarPorNombre(@Param("nombre") String nombre);
+
+    @Query("SELECT COUNT(s) FROM SolicitudCursoVeranoInscripcionEntity s WHERE LOWER(s.nombre_solicitud) LIKE LOWER(CONCAT('%', :nombre, '%')) " +
+    "AND s.objCursoOfertado.id_curso = :idCurso")
+    Integer contarPorNombreYCurso(@Param("nombre") String nombre, @Param("idCurso") Integer idCurso);
+
+    @Query("SELECT COUNT(s) FROM SolicitudCursoVeranoInscripcionEntity s WHERE LOWER(s.nombre_solicitud) LIKE LOWER(CONCAT('%', :nombre, '%')) " +
+    "AND s.objCursoOfertado.id_curso = :idCurso " +
+    "AND LOWER(s.objEstadoSolicitud.estado_actual) LIKE LOWER(CONCAT('%', :estado_actual, '%'))")
+    Integer contarPorNombreCursoEstado(@Param("nombre") String nombre, @Param("idCurso") Integer idCurso, @Param("estado_actual") String estado_actual);
+
+    @Query("SELECT s FROM SolicitudCursoVeranoInscripcionEntity s WHERE LOWER(s.nombre_solicitud) LIKE LOWER(CONCAT('%', :nombre, '%')) " +
+    "AND s.objCursoOfertado.id_curso = :idCurso")
+    List<SolicitudEntity> buscarPorNombreYCurso(@Param("nombre") String nombre, @Param("idCurso") Integer idCurso);
+
+    @Query("SELECT s FROM SolicitudCursoVeranoInscripcionEntity s WHERE LOWER(s.nombre_solicitud) LIKE LOWER(CONCAT('%', :nombre, '%')) " +
+    "AND s.objCursoOfertado.id_curso = :idCurso " +
+    "AND LOWER(s.objEstadoSolicitud.estado_actual) LIKE LOWER(CONCAT('%', :estado_actual, '%')) ")
+    List<SolicitudEntity> buscarPorNombreCursoEstado(@Param("nombre") String nombre, @Param("idCurso") Integer idCurso, @Param("estado_actual") String estado_actual);
 
     // Consulta JPQL: contar todas las solicitudes
     @Query("SELECT COUNT(s) FROM SolicitudEntity s")
@@ -101,7 +119,7 @@ public interface SolicitudRepositoryInt extends JpaRepository<SolicitudEntity, I
     @Query("SELECT s FROM SolicitudEntity s WHERE LOWER(s.nombre_solicitud) LIKE LOWER(CONCAT('%', :nombre, '%'))")
     List<SolicitudEntity> buscarPorNombre(@Param("nombre") String nombre);
 
-    @Query(value = "SELECT * FROM usuariosolicitudes us LEFT JOIN Solicitudes ON us.idSolicitud = Solicitudes.idSolicitud WHERE us.IdUsuario = :IdUsuario", nativeQuery = true)
-    List<SolicitudEntity> buscarSolicitudesPorUsuario(@Param("IdUsuario") Integer IdUsuario);
+    @Query(value = "SELECT * FROM usuariosolicitudes us LEFT JOIN solicitudes ON us.idSolicitud = solicitudes.idSolicitud WHERE us.idUsuario = :idUsuario", nativeQuery = true)
+    List<SolicitudEntity> buscarSolicitudesPorUsuario(@Param("idUsuario") Integer idUsuario);
 
 }

@@ -27,4 +27,6 @@ public interface GestionarUsuarioGatewayIntPort {
     List<Usuario> buscarUsuariosPorPrograma(Integer idPrograma);
 
     List<Usuario> listarUsuarios();
+
+    Usuario buscarUsuarioPorSolicitud(Integer idSolicitud);
 }

@@ -133,4 +133,14 @@ public class GestionarUsuarioGatewayImplAdapter implements GestionarUsuarioGatew
                 .map(entity -> usuarioMapper.map(entity, Usuario.class))
                 .toList();
     }
+
+    @Override
+    public Usuario buscarUsuarioPorSolicitud(Integer idSolicitud) {
+        UsuarioEntity usuarioEntity = usuarioRepository.buscarUsuariosPorSolicitud(idSolicitud);
+        Usuario usuario = null;
+        if (usuarioEntity != null) {
+            usuario = usuarioMapper.map(usuarioEntity, Usuario.class);
+        }
+        return usuario;
+    }
 }
