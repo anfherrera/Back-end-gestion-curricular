@@ -1,12 +1,11 @@
 package co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.entidades;
 
 import java.util.Date;
-import java.util.HashSet;
-import java.util.Set;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.InheritanceType;
-import jakarta.persistence.ManyToMany;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -18,12 +17,14 @@ import jakarta.persistence.Inheritance;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Entity
 @Table(name = "Solicitudes")
 @Inheritance(strategy = InheritanceType.JOINED)
 @Data
 @AllArgsConstructor
+@NoArgsConstructor
 public class SolicitudEntity {
 
     @Id
@@ -38,11 +39,8 @@ public class SolicitudEntity {
     @OneToOne(fetch = FetchType.EAGER, cascade = {CascadeType.REMOVE, CascadeType.PERSIST }, mappedBy = "objSolicitud")
     private EstadoSolicitudEntity objEstadoSolicitud;
 
-    @ManyToMany(mappedBy = "solicitudes")
-    private Set<UsuarioEntity> usuarios;
-
-    public SolicitudEntity() {
-        this.usuarios = new HashSet<UsuarioEntity>();
-    }
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "idUsuario")
+    private UsuarioEntity objUsuario;
 
 }

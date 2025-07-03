@@ -1,7 +1,9 @@
 package co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos;
 
 
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import lombok.AllArgsConstructor;
@@ -20,12 +22,12 @@ public class Usuario {
     private boolean estado_usuario;
     private Programa objPrograma;
 
-    private Set<Solicitud> solicitudes;
+    private List<Solicitud> solicitudes;
 
     private Set<CursoOfertadoVerano> cursosOfertadosInscritos;
 
     public Usuario(){
-        this.solicitudes = new HashSet<Solicitud>();
+        this.solicitudes = new ArrayList<Solicitud>();
         this.cursosOfertadosInscritos = new HashSet<CursoOfertadoVerano>();
     }
 

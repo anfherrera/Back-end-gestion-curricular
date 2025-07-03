@@ -33,6 +33,7 @@ public class GestionarEstadisticasGatewayImplAdapter implements GestionarEstadis
     }
 
     @Override
+    @Transactional
     public Estadistica crearEstadistica(Estadistica estadistica) {
         if(solicitudRepository.count() <= 0) {
             throw new RuntimeException("No hay solicitudes disponibles para crear estadísticas.");
@@ -50,6 +51,7 @@ public class GestionarEstadisticasGatewayImplAdapter implements GestionarEstadis
     }
 
     @Override
+    @Transactional
     public Estadistica actualizarEstadistica(Estadistica estadistica) {
         estadisticaRepository.findById(estadistica.getId_estadistica())
             .orElseThrow(() -> new RuntimeException("Estadistica no encontrada con ID: " + estadistica.getId_estadistica()));
@@ -59,6 +61,7 @@ public class GestionarEstadisticasGatewayImplAdapter implements GestionarEstadis
     }
 
     @Override
+    @Transactional
     public Boolean eliminarEstadistica(Integer idEstadistica) {
         boolean eliminado = false;
         Optional<EstadisticaEntity> estadisticaEntity = estadisticaRepository.findById(idEstadistica);
@@ -70,6 +73,7 @@ public class GestionarEstadisticasGatewayImplAdapter implements GestionarEstadis
     }
 
     @Override
+    @Transactional(readOnly = true)
     public Estadistica obtenerEstadisticaPorId(Integer idEstadistica) {
        EstadisticaEntity entity = estadisticaRepository.findById(idEstadistica)
         .orElseThrow(() -> new IllegalArgumentException("Estadística no encontrada"));
@@ -77,6 +81,7 @@ public class GestionarEstadisticasGatewayImplAdapter implements GestionarEstadis
     }
 
     @Override
+    @Transactional(readOnly = true)
     public Estadistica obtenerEstadisticasSolicitudPeriodoYPrograma(Integer idEstadistica, String proceso,
             Date fechaInicio, Date fechaFin, Integer idPrograma) {
         EstadisticaEntity estadisticaEntity = estadisticaRepository.findById(idEstadistica)
@@ -93,6 +98,7 @@ public class GestionarEstadisticasGatewayImplAdapter implements GestionarEstadis
     }
 
     @Override
+    @Transactional(readOnly = true)
     public Estadistica obtenerEstadisticasSolicitudPeriodoEstadoYPrograma(Integer idEstadistica, String proceso,
             Date fechaInicio, Date fechaFin, Integer idEstado, Integer idPrograma) {
     EstadisticaEntity estadisticaEntity = estadisticaRepository.findById(idEstadistica)
@@ -112,6 +118,7 @@ public class GestionarEstadisticasGatewayImplAdapter implements GestionarEstadis
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<Estadistica> obtenerEstadisticasPeriodoEstadoYPrograma(Date fechaInicio, Date fechaFin,
             Integer idPrograma) {
             Optional<EstadisticaEntity> estadisticaEntityOp = estadisticaRepository.findById(1);

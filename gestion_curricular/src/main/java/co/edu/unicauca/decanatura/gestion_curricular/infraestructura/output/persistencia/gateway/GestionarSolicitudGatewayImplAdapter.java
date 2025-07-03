@@ -3,7 +3,6 @@ package co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.per
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
@@ -19,7 +18,6 @@ import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.SolicitudEc
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.SolicitudHomologacion;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.SolicitudPazYSalvo;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.SolicitudReingreso;
-import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Usuario;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.entidades.CursoOfertadoVeranoEntity;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.entidades.DocenteEntity;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.entidades.EstadoSolicitudEntity;
@@ -58,6 +56,7 @@ public class GestionarSolicitudGatewayImplAdapter implements GestionarSolicitudG
     }
 
     @Override
+    @Transactional
     public SolicitudCursoVeranoPreinscripcion crearSolicitudCursoVeranoPreinscripcion(
         SolicitudCursoVeranoPreinscripcion solicitudCursoVerano) {
         SolicitudCursoVeranoPreinscripcionEntity solicitudCursoVeranoEntity = solicitudMapper.map(solicitudCursoVerano, SolicitudCursoVeranoPreinscripcionEntity.class);
@@ -99,6 +98,7 @@ public class GestionarSolicitudGatewayImplAdapter implements GestionarSolicitudG
 
 
     @Override
+    @Transactional
     public SolicitudCursoVeranoIncripcion crearSolicitudCursoVeranoInscripcion(
             SolicitudCursoVeranoIncripcion solicitudCursoVerano) {
         SolicitudCursoVeranoInscripcionEntity solicitudCursoVeranoEntity = solicitudMapper.map(solicitudCursoVerano, SolicitudCursoVeranoInscripcionEntity.class);
@@ -373,29 +373,8 @@ public class GestionarSolicitudGatewayImplAdapter implements GestionarSolicitudG
         return solicitudes;
     }
 
-
     @Override
-    public Usuario asociarUsuarioASolicitud(Integer idUsuario, Integer idSolicitud) {
-        Set<SolicitudEntity> solicitudesEntitySet = null;
-        UsuarioEntity usuarioEntityGuardado = null;
-        Optional<UsuarioEntity> usuarioEntityOptional = usuarioRepository.findById(idUsuario);
-        Optional<SolicitudEntity> solicitudEntityOptional = solicitudRepository.findById(idSolicitud);
-
-        if(usuarioEntityOptional != null && solicitudEntityOptional != null) {
-            UsuarioEntity usuarioEntity = usuarioEntityOptional.get();
-            SolicitudEntity solicitudEntity = solicitudEntityOptional.get();
-
-            solicitudesEntitySet = usuarioEntity.getSolicitudes();
-            solicitudesEntitySet.add(solicitudEntity);
-            usuarioEntity.setSolicitudes(solicitudesEntitySet);
-            
-            usuarioEntityGuardado = usuarioRepository.save(usuarioEntity);
-        }
-        return solicitudMapper.map(usuarioEntityGuardado, Usuario.class);
-    }
-
-
-    @Override
+    @Transactional
     public Solicitud actualizarSolicitud(Solicitud solicitud, EstadoSolicitud estadoSolicitud) {
         SolicitudEntity solicitudEntity = null;
         if (solicitud instanceof SolicitudCursoVeranoPreinscripcion) {
@@ -430,21 +409,21 @@ public class GestionarSolicitudGatewayImplAdapter implements GestionarSolicitudG
 
     @Override
     @Transactional(readOnly = true)
-    public Integer contarSolicitudPorNombreYCurso(String nombreSolicitud, Integer idCurso) {
-        return solicitudRepository.contarPorNombreYCurso(nombreSolicitud, idCurso);
+    public Integer contarSolicitudPorNombreYCursoIns(String nombreSolicitud, Integer idCurso) {
+        return solicitudRepository.contarPorNombreYCursoIns(nombreSolicitud, idCurso);
     }
 
     @Override
     @Transactional(readOnly = true)
-    public Integer contarSolicitudPorNombreCursoEstado(String nombreSolicitud, Integer idCurso, String estadoActual) {
-        return solicitudRepository.contarPorNombreCursoEstado(nombreSolicitud, idCurso, estadoActual);
+    public Integer contarSolicitudPorNombreCursoEstadoIns(String nombreSolicitud, Integer idCurso, String estadoActual) {
+        return solicitudRepository.contarPorNombreCursoEstadoIns(nombreSolicitud, idCurso, estadoActual);
     }
 
     @Override
     @Transactional(readOnly = true)
-    public List<Solicitud> buscarSolicitudPorNombreCursoEstado(String nombreSolicitud, Integer idCurso,
+    public List<Solicitud> buscarSolicitudPorNombreCursoEstadoIns(String nombreSolicitud, Integer idCurso,
             String estadoActual) {
-        List<SolicitudEntity> solicitudEntities = solicitudRepository.buscarPorNombreCursoEstado(nombreSolicitud, idCurso, estadoActual);
+        List<SolicitudEntity> solicitudEntities = solicitudRepository.buscarPorNombreCursoEstadoIns(nombreSolicitud, idCurso, estadoActual);
         List<Solicitud> solicitudes = null;
         if(solicitudEntities != null){
             solicitudes = solicitudEntities.stream().map(solicitudEntity -> {
@@ -468,8 +447,9 @@ public class GestionarSolicitudGatewayImplAdapter implements GestionarSolicitudG
     }
 
     @Override
-    public List<Solicitud> buscarSolicitudPorNombreCurso(String nombreSolicitud, Integer idCurso) {
-        List<SolicitudEntity> solicitudEntities = solicitudRepository.buscarPorNombreYCurso(nombreSolicitud, idCurso);
+    @Transactional(readOnly = true)
+    public List<Solicitud> buscarSolicitudPorNombreCursoIns(String nombreSolicitud, Integer idCurso) {
+        List<SolicitudEntity> solicitudEntities = solicitudRepository.buscarPorNombreYCursoIns(nombreSolicitud, idCurso);
         List<Solicitud> solicitudes = null;
         if(solicitudEntities != null){
             solicitudes = solicitudEntities.stream().map(solicitudEntity -> {
@@ -491,5 +471,94 @@ public class GestionarSolicitudGatewayImplAdapter implements GestionarSolicitudG
         }
         return solicitudes;
     }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Integer contarSolicitudPorNombreYCursoPre(String nombreSolicitud, Integer idCurso) {
+        return solicitudRepository.contarPorNombreYCursoPre(nombreSolicitud, idCurso);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Integer contarSolicitudPorNombreCursoEstadoPre(String nombreSolicitud, Integer idCurso,
+            String estadoActual) {
+        return solicitudRepository.contarPorNombreCursoEstadoPre(nombreSolicitud, idCurso, estadoActual);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<Solicitud> buscarSolicitudPorNombreCursoPre(String nombreSolicitud, Integer idCurso) {
+        List<SolicitudEntity> solicitudEntities = solicitudRepository.buscarPorNombreYCursoPre(nombreSolicitud, idCurso);
+        List<Solicitud> solicitudes = null;
+        if(solicitudEntities != null){
+            solicitudes = solicitudEntities.stream().map(solicitudEntity -> {
+                if (solicitudEntity instanceof SolicitudCursoVeranoPreinscripcionEntity) {
+                    return solicitudMapper.map(solicitudEntity, SolicitudCursoVeranoPreinscripcion.class);
+                } else if (solicitudEntity instanceof SolicitudEcaesEntity) {
+                    return solicitudMapper.map(solicitudEntity, SolicitudEcaes.class);
+                } else if (solicitudEntity instanceof SolicitudReingresoEntity) {
+                    return solicitudMapper.map(solicitudEntity, SolicitudReingreso.class);
+                } else if (solicitudEntity instanceof SolicitudHomologacionEntity) {
+                    return solicitudMapper.map(solicitudEntity, SolicitudHomologacion.class);
+                } else if (solicitudEntity instanceof SolicitudPazYSalvoEntity) {
+                    return solicitudMapper.map(solicitudEntity, SolicitudPazYSalvo.class);
+                } else if (solicitudEntity instanceof SolicitudCursoVeranoInscripcionEntity) {
+                    return solicitudMapper.map(solicitudEntity, SolicitudCursoVeranoIncripcion.class);
+                }
+                return null;
+            }).toList();
+        }
+        return solicitudes;
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<Solicitud> buscarSolicitudPorNombreCursoEstadoPre(String nombreSolicitud, Integer idCurso,
+            String estadoActual) {
+        List<SolicitudEntity> solicitudEntities = solicitudRepository.buscarPorNombreCursoEstadoPre(nombreSolicitud, idCurso, estadoActual);
+        List<Solicitud> solicitudes = null;
+        if(solicitudEntities != null){
+            solicitudes = solicitudEntities.stream().map(solicitudEntity -> {
+                if (solicitudEntity instanceof SolicitudCursoVeranoPreinscripcionEntity) {
+                    return solicitudMapper.map(solicitudEntity, SolicitudCursoVeranoPreinscripcion.class);
+                } else if (solicitudEntity instanceof SolicitudEcaesEntity) {
+                    return solicitudMapper.map(solicitudEntity, SolicitudEcaes.class);
+                } else if (solicitudEntity instanceof SolicitudReingresoEntity) {
+                    return solicitudMapper.map(solicitudEntity, SolicitudReingreso.class);
+                } else if (solicitudEntity instanceof SolicitudHomologacionEntity) {
+                    return solicitudMapper.map(solicitudEntity, SolicitudHomologacion.class);
+                } else if (solicitudEntity instanceof SolicitudPazYSalvoEntity) {
+                    return solicitudMapper.map(solicitudEntity, SolicitudPazYSalvo.class);
+                } else if (solicitudEntity instanceof SolicitudCursoVeranoInscripcionEntity) {
+                    return solicitudMapper.map(solicitudEntity, SolicitudCursoVeranoIncripcion.class);
+                }
+                return null;
+            }).toList();
+        }
+        return solicitudes;
+    }
+
+    @Override
+    public Solicitud buscarSolicitudesPorUsuarioNombreSolicitudCursoPre(Integer idUsuario, String nombre,
+            Integer idCurso) {
+        SolicitudEntity solicitudEntity = solicitudRepository.buscarSolicitudesPorUsuarioNombreSolicitudCursoPre(idUsuario, nombre, idCurso);
+        Solicitud solicitud = null;
+        if(solicitudEntity!= null){
+                if (solicitudEntity instanceof SolicitudCursoVeranoPreinscripcionEntity) {
+                    solicitud = solicitudMapper.map(solicitudEntity, SolicitudCursoVeranoPreinscripcion.class);
+                } else if (solicitudEntity instanceof SolicitudEcaesEntity) {
+                    solicitud = solicitudMapper.map(solicitudEntity, SolicitudEcaes.class);
+                } else if (solicitudEntity instanceof SolicitudReingresoEntity) {
+                    solicitud = solicitudMapper.map(solicitudEntity, SolicitudReingreso.class);
+                } else if (solicitudEntity instanceof SolicitudHomologacionEntity) {
+                    solicitud = solicitudMapper.map(solicitudEntity, SolicitudHomologacion.class);
+                } else if (solicitudEntity instanceof SolicitudPazYSalvoEntity) {
+                    solicitud = solicitudMapper.map(solicitudEntity, SolicitudPazYSalvo.class);
+                } else if (solicitudEntity instanceof SolicitudCursoVeranoInscripcionEntity) {
+                    solicitud = solicitudMapper.map(solicitudEntity, SolicitudCursoVeranoIncripcion.class);
+                }
+        }
+        return solicitud;
+    }   
     
 }
