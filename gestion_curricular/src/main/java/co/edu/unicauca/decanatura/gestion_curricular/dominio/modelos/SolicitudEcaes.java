@@ -17,7 +17,7 @@ public class SolicitudEcaes extends Solicitud {
     private TipoDocumento tipoDocumento;
     private String numero_documento;
     private Date fecha_expedicion;
-    private String ruta_documento;
+    //private String ruta_documento;//en el commit se pasa este atributo para la clase solicitud
     //@Lob
     //@Column(name = "archivo_datos")
     //private byte[] archivo_datos; //se puede usar si se quiere almacenar el documento en la base de datos
