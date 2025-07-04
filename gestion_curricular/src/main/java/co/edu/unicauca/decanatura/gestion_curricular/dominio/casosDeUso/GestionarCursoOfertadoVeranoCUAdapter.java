@@ -50,7 +50,7 @@ public class GestionarCursoOfertadoVeranoCUAdapter implements GestionarCursoOfer
             if(cursoABuscar == null){
                 this.objFormateadorResultados.retornarRespuestaErrorEntidadExiste("No se encuentra el curso");
             }else{
-                if(solicitudes.size() >= cursoABuscar.getCupo_estimado()){
+                if(solicitudes.size() >= 20){
                     for (Solicitud solicitud : solicitudes) {
                         estadoSolicitud = solicitud.getObjEstadoSolicitud();
                         estadoSolicitud.setEstado_actual("Aprobado");

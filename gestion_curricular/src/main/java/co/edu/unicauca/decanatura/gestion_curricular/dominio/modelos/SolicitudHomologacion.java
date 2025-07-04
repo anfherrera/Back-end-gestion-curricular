@@ -1,17 +1,20 @@
 package co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos;
 
-import lombok.AllArgsConstructor;
+import java.util.Date;
+import java.util.List;
+
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
+
 
 @Data
-@NoArgsConstructor
-@AllArgsConstructor
 @EqualsAndHashCode(callSuper = true)
 public class SolicitudHomologacion extends Solicitud {
-    
-    private String ruta_PM_FO_4_FOR_27;
-    private String ruta_contenido_programatico; //Es nulleable
-    private boolean esValido;
+    public SolicitudHomologacion(){
+        super();
+    }
+    public SolicitudHomologacion(Integer id_solicitud, String nombre_solicitud, Date fecha_registro_solicitud,
+                                EstadoSolicitud objEstadoSolicitud, Usuario objUsuario, List<Documento> documentos) {
+        super(id_solicitud, nombre_solicitud, fecha_registro_solicitud, objEstadoSolicitud, objUsuario, documentos);
+    }
 }

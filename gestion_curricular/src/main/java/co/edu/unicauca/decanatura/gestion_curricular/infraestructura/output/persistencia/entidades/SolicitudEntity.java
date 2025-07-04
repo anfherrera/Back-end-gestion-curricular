@@ -1,11 +1,14 @@
 package co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.entidades;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.InheritanceType;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -17,14 +20,12 @@ import jakarta.persistence.Inheritance;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 
 @Entity
 @Table(name = "Solicitudes")
 @Inheritance(strategy = InheritanceType.JOINED)
 @Data
 @AllArgsConstructor
-@NoArgsConstructor
 public class SolicitudEntity {
 
     @Id
@@ -42,5 +43,12 @@ public class SolicitudEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "idUsuario")
     private UsuarioEntity objUsuario;
+
+    @OneToMany(mappedBy = "objSolicitud", cascade = {CascadeType.PERSIST, CascadeType.REMOVE}, orphanRemoval = true)
+    private List<DocumentoEntity> documentos;
+
+    public SolicitudEntity() {
+        this.documentos = new ArrayList<DocumentoEntity>();
+    }
 
 }

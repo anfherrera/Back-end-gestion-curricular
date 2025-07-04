@@ -1,22 +1,19 @@
 package co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos;
 
-import lombok.AllArgsConstructor;
+import java.util.Date;
+import java.util.List;
+
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
 
 @Data
-@AllArgsConstructor
-@NoArgsConstructor
 @EqualsAndHashCode(callSuper = true)
 public class SolicitudPazYSalvo extends Solicitud {
-
-    private String ruta_PM_FO_4_FOR_27;
-    private String ruta_autorizacion_publicar;
-    private String ruta_resultados_pruebas;
-    private String ruta_formato_TI_G;
-    private String ruta_formato_PP_H;
-    private String ruta_comprobante_pago;
-    private String rute_trabajo_grado;
-    private boolean esValido;
+    public SolicitudPazYSalvo(){
+        super();
+    }
+    public SolicitudPazYSalvo(Integer id_solicitud, String nombre_solicitud, Date fecha_registro_solicitud,
+                                EstadoSolicitud objEstadoSolicitud, Usuario objUsuario, List<Documento> documentos) {
+        super(id_solicitud, nombre_solicitud, fecha_registro_solicitud, objEstadoSolicitud, objUsuario, documentos);
+    }
 }

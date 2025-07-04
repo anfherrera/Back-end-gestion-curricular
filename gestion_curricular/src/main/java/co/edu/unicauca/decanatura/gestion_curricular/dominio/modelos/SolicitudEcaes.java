@@ -17,6 +17,6 @@ public class SolicitudEcaes extends Solicitud {
     private TipoDocumento tipoDocumento;
     private String numero_documento;
     private Date fecha_expedicion;
-    private String ruta_documento;
+    private Date fecha_nacimiento;
 
 }
