@@ -30,5 +30,9 @@ public class SolicitudEcaesEntity extends SolicitudEntity {
     private Date fecha_expedicion;
     @Column(nullable = false, length = 100)
     private String ruta_documento;
+    // @Lob
+    // @Column(name = "archivo_datos")
+     //private byte[] archivo_datos; //se puede usar si se quiere almacenar el documento en la base de datos
+
 
 }

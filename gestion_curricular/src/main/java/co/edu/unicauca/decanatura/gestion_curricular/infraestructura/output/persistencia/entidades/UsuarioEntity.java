@@ -51,6 +51,10 @@ public class UsuarioEntity {
     private ProgramaEntity objPrograma;
 
 	@ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(name = "usuarioPrograma", joinColumns = @JoinColumn(name = "idUsuario"), inverseJoinColumns = @JoinColumn(name = "idPrograma"))
+    private Set<ProgramaEntity> programas;
+
+    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL) 
 	@JoinTable(name = "usuarioSolicitudes", joinColumns = @JoinColumn(name = "idUsuario"), inverseJoinColumns = @JoinColumn(name = "idSolicitud"))
     private Set<SolicitudEntity> solicitudes;
 
