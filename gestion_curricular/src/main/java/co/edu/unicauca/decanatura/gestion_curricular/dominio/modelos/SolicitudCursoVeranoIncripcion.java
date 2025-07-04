@@ -16,6 +16,5 @@ public class SolicitudCursoVeranoIncripcion extends Solicitud {
     private CursoOfertadoVerano objCursoOfertado;
     private CondicionSolicitudVerano codicion_solicitud;
     private String observacion;
-    private String ruta_recibo_pago;
 
 }

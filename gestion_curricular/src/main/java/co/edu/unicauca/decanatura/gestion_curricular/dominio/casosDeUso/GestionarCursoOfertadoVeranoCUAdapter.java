@@ -50,7 +50,7 @@ public class GestionarCursoOfertadoVeranoCUAdapter implements GestionarCursoOfer
             if(cursoABuscar == null){
                 this.objFormateadorResultados.retornarRespuestaErrorEntidadExiste("No se encuentra el curso");
             }else{
-                if(solicitudes.size() >= cursoABuscar.getCupo_estimado()){
+                if(solicitudes.size() >= 20){
                     for (Solicitud solicitud : solicitudes) {
                         estadoSolicitud = solicitud.getObjEstadoSolicitud();
                         estadoSolicitud.setEstado_actual("Aprobado");
@@ -99,6 +99,54 @@ public class GestionarCursoOfertadoVeranoCUAdapter implements GestionarCursoOfer
         }
 
         return this.objGestionarCursoOfertadoVeranoGateway.actualizarCurso(cursoABuscar, estadoCurso);
+    }
+
+    @Override
+    public CursoOfertadoVerano crearCurso(CursoOfertadoVerano curso) {
+        List<CursoOfertadoVerano> cursos = null;
+        CursoOfertadoVerano cursoGuardado = null;
+        Boolean bandera = false;
+        if(curso != null){
+            cursos = this.objGestionarCursoOfertadoVeranoGateway.listarTodos();
+            for (CursoOfertadoVerano cursoOfertadoVerano : cursos) {
+                if(curso.getObjMateria().getId_materia() == cursoOfertadoVerano.getObjMateria().getId_materia()){
+                    if(curso.getGrupo().name() == cursoOfertadoVerano.getGrupo().name()){
+                        this.objFormateadorResultados.retornarRespuestaErrorEntidadExiste("El grupo asignado ya esta en uso"+ curso.getGrupo().name());
+                        bandera = true;
+                        break;
+                    }
+                }
+            }
+            if(!bandera){
+            cursoGuardado = this.objGestionarCursoOfertadoVeranoGateway.crearCurso(curso);
+            }
+        }
+        return cursoGuardado;
+    }
+
+    @Override
+    public boolean eliminarCurso(Integer idCurso) {
+        CursoOfertadoVerano cursosABuscar=null;
+        cursosABuscar = this.objGestionarCursoOfertadoVeranoGateway.obtenerCursoPorId(idCurso);
+        if(cursosABuscar == null){
+            this.objFormateadorResultados.retornarRespuestaErrorEntidadExiste("No se encuentra el curso");
+        }
+        return this.objGestionarCursoOfertadoVeranoGateway.eliminarCurso(idCurso);
+    }
+
+    @Override
+    public CursoOfertadoVerano obtenerCursoPorId(Integer idCurso) {
+        CursoOfertadoVerano cursosABuscar=null;
+        cursosABuscar = this.objGestionarCursoOfertadoVeranoGateway.obtenerCursoPorId(idCurso);
+        if(cursosABuscar == null){
+            this.objFormateadorResultados.retornarRespuestaErrorEntidadExiste("No se encuentra el curso");
+        }
+        return this.objGestionarCursoOfertadoVeranoGateway.obtenerCursoPorId(idCurso);
+    }
+
+    @Override
+    public List<CursoOfertadoVerano> listarTodos() {
+        return this.objGestionarCursoOfertadoVeranoGateway.listarTodos();
     }
 
     

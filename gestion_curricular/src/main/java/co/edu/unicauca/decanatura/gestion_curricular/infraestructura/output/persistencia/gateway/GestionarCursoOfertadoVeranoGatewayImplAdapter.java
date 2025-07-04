@@ -36,6 +36,7 @@ public class GestionarCursoOfertadoVeranoGatewayImplAdapter implements Gestionar
     }
 
     @Override
+    @Transactional
     public CursoOfertadoVerano crearCurso(CursoOfertadoVerano curso) {
         CursoOfertadoVeranoEntity cursoEntity = cursoMapper.map(curso, CursoOfertadoVeranoEntity.class);
         EstadoCursoOfertadoEntity estadoCurso = new EstadoCursoOfertadoEntity();
@@ -47,6 +48,7 @@ public class GestionarCursoOfertadoVeranoGatewayImplAdapter implements Gestionar
     }
 
     @Override
+    @Transactional
     public CursoOfertadoVerano actualizarCurso(CursoOfertadoVerano curso, EstadoCursoOfertado estadoCurso) {
         cursoRepository.findById(curso.getId_curso())
             .orElseThrow(() -> new RuntimeException("Curso no encontrado con ID: " + curso.getId_curso()));
@@ -69,6 +71,7 @@ public class GestionarCursoOfertadoVeranoGatewayImplAdapter implements Gestionar
     }
 
     @Override
+    @Transactional
     public boolean eliminarCurso(Integer idCurso) {
         Optional<CursoOfertadoVeranoEntity> entityOpt = cursoRepository.findById(idCurso);
         if (entityOpt.isPresent()) {
@@ -126,6 +129,7 @@ public class GestionarCursoOfertadoVeranoGatewayImplAdapter implements Gestionar
     }
 
     @Override
+    @Transactional
     public CursoOfertadoVerano asociarUsuarioCurso(Integer idUsuario, Integer idCurso) {
         Set<UsuarioEntity> usuariosEntitySet = null;
         CursoOfertadoVeranoEntity cursoOfertadoVeranoEntityGuardado = null;
@@ -148,6 +152,7 @@ public class GestionarCursoOfertadoVeranoGatewayImplAdapter implements Gestionar
     }
 
     @Override
+    @Transactional
     public CursoOfertadoVerano desasociarUsuarioCurso(Integer idUsuario, Integer idCurso) {
         Set<UsuarioEntity> usuariosEntitySet = null;
         CursoOfertadoVeranoEntity cursoOfertadoVeranoEntityGuardado = null;

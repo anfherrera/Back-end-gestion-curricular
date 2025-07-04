@@ -1,12 +1,14 @@
 package co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.entidades;
 
+import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.List;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.InheritanceType;
-import jakarta.persistence.ManyToMany;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -38,11 +40,15 @@ public class SolicitudEntity {
     @OneToOne(fetch = FetchType.EAGER, cascade = {CascadeType.REMOVE, CascadeType.PERSIST }, mappedBy = "objSolicitud")
     private EstadoSolicitudEntity objEstadoSolicitud;
 
-    @ManyToMany(mappedBy = "solicitudes")
-    private Set<UsuarioEntity> usuarios;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "idUsuario")
+    private UsuarioEntity objUsuario;
+
+    @OneToMany(mappedBy = "objSolicitud", cascade = {CascadeType.PERSIST, CascadeType.REMOVE}, orphanRemoval = true)
+    private List<DocumentoEntity> documentos;
 
     public SolicitudEntity() {
-        this.usuarios = new HashSet<UsuarioEntity>();
+        this.documentos = new ArrayList<DocumentoEntity>();
     }
 
 }

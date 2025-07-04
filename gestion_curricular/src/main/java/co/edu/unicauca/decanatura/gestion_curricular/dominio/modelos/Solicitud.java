@@ -1,8 +1,8 @@
 package co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos;
 
+import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.List;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -18,10 +18,13 @@ public class Solicitud {
 
     private EstadoSolicitud objEstadoSolicitud;
 
-    private Set<Usuario> usuarios;
+    private Usuario objUsuario;
 
-    public Solicitud() {
-        this.usuarios = new HashSet<Usuario>();
+    private List<Documento> documentos;
+
+    public Solicitud () {
+        this.documentos = new ArrayList<Documento>();
     }
+
     
 }

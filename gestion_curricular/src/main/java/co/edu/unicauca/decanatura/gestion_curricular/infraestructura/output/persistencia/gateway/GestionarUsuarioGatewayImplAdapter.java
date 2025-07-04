@@ -1,9 +1,7 @@
 package co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.gateway;
 
-import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
@@ -100,9 +98,8 @@ public class GestionarUsuarioGatewayImplAdapter implements GestionarUsuarioGatew
             solicitudesEntity = List.of();
         }
 
-        Set<SolicitudEntity> solicitudesEntitySet = new HashSet<>(solicitudesEntity);
         
-        usuarioEntity.setSolicitudes(solicitudesEntitySet);
+        usuarioEntity.setSolicitudes(solicitudesEntity);
 
         return usuarioMapper.map(usuarioEntity, Usuario.class);
     }

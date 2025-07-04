@@ -1,4 +1,4 @@
-package co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output;
+package co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input;
 
 import java.util.Date;
 import java.util.List;
@@ -12,8 +12,7 @@ import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.SolicitudHo
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.SolicitudPazYSalvo;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.SolicitudReingreso;
 
-
-public interface GestionarSolicitudGatewayIntPort {
+public interface GestionarSolicitudCUIntPort {
     
     SolicitudCursoVeranoPreinscripcion crearSolicitudCursoVeranoPreinscripcion(SolicitudCursoVeranoPreinscripcion solicitudCursoVerano);
     SolicitudCursoVeranoIncripcion crearSolicitudCursoVeranoInscripcion(SolicitudCursoVeranoIncripcion solicitudCursoVerano);
@@ -48,11 +47,6 @@ public interface GestionarSolicitudGatewayIntPort {
     List<Solicitud> buscarSolicitudPorNombreCursoPre(String nombreSolicitud, Integer idCurso);
 
     List<Solicitud> buscarSolicitudPorNombreCursoEstadoPre(String nombreSolicitud, Integer idCurso, String estadoActual);
-
-    Solicitud buscarSolicitudesPorUsuarioNombreSolicitudCursoPre(Integer idUsuario,String nombre, Integer idCurso);
-
-    // Contar total de solicitudes
-    Integer contarSolicitudes();
 
     // Buscar solicitudes por rango de fechas
     List<Solicitud> buscarSolicitudesPorFecha(Date fechaInicio, Date fechaFin);

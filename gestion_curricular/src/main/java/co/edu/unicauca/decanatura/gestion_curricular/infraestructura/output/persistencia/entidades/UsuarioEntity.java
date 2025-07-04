@@ -1,20 +1,21 @@
 package co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.entidades;
 
 
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
-import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -50,19 +51,14 @@ public class UsuarioEntity {
     @JoinColumn(name = "idfkPrograma", nullable = false)
     private ProgramaEntity objPrograma;
 
-	@ManyToMany(fetch = FetchType.EAGER)
-    @JoinTable(name = "usuarioPrograma", joinColumns = @JoinColumn(name = "idUsuario"), inverseJoinColumns = @JoinColumn(name = "idPrograma"))
-    private Set<ProgramaEntity> programas;
-
-    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL) 
-	@JoinTable(name = "usuarioSolicitudes", joinColumns = @JoinColumn(name = "idUsuario"), inverseJoinColumns = @JoinColumn(name = "idSolicitud"))
-    private Set<SolicitudEntity> solicitudes;
+    @OneToMany(mappedBy = "objUsuario", cascade = {CascadeType.PERSIST, CascadeType.REMOVE}, orphanRemoval = true)
+	private List<SolicitudEntity> solicitudes;
 
     @ManyToMany(mappedBy = "estudiantesInscritos")
     private Set<CursoOfertadoVeranoEntity> cursosOfertadosInscritos;
 
     public UsuarioEntity(){
-        this.solicitudes = new HashSet<SolicitudEntity>();
+        this.solicitudes = new ArrayList<SolicitudEntity>();
         this.cursosOfertadosInscritos = new HashSet<CursoOfertadoVeranoEntity>();
     }
     

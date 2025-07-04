@@ -1,19 +1,20 @@
 package co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos;
 
-import lombok.AllArgsConstructor;
+import java.util.Date;
+import java.util.List;
+
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
+
 
 @Data
-@AllArgsConstructor
-@NoArgsConstructor
 @EqualsAndHashCode(callSuper = true)
 public class SolicitudReingreso extends Solicitud {
-
-    private String ruta_PM_FO_4_FOR_17;
-    private String ruta_pazysalvo_academico;
-    private String ruta_pazysalvo_financiero;
-    private boolean esValido;
-    
+    public SolicitudReingreso(){
+        super();
+    }
+    public SolicitudReingreso(Integer id_solicitud, String nombre_solicitud, Date fecha_registro_solicitud,
+                                EstadoSolicitud objEstadoSolicitud, Usuario objUsuario, List<Documento> documentos) {
+        super(id_solicitud, nombre_solicitud, fecha_registro_solicitud, objEstadoSolicitud, objUsuario, documentos);
+    }
 }

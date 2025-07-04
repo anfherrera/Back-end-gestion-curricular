@@ -24,7 +24,7 @@ public class Estadistica {
         public Estadistica() {
         this.periodos_academico = new ArrayList<Date>();
         this.nombres_procesos = new ArrayList<String>();
-        this.nombres_programas = new ArrayList<String>();
+        this.nombres_programas = new ArrayList<String>();   
     }
 }
 
