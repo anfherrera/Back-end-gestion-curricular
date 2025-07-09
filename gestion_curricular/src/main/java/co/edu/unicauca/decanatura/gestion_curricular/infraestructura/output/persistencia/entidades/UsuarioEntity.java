@@ -51,7 +51,7 @@ public class UsuarioEntity {
     @JoinColumn(name = "idfkPrograma", nullable = false)
     private ProgramaEntity objPrograma;
 
-    @OneToMany(mappedBy = "objUsuario", cascade = {CascadeType.PERSIST, CascadeType.REMOVE}, orphanRemoval = true)
+    @OneToMany(mappedBy = "objUsuario", cascade = {CascadeType.REMOVE}, orphanRemoval = true)
 	private List<SolicitudEntity> solicitudes;
 
     @ManyToMany(mappedBy = "estudiantesInscritos")

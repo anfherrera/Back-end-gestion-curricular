@@ -1,9 +1,12 @@
 package co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.entidades;
 
 
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.EstadoCursoOfertado;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.entidades.Enums.GrupoCursoVeranoEntity;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -17,6 +20,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
@@ -46,8 +50,8 @@ public class CursoOfertadoVeranoEntity {
     @JoinColumn(name = "idfkDocente", referencedColumnName = "idDocente", nullable = false)
     private DocenteEntity objDocente;
 
-    @OneToOne(fetch = FetchType.EAGER, cascade = {CascadeType.REMOVE, CascadeType.PERSIST }, mappedBy = "objCursoOfertadoVerano")
-    private EstadoCursoOfertadoEntity objEstadoCursoOfertado; // Estado del curso ofertado
+    @OneToMany( mappedBy = "objCursoOfertadoVerano", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<EstadoCursoOfertadoEntity> estadosCursoOfertados; // Estado del curso ofertado
     
     @ManyToMany(fetch = FetchType.EAGER)
 	@JoinTable(name = "cursosEstudiantes", joinColumns = @JoinColumn(name = "idCurso"), inverseJoinColumns = @JoinColumn(name = "idUsuario"))
@@ -55,5 +59,6 @@ public class CursoOfertadoVeranoEntity {
 
     public CursoOfertadoVeranoEntity() {
         this.estudiantesInscritos = new HashSet<UsuarioEntity>();
+        this.estadosCursoOfertados = new ArrayList<EstadoCursoOfertadoEntity>();
     }
 }

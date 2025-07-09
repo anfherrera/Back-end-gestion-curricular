@@ -18,8 +18,8 @@ public class SolicitudPazYSalvoEntity extends SolicitudEntity {
         super();
     }
     public SolicitudPazYSalvoEntity(Integer id_solicitud, String nombre_solicitud, Date fecha_registro_solicitud,
-                                EstadoSolicitudEntity objEstadoSolicitud, UsuarioEntity objUsuario, List<DocumentoEntity> documentos) {
-        super(id_solicitud, nombre_solicitud, fecha_registro_solicitud, objEstadoSolicitud, objUsuario, documentos);
+                                List<EstadoSolicitudEntity> estadosSolicitud, UsuarioEntity objUsuario, List<DocumentoEntity> documentos) {
+        super(id_solicitud, nombre_solicitud, fecha_registro_solicitud, estadosSolicitud, objUsuario, documentos);
     }
     
 }

@@ -11,6 +11,7 @@ import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.Gestionar
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.GestionarUsuarioGatewayIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.CursoOfertadoVerano;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Documento;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.EstadoCursoOfertado;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.EstadoSolicitud;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Solicitud;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.SolicitudCursoVeranoIncripcion;
@@ -48,6 +49,7 @@ public class GestionarSolicitudCUAdapter implements GestionarSolicitudCUIntPort 
         SolicitudCursoVeranoPreinscripcion solicitudGuardada = null;
         Usuario usuarioBuscar =null;
         List<Solicitud> solicitudes = null;
+        List<EstadoCursoOfertado> estadosCursos = null;
         if(solicitudCursoVerano == null) {
             this.objFormateadorResultados.retornarRespuestaErrorReglaDeNegocio("La solicitud de preinscripción no puede ser nula");
         }else{
@@ -60,7 +62,8 @@ public class GestionarSolicitudCUAdapter implements GestionarSolicitudCUIntPort 
                         if(solicitudCursoVerano.getDocumentos().size() == 0){
                             cursoABuscar = this.objCursoOfertado.obtenerCursoPorId(solicitudCursoVerano.getObjCursoOfertado().getId_curso());
                             if(cursoABuscar != null){
-                                if(cursoABuscar.getObjEstadoCursoOfertado().getEstado_actual().equals("Publicado")){
+                                estadosCursos = cursoABuscar.getEstadosCursoOfertados();
+                                if(estadosCursos.get(estadosCursos.size()-1).getEstado_actual().equals("Publicado")){
                                     solicitudGuardada = this.objGestionarSolicitudGateway.crearSolicitudCursoVeranoPreinscripcion(solicitudCursoVerano);
                                     solicitudes = usuarioBuscar.getSolicitudes();
                                     solicitudes.add(solicitudGuardada);
@@ -81,7 +84,7 @@ public class GestionarSolicitudCUAdapter implements GestionarSolicitudCUIntPort 
                 }else{
                     this.objFormateadorResultados.retornarRespuestaErrorEntidadExiste("Usuario no encontrado");
                 }
-            }
+            }   
         }
         return solicitudGuardada;
     }
@@ -95,6 +98,8 @@ public class GestionarSolicitudCUAdapter implements GestionarSolicitudCUIntPort 
         Solicitud solicitudPre = null;
         List<Solicitud> solicitudes = null;
         Documento documento = null;
+        List<EstadoCursoOfertado> estadosCursos = null;
+        List<EstadoSolicitud> estadosSolicitud = null;
         if(solicitudCursoVerano == null) {
             this.objFormateadorResultados.retornarRespuestaErrorReglaDeNegocio("La solicitud de preinscripción no puede ser nula");
         }else{
@@ -108,9 +113,11 @@ public class GestionarSolicitudCUAdapter implements GestionarSolicitudCUIntPort 
                             documento = solicitudCursoVerano.getDocumentos().get(0);
                             cursoABuscar = this.objCursoOfertado.obtenerCursoPorId(solicitudCursoVerano.getObjCursoOfertado().getId_curso());
                             if(cursoABuscar != null){
-                                if(cursoABuscar.getObjEstadoCursoOfertado().getEstado_actual().equals("Preinscripcion")){
+                                estadosCursos = cursoABuscar.getEstadosCursoOfertados();
+                                if(estadosCursos.get(estadosCursos.size()-1).getEstado_actual().equals("Preinscripcion")){
                                     solicitudPre = this.objGestionarSolicitudGateway.buscarSolicitudesPorUsuarioNombreSolicitudCursoPre(usuarioBuscar.getId_usuario(),SolicitudCursoVeranoPreinscripcion.class.getSimpleName(),cursoABuscar.getId_curso());
-                                    if(solicitudPre.getObjEstadoSolicitud().getEstado_actual().equals("Aprobado")){
+                                    estadosSolicitud = solicitudPre.getEstadosSolicitud();
+                                    if(estadosSolicitud.get(estadosSolicitud.size()-1).getEstado_actual().equals("Aprobado")){
                                         solicitudGuardada = this.objGestionarSolicitudGateway.crearSolicitudCursoVeranoInscripcion(solicitudCursoVerano);
                                         documento.setObjSolicitud(solicitudGuardada);
                                         this.objDocumentosGateway.crearDocumento(documento);

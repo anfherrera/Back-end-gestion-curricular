@@ -1,6 +1,7 @@
 package co.edu.unicauca.decanatura.gestion_curricular.dominio.casosDeUso;
 
 
+import java.util.Date;
 import java.util.List;
 
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarCursoOfertadoVeranoCUIntPort;
@@ -13,6 +14,7 @@ import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.EstadoCurso
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.EstadoSolicitud;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Solicitud;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Usuario;
+import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.entidades.EstadoSolicitudEntity;
 
 public class GestionarCursoOfertadoVeranoCUAdapter implements GestionarCursoOfertadoVeranoCUIntPort {
 
@@ -37,6 +39,7 @@ public class GestionarCursoOfertadoVeranoCUAdapter implements GestionarCursoOfer
         Integer idCurso = null;
         Usuario usuario = null;
         EstadoSolicitud estadoSolicitud = null;
+        List<EstadoCursoOfertado> estadosCursos = null;
         if(curso == null){
             this.objFormateadorResultados.retornarRespuestaErrorEntidadExiste("No hay datos en el curso");
         }
@@ -52,13 +55,16 @@ public class GestionarCursoOfertadoVeranoCUAdapter implements GestionarCursoOfer
             }else{
                 if(solicitudes.size() >= 20){
                     for (Solicitud solicitud : solicitudes) {
-                        estadoSolicitud = solicitud.getObjEstadoSolicitud();
+                        estadoSolicitud = new EstadoSolicitud();
+                        estadoSolicitud.setFecha_registro_estado(new Date());
                         estadoSolicitud.setEstado_actual("Aprobado");
                         solicitud = this.objGestionarSolicitudGateway.actualizarSolicitud(solicitud, estadoSolicitud);
                         usuario = this.objGestionarUsuarioGateway.buscarUsuarioPorSolicitud(solicitud.getId_solicitud());
                         this.objGestionarCursoOfertadoVeranoGateway.asociarUsuarioCurso(usuario.getId_usuario(), idCurso);
                     }
-                    cursoABuscar.setObjEstadoCursoOfertado(estadoCurso);
+                    estadosCursos = cursoABuscar.getEstadosCursoOfertados();
+                    estadosCursos.add(estadoCurso);
+                    cursoABuscar.setEstadosCursoOfertados(estadosCursos);
                 }else{
                     this.objFormateadorResultados.retornarRespuestaErrorReglaDeNegocio("No se puede publicar el curso, porque no se alcanzo el cupo estimado");
                 }
@@ -76,8 +82,9 @@ public class GestionarCursoOfertadoVeranoCUAdapter implements GestionarCursoOfer
             }else{
                 if(solicitudes.size() >= cursoABuscar.getCupo_estimado()){   
                         for (Solicitud solicitud : solicitudes) {
-                            estadoSolicitud = solicitud.getObjEstadoSolicitud();
-                            estadoSolicitud.setEstado_actual("Aprobado");
+                        estadoSolicitud = new EstadoSolicitud();
+                        estadoSolicitud.setFecha_registro_estado(new Date());
+                        estadoSolicitud.setEstado_actual("Aprobado");
                             solicitud = this.objGestionarSolicitudGateway.actualizarSolicitud(solicitud, estadoSolicitud);
                             usuario = this.objGestionarUsuarioGateway.buscarUsuarioPorSolicitud(solicitud.getId_solicitud());
                             if(solicitudes.size() < cursoABuscar.getEstudiantesInscritos().size()){
@@ -89,7 +96,9 @@ public class GestionarCursoOfertadoVeranoCUAdapter implements GestionarCursoOfer
                             }
                         }
                     
-                    cursoABuscar.setObjEstadoCursoOfertado(estadoCurso);
+                    estadosCursos = cursoABuscar.getEstadosCursoOfertados();
+                    estadosCursos.add(estadoCurso);
+                    cursoABuscar.setEstadosCursoOfertados(estadosCursos);
                 }else{
                     this.objFormateadorResultados.retornarRespuestaErrorReglaDeNegocio("No se puede publicar el curso, porque no se alcanzo el cupo estimado");
                 }

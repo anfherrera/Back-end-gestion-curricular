@@ -16,7 +16,7 @@ public class Solicitud {
     private String nombre_solicitud;
     private Date fecha_registro_solicitud;
 
-    private EstadoSolicitud objEstadoSolicitud;
+    private List<EstadoSolicitud> estadosSolicitud;
 
     private Usuario objUsuario;
 
@@ -24,6 +24,7 @@ public class Solicitud {
 
     public Solicitud () {
         this.documentos = new ArrayList<Documento>();
+        this.estadosSolicitud = new ArrayList<EstadoSolicitud>();
     }
 
     

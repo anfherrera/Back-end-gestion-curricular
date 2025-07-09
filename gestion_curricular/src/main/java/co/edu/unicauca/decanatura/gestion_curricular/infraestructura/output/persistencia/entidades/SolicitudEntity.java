@@ -37,8 +37,8 @@ public class SolicitudEntity {
     @Column(nullable = false)
     private Date fecha_registro_solicitud;
 
-    @OneToOne(fetch = FetchType.EAGER, cascade = {CascadeType.REMOVE, CascadeType.PERSIST }, mappedBy = "objSolicitud")
-    private EstadoSolicitudEntity objEstadoSolicitud;
+    @OneToMany( mappedBy = "objSolicitud", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<EstadoSolicitudEntity> estadosSolicitud;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "idUsuario")
@@ -49,6 +49,7 @@ public class SolicitudEntity {
 
     public SolicitudEntity() {
         this.documentos = new ArrayList<DocumentoEntity>();
+        this.estadosSolicitud = new ArrayList<EstadoSolicitudEntity>();
     }
 
 }
