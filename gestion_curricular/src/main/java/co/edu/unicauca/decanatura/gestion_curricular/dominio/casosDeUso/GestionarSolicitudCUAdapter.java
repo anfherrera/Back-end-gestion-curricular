@@ -21,6 +21,7 @@ import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.SolicitudPa
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.SolicitudReingreso;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Usuario;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Enums.TipoDocumentoSolicitudPazYSalvo;
+import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.entidades.EstadoSolicitudEntity;
 
 public class GestionarSolicitudCUAdapter implements GestionarSolicitudCUIntPort {
 
@@ -110,7 +111,8 @@ public class GestionarSolicitudCUAdapter implements GestionarSolicitudCUIntPort 
                             if(cursoABuscar != null){
                                 if(cursoABuscar.getObjEstadoCursoOfertado().getEstado_actual().equals("Preinscripcion")){
                                     solicitudPre = this.objGestionarSolicitudGateway.buscarSolicitudesPorUsuarioNombreSolicitudCursoPre(usuarioBuscar.getId_usuario(),SolicitudCursoVeranoPreinscripcion.class.getSimpleName(),cursoABuscar.getId_curso());
-                                    if(solicitudPre.getObjEstadoSolicitud().getEstado_actual().equals("Aprobado")){
+                                    List<EstadoSolicitud> estadosSolicitud = solicitudPre.getObjEstadoSolicitud();
+                                    if("Aprobado".equals(solicitudPre.getObjEstadoSolicitud().get(estadosSolicitud.size()-1).getEstado_actual())){
                                         solicitudGuardada = this.objGestionarSolicitudGateway.crearSolicitudCursoVeranoInscripcion(solicitudCursoVerano);
                                         documento.setObjSolicitud(solicitudGuardada);
                                         this.objDocumentosGateway.crearDocumento(documento);
