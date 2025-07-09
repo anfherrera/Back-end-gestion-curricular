@@ -2,11 +2,13 @@ package co.edu.unicauca.decanatura.gestion_curricular.dominio.casosDeUso;
 
 import java.util.List;
 
+import org.springframework.stereotype.Service;
+
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarUsuarioCUIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.FormateadorResultadosIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.GestionarUsuarioGatewayIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Usuario;
-
+@Service
 public class GestionarUsuarioCUAdapter implements GestionarUsuarioCUIntPort {
 
     private final GestionarUsuarioGatewayIntPort objGestionarUsuarioGateway;

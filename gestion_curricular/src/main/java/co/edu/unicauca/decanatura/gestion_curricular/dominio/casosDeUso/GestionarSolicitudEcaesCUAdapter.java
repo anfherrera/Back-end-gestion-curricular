@@ -71,7 +71,7 @@ public class GestionarSolicitudEcaesCUAdapter implements GestionarSolicitudEcaes
         estado.setEstado_actual("Enviado");
         estado.setFecha_registro_estado(new Date(System.currentTimeMillis()));
         estado.setObjSolicitud(solicitudEntity); // <- esto establece el vínculo
-        solicitudEntity.getObjEstadosSolicitud().add(estado); // <- y este el otro lado
+        solicitudEntity.getObjEstadoSolicitud().add(estado); // <- y este el otro lado
 
 
         // Guardar solicitud
@@ -112,7 +112,7 @@ public class GestionarSolicitudEcaesCUAdapter implements GestionarSolicitudEcaes
         nuevo.setObjSolicitud(solicitud);
 
         // Agregar al historial de estados
-        solicitud.getObjEstadosSolicitud().add(nuevo);
+        solicitud.getObjEstadoSolicitud().add(nuevo);
 
         // Guardar cambios
         solicitudRepository.save(solicitud);

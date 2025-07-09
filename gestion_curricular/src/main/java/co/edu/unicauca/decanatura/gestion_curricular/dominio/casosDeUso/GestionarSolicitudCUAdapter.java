@@ -3,6 +3,8 @@ package co.edu.unicauca.decanatura.gestion_curricular.dominio.casosDeUso;
 import java.util.Date;
 import java.util.List;
 
+import org.springframework.stereotype.Service;
+
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarSolicitudCUIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.FormateadorResultadosIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.GestionarCursoOfertadoVeranoGatewayIntPort;
@@ -22,7 +24,7 @@ import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.SolicitudRe
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Usuario;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Enums.TipoDocumentoSolicitudPazYSalvo;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.entidades.EstadoSolicitudEntity;
-
+@Service
 public class GestionarSolicitudCUAdapter implements GestionarSolicitudCUIntPort {
 
     private final GestionarSolicitudGatewayIntPort objGestionarSolicitudGateway;

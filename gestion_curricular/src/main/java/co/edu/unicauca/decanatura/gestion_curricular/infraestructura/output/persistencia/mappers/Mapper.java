@@ -17,12 +17,14 @@ import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.DTORe
 
 @Component
 public class Mapper {
+    
    
     private final ModelMapper modelMapper;
 
-    public Mapper() {
-        this.modelMapper = new ModelMapper();
+    public Mapper(ModelMapper modelMapper) {
+        this.modelMapper = modelMapper;
     }
+
 
     // Método genérico
     public <D, T> D map(final T source, Class<D> destinationType) {

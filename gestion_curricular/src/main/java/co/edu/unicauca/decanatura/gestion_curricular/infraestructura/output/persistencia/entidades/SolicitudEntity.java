@@ -38,7 +38,7 @@ public class SolicitudEntity {
     private Date fecha_registro_solicitud;
     //cambio: cambio de relacion one to one a one to many
     @OneToMany( mappedBy = "objSolicitud", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<EstadoSolicitudEntity> objEstadosSolicitud = new ArrayList<>();
+    private List<EstadoSolicitudEntity> objEstadoSolicitud = new ArrayList<>();
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "idUsuario")
