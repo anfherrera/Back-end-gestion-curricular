@@ -19,8 +19,9 @@ public interface SolicitudEcaesRepositoryInt extends JpaRepository<SolicitudEcae
     List<SolicitudEcaesEntity> buscarPorNumeroDocumentoParcial(@Param("numeroDocumentoParcial") String numeroDocumentoParcial);
 
     // Consulta JPQL: listar solicitudes con usuarios
-    @Query("SELECT DISTINCT s FROM SolicitudEcaesEntity s LEFT JOIN FETCH s.usuario")
+    @Query("SELECT DISTINCT s FROM SolicitudEcaesEntity s LEFT JOIN FETCH s.objUsuario")
     List<SolicitudEcaesEntity> listarSolicitudesConUsuarios();
+
 
 }
 //reviar si las consultas estan correctas 

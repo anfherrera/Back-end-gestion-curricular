@@ -1,6 +1,8 @@
 package co.edu.unicauca.decanatura.gestion_curricular.dominio.casosDeUso;
 
 
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarCursoOfertadoVeranoCUIntPort;
@@ -37,6 +39,7 @@ public class GestionarCursoOfertadoVeranoCUAdapter implements GestionarCursoOfer
         Integer idCurso = null;
         Usuario usuario = null;
         EstadoSolicitud estadoSolicitud = null;
+        List<EstadoSolicitud> historialEstadoSoliciud = null;
         if(curso == null){
             this.objFormateadorResultados.retornarRespuestaErrorEntidadExiste("No hay datos en el curso");
         }
@@ -52,9 +55,18 @@ public class GestionarCursoOfertadoVeranoCUAdapter implements GestionarCursoOfer
             }else{
                 if(solicitudes.size() >= 20){
                     for (Solicitud solicitud : solicitudes) {
-                        estadoSolicitud = solicitud.getObjEstadoSolicitud();
-                        estadoSolicitud.setEstado_actual("Aprobado");
-                        solicitud = this.objGestionarSolicitudGateway.actualizarSolicitud(solicitud, estadoSolicitud);
+                        historialEstadoSoliciud = solicitud.getObjEstadoSolicitud();
+                        if (historialEstadoSoliciud == null) {
+                            historialEstadoSoliciud = new ArrayList<>();
+                            solicitud.setObjEstadoSolicitud(historialEstadoSoliciud);
+                        }
+                        // Agregar un nuevo estado a la lista de estados(Trazabilidad)
+                        EstadoSolicitud nuevoEstado = new EstadoSolicitud();
+                        nuevoEstado.setEstado_actual("Aprobado");
+                        nuevoEstado.setFecha_registro_estado(new Date());
+                        nuevoEstado.setObjSolicitud(solicitud); // Importante para mantener relación
+                        historialEstadoSoliciud.add(nuevoEstado);
+                        solicitud = this.objGestionarSolicitudGateway.actualizarSolicitud(solicitud, nuevoEstado);
                         usuario = this.objGestionarUsuarioGateway.buscarUsuarioPorSolicitud(solicitud.getId_solicitud());
                         this.objGestionarCursoOfertadoVeranoGateway.asociarUsuarioCurso(usuario.getId_usuario(), idCurso);
                     }
@@ -76,9 +88,19 @@ public class GestionarCursoOfertadoVeranoCUAdapter implements GestionarCursoOfer
             }else{
                 if(solicitudes.size() >= cursoABuscar.getCupo_estimado()){   
                         for (Solicitud solicitud : solicitudes) {
-                            estadoSolicitud = solicitud.getObjEstadoSolicitud();
-                            estadoSolicitud.setEstado_actual("Aprobado");
-                            solicitud = this.objGestionarSolicitudGateway.actualizarSolicitud(solicitud, estadoSolicitud);
+                            historialEstadoSoliciud = solicitud.getObjEstadoSolicitud();
+                            if (historialEstadoSoliciud == null) {
+                                historialEstadoSoliciud = new ArrayList<>();
+                                solicitud.setObjEstadoSolicitud(historialEstadoSoliciud);
+                            }
+                            // Agregar un nuevo estado a la lista de estados(Trazabilidad)
+                            EstadoSolicitud nuevoEstado = new EstadoSolicitud();
+                            //estadoSolicitud = solicitud.getObjEstadoSolicitud();
+                            nuevoEstado.setEstado_actual("Aprobado");
+                            nuevoEstado.setFecha_registro_estado(new Date());
+                            nuevoEstado.setObjSolicitud(solicitud); // Importante para mantener relación
+                            historialEstadoSoliciud.add(nuevoEstado);
+                            solicitud = this.objGestionarSolicitudGateway.actualizarSolicitud(solicitud, nuevoEstado);
                             usuario = this.objGestionarUsuarioGateway.buscarUsuarioPorSolicitud(solicitud.getId_solicitud());
                             if(solicitudes.size() < cursoABuscar.getEstudiantesInscritos().size()){
                                 for (Usuario usuarioViejo : cursoABuscar.getEstudiantesInscritos()) {

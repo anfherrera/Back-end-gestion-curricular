@@ -12,6 +12,6 @@ public interface GestionarPreRegistroEcaesGatewayIntPort {
 
     List<SolicitudEcaes> listar();
 
-    Optional<SolicitudEcaes> buscarPorId(Integer id);
+    SolicitudEcaes buscarPorId(Integer id);
 
 }

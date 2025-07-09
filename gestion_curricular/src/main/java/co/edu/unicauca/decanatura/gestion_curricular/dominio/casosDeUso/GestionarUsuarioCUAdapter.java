@@ -31,6 +31,7 @@ public Usuario crearUsuario(Usuario usuario) {
     if (usuarioExistenteCodigo != null) {
         this.objFormateadorResultados.retornarRespuestaErrorEntidadExiste("Ya existe un usuario con ese código.");
     }
+    
 
     return this.objGestionarUsuarioGateway.crearUsuario(usuario);
 }

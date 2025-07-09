@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarCursoOfertadoVeranoCUIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.GestionarPreRegistroEcaesGatewayIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.SolicitudEcaes;
+import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.controladorExcepciones.excepcionesPropias.EntidadNoExisteException;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.entidades.SolicitudEcaesEntity;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.mappers.Mapper;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.repositorios.SolicitudEcaesRepositoryInt;
@@ -50,11 +51,11 @@ public class GestionarPreRegistroEcaesGatewayImplAdapter implements GestionarPre
     }
 
     @Override
-    public Optional<SolicitudEcaes> buscarPorId(Integer id) {
-        //return solicitudEcaesRepository.findById(id);
-         return solicitudEcaesRepository.findById(id)
-            .map(entity -> mapper.map(entity, SolicitudEcaes.class));
-
+    public SolicitudEcaes buscarPorId(Integer id) {
+        SolicitudEcaesEntity entity = solicitudEcaesRepository.findById(id)
+            .orElseThrow(() -> new EntidadNoExisteException("No se encontró la solicitud con ID: " + id));
+        
+        return mapper.map(entity, SolicitudEcaes.class);
     }
     
 
