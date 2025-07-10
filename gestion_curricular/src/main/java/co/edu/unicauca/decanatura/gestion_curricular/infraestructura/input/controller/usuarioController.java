@@ -1,7 +1,11 @@
 package co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.controller;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -32,4 +36,13 @@ public class usuarioController {
         usuarioSalidaDto respuesta = mapper.usuarioAUsuarioSalidaDto(usuarioCreado);
         return new ResponseEntity<>(respuesta, HttpStatus.CREATED);
     }
+    @GetMapping
+    public ResponseEntity<List<usuarioSalidaDto>> obtenerUsuarios() {
+        List<Usuario> usuarios = usuarioCU.listarUsuarios();
+        List<usuarioSalidaDto> respuesta = usuarios.stream()
+                .map(mapper::usuarioAUsuarioSalidaDto)
+                .collect(Collectors.toList());
+        return ResponseEntity.ok(respuesta);
+    }
+
 }
