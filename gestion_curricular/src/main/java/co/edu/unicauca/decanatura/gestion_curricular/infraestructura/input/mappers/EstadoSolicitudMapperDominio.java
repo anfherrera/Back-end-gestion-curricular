@@ -9,17 +9,14 @@ import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.EstadoSolic
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.DTORespuesta.EstadoSolicitudDTORespuesta;
 
 @Mapper(
-    componentModel = "spring",
-    uses = {
-        SolicitudMapperDominio.class
-    }
+    componentModel = "spring"
 )
 public interface EstadoSolicitudMapperDominio {
 
     @Mapping(source = "id_estado", target = "id_estado")
     @Mapping(source = "estado_actual", target = "estado_actual")
     @Mapping(source = "fecha_registro_estado", target = "fecha_registro_estado")
-    @Mapping(source = "objSolicitud", target = "objSolicitud")
+    @Mapping(target = "objSolicitud", ignore = true)
     EstadoSolicitudDTORespuesta mappearDeEstadoSolicitudARespuesta(EstadoSolicitud estadoSolicitud);
 
     List<EstadoSolicitudDTORespuesta> mappearListaDeEstadosARespuesta(List<EstadoSolicitud> estados);

@@ -11,7 +11,7 @@ public class UsuarioDTORespuesta {
 
     private Integer id_usuario;
     private String nombre_completo;
-    private String rol;
+    private RolDTORespuesta rol;
     private String codigo;
     private String correo;
     private boolean estado_usuario;

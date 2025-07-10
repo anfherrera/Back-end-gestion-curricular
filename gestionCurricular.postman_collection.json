@@ -1,0 +1,39 @@
+{
+	"info": {
+		"_postman_id": "7a5e6a84-f966-480c-a833-5adbda247ed5",
+		"name": "gestionCurricular",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "21638757"
+	},
+	"item": [
+		{
+			"name": "CrearUsuario",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"id_usuario\": 1,\r\n  \"nombre_completo\": \"Laura González\",\r\n  \"rol\": {\r\n    \"id_rol\": null,\r\n    \"nombre\": null\r\n  },\r\n  \"codigo\": \"104612345678\",\r\n  \"correo\": \"laura.gonzalez@unicauca.edu.co\",\r\n  \"password\": \"ContraseñaSegura123\",\r\n  \"estado_usuario\": true,\r\n  \"objPrograma\": {\r\n    \"id_programa\": 1,\r\n    \"codigo\": \"INF01\",\r\n    \"nombre_programa\": \"Ingeniería Informática\"\r\n  }\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:5000/api/usuarios/crearUsuario",
+					"host": [
+						"localhost"
+					],
+					"port": "5000",
+					"path": [
+						"api",
+						"usuarios",
+						"crearUsuario"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}

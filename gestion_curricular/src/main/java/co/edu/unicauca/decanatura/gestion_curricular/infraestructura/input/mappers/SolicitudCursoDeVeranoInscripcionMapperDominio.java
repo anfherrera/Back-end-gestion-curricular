@@ -12,10 +12,16 @@ import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.DTORe
 
 
 
-@Mapper(componentModel = "spring")
+@Mapper(componentModel = "spring", 
+uses = {
+    EstadoSolicitudMapperDominio.class,
+    UsuarioMapperDominio.class,
+    DocumentosMapperDominio.class,
+    CursosOfertadosMapperDominio.class
+})
 public interface SolicitudCursoDeVeranoInscripcionMapperDominio {
     
-    @Mapping(target = "estadosSolicitud", ignore = true)
+    @Mapping(target = "estadosSolicitud", ignore = true) // No viene en el DTO de petición
     SolicitudCursoVeranoIncripcion mappearDePeticionASolicitudCursoVeranoIncripcion(SolicitudCursoVeranoInscripcionDTOPeticion peticion);
 
     @Mapping(target = "estadosSolicitud", source = "estadosSolicitud")

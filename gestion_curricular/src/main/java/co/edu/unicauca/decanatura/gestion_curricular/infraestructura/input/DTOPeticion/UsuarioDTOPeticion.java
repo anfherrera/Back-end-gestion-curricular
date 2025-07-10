@@ -21,7 +21,7 @@ public class UsuarioDTOPeticion {
     @Size(min = 3, max = 100, message = "{Usuario.nombre_completo.length}")
     private String nombre_completo;
 
-    private String rol;
+    private RolDTOPeticion rol;
 
     @NotBlank(message = "{Usuario.codigo.empty}")
     @Size(min = 12, max = 12, message = "{Usuario.codigo.length}")

@@ -4,24 +4,36 @@ import java.util.List;
 
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarUsuarioCUIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.FormateadorResultadosIntPort;
+import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.GestionarProgramaGatewayIntPort;
+import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.GestionarRolGatewayIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.GestionarUsuarioGatewayIntPort;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Programa;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Rol;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Usuario;
 
 public class GestionarUsuarioCUAdapter implements GestionarUsuarioCUIntPort {
 
     private final GestionarUsuarioGatewayIntPort objGestionarUsuarioGateway;
+    private final GestionarRolGatewayIntPort objGestionarRolGateway;
+    private final GestionarProgramaGatewayIntPort objGestionarProgramaGateway;
+
     private final FormateadorResultadosIntPort objFormateadorResultados;
 
     public GestionarUsuarioCUAdapter(GestionarUsuarioGatewayIntPort objGestionarUsuarioGateway,
+                                    GestionarProgramaGatewayIntPort objGestionarProgramaGateway,
+                                    GestionarRolGatewayIntPort objGestionarRolGateway,
                                      FormateadorResultadosIntPort objFormateadorResultados) {
         this.objGestionarUsuarioGateway = objGestionarUsuarioGateway;
+        this.objGestionarProgramaGateway = objGestionarProgramaGateway;
+        this.objGestionarRolGateway = objGestionarRolGateway;
         this.objFormateadorResultados = objFormateadorResultados;
     }
 
 @Override
 public Usuario crearUsuario(Usuario usuario) {
 
-
+    Programa programa = null;
+    Rol objRol = null;
     Usuario usuarioExistenteCorreo = objGestionarUsuarioGateway.buscarUsuarioPorCorreo(usuario.getCorreo());
     if (usuarioExistenteCorreo != null) {
         this.objFormateadorResultados.retornarRespuestaErrorEntidadExiste("Ya existe un usuario con ese correo.");
@@ -31,6 +43,23 @@ public Usuario crearUsuario(Usuario usuario) {
     if (usuarioExistenteCodigo != null) {
         this.objFormateadorResultados.retornarRespuestaErrorEntidadExiste("Ya existe un usuario con ese código.");
     }
+
+    if (usuario.getObjPrograma() == null) {
+        this.objFormateadorResultados.retornarRespuestaErrorEntidadExiste("El programa del usuario no puede ser nulo o su ID no puede ser nulo.");
+    }
+
+    programa = this.objGestionarProgramaGateway.buscarPorIdPrograma(usuario.getObjPrograma().getId_programa());
+
+    if (programa == null) {
+        this.objFormateadorResultados.retornarRespuestaErrorEntidadExiste("El programa enviado no existe.");
+    }
+    objRol = this.objGestionarRolGateway.bucarRolPorId(1);
+    if (objRol == null) {
+        this.objFormateadorResultados.retornarRespuestaErrorEntidadExiste("El rol 'Estudiante' no existe.");
+    }
+    objRol.getUsuarios().add(usuario);
+    usuario.setObjRol(objRol);
+    usuario.setObjPrograma(programa);
 
     return this.objGestionarUsuarioGateway.crearUsuario(usuario);
 }

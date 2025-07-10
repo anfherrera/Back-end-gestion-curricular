@@ -43,13 +43,14 @@ public class UsuarioEntity {
     @Column(nullable = false, columnDefinition = "TINYINT", length = 1)
     private boolean estado_usuario;
     
-    @ManyToOne(cascade = { CascadeType.PERSIST })
-    @JoinColumn(name = "idfkRol", nullable = false)
+    @ManyToOne
+    @JoinColumn(name = "idfkRol", referencedColumnName = "idRol", nullable = false)
     private RolEntity objRol;
 
-    @ManyToOne(cascade = { CascadeType.PERSIST })
-    @JoinColumn(name = "idfkPrograma", nullable = false)
+    @ManyToOne
+    @JoinColumn(name = "idfkPrograma", referencedColumnName = "idPrograma", nullable = false)
     private ProgramaEntity objPrograma;
+
 
     @OneToMany(mappedBy = "objUsuario", cascade = {CascadeType.REMOVE}, orphanRemoval = true)
 	private List<SolicitudEntity> solicitudes;
