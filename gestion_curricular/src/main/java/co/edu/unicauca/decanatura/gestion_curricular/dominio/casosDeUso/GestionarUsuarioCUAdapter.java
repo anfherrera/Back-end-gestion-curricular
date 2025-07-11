@@ -53,29 +53,81 @@ public Usuario crearUsuario(Usuario usuario) {
     if (programa == null) {
         this.objFormateadorResultados.retornarRespuestaErrorEntidadExiste("El programa enviado no existe.");
     }
-    objRol = this.objGestionarRolGateway.bucarRolPorId(1);
+    objRol = this.objGestionarRolGateway.buscarRolPorNombre("Estudiante");
     if (objRol == null) {
         this.objFormateadorResultados.retornarRespuestaErrorEntidadExiste("El rol 'Estudiante' no existe.");
     }
     objRol.getUsuarios().add(usuario);
     usuario.setObjRol(objRol);
     usuario.setObjPrograma(programa);
+    usuario.setId_usuario(null);
 
     return this.objGestionarUsuarioGateway.crearUsuario(usuario);
 }
 
     @Override
     public Usuario actualizarUsuario(Usuario usuario) {
-        if (usuario == null || usuario.getId_usuario() == null) {
-            this.objFormateadorResultados.retornarRespuestaErrorEntidadExiste("El usuario o su ID no puede ser nulo.");
+        Programa programa = null;
+        Rol objRol = null;
+        Usuario usuarioActualizado = null;
+        if (usuario == null) {
+            this.objFormateadorResultados.retornarRespuestaErrorEntidadExiste("El usuario no puede ser nulo.");
         }
+
+        if(usuario.getId_usuario() == null) {
+            this.objFormateadorResultados.retornarRespuestaErrorEntidadExiste("El ID del usuario no puede ser nulo.");
+
+        }
+        //this.objFormateadorResultados.retornarRespuestaErrorEntidadExiste("usuario id" + usuario.getId_usuario());
 
         Usuario existente = this.objGestionarUsuarioGateway.obtenerUsuarioPorId(usuario.getId_usuario());
         if (existente == null) {
             this.objFormateadorResultados.retornarRespuestaErrorEntidadExiste("No se encontró el usuario a actualizar.");
         }
 
-        return this.objGestionarUsuarioGateway.actualizarUsuario(usuario);
+        if (usuario.getObjPrograma() == null) {
+        this.objFormateadorResultados.retornarRespuestaErrorEntidadExiste("El programa del usuario no puede ser nulo");
+        }
+
+        if(usuario.getObjPrograma().getId_programa() == null) {
+            this.objFormateadorResultados.retornarRespuestaErrorEntidadExiste("El ID del programa del usuario no puede ser nulo.");
+
+        }
+
+        programa = this.objGestionarProgramaGateway.buscarPorIdPrograma(usuario.getObjPrograma().getId_programa());
+
+        if (programa == null) {
+            this.objFormateadorResultados.retornarRespuestaErrorEntidadExiste("El programa enviado no existe.");
+        }
+
+       
+        if (usuario.getObjRol() == null) {
+            this.objFormateadorResultados.retornarRespuestaErrorEntidadExiste("El rol es nulo");
+        }
+
+        if (usuario.getObjRol().getId_rol() == null) {
+            this.objFormateadorResultados.retornarRespuestaErrorEntidadExiste("El ID del rol no puede ser nulo.");
+        }
+
+        objRol = this.objGestionarRolGateway.bucarRolPorId(usuario.getObjRol().getId_rol());
+        if (objRol == null) {
+            this.objFormateadorResultados.retornarRespuestaErrorEntidadExiste("El rol enviado no existe.");
+        }
+
+        objRol.getUsuarios().add(usuario);
+        usuario.setObjRol(objRol);
+        usuario.setObjPrograma(programa);
+
+
+        try{
+            usuarioActualizado = this.objGestionarUsuarioGateway.actualizarUsuario(usuario);
+        } catch (RuntimeException e) {
+            this.objFormateadorResultados.retornarRespuestaErrorEntidadExiste("Error al actualizar el usuario: " + e.getMessage());
+        } catch (Exception e) {
+            this.objFormateadorResultados.retornarRespuestaErrorEntidadExiste("Error inesperado al actualizar el usuario: " + e.getMessage());
+        }
+
+        return usuarioActualizado;
     }
 
     @Override

@@ -29,7 +29,7 @@ public class RolEntity {
     @Column(nullable = false, length = 100)
     private String nombre;
 
-    @OneToMany(fetch = FetchType.LAZY, cascade = { CascadeType.PERSIST }, mappedBy = "objRol")
+    @OneToMany(fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST }, mappedBy = "objRol")
     private List<UsuarioEntity> usuarios;
 
     public RolEntity(){

@@ -30,7 +30,7 @@ public class GestionarRolGatewayImplAdapter implements GestionarRolGatewayIntPor
     @Transactional(readOnly = true)
     public Rol buscarRolPorNombre(String nombre) {
         return this.rolMapper.map(
-            this.objrolRepository.buscarPorNombreParcial(nombre), Rol.class);
+            this.objrolRepository.buscarPorNombreParcial(nombre).orElse(null), Rol.class);
     }
 
 

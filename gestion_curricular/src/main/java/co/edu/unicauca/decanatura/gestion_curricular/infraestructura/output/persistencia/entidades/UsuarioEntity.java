@@ -6,7 +6,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -52,7 +51,7 @@ public class UsuarioEntity {
     private ProgramaEntity objPrograma;
 
 
-    @OneToMany(mappedBy = "objUsuario", cascade = {CascadeType.REMOVE}, orphanRemoval = true)
+    @OneToMany(mappedBy = "objUsuario", orphanRemoval = true)
 	private List<SolicitudEntity> solicitudes;
 
     @ManyToMany(mappedBy = "estudiantesInscritos")

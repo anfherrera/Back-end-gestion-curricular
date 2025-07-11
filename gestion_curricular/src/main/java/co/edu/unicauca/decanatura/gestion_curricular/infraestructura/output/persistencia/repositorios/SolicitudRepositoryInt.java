@@ -10,9 +10,6 @@ import org.springframework.data.repository.query.Param;
 
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.entidades.SolicitudEntity;
 
-import java.util.Date;
-import java.util.List;
-import java.util.Set;
 
 public interface SolicitudRepositoryInt extends JpaRepository<SolicitudEntity, Integer>{
 

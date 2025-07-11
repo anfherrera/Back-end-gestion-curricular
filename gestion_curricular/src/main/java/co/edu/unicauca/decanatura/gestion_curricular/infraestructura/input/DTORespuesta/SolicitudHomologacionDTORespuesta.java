@@ -2,18 +2,8 @@ package co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.DTOR
 import java.util.Date;
 import java.util.List;
 
-import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Documento;
-import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.EstadoSolicitud;
-import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Usuario;
-import jakarta.validation.Valid;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Size;
-import jakarta.validation.constraints.Pattern;
 
-import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 import lombok.EqualsAndHashCode;
 
 

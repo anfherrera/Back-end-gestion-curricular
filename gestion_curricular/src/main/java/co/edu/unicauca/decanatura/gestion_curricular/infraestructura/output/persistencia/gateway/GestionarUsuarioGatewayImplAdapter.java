@@ -22,7 +22,7 @@ public class GestionarUsuarioGatewayImplAdapter implements GestionarUsuarioGatew
     private final SolicitudRepositoryInt solicitudRepository;
     private final ModelMapper usuarioMapper;
 
-    public GestionarUsuarioGatewayImplAdapter(UsuarioRepositoryInt usuarioRepository, SolicitudRepositoryInt solicitudRepository,  ModelMapper usuarioMapper) {
+    public GestionarUsuarioGatewayImplAdapter(UsuarioRepositoryInt usuarioRepository, SolicitudRepositoryInt solicitudRepository, ModelMapper usuarioMapper) {
         this.usuarioRepository = usuarioRepository;
         this.solicitudRepository = solicitudRepository;
         this.usuarioMapper = usuarioMapper;
@@ -52,7 +52,8 @@ public class GestionarUsuarioGatewayImplAdapter implements GestionarUsuarioGatew
     public boolean eliminarUsuario(Integer id_usuario) {
         Optional<UsuarioEntity> usuarioEntity = usuarioRepository.findById(id_usuario);
         if (usuarioEntity.isPresent()) {
-            usuarioRepository.deleteById(id_usuario);
+            usuarioRepository.delete(usuarioEntity.get());
+            //usuarioRepository.deleteById(id_usuario);
             return true;
         }
         return false;
@@ -117,9 +118,13 @@ public class GestionarUsuarioGatewayImplAdapter implements GestionarUsuarioGatew
     @Transactional(readOnly = true)
     public List<Usuario> buscarUsuariosPorPrograma(Integer idPrograma) {
         List<UsuarioEntity> entities = usuarioRepository.buscarPorPrograma(idPrograma);
-        return entities.stream()
-                .map(entity -> usuarioMapper.map(entity, Usuario.class))
-                .toList();
+        List<Usuario> usuarios = null;
+        if(entities != null){
+            usuarios = entities.stream()
+                    .map(entity -> usuarioMapper.map(entity, Usuario.class))
+                    .toList();
+        }
+        return usuarios;
     }
 
     @Override

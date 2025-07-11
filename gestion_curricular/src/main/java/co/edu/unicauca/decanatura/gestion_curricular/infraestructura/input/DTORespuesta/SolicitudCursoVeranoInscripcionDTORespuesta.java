@@ -1,7 +1,5 @@
 package co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.DTORespuesta;
 
-import java.util.Date;
-import java.util.List;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

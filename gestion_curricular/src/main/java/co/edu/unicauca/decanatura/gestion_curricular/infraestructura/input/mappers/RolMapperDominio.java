@@ -11,7 +11,7 @@ import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.DTORe
 public interface RolMapperDominio {
 
     // DTO Petición -> Dominio
-    @Mapping(target = "id_rol", ignore = true) // Se ignora, porque en DTOPeticion no se envía el id
+    @Mapping(target = "id_rol", source = "id_rol") // Se ignora, porque en DTOPeticion no se envía el id
     @Mapping(target = "usuarios", ignore = true) // Se ignora, porque en
     Rol mappearDeRolDTOPeticionARol(RolDTOPeticion peticion);
 
