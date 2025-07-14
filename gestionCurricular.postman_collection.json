@@ -3,7 +3,8 @@
 		"_postman_id": "7a5e6a84-f966-480c-a833-5adbda247ed5",
 		"name": "gestionCurricular",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
-		"_exporter_id": "21638757"
+		"_exporter_id": "21638757",
+		"_collection_link": "https://gestioncurricular.postman.co/workspace/7abf1506-e2c7-499e-8af7-7c61a71f7a55/collection/21638757-7a5e6a84-f966-480c-a833-5adbda247ed5?action=share&source=collection_link&creator=21638757"
 	},
 	"item": [
 		{
@@ -30,6 +31,200 @@
 						"api",
 						"usuarios",
 						"crearUsuario"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "BuscarPorID",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "localhost:5000/api/usuarios/buscarUsuarioPorId/1",
+					"host": [
+						"localhost"
+					],
+					"port": "5000",
+					"path": [
+						"api",
+						"usuarios",
+						"buscarUsuarioPorId",
+						"1"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "ActualizarUsuario",
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"id_usuario\": 1,\r\n  \"nombre_completo\": \"Pepita González\",\r\n  \"rol\": {\r\n    \"id_rol\": 1,\r\n    \"nombre\": \"Estudiante\"\r\n  },\r\n  \"codigo\": \"104612345678\",\r\n  \"correo\": \"laura.gonzalez@unicauca.edu.co\",\r\n  \"password\": \"ContraseñaSegura123\",\r\n  \"estado_usuario\": true,\r\n  \"objPrograma\": {\r\n    \"id_programa\": 1,\r\n    \"codigo\": \"INF01\",\r\n    \"nombre_programa\": \"Ingeniería Informática\"\r\n  }\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:5000/api/usuarios/actualizarUsuario",
+					"host": [
+						"localhost"
+					],
+					"port": "5000",
+					"path": [
+						"api",
+						"usuarios",
+						"actualizarUsuario"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "BuscarPorPrograma",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "localhost:5000/api/usuarios/buscarPorPrograma/1",
+					"host": [
+						"localhost"
+					],
+					"port": "5000",
+					"path": [
+						"api",
+						"usuarios",
+						"buscarPorPrograma",
+						"1"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "EliminarUsuario",
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "localhost:5000/api/usuarios/eliminarUsuario/1",
+					"host": [
+						"localhost"
+					],
+					"port": "5000",
+					"path": [
+						"api",
+						"usuarios",
+						"eliminarUsuario",
+						"1"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "listarUsuarios",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "localhost:5000/api/usuarios/listarUsuarios",
+					"host": [
+						"localhost"
+					],
+					"port": "5000",
+					"path": [
+						"api",
+						"usuarios",
+						"listarUsuarios"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "CrearMaterias",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"id_materia\": 1,\r\n  \"codigo\": \"MAT101\",\r\n  \"nombre\": \"Matemáticas Básicas\",\r\n  \"creditos\": 5\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:5000/api/materias/crearMateria",
+					"host": [
+						"localhost"
+					],
+					"port": "5000",
+					"path": [
+						"api",
+						"materias",
+						"crearMateria"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "ActualizarMateria",
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"id_materia\": 1,\r\n  \"codigo\": \"MAT101\",\r\n  \"nombre\": \"Cálculo\",\r\n  \"creditos\": 5\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:5000/api/materias/actualizarMateria",
+					"host": [
+						"localhost"
+					],
+					"port": "5000",
+					"path": [
+						"api",
+						"materias",
+						"actualizarMateria"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "New Request",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"id_materia\": 1,\r\n  \"codigo\": \"MAT101\",\r\n  \"nombre\": \"Cálculo\",\r\n  \"creditos\": 5\r\n}"
+				},
+				"url": {
+					"raw": "localhost:5000/api/cursos-verano/crearCurso",
+					"host": [
+						"localhost"
+					],
+					"port": "5000",
+					"path": [
+						"api",
+						"cursos-verano",
+						"crearCurso"
 					]
 				}
 			},

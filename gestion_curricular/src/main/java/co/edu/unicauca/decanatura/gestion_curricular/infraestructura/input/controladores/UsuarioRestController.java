@@ -79,8 +79,17 @@ public class UsuarioRestController {
     }
 
     @GetMapping("/buscarPorPrograma/{id}")
-    public ResponseEntity<List<UsuarioDTORespuesta>> buscarUsuariosPorPrograma(@Min(value = 1) @PathVariable Integer idPrograma) {
-        List<Usuario> usuarios = objUsuarioCUIntPort.buscarUsuariosPorPrograma(idPrograma);
+    public ResponseEntity<List<UsuarioDTORespuesta>> buscarUsuariosPorPrograma(@Min(value = 1) @PathVariable Integer id) {
+        List<Usuario> usuarios = objUsuarioCUIntPort.buscarUsuariosPorPrograma(id);
+        List<UsuarioDTORespuesta> respuesta = usuarios.stream()
+                .map(objUsuarioMapperDominio::mappearDeUsuarioAUsuarioDTORespuesta)
+                .collect(Collectors.toList());
+        return ResponseEntity.ok(respuesta);
+    }
+
+    @GetMapping("/listarUsuarios")
+    public ResponseEntity<List<UsuarioDTORespuesta>> obtenerUsuarios() {
+        List<Usuario> usuarios = objUsuarioCUIntPort.listarUsuarios();
         List<UsuarioDTORespuesta> respuesta = usuarios.stream()
                 .map(objUsuarioMapperDominio::mappearDeUsuarioAUsuarioDTORespuesta)
                 .collect(Collectors.toList());

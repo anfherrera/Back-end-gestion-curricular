@@ -52,8 +52,10 @@ public class GestionarUsuarioGatewayImplAdapter implements GestionarUsuarioGatew
     public boolean eliminarUsuario(Integer id_usuario) {
         Optional<UsuarioEntity> usuarioEntity = usuarioRepository.findById(id_usuario);
         if (usuarioEntity.isPresent()) {
-            usuarioRepository.delete(usuarioEntity.get());
-            //usuarioRepository.deleteById(id_usuario);
+            // usuarioRepository.delete(usuarioEntity.get());
+            // usuarioRepository.deleteById(id_usuario);
+            // usuarioRepository.flush(); // Asegura que la eliminación se realice inmediatamente
+            usuarioRepository.eliminarPorId(usuarioEntity.get().getId_usuario());
             return true;
         }
         return false;

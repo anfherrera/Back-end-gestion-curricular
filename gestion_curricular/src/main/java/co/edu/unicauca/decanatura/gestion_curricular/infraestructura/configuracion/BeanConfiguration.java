@@ -13,6 +13,7 @@ import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.Gestionar
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.GestionarSolicitudGatewayIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.GestionarUsuarioGatewayIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.casosDeUso.GestionarCursoOfertadoVeranoCUAdapter;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.casosDeUso.GestionarDocumentosCUAdapter;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.casosDeUso.GestionarEstadisticasCUAdapter;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.casosDeUso.GestionarMateriasCUAdapter;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.casosDeUso.GestionarSolicitudCUAdapter;
@@ -58,5 +59,9 @@ public class BeanConfiguration {
                                      FormateadorResultadosIntPort objFormateadorResultados) {
         return new GestionarUsuarioCUAdapter(objGestionarUsuarioGateway, objGestionarProgramaGateway, objGestionarRolGateway, objFormateadorResultados);
     }
-    
+    @Bean
+    public GestionarDocumentosCUAdapter crearGestionarDocumentosCUInt(GestionarDocumentosGatewayIntPort objGestionarDocumentosGateway,
+            FormateadorResultadosIntPort objFormateadorResultados) {
+        return new GestionarDocumentosCUAdapter(objGestionarDocumentosGateway, objFormateadorResultados);
+    }
 }

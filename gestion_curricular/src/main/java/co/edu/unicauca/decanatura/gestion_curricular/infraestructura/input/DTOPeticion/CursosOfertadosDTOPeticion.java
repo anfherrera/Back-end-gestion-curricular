@@ -39,9 +39,8 @@ public class CursosOfertadosDTOPeticion {
     @Size(min = 2, max = 20, message = "{Curso.salon.length}")
     private String salon;
 
-    @NotBlank(message = "{Curso.estado.empty}")
-    @Size(min = 3, max = 20, message = "{Curso.estado.length}")
-    private String EstadoCursoOfertado;
+    
+    private EstadoCursoOfertadoDTOPeticion EstadoCursoOfertado;
 
     @Valid
     private Set<UsuarioDTOPeticion> estudiantesInscritos;

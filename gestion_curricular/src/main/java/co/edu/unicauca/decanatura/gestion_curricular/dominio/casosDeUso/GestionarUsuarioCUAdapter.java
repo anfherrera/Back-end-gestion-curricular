@@ -228,6 +228,7 @@ public Usuario crearUsuario(Usuario usuario) {
         if (idPrograma == null) {
             this.objFormateadorResultados.retornarRespuestaErrorEntidadExiste("Debe proporcionar un ID de programa válido.");
         }
+        //this.objFormateadorResultados.retornarRespuestaErrorEntidadExiste("Buscando usuarios por programa con ID: " + idPrograma);
 
         return this.objGestionarUsuarioGateway.buscarUsuariosPorPrograma(idPrograma);
     }
@@ -242,7 +243,6 @@ public Usuario crearUsuario(Usuario usuario) {
         if (idSolicitud == null) {
             this.objFormateadorResultados.retornarRespuestaErrorEntidadExiste("Debe proporcionar un ID de solicitud válido.");
         }
-
         Usuario usuario = this.objGestionarUsuarioGateway.buscarUsuarioPorSolicitud(idSolicitud);
         if (usuario == null) {
             this.objFormateadorResultados.retornarRespuestaErrorEntidadExiste("No se encontró un usuario con esa solicitud.");
