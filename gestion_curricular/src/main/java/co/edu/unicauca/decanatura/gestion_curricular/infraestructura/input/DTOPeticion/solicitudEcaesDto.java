@@ -12,7 +12,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 public class solicitudEcaesDto  {
-     private Integer id_solicitud; // necesario para edición y respuesta
+    //private Integer id_solicitud; // necesario para edición y respuesta
     private String nombre_solicitud;
     private Date fecha_registro_solicitud;
 

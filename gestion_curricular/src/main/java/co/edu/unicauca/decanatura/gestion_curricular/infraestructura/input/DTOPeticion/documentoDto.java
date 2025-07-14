@@ -11,7 +11,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class documentoDto {
-   private Integer id_documento;
+    private Integer id_documento;
     private String nombre;
     private String ruta_documento;
     private Date fecha_documento;
