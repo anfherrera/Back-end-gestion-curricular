@@ -9,7 +9,6 @@ import jakarta.persistence.InheritanceType;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
-import jakarta.persistence.OneToOne;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -36,9 +35,9 @@ public class SolicitudEntity {
     private String nombre_solicitud;
     @Column(nullable = false)
     private Date fecha_registro_solicitud;
-    //cambio: cambio de relacion one to one a one to many
+
     @OneToMany( mappedBy = "objSolicitud", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<EstadoSolicitudEntity> objEstadoSolicitud = new ArrayList<>();
+    private List<EstadoSolicitudEntity> estadosSolicitud;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "idUsuario")
@@ -49,6 +48,7 @@ public class SolicitudEntity {
 
     public SolicitudEntity() {
         this.documentos = new ArrayList<DocumentoEntity>();
+        this.estadosSolicitud = new ArrayList<EstadoSolicitudEntity>();
     }
 
 }

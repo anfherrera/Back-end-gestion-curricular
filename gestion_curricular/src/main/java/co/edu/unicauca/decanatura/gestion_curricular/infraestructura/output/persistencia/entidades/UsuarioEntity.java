@@ -6,7 +6,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -44,14 +43,15 @@ public class UsuarioEntity {
     private boolean estado_usuario;
     
     @ManyToOne
-    @JoinColumn(name = "idfkRol",referencedColumnName = "idRol",nullable = false)
+    @JoinColumn(name = "idfkRol", referencedColumnName = "idRol", nullable = false)
     private RolEntity objRol;
 
     @ManyToOne
     @JoinColumn(name = "idfkPrograma", referencedColumnName = "idPrograma", nullable = false)
     private ProgramaEntity objPrograma;
 
-    @OneToMany(mappedBy = "objUsuario", cascade = {CascadeType.PERSIST, CascadeType.REMOVE}, orphanRemoval = true)
+
+    @OneToMany(mappedBy = "objUsuario", orphanRemoval = true)
 	private List<SolicitudEntity> solicitudes;
 
     @ManyToMany(mappedBy = "estudiantesInscritos")

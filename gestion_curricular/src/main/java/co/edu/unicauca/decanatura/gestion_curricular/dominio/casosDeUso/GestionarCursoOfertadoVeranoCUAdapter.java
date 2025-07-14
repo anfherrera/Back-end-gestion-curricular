@@ -1,7 +1,6 @@
 package co.edu.unicauca.decanatura.gestion_curricular.dominio.casosDeUso;
 
 
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -39,7 +38,7 @@ public class GestionarCursoOfertadoVeranoCUAdapter implements GestionarCursoOfer
         Integer idCurso = null;
         Usuario usuario = null;
         EstadoSolicitud estadoSolicitud = null;
-        List<EstadoSolicitud> historialEstadoSoliciud = null;
+        List<EstadoCursoOfertado> estadosCursos = null;
         if(curso == null){
             this.objFormateadorResultados.retornarRespuestaErrorEntidadExiste("No hay datos en el curso");
         }
@@ -55,22 +54,16 @@ public class GestionarCursoOfertadoVeranoCUAdapter implements GestionarCursoOfer
             }else{
                 if(solicitudes.size() >= 20){
                     for (Solicitud solicitud : solicitudes) {
-                        historialEstadoSoliciud = solicitud.getObjEstadoSolicitud();
-                        if (historialEstadoSoliciud == null) {
-                            historialEstadoSoliciud = new ArrayList<>();
-                            solicitud.setObjEstadoSolicitud(historialEstadoSoliciud);
-                        }
-                        // Agregar un nuevo estado a la lista de estados(Trazabilidad)
-                        EstadoSolicitud nuevoEstado = new EstadoSolicitud();
-                        nuevoEstado.setEstado_actual("Aprobado");
-                        nuevoEstado.setFecha_registro_estado(new Date());
-                        nuevoEstado.setObjSolicitud(solicitud); // Importante para mantener relación
-                        historialEstadoSoliciud.add(nuevoEstado);
-                        solicitud = this.objGestionarSolicitudGateway.actualizarSolicitud(solicitud, nuevoEstado);
+                        estadoSolicitud = new EstadoSolicitud();
+                        estadoSolicitud.setFecha_registro_estado(new Date());
+                        estadoSolicitud.setEstado_actual("Aprobado");
+                        solicitud = this.objGestionarSolicitudGateway.actualizarSolicitud(solicitud, estadoSolicitud);
                         usuario = this.objGestionarUsuarioGateway.buscarUsuarioPorSolicitud(solicitud.getId_solicitud());
                         this.objGestionarCursoOfertadoVeranoGateway.asociarUsuarioCurso(usuario.getId_usuario(), idCurso);
                     }
-                    cursoABuscar.setObjEstadoCursoOfertado(estadoCurso);
+                    estadosCursos = cursoABuscar.getEstadosCursoOfertados();
+                    estadosCursos.add(estadoCurso);
+                    cursoABuscar.setEstadosCursoOfertados(estadosCursos);
                 }else{
                     this.objFormateadorResultados.retornarRespuestaErrorReglaDeNegocio("No se puede publicar el curso, porque no se alcanzo el cupo estimado");
                 }
@@ -88,19 +81,10 @@ public class GestionarCursoOfertadoVeranoCUAdapter implements GestionarCursoOfer
             }else{
                 if(solicitudes.size() >= cursoABuscar.getCupo_estimado()){   
                         for (Solicitud solicitud : solicitudes) {
-                            historialEstadoSoliciud = solicitud.getObjEstadoSolicitud();
-                            if (historialEstadoSoliciud == null) {
-                                historialEstadoSoliciud = new ArrayList<>();
-                                solicitud.setObjEstadoSolicitud(historialEstadoSoliciud);
-                            }
-                            // Agregar un nuevo estado a la lista de estados(Trazabilidad)
-                            EstadoSolicitud nuevoEstado = new EstadoSolicitud();
-                            //estadoSolicitud = solicitud.getObjEstadoSolicitud();
-                            nuevoEstado.setEstado_actual("Aprobado");
-                            nuevoEstado.setFecha_registro_estado(new Date());
-                            nuevoEstado.setObjSolicitud(solicitud); // Importante para mantener relación
-                            historialEstadoSoliciud.add(nuevoEstado);
-                            solicitud = this.objGestionarSolicitudGateway.actualizarSolicitud(solicitud, nuevoEstado);
+                        estadoSolicitud = new EstadoSolicitud();
+                        estadoSolicitud.setFecha_registro_estado(new Date());
+                        estadoSolicitud.setEstado_actual("Aprobado");
+                            solicitud = this.objGestionarSolicitudGateway.actualizarSolicitud(solicitud, estadoSolicitud);
                             usuario = this.objGestionarUsuarioGateway.buscarUsuarioPorSolicitud(solicitud.getId_solicitud());
                             if(solicitudes.size() < cursoABuscar.getEstudiantesInscritos().size()){
                                 for (Usuario usuarioViejo : cursoABuscar.getEstudiantesInscritos()) {
@@ -111,7 +95,9 @@ public class GestionarCursoOfertadoVeranoCUAdapter implements GestionarCursoOfer
                             }
                         }
                     
-                    cursoABuscar.setObjEstadoCursoOfertado(estadoCurso);
+                    estadosCursos = cursoABuscar.getEstadosCursoOfertados();
+                    estadosCursos.add(estadoCurso);
+                    cursoABuscar.setEstadosCursoOfertados(estadosCursos);
                 }else{
                     this.objFormateadorResultados.retornarRespuestaErrorReglaDeNegocio("No se puede publicar el curso, porque no se alcanzo el cupo estimado");
                 }

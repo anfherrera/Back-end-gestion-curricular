@@ -39,10 +39,13 @@ public class GestionarCursoOfertadoVeranoGatewayImplAdapter implements Gestionar
     @Transactional
     public CursoOfertadoVerano crearCurso(CursoOfertadoVerano curso) {
         CursoOfertadoVeranoEntity cursoEntity = cursoMapper.map(curso, CursoOfertadoVeranoEntity.class);
+        List<EstadoCursoOfertadoEntity> estadosCursos = null;
         EstadoCursoOfertadoEntity estadoCurso = new EstadoCursoOfertadoEntity();
         estadoCurso.setFecha_registro_estado(new Date());
         estadoCurso.setObjCursoOfertadoVerano(cursoEntity);
-        cursoEntity.setObjEstadoCursoOfertado(estadoCurso);
+        estadosCursos = cursoEntity.getEstadosCursoOfertados();
+        estadosCursos.add(estadoCurso);
+        cursoEntity.setEstadosCursoOfertados(estadosCursos);
         CursoOfertadoVeranoEntity saved = cursoRepository.save(cursoEntity);
         return cursoMapper.map(saved, CursoOfertadoVerano.class);
     }
@@ -55,6 +58,7 @@ public class GestionarCursoOfertadoVeranoGatewayImplAdapter implements Gestionar
 
         CursoOfertadoVeranoEntity cursoEntity = cursoMapper.map(curso, CursoOfertadoVeranoEntity.class);
         EstadoCursoOfertadoEntity estadoCursoEntity = null;
+        List<EstadoCursoOfertadoEntity> estadosCursos = null;
         if(estadoCurso != null) {
             estadoCursoEntity = cursoMapper.map(estadoCurso, EstadoCursoOfertadoEntity.class);
 
@@ -64,7 +68,9 @@ public class GestionarCursoOfertadoVeranoGatewayImplAdapter implements Gestionar
 
             estadoCursoEntity.setFecha_registro_estado(new Date());
             estadoCursoEntity.setObjCursoOfertadoVerano(cursoEntity);
-            cursoEntity.setObjEstadoCursoOfertado(estadoCursoEntity);
+            estadosCursos = cursoEntity.getEstadosCursoOfertados();
+            estadosCursos.add(estadoCursoEntity);
+            cursoEntity.setEstadosCursoOfertados(estadosCursos);
 
         CursoOfertadoVeranoEntity cursoGuardado = cursoRepository.save(cursoEntity);
         return cursoMapper.map(cursoGuardado, CursoOfertadoVerano.class);

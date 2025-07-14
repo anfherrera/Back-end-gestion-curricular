@@ -13,7 +13,7 @@ public class SolicitudPazYSalvo extends Solicitud {
         super();
     }
     public SolicitudPazYSalvo(Integer id_solicitud, String nombre_solicitud, Date fecha_registro_solicitud,
-                                List<EstadoSolicitud> objEstadoSolicitud, Usuario objUsuario, List<Documento> documentos) {
-        super(id_solicitud, nombre_solicitud, fecha_registro_solicitud, objEstadoSolicitud, objUsuario, documentos);
+                                List<EstadoSolicitud> estadosSolicitud, Usuario objUsuario, List<Documento> documentos) {
+        super(id_solicitud, nombre_solicitud, fecha_registro_solicitud, estadosSolicitud, objUsuario, documentos);
     }
 }

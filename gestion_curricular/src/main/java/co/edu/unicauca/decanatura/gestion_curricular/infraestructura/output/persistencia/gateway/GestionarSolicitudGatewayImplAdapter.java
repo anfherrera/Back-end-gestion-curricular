@@ -61,11 +61,17 @@ public class GestionarSolicitudGatewayImplAdapter implements GestionarSolicitudG
         SolicitudCursoVeranoPreinscripcion solicitudCursoVerano) {
         SolicitudCursoVeranoPreinscripcionEntity solicitudCursoVeranoEntity = solicitudMapper.map(solicitudCursoVerano, SolicitudCursoVeranoPreinscripcionEntity.class);
         solicitudCursoVeranoEntity.setNombre_solicitud(SolicitudCursoVeranoPreinscripcion.class.getSimpleName());
-        EstadoSolicitudEntity estadoSolicitudEntity = new  EstadoSolicitudEntity();
+        
+        EstadoSolicitudEntity estadoSolicitudEntity = null;
+
+        estadoSolicitudEntity = new EstadoSolicitudEntity();
         estadoSolicitudEntity.setFecha_registro_estado(new Date());
         estadoSolicitudEntity.setObjSolicitud(solicitudCursoVeranoEntity);
-        //solicitudCursoVeranoEntity.setObjEstadoSolicitud(estadoSolicitudEntity);
-        solicitudCursoVeranoEntity.getObjEstadoSolicitud().add(estadoSolicitudEntity);
+        
+        List<EstadoSolicitudEntity> estadosSolcitud = solicitudCursoVeranoEntity.getEstadosSolicitud();
+        estadosSolcitud.add(estadoSolicitudEntity);
+        solicitudCursoVeranoEntity.setEstadosSolicitud(estadosSolcitud);
+
         CursoOfertadoVerano cursoOfertado = solicitudCursoVerano.getObjCursoOfertado();
         CursoOfertadoVeranoEntity cursoOfertadoVeranoEntity = null;
 
@@ -103,11 +109,15 @@ public class GestionarSolicitudGatewayImplAdapter implements GestionarSolicitudG
             SolicitudCursoVeranoIncripcion solicitudCursoVerano) {
         SolicitudCursoVeranoInscripcionEntity solicitudCursoVeranoEntity = solicitudMapper.map(solicitudCursoVerano, SolicitudCursoVeranoInscripcionEntity.class);
         solicitudCursoVeranoEntity.setNombre_solicitud(SolicitudCursoVeranoIncripcion.class.getSimpleName());
-        EstadoSolicitudEntity estadoSolicitudEntity = new EstadoSolicitudEntity();
+        EstadoSolicitudEntity estadoSolicitudEntity = null;
+        
+        estadoSolicitudEntity = new EstadoSolicitudEntity();
         estadoSolicitudEntity.setFecha_registro_estado(new Date());
         estadoSolicitudEntity.setObjSolicitud(solicitudCursoVeranoEntity);
-        //solicitudCursoVeranoEntity.setObjEstadoSolicitud(estadoSolicitudEntity);
-        solicitudCursoVeranoEntity.getObjEstadoSolicitud().add(estadoSolicitudEntity);
+        
+        List<EstadoSolicitudEntity> estadosSolcitud = solicitudCursoVeranoEntity.getEstadosSolicitud();
+        estadosSolcitud.add(estadoSolicitudEntity);
+        solicitudCursoVeranoEntity.setEstadosSolicitud(estadosSolcitud);
         CursoOfertadoVerano cursoOfertado = solicitudCursoVerano.getObjCursoOfertado();
         CursoOfertadoVeranoEntity cursoOfertadoVeranoEntity = null;
         if(cursoOfertado != null && cursoOfertado.getId_curso() != null) {
@@ -141,11 +151,15 @@ public class GestionarSolicitudGatewayImplAdapter implements GestionarSolicitudG
     public SolicitudEcaes crearSolicitudEcaes(SolicitudEcaes solicitudEcaes) {
         SolicitudEcaesEntity solicitudEcaesEntity = solicitudMapper.map(solicitudEcaes, SolicitudEcaesEntity.class);
         solicitudEcaesEntity.setNombre_solicitud(SolicitudEcaes.class.getSimpleName());
-        EstadoSolicitudEntity estadoSolicitudEntity = new EstadoSolicitudEntity();
+        EstadoSolicitudEntity estadoSolicitudEntity = null;
+        estadoSolicitudEntity = new EstadoSolicitudEntity();
         estadoSolicitudEntity.setFecha_registro_estado(new Date());
         estadoSolicitudEntity.setObjSolicitud(solicitudEcaesEntity);
-        //solicitudEcaesEntity.setObjEstadoSolicitud(estadoSolicitudEntity);
-        solicitudEcaesEntity.getObjEstadoSolicitud().add(estadoSolicitudEntity);
+        
+        List<EstadoSolicitudEntity> estadosSolcitud = solicitudEcaesEntity.getEstadosSolicitud();
+        estadosSolcitud.add(estadoSolicitudEntity);
+        solicitudEcaesEntity.setEstadosSolicitud(estadosSolcitud);
+
         SolicitudEcaesEntity solicitudEcaesGuardado = solicitudRepository.save(solicitudEcaesEntity);
 
         return solicitudMapper.map(solicitudEcaesGuardado, SolicitudEcaes.class);
@@ -156,11 +170,14 @@ public class GestionarSolicitudGatewayImplAdapter implements GestionarSolicitudG
     public SolicitudReingreso crearSolicitudReingreso(SolicitudReingreso solicitudReingreso) {
         SolicitudReingresoEntity solicitudReingresoEntity = solicitudMapper.map(solicitudReingreso, SolicitudReingresoEntity.class);
         solicitudReingresoEntity.setNombre_solicitud(SolicitudReingreso.class.getSimpleName());
-        EstadoSolicitudEntity estadoSolicitudEntity = new EstadoSolicitudEntity();
+        EstadoSolicitudEntity estadoSolicitudEntity = null;
+        estadoSolicitudEntity = new EstadoSolicitudEntity();
         estadoSolicitudEntity.setFecha_registro_estado(new Date());
         estadoSolicitudEntity.setObjSolicitud(solicitudReingresoEntity);
-        //solicitudReingresoEntity.setObjEstadoSolicitud(estadoSolicitudEntity);
-        solicitudReingresoEntity.getObjEstadoSolicitud().add(estadoSolicitudEntity);
+        
+        List<EstadoSolicitudEntity> estadosSolcitud = solicitudReingresoEntity.getEstadosSolicitud();
+        estadosSolcitud.add(estadoSolicitudEntity);
+        solicitudReingresoEntity.setEstadosSolicitud(estadosSolcitud);
         SolicitudReingresoEntity solicitudReingresoGuardado = solicitudRepository.save(solicitudReingresoEntity);
 
         return solicitudMapper.map(solicitudReingresoGuardado, SolicitudReingreso.class);        
@@ -172,11 +189,15 @@ public class GestionarSolicitudGatewayImplAdapter implements GestionarSolicitudG
     public SolicitudHomologacion crearSolicitudHomologacion(SolicitudHomologacion solicitudHomologacion) {
         SolicitudHomologacionEntity solicitudHomologacionEntity = solicitudMapper.map(solicitudHomologacion, SolicitudHomologacionEntity.class);
         solicitudHomologacionEntity.setNombre_solicitud(SolicitudHomologacion.class.getSimpleName());
-        EstadoSolicitudEntity estadoSolicitudEntity = new EstadoSolicitudEntity();
+        EstadoSolicitudEntity estadoSolicitudEntity = null;
+        estadoSolicitudEntity = new EstadoSolicitudEntity();
         estadoSolicitudEntity.setFecha_registro_estado(new Date());
         estadoSolicitudEntity.setObjSolicitud(solicitudHomologacionEntity);
-        //solicitudHomologacionEntity.setObjEstadoSolicitud(estadoSolicitudEntity);
-        solicitudHomologacionEntity.getObjEstadoSolicitud().add(estadoSolicitudEntity);
+        
+        List<EstadoSolicitudEntity> estadosSolcitud = solicitudHomologacionEntity.getEstadosSolicitud();
+        estadosSolcitud.add(estadoSolicitudEntity);
+        solicitudHomologacionEntity.setEstadosSolicitud(estadosSolcitud);
+
         SolicitudHomologacionEntity solicitudHomologacionGuardado = solicitudRepository.save(solicitudHomologacionEntity);
 
         return solicitudMapper.map(solicitudHomologacionGuardado, SolicitudHomologacion.class); // Implementación pendiente
@@ -187,11 +208,14 @@ public class GestionarSolicitudGatewayImplAdapter implements GestionarSolicitudG
     public SolicitudPazYSalvo crearSolicitudPazYSalvo(SolicitudPazYSalvo solicitudPazYSalvo) {
         SolicitudPazYSalvoEntity solicitudPazYSalvoEntity = solicitudMapper.map(solicitudPazYSalvo, SolicitudPazYSalvoEntity.class);
         solicitudPazYSalvoEntity.setNombre_solicitud(SolicitudPazYSalvo.class.getSimpleName());
-        EstadoSolicitudEntity estadoSolicitudEntity = new EstadoSolicitudEntity();
+        EstadoSolicitudEntity estadoSolicitudEntity = null;
+        estadoSolicitudEntity = new EstadoSolicitudEntity();
         estadoSolicitudEntity.setFecha_registro_estado(new Date());
         estadoSolicitudEntity.setObjSolicitud(solicitudPazYSalvoEntity);
-        //solicitudPazYSalvoEntity.setObjEstadoSolicitud(estadoSolicitudEntity);
-        solicitudPazYSalvoEntity.getObjEstadoSolicitud().add(estadoSolicitudEntity);   
+        
+        List<EstadoSolicitudEntity> estadosSolcitud = solicitudPazYSalvoEntity.getEstadosSolicitud();
+        estadosSolcitud.add(estadoSolicitudEntity);
+        solicitudPazYSalvoEntity.setEstadosSolicitud(estadosSolcitud);
         SolicitudPazYSalvoEntity solicitudPazYSalvoGuardado = solicitudRepository.save(solicitudPazYSalvoEntity);
         
         return solicitudMapper.map(solicitudPazYSalvoGuardado, SolicitudPazYSalvo.class); // Implementación pendiente
@@ -391,17 +415,25 @@ public class GestionarSolicitudGatewayImplAdapter implements GestionarSolicitudG
             solicitudEntity = solicitudMapper.map(solicitud, SolicitudCursoVeranoInscripcionEntity.class);
         }
 
+        List<EstadoSolicitudEntity> estadosSolicitud = null;
         EstadoSolicitudEntity estadoSolicitudEntity = null;
+
         if (estadoSolicitud != null) {
             estadoSolicitudEntity = solicitudMapper.map(estadoSolicitud, EstadoSolicitudEntity.class);
+
         } else {
             estadoSolicitudEntity = new EstadoSolicitudEntity();
         }
+
         estadoSolicitudEntity.setFecha_registro_estado(new Date());
         estadoSolicitudEntity.setObjSolicitud(solicitudEntity);
 
-        //solicitudEntity.setObjEstadoSolicitud(estadoSolicitudEntity);
-        solicitudEntity.getObjEstadoSolicitud().add(estadoSolicitudEntity);
+        estadosSolicitud = solicitudEntity.getEstadosSolicitud();
+
+        estadosSolicitud.add(estadoSolicitudEntity);
+
+        solicitudEntity.setEstadosSolicitud(estadosSolicitud);
+
         SolicitudEntity solicitudActualizada = solicitudRepository.save(solicitudEntity);
 
         return solicitudMapper.map(solicitudActualizada, Solicitud.class);

@@ -10,7 +10,6 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -28,7 +27,6 @@ public class EstadoSolicitudEntity {
     private String estado_actual;
     @Column(nullable = false)
     private Date fecha_registro_estado;
-    // Cambio: Se cambia la relacion de uno a uno a uno a muchos
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "idfkSolicitud", referencedColumnName = "idSolicitud", nullable = true)
     private SolicitudEntity objSolicitud;

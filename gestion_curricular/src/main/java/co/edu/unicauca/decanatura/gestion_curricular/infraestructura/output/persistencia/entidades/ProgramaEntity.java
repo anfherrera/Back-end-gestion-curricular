@@ -30,7 +30,7 @@ public class ProgramaEntity {
     @Column(nullable = false, unique = true, length = 100)
     private String nombre_programa;
 
-    @OneToMany(fetch = FetchType.LAZY, cascade = { CascadeType.PERSIST }, mappedBy = "objPrograma")
+    @OneToMany(fetch = FetchType.LAZY, cascade = {CascadeType.PERSIST }, mappedBy = "objPrograma")
     private List<UsuarioEntity> usuarios;
 
     public ProgramaEntity (){

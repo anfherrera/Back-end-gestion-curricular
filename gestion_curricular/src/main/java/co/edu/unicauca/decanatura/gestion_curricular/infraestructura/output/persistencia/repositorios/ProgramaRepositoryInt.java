@@ -21,7 +21,7 @@ public interface ProgramaRepositoryInt extends JpaRepository<ProgramaEntity, Int
 
     // Consulta JPQL: buscar programas por nombre parcial
     @Query("SELECT p FROM ProgramaEntity p WHERE LOWER(p.nombre_programa) LIKE LOWER(CONCAT('%', :nombreParcial, '%')) ORDER BY p.nombre_programa ASC")
-    List<ProgramaEntity> buscarPorNombreParcial(@Param("nombreParcial") String nombreParcial);
+    ProgramaEntity buscarPorNombreParcial(@Param("nombreParcial") String nombreParcial);
 
     // Consulta JPQL: obtener todos los programas con sus usuarios (LEFT JOIN FETCH para evitar lazy loading)
     @Query("SELECT DISTINCT p FROM ProgramaEntity p LEFT JOIN FETCH p.usuarios")

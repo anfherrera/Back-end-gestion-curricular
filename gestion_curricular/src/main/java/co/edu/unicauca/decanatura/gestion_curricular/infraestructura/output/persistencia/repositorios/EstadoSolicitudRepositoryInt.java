@@ -14,7 +14,7 @@ public interface EstadoSolicitudRepositoryInt extends JpaRepository<EstadoSolici
 
     // Consulta JPQL: buscar por estado exacto
     @Query("SELECT e FROM EstadoSolicitudEntity e WHERE e.estado_actual = :estado")
-    List<EstadoSolicitudEntity> buscarPorEstado(@Param("estado") String estado);
+    EstadoSolicitudEntity buscarPorEstado(@Param("estado") String estado);
 
     // Consulta JPQL: buscar por fecha de registro
     @Query("SELECT e FROM EstadoSolicitudEntity e WHERE e.fecha_registro_estado = :fecha")

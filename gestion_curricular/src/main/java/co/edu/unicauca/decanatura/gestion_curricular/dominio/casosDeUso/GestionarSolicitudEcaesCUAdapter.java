@@ -6,7 +6,6 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.modelmapper.ModelMapper;
-import org.springframework.stereotype.Service;
 
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarSolicitudEcaesCUIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.FormateadorResultadosIntPort;
@@ -18,11 +17,11 @@ import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.form
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.entidades.EstadoSolicitudEntity;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.entidades.SolicitudEcaesEntity;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.entidades.UsuarioEntity;
-import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.gateway.GestionarPreRegistroEcaesGatewayImplAdapter;
+
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.repositorios.SolicitudEcaesRepositoryInt;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.repositorios.UsuarioRepositoryInt;
 
-@Service
+
 public class GestionarSolicitudEcaesCUAdapter implements GestionarSolicitudEcaesCUIntPort {
 
     private final FormateadorResultadosImplAdapter formateadorResultadosImplAdapter;
@@ -71,7 +70,7 @@ public class GestionarSolicitudEcaesCUAdapter implements GestionarSolicitudEcaes
         estado.setEstado_actual("Enviado");
         estado.setFecha_registro_estado(new Date(System.currentTimeMillis()));
         estado.setObjSolicitud(solicitudEntity); // <- esto establece el vínculo
-        solicitudEntity.getObjEstadoSolicitud().add(estado); // <- y este el otro lado
+        solicitudEntity.getEstadosSolicitud().add(estado); // <- y este el otro lado
 
 
         // Guardar solicitud
@@ -112,7 +111,7 @@ public class GestionarSolicitudEcaesCUAdapter implements GestionarSolicitudEcaes
         nuevo.setObjSolicitud(solicitud);
 
         // Agregar al historial de estados
-        solicitud.getObjEstadoSolicitud().add(nuevo);
+        solicitud.getEstadosSolicitud().add(nuevo);
 
         // Guardar cambios
         solicitudRepository.save(solicitud);

@@ -1,7 +1,9 @@
 package co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos;
 
 
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Enums.GrupoCursoVerano;
@@ -19,11 +21,12 @@ public class CursoOfertadoVerano {
     private String salon;
     
 
-    private EstadoCursoOfertado objEstadoCursoOfertado; // Estado del curso ofertado
+    private List<EstadoCursoOfertado> estadosCursoOfertados; // Estado del curso ofertado
     private Set<Usuario> estudiantesInscritos; // Lista de estudiantes inscritos en el curso
 
     public CursoOfertadoVerano() {
         this.estudiantesInscritos = new HashSet<Usuario>();
+        this.estadosCursoOfertados = new ArrayList<EstadoCursoOfertado>();
     }
 
     

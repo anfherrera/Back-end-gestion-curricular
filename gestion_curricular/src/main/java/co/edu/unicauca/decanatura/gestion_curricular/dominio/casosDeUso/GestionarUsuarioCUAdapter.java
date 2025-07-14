@@ -2,28 +2,39 @@ package co.edu.unicauca.decanatura.gestion_curricular.dominio.casosDeUso;
 
 import java.util.List;
 
-import org.springframework.stereotype.Service;
 
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarUsuarioCUIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.FormateadorResultadosIntPort;
+import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.GestionarProgramaGatewayIntPort;
+import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.GestionarRolGatewayIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.GestionarUsuarioGatewayIntPort;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Programa;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Rol;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Usuario;
-@Service
+
 public class GestionarUsuarioCUAdapter implements GestionarUsuarioCUIntPort {
 
     private final GestionarUsuarioGatewayIntPort objGestionarUsuarioGateway;
+    private final GestionarRolGatewayIntPort objGestionarRolGateway;
+    private final GestionarProgramaGatewayIntPort objGestionarProgramaGateway;
+
     private final FormateadorResultadosIntPort objFormateadorResultados;
 
     public GestionarUsuarioCUAdapter(GestionarUsuarioGatewayIntPort objGestionarUsuarioGateway,
+                                    GestionarProgramaGatewayIntPort objGestionarProgramaGateway,
+                                    GestionarRolGatewayIntPort objGestionarRolGateway,
                                      FormateadorResultadosIntPort objFormateadorResultados) {
         this.objGestionarUsuarioGateway = objGestionarUsuarioGateway;
+        this.objGestionarProgramaGateway = objGestionarProgramaGateway;
+        this.objGestionarRolGateway = objGestionarRolGateway;
         this.objFormateadorResultados = objFormateadorResultados;
     }
 
 @Override
 public Usuario crearUsuario(Usuario usuario) {
 
-
+    Programa programa = null;
+    Rol objRol = null;
     Usuario usuarioExistenteCorreo = objGestionarUsuarioGateway.buscarUsuarioPorCorreo(usuario.getCorreo());
     if (usuarioExistenteCorreo != null) {
         this.objFormateadorResultados.retornarRespuestaErrorEntidadExiste("Ya existe un usuario con ese correo.");
@@ -35,21 +46,90 @@ public Usuario crearUsuario(Usuario usuario) {
     }
     
 
+    if (usuario.getObjPrograma() == null) {
+        this.objFormateadorResultados.retornarRespuestaErrorEntidadExiste("El programa del usuario no puede ser nulo o su ID no puede ser nulo.");
+    }
+
+    programa = this.objGestionarProgramaGateway.buscarPorIdPrograma(usuario.getObjPrograma().getId_programa());
+
+    if (programa == null) {
+        this.objFormateadorResultados.retornarRespuestaErrorEntidadExiste("El programa enviado no existe.");
+    }
+    objRol = this.objGestionarRolGateway.buscarRolPorNombre("Estudiante");
+    if (objRol == null) {
+        this.objFormateadorResultados.retornarRespuestaErrorEntidadExiste("El rol 'Estudiante' no existe.");
+    }
+    objRol.getUsuarios().add(usuario);
+    usuario.setObjRol(objRol);
+    usuario.setObjPrograma(programa);
+    usuario.setId_usuario(null);
+
     return this.objGestionarUsuarioGateway.crearUsuario(usuario);
 }
 
     @Override
     public Usuario actualizarUsuario(Usuario usuario) {
-        if (usuario == null || usuario.getId_usuario() == null) {
-            this.objFormateadorResultados.retornarRespuestaErrorEntidadExiste("El usuario o su ID no puede ser nulo.");
+        Programa programa = null;
+        Rol objRol = null;
+        Usuario usuarioActualizado = null;
+        if (usuario == null) {
+            this.objFormateadorResultados.retornarRespuestaErrorEntidadExiste("El usuario no puede ser nulo.");
         }
+
+        if(usuario.getId_usuario() == null) {
+            this.objFormateadorResultados.retornarRespuestaErrorEntidadExiste("El ID del usuario no puede ser nulo.");
+
+        }
+        //this.objFormateadorResultados.retornarRespuestaErrorEntidadExiste("usuario id" + usuario.getId_usuario());
 
         Usuario existente = this.objGestionarUsuarioGateway.obtenerUsuarioPorId(usuario.getId_usuario());
         if (existente == null) {
             this.objFormateadorResultados.retornarRespuestaErrorEntidadExiste("No se encontró el usuario a actualizar.");
         }
 
-        return this.objGestionarUsuarioGateway.actualizarUsuario(usuario);
+        if (usuario.getObjPrograma() == null) {
+        this.objFormateadorResultados.retornarRespuestaErrorEntidadExiste("El programa del usuario no puede ser nulo");
+        }
+
+        if(usuario.getObjPrograma().getId_programa() == null) {
+            this.objFormateadorResultados.retornarRespuestaErrorEntidadExiste("El ID del programa del usuario no puede ser nulo.");
+
+        }
+
+        programa = this.objGestionarProgramaGateway.buscarPorIdPrograma(usuario.getObjPrograma().getId_programa());
+
+        if (programa == null) {
+            this.objFormateadorResultados.retornarRespuestaErrorEntidadExiste("El programa enviado no existe.");
+        }
+
+       
+        if (usuario.getObjRol() == null) {
+            this.objFormateadorResultados.retornarRespuestaErrorEntidadExiste("El rol es nulo");
+        }
+
+        if (usuario.getObjRol().getId_rol() == null) {
+            this.objFormateadorResultados.retornarRespuestaErrorEntidadExiste("El ID del rol no puede ser nulo.");
+        }
+
+        objRol = this.objGestionarRolGateway.bucarRolPorId(usuario.getObjRol().getId_rol());
+        if (objRol == null) {
+            this.objFormateadorResultados.retornarRespuestaErrorEntidadExiste("El rol enviado no existe.");
+        }
+
+        objRol.getUsuarios().add(usuario);
+        usuario.setObjRol(objRol);
+        usuario.setObjPrograma(programa);
+
+
+        try{
+            usuarioActualizado = this.objGestionarUsuarioGateway.actualizarUsuario(usuario);
+        } catch (RuntimeException e) {
+            this.objFormateadorResultados.retornarRespuestaErrorEntidadExiste("Error al actualizar el usuario: " + e.getMessage());
+        } catch (Exception e) {
+            this.objFormateadorResultados.retornarRespuestaErrorEntidadExiste("Error inesperado al actualizar el usuario: " + e.getMessage());
+        }
+
+        return usuarioActualizado;
     }
 
     @Override

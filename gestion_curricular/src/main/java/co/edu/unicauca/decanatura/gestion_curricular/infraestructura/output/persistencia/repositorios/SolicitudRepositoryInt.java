@@ -10,9 +10,6 @@ import org.springframework.data.repository.query.Param;
 
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.entidades.SolicitudEntity;
 
-import java.util.Date;
-import java.util.List;
-import java.util.Set;
 
 public interface SolicitudRepositoryInt extends JpaRepository<SolicitudEntity, Integer>{
 
@@ -30,13 +27,13 @@ public interface SolicitudRepositoryInt extends JpaRepository<SolicitudEntity, I
 //===========================
     // @Query("SELECT COUNT(s) FROM SolicitudCursoVeranoInscripcionEntity s WHERE LOWER(s.nombre_solicitud) LIKE LOWER(CONCAT('%', :nombre, '%')) " +
     // "AND s.objCursoOfertado.id_curso = :idCurso " +
-    // "AND LOWER(s.objEstadoSolicitud.estado_actual) LIKE LOWER(CONCAT('%', :estado_actual, '%'))")
+    // "AND LOWER(s.estadosSolicitud.estado_actual) LIKE LOWER(CONCAT('%', :estado_actual, '%'))")
     // Integer contarPorNombreCursoEstadoIns(@Param("nombre") String nombre, @Param("idCurso") Integer idCurso, @Param("estado_actual") String estado_actual);
 
     @Query("""
         SELECT COUNT(s)
         FROM SolicitudCursoVeranoInscripcionEntity s
-        JOIN s.objEstadoSolicitud e
+        JOIN s.estadosSolicitud e
         WHERE LOWER(s.nombre_solicitud) LIKE LOWER(CONCAT('%', :nombre, '%'))
         AND s.objCursoOfertado.id_curso = :idCurso
         AND LOWER(e.estado_actual) LIKE LOWER(CONCAT('%', :estado_actual, '%'))
@@ -62,13 +59,13 @@ public interface SolicitudRepositoryInt extends JpaRepository<SolicitudEntity, I
 //===================
     // @Query("SELECT COUNT(s) FROM SolicitudCursoVeranoPreinscripcionEntity s WHERE LOWER(s.nombre_solicitud) LIKE LOWER(CONCAT('%', :nombre, '%')) " +
     // "AND s.objCursoOfertado.id_curso = :idCurso " +
-    // "AND LOWER(s.objEstadoSolicitud.estado_actual) LIKE LOWER(CONCAT('%', :estado_actual, '%'))")
+    // "AND LOWER(s.estadosSolicitud.estado_actual) LIKE LOWER(CONCAT('%', :estado_actual, '%'))")
     // Integer contarPorNombreCursoEstadoPre(@Param("nombre") String nombre, @Param("idCurso") Integer idCurso, @Param("estado_actual") String estado_actual);
 
     @Query("""
         SELECT COUNT(s)
         FROM SolicitudCursoVeranoPreinscripcionEntity s
-        JOIN s.objEstadoSolicitud e
+        JOIN s.estadosSolicitud e
         WHERE LOWER(s.nombre_solicitud) LIKE LOWER(CONCAT('%', :nombre, '%'))
         AND s.objCursoOfertado.id_curso = :idCurso
         AND LOWER(e.estado_actual) LIKE LOWER(CONCAT('%', :estado_actual, '%'))
@@ -90,12 +87,12 @@ public interface SolicitudRepositoryInt extends JpaRepository<SolicitudEntity, I
 
     // @Query("SELECT s FROM SolicitudCursoVeranoInscripcionEntity s WHERE LOWER(s.nombre_solicitud) LIKE LOWER(CONCAT('%', :nombre, '%')) " +
     // "AND s.objCursoOfertado.id_curso = :idCurso " +
-    // "AND LOWER(s.objEstadoSolicitud.estado_actual) LIKE LOWER(CONCAT('%', :estado_actual, '%')) ")
+    // "AND LOWER(s.estadosSolicitud.estado_actual) LIKE LOWER(CONCAT('%', :estado_actual, '%')) ")
     // List<SolicitudEntity> buscarPorNombreCursoEstadoIns(@Param("nombre") String nombre, @Param("idCurso") Integer idCurso, @Param("estado_actual") String estado_actual);
     @Query("""
         SELECT s 
         FROM SolicitudCursoVeranoInscripcionEntity s 
-        JOIN s.objEstadoSolicitud e 
+        JOIN s.estadosSolicitud e 
         WHERE LOWER(s.nombre_solicitud) LIKE LOWER(CONCAT('%', :nombre, '%')) 
         AND s.objCursoOfertado.id_curso = :idCurso 
         AND LOWER(e.estado_actual) LIKE LOWER(CONCAT('%', :estado_actual, '%')) 
@@ -113,12 +110,12 @@ public interface SolicitudRepositoryInt extends JpaRepository<SolicitudEntity, I
 
     // @Query("SELECT s FROM SolicitudCursoVeranoInscripcionEntity s WHERE LOWER(s.nombre_solicitud) LIKE LOWER(CONCAT('%', :nombre, '%')) " +
     // "AND s.objCursoOfertado.id_curso = :idCurso " +
-    // "AND LOWER(s.objEstadoSolicitud.estado_actual) LIKE LOWER(CONCAT('%', :estado_actual, '%')) ")
+    // "AND LOWER(s.estadosSolicitud.estado_actual) LIKE LOWER(CONCAT('%', :estado_actual, '%')) ")
     // List<SolicitudEntity> buscarPorNombreCursoEstadoPre(@Param("nombre") String nombre, @Param("idCurso") Integer idCurso, @Param("estado_actual") String estado_actual);
     @Query("""
         SELECT s 
         FROM SolicitudCursoVeranoPreinscripcionEntity s 
-        JOIN s.objEstadoSolicitud e 
+        JOIN s.estadosSolicitud e 
         WHERE LOWER(s.nombre_solicitud) LIKE LOWER(CONCAT('%', :nombre, '%')) 
         AND s.objCursoOfertado.id_curso = :idCurso 
         AND LOWER(e.estado_actual) LIKE LOWER(CONCAT('%', :estado_actual, '%')) 
@@ -140,9 +137,9 @@ public interface SolicitudRepositoryInt extends JpaRepository<SolicitudEntity, I
     Integer totalSolicitudes();
 
     // Consulta JPQL: buscar solicitudes por estado
-    // @Query("SELECT s FROM SolicitudEntity s WHERE s.objEstadoSolicitud.id_estado = :idEstado")
+    // @Query("SELECT s FROM SolicitudEntity s WHERE s.estadosSolicitud.id_estado = :idEstado")
     // List<SolicitudEntity> contarPorEstado(@Param("idEstado") Integer idEstado);
-    // // @Query("SELECT COUNT(s) FROM SolicitudEntity s WHERE s.objEstadoSolicitud.id_estado = :idEstado")
+    // // @Query("SELECT COUNT(s) FROM SolicitudEntity s WHERE s.estadosSolicitud.id_estado = :idEstado")
     // Integer contarPorEstado(@Param("idEstado") Integer idEstado);
     // Contar solicitudes cuyo último estado tiene el ID indicado
     @Query("""
@@ -174,7 +171,7 @@ public interface SolicitudRepositoryInt extends JpaRepository<SolicitudEntity, I
     // "SELECT COUNT(s) FROM SolicitudEntity s " +
     // "WHERE LOWER(s.nombre_solicitud) LIKE LOWER(CONCAT('%', :nombreSolicitud, '%')) " +
     // "AND s.fecha_registro_solicitud BETWEEN :fechaInicio AND :fechaFin " +
-    // "AND s.objEstadoSolicitud.id_estado = :idEstado " +
+    // "AND s.estadosSolicitud.id_estado = :idEstado " +
     // "AND s.objUsuario.objPrograma.id_programa = :idPrograma")
 
     // Integer contarNombreFechaEstadoYPrograma(
@@ -184,7 +181,7 @@ public interface SolicitudRepositoryInt extends JpaRepository<SolicitudEntity, I
     // @Param("idPrograma") Integer idPrograma);
     @Query(value =
         "SELECT COUNT(s) FROM SolicitudEntity s " +
-        "JOIN s.objEstadoSolicitud est " +
+        "JOIN s.estadosSolicitud est " +
         "WHERE LOWER(s.nombre_solicitud) LIKE LOWER(CONCAT('%', :nombreSolicitud, '%')) " +
         "AND s.fecha_registro_solicitud BETWEEN :fechaInicio AND :fechaFin " +
         "AND est.id_estado = :idEstado " +

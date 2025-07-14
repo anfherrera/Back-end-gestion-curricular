@@ -14,7 +14,7 @@ public class SolicitudHomologacion extends Solicitud {
         super();
     }
     public SolicitudHomologacion(Integer id_solicitud, String nombre_solicitud, Date fecha_registro_solicitud,
-                                List<EstadoSolicitud> objEstadosSolicitud, Usuario objUsuario, List<Documento> documentos) {
-        super(id_solicitud, nombre_solicitud, fecha_registro_solicitud, objEstadosSolicitud, objUsuario, documentos);
+                                List<EstadoSolicitud> estadosSolicitud, Usuario objUsuario, List<Documento> documentos) {
+        super(id_solicitud, nombre_solicitud, fecha_registro_solicitud, estadosSolicitud, objUsuario, documentos);
     }
 }
