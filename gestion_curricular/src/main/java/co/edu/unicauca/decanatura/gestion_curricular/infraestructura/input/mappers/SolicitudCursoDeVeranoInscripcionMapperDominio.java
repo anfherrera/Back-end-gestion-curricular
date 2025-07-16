@@ -20,6 +20,7 @@ uses = {
 public interface SolicitudCursoDeVeranoInscripcionMapperDominio {
     
     @Mapping(target = "estadosSolicitud", ignore = true) // No viene en el DTO de petición
+    @Mapping(source = "documentos", target = "documentos")
     SolicitudCursoVeranoIncripcion mappearDePeticionASolicitudCursoVeranoIncripcion(SolicitudCursoVeranoInscripcionDTOPeticion peticion);
 
     @Mapping(target = "estadosSolicitud", source = "estadosSolicitud")

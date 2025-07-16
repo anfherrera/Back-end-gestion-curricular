@@ -10,7 +10,7 @@ public interface GestionarCursoOfertadoVeranoCUIntPort {
     
     CursoOfertadoVerano crearCurso(CursoOfertadoVerano curso);
 
-    CursoOfertadoVerano actualizarCurso(CursoOfertadoVerano curso, EstadoCursoOfertado estadoCurso, List<Solicitud> solicitudes);
+    CursoOfertadoVerano actualizarCurso(CursoOfertadoVerano curso, EstadoCursoOfertado estadoCurso);
 
     boolean eliminarCurso(Integer idCurso);
     

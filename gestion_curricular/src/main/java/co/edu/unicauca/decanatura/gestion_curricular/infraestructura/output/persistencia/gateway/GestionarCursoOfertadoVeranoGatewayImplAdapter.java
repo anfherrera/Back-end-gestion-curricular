@@ -6,6 +6,7 @@ import java.util.Optional;
 import java.util.Set;
 
 import org.modelmapper.ModelMapper;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -29,7 +30,7 @@ public class GestionarCursoOfertadoVeranoGatewayImplAdapter implements Gestionar
     private final UsuarioRepositoryInt usuarioRepository;
     private final ModelMapper cursoMapper;
 
-    public GestionarCursoOfertadoVeranoGatewayImplAdapter(CursoOfertadoVeranoRepositoryInt cursoRepository, UsuarioRepositoryInt usuarioRepository, ModelMapper cursoMapper) {
+    public GestionarCursoOfertadoVeranoGatewayImplAdapter(CursoOfertadoVeranoRepositoryInt cursoRepository, UsuarioRepositoryInt usuarioRepository,@Qualifier("mapperCurso") ModelMapper cursoMapper) {
         this.cursoRepository = cursoRepository;
         this.usuarioRepository = usuarioRepository;
         this.cursoMapper = cursoMapper;
@@ -39,14 +40,17 @@ public class GestionarCursoOfertadoVeranoGatewayImplAdapter implements Gestionar
     @Transactional
     public CursoOfertadoVerano crearCurso(CursoOfertadoVerano curso) {
         CursoOfertadoVeranoEntity cursoEntity = cursoMapper.map(curso, CursoOfertadoVeranoEntity.class);
-        List<EstadoCursoOfertadoEntity> estadosCursos = null;
         EstadoCursoOfertadoEntity estadoCurso = new EstadoCursoOfertadoEntity();
         estadoCurso.setFecha_registro_estado(new Date());
         estadoCurso.setObjCursoOfertadoVerano(cursoEntity);
-        estadosCursos = cursoEntity.getEstadosCursoOfertados();
-        estadosCursos.add(estadoCurso);
-        cursoEntity.setEstadosCursoOfertados(estadosCursos);
+        //cursoEntity.getEstadosCursoOfertados().add(estadoCurso);
+        List<EstadoCursoOfertadoEntity> estadosCurso = cursoEntity.getEstadosCursoOfertados();
+        estadosCurso.add(estadoCurso);
+        cursoEntity.setEstadosCursoOfertados(estadosCurso); 
+
+
         CursoOfertadoVeranoEntity saved = cursoRepository.save(cursoEntity);
+
         return cursoMapper.map(saved, CursoOfertadoVerano.class);
     }
 
@@ -58,7 +62,6 @@ public class GestionarCursoOfertadoVeranoGatewayImplAdapter implements Gestionar
 
         CursoOfertadoVeranoEntity cursoEntity = cursoMapper.map(curso, CursoOfertadoVeranoEntity.class);
         EstadoCursoOfertadoEntity estadoCursoEntity = null;
-        List<EstadoCursoOfertadoEntity> estadosCursos = null;
         if(estadoCurso != null) {
             estadoCursoEntity = cursoMapper.map(estadoCurso, EstadoCursoOfertadoEntity.class);
 
@@ -68,9 +71,7 @@ public class GestionarCursoOfertadoVeranoGatewayImplAdapter implements Gestionar
 
             estadoCursoEntity.setFecha_registro_estado(new Date());
             estadoCursoEntity.setObjCursoOfertadoVerano(cursoEntity);
-            estadosCursos = cursoEntity.getEstadosCursoOfertados();
-            estadosCursos.add(estadoCursoEntity);
-            cursoEntity.setEstadosCursoOfertados(estadosCursos);
+            cursoEntity.getEstadosCursoOfertados().add(estadoCursoEntity);
 
         CursoOfertadoVeranoEntity cursoGuardado = cursoRepository.save(cursoEntity);
         return cursoMapper.map(cursoGuardado, CursoOfertadoVerano.class);

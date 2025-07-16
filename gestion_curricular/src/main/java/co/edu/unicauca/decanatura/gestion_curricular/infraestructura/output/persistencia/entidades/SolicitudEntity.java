@@ -36,6 +36,8 @@ public class SolicitudEntity {
     @Column(nullable = false)
     private Date fecha_registro_solicitud;
 
+    private boolean esSeleccionado;
+
     @OneToMany( mappedBy = "objSolicitud", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<EstadoSolicitudEntity> estadosSolicitud;
 

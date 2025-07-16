@@ -2,9 +2,21 @@ package co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.cont
 
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarSolicitudCUIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Solicitud;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.SolicitudCursoVeranoIncripcion;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.SolicitudCursoVeranoPreinscripcion;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.SolicitudPazYSalvo;
+import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.DTOPeticion.SolicitudPazYSalvoDTOPeticion;
+import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.DTORespuesta.SolicitudCursoVeranoInscripcionDTORespuesta;
+import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.DTORespuesta.SolicitudCursoVeranoPreinscripcionDTORespuesta;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.DTORespuesta.SolicitudDTORespuesta;
-import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.mappers.SolicitudMapperDominio;
+import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.DTOPeticion.SolicitudCurosoVeranoPreinscripcionDTOPeticion;
+import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.DTOPeticion.SolicitudCursoVeranoInscripcionDTOPeticion;
+import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.DTORespuesta.*;
+import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.mappers.*;
+
+
 import jakarta.validation.constraints.Min;
+
 import lombok.RequiredArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
@@ -24,6 +36,11 @@ public class SolicitudRestController {
 
     private final GestionarSolicitudCUIntPort solicitudCU;
     private final SolicitudMapperDominio mapper;
+    private final SolicitudPazYSalvoMapperDominio solicitudPazYSalvoMapper;
+    private final SolicitudCursoDeVeranoPreinscripcionMapperDominio solicitudCursoVeranoPreinscripcionMapper;
+    private final SolicitudCursoDeVeranoInscripcionMapperDominio solicitudCursoDeVeranoInscripcionMapper;
+
+    
 
     @GetMapping("/buscarPorId/{id}")
     public ResponseEntity<SolicitudDTORespuesta> buscarSolicitudPorId(@Min(1) @PathVariable Integer id) {
@@ -81,4 +98,48 @@ public class SolicitudRestController {
                 .collect(Collectors.toList());
         return ResponseEntity.ok(respuesta);
     }
+
+    @PostMapping("/crearPazYSalvo")
+    public ResponseEntity<SolicitudDTORespuesta> crearSolicitudPazYSalvo(@RequestBody SolicitudPazYSalvoDTOPeticion solicitud) {
+        SolicitudPazYSalvo solicitudPazYSalvo = solicitudPazYSalvoMapper.mappearDeSolicitudDTOPeticionASolicitud(solicitud);
+        SolicitudPazYSalvo solicitudGuardada = solicitudCU.crearSolicitudPazYSalvo(solicitudPazYSalvo);
+        return new ResponseEntity<>(
+                mapper.mappearDeSolicitudARespuesta(solicitudGuardada),
+                HttpStatus.CREATED
+        );
+    }
+
+    @PostMapping("/crearCursoVeranoPreinscripcion")
+    public ResponseEntity<SolicitudCursoVeranoPreinscripcionDTORespuesta> crearSolicitudCursoVeranoPreinscripcion(
+            @RequestBody SolicitudCurosoVeranoPreinscripcionDTOPeticion solicitud) {
+
+        SolicitudCursoVeranoPreinscripcion solicitudDominio = solicitudCursoVeranoPreinscripcionMapper
+                .mappearDePeticionASolicitudCursoVeranoPreinscripcion(solicitud);
+
+        SolicitudCursoVeranoPreinscripcion solicitudGuardada = solicitudCU
+                .crearSolicitudCursoVeranoPreinscripcion(solicitudDominio);
+
+        SolicitudCursoVeranoPreinscripcionDTORespuesta respuesta = solicitudCursoVeranoPreinscripcionMapper
+                .mappearDeSolicitudCursoVeranoPreinscripcionARespuesta(solicitudGuardada);
+
+        return new ResponseEntity<>(respuesta, HttpStatus.CREATED);
+    }
+
+    @PostMapping("/crearCursoVeranoInscripcion")
+    public ResponseEntity<SolicitudCursoVeranoInscripcionDTORespuesta> crearSolicitudCursoVeranoInscripcion(
+            @RequestBody SolicitudCursoVeranoInscripcionDTOPeticion solicitud) {
+
+        SolicitudCursoVeranoIncripcion solicitudDominio = solicitudCursoDeVeranoInscripcionMapper
+                .mappearDePeticionASolicitudCursoVeranoIncripcion(solicitud);
+
+        SolicitudCursoVeranoIncripcion solicitudGuardada = solicitudCU
+                .crearSolicitudCursoVeranoInscripcion(solicitudDominio);
+
+        SolicitudCursoVeranoInscripcionDTORespuesta respuesta = solicitudCursoDeVeranoInscripcionMapper
+                .mappearDeSolicitudCursoVeranoIncripcionARespuesta(solicitudGuardada);
+
+        return new ResponseEntity<>(respuesta, HttpStatus.CREATED);
+    }
+
+
 }

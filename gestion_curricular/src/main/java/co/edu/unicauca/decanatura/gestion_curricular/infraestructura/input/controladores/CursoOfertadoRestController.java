@@ -32,7 +32,6 @@ public class CursoOfertadoRestController {
 
     private final GestionarCursoOfertadoVeranoCUIntPort cursoCU;
     private final CursosOfertadosMapperDominio CursoMapper;
-    private final SolicitudMapperDominio solicitudMapper;
     private final EstadoCursoOfertadoMapper estadoCursoMapper;
 
     @PostMapping("/crearCurso")
@@ -46,13 +45,10 @@ public class CursoOfertadoRestController {
     }
 
     @PutMapping("/actualizarCurso")
-    public ResponseEntity<CursosOfertadosDTORespuesta> actualizarCurso(@RequestBody @Valid ActualizarCursosOfertadosDTOPeticion peticion) {
-        CursoOfertadoVerano curso = CursoMapper.mappearDeDTOPeticionACursoOfertado(peticion.getCurso());
-        EstadoCursoOfertado nuevoEstado = estadoCursoMapper.mappearDeDTOPeticionAEstadoCursoOfertado(peticion.getCurso().getEstadoCursoOfertado());
-        List<Solicitud> solicitudesMapeadas = peticion.getSolicitudes().stream()
-                .map(solicitudMapper::mappearDeSolicitudDTOPeticionASolicitud)
-                .collect(Collectors.toList());
-        CursoOfertadoVerano cursoActualizado = cursoCU.actualizarCurso(curso, nuevoEstado, solicitudesMapeadas); // sin nuevo estado
+    public ResponseEntity<CursosOfertadosDTORespuesta> actualizarCurso(@RequestBody @Valid CursosOfertadosDTOPeticion peticion) {
+        CursoOfertadoVerano curso = CursoMapper.mappearDeDTOPeticionACursoOfertado(peticion);
+        EstadoCursoOfertado nuevoEstado = estadoCursoMapper.mappearDeDTOPeticionAEstadoCursoOfertado(peticion.getEstadoCursoOfertado());
+        CursoOfertadoVerano cursoActualizado = cursoCU.actualizarCurso(curso, nuevoEstado); // sin nuevo estado
         return new ResponseEntity<>(
                 CursoMapper.mappearDeCursoOfertadoARespuesta(cursoActualizado),
                 HttpStatus.ACCEPTED

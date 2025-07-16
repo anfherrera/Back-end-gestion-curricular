@@ -64,8 +64,8 @@ public class MateriaRestController {
         return new ResponseEntity<>(eliminada ? HttpStatus.OK : HttpStatus.NOT_FOUND);
     }
 
-    @GetMapping("/buscarPorNombre/{nombre}")
-    public ResponseEntity<List<MateriaDTORespuesta>> buscarPorNombre(@PathVariable String nombre) {
+    @GetMapping("/buscarPorNombre")
+    public ResponseEntity<List<MateriaDTORespuesta>> buscarPorNombre(@RequestParam(name = "nombre", required = true) String nombre) {
         List<Materia> materias = objMateriaCUIntPort.buscarPorNombreParcial(nombre);
         List<MateriaDTORespuesta> respuesta = materias.stream()
                 .map(objMateriaMapperDominio::mappearDeMateriaAMateriaDTORespuesta)
@@ -74,7 +74,7 @@ public class MateriaRestController {
     }
 
     @GetMapping("/buscarPorCreditos/{creditos}")
-    public ResponseEntity<List<MateriaDTORespuesta>> buscarPorCreditos(@PathVariable Integer creditos) {
+    public ResponseEntity<List<MateriaDTORespuesta>> buscarPorCreditos(@Min(value = 1) @PathVariable Integer creditos) {
         List<Materia> materias = objMateriaCUIntPort.buscarPorCreditos(creditos);
         List<MateriaDTORespuesta> respuesta = materias.stream()
                 .map(objMateriaMapperDominio::mappearDeMateriaAMateriaDTORespuesta)
@@ -82,8 +82,8 @@ public class MateriaRestController {
         return ResponseEntity.ok(respuesta);
     }
 
-    @GetMapping("/buscarPorCodigo/{codigo}")
-    public ResponseEntity<MateriaDTORespuesta> buscarPorCodigo(@PathVariable String codigo) {
+    @GetMapping("/buscarPorCodigo")
+    public ResponseEntity<MateriaDTORespuesta> buscarPorCodigo(@RequestParam(name = "codigo", required = true) String codigo) {
         Materia materia = objMateriaCUIntPort.obtenerMateriaPorCodigo(codigo);
         if (materia == null) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);

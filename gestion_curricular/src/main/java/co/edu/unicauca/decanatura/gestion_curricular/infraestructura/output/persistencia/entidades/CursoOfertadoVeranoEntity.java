@@ -49,7 +49,7 @@ public class CursoOfertadoVeranoEntity {
     @JoinColumn(name = "idfkDocente", referencedColumnName = "idDocente", nullable = false)
     private DocenteEntity objDocente;
 
-    @OneToMany( mappedBy = "objCursoOfertadoVerano", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany( mappedBy = "objCursoOfertadoVerano", cascade = {CascadeType.REMOVE, CascadeType.PERSIST}, orphanRemoval = true)
     private List<EstadoCursoOfertadoEntity> estadosCursoOfertados; // Estado del curso ofertado
     
     @ManyToMany(fetch = FetchType.EAGER)

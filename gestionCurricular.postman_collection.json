@@ -4,7 +4,7 @@
 		"name": "gestionCurricular",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
 		"_exporter_id": "21638757",
-		"_collection_link": "https://gestioncurricular.postman.co/workspace/7abf1506-e2c7-499e-8af7-7c61a71f7a55/collection/21638757-7a5e6a84-f966-480c-a833-5adbda247ed5?action=share&source=collection_link&creator=21638757"
+		"_collection_link": "https://gestioncurricular.postman.co/workspace/gestionCurricular-Workspace~7abf1506-e2c7-499e-8af7-7c61a71f7a55/collection/21638757-7a5e6a84-f966-480c-a833-5adbda247ed5?action=share&source=collection_link&creator=21638757"
 	},
 	"item": [
 		{
@@ -207,13 +207,112 @@
 			"response": []
 		},
 		{
-			"name": "New Request",
+			"name": "MateriaPorId",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "localhost:5000/api/materias/buscarMateriaPorId/1",
+					"host": [
+						"localhost"
+					],
+					"port": "5000",
+					"path": [
+						"api",
+						"materias",
+						"buscarMateriaPorId",
+						"1"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "BuscarMateriaPorNombre",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "localhost:5000/api/materias/buscarPorNombre?nombre=Cálculo",
+					"host": [
+						"localhost"
+					],
+					"port": "5000",
+					"path": [
+						"api",
+						"materias",
+						"buscarPorNombre"
+					],
+					"query": [
+						{
+							"key": "nombre",
+							"value": "Cálculo"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "BuscarMateriaPorCreditos",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "localhost:5000/api/materias/buscarPorCreditos/5",
+					"host": [
+						"localhost"
+					],
+					"port": "5000",
+					"path": [
+						"api",
+						"materias",
+						"buscarPorCreditos",
+						"5"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "BuscarMateriaCodigo",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "localhost:5000/api/materias/buscarPorCodigo?codigo=MAT101",
+					"host": [
+						"localhost"
+					],
+					"port": "5000",
+					"path": [
+						"api",
+						"materias",
+						"buscarPorCodigo"
+					],
+					"query": [
+						{
+							"key": "codigo",
+							"value": "MAT101"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "CrearCurso",
 			"request": {
 				"method": "POST",
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n  \"id_materia\": 1,\r\n  \"codigo\": \"MAT101\",\r\n  \"nombre\": \"Cálculo\",\r\n  \"creditos\": 5\r\n}"
+					"raw": "{\r\n  \"id_curso\": null,\r\n  \"objMateria\": {\r\n    \"id_materia\": 1,\r\n    \"nombre\": \"Programación Avanzada\",\r\n    \"creditos\": 3,\r\n    \"codigo\": \"PROG302\"\r\n  },\r\n  \"objDocente\": {\r\n    \"id_docente\": 1,\r\n    \"codigo_docente\": 1234567890,\r\n    \"nombre_docente\": \"Pepe\"\r\n  },\r\n  \"grupo\": \"A\",\r\n  \"cupo_estimado\": 25,\r\n  \"salon\": \"B203\",\r\n  \"EstadoCursoOfertado\": {\r\n    \"estado\": null,\r\n    \"fechaRegistro\": null\r\n  }\r\n}\r\n",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
 				},
 				"url": {
 					"raw": "localhost:5000/api/cursos-verano/crearCurso",
@@ -225,6 +324,265 @@
 						"api",
 						"cursos-verano",
 						"crearCurso"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "ActualizarCurso",
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"id_curso\": 10,\r\n  \"objMateria\": {\r\n    \"id_materia\": 1,\r\n    \"nombre\": \"Estructuras de Datos\",\r\n    \"creditos\": 4,\r\n    \"codigo\": \"EDAT202\"\r\n  },\r\n  \"objDocente\": {\r\n    \"id_docente\": 2,\r\n    \"nombre\": \"María López\",\r\n    \"apellido\": \"Rodríguez\",\r\n    \"correo\": \"mlopez@unicauca.edu.co\"\r\n  },\r\n  \"grupo\": \"B2\",\r\n  \"cupo_estimado\": 35,\r\n  \"salon\": \"F102\",\r\n  \"EstadoCursoOfertado\": {\r\n    \"estado\": \"ACTUALIZADO\",\r\n    \"fechaRegistro\": \"2025-07-14T15:30:00\"\r\n  }\r\n}\r\n",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:5000/api/",
+					"host": [
+						"localhost"
+					],
+					"port": "5000",
+					"path": [
+						"api",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "EliminarCurso",
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "localhost:5000/api/cursos-verano/eliminarCurso/1",
+					"host": [
+						"localhost"
+					],
+					"port": "5000",
+					"path": [
+						"api",
+						"cursos-verano",
+						"eliminarCurso",
+						"1"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "BuscarCursoPorId",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "localhost:5000/api/cursos-verano/buscarCursoPorId/1",
+					"host": [
+						"localhost"
+					],
+					"port": "5000",
+					"path": [
+						"api",
+						"cursos-verano",
+						"buscarCursoPorId",
+						"1"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "listarCursos",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "localhost:5000/api/cursos-verano/listarCursos",
+					"host": [
+						"localhost"
+					],
+					"port": "5000",
+					"path": [
+						"api",
+						"cursos-verano",
+						"listarCursos"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "CrearSolicitudPazYSalvo",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"id_solicitud\": null,\r\n  \"nombre_solicitud\": \"Solicitud de Paz y Salvo\",\r\n  \"fecha_registro_solicitud\": \"2025-07-10\",\r\n  \"esSeleccionado\": true,\r\n  \"estado_actual\": {\r\n    \"id_estado\": 1,\r\n    \"nombre_estado\": \"Pendiente\"\r\n  },\r\n  \"objUsuario\": {\r\n    \"id_usuario\": 1,\r\n    \"nombre_completo\": \"Juan Pérez\",\r\n    \"rol\": {\r\n      \"id_rol\": 2,\r\n      \"nombre_rol\": \"Estudiante\"\r\n    },\r\n    \"codigo\": \"104612345678\",\r\n    \"correo\": \"juan.perez@unicauca.edu.co\",\r\n    \"password\": \"claveSegura123\",\r\n    \"estado_usuario\": true,\r\n    \"objPrograma\": {\r\n      \"id_programa\": 1,\r\n      \"nombre_programa\": \"Ingeniería de Sistemas\"\r\n    }\r\n  },\r\n  \"documentos\": [\r\n    {\r\n      \"id_documento\": null,\r\n      \"nombre\": \"Certificado de notas\",\r\n      \"ruta_documento\": \"/archivos/documentos/certificado_notas.pdf\",\r\n      \"fecha_documento\": \"2025-06-15\",\r\n      \"esValido\": true,\r\n      \"comentario\": \"Documento requerido por reglamento.\",\r\n      \"tipoDocumentoSolicitudPazYSalvo\": \"formato_PP_H\"\r\n    }\r\n  ]\r\n}\r\n",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:5000/api/solicitudes/crearPazYSalvo",
+					"host": [
+						"localhost"
+					],
+					"port": "5000",
+					"path": [
+						"api",
+						"solicitudes",
+						"crearPazYSalvo"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "BuscarSolicitudPorId",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"id_solicitud\": 12,\r\n  \"nombre_solicitud\": \"Inscripción Curso Verano\",\r\n  \"fecha_registro_solicitud\": \"2024-09-30T00:00:00\",\r\n  \"esSeleccionado\": true,\r\n  \"estado_actual\": {\r\n    \"id_estado\": 3,\r\n    \"nombre_estado\": \"Aprobado\"\r\n  },\r\n  \"objUsuario\": {\r\n    \"id_usuario\": 45,\r\n    \"nombre\": \"Carlos Ramírez\",\r\n    \"correo\": \"carlos.ramirez@unicauca.edu.co\",\r\n    \"rol\": \"Estudiante\"\r\n  },\r\n  \"documentos\": [\r\n    {\r\n      \"id_documento\": 101,\r\n      \"nombre\": \"Certificado de notas\",\r\n      \"url\": \"https://drive.google.com/documento-notas\",\r\n      \"tipo\": \"PDF\"\r\n    },\r\n    {\r\n      \"id_documento\": 102,\r\n      \"nombre\": \"Carta de solicitud\",\r\n      \"url\": \"https://drive.google.com/carta-solicitud\",\r\n      \"tipo\": \"PDF\"\r\n    }\r\n  ]\r\n}\r\n",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:5000/api/solicitudes/buscarPorId/{id}",
+					"host": [
+						"localhost"
+					],
+					"port": "5000",
+					"path": [
+						"api",
+						"solicitudes",
+						"buscarPorId",
+						"{id}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "EliminarSolicitud",
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:5000/api/solicitudes/eliminar/{id}\n",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5000",
+					"path": [
+						"api",
+						"solicitudes",
+						"eliminar",
+						"{id}\n"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "ListarSolicitudes",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:5000/api/solicitudes/listar",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5000",
+					"path": [
+						"api",
+						"solicitudes",
+						"listar"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "BuscarSolicitudPorIdUsuario",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:5000/api/solicitudes/buscarPorUsuario/{idUsuario}",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5000",
+					"path": [
+						"api",
+						"solicitudes",
+						"buscarPorUsuario",
+						"{idUsuario}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "BuscarSolicitudPorNombre",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:5000/api/solicitudes/buscarPorNombre",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5000",
+					"path": [
+						"api",
+						"solicitudes",
+						"buscarPorNombre"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "BuscarSolicitudPorFecha",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:5000/api/solicitudes/buscarPorFechas",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "5000",
+					"path": [
+						"api",
+						"solicitudes",
+						"buscarPorFechas"
 					]
 				}
 			},

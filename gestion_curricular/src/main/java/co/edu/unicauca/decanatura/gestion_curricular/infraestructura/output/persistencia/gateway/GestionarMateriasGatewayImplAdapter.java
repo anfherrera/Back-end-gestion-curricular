@@ -57,7 +57,7 @@ public class GestionarMateriasGatewayImplAdapter implements GestionarMateriasInt
         boolean existe = false;
         Optional<MateriaEntity> materiaEntity = materiaRepository.findById(idMateria);
         if (materiaEntity != null) {
-            materiaRepository.deleteById(idMateria);
+            materiaRepository.eliminarPorId(idMateria);
             existe = true;
         }
         return existe;

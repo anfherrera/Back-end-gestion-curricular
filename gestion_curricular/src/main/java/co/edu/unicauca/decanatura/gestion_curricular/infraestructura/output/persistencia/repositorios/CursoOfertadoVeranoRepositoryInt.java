@@ -2,6 +2,7 @@ package co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.per
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.entidades.CursoOfertadoVeranoEntity;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
@@ -23,4 +24,8 @@ public interface CursoOfertadoVeranoRepositoryInt extends JpaRepository<CursoOfe
     // Consulta nativa: contar cursos por salón específico
     @Query(value = "SELECT COUNT(*) FROM cursos_ofertados WHERE salon = ?1", nativeQuery = true)
     Integer contarPorSalon(String salon);
+    
+    @Modifying
+    @Query("DELETE FROM CursoOfertadoVeranoEntity c WHERE c.id = :id")
+    void eliminarPorId(@Param("id") Integer id);
 }

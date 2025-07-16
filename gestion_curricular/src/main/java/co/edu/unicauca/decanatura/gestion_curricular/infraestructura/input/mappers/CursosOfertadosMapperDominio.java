@@ -23,7 +23,7 @@ public interface CursosOfertadosMapperDominio {
     @Mapping(source = "cupo_estimado", target = "cupo_estimado")
     @Mapping(source = "salon", target = "salon")
     @Mapping(target = "estadosCursoOfertados", ignore =  true)
-    @Mapping(source = "estudiantesInscritos", target = "estudiantesInscritos")
+    @Mapping(target = "estudiantesInscritos", ignore = true)
     CursoOfertadoVerano mappearDeDTOPeticionACursoOfertado(CursosOfertadosDTOPeticion peticion);
 
     // Dominio → DTO Respuesta

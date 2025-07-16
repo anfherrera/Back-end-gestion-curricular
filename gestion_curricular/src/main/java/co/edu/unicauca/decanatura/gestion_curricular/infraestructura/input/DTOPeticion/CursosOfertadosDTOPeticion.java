@@ -42,6 +42,4 @@ public class CursosOfertadosDTOPeticion {
     
     private EstadoCursoOfertadoDTOPeticion EstadoCursoOfertado;
 
-    @Valid
-    private Set<UsuarioDTOPeticion> estudiantesInscritos;
 }
