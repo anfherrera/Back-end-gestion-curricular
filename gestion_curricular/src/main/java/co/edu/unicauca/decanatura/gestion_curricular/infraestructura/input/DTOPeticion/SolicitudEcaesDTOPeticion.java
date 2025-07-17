@@ -19,7 +19,7 @@ import lombok.EqualsAndHashCode;
 public class SolicitudEcaesDTOPeticion extends SolicitudDTOPeticion {
 
     @NotBlank(message = "{SolicitudEcaes.tipoDocumento.empty}")
-    @Size(min = 3, max = 20, message = "{SolicitudEcaes.tipoDocumento.length}")
+    @Size(min = 2, max = 20, message = "{SolicitudEcaes.tipoDocumento.length}")
     private String tipoDocumento;
 
     @NotBlank(message = "{SolicitudEcaes.numeroDocumento.empty}")

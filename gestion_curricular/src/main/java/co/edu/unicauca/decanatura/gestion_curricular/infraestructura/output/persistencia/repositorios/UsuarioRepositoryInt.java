@@ -14,7 +14,7 @@ public interface UsuarioRepositoryInt extends JpaRepository<UsuarioEntity, Integ
     // Buscar usuario por código exacto (usado en obtener usuario o para encontrar ID)
     @Query("SELECT u FROM UsuarioEntity u WHERE u.codigo = :codigo")
     UsuarioEntity buscarIdUsuarioPorCodigo(@Param("codigo") String codigo);
-
+    
     // Verificar existencia de correo (retorna count)
     @Query(value = "SELECT COUNT(*) FROM usuarios WHERE correo = ?1", nativeQuery = true)
     Integer contarPorCorreo(String correo);

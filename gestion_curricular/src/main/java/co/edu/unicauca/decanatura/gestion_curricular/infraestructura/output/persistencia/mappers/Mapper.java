@@ -11,8 +11,10 @@ import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Programa;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Rol;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.SolicitudEcaes;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Usuario;
-import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.DTOPeticion.solicitudEcaesDto;
+
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.DTOPeticion.usuarioEntradaDto;
+import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.DTORespuesta.SolicitudDTORespuesta;
+import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.DTORespuesta.solicitudEcaesSalidaDto;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.DTORespuesta.usuarioSalidaDto;
 
 @Component
@@ -30,15 +32,15 @@ public class Mapper {
     public <D, T> D map(final T source, Class<D> destinationType) {
         return modelMapper.map(source, destinationType);
     }
-    // Métodos específicos para SolicitudEcaes
-    public SolicitudEcaes solicitudEcaesDtoADominio(solicitudEcaesDto dto) {
-        return modelMapper.map(dto, SolicitudEcaes.class);
-    }
+    // // Métodos específicos para SolicitudEcaes
+    // public SolicitudEcaes solicitudEcaesDtoADominio(solicitudEcaesSalidaDto dto) {
+    //     return modelMapper.map(dto, SolicitudEcaes.class);
+    // }
 
-    public solicitudEcaesDto solicitudEcaesDominioADto(SolicitudEcaes solicitud) {
-        return modelMapper.map(solicitud, solicitudEcaesDto.class);
-    }
-    //===========================
+    // public SolicitudDTORespuesta solicitudEcaesDominioADto(SolicitudEcaes solicitud) {
+    //     return modelMapper.map(solicitud, SolicitudDTORespuesta.class);
+    // }
+    // //===========================
 
     // Métodos personalizados
     public Usuario usuarioEntradaDtoAUsuario(usuarioEntradaDto dto) {

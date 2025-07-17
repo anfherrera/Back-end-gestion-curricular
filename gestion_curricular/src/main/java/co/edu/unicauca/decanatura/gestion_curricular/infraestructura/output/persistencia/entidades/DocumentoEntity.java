@@ -33,7 +33,7 @@ public class DocumentoEntity {
     private String nombre;
     @Column(nullable = false, length = 100)
     private String ruta_documento;
-    @Column(nullable = false)
+    @Column(nullable = true)
     private Date fecha_documento;
     @Column(columnDefinition = "TINYINT", length = 1)
     private boolean esValido;

@@ -21,7 +21,7 @@ public interface SolicitudEcaesRepositoryInt extends JpaRepository<SolicitudEcae
     // Consulta JPQL: listar solicitudes con usuarios
     @Query("SELECT DISTINCT s FROM SolicitudEcaesEntity s LEFT JOIN FETCH s.objUsuario")
     List<SolicitudEcaesEntity> listarSolicitudesConUsuarios();
-
+    
 
 }
 //reviar si las consultas estan correctas 

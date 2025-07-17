@@ -38,5 +38,5 @@ public class DocumentosDTOPeticion {
 
     @NotBlank(message = "{Documento.tipo.empty}")
     @Size(min = 3, max = 50, message = "{Documento.tipo.length}")
-    private String tipoDocumentoSolicitudPazYSalvo;
+    private String tipoDocumentoSolicitudPazYSalvo; //este atributo no deberia ser obligatorio
 }

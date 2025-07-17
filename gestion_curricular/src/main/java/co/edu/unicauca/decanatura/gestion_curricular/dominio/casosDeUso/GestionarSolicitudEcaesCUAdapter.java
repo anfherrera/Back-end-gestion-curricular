@@ -1,5 +1,6 @@
 package co.edu.unicauca.decanatura.gestion_curricular.dominio.casosDeUso;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -10,7 +11,10 @@ import org.modelmapper.ModelMapper;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarSolicitudEcaesCUIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.FormateadorResultadosIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.GestionarPreRegistroEcaesGatewayIntPort;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Documento;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.EstadoSolicitud;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.SolicitudEcaes;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Usuario;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Enums.EstadoSolicitudEcaes;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.controladorExcepciones.excepcionesPropias.EntidadNoExisteException;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.formateador.FormateadorResultadosImplAdapter;
@@ -24,105 +28,154 @@ import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.pers
 
 public class GestionarSolicitudEcaesCUAdapter implements GestionarSolicitudEcaesCUIntPort {
 
-    private final FormateadorResultadosImplAdapter formateadorResultadosImplAdapter;
-
     private final SolicitudEcaesRepositoryInt solicitudRepository;
     private final UsuarioRepositoryInt usuarioRepository;
     private final GestionarPreRegistroEcaesGatewayIntPort objGestionarSolicitudEcaesGateway;
     private final FormateadorResultadosIntPort objFormateadorResultados;
-    private final ModelMapper mapper;
+
 
 
     public GestionarSolicitudEcaesCUAdapter(SolicitudEcaesRepositoryInt solicitudEcaesRepository
             , UsuarioRepositoryInt usuarioRepository,GestionarPreRegistroEcaesGatewayIntPort objGestionarSolicitudEcaesGateway,FormateadorResultadosIntPort objFormateadorResultados
-            ,ModelMapper modelMapper, FormateadorResultadosImplAdapter formateadorResultadosImplAdapter) {
+            ) {
         this.solicitudRepository= solicitudEcaesRepository;
         this.usuarioRepository = usuarioRepository;
         this.objGestionarSolicitudEcaesGateway = objGestionarSolicitudEcaesGateway;
         this.objFormateadorResultados = objFormateadorResultados;
-        this.mapper = modelMapper;
-        this.formateadorResultadosImplAdapter = formateadorResultadosImplAdapter;
+        
 
     }
 
+    // @Override
+    // public SolicitudEcaes guardar(SolicitudEcaes solicitud) {
+
+    //     if(solicitud.getId_solicitud()!=null){
+    //         Optional<SolicitudEcaes> solicitudExistente = objGestionarSolicitudEcaesGateway.buscarOpcionalPorId(solicitud.getId_solicitud());
+    //         if (solicitudExistente.isPresent()) {
+    //             this.objFormateadorResultados.retornarRespuestaErrorEntidadExiste("Ya existe una solicitud con el ID: "
+    //             + solicitud.getId_solicitud());
+    //             //return null;
+    //         }
+    //     }
+
+    //     // Optional<Usuario> usuarioOpt = objGestionarSolicitudEcaesGateway.buscarUsuarioPorId(solicitud.getObjUsuario().getId_usuario());
+    //     // if (usuarioOpt.isEmpty()) {
+    //     //     this.objFormateadorResultados.retornarRespuestaErrorEntidadExiste("Usuario no encontrado con ID: " + solicitud.getObjUsuario().getId_usuario());
+    
+    //     // }
+    //     if(solicitud.getObjUsuario() == null || solicitud.getObjUsuario().getId_usuario() == null){
+    //         this.objFormateadorResultados.retornarRespuestaErrorEntidadExiste("El usuario no puede ser nulo o no tener ID");
+    //     }
+    //     Integer idUsuario = solicitud.getObjUsuario().getId_usuario();
+    //     Optional<Usuario> usuarioOpt = objGestionarSolicitudEcaesGateway.buscarUsuarioPorId(idUsuario);
+    //     if (usuarioOpt.isEmpty()) {
+    //         this.objFormateadorResultados.retornarRespuestaErrorEntidadExiste("Usuario ID: " + idUsuario + " no encontrado");
+    //     }
+
+    //     // Aseguramos relaciones inversas
+    //     if (solicitud.getDocumentos() != null) {
+    //         solicitud.getDocumentos().forEach(doc -> doc.setObjSolicitud(solicitud));
+    //     }
+
+    //     if (solicitud.getEstadosSolicitud() != null) {
+    //         solicitud.getEstadosSolicitud().forEach(est -> est.setObjSolicitud(solicitud));
+    //     }
+
+
+    //     solicitud.setObjUsuario(usuarioOpt.get());
+        
+    //     EstadoSolicitud estadoInicial = new EstadoSolicitud();
+    //     estadoInicial.setEstado_actual("Enviado");
+    //     estadoInicial.setFecha_registro_estado(new Date());
+    //     estadoInicial.setObjSolicitud(solicitud); // establecer vínculo
+        
+    //     if(solicitud.getEstadosSolicitud() == null) {
+    //         solicitud.setEstadosSolicitud(new ArrayList<>());
+    //     }
+
+    //     solicitud.getEstadosSolicitud().add(estadoInicial); 
+
+    //     return objGestionarSolicitudEcaesGateway.guardar(solicitud);
+    // }
     @Override
     public SolicitudEcaes guardar(SolicitudEcaes solicitud) {
 
-        SolicitudEcaes solicitudExistePorId = objGestionarSolicitudEcaesGateway.buscarPorId(solicitud.getId_solicitud());
-        if (solicitudExistePorId != null) {
-            this.formateadorResultadosImplAdapter.retornarRespuestaErrorEntidadExiste("Ya existe una solicitud con el ID: " + solicitud.getId_solicitud());
+        if(solicitud.getId_solicitud()!=null){
+            Optional<SolicitudEcaes> solicitudExistente = objGestionarSolicitudEcaesGateway.buscarOpcionalPorId(solicitud.getId_solicitud());
+            if (solicitudExistente.isPresent()) {
+                this.objFormateadorResultados.retornarRespuestaErrorEntidadExiste("Ya existe una solicitud con el ID: "
+                + solicitud.getId_solicitud());
+                //return null;
+            }
         }
-        //============debe ir las reglas de negocio? no lo de abajo========================
-        // Buscar usuario
-        Optional<UsuarioEntity> usuarioOpt = usuarioRepository.findById(solicitud.getObjUsuario().getId_usuario());
+
+        if(solicitud.getObjUsuario() == null || solicitud.getObjUsuario().getId_usuario() == null){
+            this.objFormateadorResultados.retornarRespuestaErrorEntidadExiste("El usuario no puede ser nulo o no tener ID");
+        }
+        Integer idUsuario = solicitud.getObjUsuario().getId_usuario();
+        Optional<Usuario> usuarioOpt = objGestionarSolicitudEcaesGateway.buscarUsuarioPorId(idUsuario);
         if (usuarioOpt.isEmpty()) {
-            throw new RuntimeException("Usuario no encontrado con ID: " + solicitud.getObjUsuario().getId_usuario());
+            this.objFormateadorResultados.retornarRespuestaErrorEntidadExiste("Usuario ID: " + idUsuario + " no encontrado");
         }
 
-        UsuarioEntity usuarioEntity = usuarioOpt.get();
+        // Asignar usuario
+        solicitud.setObjUsuario(usuarioOpt.get());
 
-        // Mapear a entidad
-        SolicitudEcaesEntity solicitudEntity = mapper.map(solicitud, SolicitudEcaesEntity.class);
-        // Asociar usuario 
-        solicitudEntity.setObjUsuario(usuarioEntity);
-        
-        EstadoSolicitudEntity estado = new EstadoSolicitudEntity();
-        estado.setEstado_actual("Enviado");
-        estado.setFecha_registro_estado(new Date(System.currentTimeMillis()));
-        estado.setObjSolicitud(solicitudEntity); // <- esto establece el vínculo
-        solicitudEntity.getEstadosSolicitud().add(estado); // <- y este el otro lado
+        // Guardar sin relaciones primero
+        List<Documento> documentos = solicitud.getDocumentos();
+        List<EstadoSolicitud> estados = solicitud.getEstadosSolicitud();
 
+        solicitud.setDocumentos(null);
+        solicitud.setEstadosSolicitud(null);
 
-        // Guardar solicitud
-        SolicitudEcaesEntity saved = solicitudRepository.save(solicitudEntity);
+        // Persistir solicitud sin relaciones
+        SolicitudEcaes solicitudGuardada = objGestionarSolicitudEcaesGateway.guardar(solicitud);
 
-        // Mapear de vuelta a dominio
-        return mapper.map(saved, SolicitudEcaes.class);
+        // Estado inicial
+        EstadoSolicitud estadoInicial = new EstadoSolicitud();
+        estadoInicial.setEstado_actual("Enviado");
+        estadoInicial.setFecha_registro_estado(new Date());
+        estadoInicial.setObjSolicitud(solicitudGuardada);
+
+        List<EstadoSolicitud> nuevosEstados = new ArrayList<>();
+        nuevosEstados.add(estadoInicial);
+
+        if (estados != null) {
+            estados.forEach(est -> est.setObjSolicitud(solicitudGuardada));
+            nuevosEstados.addAll(estados);
+        }
+
+        if (documentos != null) {
+            documentos.forEach(doc -> doc.setObjSolicitud(solicitudGuardada));
+        }
+
+        // Asignar relaciones ya con solicitud persistida
+        solicitudGuardada.setEstadosSolicitud(nuevosEstados);
+        solicitudGuardada.setDocumentos(documentos);
+
+        return objGestionarSolicitudEcaesGateway.guardar(solicitudGuardada);
+ 
     }
 
     @Override
     public List<SolicitudEcaes> listarSolicitudes() {
-        return solicitudRepository.listarSolicitudesConUsuarios() 
-                .stream()
-                .map(entity -> mapper.map(entity, SolicitudEcaes.class))
-                .collect(Collectors.toList());
+        return objGestionarSolicitudEcaesGateway.listar();
     }
     @Override
     public SolicitudEcaes buscarPorId(Integer idSolicitud) {
-        SolicitudEcaesEntity entity = solicitudRepository.findById(idSolicitud)
-            .orElseThrow(() -> new EntidadNoExisteException("Solicitud no encontrada con ID: " + idSolicitud));
-
-        return mapper.map(entity, SolicitudEcaes.class);
+        return objGestionarSolicitudEcaesGateway.buscarPorId(idSolicitud)
+            .orElseThrow(() -> new EntidadNoExisteException("Solicitud no encontrada con ID: " + idSolicitud));    
     }
-    // @Override
-    // public Optional<SolicitudEcaes> buscarPorId(Integer idSolicitud) {
-    //     return solicitudRepository.findById(idSolicitud)
-    //             .map(entity -> mapper.map(entity, SolicitudEcaes.class  ));
-    // }
+
     @Override
     public void cambiarEstadoSolicitudEcaes(Integer idSolicitud, EstadoSolicitudEcaes nuevoEstado) {
-        SolicitudEcaesEntity solicitud = solicitudRepository.findById(idSolicitud)
-            .orElseThrow(() -> new EntidadNoExisteException("Solicitud no encontrada con ID: " + idSolicitud));
-
-        // Crear nuevo estado
-        EstadoSolicitudEntity nuevo = new EstadoSolicitudEntity();
+        
+        EstadoSolicitud nuevo = new EstadoSolicitud();
         nuevo.setEstado_actual(nuevoEstado.name());
         nuevo.setFecha_registro_estado(new Date());
-        nuevo.setObjSolicitud(solicitud);
-
-        // Agregar al historial de estados
-        solicitud.getEstadosSolicitud().add(nuevo);
-
-        // Guardar cambios
-        solicitudRepository.save(solicitud);
+        
+        objGestionarSolicitudEcaesGateway.cambiarEstadoSolicitudEcaes(idSolicitud, nuevo);
     }
-    //metodo adicional si deseo obtener el ultimo estado de la solicitud
-    // public String obtenerEstadoActual() {
-    //     if (objEstadosSolicitud == null || objEstadosSolicitud.isEmpty()) {
-    //         return "Sin estado";
-    //     }
-    //     return objEstadosSolicitud.get(objEstadosSolicitud.size() - 1).getEstado_actual();
-    // }
 
 
 }
