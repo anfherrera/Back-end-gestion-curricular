@@ -6,8 +6,6 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -29,9 +27,5 @@ public class SolicitudCursoVeranoPreinscripcionEntity extends SolicitudEntity {
     private CondicionSolicitudVeranoEntity codicion_solicitud;
     @Column(nullable = false, length = 100)
     private String observacion;
-
-    @OneToOne
-    @JoinColumn(name = "idfkCurso", referencedColumnName = "idCurso", nullable = false)
-    private CursoOfertadoVeranoEntity objCursoOfertado;
 
 }

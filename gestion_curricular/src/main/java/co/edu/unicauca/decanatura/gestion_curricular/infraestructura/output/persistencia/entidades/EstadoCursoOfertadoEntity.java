@@ -26,7 +26,7 @@ public class EstadoCursoOfertadoEntity {
     private Integer id_estado;
     @Column(nullable = false, length = 100)
     private String estado_actual;
-    @Column(nullable = false)
+    //@Column(nullable = false)
     private Date fecha_registro_estado;
 
     @ManyToOne(fetch = FetchType.LAZY)

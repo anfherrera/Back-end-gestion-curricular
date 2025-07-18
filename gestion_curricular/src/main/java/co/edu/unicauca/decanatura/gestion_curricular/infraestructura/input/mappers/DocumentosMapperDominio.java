@@ -34,7 +34,7 @@ public interface DocumentosMapperDominio {
     /* Si tu dominio usa un enum (TipoDocumentoSolicitudPazYSalvo) y
        en el DTO recibes un String, necesitarás lógica adicional o
        un mapper específico; por ahora lo ignoramos: */
-    @Mapping(target = "tipoDocumentoSolicitudPazYSalvo", ignore = true)
+    @Mapping(source = "tipoDocumentoSolicitudPazYSalvo",target = "tipoDocumentoSolicitudPazYSalvo")
     @Mapping(target = "objSolicitud", ignore = true) // Ignoramos el usuario, si no es necesario
     /* -------------  */
     Documento mappearDeDTOPeticionADocumento(DocumentosDTOPeticion peticion);

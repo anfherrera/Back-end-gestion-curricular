@@ -36,6 +36,8 @@ public class SolicitudEntity {
     @Column(nullable = false)
     private Date fecha_registro_solicitud;
 
+    private boolean esSeleccionado;
+
     @OneToMany( mappedBy = "objSolicitud", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<EstadoSolicitudEntity> estadosSolicitud;
 
@@ -45,6 +47,10 @@ public class SolicitudEntity {
 
     @OneToMany(mappedBy = "objSolicitud", cascade = {CascadeType.PERSIST, CascadeType.REMOVE}, orphanRemoval = true)
     private List<DocumentoEntity> documentos;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "idCurso")
+    private CursoOfertadoVeranoEntity objCursoOfertadoVerano;
 
     public SolicitudEntity() {
         this.documentos = new ArrayList<DocumentoEntity>();

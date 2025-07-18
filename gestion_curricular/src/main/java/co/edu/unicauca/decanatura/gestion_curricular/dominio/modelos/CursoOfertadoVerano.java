@@ -20,13 +20,16 @@ public class CursoOfertadoVerano {
     private Integer cupo_estimado; // Valor mínimo para abrir un curso
     private String salon;
     
-
+    
     private List<EstadoCursoOfertado> estadosCursoOfertados; // Estado del curso ofertado
     private Set<Usuario> estudiantesInscritos; // Lista de estudiantes inscritos en el curso
 
+    private List<Solicitud> solicitudes;
+    
     public CursoOfertadoVerano() {
         this.estudiantesInscritos = new HashSet<Usuario>();
         this.estadosCursoOfertados = new ArrayList<EstadoCursoOfertado>();
+        this.solicitudes = new ArrayList<Solicitud>();
     }
 
     

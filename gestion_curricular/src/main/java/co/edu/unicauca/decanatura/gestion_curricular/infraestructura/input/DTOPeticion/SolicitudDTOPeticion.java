@@ -28,9 +28,10 @@ public class SolicitudDTOPeticion {
     @PastOrPresent(message = "{Solicitud.fecha.pastorpresent}")
     private Date fecha_registro_solicitud;
 
-    @NotBlank(message = "{Solicitud.estado.empty}")
-    @Size(min = 3, max = 30, message = "{Solicitud.estado.length}")
-    private String estado_actual;
+    private boolean esSeleccionado;
+
+    @Valid
+    private EstadoSolicitudDTOPeticion estado_actual;
 
     @NotNull(message = "{Solicitud.usuario.empty}")
     @Valid

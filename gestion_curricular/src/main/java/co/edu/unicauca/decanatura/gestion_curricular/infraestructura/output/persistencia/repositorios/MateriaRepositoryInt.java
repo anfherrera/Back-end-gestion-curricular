@@ -3,6 +3,7 @@ package co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.per
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.entidades.MateriaEntity;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
@@ -25,4 +26,10 @@ public interface MateriaRepositoryInt extends JpaRepository<MateriaEntity, Integ
 
     @Query("SELECT m FROM MateriaEntity m WHERE m.codigo = :codigo")
     Optional<MateriaEntity> buscarPorCodigo(@Param("codigo") String codigo);
+
+    @Modifying
+    @Query("DELETE FROM MateriaEntity m WHERE m.id = :id")
+    void eliminarPorId(@Param("id") Integer id);
+
+    
 }

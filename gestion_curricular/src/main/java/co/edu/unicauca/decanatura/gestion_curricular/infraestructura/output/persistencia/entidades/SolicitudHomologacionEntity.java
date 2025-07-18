@@ -16,8 +16,8 @@ public class SolicitudHomologacionEntity extends SolicitudEntity {
     public SolicitudHomologacionEntity(){
         super();
     }
-    public SolicitudHomologacionEntity(Integer id_solicitud, String nombre_solicitud, Date fecha_registro_solicitud,
-                                List<EstadoSolicitudEntity> estadosSolicitud, UsuarioEntity objUsuario, List<DocumentoEntity> documentos) {
-        super(id_solicitud, nombre_solicitud, fecha_registro_solicitud, estadosSolicitud, objUsuario, documentos);
+    public SolicitudHomologacionEntity(Integer id_solicitud, String nombre_solicitud, Date fecha_registro_solicitud, boolean esSeleccionado,
+                                List<EstadoSolicitudEntity> estadosSolicitud, UsuarioEntity objUsuario, List<DocumentoEntity> documentos, CursoOfertadoVeranoEntity objCursoOfertadoVerano) {
+        super(id_solicitud, nombre_solicitud, fecha_registro_solicitud, esSeleccionado, estadosSolicitud, objUsuario, documentos, objCursoOfertadoVerano);
     }
 }

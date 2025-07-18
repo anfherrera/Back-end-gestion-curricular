@@ -49,7 +49,11 @@ public interface GestionarSolicitudGatewayIntPort {
 
     List<Solicitud> buscarSolicitudPorNombreCursoEstadoPre(String nombreSolicitud, Integer idCurso, String estadoActual);
 
-    Solicitud buscarSolicitudesPorUsuarioNombreSolicitudCursoPre(Integer idUsuario,String nombre, Integer idCurso);
+    List<Solicitud> buscarPorNombreCursoYSeleccionadoIns(Integer idCurso, boolean seleccionado);
+    
+    List<Solicitud> buscarPorNombreCursoYSeleccionadoPre(Integer idCurso, boolean seleccionado);
+
+    Solicitud buscarSolicitudesPorUsuarioEstadoCursoPre(Integer idUsuario,String estado_actual, Integer idCurso);
 
     // Contar total de solicitudes
     Integer contarSolicitudes();
