@@ -125,8 +125,9 @@ public class GestionarSolicitudEcaesCUAdapter implements GestionarSolicitudEcaes
         List<Documento> documentos = solicitud.getDocumentos();
         List<EstadoSolicitud> estados = solicitud.getEstadosSolicitud();
 
-        solicitud.setDocumentos(null);
+        
         solicitud.setEstadosSolicitud(null);
+        solicitud.setDocumentos(null);
 
         // Persistir solicitud sin relaciones
         SolicitudEcaes solicitudGuardada = objGestionarSolicitudEcaesGateway.guardar(solicitud);
