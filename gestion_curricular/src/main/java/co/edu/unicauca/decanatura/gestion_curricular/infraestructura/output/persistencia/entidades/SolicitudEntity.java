@@ -48,6 +48,10 @@ public class SolicitudEntity {
     @OneToMany(mappedBy = "objSolicitud", cascade = {CascadeType.PERSIST, CascadeType.REMOVE}, orphanRemoval = true)
     private List<DocumentoEntity> documentos;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "idCurso")
+    private CursoOfertadoVeranoEntity objCursoOfertadoVerano;
+
     public SolicitudEntity() {
         this.documentos = new ArrayList<DocumentoEntity>();
         this.estadosSolicitud = new ArrayList<EstadoSolicitudEntity>();

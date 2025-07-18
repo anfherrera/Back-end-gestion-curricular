@@ -13,7 +13,6 @@ import lombok.NoArgsConstructor;
 public class SolicitudCursoVeranoIncripcion extends Solicitud {
 
     private String nombre_estudiante;
-    private CursoOfertadoVerano objCursoOfertado;
     private CondicionSolicitudVerano codicion_solicitud;
     private String observacion;
 

@@ -1,7 +1,5 @@
 package co.edu.unicauca.decanatura.gestion_curricular.dominio.casosDeUso;
 
-
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -19,9 +17,7 @@ import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.EstadoCurso
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.EstadoSolicitud;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Materia;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Solicitud;
-import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.SolicitudCursoVeranoPreinscripcion;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Usuario;
-import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.gateway.GestionarMateriasGatewayImplAdapter;
 
 public class GestionarCursoOfertadoVeranoCUAdapter implements GestionarCursoOfertadoVeranoCUIntPort {
 
@@ -63,70 +59,72 @@ public class GestionarCursoOfertadoVeranoCUAdapter implements GestionarCursoOfer
             this.objFormateadorResultados.retornarRespuestaErrorEntidadExiste("No hay datos en el curso");
         }
         if(curso.getId_curso() == null){
-            this.objFormateadorResultados.retornarRespuestaErrorEntidadExiste("No hay datos en el curso");
+            this.objFormateadorResultados.retornarRespuestaErrorEntidadExiste("No hay id en el curso");
         }
         idCurso = curso.getId_curso();
         cursoABuscar = objGestionarCursoOfertadoVeranoGateway.obtenerCursoPorId(idCurso);
         if(cursoABuscar == null){
             this.objFormateadorResultados.retornarRespuestaErrorEntidadExiste("No se encuentra el curso");
         }
+        if(cursoABuscar.getEstadosCursoOfertados().isEmpty()){
+                this.objFormateadorResultados.retornarRespuestaErrorEntidadExiste("No se puede actualizar el curso, porque no tiene estados");
+        }
+        sizeEstados = cursoABuscar.getEstadosCursoOfertados().size();
         if(estadoCurso == null){
             this.objFormateadorResultados.retornarRespuestaErrorEntidadExiste("No hay datos en el estado");
         }
         if(estadoCurso.getId_estado() == null){
-            this.objFormateadorResultados.retornarRespuestaErrorEntidadExiste("No hay datos en el estado");
+            this.objFormateadorResultados.retornarRespuestaErrorEntidadExiste("No hay id en el estado");
         }
         idEstado = estadoCurso.getId_estado();
-        estadoCursoOfertado = this.objGestionarEstadoCursoOfertadoGateway.buscarPorIEstadoCursoOfertado(idEstado);
-        if(estadoCursoOfertado == null){
-            this.objFormateadorResultados.retornarRespuestaErrorEntidadExiste("No existe el estado con el ID: " + idEstado);
-        }
+        // estadoCursoOfertado = this.objGestionarEstadoCursoOfertadoGateway.buscarPorIEstadoCursoOfertado(idEstado);
+        // if(estadoCursoOfertado == null){
+        //     this.objFormateadorResultados.retornarRespuestaErrorEntidadExiste("No existe el estado con el ID: " + idEstado);
+        // }
         if(estadoCurso.getEstado_actual() == null){
             this.objFormateadorResultados.retornarRespuestaErrorEntidadExiste("No hay datos en el estado actual");
         }
 
         if(estadoCurso.getEstado_actual().equals("Preinscripcion")){
-            if(cursoABuscar.getEstadosCursoOfertados().isEmpty()){
-                this.objFormateadorResultados.retornarRespuestaErrorEntidadExiste("No se puede actualizar el curso, porque no tiene estados");
-            }
-            sizeEstados = cursoABuscar.getEstadosCursoOfertados().size();
-            if(cursoABuscar.getEstadosCursoOfertados().get(sizeEstados-1).getEstado_actual().equals("Abierto")){
+            if(cursoABuscar.getEstadosCursoOfertados().get(0).getEstado_actual().equals("Publicado")){
                 this.objFormateadorResultados.retornarRespuestaErrorEntidadExiste("No se puede actualizar el curso, porque no esta publicado");
             }
 
             List<Solicitud> solicitudes = this.objGestionarSolicitudGateway.buscarPorNombreCursoYSeleccionadoPre(idCurso, true);
-            if(!solicitudes.isEmpty()){
-                if(solicitudes.size()< 20){
+            if(solicitudes.isEmpty()){
+                this.objFormateadorResultados.retornarRespuestaErrorEntidadExiste("No se puede publicar el curso, porque no hay solicitudes");
+            }
+                if(solicitudes.size()< 2){
                     this.objFormateadorResultados.retornarRespuestaErrorReglaDeNegocio("No se puede publicar el curso, porque no se alcanzo el cupo estimado");
                 }
                     for (Solicitud solicitud : solicitudes) {
+                        //cursoABuscar.getSolicitudes().add(solicitud);
                         estadoSolicitud = new EstadoSolicitud();
                         estadoSolicitud.setFecha_registro_estado(new Date());
                         estadoSolicitud.setEstado_actual("Aprobado");
                         solicitud = this.objGestionarSolicitudGateway.actualizarSolicitud(solicitud, estadoSolicitud);
                         usuario = this.objGestionarUsuarioGateway.buscarUsuarioPorSolicitud(solicitud.getId_solicitud());
-                        this.objGestionarCursoOfertadoVeranoGateway.asociarUsuarioCurso(usuario.getId_usuario(), idCurso);
+                        //this.objGestionarCursoOfertadoVeranoGateway.asociarUsuarioCurso(usuario.getId_usuario(), idCurso);
+                        cursoABuscar.getEstudiantesInscritos().add(usuario);
                     }
                     
 
-            }
         }
 
         if(estadoCurso.getEstado_actual().equals("Inscripcion")){
-           if(cursoABuscar.getEstadosCursoOfertados().isEmpty()){
-                this.objFormateadorResultados.retornarRespuestaErrorEntidadExiste("No se puede actualizar el curso, porque no tiene estados");
-            }
-            sizeEstados = cursoABuscar.getEstadosCursoOfertados().size();
-            if(cursoABuscar.getEstadosCursoOfertados().get(sizeEstados-1).getEstado_actual().equals("Preinscripcion")){
+            if(cursoABuscar.getEstadosCursoOfertados().get(0).getEstado_actual().equals("Preinscripcion")){
                 this.objFormateadorResultados.retornarRespuestaErrorEntidadExiste("No se puede actualizar el curso, porque no esta publicado");
             }
 
             List<Solicitud> solicitudes = this.objGestionarSolicitudGateway.buscarPorNombreCursoYSeleccionadoIns(idCurso, true);
-            if(!solicitudes.isEmpty()){
+            if(solicitudes.isEmpty()){
+                this.objFormateadorResultados.retornarRespuestaErrorEntidadExiste("No se puede publicar el curso, porque no hay solicitudes");
+            }
                 if(solicitudes.size()< cursoABuscar.getCupo_estimado()){
                     this.objFormateadorResultados.retornarRespuestaErrorReglaDeNegocio("No se puede publicar el curso, porque no se alcanzo el cupo estimado");
                 }
                 for (Solicitud solicitud : solicitudes) {
+                    //cursoABuscar.getSolicitudes().add(solicitud);
                     estadoSolicitud = new EstadoSolicitud();
                     estadoSolicitud.setFecha_registro_estado(new Date());
                     estadoSolicitud.setEstado_actual("Aprobado");
@@ -135,13 +133,13 @@ public class GestionarCursoOfertadoVeranoCUAdapter implements GestionarCursoOfer
                     if(solicitudes.size() < cursoABuscar.getEstudiantesInscritos().size()){
                         for (Usuario usuarioViejo : cursoABuscar.getEstudiantesInscritos()) {
                             if(usuarioViejo.getId_usuario() != usuario.getId_usuario()){
-                                this.objGestionarCursoOfertadoVeranoGateway.desasociarUsuarioCurso(usuarioViejo.getId_usuario(), idCurso);
+                                //this.objGestionarCursoOfertadoVeranoGateway.desasociarUsuarioCurso(usuarioViejo.getId_usuario(), idCurso);
+                                cursoABuscar.getEstudiantesInscritos().remove(usuarioViejo);
                             }
                         }
                     }
                 }
 
-            }
         }
 
         nuevoEstado = new EstadoCursoOfertado();
@@ -151,6 +149,7 @@ public class GestionarCursoOfertadoVeranoCUAdapter implements GestionarCursoOfer
 
         return this.objGestionarCursoOfertadoVeranoGateway.actualizarCurso(cursoABuscar, nuevoEstado);
     }
+
 
     @Override
     public CursoOfertadoVerano crearCurso(CursoOfertadoVerano curso) {

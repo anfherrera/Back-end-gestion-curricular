@@ -1,6 +1,5 @@
 package co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.DTOPeticion;
 
-import java.util.Set;
 
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
@@ -40,6 +39,6 @@ public class CursosOfertadosDTOPeticion {
     private String salon;
 
     
-    private EstadoCursoOfertadoDTOPeticion EstadoCursoOfertado;
+    private EstadoCursoOfertadoDTOPeticion estadoCursoOfertado;
 
 }

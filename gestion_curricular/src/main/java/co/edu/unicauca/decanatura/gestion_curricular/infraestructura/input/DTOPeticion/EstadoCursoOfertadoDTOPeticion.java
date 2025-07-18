@@ -1,8 +1,6 @@
 package co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.DTOPeticion;
 
-import java.util.Date;
 
-import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.DTORespuesta.CursosOfertadosDTORespuesta;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;

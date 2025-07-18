@@ -23,7 +23,7 @@ public interface SolicitudRepositoryInt extends JpaRepository<SolicitudEntity, I
     Integer contarPorNombre(@Param("nombre") String nombre);
 
     @Query("SELECT COUNT(s) FROM SolicitudCursoVeranoInscripcionEntity s WHERE LOWER(s.nombre_solicitud) LIKE LOWER(CONCAT('%', :nombre, '%')) " +
-    "AND s.objCursoOfertado.id_curso = :idCurso")
+    "AND s.objCursoOfertadoVerano.id_curso = :idCurso")
     Integer contarPorNombreYCursoIns(@Param("nombre") String nombre, @Param("idCurso") Integer idCurso);
 
     @Query("""
@@ -31,7 +31,7 @@ public interface SolicitudRepositoryInt extends JpaRepository<SolicitudEntity, I
         FROM SolicitudCursoVeranoInscripcionEntity s
         JOIN s.estadosSolicitud e
         WHERE LOWER(s.nombre_solicitud) LIKE LOWER(CONCAT('%', :nombre, '%'))
-        AND s.objCursoOfertado.id_curso = :idCurso
+        AND s.objCursoOfertadoVerano.id_curso = :idCurso
         AND LOWER(e.estado_actual) LIKE LOWER(CONCAT('%', :estado_actual, '%'))
         AND e.fecha_registro_estado = (
             SELECT MAX(e2.fecha_registro_estado)
@@ -46,21 +46,21 @@ public interface SolicitudRepositoryInt extends JpaRepository<SolicitudEntity, I
     );
 
 
-    @Query("SELECT s FROM SolicitudCursoVeranoInscripcionEntity s WHERE s.objCursoOfertado.id_curso = :idCurso "+
+    @Query("SELECT s FROM SolicitudCursoVeranoInscripcionEntity s WHERE s.objCursoOfertadoVerano.id_curso = :idCurso "+
     "AND s.esSeleccionado = :seleccionado")
     List<SolicitudEntity> buscarPorNombreCursoYSeleccionadoIns(@Param("idCurso") Integer idCurso, @Param("seleccionado") boolean seleccionado);
     
-    @Query("SELECT s FROM SolicitudCursoVeranoPreinscripcionEntity s WHERE s.objCursoOfertado.id_curso = :idCurso "+
+    @Query("SELECT s FROM SolicitudCursoVeranoPreinscripcionEntity s WHERE s.objCursoOfertadoVerano.id_curso = :idCurso "+
     "AND s.esSeleccionado = :seleccionado")
     List<SolicitudEntity> buscarPorNombreCursoYSeleccionadoPre(@Param("idCurso") Integer idCurso, @Param("seleccionado") boolean seleccionado);
     
 
     @Query("SELECT s FROM SolicitudCursoVeranoInscripcionEntity s WHERE LOWER(s.nombre_solicitud) LIKE LOWER(CONCAT('%', :nombre, '%')) " +
-    "AND s.objCursoOfertado.id_curso = :idCurso")
+    "AND s.objCursoOfertadoVerano.id_curso = :idCurso")
     List<SolicitudEntity> buscarPorNombreYCursoIns(@Param("nombre") String nombre, @Param("idCurso") Integer idCurso);
 
     @Query("SELECT COUNT(s) FROM SolicitudCursoVeranoPreinscripcionEntity s WHERE LOWER(s.nombre_solicitud) LIKE LOWER(CONCAT('%', :nombre, '%')) " +
-    "AND s.objCursoOfertado.id_curso = :idCurso")
+    "AND s.objCursoOfertadoVerano.id_curso = :idCurso")
     Integer contarPorNombreYCursoPre(@Param("nombre") String nombre, @Param("idCurso") Integer idCurso);
 
     @Query("""
@@ -68,7 +68,7 @@ public interface SolicitudRepositoryInt extends JpaRepository<SolicitudEntity, I
         FROM SolicitudCursoVeranoPreinscripcionEntity s
         JOIN s.estadosSolicitud e
         WHERE LOWER(s.nombre_solicitud) LIKE LOWER(CONCAT('%', :nombre, '%'))
-        AND s.objCursoOfertado.id_curso = :idCurso
+        AND s.objCursoOfertadoVerano.id_curso = :idCurso
         AND LOWER(e.estado_actual) LIKE LOWER(CONCAT('%', :estado_actual, '%'))
         AND e.fecha_registro_estado = (
             SELECT MAX(e2.fecha_registro_estado)
@@ -83,7 +83,7 @@ public interface SolicitudRepositoryInt extends JpaRepository<SolicitudEntity, I
     );
 
     @Query("SELECT s FROM SolicitudCursoVeranoPreinscripcionEntity s WHERE LOWER(s.nombre_solicitud) LIKE LOWER(CONCAT('%', :nombre, '%')) " +
-    "AND s.objCursoOfertado.id_curso = :idCurso")
+    "AND s.objCursoOfertadoVerano.id_curso = :idCurso")
     List<SolicitudEntity> buscarPorNombreYCursoPre(@Param("nombre") String nombre, @Param("idCurso") Integer idCurso);
 
     @Query("""
@@ -91,7 +91,7 @@ public interface SolicitudRepositoryInt extends JpaRepository<SolicitudEntity, I
         FROM SolicitudCursoVeranoInscripcionEntity s 
         JOIN s.estadosSolicitud e 
         WHERE LOWER(s.nombre_solicitud) LIKE LOWER(CONCAT('%', :nombre, '%')) 
-        AND s.objCursoOfertado.id_curso = :idCurso 
+        AND s.objCursoOfertadoVerano.id_curso = :idCurso 
         AND LOWER(e.estado_actual) LIKE LOWER(CONCAT('%', :estado_actual, '%')) 
         AND e.fecha_registro_estado = (
             SELECT MAX(e2.fecha_registro_estado) 
@@ -111,7 +111,7 @@ public interface SolicitudRepositoryInt extends JpaRepository<SolicitudEntity, I
         FROM SolicitudCursoVeranoPreinscripcionEntity s 
         JOIN s.estadosSolicitud e 
         WHERE LOWER(s.nombre_solicitud) LIKE LOWER(CONCAT('%', :nombre, '%')) 
-        AND s.objCursoOfertado.id_curso = :idCurso 
+        AND s.objCursoOfertadoVerano.id_curso = :idCurso 
         AND LOWER(e.estado_actual) LIKE LOWER(CONCAT('%', :estado_actual, '%')) 
         AND e.fecha_registro_estado = (
             SELECT MAX(e2.fecha_registro_estado) 
@@ -183,7 +183,7 @@ public interface SolicitudRepositoryInt extends JpaRepository<SolicitudEntity, I
         FROM SolicitudCursoVeranoPreinscripcionEntity s 
         JOIN s.estadosSolicitud e 
         WHERE s.objUsuario.id_usuario = :idUsuario 
-        AND s.objCursoOfertado.id_curso = :idCurso 
+        AND s.objCursoOfertadoVerano.id_curso = :idCurso 
         AND LOWER(e.estado_actual) LIKE LOWER(CONCAT('%', :estado_actual, '%')) 
         AND e.fecha_registro_estado = (
             SELECT MAX(e2.fecha_registro_estado) 
@@ -195,7 +195,7 @@ public interface SolicitudRepositoryInt extends JpaRepository<SolicitudEntity, I
 
     @Query("SELECT s FROM SolicitudCursoVeranoInscripcionEntity s WHERE s.objUsuario.id_usuario = :idUsuario "+
     "AND LOWER(s.nombre_solicitud) LIKE LOWER(CONCAT('%', :nombre, '%')) "+
-    "AND s.objCursoOfertado.id_curso = :idCurso")
+    "AND s.objCursoOfertadoVerano.id_curso = :idCurso")
     SolicitudEntity buscarSolicitudesPorUsuarioNombreSolicitudCursoIns(@Param("idUsuario") Integer idUsuario, @Param("nombre") String nombre, @Param("idCurso") Integer idCurso);
 
     @Modifying

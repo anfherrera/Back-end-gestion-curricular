@@ -11,7 +11,6 @@ import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.DTORe
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.DTORespuesta.SolicitudDTORespuesta;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.DTOPeticion.SolicitudCurosoVeranoPreinscripcionDTOPeticion;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.DTOPeticion.SolicitudCursoVeranoInscripcionDTOPeticion;
-import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.DTORespuesta.*;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.mappers.*;
 
 
@@ -78,8 +77,8 @@ public class SolicitudRestController {
         return ResponseEntity.ok(respuesta);
     }
 
-    @GetMapping("/buscarPorNombre/{nombre}")
-    public ResponseEntity<List<SolicitudDTORespuesta>> obtenerPorNombre(@PathVariable String nombre) {
+    @GetMapping("/buscarPorNombre")
+    public ResponseEntity<List<SolicitudDTORespuesta>> obtenerPorNombre(@RequestParam(name = "nombre", required = true) String nombre) {
         List<Solicitud> solicitudes = solicitudCU.obtenerSolicitudesPorNombre(nombre);
         List<SolicitudDTORespuesta> respuesta = solicitudes.stream()
                 .map(mapper::mappearDeSolicitudARespuesta)
@@ -89,8 +88,8 @@ public class SolicitudRestController {
 
     @GetMapping("/buscarPorFechas")
     public ResponseEntity<List<SolicitudDTORespuesta>> buscarPorFechas(
-            @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") Date inicio,
-            @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") Date fin) {
+            @RequestParam(name = "inicio", required = true) @DateTimeFormat(pattern = "yyyy-MM-dd") Date inicio,
+            @RequestParam(name = "fin", required = true)  @DateTimeFormat(pattern = "yyyy-MM-dd") Date fin) {
 
         List<Solicitud> solicitudes = solicitudCU.buscarSolicitudesPorFecha(inicio, fin);
         List<SolicitudDTORespuesta> respuesta = solicitudes.stream()

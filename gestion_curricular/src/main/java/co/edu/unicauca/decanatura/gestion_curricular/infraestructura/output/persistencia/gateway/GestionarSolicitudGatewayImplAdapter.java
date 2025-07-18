@@ -32,6 +32,7 @@ import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.pers
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.entidades.UsuarioEntity;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.entidades.Enums.GrupoCursoVeranoEntity;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.repositorios.CursoOfertadoVeranoRepositoryInt;
+import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.repositorios.EstadoSolicitudRepositoryInt;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.repositorios.SolicitudRepositoryInt;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.repositorios.UsuarioRepositoryInt;
 
@@ -43,15 +44,18 @@ public class GestionarSolicitudGatewayImplAdapter implements GestionarSolicitudG
     private final SolicitudRepositoryInt solicitudRepository;
     private final CursoOfertadoVeranoRepositoryInt cursoOfertadoVeranoRepository;
     private final UsuarioRepositoryInt usuarioRepository;
+    private final EstadoSolicitudRepositoryInt estadoSolicitudRepository;
     private final ModelMapper solicitudMapper;
 
     public GestionarSolicitudGatewayImplAdapter(SolicitudRepositoryInt solicitudRepository,
                                                 CursoOfertadoVeranoRepositoryInt cursoOfertadoVeranoRepository,
                                                 UsuarioRepositoryInt usuarioRepository,
+                                                EstadoSolicitudRepositoryInt estadoSolicitudRepository,
                                                 ModelMapper solicitudMapper) {
         this.solicitudRepository = solicitudRepository;
         this.cursoOfertadoVeranoRepository = cursoOfertadoVeranoRepository;
         this.usuarioRepository = usuarioRepository;
+        this.estadoSolicitudRepository = estadoSolicitudRepository;
         this.solicitudMapper = solicitudMapper;
     }
 
@@ -72,7 +76,7 @@ public class GestionarSolicitudGatewayImplAdapter implements GestionarSolicitudG
         estadosSolcitud.add(estadoSolicitudEntity);
         solicitudCursoVeranoEntity.setEstadosSolicitud(estadosSolcitud);
 
-        CursoOfertadoVerano cursoOfertado = solicitudCursoVerano.getObjCursoOfertado();
+        CursoOfertadoVerano cursoOfertado = solicitudCursoVerano.getObjCursoOfertadoVerano();
         CursoOfertadoVeranoEntity cursoOfertadoVeranoEntity = null;
 
         if(cursoOfertado != null && cursoOfertado.getId_curso() != null) {
@@ -92,7 +96,7 @@ public class GestionarSolicitudGatewayImplAdapter implements GestionarSolicitudG
                 cursoOfertadoVeranoEntity.setObjDocente(docenteEntity);
                 
             }
-            solicitudCursoVeranoEntity.setObjCursoOfertado(cursoOfertadoVeranoEntity);
+            solicitudCursoVeranoEntity.setObjCursoOfertadoVerano(cursoOfertadoVeranoEntity);
         }else{
             throw new IllegalArgumentException("El curso ofertado no puede ser nulo o debe tener un ID válido.");
         }
@@ -118,7 +122,7 @@ public class GestionarSolicitudGatewayImplAdapter implements GestionarSolicitudG
         List<EstadoSolicitudEntity> estadosSolcitud = solicitudCursoVeranoEntity.getEstadosSolicitud();
         estadosSolcitud.add(estadoSolicitudEntity);
         solicitudCursoVeranoEntity.setEstadosSolicitud(estadosSolcitud);
-        CursoOfertadoVerano cursoOfertado = solicitudCursoVerano.getObjCursoOfertado();
+        CursoOfertadoVerano cursoOfertado = solicitudCursoVerano.getObjCursoOfertadoVerano();
         CursoOfertadoVeranoEntity cursoOfertadoVeranoEntity = null;
         if(cursoOfertado != null && cursoOfertado.getId_curso() != null) {
             Integer idCurso = cursoOfertado.getId_curso();
@@ -137,7 +141,7 @@ public class GestionarSolicitudGatewayImplAdapter implements GestionarSolicitudG
                 cursoOfertadoVeranoEntity.setObjDocente(docenteEntity);
                 
             }
-            solicitudCursoVeranoEntity.setObjCursoOfertado(cursoOfertadoVeranoEntity);
+            solicitudCursoVeranoEntity.setObjCursoOfertadoVerano(cursoOfertadoVeranoEntity);
         } else {
             throw new IllegalArgumentException("El curso ofertado no puede ser nulo o debe tener un ID válido.");
         }
@@ -256,7 +260,7 @@ public class GestionarSolicitudGatewayImplAdapter implements GestionarSolicitudG
     public boolean eliminarSolicitud(Integer idSolicitud) {
         boolean existe = false;
         Optional<SolicitudEntity> solicitudEntity = solicitudRepository.findById(idSolicitud);
-        if (solicitudEntity != null) {
+        if (solicitudEntity.isPresent()) {
             solicitudRepository.deleteById(idSolicitud);
             existe = true;
         }
@@ -428,9 +432,12 @@ public class GestionarSolicitudGatewayImplAdapter implements GestionarSolicitudG
         estadoSolicitudEntity.setFecha_registro_estado(new Date());
         estadoSolicitudEntity.setObjSolicitud(solicitudEntity);
 
+        EstadoSolicitudEntity estadoNuevo = estadoSolicitudRepository.save(estadoSolicitudEntity);
+
+
         estadosSolicitud = solicitudEntity.getEstadosSolicitud();
 
-        estadosSolicitud.add(estadoSolicitudEntity);
+        estadosSolicitud.add(estadoNuevo);
 
         solicitudEntity.setEstadosSolicitud(estadosSolicitud);
 

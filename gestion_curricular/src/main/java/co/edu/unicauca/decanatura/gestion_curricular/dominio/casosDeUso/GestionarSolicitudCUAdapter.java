@@ -11,7 +11,6 @@ import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.Gestionar
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.GestionarUsuarioGatewayIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.CursoOfertadoVerano;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Documento;
-import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.EstadoCursoOfertado;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.EstadoSolicitud;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Solicitud;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.SolicitudCursoVeranoIncripcion;
@@ -64,13 +63,13 @@ public class GestionarSolicitudCUAdapter implements GestionarSolicitudCUIntPort 
         if(!solicitudCursoVerano.getDocumentos().isEmpty()){
             this.objFormateadorResultados.retornarRespuestaErrorReglaDeNegocio("No se debe adjuntar documentos en la solicitud de preinscripción");
         }
-        if(solicitudCursoVerano.getObjCursoOfertado() == null){
+        if(solicitudCursoVerano.getObjCursoOfertadoVerano() == null){
             this.objFormateadorResultados.retornarRespuestaErrorReglaDeNegocio("Debe seleccionar un curso válido");
         }
-        if(solicitudCursoVerano.getObjCursoOfertado().getId_curso() == null){
+        if(solicitudCursoVerano.getObjCursoOfertadoVerano().getId_curso() == null){
             this.objFormateadorResultados.retornarRespuestaErrorReglaDeNegocio("Debe seleccionar un curso válido");
         }   
-        cursoABuscar = this.objCursoOfertado.obtenerCursoPorId(solicitudCursoVerano.getObjCursoOfertado().getId_curso());
+        cursoABuscar = this.objCursoOfertado.obtenerCursoPorId(solicitudCursoVerano.getObjCursoOfertadoVerano().getId_curso());
         if(cursoABuscar == null){   
             this.objFormateadorResultados.retornarRespuestaErrorReglaDeNegocio("No se encontró el curso");
         }
@@ -121,14 +120,14 @@ public class GestionarSolicitudCUAdapter implements GestionarSolicitudCUIntPort 
         }
 
         Documento documento = solicitudCursoVerano.getDocumentos().get(0);
-        if (solicitudCursoVerano.getObjCursoOfertado() == null) {
+        if (solicitudCursoVerano.getObjCursoOfertadoVerano() == null) {
             this.objFormateadorResultados.retornarRespuestaErrorReglaDeNegocio("Debe seleccionar un curso válido");
         }
-        if(solicitudCursoVerano.getObjCursoOfertado().getId_curso() == null) {
+        if(solicitudCursoVerano.getObjCursoOfertadoVerano().getId_curso() == null) {
             this.objFormateadorResultados.retornarRespuestaErrorReglaDeNegocio("Debe seleccionar un curso válido");
         }
 
-        cursoABuscar = this.objCursoOfertado.obtenerCursoPorId(solicitudCursoVerano.getObjCursoOfertado().getId_curso());
+        cursoABuscar = this.objCursoOfertado.obtenerCursoPorId(solicitudCursoVerano.getObjCursoOfertadoVerano().getId_curso());
         if (cursoABuscar == null) {
             this.objFormateadorResultados.retornarRespuestaErrorReglaDeNegocio("No se encontró el curso");
         }
@@ -294,14 +293,22 @@ public class GestionarSolicitudCUAdapter implements GestionarSolicitudCUIntPort 
 
     @Override
     public Solicitud obtenerSolicitudPorId(Integer idSolicitud) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'obtenerSolicitudPorId'");
+        if(idSolicitud == null) {
+            this.objFormateadorResultados.retornarRespuestaErrorReglaDeNegocio("El ID de la solicitud no puede ser nulo");
+        }
+        return this.objGestionarSolicitudGateway.obtenerSolicitudPorId(idSolicitud);
     }
 
     @Override
     public boolean eliminarSolicitud(Integer idSolicitud) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'eliminarSolicitud'");
+        if(idSolicitud == null) {
+            this.objFormateadorResultados.retornarRespuestaErrorReglaDeNegocio("El ID de la solicitud no puede ser nulo");
+        }
+        Solicitud solicitud = this.objGestionarSolicitudGateway.obtenerSolicitudPorId(idSolicitud);
+        if(solicitud == null) {
+            this.objFormateadorResultados.retornarRespuestaErrorEntidadExiste("Solicitud no existe en el sistema");
+        }
+        return this.objGestionarSolicitudGateway.eliminarSolicitud(idSolicitud);
     }
 
     @Override
@@ -364,26 +371,46 @@ public class GestionarSolicitudCUAdapter implements GestionarSolicitudCUIntPort 
 
     @Override
     public List<Solicitud> buscarSolicitudesPorFecha(Date fechaInicio, Date fechaFin) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'buscarSolicitudesPorFecha'");
+        if(fechaInicio == null){
+            this.objFormateadorResultados.retornarRespuestaErrorReglaDeNegocio("La fecha de inicio no puede ser nula");
+        }
+        if(fechaFin == null){
+            this.objFormateadorResultados.retornarRespuestaErrorReglaDeNegocio("La fecha de fin no puede ser nula");
+        }
+        if(fechaInicio.after(fechaFin)){
+            this.objFormateadorResultados.retornarRespuestaErrorReglaDeNegocio("La fecha de inicio no puede ser posterior a la fecha de fin");
+        }
+        return this.objGestionarSolicitudGateway.buscarSolicitudesPorFecha(fechaInicio, fechaFin);
     }
 
     @Override
     public List<Solicitud> listarSolicitudes() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'listarSolicitudes'");
+        return this.objGestionarSolicitudGateway.listarSolicitudes();
     }
 
     @Override
     public List<Solicitud> obtenerSolicitudesPorNombre(String nombreSolicitud) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'obtenerSolicitudesPorNombre'");
+        if (nombreSolicitud == null || nombreSolicitud.isBlank()) {
+            this.objFormateadorResultados.retornarRespuestaErrorReglaDeNegocio("El nombre de la solicitud no puede ser nulo o vacío");
+        }
+        return this.objGestionarSolicitudGateway.obtenerSolicitudesPorNombre(nombreSolicitud);
+       
     }
 
     @Override
     public List<Solicitud> obtenerSolicitudesPorUsuario(Integer idUsuario) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'obtenerSolicitudesPorUsuario'");
+        if(idUsuario == null) {
+            this.objFormateadorResultados.retornarRespuestaErrorReglaDeNegocio("El ID del usuario no puede ser nulo");
+        }
+        Usuario usuario = this.objUsuario.obtenerUsuarioPorId(idUsuario);
+        if(usuario == null) {
+            this.objFormateadorResultados.retornarRespuestaErrorEntidadExiste("Usuario no encontrado");
+        }
+        List<Solicitud> solicitudes = this.objGestionarSolicitudGateway.obtenerSolicitudesPorUsuario(idUsuario);
+        if(solicitudes == null || solicitudes.isEmpty()) {  
+            this.objFormateadorResultados.retornarRespuestaErrorEntidadExiste("No se encontraron solicitudes para el usuario");
+        }
+        return solicitudes;
     }
 
 

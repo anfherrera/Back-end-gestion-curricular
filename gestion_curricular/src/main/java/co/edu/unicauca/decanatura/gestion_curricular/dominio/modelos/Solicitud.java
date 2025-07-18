@@ -24,6 +24,8 @@ public class Solicitud {
 
     private List<Documento> documentos;
 
+    private CursoOfertadoVerano objCursoOfertadoVerano;
+
     public Solicitud () {
         this.documentos = new ArrayList<Documento>();
         this.estadosSolicitud = new ArrayList<EstadoSolicitud>();

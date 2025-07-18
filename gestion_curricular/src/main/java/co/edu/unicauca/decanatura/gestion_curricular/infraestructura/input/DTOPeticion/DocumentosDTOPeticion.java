@@ -36,7 +36,5 @@ public class DocumentosDTOPeticion {
     @Size(min = 5, max = 200, message = "{Documento.comentario.length}")
     private String comentario;//El estudiante no sube esto
 
-    @NotBlank(message = "{Documento.tipo.empty}")
-    @Size(min = 3, max = 50, message = "{Documento.tipo.length}")
     private String tipoDocumentoSolicitudPazYSalvo;
 }

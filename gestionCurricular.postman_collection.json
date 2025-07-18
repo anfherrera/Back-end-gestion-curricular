@@ -307,7 +307,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n  \"id_curso\": null,\r\n  \"objMateria\": {\r\n    \"id_materia\": 1,\r\n    \"nombre\": \"Programación Avanzada\",\r\n    \"creditos\": 3,\r\n    \"codigo\": \"PROG302\"\r\n  },\r\n  \"objDocente\": {\r\n    \"id_docente\": 1,\r\n    \"codigo_docente\": 1234567890,\r\n    \"nombre_docente\": \"Pepe\"\r\n  },\r\n  \"grupo\": \"A\",\r\n  \"cupo_estimado\": 25,\r\n  \"salon\": \"B203\",\r\n  \"EstadoCursoOfertado\": {\r\n    \"estado\": null,\r\n    \"fechaRegistro\": null\r\n  }\r\n}\r\n",
+					"raw": "{\r\n  \"id_curso\": null,\r\n  \"objMateria\": {\r\n    \"id_materia\": 1,\r\n    \"nombre\": \"Programación Avanzada\",\r\n    \"creditos\": 3,\r\n    \"codigo\": \"PROG302\"\r\n  },\r\n  \"objDocente\": {\r\n    \"id_docente\": 1,\r\n    \"codigo_docente\": 1234567890,\r\n    \"nombre_docente\": \"Pepe\"\r\n  },\r\n  \"grupo\": \"A\",\r\n  \"cupo_estimado\": 25,\r\n  \"salon\": \"B203\",\r\n  \"estadoCursoOfertado\": {\r\n    \"estado\": null,\r\n    \"fechaRegistro\": null\r\n  }\r\n}\r\n",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -336,7 +336,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\r\n  \"id_curso\": 10,\r\n  \"objMateria\": {\r\n    \"id_materia\": 1,\r\n    \"nombre\": \"Estructuras de Datos\",\r\n    \"creditos\": 4,\r\n    \"codigo\": \"EDAT202\"\r\n  },\r\n  \"objDocente\": {\r\n    \"id_docente\": 2,\r\n    \"nombre\": \"María López\",\r\n    \"apellido\": \"Rodríguez\",\r\n    \"correo\": \"mlopez@unicauca.edu.co\"\r\n  },\r\n  \"grupo\": \"B2\",\r\n  \"cupo_estimado\": 35,\r\n  \"salon\": \"F102\",\r\n  \"EstadoCursoOfertado\": {\r\n    \"estado\": \"ACTUALIZADO\",\r\n    \"fechaRegistro\": \"2025-07-14T15:30:00\"\r\n  }\r\n}\r\n",
+					"raw": "{\r\n  \"id_curso\": 1,\r\n  \"objMateria\": {\r\n    \"id_materia\": 101,\r\n    \"codigo\": \"MAT101\",\r\n    \"nombre\": \"Estructuras de Datos\",\r\n    \"creditos\": 4\r\n  },\r\n  \"objDocente\": {\r\n    \"id_docente\": 1,\r\n    \"codigo_docente\": 1234567890,\r\n    \"nombre_docente\": \"Pepe\"\r\n  },\r\n  \"grupo\": \"A\",\r\n  \"cupo_estimado\": 30,\r\n  \"salon\": \"Lab202\",\r\n  \"estadoCursoOfertado\": {\r\n    \"id_estado\": 1,\r\n    \"estado_actual\": \"Preinscripcion\"\r\n  }\r\n}\r\n",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -344,14 +344,15 @@
 					}
 				},
 				"url": {
-					"raw": "localhost:5000/api/",
+					"raw": "localhost:5000/api/cursos-verano/actualizarCurso",
 					"host": [
 						"localhost"
 					],
 					"port": "5000",
 					"path": [
 						"api",
-						""
+						"cursos-verano",
+						"actualizarCurso"
 					]
 				}
 			},
@@ -450,23 +451,11 @@
 		},
 		{
 			"name": "BuscarSolicitudPorId",
-			"protocolProfileBehavior": {
-				"disableBodyPruning": true
-			},
 			"request": {
 				"method": "GET",
 				"header": [],
-				"body": {
-					"mode": "raw",
-					"raw": "{\r\n  \"id_solicitud\": 12,\r\n  \"nombre_solicitud\": \"Inscripción Curso Verano\",\r\n  \"fecha_registro_solicitud\": \"2024-09-30T00:00:00\",\r\n  \"esSeleccionado\": true,\r\n  \"estado_actual\": {\r\n    \"id_estado\": 3,\r\n    \"nombre_estado\": \"Aprobado\"\r\n  },\r\n  \"objUsuario\": {\r\n    \"id_usuario\": 45,\r\n    \"nombre\": \"Carlos Ramírez\",\r\n    \"correo\": \"carlos.ramirez@unicauca.edu.co\",\r\n    \"rol\": \"Estudiante\"\r\n  },\r\n  \"documentos\": [\r\n    {\r\n      \"id_documento\": 101,\r\n      \"nombre\": \"Certificado de notas\",\r\n      \"url\": \"https://drive.google.com/documento-notas\",\r\n      \"tipo\": \"PDF\"\r\n    },\r\n    {\r\n      \"id_documento\": 102,\r\n      \"nombre\": \"Carta de solicitud\",\r\n      \"url\": \"https://drive.google.com/carta-solicitud\",\r\n      \"tipo\": \"PDF\"\r\n    }\r\n  ]\r\n}\r\n",
-					"options": {
-						"raw": {
-							"language": "json"
-						}
-					}
-				},
 				"url": {
-					"raw": "localhost:5000/api/solicitudes/buscarPorId/{id}",
+					"raw": "localhost:5000/api/solicitudes/buscarPorId/1",
 					"host": [
 						"localhost"
 					],
@@ -475,7 +464,7 @@
 						"api",
 						"solicitudes",
 						"buscarPorId",
-						"{id}"
+						"1"
 					]
 				}
 			},
@@ -487,7 +476,7 @@
 				"method": "DELETE",
 				"header": [],
 				"url": {
-					"raw": "http://localhost:5000/api/solicitudes/eliminar/{id}\n",
+					"raw": "http://localhost:5000/api/solicitudes/eliminar/1",
 					"protocol": "http",
 					"host": [
 						"localhost"
@@ -497,7 +486,7 @@
 						"api",
 						"solicitudes",
 						"eliminar",
-						"{id}\n"
+						"1"
 					]
 				}
 			},
@@ -530,7 +519,7 @@
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "http://localhost:5000/api/solicitudes/buscarPorUsuario/{idUsuario}",
+					"raw": "http://localhost:5000/api/solicitudes/buscarPorUsuario/1",
 					"protocol": "http",
 					"host": [
 						"localhost"
@@ -540,7 +529,7 @@
 						"api",
 						"solicitudes",
 						"buscarPorUsuario",
-						"{idUsuario}"
+						"1"
 					]
 				}
 			},
@@ -552,7 +541,7 @@
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "http://localhost:5000/api/solicitudes/buscarPorNombre",
+					"raw": "http://localhost:5000/api/solicitudes/buscarPorNombre?nombre=SolicitudPazYSalvo",
 					"protocol": "http",
 					"host": [
 						"localhost"
@@ -562,6 +551,12 @@
 						"api",
 						"solicitudes",
 						"buscarPorNombre"
+					],
+					"query": [
+						{
+							"key": "nombre",
+							"value": "SolicitudPazYSalvo"
+						}
 					]
 				}
 			},
@@ -573,7 +568,7 @@
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "http://localhost:5000/api/solicitudes/buscarPorFechas",
+					"raw": "http://localhost:5000/api/solicitudes/buscarPorFechas?inicio=2025-07-9&fin=2025-07-11",
 					"protocol": "http",
 					"host": [
 						"localhost"
@@ -583,6 +578,74 @@
 						"api",
 						"solicitudes",
 						"buscarPorFechas"
+					],
+					"query": [
+						{
+							"key": "inicio",
+							"value": "2025-07-9"
+						},
+						{
+							"key": "fin",
+							"value": "2025-07-11"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "CrearSolicitudPreinscripcion",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"id_solicitud\": null,\r\n  \"nombre_solicitud\": \"Solicitud Verano 2025\",\r\n  \"fecha_registro_solicitud\": \"2025-07-15\",\r\n  \"esSeleccionado\": true,\r\n  \"estado_actual\": {\r\n    \"id_estado\": 1,\r\n    \"nombre_estado\": \"Pendiente\"\r\n  },\r\n  \"objUsuario\": {\r\n    \"id_usuario\": 1,\r\n    \"nombre_completo\": \"Juan Pérez\",\r\n    \"rol\": {\r\n      \"id_rol\": 2,\r\n      \"nombre_rol\": \"Estudiante\"\r\n    },\r\n    \"codigo\": \"104612345678\",\r\n    \"correo\": \"juan.perez@unicauca.edu.co\",\r\n    \"password\": \"password123\",\r\n    \"estado_usuario\": true,\r\n    \"objPrograma\": {\r\n      \"id_programa\": 10,\r\n      \"nombre_programa\": \"Ingeniería de Sistemas\"\r\n    }\r\n  },\r\n  \"documentos\": [\r\n    {\r\n      \"id_documento\": 10,\r\n      \"nombre\": \"Documento de identidad\",\r\n      \"ruta_documento\": \"/documentos/juan_dni.pdf\",\r\n      \"fecha_documento\": \"2025-07-14\",\r\n      \"esValido\": true,\r\n      \"comentario\": \"Documento cargado correctamente\"\r\n    }\r\n  ],\r\n  \"nombre_estudiante\": \"Juan Pérez\",\r\n  \"objCursoOfertado\": {\r\n    \"id_curso\": 1,\r\n    \"objMateria\": {\r\n      \"id_materia\": 1,\r\n      \"nombre_materia\": \"Estructuras de Datos\"\r\n    },\r\n    \"objDocente\": {\r\n      \"id_docente\": 33,\r\n      \"nombre_docente\": \"Dra. Ana Martínez\"\r\n    },\r\n    \"grupo\": \"A\",\r\n    \"cupo_estimado\": 30,\r\n    \"salon\": \"Lab202\",\r\n    \"EstadoCursoOfertado\": {\r\n      \"id_estado_curso\": 1,\r\n      \"nombre_estado_curso\": \"Disponible\"\r\n    }\r\n  },\r\n  \"codicion_solicitud\": \"Primera_Vez\",\r\n  \"observacion\": \"Estudiante con promedio alto\"\r\n}\r\n",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:5000/api/solicitudes/crearCursoVeranoPreinscripcion",
+					"host": [
+						"localhost"
+					],
+					"port": "5000",
+					"path": [
+						"api",
+						"solicitudes",
+						"crearCursoVeranoPreinscripcion"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "CrearSolicitudInscripcion",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"id_solicitud\": null,\r\n  \"nombre_solicitud\": \"Solicitud Verano 2025\",\r\n  \"fecha_registro_solicitud\": \"2025-07-15\",\r\n  \"esSeleccionado\": true,\r\n  \"estado_actual\": {\r\n    \"id_estado\": 1,\r\n    \"nombre_estado\": \"Pendiente\"\r\n  },\r\n  \"objUsuario\": {\r\n    \"id_usuario\": 1,\r\n    \"nombre_completo\": \"Juan Pérez\",\r\n    \"rol\": {\r\n      \"id_rol\": 2,\r\n      \"nombre_rol\": \"Estudiante\"\r\n    },\r\n    \"codigo\": \"104612345678\",\r\n    \"correo\": \"juan.perez@unicauca.edu.co\",\r\n    \"password\": \"password123\",\r\n    \"estado_usuario\": true,\r\n    \"objPrograma\": {\r\n      \"id_programa\": 10,\r\n      \"nombre_programa\": \"Ingeniería de Sistemas\"\r\n    }\r\n  },\r\n  \"documentos\": [\r\n    {\r\n      \"id_documento\": 10,\r\n      \"nombre\": \"Documento de identidad\",\r\n      \"ruta_documento\": \"/documentos/juan_dni.pdf\",\r\n      \"fecha_documento\": \"2025-07-14\",\r\n      \"esValido\": true,\r\n      \"comentario\": \"Documento cargado correctamente\",\r\n      \"tipoDocumentoSolicitudPazYSalvo\": null\r\n    }\r\n  ],\r\n  \"nombre_estudiante\": \"Juan Pérez\",\r\n  \"objCursoOfertado\": {\r\n    \"id_curso\": 1,\r\n    \"objMateria\": {\r\n      \"id_materia\": 1,\r\n      \"nombre_materia\": \"Estructuras de Datos\"\r\n    },\r\n    \"objDocente\": {\r\n      \"id_docente\": 33,\r\n      \"nombre_docente\": \"Dra. Ana Martínez\"\r\n    },\r\n    \"grupo\": \"A\",\r\n    \"cupo_estimado\": 30,\r\n    \"salon\": \"Lab202\",\r\n    \"EstadoCursoOfertado\": {\r\n      \"id_estado_curso\": 1,\r\n      \"nombre_estado_curso\": \"Disponible\"\r\n    }\r\n  },\r\n  \"codicion_solicitud\": \"Primera_Vez\",\r\n  \"observacion\": \"Estudiante con promedio alto\"\r\n}\r\n",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:5000/api/solicitudes/crearCursoVeranoInscripcion",
+					"host": [
+						"localhost"
+					],
+					"port": "5000",
+					"path": [
+						"api",
+						"solicitudes",
+						"crearCursoVeranoInscripcion"
 					]
 				}
 			},

@@ -11,15 +11,10 @@ import org.springframework.web.bind.annotation.*;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarCursoOfertadoVeranoCUIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.CursoOfertadoVerano;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.EstadoCursoOfertado;
-import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Solicitud;
-import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Enums.GrupoCursoVerano;
-import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.DTOPeticion.ActualizarCursosOfertadosDTOPeticion;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.DTOPeticion.CursosOfertadosDTOPeticion;
-import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.DTOPeticion.SolicitudDTOPeticion;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.DTORespuesta.CursosOfertadosDTORespuesta;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.mappers.CursosOfertadosMapperDominio;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.mappers.EstadoCursoOfertadoMapper;
-import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.mappers.SolicitudMapperDominio;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -46,8 +41,15 @@ public class CursoOfertadoRestController {
 
     @PutMapping("/actualizarCurso")
     public ResponseEntity<CursosOfertadosDTORespuesta> actualizarCurso(@RequestBody @Valid CursosOfertadosDTOPeticion peticion) {
-        CursoOfertadoVerano curso = CursoMapper.mappearDeDTOPeticionACursoOfertado(peticion);
+        if(peticion.getEstadoCursoOfertado() == null) {
+            return new ResponseEntity<>(HttpStatus.CONFLICT);
+        }
         EstadoCursoOfertado nuevoEstado = estadoCursoMapper.mappearDeDTOPeticionAEstadoCursoOfertado(peticion.getEstadoCursoOfertado());
+
+        if (nuevoEstado == null) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+        CursoOfertadoVerano curso = CursoMapper.mappearDeDTOPeticionACursoOfertado(peticion);
         CursoOfertadoVerano cursoActualizado = cursoCU.actualizarCurso(curso, nuevoEstado); // sin nuevo estado
         return new ResponseEntity<>(
                 CursoMapper.mappearDeCursoOfertadoARespuesta(cursoActualizado),
