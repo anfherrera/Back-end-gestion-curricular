@@ -63,6 +63,7 @@ public class GestionarCursoOfertadoVeranoGatewayImplAdapter implements Gestionar
     public CursoOfertadoVerano actualizarCurso(CursoOfertadoVerano curso, EstadoCursoOfertado estadoCurso) {
         cursoRepository.findById(curso.getId_curso())
             .orElseThrow(() -> new RuntimeException("Curso no encontrado con ID: " + curso.getId_curso()));
+            
 
         CursoOfertadoVeranoEntity cursoEntity = cursoMapper.map(curso, CursoOfertadoVeranoEntity.class);
         EstadoCursoOfertadoEntity estadoCursoEntity = null;
@@ -87,6 +88,8 @@ public class GestionarCursoOfertadoVeranoGatewayImplAdapter implements Gestionar
         CursoOfertadoVeranoEntity cursoGuardado = cursoRepository.save(cursoEntity);
 
         return cursoMapper.map(cursoGuardado, CursoOfertadoVerano.class);
+
+        //return null;
     }
 
     @Override
@@ -149,47 +152,51 @@ public class GestionarCursoOfertadoVeranoGatewayImplAdapter implements Gestionar
 
     @Override
     @Transactional
-    public CursoOfertadoVerano asociarUsuarioCurso(Integer idUsuario, Integer idCurso) {
+    public Boolean asociarUsuarioCurso(Integer idUsuario, Integer idCurso) {
         Set<UsuarioEntity> usuariosEntitySet = null;
         CursoOfertadoVeranoEntity cursoOfertadoVeranoEntityGuardado = null;
         Optional<UsuarioEntity> usuarioEntityOptional = usuarioRepository.findById(idUsuario);
         Optional<CursoOfertadoVeranoEntity> cursoEntityOptional = cursoRepository.findById(idCurso);
+        Boolean usuarioYaInscrito = false;
+        Integer result = 0;
             if(usuarioEntityOptional.isPresent() && cursoEntityOptional.isPresent()) {
                 UsuarioEntity usuarioEntity = usuarioEntityOptional.get();
                 CursoOfertadoVeranoEntity cursoEntity = cursoEntityOptional.get();
 
-                usuariosEntitySet = cursoEntity.getEstudiantesInscritos();
-                usuariosEntitySet.add(usuarioEntity);
-                cursoEntity.setEstudiantesInscritos(usuariosEntitySet);
+                result = cursoRepository.insertarCursoEstudiante(idCurso, idUsuario);
                 
-                cursoOfertadoVeranoEntityGuardado = cursoRepository.save(cursoEntity);
+                if (result == 1){
+                    usuarioYaInscrito = true;
+                }
+                
+                
             }
         
         
 
-        return cursoMapper.map(cursoOfertadoVeranoEntityGuardado, CursoOfertadoVerano.class);
+        return usuarioYaInscrito;
     }
 
     @Override
     @Transactional
-    public CursoOfertadoVerano desasociarUsuarioCurso(Integer idUsuario, Integer idCurso) {
+    public Boolean desasociarUsuarioCurso(Integer idUsuario, Integer idCurso) {
         Set<UsuarioEntity> usuariosEntitySet = null;
         CursoOfertadoVeranoEntity cursoOfertadoVeranoEntityGuardado = null;
         Optional<UsuarioEntity> usuarioEntityOptional = usuarioRepository.findById(idUsuario);
         Optional<CursoOfertadoVeranoEntity> cursoEntityOptional = cursoRepository.findById(idCurso);
+        Boolean usuarioYaEliminado = false;
+        Integer result = 0;
             if(usuarioEntityOptional.isPresent() && cursoEntityOptional.isPresent()) {
             UsuarioEntity usuarioEntity = usuarioEntityOptional.get();
             CursoOfertadoVeranoEntity cursoEntity = cursoEntityOptional.get();
+                if (result == 1){
+                    usuarioYaEliminado = true;
+                }
 
-            usuariosEntitySet = cursoEntity.getEstudiantesInscritos();
-            usuariosEntitySet.remove(usuarioEntity);
-            cursoEntity.setEstudiantesInscritos(usuariosEntitySet);
-            
-            cursoOfertadoVeranoEntityGuardado = cursoRepository.save(cursoEntity);
         }
         
 
 
-        return cursoMapper.map(cursoOfertadoVeranoEntityGuardado, CursoOfertadoVerano.class);
+        return usuarioYaEliminado;
     }
 }

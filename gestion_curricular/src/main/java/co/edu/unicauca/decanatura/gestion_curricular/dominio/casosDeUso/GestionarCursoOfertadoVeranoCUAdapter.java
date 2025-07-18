@@ -1,7 +1,10 @@
 package co.edu.unicauca.decanatura.gestion_curricular.dominio.casosDeUso;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarCursoOfertadoVeranoCUIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.FormateadorResultadosIntPort;
@@ -55,6 +58,9 @@ public class GestionarCursoOfertadoVeranoCUAdapter implements GestionarCursoOfer
         EstadoCursoOfertado estadoCursoOfertado = null;
         EstadoCursoOfertado nuevoEstado = null;
         Integer sizeEstados = null;
+        CursoOfertadoVerano cursoActualizado = null;
+        List<Usuario> estudiantesInscritos = new ArrayList<Usuario>();
+        Boolean bandera = false;
         if(curso == null){
             this.objFormateadorResultados.retornarRespuestaErrorEntidadExiste("No hay datos en el curso");
         }
@@ -105,7 +111,7 @@ public class GestionarCursoOfertadoVeranoCUAdapter implements GestionarCursoOfer
                         solicitud = this.objGestionarSolicitudGateway.actualizarSolicitud(solicitud, estadoSolicitud);
                         usuario = this.objGestionarUsuarioGateway.buscarUsuarioPorSolicitud(solicitud.getId_solicitud());
                         //this.objGestionarCursoOfertadoVeranoGateway.asociarUsuarioCurso(usuario.getId_usuario(), idCurso);
-                        cursoABuscar.getEstudiantesInscritos().add(usuario);
+                        estudiantesInscritos.add(usuario);
                     }
                     
 
@@ -142,12 +148,25 @@ public class GestionarCursoOfertadoVeranoCUAdapter implements GestionarCursoOfer
 
         }
 
+        for (Usuario usuarioInscrito : estudiantesInscritos) {
+            bandera = this.objGestionarCursoOfertadoVeranoGateway.asociarUsuarioCurso(usuarioInscrito.getId_usuario(), idCurso);
+            if(bandera == false){
+                this.objFormateadorResultados.retornarRespuestaErrorEntidadExiste("No se pudo asociar el usuario al curso");
+            }
+        }
+
         nuevoEstado = new EstadoCursoOfertado();
         nuevoEstado.setFecha_registro_estado(new Date());
         nuevoEstado.setEstado_actual(estadoCurso.getEstado_actual());
         //nuevoEstado.setObjCursoOfertadoVerano(cursoABuscar);
 
-        return this.objGestionarCursoOfertadoVeranoGateway.actualizarCurso(cursoABuscar, nuevoEstado);
+        cursoActualizado = this.objGestionarCursoOfertadoVeranoGateway.actualizarCurso(cursoABuscar, nuevoEstado);
+
+        if(cursoActualizado == null){
+            this.objFormateadorResultados.retornarRespuestaErrorEntidadExiste("No se pudo actualizar el curso");
+        }
+
+        return cursoActualizado;
     }
 
 
