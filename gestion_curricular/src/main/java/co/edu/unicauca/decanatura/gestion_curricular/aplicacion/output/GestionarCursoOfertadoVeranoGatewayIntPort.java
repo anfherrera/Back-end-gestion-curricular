@@ -26,7 +26,7 @@ public interface GestionarCursoOfertadoVeranoGatewayIntPort {
     
     List<CursoOfertadoVerano> listarTodos();
 
-    CursoOfertadoVerano asociarUsuarioCurso(Integer idUsuario, Integer idCurso);
+    Boolean asociarUsuarioCurso(Integer idUsuario, Integer idCurso);
 
-    CursoOfertadoVerano desasociarUsuarioCurso(Integer idUsuario, Integer idCurso);
+    Boolean desasociarUsuarioCurso(Integer idUsuario, Integer idCurso);
 }

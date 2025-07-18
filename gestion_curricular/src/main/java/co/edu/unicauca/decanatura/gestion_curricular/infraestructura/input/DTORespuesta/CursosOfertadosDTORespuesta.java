@@ -1,7 +1,6 @@
 package co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.DTORespuesta;
 
 import java.util.List;
-import java.util.Set;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -26,5 +25,5 @@ public class CursosOfertadosDTORespuesta {
 
     private List<EstadoCursoOfertadoDTORespuesta> estadosCursoOfertados;
 
-    private Set<UsuarioDTORespuesta> estudiantesInscritos;
+    private List<UsuarioDTORespuesta> estudiantesInscritos;
 }
