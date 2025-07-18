@@ -10,7 +10,9 @@ import org.modelmapper.ModelMapper;
 
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarSolicitudEcaesCUIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.FormateadorResultadosIntPort;
+import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.GestionarDocumentosGatewayIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.GestionarPreRegistroEcaesGatewayIntPort;
+import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.GestionarUsuarioGatewayIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Documento;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.EstadoSolicitud;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.SolicitudEcaes;
@@ -21,7 +23,7 @@ import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.form
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.entidades.EstadoSolicitudEntity;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.entidades.SolicitudEcaesEntity;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.entidades.UsuarioEntity;
-
+import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.gateway.GestionarDocumentoGatewayImplAdapter;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.repositorios.SolicitudEcaesRepositoryInt;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.repositorios.UsuarioRepositoryInt;
 
@@ -32,17 +34,22 @@ public class GestionarSolicitudEcaesCUAdapter implements GestionarSolicitudEcaes
     private final UsuarioRepositoryInt usuarioRepository;
     private final GestionarPreRegistroEcaesGatewayIntPort objGestionarSolicitudEcaesGateway;
     private final FormateadorResultadosIntPort objFormateadorResultados;
+    private final GestionarDocumentosGatewayIntPort objDocumentosGateway;
+    private final GestionarUsuarioGatewayIntPort objUsuario;
 
 
 
     public GestionarSolicitudEcaesCUAdapter(SolicitudEcaesRepositoryInt solicitudEcaesRepository
-            , UsuarioRepositoryInt usuarioRepository,GestionarPreRegistroEcaesGatewayIntPort objGestionarSolicitudEcaesGateway,FormateadorResultadosIntPort objFormateadorResultados
+            , UsuarioRepositoryInt usuarioRepository,GestionarPreRegistroEcaesGatewayIntPort objGestionarSolicitudEcaesGateway,
+            FormateadorResultadosIntPort objFormateadorResultados,
+            GestionarDocumentosGatewayIntPort objDocumentosGateway, GestionarUsuarioGatewayIntPort objUsuario
             ) {
         this.solicitudRepository= solicitudEcaesRepository;
         this.usuarioRepository = usuarioRepository;
         this.objGestionarSolicitudEcaesGateway = objGestionarSolicitudEcaesGateway;
         this.objFormateadorResultados = objFormateadorResultados;
-        
+        this.objDocumentosGateway = objDocumentosGateway;
+        this.objUsuario = objUsuario;   
 
     }
 
@@ -99,6 +106,9 @@ public class GestionarSolicitudEcaesCUAdapter implements GestionarSolicitudEcaes
     // }
     @Override
     public SolicitudEcaes guardar(SolicitudEcaes solicitud) {
+        if(solicitud == null) {
+            this.objFormateadorResultados.retornarRespuestaErrorReglaDeNegocio("La solicitud no puede ser nula");
+        }
 
         if(solicitud.getId_solicitud()!=null){
             Optional<SolicitudEcaes> solicitudExistente = objGestionarSolicitudEcaesGateway.buscarOpcionalPorId(solicitud.getId_solicitud());
@@ -115,46 +125,26 @@ public class GestionarSolicitudEcaesCUAdapter implements GestionarSolicitudEcaes
         Integer idUsuario = solicitud.getObjUsuario().getId_usuario();
         Optional<Usuario> usuarioOpt = objGestionarSolicitudEcaesGateway.buscarUsuarioPorId(idUsuario);
         if (usuarioOpt.isEmpty()) {
-            this.objFormateadorResultados.retornarRespuestaErrorEntidadExiste("Usuario ID: " + idUsuario + " no encontrado");
+            this.objFormateadorResultados.retornarRespuestaErrorReglaDeNegocio("Usuario ID: " + idUsuario + " no encontrado");
         }
 
-        // Asignar usuario
-        solicitud.setObjUsuario(usuarioOpt.get());
-
-        // Guardar sin relaciones primero
         List<Documento> documentos = solicitud.getDocumentos();
-        List<EstadoSolicitud> estados = solicitud.getEstadosSolicitud();
-
-        
-        solicitud.setEstadosSolicitud(null);
-        solicitud.setDocumentos(null);
-
-        // Persistir solicitud sin relaciones
-        SolicitudEcaes solicitudGuardada = objGestionarSolicitudEcaesGateway.guardar(solicitud);
-
-        // Estado inicial
-        EstadoSolicitud estadoInicial = new EstadoSolicitud();
-        estadoInicial.setEstado_actual("Enviado");
-        estadoInicial.setFecha_registro_estado(new Date());
-        estadoInicial.setObjSolicitud(solicitudGuardada);
-
-        List<EstadoSolicitud> nuevosEstados = new ArrayList<>();
-        nuevosEstados.add(estadoInicial);
-
-        if (estados != null) {
-            estados.forEach(est -> est.setObjSolicitud(solicitudGuardada));
-            nuevosEstados.addAll(estados);
+        if(documentos == null || documentos.isEmpty()) {
+            this.objFormateadorResultados.retornarRespuestaErrorReglaDeNegocio("La solicitud debe tener al menos un documento");
         }
 
-        if (documentos != null) {
-            documentos.forEach(doc -> doc.setObjSolicitud(solicitudGuardada));
+        SolicitudEcaes solicitudGuardada = this.objGestionarSolicitudEcaesGateway.guardar(solicitud);
+
+        //Asociar documentos a la solicitud guardada
+        for (Documento doc : solicitudGuardada.getDocumentos()) {
+            doc.setObjSolicitud(solicitudGuardada);
+            this.objDocumentosGateway.actualizarDocumento(doc);
         }
+        usuarioOpt.get().getSolicitudes().add(solicitudGuardada);
+        this.objUsuario.actualizarUsuario(usuarioOpt.get());
+       
 
-        // Asignar relaciones ya con solicitud persistida
-        solicitudGuardada.setEstadosSolicitud(nuevosEstados);
-        solicitudGuardada.setDocumentos(documentos);
-
-        return objGestionarSolicitudEcaesGateway.guardar(solicitudGuardada);
+        return solicitudGuardada;
  
     }
 

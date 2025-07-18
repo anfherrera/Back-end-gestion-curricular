@@ -68,8 +68,9 @@ public class BeanConfiguration {
     public GestionarSolicitudEcaesCUAdapter crearGestionarSolicitudEcaesCUInt(
             SolicitudEcaesRepositoryInt solicitudEcaesRepository
             , UsuarioRepositoryInt usuarioRepository,GestionarPreRegistroEcaesGatewayIntPort objGestionarSolicitudEcaesGateway,FormateadorResultadosIntPort objFormateadorResultados
+            ,GestionarDocumentosGatewayIntPort objDocumentosGateway, GestionarUsuarioGatewayIntPort objUsuario
             ) {
-        return new GestionarSolicitudEcaesCUAdapter(solicitudEcaesRepository,usuarioRepository,objGestionarSolicitudEcaesGateway,objFormateadorResultados);
+        return new GestionarSolicitudEcaesCUAdapter(solicitudEcaesRepository,usuarioRepository,objGestionarSolicitudEcaesGateway,objFormateadorResultados,objDocumentosGateway,objUsuario);
     }
     
 }
