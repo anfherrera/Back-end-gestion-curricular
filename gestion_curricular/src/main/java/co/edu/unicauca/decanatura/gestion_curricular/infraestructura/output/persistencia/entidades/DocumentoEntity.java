@@ -38,7 +38,7 @@ public class DocumentoEntity {
     @Column(columnDefinition = "TINYINT", length = 1)
     private boolean esValido;
     @Column(length = 100)
-    private String observacion; // comentario de funcionario o coordinador
+    private String comentario; // comentario de funcionario o coordinador
 
     @Enumerated(EnumType.STRING)
     private TipoDocumentoSolicitudPazYSalvoEntity tipoDocumentoSolicitudPazYSalvo;
