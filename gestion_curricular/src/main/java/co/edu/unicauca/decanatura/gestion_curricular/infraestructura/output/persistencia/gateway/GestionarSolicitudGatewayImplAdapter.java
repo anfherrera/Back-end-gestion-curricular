@@ -647,6 +647,50 @@ public class GestionarSolicitudGatewayImplAdapter implements GestionarSolicitudG
             }).toList();
         }
         return solicitudes;
+    }
+
+    @Override
+    public Solicitud buscarSolicitudesPorUsuarioYCursoIns(Integer idUsuario, Integer idCurso) {
+        SolicitudEntity solicitudEntity = solicitudRepository.buscarSolicitudesPorUsuarioyCursoIns(idUsuario, idCurso);
+        Solicitud solicitud = null;
+        if(solicitudEntity!= null){
+                if (solicitudEntity instanceof SolicitudCursoVeranoPreinscripcionEntity) {
+                    solicitud = solicitudMapper.map(solicitudEntity, SolicitudCursoVeranoPreinscripcion.class);
+                } else if (solicitudEntity instanceof SolicitudEcaesEntity) {
+                    solicitud = solicitudMapper.map(solicitudEntity, SolicitudEcaes.class);
+                } else if (solicitudEntity instanceof SolicitudReingresoEntity) {
+                    solicitud = solicitudMapper.map(solicitudEntity, SolicitudReingreso.class);
+                } else if (solicitudEntity instanceof SolicitudHomologacionEntity) {
+                    solicitud = solicitudMapper.map(solicitudEntity, SolicitudHomologacion.class);
+                } else if (solicitudEntity instanceof SolicitudPazYSalvoEntity) {
+                    solicitud = solicitudMapper.map(solicitudEntity, SolicitudPazYSalvo.class);
+                } else if (solicitudEntity instanceof SolicitudCursoVeranoInscripcionEntity) {
+                    solicitud = solicitudMapper.map(solicitudEntity, SolicitudCursoVeranoIncripcion.class);
+                }
+        }
+        return solicitud;
+    }
+
+    @Override
+    public Solicitud buscarSolicitudesPorUsuarioYCursoPre(Integer idUsuario, Integer idCurso) {
+SolicitudEntity solicitudEntity = solicitudRepository.buscarSolicitudesPorUsuarioyCursoPre(idUsuario, idCurso);
+        Solicitud solicitud = null;
+        if(solicitudEntity!= null){
+                if (solicitudEntity instanceof SolicitudCursoVeranoPreinscripcionEntity) {
+                    solicitud = solicitudMapper.map(solicitudEntity, SolicitudCursoVeranoPreinscripcion.class);
+                } else if (solicitudEntity instanceof SolicitudEcaesEntity) {
+                    solicitud = solicitudMapper.map(solicitudEntity, SolicitudEcaes.class);
+                } else if (solicitudEntity instanceof SolicitudReingresoEntity) {
+                    solicitud = solicitudMapper.map(solicitudEntity, SolicitudReingreso.class);
+                } else if (solicitudEntity instanceof SolicitudHomologacionEntity) {
+                    solicitud = solicitudMapper.map(solicitudEntity, SolicitudHomologacion.class);
+                } else if (solicitudEntity instanceof SolicitudPazYSalvoEntity) {
+                    solicitud = solicitudMapper.map(solicitudEntity, SolicitudPazYSalvo.class);
+                } else if (solicitudEntity instanceof SolicitudCursoVeranoInscripcionEntity) {
+                    solicitud = solicitudMapper.map(solicitudEntity, SolicitudCursoVeranoIncripcion.class);
+                }
+        }
+        return solicitud;
     }   
     
 }

@@ -42,7 +42,7 @@ public class SolicitudRestController {
     
 
     @GetMapping("/buscarPorId/{id}")
-    public ResponseEntity<SolicitudDTORespuesta> buscarSolicitudPorId(@Min(1) @PathVariable Integer id) {
+    public ResponseEntity<SolicitudDTORespuesta> buscarSolicitudPorId(@Min(value = 1) @PathVariable Integer id) {
         Solicitud solicitud = solicitudCU.obtenerSolicitudPorId(id);
         if (solicitud == null) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
@@ -54,7 +54,7 @@ public class SolicitudRestController {
     }
 
     @DeleteMapping("/eliminar/{id}")
-    public ResponseEntity<Boolean> eliminarSolicitud(@Min(1) @PathVariable Integer id) {
+    public ResponseEntity<Boolean> eliminarSolicitud(@Min(value = 1) @PathVariable Integer id) {
         boolean eliminada = solicitudCU.eliminarSolicitud(id);
         return new ResponseEntity<>(eliminada ? HttpStatus.OK : HttpStatus.NOT_FOUND);
     }

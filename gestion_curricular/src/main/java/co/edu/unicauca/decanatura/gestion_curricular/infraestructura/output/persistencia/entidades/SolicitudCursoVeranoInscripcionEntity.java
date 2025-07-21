@@ -28,7 +28,4 @@ public class SolicitudCursoVeranoInscripcionEntity extends SolicitudEntity {
     @Column(nullable = false, length = 100)
     private String observacion;
 
-    @Column(nullable = false, length = 255)
-    private String ruta_recibo_pago;
-
 }

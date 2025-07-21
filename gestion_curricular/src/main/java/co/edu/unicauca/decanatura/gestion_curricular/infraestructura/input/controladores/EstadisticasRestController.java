@@ -45,13 +45,13 @@ public class EstadisticasRestController {
     }
 
     @DeleteMapping("/eliminar/{id}")
-    public ResponseEntity<Boolean> eliminarEstadistica(@Min(1) @PathVariable Integer id) {
+    public ResponseEntity<Boolean> eliminarEstadistica(@Min(value =  1) @PathVariable Integer id) {
         boolean eliminada = estadisticaCU.eliminarEstadistica(id);
         return new ResponseEntity<>(eliminada ? HttpStatus.OK : HttpStatus.NOT_FOUND);
     }
 
     @GetMapping("/buscarPorId/{id}")
-    public ResponseEntity<EstadisticaDTORespuesta> obtenerPorId(@Min(1) @PathVariable Integer id) {
+    public ResponseEntity<EstadisticaDTORespuesta> obtenerPorId(@Min(value = 1) @PathVariable Integer id) {
         Estadistica estadistica = estadisticaCU.obtenerEstadisticaPorId(id);
         if (estadistica == null) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
@@ -64,11 +64,11 @@ public class EstadisticasRestController {
 
     @GetMapping("/porSolicitudPeriodoPrograma")
     public ResponseEntity<EstadisticaDTORespuesta> obtenerPorSolicitudPeriodoYPrograma(
-            @RequestParam Integer idEstadistica,
-            @RequestParam String proceso,
-            @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") Date fechaInicio,
-            @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") Date fechaFin,
-            @RequestParam Integer idPrograma) {
+            @RequestParam(name = "idEstadistica", required = true) @Min(value =  1) Integer idEstadistica,
+            @RequestParam(name = "proceso", required = true) String proceso,
+            @RequestParam(name = "fechaInicio", required = true) @DateTimeFormat(pattern = "yyyy-MM-dd") Date fechaInicio,
+            @RequestParam(name = "fechaFin", required = true) @DateTimeFormat(pattern = "yyyy-MM-dd") Date fechaFin,
+            @RequestParam(name = "idPrograma", required = true) @Min(value =  1) Integer idPrograma) {
 
         Estadistica resultado = estadisticaCU.obtenerEstadisticasSolicitudPeriodoYPrograma(
                 idEstadistica, proceso, fechaInicio, fechaFin, idPrograma
@@ -82,12 +82,12 @@ public class EstadisticasRestController {
 
     @GetMapping("/porSolicitudPeriodoEstadoPrograma")
     public ResponseEntity<EstadisticaDTORespuesta> obtenerPorSolicitudPeriodoEstadoYPrograma(
-            @RequestParam Integer idEstadistica,
-            @RequestParam String proceso,
-            @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") Date fechaInicio,
-            @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") Date fechaFin,
-            @RequestParam Integer idEstado,
-            @RequestParam Integer idPrograma) {
+            @RequestParam(name = "idEstadistica", required = true) @Min(value =  1) Integer idEstadistica,
+            @RequestParam(name = "proceso", required = true) String proceso,
+            @RequestParam(name = "fechaInicio", required = true) @DateTimeFormat(pattern = "yyyy-MM-dd") Date fechaInicio,
+            @RequestParam(name = "fechaFin", required = true) @DateTimeFormat(pattern = "yyyy-MM-dd") Date fechaFin,
+            @RequestParam(name = "idEstado", required = true) @Min(value =  1) Integer idEstado,
+            @RequestParam(name = "idPrograma", required = true) @Min(value =  1) Integer idPrograma) {
 
         Estadistica resultado = estadisticaCU.obtenerEstadisticasSolicitudPeriodoEstadoYPrograma(
                 idEstadistica, proceso, fechaInicio, fechaFin, idEstado, idPrograma
@@ -101,9 +101,9 @@ public class EstadisticasRestController {
 
     @GetMapping("/porPeriodoEstadoPrograma")
     public ResponseEntity<List<EstadisticaDTORespuesta>> obtenerPorPeriodoEstadoYPrograma(
-            @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") Date fechaInicio,
-            @RequestParam @DateTimeFormat(pattern = "yyyy-MM-dd") Date fechaFin,
-            @RequestParam Integer idPrograma) {
+            @RequestParam(name = "fechaInicio", required = true) @DateTimeFormat(pattern = "yyyy-MM-dd") Date fechaInicio,
+            @RequestParam(name = "fechaFin", required = true) @DateTimeFormat(pattern = "yyyy-MM-dd") Date fechaFin,
+            @RequestParam(name = "idPrograma", required = true) @Min(value =  1) Integer idPrograma) {
 
         List<Estadistica> lista = estadisticaCU.obtenerEstadisticasPeriodoEstadoYPrograma(
                 fechaInicio, fechaFin, idPrograma
