@@ -102,41 +102,50 @@ public class MapperCursosOfertados {
             .addMappings(mapper -> mapper.skip(CursoOfertadoVerano::setEstadosCursoOfertados))
             .addMappings(mapper -> mapper.skip(CursoOfertadoVerano::setEstudiantesInscritos))
             .setPostConverter(context -> {
-                CursoOfertadoVeranoEntity source = context.getSource();
-                CursoOfertadoVerano destination = context.getDestination();
+            CursoOfertadoVeranoEntity source = context.getSource();
+            CursoOfertadoVerano destination = context.getDestination();
 
-                    if (source == null || source.getEstadosCursoOfertados() == null) {
-                        destination.setEstadosCursoOfertados(Collections.emptyList());
-                        return destination;
-                    }
-
-                List<EstadoCursoOfertadoEntity> estadosCursoEntities = source.getEstadosCursoOfertados();
-
-                List<EstadoCursoOfertado> estados = estadosCursoEntities
-                    .stream()
-                    .map(estadoEntity ->{
-                    EstadoCursoOfertado estadoCurso = modelMapper.map(estadoEntity, EstadoCursoOfertado.class);
-                    estadoCurso.setObjCursoOfertadoVerano(null);
-                    return estadoCurso;
-                    } )
-                    .toList();
-                destination.setEstadosCursoOfertados(estados);
-
-
-                List<UsuarioEntity> estudiantes = source.getEstudiantesInscritos();
-
-                List<Usuario> usuarios = estudiantes
-                    .stream()
-                    .map(estudiante ->{
-                    Usuario usuario = modelMapper.map(estudiante, Usuario.class);
-                    usuario.getCursosOfertadosInscritos().clear();
-                    return usuario;
-                    } )
-                    .toList();
-                destination.setEstudiantesInscritos(usuarios);
-
+            if (source == null) {
                 return destination;
+            }
+
+            // Mapeo manual de estados SIN usar modelMapper.map
+            List<EstadoCursoOfertado> estadosCurso = new ArrayList<>();
+            if (source.getEstadosCursoOfertados() != null) {
+                for (EstadoCursoOfertadoEntity estadoEntity : source.getEstadosCursoOfertados()) {
+                    EstadoCursoOfertado estado = new EstadoCursoOfertado();
+                    estado.setId_estado(estadoEntity.getId_estado());
+                    estado.setEstado_actual(estadoEntity.getEstado_actual());
+                    estado.setFecha_registro_estado(estadoEntity.getFecha_registro_estado());
+                    estado.setObjCursoOfertadoVerano(null); // cortar recursividad
+
+                    estadosCurso.add(estado);
+                }
+            }
+            destination.setEstadosCursoOfertados(estadosCurso);
+
+            // Mapeo manual de usuarios SIN usar modelMapper.map
+            List<Usuario> estudiantes = new ArrayList<>();
+            if (source.getEstudiantesInscritos() != null) {
+                for (UsuarioEntity usuarioEntity : source.getEstudiantesInscritos()) {
+                    Usuario usuario = new Usuario();
+                    usuario.setId_usuario(usuarioEntity.getId_usuario());
+                    usuario.setNombre_completo(usuarioEntity.getNombre_completo());
+                    usuario.setCorreo(usuarioEntity.getCorreo());
+                    usuario.setCodigo(usuarioEntity.getCodigo());
+                    usuario.setEstado_usuario(usuarioEntity.isEstado_usuario());
+                    usuario.setPassword(usuarioEntity.getPassword());
+                    usuario.setSolicitudes(new ArrayList<>());
+                    usuario.setCursosOfertadosInscritos(new ArrayList<>()); // evitar ciclo
+
+                    estudiantes.add(usuario);
+                }
+            }
+            destination.setEstudiantesInscritos(estudiantes);
+
+            return destination;
             });
+
 
         return modelMapper;
     }

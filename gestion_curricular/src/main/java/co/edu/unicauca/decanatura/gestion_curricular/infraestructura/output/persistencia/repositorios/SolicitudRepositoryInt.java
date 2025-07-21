@@ -193,6 +193,32 @@ public interface SolicitudRepositoryInt extends JpaRepository<SolicitudEntity, I
     """)
     SolicitudEntity buscarSolicitudesPorUsuarioCursoEstadoPre(@Param("idUsuario") Integer idUsuario, @Param("idCurso") Integer idCurso, @Param("estado_actual") String estado_actual);
 
+    
+    @Query("SELECT s FROM SolicitudCursoVeranoPreinscripcionEntity s WHERE s.objUsuario.id_usuario = :idUsuario "+
+    "AND s.objCursoOfertadoVerano.id_curso = :idCurso")
+    SolicitudEntity buscarSolicitudesPorUsuarioyCursoPre(@Param("idUsuario") Integer idUsuario, @Param("idCurso") Integer idCurso);
+
+    @Query(
+    """
+        SELECT s 
+        FROM SolicitudCursoVeranoInscripcionEntity s 
+        JOIN s.estadosSolicitud e 
+        WHERE s.objUsuario.id_usuario = :idUsuario 
+        AND s.objCursoOfertadoVerano.id_curso = :idCurso 
+        AND LOWER(e.estado_actual) LIKE LOWER(CONCAT('%', :estado_actual, '%')) 
+        AND e.fecha_registro_estado = (
+            SELECT MAX(e2.fecha_registro_estado) 
+            FROM EstadoSolicitudEntity e2 
+            WHERE e2.objSolicitud.id_solicitud = s.id_solicitud
+        )
+    """)
+    SolicitudEntity buscarSolicitudesPorUsuarioCursoEstadoIns(@Param("idUsuario") Integer idUsuario, @Param("idCurso") Integer idCurso, @Param("estado_actual") String estado_actual);
+
+        @Query("SELECT s FROM SolicitudCursoVeranoInscripcionEntity s WHERE s.objUsuario.id_usuario = :idUsuario "+
+    "AND s.objCursoOfertadoVerano.id_curso = :idCurso")
+    SolicitudEntity buscarSolicitudesPorUsuarioyCursoIns(@Param("idUsuario") Integer idUsuario, @Param("idCurso") Integer idCurso);
+
+
     @Query("SELECT s FROM SolicitudCursoVeranoInscripcionEntity s WHERE s.objUsuario.id_usuario = :idUsuario "+
     "AND LOWER(s.nombre_solicitud) LIKE LOWER(CONCAT('%', :nombre, '%')) "+
     "AND s.objCursoOfertadoVerano.id_curso = :idCurso")

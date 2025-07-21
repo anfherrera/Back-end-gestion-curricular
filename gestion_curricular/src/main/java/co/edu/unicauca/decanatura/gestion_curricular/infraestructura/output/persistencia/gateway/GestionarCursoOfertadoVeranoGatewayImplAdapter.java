@@ -189,6 +189,7 @@ public class GestionarCursoOfertadoVeranoGatewayImplAdapter implements Gestionar
             if(usuarioEntityOptional.isPresent() && cursoEntityOptional.isPresent()) {
             UsuarioEntity usuarioEntity = usuarioEntityOptional.get();
             CursoOfertadoVeranoEntity cursoEntity = cursoEntityOptional.get();
+            result = cursoRepository.eliminarEstudianteDeCurso(idCurso, idUsuario);
                 if (result == 1){
                     usuarioYaEliminado = true;
                 }

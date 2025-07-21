@@ -47,6 +47,7 @@ public class GestionarSolicitudCUAdapter implements GestionarSolicitudCUIntPort 
         CursoOfertadoVerano cursoABuscar=null;
         SolicitudCursoVeranoPreinscripcion solicitudGuardada = null;
         Usuario usuarioBuscar =null;
+        Solicitud preinscripcionBuscar = null;
         if(solicitudCursoVerano == null) {
             this.objFormateadorResultados.retornarRespuestaErrorReglaDeNegocio("La solicitud de preinscripción no puede ser nula");
         }
@@ -83,6 +84,13 @@ public class GestionarSolicitudCUAdapter implements GestionarSolicitudCUIntPort 
         if(solicitudCursoVerano.getCodicion_solicitud() == null){
             this.objFormateadorResultados.retornarRespuestaErrorReglaDeNegocio("Debe seleccionar una condición de solicitud válida");
         }
+
+        preinscripcionBuscar = this.objGestionarSolicitudGateway.buscarSolicitudesPorUsuarioYCursoPre(usuarioBuscar.getId_usuario(), cursoABuscar.getId_curso());
+
+        if(preinscripcionBuscar != null) {
+            this.objFormateadorResultados.retornarRespuestaErrorReglaDeNegocio("Ya existe una solicitud de preinscripción para este curso");
+        }
+
         usuarioBuscar.getSolicitudes().add(solicitudCursoVerano);
         this.objUsuario.actualizarUsuario(usuarioBuscar);
 
@@ -98,6 +106,7 @@ public class GestionarSolicitudCUAdapter implements GestionarSolicitudCUIntPort 
     public SolicitudCursoVeranoIncripcion crearSolicitudCursoVeranoInscripcion(SolicitudCursoVeranoIncripcion solicitudCursoVerano) {
         Usuario usuarioBuscar = null;
         CursoOfertadoVerano cursoABuscar = null;
+        Solicitud solicitudInscripcionBuscar = null;
         if (solicitudCursoVerano == null) {
             this.objFormateadorResultados.retornarRespuestaErrorReglaDeNegocio("La solicitud de preinscripción no puede ser nula");
         }
@@ -135,26 +144,24 @@ public class GestionarSolicitudCUAdapter implements GestionarSolicitudCUIntPort 
         if(cursoABuscar.getEstadosCursoOfertados().isEmpty()){
             this.objFormateadorResultados.retornarRespuestaErrorReglaDeNegocio("El curso no tiene estados asociados");
         }
-        if(!cursoABuscar.getEstadosCursoOfertados().get(cursoABuscar.getEstadosCursoOfertados().size() - 1).getEstado_actual().equals("Preinscripcion")){
+        if(!cursoABuscar.getEstadosCursoOfertados().get(cursoABuscar.getEstadosCursoOfertados().size()-1).getEstado_actual().equals("Preinscripcion")){
             this.objFormateadorResultados.retornarRespuestaErrorReglaDeNegocio("El curso no está en estado de Preinscripcion");
         }
 
-        Solicitud solicitudPre = this.objGestionarSolicitudGateway.buscarSolicitudesPorUsuarioEstadoCursoPre(
-                usuarioBuscar.getId_usuario(), 
-                "Aprobado", 
-                cursoABuscar.getId_curso()
-        );
+        solicitudInscripcionBuscar = this.objGestionarSolicitudGateway.buscarSolicitudesPorUsuarioYCursoIns(usuarioBuscar.getId_usuario(), cursoABuscar.getId_curso());
 
-        if (solicitudPre == null) {
-            this.objFormateadorResultados.retornarRespuestaErrorReglaDeNegocio("No se encontró la solicitud de preinscripción previa");
+        if(solicitudInscripcionBuscar != null) {
+            this.objFormateadorResultados.retornarRespuestaErrorReglaDeNegocio("Ya existe una solicitud de preinscripción para este curso");
         }
 
         // Crear la solicitud
         SolicitudCursoVeranoIncripcion solicitudGuardada = this.objGestionarSolicitudGateway.crearSolicitudCursoVeranoInscripcion(solicitudCursoVerano);
 
-        // Asociar y guardar documento
-        documento.setObjSolicitud(solicitudGuardada);
-        this.objDocumentosGateway.crearDocumento(documento);
+        // Asociar y guardar los documentos
+        for (Documento doc : solicitudGuardada.getDocumentos()) {
+            doc.setObjSolicitud(solicitudGuardada);
+            this.objDocumentosGateway.actualizarDocumento(doc);
+        }
 
         // Actualizar usuario con la nueva solicitud
         usuarioBuscar.getSolicitudes().add(solicitudGuardada);

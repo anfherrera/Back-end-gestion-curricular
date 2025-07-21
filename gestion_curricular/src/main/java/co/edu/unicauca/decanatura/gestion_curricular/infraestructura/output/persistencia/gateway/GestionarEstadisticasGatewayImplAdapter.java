@@ -42,7 +42,8 @@ public class GestionarEstadisticasGatewayImplAdapter implements GestionarEstadis
             throw new RuntimeException("No hay programas disponibles para crear estadísticas.");
         }
         EstadisticaEntity estadisticaEntity = estadisticaMapper.map(estadistica, EstadisticaEntity.class);
-        estadisticaEntity.setNombre("Estadisticas");
+        //estadisticaEntity.setNombre("Estadisticas");
+        estadisticaEntity.setTotal_solicitudes(solicitudRepository.totalSolicitudes());
         estadisticaEntity.setNombres_procesos(new ArrayList<String>(solicitudRepository.buscarNombresSolicitudes()));
         estadisticaEntity.setPeriodos_academico(new ArrayList<Date>());
         estadisticaEntity.setNombres_programas(new ArrayList<String>(programaRepository.buscarNombresProgramas()));
@@ -56,6 +57,10 @@ public class GestionarEstadisticasGatewayImplAdapter implements GestionarEstadis
         estadisticaRepository.findById(estadistica.getId_estadistica())
             .orElseThrow(() -> new RuntimeException("Estadistica no encontrada con ID: " + estadistica.getId_estadistica()));
         EstadisticaEntity estadisticaEntity = estadisticaMapper.map(estadistica, EstadisticaEntity.class);
+        estadisticaEntity.setTotal_solicitudes(solicitudRepository.totalSolicitudes());
+        estadisticaEntity.setNombres_procesos(new ArrayList<String>(solicitudRepository.buscarNombresSolicitudes()));
+        estadisticaEntity.setPeriodos_academico(new ArrayList<Date>());
+        estadisticaEntity.setNombres_programas(new ArrayList<String>(programaRepository.buscarNombresProgramas()));
         EstadisticaEntity updatedEntity = estadisticaRepository.save(estadisticaEntity);
         return estadisticaMapper.map(updatedEntity, Estadistica.class);
     }
