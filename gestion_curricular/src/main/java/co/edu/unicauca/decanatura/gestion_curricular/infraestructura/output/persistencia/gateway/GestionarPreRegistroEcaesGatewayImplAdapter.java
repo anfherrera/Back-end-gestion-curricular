@@ -10,11 +10,14 @@ import org.springframework.stereotype.Service;
 
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.GestionarPreRegistroEcaesGatewayIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.EstadoSolicitud;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.FechaEcaes;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.SolicitudEcaes;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Usuario;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.controladorExcepciones.excepcionesPropias.EntidadNoExisteException;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.entidades.EstadoSolicitudEntity;
+import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.entidades.FechaEcaesEntity;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.entidades.SolicitudEcaesEntity;
+import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.repositorios.FechaEcaesRepositoryInt;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.repositorios.SolicitudEcaesRepositoryInt;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.repositorios.UsuarioRepositoryInt;
 import jakarta.transaction.Transactional;
@@ -26,12 +29,15 @@ public class GestionarPreRegistroEcaesGatewayImplAdapter implements GestionarPre
     private final UsuarioRepositoryInt usuarioRepository;
 
     private final SolicitudEcaesRepositoryInt solicitudEcaesRepository;
+    private final FechaEcaesRepositoryInt fechaEcaesRepository;
     private final ModelMapper mapper;
     @Autowired
-    public GestionarPreRegistroEcaesGatewayImplAdapter(SolicitudEcaesRepositoryInt solicitudEcaesRepository, UsuarioRepositoryInt usuarioRepositoryInt) {
+    public GestionarPreRegistroEcaesGatewayImplAdapter(SolicitudEcaesRepositoryInt solicitudEcaesRepository, UsuarioRepositoryInt usuarioRepositoryInt,
+    FechaEcaesRepositoryInt fechaEcaesRepository) {
         this.solicitudEcaesRepository = solicitudEcaesRepository;
         this.mapper = new ModelMapper();
         this.usuarioRepository = usuarioRepositoryInt;
+        this.fechaEcaesRepository = fechaEcaesRepository;
     }
     @Override
     public SolicitudEcaes guardar(SolicitudEcaes solicitud) {
@@ -81,7 +87,20 @@ public class GestionarPreRegistroEcaesGatewayImplAdapter implements GestionarPre
         solicitudEcaesRepository.save(solicitudEntity);
 
     }
-
+    @Override
+    public FechaEcaes publicarFechasEcaes(FechaEcaes fechasEcaes) {
+        FechaEcaesEntity entity = mapper.map(fechasEcaes, FechaEcaesEntity.class);
+        FechaEcaesEntity saved = fechaEcaesRepository.save(entity);
+        return mapper.map(saved, FechaEcaes.class);
+    }
+    
+    @Override
+    public List<FechaEcaes> listarFechasEcaes() {
+        return fechaEcaesRepository.findAll().stream()
+            .map(entity -> mapper.map(entity, FechaEcaes.class))
+            .collect(Collectors.toList());
+    }
+    
     
 
 }

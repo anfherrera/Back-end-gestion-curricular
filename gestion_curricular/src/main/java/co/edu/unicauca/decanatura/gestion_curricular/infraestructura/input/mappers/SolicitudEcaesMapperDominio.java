@@ -5,8 +5,11 @@ import java.util.List;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.FechaEcaes;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.SolicitudEcaes;
+import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.DTOPeticion.FechasEcaesDTOPeticion;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.DTOPeticion.SolicitudEcaesDTOPeticion;
+import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.DTORespuesta.FechaEcaesDTORespuesta;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.DTORespuesta.SolicitudDTORespuesta;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.DTORespuesta.SolicitudEcaesDTORespuesta;
 
@@ -36,4 +39,13 @@ public interface SolicitudEcaesMapperDominio {
 
     List<SolicitudEcaesDTORespuesta> mappearListaDeSolicitudEcaesARespuesta(List<SolicitudEcaes> solicitudes);
 
+    //DTO de peticion  → fechas ecaes dominio    
+    FechaEcaes mappearDeFechasEcaesDTOPeticionAFechaEcaes(FechasEcaesDTOPeticion fechasEcaes);
+
+    // Fechas ecaes dominio → DTO respuesta
+    FechaEcaesDTORespuesta mappearDeFechaEcaesAFechaEcaesDTORespuesta(FechaEcaes fechaEcaes);    
+
+    // Lista de fechas ecaes dominio → Lista de DTO respuesta
+    List<FechaEcaesDTORespuesta> mappearListaDeFechaEcaesAFechaEcaesDTORespuesta(List<FechaEcaes> fechasEcaes); 
+    
 }

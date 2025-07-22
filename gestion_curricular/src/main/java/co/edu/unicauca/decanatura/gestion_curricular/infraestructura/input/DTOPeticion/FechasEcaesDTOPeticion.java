@@ -1,6 +1,6 @@
-package co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos;
+package co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.DTOPeticion;
 
-import java.sql.Date;
+import java.util.Date;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class FechaEcaes {
+public class FechasEcaesDTOPeticion {
     private Integer idFechaEcaes;
     private String periodoAcademico; // Ejemplo: "2025-2"
     private Date inscripcion_est_by_facultad;
@@ -18,5 +18,4 @@ public class FechaEcaes {
     private Date citacion;
     private Date aplicacion;
     private Date resultados_individuales;
-
 }

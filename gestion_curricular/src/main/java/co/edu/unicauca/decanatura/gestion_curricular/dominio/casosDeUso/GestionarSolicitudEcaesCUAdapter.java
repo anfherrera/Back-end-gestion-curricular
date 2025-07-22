@@ -15,6 +15,7 @@ import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.Gestionar
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.GestionarUsuarioGatewayIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Documento;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.EstadoSolicitud;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.FechaEcaes;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.SolicitudEcaes;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Usuario;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Enums.EstadoSolicitudEcaes;
@@ -166,6 +167,16 @@ public class GestionarSolicitudEcaesCUAdapter implements GestionarSolicitudEcaes
         nuevo.setFecha_registro_estado(new Date());
         
         objGestionarSolicitudEcaesGateway.cambiarEstadoSolicitudEcaes(idSolicitud, nuevo);
+    }
+
+    @Override
+    public FechaEcaes publicarFechasEcaes(FechaEcaes fechasEcaes) {
+        return objGestionarSolicitudEcaesGateway.publicarFechasEcaes(fechasEcaes);
+    }
+
+    @Override
+    public List<FechaEcaes> listarFechasEcaes() {
+        return objGestionarSolicitudEcaesGateway.listarFechasEcaes();
     }
 
 

@@ -22,6 +22,8 @@ public class FechaEcaesEntity {
     @Column(name = "idFechaEcaes")
     private Integer id_fecha_ecaes;
     @Column(nullable = false)
+    private String periodoAcademico; // Ejemplo: "2025-2"
+    @Column(nullable = false)
     private Date inscripcion_est_by_facultad;
     @Column(nullable = false)
     private Date registro_recaudo_ordinario;

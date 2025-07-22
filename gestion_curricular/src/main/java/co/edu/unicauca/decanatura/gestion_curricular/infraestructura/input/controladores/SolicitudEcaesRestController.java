@@ -4,9 +4,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarSolicitudEcaesCUIntPort;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.FechaEcaes;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.SolicitudEcaes;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Enums.EstadoSolicitudEcaes;
+import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.DTOPeticion.FechasEcaesDTOPeticion;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.DTOPeticion.SolicitudEcaesDTOPeticion;
+import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.DTORespuesta.FechaEcaesDTORespuesta;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.DTORespuesta.SolicitudDTORespuesta;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.DTORespuesta.SolicitudEcaesDTORespuesta;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.mappers.SolicitudEcaesMapperDominio;
@@ -45,23 +48,39 @@ public class SolicitudEcaesRestController {
         return respuesta;
     }
 
-    @GetMapping
+    @GetMapping("/listarSolicitudes-Ecaes")
     public ResponseEntity<List<SolicitudEcaesDTORespuesta>> listarSolicitudes() {
         List<SolicitudEcaes> solicitudes = solicitudEcaesCU.listarSolicitudes();
         List<SolicitudEcaesDTORespuesta> respuesta = solicitudMapperDominio.mappearListaDeSolicitudEcaesARespuesta(solicitudes);
         return ResponseEntity.ok(respuesta);
     }
     
-    @GetMapping("/{id}")
+    @GetMapping("/buscarSolicitud-Ecaes/{id}")
     public ResponseEntity<SolicitudEcaesDTORespuesta> obtenerPorId(@PathVariable Integer id) {
         SolicitudEcaes solicitud = solicitudEcaesCU.buscarPorId(id);
         SolicitudEcaesDTORespuesta respuesta = solicitudMapperDominio.mappearDeSolicitudEcaesARespuesta(solicitud);
         return ResponseEntity.ok(respuesta);
     }
 
-    @PutMapping("/{id}/estado")
+    @PutMapping("/cambiarEstado-Ecaes{id}")
     public ResponseEntity<Void> cambiarEstado(@PathVariable Integer id, @RequestParam EstadoSolicitudEcaes nuevoEstado) {
         solicitudEcaesCU.cambiarEstadoSolicitudEcaes(id, nuevoEstado);
         return ResponseEntity.noContent().build();
     }
+
+    @PostMapping("/publicarFechasEcaes")
+    public ResponseEntity<FechaEcaesDTORespuesta> publicarFechasEcaes(@RequestBody FechasEcaesDTOPeticion fechasEcaes) {
+        FechaEcaes fechaEcaes = solicitudMapperDominio.mappearDeFechasEcaesDTOPeticionAFechaEcaes(fechasEcaes);
+        FechaEcaes fechaPublicada = solicitudEcaesCU.publicarFechasEcaes(fechaEcaes);
+        FechaEcaesDTORespuesta respuesta = solicitudMapperDominio.mappearDeFechaEcaesAFechaEcaesDTORespuesta(fechaPublicada);
+        return new ResponseEntity<>(respuesta, HttpStatus.CREATED);
+    }
+
+    @GetMapping("/listarFechasEcaes")
+    public ResponseEntity<List<FechaEcaesDTORespuesta>> listarFechasEcaes() {
+        List<FechaEcaes> fechas = solicitudEcaesCU.listarFechasEcaes();
+        List<FechaEcaesDTORespuesta> respuesta = solicitudMapperDominio.mappearListaDeFechaEcaesAFechaEcaesDTORespuesta(fechas);
+        return ResponseEntity.ok(respuesta);
+    }
+    
 }
