@@ -127,8 +127,6 @@ public class GestionarSolicitudCUAdapter implements GestionarSolicitudCUIntPort 
         if(solicitudCursoVerano.getDocumentos().size() != 1) {
             this.objFormateadorResultados.retornarRespuestaErrorReglaDeNegocio("Debe adjuntar exactamente un documento");
         }
-
-        Documento documento = solicitudCursoVerano.getDocumentos().get(0);
         if (solicitudCursoVerano.getObjCursoOfertadoVerano() == null) {
             this.objFormateadorResultados.retornarRespuestaErrorReglaDeNegocio("Debe seleccionar un curso válido");
         }

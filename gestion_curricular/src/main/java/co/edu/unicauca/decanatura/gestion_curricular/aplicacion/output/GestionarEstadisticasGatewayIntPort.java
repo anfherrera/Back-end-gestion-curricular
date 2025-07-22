@@ -11,7 +11,7 @@ public interface GestionarEstadisticasGatewayIntPort {
     Boolean eliminarEstadistica(Integer idEstadistica);
     Estadistica obtenerEstadisticaPorId(Integer idEstadistica);
     Estadistica obtenerEstadisticasSolicitudPeriodoYPrograma(Integer idEstadistica, String proceso, Date fechaInicio, Date fechaFin, Integer idPrograma);
-    Estadistica obtenerEstadisticasSolicitudPeriodoEstadoYPrograma(Integer idEstadistica, String proceso, Date fechaInicio, Date fechaFin, Integer idEstado, Integer idPrograma);
+    Estadistica obtenerEstadisticasSolicitudPeriodoEstadoYPrograma(Integer idEstadistica, String proceso, Date fechaInicio, Date fechaFin, String estado, Integer idPrograma);
     List<Estadistica> obtenerEstadisticasPeriodoEstadoYPrograma( Date fechaInicio, Date fechaFin, Integer idPrograma);
 
 }

@@ -18,6 +18,7 @@ import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.DTORe
 public interface SolicitudCursoDeVeranoPreinscripcionMapperDominio {
     @Mapping(target = "estadosSolicitud", ignore = true) // No se incluye en la petición
     @Mapping(target = "documentos", ignore = true) // Map documentos collection
+    @Mapping(source = "esSeleccionado", target = "esSeleccionado")
     @Mapping(target = "objCursoOfertadoVerano", source = "objCursoOfertado") //
     SolicitudCursoVeranoPreinscripcion mappearDePeticionASolicitudCursoVeranoPreinscripcion(
         SolicitudCurosoVeranoPreinscripcionDTOPeticion peticion);
@@ -28,6 +29,7 @@ public interface SolicitudCursoDeVeranoPreinscripcionMapperDominio {
     @Mapping(target = "codicion_solicitud", source = "codicion_solicitud")
     @Mapping(target = "nombre_estudiante", source = "nombre_estudiante")
     @Mapping(target = "observacion", source = "observacion")
+    @Mapping(source = "esSeleccionado", target = "esSeleccionado")
     SolicitudCursoVeranoPreinscripcionDTORespuesta mappearDeSolicitudCursoVeranoPreinscripcionARespuesta(
         SolicitudCursoVeranoPreinscripcion solicitud);
 

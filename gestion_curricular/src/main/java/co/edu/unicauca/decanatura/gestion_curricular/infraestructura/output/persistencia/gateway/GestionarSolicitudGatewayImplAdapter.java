@@ -65,7 +65,7 @@ public class GestionarSolicitudGatewayImplAdapter implements GestionarSolicitudG
         SolicitudCursoVeranoPreinscripcion solicitudCursoVerano) {
         SolicitudCursoVeranoPreinscripcionEntity solicitudCursoVeranoEntity = solicitudMapper.map(solicitudCursoVerano, SolicitudCursoVeranoPreinscripcionEntity.class);
         solicitudCursoVeranoEntity.setNombre_solicitud(SolicitudCursoVeranoPreinscripcion.class.getSimpleName());
-        
+        solicitudCursoVeranoEntity.setFecha_registro_solicitud(new Date());
         EstadoSolicitudEntity estadoSolicitudEntity = null;
 
         estadoSolicitudEntity = new EstadoSolicitudEntity();
@@ -113,6 +113,7 @@ public class GestionarSolicitudGatewayImplAdapter implements GestionarSolicitudG
             SolicitudCursoVeranoIncripcion solicitudCursoVerano) {
         SolicitudCursoVeranoInscripcionEntity solicitudCursoVeranoEntity = solicitudMapper.map(solicitudCursoVerano, SolicitudCursoVeranoInscripcionEntity.class);
         solicitudCursoVeranoEntity.setNombre_solicitud(SolicitudCursoVeranoIncripcion.class.getSimpleName());
+        solicitudCursoVeranoEntity.setFecha_registro_solicitud(new Date());
         EstadoSolicitudEntity estadoSolicitudEntity = null;
         
         estadoSolicitudEntity = new EstadoSolicitudEntity();
@@ -155,6 +156,7 @@ public class GestionarSolicitudGatewayImplAdapter implements GestionarSolicitudG
     public SolicitudEcaes crearSolicitudEcaes(SolicitudEcaes solicitudEcaes) {
         SolicitudEcaesEntity solicitudEcaesEntity = solicitudMapper.map(solicitudEcaes, SolicitudEcaesEntity.class);
         solicitudEcaesEntity.setNombre_solicitud(SolicitudEcaes.class.getSimpleName());
+        solicitudEcaes.setFecha_registro_solicitud(new Date());
         EstadoSolicitudEntity estadoSolicitudEntity = null;
         estadoSolicitudEntity = new EstadoSolicitudEntity();
         estadoSolicitudEntity.setFecha_registro_estado(new Date());
@@ -174,6 +176,7 @@ public class GestionarSolicitudGatewayImplAdapter implements GestionarSolicitudG
     public SolicitudReingreso crearSolicitudReingreso(SolicitudReingreso solicitudReingreso) {
         SolicitudReingresoEntity solicitudReingresoEntity = solicitudMapper.map(solicitudReingreso, SolicitudReingresoEntity.class);
         solicitudReingresoEntity.setNombre_solicitud(SolicitudReingreso.class.getSimpleName());
+        solicitudReingresoEntity.setFecha_registro_solicitud(new Date());
         EstadoSolicitudEntity estadoSolicitudEntity = null;
         estadoSolicitudEntity = new EstadoSolicitudEntity();
         estadoSolicitudEntity.setFecha_registro_estado(new Date());
@@ -193,6 +196,7 @@ public class GestionarSolicitudGatewayImplAdapter implements GestionarSolicitudG
     public SolicitudHomologacion crearSolicitudHomologacion(SolicitudHomologacion solicitudHomologacion) {
         SolicitudHomologacionEntity solicitudHomologacionEntity = solicitudMapper.map(solicitudHomologacion, SolicitudHomologacionEntity.class);
         solicitudHomologacionEntity.setNombre_solicitud(SolicitudHomologacion.class.getSimpleName());
+        solicitudHomologacionEntity.setFecha_registro_solicitud(new Date());
         EstadoSolicitudEntity estadoSolicitudEntity = null;
         estadoSolicitudEntity = new EstadoSolicitudEntity();
         estadoSolicitudEntity.setFecha_registro_estado(new Date());
@@ -212,6 +216,7 @@ public class GestionarSolicitudGatewayImplAdapter implements GestionarSolicitudG
     public SolicitudPazYSalvo crearSolicitudPazYSalvo(SolicitudPazYSalvo solicitudPazYSalvo) {
         SolicitudPazYSalvoEntity solicitudPazYSalvoEntity = solicitudMapper.map(solicitudPazYSalvo, SolicitudPazYSalvoEntity.class);
         solicitudPazYSalvoEntity.setNombre_solicitud(SolicitudPazYSalvo.class.getSimpleName());
+        solicitudPazYSalvoEntity.setFecha_registro_solicitud(new Date());
         EstadoSolicitudEntity estadoSolicitudEntity = null;
         estadoSolicitudEntity = new EstadoSolicitudEntity();
         estadoSolicitudEntity.setFecha_registro_estado(new Date());
@@ -487,8 +492,8 @@ public class GestionarSolicitudGatewayImplAdapter implements GestionarSolicitudG
 
     @Override
     @Transactional(readOnly = true)
-    public List<Solicitud> buscarSolicitudPorNombreCursoIns(String nombreSolicitud, Integer idCurso) {
-        List<SolicitudEntity> solicitudEntities = solicitudRepository.buscarPorNombreYCursoIns(nombreSolicitud, idCurso);
+    public List<Solicitud> buscarSolicitudPorNombreCursoIns(Integer idCurso) {
+        List<SolicitudEntity> solicitudEntities = solicitudRepository.buscarPorNombreYCursoIns(idCurso);
         List<Solicitud> solicitudes = null;
         if(solicitudEntities != null){
             solicitudes = solicitudEntities.stream().map(solicitudEntity -> {
@@ -526,8 +531,8 @@ public class GestionarSolicitudGatewayImplAdapter implements GestionarSolicitudG
 
     @Override
     @Transactional(readOnly = true)
-    public List<Solicitud> buscarSolicitudPorNombreCursoPre(String nombreSolicitud, Integer idCurso) {
-        List<SolicitudEntity> solicitudEntities = solicitudRepository.buscarPorNombreYCursoPre(nombreSolicitud, idCurso);
+    public List<Solicitud> buscarSolicitudPorNombreCursoPre(Integer idCurso) {
+        List<SolicitudEntity> solicitudEntities = solicitudRepository.buscarPorNombreYCursoPre(idCurso);
         List<Solicitud> solicitudes = null;
         if(solicitudEntities != null){
             solicitudes = solicitudEntities.stream().map(solicitudEntity -> {
@@ -691,6 +696,5 @@ SolicitudEntity solicitudEntity = solicitudRepository.buscarSolicitudesPorUsuari
                 }
         }
         return solicitud;
-    }   
-    
+    }
 }

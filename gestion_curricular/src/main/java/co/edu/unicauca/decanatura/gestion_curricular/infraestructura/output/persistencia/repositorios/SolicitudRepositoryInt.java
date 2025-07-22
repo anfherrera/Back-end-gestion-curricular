@@ -55,9 +55,8 @@ public interface SolicitudRepositoryInt extends JpaRepository<SolicitudEntity, I
     List<SolicitudEntity> buscarPorNombreCursoYSeleccionadoPre(@Param("idCurso") Integer idCurso, @Param("seleccionado") boolean seleccionado);
     
 
-    @Query("SELECT s FROM SolicitudCursoVeranoInscripcionEntity s WHERE LOWER(s.nombre_solicitud) LIKE LOWER(CONCAT('%', :nombre, '%')) " +
-    "AND s.objCursoOfertadoVerano.id_curso = :idCurso")
-    List<SolicitudEntity> buscarPorNombreYCursoIns(@Param("nombre") String nombre, @Param("idCurso") Integer idCurso);
+    @Query("SELECT s FROM SolicitudCursoVeranoInscripcionEntity s WHERE s.objCursoOfertadoVerano.id_curso = :idCurso")
+    List<SolicitudEntity> buscarPorNombreYCursoIns(@Param("idCurso") Integer idCurso);
 
     @Query("SELECT COUNT(s) FROM SolicitudCursoVeranoPreinscripcionEntity s WHERE LOWER(s.nombre_solicitud) LIKE LOWER(CONCAT('%', :nombre, '%')) " +
     "AND s.objCursoOfertadoVerano.id_curso = :idCurso")
@@ -82,9 +81,8 @@ public interface SolicitudRepositoryInt extends JpaRepository<SolicitudEntity, I
         @Param("estado_actual") String estado_actual
     );
 
-    @Query("SELECT s FROM SolicitudCursoVeranoPreinscripcionEntity s WHERE LOWER(s.nombre_solicitud) LIKE LOWER(CONCAT('%', :nombre, '%')) " +
-    "AND s.objCursoOfertadoVerano.id_curso = :idCurso")
-    List<SolicitudEntity> buscarPorNombreYCursoPre(@Param("nombre") String nombre, @Param("idCurso") Integer idCurso);
+    @Query("SELECT s FROM SolicitudCursoVeranoPreinscripcionEntity s WHERE s.objCursoOfertadoVerano.id_curso = :idCurso")
+    List<SolicitudEntity> buscarPorNombreYCursoPre(@Param("idCurso") Integer idCurso);
 
     @Query("""
         SELECT s 
@@ -144,7 +142,7 @@ public interface SolicitudRepositoryInt extends JpaRepository<SolicitudEntity, I
     @Query("SELECT COUNT(s) FROM SolicitudEntity s WHERE s.fecha_registro_solicitud BETWEEN :fechaInicio AND :fechaFin")
     Integer contarPorRangoFechas(@Param("fechaInicio") Date fechaInicio, @Param("fechaFin") Date fechaFin);
     
-    @Query(value =
+    @Query(
     "SELECT COUNT(s) FROM SolicitudEntity s " +
     "WHERE LOWER(s.nombre_solicitud) LIKE LOWER(CONCAT('%', :nombreSolicitud, '%')) " +
     "AND s.fecha_registro_solicitud BETWEEN :fechaInicio AND :fechaFin " +
@@ -159,13 +157,21 @@ public interface SolicitudRepositoryInt extends JpaRepository<SolicitudEntity, I
         "JOIN s.estadosSolicitud est " +
         "WHERE LOWER(s.nombre_solicitud) LIKE LOWER(CONCAT('%', :nombreSolicitud, '%')) " +
         "AND s.fecha_registro_solicitud BETWEEN :fechaInicio AND :fechaFin " +
-        "AND est.id_estado = :idEstado " +
+        "AND LOWER(est.estado_actual) LIKE LOWER(CONCAT('%', :estado, '%')) " +
         "AND s.objUsuario.objPrograma.id_programa = :idPrograma")
     Integer contarNombreFechaEstadoYPrograma(
         @Param("nombreSolicitud") String nombreSolicitud,
         @Param("fechaInicio") Date fechaInicio, @Param("fechaFin") Date fechaFin,
-        @Param("idEstado") Integer idEstado,
+        @Param("estado") String estado,
         @Param("idPrograma") Integer idPrograma);
+
+    @Query(
+    "SELECT COUNT(s) FROM SolicitudEntity s " +
+    "JOIN s.estadosSolicitud est " +
+    "WHERE LOWER(est.estado_actual) LIKE LOWER(CONCAT('%', :estado, '%'))")
+    Integer contarEstado(
+    @Param("estado") String estado);
+
 
     // Consulta JPQL: buscar entre un rango de fechas
     @Query("SELECT s FROM SolicitudEntity s WHERE s.fecha_registro_solicitud BETWEEN :fechaInicio AND :fechaFin")
