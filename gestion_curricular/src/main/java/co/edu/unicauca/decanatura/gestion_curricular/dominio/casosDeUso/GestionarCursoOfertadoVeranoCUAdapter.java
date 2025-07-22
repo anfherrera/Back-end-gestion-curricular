@@ -98,7 +98,7 @@ public class GestionarCursoOfertadoVeranoCUAdapter implements GestionarCursoOfer
                 this.objFormateadorResultados.retornarRespuestaErrorEntidadExiste("No se puede actualizar el curso, porque no esta publicado");
             }
 
-            List<Solicitud> solicitudes = this.objGestionarSolicitudGateway.buscarPorNombreCursoYSeleccionadoPre(idCurso, true);
+            List<Solicitud> solicitudes = this.objGestionarSolicitudGateway.buscarSolicitudPorNombreCursoPre(idCurso);
             if(solicitudes.isEmpty()){
                 this.objFormateadorResultados.retornarRespuestaErrorEntidadExiste("No se puede publicar el curso, porque no hay solicitudes");
             }
@@ -106,20 +106,21 @@ public class GestionarCursoOfertadoVeranoCUAdapter implements GestionarCursoOfer
                     this.objFormateadorResultados.retornarRespuestaErrorReglaDeNegocio("No se puede publicar el curso, porque no se alcanzo el cupo estimado");
                 }
                     for (Solicitud solicitud : solicitudes) {
-                        if(solicitud.isEsSeleccionado()){
-                            //cursoABuscar.getSolicitudes().add(solicitud);
-                            estadoSolicitud = new EstadoSolicitud();
-                            estadoSolicitud.setFecha_registro_estado(new Date());
-                            estadoSolicitud.setEstado_actual("Aprobado");
-                            solicitud = this.objGestionarSolicitudGateway.actualizarSolicitud(solicitud, estadoSolicitud);
-                            usuario = this.objGestionarUsuarioGateway.buscarUsuarioPorSolicitud(solicitud.getId_solicitud());
-                            //this.objGestionarCursoOfertadoVeranoGateway.asociarUsuarioCurso(usuario.getId_usuario(), idCurso);
-                            //estudiantesInscritos.add(usuario);
-                            bandera = this.objGestionarCursoOfertadoVeranoGateway.asociarUsuarioCurso(usuario.getId_usuario(), idCurso);
-                            if(bandera == false){
-                                this.objFormateadorResultados.retornarRespuestaErrorEntidadExiste("No se pudo asociar el usuario al curso");
+                        estadoSolicitud = new EstadoSolicitud();
+                        estadoSolicitud.setFecha_registro_estado(new Date());
+                            if(solicitud.getEsSeleccionado() == true){
+                                estadoSolicitud.setEstado_actual("Aprobado");
+                                solicitud = this.objGestionarSolicitudGateway.actualizarSolicitud(solicitud, estadoSolicitud);
+                                usuario = this.objGestionarUsuarioGateway.buscarUsuarioPorSolicitud(solicitud.getId_solicitud());
+                                bandera = this.objGestionarCursoOfertadoVeranoGateway.asociarUsuarioCurso(usuario.getId_usuario(), idCurso);
+                                if(bandera == false){
+                                    this.objFormateadorResultados.retornarRespuestaErrorEntidadExiste("No se pudo asociar el usuario al curso");
+                                }
+                            }else{
+                                estadoSolicitud.setEstado_actual("Rechazado");
+                                solicitud = this.objGestionarSolicitudGateway.actualizarSolicitud(solicitud, estadoSolicitud);
+
                             }
-                        }
                     }
                     
 
@@ -130,7 +131,7 @@ public class GestionarCursoOfertadoVeranoCUAdapter implements GestionarCursoOfer
                 this.objFormateadorResultados.retornarRespuestaErrorEntidadExiste("No se puede actualizar el curso, porque no esta publicado");
             }
 
-            List<Solicitud> solicitudes = this.objGestionarSolicitudGateway.buscarPorNombreCursoYSeleccionadoIns(idCurso, true);
+            List<Solicitud> solicitudes = this.objGestionarSolicitudGateway.buscarSolicitudPorNombreCursoIns(idCurso);
             if(solicitudes.isEmpty()){
                 this.objFormateadorResultados.retornarRespuestaErrorEntidadExiste("No se puede publicar el curso, porque no hay solicitudes");
             }
@@ -139,20 +140,23 @@ public class GestionarCursoOfertadoVeranoCUAdapter implements GestionarCursoOfer
                 }
                 estudiantesInscritos = new ArrayList<Usuario>(cursoABuscar.getEstudiantesInscritos());
                 for (Solicitud solicitud : solicitudes) {
-                    if(solicitud.isEsSeleccionado()){
-                        estadoSolicitud = new EstadoSolicitud();
-                        estadoSolicitud.setFecha_registro_estado(new Date());
-                        estadoSolicitud.setEstado_actual("Aprobado");
-                        solicitud = this.objGestionarSolicitudGateway.actualizarSolicitud(solicitud, estadoSolicitud);
-                        usuario = this.objGestionarUsuarioGateway.buscarUsuarioPorSolicitud(solicitud.getId_solicitud());
-                        if(solicitudes.size() < cursoABuscar.getEstudiantesInscritos().size()){
-                            for (Usuario usuarioViejo : estudiantesInscritos) {
-                                if (usuarioViejo.getId_usuario().equals(usuario.getId_usuario())) {
-                                    usuariosRemovidos.add(usuarioViejo);
+                    estadoSolicitud = new EstadoSolicitud();
+                    estadoSolicitud.setFecha_registro_estado(new Date());
+                        if(solicitud.getEsSeleccionado() == true){
+                            estadoSolicitud.setEstado_actual("Aprobado");
+                            solicitud = this.objGestionarSolicitudGateway.actualizarSolicitud(solicitud, estadoSolicitud);
+                            usuario = this.objGestionarUsuarioGateway.buscarUsuarioPorSolicitud(solicitud.getId_solicitud());
+                                if(solicitudes.size() < cursoABuscar.getEstudiantesInscritos().size()){
+                                    for (Usuario usuarioViejo : estudiantesInscritos) {
+                                        if (usuarioViejo.getId_usuario().equals(usuario.getId_usuario())) {
+                                            usuariosRemovidos.add(usuarioViejo);
+                                        }
+                                    }
                                 }
-                            }
+                        }else{
+                            estadoSolicitud.setEstado_actual("Rechazado");
+                            solicitud = this.objGestionarSolicitudGateway.actualizarSolicitud(solicitud, estadoSolicitud); 
                         }
-                    }
                 }
                 if(estudiantesInscritos != null){
                     estudiantesInscritos.removeAll(usuariosRemovidos);

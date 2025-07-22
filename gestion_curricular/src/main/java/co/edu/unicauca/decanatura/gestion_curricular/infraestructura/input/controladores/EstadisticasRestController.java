@@ -86,11 +86,11 @@ public class EstadisticasRestController {
             @RequestParam(name = "proceso", required = true) String proceso,
             @RequestParam(name = "fechaInicio", required = true) @DateTimeFormat(pattern = "yyyy-MM-dd") Date fechaInicio,
             @RequestParam(name = "fechaFin", required = true) @DateTimeFormat(pattern = "yyyy-MM-dd") Date fechaFin,
-            @RequestParam(name = "idEstado", required = true) @Min(value =  1) Integer idEstado,
+            @RequestParam(name = "estado", required = true) String estado,
             @RequestParam(name = "idPrograma", required = true) @Min(value =  1) Integer idPrograma) {
 
         Estadistica resultado = estadisticaCU.obtenerEstadisticasSolicitudPeriodoEstadoYPrograma(
-                idEstadistica, proceso, fechaInicio, fechaFin, idEstado, idPrograma
+                idEstadistica, proceso, fechaInicio, fechaFin, estado, idPrograma
         );
 
         return new ResponseEntity<>(

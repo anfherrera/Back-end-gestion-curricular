@@ -16,7 +16,7 @@ public class Solicitud {
     private String nombre_solicitud;
     private Date fecha_registro_solicitud;
 
-    private boolean esSeleccionado;
+    private Boolean esSeleccionado;
 
     private List<EstadoSolicitud> estadosSolicitud;
 

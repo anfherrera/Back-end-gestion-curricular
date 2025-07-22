@@ -88,16 +88,16 @@ public class GestionarEstadisticasCUAdapter implements GestionarEstadisticasCUIn
     }
 
     @Override
-    public Estadistica obtenerEstadisticasSolicitudPeriodoEstadoYPrograma(Integer idEstadistica, String proceso, Date fechaInicio, Date fechaFin, Integer idEstado, Integer idPrograma) {
+    public Estadistica obtenerEstadisticasSolicitudPeriodoEstadoYPrograma(Integer idEstadistica, String proceso, Date fechaInicio, Date fechaFin, String estado, Integer idPrograma) {
         if (proceso == null || proceso.isBlank()) {
             formateadorResultados.retornarRespuestaErrorEntidadExiste("El proceso no puede estar vacío.");
         }
 
-        if (fechaInicio == null || fechaFin == null || idPrograma == null || idEstado == null) {
+        if (fechaInicio == null || fechaFin == null || idPrograma == null || estado == null) {
             formateadorResultados.retornarRespuestaErrorEntidadExiste("Parámetros incompletos para la consulta.");
         }
 
-        return estadisticasGateway.obtenerEstadisticasSolicitudPeriodoEstadoYPrograma(idEstadistica, proceso, fechaInicio, fechaFin, idEstado, idPrograma);
+        return estadisticasGateway.obtenerEstadisticasSolicitudPeriodoEstadoYPrograma(idEstadistica, proceso, fechaInicio, fechaFin, estado, idPrograma);
     }
 
     @Override

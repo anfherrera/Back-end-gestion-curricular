@@ -3,7 +3,6 @@ package co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.per
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -21,7 +20,6 @@ import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.pers
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.repositorios.CursoOfertadoVeranoRepositoryInt;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.repositorios.EstadoCursoOfertadoRepositoryInt;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.repositorios.UsuarioRepositoryInt;
-import jakarta.persistence.EntityNotFoundException;
 
 
 @Service
@@ -153,8 +151,6 @@ public class GestionarCursoOfertadoVeranoGatewayImplAdapter implements Gestionar
     @Override
     @Transactional
     public Boolean asociarUsuarioCurso(Integer idUsuario, Integer idCurso) {
-        Set<UsuarioEntity> usuariosEntitySet = null;
-        CursoOfertadoVeranoEntity cursoOfertadoVeranoEntityGuardado = null;
         Optional<UsuarioEntity> usuarioEntityOptional = usuarioRepository.findById(idUsuario);
         Optional<CursoOfertadoVeranoEntity> cursoEntityOptional = cursoRepository.findById(idCurso);
         Boolean usuarioYaInscrito = false;
@@ -163,7 +159,7 @@ public class GestionarCursoOfertadoVeranoGatewayImplAdapter implements Gestionar
                 UsuarioEntity usuarioEntity = usuarioEntityOptional.get();
                 CursoOfertadoVeranoEntity cursoEntity = cursoEntityOptional.get();
 
-                result = cursoRepository.insertarCursoEstudiante(idCurso, idUsuario);
+                result = cursoRepository.insertarCursoEstudiante(cursoEntity.getId_curso(), usuarioEntity.getId_usuario());
                 
                 if (result == 1){
                     usuarioYaInscrito = true;
@@ -180,8 +176,6 @@ public class GestionarCursoOfertadoVeranoGatewayImplAdapter implements Gestionar
     @Override
     @Transactional
     public Boolean desasociarUsuarioCurso(Integer idUsuario, Integer idCurso) {
-        Set<UsuarioEntity> usuariosEntitySet = null;
-        CursoOfertadoVeranoEntity cursoOfertadoVeranoEntityGuardado = null;
         Optional<UsuarioEntity> usuarioEntityOptional = usuarioRepository.findById(idUsuario);
         Optional<CursoOfertadoVeranoEntity> cursoEntityOptional = cursoRepository.findById(idCurso);
         Boolean usuarioYaEliminado = false;
@@ -189,7 +183,7 @@ public class GestionarCursoOfertadoVeranoGatewayImplAdapter implements Gestionar
             if(usuarioEntityOptional.isPresent() && cursoEntityOptional.isPresent()) {
             UsuarioEntity usuarioEntity = usuarioEntityOptional.get();
             CursoOfertadoVeranoEntity cursoEntity = cursoEntityOptional.get();
-            result = cursoRepository.eliminarEstudianteDeCurso(idCurso, idUsuario);
+            result = cursoRepository.eliminarEstudianteDeCurso(cursoEntity.getId_curso(), usuarioEntity.getId_usuario());
                 if (result == 1){
                     usuarioYaEliminado = true;
                 }

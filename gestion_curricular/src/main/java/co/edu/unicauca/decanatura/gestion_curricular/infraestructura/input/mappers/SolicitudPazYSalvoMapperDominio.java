@@ -24,6 +24,7 @@ public interface SolicitudPazYSalvoMapperDominio {
     @Mapping(source = "id_solicitud", target = "id_solicitud")
     @Mapping(source = "nombre_solicitud", target = "nombre_solicitud")
     @Mapping(source = "fecha_registro_solicitud", target = "fecha_registro_solicitud")
+    @Mapping(source = "esSeleccionado", target = "esSeleccionado")
     @Mapping(source = "estadosSolicitud", target = "estadosSolicitud")
     @Mapping(source = "objUsuario", target = "objUsuario")
     @Mapping(source = "documentos", target = "documentos")
@@ -33,6 +34,8 @@ public interface SolicitudPazYSalvoMapperDominio {
 
     // DTO Petición → Modelo
     @Mapping(target = "estadosSolicitud", ignore = true) // No viene en el DTO de petición
+    @Mapping(source = "esSeleccionado", target = "esSeleccionado")
+    @Mapping(target = "objCursoOfertadoVerano", ignore = true) 
     SolicitudPazYSalvo mappearDeSolicitudDTOPeticionASolicitud(SolicitudPazYSalvoDTOPeticion peticion);
 
     List<SolicitudPazYSalvo> mappearListaDeSolicitudDTOPeticionAListaSolicitud(List<SolicitudPazYSalvoDTOPeticion> peticiones); 

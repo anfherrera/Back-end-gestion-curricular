@@ -28,7 +28,7 @@ public class SolicitudDTOPeticion {
     @PastOrPresent(message = "{Solicitud.fecha.pastorpresent}")
     private Date fecha_registro_solicitud;
 
-    private boolean esSeleccionado;
+    private Boolean esSeleccionado;
 
     @Valid
     private EstadoSolicitudDTOPeticion estado_actual;

@@ -15,6 +15,7 @@ public class SolicitudDTORespuesta {
     private Integer id_solicitud;
     private String nombre_solicitud;
     private Date fecha_registro_solicitud;
+    private Boolean esSeleccionado;
     private List<EstadoSolicitudDTORespuesta> estadosSolicitud;
     private UsuarioDTORespuesta objUsuario;
     private List<DocumentosDTORespuesta> documentos;
