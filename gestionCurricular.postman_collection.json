@@ -1134,6 +1134,77 @@
 				}
 			},
 			"response": []
+		},
+		{
+			"name": "SubirArchivo",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "file",
+							"type": "file",
+							"src": "/D:/1Descargas/Dilema Moral.pdf"
+						}
+					]
+				},
+				"url": {
+					"raw": "localhost:5000/api/archivos/subir/pdf",
+					"host": [
+						"localhost"
+					],
+					"port": "5000",
+					"path": [
+						"api",
+						"archivos",
+						"subir",
+						"pdf"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "ObtenerArchivo",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "file",
+							"type": "file",
+							"src": "/D:/1Descargas/Dilema Moral.pdf"
+						}
+					]
+				},
+				"url": {
+					"raw": "localhost:5000/api/archivos/descargar/pdf?filename=prueba.pdf",
+					"host": [
+						"localhost"
+					],
+					"port": "5000",
+					"path": [
+						"api",
+						"archivos",
+						"descargar",
+						"pdf"
+					],
+					"query": [
+						{
+							"key": "filename",
+							"value": "prueba.pdf"
+						}
+					]
+				}
+			},
+			"response": []
 		}
 	]
 }
