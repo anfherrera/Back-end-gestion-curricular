@@ -5,8 +5,11 @@ import java.util.List;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.CambioEstadoSolicitudEcaes;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.EstadoSolicitud;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.FechaEcaes;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.SolicitudEcaes;
+import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.DTOPeticion.CambioEstadoSolicitudEcaesDTOPeticion;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.DTOPeticion.FechasEcaesDTOPeticion;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.DTOPeticion.SolicitudEcaesDTOPeticion;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.DTORespuesta.FechaEcaesDTORespuesta;
@@ -48,4 +51,8 @@ public interface SolicitudEcaesMapperDominio {
     // Lista de fechas ecaes dominio → Lista de DTO respuesta
     List<FechaEcaesDTORespuesta> mappearListaDeFechaEcaesAFechaEcaesDTORespuesta(List<FechaEcaes> fechasEcaes); 
     
+    //Intento para la actualizacion del estado de la solicitud
+    CambioEstadoSolicitudEcaesDTOPeticion mappearDeCambioEstadoSolicitudACambioEstadoSolicitudEcaesDTOPeticion(CambioEstadoSolicitudEcaes solicitudPeticion);
+
+    CambioEstadoSolicitudEcaes mappearDeCambioEstadoSolicitudEcaesDTOPeticionACambioEstadoSolicitud(CambioEstadoSolicitudEcaesDTOPeticion solicitudPeticion);
 }

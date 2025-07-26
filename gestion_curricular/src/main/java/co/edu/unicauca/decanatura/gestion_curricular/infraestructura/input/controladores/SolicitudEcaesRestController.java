@@ -82,5 +82,15 @@ public class SolicitudEcaesRestController {
         List<FechaEcaesDTORespuesta> respuesta = solicitudMapperDominio.mappearListaDeFechaEcaesAFechaEcaesDTORespuesta(fechas);
         return ResponseEntity.ok(respuesta);
     }
+
+    //metodo para agregar un estado a la solicitud
+    @PutMapping("/actualizarEstadoSolicitud")
+    public ResponseEntity<Void> actualizarEstadoSolicitud(@RequestBody SolicitudEcaesDTOPeticion solicitudPeticion, EstadoSolicitudEcaes nuevoEstado) {
+        SolicitudEcaes solicitud = solicitudMapperDominio.mappearDeSolicitudEcaesDTOPeticionASolicitudEcaes(solicitudPeticion);
+        solicitudEcaesCU.cambiarEstadoSolicitudEcaes(solicitud.getId_solicitud(), );
+        return ResponseEntity.noContent().build();
+    }
+    
+    
     
 }

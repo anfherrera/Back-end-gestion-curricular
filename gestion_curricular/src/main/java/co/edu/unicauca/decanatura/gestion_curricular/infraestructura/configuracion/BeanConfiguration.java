@@ -7,6 +7,7 @@ import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.Formatead
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.GestionarCursoOfertadoVeranoGatewayIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.GestionarDocumentosGatewayIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.GestionarEstadisticasGatewayIntPort;
+import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.GestionarEstadoSolicitudGatewayIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.GestionarMateriasIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.GestionarPreRegistroEcaesGatewayIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.GestionarProgramaGatewayIntPort;
@@ -68,9 +69,10 @@ public class BeanConfiguration {
     public GestionarSolicitudEcaesCUAdapter crearGestionarSolicitudEcaesCUInt(
             SolicitudEcaesRepositoryInt solicitudEcaesRepository
             , UsuarioRepositoryInt usuarioRepository,GestionarPreRegistroEcaesGatewayIntPort objGestionarSolicitudEcaesGateway,FormateadorResultadosIntPort objFormateadorResultados
-            ,GestionarDocumentosGatewayIntPort objDocumentosGateway, GestionarUsuarioGatewayIntPort objUsuario
+            ,GestionarDocumentosGatewayIntPort objDocumentosGateway, GestionarUsuarioGatewayIntPort objUsuario,
+            GestionarEstadoSolicitudGatewayIntPort objGestionarEstadoSolicitudGateway
             ) {
-        return new GestionarSolicitudEcaesCUAdapter(solicitudEcaesRepository,usuarioRepository,objGestionarSolicitudEcaesGateway,objFormateadorResultados,objDocumentosGateway,objUsuario);
+        return new GestionarSolicitudEcaesCUAdapter(solicitudEcaesRepository,usuarioRepository,objGestionarSolicitudEcaesGateway,objFormateadorResultados,objDocumentosGateway,objUsuario,objGestionarEstadoSolicitudGateway);
     }
     
 }

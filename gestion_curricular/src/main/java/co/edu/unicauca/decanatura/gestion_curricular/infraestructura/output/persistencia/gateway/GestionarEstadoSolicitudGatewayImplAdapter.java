@@ -67,5 +67,14 @@ public class GestionarEstadoSolicitudGatewayImplAdapter implements GestionarEsta
         }
         return estadoSolicitud;
     }
+    @Override
+    public EstadoSolicitud guarEstadoSolicitud(EstadoSolicitud estadoSolicitud) {
+        // Convertir dominio → entidad
+        EstadoSolicitudEntity entity = estadoSolicitudMapper.map(estadoSolicitud, EstadoSolicitudEntity.class);
+        // Guardar en base de datos
+        EstadoSolicitudEntity saved = estadoSolicitudRepository.save(entity);
+        // Convertir entidad → dominio
+        return estadoSolicitudMapper.map(saved, EstadoSolicitud.class);
+    }
     
 }

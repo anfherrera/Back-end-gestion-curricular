@@ -11,6 +11,7 @@ import org.modelmapper.ModelMapper;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarSolicitudEcaesCUIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.FormateadorResultadosIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.GestionarDocumentosGatewayIntPort;
+import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.GestionarEstadoSolicitudGatewayIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.GestionarPreRegistroEcaesGatewayIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.GestionarUsuarioGatewayIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Documento;
@@ -37,13 +38,15 @@ public class GestionarSolicitudEcaesCUAdapter implements GestionarSolicitudEcaes
     private final FormateadorResultadosIntPort objFormateadorResultados;
     private final GestionarDocumentosGatewayIntPort objDocumentosGateway;
     private final GestionarUsuarioGatewayIntPort objUsuario;
+    private final GestionarEstadoSolicitudGatewayIntPort objGestionarEstadoSolicitudGateway;
 
 
 
     public GestionarSolicitudEcaesCUAdapter(SolicitudEcaesRepositoryInt solicitudEcaesRepository
             , UsuarioRepositoryInt usuarioRepository,GestionarPreRegistroEcaesGatewayIntPort objGestionarSolicitudEcaesGateway,
             FormateadorResultadosIntPort objFormateadorResultados,
-            GestionarDocumentosGatewayIntPort objDocumentosGateway, GestionarUsuarioGatewayIntPort objUsuario
+            GestionarDocumentosGatewayIntPort objDocumentosGateway, GestionarUsuarioGatewayIntPort objUsuario,
+            GestionarEstadoSolicitudGatewayIntPort objGestionarEstadoSolicitudGateway
             ) {
         this.solicitudRepository= solicitudEcaesRepository;
         this.usuarioRepository = usuarioRepository;
@@ -51,6 +54,7 @@ public class GestionarSolicitudEcaesCUAdapter implements GestionarSolicitudEcaes
         this.objFormateadorResultados = objFormateadorResultados;
         this.objDocumentosGateway = objDocumentosGateway;
         this.objUsuario = objUsuario;   
+        this.objGestionarEstadoSolicitudGateway = objGestionarEstadoSolicitudGateway;
 
     }
 
@@ -105,49 +109,65 @@ public class GestionarSolicitudEcaesCUAdapter implements GestionarSolicitudEcaes
 
     //     return objGestionarSolicitudEcaesGateway.guardar(solicitud);
     // }
-    @Override
-    public SolicitudEcaes guardar(SolicitudEcaes solicitud) {
-        if(solicitud == null) {
-            this.objFormateadorResultados.retornarRespuestaErrorReglaDeNegocio("La solicitud no puede ser nula");
-        }
-
-        if(solicitud.getId_solicitud()!=null){
-            Optional<SolicitudEcaes> solicitudExistente = objGestionarSolicitudEcaesGateway.buscarOpcionalPorId(solicitud.getId_solicitud());
-            if (solicitudExistente.isPresent()) {
-                this.objFormateadorResultados.retornarRespuestaErrorEntidadExiste("Ya existe una solicitud con el ID: "
-                + solicitud.getId_solicitud());
-                //return null;
+        @Override
+        public SolicitudEcaes guardar(SolicitudEcaes solicitud) {
+            if(solicitud == null) {
+                this.objFormateadorResultados.retornarRespuestaErrorReglaDeNegocio("La solicitud no puede ser nula");
             }
-        }
 
-        if(solicitud.getObjUsuario() == null || solicitud.getObjUsuario().getId_usuario() == null){
-            this.objFormateadorResultados.retornarRespuestaErrorEntidadExiste("El usuario no puede ser nulo o no tener ID");
-        }
-        Integer idUsuario = solicitud.getObjUsuario().getId_usuario();
-        Optional<Usuario> usuarioOpt = objGestionarSolicitudEcaesGateway.buscarUsuarioPorId(idUsuario);
-        if (usuarioOpt.isEmpty()) {
-            this.objFormateadorResultados.retornarRespuestaErrorReglaDeNegocio("Usuario ID: " + idUsuario + " no encontrado");
-        }
+            if(solicitud.getId_solicitud()!=null){
+                Optional<SolicitudEcaes> solicitudExistente = objGestionarSolicitudEcaesGateway.buscarOpcionalPorId(solicitud.getId_solicitud());
+                if (solicitudExistente.isPresent()) {
+                    this.objFormateadorResultados.retornarRespuestaErrorEntidadExiste("Ya existe una solicitud con el ID: "
+                    + solicitud.getId_solicitud());
+                    //return null;
+                }
+            }
 
-        List<Documento> documentos = solicitud.getDocumentos();
-        if(documentos == null || documentos.isEmpty()) {
-            this.objFormateadorResultados.retornarRespuestaErrorReglaDeNegocio("La solicitud debe tener al menos un documento");
+            if(solicitud.getObjUsuario() == null || solicitud.getObjUsuario().getId_usuario() == null){
+                this.objFormateadorResultados.retornarRespuestaErrorEntidadExiste("El usuario no puede ser nulo o no tener ID");
+            }
+            Integer idUsuario = solicitud.getObjUsuario().getId_usuario();
+            Optional<Usuario> usuarioOpt = objGestionarSolicitudEcaesGateway.buscarUsuarioPorId(idUsuario);
+            if (usuarioOpt.isEmpty()) {
+                this.objFormateadorResultados.retornarRespuestaErrorReglaDeNegocio("Usuario ID: " + idUsuario + " no encontrado");
+            }
+
+            List<Documento> documentos = solicitud.getDocumentos();
+            if(documentos == null || documentos.isEmpty()) {
+                this.objFormateadorResultados.retornarRespuestaErrorReglaDeNegocio("La solicitud debe tener al menos un documento");
+            }
+
+            SolicitudEcaes solicitudGuardada = this.objGestionarSolicitudEcaesGateway.guardar(solicitud);
+
+            //Asociar documentos a la solicitud guardada
+            for (Documento doc : solicitudGuardada.getDocumentos()) {
+                doc.setObjSolicitud(solicitudGuardada);
+                this.objDocumentosGateway.actualizarDocumento(doc);
+            }
+
+            // for (EstadoSolicitud estado : solicitudGuardada.getEstadosSolicitud()) {
+            //     estado.setObjSolicitud(solicitudGuardada);
+            //     this.objGestionarEstadoSolicitudGateway.actualizarEstadoSolicitud(estado);
+            // }
+            EstadoSolicitud estadoInicial = new EstadoSolicitud();
+            estadoInicial.setEstado_actual("Enviado");
+            estadoInicial.setFecha_registro_estado(new Date());
+            estadoInicial.setObjSolicitud(solicitudGuardada); // establecer vínculo
+            
+            if(solicitudGuardada.getEstadosSolicitud() == null) {
+                solicitudGuardada.setEstadosSolicitud(new ArrayList<>());
+            }
+            solicitudGuardada.getEstadosSolicitud().add(estadoInicial);
+            this.objGestionarEstadoSolicitudGateway.guarEstadoSolicitud(estadoInicial);
+
+            usuarioOpt.get().getSolicitudes().add(solicitudGuardada);
+            this.objUsuario.actualizarUsuario(usuarioOpt.get());
+        
+
+            return solicitudGuardada;
+    
         }
-
-        SolicitudEcaes solicitudGuardada = this.objGestionarSolicitudEcaesGateway.guardar(solicitud);
-
-        //Asociar documentos a la solicitud guardada
-        for (Documento doc : solicitudGuardada.getDocumentos()) {
-            doc.setObjSolicitud(solicitudGuardada);
-            this.objDocumentosGateway.actualizarDocumento(doc);
-        }
-        usuarioOpt.get().getSolicitudes().add(solicitudGuardada);
-        this.objUsuario.actualizarUsuario(usuarioOpt.get());
-       
-
-        return solicitudGuardada;
- 
-    }
 
     @Override
     public List<SolicitudEcaes> listarSolicitudes() {
