@@ -10,7 +10,7 @@ import lombok.Data;
 @AllArgsConstructor
 public class CambioEstadoSolicitudEcaes {
     private Integer idSolicitud;
-    // private String nuevoEstado;
+    private String nuevoEstado;
     // private String observacion; // opcional
-    private EstadoSolicitudEcaes nuevoEstado;
+    //private EstadoSolicitudEcaes nuevoEstado;
 }

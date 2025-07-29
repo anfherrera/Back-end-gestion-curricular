@@ -4,9 +4,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarSolicitudEcaesCUIntPort;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.CambioEstadoSolicitudEcaes;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.FechaEcaes;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.SolicitudEcaes;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Enums.EstadoSolicitudEcaes;
+import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.DTOPeticion.CambioEstadoSolicitudEcaesDTOPeticion;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.DTOPeticion.FechasEcaesDTOPeticion;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.DTOPeticion.SolicitudEcaesDTOPeticion;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.DTORespuesta.FechaEcaesDTORespuesta;
@@ -62,11 +64,11 @@ public class SolicitudEcaesRestController {
         return ResponseEntity.ok(respuesta);
     }
 
-    @PutMapping("/cambiarEstado-Ecaes{id}")
-    public ResponseEntity<Void> cambiarEstado(@PathVariable Integer id, @RequestParam EstadoSolicitudEcaes nuevoEstado) {
-        solicitudEcaesCU.cambiarEstadoSolicitudEcaes(id, nuevoEstado);
-        return ResponseEntity.noContent().build();
-    }
+    // @PutMapping("/cambiarEstado-Ecaes{id}")
+    // public ResponseEntity<Void> cambiarEstado(@PathVariable Integer id, @RequestParam EstadoSolicitudEcaes nuevoEstado) {
+    //     solicitudEcaesCU.cambiarEstadoSolicitudEcaes(id, nuevoEstado);
+    //     return ResponseEntity.noContent().build();
+    // }
 
     @PostMapping("/publicarFechasEcaes")
     public ResponseEntity<FechaEcaesDTORespuesta> publicarFechasEcaes(@RequestBody FechasEcaesDTOPeticion fechasEcaes) {
@@ -83,11 +85,19 @@ public class SolicitudEcaesRestController {
         return ResponseEntity.ok(respuesta);
     }
 
-    //metodo para agregar un estado a la solicitud
+    // //metodo para agregar un estado a la solicitud
+    // @PutMapping("/actualizarEstadoSolicitud")
+    // public ResponseEntity<Void> actualizarEstadoSolicitud(@RequestBody SolicitudEcaesDTOPeticion solicitudPeticion, EstadoSolicitudEcaes nuevoEstado) {
+    //     SolicitudEcaes solicitud = solicitudMapperDominio.mappearDeSolicitudEcaesDTOPeticionASolicitudEcaes(solicitudPeticion);
+    //     solicitudEcaesCU.cambiarEstadoSolicitudEcaes(solicitud.getId_solicitud(),nuevoEstado);
+    //     return ResponseEntity.noContent().build();
+    // }
+
+    // Intento de actualizar el estado de la solicitud
     @PutMapping("/actualizarEstadoSolicitud")
-    public ResponseEntity<Void> actualizarEstadoSolicitud(@RequestBody SolicitudEcaesDTOPeticion solicitudPeticion, EstadoSolicitudEcaes nuevoEstado) {
-        SolicitudEcaes solicitud = solicitudMapperDominio.mappearDeSolicitudEcaesDTOPeticionASolicitudEcaes(solicitudPeticion);
-        solicitudEcaesCU.cambiarEstadoSolicitudEcaes(solicitud.getId_solicitud(), );
+    public ResponseEntity<Void> actualizarEstadoSolicitud(@RequestBody CambioEstadoSolicitudEcaesDTOPeticion solicitudPeticion) {
+        CambioEstadoSolicitudEcaes solicitud = solicitudMapperDominio.mappearDeCambioEstadoSolicitudEcaesDTOPeticionACambioEstadoSolicitud(solicitudPeticion);
+        solicitudEcaesCU.cambiarEstadoSolicitud(solicitud.getIdSolicitud(), solicitud.getNuevoEstado());
         return ResponseEntity.noContent().build();
     }
     

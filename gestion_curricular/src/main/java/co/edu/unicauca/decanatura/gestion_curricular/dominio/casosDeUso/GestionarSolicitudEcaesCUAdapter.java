@@ -58,57 +58,7 @@ public class GestionarSolicitudEcaesCUAdapter implements GestionarSolicitudEcaes
 
     }
 
-    // @Override
-    // public SolicitudEcaes guardar(SolicitudEcaes solicitud) {
-
-    //     if(solicitud.getId_solicitud()!=null){
-    //         Optional<SolicitudEcaes> solicitudExistente = objGestionarSolicitudEcaesGateway.buscarOpcionalPorId(solicitud.getId_solicitud());
-    //         if (solicitudExistente.isPresent()) {
-    //             this.objFormateadorResultados.retornarRespuestaErrorEntidadExiste("Ya existe una solicitud con el ID: "
-    //             + solicitud.getId_solicitud());
-    //             //return null;
-    //         }
-    //     }
-
-    //     // Optional<Usuario> usuarioOpt = objGestionarSolicitudEcaesGateway.buscarUsuarioPorId(solicitud.getObjUsuario().getId_usuario());
-    //     // if (usuarioOpt.isEmpty()) {
-    //     //     this.objFormateadorResultados.retornarRespuestaErrorEntidadExiste("Usuario no encontrado con ID: " + solicitud.getObjUsuario().getId_usuario());
-    
-    //     // }
-    //     if(solicitud.getObjUsuario() == null || solicitud.getObjUsuario().getId_usuario() == null){
-    //         this.objFormateadorResultados.retornarRespuestaErrorEntidadExiste("El usuario no puede ser nulo o no tener ID");
-    //     }
-    //     Integer idUsuario = solicitud.getObjUsuario().getId_usuario();
-    //     Optional<Usuario> usuarioOpt = objGestionarSolicitudEcaesGateway.buscarUsuarioPorId(idUsuario);
-    //     if (usuarioOpt.isEmpty()) {
-    //         this.objFormateadorResultados.retornarRespuestaErrorEntidadExiste("Usuario ID: " + idUsuario + " no encontrado");
-    //     }
-
-    //     // Aseguramos relaciones inversas
-    //     if (solicitud.getDocumentos() != null) {
-    //         solicitud.getDocumentos().forEach(doc -> doc.setObjSolicitud(solicitud));
-    //     }
-
-    //     if (solicitud.getEstadosSolicitud() != null) {
-    //         solicitud.getEstadosSolicitud().forEach(est -> est.setObjSolicitud(solicitud));
-    //     }
-
-
-    //     solicitud.setObjUsuario(usuarioOpt.get());
-        
-    //     EstadoSolicitud estadoInicial = new EstadoSolicitud();
-    //     estadoInicial.setEstado_actual("Enviado");
-    //     estadoInicial.setFecha_registro_estado(new Date());
-    //     estadoInicial.setObjSolicitud(solicitud); // establecer vínculo
-        
-    //     if(solicitud.getEstadosSolicitud() == null) {
-    //         solicitud.setEstadosSolicitud(new ArrayList<>());
-    //     }
-
-    //     solicitud.getEstadosSolicitud().add(estadoInicial); 
-
-    //     return objGestionarSolicitudEcaesGateway.guardar(solicitud);
-    // }
+   
         @Override
         public SolicitudEcaes guardar(SolicitudEcaes solicitud) {
             if(solicitud == null) {
@@ -151,7 +101,7 @@ public class GestionarSolicitudEcaesCUAdapter implements GestionarSolicitudEcaes
             //     this.objGestionarEstadoSolicitudGateway.actualizarEstadoSolicitud(estado);
             // }
             EstadoSolicitud estadoInicial = new EstadoSolicitud();
-            estadoInicial.setEstado_actual("Enviado");
+            estadoInicial.setEstado_actual("Enviada");//Se pone por defecto el estado de Enviada
             estadoInicial.setFecha_registro_estado(new Date());
             estadoInicial.setObjSolicitud(solicitudGuardada); // establecer vínculo
             
@@ -178,7 +128,7 @@ public class GestionarSolicitudEcaesCUAdapter implements GestionarSolicitudEcaes
         return objGestionarSolicitudEcaesGateway.buscarPorId(idSolicitud)
             .orElseThrow(() -> new EntidadNoExisteException("Solicitud no encontrada con ID: " + idSolicitud));    
     }
-
+    //metodo poco eficiente, de ser posible se elimina
     @Override
     public void cambiarEstadoSolicitudEcaes(Integer idSolicitud, EstadoSolicitudEcaes nuevoEstado) {
         
@@ -186,6 +136,15 @@ public class GestionarSolicitudEcaesCUAdapter implements GestionarSolicitudEcaes
         nuevo.setEstado_actual(nuevoEstado.name());
         nuevo.setFecha_registro_estado(new Date());
         
+        objGestionarSolicitudEcaesGateway.cambiarEstadoSolicitudEcaes(idSolicitud, nuevo);
+    }
+    //Metodo que solo pide Id y el nuevo estado como String
+    @Override
+    public void cambiarEstadoSolicitud(Integer idSolicitud, String nuevoEstado) {
+        EstadoSolicitud nuevo = new EstadoSolicitud();
+        nuevo.setEstado_actual(nuevoEstado);
+        nuevo.setFecha_registro_estado(new Date());
+
         objGestionarSolicitudEcaesGateway.cambiarEstadoSolicitudEcaes(idSolicitud, nuevo);
     }
 
@@ -198,6 +157,9 @@ public class GestionarSolicitudEcaesCUAdapter implements GestionarSolicitudEcaes
     public List<FechaEcaes> listarFechasEcaes() {
         return objGestionarSolicitudEcaesGateway.listarFechasEcaes();
     }
+
+
+    
 
 
 }

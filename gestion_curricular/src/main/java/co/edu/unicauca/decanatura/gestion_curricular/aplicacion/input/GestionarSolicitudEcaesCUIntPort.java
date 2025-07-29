@@ -16,6 +16,9 @@ public interface GestionarSolicitudEcaesCUIntPort {
 
     void cambiarEstadoSolicitudEcaes(Integer idSolicitud, EstadoSolicitudEcaes nuevoEstado);
 
+    // Nuevo método para cambiar el estado de la solicitud con un String
+    void cambiarEstadoSolicitud(Integer idSolicitud, String nuevoEstado);
+
     FechaEcaes publicarFechasEcaes(FechaEcaes fechasEcaes);
 
     List<FechaEcaes> listarFechasEcaes();
