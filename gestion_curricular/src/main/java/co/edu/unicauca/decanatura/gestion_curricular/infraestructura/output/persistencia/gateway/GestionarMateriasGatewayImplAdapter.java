@@ -57,7 +57,7 @@ public class GestionarMateriasGatewayImplAdapter implements GestionarMateriasInt
         boolean existe = false;
         Optional<MateriaEntity> materiaEntity = materiaRepository.findById(idMateria);
         if (materiaEntity != null) {
-            materiaRepository.deleteById(idMateria);
+            materiaRepository.eliminarPorId(idMateria);
             existe = true;
         }
         return existe;
@@ -66,12 +66,11 @@ public class GestionarMateriasGatewayImplAdapter implements GestionarMateriasInt
     @Override
     @Transactional(readOnly = true)
     public Materia obtenerMateriaPorId(Integer idMateria) {
-        Materia materiaRetornar = null;
         Optional<MateriaEntity> materiaEntity = materiaRepository.findById(idMateria);
-        if (materiaEntity != null) {
-            materiaRetornar = materiasMapper.map(materiaEntity.get(), Materia.class);
+        if (materiaEntity.isPresent()) {
+            return materiasMapper.map(materiaEntity.get(), Materia.class);
         }
-        return materiaRetornar;
+        return null;
     }
 
     @Override
@@ -91,7 +90,10 @@ public class GestionarMateriasGatewayImplAdapter implements GestionarMateriasInt
         boolean existe = false;
         Optional<MateriaEntity> materiaEntity = materiaRepository.buscarPorCodigo(codigo);
         if (materiaEntity != null) {
-            existe = true;
+            if( materiaEntity.isPresent() ) {
+                existe = true;
+            }
+                // Si existe, se retorna true
         }
         return existe;
 

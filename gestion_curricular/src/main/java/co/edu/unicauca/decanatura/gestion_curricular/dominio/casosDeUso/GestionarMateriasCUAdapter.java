@@ -24,9 +24,11 @@ public class GestionarMateriasCUAdapter implements GestionarMateriasCUIntPort {
             formateadorResultados.retornarRespuestaErrorEntidadExiste("La materia no puede ser nula.");
         }
 
-        if (materia.getCodigo() == null || materia.getCodigo().isBlank()) {
-            formateadorResultados.retornarRespuestaErrorEntidadExiste("El código de la materia es obligatorio.");
-        }
+        materia.setId_materia(null); // Asegurarse de que el ID sea nulo para una nueva creación
+
+        // if (materia.getCodigo() == null || materia.getCodigo().isBlank()) {
+        //     formateadorResultados.retornarRespuestaErrorEntidadExiste("El código de la materia es obligatorio.");
+        // }
 
         if (materiasGateway.existeMateriaPorCodigo(materia.getCodigo())) {
             formateadorResultados.retornarRespuestaErrorEntidadExiste("Ya existe una materia con este código.");
@@ -37,15 +39,16 @@ public class GestionarMateriasCUAdapter implements GestionarMateriasCUIntPort {
 
     @Override
     public Materia actualizarMateria(Materia materia) {
-        if (materia == null || materia.getId_materia() == null) {
-            formateadorResultados.retornarRespuestaErrorEntidadExiste("La materia o su ID no puede ser nula.");
+        if (materia == null ) {
+            formateadorResultados.retornarRespuestaErrorEntidadExiste("La materia no puede ser nula.");
         }
-
+        if(materia.getId_materia() == null){
+            formateadorResultados.retornarRespuestaErrorEntidadExiste("Debe proporcionar un ID válido para actualizar.");
+        }
         Materia existente = materiasGateway.obtenerMateriaPorId(materia.getId_materia());
         if (existente == null) {
             formateadorResultados.retornarRespuestaErrorEntidadExiste("No se encontró la materia a actualizar.");
         }
-
         return materiasGateway.actualizarMateria(materia);
     }
 

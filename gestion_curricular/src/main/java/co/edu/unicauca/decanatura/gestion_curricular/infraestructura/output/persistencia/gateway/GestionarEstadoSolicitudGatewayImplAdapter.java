@@ -39,8 +39,8 @@ public class GestionarEstadoSolicitudGatewayImplAdapter implements GestionarEsta
     public EstadoSolicitud obtenerEstadoSolicitudPorId(Integer id_estado_solicitud) {
         EstadoSolicitud estadoSolicitud = null;
         Optional<EstadoSolicitudEntity> estadoSolicitudEntity = estadoSolicitudRepository.findById(id_estado_solicitud);
-        if(estadoSolicitudEntity !=null){
-            estadoSolicitud = estadoSolicitudMapper.map(estadoSolicitudEntity, EstadoSolicitud.class);
+        if(estadoSolicitudEntity.isPresent()){
+            estadoSolicitud = estadoSolicitudMapper.map(estadoSolicitudEntity.get(), EstadoSolicitud.class);
         }
         return estadoSolicitud;
     }

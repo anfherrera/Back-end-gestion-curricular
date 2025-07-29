@@ -2,8 +2,11 @@ package co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.per
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.entidades.CursoOfertadoVeranoEntity;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+import org.springframework.transaction.annotation.Transactional;
+
 
 import java.util.List;
 public interface CursoOfertadoVeranoRepositoryInt extends JpaRepository<CursoOfertadoVeranoEntity, Integer> {
@@ -23,4 +26,20 @@ public interface CursoOfertadoVeranoRepositoryInt extends JpaRepository<CursoOfe
     // Consulta nativa: contar cursos por salón específico
     @Query(value = "SELECT COUNT(*) FROM cursos_ofertados WHERE salon = ?1", nativeQuery = true)
     Integer contarPorSalon(String salon);
+    
+    @Modifying
+    @Query("DELETE FROM CursoOfertadoVeranoEntity c WHERE c.id = :id")
+    void eliminarPorId(@Param("id") Integer id);
+
+    @Modifying
+    @Transactional
+    @Query(value = "INSERT INTO cursosestudiantes (idCurso, idUsuario) VALUES (:idCurso, :idUsuario)", nativeQuery = true)
+    int insertarCursoEstudiante(@Param("idCurso") Integer idCurso, @Param("idUsuario") Integer idUsuario);
+
+    @Modifying
+    @Transactional
+    @Query(value = "DELETE FROM cursosestudiantes WHERE idCurso = :idCurso AND idUsuario = :idUsuario", nativeQuery = true)
+    int eliminarEstudianteDeCurso(@Param("idCurso") Integer idCurso, @Param("idUsuario") Integer idUsuario);
+
 }
+

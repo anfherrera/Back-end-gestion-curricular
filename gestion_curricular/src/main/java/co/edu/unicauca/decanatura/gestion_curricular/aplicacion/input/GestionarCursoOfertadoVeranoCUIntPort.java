@@ -4,13 +4,12 @@ import java.util.List;
 
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.CursoOfertadoVerano;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.EstadoCursoOfertado;
-import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Solicitud;
 
 public interface GestionarCursoOfertadoVeranoCUIntPort {
     
     CursoOfertadoVerano crearCurso(CursoOfertadoVerano curso);
 
-    CursoOfertadoVerano actualizarCurso(CursoOfertadoVerano curso, EstadoCursoOfertado estadoCurso, List<Solicitud> solicitudes);
+    CursoOfertadoVerano actualizarCurso(CursoOfertadoVerano curso, EstadoCursoOfertado estadoCurso);
 
     boolean eliminarCurso(Integer idCurso);
     

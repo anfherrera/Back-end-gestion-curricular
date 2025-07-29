@@ -16,11 +16,15 @@ public class Solicitud {
     private String nombre_solicitud;
     private Date fecha_registro_solicitud;
 
+    private Boolean esSeleccionado;
+
     private List<EstadoSolicitud> estadosSolicitud;
 
     private Usuario objUsuario;
 
     private List<Documento> documentos;
+
+    private CursoOfertadoVerano objCursoOfertadoVerano;
 
     public Solicitud () {
         this.documentos = new ArrayList<Documento>();

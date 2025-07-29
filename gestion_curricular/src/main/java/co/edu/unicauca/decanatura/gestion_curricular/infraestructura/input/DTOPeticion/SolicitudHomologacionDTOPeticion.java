@@ -14,9 +14,9 @@ public class SolicitudHomologacionDTOPeticion extends SolicitudDTOPeticion {
     }
 
     // Constructor con parámetros para todos los campos de la clase base y de esta clase
-    public SolicitudHomologacionDTOPeticion(Integer id_solicitud, String nombre_solicitud, Date fecha_registro_solicitud,
-                                             String estado_actual, UsuarioDTOPeticion objUsuario, List<DocumentosDTOPeticion> documentos) {
+    public SolicitudHomologacionDTOPeticion(Integer id_solicitud, String nombre_solicitud, Date fecha_registro_solicitud, boolean esSeleccionado,
+                                             EstadoSolicitudDTOPeticion estado_actual, UsuarioDTOPeticion objUsuario, List<DocumentosDTOPeticion> documentos) {
         // Llamamos al constructor de la clase base
-        super(id_solicitud, nombre_solicitud, fecha_registro_solicitud, estado_actual, objUsuario, documentos);
+        super(id_solicitud, nombre_solicitud, fecha_registro_solicitud, esSeleccionado, estado_actual, objUsuario, documentos);
     }
 }

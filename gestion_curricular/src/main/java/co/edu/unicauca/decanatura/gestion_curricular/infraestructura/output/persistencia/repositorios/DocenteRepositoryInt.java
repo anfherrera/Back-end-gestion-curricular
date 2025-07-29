@@ -3,6 +3,7 @@ package co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.per
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.entidades.DocenteEntity;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
@@ -21,4 +22,9 @@ public interface DocenteRepositoryInt extends JpaRepository<DocenteEntity, Integ
     // Consulta JPQL: buscar docente por código exacto
     @Query("SELECT d FROM DocenteEntity d WHERE d.codigo_docente = :codigo")
     DocenteEntity buscarPorCodigoExacto(@Param("codigo") String codigo);
+
+    @Modifying
+    @Query("DELETE FROM DocumentoEntity d WHERE d.id = :id")
+    void eliminarPorId(@Param("id") Integer id);
+
 }

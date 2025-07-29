@@ -13,8 +13,8 @@ public class SolicitudReingreso extends Solicitud {
     public SolicitudReingreso(){
         super();
     }
-    public SolicitudReingreso(Integer id_solicitud, String nombre_solicitud, Date fecha_registro_solicitud,
-                                List<EstadoSolicitud> estadosSolicitud, Usuario objUsuario, List<Documento> documentos) {
-        super(id_solicitud, nombre_solicitud, fecha_registro_solicitud, estadosSolicitud, objUsuario, documentos);
+    public SolicitudReingreso(Integer id_solicitud, String nombre_solicitud, Date fecha_registro_solicitud, Boolean esSeleccionado,
+                                List<EstadoSolicitud> estadosSolicitud, Usuario objUsuario, List<Documento> documentos, CursoOfertadoVerano objCursoOfertadoVerano) {
+        super(id_solicitud, nombre_solicitud, fecha_registro_solicitud, esSeleccionado, estadosSolicitud, objUsuario, documentos, objCursoOfertadoVerano);
     }
 }

@@ -1,5 +1,6 @@
 package co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.mappers;
 
+
 import java.util.List;
 
 import org.mapstruct.Mapper;
@@ -12,7 +13,8 @@ import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.DTORe
 @Mapper(componentModel = "spring", uses = {
     MateriaMapperDominio.class,
     DocenteMapperDominio.class,
-    UsuarioMapperDominio.class
+    UsuarioMapperDominio.class,
+    EstadoCursoOfertadoMapper.class
 })
 public interface CursosOfertadosMapperDominio {
 
@@ -22,8 +24,9 @@ public interface CursosOfertadosMapperDominio {
     @Mapping(source = "grupo", target = "grupo")
     @Mapping(source = "cupo_estimado", target = "cupo_estimado")
     @Mapping(source = "salon", target = "salon")
-    @Mapping(target = "estadosCursoOfertados", ignore =  true)
-    @Mapping(source = "estudiantesInscritos", target = "estudiantesInscritos")
+    @Mapping(target = "estadosCursoOfertados", ignore = true)
+    @Mapping(target = "estudiantesInscritos", ignore = true)
+    @Mapping(target = "solicitudes" , ignore = true)
     CursoOfertadoVerano mappearDeDTOPeticionACursoOfertado(CursosOfertadosDTOPeticion peticion);
 
     // Dominio → DTO Respuesta

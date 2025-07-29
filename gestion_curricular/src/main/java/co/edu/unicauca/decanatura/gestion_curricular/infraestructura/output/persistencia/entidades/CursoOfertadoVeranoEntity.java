@@ -2,9 +2,7 @@ package co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.per
 
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.entidades.Enums.GrupoCursoVeranoEntity;
 import jakarta.persistence.CascadeType;
@@ -49,15 +47,20 @@ public class CursoOfertadoVeranoEntity {
     @JoinColumn(name = "idfkDocente", referencedColumnName = "idDocente", nullable = false)
     private DocenteEntity objDocente;
 
-    @OneToMany( mappedBy = "objCursoOfertadoVerano", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany( mappedBy = "objCursoOfertadoVerano", cascade = {CascadeType.REMOVE, CascadeType.PERSIST}, orphanRemoval = true)
     private List<EstadoCursoOfertadoEntity> estadosCursoOfertados; // Estado del curso ofertado
     
-    @ManyToMany(fetch = FetchType.EAGER)
+    @ManyToMany(fetch = FetchType.LAZY)
 	@JoinTable(name = "cursosEstudiantes", joinColumns = @JoinColumn(name = "idCurso"), inverseJoinColumns = @JoinColumn(name = "idUsuario"))
-    private Set<UsuarioEntity> estudiantesInscritos; // Lista de estudiantes inscritos en el curso
+    private List<UsuarioEntity> estudiantesInscritos; // Lista de estudiantes inscritos en el curso
+
+
+    @OneToMany(mappedBy = "objCursoOfertadoVerano", cascade = {CascadeType.REMOVE}, orphanRemoval = true)
+    private List<SolicitudEntity> solicitudes; // Lista de solicitudes de estudiantes para el curso
 
     public CursoOfertadoVeranoEntity() {
-        this.estudiantesInscritos = new HashSet<UsuarioEntity>();
+        this.estudiantesInscritos = new ArrayList<UsuarioEntity>();
         this.estadosCursoOfertados = new ArrayList<EstadoCursoOfertadoEntity>();
+        this.solicitudes = new ArrayList<SolicitudEntity>();
     }
 }

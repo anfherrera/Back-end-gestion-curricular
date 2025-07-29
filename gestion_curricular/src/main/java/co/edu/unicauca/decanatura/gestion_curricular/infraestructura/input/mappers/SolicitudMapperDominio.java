@@ -24,6 +24,7 @@ public interface SolicitudMapperDominio {
     @Mapping(source = "nombre_solicitud", target = "nombre_solicitud")
     @Mapping(source = "fecha_registro_solicitud", target = "fecha_registro_solicitud")
     @Mapping(source = "estadosSolicitud", target = "estadosSolicitud")
+    @Mapping(source = "esSeleccionado", target = "esSeleccionado")
     @Mapping(source = "objUsuario", target = "objUsuario")
     @Mapping(source = "documentos", target = "documentos")
     SolicitudDTORespuesta mappearDeSolicitudARespuesta(Solicitud solicitud);
@@ -32,6 +33,8 @@ public interface SolicitudMapperDominio {
 
     // DTO Petición → Modelo
     @Mapping(target = "estadosSolicitud", ignore = true) // No viene en el DTO de petición
+    @Mapping(target = "esSeleccionado", source = "esSeleccionado")
+    @Mapping(target = "objCursoOfertadoVerano", ignore = true) 
     Solicitud mappearDeSolicitudDTOPeticionASolicitud(SolicitudDTOPeticion peticion);
 
     List<Solicitud> mappearListaDeSolicitudDTOPeticionAListaSolicitud(List<SolicitudDTOPeticion> peticiones);

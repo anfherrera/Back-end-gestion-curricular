@@ -42,7 +42,10 @@ public class GestionarEstadisticasGatewayImplAdapter implements GestionarEstadis
             throw new RuntimeException("No hay programas disponibles para crear estadísticas.");
         }
         EstadisticaEntity estadisticaEntity = estadisticaMapper.map(estadistica, EstadisticaEntity.class);
-        estadisticaEntity.setNombre("Estadisticas");
+        //estadisticaEntity.setNombre("Estadisticas");
+        estadisticaEntity.setTotal_solicitudes(solicitudRepository.totalSolicitudes());
+        estadisticaEntity.setTotal_aprobadas(solicitudRepository.contarEstado("Aprobado"));
+        estadisticaEntity.setTotal_rechazadas(solicitudRepository.contarEstado("Rechazado"));
         estadisticaEntity.setNombres_procesos(new ArrayList<String>(solicitudRepository.buscarNombresSolicitudes()));
         estadisticaEntity.setPeriodos_academico(new ArrayList<Date>());
         estadisticaEntity.setNombres_programas(new ArrayList<String>(programaRepository.buscarNombresProgramas()));
@@ -56,6 +59,12 @@ public class GestionarEstadisticasGatewayImplAdapter implements GestionarEstadis
         estadisticaRepository.findById(estadistica.getId_estadistica())
             .orElseThrow(() -> new RuntimeException("Estadistica no encontrada con ID: " + estadistica.getId_estadistica()));
         EstadisticaEntity estadisticaEntity = estadisticaMapper.map(estadistica, EstadisticaEntity.class);
+                estadisticaEntity.setTotal_solicitudes(solicitudRepository.totalSolicitudes());
+        estadisticaEntity.setTotal_aprobadas(solicitudRepository.contarEstado("Aprobado"));
+        estadisticaEntity.setTotal_rechazadas(solicitudRepository.contarEstado("Rechazado"));
+        estadisticaEntity.setNombres_procesos(new ArrayList<String>(solicitudRepository.buscarNombresSolicitudes()));
+        estadisticaEntity.setPeriodos_academico(new ArrayList<Date>());
+        estadisticaEntity.setNombres_programas(new ArrayList<String>(programaRepository.buscarNombresProgramas()));
         EstadisticaEntity updatedEntity = estadisticaRepository.save(estadisticaEntity);
         return estadisticaMapper.map(updatedEntity, Estadistica.class);
     }
@@ -89,9 +98,9 @@ public class GestionarEstadisticasGatewayImplAdapter implements GestionarEstadis
         
         if(solicitudRepository.count() >= 0) {
         
-        estadisticaEntity.setTotal_aprobadas(solicitudRepository.contarNombreFechaEstadoYPrograma(proceso, fechaInicio, fechaFin, 1, idPrograma)); // Asumiendo que 1 es el ID del estado "aprobada"
+        estadisticaEntity.setTotal_aprobadas(solicitudRepository.contarNombreFechaEstadoYPrograma(proceso, fechaInicio, fechaFin, "Aprobado", idPrograma)); // Asumiendo que 1 es el ID del estado "aprobada"
         estadisticaEntity.setTotal_solicitudes(solicitudRepository.contarNombreFechaYPrograma(proceso, fechaInicio, fechaFin, idPrograma));
-        estadisticaEntity.setTotal_rechazadas(solicitudRepository.contarNombreFechaEstadoYPrograma(proceso, fechaInicio, fechaFin, 1, idPrograma)); // Asumiendo que 1 es el ID del estado "rechazada"
+        estadisticaEntity.setTotal_rechazadas(solicitudRepository.contarNombreFechaEstadoYPrograma(proceso, fechaInicio, fechaFin, "Rechazado", idPrograma)); // Asumiendo que 1 es el ID del estado "rechazada"
         }
 
         return estadisticaMapper.map(estadisticaEntity, Estadistica.class);
@@ -100,7 +109,7 @@ public class GestionarEstadisticasGatewayImplAdapter implements GestionarEstadis
     @Override
     @Transactional(readOnly = true)
     public Estadistica obtenerEstadisticasSolicitudPeriodoEstadoYPrograma(Integer idEstadistica, String proceso,
-            Date fechaInicio, Date fechaFin, Integer idEstado, Integer idPrograma) {
+            Date fechaInicio, Date fechaFin, String estado, Integer idPrograma) {
     EstadisticaEntity estadisticaEntity = estadisticaRepository.findById(idEstadistica)
         .orElseThrow(() -> new IllegalArgumentException("Estadística no encontrada con ID: " + idEstadistica));
 
@@ -109,7 +118,7 @@ public class GestionarEstadisticasGatewayImplAdapter implements GestionarEstadis
         }
 
         int totalSolicitudes = solicitudRepository.contarNombreFechaEstadoYPrograma(
-        proceso, fechaInicio, fechaFin, idPrograma, idEstado);
+        proceso, fechaInicio, fechaFin, estado, idPrograma);
 
         // Actualizar el campo total_solicitudes de la estadística
         estadisticaEntity.setTotal_solicitudes(totalSolicitudes);
@@ -121,19 +130,18 @@ public class GestionarEstadisticasGatewayImplAdapter implements GestionarEstadis
     @Transactional(readOnly = true)
     public List<Estadistica> obtenerEstadisticasPeriodoEstadoYPrograma(Date fechaInicio, Date fechaFin,
             Integer idPrograma) {
-            Optional<EstadisticaEntity> estadisticaEntityOp = estadisticaRepository.findById(1);
+            List<EstadisticaEntity> estadisticaEntityOp = estadisticaRepository.findAll();
             EstadisticaEntity estadisticaEntity = null; 
             List<Estadistica> estadisticas = new ArrayList<>();
             if(estadisticaEntityOp!=null){
-                estadisticaEntity = estadisticaEntityOp.get();
-                List<String> nombres_procesos = estadisticaEntity.getNombres_procesos();
+                List<String> nombres_procesos = new ArrayList<String>(solicitudRepository.buscarNombresSolicitudes());
                 for (String proceso : nombres_procesos) {
                     Estadistica estadistica = new Estadistica();
                     estadistica.setNombre(proceso);
                     
                     estadistica.setTotal_solicitudes(solicitudRepository.contarNombreFechaYPrograma(proceso, fechaInicio, fechaFin, idPrograma));
-                    estadistica.setTotal_aprobadas(solicitudRepository.contarNombreFechaEstadoYPrograma(proceso, fechaInicio, fechaFin, 1, idPrograma));
-                    estadistica.setTotal_rechazadas(solicitudRepository.contarNombreFechaEstadoYPrograma(proceso, fechaInicio, fechaFin, 2, idPrograma));
+                    estadistica.setTotal_aprobadas(solicitudRepository.contarNombreFechaEstadoYPrograma(proceso, fechaInicio, fechaFin, "Aprobado", idPrograma));
+                    estadistica.setTotal_rechazadas(solicitudRepository.contarNombreFechaEstadoYPrograma(proceso, fechaInicio, fechaFin, "Rechazado", idPrograma));
                     
                     estadisticas.add(estadistica);
                 }

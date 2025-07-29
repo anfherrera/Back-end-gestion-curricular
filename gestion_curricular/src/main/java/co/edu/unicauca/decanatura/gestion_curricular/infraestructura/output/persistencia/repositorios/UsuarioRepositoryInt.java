@@ -3,6 +3,7 @@ package co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.per
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.entidades.UsuarioEntity;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
@@ -35,11 +36,16 @@ public interface UsuarioRepositoryInt extends JpaRepository<UsuarioEntity, Integ
     @Query("SELECT u FROM UsuarioEntity u WHERE u.objPrograma.id_programa = :idPrograma")
     List<UsuarioEntity> buscarPorPrograma(@Param("idPrograma") Integer idPrograma);
 
+    
     // Traer todos los usuarios con sus solicitudes (para evitar lazy loading)
     @Query("SELECT u FROM UsuarioEntity u")
     List<UsuarioEntity> listarConSolicitudes();
 
     @Query("SELECT s.objUsuario FROM SolicitudEntity s WHERE s.id_solicitud = :idSolicitud")
     UsuarioEntity buscarUsuariosPorSolicitud(@Param("idSolicitud") Integer idSolicitud);
+
+    @Modifying
+    @Query("DELETE FROM UsuarioEntity u WHERE u.id = :id")
+    void eliminarPorId(@Param("id") Integer id);
 
 }

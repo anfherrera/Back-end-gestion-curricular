@@ -2,9 +2,9 @@ package co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.per
 
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -55,11 +55,11 @@ public class UsuarioEntity {
 	private List<SolicitudEntity> solicitudes;
 
     @ManyToMany(mappedBy = "estudiantesInscritos")
-    private Set<CursoOfertadoVeranoEntity> cursosOfertadosInscritos;
+    private List<CursoOfertadoVeranoEntity> cursosOfertadosInscritos;
 
     public UsuarioEntity(){
         this.solicitudes = new ArrayList<SolicitudEntity>();
-        this.cursosOfertadosInscritos = new HashSet<CursoOfertadoVeranoEntity>();
+        this.cursosOfertadosInscritos = new ArrayList<CursoOfertadoVeranoEntity>();
     }
     
 }
