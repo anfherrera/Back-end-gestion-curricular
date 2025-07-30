@@ -55,9 +55,9 @@ public Usuario crearUsuario(Usuario usuario) {
     if (programa == null) {
         this.objFormateadorResultados.retornarRespuestaErrorEntidadExiste("El programa enviado no existe.");
     }
-    objRol = this.objGestionarRolGateway.buscarRolPorNombre("Estudiante");
+    objRol = this.objGestionarRolGateway.bucarRolPorId(usuario.getObjRol().getId_rol());
     if (objRol == null) {
-        this.objFormateadorResultados.retornarRespuestaErrorEntidadExiste("El rol 'Estudiante' no existe.");
+        this.objFormateadorResultados.retornarRespuestaErrorEntidadExiste("El rol con ID: '" + usuario.getObjRol().getId_rol() + "' no existe.");
     }
     objRol.getUsuarios().add(usuario);
     usuario.setObjRol(objRol);

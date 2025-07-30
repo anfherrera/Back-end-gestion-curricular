@@ -9,8 +9,6 @@ import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Programa;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Rol;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.SolicitudEcaes;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Usuario;
-
-import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.DTOPeticion.usuarioEntradaDto;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.DTORespuesta.SolicitudDTORespuesta;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.DTORespuesta.solicitudEcaesSalidaDto;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.DTORespuesta.usuarioSalidaDto;
@@ -40,42 +38,42 @@ public class Mapper {
     // }
     // //===========================
 
-    // Métodos personalizados
-    public Usuario usuarioEntradaDtoAUsuario(usuarioEntradaDto dto) {
-        Usuario usuario = new Usuario();
-        usuario.setNombre_completo(dto.getNombre_completo());
-        usuario.setCodigo(dto.getCodigo());
-        usuario.setCorreo(dto.getCorreo());
-        usuario.setPassword(dto.getPassword());
-        usuario.setEstado_usuario(dto.isEstado_usuario());
+    // // Métodos personalizados
+    // public Usuario usuarioEntradaDtoAUsuario(usuarioEntradaDto dto) {
+    //     Usuario usuario = new Usuario();
+    //     usuario.setNombre_completo(dto.getNombre_completo());
+    //     usuario.setCodigo(dto.getCodigo());
+    //     usuario.setCorreo(dto.getCorreo());
+    //     usuario.setPassword(dto.getPassword());
+    //     usuario.setEstado_usuario(dto.isEstado_usuario());
 
-        Rol rol = new Rol();
-        rol.setId_rol(dto.getIdRol());
-        usuario.setObjRol(rol);
+    //     Rol rol = new Rol();
+    //     rol.setId_rol(dto.getIdRol());
+    //     usuario.setObjRol(rol);
 
-        Programa programa = new Programa();
-        programa.setId_programa(dto.getIdPrograma());
-        usuario.setObjPrograma(programa);
+    //     Programa programa = new Programa();
+    //     programa.setId_programa(dto.getIdPrograma());
+    //     usuario.setObjPrograma(programa);
 
-        return usuario;
-    }
+    //     return usuario;
+    // }
 
-    public usuarioSalidaDto usuarioAUsuarioSalidaDto(Usuario usuario) {
-        usuarioSalidaDto dto = new usuarioSalidaDto();
-        dto.setId_usuario(usuario.getId_usuario());
-        dto.setNombre_completo(usuario.getNombre_completo());
-        dto.setCodigo(usuario.getCodigo());
-        dto.setCorreo(usuario.getCorreo());
-        dto.setEstado_usuario(usuario.isEstado_usuario());
+    // public usuarioSalidaDto usuarioAUsuarioSalidaDto(Usuario usuario) {
+    //     usuarioSalidaDto dto = new usuarioSalidaDto();
+    //     dto.setId_usuario(usuario.getId_usuario());
+    //     dto.setNombre_completo(usuario.getNombre_completo());
+    //     dto.setCodigo(usuario.getCodigo());
+    //     dto.setCorreo(usuario.getCorreo());
+    //     dto.setEstado_usuario(usuario.isEstado_usuario());
 
-        if (usuario.getObjRol() != null) {
-            dto.setNombreRol(usuario.getObjRol().getNombre());
-        }
+    //     if (usuario.getObjRol() != null) {
+    //         dto.setNombreRol(usuario.getObjRol().getNombre());
+    //     }
 
-        if (usuario.getObjPrograma() != null) {
-            dto.setNombrePrograma(usuario.getObjPrograma().getNombre_programa());
-        }
+    //     if (usuario.getObjPrograma() != null) {
+    //         dto.setNombrePrograma(usuario.getObjPrograma().getNombre_programa());
+    //     }
 
-        return dto;
-    }   
+    //     return dto;
+    // }   
 }
