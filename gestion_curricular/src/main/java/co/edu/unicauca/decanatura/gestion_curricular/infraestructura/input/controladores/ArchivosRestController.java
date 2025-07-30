@@ -21,14 +21,25 @@ import org.springframework.web.multipart.MultipartFile;
 public class ArchivosRestController {
     private final GestionarArchivosCUIntPort objGestionarArchivos;
 
+    // @PostMapping("/subir/pdf")
+    // public ResponseEntity<String> subirPDF(@RequestParam(name = "file", required = true) MultipartFile file) {
+    //     String filename = null;
+    //     try {
+    //         filename = this.objGestionarArchivos.saveFile(file, "prueba", "pdf");
+    //         return ResponseEntity.ok("Archivo subido correctamente"+ filename);
+    //     } catch (Exception e) {
+    //         return ResponseEntity.badRequest().body("Error al subir el archivo" + e.getMessage());
+    //     }
+    // }
     @PostMapping("/subir/pdf")
     public ResponseEntity<String> subirPDF(@RequestParam(name = "file", required = true) MultipartFile file) {
-        String filename = null;
+        String filename = null; 
         try {
-            filename = this.objGestionarArchivos.saveFile(file, "prueba", "pdf");
-            return ResponseEntity.ok("Archivo subido correctamente"+ filename);
+            String nombreOriginal = file.getOriginalFilename(); // ← nombre real del archivo
+            filename = this.objGestionarArchivos.saveFile(file, nombreOriginal, "pdf"); // ← úsalo aquí
+            return ResponseEntity.ok("Archivo subido correctamente: " + nombreOriginal);
         } catch (Exception e) {
-            return ResponseEntity.badRequest().body("Error al subir el archivo" + e.getMessage());
+            return ResponseEntity.badRequest().body("Error al subir el archivo: " + e.getMessage());
         }
     }
     @GetMapping("/descargar/pdf")
