@@ -6,9 +6,18 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.Date;
+
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarArchivosCUIntPort;
+import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.GestionarDocumentosGatewayIntPort;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Documento;
+import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.DTOPeticion.DocumentosDTOPeticion;
+import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.DTORespuesta.DocumentosDTORespuesta;
+import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.mappers.DocumentosMapperDominio;
 
 import org.springframework.web.multipart.MultipartFile;
 
@@ -20,28 +29,31 @@ import org.springframework.web.multipart.MultipartFile;
 @Validated
 public class ArchivosRestController {
     private final GestionarArchivosCUIntPort objGestionarArchivos;
-
-    // @PostMapping("/subir/pdf")
-    // public ResponseEntity<String> subirPDF(@RequestParam(name = "file", required = true) MultipartFile file) {
-    //     String filename = null;
-    //     try {
-    //         filename = this.objGestionarArchivos.saveFile(file, "prueba", "pdf");
-    //         return ResponseEntity.ok("Archivo subido correctamente"+ filename);
-    //     } catch (Exception e) {
-    //         return ResponseEntity.badRequest().body("Error al subir el archivo" + e.getMessage());
-    //     }
-    // }
+    private final DocumentosMapperDominio documentosMapperDominio;
+    private final GestionarDocumentosGatewayIntPort objGestionarDocumentosGateway;
     @PostMapping("/subir/pdf")
-    public ResponseEntity<String> subirPDF(@RequestParam(name = "file", required = true) MultipartFile file) {
+    public ResponseEntity<DocumentosDTORespuesta> subirPDF(@RequestParam(name = "file", required = true) MultipartFile file) {
         String filename = null; 
         try {
             String nombreOriginal = file.getOriginalFilename(); // ← nombre real del archivo
             filename = this.objGestionarArchivos.saveFile(file, nombreOriginal, "pdf"); // ← úsalo aquí
-            return ResponseEntity.ok("Archivo subido correctamente: " + nombreOriginal);
+            // DocumentosDTOPeticion doc = new DocumentosDTOPeticion();
+            Documento doc = new Documento();
+            doc.setNombre(nombreOriginal);
+            doc.setRuta_documento(nombreOriginal);
+            doc.setFecha_documento(new Date());
+            doc.setEsValido(true);  
+            //Documento documento = documentosMapperDominio.mappearDeDTOPeticionADocumento(doc);
+            Documento documentoGuardado = this.objGestionarDocumentosGateway.crearDocumento(doc);
+            ResponseEntity<DocumentosDTORespuesta> respuesta = new ResponseEntity<DocumentosDTORespuesta>(
+                documentosMapperDominio.mappearDeDocumentoADTORespuesta(documentoGuardado), HttpStatus.CREATED
+            );
+            return respuesta;
         } catch (Exception e) {
-            return ResponseEntity.badRequest().body("Error al subir el archivo: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
+
     @GetMapping("/descargar/pdf")
     public ResponseEntity<byte[]> bajarPDF(@RequestParam(name = "filename", required = true) String filename) {
         byte[] archivos = null;

@@ -22,10 +22,12 @@ import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Usuario;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Enums.EstadoSolicitudEcaes;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.controladorExcepciones.excepcionesPropias.EntidadNoExisteException;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.formateador.FormateadorResultadosImplAdapter;
+import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.entidades.DocumentoEntity;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.entidades.EstadoSolicitudEntity;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.entidades.SolicitudEcaesEntity;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.entidades.UsuarioEntity;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.gateway.GestionarDocumentoGatewayImplAdapter;
+import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.repositorios.DocumentoRepositoryInt;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.repositorios.SolicitudEcaesRepositoryInt;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.repositorios.UsuarioRepositoryInt;
 
@@ -39,7 +41,7 @@ public class GestionarSolicitudEcaesCUAdapter implements GestionarSolicitudEcaes
     private final GestionarDocumentosGatewayIntPort objDocumentosGateway;
     private final GestionarUsuarioGatewayIntPort objUsuario;
     private final GestionarEstadoSolicitudGatewayIntPort objGestionarEstadoSolicitudGateway;
-
+    
 
 
     public GestionarSolicitudEcaesCUAdapter(SolicitudEcaesRepositoryInt solicitudEcaesRepository
@@ -55,7 +57,7 @@ public class GestionarSolicitudEcaesCUAdapter implements GestionarSolicitudEcaes
         this.objDocumentosGateway = objDocumentosGateway;
         this.objUsuario = objUsuario;   
         this.objGestionarEstadoSolicitudGateway = objGestionarEstadoSolicitudGateway;
-
+    
     }
 
    
@@ -82,24 +84,49 @@ public class GestionarSolicitudEcaesCUAdapter implements GestionarSolicitudEcaes
             if (usuarioOpt.isEmpty()) {
                 this.objFormateadorResultados.retornarRespuestaErrorReglaDeNegocio("Usuario ID: " + idUsuario + " no encontrado");
             }
-
-            List<Documento> documentos = solicitud.getDocumentos();
-            if(documentos == null || documentos.isEmpty()) {
-                this.objFormateadorResultados.retornarRespuestaErrorReglaDeNegocio("La solicitud debe tener al menos un documento");
-            }
+            //version original se comento para evitar errores
+            // List<Documento> documentos = solicitud.getDocumentos();
+            // if(documentos == null || documentos.isEmpty()) {
+            //     this.objFormateadorResultados.retornarRespuestaErrorReglaDeNegocio("La solicitud debe tener al menos un documento");
+            // }
 
             SolicitudEcaes solicitudGuardada = this.objGestionarSolicitudEcaesGateway.guardar(solicitud);
-
+            //version original se comento para evitar errores======================
             //Asociar documentos a la solicitud guardada
-            for (Documento doc : solicitudGuardada.getDocumentos()) {
+            // for (Documento doc : solicitudGuardada.getDocumentos()) {
+            //     doc.setObjSolicitud(solicitudGuardada);
+            //     this.objDocumentosGateway.actualizarDocumento(doc);
+            // }
+            //==============
+            //buscar documentos sin solicitud pero en la solicitud guardada
+            
+            List<Documento> documentosSinSolicitud = this.objDocumentosGateway.buscarDocumentoSinSolicitud();
+            
+            for (Documento doc : documentosSinSolicitud) {
+                Integer i = 0;
+                Integer idsDocumentos = solicitudGuardada.getDocumentos().get(i).getId_documento();
                 doc.setObjSolicitud(solicitudGuardada);
+                if(solicitud.getDocumentos() != null) {
+                    doc.setComentario(solicitud.getDocumentos().get(i).getComentario());
+                    System.out.println("Ingreso al if: "+ i);
+                    doc.setTipoDocumentoSolicitudPazYSalvo(solicitud.getDocumentos().get(i).getTipoDocumentoSolicitudPazYSalvo()); ;
+                }
+                
+                System.out.println("Documento sin solicitud: " + doc.getNombre());
+                System.out.println("iD doc a eliminar: "+ this.objDocumentosGateway.buscarDocumentoId(idsDocumentos).getId_documento());
+                System.out.println("Iterador: "+i   );
                 this.objDocumentosGateway.actualizarDocumento(doc);
+                i++;
+                
             }
+            //==================
+
 
             // for (EstadoSolicitud estado : solicitudGuardada.getEstadosSolicitud()) {
             //     estado.setObjSolicitud(solicitudGuardada);
             //     this.objGestionarEstadoSolicitudGateway.actualizarEstadoSolicitud(estado);
             // }
+            //============================================
             EstadoSolicitud estadoInicial = new EstadoSolicitud();
             estadoInicial.setEstado_actual("Enviada");//Se pone por defecto el estado de Enviada
             estadoInicial.setFecha_registro_estado(new Date());

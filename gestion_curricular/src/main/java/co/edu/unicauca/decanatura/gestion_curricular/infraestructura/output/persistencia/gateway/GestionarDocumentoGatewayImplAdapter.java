@@ -1,5 +1,6 @@
 package co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.gateway;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.modelmapper.ModelMapper;
@@ -8,6 +9,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.GestionarDocumentosGatewayIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Documento;
+import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.controladores.CursoOfertadoRestController;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.entidades.DocumentoEntity;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.repositorios.DocumentoRepositoryInt;
 
@@ -15,12 +17,15 @@ import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.pers
 @Transactional
 public class GestionarDocumentoGatewayImplAdapter implements GestionarDocumentosGatewayIntPort {
 
+    private final CursoOfertadoRestController cursoOfertadoRestController;
+
     private final DocumentoRepositoryInt documentoRepository;
     private final ModelMapper documentoMapper;
 
-    public GestionarDocumentoGatewayImplAdapter(DocumentoRepositoryInt documentoRepository, ModelMapper documentoMapper){
+    public GestionarDocumentoGatewayImplAdapter(DocumentoRepositoryInt documentoRepository, ModelMapper documentoMapper, CursoOfertadoRestController cursoOfertadoRestController){
         this.documentoRepository = documentoRepository;
         this.documentoMapper = documentoMapper;
+        this.cursoOfertadoRestController = cursoOfertadoRestController;
     }
 
     @Override
@@ -59,5 +64,15 @@ public class GestionarDocumentoGatewayImplAdapter implements GestionarDocumentos
         }
         return false;
     }
+
+    @Override
+    public List<Documento> buscarDocumentoSinSolicitud() {
+       return documentoRepository.findByobjSolicitudIsNull()
+            .stream()
+            .map(entity -> documentoMapper.map(entity, Documento.class))
+            .toList();
+    }
+
+    
     
 }

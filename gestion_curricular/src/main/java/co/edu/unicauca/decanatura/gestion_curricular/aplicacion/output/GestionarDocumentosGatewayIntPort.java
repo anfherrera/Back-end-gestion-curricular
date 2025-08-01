@@ -1,5 +1,7 @@
 package co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output;
 
+import java.util.List;
+
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Documento;
 
 public interface GestionarDocumentosGatewayIntPort {
@@ -11,5 +13,8 @@ public interface GestionarDocumentosGatewayIntPort {
     Documento buscarDocumentoId(Integer idDocumento);
 
     boolean eliminarDocumento (Documento documento);
+
+    List<Documento> buscarDocumentoSinSolicitud();
+
     
 }
