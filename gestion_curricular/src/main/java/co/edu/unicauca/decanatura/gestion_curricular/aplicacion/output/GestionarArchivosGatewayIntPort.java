@@ -10,5 +10,8 @@ public interface GestionarArchivosGatewayIntPort {
     byte[] getFile(String filename) throws IOException;
     String getFileExtension(String filename);
     Boolean isValidImageFile(String extension);
+    String changePathRoute(String solicitud, String usuario);
+    String findPathRoute(String solicitud, String usuario);
+    
     
 }
