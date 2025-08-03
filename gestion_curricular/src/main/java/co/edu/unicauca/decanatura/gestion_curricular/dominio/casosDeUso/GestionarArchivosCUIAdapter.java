@@ -20,7 +20,6 @@ public class GestionarArchivosCUIAdapter implements GestionarArchivosCUIntPort {
     @Override
     public String saveFile(MultipartFile file, String name, String fileType) {
         String filename = null;
-        String route = null;
         if(file == null){
             this.objFormateadorResultados.retornarRespuestaErrorReglaDeNegocio("el archivo no puede ser nulo");
         }
@@ -29,10 +28,6 @@ public class GestionarArchivosCUIAdapter implements GestionarArchivosCUIntPort {
         }
         if(fileType == null){
             this.objFormateadorResultados.retornarRespuestaErrorReglaDeNegocio("el tipo de archivo no puede ser nulo");
-        }
-        route = this.objGestionarArchivos.changePathRoute("Prueba", "1");
-        if(route == null){
-            this.objFormateadorResultados.retornarRespuestaErrorReglaDeNegocio("error al cambiar la ruta");
         }
         try {
             filename = this.objGestionarArchivos.saveFile(file, name, fileType);

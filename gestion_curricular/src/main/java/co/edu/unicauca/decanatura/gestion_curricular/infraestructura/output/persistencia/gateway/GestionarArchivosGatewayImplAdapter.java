@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 
 import org.springframework.stereotype.Service;
 
@@ -15,9 +16,9 @@ import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.Gestionar
 @Service
 public class GestionarArchivosGatewayImplAdapter implements GestionarArchivosGatewayIntPort {
 
-    private Path rootLocation;
+    private final Path rootLocation;
     
-    private final String rutaRaiz = "Archivos";
+    private static String rutaRaiz = "Archivos";
 
     public GestionarArchivosGatewayImplAdapter() throws IOException{
         this.rootLocation = Paths.get(rutaRaiz);
@@ -35,7 +36,7 @@ public class GestionarArchivosGatewayImplAdapter implements GestionarArchivosGat
             throw new IOException("nombre nulo");
         }
 
-        String filename = name + "." + extension;
+        String filename = name ;
 
         if(fileType.equalsIgnoreCase("image") && !isValidImageFile(extension)){
             throw new IOException("Invalid image file type:");
@@ -43,8 +44,12 @@ public class GestionarArchivosGatewayImplAdapter implements GestionarArchivosGat
         if (fileType.equalsIgnoreCase("pdf") && !"pdf".equalsIgnoreCase(extension)) {
             throw new IOException("Invalid PDF file type:");
         }
+
         Files.copy(file.getInputStream(), this.rootLocation.resolve(filename));
         return filename;    
+        // Path destination = this.rootLocation.resolve(filename);
+        // Files.copy(file.getInputStream(), destination, StandardCopyOption.REPLACE_EXISTING);
+        // return destination.toAbsolutePath().toString();
     }
 
     @Override
@@ -61,36 +66,6 @@ public class GestionarArchivosGatewayImplAdapter implements GestionarArchivosGat
     @Override
     public Boolean isValidImageFile(String extension) {
         return "jpg".equalsIgnoreCase(extension) || "jpeg".equalsIgnoreCase(extension);
-    }
-
-
-    @Override
-    public String changePathRoute(String solicitud, String usuario){
-        String cambioRuta = null;
-        try {
-        this.rootLocation = Paths.get(rutaRaiz, solicitud, usuario);
-        if(!Files.exists(rootLocation)){
-            Files.createDirectories(rootLocation);
-        }
-        cambioRuta = this.rootLocation.toString();            
-        } catch (IOException e) {
-            cambioRuta = null;
-        }
-
-        return cambioRuta;
-    }
-
-
-    @Override
-    public String findPathRoute(String solicitud, String usuario) {
-        String rutaRetornar = null;
-        Path rutaBuscar = Paths.get(rutaRaiz, solicitud, usuario);
-        if(Files.exists(rutaBuscar)){
-            this.rootLocation = rutaBuscar;
-            rutaRetornar = this.rootLocation.toString();
-        }
-
-        return rutaRetornar;
     }
     
 }
