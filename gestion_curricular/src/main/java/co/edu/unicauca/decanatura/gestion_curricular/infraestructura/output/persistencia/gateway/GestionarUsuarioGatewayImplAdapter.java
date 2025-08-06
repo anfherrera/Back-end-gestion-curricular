@@ -1,11 +1,17 @@
 package co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.gateway;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
 import org.modelmapper.ModelMapper;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
 
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.GestionarUsuarioGatewayIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Usuario;
@@ -147,4 +153,16 @@ public class GestionarUsuarioGatewayImplAdapter implements GestionarUsuarioGatew
         }
         return usuario;
     }
+
+    //@Override
+    // public UserDetails loadUserByUsername(String correo) throws UsernameNotFoundException {
+    //     Usuario usuario = usuarioRepository.findByCorreo(correo)
+    //             .orElseThrow(() -> new UsernameNotFoundException("Usuario no encontrado"));
+
+    //     return new org.springframework.security.core.userdetails.User(
+    //             usuario.getCorreo(),
+    //             usuario.getPassword(),
+    //             Collections.singletonList(new SimpleGrantedAuthority("ROLE_" + usuario.getRol().getNombre()))
+    //     );
+    // }
 }

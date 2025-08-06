@@ -2,6 +2,7 @@ package co.edu.unicauca.decanatura.gestion_curricular.infraestructura.configurac
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.FormateadorResultadosIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.GestionarArchivosGatewayIntPort;
@@ -74,8 +75,9 @@ public class BeanConfiguration {
     public GestionarUsuarioCUAdapter crearGestionarUsuarioCUInt(GestionarUsuarioGatewayIntPort objGestionarUsuarioGateway,
                                     GestionarProgramaGatewayIntPort objGestionarProgramaGateway,
                                     GestionarRolGatewayIntPort objGestionarRolGateway,
-                                     FormateadorResultadosIntPort objFormateadorResultados) {
-        return new GestionarUsuarioCUAdapter(objGestionarUsuarioGateway, objGestionarProgramaGateway, objGestionarRolGateway, objFormateadorResultados);
+                                     FormateadorResultadosIntPort objFormateadorResultados,
+                                     PasswordEncoder passwordEncoder) {
+        return new GestionarUsuarioCUAdapter(objGestionarUsuarioGateway, objGestionarProgramaGateway, objGestionarRolGateway, objFormateadorResultados, passwordEncoder);
     }
 
 

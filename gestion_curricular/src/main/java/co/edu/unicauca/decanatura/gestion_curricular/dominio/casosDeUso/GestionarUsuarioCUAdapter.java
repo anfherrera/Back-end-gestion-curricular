@@ -11,23 +11,26 @@ import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.Gestionar
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Programa;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Rol;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Usuario;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 public class GestionarUsuarioCUAdapter implements GestionarUsuarioCUIntPort {
 
     private final GestionarUsuarioGatewayIntPort objGestionarUsuarioGateway;
     private final GestionarRolGatewayIntPort objGestionarRolGateway;
     private final GestionarProgramaGatewayIntPort objGestionarProgramaGateway;
-
     private final FormateadorResultadosIntPort objFormateadorResultados;
+    private final PasswordEncoder passwordEncoder;
 
     public GestionarUsuarioCUAdapter(GestionarUsuarioGatewayIntPort objGestionarUsuarioGateway,
                                     GestionarProgramaGatewayIntPort objGestionarProgramaGateway,
                                     GestionarRolGatewayIntPort objGestionarRolGateway,
-                                     FormateadorResultadosIntPort objFormateadorResultados) {
+                                     FormateadorResultadosIntPort objFormateadorResultados,
+                                     PasswordEncoder passwordEncoder) {
         this.objGestionarUsuarioGateway = objGestionarUsuarioGateway;
         this.objGestionarProgramaGateway = objGestionarProgramaGateway;
         this.objGestionarRolGateway = objGestionarRolGateway;
         this.objFormateadorResultados = objFormateadorResultados;
+        this.passwordEncoder = passwordEncoder;
     }
 
 @Override
@@ -59,6 +62,8 @@ public Usuario crearUsuario(Usuario usuario) {
     if (objRol == null) {
         this.objFormateadorResultados.retornarRespuestaErrorEntidadExiste("El rol con ID: '" + usuario.getObjRol().getId_rol() + "' no existe.");
     }
+    String passwordCodificada = passwordEncoder.encode(usuario.getPassword());
+    usuario.setPassword(passwordCodificada);
     objRol.getUsuarios().add(usuario);
     usuario.setObjRol(objRol);
     usuario.setObjPrograma(programa);
