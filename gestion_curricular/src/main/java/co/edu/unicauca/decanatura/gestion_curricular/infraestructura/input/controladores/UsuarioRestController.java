@@ -6,14 +6,23 @@ import lombok.RequiredArgsConstructor;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import co.edu.unicauca.decanatura.gestion_curricular.Security.JwtUtil;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarUsuarioCUIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Usuario;
+import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.DTOPeticion.LoginDTOPeticion;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.DTOPeticion.UsuarioDTOPeticion;
+import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.DTORespuesta.LoginDTORespuesta;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.DTORespuesta.UsuarioDTORespuesta;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.DTORespuesta.usuarioSalidaDto;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.mappers.UsuarioMapperDominio;
@@ -35,6 +44,10 @@ import java.util.stream.Collectors;
 public class UsuarioRestController {
     private final GestionarUsuarioCUIntPort objUsuarioCUIntPort;
     private final UsuarioMapperDominio objUsuarioMapperDominio;
+    private final AuthenticationManager authManager;
+    private final JwtUtil jwtUtil;
+    private final UserDetailsService userDetailsService;
+
 
     @PostMapping("/crearUsuario")
     public ResponseEntity<UsuarioDTORespuesta> crearUsuario(@RequestBody @Valid UsuarioDTOPeticion peticion) {
@@ -97,4 +110,20 @@ public class UsuarioRestController {
         return ResponseEntity.ok(respuesta);
     }
     
+    @PostMapping("/login")
+    public ResponseEntity<?> login(@RequestBody LoginDTOPeticion request) {
+        try {
+            Authentication authentication = authManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(request.getCorreo(), request.getPassword())
+            );
+
+            UserDetails userDetails = userDetailsService.loadUserByUsername(request.getCorreo());
+            String token = jwtUtil.generarToken(userDetails.getUsername());
+
+            return ResponseEntity.ok(new LoginDTORespuesta(token));
+
+        } catch (BadCredentialsException ex) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Credenciales incorrectas");
+        }
+    }
 }

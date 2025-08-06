@@ -4,6 +4,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
+import co.edu.unicauca.decanatura.gestion_curricular.Security.JwtUtil;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.FormateadorResultadosIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.GestionarArchivosGatewayIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.GestionarCursoOfertadoVeranoGatewayIntPort;
@@ -102,4 +103,8 @@ public class BeanConfiguration {
         return new GestionarArchivosCUIAdapter(objGestionarArchivos, objFormateadorResultados);
     }
 
+     @Bean
+    public JwtUtil jwtUtil() {
+        return new JwtUtil();
+    }
 }
