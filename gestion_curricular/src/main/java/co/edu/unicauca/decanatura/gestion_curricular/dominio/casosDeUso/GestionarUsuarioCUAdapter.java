@@ -63,6 +63,7 @@ public Usuario crearUsuario(Usuario usuario) {
         this.objFormateadorResultados.retornarRespuestaErrorEntidadExiste("El rol con ID: '" + usuario.getObjRol().getId_rol() + "' no existe.");
     }
     String passwordCodificada = passwordEncoder.encode(usuario.getPassword());
+    System.out.println("contraseña codificada: " + passwordCodificada);
     usuario.setPassword(passwordCodificada);
     objRol.getUsuarios().add(usuario);
     usuario.setObjRol(objRol);

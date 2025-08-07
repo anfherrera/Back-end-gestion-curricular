@@ -103,7 +103,7 @@ public class BeanConfiguration {
         return new GestionarArchivosCUIAdapter(objGestionarArchivos, objFormateadorResultados);
     }
 
-     @Bean
+    @Bean
     public JwtUtil jwtUtil() {
         return new JwtUtil();
     }
