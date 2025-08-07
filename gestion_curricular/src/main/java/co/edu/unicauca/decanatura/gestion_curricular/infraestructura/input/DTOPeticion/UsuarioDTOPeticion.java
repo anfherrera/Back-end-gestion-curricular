@@ -22,6 +22,7 @@ public class UsuarioDTOPeticion {
     private String nombre_completo;
 
     private RolDTOPeticion rol;
+    // private Integer rol;
 
     @NotBlank(message = "{Usuario.codigo.empty}")
     @Size(min = 12, max = 12, message = "{Usuario.codigo.length}")
@@ -42,4 +43,5 @@ public class UsuarioDTOPeticion {
     @NotNull(message = "{Usuario.objPrograma.notnull}")
     @Valid
     private ProgramaDTOPeticion objPrograma;
+    // private Integer objPrograma;
 }

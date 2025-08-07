@@ -2,6 +2,7 @@ package co.edu.unicauca.decanatura.gestion_curricular.dominio.casosDeUso;
 
 import java.util.List;
 
+
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarUsuarioCUIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.FormateadorResultadosIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.GestionarProgramaGatewayIntPort;
@@ -10,23 +11,26 @@ import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.Gestionar
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Programa;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Rol;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Usuario;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 public class GestionarUsuarioCUAdapter implements GestionarUsuarioCUIntPort {
 
     private final GestionarUsuarioGatewayIntPort objGestionarUsuarioGateway;
     private final GestionarRolGatewayIntPort objGestionarRolGateway;
     private final GestionarProgramaGatewayIntPort objGestionarProgramaGateway;
-
     private final FormateadorResultadosIntPort objFormateadorResultados;
+    private final PasswordEncoder passwordEncoder;
 
     public GestionarUsuarioCUAdapter(GestionarUsuarioGatewayIntPort objGestionarUsuarioGateway,
                                     GestionarProgramaGatewayIntPort objGestionarProgramaGateway,
                                     GestionarRolGatewayIntPort objGestionarRolGateway,
-                                     FormateadorResultadosIntPort objFormateadorResultados) {
+                                     FormateadorResultadosIntPort objFormateadorResultados,
+                                     PasswordEncoder passwordEncoder) {
         this.objGestionarUsuarioGateway = objGestionarUsuarioGateway;
         this.objGestionarProgramaGateway = objGestionarProgramaGateway;
         this.objGestionarRolGateway = objGestionarRolGateway;
         this.objFormateadorResultados = objFormateadorResultados;
+        this.passwordEncoder = passwordEncoder;
     }
 
 @Override
@@ -43,6 +47,7 @@ public Usuario crearUsuario(Usuario usuario) {
     if (usuarioExistenteCodigo != null) {
         this.objFormateadorResultados.retornarRespuestaErrorEntidadExiste("Ya existe un usuario con ese código.");
     }
+    
 
     if (usuario.getObjPrograma() == null) {
         this.objFormateadorResultados.retornarRespuestaErrorEntidadExiste("El programa del usuario no puede ser nulo o su ID no puede ser nulo.");
@@ -53,10 +58,13 @@ public Usuario crearUsuario(Usuario usuario) {
     if (programa == null) {
         this.objFormateadorResultados.retornarRespuestaErrorEntidadExiste("El programa enviado no existe.");
     }
-    objRol = this.objGestionarRolGateway.buscarRolPorNombre("Estudiante");
+    objRol = this.objGestionarRolGateway.bucarRolPorId(usuario.getObjRol().getId_rol());
     if (objRol == null) {
-        this.objFormateadorResultados.retornarRespuestaErrorEntidadExiste("El rol 'Estudiante' no existe.");
+        this.objFormateadorResultados.retornarRespuestaErrorEntidadExiste("El rol con ID: '" + usuario.getObjRol().getId_rol() + "' no existe.");
     }
+    String passwordCodificada = passwordEncoder.encode(usuario.getPassword());
+    System.out.println("contraseña codificada: " + passwordCodificada);
+    usuario.setPassword(passwordCodificada);
     objRol.getUsuarios().add(usuario);
     usuario.setObjRol(objRol);
     usuario.setObjPrograma(programa);

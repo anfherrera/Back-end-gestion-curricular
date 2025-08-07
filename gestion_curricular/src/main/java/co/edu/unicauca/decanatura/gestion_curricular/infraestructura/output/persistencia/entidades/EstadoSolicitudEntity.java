@@ -27,13 +27,13 @@ public class EstadoSolicitudEntity {
     private String estado_actual;
     @Column(nullable = false)
     private Date fecha_registro_estado;
-
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "idfkSolicitud", referencedColumnName = "idSolicitud", nullable = true)
     private SolicitudEntity objSolicitud;
 
     public EstadoSolicitudEntity(){
         this.estado_actual = "Enviado";
+        
     }
     
 }

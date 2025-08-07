@@ -4,8 +4,15 @@ import java.util.List;
 import java.util.Optional;
 
 import org.modelmapper.ModelMapper;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.ArrayList;
+
 
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.GestionarUsuarioGatewayIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Usuario;
@@ -16,7 +23,7 @@ import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.pers
 
 @Service
 @Transactional
-public class GestionarUsuarioGatewayImplAdapter implements GestionarUsuarioGatewayIntPort {
+public class GestionarUsuarioGatewayImplAdapter implements GestionarUsuarioGatewayIntPort, UserDetailsService {
 
     private final UsuarioRepositoryInt usuarioRepository;
     private final SolicitudRepositoryInt solicitudRepository;
@@ -146,5 +153,24 @@ public class GestionarUsuarioGatewayImplAdapter implements GestionarUsuarioGatew
             usuario = usuarioMapper.map(usuarioEntity, Usuario.class);
         }
         return usuario;
+    }
+
+    @Override
+    public UserDetails loadUserByUsername(String correo) throws UsernameNotFoundException {
+        Usuario usuario = usuarioRepository.buscarPorCorreo(correo)
+                .map(entity -> usuarioMapper.map(entity, Usuario.class))
+                .orElseThrow(() -> new UsernameNotFoundException("Usuario no encontrado"));
+
+        List<SimpleGrantedAuthority> authorities = new ArrayList<>();
+        authorities.add(new SimpleGrantedAuthority("ROLE_" + usuario.getObjRol().getNombre()));
+
+        System.out.println("Usuario autenticado: " + usuario.getCorreo());
+        System.out.println("Contraseña encontrada en BD: " + usuario.getPassword());
+
+        return new org.springframework.security.core.userdetails.User(
+                usuario.getCorreo(),
+                usuario.getPassword(),
+                authorities
+        );
     }
 }

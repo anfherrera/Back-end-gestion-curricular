@@ -6,6 +6,7 @@ import java.util.List;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.EstadoSolicitud;
 
 public interface GestionarEstadoSolicitudGatewayIntPort {
+    EstadoSolicitud guarEstadoSolicitud(EstadoSolicitud estadoSolicitud);
     EstadoSolicitud actualizarEstadoSolicitud(EstadoSolicitud estadoSolicitud);
     EstadoSolicitud obtenerEstadoSolicitudPorId(Integer id_estado_solicitud);
     EstadoSolicitud obtenerEstadoSolicitudPorSolicitudId(Integer id_estado_solicitud);
