@@ -1,16 +1,9 @@
 package co.edu.unicauca.decanatura.gestion_curricular.Security;
 
-import org.springframework.security.core.userdetails.UserDetails;
 
-import java.nio.charset.StandardCharsets;
 import java.util.Date;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
-
-import io.jsonwebtoken.security.Keys;
-
-import java.security.Key;
-
 
 
 public class JwtUtil {
