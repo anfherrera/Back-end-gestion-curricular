@@ -9,10 +9,10 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class CambioEstadoSolicitudEcaesDTOPeticion {
+public class CambioEstadoSolicitudDTOPeticion {
     private Integer idSolicitud;
-    @NotBlank(message = "{SolicitudEcaes.estado.empty}")
-    @Size(min = 1, max = 9, message = "{SolicitudEcaes.estado.length}")
+    @NotBlank(message = "{Solicitud.estado.empty}")
+    @Size(min = 1, max = 9, message = "{Solicitud.estado.length}")
     private String nuevoEstado;
     //private String observacion; // opcional
     

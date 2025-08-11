@@ -77,6 +77,13 @@ public class GestionarUsuarioGatewayImplAdapter implements GestionarUsuarioGatew
     }
 
     @Override
+    public Optional<Usuario> buscarUsuarioPorId(Integer idUsuario) {
+        return usuarioRepository.findById(idUsuario)
+            .map(entity -> Optional.of(usuarioMapper.map(entity, Usuario.class)))
+            .orElse(Optional.empty());
+    }
+
+    @Override
     @Transactional(readOnly = true)
     public Usuario buscarUsuarioPorCodigo(String codigo) {
         UsuarioEntity usuarioEntity = usuarioRepository.buscarIdUsuarioPorCodigo(codigo);

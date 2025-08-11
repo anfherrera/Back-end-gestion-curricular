@@ -18,9 +18,7 @@ public class SeguridadConfig {
         http
             .csrf(csrf -> csrf.disable())
             .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/api/usuarios/crearUsuario").permitAll()  // Permitir este endpoint
-                .requestMatchers("/api/usuarios/login").permitAll()  // Permitir el login
-                .anyRequest().authenticated()
+                .anyRequest().permitAll()    //.authenticated() se pone para realizar autenticacion, eliminar el permitAll
             );
 
         return http.build();

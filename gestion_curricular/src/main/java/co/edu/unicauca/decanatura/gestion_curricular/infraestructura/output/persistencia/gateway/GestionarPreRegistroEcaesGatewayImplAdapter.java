@@ -69,12 +69,7 @@ public class GestionarPreRegistroEcaesGatewayImplAdapter implements GestionarPre
             .map(entity -> Optional.of(mapper.map(entity, SolicitudEcaes.class)))
             .orElse(Optional.empty());
     }
-    @Override
-    public Optional<Usuario> buscarUsuarioPorId(Integer idUsuario) {
-        return usuarioRepository.findById(idUsuario)
-            .map(entity -> Optional.of(mapper.map(entity, Usuario.class)))
-            .orElse(Optional.empty());
-    }
+    
     @Override
     public void cambiarEstadoSolicitudEcaes(Integer idSolicitud, EstadoSolicitud nuevoEstado) {
         SolicitudEcaesEntity solicitudEntity = solicitudEcaesRepository.findById(idSolicitud)

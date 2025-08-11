@@ -1,9 +1,12 @@
 package co.edu.unicauca.decanatura.gestion_curricular.dominio.casosDeUso;
 
+import java.util.List;
+
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarDocumentosCUIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.FormateadorResultadosIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.GestionarDocumentosGatewayIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Documento;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Solicitud;
 
 public class GestionarDocumentosCUAdapter implements GestionarDocumentosCUIntPort {
 
@@ -29,5 +32,7 @@ public class GestionarDocumentosCUAdapter implements GestionarDocumentosCUIntPor
         }
         return documento;
     }
+
+    
     
 }
