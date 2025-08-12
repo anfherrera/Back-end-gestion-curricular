@@ -100,20 +100,9 @@ public class GestionarSolicitudEcaesCUAdapter implements GestionarSolicitudEcaes
             List<Documento> documentosSinSolicitud = this.objDocumentosGateway.buscarDocumentoSinSolicitud();
             
             for (Documento doc : documentosSinSolicitud) {
-                Integer i = 0;
-                Integer idsDocumentos = solicitudGuardada.getDocumentos().get(i).getId_documento();
-                doc.setObjSolicitud(solicitudGuardada);
-                if(solicitud.getDocumentos() != null) {
-                    doc.setComentario(solicitud.getDocumentos().get(i).getComentario());
-                    System.out.println("Ingreso al if: "+ i);
-                    doc.setTipoDocumentoSolicitudPazYSalvo(solicitud.getDocumentos().get(i).getTipoDocumentoSolicitudPazYSalvo()); ;
-                }
                 
-                System.out.println("Documento sin solicitud: " + doc.getNombre());
-                System.out.println("iD doc a eliminar: "+ this.objDocumentosGateway.buscarDocumentoId(idsDocumentos).getId_documento());
-                System.out.println("Iterador: "+i   );
+                doc.setObjSolicitud(solicitudGuardada);
                 this.objDocumentosGateway.actualizarDocumento(doc);
-                i++;
                 
             }
             //==================

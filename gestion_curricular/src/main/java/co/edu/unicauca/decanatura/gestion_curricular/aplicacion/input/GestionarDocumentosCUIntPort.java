@@ -9,5 +9,5 @@ public interface GestionarDocumentosCUIntPort {
 
     Documento buscarDocumentoId(Integer idDocumento);
 
-    
+    void añadirComentario(Integer idDocumento, String comentario);
 }

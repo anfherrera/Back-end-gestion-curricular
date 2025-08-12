@@ -2,6 +2,7 @@ package co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.cont
 
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarDocumentosCUIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Documento;
+import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.DTOPeticion.ComentarioDocumentoDTOPeticion;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.DTORespuesta.DocumentosDTORespuesta;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.mappers.DocumentosMapperDominio;
 import jakarta.validation.constraints.Min;
@@ -30,5 +31,12 @@ public class DocumentoRestController {
                 mapperDocumento.mappearDeDocumentoADTORespuesta(documento),
                 HttpStatus.OK
         );
+    }
+
+    @PutMapping("/añadirComentario")
+    public ResponseEntity<Void> añadirComentario(@RequestBody ComentarioDocumentoDTOPeticion peticion) {
+        System.out.println("Añadiendo comentario"+peticion.getComentario()+"al documento con ID: " + peticion.getIdDocumento());
+        documentoCU.añadirComentario(peticion.getIdDocumento(), peticion.getComentario());
+        return new ResponseEntity<>(HttpStatus.CREATED);
     }
 }

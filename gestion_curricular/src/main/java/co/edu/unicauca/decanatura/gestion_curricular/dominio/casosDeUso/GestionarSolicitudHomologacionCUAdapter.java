@@ -60,17 +60,17 @@ public class GestionarSolicitudHomologacionCUAdapter implements GestionarSolicit
         //Asociar documentos con solicitud = null
         List<Documento> documentosSinSolicitud = this.objGestionarDocumentosGateway.buscarDocumentoSinSolicitud();
         for (Documento doc : documentosSinSolicitud) {
-            Integer i = 0;
+            //Integer i = 0;
             //Integer idsDocumentos = solicitudGuardada.getDocumentos().get(i).getId_documento();
             doc.setObjSolicitud(solicitudGuardada);
-            if(solicitud.getDocumentos() != null) {
-                //verificar si necesito el contador i, lo uso para agregar el comentario
-                doc.setComentario(solicitud.getDocumentos().get(i).getComentario());
-                //doc.setTipoDocumentoSolicitudPazYSalvo(solicitud.getDocumentos().get(i).getTipoDocumentoSolicitudPazYSalvo()); ;
-            }
+            // if(solicitud.getDocumentos() != null) {
+            //     //verificar si necesito el contador i, lo uso para agregar el comentario
+            //     doc.setComentario(solicitud.getDocumentos().get(i).getComentario());
+            //     //doc.setTipoDocumentoSolicitudPazYSalvo(solicitud.getDocumentos().get(i).getTipoDocumentoSolicitudPazYSalvo()); ;
+            // }
                 
             this.objGestionarDocumentosGateway.actualizarDocumento(doc);
-            i++;
+            //i++;
                 
         }
 

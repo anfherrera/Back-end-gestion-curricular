@@ -37,6 +37,7 @@ public interface SolicitudMapperDominio {
     @Mapping(target = "estadosSolicitud", ignore = true) // No viene en el DTO de petición
     @Mapping(target = "esSeleccionado", source = "esSeleccionado")
     @Mapping(target = "objCursoOfertadoVerano", ignore = true) 
+    @Mapping(target = "documentos", ignore = true) 
     Solicitud mappearDeSolicitudDTOPeticionASolicitud(SolicitudDTOPeticion peticion);
 
     List<Solicitud> mappearListaDeSolicitudDTOPeticionAListaSolicitud(List<SolicitudDTOPeticion> peticiones);

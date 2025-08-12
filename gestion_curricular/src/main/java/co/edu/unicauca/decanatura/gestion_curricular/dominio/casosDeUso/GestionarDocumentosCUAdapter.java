@@ -33,6 +33,20 @@ public class GestionarDocumentosCUAdapter implements GestionarDocumentosCUIntPor
         return documento;
     }
 
+    @Override
+    public void añadirComentario(Integer idDocumento, String comentario) {
+        if(idDocumento == null || comentario == null ) {
+            this.formateadorResultados.retornarRespuestaErrorEntidadExiste("El ID del documento y el comentario son obligatorios.");
+        }
+        Documento documento = gestionarDocumentosGateway.buscarDocumentoId(idDocumento);
+        if (documento == null) {
+            this.formateadorResultados.retornarRespuestaErrorEntidadExiste("No se encontró el documento con ID: " + idDocumento);
+        }
+        documento.setComentario(comentario); 
+        //gestionarDocumentosGateway.añadirComentario(documento, comentario);
+        gestionarDocumentosGateway.actualizarDocumento(documento);
+    }
+
     
     
 }

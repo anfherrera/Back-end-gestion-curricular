@@ -27,6 +27,7 @@ import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.DTORe
 public interface SolicitudEcaesMapperDominio {
    // DTO de petición → Dominio
     @Mapping(target = "estadosSolicitud", ignore = true) // Lo controlas desde el caso de uso
+    @Mapping(target = "documentos", ignore = true)
     SolicitudEcaes mappearDeSolicitudEcaesDTOPeticionASolicitudEcaes(SolicitudEcaesDTOPeticion peticion);
 
     List<SolicitudEcaes> mappearListaDeSolicitudEcaesDTOPeticionAListaDeSolicitudEcaes(List<SolicitudEcaesDTOPeticion> solicitudes);
