@@ -7,7 +7,7 @@ import org.springframework.context.annotation.ComponentScan;
 @SpringBootApplication
 @ComponentScan(basePackages = "co.edu.unicauca.decanatura")
 public class GestionCurricularApplication {
-
+//hola
 	public static void main(String[] args) {
 		SpringApplication.run(GestionCurricularApplication.class, args);
 	}
