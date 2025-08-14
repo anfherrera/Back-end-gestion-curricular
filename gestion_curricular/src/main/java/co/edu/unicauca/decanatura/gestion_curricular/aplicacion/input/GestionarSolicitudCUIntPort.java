@@ -19,7 +19,7 @@ public interface GestionarSolicitudCUIntPort {
     SolicitudEcaes crearSolicitudEcaes(SolicitudEcaes solicitudEcaes);
     SolicitudReingreso crearSolicitudReingreso(SolicitudReingreso solicitudReingreso);
     SolicitudHomologacion crearSolicitudHomologacion(SolicitudHomologacion solicitudHomologacion);
-    SolicitudPazYSalvo crearSolicitudPazYSalvo(SolicitudPazYSalvo solicitudPazYSalvo);
+    // SolicitudPazYSalvo crearSolicitudPazYSalvo(SolicitudPazYSalvo solicitudPazYSalvo);
 
     Solicitud actualizarSolicitud(Solicitud solicitud, EstadoSolicitud estadoSolicitud);
 

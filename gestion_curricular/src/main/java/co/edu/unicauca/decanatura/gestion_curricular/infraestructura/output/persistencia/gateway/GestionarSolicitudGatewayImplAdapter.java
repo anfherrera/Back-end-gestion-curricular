@@ -211,25 +211,25 @@ public class GestionarSolicitudGatewayImplAdapter implements GestionarSolicitudG
         return solicitudMapper.map(solicitudHomologacionGuardado, SolicitudHomologacion.class); // Implementación pendiente
     }
 
-    @Override
-    @Transactional
-    public SolicitudPazYSalvo crearSolicitudPazYSalvo(SolicitudPazYSalvo solicitudPazYSalvo) {
-        SolicitudPazYSalvoEntity solicitudPazYSalvoEntity = solicitudMapper.map(solicitudPazYSalvo, SolicitudPazYSalvoEntity.class);
-        solicitudPazYSalvoEntity.setNombre_solicitud(SolicitudPazYSalvo.class.getSimpleName());
-        solicitudPazYSalvoEntity.setFecha_registro_solicitud(new Date());
-        EstadoSolicitudEntity estadoSolicitudEntity = null;
-        estadoSolicitudEntity = new EstadoSolicitudEntity();
-        estadoSolicitudEntity.setFecha_registro_estado(new Date());
-        estadoSolicitudEntity.setObjSolicitud(solicitudPazYSalvoEntity);
+    // @Override
+    // @Transactional
+    // public SolicitudPazYSalvo crearSolicitudPazYSalvo(SolicitudPazYSalvo solicitudPazYSalvo) {
+    //     SolicitudPazYSalvoEntity solicitudPazYSalvoEntity = solicitudMapper.map(solicitudPazYSalvo, SolicitudPazYSalvoEntity.class);
+    //     solicitudPazYSalvoEntity.setNombre_solicitud(SolicitudPazYSalvo.class.getSimpleName());
+    //     solicitudPazYSalvoEntity.setFecha_registro_solicitud(new Date());
+    //     EstadoSolicitudEntity estadoSolicitudEntity = null;
+    //     estadoSolicitudEntity = new EstadoSolicitudEntity();
+    //     estadoSolicitudEntity.setFecha_registro_estado(new Date());
+    //     estadoSolicitudEntity.setObjSolicitud(solicitudPazYSalvoEntity);
         
-        List<EstadoSolicitudEntity> estadosSolcitud = solicitudPazYSalvoEntity.getEstadosSolicitud();
-        estadosSolcitud.add(estadoSolicitudEntity);
-        solicitudPazYSalvoEntity.setEstadosSolicitud(estadosSolcitud);
-        SolicitudPazYSalvoEntity solicitudPazYSalvoGuardado = solicitudRepository.save(solicitudPazYSalvoEntity);
+    //     List<EstadoSolicitudEntity> estadosSolcitud = solicitudPazYSalvoEntity.getEstadosSolicitud();
+    //     estadosSolcitud.add(estadoSolicitudEntity);
+    //     solicitudPazYSalvoEntity.setEstadosSolicitud(estadosSolcitud);
+    //     SolicitudPazYSalvoEntity solicitudPazYSalvoGuardado = solicitudRepository.save(solicitudPazYSalvoEntity);
         
-        return solicitudMapper.map(solicitudPazYSalvoGuardado, SolicitudPazYSalvo.class); // Implementación pendiente
+    //     return solicitudMapper.map(solicitudPazYSalvoGuardado, SolicitudPazYSalvo.class); // Implementación pendiente
 
-    }
+    // }
 
     @Override
     @Transactional(readOnly = true)

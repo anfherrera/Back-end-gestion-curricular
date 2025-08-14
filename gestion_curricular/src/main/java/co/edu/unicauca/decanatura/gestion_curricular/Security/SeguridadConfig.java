@@ -20,6 +20,7 @@ public class SeguridadConfig {
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers("/api/usuarios/crearUsuario").permitAll()  // Permitir este endpoint
                 .requestMatchers("/api/usuarios/login").permitAll()  // Permitir el login
+                .requestMatchers("/api/solicitudes-pazysalvo/crearPazYSalvo").permitAll() // Permitir la creación de solicitudes de paz y salvo
                 .anyRequest().authenticated()
             );
 

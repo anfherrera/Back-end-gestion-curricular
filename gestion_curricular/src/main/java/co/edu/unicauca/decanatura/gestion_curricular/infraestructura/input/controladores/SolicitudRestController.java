@@ -98,15 +98,15 @@ public class SolicitudRestController {
         return ResponseEntity.ok(respuesta);
     }
 
-    @PostMapping("/crearPazYSalvo")
-    public ResponseEntity<SolicitudDTORespuesta> crearSolicitudPazYSalvo(@RequestBody SolicitudPazYSalvoDTOPeticion solicitud) {
-        SolicitudPazYSalvo solicitudPazYSalvo = solicitudPazYSalvoMapper.mappearDeSolicitudDTOPeticionASolicitud(solicitud);
-        SolicitudPazYSalvo solicitudGuardada = solicitudCU.crearSolicitudPazYSalvo(solicitudPazYSalvo);
-        return new ResponseEntity<>(
-                mapper.mappearDeSolicitudARespuesta(solicitudGuardada),
-                HttpStatus.CREATED
-        );
-    }
+//     @PostMapping("/crearPazYSalvo")
+//     public ResponseEntity<SolicitudDTORespuesta> crearSolicitudPazYSalvo(@RequestBody SolicitudPazYSalvoDTOPeticion solicitud) {
+//         SolicitudPazYSalvo solicitudPazYSalvo = solicitudPazYSalvoMapper.mappearDeSolicitudDTOPeticionASolicitud(solicitud);
+//         SolicitudPazYSalvo solicitudGuardada = solicitudCU.crearSolicitudPazYSalvo(solicitudPazYSalvo);
+//         return new ResponseEntity<>(
+//                 mapper.mappearDeSolicitudARespuesta(solicitudGuardada),
+//                 HttpStatus.CREATED
+//         );
+//     }
 
     @PostMapping("/crearCursoVeranoPreinscripcion")
     public ResponseEntity<SolicitudCursoVeranoPreinscripcionDTORespuesta> crearSolicitudCursoVeranoPreinscripcion(
