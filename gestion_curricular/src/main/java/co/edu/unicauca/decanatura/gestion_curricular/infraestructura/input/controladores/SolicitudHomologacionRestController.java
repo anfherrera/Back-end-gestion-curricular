@@ -65,9 +65,13 @@ public class SolicitudHomologacionRestController {
         solicitudHomologacionCU.cambiarEstadoSolicitud(solicitud.getIdSolicitud(), solicitud.getNuevoEstado());
         return ResponseEntity.noContent().build();
     }
- 
 
-    
+    // @GetMapping(" ")
+    // public ResponseEntity<SolicitudHomologacionDTORespuesta> obtenerSolicitudHomologacionSeleccionada() {
+    //     SolicitudHomologacion solicitud = solicitudHomologacionCU. obtenerSolicitudHomologacion();
+    //     SolicitudHomologacionDTORespuesta respuesta = solicitudMapperDominio.mappearDeSolicitudHomologacionASolicitudHomologacionDTORespuesta(solicitud);
+    //     return ResponseEntity.ok(respuesta);
+    // }
 
 
 }
