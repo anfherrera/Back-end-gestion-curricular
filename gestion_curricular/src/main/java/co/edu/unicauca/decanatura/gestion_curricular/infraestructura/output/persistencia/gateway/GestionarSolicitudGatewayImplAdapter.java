@@ -59,97 +59,97 @@ public class GestionarSolicitudGatewayImplAdapter implements GestionarSolicitudG
         this.solicitudMapper = solicitudMapper;
     }
 
-    @Override
-    @Transactional
-    public SolicitudCursoVeranoPreinscripcion crearSolicitudCursoVeranoPreinscripcion(
-        SolicitudCursoVeranoPreinscripcion solicitudCursoVerano) {
-        SolicitudCursoVeranoPreinscripcionEntity solicitudCursoVeranoEntity = solicitudMapper.map(solicitudCursoVerano, SolicitudCursoVeranoPreinscripcionEntity.class);
-        solicitudCursoVeranoEntity.setNombre_solicitud(SolicitudCursoVeranoPreinscripcion.class.getSimpleName());
-        solicitudCursoVeranoEntity.setFecha_registro_solicitud(new Date());
-        EstadoSolicitudEntity estadoSolicitudEntity = null;
+    // @Override
+    // @Transactional
+    // public SolicitudCursoVeranoPreinscripcion crearSolicitudCursoVeranoPreinscripcion(
+    //     SolicitudCursoVeranoPreinscripcion solicitudCursoVerano) {
+    //     SolicitudCursoVeranoPreinscripcionEntity solicitudCursoVeranoEntity = solicitudMapper.map(solicitudCursoVerano, SolicitudCursoVeranoPreinscripcionEntity.class);
+    //     solicitudCursoVeranoEntity.setNombre_solicitud(SolicitudCursoVeranoPreinscripcion.class.getSimpleName());
+    //     solicitudCursoVeranoEntity.setFecha_registro_solicitud(new Date());
+    //     EstadoSolicitudEntity estadoSolicitudEntity = null;
 
-        estadoSolicitudEntity = new EstadoSolicitudEntity();
-        estadoSolicitudEntity.setFecha_registro_estado(new Date());
-        estadoSolicitudEntity.setObjSolicitud(solicitudCursoVeranoEntity);
+    //     estadoSolicitudEntity = new EstadoSolicitudEntity();
+    //     estadoSolicitudEntity.setFecha_registro_estado(new Date());
+    //     estadoSolicitudEntity.setObjSolicitud(solicitudCursoVeranoEntity);
         
-        List<EstadoSolicitudEntity> estadosSolcitud = solicitudCursoVeranoEntity.getEstadosSolicitud();
-        estadosSolcitud.add(estadoSolicitudEntity);
-        solicitudCursoVeranoEntity.setEstadosSolicitud(estadosSolcitud);
+    //     List<EstadoSolicitudEntity> estadosSolcitud = solicitudCursoVeranoEntity.getEstadosSolicitud();
+    //     estadosSolcitud.add(estadoSolicitudEntity);
+    //     solicitudCursoVeranoEntity.setEstadosSolicitud(estadosSolcitud);
 
-        CursoOfertadoVerano cursoOfertado = solicitudCursoVerano.getObjCursoOfertadoVerano();
-        CursoOfertadoVeranoEntity cursoOfertadoVeranoEntity = null;
+    //     CursoOfertadoVerano cursoOfertado = solicitudCursoVerano.getObjCursoOfertadoVerano();
+    //     CursoOfertadoVeranoEntity cursoOfertadoVeranoEntity = null;
 
-        if(cursoOfertado != null && cursoOfertado.getId_curso() != null) {
-            Integer idCurso = cursoOfertado.getId_curso();
-            if(cursoOfertadoVeranoRepository.existsById(idCurso)){
-                cursoOfertadoVeranoEntity = cursoOfertadoVeranoRepository.findById(idCurso)
-                        .orElseThrow(() -> new IllegalArgumentException("Curso ofertado no encontrado con ID: " + idCurso));
-            } else {
-                cursoOfertadoVeranoEntity = new CursoOfertadoVeranoEntity();
-                GrupoCursoVeranoEntity  grupoEntity = solicitudMapper.map(cursoOfertado.getGrupo(), GrupoCursoVeranoEntity.class);
-                cursoOfertadoVeranoEntity.setGrupo(grupoEntity);
-                cursoOfertadoVeranoEntity.setCupo_estimado(cursoOfertado.getCupo_estimado());
-                cursoOfertadoVeranoEntity.setSalon(cursoOfertado.getSalon());
-                MateriaEntity materiaEntity = solicitudMapper.map(cursoOfertado.getObjMateria(), MateriaEntity.class);
-                DocenteEntity docenteEntity = solicitudMapper.map(cursoOfertado.getObjDocente(), DocenteEntity.class);
-                cursoOfertadoVeranoEntity.setObjMateria(materiaEntity);
-                cursoOfertadoVeranoEntity.setObjDocente(docenteEntity);
+    //     if(cursoOfertado != null && cursoOfertado.getId_curso() != null) {
+    //         Integer idCurso = cursoOfertado.getId_curso();
+    //         if(cursoOfertadoVeranoRepository.existsById(idCurso)){
+    //             cursoOfertadoVeranoEntity = cursoOfertadoVeranoRepository.findById(idCurso)
+    //                     .orElseThrow(() -> new IllegalArgumentException("Curso ofertado no encontrado con ID: " + idCurso));
+    //         } else {
+    //             cursoOfertadoVeranoEntity = new CursoOfertadoVeranoEntity();
+    //             GrupoCursoVeranoEntity  grupoEntity = solicitudMapper.map(cursoOfertado.getGrupo(), GrupoCursoVeranoEntity.class);
+    //             cursoOfertadoVeranoEntity.setGrupo(grupoEntity);
+    //             cursoOfertadoVeranoEntity.setCupo_estimado(cursoOfertado.getCupo_estimado());
+    //             cursoOfertadoVeranoEntity.setSalon(cursoOfertado.getSalon());
+    //             MateriaEntity materiaEntity = solicitudMapper.map(cursoOfertado.getObjMateria(), MateriaEntity.class);
+    //             DocenteEntity docenteEntity = solicitudMapper.map(cursoOfertado.getObjDocente(), DocenteEntity.class);
+    //             cursoOfertadoVeranoEntity.setObjMateria(materiaEntity);
+    //             cursoOfertadoVeranoEntity.setObjDocente(docenteEntity);
                 
-            }
-            solicitudCursoVeranoEntity.setObjCursoOfertadoVerano(cursoOfertadoVeranoEntity);
-        }else{
-            throw new IllegalArgumentException("El curso ofertado no puede ser nulo o debe tener un ID válido.");
-        }
+    //         }
+    //         solicitudCursoVeranoEntity.setObjCursoOfertadoVerano(cursoOfertadoVeranoEntity);
+    //     }else{
+    //         throw new IllegalArgumentException("El curso ofertado no puede ser nulo o debe tener un ID válido.");
+    //     }
 
-        SolicitudCursoVeranoPreinscripcionEntity solicitudCursoVeranoGuardado = solicitudRepository.save(solicitudCursoVeranoEntity);
+    //     SolicitudCursoVeranoPreinscripcionEntity solicitudCursoVeranoGuardado = solicitudRepository.save(solicitudCursoVeranoEntity);
 
-        return solicitudMapper.map(solicitudCursoVeranoGuardado,SolicitudCursoVeranoPreinscripcion.class); // Implementación pendiente
-    }
+    //     return solicitudMapper.map(solicitudCursoVeranoGuardado,SolicitudCursoVeranoPreinscripcion.class); // Implementación pendiente
+    // }
 
 
-    @Override
-    @Transactional
-    public SolicitudCursoVeranoIncripcion crearSolicitudCursoVeranoInscripcion(
-            SolicitudCursoVeranoIncripcion solicitudCursoVerano) {
-        SolicitudCursoVeranoInscripcionEntity solicitudCursoVeranoEntity = solicitudMapper.map(solicitudCursoVerano, SolicitudCursoVeranoInscripcionEntity.class);
-        solicitudCursoVeranoEntity.setNombre_solicitud(SolicitudCursoVeranoIncripcion.class.getSimpleName());
-        solicitudCursoVeranoEntity.setFecha_registro_solicitud(new Date());
-        EstadoSolicitudEntity estadoSolicitudEntity = null;
+    // @Override
+    // @Transactional
+    // public SolicitudCursoVeranoIncripcion crearSolicitudCursoVeranoInscripcion(
+    //         SolicitudCursoVeranoIncripcion solicitudCursoVerano) {
+    //     SolicitudCursoVeranoInscripcionEntity solicitudCursoVeranoEntity = solicitudMapper.map(solicitudCursoVerano, SolicitudCursoVeranoInscripcionEntity.class);
+    //     solicitudCursoVeranoEntity.setNombre_solicitud(SolicitudCursoVeranoIncripcion.class.getSimpleName());
+    //     solicitudCursoVeranoEntity.setFecha_registro_solicitud(new Date());
+    //     EstadoSolicitudEntity estadoSolicitudEntity = null;
         
-        estadoSolicitudEntity = new EstadoSolicitudEntity();
-        estadoSolicitudEntity.setFecha_registro_estado(new Date());
-        estadoSolicitudEntity.setObjSolicitud(solicitudCursoVeranoEntity);
+    //     estadoSolicitudEntity = new EstadoSolicitudEntity();
+    //     estadoSolicitudEntity.setFecha_registro_estado(new Date());
+    //     estadoSolicitudEntity.setObjSolicitud(solicitudCursoVeranoEntity);
         
-        List<EstadoSolicitudEntity> estadosSolcitud = solicitudCursoVeranoEntity.getEstadosSolicitud();
-        estadosSolcitud.add(estadoSolicitudEntity);
-        solicitudCursoVeranoEntity.setEstadosSolicitud(estadosSolcitud);
-        CursoOfertadoVerano cursoOfertado = solicitudCursoVerano.getObjCursoOfertadoVerano();
-        CursoOfertadoVeranoEntity cursoOfertadoVeranoEntity = null;
-        if(cursoOfertado != null && cursoOfertado.getId_curso() != null) {
-            Integer idCurso = cursoOfertado.getId_curso();
-            if(cursoOfertadoVeranoRepository.existsById(idCurso)){
-                cursoOfertadoVeranoEntity = cursoOfertadoVeranoRepository.findById(idCurso)
-                        .orElseThrow(() -> new IllegalArgumentException("Curso ofertado no encontrado con ID: " + idCurso));
-            } else {
-                cursoOfertadoVeranoEntity = new CursoOfertadoVeranoEntity();
-                GrupoCursoVeranoEntity  grupoEntity = solicitudMapper.map(cursoOfertado.getGrupo(), GrupoCursoVeranoEntity.class);
-                cursoOfertadoVeranoEntity.setGrupo(grupoEntity);
-                cursoOfertadoVeranoEntity.setCupo_estimado(cursoOfertado.getCupo_estimado());
-                cursoOfertadoVeranoEntity.setSalon(cursoOfertado.getSalon());
-                MateriaEntity materiaEntity = solicitudMapper.map(cursoOfertado.getObjMateria(), MateriaEntity.class);
-                DocenteEntity docenteEntity = solicitudMapper.map(cursoOfertado.getObjDocente(), DocenteEntity.class);
-                cursoOfertadoVeranoEntity.setObjMateria(materiaEntity);
-                cursoOfertadoVeranoEntity.setObjDocente(docenteEntity);
+    //     List<EstadoSolicitudEntity> estadosSolcitud = solicitudCursoVeranoEntity.getEstadosSolicitud();
+    //     estadosSolcitud.add(estadoSolicitudEntity);
+    //     solicitudCursoVeranoEntity.setEstadosSolicitud(estadosSolcitud);
+    //     CursoOfertadoVerano cursoOfertado = solicitudCursoVerano.getObjCursoOfertadoVerano();
+    //     CursoOfertadoVeranoEntity cursoOfertadoVeranoEntity = null;
+    //     if(cursoOfertado != null && cursoOfertado.getId_curso() != null) {
+    //         Integer idCurso = cursoOfertado.getId_curso();
+    //         if(cursoOfertadoVeranoRepository.existsById(idCurso)){
+    //             cursoOfertadoVeranoEntity = cursoOfertadoVeranoRepository.findById(idCurso)
+    //                     .orElseThrow(() -> new IllegalArgumentException("Curso ofertado no encontrado con ID: " + idCurso));
+    //         } else {
+    //             cursoOfertadoVeranoEntity = new CursoOfertadoVeranoEntity();
+    //             GrupoCursoVeranoEntity  grupoEntity = solicitudMapper.map(cursoOfertado.getGrupo(), GrupoCursoVeranoEntity.class);
+    //             cursoOfertadoVeranoEntity.setGrupo(grupoEntity);
+    //             cursoOfertadoVeranoEntity.setCupo_estimado(cursoOfertado.getCupo_estimado());
+    //             cursoOfertadoVeranoEntity.setSalon(cursoOfertado.getSalon());
+    //             MateriaEntity materiaEntity = solicitudMapper.map(cursoOfertado.getObjMateria(), MateriaEntity.class);
+    //             DocenteEntity docenteEntity = solicitudMapper.map(cursoOfertado.getObjDocente(), DocenteEntity.class);
+    //             cursoOfertadoVeranoEntity.setObjMateria(materiaEntity);
+    //             cursoOfertadoVeranoEntity.setObjDocente(docenteEntity);
                 
-            }
-            solicitudCursoVeranoEntity.setObjCursoOfertadoVerano(cursoOfertadoVeranoEntity);
-        } else {
-            throw new IllegalArgumentException("El curso ofertado no puede ser nulo o debe tener un ID válido.");
-        }
-        SolicitudCursoVeranoInscripcionEntity solicitudCursoVeranoGuardado = solicitudRepository.save(solicitudCursoVeranoEntity);
+    //         }
+    //         solicitudCursoVeranoEntity.setObjCursoOfertadoVerano(cursoOfertadoVeranoEntity);
+    //     } else {
+    //         throw new IllegalArgumentException("El curso ofertado no puede ser nulo o debe tener un ID válido.");
+    //     }
+    //     SolicitudCursoVeranoInscripcionEntity solicitudCursoVeranoGuardado = solicitudRepository.save(solicitudCursoVeranoEntity);
 
-        return solicitudMapper.map(solicitudCursoVeranoGuardado, SolicitudCursoVeranoIncripcion.class); // Implementación pendiente
-    }
+    //     return solicitudMapper.map(solicitudCursoVeranoGuardado, SolicitudCursoVeranoIncripcion.class); // Implementación pendiente
+    // }
 
     @Override
     @Transactional
@@ -676,25 +676,25 @@ public class GestionarSolicitudGatewayImplAdapter implements GestionarSolicitudG
         return solicitud;
     }
 
-    @Override
-    public Solicitud buscarSolicitudesPorUsuarioYCursoPre(Integer idUsuario, Integer idCurso) {
-SolicitudEntity solicitudEntity = solicitudRepository.buscarSolicitudesPorUsuarioyCursoPre(idUsuario, idCurso);
-        Solicitud solicitud = null;
-        if(solicitudEntity!= null){
-                if (solicitudEntity instanceof SolicitudCursoVeranoPreinscripcionEntity) {
-                    solicitud = solicitudMapper.map(solicitudEntity, SolicitudCursoVeranoPreinscripcion.class);
-                } else if (solicitudEntity instanceof SolicitudEcaesEntity) {
-                    solicitud = solicitudMapper.map(solicitudEntity, SolicitudEcaes.class);
-                } else if (solicitudEntity instanceof SolicitudReingresoEntity) {
-                    solicitud = solicitudMapper.map(solicitudEntity, SolicitudReingreso.class);
-                } else if (solicitudEntity instanceof SolicitudHomologacionEntity) {
-                    solicitud = solicitudMapper.map(solicitudEntity, SolicitudHomologacion.class);
-                } else if (solicitudEntity instanceof SolicitudPazYSalvoEntity) {
-                    solicitud = solicitudMapper.map(solicitudEntity, SolicitudPazYSalvo.class);
-                } else if (solicitudEntity instanceof SolicitudCursoVeranoInscripcionEntity) {
-                    solicitud = solicitudMapper.map(solicitudEntity, SolicitudCursoVeranoIncripcion.class);
-                }
-        }
-        return solicitud;
-    }
+//     @Override
+//     public Solicitud buscarSolicitudesPorUsuarioYCursoPre(Integer idUsuario, Integer idCurso) {
+// SolicitudEntity solicitudEntity = solicitudRepository.buscarSolicitudesPorUsuarioyCursoPre(idUsuario, idCurso);
+//         Solicitud solicitud = null;
+//         if(solicitudEntity!= null){
+//                 if (solicitudEntity instanceof SolicitudCursoVeranoPreinscripcionEntity) {
+//                     solicitud = solicitudMapper.map(solicitudEntity, SolicitudCursoVeranoPreinscripcion.class);
+//                 } else if (solicitudEntity instanceof SolicitudEcaesEntity) {
+//                     solicitud = solicitudMapper.map(solicitudEntity, SolicitudEcaes.class);
+//                 } else if (solicitudEntity instanceof SolicitudReingresoEntity) {
+//                     solicitud = solicitudMapper.map(solicitudEntity, SolicitudReingreso.class);
+//                 } else if (solicitudEntity instanceof SolicitudHomologacionEntity) {
+//                     solicitud = solicitudMapper.map(solicitudEntity, SolicitudHomologacion.class);
+//                 } else if (solicitudEntity instanceof SolicitudPazYSalvoEntity) {
+//                     solicitud = solicitudMapper.map(solicitudEntity, SolicitudPazYSalvo.class);
+//                 } else if (solicitudEntity instanceof SolicitudCursoVeranoInscripcionEntity) {
+//                     solicitud = solicitudMapper.map(solicitudEntity, SolicitudCursoVeranoIncripcion.class);
+//                 }
+//         }
+//         return solicitud;
+//     }
 }

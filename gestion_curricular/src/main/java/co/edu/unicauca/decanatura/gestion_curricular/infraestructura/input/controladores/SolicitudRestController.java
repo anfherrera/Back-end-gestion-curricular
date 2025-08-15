@@ -35,9 +35,9 @@ public class SolicitudRestController {
 
     private final GestionarSolicitudCUIntPort solicitudCU;
     private final SolicitudMapperDominio mapper;
-    private final SolicitudPazYSalvoMapperDominio solicitudPazYSalvoMapper;
-    private final SolicitudCursoDeVeranoPreinscripcionMapperDominio solicitudCursoVeranoPreinscripcionMapper;
-    private final SolicitudCursoDeVeranoInscripcionMapperDominio solicitudCursoDeVeranoInscripcionMapper;
+//     private final SolicitudPazYSalvoMapperDominio solicitudPazYSalvoMapper;
+//     private final SolicitudCursoDeVeranoPreinscripcionMapperDominio solicitudCursoVeranoPreinscripcionMapper;
+//     private final SolicitudCursoDeVeranoInscripcionMapperDominio solicitudCursoDeVeranoInscripcionMapper;
 
     
 
@@ -108,37 +108,37 @@ public class SolicitudRestController {
 //         );
 //     }
 
-    @PostMapping("/crearCursoVeranoPreinscripcion")
-    public ResponseEntity<SolicitudCursoVeranoPreinscripcionDTORespuesta> crearSolicitudCursoVeranoPreinscripcion(
-            @RequestBody SolicitudCurosoVeranoPreinscripcionDTOPeticion solicitud) {
+//     @PostMapping("/crearCursoVeranoPreinscripcion")
+//     public ResponseEntity<SolicitudCursoVeranoPreinscripcionDTORespuesta> crearSolicitudCursoVeranoPreinscripcion(
+//             @RequestBody SolicitudCurosoVeranoPreinscripcionDTOPeticion solicitud) {
 
-        SolicitudCursoVeranoPreinscripcion solicitudDominio = solicitudCursoVeranoPreinscripcionMapper
-                .mappearDePeticionASolicitudCursoVeranoPreinscripcion(solicitud);
+//         SolicitudCursoVeranoPreinscripcion solicitudDominio = solicitudCursoVeranoPreinscripcionMapper
+//                 .mappearDePeticionASolicitudCursoVeranoPreinscripcion(solicitud);
 
-        SolicitudCursoVeranoPreinscripcion solicitudGuardada = solicitudCU
-                .crearSolicitudCursoVeranoPreinscripcion(solicitudDominio);
+//         SolicitudCursoVeranoPreinscripcion solicitudGuardada = solicitudCU
+//                 .crearSolicitudCursoVeranoPreinscripcion(solicitudDominio);
 
-        SolicitudCursoVeranoPreinscripcionDTORespuesta respuesta = solicitudCursoVeranoPreinscripcionMapper
-                .mappearDeSolicitudCursoVeranoPreinscripcionARespuesta(solicitudGuardada);
+//         SolicitudCursoVeranoPreinscripcionDTORespuesta respuesta = solicitudCursoVeranoPreinscripcionMapper
+//                 .mappearDeSolicitudCursoVeranoPreinscripcionARespuesta(solicitudGuardada);
 
-        return new ResponseEntity<>(respuesta, HttpStatus.CREATED);
-    }
+//         return new ResponseEntity<>(respuesta, HttpStatus.CREATED);
+//     }
 
-    @PostMapping("/crearCursoVeranoInscripcion")
-    public ResponseEntity<SolicitudCursoVeranoInscripcionDTORespuesta> crearSolicitudCursoVeranoInscripcion(
-            @RequestBody SolicitudCursoVeranoInscripcionDTOPeticion solicitud) {
+//     @PostMapping("/crearCursoVeranoInscripcion")
+//     public ResponseEntity<SolicitudCursoVeranoInscripcionDTORespuesta> crearSolicitudCursoVeranoInscripcion(
+//             @RequestBody SolicitudCursoVeranoInscripcionDTOPeticion solicitud) {
 
-        SolicitudCursoVeranoIncripcion solicitudDominio = solicitudCursoDeVeranoInscripcionMapper
-                .mappearDePeticionASolicitudCursoVeranoIncripcion(solicitud);
+//         SolicitudCursoVeranoIncripcion solicitudDominio = solicitudCursoDeVeranoInscripcionMapper
+//                 .mappearDePeticionASolicitudCursoVeranoIncripcion(solicitud);
 
-        SolicitudCursoVeranoIncripcion solicitudGuardada = solicitudCU
-                .crearSolicitudCursoVeranoInscripcion(solicitudDominio);
+//         SolicitudCursoVeranoIncripcion solicitudGuardada = solicitudCU
+//                 .crearSolicitudCursoVeranoInscripcion(solicitudDominio);
 
-        SolicitudCursoVeranoInscripcionDTORespuesta respuesta = solicitudCursoDeVeranoInscripcionMapper
-                .mappearDeSolicitudCursoVeranoIncripcionARespuesta(solicitudGuardada);
+//         SolicitudCursoVeranoInscripcionDTORespuesta respuesta = solicitudCursoDeVeranoInscripcionMapper
+//                 .mappearDeSolicitudCursoVeranoIncripcionARespuesta(solicitudGuardada);
 
-        return new ResponseEntity<>(respuesta, HttpStatus.CREATED);
-    }
+//         return new ResponseEntity<>(respuesta, HttpStatus.CREATED);
+//     }
 
 
 }

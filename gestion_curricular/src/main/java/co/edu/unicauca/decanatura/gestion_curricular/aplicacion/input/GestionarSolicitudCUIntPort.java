@@ -5,17 +5,14 @@ import java.util.List;
 
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.EstadoSolicitud;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Solicitud;
-import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.SolicitudCursoVeranoIncripcion;
-import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.SolicitudCursoVeranoPreinscripcion;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.SolicitudEcaes;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.SolicitudHomologacion;
-import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.SolicitudPazYSalvo;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.SolicitudReingreso;
 
 public interface GestionarSolicitudCUIntPort {
     
-    SolicitudCursoVeranoPreinscripcion crearSolicitudCursoVeranoPreinscripcion(SolicitudCursoVeranoPreinscripcion solicitudCursoVerano);
-    SolicitudCursoVeranoIncripcion crearSolicitudCursoVeranoInscripcion(SolicitudCursoVeranoIncripcion solicitudCursoVerano);
+    // SolicitudCursoVeranoPreinscripcion crearSolicitudCursoVeranoPreinscripcion(SolicitudCursoVeranoPreinscripcion solicitudCursoVerano);
+    // SolicitudCursoVeranoIncripcion crearSolicitudCursoVeranoInscripcion(SolicitudCursoVeranoIncripcion solicitudCursoVerano);
     SolicitudEcaes crearSolicitudEcaes(SolicitudEcaes solicitudEcaes);
     SolicitudReingreso crearSolicitudReingreso(SolicitudReingreso solicitudReingreso);
     SolicitudHomologacion crearSolicitudHomologacion(SolicitudHomologacion solicitudHomologacion);

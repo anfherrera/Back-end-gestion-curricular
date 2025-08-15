@@ -20,6 +20,7 @@ import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.Gestionar
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.GestionarPreRegistroEcaesGatewayIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.GestionarProgramaGatewayIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.GestionarRolGatewayIntPort;
+import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.GestionarSolicitudCursoVeranoGatewayIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.GestionarSolicitudGatewayIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.GestionarSolicitudPazYSalvoGatewayIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.GestionarUsuarioGatewayIntPort;
@@ -29,6 +30,7 @@ import co.edu.unicauca.decanatura.gestion_curricular.dominio.casosDeUso.Gestiona
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.casosDeUso.GestionarEstadisticasCUAdapter;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.casosDeUso.GestionarMateriasCUAdapter;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.casosDeUso.GestionarSolicitudCUAdapter;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.casosDeUso.GestionarSolicitudCursoVeranoCUAdapter;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.casosDeUso.GestionarSolicitudEcaesCUAdapter;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.casosDeUso.GestionarSolicitudPazYSalvoCUAdapter;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.casosDeUso.GestionarUsuarioCUAdapter;
@@ -81,6 +83,14 @@ public class BeanConfiguration {
         return new GestionarSolicitudPazYSalvoCUAdapter(objGestionarSolicitudGateway, objUsuario, objDocumentosGateway, objFormateadorResultados);  
     }
 
+    @Bean
+    public GestionarSolicitudCursoVeranoCUAdapter GestionarSolicitudCursoVeranoInt(GestionarSolicitudCursoVeranoGatewayIntPort objGestionarSolicitudGateway,
+        GestionarCursoOfertadoVeranoGatewayIntPort objCursoOfertado,
+        GestionarUsuarioGatewayIntPort objUsuario, 
+        GestionarDocumentosGatewayIntPort objDocumentosGateway,
+        FormateadorResultadosIntPort objFormateadorResultados) {
+        return new GestionarSolicitudCursoVeranoCUAdapter(objGestionarSolicitudGateway, objCursoOfertado, objUsuario, objDocumentosGateway, objFormateadorResultados);
+    }
     
     @Bean
     public GestionarUsuarioCUAdapter crearGestionarUsuarioCUInt(GestionarUsuarioGatewayIntPort objGestionarUsuarioGateway,
