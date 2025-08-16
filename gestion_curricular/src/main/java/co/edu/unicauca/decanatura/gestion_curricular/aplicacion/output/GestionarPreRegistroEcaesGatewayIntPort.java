@@ -18,7 +18,7 @@ public interface GestionarPreRegistroEcaesGatewayIntPort {
 
     Optional<SolicitudEcaes> buscarOpcionalPorId(Integer id);
 
-    Optional<Usuario> buscarUsuarioPorId(Integer idUsuario);
+    //Optional<Usuario> buscarUsuarioPorId(Integer idUsuario); usarlo en la interfaz de usuario
 
     void cambiarEstadoSolicitudEcaes(Integer idSolicitud, EstadoSolicitud nuevoEstado);
 

@@ -16,5 +16,5 @@ public interface GestionarDocumentosGatewayIntPort {
 
     List<Documento> buscarDocumentoSinSolicitud();
 
-    
+    void añadirComentario(Documento documento, String comentario); 
 }

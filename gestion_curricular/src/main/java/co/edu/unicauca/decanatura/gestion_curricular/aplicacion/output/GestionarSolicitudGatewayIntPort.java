@@ -5,19 +5,22 @@ import java.util.List;
 
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.EstadoSolicitud;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Solicitud;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.SolicitudCursoVeranoIncripcion;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.SolicitudCursoVeranoPreinscripcion;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.SolicitudEcaes;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.SolicitudHomologacion;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.SolicitudPazYSalvo;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.SolicitudReingreso;
 
 
 public interface GestionarSolicitudGatewayIntPort {
     
-    // SolicitudCursoVeranoPreinscripcion crearSolicitudCursoVeranoPreinscripcion(SolicitudCursoVeranoPreinscripcion solicitudCursoVerano);
-    // SolicitudCursoVeranoIncripcion crearSolicitudCursoVeranoInscripcion(SolicitudCursoVeranoIncripcion solicitudCursoVerano);
+    SolicitudCursoVeranoPreinscripcion crearSolicitudCursoVeranoPreinscripcion(SolicitudCursoVeranoPreinscripcion solicitudCursoVerano);
+    SolicitudCursoVeranoIncripcion crearSolicitudCursoVeranoInscripcion(SolicitudCursoVeranoIncripcion solicitudCursoVerano);
     SolicitudEcaes crearSolicitudEcaes(SolicitudEcaes solicitudEcaes);
     SolicitudReingreso crearSolicitudReingreso(SolicitudReingreso solicitudReingreso);
     SolicitudHomologacion crearSolicitudHomologacion(SolicitudHomologacion solicitudHomologacion);
-    // SolicitudPazYSalvo crearSolicitudPazYSalvo(SolicitudPazYSalvo solicitudPazYSalvo);
+    SolicitudPazYSalvo crearSolicitudPazYSalvo(SolicitudPazYSalvo solicitudPazYSalvo);
 
     Solicitud actualizarSolicitud(Solicitud solicitud, EstadoSolicitud estadoSolicitud);
 
@@ -54,7 +57,7 @@ public interface GestionarSolicitudGatewayIntPort {
 
     Solicitud buscarSolicitudesPorUsuarioYCursoIns(Integer idUsuario, Integer idCurso);
 
-    //Solicitud buscarSolicitudesPorUsuarioYCursoPre(Integer idUsuario, Integer idCurso);
+    Solicitud buscarSolicitudesPorUsuarioYCursoPre(Integer idUsuario, Integer idCurso);
 
     // Contar total de solicitudes
     Integer contarSolicitudes();

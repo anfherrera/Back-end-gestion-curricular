@@ -73,6 +73,12 @@ public class GestionarDocumentoGatewayImplAdapter implements GestionarDocumentos
             .toList();
     }
 
+    @Override
+    public void añadirComentario(Documento documento, String comentario) {
+        
+        
+    }
+
     
     
 }

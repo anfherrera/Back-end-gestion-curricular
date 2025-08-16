@@ -1,6 +1,7 @@
 package co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output;
 
 import java.util.List;
+import java.util.Optional;
 
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Usuario;
 
@@ -13,6 +14,8 @@ public interface GestionarUsuarioGatewayIntPort {
     boolean eliminarUsuario(Integer id_usuario);
 
     Usuario obtenerUsuarioPorId(Integer id_usuario);
+
+    Optional<Usuario> buscarUsuarioPorId(Integer idUsuario);
 
     Usuario buscarUsuarioPorCodigo(String codigo);
 
