@@ -15,12 +15,12 @@ import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.SolicitudRe
 
 public interface GestionarSolicitudGatewayIntPort {
     
-    SolicitudCursoVeranoPreinscripcion crearSolicitudCursoVeranoPreinscripcion(SolicitudCursoVeranoPreinscripcion solicitudCursoVerano);
-    SolicitudCursoVeranoIncripcion crearSolicitudCursoVeranoInscripcion(SolicitudCursoVeranoIncripcion solicitudCursoVerano);
+    // SolicitudCursoVeranoPreinscripcion crearSolicitudCursoVeranoPreinscripcion(SolicitudCursoVeranoPreinscripcion solicitudCursoVerano);
+    // SolicitudCursoVeranoIncripcion crearSolicitudCursoVeranoInscripcion(SolicitudCursoVeranoIncripcion solicitudCursoVerano);
     SolicitudEcaes crearSolicitudEcaes(SolicitudEcaes solicitudEcaes);
     SolicitudReingreso crearSolicitudReingreso(SolicitudReingreso solicitudReingreso);
     SolicitudHomologacion crearSolicitudHomologacion(SolicitudHomologacion solicitudHomologacion);
-    SolicitudPazYSalvo crearSolicitudPazYSalvo(SolicitudPazYSalvo solicitudPazYSalvo);
+    // SolicitudPazYSalvo crearSolicitudPazYSalvo(SolicitudPazYSalvo solicitudPazYSalvo);
 
     Solicitud actualizarSolicitud(Solicitud solicitud, EstadoSolicitud estadoSolicitud);
 

@@ -42,133 +42,133 @@ public class GestionarSolicitudCUAdapter implements GestionarSolicitudCUIntPort 
         this.objGestionarSolicitudGateway = objGestionarSolicitudGateway;
     }
     //Se implementan los métodos con tantas validaciones para tener en cuenta los accesos a servicios por postman o clientes similares.
-    @Override
-    public SolicitudCursoVeranoPreinscripcion crearSolicitudCursoVeranoPreinscripcion(
-            SolicitudCursoVeranoPreinscripcion solicitudCursoVerano) {
-        CursoOfertadoVerano cursoABuscar=null;
-        SolicitudCursoVeranoPreinscripcion solicitudGuardada = null;
-        Usuario usuarioBuscar =null;
-        Solicitud preinscripcionBuscar = null;
-        if(solicitudCursoVerano == null) {
-            this.objFormateadorResultados.retornarRespuestaErrorReglaDeNegocio("La solicitud de preinscripción no puede ser nula");
-        }
-        if(solicitudCursoVerano.getObjUsuario() == null){
-            this.objFormateadorResultados.retornarRespuestaErrorReglaDeNegocio("La solicitud de preinscripción no puede ser nula");
-        }
-        if(solicitudCursoVerano.getObjUsuario().getId_usuario() == null){
-            this.objFormateadorResultados.retornarRespuestaErrorReglaDeNegocio("El usuario de la solicitud no puede ser nulo");
-        }
-        usuarioBuscar = this.objUsuario.obtenerUsuarioPorId(solicitudCursoVerano.getObjUsuario().getId_usuario());
-        if(usuarioBuscar == null){
-            this.objFormateadorResultados.retornarRespuestaErrorEntidadExiste("Usuario no encontrado");
-        }
-        if(!solicitudCursoVerano.getDocumentos().isEmpty()){
-            this.objFormateadorResultados.retornarRespuestaErrorReglaDeNegocio("No se debe adjuntar documentos en la solicitud de preinscripción");
-        }
-        if(solicitudCursoVerano.getObjCursoOfertadoVerano() == null){
-            this.objFormateadorResultados.retornarRespuestaErrorReglaDeNegocio("Debe seleccionar un curso válido");
-        }
-        if(solicitudCursoVerano.getObjCursoOfertadoVerano().getId_curso() == null){
-            this.objFormateadorResultados.retornarRespuestaErrorReglaDeNegocio("Debe seleccionar un curso válido");
-        }   
-        cursoABuscar = this.objCursoOfertado.obtenerCursoPorId(solicitudCursoVerano.getObjCursoOfertadoVerano().getId_curso());
-        if(cursoABuscar == null){   
-            this.objFormateadorResultados.retornarRespuestaErrorReglaDeNegocio("No se encontró el curso");
-        }
-        if(cursoABuscar.getEstadosCursoOfertados().isEmpty()){
-            this.objFormateadorResultados.retornarRespuestaErrorReglaDeNegocio("El curso no tiene estados asociados");
-        }
-        if(!cursoABuscar.getEstadosCursoOfertados().get(cursoABuscar.getEstadosCursoOfertados().size() - 1).getEstado_actual().equals("Publicado")){
-            this.objFormateadorResultados.retornarRespuestaErrorReglaDeNegocio("El curso no está en estado de publicado");
-        }
+    // @Override
+    // public SolicitudCursoVeranoPreinscripcion crearSolicitudCursoVeranoPreinscripcion(
+    //         SolicitudCursoVeranoPreinscripcion solicitudCursoVerano) {
+    //     CursoOfertadoVerano cursoABuscar=null;
+    //     SolicitudCursoVeranoPreinscripcion solicitudGuardada = null;
+    //     Usuario usuarioBuscar =null;
+    //     Solicitud preinscripcionBuscar = null;
+    //     if(solicitudCursoVerano == null) {
+    //         this.objFormateadorResultados.retornarRespuestaErrorReglaDeNegocio("La solicitud de preinscripción no puede ser nula");
+    //     }
+    //     if(solicitudCursoVerano.getObjUsuario() == null){
+    //         this.objFormateadorResultados.retornarRespuestaErrorReglaDeNegocio("La solicitud de preinscripción no puede ser nula");
+    //     }
+    //     if(solicitudCursoVerano.getObjUsuario().getId_usuario() == null){
+    //         this.objFormateadorResultados.retornarRespuestaErrorReglaDeNegocio("El usuario de la solicitud no puede ser nulo");
+    //     }
+    //     usuarioBuscar = this.objUsuario.obtenerUsuarioPorId(solicitudCursoVerano.getObjUsuario().getId_usuario());
+    //     if(usuarioBuscar == null){
+    //         this.objFormateadorResultados.retornarRespuestaErrorEntidadExiste("Usuario no encontrado");
+    //     }
+    //     if(!solicitudCursoVerano.getDocumentos().isEmpty()){
+    //         this.objFormateadorResultados.retornarRespuestaErrorReglaDeNegocio("No se debe adjuntar documentos en la solicitud de preinscripción");
+    //     }
+    //     if(solicitudCursoVerano.getObjCursoOfertadoVerano() == null){
+    //         this.objFormateadorResultados.retornarRespuestaErrorReglaDeNegocio("Debe seleccionar un curso válido");
+    //     }
+    //     if(solicitudCursoVerano.getObjCursoOfertadoVerano().getId_curso() == null){
+    //         this.objFormateadorResultados.retornarRespuestaErrorReglaDeNegocio("Debe seleccionar un curso válido");
+    //     }   
+    //     cursoABuscar = this.objCursoOfertado.obtenerCursoPorId(solicitudCursoVerano.getObjCursoOfertadoVerano().getId_curso());
+    //     if(cursoABuscar == null){   
+    //         this.objFormateadorResultados.retornarRespuestaErrorReglaDeNegocio("No se encontró el curso");
+    //     }
+    //     if(cursoABuscar.getEstadosCursoOfertados().isEmpty()){
+    //         this.objFormateadorResultados.retornarRespuestaErrorReglaDeNegocio("El curso no tiene estados asociados");
+    //     }
+    //     if(!cursoABuscar.getEstadosCursoOfertados().get(cursoABuscar.getEstadosCursoOfertados().size() - 1).getEstado_actual().equals("Publicado")){
+    //         this.objFormateadorResultados.retornarRespuestaErrorReglaDeNegocio("El curso no está en estado de publicado");
+    //     }
 
-        if(solicitudCursoVerano.getCodicion_solicitud() == null){
-            this.objFormateadorResultados.retornarRespuestaErrorReglaDeNegocio("Debe seleccionar una condición de solicitud válida");
-        }
+    //     if(solicitudCursoVerano.getCodicion_solicitud() == null){
+    //         this.objFormateadorResultados.retornarRespuestaErrorReglaDeNegocio("Debe seleccionar una condición de solicitud válida");
+    //     }
 
-        preinscripcionBuscar = this.objGestionarSolicitudGateway.buscarSolicitudesPorUsuarioYCursoPre(usuarioBuscar.getId_usuario(), cursoABuscar.getId_curso());
+    //     preinscripcionBuscar = this.objGestionarSolicitudGateway.buscarSolicitudesPorUsuarioYCursoPre(usuarioBuscar.getId_usuario(), cursoABuscar.getId_curso());
 
-        if(preinscripcionBuscar != null) {
-            this.objFormateadorResultados.retornarRespuestaErrorReglaDeNegocio("Ya existe una solicitud de preinscripción para este curso");
-        }
+    //     if(preinscripcionBuscar != null) {
+    //         this.objFormateadorResultados.retornarRespuestaErrorReglaDeNegocio("Ya existe una solicitud de preinscripción para este curso");
+    //     }
 
-        usuarioBuscar.getSolicitudes().add(solicitudCursoVerano);
-        this.objUsuario.actualizarUsuario(usuarioBuscar);
+    //     usuarioBuscar.getSolicitudes().add(solicitudCursoVerano);
+    //     this.objUsuario.actualizarUsuario(usuarioBuscar);
 
-        solicitudCursoVerano.setObjUsuario(usuarioBuscar);
+    //     solicitudCursoVerano.setObjUsuario(usuarioBuscar);
 
-        solicitudGuardada = this.objGestionarSolicitudGateway.crearSolicitudCursoVeranoPreinscripcion(solicitudCursoVerano);
+    //     solicitudGuardada = this.objGestionarSolicitudGateway.crearSolicitudCursoVeranoPreinscripcion(solicitudCursoVerano);
 
-        return solicitudGuardada;
-    }
+    //     return solicitudGuardada;
+    // }
 
 
-    @Override
-    public SolicitudCursoVeranoIncripcion crearSolicitudCursoVeranoInscripcion(SolicitudCursoVeranoIncripcion solicitudCursoVerano) {
-        Usuario usuarioBuscar = null;
-        CursoOfertadoVerano cursoABuscar = null;
-        Solicitud solicitudInscripcionBuscar = null;
-        if (solicitudCursoVerano == null) {
-            this.objFormateadorResultados.retornarRespuestaErrorReglaDeNegocio("La solicitud de preinscripción no puede ser nula");
-        }
-        if (solicitudCursoVerano.getObjUsuario() == null ) {
-            this.objFormateadorResultados.retornarRespuestaErrorReglaDeNegocio("El usuario de la solicitud no puede ser nulo");
-        }
-        if( solicitudCursoVerano.getObjUsuario().getId_usuario() == null) {
-            this.objFormateadorResultados.retornarRespuestaErrorReglaDeNegocio("El usuario de la solicitud no puede ser nulo");
-        }
+    // @Override
+    // public SolicitudCursoVeranoIncripcion crearSolicitudCursoVeranoInscripcion(SolicitudCursoVeranoIncripcion solicitudCursoVerano) {
+    //     Usuario usuarioBuscar = null;
+    //     CursoOfertadoVerano cursoABuscar = null;
+    //     Solicitud solicitudInscripcionBuscar = null;
+    //     if (solicitudCursoVerano == null) {
+    //         this.objFormateadorResultados.retornarRespuestaErrorReglaDeNegocio("La solicitud de preinscripción no puede ser nula");
+    //     }
+    //     if (solicitudCursoVerano.getObjUsuario() == null ) {
+    //         this.objFormateadorResultados.retornarRespuestaErrorReglaDeNegocio("El usuario de la solicitud no puede ser nulo");
+    //     }
+    //     if( solicitudCursoVerano.getObjUsuario().getId_usuario() == null) {
+    //         this.objFormateadorResultados.retornarRespuestaErrorReglaDeNegocio("El usuario de la solicitud no puede ser nulo");
+    //     }
 
-        usuarioBuscar = this.objUsuario.obtenerUsuarioPorId(solicitudCursoVerano.getObjUsuario().getId_usuario());
-        if (usuarioBuscar == null) {
-            this.objFormateadorResultados.retornarRespuestaErrorEntidadExiste("Usuario no encontrado");
-        }
-        if (solicitudCursoVerano.getDocumentos() == null || solicitudCursoVerano.getDocumentos().isEmpty()) {
-            this.objFormateadorResultados.retornarRespuestaErrorReglaDeNegocio("Debe adjuntar exactamente un documento");
-        }
-        if(solicitudCursoVerano.getDocumentos().size() != 1) {
-            this.objFormateadorResultados.retornarRespuestaErrorReglaDeNegocio("Debe adjuntar exactamente un documento");
-        }
-        if (solicitudCursoVerano.getObjCursoOfertadoVerano() == null) {
-            this.objFormateadorResultados.retornarRespuestaErrorReglaDeNegocio("Debe seleccionar un curso válido");
-        }
-        if(solicitudCursoVerano.getObjCursoOfertadoVerano().getId_curso() == null) {
-            this.objFormateadorResultados.retornarRespuestaErrorReglaDeNegocio("Debe seleccionar un curso válido");
-        }
+    //     usuarioBuscar = this.objUsuario.obtenerUsuarioPorId(solicitudCursoVerano.getObjUsuario().getId_usuario());
+    //     if (usuarioBuscar == null) {
+    //         this.objFormateadorResultados.retornarRespuestaErrorEntidadExiste("Usuario no encontrado");
+    //     }
+    //     if (solicitudCursoVerano.getDocumentos() == null || solicitudCursoVerano.getDocumentos().isEmpty()) {
+    //         this.objFormateadorResultados.retornarRespuestaErrorReglaDeNegocio("Debe adjuntar exactamente un documento");
+    //     }
+    //     if(solicitudCursoVerano.getDocumentos().size() != 1) {
+    //         this.objFormateadorResultados.retornarRespuestaErrorReglaDeNegocio("Debe adjuntar exactamente un documento");
+    //     }
+    //     if (solicitudCursoVerano.getObjCursoOfertadoVerano() == null) {
+    //         this.objFormateadorResultados.retornarRespuestaErrorReglaDeNegocio("Debe seleccionar un curso válido");
+    //     }
+    //     if(solicitudCursoVerano.getObjCursoOfertadoVerano().getId_curso() == null) {
+    //         this.objFormateadorResultados.retornarRespuestaErrorReglaDeNegocio("Debe seleccionar un curso válido");
+    //     }
 
-        cursoABuscar = this.objCursoOfertado.obtenerCursoPorId(solicitudCursoVerano.getObjCursoOfertadoVerano().getId_curso());
-        if (cursoABuscar == null) {
-            this.objFormateadorResultados.retornarRespuestaErrorReglaDeNegocio("No se encontró el curso");
-        }
+    //     cursoABuscar = this.objCursoOfertado.obtenerCursoPorId(solicitudCursoVerano.getObjCursoOfertadoVerano().getId_curso());
+    //     if (cursoABuscar == null) {
+    //         this.objFormateadorResultados.retornarRespuestaErrorReglaDeNegocio("No se encontró el curso");
+    //     }
 
-        if(cursoABuscar.getEstadosCursoOfertados().isEmpty()){
-            this.objFormateadorResultados.retornarRespuestaErrorReglaDeNegocio("El curso no tiene estados asociados");
-        }
-        if(!cursoABuscar.getEstadosCursoOfertados().get(cursoABuscar.getEstadosCursoOfertados().size()-1).getEstado_actual().equals("Preinscripcion")){
-            this.objFormateadorResultados.retornarRespuestaErrorReglaDeNegocio("El curso no está en estado de Preinscripcion");
-        }
+    //     if(cursoABuscar.getEstadosCursoOfertados().isEmpty()){
+    //         this.objFormateadorResultados.retornarRespuestaErrorReglaDeNegocio("El curso no tiene estados asociados");
+    //     }
+    //     if(!cursoABuscar.getEstadosCursoOfertados().get(cursoABuscar.getEstadosCursoOfertados().size()-1).getEstado_actual().equals("Preinscripcion")){
+    //         this.objFormateadorResultados.retornarRespuestaErrorReglaDeNegocio("El curso no está en estado de Preinscripcion");
+    //     }
 
-        solicitudInscripcionBuscar = this.objGestionarSolicitudGateway.buscarSolicitudesPorUsuarioYCursoIns(usuarioBuscar.getId_usuario(), cursoABuscar.getId_curso());
+    //     solicitudInscripcionBuscar = this.objGestionarSolicitudGateway.buscarSolicitudesPorUsuarioYCursoIns(usuarioBuscar.getId_usuario(), cursoABuscar.getId_curso());
 
-        if(solicitudInscripcionBuscar != null) {
-            this.objFormateadorResultados.retornarRespuestaErrorReglaDeNegocio("Ya existe una solicitud de preinscripción para este curso");
-        }
+    //     if(solicitudInscripcionBuscar != null) {
+    //         this.objFormateadorResultados.retornarRespuestaErrorReglaDeNegocio("Ya existe una solicitud de preinscripción para este curso");
+    //     }
 
-        // Crear la solicitud
-        SolicitudCursoVeranoIncripcion solicitudGuardada = this.objGestionarSolicitudGateway.crearSolicitudCursoVeranoInscripcion(solicitudCursoVerano);
+    //     // Crear la solicitud
+    //     SolicitudCursoVeranoIncripcion solicitudGuardada = this.objGestionarSolicitudGateway.crearSolicitudCursoVeranoInscripcion(solicitudCursoVerano);
 
-        // Asociar y guardar los documentos
-        for (Documento doc : solicitudGuardada.getDocumentos()) {
-            doc.setObjSolicitud(solicitudGuardada);
-            this.objDocumentosGateway.actualizarDocumento(doc);
-        }
+    //     // Asociar y guardar los documentos
+    //     for (Documento doc : solicitudGuardada.getDocumentos()) {
+    //         doc.setObjSolicitud(solicitudGuardada);
+    //         this.objDocumentosGateway.actualizarDocumento(doc);
+    //     }
 
-        // Actualizar usuario con la nueva solicitud
-        usuarioBuscar.getSolicitudes().add(solicitudGuardada);
+    //     // Actualizar usuario con la nueva solicitud
+    //     usuarioBuscar.getSolicitudes().add(solicitudGuardada);
   
-        this.objUsuario.actualizarUsuario(usuarioBuscar);
+    //     this.objUsuario.actualizarUsuario(usuarioBuscar);
 
-        return solicitudGuardada;
-    }
+    //     return solicitudGuardada;
+    // }
 
     @Override
     public SolicitudEcaes crearSolicitudEcaes(SolicitudEcaes solicitudEcaes) {
@@ -190,69 +190,69 @@ public class GestionarSolicitudCUAdapter implements GestionarSolicitudCUIntPort 
 
 
     
-    @Override
-    public SolicitudPazYSalvo crearSolicitudPazYSalvo(SolicitudPazYSalvo solicitudPazYSalvo) {
-        if (solicitudPazYSalvo == null) {
-            this.objFormateadorResultados.retornarRespuestaErrorReglaDeNegocio("La solicitud no puede ser nula");
-        }
+    // @Override
+    // public SolicitudPazYSalvo crearSolicitudPazYSalvo(SolicitudPazYSalvo solicitudPazYSalvo) {
+    //     if (solicitudPazYSalvo == null) {
+    //         this.objFormateadorResultados.retornarRespuestaErrorReglaDeNegocio("La solicitud no puede ser nula");
+    //     }
 
-        if (solicitudPazYSalvo.getObjUsuario() == null) {
-            this.objFormateadorResultados.retornarRespuestaErrorReglaDeNegocio("El usuario no puede ser nulo");
-        }
-        if(solicitudPazYSalvo.getObjUsuario().getId_usuario() == null) {
-            this.objFormateadorResultados.retornarRespuestaErrorReglaDeNegocio("El usuario no puede ser nulo");
+    //     if (solicitudPazYSalvo.getObjUsuario() == null) {
+    //         this.objFormateadorResultados.retornarRespuestaErrorReglaDeNegocio("El usuario no puede ser nulo");
+    //     }
+    //     if(solicitudPazYSalvo.getObjUsuario().getId_usuario() == null) {
+    //         this.objFormateadorResultados.retornarRespuestaErrorReglaDeNegocio("El usuario no puede ser nulo");
 
-        }
-        Usuario usuarioBuscar = this.objUsuario.obtenerUsuarioPorId(solicitudPazYSalvo.getObjUsuario().getId_usuario());
-        if (usuarioBuscar == null) {
-            this.objFormateadorResultados.retornarRespuestaErrorEntidadExiste("Usuario no encontrado");
-        }
+    //     }
+    //     Usuario usuarioBuscar = this.objUsuario.obtenerUsuarioPorId(solicitudPazYSalvo.getObjUsuario().getId_usuario());
+    //     if (usuarioBuscar == null) {
+    //         this.objFormateadorResultados.retornarRespuestaErrorEntidadExiste("Usuario no encontrado");
+    //     }
 
-        List<Documento> documentos = solicitudPazYSalvo.getDocumentos();
-        if (documentos == null || documentos.isEmpty() || documentos.size() > 6) {
-            this.objFormateadorResultados.retornarRespuestaErrorReglaDeNegocio("Se deben adjuntar entre 1 y 6 documentos");
-        }
+    //     List<Documento> documentos = solicitudPazYSalvo.getDocumentos();
+    //     if (documentos == null || documentos.isEmpty() || documentos.size() > 6) {
+    //         this.objFormateadorResultados.retornarRespuestaErrorReglaDeNegocio("Se deben adjuntar entre 1 y 6 documentos");
+    //     }
 
-        boolean contienePP_H = false;
-        boolean contieneTI_G = false;
+    //     boolean contienePP_H = false;
+    //     boolean contieneTI_G = false;
 
-        for (Documento doc : documentos) {
-            if(doc.getTipoDocumentoSolicitudPazYSalvo() == null){
-                this.objFormateadorResultados.retornarRespuestaErrorReglaDeNegocio("No hay un tipo de documento");
-            }
-            String tipo = doc.getTipoDocumentoSolicitudPazYSalvo().name();
-            if (tipo.equals(TipoDocumentoSolicitudPazYSalvo.formato_PP_H.name())) {
-                contienePP_H = true;
-            }
-            if (tipo.equals(TipoDocumentoSolicitudPazYSalvo.formato_TI_G.name())) {
-                contieneTI_G = true;
-            }
+    //     for (Documento doc : documentos) {
+    //         if(doc.getTipoDocumentoSolicitudPazYSalvo() == null){
+    //             this.objFormateadorResultados.retornarRespuestaErrorReglaDeNegocio("No hay un tipo de documento");
+    //         }
+    //         String tipo = doc.getTipoDocumentoSolicitudPazYSalvo().name();
+    //         if (tipo.equals(TipoDocumentoSolicitudPazYSalvo.formato_PP_H.name())) {
+    //             contienePP_H = true;
+    //         }
+    //         if (tipo.equals(TipoDocumentoSolicitudPazYSalvo.formato_TI_G.name())) {
+    //             contieneTI_G = true;
+    //         }
 
-        }
+    //     }
 
-        if (!contienePP_H && !contieneTI_G) {
-            this.objFormateadorResultados.retornarRespuestaErrorReglaDeNegocio("Se debe ingresar al menos uno de los dos formatos: PP_H o TI_G");
-        }
+    //     if (!contienePP_H && !contieneTI_G) {
+    //         this.objFormateadorResultados.retornarRespuestaErrorReglaDeNegocio("Se debe ingresar al menos uno de los dos formatos: PP_H o TI_G");
+    //     }
 
-        if (contienePP_H && contieneTI_G) {
-            this.objFormateadorResultados.retornarRespuestaErrorReglaDeNegocio("Se ingresaron ambos formatos. Solo se debe adjuntar uno");
-        }
+    //     if (contienePP_H && contieneTI_G) {
+    //         this.objFormateadorResultados.retornarRespuestaErrorReglaDeNegocio("Se ingresaron ambos formatos. Solo se debe adjuntar uno");
+    //     }
 
-        // Crear la solicitud
-        SolicitudPazYSalvo solicitudGuardada = this.objGestionarSolicitudGateway.crearSolicitudPazYSalvo(solicitudPazYSalvo);
+    //     // Crear la solicitud
+    //     SolicitudPazYSalvo solicitudGuardada = this.objGestionarSolicitudGateway.crearSolicitudPazYSalvo(solicitudPazYSalvo);
 
-        // Asociar y guardar los documentos
-        for (Documento doc : solicitudGuardada.getDocumentos()) {
-            doc.setObjSolicitud(solicitudGuardada);
-            this.objDocumentosGateway.actualizarDocumento(doc);
-        }
+    //     // Asociar y guardar los documentos
+    //     for (Documento doc : solicitudGuardada.getDocumentos()) {
+    //         doc.setObjSolicitud(solicitudGuardada);
+    //         this.objDocumentosGateway.actualizarDocumento(doc);
+    //     }
 
-        // Asociar solicitud al usuario
-        usuarioBuscar.getSolicitudes().add(solicitudGuardada);
-        this.objUsuario.actualizarUsuario(usuarioBuscar);
+    //     // Asociar solicitud al usuario
+    //     usuarioBuscar.getSolicitudes().add(solicitudGuardada);
+    //     this.objUsuario.actualizarUsuario(usuarioBuscar);
 
-        return solicitudGuardada;
-    }
+    //     return solicitudGuardada;
+    // }
 
     @Override
     public Solicitud actualizarSolicitud(Solicitud solicitud, EstadoSolicitud estadoSolicitud) {
