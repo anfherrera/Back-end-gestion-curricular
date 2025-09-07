@@ -122,7 +122,10 @@ public class UsuarioRestController {
             UserDetails userDetails = userDetailsService.loadUserByUsername(request.getCorreo());
             String token = jwtUtil.generarToken(userDetails.getUsername());
 
-            return ResponseEntity.ok(new LoginDTORespuesta(token));
+            Usuario usuario = objUsuarioCUIntPort.buscarUsuarioPorCorreo(request.getCorreo());
+            UsuarioDTORespuesta usuarioDTO = objUsuarioMapperDominio.mappearDeUsuarioAUsuarioDTORespuesta(usuario);
+
+            return ResponseEntity.ok(new LoginDTORespuesta(token, usuarioDTO));
 
         } catch (BadCredentialsException ex) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Credenciales incorrectas");
