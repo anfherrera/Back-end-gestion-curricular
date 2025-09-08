@@ -21,7 +21,7 @@ public class JwtUtil {
         return Jwts.builder()
             .setSubject(correo)
             .setIssuedAt(new Date())
-            .setExpiration(new Date(System.currentTimeMillis() + 3600000)) // 1 hora
+            .setExpiration(new Date(System.currentTimeMillis() + 300000)) // 5 minutos
             .signWith(SignatureAlgorithm.HS512, SECRET_KEY.getBytes())
             .compact();
     }
