@@ -1,27 +1,33 @@
 package co.edu.unicauca.decanatura.gestion_curricular.Security;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.stereotype.Component;
 
 import java.nio.charset.StandardCharsets;
 import java.util.Date;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
-
 import io.jsonwebtoken.security.Keys;
-
 import java.security.Key;
+import lombok.extern.slf4j.Slf4j;
 
-
-
+@Component
+@Slf4j
 public class JwtUtil {
 
-    private final String SECRET_KEY = "clave_secreta"; // Ocultar informacion al hacer commit(Produccion)
+    @Value("${jwt.secret:mi_clave_super_secreta_de_256_bits_minimo_para_produccion_segura}")
+    private String SECRET_KEY;
+    
+    @Value("${jwt.expiration:3600000}") // 1 hora por defecto
+    private Long EXPIRATION_TIME;
 
     public String generarToken(String correo) {
+        log.debug("Generando token para usuario: {}", correo);
         return Jwts.builder()
             .setSubject(correo)
             .setIssuedAt(new Date())
-            .setExpiration(new Date(System.currentTimeMillis() + 3600000)) // 1 hora
+            .setExpiration(new Date(System.currentTimeMillis() + EXPIRATION_TIME))
             .signWith(SignatureAlgorithm.HS512, SECRET_KEY.getBytes())
             .compact();
     }
@@ -35,11 +41,16 @@ public class JwtUtil {
     // }
 
     public String extraerCorreoDesdeToken(String token) {
-        return Jwts.parser()
-                .setSigningKey(SECRET_KEY.getBytes())
-                .parseClaimsJws(token)
-                .getBody()
-                .getSubject();
+        try {
+            return Jwts.parser()
+                    .setSigningKey(SECRET_KEY.getBytes())
+                    .parseClaimsJws(token)
+                    .getBody()
+                    .getSubject();
+        } catch (Exception e) {
+            log.error("Error al extraer correo del token: {}", e.getMessage());
+            return null;
+        }
     }
 
     // public boolean validarToken(String token, UserDetails userDetails) {
@@ -68,17 +79,22 @@ public class JwtUtil {
                 .parseClaimsJws(token);
             return true;
         } catch (Exception e) {
-            e.printStackTrace();
+            log.error("Token inválido: {}", e.getMessage());
             return false;
         }
     }
 
     private boolean estaExpirado(String token) {
-        return Jwts.parser()
-                .setSigningKey(SECRET_KEY)
-                .parseClaimsJws(token)
-                .getBody()
-                .getExpiration()
-                .before(new Date());
+        try {
+            return Jwts.parser()
+                    .setSigningKey(SECRET_KEY.getBytes())
+                    .parseClaimsJws(token)
+                    .getBody()
+                    .getExpiration()
+                    .before(new Date());
+        } catch (Exception e) {
+            log.error("Error al verificar expiración del token: {}", e.getMessage());
+            return true; // Si hay error, considerar como expirado
+        }
     }
 }
