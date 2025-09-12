@@ -1,15 +1,11 @@
 package co.edu.unicauca.decanatura.gestion_curricular.Security;
 
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
-import java.nio.charset.StandardCharsets;
 import java.util.Date;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
-import io.jsonwebtoken.security.Keys;
-import java.security.Key;
 import lombok.extern.slf4j.Slf4j;
 
 @Component
@@ -84,17 +80,4 @@ public class JwtUtil {
         }
     }
 
-    private boolean estaExpirado(String token) {
-        try {
-            return Jwts.parser()
-                    .setSigningKey(SECRET_KEY.getBytes())
-                    .parseClaimsJws(token)
-                    .getBody()
-                    .getExpiration()
-                    .before(new Date());
-        } catch (Exception e) {
-            log.error("Error al verificar expiración del token: {}", e.getMessage());
-            return true; // Si hay error, considerar como expirado
-        }
-    }
 }

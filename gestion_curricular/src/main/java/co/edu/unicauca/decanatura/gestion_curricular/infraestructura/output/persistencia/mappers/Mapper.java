@@ -1,17 +1,7 @@
 package co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.mappers;
 
 import org.modelmapper.ModelMapper;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.stereotype.Component;
-
-import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Programa;
-import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Rol;
-import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.SolicitudEcaes;
-import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Usuario;
-import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.DTORespuesta.SolicitudDTORespuesta;
-import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.DTORespuesta.solicitudEcaesSalidaDto;
-import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.DTORespuesta.usuarioSalidaDto;
 
 @Component
 public class Mapper {

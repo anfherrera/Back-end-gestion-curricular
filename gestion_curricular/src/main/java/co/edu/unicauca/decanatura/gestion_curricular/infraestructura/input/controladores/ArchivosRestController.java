@@ -15,7 +15,6 @@ import org.springframework.http.HttpStatus;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarArchivosCUIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.GestionarDocumentosGatewayIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Documento;
-import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.DTOPeticion.DocumentosDTOPeticion;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.DTORespuesta.DocumentosDTORespuesta;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.mappers.DocumentosMapperDominio;
 
@@ -33,10 +32,9 @@ public class ArchivosRestController {
     private final GestionarDocumentosGatewayIntPort objGestionarDocumentosGateway;
     @PostMapping("/subir/pdf")
     public ResponseEntity<DocumentosDTORespuesta> subirPDF(@RequestParam(name = "file", required = true) MultipartFile file) {
-        String filename = null; 
         try {
             String nombreOriginal = file.getOriginalFilename(); // ← nombre real del archivo
-            filename = this.objGestionarArchivos.saveFile(file, nombreOriginal, "pdf"); // ← úsalo aquí
+            this.objGestionarArchivos.saveFile(file, nombreOriginal, "pdf"); // ← guardar archivo
             // DocumentosDTOPeticion doc = new DocumentosDTOPeticion();
             Documento doc = new Documento();
             doc.setNombre(nombreOriginal);

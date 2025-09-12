@@ -21,6 +21,7 @@ public interface SolicitudReingresoMapperDominio {
 
     @Mapping(target = "estadosSolicitud", ignore = true) // Lo controlas desde el caso de uso
     @Mapping(target = "documentos", ignore = true)
+    @Mapping(target = "objCursoOfertadoVerano", ignore = true) // Propiedad no mapeada
     SolicitudReingreso mappearDeSolicitudReingresoDTOPeticionASolicitudReingreso(SolicitudReingresoDTOPeticion peticion);
 
     SolicitudReingresoDTORespuesta mappearDeSolicitudReingresoASolicitudReingresoDTORespuesta(SolicitudReingreso solicitud);

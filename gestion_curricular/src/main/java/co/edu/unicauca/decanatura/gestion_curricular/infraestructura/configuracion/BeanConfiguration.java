@@ -38,10 +38,6 @@ import co.edu.unicauca.decanatura.gestion_curricular.dominio.casosDeUso.Gestiona
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.casosDeUso.GestionarSolicitudPazYSalvoCUAdapter;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.casosDeUso.GestionarSolicitudReingresoCUAdapter;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.casosDeUso.GestionarUsuarioCUAdapter;
-import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.formateador.FormateadorResultadosImplAdapter;
-import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.repositorios.DocumentoRepositoryInt;
-import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.repositorios.SolicitudEcaesRepositoryInt;
-import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.repositorios.UsuarioRepositoryInt;
 
 @Configuration
 public class BeanConfiguration {
@@ -55,7 +51,7 @@ public class BeanConfiguration {
             GestionarEstadoCursoOfertadoGatewayIntPort objGestionarEstadoCursoOfertadoGateway,
             FormateadorResultadosIntPort objFormateadorResultados){
                 return new GestionarCursoOfertadoVeranoCUAdapter(objGestionarCursoOfertadoVeranoGateway, objGestionarSolicitudGateway, objGestionarUsuarioGateway,
-                 objGestionarMateriasGateway, objGestionarDocenteGateway, objGestionarEstadoCursoOfertadoGateway, objFormateadorResultados);
+                 objGestionarMateriasGateway, objGestionarDocenteGateway, objFormateadorResultados);
             }
 
     @Bean
@@ -74,10 +70,9 @@ public class BeanConfiguration {
     
     @Bean
     public GestionarSolicitudCUAdapter GestionarSolicitudCUInt (GestionarSolicitudGatewayIntPort objGestionarSolicitudGateway,
-    GestionarCursoOfertadoVeranoGatewayIntPort objCursoOfertado,  GestionarUsuarioGatewayIntPort objUsuario, 
-    GestionarDocumentosGatewayIntPort objDocumentosGateway,
+    GestionarUsuarioGatewayIntPort objUsuario, 
     FormateadorResultadosIntPort objFormateadorResultados) {
-        return new GestionarSolicitudCUAdapter(objGestionarSolicitudGateway, objCursoOfertado, objUsuario, objDocumentosGateway, objFormateadorResultados);
+        return new GestionarSolicitudCUAdapter(objGestionarSolicitudGateway, objUsuario, objFormateadorResultados);
     }
 
     @Bean 

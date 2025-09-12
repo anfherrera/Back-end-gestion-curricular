@@ -9,7 +9,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.GestionarDocumentosGatewayIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Documento;
-import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.controladores.CursoOfertadoRestController;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.entidades.DocumentoEntity;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.repositorios.DocumentoRepositoryInt;
 
@@ -17,15 +16,13 @@ import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.pers
 @Transactional
 public class GestionarDocumentoGatewayImplAdapter implements GestionarDocumentosGatewayIntPort {
 
-    private final CursoOfertadoRestController cursoOfertadoRestController;
 
     private final DocumentoRepositoryInt documentoRepository;
     private final ModelMapper documentoMapper;
 
-    public GestionarDocumentoGatewayImplAdapter(DocumentoRepositoryInt documentoRepository, ModelMapper documentoMapper, CursoOfertadoRestController cursoOfertadoRestController){
+    public GestionarDocumentoGatewayImplAdapter(DocumentoRepositoryInt documentoRepository, ModelMapper documentoMapper){
         this.documentoRepository = documentoRepository;
         this.documentoMapper = documentoMapper;
-        this.cursoOfertadoRestController = cursoOfertadoRestController;
     }
 
     @Override

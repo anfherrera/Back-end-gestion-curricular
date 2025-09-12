@@ -9,7 +9,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.GestionarSolicitudGatewayIntPort;
-import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.CursoOfertadoVerano;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.EstadoSolicitud;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Solicitud;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.SolicitudCursoVeranoIncripcion;
@@ -18,10 +17,7 @@ import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.SolicitudEc
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.SolicitudHomologacion;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.SolicitudPazYSalvo;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.SolicitudReingreso;
-import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.entidades.CursoOfertadoVeranoEntity;
-import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.entidades.DocenteEntity;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.entidades.EstadoSolicitudEntity;
-import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.entidades.MateriaEntity;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.entidades.SolicitudCursoVeranoInscripcionEntity;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.entidades.SolicitudCursoVeranoPreinscripcionEntity;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.entidades.SolicitudEcaesEntity;
@@ -30,8 +26,6 @@ import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.pers
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.entidades.SolicitudPazYSalvoEntity;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.entidades.SolicitudReingresoEntity;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.entidades.UsuarioEntity;
-import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.entidades.Enums.GrupoCursoVeranoEntity;
-import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.repositorios.CursoOfertadoVeranoRepositoryInt;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.repositorios.EstadoSolicitudRepositoryInt;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.repositorios.SolicitudRepositoryInt;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.repositorios.UsuarioRepositoryInt;
@@ -42,18 +36,15 @@ import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.pers
 public class GestionarSolicitudGatewayImplAdapter implements GestionarSolicitudGatewayIntPort {
 
     private final SolicitudRepositoryInt solicitudRepository;
-    private final CursoOfertadoVeranoRepositoryInt cursoOfertadoVeranoRepository;
     private final UsuarioRepositoryInt usuarioRepository;
     private final EstadoSolicitudRepositoryInt estadoSolicitudRepository;
     private final ModelMapper solicitudMapper;
 
     public GestionarSolicitudGatewayImplAdapter(SolicitudRepositoryInt solicitudRepository,
-                                                CursoOfertadoVeranoRepositoryInt cursoOfertadoVeranoRepository,
                                                 UsuarioRepositoryInt usuarioRepository,
                                                 EstadoSolicitudRepositoryInt estadoSolicitudRepository,
                                                 ModelMapper solicitudMapper) {
         this.solicitudRepository = solicitudRepository;
-        this.cursoOfertadoVeranoRepository = cursoOfertadoVeranoRepository;
         this.usuarioRepository = usuarioRepository;
         this.estadoSolicitudRepository = estadoSolicitudRepository;
         this.solicitudMapper = solicitudMapper;

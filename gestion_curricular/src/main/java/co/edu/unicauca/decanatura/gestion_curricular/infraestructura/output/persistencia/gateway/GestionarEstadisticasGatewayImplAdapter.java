@@ -131,7 +131,6 @@ public class GestionarEstadisticasGatewayImplAdapter implements GestionarEstadis
     public List<Estadistica> obtenerEstadisticasPeriodoEstadoYPrograma(Date fechaInicio, Date fechaFin,
             Integer idPrograma) {
             List<EstadisticaEntity> estadisticaEntityOp = estadisticaRepository.findAll();
-            EstadisticaEntity estadisticaEntity = null; 
             List<Estadistica> estadisticas = new ArrayList<>();
             if(estadisticaEntityOp!=null){
                 List<String> nombres_procesos = new ArrayList<String>(solicitudRepository.buscarNombresSolicitudes());

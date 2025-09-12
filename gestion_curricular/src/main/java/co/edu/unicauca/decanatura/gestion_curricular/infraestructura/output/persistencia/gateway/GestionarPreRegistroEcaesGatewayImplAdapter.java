@@ -12,31 +12,27 @@ import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.Gestionar
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.EstadoSolicitud;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.FechaEcaes;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.SolicitudEcaes;
-import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Usuario;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.controladorExcepciones.excepcionesPropias.EntidadNoExisteException;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.entidades.EstadoSolicitudEntity;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.entidades.FechaEcaesEntity;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.entidades.SolicitudEcaesEntity;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.repositorios.FechaEcaesRepositoryInt;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.repositorios.SolicitudEcaesRepositoryInt;
-import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.repositorios.UsuarioRepositoryInt;
 import jakarta.transaction.Transactional;
 
 @Service
 @Transactional
 public class GestionarPreRegistroEcaesGatewayImplAdapter implements GestionarPreRegistroEcaesGatewayIntPort{
 
-    private final UsuarioRepositoryInt usuarioRepository;
 
     private final SolicitudEcaesRepositoryInt solicitudEcaesRepository;
     private final FechaEcaesRepositoryInt fechaEcaesRepository;
     private final ModelMapper mapper;
     @Autowired
-    public GestionarPreRegistroEcaesGatewayImplAdapter(SolicitudEcaesRepositoryInt solicitudEcaesRepository, UsuarioRepositoryInt usuarioRepositoryInt,
+    public GestionarPreRegistroEcaesGatewayImplAdapter(SolicitudEcaesRepositoryInt solicitudEcaesRepository,
     FechaEcaesRepositoryInt fechaEcaesRepository) {
         this.solicitudEcaesRepository = solicitudEcaesRepository;
         this.mapper = new ModelMapper();
-        this.usuarioRepository = usuarioRepositoryInt;
         this.fechaEcaesRepository = fechaEcaesRepository;
     }
     @Override

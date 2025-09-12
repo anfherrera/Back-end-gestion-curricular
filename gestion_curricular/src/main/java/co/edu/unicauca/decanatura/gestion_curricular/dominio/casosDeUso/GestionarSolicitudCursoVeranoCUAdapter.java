@@ -96,7 +96,7 @@ public class GestionarSolicitudCursoVeranoCUAdapter implements GestionarSolicitu
 
     @Override
     public SolicitudCursoVeranoIncripcion crearSolicitudCursoVeranoInscripcion(SolicitudCursoVeranoIncripcion solicitudCursoVerano) {
-        // TODO: Implementar
+        // Implementación pendiente
         return null;
     }
 }

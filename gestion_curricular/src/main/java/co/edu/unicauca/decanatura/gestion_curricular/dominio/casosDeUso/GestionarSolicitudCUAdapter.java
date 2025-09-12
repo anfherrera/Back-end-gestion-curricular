@@ -1,44 +1,32 @@
 package co.edu.unicauca.decanatura.gestion_curricular.dominio.casosDeUso;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
 
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarSolicitudCUIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.FormateadorResultadosIntPort;
-import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.GestionarCursoOfertadoVeranoGatewayIntPort;
-import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.GestionarDocumentosGatewayIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.GestionarSolicitudGatewayIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.GestionarUsuarioGatewayIntPort;
-import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.CursoOfertadoVerano;
-import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Documento;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.EstadoSolicitud;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Solicitud;
-import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.SolicitudCursoVeranoIncripcion;
-import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.SolicitudCursoVeranoPreinscripcion;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.SolicitudEcaes;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.SolicitudHomologacion;
-import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.SolicitudPazYSalvo;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.SolicitudReingreso;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Usuario;
-import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Enums.TipoDocumentoSolicitudPazYSalvo;
 
 public class GestionarSolicitudCUAdapter implements GestionarSolicitudCUIntPort {
 
     private final GestionarSolicitudGatewayIntPort objGestionarSolicitudGateway;
-    private final GestionarCursoOfertadoVeranoGatewayIntPort objCursoOfertado;
     private final GestionarUsuarioGatewayIntPort objUsuario;
-    private final GestionarDocumentosGatewayIntPort objDocumentosGateway;
     private final FormateadorResultadosIntPort objFormateadorResultados;
 
     public GestionarSolicitudCUAdapter(GestionarSolicitudGatewayIntPort objGestionarSolicitudGateway,
-    GestionarCursoOfertadoVeranoGatewayIntPort objCursoOfertado,  GestionarUsuarioGatewayIntPort objUsuario, 
-    GestionarDocumentosGatewayIntPort objDocumentosGateway,
+    GestionarUsuarioGatewayIntPort objUsuario, 
     FormateadorResultadosIntPort objFormateadorResultados){
         this.objUsuario = objUsuario;
         this.objFormateadorResultados = objFormateadorResultados;
-        this.objCursoOfertado = objCursoOfertado;
-        this.objDocumentosGateway = objDocumentosGateway;
         this.objGestionarSolicitudGateway = objGestionarSolicitudGateway;
     }
     //Se implementan los métodos con tantas validaciones para tener en cuenta los accesos a servicios por postman o clientes similares.
@@ -172,20 +160,20 @@ public class GestionarSolicitudCUAdapter implements GestionarSolicitudCUIntPort 
 
     @Override
     public SolicitudEcaes crearSolicitudEcaes(SolicitudEcaes solicitudEcaes) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'crearSolicitudEcaes'");
+        // Implementación pendiente
+        return null;
     }
 
     @Override
     public SolicitudReingreso crearSolicitudReingreso(SolicitudReingreso solicitudReingreso) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'crearSolicitudReingreso'");
+        // Implementación pendiente
+        return null;
     }
 
     @Override
     public SolicitudHomologacion crearSolicitudHomologacion(SolicitudHomologacion solicitudHomologacion) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'crearSolicitudHomologacion'");
+        // Implementación pendiente
+        return null;
     }
 
 
@@ -319,60 +307,60 @@ public class GestionarSolicitudCUAdapter implements GestionarSolicitudCUIntPort 
 
     @Override
     public boolean existeSolicitudPorNombre(String nombreSolicitud) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'existeSolicitudPorNombre'");
+        // Implementación pendiente
+        return false;
     }
 
     @Override
     public Integer contarSolicitudPorNombreYCursoIns(String nombreSolicitud, Integer idCurso) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'contarSolicitudPorNombreYCursoIns'");
+        // Implementación pendiente
+        return 0;
     }
 
     @Override
     public Integer contarSolicitudPorNombreCursoEstadoIns(String nombreSolicitud, Integer idCurso,
             String estadoActual) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'contarSolicitudPorNombreCursoEstadoIns'");
+        // Implementación pendiente
+        return 0;
     }
 
     @Override
     public List<Solicitud> buscarSolicitudPorNombreCursoIns(String nombreSolicitud, Integer idCurso) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'buscarSolicitudPorNombreCursoIns'");
+        // Implementación pendiente
+        return new ArrayList<>();
     }
 
     @Override
     public List<Solicitud> buscarSolicitudPorNombreCursoEstadoIns(String nombreSolicitud, Integer idCurso,
             String estadoActual) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'buscarSolicitudPorNombreCursoEstadoIns'");
+        // Implementación pendiente
+        return new ArrayList<>();
     }
 
     @Override
     public Integer contarSolicitudPorNombreYCursoPre(String nombreSolicitud, Integer idCurso) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'contarSolicitudPorNombreYCursoPre'");
+        // Implementación pendiente
+        return 0;
     }
 
     @Override
     public Integer contarSolicitudPorNombreCursoEstadoPre(String nombreSolicitud, Integer idCurso,
             String estadoActual) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'contarSolicitudPorNombreCursoEstadoPre'");
+        // Implementación pendiente
+        return 0;
     }
 
     @Override
     public List<Solicitud> buscarSolicitudPorNombreCursoPre(String nombreSolicitud, Integer idCurso) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'buscarSolicitudPorNombreCursoPre'");
+        // Implementación pendiente
+        return new ArrayList<>();
     }
 
     @Override
     public List<Solicitud> buscarSolicitudPorNombreCursoEstadoPre(String nombreSolicitud, Integer idCurso,
             String estadoActual) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'buscarSolicitudPorNombreCursoEstadoPre'");
+        // Implementación pendiente
+        return new ArrayList<>();
     }
 
     @Override

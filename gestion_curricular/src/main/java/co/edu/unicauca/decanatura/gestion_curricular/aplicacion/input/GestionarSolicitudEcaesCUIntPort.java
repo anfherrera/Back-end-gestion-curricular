@@ -1,7 +1,6 @@
 package co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input;
 
 import java.util.List;
-import java.util.Optional;
 
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.FechaEcaes;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.SolicitudEcaes;

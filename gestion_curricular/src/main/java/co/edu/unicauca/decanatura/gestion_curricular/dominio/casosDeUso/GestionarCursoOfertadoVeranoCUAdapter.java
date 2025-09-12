@@ -8,7 +8,6 @@ import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarC
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.FormateadorResultadosIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.GestionarCursoOfertadoVeranoGatewayIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.GestionarDocenteGatewayIntPort;
-import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.GestionarEstadoCursoOfertadoGatewayIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.GestionarMateriasIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.GestionarSolicitudGatewayIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.GestionarUsuarioGatewayIntPort;
@@ -27,7 +26,6 @@ public class GestionarCursoOfertadoVeranoCUAdapter implements GestionarCursoOfer
     private final GestionarUsuarioGatewayIntPort objGestionarUsuarioGateway;
     private final GestionarMateriasIntPort objGestionarMateriasGateway;
     private final GestionarDocenteGatewayIntPort objGestionarDocenteGateway;
-    private final GestionarEstadoCursoOfertadoGatewayIntPort objGestionarEstadoCursoOfertadoGateway;
     private final FormateadorResultadosIntPort objFormateadorResultados;
 
     public GestionarCursoOfertadoVeranoCUAdapter(GestionarCursoOfertadoVeranoGatewayIntPort objGestionarCursoOfertadoVeranoGateway,
@@ -35,14 +33,12 @@ public class GestionarCursoOfertadoVeranoCUAdapter implements GestionarCursoOfer
             GestionarUsuarioGatewayIntPort objGestionarUsuarioGateway,
             GestionarMateriasIntPort objGestionarMateriasGateway,
             GestionarDocenteGatewayIntPort objGestionarDocenteGateway,
-            GestionarEstadoCursoOfertadoGatewayIntPort objGestionarEstadoCursoOfertadoGateway,
             FormateadorResultadosIntPort objFormateadorResultados) {
         this.objGestionarCursoOfertadoVeranoGateway = objGestionarCursoOfertadoVeranoGateway;
         this.objGestionarSolicitudGateway = objGestionarSolicitudGateway;
         this.objGestionarUsuarioGateway = objGestionarUsuarioGateway;
         this.objGestionarMateriasGateway = objGestionarMateriasGateway;
         this.objGestionarDocenteGateway = objGestionarDocenteGateway;
-        this.objGestionarEstadoCursoOfertadoGateway = objGestionarEstadoCursoOfertadoGateway;
         this.objFormateadorResultados = objFormateadorResultados;
     }
 
@@ -51,12 +47,9 @@ public class GestionarCursoOfertadoVeranoCUAdapter implements GestionarCursoOfer
         Integer puntoEquilibrioMinimo = 2;
         CursoOfertadoVerano cursoABuscar = curso;
         Integer idCurso = null;
-        Integer idEstado = null;
         Usuario usuario = null;
         EstadoSolicitud estadoSolicitud = null;
-        EstadoCursoOfertado estadoCursoOfertado = null;
         EstadoCursoOfertado nuevoEstado = null;
-        Integer sizeEstados = null;
         CursoOfertadoVerano cursoActualizado = null;
         List<Usuario> estudiantesInscritos = new ArrayList<Usuario>();
         List<Usuario> usuariosRemovidos = new ArrayList<Usuario>();
@@ -75,14 +68,12 @@ public class GestionarCursoOfertadoVeranoCUAdapter implements GestionarCursoOfer
         if(cursoABuscar.getEstadosCursoOfertados().isEmpty()){
                 this.objFormateadorResultados.retornarRespuestaErrorEntidadExiste("No se puede actualizar el curso, porque no tiene estados");
         }
-        sizeEstados = cursoABuscar.getEstadosCursoOfertados().size();
         if(estadoCurso == null){
             this.objFormateadorResultados.retornarRespuestaErrorEntidadExiste("No hay datos en el estado");
         }
         if(estadoCurso.getId_estado() == null){
             this.objFormateadorResultados.retornarRespuestaErrorEntidadExiste("No hay id en el estado");
         }
-        idEstado = estadoCurso.getId_estado();
         // estadoCursoOfertado = this.objGestionarEstadoCursoOfertadoGateway.buscarPorIEstadoCursoOfertado(idEstado);
         // if(estadoCursoOfertado == null){
         //     this.objFormateadorResultados.retornarRespuestaErrorEntidadExiste("No existe el estado con el ID: " + idEstado);
