@@ -9,5 +9,6 @@ import lombok.NoArgsConstructor;
 public class LoginDTORespuesta {
 
     private String token;
+    private UsuarioDTORespuesta usuario;
 
 }

@@ -27,6 +27,7 @@ import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.DTORe
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.DTORespuesta.usuarioSalidaDto;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.mappers.UsuarioMapperDominio;
 
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -38,6 +39,7 @@ import java.util.stream.Collectors;
 
 
 @RestController
+@CrossOrigin(origins = "http://localhost:4200")
 @RequestMapping("/api/usuarios")
 @RequiredArgsConstructor
 @Validated
@@ -120,7 +122,10 @@ public class UsuarioRestController {
             UserDetails userDetails = userDetailsService.loadUserByUsername(request.getCorreo());
             String token = jwtUtil.generarToken(userDetails.getUsername());
 
-            return ResponseEntity.ok(new LoginDTORespuesta(token));
+            Usuario usuario = objUsuarioCUIntPort.buscarUsuarioPorCorreo(request.getCorreo());
+            UsuarioDTORespuesta usuarioDTO = objUsuarioMapperDominio.mappearDeUsuarioAUsuarioDTORespuesta(usuario);
+
+            return ResponseEntity.ok(new LoginDTORespuesta(token, usuarioDTO));
 
         } catch (BadCredentialsException ex) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Credenciales incorrectas");
