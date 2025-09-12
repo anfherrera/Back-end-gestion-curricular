@@ -5,7 +5,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.modelmapper.ModelMapper;
-import org.springframework.beans.factory.annotation.Autowired;
+
 import org.springframework.stereotype.Service;
 
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.GestionarPreRegistroEcaesGatewayIntPort;
@@ -28,7 +28,7 @@ public class GestionarPreRegistroEcaesGatewayImplAdapter implements GestionarPre
     private final SolicitudEcaesRepositoryInt solicitudEcaesRepository;
     private final FechaEcaesRepositoryInt fechaEcaesRepository;
     private final ModelMapper mapper;
-    @Autowired
+    
     public GestionarPreRegistroEcaesGatewayImplAdapter(SolicitudEcaesRepositoryInt solicitudEcaesRepository,
     FechaEcaesRepositoryInt fechaEcaesRepository) {
         this.solicitudEcaesRepository = solicitudEcaesRepository;
