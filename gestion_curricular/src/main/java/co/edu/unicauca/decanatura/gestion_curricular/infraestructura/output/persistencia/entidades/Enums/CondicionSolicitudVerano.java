@@ -3,6 +3,5 @@ package co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.per
 public enum CondicionSolicitudVerano {
     Primera_Vez,
     Habilitación,
-    Repeteción
-    
+    Repetición
 }
