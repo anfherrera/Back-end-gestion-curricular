@@ -50,13 +50,14 @@ public class GestionarSolicitudPazYSalvoCUAdapter implements GestionarSolicitudP
         }
 
         List<Documento> documentos = solicitudPazYSalvo.getDocumentos();
-        if (documentos == null || documentos.isEmpty() || documentos.size() > 6) {
-            this.objFormateadorResultados.retornarRespuestaErrorReglaDeNegocio("Se deben adjuntar entre 1 y 6 documentos");
-        }
+        // if (documentos == null || documentos.isEmpty() || documentos.size() > 6) {
+        //     this.objFormateadorResultados.retornarRespuestaErrorReglaDeNegocio("Se deben adjuntar entre 1 y 6 documentos");
+        // }
 
         boolean contienePP_H = false;
         boolean contieneTI_G = false;
 
+        //buscar otra forma para validar los tipos de documentos(ya que no se va a pasar por el objeto json)
         for (Documento doc : documentos) {
             if(doc.getTipoDocumentoSolicitudPazYSalvo() == null){
                 this.objFormateadorResultados.retornarRespuestaErrorReglaDeNegocio("No hay un tipo de documento");
@@ -71,21 +72,27 @@ public class GestionarSolicitudPazYSalvoCUAdapter implements GestionarSolicitudP
 
         }
 
-        if (!contienePP_H && !contieneTI_G) {
-            this.objFormateadorResultados.retornarRespuestaErrorReglaDeNegocio("Se debe ingresar al menos uno de los dos formatos: PP_H o TI_G");
-        }
+        // if (!contienePP_H && !contieneTI_G) {
+        //     this.objFormateadorResultados.retornarRespuestaErrorReglaDeNegocio("Se debe ingresar al menos uno de los dos formatos: PP_H o TI_G");
+        // }
 
-        if (contienePP_H && contieneTI_G) {
-            this.objFormateadorResultados.retornarRespuestaErrorReglaDeNegocio("Se ingresaron ambos formatos. Solo se debe adjuntar uno");
-        }
+        // if (contienePP_H && contieneTI_G) {
+        //     this.objFormateadorResultados.retornarRespuestaErrorReglaDeNegocio("Se ingresaron ambos formatos. Solo se debe adjuntar uno");
+        // }
 
         // Crear la solicitud
         SolicitudPazYSalvo solicitudGuardada = this.objGestionarSolicitudGateway.crearSolicitudPazYSalvo(solicitudPazYSalvo);
 
-        // Asociar y guardar los documentos
-        for (Documento doc : solicitudGuardada.getDocumentos()) {
-            doc.setObjSolicitud(solicitudGuardada);
-            this.objDocumentosGateway.actualizarDocumento(doc);
+        // // Asociar y guardar los documentos
+        // for (Documento doc : solicitudGuardada.getDocumentos()) {
+        //     doc.setObjSolicitud(solicitudGuardada);
+        //     this.objDocumentosGateway.actualizarDocumento(doc);
+        // }
+        //Asociar documentos con solicitud = null
+        List<Documento> documentosSinSolicitud = this.objDocumentosGateway.buscarDocumentoSinSolicitud();
+        for (Documento doc : documentosSinSolicitud) {
+            doc.setObjSolicitud(solicitudGuardada);           
+            this.objDocumentosGateway.actualizarDocumento(doc);            
         }
 
         // Asociar solicitud al usuario

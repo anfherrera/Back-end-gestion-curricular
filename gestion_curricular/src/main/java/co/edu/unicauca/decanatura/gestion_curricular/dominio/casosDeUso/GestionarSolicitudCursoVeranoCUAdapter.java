@@ -91,6 +91,8 @@ public class GestionarSolicitudCursoVeranoCUAdapter implements GestionarSolicitu
 
         solicitudGuardada = this.objGestionarSolicitudGateway.crearSolicitudCursoVeranoPreinscripcion(solicitudCursoVerano);
 
+        
+        
         return solicitudGuardada;
     }
 

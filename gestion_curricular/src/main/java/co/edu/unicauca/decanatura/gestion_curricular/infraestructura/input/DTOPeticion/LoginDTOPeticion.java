@@ -12,7 +12,7 @@ public class LoginDTOPeticion {
     @NotBlank(message = "{Login.correo.empty}")
     @Size(min = 5, max = 30, message = "{Login.correo.length}")
     private String correo;
-    @NotBlank(message = "{Login.password.empty}")
-    @Size(min = 5, max = 20, message = "{Login.password.length}")
+    // @NotBlank(message = "{Login.password.empty}")
+    // @Size(min = 5, max = 20, message = "{Login.password.length}")
     private String password;
 }
