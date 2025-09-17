@@ -34,8 +34,8 @@ public class UsuarioDTOPeticion {
     @Pattern(regexp = "^[\\w.%+-]+@unicauca\\.edu\\.co$", message = "{Usuario.correo.unicauca}")
     private String correo;
 
-    @NotBlank(message = "{Usuario.password.empty}")
-    @Size(min = 8, max = 20, message = "{Usuario.password.length}")
+    // @NotBlank(message = "{Usuario.password.empty}")
+    // @Size(min = 8, max = 20, message = "{Usuario.password.length}")
     private String password;
 
     private boolean estado_usuario;
