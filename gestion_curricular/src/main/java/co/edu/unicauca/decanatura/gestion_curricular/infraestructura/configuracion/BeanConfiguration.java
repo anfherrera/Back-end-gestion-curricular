@@ -98,9 +98,17 @@ public class BeanConfiguration {
             GestionarSolicitudPazYSalvoGatewayIntPort objGestionarSolicitudGateway,
             GestionarUsuarioGatewayIntPort objUsuario, 
             GestionarDocumentosGatewayIntPort objDocumentosGateway,
+            GestionarEstadoSolicitudGatewayIntPort objGestionarEstadoSolicitudGateway,
             FormateadorResultadosIntPort objFormateadorResultados) {
-        return new GestionarSolicitudPazYSalvoCUAdapter(objGestionarSolicitudGateway, objUsuario, objDocumentosGateway, objFormateadorResultados);
+        return new GestionarSolicitudPazYSalvoCUAdapter(
+                objGestionarSolicitudGateway,
+                objUsuario,
+                objDocumentosGateway,
+                objGestionarEstadoSolicitudGateway,
+                objFormateadorResultados
+        );
     }
+
 
     @Bean
     public GestionarSolicitudEcaesCUAdapter crearGestionarSolicitudEcaesCUInt(

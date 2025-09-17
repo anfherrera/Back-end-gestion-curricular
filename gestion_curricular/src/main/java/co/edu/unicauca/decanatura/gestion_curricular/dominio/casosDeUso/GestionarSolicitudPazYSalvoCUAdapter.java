@@ -1,104 +1,101 @@
 package co.edu.unicauca.decanatura.gestion_curricular.dominio.casosDeUso;
 
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarSolicitudPazYSalvoCUIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.FormateadorResultadosIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.GestionarDocumentosGatewayIntPort;
+import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.GestionarEstadoSolicitudGatewayIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.GestionarSolicitudPazYSalvoGatewayIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.GestionarUsuarioGatewayIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Documento;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.EstadoSolicitud;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.SolicitudPazYSalvo;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Usuario;
-import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Enums.TipoDocumentoSolicitudPazYSalvo;
 
 public class GestionarSolicitudPazYSalvoCUAdapter implements GestionarSolicitudPazYSalvoCUIntPort {
 
+    private final GestionarSolicitudPazYSalvoGatewayIntPort solicitudGateway;
+    private final GestionarUsuarioGatewayIntPort usuarioGateway;
+    private final GestionarDocumentosGatewayIntPort documentosGateway;
+    private final GestionarEstadoSolicitudGatewayIntPort estadoSolicitudGateway;
+    private final FormateadorResultadosIntPort formateadorResultados;
 
-    private final GestionarSolicitudPazYSalvoGatewayIntPort objGestionarSolicitudGateway;
-    private final GestionarUsuarioGatewayIntPort objUsuario;
-    private final GestionarDocumentosGatewayIntPort objDocumentosGateway;
-    private final FormateadorResultadosIntPort objFormateadorResultados;
-    
-    
-    public GestionarSolicitudPazYSalvoCUAdapter(GestionarSolicitudPazYSalvoGatewayIntPort objGestionarSolicitudGateway,
-    GestionarUsuarioGatewayIntPort objUsuario, 
-    GestionarDocumentosGatewayIntPort objDocumentosGateway,
-    FormateadorResultadosIntPort objFormateadorResultados){
-        this.objUsuario = objUsuario;
-        this.objFormateadorResultados = objFormateadorResultados;
-        this.objDocumentosGateway = objDocumentosGateway;
-        this.objGestionarSolicitudGateway = objGestionarSolicitudGateway;
+    public GestionarSolicitudPazYSalvoCUAdapter(
+            GestionarSolicitudPazYSalvoGatewayIntPort solicitudGateway,
+            GestionarUsuarioGatewayIntPort usuarioGateway,
+            GestionarDocumentosGatewayIntPort documentosGateway,
+            GestionarEstadoSolicitudGatewayIntPort estadoSolicitudGateway,
+            FormateadorResultadosIntPort formateadorResultados) {
+        this.solicitudGateway = solicitudGateway;
+        this.usuarioGateway = usuarioGateway;
+        this.documentosGateway = documentosGateway;
+        this.estadoSolicitudGateway = estadoSolicitudGateway;
+        this.formateadorResultados = formateadorResultados;
     }
 
     @Override
-    public SolicitudPazYSalvo crearSolicitudPazYSalvo(SolicitudPazYSalvo solicitudPazYSalvo) {
-        if (solicitudPazYSalvo == null) {
-            this.objFormateadorResultados.retornarRespuestaErrorReglaDeNegocio("La solicitud no puede ser nula");
+    public SolicitudPazYSalvo guardar(SolicitudPazYSalvo solicitud) {
+        if (solicitud == null) {
+            formateadorResultados.retornarRespuestaErrorReglaDeNegocio("La solicitud no puede ser nula");
         }
 
-        if (solicitudPazYSalvo.getObjUsuario() == null) {
-            this.objFormateadorResultados.retornarRespuestaErrorReglaDeNegocio("El usuario no puede ser nulo");
-        }
-        if(solicitudPazYSalvo.getObjUsuario().getId_usuario() == null) {
-            this.objFormateadorResultados.retornarRespuestaErrorReglaDeNegocio("El usuario no puede ser nulo");
-
-        }
-        Usuario usuarioBuscar = this.objUsuario.obtenerUsuarioPorId(solicitudPazYSalvo.getObjUsuario().getId_usuario());
-        if (usuarioBuscar == null) {
-            this.objFormateadorResultados.retornarRespuestaErrorEntidadExiste("Usuario no encontrado");
+        if (solicitud.getObjUsuario() == null || solicitud.getObjUsuario().getId_usuario() == null) {
+            formateadorResultados.retornarRespuestaErrorReglaDeNegocio("El usuario no puede ser nulo o sin ID");
         }
 
-        List<Documento> documentos = solicitudPazYSalvo.getDocumentos();
-        // if (documentos == null || documentos.isEmpty() || documentos.size() > 6) {
-        //     this.objFormateadorResultados.retornarRespuestaErrorReglaDeNegocio("Se deben adjuntar entre 1 y 6 documentos");
-        // }
-
-        boolean contienePP_H = false;
-        boolean contieneTI_G = false;
-
-        //buscar otra forma para validar los tipos de documentos(ya que no se va a pasar por el objeto json)
-        for (Documento doc : documentos) {
-            if(doc.getTipoDocumentoSolicitudPazYSalvo() == null){
-                this.objFormateadorResultados.retornarRespuestaErrorReglaDeNegocio("No hay un tipo de documento");
-            }
-            String tipo = doc.getTipoDocumentoSolicitudPazYSalvo().name();
-            if (tipo.equals(TipoDocumentoSolicitudPazYSalvo.formato_PP_H.name())) {
-                contienePP_H = true;
-            }
-            if (tipo.equals(TipoDocumentoSolicitudPazYSalvo.formato_TI_G.name())) {
-                contieneTI_G = true;
-            }
-
+        Usuario usuario = usuarioGateway.obtenerUsuarioPorId(solicitud.getObjUsuario().getId_usuario());
+        if (usuario == null) {
+            formateadorResultados.retornarRespuestaErrorEntidadExiste("Usuario no encontrado");
         }
 
-        // if (!contienePP_H && !contieneTI_G) {
-        //     this.objFormateadorResultados.retornarRespuestaErrorReglaDeNegocio("Se debe ingresar al menos uno de los dos formatos: PP_H o TI_G");
-        // }
+        // Guardar solicitud
+        SolicitudPazYSalvo solicitudGuardada = solicitudGateway.guardar(solicitud);
 
-        // if (contienePP_H && contieneTI_G) {
-        //     this.objFormateadorResultados.retornarRespuestaErrorReglaDeNegocio("Se ingresaron ambos formatos. Solo se debe adjuntar uno");
-        // }
-
-        // Crear la solicitud
-        SolicitudPazYSalvo solicitudGuardada = this.objGestionarSolicitudGateway.crearSolicitudPazYSalvo(solicitudPazYSalvo);
-
-        // // Asociar y guardar los documentos
-        // for (Documento doc : solicitudGuardada.getDocumentos()) {
-        //     doc.setObjSolicitud(solicitudGuardada);
-        //     this.objDocumentosGateway.actualizarDocumento(doc);
-        // }
-        //Asociar documentos con solicitud = null
-        List<Documento> documentosSinSolicitud = this.objDocumentosGateway.buscarDocumentoSinSolicitud();
+        // Asociar documentos sin solicitud
+        List<Documento> documentosSinSolicitud = documentosGateway.buscarDocumentoSinSolicitud();
         for (Documento doc : documentosSinSolicitud) {
-            doc.setObjSolicitud(solicitudGuardada);           
-            this.objDocumentosGateway.actualizarDocumento(doc);            
+            doc.setObjSolicitud(solicitudGuardada);
+            documentosGateway.actualizarDocumento(doc);
         }
+
+        // Crear estado inicial
+        EstadoSolicitud estadoInicial = new EstadoSolicitud();
+        estadoInicial.setEstado_actual("Enviada");
+        estadoInicial.setFecha_registro_estado(new Date());
+        estadoInicial.setObjSolicitud(solicitudGuardada);
+
+        if (solicitudGuardada.getEstadosSolicitud() == null) {
+            solicitudGuardada.setEstadosSolicitud(new ArrayList<>());
+        }
+        solicitudGuardada.getEstadosSolicitud().add(estadoInicial);
+        estadoSolicitudGateway.guarEstadoSolicitud(estadoInicial);
 
         // Asociar solicitud al usuario
-        usuarioBuscar.getSolicitudes().add(solicitudGuardada);
-        this.objUsuario.actualizarUsuario(usuarioBuscar);
+        usuario.getSolicitudes().add(solicitudGuardada);
+        usuarioGateway.actualizarUsuario(usuario);
 
         return solicitudGuardada;
+    }
+
+    @Override
+    public List<SolicitudPazYSalvo> listarSolicitudes() {
+        return solicitudGateway.listarSolicitudes();
+    }
+
+    @Override
+    public SolicitudPazYSalvo buscarPorId(Integer idSolicitud) {
+        return solicitudGateway.buscarPorId(idSolicitud)
+                .orElseThrow(() -> new RuntimeException("Solicitud de Paz y Salvo no encontrada"));
+    }
+
+    @Override
+    public void cambiarEstadoSolicitud(Integer idSolicitud, String nuevoEstado) {
+        EstadoSolicitud estado = new EstadoSolicitud();
+        estado.setEstado_actual(nuevoEstado);
+        estado.setFecha_registro_estado(new Date());
+        solicitudGateway.cambiarEstadoSolicitud(idSolicitud, estado);
     }
 }

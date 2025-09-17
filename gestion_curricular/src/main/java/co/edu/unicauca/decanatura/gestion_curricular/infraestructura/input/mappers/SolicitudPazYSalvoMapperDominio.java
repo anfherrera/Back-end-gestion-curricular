@@ -17,27 +17,26 @@ import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.DTORe
         DocumentosMapperDominio.class
     }
 )
-
 public interface SolicitudPazYSalvoMapperDominio {
-   
+
     // Modelo → DTO Respuesta
     @Mapping(source = "id_solicitud", target = "id_solicitud")
     @Mapping(source = "nombre_solicitud", target = "nombre_solicitud")
     @Mapping(source = "fecha_registro_solicitud", target = "fecha_registro_solicitud")
     @Mapping(source = "esSeleccionado", target = "esSeleccionado")
-    @Mapping(source = "estadosSolicitud", target = "estadosSolicitud")
+    @Mapping(source = "estadosSolicitud", target = "estadosSolicitud") // CORREGIDO
     @Mapping(source = "objUsuario", target = "objUsuario")
-    //@Mapping(source = "documentos", target = "documentos",ignore = true) 
+    @Mapping(source = "documentos", target = "documentos") 
     SolicitudPazYSalvoDTORespuesta mappearDeSolicitudARespuesta(SolicitudPazYSalvo solicitud);
 
     List<SolicitudPazYSalvoDTORespuesta> mappearListaDeSolicitudesARespuesta(List<SolicitudPazYSalvo> solicitudes);
 
     // DTO Petición → Modelo
-    @Mapping(target = "estadosSolicitud", ignore = true) // No viene en el DTO de petición
+    @Mapping(target = "estadosSolicitud", ignore = true) 
     @Mapping(source = "esSeleccionado", target = "esSeleccionado")
     @Mapping(target = "objCursoOfertadoVerano", ignore = true) 
-    @Mapping(target = "documentos", ignore = true) // Se manejan aparte
+    @Mapping(target = "documentos", ignore = true) 
     SolicitudPazYSalvo mappearDeSolicitudDTOPeticionASolicitud(SolicitudPazYSalvoDTOPeticion peticion);
 
-    List<SolicitudPazYSalvo> mappearListaDeSolicitudDTOPeticionAListaSolicitud(List<SolicitudPazYSalvoDTOPeticion> peticiones); 
+    List<SolicitudPazYSalvo> mappearListaDeSolicitudDTOPeticionAListaSolicitud(List<SolicitudPazYSalvoDTOPeticion> peticiones);
 }
