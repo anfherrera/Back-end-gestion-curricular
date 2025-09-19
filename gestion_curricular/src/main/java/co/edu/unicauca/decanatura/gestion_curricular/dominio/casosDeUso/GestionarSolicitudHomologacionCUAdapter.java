@@ -98,6 +98,34 @@ public class GestionarSolicitudHomologacionCUAdapter implements GestionarSolicit
         return objGestionarSolicitudHomologacionGateway.listarSolicitudes();
     }
 
+    //========================
+
+    @Override
+    public List<SolicitudHomologacion> listarSolicitudesPorRol(String rol, Integer idUsuario) {
+        List<SolicitudHomologacion> todas = objGestionarSolicitudHomologacionGateway.listarSolicitudes();
+
+        return todas.stream().filter(solicitud -> {
+            List<EstadoSolicitud> estados = solicitud.getEstadosSolicitud();
+            EstadoSolicitud ultimoEstado = estados != null && !estados.isEmpty()
+                ? estados.get(estados.size() - 1)
+                : null;
+
+            switch (rol) {
+                case "ESTUDIANTE":
+                    return solicitud.getObjUsuario().getId_usuario().equals(idUsuario);
+                case "FUNCIONARIO":
+                    return ultimoEstado != null && "ENVIADA".equals(ultimoEstado.getEstado_actual());
+                case "COORDINADOR":
+                    return ultimoEstado != null && "APROBADA_FUNCIONARIO".equals(ultimoEstado.getEstado_actual());
+                default:
+                    return false;
+            }
+        }).toList();
+    }
+
+    //=======================
+
+
     @Override
     public SolicitudHomologacion buscarPorId(Integer idSolicitud) {
         return objGestionarSolicitudHomologacionGateway.buscarPorId(idSolicitud).

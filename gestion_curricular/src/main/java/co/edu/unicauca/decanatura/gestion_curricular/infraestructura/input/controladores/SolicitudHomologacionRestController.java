@@ -1,6 +1,7 @@
 package co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.controladores;
 
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarSolicitudHomologacionCUIntPort;
@@ -52,6 +53,22 @@ public class SolicitudHomologacionRestController {
         List<SolicitudHomologacionDTORespuesta> respuesta = solicitudMapperDominio.mappearListaDeSolicitudHomologacionARespuesta(solicitudes);
         return ResponseEntity.ok(respuesta);
     }
+
+//====================================
+
+    @GetMapping("/listarSolicitud-Homologacion/porRol")
+    public ResponseEntity<List<SolicitudHomologacionDTORespuesta>> listarSolicitudPorRol(
+            @RequestParam String rol,
+            @RequestParam(required = false) Integer idUsuario) {
+
+        List<SolicitudHomologacion> solicitudes = solicitudHomologacionCU.listarSolicitudesPorRol(rol, idUsuario);
+
+        List<SolicitudHomologacionDTORespuesta> respuesta =
+                solicitudMapperDominio.mappearListaDeSolicitudHomologacionARespuesta(solicitudes);
+
+        return ResponseEntity.ok(respuesta);
+    }
+//====================================
 
     @GetMapping("/listarSolicitud-Homologacion/{id}")
     public ResponseEntity<SolicitudHomologacionDTORespuesta> listarHomologacionById(@PathVariable Integer id) {
