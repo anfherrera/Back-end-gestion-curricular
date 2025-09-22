@@ -59,6 +59,13 @@ public class SolicitudPazYSalvoRestController {
         return ResponseEntity.ok(respuesta);
     }
 
+    @GetMapping("/listarSolicitud-PazYSalvo/funcionario")
+    public ResponseEntity<List<SolicitudPazYSalvoDTORespuesta>> listarSolicitudPazYSalvoFuncionario() {
+        List<SolicitudPazYSalvo> solicitudes = solicitudPazYSalvoCU.listarSolicitudesToFuncionario();
+        List<SolicitudPazYSalvoDTORespuesta> respuesta = solicitudMapperDominio.mappearListaDeSolicitudesARespuesta(solicitudes);
+        return ResponseEntity.ok(respuesta);
+    }
+
     @GetMapping("/listarSolicitud-PazYSalvo/{id}")
     public ResponseEntity<SolicitudPazYSalvoDTORespuesta> listarPazYSalvoById(@PathVariable Integer id) {
         SolicitudPazYSalvo solicitud = solicitudPazYSalvoCU.buscarPorId(id);

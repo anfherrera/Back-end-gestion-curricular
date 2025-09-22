@@ -55,6 +55,19 @@ public class GestionarSolicitudPazYSalvoGatewayImplAdapter implements GestionarS
     }
 
     @Override
+    public List<SolicitudPazYSalvo> listarSolicitudesToFuncionario() {
+        return solicitudRepository.findAll().stream()
+                .map(entity -> mapper.map(entity, SolicitudPazYSalvo.class))
+                .toList();
+    }
+
+    @Override
+    public List<SolicitudPazYSalvo> listarSolicitudesToCoordinador() {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'listarSolicitudesToCoordinador'");
+    }
+
+    @Override
     public Optional<SolicitudPazYSalvo> buscarPorId(Integer idSolicitud) {
         return solicitudRepository.findById(idSolicitud)
                 .map(entity -> mapper.map(entity, SolicitudPazYSalvo.class));
@@ -71,4 +84,6 @@ public class GestionarSolicitudPazYSalvoGatewayImplAdapter implements GestionarS
         solicitudEntity.getEstadosSolicitud().add(nuevo);
         solicitudRepository.save(solicitudEntity);
     }
+
+    
 }

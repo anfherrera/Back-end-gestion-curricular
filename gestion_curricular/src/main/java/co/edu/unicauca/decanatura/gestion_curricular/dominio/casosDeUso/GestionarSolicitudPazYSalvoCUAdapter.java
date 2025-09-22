@@ -86,6 +86,16 @@ public class GestionarSolicitudPazYSalvoCUAdapter implements GestionarSolicitudP
     }
 
     @Override
+    public List<SolicitudPazYSalvo> listarSolicitudesToFuncionario() {
+       return solicitudGateway.listarSolicitudesToFuncionario();
+    }
+
+    @Override
+    public List<SolicitudPazYSalvo> listarSolicitudesToCoordinador() {
+        return solicitudGateway.listarSolicitudesToCoordinador();
+    }
+
+    @Override
     public SolicitudPazYSalvo buscarPorId(Integer idSolicitud) {
         return solicitudGateway.buscarPorId(idSolicitud)
                 .orElseThrow(() -> new RuntimeException("Solicitud de Paz y Salvo no encontrada"));
@@ -98,4 +108,6 @@ public class GestionarSolicitudPazYSalvoCUAdapter implements GestionarSolicitudP
         estado.setFecha_registro_estado(new Date());
         solicitudGateway.cambiarEstadoSolicitud(idSolicitud, estado);
     }
+
+    
 }
