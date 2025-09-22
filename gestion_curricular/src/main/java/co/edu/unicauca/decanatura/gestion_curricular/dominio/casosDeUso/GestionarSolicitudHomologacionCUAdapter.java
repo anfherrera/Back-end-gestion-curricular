@@ -98,7 +98,14 @@ public class GestionarSolicitudHomologacionCUAdapter implements GestionarSolicit
         return objGestionarSolicitudHomologacionGateway.listarSolicitudes();
     }
 
-    //========================
+    @Override
+    public List<SolicitudHomologacion> listarSolicitudesToFuncionario() {
+        return objGestionarSolicitudHomologacionGateway.listarSolicitudesToFuncionario();
+    }
+    @Override
+    public List<SolicitudHomologacion> listarSolicitudesToCoordinador() {
+        return objGestionarSolicitudHomologacionGateway.listarSolicitudesToCoordinador();
+    }
 
     @Override
     public List<SolicitudHomologacion> listarSolicitudesPorRol(String rol, Integer idUsuario) {
@@ -123,8 +130,6 @@ public class GestionarSolicitudHomologacionCUAdapter implements GestionarSolicit
         }).toList();
     }
 
-    //=======================
-
 
     @Override
     public SolicitudHomologacion buscarPorId(Integer idSolicitud) {
@@ -139,5 +144,6 @@ public class GestionarSolicitudHomologacionCUAdapter implements GestionarSolicit
         estado.setFecha_registro_estado(new Date());
         objGestionarSolicitudHomologacionGateway.cambiarEstadoSolicitud(idSolicitud, estado);
     }
+    
 
 }

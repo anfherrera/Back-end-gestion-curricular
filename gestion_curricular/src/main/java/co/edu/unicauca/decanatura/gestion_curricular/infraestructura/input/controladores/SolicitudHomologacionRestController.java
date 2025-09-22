@@ -54,7 +54,22 @@ public class SolicitudHomologacionRestController {
         return ResponseEntity.ok(respuesta);
     }
 
-//====================================
+
+    @GetMapping("/listarSolicitud-Homologacion/Funcionario")
+    public ResponseEntity<List<SolicitudHomologacionDTORespuesta>> listarSolicitudHomologacionToFuncionario() {
+        List<SolicitudHomologacion> solicitudes = solicitudHomologacionCU.listarSolicitudesToFuncionario();
+        List<SolicitudHomologacionDTORespuesta> respuesta = solicitudMapperDominio.mappearListaDeSolicitudHomologacionARespuesta(solicitudes);
+        return ResponseEntity.ok(respuesta);
+    }
+
+    @GetMapping("/listarSolicitud-Homologacion/Coordinador")
+    public ResponseEntity<List<SolicitudHomologacionDTORespuesta>> listarSolicitudHomologacionToCoordinador() {
+        List<SolicitudHomologacion> solicitudes = solicitudHomologacionCU.listarSolicitudesToCoordinador();
+        List<SolicitudHomologacionDTORespuesta> respuesta = solicitudMapperDominio.mappearListaDeSolicitudHomologacionARespuesta(solicitudes);
+        return ResponseEntity.ok(respuesta);
+    }
+
+
 
     @GetMapping("/listarSolicitud-Homologacion/porRol")
     public ResponseEntity<List<SolicitudHomologacionDTORespuesta>> listarSolicitudPorRol(
@@ -68,7 +83,7 @@ public class SolicitudHomologacionRestController {
 
         return ResponseEntity.ok(respuesta);
     }
-//====================================
+
 
     @GetMapping("/listarSolicitud-Homologacion/{id}")
     public ResponseEntity<SolicitudHomologacionDTORespuesta> listarHomologacionById(@PathVariable Integer id) {

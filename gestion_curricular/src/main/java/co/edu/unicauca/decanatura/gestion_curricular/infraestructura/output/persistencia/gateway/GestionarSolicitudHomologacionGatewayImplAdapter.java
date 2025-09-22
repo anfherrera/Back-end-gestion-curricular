@@ -43,6 +43,20 @@ public class GestionarSolicitudHomologacionGatewayImplAdapter implements Gestion
     }
 
     @Override
+    public List<SolicitudHomologacion> listarSolicitudesToFuncionario() {
+        return  solicitudHomologacionRepository.findByUltimoEstado("Enviada").stream()
+               .map(entity -> mapper.map(entity, SolicitudHomologacion.class))
+               .toList();
+    }
+
+    @Override
+    public List<SolicitudHomologacion> listarSolicitudesToCoordinador() {
+       return  solicitudHomologacionRepository.findByUltimoEstado("APROBADA_FUNCIONARIO").stream()
+               .map(entity -> mapper.map(entity, SolicitudHomologacion.class))
+               .toList();
+    }
+
+    @Override
     public Optional<SolicitudHomologacion> buscarPorId(Integer idSolicitud) {
        return solicitudHomologacionRepository.findById(idSolicitud)
                .map(entity -> Optional.of(mapper.map(entity, SolicitudHomologacion.class)))
@@ -61,5 +75,6 @@ public class GestionarSolicitudHomologacionGatewayImplAdapter implements Gestion
         solicitudHomologacionRepository.save(solicitudEntity);
 
     }
+
 
 }

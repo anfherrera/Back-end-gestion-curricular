@@ -9,6 +9,10 @@ public interface GestionarSolicitudHomologacionCUIntPort {
 
     List<SolicitudHomologacion> listarSolicitudes();
 
+    List<SolicitudHomologacion> listarSolicitudesToFuncionario();
+
+    List<SolicitudHomologacion> listarSolicitudesToCoordinador();
+
     List<SolicitudHomologacion> listarSolicitudesPorRol(String rol, Integer idUsuario);
 
     SolicitudHomologacion buscarPorId(Integer idSolicitud);
