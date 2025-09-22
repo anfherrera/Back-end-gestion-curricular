@@ -64,8 +64,9 @@ public class GestionarSolicitudPazYSalvoGatewayImplAdapter implements GestionarS
 
     @Override
     public List<SolicitudPazYSalvo> listarSolicitudesToCoordinador() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'listarSolicitudesToCoordinador'");
+        return solicitudRepository.findByUltimoEstado("APROBADA_FUNCIONARIO").stream()
+                .map(entity -> mapper.map(entity, SolicitudPazYSalvo.class))
+                .toList();
     }
 
     @Override
