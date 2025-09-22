@@ -53,7 +53,7 @@ public class ArchivosRestController {
         }
     }
 
-    @GetMapping("/descargar/pdf/{ruta}")
+    @GetMapping("/descargar/pdf")
     public ResponseEntity<byte[]> bajarPDF(@RequestParam(name = "filename", required = true) String filename) {
         byte[] archivos = null;
         try {
