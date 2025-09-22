@@ -56,7 +56,8 @@ public class GestionarSolicitudPazYSalvoGatewayImplAdapter implements GestionarS
 
     @Override
     public List<SolicitudPazYSalvo> listarSolicitudesToFuncionario() {
-        return solicitudRepository.findAll().stream()
+        // Buscar solo las solicitudes cuyo último estado sea "Enviada"
+        return solicitudRepository.findByUltimoEstado("Enviada").stream()
                 .map(entity -> mapper.map(entity, SolicitudPazYSalvo.class))
                 .toList();
     }
