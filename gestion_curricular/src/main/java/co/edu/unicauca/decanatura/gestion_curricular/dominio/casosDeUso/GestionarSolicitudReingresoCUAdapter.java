@@ -13,6 +13,7 @@ import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.Gestionar
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.GestionarUsuarioGatewayIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Documento;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.EstadoSolicitud;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.SolicitudHomologacion;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.SolicitudReingreso;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Usuario;
 
@@ -61,7 +62,7 @@ public class GestionarSolicitudReingresoCUAdapter  implements GestionarSolicitud
         SolicitudReingreso solicitudGuardada = objGestionarSolicitudReingresoGateway.crearSolicitudReingreso(solicitud);
 
         //Asociar documentos con solicitud = null
-        List<Documento> documentosSinSolicitud = this.objGestionarDocumentosGateway.buscarDocumentoSinSolicitud();
+        List<Documento> documentosSinSolicitud = this.objGestionarDocumentosGateway.buscarDocumentosSinSolicitud();
         for (Documento doc : documentosSinSolicitud) {
             doc.setObjSolicitud(solicitudGuardada);           
             this.objGestionarDocumentosGateway.actualizarDocumento(doc);            
@@ -88,6 +89,30 @@ public class GestionarSolicitudReingresoCUAdapter  implements GestionarSolicitud
     public List<SolicitudReingreso> listarSolicitudesReingreso() {
         return objGestionarSolicitudReingresoGateway.listarSolicitudesReingreso();
     }
+
+    @Override
+    public List<SolicitudReingreso> listarSolicitudesReingresoPorRol(String rol, Integer idUsuario) {
+       List<SolicitudReingreso> todas = objGestionarSolicitudReingresoGateway.listarSolicitudesReingreso();
+
+        return todas.stream().filter(solicitud -> {
+            List<EstadoSolicitud> estados = solicitud.getEstadosSolicitud();
+            EstadoSolicitud ultimoEstado = estados != null && !estados.isEmpty()
+                ? estados.get(estados.size() - 1)
+                : null;
+
+            switch (rol) {
+                case "ESTUDIANTE":
+                    return solicitud.getObjUsuario().getId_usuario().equals(idUsuario);
+                case "FUNCIONARIO":
+                    return ultimoEstado != null && "ENVIADA".equals(ultimoEstado.getEstado_actual());
+                case "COORDINADOR":
+                    return ultimoEstado != null && "APROBADA_FUNCIONARIO".equals(ultimoEstado.getEstado_actual());
+                default:
+                    return false;
+            }
+        }).toList();
+    }
+
     @Override
     public SolicitudReingreso obtenerSolicitudReingresoPorId(Integer id) {
         return objGestionarSolicitudReingresoGateway.buscarPorId(id).orElseThrow(() -> new RuntimeException("Solicitud de reingreso no encontrada con ID: " + id));
@@ -99,4 +124,6 @@ public class GestionarSolicitudReingresoCUAdapter  implements GestionarSolicitud
         estado.setFecha_registro_estado(new Date());
         objGestionarSolicitudReingresoGateway.cambiarEstadoSolicitudReingreso(idSolicitud, nuevoEstado);
     }
+
+    
 }

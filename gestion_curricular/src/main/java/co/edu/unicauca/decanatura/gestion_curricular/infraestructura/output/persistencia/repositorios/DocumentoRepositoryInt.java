@@ -9,4 +9,6 @@ import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.pers
 public interface DocumentoRepositoryInt extends JpaRepository<DocumentoEntity, Integer> {
     List<DocumentoEntity> findByobjSolicitudIsNull();
 
+    List<DocumentoEntity> findByObjSolicitudIsNullAndNombreContainingIgnoreCase(String nombre);
+
 }

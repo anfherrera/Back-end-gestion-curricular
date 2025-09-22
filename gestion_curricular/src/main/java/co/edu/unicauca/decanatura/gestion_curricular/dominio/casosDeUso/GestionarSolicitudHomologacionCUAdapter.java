@@ -58,7 +58,7 @@ public class GestionarSolicitudHomologacionCUAdapter implements GestionarSolicit
         SolicitudHomologacion solicitudGuardada = objGestionarSolicitudHomologacionGateway.guardar(solicitud);
 
         //Asociar documentos con solicitud = null
-        List<Documento> documentosSinSolicitud = this.objGestionarDocumentosGateway.buscarDocumentoSinSolicitud();
+        List<Documento> documentosSinSolicitud = this.objGestionarDocumentosGateway.buscarDocumentosSinSolicitud();
         for (Documento doc : documentosSinSolicitud) {
             //Integer i = 0;
             //Integer idsDocumentos = solicitudGuardada.getDocumentos().get(i).getId_documento();

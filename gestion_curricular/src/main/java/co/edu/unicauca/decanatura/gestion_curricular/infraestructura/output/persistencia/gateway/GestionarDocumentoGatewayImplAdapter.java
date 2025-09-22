@@ -63,7 +63,7 @@ public class GestionarDocumentoGatewayImplAdapter implements GestionarDocumentos
     }
 
     @Override
-    public List<Documento> buscarDocumentoSinSolicitud() {
+    public List<Documento> buscarDocumentosSinSolicitud() {
        return documentoRepository.findByobjSolicitudIsNull()
             .stream()
             .map(entity -> documentoMapper.map(entity, Documento.class))

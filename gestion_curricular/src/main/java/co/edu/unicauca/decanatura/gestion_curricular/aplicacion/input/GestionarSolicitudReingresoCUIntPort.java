@@ -10,6 +10,8 @@ public interface GestionarSolicitudReingresoCUIntPort {
 
     List<SolicitudReingreso> listarSolicitudesReingreso();
 
+    List<SolicitudReingreso> listarSolicitudesReingresoPorRol(String rol, Integer idUsuario);
+
     SolicitudReingreso obtenerSolicitudReingresoPorId(Integer id);
 
     void cambiarEstadoSolicitudReingreso(Integer idSolicitud, String nuevoEstado);

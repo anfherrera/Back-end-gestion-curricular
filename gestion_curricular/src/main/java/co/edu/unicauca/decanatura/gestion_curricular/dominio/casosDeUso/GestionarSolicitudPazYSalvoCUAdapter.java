@@ -55,7 +55,7 @@ public class GestionarSolicitudPazYSalvoCUAdapter implements GestionarSolicitudP
         SolicitudPazYSalvo solicitudGuardada = solicitudGateway.guardar(solicitud);
 
         // Asociar documentos sin solicitud
-        List<Documento> documentosSinSolicitud = documentosGateway.buscarDocumentoSinSolicitud();
+        List<Documento> documentosSinSolicitud = documentosGateway.buscarDocumentosSinSolicitud();
         for (Documento doc : documentosSinSolicitud) {
             doc.setObjSolicitud(solicitudGuardada);
             documentosGateway.actualizarDocumento(doc);

@@ -83,7 +83,7 @@ public class GestionarSolicitudEcaesCUAdapter implements GestionarSolicitudEcaes
             //==============
             //buscar documentos sin solicitud pero en la solicitud guardada
             
-            List<Documento> documentosSinSolicitud = this.objDocumentosGateway.buscarDocumentoSinSolicitud();
+            List<Documento> documentosSinSolicitud = this.objDocumentosGateway.buscarDocumentosSinSolicitud();
             
             for (Documento doc : documentosSinSolicitud) {
                 

@@ -8,13 +8,16 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarSolicitudReingresoCUIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.CambioEstadoSolicitud;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.SolicitudHomologacion;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.SolicitudReingreso;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.DTOPeticion.CambioEstadoSolicitudDTOPeticion;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.DTOPeticion.SolicitudReingresoDTOPeticion;
+import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.DTORespuesta.SolicitudHomologacionDTORespuesta;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.DTORespuesta.SolicitudReingresoDTORespuesta;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.mappers.SolicitudMapperDominio;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.mappers.SolicitudReingresoMapperDominio;
@@ -48,6 +51,23 @@ public class SolicitudReingresoRestController {
         return ResponseEntity.ok(solicitudesDTO);
     }
     
+    //====================================
+
+    @GetMapping("/listarSolicitud-Reingreso/porUser")
+    public ResponseEntity<List<SolicitudReingresoDTORespuesta>> listarSolicitudPorUser(
+            @RequestParam String rol,
+            @RequestParam(required = false) Integer idUsuario) {
+
+        List<SolicitudReingreso> solicitudes = solicitudService.listarSolicitudesReingresoPorRol(rol, idUsuario);
+
+        List<SolicitudReingresoDTORespuesta> respuesta =
+                solicitudReingresoMapper.mappearDeListaSolicitudReingresoASolicitudReingresoDTORespuesta(solicitudes);
+
+        return ResponseEntity.ok(respuesta);
+    }
+//====================================
+
+
     @GetMapping("/listarSolicitud-Reingreo/{id}")
     public ResponseEntity<SolicitudReingresoDTORespuesta> listarReingresoById(@PathVariable Integer id) {
         SolicitudReingreso solicitud = solicitudService.obtenerSolicitudReingresoPorId(id);
