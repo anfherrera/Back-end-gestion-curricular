@@ -108,6 +108,11 @@ public class GestionarSolicitudHomologacionCUAdapter implements GestionarSolicit
     }
 
     @Override
+    public List<SolicitudHomologacion> listarSolicitudesToSecretaria() {
+        return objGestionarSolicitudHomologacionGateway.listarSolicitudesToSecretaria();
+    }
+
+    @Override
     public List<SolicitudHomologacion> listarSolicitudesPorRol(String rol, Integer idUsuario) {
         List<SolicitudHomologacion> todas = objGestionarSolicitudHomologacionGateway.listarSolicitudes();
 

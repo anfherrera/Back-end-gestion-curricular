@@ -57,6 +57,13 @@ public class GestionarSolicitudHomologacionGatewayImplAdapter implements Gestion
     }
 
     @Override
+    public List<SolicitudHomologacion> listarSolicitudesToSecretaria() {
+       return  solicitudHomologacionRepository.findByUltimoEstado("APROBADA_COORDINADOR").stream()
+               .map(entity -> mapper.map(entity, SolicitudHomologacion.class))
+               .toList();
+    }
+
+    @Override
     public Optional<SolicitudHomologacion> buscarPorId(Integer idSolicitud) {
        return solicitudHomologacionRepository.findById(idSolicitud)
                .map(entity -> Optional.of(mapper.map(entity, SolicitudHomologacion.class)))

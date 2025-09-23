@@ -16,6 +16,8 @@ public interface GestionarSolicitudHomologacionGatewayIntPort {
 
     List<SolicitudHomologacion> listarSolicitudesToCoordinador();
 
+    List<SolicitudHomologacion> listarSolicitudesToSecretaria();
+
     Optional<SolicitudHomologacion> buscarPorId(Integer idSolicitud);
 
     void cambiarEstadoSolicitud(Integer idSolicitud, EstadoSolicitud nuevoEstado);
