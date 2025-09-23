@@ -13,8 +13,11 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarArchivosCUIntPort;
+import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarSolicitudHomologacionCUIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.GestionarDocumentosGatewayIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Documento;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Solicitud;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.SolicitudHomologacion;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.DTORespuesta.DocumentosDTORespuesta;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.mappers.DocumentosMapperDominio;
 
@@ -31,24 +34,48 @@ public class ArchivosRestController {
     private final GestionarArchivosCUIntPort objGestionarArchivos;
     private final DocumentosMapperDominio documentosMapperDominio;
     private final GestionarDocumentosGatewayIntPort objGestionarDocumentosGateway;
+    private final GestionarSolicitudHomologacionCUIntPort solicitudHomologacionCU;
     @PostMapping("/subir/pdf")
-    public ResponseEntity<DocumentosDTORespuesta> subirPDF(@RequestParam(name = "file", required = true) MultipartFile file) {
+    public ResponseEntity<DocumentosDTORespuesta> subirPDF(
+            @RequestParam(name = "file", required = true) MultipartFile file,
+            @RequestParam(name = "idSolicitud", required = false) Integer idSolicitud) {
         try {
             String nombreOriginal = file.getOriginalFilename(); // ← nombre real del archivo
             this.objGestionarArchivos.saveFile(file, nombreOriginal, "pdf"); // ← guardar archivo
-            // DocumentosDTOPeticion doc = new DocumentosDTOPeticion();
+            
             Documento doc = new Documento();
             doc.setNombre(nombreOriginal);
             doc.setRuta_documento(nombreOriginal);
             doc.setFecha_documento(new Date());
-            doc.setEsValido(true);  
-            //Documento documento = documentosMapperDominio.mappearDeDTOPeticionADocumento(doc);
+            doc.setEsValido(true);
+            
+            // Asociar solicitud si se proporciona idSolicitud
+            if (idSolicitud != null) {
+                try {
+                    // Obtener la solicitud de homologación
+                    SolicitudHomologacion solicitud = solicitudHomologacionCU.buscarPorId(idSolicitud);
+                    if (solicitud != null) {
+                        // Crear objeto Solicitud para asociar
+                        Solicitud objSolicitud = new Solicitud();
+                        objSolicitud.setId_solicitud(idSolicitud);
+                        doc.setObjSolicitud(objSolicitud);
+                        System.out.println("📎 Asociando archivo '" + nombreOriginal + "' a solicitud ID: " + idSolicitud);
+                    } else {
+                        System.err.println("❌ No se encontró la solicitud con ID: " + idSolicitud);
+                    }
+                } catch (Exception e) {
+                    System.err.println("❌ Error al obtener solicitud: " + e.getMessage());
+                }
+            }
+            
             Documento documentoGuardado = this.objGestionarDocumentosGateway.crearDocumento(doc);
             ResponseEntity<DocumentosDTORespuesta> respuesta = new ResponseEntity<DocumentosDTORespuesta>(
                 documentosMapperDominio.mappearDeDocumentoADTORespuesta(documentoGuardado), HttpStatus.CREATED
             );
             return respuesta;
         } catch (Exception e) {
+            System.err.println("❌ Error al subir PDF: " + e.getMessage());
+            e.printStackTrace();
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }

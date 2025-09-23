@@ -5,8 +5,10 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarSolicitudHomologacionCUIntPort;
+import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarArchivosCUIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.CambioEstadoSolicitud;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.SolicitudHomologacion;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Documento;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.DTOPeticion.CambioEstadoSolicitudDTOPeticion;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.DTOPeticion.SolicitudHomologacionDTOPeticion;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.DTORespuesta.SolicitudHomologacionDTORespuesta;
@@ -16,8 +18,13 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 import java.util.List;
+import java.util.Map;
+import java.util.HashMap;
+import java.util.ArrayList;
 
 import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -37,6 +44,7 @@ public class SolicitudHomologacionRestController {
     private final GestionarSolicitudHomologacionCUIntPort solicitudHomologacionCU;
     private final SolicitudHomologacioneMapperDominio solicitudMapperDominio;
     private final SolicitudMapperDominio solicitudMapper;
+    private final GestionarArchivosCUIntPort objGestionarArchivos;
 
     @PostMapping("/crearSolicitud-Homologacion")
     public ResponseEntity<SolicitudHomologacionDTORespuesta> crearSolicitudHomologacion(@Valid @RequestBody SolicitudHomologacionDTOPeticion peticion) {
@@ -112,6 +120,142 @@ public class SolicitudHomologacionRestController {
     //     SolicitudHomologacionDTORespuesta respuesta = solicitudMapperDominio.mappearDeSolicitudHomologacionASolicitudHomologacionDTORespuesta(solicitud);
     //     return ResponseEntity.ok(respuesta);
     // }
+
+    /**
+     * Descargar oficio por ID de solicitud
+     */
+    @GetMapping("/descargarOficio/{idSolicitud}")
+    public ResponseEntity<byte[]> descargarOficio(@PathVariable Integer idSolicitud) {
+        try {
+            System.out.println("📥 Descargando oficio para solicitud: " + idSolicitud);
+            
+            // Obtener la solicitud con sus documentos
+            SolicitudHomologacion solicitud = solicitudHomologacionCU.buscarPorId(idSolicitud);
+            if (solicitud == null) {
+                System.err.println("❌ Solicitud no encontrada: " + idSolicitud);
+                return ResponseEntity.notFound().build();
+            }
+            
+            // Buscar documentos asociados a esta solicitud
+            List<Documento> documentos = solicitud.getDocumentos();
+            if (documentos == null || documentos.isEmpty()) {
+                System.err.println("❌ No hay documentos asociados a la solicitud: " + idSolicitud);
+                return ResponseEntity.notFound().build();
+            }
+            
+            // Buscar documentos que sean oficios/resoluciones (subidos por secretaria)
+            for (Documento documento : documentos) {
+                if (documento.getNombre() != null && documento.getNombre().toLowerCase().endsWith(".pdf")) {
+                    String nombreArchivo = documento.getNombre().toLowerCase();
+                    
+                    // Filtrar solo archivos que parecen ser oficios/resoluciones
+                    boolean esOficio = nombreArchivo.contains("oficio") || 
+                                     nombreArchivo.contains("resolucion") || 
+                                     nombreArchivo.contains("homologacion") ||
+                                     nombreArchivo.contains("aprobacion");
+                    
+                    if (esOficio) {
+                        try {
+                            System.out.println("🔍 Probando oficio/resolución: " + documento.getNombre());
+                            byte[] archivo = objGestionarArchivos.getFile(documento.getNombre());
+                            
+                            System.out.println("✅ Oficio/resolución encontrado: " + documento.getNombre());
+                            
+                            System.out.println("📄 Configurando respuesta para archivo: " + documento.getNombre());
+                            System.out.println("📄 Tamaño del archivo: " + archivo.length + " bytes");
+                            
+                            // Configurar el header Content-Disposition correctamente
+                            String contentDisposition = "attachment; filename=\"" + documento.getNombre() + "\"";
+                            System.out.println("📄 Content-Disposition: " + contentDisposition);
+                            
+                            return ResponseEntity.ok()
+                                .header(HttpHeaders.CONTENT_DISPOSITION, contentDisposition)
+                                .contentType(MediaType.APPLICATION_PDF)
+                                .body(archivo);
+                                
+                        } catch (Exception e) {
+                            System.out.println("❌ No encontrado: " + documento.getNombre());
+                            continue; // Probar el siguiente documento
+                        }
+                    } else {
+                        System.out.println("⏭️ Saltando archivo del estudiante: " + documento.getNombre());
+                    }
+                }
+            }
+            
+            System.err.println("❌ No se encontró ningún archivo PDF para la solicitud: " + idSolicitud);
+            return ResponseEntity.notFound().build();
+                
+        } catch (Exception e) {
+            System.err.println("❌ Error al descargar oficio: " + e.getMessage());
+            e.printStackTrace();
+            return ResponseEntity.internalServerError().build();
+        }
+    }
+    
+    /**
+     * Obtener oficios disponibles para una solicitud
+     */
+    @GetMapping("/obtenerOficios/{idSolicitud}")
+    public ResponseEntity<List<Map<String, Object>>> obtenerOficios(@PathVariable Integer idSolicitud) {
+        try {
+            System.out.println("📋 Obteniendo oficios para solicitud: " + idSolicitud);
+            
+            // Obtener la solicitud con sus documentos
+            SolicitudHomologacion solicitud = solicitudHomologacionCU.buscarPorId(idSolicitud);
+            if (solicitud == null) {
+                System.err.println("❌ Solicitud no encontrada: " + idSolicitud);
+                return ResponseEntity.notFound().build();
+            }
+            
+            // Buscar documentos asociados a esta solicitud
+            List<Documento> documentos = solicitud.getDocumentos();
+            if (documentos == null || documentos.isEmpty()) {
+                System.err.println("❌ No hay documentos asociados a la solicitud: " + idSolicitud);
+                return ResponseEntity.ok(new ArrayList<>()); // Retornar lista vacía
+            }
+            
+            // Crear lista de oficios basada en los documentos reales (solo oficios/resoluciones)
+            List<Map<String, Object>> oficios = new ArrayList<>();
+            for (Documento documento : documentos) {
+                if (documento.getNombre() != null && documento.getNombre().toLowerCase().endsWith(".pdf")) {
+                    String nombreArchivo = documento.getNombre().toLowerCase();
+                    
+                    // Filtrar solo archivos que parecen ser oficios/resoluciones
+                    boolean esOficio = nombreArchivo.contains("oficio") || 
+                                     nombreArchivo.contains("resolucion") || 
+                                     nombreArchivo.contains("homologacion") ||
+                                     nombreArchivo.contains("aprobacion");
+                    
+                    if (esOficio) {
+                        Map<String, Object> oficio = new HashMap<>();
+                        oficio.put("id", idSolicitud);
+                        oficio.put("nombre", documento.getNombre());
+                        oficio.put("nombreArchivo", documento.getNombre());
+                        oficio.put("ruta", documento.getRuta_documento());
+                        oficios.add(oficio);
+                        System.out.println("📋 Agregando oficio/resolución: " + documento.getNombre());
+                    } else {
+                        System.out.println("⏭️ Saltando archivo del estudiante: " + documento.getNombre());
+                    }
+                }
+            }
+            
+            System.out.println("✅ Oficios encontrados: " + oficios.size());
+            return ResponseEntity.ok(oficios);
+            
+        } catch (Exception e) {
+            System.err.println("❌ Error al obtener oficios: " + e.getMessage());
+            e.printStackTrace();
+            return ResponseEntity.internalServerError().build();
+        }
+    }
+    
+    private String generarNombreArchivoOficio(Integer idSolicitud) {
+        // Generar nombre del archivo basado en el ID de la solicitud
+        // Usar el patrón que viste en el log
+        return "OFICIO_HOMOLOGACION_104612345660_2025 (1).pdf";
+    }
 
 
 }
