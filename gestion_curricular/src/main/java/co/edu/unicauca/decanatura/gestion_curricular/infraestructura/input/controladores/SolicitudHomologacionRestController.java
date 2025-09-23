@@ -69,6 +69,13 @@ public class SolicitudHomologacionRestController {
         return ResponseEntity.ok(respuesta);
     }
 
+    @GetMapping("/listarSolicitud-Homologacion/Secretaria")
+    public ResponseEntity<List<SolicitudHomologacionDTORespuesta>> listarSolicitudHomologacionToSecretaria() {
+        List<SolicitudHomologacion> solicitudes = solicitudHomologacionCU.listarSolicitudesToSecretaria();
+        List<SolicitudHomologacionDTORespuesta> respuesta = solicitudMapperDominio.mappearListaDeSolicitudHomologacionARespuesta(solicitudes);
+        return ResponseEntity.ok(respuesta);
+    }
+
 
 
     @GetMapping("/listarSolicitud-Homologacion/porRol")
