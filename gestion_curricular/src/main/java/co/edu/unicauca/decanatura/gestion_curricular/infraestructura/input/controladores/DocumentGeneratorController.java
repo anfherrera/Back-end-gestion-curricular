@@ -72,3 +72,4 @@ public class DocumentGeneratorController {
         return String.format("%s_%s_%s.docx", tipoDocumento, nombreLimpio, numeroDocumento);
     }
 }
+

@@ -136,3 +136,4 @@ Si tienes algún problema, revisa los logs del servidor para ver los mensajes de
 - 📄 Generando documento: [tipo]
 - 📄 Datos del documento: [datos]
 - ✅ Documento generado exitosamente: [nombre]
+

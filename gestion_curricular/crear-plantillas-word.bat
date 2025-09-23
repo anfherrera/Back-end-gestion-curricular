@@ -35,3 +35,4 @@ echo 2. Ejecutar el servidor: mvn spring-boot:run
 echo 3. Probar la generacion de documentos desde el frontend
 echo.
 pause
+
