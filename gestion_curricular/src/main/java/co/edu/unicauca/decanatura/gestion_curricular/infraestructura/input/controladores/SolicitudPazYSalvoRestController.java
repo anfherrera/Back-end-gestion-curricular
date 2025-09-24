@@ -4,8 +4,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarSolicitudPazYSalvoCUIntPort;
+import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarArchivosCUIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.CambioEstadoSolicitud;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.SolicitudPazYSalvo;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Documento;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.DTOPeticion.CambioEstadoSolicitudDTOPeticion;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.DTOPeticion.SolicitudPazYSalvoDTOPeticion;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.DTORespuesta.SolicitudPazYSalvoDTORespuesta;
@@ -16,8 +18,13 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 import java.util.List;
+import java.util.Map;
+import java.util.HashMap;
+import java.util.ArrayList;
 
 import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -25,6 +32,13 @@ import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.multipart.MultipartFile;
+import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.GestionarDocumentosGatewayIntPort;
+import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.DTORespuesta.DocumentosDTORespuesta;
+import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.mappers.DocumentosMapperDominio;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Solicitud;
+import java.util.Date;
 
 @RestController
 @CrossOrigin(origins = "http://localhost:4200")
@@ -35,6 +49,9 @@ public class SolicitudPazYSalvoRestController {
     private final GestionarSolicitudPazYSalvoCUIntPort solicitudPazYSalvoCU;
     private final SolicitudPazYSalvoMapperDominio solicitudMapperDominio;
     private final SolicitudMapperDominio solicitudMapper;
+    private final GestionarArchivosCUIntPort objGestionarArchivos;
+    private final GestionarDocumentosGatewayIntPort objGestionarDocumentosGateway;
+    private final DocumentosMapperDominio documentosMapperDominio;
 
     @PostMapping("/crearSolicitud-PazYSalvo")
     public ResponseEntity<SolicitudPazYSalvoDTORespuesta> crearSolicitudPazYSalvo(
@@ -90,5 +107,298 @@ public class SolicitudPazYSalvoRestController {
         solicitudPazYSalvoCU.cambiarEstadoSolicitud(solicitud.getIdSolicitud(), solicitud.getNuevoEstado());
 
         return ResponseEntity.noContent().build();
+    }
+
+    /**
+     * Endpoint de prueba para verificar que el controlador funciona
+     */
+    @GetMapping("/test")
+    public ResponseEntity<String> test() {
+        return ResponseEntity.ok("✅ Controlador de Paz y Salvo funcionando correctamente");
+    }
+
+    /**
+     * Subir archivo para una solicitud de paz y salvo
+     */
+    @PostMapping("/{idSolicitud}/subir-archivo")
+    public ResponseEntity<DocumentosDTORespuesta> subirArchivoPazSalvo(
+            @PathVariable Integer idSolicitud,
+            @RequestParam("file") MultipartFile file) {
+        try {
+            System.out.println("📁 Subiendo archivo para solicitud de paz y salvo: " + idSolicitud);
+            
+            String nombreOriginal = file.getOriginalFilename();
+            
+            // Validaciones
+            System.out.println("📁 Validando archivo: " + nombreOriginal);
+            
+            // 1. Validar peso máximo (10MB = 10 * 1024 * 1024 bytes)
+            long maxFileSize = 10 * 1024 * 1024; // 10MB
+            if (file.getSize() > maxFileSize) {
+                System.err.println("❌ Archivo demasiado grande: " + file.getSize() + " bytes (máximo: " + maxFileSize + " bytes)");
+                return ResponseEntity.status(HttpStatus.PAYLOAD_TOO_LARGE).body(null);
+            }
+            
+            // 2. Validar que no sea un archivo duplicado
+            try {
+                SolicitudPazYSalvo solicitud = solicitudPazYSalvoCU.buscarPorId(idSolicitud);
+                if (solicitud != null && solicitud.getDocumentos() != null) {
+                    for (Documento doc : solicitud.getDocumentos()) {
+                        if (doc.getNombre() != null && doc.getNombre().equals(nombreOriginal)) {
+                            System.err.println("❌ Archivo duplicado: " + nombreOriginal);
+                            return ResponseEntity.status(HttpStatus.CONFLICT).body(null);
+                        }
+                    }
+                }
+            } catch (Exception e) {
+                System.err.println("⚠️ Error al verificar duplicados: " + e.getMessage());
+            }
+            
+            // 3. Validar tipo de archivo
+            if (!nombreOriginal.toLowerCase().endsWith(".pdf")) {
+                System.err.println("❌ Tipo de archivo no válido: " + nombreOriginal);
+                return ResponseEntity.status(HttpStatus.UNSUPPORTED_MEDIA_TYPE).body(null);
+            }
+            
+            System.out.println("✅ Validaciones pasadas, guardando archivo...");
+            this.objGestionarArchivos.saveFile(file, nombreOriginal, "pdf");
+            
+            Documento doc = new Documento();
+            doc.setNombre(nombreOriginal);
+            doc.setRuta_documento(nombreOriginal);
+            doc.setFecha_documento(new Date());
+            doc.setEsValido(true);
+            
+            // Asociar solicitud
+            try {
+                SolicitudPazYSalvo solicitud = solicitudPazYSalvoCU.buscarPorId(idSolicitud);
+                if (solicitud != null) {
+                    Solicitud objSolicitud = new Solicitud();
+                    objSolicitud.setId_solicitud(idSolicitud);
+                    doc.setObjSolicitud(objSolicitud);
+                    System.out.println("📎 Asociando archivo '" + nombreOriginal + "' a solicitud de paz y salvo ID: " + idSolicitud);
+                } else {
+                    System.err.println("❌ No se encontró la solicitud de paz y salvo con ID: " + idSolicitud);
+                }
+            } catch (Exception e) {
+                System.err.println("❌ Error al obtener solicitud de paz y salvo: " + e.getMessage());
+            }
+            
+            Documento documentoGuardado = this.objGestionarDocumentosGateway.crearDocumento(doc);
+            ResponseEntity<DocumentosDTORespuesta> respuesta = new ResponseEntity<>(
+                documentosMapperDominio.mappearDeDocumentoADTORespuesta(documentoGuardado), HttpStatus.CREATED
+            );
+            
+            System.out.println("✅ Archivo subido exitosamente: " + nombreOriginal);
+            return respuesta;
+            
+        } catch (Exception e) {
+            System.err.println("❌ Error al subir archivo de paz y salvo: " + e.getMessage());
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
+    /**
+     * Descargar oficio por ID de solicitud de paz y salvo
+     */
+    @GetMapping("/descargarOficio/{idSolicitud}")
+    public ResponseEntity<byte[]> descargarOficioPazSalvo(@PathVariable Integer idSolicitud) {
+        try {
+            System.out.println("📥 Descargando oficio de paz y salvo para solicitud: " + idSolicitud);
+            
+            // Obtener la solicitud con sus documentos
+            SolicitudPazYSalvo solicitud = solicitudPazYSalvoCU.buscarPorId(idSolicitud);
+            if (solicitud == null) {
+                System.err.println("❌ Solicitud de paz y salvo no encontrada: " + idSolicitud);
+                return ResponseEntity.notFound().build();
+            }
+            
+            // Buscar documentos asociados a esta solicitud
+            List<Documento> documentos = solicitud.getDocumentos();
+            if (documentos == null || documentos.isEmpty()) {
+                System.err.println("❌ No hay documentos asociados a la solicitud de paz y salvo: " + idSolicitud);
+                return ResponseEntity.notFound().build();
+            }
+            
+            // Buscar documentos que sean oficios/resoluciones (subidos por secretaria)
+            for (Documento documento : documentos) {
+                if (documento.getNombre() != null && documento.getNombre().toLowerCase().endsWith(".pdf")) {
+                    String nombreArchivo = documento.getNombre().toLowerCase();
+                    
+                    // Filtrar solo archivos que parecen ser oficios/resoluciones
+                    boolean esOficio = nombreArchivo.contains("oficio") || 
+                                     nombreArchivo.contains("resolucion") || 
+                                     nombreArchivo.contains("paz") ||
+                                     nombreArchivo.contains("salvo") ||
+                                     nombreArchivo.contains("aprobacion");
+                    
+                    if (esOficio) {
+                        try {
+                            System.out.println("🔍 Probando oficio/resolución de paz y salvo: " + documento.getNombre());
+                            byte[] archivo = objGestionarArchivos.getFile(documento.getNombre());
+                            
+                            System.out.println("✅ Oficio/resolución de paz y salvo encontrado: " + documento.getNombre());
+                            
+                            System.out.println("📄 Configurando respuesta para archivo: " + documento.getNombre());
+                            System.out.println("📄 Tamaño del archivo: " + archivo.length + " bytes");
+                            
+                            // Configurar el header Content-Disposition correctamente
+                            String contentDisposition = "attachment; filename=\"" + documento.getNombre() + "\"";
+                            System.out.println("📄 Content-Disposition: " + contentDisposition);
+                            
+                            return ResponseEntity.ok()
+                                .header(HttpHeaders.CONTENT_DISPOSITION, contentDisposition)
+                                .contentType(MediaType.APPLICATION_PDF)
+                                .body(archivo);
+                                
+                        } catch (Exception e) {
+                            System.out.println("❌ No encontrado: " + documento.getNombre());
+                            continue; // Probar el siguiente documento
+                        }
+                    } else {
+                        System.out.println("⏭️ Saltando archivo del estudiante: " + documento.getNombre());
+                    }
+                }
+            }
+            
+            System.err.println("❌ No se encontró ningún archivo PDF para la solicitud de paz y salvo: " + idSolicitud);
+            return ResponseEntity.notFound().build();
+                
+        } catch (Exception e) {
+            System.err.println("❌ Error al descargar oficio de paz y salvo: " + e.getMessage());
+            e.printStackTrace();
+            return ResponseEntity.internalServerError().build();
+        }
+    }
+    
+    /**
+     * Obtener oficios disponibles para una solicitud de paz y salvo
+     */
+    @GetMapping("/obtenerOficios/{idSolicitud}")
+    public ResponseEntity<List<Map<String, Object>>> obtenerOficiosPazSalvo(@PathVariable Integer idSolicitud) {
+        try {
+            System.out.println("📋 Obteniendo oficios de paz y salvo para solicitud: " + idSolicitud);
+            
+            // Obtener la solicitud con sus documentos
+            SolicitudPazYSalvo solicitud = solicitudPazYSalvoCU.buscarPorId(idSolicitud);
+            if (solicitud == null) {
+                System.err.println("❌ Solicitud de paz y salvo no encontrada: " + idSolicitud);
+                return ResponseEntity.notFound().build();
+            }
+            
+            // Buscar documentos asociados a esta solicitud
+            List<Documento> documentos = solicitud.getDocumentos();
+            if (documentos == null || documentos.isEmpty()) {
+                System.err.println("❌ No hay documentos asociados a la solicitud de paz y salvo: " + idSolicitud);
+                return ResponseEntity.ok(new ArrayList<>()); // Retornar lista vacía
+            }
+            
+            // Crear lista de oficios basada en los documentos reales (solo oficios/resoluciones)
+            List<Map<String, Object>> oficios = new ArrayList<>();
+            for (Documento documento : documentos) {
+                if (documento.getNombre() != null && documento.getNombre().toLowerCase().endsWith(".pdf")) {
+                    String nombreArchivo = documento.getNombre().toLowerCase();
+                    
+                    // Filtrar solo archivos que parecen ser oficios/resoluciones
+                    boolean esOficio = nombreArchivo.contains("oficio") || 
+                                     nombreArchivo.contains("resolucion") || 
+                                     nombreArchivo.contains("paz") ||
+                                     nombreArchivo.contains("salvo") ||
+                                     nombreArchivo.contains("aprobacion");
+                    
+                    if (esOficio) {
+                        Map<String, Object> oficio = new HashMap<>();
+                        oficio.put("id", idSolicitud);
+                        oficio.put("nombre", documento.getNombre());
+                        oficio.put("nombreArchivo", documento.getNombre());
+                        oficio.put("ruta", documento.getRuta_documento());
+                        oficios.add(oficio);
+                        System.out.println("📋 Agregando oficio/resolución de paz y salvo: " + documento.getNombre());
+                    } else {
+                        System.out.println("⏭️ Saltando archivo del estudiante: " + documento.getNombre());
+                    }
+                }
+            }
+            
+            System.out.println("✅ Oficios de paz y salvo encontrados: " + oficios.size());
+            return ResponseEntity.ok(oficios);
+            
+        } catch (Exception e) {
+            System.err.println("❌ Error al obtener oficios de paz y salvo: " + e.getMessage());
+            e.printStackTrace();
+            return ResponseEntity.internalServerError().build();
+        }
+    }
+    
+    /**
+     * Validar documentos requeridos para paz y salvo
+     */
+    @GetMapping("/validarDocumentosRequeridos/{idSolicitud}")
+    public ResponseEntity<Map<String, Object>> validarDocumentosRequeridosPazSalvo(@PathVariable Integer idSolicitud) {
+        try {
+            System.out.println("📋 Validando documentos requeridos para solicitud de paz y salvo: " + idSolicitud);
+            
+            // Obtener la solicitud con sus documentos
+            SolicitudPazYSalvo solicitud = solicitudPazYSalvoCU.buscarPorId(idSolicitud);
+            if (solicitud == null) {
+                return ResponseEntity.notFound().build();
+            }
+            
+            List<Documento> documentos = solicitud.getDocumentos();
+            if (documentos == null) {
+                documentos = new ArrayList<>();
+            }
+            
+            // Documentos requeridos para paz y salvo
+            Map<String, Boolean> documentosRequeridos = new HashMap<>();
+            documentosRequeridos.put("formato_pm_fo_4_for_27", false);
+            documentosRequeridos.put("autorizacion_publicar", false);
+            documentosRequeridos.put("hoja_vida_academica", false);
+            documentosRequeridos.put("comprobante_pago", false);
+            documentosRequeridos.put("documento_trabajo_grado", false);
+            documentosRequeridos.put("resultado_saber_pro", false); // Opcional
+            
+            // Verificar qué documentos están presentes
+            for (Documento documento : documentos) {
+                if (documento.getNombre() != null) {
+                    String nombre = documento.getNombre().toLowerCase();
+                    
+                    if (nombre.contains("formato") && nombre.contains("pm-fo-4-for-27")) {
+                        documentosRequeridos.put("formato_pm_fo_4_for_27", true);
+                    } else if (nombre.contains("autorizacion") && nombre.contains("publicar")) {
+                        documentosRequeridos.put("autorizacion_publicar", true);
+                    } else if (nombre.contains("hoja") && nombre.contains("vida") && nombre.contains("academica")) {
+                        documentosRequeridos.put("hoja_vida_academica", true);
+                    } else if (nombre.contains("comprobante") && nombre.contains("pago")) {
+                        documentosRequeridos.put("comprobante_pago", true);
+                    } else if (nombre.contains("documento") && nombre.contains("trabajo") && nombre.contains("grado")) {
+                        documentosRequeridos.put("documento_trabajo_grado", true);
+                    } else if (nombre.contains("resultado") && nombre.contains("saber")) {
+                        documentosRequeridos.put("resultado_saber_pro", true);
+                    }
+                }
+            }
+            
+            // Calcular si todos los documentos obligatorios están presentes
+            boolean todosCompletos = documentosRequeridos.get("formato_pm_fo_4_for_27") &&
+                                   documentosRequeridos.get("autorizacion_publicar") &&
+                                   documentosRequeridos.get("hoja_vida_academica") &&
+                                   documentosRequeridos.get("comprobante_pago") &&
+                                   documentosRequeridos.get("documento_trabajo_grado");
+            
+            Map<String, Object> resultado = new HashMap<>();
+            resultado.put("documentosRequeridos", documentosRequeridos);
+            resultado.put("todosCompletos", todosCompletos);
+            resultado.put("totalDocumentos", documentos.size());
+            
+            System.out.println("✅ Validación de paz y salvo completada. Todos completos: " + todosCompletos);
+            return ResponseEntity.ok(resultado);
+            
+        } catch (Exception e) {
+            System.err.println("❌ Error al validar documentos de paz y salvo: " + e.getMessage());
+            e.printStackTrace();
+            return ResponseEntity.internalServerError().build();
+        }
     }
 }
