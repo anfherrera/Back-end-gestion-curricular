@@ -251,6 +251,67 @@ public class SolicitudHomologacionRestController {
         }
     }
     
+    /**
+     * Validar documentos requeridos para homologación
+     */
+    @GetMapping("/validarDocumentosRequeridos/{idSolicitud}")
+    public ResponseEntity<Map<String, Object>> validarDocumentosRequeridos(@PathVariable Integer idSolicitud) {
+        try {
+            System.out.println("📋 Validando documentos requeridos para solicitud: " + idSolicitud);
+            
+            // Obtener la solicitud con sus documentos
+            SolicitudHomologacion solicitud = solicitudHomologacionCU.buscarPorId(idSolicitud);
+            if (solicitud == null) {
+                return ResponseEntity.notFound().build();
+            }
+            
+            List<Documento> documentos = solicitud.getDocumentos();
+            if (documentos == null) {
+                documentos = new ArrayList<>();
+            }
+            
+            // Documentos requeridos para homologación
+            Map<String, Boolean> documentosRequeridos = new HashMap<>();
+            documentosRequeridos.put("formulario_homologacion", false);
+            documentosRequeridos.put("certificado_notas", false);
+            documentosRequeridos.put("programa_academico", false);
+            documentosRequeridos.put("documento_a_o_b", false);
+            
+            // Verificar qué documentos están presentes
+            for (Documento documento : documentos) {
+                if (documento.getNombre() != null) {
+                    String nombre = documento.getNombre().toLowerCase();
+                    
+                    if (nombre.contains("formulario") && nombre.contains("homologacion")) {
+                        documentosRequeridos.put("formulario_homologacion", true);
+                    } else if (nombre.contains("certificado") && nombre.contains("notas")) {
+                        documentosRequeridos.put("certificado_notas", true);
+                    } else if (nombre.contains("programa") && nombre.contains("academico")) {
+                        documentosRequeridos.put("programa_academico", true);
+                    } else if (nombre.contains("documento_a") || nombre.contains("documento_b")) {
+                        documentosRequeridos.put("documento_a_o_b", true);
+                    }
+                }
+            }
+            
+            // Calcular si todos los documentos están presentes
+            boolean todosCompletos = documentosRequeridos.values().stream().allMatch(Boolean::booleanValue);
+            
+            Map<String, Object> resultado = new HashMap<>();
+            resultado.put("documentosRequeridos", documentosRequeridos);
+            resultado.put("todosCompletos", todosCompletos);
+            resultado.put("totalDocumentos", documentos.size());
+            
+            System.out.println("✅ Validación completada. Todos completos: " + todosCompletos);
+            return ResponseEntity.ok(resultado);
+            
+        } catch (Exception e) {
+            System.err.println("❌ Error al validar documentos: " + e.getMessage());
+            e.printStackTrace();
+            return ResponseEntity.internalServerError().build();
+        }
+    }
+    
     private String generarNombreArchivoOficio(Integer idSolicitud) {
         // Generar nombre del archivo basado en el ID de la solicitud
         // Usar el patrón que viste en el log

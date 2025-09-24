@@ -41,6 +41,44 @@ public class ArchivosRestController {
             @RequestParam(name = "idSolicitud", required = false) Integer idSolicitud) {
         try {
             String nombreOriginal = file.getOriginalFilename(); // ← nombre real del archivo
+            
+            // Validaciones
+            System.out.println("📁 Validando archivo: " + nombreOriginal);
+            
+            // 1. Validar peso máximo (10MB = 10 * 1024 * 1024 bytes)
+            long maxFileSize = 10 * 1024 * 1024; // 10MB
+            if (file.getSize() > maxFileSize) {
+                System.err.println("❌ Archivo demasiado grande: " + file.getSize() + " bytes (máximo: " + maxFileSize + " bytes)");
+                return ResponseEntity.status(HttpStatus.PAYLOAD_TOO_LARGE)
+                    .body(null);
+            }
+            
+            // 2. Validar que no sea un archivo duplicado
+            if (idSolicitud != null) {
+                try {
+                    SolicitudHomologacion solicitud = solicitudHomologacionCU.buscarPorId(idSolicitud);
+                    if (solicitud != null && solicitud.getDocumentos() != null) {
+                        for (Documento doc : solicitud.getDocumentos()) {
+                            if (doc.getNombre() != null && doc.getNombre().equals(nombreOriginal)) {
+                                System.err.println("❌ Archivo duplicado: " + nombreOriginal);
+                                return ResponseEntity.status(HttpStatus.CONFLICT)
+                                    .body(null);
+                            }
+                        }
+                    }
+                } catch (Exception e) {
+                    System.err.println("⚠️ Error al verificar duplicados: " + e.getMessage());
+                }
+            }
+            
+            // 3. Validar tipo de archivo
+            if (!nombreOriginal.toLowerCase().endsWith(".pdf")) {
+                System.err.println("❌ Tipo de archivo no válido: " + nombreOriginal);
+                return ResponseEntity.status(HttpStatus.UNSUPPORTED_MEDIA_TYPE)
+                    .body(null);
+            }
+            
+            System.out.println("✅ Validaciones pasadas, guardando archivo...");
             this.objGestionarArchivos.saveFile(file, nombreOriginal, "pdf"); // ← guardar archivo
             
             Documento doc = new Documento();
