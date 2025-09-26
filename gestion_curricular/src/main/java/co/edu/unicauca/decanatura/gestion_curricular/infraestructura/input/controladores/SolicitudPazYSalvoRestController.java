@@ -13,6 +13,9 @@ import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.DTOPe
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.DTORespuesta.SolicitudPazYSalvoDTORespuesta;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.mappers.SolicitudPazYSalvoMapperDominio;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.mappers.SolicitudMapperDominio;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.bind.annotation.RequestParam;
+import java.util.Date;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -401,4 +404,75 @@ public class SolicitudPazYSalvoRestController {
             return ResponseEntity.internalServerError().build();
         }
     }
+    /**
+ * Guardar oficio generado para una solicitud de paz y salvo
+ */
+@PostMapping("/guardarOficio")
+public ResponseEntity<DocumentosDTORespuesta> guardarOficioPazSalvo(
+        @RequestParam("file") MultipartFile file,
+        @RequestParam("idSolicitud") Integer idSolicitud,
+        @RequestParam("tipoDocumento") String tipoDocumento,
+        @RequestParam("numeroDocumento") String numeroDocumento,
+        @RequestParam("fechaDocumento") String fechaDocumento,
+        @RequestParam(value = "observaciones", required = false) String observaciones) {
+    
+    try {
+        System.out.println("📄 Guardando oficio de paz y salvo para solicitud: " + idSolicitud);
+        System.out.println("📄 Tipo documento: " + tipoDocumento);
+        System.out.println("📄 Número documento: " + numeroDocumento);
+        System.out.println("📄 Fecha documento: " + fechaDocumento);
+        
+        String nombreOriginal = file.getOriginalFilename();
+        System.out.println("📄 Nombre archivo: " + nombreOriginal);
+        
+        // Validaciones
+        if (file.isEmpty()) {
+            System.err.println("❌ Archivo vacío");
+            return ResponseEntity.badRequest().body(null);
+        }
+        
+        if (!nombreOriginal.toLowerCase().endsWith(".docx")) {
+            System.err.println("❌ Tipo de archivo no válido: " + nombreOriginal);
+            return ResponseEntity.status(HttpStatus.UNSUPPORTED_MEDIA_TYPE).body(null);
+        }
+        
+        // Guardar archivo
+        this.objGestionarArchivos.saveFile(file, nombreOriginal, "docx");
+        
+        // Crear documento
+        Documento doc = new Documento();
+        doc.setNombre(nombreOriginal);
+        doc.setRuta_documento(nombreOriginal);
+        doc.setFecha_documento(new Date());
+        doc.setEsValido(true);
+        
+        // Asociar solicitud
+        SolicitudPazYSalvo solicitud = solicitudPazYSalvoCU.buscarPorId(idSolicitud);
+        if (solicitud != null) {
+            Solicitud objSolicitud = new Solicitud();
+            objSolicitud.setId_solicitud(idSolicitud);
+            doc.setObjSolicitud(objSolicitud);
+            System.out.println("�� Asociando oficio '" + nombreOriginal + "' a solicitud de paz y salvo ID: " + idSolicitud);
+        } else {
+            System.err.println("❌ No se encontró la solicitud de paz y salvo con ID: " + idSolicitud);
+            return ResponseEntity.notFound().build();
+        }
+        
+        // Guardar documento en BD
+        Documento documentoGuardado = this.objGestionarDocumentosGateway.crearDocumento(doc);
+        
+        ResponseEntity<DocumentosDTORespuesta> respuesta = new ResponseEntity<>(
+            documentosMapperDominio.mappearDeDocumentoADTORespuesta(documentoGuardado), 
+            HttpStatus.CREATED
+        );
+        
+        System.out.println("✅ Oficio de paz y salvo guardado exitosamente: " + nombreOriginal);
+        return respuesta;
+        
+    } catch (Exception e) {
+        System.err.println("❌ Error al guardar oficio de paz y salvo: " + e.getMessage());
+        e.printStackTrace();
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+    }
+}
 }
