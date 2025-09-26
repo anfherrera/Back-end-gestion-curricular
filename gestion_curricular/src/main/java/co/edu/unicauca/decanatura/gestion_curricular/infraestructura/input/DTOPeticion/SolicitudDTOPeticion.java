@@ -28,6 +28,8 @@ public class SolicitudDTOPeticion {
     @PastOrPresent(message = "{Solicitud.fecha.pastorpresent}")
     private Date fecha_registro_solicitud;
 
+    // private String periodo_academico;
+
     private Boolean esSeleccionado;
 
     @Valid

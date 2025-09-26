@@ -33,6 +33,10 @@ public class SolicitudEntity {
     private Integer id_solicitud;
     @Column(nullable = false, length = 100)
     private String nombre_solicitud;
+
+    // @Column(nullable = false, length = 50)
+    // private String periodo_academico;
+
     @Column(nullable = false)
     private Date fecha_registro_solicitud;
 

@@ -51,8 +51,6 @@ public class SolicitudReingresoRestController {
         return ResponseEntity.ok(solicitudesDTO);
     }
     
-    //====================================
-
     @GetMapping("/listarSolicitud-Reingreso/porUser")
     public ResponseEntity<List<SolicitudReingresoDTORespuesta>> listarSolicitudPorUser(
             @RequestParam String rol,
@@ -65,7 +63,27 @@ public class SolicitudReingresoRestController {
 
         return ResponseEntity.ok(respuesta);
     }
-//====================================
+
+        @GetMapping("/listarSolicitud-Reingreso/Funcionario")
+    public ResponseEntity<List<SolicitudReingresoDTORespuesta>> listarSolicitudReingresoToFuncionario() {
+        List<SolicitudReingreso> solicitudes = solicitudService.listarSolicitudesReingresoToFuncionario();
+        List<SolicitudReingresoDTORespuesta> respuesta = solicitudReingresoMapper.mappearDeListaSolicitudReingresoASolicitudReingresoDTORespuesta(solicitudes);
+        return ResponseEntity.ok(respuesta);
+    }
+
+    @GetMapping("/listarSolicitud-Reingreso/Coordinador")
+    public ResponseEntity<List<SolicitudReingresoDTORespuesta>> listarSolicitudReingresoToCoordinador() {
+        List<SolicitudReingreso> solicitudes = solicitudService.listarSolicitudesReingresoToCoordinador();
+        List<SolicitudReingresoDTORespuesta> respuesta = solicitudReingresoMapper.mappearDeListaSolicitudReingresoASolicitudReingresoDTORespuesta(solicitudes);
+        return ResponseEntity.ok(respuesta);
+    }
+
+    @GetMapping("/listarSolicitud-Reingreso/Secretaria")
+    public ResponseEntity<List<SolicitudReingresoDTORespuesta>> listarSolicitudReingresoToSecretaria() {
+        List<SolicitudReingreso> solicitudes = solicitudService.listarSolicitudesReingresoToSecretaria();
+        List<SolicitudReingresoDTORespuesta> respuesta = solicitudReingresoMapper.mappearDeListaSolicitudReingresoASolicitudReingresoDTORespuesta(solicitudes);
+        return ResponseEntity.ok(respuesta);
+    }
 
 
     @GetMapping("/listarSolicitud-Reingreo/{id}")

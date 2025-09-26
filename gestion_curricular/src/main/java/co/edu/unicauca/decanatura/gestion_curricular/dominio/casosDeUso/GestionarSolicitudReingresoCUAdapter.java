@@ -91,6 +91,21 @@ public class GestionarSolicitudReingresoCUAdapter  implements GestionarSolicitud
     }
 
     @Override
+    public List<SolicitudReingreso> listarSolicitudesReingresoToFuncionario() {
+        return objGestionarSolicitudReingresoGateway.listarSolicitudesReingresoToFuncionario();
+    }
+
+    @Override
+    public List<SolicitudReingreso> listarSolicitudesReingresoToSecretaria() {
+        return objGestionarSolicitudReingresoGateway.listarSolicitudesReingresoToSecretaria();
+    }
+
+    @Override
+    public List<SolicitudReingreso> listarSolicitudesReingresoToCoordinador() {
+        return objGestionarSolicitudReingresoGateway.listarSolicitudesReingresoToCoordinador();
+    }
+
+    @Override
     public List<SolicitudReingreso> listarSolicitudesReingresoPorRol(String rol, Integer idUsuario) {
        List<SolicitudReingreso> todas = objGestionarSolicitudReingresoGateway.listarSolicitudesReingreso();
 
@@ -122,8 +137,10 @@ public class GestionarSolicitudReingresoCUAdapter  implements GestionarSolicitud
         EstadoSolicitud estado = new EstadoSolicitud();
         estado.setEstado_actual(nuevoEstado);
         estado.setFecha_registro_estado(new Date());
-        objGestionarSolicitudReingresoGateway.cambiarEstadoSolicitudReingreso(idSolicitud, nuevoEstado);
+        objGestionarSolicitudReingresoGateway.cambiarEstadoSolicitudReingreso(idSolicitud, estado);
     }
+
+    
 
     
 }
