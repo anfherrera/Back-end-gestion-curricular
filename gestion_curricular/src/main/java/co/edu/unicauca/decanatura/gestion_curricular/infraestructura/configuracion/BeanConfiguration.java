@@ -103,14 +103,15 @@ public class BeanConfiguration {
         return new GestionarSolicitudCursoVeranoCUAdapter(objGestionarSolicitudGateway, objCursoOfertado, objUsuario, objDocumentosGateway, objNotificacion, objFormateadorResultados);
     }
 
-    @Bean
-    public GestionarNotificacionGatewayImplAdapter crearGestionarNotificacionGatewayInt(
-        NotificacionRepositoryInt notificacionRepository,
-        UsuarioRepositoryInt usuarioRepository,
-        SolicitudRepositoryInt solicitudRepository,
-        ModelMapper notificacionMapper) {
-        return new GestionarNotificacionGatewayImplAdapter(notificacionRepository, usuarioRepository, solicitudRepository, notificacionMapper);
-    }
+    //Comentada por que detecta como doble bean 
+    // @Bean
+    // public GestionarNotificacionGatewayImplAdapter crearGestionarNotificacionGatewayInt(
+    //     NotificacionRepositoryInt notificacionRepository,
+    //     UsuarioRepositoryInt usuarioRepository,
+    //     SolicitudRepositoryInt solicitudRepository,
+    //     ModelMapper notificacionMapper) {
+    //     return new GestionarNotificacionGatewayImplAdapter(notificacionRepository, usuarioRepository, solicitudRepository, notificacionMapper);
+    // }
 
     @Bean
     public GestionarNotificacionCUAdapter crearGestionarNotificacionCUInt(
