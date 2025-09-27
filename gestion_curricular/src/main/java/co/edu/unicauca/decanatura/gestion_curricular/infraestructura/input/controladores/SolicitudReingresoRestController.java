@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.HashMap;
 import java.util.ArrayList;
+import java.util.Date;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpHeaders;
@@ -15,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarSolicitudReingresoCUIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarArchivosCUIntPort;
@@ -34,7 +36,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 
 
 @RestController
-@RequestMapping("/api/solicitudes-reingreso")
+@RequestMapping("/api/solicitudes-reingreso")   
 @RequiredArgsConstructor
 public class SolicitudReingresoRestController {
 
@@ -242,6 +244,81 @@ public class SolicitudReingresoRestController {
         }
     }
     
+    /**
+     * Subir archivo PDF asociado a una solicitud de reingreso
+     */
+    @PostMapping("/{idSolicitud}/subir-archivo")
+    public ResponseEntity<Map<String, Object>> subirArchivo(@PathVariable Integer idSolicitud, 
+                                                           @RequestParam("file") MultipartFile archivo) {
+        try {
+            System.out.println("📤 Subiendo archivo para solicitud de reingreso: " + idSolicitud);
+            System.out.println("📁 Nombre del archivo: " + archivo.getOriginalFilename());
+            System.out.println("📊 Tamaño del archivo: " + archivo.getSize() + " bytes");
+
+            // Validar que la solicitud existe
+            SolicitudReingreso solicitud = solicitudService.obtenerSolicitudReingresoPorId(idSolicitud);
+            if (solicitud == null) {
+                System.err.println("❌ Solicitud de reingreso no encontrada: " + idSolicitud);
+                return ResponseEntity.notFound().build();
+            }
+
+            // Validar que el archivo no esté vacío
+            if (archivo.isEmpty()) {
+                System.err.println("❌ El archivo está vacío");
+                return ResponseEntity.badRequest().body(Map.of("error", "El archivo está vacío"));
+            }
+
+            // Validar que sea un PDF
+            String contentType = archivo.getContentType();
+            if (contentType == null || !contentType.equals("application/pdf")) {
+                System.err.println("❌ El archivo no es un PDF. Tipo: " + contentType);
+                return ResponseEntity.badRequest().body(Map.of("error", "Solo se permiten archivos PDF"));
+            }
+
+            // Guardar el archivo usando el servicio de archivos
+            String nombreArchivo = archivo.getOriginalFilename();
+            if (nombreArchivo == null || nombreArchivo.trim().isEmpty()) {
+                nombreArchivo = "archivo_reingreso_" + idSolicitud + ".pdf";
+            }
+
+            System.out.println("💾 Guardando archivo: " + nombreArchivo);
+            objGestionarArchivos.saveFile(archivo, nombreArchivo, "pdf");
+
+            // Crear documento y asociarlo a la solicitud
+            Documento documento = new Documento();
+            documento.setNombre(nombreArchivo);
+            documento.setRuta_documento(nombreArchivo); // La ruta es el nombre del archivo
+            documento.setFecha_documento(new Date());
+            documento.setEsValido(true);
+            documento.setComentario("Archivo subido por secretaría");
+
+            // Agregar el documento a la solicitud
+            if (solicitud.getDocumentos() == null) {
+                solicitud.setDocumentos(new ArrayList<>());
+            }
+            solicitud.getDocumentos().add(documento);
+
+            // Guardar la solicitud actualizada
+            solicitudService.crearSolicitudReingreso(solicitud);
+
+            System.out.println("✅ Archivo subido exitosamente para solicitud: " + idSolicitud);
+            System.out.println("📋 Documento creado: " + documento.getNombre());
+
+            Map<String, Object> respuesta = new HashMap<>();
+            respuesta.put("success", true);
+            respuesta.put("message", "Archivo subido exitosamente");
+            respuesta.put("nombreArchivo", nombreArchivo);
+            respuesta.put("idSolicitud", idSolicitud);
+
+            return ResponseEntity.ok(respuesta);
+
+        } catch (Exception e) {
+            System.err.println("❌ Error al subir archivo de reingreso: " + e.getMessage());
+            e.printStackTrace();
+            return ResponseEntity.internalServerError().body(Map.of("error", "Error interno del servidor"));
+        }
+    }
+
     /**
      * Validar documentos requeridos para reingreso
      */

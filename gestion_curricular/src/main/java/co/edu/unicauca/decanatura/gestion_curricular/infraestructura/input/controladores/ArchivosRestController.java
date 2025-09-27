@@ -19,11 +19,13 @@ import org.springframework.http.HttpStatus;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarArchivosCUIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarSolicitudHomologacionCUIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarSolicitudPazYSalvoCUIntPort;
+import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarSolicitudReingresoCUIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.GestionarDocumentosGatewayIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Documento;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Solicitud;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.SolicitudHomologacion;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.SolicitudPazYSalvo;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.SolicitudReingreso;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.DTORespuesta.DocumentosDTORespuesta;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.mappers.DocumentosMapperDominio;
 
@@ -42,6 +44,7 @@ public class ArchivosRestController {
     private final GestionarDocumentosGatewayIntPort objGestionarDocumentosGateway;
     private final GestionarSolicitudHomologacionCUIntPort solicitudHomologacionCU;
     private final GestionarSolicitudPazYSalvoCUIntPort solicitudPazYSalvoCU;
+    private final GestionarSolicitudReingresoCUIntPort solicitudReingresoCU;
     @PostMapping("/subir/pdf")
     public ResponseEntity<DocumentosDTORespuesta> subirPDF(
             @RequestParam(name = "file", required = true) MultipartFile file,
@@ -89,7 +92,21 @@ public class ArchivosRestController {
                                 }
                             }
                         } catch (Exception e2) {
-                            System.err.println("⚠️ Error al verificar duplicados en paz y salvo: " + e2.getMessage());
+                            // Si no es paz y salvo, intentar con reingreso
+                            try {
+                                SolicitudReingreso solicitudReingreso = solicitudReingresoCU.obtenerSolicitudReingresoPorId(idSolicitud);
+                                if (solicitudReingreso != null && solicitudReingreso.getDocumentos() != null) {
+                                    for (Documento doc : solicitudReingreso.getDocumentos()) {
+                                        if (doc.getNombre() != null && doc.getNombre().equals(nombreOriginal)) {
+                                            System.err.println("❌ Archivo duplicado en reingreso: " + nombreOriginal);
+                                            return ResponseEntity.status(HttpStatus.CONFLICT)
+                                                .body(null);
+                                        }
+                                    }
+                                }
+                            } catch (Exception e3) {
+                                System.err.println("⚠️ Error al verificar duplicados en reingreso: " + e3.getMessage());
+                            }
                         }
                     }
                 } catch (Exception e) {
@@ -137,10 +154,34 @@ public class ArchivosRestController {
                                 doc.setObjSolicitud(objSolicitud);
                                 System.out.println("📎 Asociando archivo '" + nombreOriginal + "' a solicitud de paz y salvo ID: " + idSolicitud);
                             } else {
-                                System.err.println("❌ No se encontró la solicitud de paz y salvo con ID: " + idSolicitud);
+                                // Si no es paz y salvo, intentar con reingreso
+                                try {
+                                    SolicitudReingreso solicitudReingreso = solicitudReingresoCU.obtenerSolicitudReingresoPorId(idSolicitud);
+                                    if (solicitudReingreso != null) {
+                                        // Crear objeto Solicitud para asociar
+                                        Solicitud objSolicitud = new Solicitud();
+                                        objSolicitud.setId_solicitud(idSolicitud);
+                                        doc.setObjSolicitud(objSolicitud);
+                                        System.out.println("📎 Asociando archivo '" + nombreOriginal + "' a solicitud de reingreso ID: " + idSolicitud);
+                                    }
+                                } catch (Exception e3) {
+                                    System.err.println("❌ Error al obtener solicitud de reingreso: " + e3.getMessage());
+                                }
                             }
                         } catch (Exception e2) {
-                            System.err.println("❌ Error al obtener solicitud de paz y salvo: " + e2.getMessage());
+                            // Si no es paz y salvo, intentar con reingreso
+                            try {
+                                SolicitudReingreso solicitudReingreso = solicitudReingresoCU.obtenerSolicitudReingresoPorId(idSolicitud);
+                                if (solicitudReingreso != null) {
+                                    // Crear objeto Solicitud para asociar
+                                    Solicitud objSolicitud = new Solicitud();
+                                    objSolicitud.setId_solicitud(idSolicitud);
+                                    doc.setObjSolicitud(objSolicitud);
+                                    System.out.println("📎 Asociando archivo '" + nombreOriginal + "' a solicitud de reingreso ID: " + idSolicitud);
+                                }
+                            } catch (Exception e3) {
+                                System.err.println("❌ Error al obtener solicitud de reingreso: " + e3.getMessage());
+                            }
                         }
                     }
                 } catch (Exception e) {
