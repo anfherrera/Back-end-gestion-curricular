@@ -24,3 +24,16 @@ INSERT INTO `cursos_ofertados_verano`(`idCurso`, `idfkMateria`, `idfkDocente`, `
 INSERT INTO `estados_curso_ofertado`(`idEstado`, `estado_actual`, `fecha_registro_estado`, `idfkCurso`) VALUES (NULL, 'Publicado', NOW(), 1)
 INSERT INTO `estados_curso_ofertado`(`idEstado`, `estado_actual`, `fecha_registro_estado`, `idfkCurso`) VALUES (NULL, 'Preinscripcion', NOW(), 2)
 INSERT INTO `estados_curso_ofertado`(`idEstado`, `estado_actual`, `fecha_registro_estado`, `idfkCurso`) VALUES (NULL, 'Inscripcion', NOW(), 3)
+
+-- Cursos adicionales para pruebas del frontend
+INSERT INTO `materias`(`idMateria`, `codigo_materia`, `nombre_materia`, `creditos`, `idfkPrograma`) VALUES (NULL, 'FIS401', 'Física Cuántica', 4, 1)
+INSERT INTO `materias`(`idMateria`, `codigo_materia`, `nombre_materia`, `creditos`, `idfkPrograma`) VALUES (NULL, 'QUI301', 'Química Orgánica', 3, 1)
+INSERT INTO `materias`(`idMateria`, `codigo_materia`, `nombre_materia`, `creditos`, `idfkPrograma`) VALUES (NULL, 'BIO201', 'Biología Molecular', 3, 1)
+
+INSERT INTO `cursos_ofertados_verano`(`idCurso`, `idfkMateria`, `idfkDocente`, `grupo`, `cupo_estimado`, `salon`) VALUES (NULL, 4, 1, 'A', 30, 'B-101')
+INSERT INTO `cursos_ofertados_verano`(`idCurso`, `idfkMateria`, `idfkDocente`, `grupo`, `cupo_estimado`, `salon`) VALUES (NULL, 5, 1, 'B', 25, 'B-102')
+INSERT INTO `cursos_ofertados_verano`(`idCurso`, `idfkMateria`, `idfkDocente`, `grupo`, `cupo_estimado`, `salon`) VALUES (NULL, 6, 1, 'C', 20, 'B-103')
+
+INSERT INTO `estados_curso_ofertado`(`idEstado`, `estado_actual`, `fecha_registro_estado`, `idfkCurso`) VALUES (NULL, 'Abierto', NOW(), 4)
+INSERT INTO `estados_curso_ofertado`(`idEstado`, `estado_actual`, `fecha_registro_estado`, `idfkCurso`) VALUES (NULL, 'Cerrado', NOW(), 5)
+INSERT INTO `estados_curso_ofertado`(`idEstado`, `estado_actual`, `fecha_registro_estado`, `idfkCurso`) VALUES (NULL, 'Preinscripcion', NOW(), 6)
