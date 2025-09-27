@@ -16,7 +16,9 @@ import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.Gestionar
 
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.GestionarEstadoCursoOfertadoGatewayIntPort;
 
+import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarNotificacionCUIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.GestionarMateriasIntPort;
+import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.GestionarNotificacionGatewayIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.GestionarPreRegistroEcaesGatewayIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.GestionarProgramaGatewayIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.GestionarRolGatewayIntPort;
@@ -36,8 +38,14 @@ import co.edu.unicauca.decanatura.gestion_curricular.dominio.casosDeUso.Gestiona
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.casosDeUso.GestionarSolicitudEcaesCUAdapter;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.casosDeUso.GestionarSolicitudHomologacionCUAdapter;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.casosDeUso.GestionarSolicitudPazYSalvoCUAdapter;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.casosDeUso.GestionarNotificacionCUAdapter;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.casosDeUso.GestionarSolicitudReingresoCUAdapter;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.casosDeUso.GestionarUsuarioCUAdapter;
+import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.gateway.GestionarNotificacionGatewayImplAdapter;
+import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.repositorios.NotificacionRepositoryInt;
+import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.repositorios.SolicitudRepositoryInt;
+import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.repositorios.UsuarioRepositoryInt;
+import org.modelmapper.ModelMapper;
 
 @Configuration
 public class BeanConfiguration {
@@ -90,9 +98,27 @@ public class BeanConfiguration {
         GestionarCursoOfertadoVeranoGatewayIntPort objCursoOfertado,
         GestionarUsuarioGatewayIntPort objUsuario, 
         GestionarDocumentosGatewayIntPort objDocumentosGateway,
+        GestionarNotificacionCUIntPort objNotificacion,
         FormateadorResultadosIntPort objFormateadorResultados) {
-        return new GestionarSolicitudCursoVeranoCUAdapter(objGestionarSolicitudGateway, objCursoOfertado, objUsuario, objDocumentosGateway, objFormateadorResultados);
+        return new GestionarSolicitudCursoVeranoCUAdapter(objGestionarSolicitudGateway, objCursoOfertado, objUsuario, objDocumentosGateway, objNotificacion, objFormateadorResultados);
     }
+
+    @Bean
+    public GestionarNotificacionGatewayImplAdapter crearGestionarNotificacionGatewayInt(
+        NotificacionRepositoryInt notificacionRepository,
+        UsuarioRepositoryInt usuarioRepository,
+        SolicitudRepositoryInt solicitudRepository,
+        ModelMapper notificacionMapper) {
+        return new GestionarNotificacionGatewayImplAdapter(notificacionRepository, usuarioRepository, solicitudRepository, notificacionMapper);
+    }
+
+    @Bean
+    public GestionarNotificacionCUAdapter crearGestionarNotificacionCUInt(
+        GestionarNotificacionGatewayIntPort objGestionarNotificacionGateway,
+        FormateadorResultadosIntPort objFormateadorResultados) {
+        return new GestionarNotificacionCUAdapter(objGestionarNotificacionGateway, objFormateadorResultados);
+    }
+
     @Bean
     public GestionarSolicitudPazYSalvoCUAdapter crearGestionarSolicitudPazYSalvoCUInt(
             GestionarSolicitudPazYSalvoGatewayIntPort objGestionarSolicitudGateway,
