@@ -318,4 +318,145 @@ public class CursosIntersemestralesRestController {
             return ResponseEntity.internalServerError().body(error);
         }
     }
+
+    /**
+     * Obtener inscripciones
+     * GET /api/cursos-intersemestrales/inscripciones
+     */
+    @GetMapping("/inscripciones")
+    public ResponseEntity<List<Map<String, Object>>> obtenerInscripciones() {
+        try {
+            List<Map<String, Object>> inscripciones = new ArrayList<>();
+            
+            // Inscripción 1
+            Map<String, Object> inscripcion1 = new HashMap<>();
+            inscripcion1.put("id", 1);
+            inscripcion1.put("cursoId", 1);
+            inscripcion1.put("estudianteId", 1);
+            inscripcion1.put("fecha", "2024-01-15T10:30:00");
+            inscripcion1.put("estado", "inscrito");
+            inscripciones.add(inscripcion1);
+            
+            // Inscripción 2
+            Map<String, Object> inscripcion2 = new HashMap<>();
+            inscripcion2.put("id", 2);
+            inscripcion2.put("cursoId", 2);
+            inscripcion2.put("estudianteId", 1);
+            inscripcion2.put("fecha", "2024-01-16T14:20:00");
+            inscripcion2.put("estado", "inscrito");
+            inscripciones.add(inscripcion2);
+            
+            // Inscripción 3
+            Map<String, Object> inscripcion3 = new HashMap<>();
+            inscripcion3.put("id", 3);
+            inscripcion3.put("cursoId", 3);
+            inscripcion3.put("estudianteId", 2);
+            inscripcion3.put("fecha", "2024-01-17T09:15:00");
+            inscripcion3.put("estado", "pendiente");
+            inscripciones.add(inscripcion3);
+            
+            return ResponseEntity.ok(inscripciones);
+        } catch (Exception e) {
+            Map<String, Object> error = new HashMap<>();
+            error.put("error", "Error interno del servidor");
+            return ResponseEntity.internalServerError().body(List.of(error));
+        }
+    }
+
+    /**
+     * Obtener solicitudes del usuario específico
+     * GET /api/cursos-intersemestrales/cursos-verano/solicitudes/{idUsuario}
+     */
+    @GetMapping("/cursos-verano/solicitudes/{idUsuario}")
+    public ResponseEntity<List<Map<String, Object>>> obtenerSolicitudesUsuario(
+            @Min(value = 1) @PathVariable Integer idUsuario) {
+        try {
+            List<Map<String, Object>> solicitudes = new ArrayList<>();
+            
+            // Solicitud 1
+            Map<String, Object> solicitud1 = new HashMap<>();
+            solicitud1.put("id_solicitud", 1);
+            solicitud1.put("curso", "Programación I");
+            solicitud1.put("fecha", "2024-01-15T10:30:00");
+            solicitud1.put("estado", "Pendiente");
+            solicitud1.put("tipo", "Preinscripción");
+            solicitudes.add(solicitud1);
+            
+            // Solicitud 2
+            Map<String, Object> solicitud2 = new HashMap<>();
+            solicitud2.put("id_solicitud", 2);
+            solicitud2.put("curso", "Matemáticas Básicas");
+            solicitud2.put("fecha", "2024-01-16T14:20:00");
+            solicitud2.put("estado", "Aprobado");
+            solicitud2.put("tipo", "Preinscripción");
+            solicitudes.add(solicitud2);
+            
+            // Solicitud 3
+            Map<String, Object> solicitud3 = new HashMap<>();
+            solicitud3.put("id_solicitud", 3);
+            solicitud3.put("curso", "Bases de Datos");
+            solicitud3.put("fecha", "2024-01-17T09:15:00");
+            solicitud3.put("estado", "Rechazado");
+            solicitud3.put("tipo", "Inscripción");
+            solicitudes.add(solicitud3);
+            
+            return ResponseEntity.ok(solicitudes);
+        } catch (Exception e) {
+            Map<String, Object> error = new HashMap<>();
+            error.put("error", "Error interno del servidor");
+            return ResponseEntity.internalServerError().body(List.of(error));
+        }
+    }
+
+    /**
+     * Cancelar inscripción
+     * DELETE /api/cursos-intersemestrales/inscripciones/{id}
+     */
+    @DeleteMapping("/inscripciones/{id}")
+    public ResponseEntity<Map<String, Object>> cancelarInscripcion(@PathVariable Integer id) {
+        try {
+            // Simular búsqueda de inscripción (en implementación real usarías un servicio)
+            Map<String, Object> inscripcion = new HashMap<>();
+            inscripcion.put("id", id);
+            inscripcion.put("estado", "inscrito"); // Estado actual
+            
+            // Verificar si la inscripción existe (simulado)
+            if (id < 1 || id > 10) {
+                Map<String, Object> error = new HashMap<>();
+                error.put("error", "Inscripción no encontrada");
+                error.put("message", "La inscripción con ID " + id + " no existe");
+                error.put("status", 404);
+                error.put("timestamp", java.time.LocalDateTime.now().toString());
+                return ResponseEntity.status(404).body(error);
+            }
+            
+            // Verificar si ya está cancelada (simulado)
+            if (id == 5) { // Simular una inscripción ya cancelada
+                Map<String, Object> error = new HashMap<>();
+                error.put("error", "No se puede cancelar la inscripción");
+                error.put("message", "La inscripción ya está cancelada o no se puede cancelar en este momento");
+                error.put("status", 400);
+                error.put("timestamp", java.time.LocalDateTime.now().toString());
+                return ResponseEntity.status(400).body(error);
+            }
+            
+            // Cancelar la inscripción exitosamente
+            Map<String, Object> respuesta = new HashMap<>();
+            respuesta.put("message", "Inscripción cancelada exitosamente");
+            respuesta.put("inscripcionId", id);
+            respuesta.put("estadoAnterior", "inscrito");
+            respuesta.put("estadoNuevo", "cancelada");
+            respuesta.put("timestamp", java.time.LocalDateTime.now().toString());
+            
+            return ResponseEntity.ok(respuesta);
+            
+        } catch (Exception e) {
+            Map<String, Object> error = new HashMap<>();
+            error.put("error", "Error interno del servidor");
+            error.put("message", "Ha ocurrido un error inesperado. Por favor, contacta al administrador.");
+            error.put("status", 500);
+            error.put("timestamp", java.time.LocalDateTime.now().toString());
+            return ResponseEntity.status(500).body(error);
+        }
+    }
 }
