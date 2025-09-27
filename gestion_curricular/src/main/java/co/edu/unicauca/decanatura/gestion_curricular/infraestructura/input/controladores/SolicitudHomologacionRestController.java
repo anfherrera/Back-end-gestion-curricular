@@ -312,11 +312,6 @@ public class SolicitudHomologacionRestController {
         }
     }
     
-    private String generarNombreArchivoOficio(Integer idSolicitud) {
-        // Generar nombre del archivo basado en el ID de la solicitud
-        // Usar el patrón que viste en el log
-        return "OFICIO_HOMOLOGACION_104612345660_2025 (1).pdf";
-    }
 
 
 }
