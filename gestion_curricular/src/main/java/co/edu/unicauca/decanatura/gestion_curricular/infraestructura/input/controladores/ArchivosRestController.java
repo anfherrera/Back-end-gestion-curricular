@@ -156,16 +156,21 @@ public class ArchivosRestController {
                             } else {
                                 // Si no es paz y salvo, intentar con reingreso
                                 try {
+                                    System.out.println("🔍 Intentando obtener solicitud de reingreso con ID: " + idSolicitud);
                                     SolicitudReingreso solicitudReingreso = solicitudReingresoCU.obtenerSolicitudReingresoPorId(idSolicitud);
                                     if (solicitudReingreso != null) {
                                         // Crear objeto Solicitud para asociar
                                         Solicitud objSolicitud = new Solicitud();
                                         objSolicitud.setId_solicitud(idSolicitud);
                                         doc.setObjSolicitud(objSolicitud);
-                                        System.out.println("📎 Asociando archivo '" + nombreOriginal + "' a solicitud de reingreso ID: " + idSolicitud);
+                                        System.out.println("✅ Asociando archivo '" + nombreOriginal + "' a solicitud de reingreso ID: " + idSolicitud);
+                                        System.out.println("📋 Documento antes de guardar - idSolicitud: " + (doc.getObjSolicitud() != null ? doc.getObjSolicitud().getId_solicitud() : "NULL"));
+                                    } else {
+                                        System.out.println("❌ No se encontró solicitud de reingreso con ID: " + idSolicitud);
                                     }
                                 } catch (Exception e3) {
                                     System.err.println("❌ Error al obtener solicitud de reingreso: " + e3.getMessage());
+                                    e3.printStackTrace();
                                 }
                             }
                         } catch (Exception e2) {
