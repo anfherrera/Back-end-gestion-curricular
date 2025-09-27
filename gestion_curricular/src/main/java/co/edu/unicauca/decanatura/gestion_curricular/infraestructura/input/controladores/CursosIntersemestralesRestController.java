@@ -16,6 +16,7 @@ import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.DTOPe
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.DTOPeticion.PreinscripcionCursoVeranoDTOPeticion;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.mappers.CursosOfertadosMapperDominio;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.mappers.SolicitudCursoDeVeranoPreinscripcionMapperDominio;
+import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.servicios.InscripcionService;
 
 import java.util.List;
 import java.util.Map;
@@ -32,6 +33,7 @@ public class CursosIntersemestralesRestController {
     private final GestionarSolicitudCursoVeranoCUIntPort solicitudCU;
     private final CursosOfertadosMapperDominio cursoMapper;
     private final SolicitudCursoDeVeranoPreinscripcionMapperDominio solicitudMapper;
+    private final InscripcionService inscripcionService;
 
     /**
      * Obtener cursos de verano disponibles para estudiantes
@@ -326,35 +328,8 @@ public class CursosIntersemestralesRestController {
     @GetMapping("/inscripciones")
     public ResponseEntity<List<Map<String, Object>>> obtenerInscripciones() {
         try {
-            List<Map<String, Object>> inscripciones = new ArrayList<>();
-            
-            // Inscripción 1
-            Map<String, Object> inscripcion1 = new HashMap<>();
-            inscripcion1.put("id", 1);
-            inscripcion1.put("cursoId", 1);
-            inscripcion1.put("estudianteId", 1);
-            inscripcion1.put("fecha", "2024-01-15T10:30:00");
-            inscripcion1.put("estado", "inscrito");
-            inscripciones.add(inscripcion1);
-            
-            // Inscripción 2
-            Map<String, Object> inscripcion2 = new HashMap<>();
-            inscripcion2.put("id", 2);
-            inscripcion2.put("cursoId", 2);
-            inscripcion2.put("estudianteId", 1);
-            inscripcion2.put("fecha", "2024-01-16T14:20:00");
-            inscripcion2.put("estado", "inscrito");
-            inscripciones.add(inscripcion2);
-            
-            // Inscripción 3
-            Map<String, Object> inscripcion3 = new HashMap<>();
-            inscripcion3.put("id", 3);
-            inscripcion3.put("cursoId", 3);
-            inscripcion3.put("estudianteId", 2);
-            inscripcion3.put("fecha", "2024-01-17T09:15:00");
-            inscripcion3.put("estado", "pendiente");
-            inscripciones.add(inscripcion3);
-            
+            // Obtener datos reales del servicio (con persistencia)
+            List<Map<String, Object>> inscripciones = inscripcionService.findAll();
             return ResponseEntity.ok(inscripciones);
         } catch (Exception e) {
             Map<String, Object> error = new HashMap<>();
@@ -415,13 +390,11 @@ public class CursosIntersemestralesRestController {
     @DeleteMapping("/inscripciones/{id}")
     public ResponseEntity<Map<String, Object>> cancelarInscripcion(@PathVariable Integer id) {
         try {
-            // Simular búsqueda de inscripción (en implementación real usarías un servicio)
-            Map<String, Object> inscripcion = new HashMap<>();
-            inscripcion.put("id", id);
-            inscripcion.put("estado", "inscrito"); // Estado actual
+            // Buscar la inscripción real en el servicio
+            Map<String, Object> inscripcion = inscripcionService.findById(id);
             
-            // Verificar si la inscripción existe (simulado)
-            if (id < 1 || id > 10) {
+            // Verificar si la inscripción existe
+            if (inscripcion == null) {
                 Map<String, Object> error = new HashMap<>();
                 error.put("error", "Inscripción no encontrada");
                 error.put("message", "La inscripción con ID " + id + " no existe");
@@ -430,8 +403,11 @@ public class CursosIntersemestralesRestController {
                 return ResponseEntity.status(404).body(error);
             }
             
-            // Verificar si ya está cancelada (simulado)
-            if (id == 5) { // Simular una inscripción ya cancelada
+            // Obtener el estado actual
+            String estadoActual = inscripcionService.getEstado(id);
+            
+            // Verificar si ya está cancelada
+            if ("cancelada".equals(estadoActual)) {
                 Map<String, Object> error = new HashMap<>();
                 error.put("error", "No se puede cancelar la inscripción");
                 error.put("message", "La inscripción ya está cancelada o no se puede cancelar en este momento");
@@ -440,11 +416,14 @@ public class CursosIntersemestralesRestController {
                 return ResponseEntity.status(400).body(error);
             }
             
-            // Cancelar la inscripción exitosamente
+            // ACTUALIZAR EL ESTADO REAL EN EL SERVICIO
+            inscripcionService.updateEstado(id, "cancelada");
+            
+            // Respuesta exitosa
             Map<String, Object> respuesta = new HashMap<>();
             respuesta.put("message", "Inscripción cancelada exitosamente");
             respuesta.put("inscripcionId", id);
-            respuesta.put("estadoAnterior", "inscrito");
+            respuesta.put("estadoAnterior", estadoActual);
             respuesta.put("estadoNuevo", "cancelada");
             respuesta.put("timestamp", java.time.LocalDateTime.now().toString());
             
