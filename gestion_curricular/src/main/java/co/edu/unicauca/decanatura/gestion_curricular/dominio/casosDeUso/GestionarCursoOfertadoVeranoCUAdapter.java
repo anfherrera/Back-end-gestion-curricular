@@ -248,5 +248,45 @@ public class GestionarCursoOfertadoVeranoCUAdapter implements GestionarCursoOfer
         return this.objGestionarCursoOfertadoVeranoGateway.listarTodos();
     }
 
+    @Override
+    public List<CursoOfertadoVerano> publicarCursosMasivamente(List<Integer> idsCursos) {
+        List<CursoOfertadoVerano> cursosPublicados = new ArrayList<>();
+        
+        if (idsCursos == null || idsCursos.isEmpty()) {
+            this.objFormateadorResultados.retornarRespuestaErrorReglaDeNegocio("La lista de cursos no puede estar vacía");
+        }
+        
+        for (Integer idCurso : idsCursos) {
+            if (idCurso == null) {
+                this.objFormateadorResultados.retornarRespuestaErrorReglaDeNegocio("El ID del curso no puede ser nulo");
+            }
+            
+            // Obtener el curso
+            CursoOfertadoVerano curso = this.objGestionarCursoOfertadoVeranoGateway.obtenerCursoPorId(idCurso);
+            if (curso == null) {
+                this.objFormateadorResultados.retornarRespuestaErrorEntidadExiste("No se encontró el curso con ID: " + idCurso);
+            }
+            
+            // Verificar que el curso esté en estado "Abierto" para poder publicarlo
+            if (curso.getEstadosCursoOfertados().isEmpty() || 
+                !curso.getEstadosCursoOfertados().get(curso.getEstadosCursoOfertados().size() - 1).getEstado_actual().equals("Abierto")) {
+                this.objFormateadorResultados.retornarRespuestaErrorReglaDeNegocio("El curso con ID " + idCurso + " no está en estado 'Abierto' para ser publicado");
+            }
+            
+            // Crear nuevo estado "Publicado"
+            EstadoCursoOfertado estadoPublicado = new EstadoCursoOfertado();
+            estadoPublicado.setFecha_registro_estado(new Date());
+            estadoPublicado.setEstado_actual("Publicado");
+            
+            // Actualizar el curso con el nuevo estado
+            CursoOfertadoVerano cursoActualizado = this.objGestionarCursoOfertadoVeranoGateway.actualizarCurso(curso, estadoPublicado);
+            if (cursoActualizado != null) {
+                cursosPublicados.add(cursoActualizado);
+            }
+        }
+        
+        return cursosPublicados;
+    }
+
     
 }

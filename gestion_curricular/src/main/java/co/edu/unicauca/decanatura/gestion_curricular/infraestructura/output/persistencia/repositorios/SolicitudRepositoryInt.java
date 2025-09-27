@@ -234,4 +234,26 @@ public interface SolicitudRepositoryInt extends JpaRepository<SolicitudEntity, I
     @Query("DELETE FROM SolicitudEntity s WHERE s.id = :id")
     void eliminarPorId(@Param("id") Integer id);
 
+    // Métodos para cursos de verano
+    @Query("SELECT s FROM SolicitudEntity s WHERE s.objCursoOfertadoVerano.id_curso = :idCurso")
+    List<SolicitudEntity> buscarSolicitudesPorCurso(@Param("idCurso") Integer idCurso);
+
+    @Query("SELECT COUNT(s) FROM SolicitudEntity s WHERE s.objCursoOfertadoVerano.id_curso = :idCurso")
+    Integer contarSolicitudesPorCurso(@Param("idCurso") Integer idCurso);
+
+    @Query("""
+        SELECT s 
+        FROM SolicitudCursoVeranoPreinscripcionEntity s 
+        WHERE s.objCursoOfertadoVerano.id_curso IN (
+            SELECT c.id_curso 
+            FROM CursoOfertadoVeranoEntity c 
+            WHERE (
+                SELECT COUNT(s2) 
+                FROM SolicitudCursoVeranoPreinscripcionEntity s2 
+                WHERE s2.objCursoOfertadoVerano.id_curso = c.id_curso
+            ) >= :limiteMinimo
+        )
+    """)
+    List<SolicitudEntity> buscarCursosConAltaDemanda(@Param("limiteMinimo") Integer limiteMinimo);
+
 }

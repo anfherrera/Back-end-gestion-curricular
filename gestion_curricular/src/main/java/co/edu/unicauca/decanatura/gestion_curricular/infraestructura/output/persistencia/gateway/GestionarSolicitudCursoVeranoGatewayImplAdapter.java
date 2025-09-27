@@ -2,6 +2,7 @@ package co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.per
 
 import java.util.Date;
 import java.util.List;
+import java.util.ArrayList;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
@@ -29,6 +30,7 @@ import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.pers
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.entidades.SolicitudReingresoEntity;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.entidades.Enums.GrupoCursoVeranoEntity;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.repositorios.CursoOfertadoVeranoRepositoryInt;
+import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.repositorios.EstadoSolicitudRepositoryInt;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.repositorios.SolicitudRepositoryInt;
 
 
@@ -38,13 +40,16 @@ public class GestionarSolicitudCursoVeranoGatewayImplAdapter implements Gestiona
 
     private final SolicitudRepositoryInt solicitudRepository;
     private final CursoOfertadoVeranoRepositoryInt cursoOfertadoVeranoRepository;
+    private final EstadoSolicitudRepositoryInt estadoSolicitudRepository;
     private final ModelMapper solicitudMapper;
 
     public GestionarSolicitudCursoVeranoGatewayImplAdapter(SolicitudRepositoryInt solicitudRepository,
                                                            CursoOfertadoVeranoRepositoryInt cursoOfertadoVeranoRepository,
+                                                           EstadoSolicitudRepositoryInt estadoSolicitudRepository,
                                                            ModelMapper solicitudMapper) {
         this.solicitudRepository = solicitudRepository;
         this.cursoOfertadoVeranoRepository = cursoOfertadoVeranoRepository;
+        this.estadoSolicitudRepository = estadoSolicitudRepository;
         this.solicitudMapper = solicitudMapper;
     }
 
@@ -160,6 +165,198 @@ public class GestionarSolicitudCursoVeranoGatewayImplAdapter implements Gestiona
                 }
         }
         return solicitud;
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<SolicitudCursoVeranoPreinscripcion> buscarSolicitudesPorUsuario(Integer idUsuario) {
+        List<SolicitudEntity> solicitudesEntity = solicitudRepository.buscarSolicitudesPorUsuario(idUsuario);
+        List<SolicitudCursoVeranoPreinscripcion> solicitudes = new ArrayList<>();
+        
+        for (SolicitudEntity entity : solicitudesEntity) {
+            if (entity instanceof SolicitudCursoVeranoPreinscripcionEntity) {
+                solicitudes.add(solicitudMapper.map(entity, SolicitudCursoVeranoPreinscripcion.class));
+            }
+        }
+        
+        return solicitudes;
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public SolicitudCursoVeranoPreinscripcion buscarSolicitudPorId(Integer idSolicitud) {
+        return solicitudRepository.findById(idSolicitud)
+            .filter(entity -> entity instanceof SolicitudCursoVeranoPreinscripcionEntity)
+            .map(entity -> solicitudMapper.map(entity, SolicitudCursoVeranoPreinscripcion.class))
+            .orElse(null);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<SolicitudCursoVeranoPreinscripcion> buscarPreinscripcionesPorCurso(Integer idCurso) {
+        List<SolicitudEntity> solicitudesEntity = solicitudRepository.buscarSolicitudesPorCurso(idCurso);
+        List<SolicitudCursoVeranoPreinscripcion> preinscripciones = new ArrayList<>();
+        
+        for (SolicitudEntity entity : solicitudesEntity) {
+            if (entity instanceof SolicitudCursoVeranoPreinscripcionEntity) {
+                preinscripciones.add(solicitudMapper.map(entity, SolicitudCursoVeranoPreinscripcion.class));
+            }
+        }
+        
+        return preinscripciones;
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<SolicitudCursoVeranoIncripcion> buscarInscripcionesPorCurso(Integer idCurso) {
+        List<SolicitudEntity> solicitudesEntity = solicitudRepository.buscarSolicitudesPorCurso(idCurso);
+        List<SolicitudCursoVeranoIncripcion> inscripciones = new ArrayList<>();
+        
+        for (SolicitudEntity entity : solicitudesEntity) {
+            if (entity instanceof SolicitudCursoVeranoInscripcionEntity) {
+                inscripciones.add(solicitudMapper.map(entity, SolicitudCursoVeranoIncripcion.class));
+            }
+        }
+        
+        return inscripciones;
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Integer contarSolicitudesPorCurso(Integer idCurso) {
+        return solicitudRepository.contarSolicitudesPorCurso(idCurso);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<SolicitudCursoVeranoPreinscripcion> buscarCursosConAltaDemanda(Integer limiteMinimo) {
+        List<SolicitudEntity> solicitudesEntity = solicitudRepository.buscarCursosConAltaDemanda(limiteMinimo);
+        List<SolicitudCursoVeranoPreinscripcion> cursosAltaDemanda = new ArrayList<>();
+        
+        for (SolicitudEntity entity : solicitudesEntity) {
+            if (entity instanceof SolicitudCursoVeranoPreinscripcionEntity) {
+                cursosAltaDemanda.add(solicitudMapper.map(entity, SolicitudCursoVeranoPreinscripcion.class));
+            }
+        }
+        
+        return cursosAltaDemanda;
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public SolicitudCursoVeranoIncripcion buscarSolicitudInscripcionPorId(Integer idSolicitud) {
+        return solicitudRepository.findById(idSolicitud)
+            .filter(entity -> entity instanceof SolicitudCursoVeranoInscripcionEntity)
+            .map(entity -> solicitudMapper.map(entity, SolicitudCursoVeranoIncripcion.class))
+            .orElse(null);
+    }
+
+    @Override
+    @Transactional
+    public SolicitudCursoVeranoPreinscripcion aprobarPreinscripcion(Integer idSolicitud, String comentarios) {
+        SolicitudEntity solicitudEntity = solicitudRepository.findById(idSolicitud)
+            .filter(entity -> entity instanceof SolicitudCursoVeranoPreinscripcionEntity)
+            .orElse(null);
+        
+        if (solicitudEntity == null) {
+            return null;
+        }
+        
+        // Crear nuevo estado "Aprobado"
+        EstadoSolicitudEntity estadoEntity = new EstadoSolicitudEntity();
+        estadoEntity.setFecha_registro_estado(new Date());
+        estadoEntity.setEstado_actual("Aprobado");
+        estadoEntity.setObjSolicitud(solicitudEntity);
+        
+        // Guardar el estado
+        estadoSolicitudRepository.save(estadoEntity);
+        
+        // Actualizar la solicitud
+        solicitudEntity.getEstadosSolicitud().add(estadoEntity);
+        SolicitudEntity solicitudActualizada = solicitudRepository.save(solicitudEntity);
+        
+        return solicitudMapper.map(solicitudActualizada, SolicitudCursoVeranoPreinscripcion.class);
+    }
+
+    @Override
+    @Transactional
+    public SolicitudCursoVeranoPreinscripcion rechazarPreinscripcion(Integer idSolicitud, String motivo) {
+        SolicitudEntity solicitudEntity = solicitudRepository.findById(idSolicitud)
+            .filter(entity -> entity instanceof SolicitudCursoVeranoPreinscripcionEntity)
+            .orElse(null);
+        
+        if (solicitudEntity == null) {
+            return null;
+        }
+        
+        // Crear nuevo estado "Rechazado"
+        EstadoSolicitudEntity estadoEntity = new EstadoSolicitudEntity();
+        estadoEntity.setFecha_registro_estado(new Date());
+        estadoEntity.setEstado_actual("Rechazado");
+        estadoEntity.setObjSolicitud(solicitudEntity);
+        
+        // Guardar el estado
+        estadoSolicitudRepository.save(estadoEntity);
+        
+        // Actualizar la solicitud
+        solicitudEntity.getEstadosSolicitud().add(estadoEntity);
+        SolicitudEntity solicitudActualizada = solicitudRepository.save(solicitudEntity);
+        
+        return solicitudMapper.map(solicitudActualizada, SolicitudCursoVeranoPreinscripcion.class);
+    }
+
+    @Override
+    @Transactional
+    public SolicitudCursoVeranoIncripcion validarPago(Integer idSolicitud, boolean esValido, String observaciones) {
+        SolicitudEntity solicitudEntity = solicitudRepository.findById(idSolicitud)
+            .filter(entity -> entity instanceof SolicitudCursoVeranoInscripcionEntity)
+            .orElse(null);
+        
+        if (solicitudEntity == null) {
+            return null;
+        }
+        
+        // Crear nuevo estado según validación
+        EstadoSolicitudEntity estadoEntity = new EstadoSolicitudEntity();
+        estadoEntity.setFecha_registro_estado(new Date());
+        estadoEntity.setEstado_actual(esValido ? "Pago_Validado" : "Pago_Rechazado");
+        estadoEntity.setObjSolicitud(solicitudEntity);
+        
+        // Guardar el estado
+        estadoSolicitudRepository.save(estadoEntity);
+        
+        // Actualizar la solicitud
+        solicitudEntity.getEstadosSolicitud().add(estadoEntity);
+        SolicitudEntity solicitudActualizada = solicitudRepository.save(solicitudEntity);
+        
+        return solicitudMapper.map(solicitudActualizada, SolicitudCursoVeranoIncripcion.class);
+    }
+
+    @Override
+    @Transactional
+    public SolicitudCursoVeranoIncripcion completarInscripcion(Integer idSolicitud) {
+        SolicitudEntity solicitudEntity = solicitudRepository.findById(idSolicitud)
+            .filter(entity -> entity instanceof SolicitudCursoVeranoInscripcionEntity)
+            .orElse(null);
+        
+        if (solicitudEntity == null) {
+            return null;
+        }
+        
+        // Crear nuevo estado "Inscripcion_Completada"
+        EstadoSolicitudEntity estadoEntity = new EstadoSolicitudEntity();
+        estadoEntity.setFecha_registro_estado(new Date());
+        estadoEntity.setEstado_actual("Inscripcion_Completada");
+        estadoEntity.setObjSolicitud(solicitudEntity);
+        
+        // Guardar el estado
+        estadoSolicitudRepository.save(estadoEntity);
+        
+        // Actualizar la solicitud
+        solicitudEntity.getEstadosSolicitud().add(estadoEntity);
+        SolicitudEntity solicitudActualizada = solicitudRepository.save(solicitudEntity);
+        
+        return solicitudMapper.map(solicitudActualizada, SolicitudCursoVeranoIncripcion.class);
     }
 
 }

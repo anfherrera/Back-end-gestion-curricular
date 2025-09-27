@@ -1,7 +1,7 @@
 package co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.entidades;
 
 
-import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.entidades.Enums.CondicionSolicitudVerano;
+import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.entidades.Enums.CondicionSolicitudVeranoEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -26,7 +26,7 @@ public class SolicitudCursoVeranoEntity extends SolicitudEntity {
     private String nombre_estudiante;
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private CondicionSolicitudVerano codicion_solicitud;
+    private CondicionSolicitudVeranoEntity codicion_solicitud;
     @Column(nullable = false, length = 100)
     private String observacion;
 

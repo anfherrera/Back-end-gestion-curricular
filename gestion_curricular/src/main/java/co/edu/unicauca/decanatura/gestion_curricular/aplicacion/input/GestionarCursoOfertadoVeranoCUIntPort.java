@@ -17,5 +17,7 @@ public interface GestionarCursoOfertadoVeranoCUIntPort {
 
     List<CursoOfertadoVerano> listarTodos();
     
+    // Método para publicación masiva
+    List<CursoOfertadoVerano> publicarCursosMasivamente(List<Integer> idsCursos);
     
 }
