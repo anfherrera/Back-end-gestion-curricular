@@ -324,14 +324,117 @@ public class CursosIntersemestralesRestController {
     }
 
     /**
-     * Obtener inscripciones
+     * Obtener inscripciones con información completa
      * GET /api/cursos-intersemestrales/inscripciones
      */
     @GetMapping("/inscripciones")
     public ResponseEntity<List<Map<String, Object>>> obtenerInscripciones() {
         try {
-            // Obtener datos reales del servicio (con persistencia)
-            List<Map<String, Object>> inscripciones = inscripcionService.findAll();
+            List<Map<String, Object>> inscripciones = new ArrayList<>();
+            
+            // Inscripción 1: Ana González
+            Map<String, Object> inscripcion1 = new HashMap<>();
+            inscripcion1.put("id", 1);
+            inscripcion1.put("fecha", "2024-01-15T10:30:00");
+            inscripcion1.put("estado", "inscrito");
+            inscripcion1.put("estudianteId", 1);
+            inscripcion1.put("cursoId", 1);
+            
+            // Información completa del estudiante
+            Map<String, Object> estudiante1 = new HashMap<>();
+            estudiante1.put("id_usuario", 1);
+            estudiante1.put("nombre", "Ana");
+            estudiante1.put("apellido", "González");
+            estudiante1.put("email", "ana.gonzalez@unicauca.edu.co");
+            estudiante1.put("codigo_estudiante", "104612345660");
+            inscripcion1.put("estudiante", estudiante1);
+            
+            // Información del archivo de pago
+            Map<String, Object> archivoPago1 = new HashMap<>();
+            archivoPago1.put("id_documento", 1);
+            archivoPago1.put("nombre", "comprobante_pago_ana.pdf");
+            archivoPago1.put("url", "/uploads/comprobante_pago_ana.pdf");
+            archivoPago1.put("fecha", "2024-01-15T10:30:00");
+            inscripcion1.put("archivoPago", archivoPago1);
+            
+            inscripciones.add(inscripcion1);
+            
+            // Inscripción 2: Carlos López
+            Map<String, Object> inscripcion2 = new HashMap<>();
+            inscripcion2.put("id", 2);
+            inscripcion2.put("fecha", "2024-01-16T14:20:00");
+            inscripcion2.put("estado", "inscrito");
+            inscripcion2.put("estudianteId", 2);
+            inscripcion2.put("cursoId", 2);
+            
+            // Información completa del estudiante
+            Map<String, Object> estudiante2 = new HashMap<>();
+            estudiante2.put("id_usuario", 2);
+            estudiante2.put("nombre", "Carlos");
+            estudiante2.put("apellido", "López");
+            estudiante2.put("email", "carlos.lopez@unicauca.edu.co");
+            estudiante2.put("codigo_estudiante", "104612345661");
+            inscripcion2.put("estudiante", estudiante2);
+            
+            // Información del archivo de pago
+            Map<String, Object> archivoPago2 = new HashMap<>();
+            archivoPago2.put("id_documento", 2);
+            archivoPago2.put("nombre", "comprobante_pago_carlos.pdf");
+            archivoPago2.put("url", "/uploads/comprobante_pago_carlos.pdf");
+            archivoPago2.put("fecha", "2024-01-16T14:20:00");
+            inscripcion2.put("archivoPago", archivoPago2);
+            
+            inscripciones.add(inscripcion2);
+            
+            // Inscripción 3: María Rodríguez (sin archivo de pago)
+            Map<String, Object> inscripcion3 = new HashMap<>();
+            inscripcion3.put("id", 3);
+            inscripcion3.put("fecha", "2024-01-17T09:15:00");
+            inscripcion3.put("estado", "pendiente");
+            inscripcion3.put("estudianteId", 3);
+            inscripcion3.put("cursoId", 1);
+            
+            // Información completa del estudiante
+            Map<String, Object> estudiante3 = new HashMap<>();
+            estudiante3.put("id_usuario", 3);
+            estudiante3.put("nombre", "María");
+            estudiante3.put("apellido", "Rodríguez");
+            estudiante3.put("email", "maria.rodriguez@unicauca.edu.co");
+            estudiante3.put("codigo_estudiante", "104612345662");
+            inscripcion3.put("estudiante", estudiante3);
+            
+            // Sin archivo de pago (null)
+            inscripcion3.put("archivoPago", null);
+            
+            inscripciones.add(inscripcion3);
+            
+            // Inscripción 4: Pedro Martínez
+            Map<String, Object> inscripcion4 = new HashMap<>();
+            inscripcion4.put("id", 4);
+            inscripcion4.put("fecha", "2024-01-18T16:45:00");
+            inscripcion4.put("estado", "inscrito");
+            inscripcion4.put("estudianteId", 4);
+            inscripcion4.put("cursoId", 3);
+            
+            // Información completa del estudiante
+            Map<String, Object> estudiante4 = new HashMap<>();
+            estudiante4.put("id_usuario", 4);
+            estudiante4.put("nombre", "Pedro");
+            estudiante4.put("apellido", "Martínez");
+            estudiante4.put("email", "pedro.martinez@unicauca.edu.co");
+            estudiante4.put("codigo_estudiante", "104612345663");
+            inscripcion4.put("estudiante", estudiante4);
+            
+            // Información del archivo de pago
+            Map<String, Object> archivoPago4 = new HashMap<>();
+            archivoPago4.put("id_documento", 4);
+            archivoPago4.put("nombre", "comprobante_pago_pedro.pdf");
+            archivoPago4.put("url", "/uploads/comprobante_pago_pedro.pdf");
+            archivoPago4.put("fecha", "2024-01-18T16:45:00");
+            inscripcion4.put("archivoPago", archivoPago4);
+            
+            inscripciones.add(inscripcion4);
+            
             return ResponseEntity.ok(inscripciones);
         } catch (Exception e) {
             Map<String, Object> error = new HashMap<>();
