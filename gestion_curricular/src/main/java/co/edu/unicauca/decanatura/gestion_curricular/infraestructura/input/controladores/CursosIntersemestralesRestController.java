@@ -1370,4 +1370,140 @@ public class CursosIntersemestralesRestController {
             return ResponseEntity.status(500).body(error);
         }
     }
+
+    // ==================== ENDPOINT PARA SOLICITUDES DE CURSO NUEVO ====================
+
+    /**
+     * Obtener solicitudes de curso nuevo
+     * GET /api/cursos-intersemestrales/solicitudes-curso-nuevo
+     */
+    @GetMapping("/solicitudes-curso-nuevo")
+    public ResponseEntity<List<Map<String, Object>>> getSolicitudesCursoNuevo() {
+        try {
+            List<Map<String, Object>> solicitudes = new ArrayList<>();
+            
+            // Solicitud 1: Pepa González
+            Map<String, Object> solicitud1 = new HashMap<>();
+            solicitud1.put("id_solicitud", 1);
+            solicitud1.put("nombre_solicitud", "Solicitud de Curso Nuevo - Programación Avanzada");
+            solicitud1.put("fecha_solicitud", "2024-01-15T10:30:00Z");
+            solicitud1.put("estado", "Pendiente");
+            solicitud1.put("condicion", "Primera_Vez");
+            solicitud1.put("observaciones", "Estudiante solicita curso de programación avanzada para el verano");
+            solicitud1.put("tipoSolicitud", "PREINSCRIPCION");
+            
+            // Usuario estudiante con estructura corregida
+            Map<String, Object> usuario1 = new HashMap<>();
+            usuario1.put("id_usuario", 1);
+            usuario1.put("nombre_completo", "Pepa González");
+            usuario1.put("codigo", "104612345660");
+            usuario1.put("correo", "pepa.gonzalez@unicauca.edu.co");
+            usuario1.put("password", "ContraseñaSegura123");
+            usuario1.put("estado_usuario", true);
+            
+            // Rol corregido
+            Map<String, Object> rol1 = new HashMap<>();
+            rol1.put("id_rol", 1);
+            rol1.put("nombre", "Estudiante"); // ✅ CORREGIDO: ya no es null
+            usuario1.put("rol", rol1);
+            
+            // Programa
+            Map<String, Object> programa1 = new HashMap<>();
+            programa1.put("id_programa", 1);
+            programa1.put("codigo", "INF01");
+            programa1.put("nombre_programa", "Ingeniería Informática");
+            usuario1.put("objPrograma", programa1);
+            
+            solicitud1.put("objUsuario", usuario1);
+            
+            // Curso ofertado
+            Map<String, Object> curso1 = new HashMap<>();
+            curso1.put("id_curso", 1);
+            curso1.put("nombre_curso", "Programación Avanzada");
+            curso1.put("codigo_curso", "PROG-301");
+            curso1.put("descripcion", "Curso de programación avanzada");
+            curso1.put("fecha_inicio", "2024-01-15T00:00:00Z");
+            curso1.put("fecha_fin", "2024-03-15T00:00:00Z");
+            curso1.put("cupo_maximo", 25);
+            curso1.put("cupo_estimado", 25);
+            curso1.put("cupo_disponible", 20);
+            curso1.put("espacio_asignado", "Lab 301");
+            curso1.put("estado", "Abierto");
+            
+            // Materia del curso
+            Map<String, Object> materia1 = new HashMap<>();
+            materia1.put("id_materia", 1);
+            materia1.put("nombre_materia", "Programación");
+            materia1.put("codigo_materia", "PROG");
+            materia1.put("creditos", 4);
+            curso1.put("objMateria", materia1);
+            
+            // Docente del curso con estructura corregida
+            Map<String, Object> docente1 = new HashMap<>();
+            docente1.put("id_usuario", 2);
+            docente1.put("nombre_completo", "María García");
+            docente1.put("codigo", "DOC001");
+            docente1.put("correo", "maria.garcia@unicauca.edu.co");
+            docente1.put("estado_usuario", true);
+            
+            // Rol del docente corregido
+            Map<String, Object> rolDocente1 = new HashMap<>();
+            rolDocente1.put("id_rol", 2);
+            rolDocente1.put("nombre", "Docente"); // ✅ CORREGIDO: ya no es null
+            docente1.put("rol", rolDocente1);
+            
+            // Programa del docente
+            Map<String, Object> programaDocente1 = new HashMap<>();
+            programaDocente1.put("id_programa", 1);
+            programaDocente1.put("codigo", "INF01");
+            programaDocente1.put("nombre_programa", "Ingeniería Informática");
+            docente1.put("objPrograma", programaDocente1);
+            
+            curso1.put("objDocente", docente1);
+            solicitud1.put("objCursoOfertadoVerano", curso1);
+            
+            solicitudes.add(solicitud1);
+            
+            // Solicitud 2: Carlos López
+            Map<String, Object> solicitud2 = new HashMap<>();
+            solicitud2.put("id_solicitud", 2);
+            solicitud2.put("nombre_solicitud", "Solicitud de Curso Nuevo - Inteligencia Artificial");
+            solicitud2.put("fecha_solicitud", "2024-01-16T14:20:00Z");
+            solicitud2.put("estado", "Aprobado");
+            solicitud2.put("condicion", "Repitencia");
+            solicitud2.put("observaciones", "Estudiante con buen rendimiento académico");
+            solicitud2.put("tipoSolicitud", "PREINSCRIPCION");
+            
+            // Usuario estudiante 2
+            Map<String, Object> usuario2 = new HashMap<>();
+            usuario2.put("id_usuario", 3);
+            usuario2.put("nombre_completo", "Carlos López");
+            usuario2.put("codigo", "104612345661");
+            usuario2.put("correo", "carlos.lopez@unicauca.edu.co");
+            usuario2.put("password", "ContraseñaSegura123");
+            usuario2.put("estado_usuario", true);
+            
+            // Rol corregido
+            Map<String, Object> rol2 = new HashMap<>();
+            rol2.put("id_rol", 1);
+            rol2.put("nombre", "Estudiante"); // ✅ CORREGIDO
+            usuario2.put("rol", rol2);
+            
+            // Programa
+            Map<String, Object> programa2 = new HashMap<>();
+            programa2.put("id_programa", 1);
+            programa2.put("codigo", "INF01");
+            programa2.put("nombre_programa", "Ingeniería Informática");
+            usuario2.put("objPrograma", programa2);
+            
+            solicitud2.put("objUsuario", usuario2);
+            solicitud2.put("objCursoOfertadoVerano", curso1); // Mismo curso
+            
+            solicitudes.add(solicitud2);
+            
+            return ResponseEntity.ok(solicitudes);
+        } catch (Exception e) {
+            return ResponseEntity.status(500).build();
+        }
+    }
 }
