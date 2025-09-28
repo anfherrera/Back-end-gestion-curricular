@@ -1328,4 +1328,46 @@ public class CursosIntersemestralesRestController {
             return ResponseEntity.status(500).body(error);
         }
     }
+
+    // ==================== ENDPOINT PARA RECHAZAR INSCRIPCIÓN ====================
+
+    /**
+     * Rechazar inscripción de estudiante
+     * PUT /api/cursos-intersemestrales/inscripciones/{id}/rechazar
+     */
+    @PutMapping("/inscripciones/{id}/rechazar")
+    public ResponseEntity<Map<String, Object>> rechazarInscripcion(@PathVariable Long id) {
+        try {
+            // Simular rechazo de inscripción
+            Map<String, Object> inscripcion = new HashMap<>();
+            inscripcion.put("id", id);
+            inscripcion.put("fecha", "2024-01-17T09:15:00");
+            inscripcion.put("estado", "rechazado"); // Cambiado de "pendiente" a "rechazado"
+            inscripcion.put("estudianteId", 3);
+            inscripcion.put("cursoId", 1);
+            
+            // Información completa del estudiante
+            Map<String, Object> estudiante = new HashMap<>();
+            estudiante.put("id_usuario", 3);
+            estudiante.put("nombre", "María");
+            estudiante.put("apellido", "Rodríguez");
+            estudiante.put("email", "maria.rodriguez@unicauca.edu.co");
+            estudiante.put("codigo_estudiante", "104612345662");
+            inscripcion.put("estudiante", estudiante);
+            
+            // Sin archivo de pago (null) - como en el ejemplo
+            inscripcion.put("archivoPago", null);
+            
+            // Mensaje de rechazo
+            Map<String, Object> respuesta = new HashMap<>();
+            respuesta.put("message", "Inscripción rechazada exitosamente");
+            respuesta.put("inscripcion", inscripcion);
+            
+            return ResponseEntity.ok(respuesta);
+        } catch (Exception e) {
+            Map<String, Object> error = new HashMap<>();
+            error.put("error", "Error interno del servidor");
+            return ResponseEntity.status(500).body(error);
+        }
+    }
 }
