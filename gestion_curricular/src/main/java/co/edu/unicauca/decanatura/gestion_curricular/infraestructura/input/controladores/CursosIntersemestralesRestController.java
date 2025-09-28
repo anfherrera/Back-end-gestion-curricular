@@ -588,7 +588,7 @@ public class CursosIntersemestralesRestController {
             // Objeto rol
             Map<String, Object> rol1 = new HashMap<>();
             rol1.put("id_rol", 2);
-            rol1.put("nombre_rol", "Docente");
+            rol1.put("nombre", "Docente"); // ✅ CORREGIDO: nombre → nombre
             docente1.put("objRol", rol1);
             
             curso1.put("objDocente", docente1);
@@ -624,7 +624,7 @@ public class CursosIntersemestralesRestController {
             
             Map<String, Object> rol2 = new HashMap<>();
             rol2.put("id_rol", 2);
-            rol2.put("nombre_rol", "Docente");
+            rol2.put("nombre", "Docente"); // ✅ CORREGIDO: nombre → nombre
             docente2.put("objRol", rol2);
             
             curso2.put("objDocente", docente2);
@@ -675,7 +675,7 @@ public class CursosIntersemestralesRestController {
             
             Map<String, Object> rol = new HashMap<>();
             rol.put("id_rol", 2);
-            rol.put("nombre_rol", "Docente");
+            rol.put("nombre", "Docente");
             docente.put("objRol", rol);
             
             nuevoCurso.put("objDocente", docente);
@@ -727,7 +727,7 @@ public class CursosIntersemestralesRestController {
             
             Map<String, Object> rol = new HashMap<>();
             rol.put("id_rol", 2);
-            rol.put("nombre_rol", "Docente");
+            rol.put("nombre", "Docente");
             docente.put("objRol", rol);
             
             cursoActualizado.put("objDocente", docente);
@@ -792,7 +792,7 @@ public class CursosIntersemestralesRestController {
             
             Map<String, Object> rol = new HashMap<>();
             rol.put("id_rol", 2);
-            rol.put("nombre_rol", "Docente");
+            rol.put("nombre", "Docente");
             docente.put("objRol", rol);
             
             curso.put("objDocente", docente);
@@ -887,7 +887,7 @@ public class CursosIntersemestralesRestController {
             
             Map<String, Object> rol1 = new HashMap<>();
             rol1.put("id_rol", 2);
-            rol1.put("nombre_rol", "Docente");
+            rol1.put("nombre", "Docente"); // ✅ CORREGIDO: nombre → nombre
             docente1.put("objRol", rol1);
             
             docentes.add(docente1);
@@ -902,7 +902,7 @@ public class CursosIntersemestralesRestController {
             
             Map<String, Object> rol2 = new HashMap<>();
             rol2.put("id_rol", 2);
-            rol2.put("nombre_rol", "Docente");
+            rol2.put("nombre", "Docente"); // ✅ CORREGIDO: nombre → nombre
             docente2.put("objRol", rol2);
             
             docentes.add(docente2);
@@ -917,7 +917,7 @@ public class CursosIntersemestralesRestController {
             
             Map<String, Object> rol3 = new HashMap<>();
             rol3.put("id_rol", 2);
-            rol3.put("nombre_rol", "Docente");
+            rol3.put("nombre", "Docente"); // ✅ CORREGIDO: nombre → nombre
             docente3.put("objRol", rol3);
             
             docentes.add(docente3);
@@ -932,7 +932,7 @@ public class CursosIntersemestralesRestController {
             
             Map<String, Object> rol4 = new HashMap<>();
             rol4.put("id_rol", 2);
-            rol4.put("nombre_rol", "Docente");
+            rol4.put("nombre", "Docente");
             docente4.put("objRol", rol4);
             
             docentes.add(docente4);
@@ -947,7 +947,7 @@ public class CursosIntersemestralesRestController {
             
             Map<String, Object> rol5 = new HashMap<>();
             rol5.put("id_rol", 2);
-            rol5.put("nombre_rol", "Docente");
+            rol5.put("nombre", "Docente");
             docente5.put("objRol", rol5);
             
             docentes.add(docente5);
@@ -989,7 +989,7 @@ public class CursosIntersemestralesRestController {
             
             Map<String, Object> rolEstudiante = new HashMap<>();
             rolEstudiante.put("id_rol", 1);
-            rolEstudiante.put("nombre_rol", "Estudiante");
+            rolEstudiante.put("nombre", "Estudiante");
             usuario1.put("objRol", rolEstudiante);
             
             preinscripcion1.put("objUsuario", usuario1);
@@ -1026,7 +1026,7 @@ public class CursosIntersemestralesRestController {
             
             Map<String, Object> rolDocente = new HashMap<>();
             rolDocente.put("id_rol", 2);
-            rolDocente.put("nombre_rol", "Docente");
+            rolDocente.put("nombre", "Docente");
             docente1.put("objRol", rolDocente);
             
             curso1.put("objDocente", docente1);
@@ -1152,7 +1152,7 @@ public class CursosIntersemestralesRestController {
             
             Map<String, Object> rolEstudiante = new HashMap<>();
             rolEstudiante.put("id_rol", 1);
-            rolEstudiante.put("nombre_rol", "Estudiante");
+            rolEstudiante.put("nombre", "Estudiante");
             usuario.put("objRol", rolEstudiante);
             
             solicitud.put("objUsuario", usuario);
@@ -1189,7 +1189,7 @@ public class CursosIntersemestralesRestController {
             
             Map<String, Object> rolDocente = new HashMap<>();
             rolDocente.put("id_rol", 2);
-            rolDocente.put("nombre_rol", "Docente");
+            rolDocente.put("nombre", "Docente");
             docente.put("objRol", rolDocente);
             
             curso.put("objDocente", docente);
@@ -1233,7 +1233,7 @@ public class CursosIntersemestralesRestController {
             
             Map<String, Object> rolEstudiante = new HashMap<>();
             rolEstudiante.put("id_rol", 1);
-            rolEstudiante.put("nombre_rol", "Estudiante");
+            rolEstudiante.put("nombre", "Estudiante");
             usuario.put("objRol", rolEstudiante);
             
             solicitud.put("objUsuario", usuario);
@@ -1270,7 +1270,7 @@ public class CursosIntersemestralesRestController {
             
             Map<String, Object> rolDocente = new HashMap<>();
             rolDocente.put("id_rol", 2);
-            rolDocente.put("nombre_rol", "Docente");
+            rolDocente.put("nombre", "Docente");
             docente.put("objRol", rolDocente);
             
             curso.put("objDocente", docente);
