@@ -1281,4 +1281,51 @@ public class CursosIntersemestralesRestController {
             return ResponseEntity.status(500).body(null);
         }
     }
+
+    // ==================== ENDPOINT PARA CONFIRMAR INSCRIPCIÓN ====================
+
+    /**
+     * Confirmar inscripción de estudiante
+     * PUT /api/cursos-intersemestrales/inscripciones/{id}/confirmar
+     */
+    @PutMapping("/inscripciones/{id}/confirmar")
+    public ResponseEntity<Map<String, Object>> confirmarInscripcion(@PathVariable Long id) {
+        try {
+            // Simular confirmación de inscripción
+            Map<String, Object> inscripcion = new HashMap<>();
+            inscripcion.put("id", id);
+            inscripcion.put("fecha", "2024-01-15T10:30:00");
+            inscripcion.put("estado", "inscrito"); // Cambiado de "pendiente" a "inscrito"
+            inscripcion.put("estudianteId", 1);
+            inscripcion.put("cursoId", 1);
+            
+            // Información completa del estudiante
+            Map<String, Object> estudiante = new HashMap<>();
+            estudiante.put("id_usuario", 1);
+            estudiante.put("nombre", "Ana");
+            estudiante.put("apellido", "González");
+            estudiante.put("email", "ana.gonzalez@unicauca.edu.co");
+            estudiante.put("codigo_estudiante", "104612345660");
+            inscripcion.put("estudiante", estudiante);
+            
+            // Información del archivo de pago (ya existía)
+            Map<String, Object> archivoPago = new HashMap<>();
+            archivoPago.put("id_documento", 1);
+            archivoPago.put("nombre", "comprobante_pago_ana.pdf");
+            archivoPago.put("url", "/uploads/comprobante_pago_ana.pdf");
+            archivoPago.put("fecha", "2024-01-15T10:30:00");
+            inscripcion.put("archivoPago", archivoPago);
+            
+            // Mensaje de confirmación
+            Map<String, Object> respuesta = new HashMap<>();
+            respuesta.put("message", "Inscripción confirmada exitosamente");
+            respuesta.put("inscripcion", inscripcion);
+            
+            return ResponseEntity.ok(respuesta);
+        } catch (Exception e) {
+            Map<String, Object> error = new HashMap<>();
+            error.put("error", "Error interno del servidor");
+            return ResponseEntity.status(500).body(error);
+        }
+    }
 }
