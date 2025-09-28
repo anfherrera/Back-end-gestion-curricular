@@ -699,4 +699,483 @@ public class CursosIntersemestralesRestController {
             return ResponseEntity.status(500).build();
         }
     }
+
+    // ==================== ENDPOINTS PARA MATERIAS Y DOCENTES ====================
+
+    /**
+     * Obtener todas las materias
+     * GET /api/cursos-intersemestrales/materias
+     */
+    @GetMapping("/materias")
+    public ResponseEntity<List<Map<String, Object>>> getTodasLasMaterias() {
+        try {
+            List<Map<String, Object>> materias = new ArrayList<>();
+            
+            // Materia 1: Programación
+            Map<String, Object> materia1 = new HashMap<>();
+            materia1.put("id_materia", 1);
+            materia1.put("nombre_materia", "Programación");
+            materia1.put("codigo_materia", "PROG");
+            materia1.put("creditos", 4);
+            materias.add(materia1);
+            
+            // Materia 2: Bases de Datos
+            Map<String, Object> materia2 = new HashMap<>();
+            materia2.put("id_materia", 2);
+            materia2.put("nombre_materia", "Bases de Datos");
+            materia2.put("codigo_materia", "BD");
+            materia2.put("creditos", 3);
+            materias.add(materia2);
+            
+            // Materia 3: Matemáticas
+            Map<String, Object> materia3 = new HashMap<>();
+            materia3.put("id_materia", 3);
+            materia3.put("nombre_materia", "Matemáticas");
+            materia3.put("codigo_materia", "MAT");
+            materia3.put("creditos", 3);
+            materias.add(materia3);
+            
+            // Materia 4: Desarrollo Web
+            Map<String, Object> materia4 = new HashMap<>();
+            materia4.put("id_materia", 4);
+            materia4.put("nombre_materia", "Desarrollo Web");
+            materia4.put("codigo_materia", "WEB");
+            materia4.put("creditos", 4);
+            materias.add(materia4);
+            
+            // Materia 5: Inteligencia Artificial
+            Map<String, Object> materia5 = new HashMap<>();
+            materia5.put("id_materia", 5);
+            materia5.put("nombre_materia", "Inteligencia Artificial");
+            materia5.put("codigo_materia", "IA");
+            materia5.put("creditos", 4);
+            materias.add(materia5);
+            
+            // Materia 6: Redes de Computadores
+            Map<String, Object> materia6 = new HashMap<>();
+            materia6.put("id_materia", 6);
+            materia6.put("nombre_materia", "Redes de Computadores");
+            materia6.put("codigo_materia", "RED");
+            materia6.put("creditos", 3);
+            materias.add(materia6);
+            
+            return ResponseEntity.ok(materias);
+        } catch (Exception e) {
+            return ResponseEntity.status(500).build();
+        }
+    }
+
+    /**
+     * Obtener todos los docentes
+     * GET /api/cursos-intersemestrales/docentes
+     */
+    @GetMapping("/docentes")
+    public ResponseEntity<List<Map<String, Object>>> getTodosLosDocentes() {
+        try {
+            List<Map<String, Object>> docentes = new ArrayList<>();
+            
+            // Docente 1: María García
+            Map<String, Object> docente1 = new HashMap<>();
+            docente1.put("id_usuario", 2);
+            docente1.put("nombre", "María");
+            docente1.put("apellido", "García");
+            docente1.put("email", "maria.garcia@unicauca.edu.co");
+            docente1.put("telefono", "3007654321");
+            
+            Map<String, Object> rol1 = new HashMap<>();
+            rol1.put("id_rol", 2);
+            rol1.put("nombre_rol", "Docente");
+            docente1.put("objRol", rol1);
+            
+            docentes.add(docente1);
+            
+            // Docente 2: Carlos López
+            Map<String, Object> docente2 = new HashMap<>();
+            docente2.put("id_usuario", 3);
+            docente2.put("nombre", "Carlos");
+            docente2.put("apellido", "López");
+            docente2.put("email", "carlos.lopez@unicauca.edu.co");
+            docente2.put("telefono", "3009876543");
+            
+            Map<String, Object> rol2 = new HashMap<>();
+            rol2.put("id_rol", 2);
+            rol2.put("nombre_rol", "Docente");
+            docente2.put("objRol", rol2);
+            
+            docentes.add(docente2);
+            
+            // Docente 3: Ana Martínez
+            Map<String, Object> docente3 = new HashMap<>();
+            docente3.put("id_usuario", 4);
+            docente3.put("nombre", "Ana");
+            docente3.put("apellido", "Martínez");
+            docente3.put("email", "ana.martinez@unicauca.edu.co");
+            docente3.put("telefono", "3001234567");
+            
+            Map<String, Object> rol3 = new HashMap<>();
+            rol3.put("id_rol", 2);
+            rol3.put("nombre_rol", "Docente");
+            docente3.put("objRol", rol3);
+            
+            docentes.add(docente3);
+            
+            // Docente 4: Pedro Rodríguez
+            Map<String, Object> docente4 = new HashMap<>();
+            docente4.put("id_usuario", 5);
+            docente4.put("nombre", "Pedro");
+            docente4.put("apellido", "Rodríguez");
+            docente4.put("email", "pedro.rodriguez@unicauca.edu.co");
+            docente4.put("telefono", "3005555555");
+            
+            Map<String, Object> rol4 = new HashMap<>();
+            rol4.put("id_rol", 2);
+            rol4.put("nombre_rol", "Docente");
+            docente4.put("objRol", rol4);
+            
+            docentes.add(docente4);
+            
+            // Docente 5: Laura Botero
+            Map<String, Object> docente5 = new HashMap<>();
+            docente5.put("id_usuario", 6);
+            docente5.put("nombre", "Laura");
+            docente5.put("apellido", "Botero");
+            docente5.put("email", "laura.botero@unicauca.edu.co");
+            docente5.put("telefono", "3007777777");
+            
+            Map<String, Object> rol5 = new HashMap<>();
+            rol5.put("id_rol", 2);
+            rol5.put("nombre_rol", "Docente");
+            docente5.put("objRol", rol5);
+            
+            docentes.add(docente5);
+            
+            return ResponseEntity.ok(docentes);
+        } catch (Exception e) {
+            return ResponseEntity.status(500).build();
+        }
+    }
+
+    // ==================== ENDPOINTS PARA GESTIÓN DE PREINSCRIPCIONES ====================
+
+    /**
+     * Obtener preinscripciones por curso
+     * GET /api/cursos-intersemestrales/preinscripciones/curso/{idCurso}
+     */
+    @GetMapping("/preinscripciones/curso/{idCurso}")
+    public ResponseEntity<List<Map<String, Object>>> getPreinscripcionesPorCurso(
+            @PathVariable Long idCurso) {
+        try {
+            List<Map<String, Object>> preinscripciones = new ArrayList<>();
+            
+            // Preinscripción 1
+            Map<String, Object> preinscripcion1 = new HashMap<>();
+            preinscripcion1.put("id_preinscripcion", 1);
+            preinscripcion1.put("fecha_preinscripcion", "2024-01-10T10:30:00Z");
+            preinscripcion1.put("estado", "Pendiente");
+            preinscripcion1.put("observaciones", "");
+            preinscripcion1.put("condicion", "Primera_Vez");
+            
+            // Usuario estudiante
+            Map<String, Object> usuario1 = new HashMap<>();
+            usuario1.put("id_usuario", 4);
+            usuario1.put("nombre", "Juan");
+            usuario1.put("apellido", "Pérez");
+            usuario1.put("email", "juan@unicauca.edu.co");
+            usuario1.put("telefono", "3001111111");
+            usuario1.put("codigo_estudiante", "104612345660");
+            
+            Map<String, Object> rolEstudiante = new HashMap<>();
+            rolEstudiante.put("id_rol", 1);
+            rolEstudiante.put("nombre_rol", "Estudiante");
+            usuario1.put("objRol", rolEstudiante);
+            
+            preinscripcion1.put("objUsuario", usuario1);
+            
+            // Curso
+            Map<String, Object> curso1 = new HashMap<>();
+            curso1.put("id_curso", idCurso);
+            curso1.put("nombre_curso", "Álgebra Lineal");
+            curso1.put("codigo_curso", "ALG-201");
+            curso1.put("descripcion", "Fundamentos de álgebra lineal");
+            curso1.put("fecha_inicio", "2024-01-15T00:00:00Z");
+            curso1.put("fecha_fin", "2024-03-15T00:00:00Z");
+            curso1.put("cupo_maximo", 30);
+            curso1.put("cupo_estimado", 25);
+            curso1.put("cupo_disponible", 20);
+            curso1.put("espacio_asignado", "Aula 301");
+            curso1.put("estado", "Preinscripcion");
+            
+            // Materia del curso
+            Map<String, Object> materia1 = new HashMap<>();
+            materia1.put("id_materia", 1);
+            materia1.put("nombre_materia", "Álgebra Lineal");
+            materia1.put("codigo_materia", "ALG");
+            materia1.put("creditos", 4);
+            curso1.put("objMateria", materia1);
+            
+            // Docente del curso
+            Map<String, Object> docente1 = new HashMap<>();
+            docente1.put("id_usuario", 1);
+            docente1.put("nombre", "María");
+            docente1.put("apellido", "García");
+            docente1.put("email", "maria@unicauca.edu.co");
+            docente1.put("telefono", "3001234567");
+            
+            Map<String, Object> rolDocente = new HashMap<>();
+            rolDocente.put("id_rol", 2);
+            rolDocente.put("nombre_rol", "Docente");
+            docente1.put("objRol", rolDocente);
+            
+            curso1.put("objDocente", docente1);
+            preinscripcion1.put("objCurso", curso1);
+            
+            preinscripciones.add(preinscripcion1);
+            
+            // Preinscripción 2
+            Map<String, Object> preinscripcion2 = new HashMap<>();
+            preinscripcion2.put("id_preinscripcion", 2);
+            preinscripcion2.put("fecha_preinscripcion", "2024-01-11T14:20:00Z");
+            preinscripcion2.put("estado", "Pendiente");
+            preinscripcion2.put("observaciones", "");
+            preinscripcion2.put("condicion", "Repitencia");
+            
+            // Usuario estudiante 2
+            Map<String, Object> usuario2 = new HashMap<>();
+            usuario2.put("id_usuario", 5);
+            usuario2.put("nombre", "María");
+            usuario2.put("apellido", "González");
+            usuario2.put("email", "maria.gonzalez@unicauca.edu.co");
+            usuario2.put("telefono", "3002222222");
+            usuario2.put("codigo_estudiante", "104612345661");
+            usuario2.put("objRol", rolEstudiante);
+            
+            preinscripcion2.put("objUsuario", usuario2);
+            preinscripcion2.put("objCurso", curso1); // Mismo curso
+            
+            preinscripciones.add(preinscripcion2);
+            
+            // Preinscripción 3
+            Map<String, Object> preinscripcion3 = new HashMap<>();
+            preinscripcion3.put("id_preinscripcion", 3);
+            preinscripcion3.put("fecha_preinscripcion", "2024-01-12T09:15:00Z");
+            preinscripcion3.put("estado", "Aprobado");
+            preinscripcion3.put("observaciones", "Estudiante con excelente rendimiento académico");
+            preinscripcion3.put("condicion", "Homologacion");
+            
+            // Usuario estudiante 3
+            Map<String, Object> usuario3 = new HashMap<>();
+            usuario3.put("id_usuario", 6);
+            usuario3.put("nombre", "Carlos");
+            usuario3.put("apellido", "López");
+            usuario3.put("email", "carlos.lopez@unicauca.edu.co");
+            usuario3.put("telefono", "3003333333");
+            usuario3.put("codigo_estudiante", "104612345662");
+            usuario3.put("objRol", rolEstudiante);
+            
+            preinscripcion3.put("objUsuario", usuario3);
+            preinscripcion3.put("objCurso", curso1); // Mismo curso
+            
+            preinscripciones.add(preinscripcion3);
+            
+            return ResponseEntity.ok(preinscripciones);
+        } catch (Exception e) {
+            return ResponseEntity.status(500).build();
+        }
+    }
+
+    /**
+     * Actualizar observaciones de preinscripción
+     * PUT /api/cursos-intersemestrales/preinscripciones/{idPreinscripcion}/observaciones
+     */
+    @PutMapping("/preinscripciones/{idPreinscripcion}/observaciones")
+    public ResponseEntity<Map<String, Object>> actualizarObservacionesPreinscripcion(
+            @PathVariable Long idPreinscripcion,
+            @RequestBody Map<String, String> request) {
+        try {
+            String observaciones = request.get("observaciones");
+            
+            if (observaciones == null || observaciones.trim().isEmpty()) {
+                Map<String, Object> error = new HashMap<>();
+                error.put("error", "Las observaciones no pueden estar vacías");
+                return ResponseEntity.badRequest().body(error);
+            }
+            
+            // Simular actualización de observaciones
+            Map<String, Object> respuesta = new HashMap<>();
+            respuesta.put("message", "Observaciones actualizadas exitosamente");
+            
+            Map<String, Object> preinscripcion = new HashMap<>();
+            preinscripcion.put("id_preinscripcion", idPreinscripcion);
+            preinscripcion.put("observaciones", observaciones);
+            preinscripcion.put("estado", "Pendiente");
+            
+            respuesta.put("preinscripcion", preinscripcion);
+            
+            return ResponseEntity.ok(respuesta);
+        } catch (Exception e) {
+            Map<String, Object> error = new HashMap<>();
+            error.put("error", "Error interno del servidor");
+            return ResponseEntity.status(500).body(error);
+        }
+    }
+
+    // ==================== ENDPOINTS PARA APROBAR Y RECHAZAR SOLICITUDES ====================
+
+    /**
+     * Aprobar solicitud de curso nuevo
+     * PUT /api/cursos-intersemestrales/{id}/aprobar
+     */
+    @PutMapping("/{id}/aprobar")
+    public ResponseEntity<Map<String, Object>> aprobarSolicitud(@PathVariable Long id) {
+        try {
+            // Simular aprobación de solicitud
+            Map<String, Object> solicitud = new HashMap<>();
+            solicitud.put("id_solicitud", id);
+            solicitud.put("nombre_solicitud", "Solicitud de Curso Nuevo");
+            solicitud.put("fecha_solicitud", "2024-01-10T10:30:00Z");
+            solicitud.put("estado", "Aprobado");
+            solicitud.put("observaciones", "Estudiante con buen rendimiento académico");
+            solicitud.put("condicion", "Primera_Vez");
+            solicitud.put("tipoSolicitud", "PREINSCRIPCION");
+            
+            // Usuario estudiante
+            Map<String, Object> usuario = new HashMap<>();
+            usuario.put("id_usuario", 4);
+            usuario.put("nombre", "Pepa");
+            usuario.put("apellido", "González");
+            usuario.put("email", "pepa.gonzalez@unicauca.edu.co");
+            usuario.put("telefono", "3001111111");
+            usuario.put("codigo_estudiante", "104612345660");
+            
+            Map<String, Object> rolEstudiante = new HashMap<>();
+            rolEstudiante.put("id_rol", 1);
+            rolEstudiante.put("nombre_rol", "Estudiante");
+            usuario.put("objRol", rolEstudiante);
+            
+            solicitud.put("objUsuario", usuario);
+            
+            // Curso ofertado
+            Map<String, Object> curso = new HashMap<>();
+            curso.put("id_curso", 1);
+            curso.put("nombre_curso", "Programación I");
+            curso.put("codigo_curso", "PROG-201");
+            curso.put("descripcion", "Fundamentos de programación");
+            curso.put("fecha_inicio", "2024-01-15T00:00:00Z");
+            curso.put("fecha_fin", "2024-03-15T00:00:00Z");
+            curso.put("cupo_maximo", 25);
+            curso.put("cupo_estimado", 20);
+            curso.put("cupo_disponible", 15);
+            curso.put("espacio_asignado", "Lab 301");
+            curso.put("estado", "Preinscripcion");
+            
+            // Materia del curso
+            Map<String, Object> materia = new HashMap<>();
+            materia.put("id_materia", 3);
+            materia.put("nombre_materia", "Programación I");
+            materia.put("codigo_materia", "PROG");
+            materia.put("creditos", 4);
+            curso.put("objMateria", materia);
+            
+            // Docente del curso
+            Map<String, Object> docente = new HashMap<>();
+            docente.put("id_usuario", 3);
+            docente.put("nombre", "Ana");
+            docente.put("apellido", "Martínez");
+            docente.put("email", "ana@unicauca.edu.co");
+            docente.put("telefono", "3009876543");
+            
+            Map<String, Object> rolDocente = new HashMap<>();
+            rolDocente.put("id_rol", 2);
+            rolDocente.put("nombre_rol", "Docente");
+            docente.put("objRol", rolDocente);
+            
+            curso.put("objDocente", docente);
+            solicitud.put("objCursoOfertadoVerano", curso);
+            
+            return ResponseEntity.ok(solicitud);
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body(null);
+        }
+    }
+
+    /**
+     * Rechazar solicitud de curso nuevo
+     * PUT /api/cursos-intersemestrales/{id}/rechazar
+     */
+    @PutMapping("/{id}/rechazar")
+    public ResponseEntity<Map<String, Object>> rechazarSolicitud(
+            @PathVariable Long id,
+            @RequestBody(required = false) Map<String, String> request) {
+        try {
+            String motivo = request != null ? request.get("motivo") : "Solicitud rechazada por el funcionario";
+            
+            // Simular rechazo de solicitud
+            Map<String, Object> solicitud = new HashMap<>();
+            solicitud.put("id_solicitud", id);
+            solicitud.put("nombre_solicitud", "Solicitud de Curso Nuevo");
+            solicitud.put("fecha_solicitud", "2024-01-10T10:30:00Z");
+            solicitud.put("estado", "Rechazado");
+            solicitud.put("observaciones", motivo);
+            solicitud.put("condicion", "Primera_Vez");
+            solicitud.put("tipoSolicitud", "PREINSCRIPCION");
+            
+            // Usuario estudiante
+            Map<String, Object> usuario = new HashMap<>();
+            usuario.put("id_usuario", 4);
+            usuario.put("nombre", "Pepa");
+            usuario.put("apellido", "González");
+            usuario.put("email", "pepa.gonzalez@unicauca.edu.co");
+            usuario.put("telefono", "3001111111");
+            usuario.put("codigo_estudiante", "104612345660");
+            
+            Map<String, Object> rolEstudiante = new HashMap<>();
+            rolEstudiante.put("id_rol", 1);
+            rolEstudiante.put("nombre_rol", "Estudiante");
+            usuario.put("objRol", rolEstudiante);
+            
+            solicitud.put("objUsuario", usuario);
+            
+            // Curso ofertado
+            Map<String, Object> curso = new HashMap<>();
+            curso.put("id_curso", 1);
+            curso.put("nombre_curso", "Programación I");
+            curso.put("codigo_curso", "PROG-201");
+            curso.put("descripcion", "Fundamentos de programación");
+            curso.put("fecha_inicio", "2024-01-15T00:00:00Z");
+            curso.put("fecha_fin", "2024-03-15T00:00:00Z");
+            curso.put("cupo_maximo", 25);
+            curso.put("cupo_estimado", 20);
+            curso.put("cupo_disponible", 15);
+            curso.put("espacio_asignado", "Lab 301");
+            curso.put("estado", "Preinscripcion");
+            
+            // Materia del curso
+            Map<String, Object> materia = new HashMap<>();
+            materia.put("id_materia", 3);
+            materia.put("nombre_materia", "Programación I");
+            materia.put("codigo_materia", "PROG");
+            materia.put("creditos", 4);
+            curso.put("objMateria", materia);
+            
+            // Docente del curso
+            Map<String, Object> docente = new HashMap<>();
+            docente.put("id_usuario", 3);
+            docente.put("nombre", "Ana");
+            docente.put("apellido", "Martínez");
+            docente.put("email", "ana@unicauca.edu.co");
+            docente.put("telefono", "3009876543");
+            
+            Map<String, Object> rolDocente = new HashMap<>();
+            rolDocente.put("id_rol", 2);
+            rolDocente.put("nombre_rol", "Docente");
+            docente.put("objRol", rolDocente);
+            
+            curso.put("objDocente", docente);
+            solicitud.put("objCursoOfertadoVerano", curso);
+            
+            return ResponseEntity.ok(solicitud);
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body(null);
+        }
+    }
 }
