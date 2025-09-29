@@ -274,14 +274,43 @@ public class CursosIntersemestralesRestController {
     @PostMapping("/solicitudes-curso-nuevo")
     public ResponseEntity<Map<String, Object>> crearSolicitudCursoNuevo(@RequestBody SolicitudCursoNuevoDTOPeticion peticion) {
         try {
+
+            // Mapear el DTO a nuestro modelo de dominio
+            SolicitudCursoVeranoPreinscripcion solicitudDominio = new SolicitudCursoVeranoPreinscripcion();
+            solicitudDominio.setNombre_estudiante(peticion.getNombreCompleto());
+            solicitudDominio.setCodigo_estudiante(peticion.getCodigo());
+            
+            // Mapear la condición con validación
+            try {
+                solicitudDominio.setCodicion_solicitud(CondicionSolicitudVerano.valueOf(peticion.getCondicion()));
+            } catch (IllegalArgumentException e) {
+                throw new IllegalArgumentException("Condición inválida: " + peticion.getCondicion() + ". Valores válidos: " + java.util.Arrays.toString(CondicionSolicitudVerano.values()));
+            }
+            
+            solicitudDominio.setObservacion("Solicitud de apertura de curso: " + peticion.getCurso());
+            
+            // Crear un curso temporal con ID = 0 para indicar que es un curso nuevo
+            CursoOfertadoVerano cursoTemporal = new CursoOfertadoVerano();
+            cursoTemporal.setId_curso(0); // ID = 0 indica curso nuevo
+            solicitudDominio.setObjCursoOfertadoVerano(cursoTemporal);
+            
+            // Crear usuario temporal
+            co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Usuario usuarioTemporal = 
+                new co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Usuario();
+            usuarioTemporal.setId_usuario(peticion.getIdUsuario());
+            solicitudDominio.setObjUsuario(usuarioTemporal);
+
+            // Llamar al caso de uso
+            SolicitudCursoVeranoPreinscripcion solicitudGuardada = solicitudCU.crearSolicitudCursoVeranoPreinscripcion(solicitudDominio);
+
             // Crear respuesta JSON con la estructura esperada
             Map<String, Object> respuesta = new HashMap<>();
-            respuesta.put("id_solicitud", 1);
+            respuesta.put("id_solicitud", solicitudGuardada.getId_solicitud());
             respuesta.put("nombreCompleto", peticion.getNombreCompleto());
             respuesta.put("codigo", peticion.getCodigo());
             respuesta.put("curso", peticion.getCurso());
             respuesta.put("condicion", peticion.getCondicion());
-            respuesta.put("fecha", java.time.LocalDateTime.now().toString());
+            respuesta.put("fecha", solicitudGuardada.getFecha_registro_solicitud().toString());
             respuesta.put("estado", "Pendiente");
             
             // Crear objeto usuario
@@ -291,9 +320,13 @@ public class CursosIntersemestralesRestController {
             respuesta.put("objUsuario", usuario);
             
             return ResponseEntity.ok(respuesta);
+        } catch (IllegalArgumentException e) {
+            Map<String, Object> error = new HashMap<>();
+            error.put("error", "Error de validación: " + e.getMessage());
+            return ResponseEntity.badRequest().body(error);
         } catch (Exception e) {
             Map<String, Object> error = new HashMap<>();
-            error.put("error", "Error interno del servidor");
+            error.put("error", "Error interno del servidor: " + e.getMessage());
             return ResponseEntity.internalServerError().body(error);
         }
     }

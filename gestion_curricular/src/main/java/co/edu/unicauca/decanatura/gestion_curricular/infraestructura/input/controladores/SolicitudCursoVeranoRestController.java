@@ -9,12 +9,14 @@ import java.util.List;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.ArrayList;
 
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarSolicitudCursoVeranoCUIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.SolicitudCursoVeranoIncripcion;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.SolicitudCursoVeranoPreinscripcion;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.DTOPeticion.SolicitudCurosoVeranoPreinscripcionDTOPeticion;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.DTOPeticion.SolicitudCursoVeranoInscripcionDTOPeticion;
+import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.DTOPeticion.CursosOfertadosDTOPeticion;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.DTORespuesta.SolicitudCursoVeranoInscripcionDTORespuesta;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.DTORespuesta.SolicitudCursoVeranoPreinscripcionDTORespuesta;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.mappers.SolicitudCursoDeVeranoInscripcionMapperDominio;
@@ -152,6 +154,126 @@ public class SolicitudCursoVeranoRestController {
             SolicitudCursoVeranoPreinscripcionDTORespuesta respuesta = 
                 solicitudCursoVeranoPreinscripcionMapper.mappearDeSolicitudCursoVeranoPreinscripcionARespuesta(solicitud);
             return ResponseEntity.ok(respuesta);
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().build();
+        }
+    }
+
+    // ====== ENDPOINTS PARA SOLICITUDES DE CURSO NUEVO ======
+    
+    /**
+     * Crear solicitud de curso nuevo (no ofertado)
+     */
+    @PostMapping("/solicitud-curso-nuevo")
+    public ResponseEntity<Map<String, Object>> crearSolicitudCursoNuevo(
+            @RequestBody Map<String, Object> payload) {
+        try {
+            // Extraer datos del payload
+            String nombreCompleto = (String) payload.get("nombreCompleto");
+            String codigo = (String) payload.get("codigo");
+            String curso = (String) payload.get("curso");
+            String condicion = (String) payload.get("condicion");
+            Integer idUsuario = (Integer) payload.get("idUsuario");
+
+            // Validaciones básicas
+            if (nombreCompleto == null || nombreCompleto.trim().isEmpty()) {
+                return ResponseEntity.badRequest().body(Map.of("error", "Nombre completo es requerido"));
+            }
+            if (codigo == null || codigo.trim().isEmpty()) {
+                return ResponseEntity.badRequest().body(Map.of("error", "Código es requerido"));
+            }
+            if (curso == null || curso.trim().isEmpty()) {
+                return ResponseEntity.badRequest().body(Map.of("error", "Nombre del curso es requerido"));
+            }
+            if (idUsuario == null) {
+                return ResponseEntity.badRequest().body(Map.of("error", "ID de usuario es requerido"));
+            }
+
+            // Crear solicitud de preinscripción con los datos
+            SolicitudCurosoVeranoPreinscripcionDTOPeticion solicitudDTO = new SolicitudCurosoVeranoPreinscripcionDTOPeticion();
+            solicitudDTO.setNombre_estudiante(nombreCompleto);
+            solicitudDTO.setCodigo_estudiante(codigo);
+            solicitudDTO.setCodicion_solicitud(condicion);
+            solicitudDTO.setObservacion("Solicitud de apertura de curso: " + curso);
+            solicitudDTO.setUsuario_id(idUsuario);
+
+            // Crear un curso temporal para la solicitud
+            CursosOfertadosDTOPeticion cursoDTO = new CursosOfertadosDTOPeticion();
+            cursoDTO.setId_curso(0); // ID temporal
+            solicitudDTO.setObjCursoOfertado(cursoDTO);
+
+            // Crear la solicitud
+            SolicitudCursoVeranoPreinscripcion solicitudDominio = solicitudCursoVeranoPreinscripcionMapper
+                    .mappearDePeticionASolicitudCursoVeranoPreinscripcion(solicitudDTO);
+
+            System.out.println("🔍 DEBUG: Creando solicitud con datos:");
+            System.out.println("  - Nombre: " + nombreCompleto);
+            System.out.println("  - Código: " + codigo);
+            System.out.println("  - Curso: " + curso);
+            System.out.println("  - Usuario ID: " + idUsuario);
+
+            SolicitudCursoVeranoPreinscripcion solicitudGuardada = solicitudCU
+                    .crearSolicitudCursoVeranoPreinscripcion(solicitudDominio);
+
+            System.out.println("🔍 DEBUG: Solicitud guardada con ID: " + (solicitudGuardada != null ? solicitudGuardada.getId_solicitud() : "NULL"));
+
+            // Respuesta exitosa
+            Map<String, Object> respuesta = new HashMap<>();
+            respuesta.put("success", true);
+            respuesta.put("message", "Solicitud de curso nuevo creada exitosamente");
+            respuesta.put("id_solicitud", solicitudGuardada.getId_solicitud());
+            respuesta.put("fecha", solicitudGuardada.getFecha_registro_solicitud());
+            respuesta.put("codigo", codigo);
+            respuesta.put("estado", "Pendiente");
+            respuesta.put("objUsuario", Map.of("id_usuario", idUsuario));
+            respuesta.put("curso", curso);
+
+            return ResponseEntity.ok(respuesta);
+
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError()
+                    .body(Map.of("error", "Error al crear solicitud: " + e.getMessage()));
+        }
+    }
+
+    /**
+     * Obtener solicitudes de curso nuevo de un usuario
+     */
+    @GetMapping("/solicitudes-curso-nuevo/{idUsuario}")
+    public ResponseEntity<List<Map<String, Object>>> obtenerSolicitudesCursoNuevoUsuario(
+            @Min(value = 1) @PathVariable Integer idUsuario) {
+        try {
+            List<SolicitudCursoVeranoPreinscripcion> solicitudes = solicitudCU.buscarSolicitudesPorUsuario(idUsuario);
+            
+            List<Map<String, Object>> respuesta = solicitudes.stream()
+                    .map(solicitud -> {
+                        Map<String, Object> item = new HashMap<>();
+                        item.put("id_solicitud", solicitud.getId_solicitud());
+                        item.put("nombreCompleto", solicitud.getNombre_estudiante());
+                        item.put("codigo", solicitud.getCodigo_estudiante());
+                        item.put("curso", "Curso solicitado"); // Por ahora genérico
+                        item.put("condicion", solicitud.getCodicion_solicitud());
+                        item.put("fecha", solicitud.getFecha_registro_solicitud());
+                        item.put("estado", "Pendiente");
+                        item.put("objUsuario", Map.of("id_usuario", idUsuario));
+                        return item;
+                    })
+                    .toList();
+            
+            return ResponseEntity.ok(respuesta);
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().build();
+        }
+    }
+
+    /**
+     * Obtener todas las solicitudes de curso nuevo (para funcionarios)
+     */
+    @GetMapping("/solicitudes-curso-nuevo")
+    public ResponseEntity<List<Map<String, Object>>> obtenerTodasLasSolicitudesCursoNuevo() {
+        try {
+            // Por ahora retornamos una lista vacía, se puede implementar después
+            return ResponseEntity.ok(new ArrayList<>());
         } catch (Exception e) {
             return ResponseEntity.internalServerError().build();
         }
