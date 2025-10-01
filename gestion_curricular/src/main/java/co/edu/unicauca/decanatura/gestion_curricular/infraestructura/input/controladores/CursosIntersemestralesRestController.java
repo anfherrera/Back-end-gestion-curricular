@@ -10,6 +10,7 @@ import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarS
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.GestionarSolicitudCursoVeranoGatewayIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.CursoOfertadoVerano;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.SolicitudCursoVeranoPreinscripcion;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Solicitud;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Enums.CondicionSolicitudVerano;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.DTORespuesta.CursosOfertadosDTORespuesta;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.DTORespuesta.SolicitudCursoVeranoPreinscripcionDTORespuesta;
@@ -49,7 +50,7 @@ public class CursosIntersemestralesRestController {
         try {
             List<CursoOfertadoVerano> cursos = cursoCU.listarTodos();
             List<CursosOfertadosDTORespuesta> respuesta = cursos.stream()
-                    .map(cursoMapper::mappearDeCursoOfertadoARespuesta)
+                    .map(cursoMapper::mappearDeCursoOfertadoARespuestaDisponible)
                     .collect(Collectors.toList());
             return ResponseEntity.ok(respuesta);
         } catch (Exception e) {
@@ -64,10 +65,10 @@ public class CursosIntersemestralesRestController {
     @GetMapping("/cursos-verano/disponibles")
     public ResponseEntity<List<CursosOfertadosDTORespuesta>> obtenerCursosVeranoDisponibles() {
         try {
-            // Usar el mismo endpoint que /cursos/preinscripcion para consistencia
+            // Usar mapper específico para cursos disponibles (estado "Disponible")
             List<CursoOfertadoVerano> cursos = cursoCU.listarTodos();
             List<CursosOfertadosDTORespuesta> respuesta = cursos.stream()
-                    .map(cursoMapper::mappearDeCursoOfertadoARespuesta)
+                    .map(cursoMapper::mappearDeCursoOfertadoARespuestaDisponible)
                     .collect(Collectors.toList());
             return ResponseEntity.ok(respuesta);
         } catch (Exception e) {
@@ -275,9 +276,9 @@ public class CursosIntersemestralesRestController {
             
             // Verificar si ya existe una preinscripción para este usuario y curso
             System.out.println("🔍 DEBUG: Verificando preinscripciones existentes...");
-            List<SolicitudCursoVeranoPreinscripcion> preinscripcionesExistentes = solicitudGateway.buscarSolicitudesPorUsuarioYCurso(peticion.getIdUsuario(), peticion.getIdCurso());
+            Solicitud preinscripcionExistente = solicitudGateway.buscarSolicitudesPorUsuarioYCursoPre(peticion.getIdUsuario(), peticion.getIdCurso());
             
-            if (preinscripcionesExistentes != null && !preinscripcionesExistentes.isEmpty()) {
+            if (preinscripcionExistente != null) {
                 System.out.println("❌ ERROR: Ya existe una preinscripción para este usuario y curso");
                 Map<String, Object> error = new HashMap<>();
                 error.put("error", "Ya tienes una preinscripción activa para este curso");
