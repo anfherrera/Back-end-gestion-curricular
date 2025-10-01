@@ -1,0 +1,14 @@
+# Crear documento Word real
+$word = New-Object -ComObject Word.Application
+$word.Visible = $false
+
+$doc = $word.Documents.Add()
+$doc.Content.Text = "UNIVERSIDAD DEL CAUCA`nFACULTAD DE INGENIERÍA ELECTRÓNICA Y TELECOMUNICACIONES`n`nRESOLUCIÓN DE HOMOLOGACIÓN`nNo. [NUMERO_DOCUMENTO]`nFecha: [FECHA_DOCUMENTO]`n`nPor la cual se resuelve la solicitud de homologación de asignaturas`n`nEL DECANO DE LA FACULTAD DE INGENIERÍA ELECTRÓNICA Y TELECOMUNICACIONES DE LA UNIVERSIDAD DEL CAUCA`n`nEn uso de sus facultades legales y reglamentarias, y`n`nCONSIDERANDO:`n`n1. Que el estudiante [NOMBRE_ESTUDIANTE] identificado con cédula de ciudadanía N° [CEDULA_ESTUDIANTE] y código estudiantil N° [CODIGO_ESTUDIANTE], realizó solicitud de homologación de asignaturas, con fecha [FECHA_SOLICITUD], para el Programa de [PROGRAMA], el cual es administrado por la Facultad de Ingeniería Electrónica y Telecomunicaciones.`n`n2. Que la historia académica del estudiante [NOMBRE_ESTUDIANTE] fue revisada en virtud de lo estipulado en el Acuerdo 004 del 5 de marzo de 2003, y el Coordinador del Programa en fecha [FECHA_CONCEPTO], conceptúo que el (la) estudiante NO ha perdido el derecho a continuar estudios en el programa de [PROGRAMA].`n`n3. Que el Consejo de Facultad de Ingeniería Electrónica y Telecomunicaciones, en sesión del [FECHA_SESION_CONSEJO], Acta No. [NUMERO_ACTA_CONSEJO], aprobó la homologación de las asignaturas relacionadas en el Artículo Primero de la presente Resolución.`n`nEn mérito de lo expuesto,`n`nRESUELVE:`n`nARTÍCULO PRIMERO. - Homologar al estudiante [NOMBRE_ESTUDIANTE] identificado con cédula de ciudadanía N° [CEDULA_ESTUDIANTE] y código estudiantil N° [CODIGO_ESTUDIANTE], las siguientes asignaturas:`n`nARTÍCULO SEGUNDO. - Notificar personalmente o mediante correo electrónico al estudiante del contenido de la presente resolución, advirtiéndole que contra el presente Acto Administrativo procede el recurso de reposición ante el Consejo de Facultad de Ingeniería Electrónica y Telecomunicaciones, el cual deberá ser interpuesto en la diligencia de notificación o dentro de los diez (10) días hábiles siguientes a la notificación.`n`nARTÍCULO TERCERO. - Enviar la presente Resolución a la Coordinación del Programa y a la División de Admisiones, Registro y Control Académico - DARCA, para que sea registrada en la historia académica del (la) estudiante.`n`nPara constancia se firma en Popayán, a los [DIA_FIRMA] ([DIA_NUMERO]) días del mes de [MES_FIRMA] del año [AÑO_FIRMA].`n`nCOMUNÍQUESE, NOTIFÍQUESE Y CÚMPLASE`n`nALEJANDRO TOLEDO TOVAR`nPresidente Consejo de Facultad"
+
+$outputPath = "src\main\resources\templates\oficio-homologacion.docx"
+$doc.SaveAs2($outputPath, 16)
+
+$doc.Close()
+$word.Quit()
+
+Write-Host "Documento Word creado exitosamente"

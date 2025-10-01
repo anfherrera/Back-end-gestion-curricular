@@ -1,47 +1,58 @@
 UNIVERSIDAD DEL CAUCA
 FACULTAD DE INGENIERÍA ELECTRÓNICA Y TELECOMUNICACIONES
 
-[TITULO_DOCUMENTO]
-No. [NUMERO_DOCUMENTO]
-Fecha: [FECHA_DOCUMENTO]
+Resolución [NUMERO_DOCUMENTO] de [AÑO_DOCUMENTO]
+([DIA_DOCUMENTO] de [MES_DOCUMENTO])
 
-Por la cual se resuelve la solicitud de [TIPO_PROCESO]
+Por la cual se aprueba la homologación de asignaturas.
 
-EL COORDINADOR ACADÉMICO DE LA [FACULTAD]
+El Consejo de Facultad de Ingeniería Electrónica y Telecomunicaciones de la Universidad del Cauca, en uso de su competencia funcional y,
 
-En uso de sus facultades legales y reglamentarias, y
+C O N S I D E R A N D O:
 
-CONSIDERANDO:
+1. El Acuerdo Superior No. 002 de 1988 por el cual se expide el Reglamento Estudiantil de la Universidad del Cauca, modificado por el Acuerdo 055 de 1991, establece en el artículo 18, la posibilidad de solicitar la homologación de asignaturas: "El alumno que con anterioridad al ingreso a un programa de la Universidad haya cursado asignaturas en otro programa de la misma o en otra institución de Educación Superior legalmente reconocida por el ICFES, podrá solicitar la homologación".
 
-1. Que el estudiante [NOMBRE_ESTUDIANTE] con código [CODIGO_ESTUDIANTE] del programa de [PROGRAMA] ha presentado solicitud de [TIPO_PROCESO].
+2. El (la) estudiante [NOMBRE_ESTUDIANTE], identificado con cédula de ciudadanía # [CEDULA_ESTUDIANTE] y código estudiantil N°. [CODIGO_ESTUDIANTE], cursó y aprobó en el Programa de [PROGRAMA_ORIGEN], solicita le sea(n) homologada(s) las asignaturas al Programa [PROGRAMA_DESTINO] de la Facultad de Ingeniería Electrónica y Telecomunicaciones.
 
-2. Que la solicitud ha sido revisada y aprobada por los funcionarios competentes.
+3. El Comité del Programa de [PROGRAMA_DESTINO], después del correspondiente estudio del contenido programático e intensidad horaria de las asignaturas, recomendó al Consejo de Facultad aprobar la homologación.
 
-3. Que se cumplen todos los requisitos establecidos en el reglamento estudiantil.
+En mérito a lo expuesto,
 
-4. Que la solicitud fue presentada el [FECHA_SOLICITUD].
+R E S U E L V E:
 
-RESUELVE:
+ARTÍCULO PRIMERO. APROBAR, la homologación de la(s) asignatura(s) cursada(s) y aprobada(s) por (el) (la) estudiante [NOMBRE_ESTUDIANTE], identificado con cédula de ciudadanía # [CEDULA_ESTUDIANTE] y código estudiantil N°. [CODIGO_ESTUDIANTE], cursó y aprobó en el Programa de [PROGRAMA_ORIGEN], para que sea(n) homologada(s) al Programa de [PROGRAMA_DESTINO], de la Facultad de Ingeniería Electrónica y Telecomunicaciones de la Universidad del Cauca, correspondientes al [PERIODO_ACADEMICO].
 
-ARTÍCULO PRIMERO: Aprobar la [TIPO_PROCESO] solicitada por el estudiante [NOMBRE_ESTUDIANTE] con código [CODIGO_ESTUDIANTE].
+| ASIGNATURA CURSADA | CÓDIGO y PLAN [PROGRAMA_DESTINO] | Asignatura a homologar en el [PERIODO_ACADEMICO] | NOTA |
+|-------------------|----------------------------------|--------------------------------------------------|------|
+| [ASIGNATURA_CURSADA_1] | [CODIGO_CURSADA_1] | [ASIGNATURA_HOMOLOGAR_1] | [NOTA_1] |
+| [ASIGNATURA_CURSADA_2] | [CODIGO_CURSADA_2] | [ASIGNATURA_HOMOLOGAR_2] | [NOTA_2] |
+| [ASIGNATURA_CURSADA_3] | [CODIGO_CURSADA_3] | [ASIGNATURA_HOMOLOGAR_3] | [NOTA_3] |
 
-ARTÍCULO SEGUNDO: La presente resolución rige a partir de la fecha de su expedición.
+ARTÍCULO SEGUNDO: Notificar personalmente o mediante correo electrónico al estudiante del contenido de la presente resolución, advirtiéndole que contra el presente Acto Administrativo procede el recurso de reposición ante el Consejo de Facultad de Ingeniería Electrónica y Telecomunicaciones, el cual deberá ser interpuesto en la diligencia de notificación o dentro de los diez (10) días hábiles siguientes a la notificación.
 
-ARTÍCULO TERCERO: Comuníquese y cúmplase.
+ARTÍCULO TERCERO: Enviar la presente Resolución a la Coordinación del Programa y a la División de Admisiones, Registro y Control Académico – DARCA, para que sea registrada en la historia académica del (la) estudiante.
 
-Dada en [CIUDAD], a los [FECHA_ACTUAL].
+Para constancia se firma en Popayán, a los [DIA_FIRMA] ([DIA_NUMERO]) días del mes de [MES_FIRMA] de [AÑO_FIRMA].
 
-[OBSERVACIONES]
+COMUNÍQUESE, NOTIFÍQUESE Y CÚMPLASE.
 
-_________________________
-COORDINADOR ACADÉMICO
-[FACULTAD]
-[NOMBRE_UNIVERSIDAD]
+ALEJANDRO TOLEDO TOVAR
+Presidente Consejo de Facultad
 
----
+Diligencia de notificación
+El señor (a) _________________________________________________________
 
-INSTRUCCIONES:
-1. Copia este contenido a un documento Word
-2. Guarda el archivo como "oficio-homologacion.docx"
-3. Los placeholders [CAMPO] serán reemplazados automáticamente por el sistema
+en la fecha _________________________________________________________
 
+del [AÑO_FIRMA], se notificó personalmente de la presente resolución.
+
+Dado el caso que se proceda a notificar por aviso mediante correo electrónico, se le advierte que esta resolución se considerará notificada al finalizar el segundo día siguiente al de la entrega del correo donde se le enviará la resolución, seguidamente se continuarán con los trámites administrativos procedentes.
+
+Firma _________________________________________________________
+
+Proyectó: Olga C.
+Revisó: Carolina Ch.
+
+Tramitado en DARCA por _________________________________________________________
+
+en la fecha _________________________________________________________
