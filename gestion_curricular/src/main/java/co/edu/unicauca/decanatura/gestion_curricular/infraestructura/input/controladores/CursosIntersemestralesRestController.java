@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarCursoOfertadoVeranoCUIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarSolicitudCursoVeranoCUIntPort;
+import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.GestionarSolicitudCursoVeranoGatewayIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.CursoOfertadoVerano;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.SolicitudCursoVeranoPreinscripcion;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Enums.CondicionSolicitudVerano;
@@ -34,6 +35,7 @@ public class CursosIntersemestralesRestController {
 
     private final GestionarCursoOfertadoVeranoCUIntPort cursoCU;
     private final GestionarSolicitudCursoVeranoCUIntPort solicitudCU;
+    private final GestionarSolicitudCursoVeranoGatewayIntPort solicitudGateway;
     private final CursosOfertadosMapperDominio cursoMapper;
     private final SolicitudCursoDeVeranoPreinscripcionMapperDominio solicitudMapper;
     private final InscripcionService inscripcionService;
@@ -242,20 +244,71 @@ public class CursosIntersemestralesRestController {
     @PostMapping("/cursos-verano/preinscripciones")
     public ResponseEntity<Map<String, Object>> crearPreinscripcion(@RequestBody PreinscripcionCursoVeranoDTOPeticion peticion) {
         try {
+            System.out.println("🔍 DEBUG: Recibiendo preinscripción:");
+            System.out.println("  - ID Usuario: " + peticion.getIdUsuario());
+            System.out.println("  - ID Curso: " + peticion.getIdCurso());
+            System.out.println("  - Nombre Solicitud: " + peticion.getNombreSolicitud());
+            
+            // Mapear el DTO a nuestro modelo de dominio
+            SolicitudCursoVeranoPreinscripcion solicitudDominio = new SolicitudCursoVeranoPreinscripcion();
+            solicitudDominio.setNombre_estudiante("Estudiante"); // Valor por defecto
+            solicitudDominio.setCodigo_estudiante("EST001"); // Valor por defecto
+            solicitudDominio.setObservacion(peticion.getNombreSolicitud());
+            solicitudDominio.setCodicion_solicitud(CondicionSolicitudVerano.Primera_Vez); // Valor por defecto
+            
+            System.out.println("🔍 DEBUG: Solicitud dominio creada");
+            
+            // Crear curso con el ID real
+            CursoOfertadoVerano curso = new CursoOfertadoVerano();
+            curso.setId_curso(peticion.getIdCurso());
+            solicitudDominio.setObjCursoOfertadoVerano(curso);
+            
+            System.out.println("🔍 DEBUG: Curso asignado con ID: " + peticion.getIdCurso());
+            
+            // Crear usuario
+            co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Usuario usuario = 
+                new co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Usuario();
+            usuario.setId_usuario(peticion.getIdUsuario());
+            solicitudDominio.setObjUsuario(usuario);
+
+            System.out.println("🔍 DEBUG: Usuario asignado con ID: " + peticion.getIdUsuario());
+            
+            // Verificar si ya existe una preinscripción para este usuario y curso
+            System.out.println("🔍 DEBUG: Verificando preinscripciones existentes...");
+            List<SolicitudCursoVeranoPreinscripcion> preinscripcionesExistentes = solicitudGateway.buscarSolicitudesPorUsuarioYCurso(peticion.getIdUsuario(), peticion.getIdCurso());
+            
+            if (preinscripcionesExistentes != null && !preinscripcionesExistentes.isEmpty()) {
+                System.out.println("❌ ERROR: Ya existe una preinscripción para este usuario y curso");
+                Map<String, Object> error = new HashMap<>();
+                error.put("error", "Ya tienes una preinscripción activa para este curso");
+                error.put("codigo", "DUPLICATE_PREINSCRIPTION");
+                return ResponseEntity.badRequest().body(error);
+            }
+            
+            System.out.println("🔍 DEBUG: No hay preinscripciones duplicadas, procediendo a crear...");
+
+            // Llamar al gateway directamente para guardar en la base de datos
+            SolicitudCursoVeranoPreinscripcion solicitudGuardada = solicitudGateway.crearSolicitudCursoVeranoPreinscripcion(solicitudDominio);
+
+            System.out.println("🔍 DEBUG: Solicitud guardada con ID: " + (solicitudGuardada != null ? solicitudGuardada.getId_solicitud() : "NULL"));
+
             // Crear respuesta JSON con la estructura esperada
             Map<String, Object> respuesta = new HashMap<>();
-            respuesta.put("id_preinscripcion", 1);
+            respuesta.put("id_preinscripcion", solicitudGuardada.getId_solicitud());
             respuesta.put("idUsuario", peticion.getIdUsuario());
             respuesta.put("idCurso", peticion.getIdCurso());
             respuesta.put("nombreSolicitud", peticion.getNombreSolicitud());
-            respuesta.put("fecha", java.time.LocalDateTime.now().toString());
+            respuesta.put("fecha", solicitudGuardada.getFecha_registro_solicitud());
             respuesta.put("estado", "Pendiente");
             respuesta.put("mensaje", "Preinscripción creada exitosamente");
             
+            System.out.println("🔍 DEBUG: Respuesta creada exitosamente");
             return ResponseEntity.ok(respuesta);
         } catch (Exception e) {
+            System.out.println("❌ ERROR: " + e.getMessage());
+            e.printStackTrace();
             Map<String, Object> error = new HashMap<>();
-            error.put("error", "Error interno del servidor");
+            error.put("error", "Error interno del servidor: " + e.getMessage());
             return ResponseEntity.internalServerError().body(error);
         }
     }

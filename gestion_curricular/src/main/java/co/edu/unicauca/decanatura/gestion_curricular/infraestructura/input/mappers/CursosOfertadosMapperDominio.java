@@ -45,7 +45,7 @@ public interface CursosOfertadosMapperDominio {
     @Mapping(target = "descripcion", constant = "Curso de verano")
     @Mapping(target = "fecha_inicio", constant = "2024-06-01T08:00:00Z")
     @Mapping(target = "fecha_fin", constant = "2024-07-15T17:00:00Z")
-    @Mapping(target = "estado", constant = "Disponible")
+    @Mapping(target = "estado", constant = "Preinscripcion")
     CursosOfertadosDTORespuesta mappearDeCursoOfertadoARespuesta(CursoOfertadoVerano curso);
 
     // Listas

@@ -22,5 +22,6 @@ INSERT IGNORE INTO `cursos_ofertados`(`idCurso`, `idfkMateria`, `idfkDocente`, `
 INSERT IGNORE INTO `cursos_ofertados`(`idCurso`, `idfkMateria`, `idfkDocente`, `grupo`, `cupo_estimado`, `salon`) VALUES (NULL, 3, 1, 'C', 20, 'A-103');
 
 -- Solo insertar estados adicionales
+INSERT IGNORE INTO `estadoscursos`(`idEstado`, `estado_actual`, `fecha_registro_estado`, `idfkCurso`) VALUES (NULL, 'Publicado', NOW(), 1);
 INSERT IGNORE INTO `estadoscursos`(`idEstado`, `estado_actual`, `fecha_registro_estado`, `idfkCurso`) VALUES (NULL, 'Preinscripcion', NOW(), 2);
 INSERT IGNORE INTO `estadoscursos`(`idEstado`, `estado_actual`, `fecha_registro_estado`, `idfkCurso`) VALUES (NULL, 'Inscripcion', NOW(), 3);
