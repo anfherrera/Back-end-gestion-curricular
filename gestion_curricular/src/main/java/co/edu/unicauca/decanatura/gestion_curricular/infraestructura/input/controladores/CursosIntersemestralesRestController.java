@@ -39,6 +39,23 @@ public class CursosIntersemestralesRestController {
     private final InscripcionService inscripcionService;
 
     /**
+     * Obtener cursos de verano (endpoint principal que llama el frontend)
+     * GET /api/cursos-intersemestrales/cursos-verano
+     */
+    @GetMapping("/cursos-verano")
+    public ResponseEntity<List<CursosOfertadosDTORespuesta>> obtenerCursosVerano() {
+        try {
+            List<CursoOfertadoVerano> cursos = cursoCU.listarTodos();
+            List<CursosOfertadosDTORespuesta> respuesta = cursos.stream()
+                    .map(cursoMapper::mappearDeCursoOfertadoARespuesta)
+                    .collect(Collectors.toList());
+            return ResponseEntity.ok(respuesta);
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().build();
+        }
+    }
+
+    /**
      * Obtener cursos de verano disponibles para estudiantes
      * GET /api/cursos-intersemestrales/cursos-verano/disponibles
      */
@@ -116,40 +133,19 @@ public class CursosIntersemestralesRestController {
     @GetMapping("/cursos-disponibles")
     public ResponseEntity<List<Map<String, Object>>> obtenerCursosDisponibles() {
         try {
+            // Usar datos reales de la base de datos
+            List<CursoOfertadoVerano> cursos = cursoCU.listarTodos();
             List<Map<String, Object>> cursosDisponibles = new ArrayList<>();
             
-            // Agregar cursos de prueba específicos
-            Map<String, Object> curso1 = new HashMap<>();
-            curso1.put("id_curso", 1);
-            curso1.put("nombre_curso", "Inteligencia Artificial");
-            curso1.put("codigo_curso", "IA-301");
-            curso1.put("creditos", 4);
-            curso1.put("descripcion", "Curso avanzado de inteligencia artificial");
-            cursosDisponibles.add(curso1);
-            
-            Map<String, Object> curso2 = new HashMap<>();
-            curso2.put("id_curso", 2);
-            curso2.put("nombre_curso", "Desarrollo Web");
-            curso2.put("codigo_curso", "WEB-302");
-            curso2.put("creditos", 3);
-            curso2.put("descripcion", "Desarrollo web moderno con React y Node.js");
-            cursosDisponibles.add(curso2);
-            
-            Map<String, Object> curso3 = new HashMap<>();
-            curso3.put("id_curso", 3);
-            curso3.put("nombre_curso", "Machine Learning");
-            curso3.put("codigo_curso", "ML-401");
-            curso3.put("creditos", 4);
-            curso3.put("descripcion", "Fundamentos de machine learning y deep learning");
-            cursosDisponibles.add(curso3);
-            
-            Map<String, Object> curso4 = new HashMap<>();
-            curso4.put("id_curso", 4);
-            curso4.put("nombre_curso", "Ciberseguridad");
-            curso4.put("codigo_curso", "CS-501");
-            curso4.put("creditos", 3);
-            curso4.put("descripcion", "Seguridad informática y protección de datos");
-            cursosDisponibles.add(curso4);
+            for (CursoOfertadoVerano curso : cursos) {
+                Map<String, Object> cursoMap = new HashMap<>();
+                cursoMap.put("id_curso", curso.getId_curso());
+                cursoMap.put("nombre_curso", curso.getObjMateria() != null ? curso.getObjMateria().getNombre() : "Sin nombre");
+                cursoMap.put("codigo_curso", curso.getObjMateria() != null ? curso.getObjMateria().getCodigo() : "Sin código");
+                cursoMap.put("creditos", curso.getObjMateria() != null ? curso.getObjMateria().getCreditos() : 0);
+                cursoMap.put("descripcion", "Curso de " + (curso.getObjMateria() != null ? curso.getObjMateria().getNombre() : "curso"));
+                cursosDisponibles.add(cursoMap);
+            }
             
             return ResponseEntity.ok(cursosDisponibles);
         } catch (Exception e) {
@@ -491,7 +487,7 @@ public class CursosIntersemestralesRestController {
      * Obtener todos los cursos de verano
      * GET /api/cursos-intersemestrales/cursos-verano
      */
-    @GetMapping("/cursos-verano")
+    @GetMapping("/cursos-verano-alt")
     public ResponseEntity<List<Map<String, Object>>> getTodosLosCursos() {
         try {
             List<Map<String, Object>> cursos = new ArrayList<>();

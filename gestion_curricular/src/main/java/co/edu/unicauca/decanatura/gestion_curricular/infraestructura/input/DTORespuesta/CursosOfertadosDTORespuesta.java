@@ -12,6 +12,17 @@ import lombok.NoArgsConstructor;
 public class CursosOfertadosDTORespuesta {
     
     private Integer id_curso;
+    
+    // Campos que espera el frontend
+    private String codigo_curso;
+    private String nombre_curso;
+    private String descripcion;
+    private String fecha_inicio;
+    private String fecha_fin;
+    private Integer cupo_maximo;
+    private Integer cupo_disponible;
+    private String espacio_asignado;
+    private String estado;
 
     private MateriaDTORespuesta objMateria;
 
