@@ -1,102 +1,106 @@
 package co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.servicios;
 
+import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.entidades.SolicitudCursoVeranoInscripcionEntity;
+import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.repositorios.SolicitudRepositoryInt;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
 
 @Service
 public class InscripcionService {
     
-    // Usar ConcurrentHashMap para simular persistencia en memoria
-    private final Map<Integer, Map<String, Object>> inscripciones = new ConcurrentHashMap<>();
+    @Autowired
+    private SolicitudRepositoryInt solicitudRepository;
     
     public InscripcionService() {
-        // Inicializar con datos de prueba
-        inicializarDatosPrueba();
-    }
-    
-    private void inicializarDatosPrueba() {
-        // Inscripción 1
-        Map<String, Object> inscripcion1 = new HashMap<>();
-        inscripcion1.put("id", 1);
-        inscripcion1.put("cursoId", 1);
-        inscripcion1.put("estudianteId", 1);
-        inscripcion1.put("fecha", "2024-01-15T10:30:00");
-        inscripcion1.put("estado", "inscrito");
-        inscripciones.put(1, inscripcion1);
-        
-        // Inscripción 2
-        Map<String, Object> inscripcion2 = new HashMap<>();
-        inscripcion2.put("id", 2);
-        inscripcion2.put("cursoId", 2);
-        inscripcion2.put("estudianteId", 1);
-        inscripcion2.put("fecha", "2024-01-16T14:20:00");
-        inscripcion2.put("estado", "inscrito");
-        inscripciones.put(2, inscripcion2);
-        
-        // Inscripción 3
-        Map<String, Object> inscripcion3 = new HashMap<>();
-        inscripcion3.put("id", 3);
-        inscripcion3.put("cursoId", 3);
-        inscripcion3.put("estudianteId", 2);
-        inscripcion3.put("fecha", "2024-01-17T09:15:00");
-        inscripcion3.put("estado", "pendiente");
-        inscripciones.put(3, inscripcion3);
-        
-        // Inscripción 4
-        Map<String, Object> inscripcion4 = new HashMap<>();
-        inscripcion4.put("id", 4);
-        inscripcion4.put("cursoId", 1);
-        inscripcion4.put("estudianteId", 3);
-        inscripcion4.put("fecha", "2024-01-18T11:45:00");
-        inscripcion4.put("estado", "inscrito");
-        inscripciones.put(4, inscripcion4);
-        
-        // Inscripción 5 (ya cancelada para pruebas)
-        Map<String, Object> inscripcion5 = new HashMap<>();
-        inscripcion5.put("id", 5);
-        inscripcion5.put("cursoId", 2);
-        inscripcion5.put("estudianteId", 3);
-        inscripcion5.put("fecha", "2024-01-19T08:30:00");
-        inscripcion5.put("estado", "cancelada");
-        inscripciones.put(5, inscripcion5);
+        // Ya no necesitamos inicializar datos de prueba
     }
     
     public List<Map<String, Object>> findAll() {
-        return new ArrayList<>(inscripciones.values());
+        // Buscar todas las inscripciones usando el repositorio existente
+        List<SolicitudCursoVeranoInscripcionEntity> entities = solicitudRepository.findAll()
+                .stream()
+                .filter(s -> s instanceof SolicitudCursoVeranoInscripcionEntity)
+                .map(s -> (SolicitudCursoVeranoInscripcionEntity) s)
+                .collect(Collectors.toList());
+        
+        return entities.stream()
+                .map(this::convertToMap)
+                .collect(Collectors.toList());
     }
     
     public Map<String, Object> findById(Integer id) {
-        return inscripciones.get(id);
+        Optional<SolicitudCursoVeranoInscripcionEntity> entity = solicitudRepository.findById(id)
+                .filter(s -> s instanceof SolicitudCursoVeranoInscripcionEntity)
+                .map(s -> (SolicitudCursoVeranoInscripcionEntity) s);
+        return entity.map(this::convertToMap).orElse(null);
     }
     
     public boolean existsById(Integer id) {
-        return inscripciones.containsKey(id);
+        return solicitudRepository.existsById(id);
     }
     
     public void save(Map<String, Object> inscripcion) {
-        Integer id = (Integer) inscripcion.get("id");
-        inscripciones.put(id, inscripcion);
+        // Este método necesitaría implementación más compleja
+        // Por ahora lo dejamos como placeholder
     }
     
     public void updateEstado(Integer id, String nuevoEstado) {
-        Map<String, Object> inscripcion = inscripciones.get(id);
-        if (inscripcion != null) {
-            inscripcion.put("estado", nuevoEstado);
-            inscripciones.put(id, inscripcion);
+        System.out.println("🔄 Actualizando estado de inscripción ID: " + id + " a: " + nuevoEstado);
+        
+        Optional<SolicitudCursoVeranoInscripcionEntity> entityOpt = solicitudRepository.findById(id)
+                .filter(s -> s instanceof SolicitudCursoVeranoInscripcionEntity)
+                .map(s -> (SolicitudCursoVeranoInscripcionEntity) s);
+        
+        if (entityOpt.isPresent()) {
+            SolicitudCursoVeranoInscripcionEntity entity = entityOpt.get();
+            
+            // Actualizar el estado en la primera entrada de estados
+            if (entity.getEstadosSolicitud() != null && !entity.getEstadosSolicitud().isEmpty()) {
+                entity.getEstadosSolicitud().get(0).setEstado_actual(nuevoEstado);
+                solicitudRepository.save(entity);
+                System.out.println("✅ Estado actualizado exitosamente");
+            } else {
+                System.out.println("⚠️ No se encontraron estados para la inscripción ID: " + id);
+            }
+        } else {
+            System.out.println("❌ No se encontró la inscripción con ID: " + id);
         }
     }
     
     public String getEstado(Integer id) {
-        Map<String, Object> inscripcion = inscripciones.get(id);
-        return inscripcion != null ? (String) inscripcion.get("estado") : null;
+        Optional<SolicitudCursoVeranoInscripcionEntity> entity = solicitudRepository.findById(id)
+                .filter(s -> s instanceof SolicitudCursoVeranoInscripcionEntity)
+                .map(s -> (SolicitudCursoVeranoInscripcionEntity) s);
+        return entity.map(e -> {
+            if (e.getEstadosSolicitud() != null && !e.getEstadosSolicitud().isEmpty()) {
+                return e.getEstadosSolicitud().get(0).getEstado_actual();
+            }
+            return null;
+        }).orElse(null);
     }
     
     public void delete(Integer id) {
-        inscripciones.remove(id);
+        solicitudRepository.deleteById(id);
     }
     
     public int count() {
-        return inscripciones.size();
+        return (int) solicitudRepository.findAll()
+                .stream()
+                .filter(s -> s instanceof SolicitudCursoVeranoInscripcionEntity)
+                .count();
+    }
+    
+    private Map<String, Object> convertToMap(SolicitudCursoVeranoInscripcionEntity entity) {
+        Map<String, Object> map = new HashMap<>();
+        map.put("id", entity.getId_solicitud());
+        map.put("cursoId", entity.getObjCursoOfertadoVerano() != null ? entity.getObjCursoOfertadoVerano().getId_curso() : null);
+        map.put("estudianteId", entity.getObjUsuario() != null ? entity.getObjUsuario().getId_usuario() : null);
+        map.put("fecha", entity.getFecha_registro_solicitud());
+        map.put("estado", entity.getEstadosSolicitud() != null && !entity.getEstadosSolicitud().isEmpty() 
+                ? entity.getEstadosSolicitud().get(0).getEstado_actual() : null);
+        map.put("archivoPagoId", null); // No hay archivo de pago en esta entidad
+        return map;
     }
 }
