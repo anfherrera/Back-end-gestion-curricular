@@ -23,6 +23,7 @@ import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.mappe
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.servicios.InscripcionService;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.entidades.SolicitudEntity;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.repositorios.SolicitudRepositoryInt;
+import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarUsuarioCUIntPort;
 
 import java.util.List;
 import java.util.Map;
@@ -43,6 +44,7 @@ public class CursosIntersemestralesRestController {
     private final SolicitudCursoDeVeranoPreinscripcionMapperDominio solicitudMapper;
     private final InscripcionService inscripcionService;
     private final SolicitudRepositoryInt solicitudRepository;
+    private final GestionarUsuarioCUIntPort usuarioCU;
 
     /**
      * Obtener cursos de verano (endpoint principal que llama el frontend)
@@ -184,6 +186,12 @@ public class CursosIntersemestralesRestController {
     @PostMapping("/solicitudes-curso-nuevo")
     public ResponseEntity<Map<String, Object>> crearSolicitudCursoNuevo(@RequestBody SolicitudCursoNuevoDTOPeticion peticion) {
         try {
+            System.out.println("🔍 DEBUG: Recibiendo solicitud de curso nuevo:");
+            System.out.println("  - Nombre Completo: " + peticion.getNombreCompleto());
+            System.out.println("  - Código: " + peticion.getCodigo());
+            System.out.println("  - Curso: " + peticion.getCurso());
+            System.out.println("  - Condición: " + peticion.getCondicion());
+            System.out.println("  - ID Usuario: " + peticion.getIdUsuario());
 
             // Mapear el DTO a nuestro modelo de dominio
             SolicitudCursoVeranoPreinscripcion solicitudDominio = new SolicitudCursoVeranoPreinscripcion();
@@ -194,10 +202,16 @@ public class CursosIntersemestralesRestController {
             try {
                 solicitudDominio.setCodicion_solicitud(CondicionSolicitudVerano.valueOf(peticion.getCondicion()));
             } catch (IllegalArgumentException e) {
+                System.out.println("❌ ERROR: Condición inválida: " + peticion.getCondicion());
                 throw new IllegalArgumentException("Condición inválida: " + peticion.getCondicion() + ". Valores válidos: " + java.util.Arrays.toString(CondicionSolicitudVerano.values()));
             }
             
             solicitudDominio.setObservacion("Solicitud de apertura de curso: " + peticion.getCurso());
+            
+            // Inicializar campos obligatorios de la clase padre
+            solicitudDominio.setNombre_solicitud("Solicitud de apertura de curso: " + peticion.getCurso());
+            solicitudDominio.setFecha_registro_solicitud(new java.util.Date());
+            solicitudDominio.setEsSeleccionado(false);
             
             // Crear un curso temporal con ID = 0 para indicar que es un curso nuevo
             CursoOfertadoVerano cursoTemporal = new CursoOfertadoVerano();
@@ -210,8 +224,12 @@ public class CursosIntersemestralesRestController {
             usuarioTemporal.setId_usuario(peticion.getIdUsuario());
             solicitudDominio.setObjUsuario(usuarioTemporal);
 
+            System.out.println("🔍 DEBUG: Solicitud dominio creada, llamando al caso de uso...");
+
             // Llamar al caso de uso
             SolicitudCursoVeranoPreinscripcion solicitudGuardada = solicitudCU.crearSolicitudCursoVeranoPreinscripcion(solicitudDominio);
+            
+            System.out.println("🔍 DEBUG: Solicitud guardada con ID: " + (solicitudGuardada != null ? solicitudGuardada.getId_solicitud() : "NULL"));
 
             // Crear respuesta JSON con la estructura esperada
             Map<String, Object> respuesta = new HashMap<>();
@@ -229,14 +247,165 @@ public class CursosIntersemestralesRestController {
             usuario.put("nombre_completo", peticion.getNombreCompleto());
             respuesta.put("objUsuario", usuario);
             
+            System.out.println("✅ DEBUG: Respuesta creada exitosamente");
             return ResponseEntity.ok(respuesta);
         } catch (IllegalArgumentException e) {
+            System.out.println("❌ ERROR de validación: " + e.getMessage());
             Map<String, Object> error = new HashMap<>();
             error.put("error", "Error de validación: " + e.getMessage());
+            error.put("tipo", "VALIDATION_ERROR");
             return ResponseEntity.badRequest().body(error);
         } catch (Exception e) {
+            System.out.println("❌ ERROR interno del servidor: " + e.getMessage());
+            e.printStackTrace(); // Imprimir el stack trace completo para debug
             Map<String, Object> error = new HashMap<>();
             error.put("error", "Error interno del servidor: " + e.getMessage());
+            error.put("tipo", "INTERNAL_SERVER_ERROR");
+            error.put("clase", e.getClass().getSimpleName());
+            return ResponseEntity.internalServerError().body(error);
+        }
+    }
+
+    /**
+     * Endpoint de prueba simple para verificar conectividad
+     * GET /api/cursos-intersemestrales/test-simple
+     */
+    @GetMapping("/test-simple")
+    public ResponseEntity<Map<String, Object>> testSimple() {
+        System.out.println("🔍 DEBUG: Endpoint de prueba simple llamado");
+        Map<String, Object> respuesta = new HashMap<>();
+        respuesta.put("mensaje", "Endpoint funcionando correctamente");
+        respuesta.put("timestamp", new java.util.Date().toString());
+        respuesta.put("puerto", "5000");
+        return ResponseEntity.ok(respuesta);
+    }
+
+    /**
+     * Endpoint de prueba POST simple para simular la petición del frontend
+     * POST /api/cursos-intersemestrales/test-post-simple
+     */
+    @PostMapping("/test-post-simple")
+    public ResponseEntity<Map<String, Object>> testPostSimple(@RequestBody Map<String, Object> datos) {
+        try {
+            System.out.println("🔍 DEBUG: Endpoint POST de prueba llamado");
+            System.out.println("🔍 DEBUG: Datos recibidos: " + datos);
+            
+            Map<String, Object> respuesta = new HashMap<>();
+            respuesta.put("mensaje", "POST funcionando correctamente");
+            respuesta.put("datos_recibidos", datos);
+            respuesta.put("timestamp", new java.util.Date().toString());
+            respuesta.put("puerto", "5000");
+            
+            return ResponseEntity.ok(respuesta);
+        } catch (Exception e) {
+            System.out.println("❌ ERROR en POST de prueba: " + e.getMessage());
+            e.printStackTrace();
+            Map<String, Object> error = new HashMap<>();
+            error.put("error", "Error en POST de prueba: " + e.getMessage());
+            return ResponseEntity.internalServerError().body(error);
+        }
+    }
+
+    /**
+     * Endpoint para verificar usuarios disponibles en la base de datos
+     * GET /api/cursos-intersemestrales/usuarios-disponibles
+     */
+    @GetMapping("/usuarios-disponibles")
+    public ResponseEntity<Map<String, Object>> verificarUsuariosDisponibles() {
+        try {
+            System.out.println("🔍 DEBUG: Verificando usuarios disponibles...");
+            
+            // Buscar usuarios en la base de datos usando el caso de uso correcto
+            List<co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Usuario> usuarios = 
+                usuarioCU.listarUsuarios(); // Listar todos los usuarios disponibles
+            
+            Map<String, Object> respuesta = new HashMap<>();
+            respuesta.put("mensaje", "Usuarios encontrados");
+            respuesta.put("total", usuarios.size());
+            respuesta.put("usuarios", usuarios);
+            
+            return ResponseEntity.ok(respuesta);
+        } catch (Exception e) {
+            System.out.println("❌ ERROR verificando usuarios: " + e.getMessage());
+            e.printStackTrace();
+            
+            Map<String, Object> error = new HashMap<>();
+            error.put("error", "Error verificando usuarios: " + e.getMessage());
+            error.put("tipo", "USUARIOS_ERROR");
+            error.put("clase", e.getClass().getSimpleName());
+            
+            return ResponseEntity.ok(error); // Devolver como 200 para ver el error
+        }
+    }
+
+    /**
+     * Endpoint de prueba que simula exactamente el endpoint problemático
+     * POST /api/cursos-intersemestrales/test-solicitud-exacta
+     */
+    @PostMapping("/test-solicitud-exacta")
+    public ResponseEntity<Map<String, Object>> testSolicitudExacta(@RequestBody SolicitudCursoNuevoDTOPeticion peticion) {
+        try {
+            System.out.println("🔍 DEBUG: Test endpoint exacto llamado");
+            System.out.println("🔍 DEBUG: Petición recibida: " + peticion);
+            
+            // Simular el procesamiento sin llamar al caso de uso real
+            Map<String, Object> respuesta = new HashMap<>();
+            respuesta.put("id_solicitud", 999);
+            respuesta.put("nombreCompleto", peticion.getNombreCompleto());
+            respuesta.put("codigo", peticion.getCodigo());
+            respuesta.put("curso", peticion.getCurso());
+            respuesta.put("condicion", peticion.getCondicion());
+            respuesta.put("fecha", new java.util.Date().toString());
+            respuesta.put("estado", "Pendiente");
+            respuesta.put("mensaje", "Solicitud de prueba procesada correctamente");
+            
+            return ResponseEntity.ok(respuesta);
+        } catch (Exception e) {
+            System.out.println("❌ ERROR en test exacto: " + e.getMessage());
+            e.printStackTrace();
+            Map<String, Object> error = new HashMap<>();
+            error.put("error", "Error en test exacto: " + e.getMessage());
+            error.put("tipo", "TEST_EXACTO_ERROR");
+            return ResponseEntity.internalServerError().body(error);
+        }
+    }
+
+    /**
+     * Endpoint de prueba para verificar el funcionamiento del endpoint de solicitudes
+     * GET /api/cursos-intersemestrales/test-solicitud-curso-nuevo
+     */
+    @GetMapping("/test-solicitud-curso-nuevo")
+    public ResponseEntity<Map<String, Object>> testSolicitudCursoNuevo() {
+        try {
+            System.out.println("🔍 DEBUG: Probando endpoint de solicitud de curso nuevo");
+            
+            // Crear datos de prueba
+            SolicitudCursoNuevoDTOPeticion peticionPrueba = new SolicitudCursoNuevoDTOPeticion();
+            peticionPrueba.setNombreCompleto("Juan Pérez");
+            peticionPrueba.setCodigo("104612345660");
+            peticionPrueba.setCurso("Programación Avanzada");
+            peticionPrueba.setCondicion("Primera_Vez");
+            peticionPrueba.setIdUsuario(1);
+            
+            System.out.println("🔍 DEBUG: Datos de prueba creados, llamando al endpoint...");
+            
+            // Llamar al método principal
+            ResponseEntity<Map<String, Object>> respuesta = crearSolicitudCursoNuevo(peticionPrueba);
+            
+            System.out.println("🔍 DEBUG: Respuesta del endpoint: " + respuesta.getStatusCode());
+            
+            Map<String, Object> resultado = new HashMap<>();
+            resultado.put("mensaje", "Prueba completada");
+            resultado.put("status", respuesta.getStatusCode().value());
+            resultado.put("respuesta", respuesta.getBody());
+            
+            return ResponseEntity.ok(resultado);
+        } catch (Exception e) {
+            System.out.println("❌ ERROR en prueba: " + e.getMessage());
+            e.printStackTrace();
+            Map<String, Object> error = new HashMap<>();
+            error.put("error", "Error en prueba: " + e.getMessage());
+            error.put("tipo", "TEST_ERROR");
             return ResponseEntity.internalServerError().body(error);
         }
     }

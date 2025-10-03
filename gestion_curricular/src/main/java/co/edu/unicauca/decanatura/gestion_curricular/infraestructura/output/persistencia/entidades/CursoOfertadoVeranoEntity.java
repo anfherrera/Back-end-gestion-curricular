@@ -22,11 +22,13 @@ import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 @Entity
 @Table(name = "Cursos_ofertados")
 @Data
 @AllArgsConstructor
+@EqualsAndHashCode(exclude = {"objMateria", "objDocente", "estadosCursoOfertados", "estudiantesInscritos", "solicitudes"})
 public class CursoOfertadoVeranoEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
