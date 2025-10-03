@@ -735,6 +735,59 @@ public class CursosIntersemestralesRestController {
     }
 
     /**
+     * Endpoint de debug específico para seguimiento
+     * GET /api/cursos-intersemestrales/debug-seguimiento/{idUsuario}
+     */
+    @GetMapping("/debug-seguimiento/{idUsuario}")
+    public ResponseEntity<Map<String, Object>> debugSeguimiento(@PathVariable Integer idUsuario) {
+        try {
+            System.out.println("🔍 DEBUG: Iniciando debug de seguimiento para usuario: " + idUsuario);
+            
+            List<SolicitudCursoVeranoPreinscripcion> preinscripcionesReales = solicitudCU.buscarSolicitudesPorUsuario(idUsuario);
+            
+            Map<String, Object> debug = new HashMap<>();
+            debug.put("totalSolicitudes", preinscripcionesReales.size());
+            
+            List<Map<String, Object>> solicitudesDebug = new ArrayList<>();
+            for (SolicitudCursoVeranoPreinscripcion preinscripcion : preinscripcionesReales) {
+                Map<String, Object> info = new HashMap<>();
+                info.put("id", preinscripcion.getId_solicitud());
+                info.put("observacion", preinscripcion.getObservacion());
+                info.put("nombre_solicitud", preinscripcion.getNombre_solicitud());
+                info.put("clase", preinscripcion.getClass().getSimpleName());
+                
+                // Probar detección de tipo
+                boolean esSolicitudCursoNuevo = false;
+                if (preinscripcion.getObservacion() != null) {
+                    String obs = preinscripcion.getObservacion().toLowerCase();
+                    if (obs.contains("solicitud de apertura") || obs.contains("curso:")) {
+                        esSolicitudCursoNuevo = true;
+                    }
+                }
+                if (!esSolicitudCursoNuevo && preinscripcion.getNombre_solicitud() != null) {
+                    String nombre = preinscripcion.getNombre_solicitud().toLowerCase();
+                    if (nombre.contains("solicitud de apertura") || nombre.contains("curso:")) {
+                        esSolicitudCursoNuevo = true;
+                    }
+                }
+                
+                info.put("esSolicitudCursoNuevo", esSolicitudCursoNuevo);
+                info.put("tipoDetectado", esSolicitudCursoNuevo ? "Solicitud de Curso Nuevo" : "Preinscripción");
+                
+                solicitudesDebug.add(info);
+            }
+            
+            debug.put("solicitudes", solicitudesDebug);
+            
+            return ResponseEntity.ok(debug);
+        } catch (Exception e) {
+            Map<String, Object> error = new HashMap<>();
+            error.put("error", "Error en debug: " + e.getMessage());
+            return ResponseEntity.internalServerError().body(error);
+        }
+    }
+
+    /**
      * Endpoint temporal para debug - verificar TODAS las preinscripciones
      * GET /api/cursos-intersemestrales/debug-todas-solicitudes
      */
@@ -793,9 +846,55 @@ public class CursosIntersemestralesRestController {
                     preinscripcionMap.put("fecha", preinscripcion.getFecha_registro_solicitud());
                     preinscripcionMap.put("estado", preinscripcion.getEstadosSolicitud() != null && !preinscripcion.getEstadosSolicitud().isEmpty() 
                         ? preinscripcion.getEstadosSolicitud().get(0).getEstado_actual() : "Pendiente");
-                    preinscripcionMap.put("tipo", "Preinscripción");
-                    preinscripcionMap.put("curso", preinscripcion.getObjCursoOfertadoVerano() != null 
-                        ? preinscripcion.getObjCursoOfertadoVerano().getObjMateria().getNombre() : "Curso no disponible");
+                    // Determinar el tipo correcto de solicitud
+                    String tipoSolicitud = "Preinscripción";
+                    
+                    // Verificar si es una solicitud de curso nuevo basándose en el contenido
+                    
+                    // Detección más flexible para solicitudes de curso nuevo
+                    boolean esSolicitudCursoNuevo = false;
+                    
+                    if (preinscripcion.getObservacion() != null) {
+                        String obs = preinscripcion.getObservacion().toLowerCase();
+                        if (obs.contains("solicitud de apertura") || obs.contains("curso:")) {
+                            esSolicitudCursoNuevo = true;
+                        }
+                    }
+                    
+                    if (!esSolicitudCursoNuevo && preinscripcion.getNombre_solicitud() != null) {
+                        String nombre = preinscripcion.getNombre_solicitud().toLowerCase();
+                        if (nombre.contains("solicitud de apertura") || nombre.contains("curso:")) {
+                            esSolicitudCursoNuevo = true;
+                        }
+                    }
+                    
+                    if (esSolicitudCursoNuevo) {
+                        tipoSolicitud = "Solicitud de Curso Nuevo";
+                    }
+                    preinscripcionMap.put("tipo", tipoSolicitud);
+                    
+                    // Obtener el nombre del curso correctamente
+                    String nombreCurso = "Curso no disponible";
+                    if (preinscripcion.getObjCursoOfertadoVerano() != null) {
+                        // Para cursos ya existentes
+                        nombreCurso = preinscripcion.getObjCursoOfertadoVerano().getObjMateria().getNombre();
+                    } else {
+                        // Para solicitudes de curso nuevo, obtener el nombre del campo observacion
+                        if (preinscripcion.getObservacion() != null && !preinscripcion.getObservacion().isEmpty()) {
+                            // Extraer solo el nombre del curso de la observación
+                            String observacion = preinscripcion.getObservacion();
+                            if (observacion.contains(": ")) {
+                                nombreCurso = observacion.split(": ")[1].trim();
+                            } else {
+                                nombreCurso = observacion;
+                            }
+                        } else if (preinscripcion.getNombre_solicitud() != null && 
+                                  preinscripcion.getNombre_solicitud().contains(":")) {
+                            // Fallback: extraer del nombre de la solicitud
+                            nombreCurso = preinscripcion.getNombre_solicitud().split(":")[1].trim();
+                        }
+                    }
+                    preinscripcionMap.put("curso", nombreCurso);
                     preinscripcionMap.put("estudianteId", idUsuario);
                     preinscripcionMap.put("cursoId", preinscripcion.getObjCursoOfertadoVerano() != null 
                         ? preinscripcion.getObjCursoOfertadoVerano().getId_curso() : null);
