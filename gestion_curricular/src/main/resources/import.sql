@@ -13,6 +13,38 @@ INSERT IGNORE INTO `materias`(`idMateria`, `codigo`, `nombre`, `creditos`) VALUE
 INSERT IGNORE INTO `materias`(`idMateria`, `codigo`, `nombre`, `creditos`) VALUES (NULL, 'PROG001', 'Programación I', 4);
 INSERT IGNORE INTO `materias`(`idMateria`, `codigo`, `nombre`, `creditos`) VALUES (NULL, 'BD001', 'Bases de Datos', 3);
 
+-- Materias del programa de Ingeniería de Sistemas
+INSERT IGNORE INTO `materias`(`idMateria`, `codigo`, `nombre`, `creditos`) VALUES (NULL, 'SIS803', 'Calidad de Software', 3);
+INSERT IGNORE INTO `materias`(`idMateria`, `codigo`, `nombre`, `creditos`) VALUES (NULL, 'SIS801', 'Metodologia de la Investigacion', 3);
+INSERT IGNORE INTO `materias`(`idMateria`, `codigo`, `nombre`, `creditos`) VALUES (NULL, 'SIS706', 'Teoria y Dinamica de Sistemas', 3);
+INSERT IGNORE INTO `materias`(`idMateria`, `codigo`, `nombre`, `creditos`) VALUES (NULL, 'SIS703', 'Ingenieria de Software III', 3);
+INSERT IGNORE INTO `materias`(`idMateria`, `codigo`, `nombre`, `creditos`) VALUES (NULL, 'SIS702', 'Sistemas Distribuidos', 3);
+INSERT IGNORE INTO `materias`(`idMateria`, `codigo`, `nombre`, `creditos`) VALUES (NULL, 'SIS603', 'Sistemas Operativos', 3);
+INSERT IGNORE INTO `materias`(`idMateria`, `codigo`, `nombre`, `creditos`) VALUES (NULL, 'SIS602', 'Ingenieria de Software II', 3);
+INSERT IGNORE INTO `materias`(`idMateria`, `codigo`, `nombre`, `creditos`) VALUES (NULL, 'SIS601', 'Estructura de Lenguajes', 3);
+INSERT IGNORE INTO `materias`(`idMateria`, `codigo`, `nombre`, `creditos`) VALUES (NULL, 'SIS504', 'Bases de Datos II', 3);
+INSERT IGNORE INTO `materias`(`idMateria`, `codigo`, `nombre`, `creditos`) VALUES (NULL, 'SIS503', 'Ingenieria de Software I', 3);
+INSERT IGNORE INTO `materias`(`idMateria`, `codigo`, `nombre`, `creditos`) VALUES (NULL, 'SIS502', 'Arquitectura Computacional', 4);
+INSERT IGNORE INTO `materias`(`idMateria`, `codigo`, `nombre`, `creditos`) VALUES (NULL, 'SIS501', 'Teoria de la Computacion', 3);
+INSERT IGNORE INTO `materias`(`idMateria`, `codigo`, `nombre`, `creditos`) VALUES (NULL, 'SIS402', 'Bases de Datos I', 3);
+INSERT IGNORE INTO `materias`(`idMateria`, `codigo`, `nombre`, `creditos`) VALUES (NULL, 'SIS401', 'Estructura de Datos II', 3);
+INSERT IGNORE INTO `materias`(`idMateria`, `codigo`, `nombre`, `creditos`) VALUES (NULL, 'SIS301', 'Estructuras de Datos I', 3);
+INSERT IGNORE INTO `materias`(`idMateria`, `codigo`, `nombre`, `creditos`) VALUES (NULL, 'SIS201', 'Programacion Orientada a Objetos', 3);
+INSERT IGNORE INTO `materias`(`idMateria`, `codigo`, `nombre`, `creditos`) VALUES (NULL, 'MAT131', 'Estadistica y Probabilidad', 4);
+INSERT IGNORE INTO `materias`(`idMateria`, `codigo`, `nombre`, `creditos`) VALUES (NULL, '333-1', 'Inteligencia Artificial', 3);
+INSERT IGNORE INTO `materias`(`idMateria`, `codigo`, `nombre`, `creditos`) VALUES (NULL, '328-1', 'Analisis Numerico', 4);
+INSERT IGNORE INTO `materias`(`idMateria`, `codigo`, `nombre`, `creditos`) VALUES (NULL, '323-1', 'Vibraciones y Ondas', 3);
+INSERT IGNORE INTO `materias`(`idMateria`, `codigo`, `nombre`, `creditos`) VALUES (NULL, '322-1', 'Ecuaciones Diferenciales Ordinarias', 4);
+INSERT IGNORE INTO `materias`(`idMateria`, `codigo`, `nombre`, `creditos`) VALUES (NULL, '317-1', 'Electromagnetismo', 3);
+INSERT IGNORE INTO `materias`(`idMateria`, `codigo`, `nombre`, `creditos`) VALUES (NULL, '316-1', 'Calculo III', 4);
+INSERT IGNORE INTO `materias`(`idMateria`, `codigo`, `nombre`, `creditos`) VALUES (NULL, '312-1', 'Mecanica', 3);
+INSERT IGNORE INTO `materias`(`idMateria`, `codigo`, `nombre`, `creditos`) VALUES (NULL, '311-1', 'Calculo II', 4);
+INSERT IGNORE INTO `materias`(`idMateria`, `codigo`, `nombre`, `creditos`) VALUES (NULL, '307', 'Algebra Lineal', 4);
+INSERT IGNORE INTO `materias`(`idMateria`, `codigo`, `nombre`, `creditos`) VALUES (NULL, '21505', 'Lectura y Escritura', 2);
+INSERT IGNORE INTO `materias`(`idMateria`, `codigo`, `nombre`, `creditos`) VALUES (NULL, '11479', 'Introduccion a la Ingenieria de Sistemas', 1);
+INSERT IGNORE INTO `materias`(`idMateria`, `codigo`, `nombre`, `creditos`) VALUES (NULL, '11477', 'Introduccion a la Informatica', 3);
+INSERT IGNORE INTO `materias`(`idMateria`, `codigo`, `nombre`, `creditos`) VALUES (NULL, '11465', 'Calculo I', 4);
+
 INSERT INTO `usuarios`(`idUsuario`, `codigo_usuario`, `nombre_usuario`, `correo`, `contrasena`, `idfkRol`) VALUES (NULL, 'EST001', 'Juan Pérez', 'juan.perez@unicauca.edu.co', 'password123', 2);
 INSERT INTO `usuarios`(`idUsuario`, `codigo_usuario`, `nombre_usuario`, `correo`, `contrasena`, `idfkRol`) VALUES (NULL, 'EST002', 'María García', 'maria.garcia@unicauca.edu.co', 'password123', 2);
 INSERT INTO `usuarios`(`idUsuario`, `codigo_usuario`, `nombre_usuario`, `correo`, `contrasena`, `idfkRol`) VALUES (NULL, 'DOC001', 'Carlos López', 'carlos.lopez@unicauca.edu.co', 'password123', 1);
