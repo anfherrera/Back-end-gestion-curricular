@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarCursoOfertadoVeranoCUIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarSolicitudCursoVeranoCUIntPort;
+import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarMateriasCUIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.GestionarSolicitudCursoVeranoGatewayIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.CursoOfertadoVerano;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.SolicitudCursoVeranoPreinscripcion;
@@ -40,6 +41,7 @@ public class CursosIntersemestralesRestController {
     private final GestionarCursoOfertadoVeranoCUIntPort cursoCU;
     private final GestionarSolicitudCursoVeranoCUIntPort solicitudCU;
     private final GestionarSolicitudCursoVeranoGatewayIntPort solicitudGateway;
+    private final GestionarMateriasCUIntPort materiaCU;
     private final CursosOfertadosMapperDominio cursoMapper;
     private final SolicitudCursoDeVeranoPreinscripcionMapperDominio solicitudMapper;
     private final InscripcionService inscripcionService;
@@ -157,6 +159,37 @@ public class CursosIntersemestralesRestController {
             
             return ResponseEntity.ok(cursosDisponibles);
         } catch (Exception e) {
+            return ResponseEntity.internalServerError().build();
+        }
+    }
+
+    /**
+     * Obtener todas las materias disponibles para solicitud de cursos intersemestrales
+     * GET /api/cursos-intersemestrales/materias-disponibles
+     */
+    @GetMapping("/materias-disponibles")
+    public ResponseEntity<List<Map<String, Object>>> obtenerMateriasDisponibles() {
+        try {
+            // Obtener todas las materias de la base de datos
+            List<co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Materia> materias = 
+                materiaCU.listarMaterias();
+            
+            List<Map<String, Object>> materiasDisponibles = new ArrayList<>();
+            
+            for (co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Materia materia : materias) {
+                Map<String, Object> materiaMap = new HashMap<>();
+                materiaMap.put("id_materia", materia.getId_materia());
+                materiaMap.put("codigo", materia.getCodigo());
+                materiaMap.put("nombre", materia.getNombre());
+                materiaMap.put("creditos", materia.getCreditos());
+                materiaMap.put("descripcion", materia.getNombre() + " (" + materia.getCodigo() + ") - " + materia.getCreditos() + " créditos");
+                materiasDisponibles.add(materiaMap);
+            }
+            
+            return ResponseEntity.ok(materiasDisponibles);
+        } catch (Exception e) {
+            System.out.println("ERROR obteniendo materias disponibles: " + e.getMessage());
+            e.printStackTrace();
             return ResponseEntity.internalServerError().build();
         }
     }
@@ -1261,64 +1294,31 @@ public class CursosIntersemestralesRestController {
     // ==================== ENDPOINTS PARA MATERIAS Y DOCENTES ====================
 
     /**
-     * Obtener todas las materias
+     * Obtener todas las materias (endpoint actualizado para usar datos reales)
      * GET /api/cursos-intersemestrales/materias
      */
     @GetMapping("/materias")
     public ResponseEntity<List<Map<String, Object>>> getTodasLasMaterias() {
         try {
+            // Obtener todas las materias de la base de datos
+            List<co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Materia> materiasReales = 
+                materiaCU.listarMaterias();
+            
             List<Map<String, Object>> materias = new ArrayList<>();
             
-            // Materia 1: Programación
-            Map<String, Object> materia1 = new HashMap<>();
-            materia1.put("id_materia", 1);
-            materia1.put("nombre_materia", "Programación");
-            materia1.put("codigo_materia", "PROG");
-            materia1.put("creditos", 4);
-            materias.add(materia1);
-            
-            // Materia 2: Bases de Datos
-            Map<String, Object> materia2 = new HashMap<>();
-            materia2.put("id_materia", 2);
-            materia2.put("nombre_materia", "Bases de Datos");
-            materia2.put("codigo_materia", "BD");
-            materia2.put("creditos", 3);
-            materias.add(materia2);
-            
-            // Materia 3: Matemáticas
-            Map<String, Object> materia3 = new HashMap<>();
-            materia3.put("id_materia", 3);
-            materia3.put("nombre_materia", "Matemáticas");
-            materia3.put("codigo_materia", "MAT");
-            materia3.put("creditos", 3);
-            materias.add(materia3);
-            
-            // Materia 4: Desarrollo Web
-            Map<String, Object> materia4 = new HashMap<>();
-            materia4.put("id_materia", 4);
-            materia4.put("nombre_materia", "Desarrollo Web");
-            materia4.put("codigo_materia", "WEB");
-            materia4.put("creditos", 4);
-            materias.add(materia4);
-            
-            // Materia 5: Inteligencia Artificial
-            Map<String, Object> materia5 = new HashMap<>();
-            materia5.put("id_materia", 5);
-            materia5.put("nombre_materia", "Inteligencia Artificial");
-            materia5.put("codigo_materia", "IA");
-            materia5.put("creditos", 4);
-            materias.add(materia5);
-            
-            // Materia 6: Redes de Computadores
-            Map<String, Object> materia6 = new HashMap<>();
-            materia6.put("id_materia", 6);
-            materia6.put("nombre_materia", "Redes de Computadores");
-            materia6.put("codigo_materia", "RED");
-            materia6.put("creditos", 3);
-            materias.add(materia6);
+            for (co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Materia materia : materiasReales) {
+                Map<String, Object> materiaMap = new HashMap<>();
+                materiaMap.put("id_materia", materia.getId_materia());
+                materiaMap.put("nombre_materia", materia.getNombre());
+                materiaMap.put("codigo_materia", materia.getCodigo());
+                materiaMap.put("creditos", materia.getCreditos());
+                materias.add(materiaMap);
+            }
             
             return ResponseEntity.ok(materias);
         } catch (Exception e) {
+            System.out.println("ERROR obteniendo materias: " + e.getMessage());
+            e.printStackTrace();
             return ResponseEntity.status(500).build();
         }
     }

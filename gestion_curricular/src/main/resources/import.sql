@@ -9,8 +9,6 @@ INSERT INTO `programas`(`idPrograma`, `codigo`, `nombre_programa`) VALUES (NULL,
 INSERT INTO `docentes`(`idDocente`, `codigo_docente`, `nombre_docente`) VALUES (NULL, '1046','Pepe Perez');
 
 -- Datos de prueba para cursos de verano
-INSERT IGNORE INTO `materias`(`idMateria`, `codigo`, `nombre`, `creditos`) VALUES (NULL, 'MAT001', 'Matemáticas Básicas', 3);
-INSERT IGNORE INTO `materias`(`idMateria`, `codigo`, `nombre`, `creditos`) VALUES (NULL, 'PROG001', 'Programación I', 4);
 INSERT IGNORE INTO `materias`(`idMateria`, `codigo`, `nombre`, `creditos`) VALUES (NULL, 'BD001', 'Bases de Datos', 3);
 
 -- Materias del programa de Ingeniería de Sistemas
