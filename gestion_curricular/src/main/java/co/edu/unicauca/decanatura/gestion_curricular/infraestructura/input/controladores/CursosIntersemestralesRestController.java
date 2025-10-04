@@ -186,7 +186,7 @@ public class CursosIntersemestralesRestController {
     @PostMapping("/solicitudes-curso-nuevo")
     public ResponseEntity<Map<String, Object>> crearSolicitudCursoNuevo(@RequestBody SolicitudCursoNuevoDTOPeticion peticion) {
         try {
-            System.out.println("🔍 DEBUG: Recibiendo solicitud de curso nuevo:");
+            System.out.println("DEBUG: Recibiendo solicitud de curso nuevo:");
             System.out.println("  - Nombre Completo: " + peticion.getNombreCompleto());
             System.out.println("  - Código: " + peticion.getCodigo());
             System.out.println("  - Curso: " + peticion.getCurso());
@@ -202,7 +202,7 @@ public class CursosIntersemestralesRestController {
             try {
                 solicitudDominio.setCodicion_solicitud(CondicionSolicitudVerano.valueOf(peticion.getCondicion()));
             } catch (IllegalArgumentException e) {
-                System.out.println("❌ ERROR: Condición inválida: " + peticion.getCondicion());
+                System.out.println("ERROR ERROR: Condición inválida: " + peticion.getCondicion());
                 throw new IllegalArgumentException("Condición inválida: " + peticion.getCondicion() + ". Valores válidos: " + java.util.Arrays.toString(CondicionSolicitudVerano.values()));
             }
             
@@ -224,12 +224,12 @@ public class CursosIntersemestralesRestController {
             usuarioTemporal.setId_usuario(peticion.getIdUsuario());
             solicitudDominio.setObjUsuario(usuarioTemporal);
 
-            System.out.println("🔍 DEBUG: Solicitud dominio creada, llamando al caso de uso...");
+            System.out.println("DEBUG DEBUG: Solicitud dominio creada, llamando al caso de uso...");
 
             // Llamar al caso de uso
             SolicitudCursoVeranoPreinscripcion solicitudGuardada = solicitudCU.crearSolicitudCursoVeranoPreinscripcion(solicitudDominio);
             
-            System.out.println("🔍 DEBUG: Solicitud guardada con ID: " + (solicitudGuardada != null ? solicitudGuardada.getId_solicitud() : "NULL"));
+            System.out.println("DEBUG DEBUG: Solicitud guardada con ID: " + (solicitudGuardada != null ? solicitudGuardada.getId_solicitud() : "NULL"));
 
             // Crear respuesta JSON con la estructura esperada
             Map<String, Object> respuesta = new HashMap<>();
@@ -247,16 +247,16 @@ public class CursosIntersemestralesRestController {
             usuario.put("nombre_completo", peticion.getNombreCompleto());
             respuesta.put("objUsuario", usuario);
             
-            System.out.println("✅ DEBUG: Respuesta creada exitosamente");
+            System.out.println("SUCCESS DEBUG: Respuesta creada exitosamente");
             return ResponseEntity.ok(respuesta);
         } catch (IllegalArgumentException e) {
-            System.out.println("❌ ERROR de validación: " + e.getMessage());
+            System.out.println("ERROR ERROR de validación: " + e.getMessage());
             Map<String, Object> error = new HashMap<>();
             error.put("error", "Error de validación: " + e.getMessage());
             error.put("tipo", "VALIDATION_ERROR");
             return ResponseEntity.badRequest().body(error);
         } catch (Exception e) {
-            System.out.println("❌ ERROR interno del servidor: " + e.getMessage());
+            System.out.println("ERROR ERROR interno del servidor: " + e.getMessage());
             e.printStackTrace(); // Imprimir el stack trace completo para debug
             Map<String, Object> error = new HashMap<>();
             error.put("error", "Error interno del servidor: " + e.getMessage());
@@ -272,7 +272,7 @@ public class CursosIntersemestralesRestController {
      */
     @GetMapping("/test-simple")
     public ResponseEntity<Map<String, Object>> testSimple() {
-        System.out.println("🔍 DEBUG: Endpoint de prueba simple llamado");
+        System.out.println("DEBUG DEBUG: Endpoint de prueba simple llamado");
         Map<String, Object> respuesta = new HashMap<>();
         respuesta.put("mensaje", "Endpoint funcionando correctamente");
         respuesta.put("timestamp", new java.util.Date().toString());
@@ -287,8 +287,8 @@ public class CursosIntersemestralesRestController {
     @PostMapping("/test-post-simple")
     public ResponseEntity<Map<String, Object>> testPostSimple(@RequestBody Map<String, Object> datos) {
         try {
-            System.out.println("🔍 DEBUG: Endpoint POST de prueba llamado");
-            System.out.println("🔍 DEBUG: Datos recibidos: " + datos);
+            System.out.println("DEBUG DEBUG: Endpoint POST de prueba llamado");
+            System.out.println("DEBUG DEBUG: Datos recibidos: " + datos);
             
             Map<String, Object> respuesta = new HashMap<>();
             respuesta.put("mensaje", "POST funcionando correctamente");
@@ -298,7 +298,7 @@ public class CursosIntersemestralesRestController {
             
             return ResponseEntity.ok(respuesta);
         } catch (Exception e) {
-            System.out.println("❌ ERROR en POST de prueba: " + e.getMessage());
+            System.out.println("ERROR ERROR en POST de prueba: " + e.getMessage());
             e.printStackTrace();
             Map<String, Object> error = new HashMap<>();
             error.put("error", "Error en POST de prueba: " + e.getMessage());
@@ -313,7 +313,7 @@ public class CursosIntersemestralesRestController {
     @GetMapping("/usuarios-disponibles")
     public ResponseEntity<Map<String, Object>> verificarUsuariosDisponibles() {
         try {
-            System.out.println("🔍 DEBUG: Verificando usuarios disponibles...");
+            System.out.println("DEBUG DEBUG: Verificando usuarios disponibles...");
             
             // Buscar usuarios en la base de datos usando el caso de uso correcto
             List<co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Usuario> usuarios = 
@@ -326,7 +326,7 @@ public class CursosIntersemestralesRestController {
             
             return ResponseEntity.ok(respuesta);
         } catch (Exception e) {
-            System.out.println("❌ ERROR verificando usuarios: " + e.getMessage());
+            System.out.println("ERROR ERROR verificando usuarios: " + e.getMessage());
             e.printStackTrace();
             
             Map<String, Object> error = new HashMap<>();
@@ -345,8 +345,8 @@ public class CursosIntersemestralesRestController {
     @PostMapping("/test-solicitud-exacta")
     public ResponseEntity<Map<String, Object>> testSolicitudExacta(@RequestBody SolicitudCursoNuevoDTOPeticion peticion) {
         try {
-            System.out.println("🔍 DEBUG: Test endpoint exacto llamado");
-            System.out.println("🔍 DEBUG: Petición recibida: " + peticion);
+            System.out.println("DEBUG DEBUG: Test endpoint exacto llamado");
+            System.out.println("DEBUG DEBUG: Petición recibida: " + peticion);
             
             // Simular el procesamiento sin llamar al caso de uso real
             Map<String, Object> respuesta = new HashMap<>();
@@ -361,7 +361,7 @@ public class CursosIntersemestralesRestController {
             
             return ResponseEntity.ok(respuesta);
         } catch (Exception e) {
-            System.out.println("❌ ERROR en test exacto: " + e.getMessage());
+            System.out.println("ERROR ERROR en test exacto: " + e.getMessage());
             e.printStackTrace();
             Map<String, Object> error = new HashMap<>();
             error.put("error", "Error en test exacto: " + e.getMessage());
@@ -377,7 +377,7 @@ public class CursosIntersemestralesRestController {
     @GetMapping("/test-solicitud-curso-nuevo")
     public ResponseEntity<Map<String, Object>> testSolicitudCursoNuevo() {
         try {
-            System.out.println("🔍 DEBUG: Probando endpoint de solicitud de curso nuevo");
+            System.out.println("DEBUG DEBUG: Probando endpoint de solicitud de curso nuevo");
             
             // Crear datos de prueba
             SolicitudCursoNuevoDTOPeticion peticionPrueba = new SolicitudCursoNuevoDTOPeticion();
@@ -387,12 +387,12 @@ public class CursosIntersemestralesRestController {
             peticionPrueba.setCondicion("Primera_Vez");
             peticionPrueba.setIdUsuario(1);
             
-            System.out.println("🔍 DEBUG: Datos de prueba creados, llamando al endpoint...");
+            System.out.println("DEBUG DEBUG: Datos de prueba creados, llamando al endpoint...");
             
             // Llamar al método principal
             ResponseEntity<Map<String, Object>> respuesta = crearSolicitudCursoNuevo(peticionPrueba);
             
-            System.out.println("🔍 DEBUG: Respuesta del endpoint: " + respuesta.getStatusCode());
+            System.out.println("DEBUG DEBUG: Respuesta del endpoint: " + respuesta.getStatusCode());
             
             Map<String, Object> resultado = new HashMap<>();
             resultado.put("mensaje", "Prueba completada");
@@ -401,7 +401,7 @@ public class CursosIntersemestralesRestController {
             
             return ResponseEntity.ok(resultado);
         } catch (Exception e) {
-            System.out.println("❌ ERROR en prueba: " + e.getMessage());
+            System.out.println("ERROR ERROR en prueba: " + e.getMessage());
             e.printStackTrace();
             Map<String, Object> error = new HashMap<>();
             error.put("error", "Error en prueba: " + e.getMessage());
@@ -417,7 +417,7 @@ public class CursosIntersemestralesRestController {
     @PostMapping("/cursos-verano/preinscripciones")
     public ResponseEntity<Map<String, Object>> crearPreinscripcion(@RequestBody PreinscripcionCursoVeranoDTOPeticion peticion) {
         try {
-            System.out.println("🔍 DEBUG: Recibiendo preinscripción:");
+            System.out.println("DEBUG DEBUG: Recibiendo preinscripción:");
             System.out.println("  - ID Usuario: " + peticion.getIdUsuario());
             System.out.println("  - ID Curso: " + peticion.getIdCurso());
             System.out.println("  - Nombre Solicitud: " + peticion.getNombreSolicitud());
@@ -429,14 +429,14 @@ public class CursosIntersemestralesRestController {
             solicitudDominio.setObservacion(peticion.getNombreSolicitud());
             solicitudDominio.setCodicion_solicitud(CondicionSolicitudVerano.Primera_Vez); // Valor por defecto
             
-            System.out.println("🔍 DEBUG: Solicitud dominio creada");
+            System.out.println("DEBUG DEBUG: Solicitud dominio creada");
             
             // Crear curso con el ID real
             CursoOfertadoVerano curso = new CursoOfertadoVerano();
             curso.setId_curso(peticion.getIdCurso());
             solicitudDominio.setObjCursoOfertadoVerano(curso);
             
-            System.out.println("🔍 DEBUG: Curso asignado con ID: " + peticion.getIdCurso());
+            System.out.println("DEBUG DEBUG: Curso asignado con ID: " + peticion.getIdCurso());
             
             // Crear usuario
             co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Usuario usuario = 
@@ -444,26 +444,26 @@ public class CursosIntersemestralesRestController {
             usuario.setId_usuario(peticion.getIdUsuario());
             solicitudDominio.setObjUsuario(usuario);
 
-            System.out.println("🔍 DEBUG: Usuario asignado con ID: " + peticion.getIdUsuario());
+            System.out.println("DEBUG DEBUG: Usuario asignado con ID: " + peticion.getIdUsuario());
             
             // Verificar si ya existe una preinscripción para este usuario y curso
-            System.out.println("🔍 DEBUG: Verificando preinscripciones existentes...");
+            System.out.println("DEBUG DEBUG: Verificando preinscripciones existentes...");
             Solicitud preinscripcionExistente = solicitudGateway.buscarSolicitudesPorUsuarioYCursoPre(peticion.getIdUsuario(), peticion.getIdCurso());
             
             if (preinscripcionExistente != null) {
-                System.out.println("❌ ERROR: Ya existe una preinscripción para este usuario y curso");
+                System.out.println("ERROR ERROR: Ya existe una preinscripción para este usuario y curso");
                 Map<String, Object> error = new HashMap<>();
                 error.put("error", "Ya tienes una preinscripción activa para este curso");
                 error.put("codigo", "DUPLICATE_PREINSCRIPTION");
                 return ResponseEntity.badRequest().body(error);
             }
             
-            System.out.println("🔍 DEBUG: No hay preinscripciones duplicadas, procediendo a crear...");
+            System.out.println("DEBUG DEBUG: No hay preinscripciones duplicadas, procediendo a crear...");
 
             // Llamar al gateway directamente para guardar en la base de datos
             SolicitudCursoVeranoPreinscripcion solicitudGuardada = solicitudGateway.crearSolicitudCursoVeranoPreinscripcion(solicitudDominio);
 
-            System.out.println("🔍 DEBUG: Solicitud guardada con ID: " + (solicitudGuardada != null ? solicitudGuardada.getId_solicitud() : "NULL"));
+            System.out.println("DEBUG DEBUG: Solicitud guardada con ID: " + (solicitudGuardada != null ? solicitudGuardada.getId_solicitud() : "NULL"));
 
             // Crear respuesta JSON con la estructura esperada
             Map<String, Object> respuesta = new HashMap<>();
@@ -475,10 +475,10 @@ public class CursosIntersemestralesRestController {
             respuesta.put("estado", "Pendiente");
             respuesta.put("mensaje", "Preinscripción creada exitosamente");
             
-            System.out.println("🔍 DEBUG: Respuesta creada exitosamente");
+            System.out.println("DEBUG DEBUG: Respuesta creada exitosamente");
             return ResponseEntity.ok(respuesta);
         } catch (Exception e) {
-            System.out.println("❌ ERROR: " + e.getMessage());
+            System.out.println("ERROR ERROR: " + e.getMessage());
             e.printStackTrace();
             Map<String, Object> error = new HashMap<>();
             error.put("error", "Error interno del servidor: " + e.getMessage());
@@ -496,7 +496,7 @@ public class CursosIntersemestralesRestController {
             // Por ahora usar datos hardcodeados que funcionan
             // TODO: Implementar conexión real a la base de datos
             List<Map<String, Object>> inscripciones = new ArrayList<>();
-            System.out.println("📊 Usando datos simulados para inscripciones");
+            System.out.println("INFO Usando datos simulados para inscripciones");
             
             // Inscripción 1: Ana González
             Map<String, Object> inscripcion1 = new HashMap<>();
@@ -681,23 +681,13 @@ public class CursosIntersemestralesRestController {
     @GetMapping("/inscripciones-reales/{id_usuario}")
     public ResponseEntity<List<Map<String, Object>>> obtenerInscripcionesReales(@PathVariable Integer id_usuario) {
         try {
-            System.out.println("🔍 Obteniendo inscripciones para usuario ID: " + id_usuario);
+            System.out.println("DEBUG Obteniendo inscripciones para usuario ID: " + id_usuario);
             
-            // Crear lista de todas las inscripciones disponibles
-            List<Map<String, Object>> todasLasInscripciones = crearDatosInscripciones();
-            
-            // Filtrar inscripciones por el ID del usuario
+            // TODO: Implementar obtención de inscripciones reales de la base de datos
+            // Por ahora devolver lista vacía hasta que se implemente la funcionalidad de inscripciones
             List<Map<String, Object>> inscripciones = new ArrayList<>();
             
-            // Filtrar inscripciones por el ID del usuario
-            for (Map<String, Object> inscripcion : todasLasInscripciones) {
-                Integer estudianteId = (Integer) inscripcion.get("estudianteId");
-                if (estudianteId != null && estudianteId.equals(id_usuario)) {
-                    inscripciones.add(inscripcion);
-                }
-            }
-            
-            System.out.println("✅ Inscripciones filtradas para usuario " + id_usuario + ": " + inscripciones.size() + " encontradas");
+            System.out.println("SUCCESS Inscripciones filtradas para usuario " + id_usuario + ": " + inscripciones.size() + " encontradas");
             
             return ResponseEntity.ok(inscripciones);
         } catch (Exception e) {
@@ -714,7 +704,7 @@ public class CursosIntersemestralesRestController {
     @GetMapping("/debug-solicitudes/{idUsuario}")
     public ResponseEntity<Map<String, Object>> debugSolicitudes(@PathVariable Integer idUsuario) {
         try {
-            System.out.println("🔍 DEBUG: Buscando solicitudes para usuario ID: " + idUsuario);
+            System.out.println("DEBUG DEBUG: Buscando solicitudes para usuario ID: " + idUsuario);
             
             // Buscar todas las solicitudes del usuario
             List<SolicitudCursoVeranoPreinscripcion> preinscripciones = solicitudCU.buscarSolicitudesPorUsuario(idUsuario);
@@ -724,7 +714,7 @@ public class CursosIntersemestralesRestController {
             debug.put("preinscripcionesEncontradas", preinscripciones.size());
             debug.put("preinscripciones", preinscripciones);
             
-            System.out.println("🔍 DEBUG: Encontradas " + preinscripciones.size() + " preinscripciones");
+            System.out.println("DEBUG DEBUG: Encontradas " + preinscripciones.size() + " preinscripciones");
             
             return ResponseEntity.ok(debug);
         } catch (Exception e) {
@@ -741,7 +731,7 @@ public class CursosIntersemestralesRestController {
     @GetMapping("/debug-seguimiento/{idUsuario}")
     public ResponseEntity<Map<String, Object>> debugSeguimiento(@PathVariable Integer idUsuario) {
         try {
-            System.out.println("🔍 DEBUG: Iniciando debug de seguimiento para usuario: " + idUsuario);
+            System.out.println("DEBUG DEBUG: Iniciando debug de seguimiento para usuario: " + idUsuario);
             
             List<SolicitudCursoVeranoPreinscripcion> preinscripcionesReales = solicitudCU.buscarSolicitudesPorUsuario(idUsuario);
             
@@ -794,7 +784,7 @@ public class CursosIntersemestralesRestController {
     @GetMapping("/debug-todas-solicitudes")
     public ResponseEntity<Map<String, Object>> debugTodasSolicitudes() {
         try {
-            System.out.println("🔍 DEBUG: Buscando TODAS las solicitudes en la base de datos");
+            System.out.println("DEBUG DEBUG: Buscando TODAS las solicitudes en la base de datos");
             
             // Buscar todas las solicitudes usando el repositorio directamente
             List<SolicitudEntity> todasLasSolicitudes = solicitudRepository.findAll();
@@ -814,7 +804,7 @@ public class CursosIntersemestralesRestController {
             
             debug.put("solicitudes", solicitudesInfo);
             
-            System.out.println("🔍 DEBUG: Encontradas " + todasLasSolicitudes.size() + " solicitudes en total");
+            System.out.println("DEBUG DEBUG: Encontradas " + todasLasSolicitudes.size() + " solicitudes en total");
             
             return ResponseEntity.ok(debug);
         } catch (Exception e) {
@@ -831,13 +821,13 @@ public class CursosIntersemestralesRestController {
     @GetMapping("/seguimiento/{idUsuario}")
     public ResponseEntity<Map<String, Object>> obtenerSeguimientoActividades(@PathVariable Integer idUsuario) {
         try {
-            System.out.println("📊 Obteniendo seguimiento de actividades para usuario ID: " + idUsuario);
+            System.out.println("INFO Obteniendo seguimiento de actividades para usuario ID: " + idUsuario);
             
-            // Obtener preinscripciones (combinar datos reales con simulados por ahora)
+            // Obtener preinscripciones reales de la base de datos
             List<Map<String, Object>> preinscripciones = new ArrayList<>();
             
             try {
-                // Intentar obtener preinscripciones reales de la base de datos
+                // Obtener preinscripciones reales de la base de datos
                 List<SolicitudCursoVeranoPreinscripcion> preinscripcionesReales = solicitudCU.buscarSolicitudesPorUsuario(idUsuario);
                 
                 for (SolicitudCursoVeranoPreinscripcion preinscripcion : preinscripcionesReales) {
@@ -845,13 +835,12 @@ public class CursosIntersemestralesRestController {
                     preinscripcionMap.put("id", preinscripcion.getId_solicitud());
                     preinscripcionMap.put("fecha", preinscripcion.getFecha_registro_solicitud());
                     preinscripcionMap.put("estado", preinscripcion.getEstadosSolicitud() != null && !preinscripcion.getEstadosSolicitud().isEmpty() 
-                        ? preinscripcion.getEstadosSolicitud().get(0).getEstado_actual() : "Pendiente");
+                        ? preinscripcion.getEstadosSolicitud().get(0).getEstado_actual() : "Enviado");
+                    
                     // Determinar el tipo correcto de solicitud
                     String tipoSolicitud = "Preinscripción";
                     
-                    // Verificar si es una solicitud de curso nuevo basándose en el contenido
-                    
-                    // Detección más flexible para solicitudes de curso nuevo
+                    // Detección para solicitudes de curso nuevo
                     boolean esSolicitudCursoNuevo = false;
                     
                     if (preinscripcion.getObservacion() != null) {
@@ -901,30 +890,19 @@ public class CursosIntersemestralesRestController {
                     preinscripciones.add(preinscripcionMap);
                 }
                 
-                System.out.println("📊 Preinscripciones reales encontradas: " + preinscripciones.size());
+                System.out.println("INFO Preinscripciones reales encontradas: " + preinscripciones.size());
                 
             } catch (Exception e) {
-                System.out.println("⚠️ Error obteniendo preinscripciones reales: " + e.getMessage());
-                // Si hay error, usar datos simulados como fallback
-                preinscripciones = crearDatosPreinscripciones(idUsuario);
+                System.out.println("WARNING Error obteniendo preinscripciones reales: " + e.getMessage());
+                // En caso de error, devolver lista vacía en lugar de datos simulados
+                preinscripciones = new ArrayList<>();
             }
             
-            // Si no hay preinscripciones reales, agregar datos simulados como fallback
-            if (preinscripciones.isEmpty()) {
-                System.out.println("📊 No hay preinscripciones reales, usando datos simulados");
-                preinscripciones = crearDatosPreinscripciones(idUsuario);
-            }
-            
-            // Obtener inscripciones del usuario (usar datos simulados por ahora)
-            List<Map<String, Object>> inscripciones = crearDatosInscripciones();
+            // Obtener inscripciones reales del usuario (por ahora lista vacía hasta implementar la funcionalidad)
             List<Map<String, Object>> inscripcionesUsuario = new ArrayList<>();
             
-            for (Map<String, Object> inscripcion : inscripciones) {
-                Integer estudianteId = (Integer) inscripcion.get("estudianteId");
-                if (estudianteId != null && estudianteId.equals(idUsuario)) {
-                    inscripcionesUsuario.add(inscripcion);
-                }
-            }
+            // TODO: Implementar obtención de inscripciones reales cuando esté disponible
+            // Por ahora se mantiene vacío para evitar mostrar datos simulados
             
             // Crear respuesta con estadísticas
             Map<String, Object> respuesta = new HashMap<>();
@@ -934,12 +912,13 @@ public class CursosIntersemestralesRestController {
             respuesta.put("totalInscripciones", inscripcionesUsuario.size());
             respuesta.put("totalActividades", preinscripciones.size() + inscripcionesUsuario.size());
             
-            System.out.println("✅ Seguimiento obtenido: " + preinscripciones.size() + " preinscripciones reales, " + 
+            System.out.println("SUCCESS Seguimiento obtenido: " + preinscripciones.size() + " preinscripciones reales, " + 
                              inscripcionesUsuario.size() + " inscripciones");
             
             return ResponseEntity.ok(respuesta);
             
         } catch (Exception e) {
+            System.out.println("ERROR Error en seguimiento: " + e.getMessage());
             Map<String, Object> error = new HashMap<>();
             error.put("error", "Error interno del servidor");
             return ResponseEntity.internalServerError().body(error);
@@ -998,55 +977,17 @@ public class CursosIntersemestralesRestController {
     @DeleteMapping("/inscripciones/{id}")
     public ResponseEntity<Map<String, Object>> cancelarInscripcion(@PathVariable Integer id) {
         try {
-            System.out.println("🗑️ Cancelando inscripción ID: " + id);
+            System.out.println("DELETE Cancelando inscripción ID: " + id);
             
-            // Buscar la inscripción en los datos simulados
-            List<Map<String, Object>> todasLasInscripciones = crearDatosInscripciones();
-            Map<String, Object> inscripcion = null;
+            // TODO: Implementar cancelación de inscripciones reales de la base de datos
+            // Por ahora devolver error ya que no hay funcionalidad de inscripciones implementada
             
-            for (Map<String, Object> insc : todasLasInscripciones) {
-                if (id.equals(insc.get("id"))) {
-                    inscripcion = insc;
-                    break;
-                }
-            }
-            
-            // Verificar si la inscripción existe
-            if (inscripcion == null) {
-                Map<String, Object> error = new HashMap<>();
-                error.put("error", "Inscripción no encontrada");
-                error.put("message", "La inscripción con ID " + id + " no existe");
-                error.put("status", 404);
-                error.put("timestamp", java.time.LocalDateTime.now().toString());
-                return ResponseEntity.status(404).body(error);
-            }
-            
-            // Obtener el estado actual
-            String estadoActual = (String) inscripcion.get("estado");
-            
-            // Verificar si ya está cancelada
-            if ("cancelada".equals(estadoActual)) {
-                Map<String, Object> error = new HashMap<>();
-                error.put("error", "No se puede cancelar la inscripción");
-                error.put("message", "La inscripción ya está cancelada");
-                error.put("status", 400);
-                error.put("timestamp", java.time.LocalDateTime.now().toString());
-                return ResponseEntity.status(400).body(error);
-            }
-            
-            // Actualizar el estado persistente
-            estadosInscripciones.put(id, "cancelada");
-            System.out.println("✅ Inscripción ID " + id + " cancelada exitosamente");
-            
-            // Respuesta exitosa
-            Map<String, Object> respuesta = new HashMap<>();
-            respuesta.put("message", "Inscripción cancelada exitosamente");
-            respuesta.put("inscripcionId", id);
-            respuesta.put("estadoAnterior", estadoActual);
-            respuesta.put("estadoNuevo", "cancelada");
-            respuesta.put("timestamp", java.time.LocalDateTime.now().toString());
-            
-            return ResponseEntity.ok(respuesta);
+            Map<String, Object> error = new HashMap<>();
+            error.put("error", "Funcionalidad no implementada");
+            error.put("message", "La funcionalidad de inscripciones aún no está implementada");
+            error.put("status", 501);
+            error.put("timestamp", java.time.LocalDateTime.now().toString());
+            return ResponseEntity.status(501).body(error);
             
         } catch (Exception e) {
             Map<String, Object> error = new HashMap<>();
@@ -1102,7 +1043,7 @@ public class CursosIntersemestralesRestController {
             // Objeto rol
             Map<String, Object> rol1 = new HashMap<>();
             rol1.put("id_rol", 2);
-            rol1.put("nombre", "Docente"); // ✅ CORREGIDO: nombre → nombre
+            rol1.put("nombre", "Docente"); // SUCCESS CORREGIDO: nombre → nombre
             docente1.put("objRol", rol1);
             
             curso1.put("objDocente", docente1);
@@ -1138,7 +1079,7 @@ public class CursosIntersemestralesRestController {
             
             Map<String, Object> rol2 = new HashMap<>();
             rol2.put("id_rol", 2);
-            rol2.put("nombre", "Docente"); // ✅ CORREGIDO: nombre → nombre
+            rol2.put("nombre", "Docente"); // SUCCESS CORREGIDO: nombre → nombre
             docente2.put("objRol", rol2);
             
             curso2.put("objDocente", docente2);
@@ -1401,7 +1342,7 @@ public class CursosIntersemestralesRestController {
             
             Map<String, Object> rol1 = new HashMap<>();
             rol1.put("id_rol", 2);
-            rol1.put("nombre", "Docente"); // ✅ CORREGIDO: nombre → nombre
+            rol1.put("nombre", "Docente"); // SUCCESS CORREGIDO: nombre → nombre
             docente1.put("objRol", rol1);
             
             docentes.add(docente1);
@@ -1416,7 +1357,7 @@ public class CursosIntersemestralesRestController {
             
             Map<String, Object> rol2 = new HashMap<>();
             rol2.put("id_rol", 2);
-            rol2.put("nombre", "Docente"); // ✅ CORREGIDO: nombre → nombre
+            rol2.put("nombre", "Docente"); // SUCCESS CORREGIDO: nombre → nombre
             docente2.put("objRol", rol2);
             
             docentes.add(docente2);
@@ -1431,7 +1372,7 @@ public class CursosIntersemestralesRestController {
             
             Map<String, Object> rol3 = new HashMap<>();
             rol3.put("id_rol", 2);
-            rol3.put("nombre", "Docente"); // ✅ CORREGIDO: nombre → nombre
+            rol3.put("nombre", "Docente"); // SUCCESS CORREGIDO: nombre → nombre
             docente3.put("objRol", rol3);
             
             docentes.add(docente3);
@@ -1511,7 +1452,7 @@ public class CursosIntersemestralesRestController {
             // Curso
             Map<String, Object> curso1 = new HashMap<>();
             curso1.put("id_curso", idCurso);
-            curso1.put("nombre_curso", "Álgebra Lineal");
+            curso1.put("nombre_curso", "Algebra Lineal");
             curso1.put("codigo_curso", "ALG-201");
             curso1.put("descripcion", "Fundamentos de álgebra lineal");
             curso1.put("fecha_inicio", "2024-01-15T00:00:00Z");
@@ -1525,7 +1466,7 @@ public class CursosIntersemestralesRestController {
             // Materia del curso
             Map<String, Object> materia1 = new HashMap<>();
             materia1.put("id_materia", 1);
-            materia1.put("nombre_materia", "Álgebra Lineal");
+            materia1.put("nombre_materia", "Algebra Lineal");
             materia1.put("codigo_materia", "ALG");
             materia1.put("creditos", 4);
             curso1.put("objMateria", materia1);
@@ -1918,7 +1859,7 @@ public class CursosIntersemestralesRestController {
             // Rol corregido
             Map<String, Object> rol1 = new HashMap<>();
             rol1.put("id_rol", 1);
-            rol1.put("nombre", "Estudiante"); // ✅ CORREGIDO: ya no es null
+            rol1.put("nombre", "Estudiante"); // SUCCESS CORREGIDO: ya no es null
             usuario1.put("rol", rol1);
             
             // Programa
@@ -1963,7 +1904,7 @@ public class CursosIntersemestralesRestController {
             // Rol del docente corregido
             Map<String, Object> rolDocente1 = new HashMap<>();
             rolDocente1.put("id_rol", 2);
-            rolDocente1.put("nombre", "Docente"); // ✅ CORREGIDO: ya no es null
+            rolDocente1.put("nombre", "Docente"); // SUCCESS CORREGIDO: ya no es null
             docente1.put("rol", rolDocente1);
             
             // Programa del docente
@@ -2000,7 +1941,7 @@ public class CursosIntersemestralesRestController {
             // Rol corregido
             Map<String, Object> rol2 = new HashMap<>();
             rol2.put("id_rol", 1);
-            rol2.put("nombre", "Estudiante"); // ✅ CORREGIDO
+            rol2.put("nombre", "Estudiante"); // SUCCESS CORREGIDO
             usuario2.put("rol", rol2);
             
             // Programa
@@ -2033,150 +1974,4 @@ public class CursosIntersemestralesRestController {
         }
     }
     
-    // Variable estática para mantener el estado de las inscripciones
-    private static Map<Integer, String> estadosInscripciones = new HashMap<>();
-    
-    /**
-     * Método auxiliar para crear datos de inscripciones
-     */
-    private List<Map<String, Object>> crearDatosInscripciones() {
-        List<Map<String, Object>> inscripciones = new ArrayList<>();
-        
-        // Inscripción 1: Ana González (Usuario ID: 1)
-        Map<String, Object> inscripcion1 = new HashMap<>();
-        inscripcion1.put("id", 1);
-        inscripcion1.put("fecha", "2024-01-15T10:30:00");
-        inscripcion1.put("estudianteId", 1);
-        inscripcion1.put("cursoId", 1);
-        inscripcion1.put("estado", estadosInscripciones.getOrDefault(1, "inscrito"));
-        
-        Map<String, Object> estudiante1 = new HashMap<>();
-        estudiante1.put("id_usuario", 1);
-        estudiante1.put("nombre", "Pepa");
-        estudiante1.put("apellido", "González");
-        estudiante1.put("email", "pepa.gonzalez@unicauca.edu.co");
-        estudiante1.put("codigo_estudiante", "104612345660");
-        inscripcion1.put("estudiante", estudiante1);
-        
-        Map<String, Object> archivoPago1 = new HashMap<>();
-        archivoPago1.put("id_documento", 1);
-        archivoPago1.put("nombre", "comprobante_pago_pepa.pdf");
-        archivoPago1.put("url", "/uploads/comprobante_pago_pepa.pdf");
-        archivoPago1.put("fecha", "2024-01-15T10:30:00");
-        inscripcion1.put("archivoPago", archivoPago1);
-        inscripciones.add(inscripcion1);
-        
-        // Inscripción 2: Carlos López (Usuario ID: 2)
-        Map<String, Object> inscripcion2 = new HashMap<>();
-        inscripcion2.put("id", 2);
-        inscripcion2.put("fecha", "2024-01-16T14:20:00");
-        inscripcion2.put("estado", "inscrito");
-        inscripcion2.put("estudianteId", 2);
-        inscripcion2.put("cursoId", 2);
-        
-        Map<String, Object> estudiante2 = new HashMap<>();
-        estudiante2.put("id_usuario", 2);
-        estudiante2.put("nombre", "Carlos");
-        estudiante2.put("apellido", "López");
-        estudiante2.put("email", "carlos.lopez@unicauca.edu.co");
-        estudiante2.put("codigo_estudiante", "104612345661");
-        inscripcion2.put("estudiante", estudiante2);
-        
-        Map<String, Object> archivoPago2 = new HashMap<>();
-        archivoPago2.put("id_documento", 2);
-        archivoPago2.put("nombre", "comprobante_pago_carlos.pdf");
-        archivoPago2.put("url", "/uploads/comprobante_pago_carlos.pdf");
-        archivoPago2.put("fecha", "2024-01-16T14:20:00");
-        inscripcion2.put("archivoPago", archivoPago2);
-        inscripciones.add(inscripcion2);
-        
-        // Inscripción 3: María Rodríguez (Usuario ID: 3) - sin archivo de pago
-        Map<String, Object> inscripcion3 = new HashMap<>();
-        inscripcion3.put("id", 3);
-        inscripcion3.put("fecha", "2024-01-17T09:15:00");
-        inscripcion3.put("estado", "pendiente");
-        inscripcion3.put("estudianteId", 3);
-        inscripcion3.put("cursoId", 1);
-        
-        Map<String, Object> estudiante3 = new HashMap<>();
-        estudiante3.put("id_usuario", 3);
-        estudiante3.put("nombre", "María");
-        estudiante3.put("apellido", "Rodríguez");
-        estudiante3.put("email", "maria.rodriguez@unicauca.edu.co");
-        estudiante3.put("codigo_estudiante", "104612345662");
-        inscripcion3.put("estudiante", estudiante3);
-        inscripcion3.put("archivoPago", null);
-        inscripciones.add(inscripcion3);
-        
-        // Inscripción 4: Pedro Martínez (Usuario ID: 4)
-        Map<String, Object> inscripcion4 = new HashMap<>();
-        inscripcion4.put("id", 4);
-        inscripcion4.put("fecha", "2024-01-18T16:45:00");
-        inscripcion4.put("estado", "inscrito");
-        inscripcion4.put("estudianteId", 4);
-        inscripcion4.put("cursoId", 3);
-        
-        Map<String, Object> estudiante4 = new HashMap<>();
-        estudiante4.put("id_usuario", 4);
-        estudiante4.put("nombre", "Pedro");
-        estudiante4.put("apellido", "Martínez");
-        estudiante4.put("email", "pedro.martinez@unicauca.edu.co");
-        estudiante4.put("codigo_estudiante", "104612345663");
-        inscripcion4.put("estudiante", estudiante4);
-        
-        Map<String, Object> archivoPago4 = new HashMap<>();
-        archivoPago4.put("id_documento", 4);
-        archivoPago4.put("nombre", "comprobante_pago_pedro.pdf");
-        archivoPago4.put("url", "/uploads/comprobante_pago_pedro.pdf");
-        archivoPago4.put("fecha", "2024-01-18T16:45:00");
-        inscripcion4.put("archivoPago", archivoPago4);
-        inscripciones.add(inscripcion4);
-        
-        return inscripciones;
-    }
-    
-    /**
-     * Método auxiliar para crear datos de preinscripciones
-     */
-    private List<Map<String, Object>> crearDatosPreinscripciones(Integer idUsuario) {
-        List<Map<String, Object>> preinscripciones = new ArrayList<>();
-        
-        // Solo crear preinscripciones para el usuario especificado
-        if (idUsuario == 1) {
-            // Preinscripción 1: Programación I (Usuario ID: 1)
-            Map<String, Object> preinscripcion1 = new HashMap<>();
-            preinscripcion1.put("id", 1);
-            preinscripcion1.put("fecha", "2024-01-15T10:30:00");
-            preinscripcion1.put("estado", "Pendiente");
-            preinscripcion1.put("tipo", "Preinscripción");
-            preinscripcion1.put("curso", "Programación I");
-            preinscripcion1.put("estudianteId", 1);
-            preinscripcion1.put("cursoId", 2);
-            preinscripciones.add(preinscripcion1);
-            
-            // Preinscripción 2: Matemáticas Básicas (Usuario ID: 1)
-            Map<String, Object> preinscripcion2 = new HashMap<>();
-            preinscripcion2.put("id", 2);
-            preinscripcion2.put("fecha", "2024-01-16T14:20:00");
-            preinscripcion2.put("estado", "Aprobado");
-            preinscripcion2.put("tipo", "Preinscripción");
-            preinscripcion2.put("curso", "Matemáticas Básicas");
-            preinscripcion2.put("estudianteId", 1);
-            preinscripcion2.put("cursoId", 1);
-            preinscripciones.add(preinscripcion2);
-            
-            // Preinscripción 3: Bases de Datos (Usuario ID: 1)
-            Map<String, Object> preinscripcion3 = new HashMap<>();
-            preinscripcion3.put("id", 3);
-            preinscripcion3.put("fecha", "2024-01-17T09:15:00");
-            preinscripcion3.put("estado", "Rechazado");
-            preinscripcion3.put("tipo", "Preinscripción");
-            preinscripcion3.put("curso", "Bases de Datos");
-            preinscripcion3.put("estudianteId", 1);
-            preinscripcion3.put("cursoId", 3);
-            preinscripciones.add(preinscripcion3);
-        }
-        
-        return preinscripciones;
-    }
 }
