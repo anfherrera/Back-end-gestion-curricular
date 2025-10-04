@@ -40,13 +40,13 @@ public interface CursosOfertadosMapperDominio {
     @Mapping(source = "salon", target = "salon")
     @Mapping(source = "salon", target = "espacio_asignado")
     @Mapping(source = "cupo_estimado", target = "cupo_maximo")
-    @Mapping(source = "cupo_estimado", target = "cupo_disponible")
+    @Mapping(source = ".", target = "cupo_disponible", qualifiedByName = "calcularCupoDisponible")
     @Mapping(source = "estadosCursoOfertados", target = "estadosCursoOfertados")
     @Mapping(source = "estudiantesInscritos", target = "estudiantesInscritos")
-    @Mapping(target = "descripcion", constant = "Curso de verano")
-    @Mapping(target = "fecha_inicio", constant = "2024-06-01T08:00:00Z")
-    @Mapping(target = "fecha_fin", constant = "2024-07-15T17:00:00Z")
-    @Mapping(target = "estado", constant = "Preinscripcion")
+    @Mapping(source = "objMateria.nombre", target = "descripcion", qualifiedByName = "crearDescripcion")
+    @Mapping(source = "estadosCursoOfertados", target = "fecha_inicio", qualifiedByName = "obtenerFechaInicio")
+    @Mapping(source = "estadosCursoOfertados", target = "fecha_fin", qualifiedByName = "obtenerFechaFin")
+    @Mapping(source = "estadosCursoOfertados", target = "estado", qualifiedByName = "obtenerEstadoActual")
     @Named("mappearDeCursoOfertadoARespuesta")
     CursosOfertadosDTORespuesta mappearDeCursoOfertadoARespuesta(CursoOfertadoVerano curso);
     
@@ -60,22 +60,105 @@ public interface CursosOfertadosMapperDominio {
     @Mapping(source = "salon", target = "salon")
     @Mapping(source = "salon", target = "espacio_asignado")
     @Mapping(source = "cupo_estimado", target = "cupo_maximo")
-    @Mapping(source = "cupo_estimado", target = "cupo_disponible")
+    @Mapping(source = ".", target = "cupo_disponible", qualifiedByName = "calcularCupoDisponible")
     @Mapping(source = "estadosCursoOfertados", target = "estadosCursoOfertados")
     @Mapping(source = "estudiantesInscritos", target = "estudiantesInscritos")
-    @Mapping(target = "descripcion", constant = "Curso de verano")
-    @Mapping(target = "fecha_inicio", constant = "2024-06-01T08:00:00Z")
-    @Mapping(target = "fecha_fin", constant = "2024-07-15T17:00:00Z")
-    @Mapping(target = "estado", constant = "Disponible")
+    @Mapping(source = "objMateria.nombre", target = "descripcion", qualifiedByName = "crearDescripcion")
+    @Mapping(source = "estadosCursoOfertados", target = "fecha_inicio", qualifiedByName = "obtenerFechaInicio")
+    @Mapping(source = "estadosCursoOfertados", target = "fecha_fin", qualifiedByName = "obtenerFechaFin")
+    @Mapping(source = "estadosCursoOfertados", target = "estado", qualifiedByName = "obtenerEstadoActual")
     @Named("mappearDeCursoOfertadoARespuestaDisponible")
     CursosOfertadosDTORespuesta mappearDeCursoOfertadoARespuestaDisponible(CursoOfertadoVerano curso);
 
-    // Listas
-    @Mapping(target = ".", source = ".", qualifiedByName = "mappearDeCursoOfertadoARespuesta")
-    List<CursosOfertadosDTORespuesta> mappearListaDeCursoOfertadoARespuesta(List<CursoOfertadoVerano> cursos);
+    // Listas - mapeo manual para evitar problemas con métodos auxiliares
+    default List<CursosOfertadosDTORespuesta> mappearListaDeCursoOfertadoARespuesta(List<CursoOfertadoVerano> cursos) {
+        if (cursos == null) {
+            return null;
+        }
+        return cursos.stream()
+                .map(this::mappearDeCursoOfertadoARespuesta)
+                .collect(java.util.stream.Collectors.toList());
+    }
     
-    @Mapping(target = ".", source = ".", qualifiedByName = "mappearDeCursoOfertadoARespuestaDisponible")
-    List<CursosOfertadosDTORespuesta> mappearListaDeCursoOfertadoARespuestaDisponible(List<CursoOfertadoVerano> cursos);
+    default List<CursosOfertadosDTORespuesta> mappearListaDeCursoOfertadoARespuestaDisponible(List<CursoOfertadoVerano> cursos) {
+        if (cursos == null) {
+            return null;
+        }
+        return cursos.stream()
+                .map(this::mappearDeCursoOfertadoARespuestaDisponible)
+                .collect(java.util.stream.Collectors.toList());
+    }
     
     List<CursoOfertadoVerano> mappearListaDeDTOPeticionACursoOfertado(List<CursosOfertadosDTOPeticion> peticiones);
+    
+    // Métodos auxiliares para mapear datos reales
+    @Named("crearDescripcion")
+    default String crearDescripcion(String nombreMateria) {
+        if (nombreMateria == null || nombreMateria.trim().isEmpty()) {
+            return "Curso de verano";
+        }
+        return "Curso de " + nombreMateria;
+    }
+    
+    @Named("obtenerEstadoActual")
+    default String obtenerEstadoActual(List<co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.EstadoCursoOfertado> estados) {
+        if (estados == null || estados.isEmpty()) {
+            return "Abierto";
+        }
+        // Obtener el estado más reciente
+        return estados.get(estados.size() - 1).getEstado_actual();
+    }
+    
+    @Named("obtenerFechaInicio")
+    default String obtenerFechaInicio(List<co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.EstadoCursoOfertado> estados) {
+        if (estados == null || estados.isEmpty()) {
+            return "2024-06-01T08:00:00Z";
+        }
+        // Obtener la fecha del estado más reciente
+        java.util.Date fecha = estados.get(estados.size() - 1).getFecha_registro_estado();
+        if (fecha == null) {
+            return "2024-06-01T08:00:00Z";
+        }
+        return new java.text.SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'").format(fecha);
+    }
+    
+    @Named("obtenerFechaFin")
+    default String obtenerFechaFin(List<co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.EstadoCursoOfertado> estados) {
+        if (estados == null || estados.isEmpty()) {
+            return "2024-07-15T17:00:00Z";
+        }
+        // Calcular fecha fin basada en la fecha de inicio + 6 semanas
+        java.util.Date fechaInicio = estados.get(estados.size() - 1).getFecha_registro_estado();
+        if (fechaInicio == null) {
+            return "2024-07-15T17:00:00Z";
+        }
+        java.util.Calendar cal = java.util.Calendar.getInstance();
+        cal.setTime(fechaInicio);
+        cal.add(java.util.Calendar.WEEK_OF_YEAR, 6); // 6 semanas después
+        return new java.text.SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'").format(cal.getTime());
+    }
+    
+    @Named("calcularCupoDisponible")
+    default Integer calcularCupoDisponible(CursoOfertadoVerano curso) {
+        if (curso == null) {
+            return 0;
+        }
+        
+        Integer cupoMaximo = curso.getCupo_estimado();
+        if (cupoMaximo == null) {
+            return 0;
+        }
+        
+        // Calcular estudiantes inscritos
+        int estudiantesInscritos = 0;
+        if (curso.getEstudiantesInscritos() != null) {
+            estudiantesInscritos = curso.getEstudiantesInscritos().size();
+        }
+        
+        // Cupo disponible = cupo máximo - estudiantes inscritos
+        int cupoDisponible = cupoMaximo - estudiantesInscritos;
+        
+        // Asegurar que no sea negativo
+        return Math.max(0, cupoDisponible);
+    }
 }
