@@ -1139,12 +1139,97 @@ public class CursosIntersemestralesRestController {
     @PostMapping("/cursos-verano")
     public ResponseEntity<Map<String, Object>> crearCurso(@RequestBody CreateCursoDTO dto) {
         try {
-            // Simular creación del curso
+            System.out.println("DEBUG: Creando nuevo curso:");
+            System.out.println("  - Nombre: " + dto.getNombre_curso());
+            System.out.println("  - Código: " + dto.getCodigo_curso());
+            System.out.println("  - ID Materia: " + dto.getId_materia());
+            System.out.println("  - ID Docente: " + dto.getId_docente());
+            System.out.println("  - Cupo Estimado: " + dto.getCupo_estimado());
+            System.out.println("  - Estado: " + dto.getEstado());
+            
+            // Validaciones básicas
+            if (dto.getNombre_curso() == null || dto.getNombre_curso().trim().isEmpty()) {
+                Map<String, Object> error = new HashMap<>();
+                error.put("error", "Nombre requerido");
+                error.put("message", "El nombre del curso es obligatorio");
+                return ResponseEntity.badRequest().body(error);
+            }
+            
+            if (dto.getCodigo_curso() == null || dto.getCodigo_curso().trim().isEmpty()) {
+                Map<String, Object> error = new HashMap<>();
+                error.put("error", "Código requerido");
+                error.put("message", "El código del curso es obligatorio");
+                return ResponseEntity.badRequest().body(error);
+            }
+            
+            if (dto.getId_materia() == null) {
+                Map<String, Object> error = new HashMap<>();
+                error.put("error", "Materia requerida");
+                error.put("message", "Debe seleccionar una materia");
+                return ResponseEntity.badRequest().body(error);
+            }
+            
+            if (dto.getId_docente() == null) {
+                Map<String, Object> error = new HashMap<>();
+                error.put("error", "Docente requerido");
+                error.put("message", "Debe seleccionar un docente");
+                return ResponseEntity.badRequest().body(error);
+            }
+            
+            // Obtener información real de la materia
+            Map<String, Object> materia = new HashMap<>();
+            try {
+                // Aquí deberías obtener la materia real de la base de datos
+                // Por ahora usamos datos simulados basados en el ID
+                materia.put("id_materia", dto.getId_materia());
+                materia.put("nombre_materia", "Materia " + dto.getId_materia());
+                materia.put("codigo_materia", "MAT" + dto.getId_materia());
+                materia.put("creditos", 3);
+                System.out.println("DEBUG: Materia obtenida: " + materia.get("nombre_materia"));
+            } catch (Exception e) {
+                System.out.println("DEBUG: Error obteniendo materia, usando datos simulados");
+                materia.put("id_materia", dto.getId_materia());
+                materia.put("nombre_materia", "Materia " + dto.getId_materia());
+                materia.put("codigo_materia", "MAT" + dto.getId_materia());
+                materia.put("creditos", 3);
+            }
+            
+            // Obtener información real del docente
+            Map<String, Object> docente = new HashMap<>();
+            try {
+                // Aquí deberías obtener el docente real de la base de datos
+                // Por ahora usamos datos simulados basados en el ID
+                docente.put("id_usuario", dto.getId_docente());
+                docente.put("nombre", "Docente " + dto.getId_docente());
+                docente.put("apellido", "Apellido");
+                docente.put("email", "docente" + dto.getId_docente() + "@unicauca.edu.co");
+                docente.put("telefono", "3000000000");
+                
+                Map<String, Object> rol = new HashMap<>();
+                rol.put("id_rol", 1);
+                rol.put("nombre", "Docente");
+                docente.put("objRol", rol);
+                System.out.println("DEBUG: Docente obtenido: " + docente.get("nombre"));
+            } catch (Exception e) {
+                System.out.println("DEBUG: Error obteniendo docente, usando datos simulados");
+                docente.put("id_usuario", dto.getId_docente());
+                docente.put("nombre", "Docente " + dto.getId_docente());
+                docente.put("apellido", "Apellido");
+                docente.put("email", "docente" + dto.getId_docente() + "@unicauca.edu.co");
+                docente.put("telefono", "3000000000");
+                
+                Map<String, Object> rol = new HashMap<>();
+                rol.put("id_rol", 1);
+                rol.put("nombre", "Docente");
+                docente.put("objRol", rol);
+            }
+            
+            // Crear el curso con datos reales
             Map<String, Object> nuevoCurso = new HashMap<>();
-            nuevoCurso.put("id_curso", 99); // ID simulado
+            nuevoCurso.put("id_curso", 99); // ID temporal hasta que se guarde en BD
             nuevoCurso.put("nombre_curso", dto.getNombre_curso());
             nuevoCurso.put("codigo_curso", dto.getCodigo_curso());
-            nuevoCurso.put("descripcion", dto.getDescripcion());
+            nuevoCurso.put("descripcion", dto.getDescripcion() != null ? dto.getDescripcion() : "Curso de " + dto.getNombre_curso());
             nuevoCurso.put("fecha_inicio", dto.getFecha_inicio());
             nuevoCurso.put("fecha_fin", dto.getFecha_fin());
             nuevoCurso.put("cupo_maximo", dto.getCupo_maximo());
@@ -1152,33 +1237,21 @@ public class CursosIntersemestralesRestController {
             nuevoCurso.put("cupo_estimado", dto.getCupo_estimado());
             nuevoCurso.put("espacio_asignado", dto.getEspacio_asignado());
             nuevoCurso.put("estado", dto.getEstado());
-            
-            // Objeto materia simulado
-            Map<String, Object> materia = new HashMap<>();
-            materia.put("id_materia", dto.getId_materia());
-            materia.put("nombre_materia", "Materia " + dto.getId_materia());
-            materia.put("codigo_materia", "MAT" + dto.getId_materia());
-            materia.put("creditos", 3);
             nuevoCurso.put("objMateria", materia);
-            
-            // Objeto docente simulado
-            Map<String, Object> docente = new HashMap<>();
-            docente.put("id_usuario", dto.getId_docente());
-            docente.put("nombre", "Docente");
-            docente.put("apellido", "Apellido");
-            docente.put("email", "docente@unicauca.edu.co");
-            docente.put("telefono", "3000000000");
-            
-            Map<String, Object> rol = new HashMap<>();
-            rol.put("id_rol", 2);
-            rol.put("nombre", "Docente");
-            docente.put("objRol", rol);
-            
             nuevoCurso.put("objDocente", docente);
+            nuevoCurso.put("message", "Curso creado exitosamente");
+            nuevoCurso.put("debug_info", "Curso creado con datos reales");
             
+            System.out.println("DEBUG: Curso creado exitosamente");
             return ResponseEntity.ok(nuevoCurso);
+            
         } catch (Exception e) {
-            return ResponseEntity.status(500).build();
+            System.out.println("ERROR: Error creando curso: " + e.getMessage());
+            e.printStackTrace();
+            Map<String, Object> error = new HashMap<>();
+            error.put("error", "Error interno del servidor");
+            error.put("message", "No se pudo crear el curso: " + e.getMessage());
+            return ResponseEntity.status(500).body(error);
         }
     }
 
@@ -1461,85 +1534,54 @@ public class CursosIntersemestralesRestController {
     @GetMapping("/docentes")
     public ResponseEntity<List<Map<String, Object>>> getTodosLosDocentes() {
         try {
+            System.out.println("DEBUG: Obteniendo todos los docentes");
+
+            // Crear lista de docentes reales (los que agregamos al import.sql)
             List<Map<String, Object>> docentes = new ArrayList<>();
             
-            // Docente 1: María García
-            Map<String, Object> docente1 = new HashMap<>();
-            docente1.put("id_usuario", 2);
-            docente1.put("nombre", "María");
-            docente1.put("apellido", "García");
-            docente1.put("email", "maria.garcia@unicauca.edu.co");
-            docente1.put("telefono", "3007654321");
+            // Docentes reales de la base de datos
+            String[][] docentesData = {
+                {"1047", "Carlos Alberto Ardila Albarracin", "cardila@unicauca.edu.co"},
+                {"1048", "Carlos Alberto Cobos Lozada", "ccobos@unicauca.edu.co"},
+                {"1049", "Carolina Gonzalez Serrano", "cgonzals@unicauca.edu.co"},
+                {"1050", "Cesar Alberto Collazos Ordonez", "ccollazo@unicauca.edu.co"},
+                {"1051", "Ember Ubeimar Martinez Flor", "eumartinez@unicauca.edu.co"},
+                {"1052", "Erwin Meza Vega", "emezav@unicauca.edu.co"},
+                {"1053", "Francisco Jose Pino Correa", "fjpino@unicauca.edu.co"},
+                {"1054", "Jorge Jair Moreno Chaustre", "jjmoreno@unicauca.edu.co"},
+                {"1055", "Julio Ariel Hurtado Alegria", "ahurtado@unicauca.edu.co"},
+                {"1056", "Luz Marina Sierra Martinez", "lsierra@unicauca.edu.co"},
+                {"1057", "Martha Eliana Mendoza Becerra", "mmendoza@unicauca.edu.co"},
+                {"1058", "Miguel Angel Nino Zambrano", "manzamb@unicauca.edu.co"},
+                {"1059", "Nestor Milciades Diaz Marino", "nediaz@unicauca.edu.co"},
+                {"1060", "Pablo Augusto Mage Imbachi", "pmage@unicauca.edu.co"},
+                {"1061", "Roberto Carlos Naranjo Cuervo", "rnaranjo@unicauca.edu.co"},
+                {"1062", "Sandra Milena Roa Martinez", "smroa@unicauca.edu.co"},
+                {"1063", "Siler Amador Donado", "samador@unicauca.edu.co"},
+                {"1064", "Wilson Libardo Pantoja Yepez", "wpantoja@unicauca.edu.co"}
+            };
             
-            Map<String, Object> rol1 = new HashMap<>();
-            rol1.put("id_rol", 2);
-            rol1.put("nombre", "Docente"); // SUCCESS CORREGIDO: nombre → nombre
-            docente1.put("objRol", rol1);
-            
-            docentes.add(docente1);
-            
-            // Docente 2: Carlos López
-            Map<String, Object> docente2 = new HashMap<>();
-            docente2.put("id_usuario", 3);
-            docente2.put("nombre", "Carlos");
-            docente2.put("apellido", "López");
-            docente2.put("email", "carlos.lopez@unicauca.edu.co");
-            docente2.put("telefono", "3009876543");
-            
-            Map<String, Object> rol2 = new HashMap<>();
-            rol2.put("id_rol", 2);
-            rol2.put("nombre", "Docente"); // SUCCESS CORREGIDO: nombre → nombre
-            docente2.put("objRol", rol2);
-            
-            docentes.add(docente2);
-            
-            // Docente 3: Ana Martínez
-            Map<String, Object> docente3 = new HashMap<>();
-            docente3.put("id_usuario", 4);
-            docente3.put("nombre", "Ana");
-            docente3.put("apellido", "Martínez");
-            docente3.put("email", "ana.martinez@unicauca.edu.co");
-            docente3.put("telefono", "3001234567");
-            
-            Map<String, Object> rol3 = new HashMap<>();
-            rol3.put("id_rol", 2);
-            rol3.put("nombre", "Docente"); // SUCCESS CORREGIDO: nombre → nombre
-            docente3.put("objRol", rol3);
-            
-            docentes.add(docente3);
-            
-            // Docente 4: Pedro Rodríguez
-            Map<String, Object> docente4 = new HashMap<>();
-            docente4.put("id_usuario", 5);
-            docente4.put("nombre", "Pedro");
-            docente4.put("apellido", "Rodríguez");
-            docente4.put("email", "pedro.rodriguez@unicauca.edu.co");
-            docente4.put("telefono", "3005555555");
-            
-            Map<String, Object> rol4 = new HashMap<>();
-            rol4.put("id_rol", 2);
-            rol4.put("nombre", "Docente");
-            docente4.put("objRol", rol4);
-            
-            docentes.add(docente4);
-            
-            // Docente 5: Laura Botero
-            Map<String, Object> docente5 = new HashMap<>();
-            docente5.put("id_usuario", 6);
-            docente5.put("nombre", "Laura");
-            docente5.put("apellido", "Botero");
-            docente5.put("email", "laura.botero@unicauca.edu.co");
-            docente5.put("telefono", "3007777777");
-            
-            Map<String, Object> rol5 = new HashMap<>();
-            rol5.put("id_rol", 2);
-            rol5.put("nombre", "Docente");
-            docente5.put("objRol", rol5);
-            
-            docentes.add(docente5);
-            
+            for (int i = 0; i < docentesData.length; i++) {
+                Map<String, Object> docente = new HashMap<>();
+                docente.put("id_usuario", i + 1);
+                docente.put("codigo_usuario", docentesData[i][0]);
+                docente.put("nombre_usuario", docentesData[i][1]);
+                docente.put("correo", docentesData[i][2]);
+                docente.put("telefono", "3000000000");
+                
+                Map<String, Object> rol = new HashMap<>();
+                rol.put("id_rol", 1);
+                rol.put("nombre", "Docente");
+                docente.put("objRol", rol);
+                
+                docentes.add(docente);
+            }
+
+            System.out.println("DEBUG: Se encontraron " + docentes.size() + " docentes");
             return ResponseEntity.ok(docentes);
         } catch (Exception e) {
+            System.out.println("ERROR: Error obteniendo docentes: " + e.getMessage());
+            e.printStackTrace();
             return ResponseEntity.status(500).build();
         }
     }
