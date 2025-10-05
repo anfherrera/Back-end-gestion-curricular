@@ -1194,11 +1194,11 @@ public class CursosIntersemestralesRestController {
             System.out.println("DEBUG: Actualizando curso ID: " + id);
             System.out.println("DEBUG: Datos recibidos: " + dto);
             
-            // Validaciones básicas - El cupo no se puede cambiar desde aquí
-            if (dto.getCupo_estimado() != null) {
+            // Validaciones básicas
+            if (dto.getCupo_estimado() != null && (dto.getCupo_estimado() < 1 || dto.getCupo_estimado() > 100)) {
                 Map<String, Object> error = new HashMap<>();
-                error.put("error", "Cupo no modificable");
-                error.put("message", "El cupo estimado no se puede modificar desde este endpoint. Solo se puede cambiar el estado y el espacio asignado.");
+                error.put("error", "Cupo inválido");
+                error.put("message", "El cupo estimado debe estar entre 1 y 100");
                 return ResponseEntity.badRequest().body(error);
             }
             
@@ -1238,8 +1238,14 @@ public class CursosIntersemestralesRestController {
             
             System.out.println("DEBUG: Curso encontrado: " + (cursoEntity.getObjMateria() != null ? cursoEntity.getObjMateria().getNombre() : "Sin materia"));
             
-            // Aplicar cambios al objeto (solo estado y espacio)
+            // Aplicar cambios al objeto
             boolean cursoModificado = false;
+            
+            if (dto.getCupo_estimado() != null) {
+                cursoEntity.setCupo_estimado(dto.getCupo_estimado());
+                cursoModificado = true;
+                System.out.println("DEBUG: Cupo actualizado a: " + dto.getCupo_estimado());
+            }
             
             if (dto.getEspacio_asignado() != null) {
                 cursoEntity.setSalon(dto.getEspacio_asignado());
