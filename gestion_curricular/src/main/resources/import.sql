@@ -7,6 +7,24 @@ INSERT INTO `programas`(`idPrograma`, `codigo`, `nombre_programa`) VALUES (NULL,
 INSERT INTO `programas`(`idPrograma`, `codigo`, `nombre_programa`) VALUES (NULL,'1047','Ingenieria Electronica');
 INSERT INTO `programas`(`idPrograma`, `codigo`, `nombre_programa`) VALUES (NULL,'1048','Ingenieria de Telecomunicaciones');
 INSERT INTO `docentes`(`idDocente`, `codigo_docente`, `nombre_docente`) VALUES (NULL, '1046','Pepe Perez');
+INSERT INTO `docentes`(`idDocente`, `codigo_docente`, `nombre_docente`) VALUES (NULL, '1047','Carlos Alberto Ardila Albarracin');
+INSERT INTO `docentes`(`idDocente`, `codigo_docente`, `nombre_docente`) VALUES (NULL, '1048','Carlos Alberto Cobos Lozada');
+INSERT INTO `docentes`(`idDocente`, `codigo_docente`, `nombre_docente`) VALUES (NULL, '1049','Carolina Gonzalez Serrano');
+INSERT INTO `docentes`(`idDocente`, `codigo_docente`, `nombre_docente`) VALUES (NULL, '1050','Cesar Alberto Collazos Ordonez');
+INSERT INTO `docentes`(`idDocente`, `codigo_docente`, `nombre_docente`) VALUES (NULL, '1051','Ember Ubeimar Martinez Flor');
+INSERT INTO `docentes`(`idDocente`, `codigo_docente`, `nombre_docente`) VALUES (NULL, '1052','Erwin Meza Vega');
+INSERT INTO `docentes`(`idDocente`, `codigo_docente`, `nombre_docente`) VALUES (NULL, '1053','Francisco Jose Pino Correa');
+INSERT INTO `docentes`(`idDocente`, `codigo_docente`, `nombre_docente`) VALUES (NULL, '1054','Jorge Jair Moreno Chaustre');
+INSERT INTO `docentes`(`idDocente`, `codigo_docente`, `nombre_docente`) VALUES (NULL, '1055','Julio Ariel Hurtado Alegria');
+INSERT INTO `docentes`(`idDocente`, `codigo_docente`, `nombre_docente`) VALUES (NULL, '1056','Luz Marina Sierra Martinez');
+INSERT INTO `docentes`(`idDocente`, `codigo_docente`, `nombre_docente`) VALUES (NULL, '1057','Martha Eliana Mendoza Becerra');
+INSERT INTO `docentes`(`idDocente`, `codigo_docente`, `nombre_docente`) VALUES (NULL, '1058','Miguel Angel Nino Zambrano');
+INSERT INTO `docentes`(`idDocente`, `codigo_docente`, `nombre_docente`) VALUES (NULL, '1059','Nestor Milciades Diaz Marino');
+INSERT INTO `docentes`(`idDocente`, `codigo_docente`, `nombre_docente`) VALUES (NULL, '1060','Pablo Augusto Mage Imbachi');
+INSERT INTO `docentes`(`idDocente`, `codigo_docente`, `nombre_docente`) VALUES (NULL, '1061','Roberto Carlos Naranjo Cuervo');
+INSERT INTO `docentes`(`idDocente`, `codigo_docente`, `nombre_docente`) VALUES (NULL, '1062','Sandra Milena Roa Martinez');
+INSERT INTO `docentes`(`idDocente`, `codigo_docente`, `nombre_docente`) VALUES (NULL, '1063','Siler Amador Donado');
+INSERT INTO `docentes`(`idDocente`, `codigo_docente`, `nombre_docente`) VALUES (NULL, '1064','Wilson Libardo Pantoja Yepez');
 
 -- Datos de prueba para cursos de verano
 INSERT IGNORE INTO `materias`(`idMateria`, `codigo`, `nombre`, `creditos`) VALUES (NULL, 'BD001', 'Bases de Datos', 3);
@@ -46,6 +64,24 @@ INSERT IGNORE INTO `materias`(`idMateria`, `codigo`, `nombre`, `creditos`) VALUE
 INSERT INTO `usuarios`(`idUsuario`, `codigo_usuario`, `nombre_usuario`, `correo`, `contrasena`, `idfkRol`) VALUES (NULL, 'EST001', 'Juan Pérez', 'juan.perez@unicauca.edu.co', 'password123', 2);
 INSERT INTO `usuarios`(`idUsuario`, `codigo_usuario`, `nombre_usuario`, `correo`, `contrasena`, `idfkRol`) VALUES (NULL, 'EST002', 'María García', 'maria.garcia@unicauca.edu.co', 'password123', 2);
 INSERT INTO `usuarios`(`idUsuario`, `codigo_usuario`, `nombre_usuario`, `correo`, `contrasena`, `idfkRol`) VALUES (NULL, 'DOC001', 'Carlos López', 'carlos.lopez@unicauca.edu.co', 'password123', 1);
+INSERT INTO `usuarios`(`idUsuario`, `codigo_usuario`, `nombre_usuario`, `correo`, `contrasena`, `idfkRol`) VALUES (NULL, '1047', 'Carlos Alberto Ardila Albarracin', 'cardila@unicauca.edu.co', 'password123', 1);
+INSERT INTO `usuarios`(`idUsuario`, `codigo_usuario`, `nombre_usuario`, `correo`, `contrasena`, `idfkRol`) VALUES (NULL, '1048', 'Carlos Alberto Cobos Lozada', 'ccobos@unicauca.edu.co', 'password123', 1);
+INSERT INTO `usuarios`(`idUsuario`, `codigo_usuario`, `nombre_usuario`, `correo`, `contrasena`, `idfkRol`) VALUES (NULL, '1049', 'Carolina Gonzalez Serrano', 'cgonzals@unicauca.edu.co', 'password123', 1);
+INSERT INTO `usuarios`(`idUsuario`, `codigo_usuario`, `nombre_usuario`, `correo`, `contrasena`, `idfkRol`) VALUES (NULL, '1050', 'Cesar Alberto Collazos Ordonez', 'ccollazo@unicauca.edu.co', 'password123', 1);
+INSERT INTO `usuarios`(`idUsuario`, `codigo_usuario`, `nombre_usuario`, `correo`, `contrasena`, `idfkRol`) VALUES (NULL, '1051', 'Ember Ubeimar Martinez Flor', 'eumartinez@unicauca.edu.co', 'password123', 1);
+INSERT INTO `usuarios`(`idUsuario`, `codigo_usuario`, `nombre_usuario`, `correo`, `contrasena`, `idfkRol`) VALUES (NULL, '1052', 'Erwin Meza Vega', 'emezav@unicauca.edu.co', 'password123', 1);
+INSERT INTO `usuarios`(`idUsuario`, `codigo_usuario`, `nombre_usuario`, `correo`, `contrasena`, `idfkRol`) VALUES (NULL, '1053', 'Francisco Jose Pino Correa', 'fjpino@unicauca.edu.co', 'password123', 1);
+INSERT INTO `usuarios`(`idUsuario`, `codigo_usuario`, `nombre_usuario`, `correo`, `contrasena`, `idfkRol`) VALUES (NULL, '1054', 'Jorge Jair Moreno Chaustre', 'jjmoreno@unicauca.edu.co', 'password123', 1);
+INSERT INTO `usuarios`(`idUsuario`, `codigo_usuario`, `nombre_usuario`, `correo`, `contrasena`, `idfkRol`) VALUES (NULL, '1055', 'Julio Ariel Hurtado Alegria', 'ahurtado@unicauca.edu.co', 'password123', 1);
+INSERT INTO `usuarios`(`idUsuario`, `codigo_usuario`, `nombre_usuario`, `correo`, `contrasena`, `idfkRol`) VALUES (NULL, '1056', 'Luz Marina Sierra Martinez', 'lsierra@unicauca.edu.co', 'password123', 1);
+INSERT INTO `usuarios`(`idUsuario`, `codigo_usuario`, `nombre_usuario`, `correo`, `contrasena`, `idfkRol`) VALUES (NULL, '1057', 'Martha Eliana Mendoza Becerra', 'mmendoza@unicauca.edu.co', 'password123', 1);
+INSERT INTO `usuarios`(`idUsuario`, `codigo_usuario`, `nombre_usuario`, `correo`, `contrasena`, `idfkRol`) VALUES (NULL, '1058', 'Miguel Angel Nino Zambrano', 'manzamb@unicauca.edu.co', 'password123', 1);
+INSERT INTO `usuarios`(`idUsuario`, `codigo_usuario`, `nombre_usuario`, `correo`, `contrasena`, `idfkRol`) VALUES (NULL, '1059', 'Nestor Milciades Diaz Marino', 'nediaz@unicauca.edu.co', 'password123', 1);
+INSERT INTO `usuarios`(`idUsuario`, `codigo_usuario`, `nombre_usuario`, `correo`, `contrasena`, `idfkRol`) VALUES (NULL, '1060', 'Pablo Augusto Mage Imbachi', 'pmage@unicauca.edu.co', 'password123', 1);
+INSERT INTO `usuarios`(`idUsuario`, `codigo_usuario`, `nombre_usuario`, `correo`, `contrasena`, `idfkRol`) VALUES (NULL, '1061', 'Roberto Carlos Naranjo Cuervo', 'rnaranjo@unicauca.edu.co', 'password123', 1);
+INSERT INTO `usuarios`(`idUsuario`, `codigo_usuario`, `nombre_usuario`, `correo`, `contrasena`, `idfkRol`) VALUES (NULL, '1062', 'Sandra Milena Roa Martinez', 'smroa@unicauca.edu.co', 'password123', 1);
+INSERT INTO `usuarios`(`idUsuario`, `codigo_usuario`, `nombre_usuario`, `correo`, `contrasena`, `idfkRol`) VALUES (NULL, '1063', 'Siler Amador Donado', 'samador@unicauca.edu.co', 'password123', 1);
+INSERT INTO `usuarios`(`idUsuario`, `codigo_usuario`, `nombre_usuario`, `correo`, `contrasena`, `idfkRol`) VALUES (NULL, '1064', 'Wilson Libardo Pantoja Yepez', 'wpantoja@unicauca.edu.co', 'password123', 1);
 
 -- Solo insertar cursos adicionales (el curso 1 ya existe)
 INSERT IGNORE INTO `cursos_ofertados`(`idCurso`, `idfkMateria`, `idfkDocente`, `grupo`, `cupo_estimado`, `salon`) VALUES (NULL, 2, 1, 'B', 25, 'A-102');

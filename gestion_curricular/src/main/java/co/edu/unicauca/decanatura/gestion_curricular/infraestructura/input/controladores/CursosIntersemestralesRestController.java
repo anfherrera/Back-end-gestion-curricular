@@ -12,6 +12,7 @@ import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.Gestionar
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.CursoOfertadoVerano;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.SolicitudCursoVeranoPreinscripcion;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Solicitud;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.EstadoCursoOfertado;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Enums.CondicionSolicitudVerano;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.DTORespuesta.CursosOfertadosDTORespuesta;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.DTORespuesta.SolicitudCursoVeranoPreinscripcionDTORespuesta;
@@ -25,6 +26,7 @@ import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.servi
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.entidades.SolicitudEntity;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.repositorios.SolicitudRepositoryInt;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarUsuarioCUIntPort;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Usuario;
 
 import java.util.List;
 import java.util.Map;
@@ -1183,46 +1185,77 @@ public class CursosIntersemestralesRestController {
             @PathVariable Long id, 
             @RequestBody UpdateCursoDTO dto) {
         try {
-            // Simular actualización del curso
-            Map<String, Object> cursoActualizado = new HashMap<>();
-            cursoActualizado.put("id_curso", id);
-            cursoActualizado.put("nombre_curso", dto.getNombre_curso() != null ? dto.getNombre_curso() : "Curso Actualizado");
-            cursoActualizado.put("codigo_curso", dto.getCodigo_curso() != null ? dto.getCodigo_curso() : "CURSO-" + id);
-            cursoActualizado.put("descripcion", dto.getDescripcion() != null ? dto.getDescripcion() : "Descripción actualizada");
-            cursoActualizado.put("fecha_inicio", dto.getFecha_inicio() != null ? dto.getFecha_inicio() : "2024-06-01T08:00:00Z");
-            cursoActualizado.put("fecha_fin", dto.getFecha_fin() != null ? dto.getFecha_fin() : "2024-07-15T17:00:00Z");
-            cursoActualizado.put("cupo_maximo", dto.getCupo_maximo() != null ? dto.getCupo_maximo() : 25);
-            cursoActualizado.put("cupo_disponible", dto.getCupo_maximo() != null ? dto.getCupo_maximo() : 25);
-            cursoActualizado.put("cupo_estimado", dto.getCupo_estimado() != null ? dto.getCupo_estimado() : 25);
-            cursoActualizado.put("espacio_asignado", dto.getEspacio_asignado() != null ? dto.getEspacio_asignado() : "Aula 101");
-            cursoActualizado.put("estado", dto.getEstado() != null ? dto.getEstado() : "Abierto");
+            System.out.println("DEBUG: Actualizando curso ID: " + id);
+            System.out.println("DEBUG: Datos recibidos: " + dto);
             
-            // Objeto materia simulado
-            Map<String, Object> materia = new HashMap<>();
-            materia.put("id_materia", dto.getId_materia() != null ? dto.getId_materia() : 1);
-            materia.put("nombre_materia", "Materia Actualizada");
-            materia.put("codigo_materia", "MAT001");
-            materia.put("creditos", 3);
-            cursoActualizado.put("objMateria", materia);
+            // Obtener el curso existente
+            CursoOfertadoVerano cursoExistente = cursoCU.obtenerCursoPorId(id.intValue());
+            if (cursoExistente == null) {
+                Map<String, Object> error = new HashMap<>();
+                error.put("error", "Curso no encontrado");
+                error.put("message", "No se encontró el curso con ID: " + id);
+                return ResponseEntity.notFound().build();
+            }
             
-            // Objeto docente simulado
-            Map<String, Object> docente = new HashMap<>();
-            docente.put("id_usuario", dto.getId_docente() != null ? dto.getId_docente() : 1);
-            docente.put("nombre", "Docente");
-            docente.put("apellido", "Actualizado");
-            docente.put("email", "docente.actualizado@unicauca.edu.co");
-            docente.put("telefono", "3000000000");
+            // Actualizar los campos del curso
+            if (dto.getNombre_curso() != null) {
+                // El nombre del curso viene de la materia, no se puede cambiar directamente
+                System.out.println("DEBUG: Nombre del curso no se puede cambiar directamente");
+            }
             
-            Map<String, Object> rol = new HashMap<>();
-            rol.put("id_rol", 2);
-            rol.put("nombre", "Docente");
-            docente.put("objRol", rol);
+            if (dto.getCodigo_curso() != null) {
+                // El código del curso viene de la materia, no se puede cambiar directamente
+                System.out.println("DEBUG: Código del curso no se puede cambiar directamente");
+            }
             
-            cursoActualizado.put("objDocente", docente);
+            if (dto.getCupo_estimado() != null) {
+                cursoExistente.setCupo_estimado(dto.getCupo_estimado());
+            }
             
-            return ResponseEntity.ok(cursoActualizado);
+            if (dto.getEspacio_asignado() != null) {
+                cursoExistente.setSalon(dto.getEspacio_asignado());
+            }
+            
+            // Crear nuevo estado si se proporciona
+            EstadoCursoOfertado nuevoEstado = null;
+            if (dto.getEstado() != null) {
+                nuevoEstado = new EstadoCursoOfertado();
+                nuevoEstado.setEstado_actual(dto.getEstado());
+                nuevoEstado.setFecha_registro_estado(new java.util.Date());
+                nuevoEstado.setObjCursoOfertadoVerano(cursoExistente);
+            }
+            
+            // Llamar al caso de uso para actualizar
+            CursoOfertadoVerano cursoActualizado = cursoCU.actualizarCurso(cursoExistente, nuevoEstado);
+            
+            // Mapear a DTO de respuesta
+            CursosOfertadosDTORespuesta respuesta = cursoMapper.mappearDeCursoOfertadoARespuesta(cursoActualizado);
+            
+            // Convertir a Map para mantener compatibilidad
+            Map<String, Object> resultado = new HashMap<>();
+            resultado.put("id_curso", respuesta.getId_curso());
+            resultado.put("nombre_curso", respuesta.getNombre_curso());
+            resultado.put("codigo_curso", respuesta.getCodigo_curso());
+            resultado.put("descripcion", respuesta.getDescripcion());
+            resultado.put("fecha_inicio", respuesta.getFecha_inicio());
+            resultado.put("fecha_fin", respuesta.getFecha_fin());
+            resultado.put("cupo_maximo", respuesta.getCupo_maximo());
+            resultado.put("cupo_disponible", respuesta.getCupo_disponible());
+            resultado.put("cupo_estimado", respuesta.getCupo_estimado());
+            resultado.put("espacio_asignado", respuesta.getEspacio_asignado());
+            resultado.put("estado", respuesta.getEstado());
+            resultado.put("objMateria", respuesta.getObjMateria());
+            resultado.put("objDocente", respuesta.getObjDocente());
+            
+            System.out.println("DEBUG: Curso actualizado exitosamente");
+            return ResponseEntity.ok(resultado);
         } catch (Exception e) {
-            return ResponseEntity.status(500).build();
+            System.out.println("ERROR: Error actualizando curso: " + e.getMessage());
+            e.printStackTrace();
+            Map<String, Object> error = new HashMap<>();
+            error.put("error", "Error interno del servidor");
+            error.put("message", "No se pudo actualizar el curso: " + e.getMessage());
+            return ResponseEntity.status(500).body(error);
         }
     }
 
@@ -1231,13 +1264,52 @@ public class CursosIntersemestralesRestController {
      * DELETE /api/cursos-intersemestrales/cursos-verano/{id}
      */
     @DeleteMapping("/cursos-verano/{id}")
-    public ResponseEntity<Void> eliminarCurso(@PathVariable Long id) {
+    public ResponseEntity<Map<String, Object>> eliminarCurso(@PathVariable Long id) {
         try {
-            // Simular eliminación del curso
-            // En una implementación real, aquí se eliminaría de la base de datos
-            return ResponseEntity.ok().build();
+            System.out.println("DEBUG: Eliminando curso ID: " + id);
+            
+            // Verificar que el curso existe
+            CursoOfertadoVerano cursoExistente = cursoCU.obtenerCursoPorId(id.intValue());
+            if (cursoExistente == null) {
+                Map<String, Object> error = new HashMap<>();
+                error.put("error", "Curso no encontrado");
+                error.put("message", "No se encontró el curso con ID: " + id);
+                return ResponseEntity.notFound().build();
+            }
+            
+            // Verificar si hay estudiantes inscritos
+            if (cursoExistente.getEstudiantesInscritos() != null && !cursoExistente.getEstudiantesInscritos().isEmpty()) {
+                Map<String, Object> error = new HashMap<>();
+                error.put("error", "No se puede eliminar el curso");
+                error.put("message", "El curso tiene estudiantes inscritos. No se puede eliminar.");
+                error.put("estudiantes_inscritos", cursoExistente.getEstudiantesInscritos().size());
+                return ResponseEntity.badRequest().body(error);
+            }
+            
+            // Llamar al caso de uso para eliminar
+            boolean eliminado = cursoCU.eliminarCurso(id.intValue());
+            
+            if (eliminado) {
+                Map<String, Object> resultado = new HashMap<>();
+                resultado.put("message", "Curso eliminado exitosamente");
+                resultado.put("id_curso_eliminado", id);
+                resultado.put("nombre_curso", cursoExistente.getObjMateria() != null ? cursoExistente.getObjMateria().getNombre() : "Curso");
+                
+                System.out.println("DEBUG: Curso eliminado exitosamente");
+                return ResponseEntity.ok(resultado);
+            } else {
+                Map<String, Object> error = new HashMap<>();
+                error.put("error", "Error al eliminar el curso");
+                error.put("message", "No se pudo eliminar el curso por razones desconocidas");
+                return ResponseEntity.status(500).body(error);
+            }
         } catch (Exception e) {
-            return ResponseEntity.status(500).build();
+            System.out.println("ERROR: Error eliminando curso: " + e.getMessage());
+            e.printStackTrace();
+            Map<String, Object> error = new HashMap<>();
+            error.put("error", "Error interno del servidor");
+            error.put("message", "No se pudo eliminar el curso: " + e.getMessage());
+            return ResponseEntity.status(500).body(error);
         }
     }
 
