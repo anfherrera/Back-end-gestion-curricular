@@ -27,6 +27,10 @@ import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.pers
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.repositorios.SolicitudRepositoryInt;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarUsuarioCUIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Usuario;
+import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.repositorios.CursoOfertadoVeranoRepositoryInt;
+import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.repositorios.EstadoCursoOfertadoRepositoryInt;
+import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.entidades.CursoOfertadoVeranoEntity;
+import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.entidades.EstadoCursoOfertadoEntity;
 
 import java.util.List;
 import java.util.Map;
@@ -49,6 +53,8 @@ public class CursosIntersemestralesRestController {
     private final InscripcionService inscripcionService;
     private final SolicitudRepositoryInt solicitudRepository;
     private final GestionarUsuarioCUIntPort usuarioCU;
+    private final CursoOfertadoVeranoRepositoryInt cursoRepository;
+    private final EstadoCursoOfertadoRepositoryInt estadoRepository;
 
     /**
      * Obtener cursos de verano (endpoint principal que llama el frontend)
@@ -1188,76 +1194,123 @@ public class CursosIntersemestralesRestController {
             System.out.println("DEBUG: Actualizando curso ID: " + id);
             System.out.println("DEBUG: Datos recibidos: " + dto);
             
-            // Obtener el curso existente
-            CursoOfertadoVerano cursoExistente = cursoCU.obtenerCursoPorId(id.intValue());
-            if (cursoExistente == null) {
+            // Validaciones básicas - El cupo no se puede cambiar desde aquí
+            if (dto.getCupo_estimado() != null) {
+                Map<String, Object> error = new HashMap<>();
+                error.put("error", "Cupo no modificable");
+                error.put("message", "El cupo estimado no se puede modificar desde este endpoint. Solo se puede cambiar el estado y el espacio asignado.");
+                return ResponseEntity.badRequest().body(error);
+            }
+            
+            if (dto.getEspacio_asignado() != null && dto.getEspacio_asignado().trim().length() < 3) {
+                Map<String, Object> error = new HashMap<>();
+                error.put("error", "Espacio inválido");
+                error.put("message", "El espacio asignado debe tener al menos 3 caracteres");
+                return ResponseEntity.badRequest().body(error);
+            }
+            
+            // Validar estado
+            if (dto.getEstado() != null) {
+                String[] estadosValidos = {"Abierto", "Publicado", "Preinscripcion", "Inscripcion", "Cerrado"};
+                boolean estadoValido = false;
+                for (String estado : estadosValidos) {
+                    if (estado.equals(dto.getEstado())) {
+                        estadoValido = true;
+                        break;
+                    }
+                }
+                if (!estadoValido) {
+                    Map<String, Object> error = new HashMap<>();
+                    error.put("error", "Estado inválido");
+                    error.put("message", "El estado debe ser uno de: Abierto, Publicado, Preinscripcion, Inscripcion, Cerrado");
+                    return ResponseEntity.badRequest().body(error);
+                }
+            }
+            
+            // Obtener el curso existente directamente del repositorio
+            CursoOfertadoVeranoEntity cursoEntity = cursoRepository.findById(id.intValue()).orElse(null);
+            if (cursoEntity == null) {
                 Map<String, Object> error = new HashMap<>();
                 error.put("error", "Curso no encontrado");
                 error.put("message", "No se encontró el curso con ID: " + id);
                 return ResponseEntity.notFound().build();
             }
             
-            // Actualizar los campos del curso
-            if (dto.getNombre_curso() != null) {
-                // El nombre del curso viene de la materia, no se puede cambiar directamente
-                System.out.println("DEBUG: Nombre del curso no se puede cambiar directamente");
-            }
+            System.out.println("DEBUG: Curso encontrado: " + (cursoEntity.getObjMateria() != null ? cursoEntity.getObjMateria().getNombre() : "Sin materia"));
             
-            if (dto.getCodigo_curso() != null) {
-                // El código del curso viene de la materia, no se puede cambiar directamente
-                System.out.println("DEBUG: Código del curso no se puede cambiar directamente");
-            }
-            
-            if (dto.getCupo_estimado() != null) {
-                cursoExistente.setCupo_estimado(dto.getCupo_estimado());
-            }
+            // Aplicar cambios al objeto (solo estado y espacio)
+            boolean cursoModificado = false;
             
             if (dto.getEspacio_asignado() != null) {
-                cursoExistente.setSalon(dto.getEspacio_asignado());
+                cursoEntity.setSalon(dto.getEspacio_asignado());
+                cursoModificado = true;
+                System.out.println("DEBUG: Espacio actualizado a: " + dto.getEspacio_asignado());
             }
             
             // Crear nuevo estado si se proporciona
-            EstadoCursoOfertado nuevoEstado = null;
+            EstadoCursoOfertadoEntity nuevoEstadoEntity = null;
             if (dto.getEstado() != null) {
-                nuevoEstado = new EstadoCursoOfertado();
-                nuevoEstado.setEstado_actual(dto.getEstado());
-                nuevoEstado.setFecha_registro_estado(new java.util.Date());
-                nuevoEstado.setObjCursoOfertadoVerano(cursoExistente);
+                nuevoEstadoEntity = new EstadoCursoOfertadoEntity();
+                nuevoEstadoEntity.setEstado_actual(dto.getEstado());
+                nuevoEstadoEntity.setFecha_registro_estado(new java.util.Date());
+                nuevoEstadoEntity.setObjCursoOfertadoVerano(cursoEntity);
+                cursoModificado = true;
+                System.out.println("DEBUG: Estado actualizado a: " + dto.getEstado());
             }
             
-            // Llamar al caso de uso para actualizar
-            CursoOfertadoVerano cursoActualizado = cursoCU.actualizarCurso(cursoExistente, nuevoEstado);
+            if (!cursoModificado) {
+                Map<String, Object> error = new HashMap<>();
+                error.put("error", "Sin cambios");
+                error.put("message", "No se proporcionaron datos para actualizar");
+                return ResponseEntity.badRequest().body(error);
+            }
             
-            // Mapear a DTO de respuesta
-            CursosOfertadosDTORespuesta respuesta = cursoMapper.mappearDeCursoOfertadoARespuesta(cursoActualizado);
+            // Guardar cambios en la base de datos
+            try {
+                System.out.println("DEBUG: Guardando cambios en la base de datos");
+                CursoOfertadoVeranoEntity cursoActualizado = cursoRepository.save(cursoEntity);
+                
+                // Si hay nuevo estado, guardarlo también
+                if (nuevoEstadoEntity != null) {
+                    System.out.println("DEBUG: Guardando nuevo estado: " + nuevoEstadoEntity.getEstado_actual());
+                    estadoRepository.save(nuevoEstadoEntity);
+                    System.out.println("DEBUG: Nuevo estado guardado exitosamente en BD");
+                }
+                
+                System.out.println("DEBUG: Cambios guardados exitosamente en BD");
+                
+                // Crear respuesta con los datos actualizados
+                Map<String, Object> resultado = new HashMap<>();
+                resultado.put("id_curso", cursoActualizado.getId_curso());
+                resultado.put("nombre_curso", cursoActualizado.getObjMateria() != null ? cursoActualizado.getObjMateria().getNombre() : "Curso");
+                resultado.put("codigo_curso", cursoActualizado.getObjMateria() != null ? cursoActualizado.getObjMateria().getCodigo() : "N/A");
+                resultado.put("cupo_estimado", cursoActualizado.getCupo_estimado());
+                resultado.put("espacio_asignado", cursoActualizado.getSalon());
+                resultado.put("estado", dto.getEstado() != null ? dto.getEstado() : "Actualizado");
+                resultado.put("message", "Curso actualizado exitosamente");
+                resultado.put("debug_info", "Cambios aplicados y guardados en BD");
+                
+                return ResponseEntity.ok(resultado);
+                
+            } catch (Exception e) {
+                System.out.println("DEBUG: Error guardando en BD: " + e.getMessage());
+                Map<String, Object> error = new HashMap<>();
+                error.put("error", "Error guardando en base de datos");
+                error.put("message", "No se pudo guardar los cambios: " + e.getMessage());
+                return ResponseEntity.status(500).body(error);
+            }
             
-            // Convertir a Map para mantener compatibilidad
-            Map<String, Object> resultado = new HashMap<>();
-            resultado.put("id_curso", respuesta.getId_curso());
-            resultado.put("nombre_curso", respuesta.getNombre_curso());
-            resultado.put("codigo_curso", respuesta.getCodigo_curso());
-            resultado.put("descripcion", respuesta.getDescripcion());
-            resultado.put("fecha_inicio", respuesta.getFecha_inicio());
-            resultado.put("fecha_fin", respuesta.getFecha_fin());
-            resultado.put("cupo_maximo", respuesta.getCupo_maximo());
-            resultado.put("cupo_disponible", respuesta.getCupo_disponible());
-            resultado.put("cupo_estimado", respuesta.getCupo_estimado());
-            resultado.put("espacio_asignado", respuesta.getEspacio_asignado());
-            resultado.put("estado", respuesta.getEstado());
-            resultado.put("objMateria", respuesta.getObjMateria());
-            resultado.put("objDocente", respuesta.getObjDocente());
-            
-            System.out.println("DEBUG: Curso actualizado exitosamente");
-            return ResponseEntity.ok(resultado);
         } catch (Exception e) {
             System.out.println("ERROR: Error actualizando curso: " + e.getMessage());
             e.printStackTrace();
             Map<String, Object> error = new HashMap<>();
             error.put("error", "Error interno del servidor");
             error.put("message", "No se pudo actualizar el curso: " + e.getMessage());
+            error.put("details", e.getClass().getSimpleName());
             return ResponseEntity.status(500).body(error);
         }
     }
+
 
     /**
      * Eliminar curso de verano
