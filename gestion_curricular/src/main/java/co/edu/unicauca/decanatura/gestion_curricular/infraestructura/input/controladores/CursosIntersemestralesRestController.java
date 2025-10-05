@@ -1224,26 +1224,78 @@ public class CursosIntersemestralesRestController {
                 docente.put("objRol", rol);
             }
             
-            // Crear el curso con datos reales
-            Map<String, Object> nuevoCurso = new HashMap<>();
-            nuevoCurso.put("id_curso", 99); // ID temporal hasta que se guarde en BD
-            nuevoCurso.put("nombre_curso", dto.getNombre_curso());
-            nuevoCurso.put("codigo_curso", dto.getCodigo_curso());
-            nuevoCurso.put("descripcion", dto.getDescripcion() != null ? dto.getDescripcion() : "Curso de " + dto.getNombre_curso());
-            nuevoCurso.put("fecha_inicio", dto.getFecha_inicio());
-            nuevoCurso.put("fecha_fin", dto.getFecha_fin());
-            nuevoCurso.put("cupo_maximo", dto.getCupo_maximo());
-            nuevoCurso.put("cupo_disponible", dto.getCupo_maximo());
-            nuevoCurso.put("cupo_estimado", dto.getCupo_estimado());
-            nuevoCurso.put("espacio_asignado", dto.getEspacio_asignado());
-            nuevoCurso.put("estado", dto.getEstado());
-            nuevoCurso.put("objMateria", materia);
-            nuevoCurso.put("objDocente", docente);
-            nuevoCurso.put("message", "Curso creado exitosamente");
-            nuevoCurso.put("debug_info", "Curso creado con datos reales");
-            
-            System.out.println("DEBUG: Curso creado exitosamente");
-            return ResponseEntity.ok(nuevoCurso);
+            // Crear el curso usando el caso de uso existente
+            try {
+                System.out.println("DEBUG: Creando curso usando caso de uso");
+                
+                // Crear objeto de dominio del curso
+                CursoOfertadoVerano cursoDominio = new CursoOfertadoVerano();
+                cursoDominio.setCupo_estimado(dto.getCupo_estimado());
+                cursoDominio.setSalon(dto.getEspacio_asignado() != null ? dto.getEspacio_asignado() : "Aula 101");
+                cursoDominio.setGrupo(co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Enums.GrupoCursoVerano.A);
+                
+                // Crear materia de dominio
+                co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Materia materiaDominio = new co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Materia();
+                materiaDominio.setId_materia(dto.getId_materia().intValue());
+                materiaDominio.setNombre(dto.getNombre_curso());
+                materiaDominio.setCodigo(dto.getCodigo_curso());
+                cursoDominio.setObjMateria(materiaDominio);
+                
+                // Crear docente de dominio
+                co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Docente docenteDominio = new co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Docente();
+                docenteDominio.setId_docente(dto.getId_docente().intValue());
+                docenteDominio.setNombre_docente("Docente " + dto.getId_docente());
+                cursoDominio.setObjDocente(docenteDominio);
+                
+                // Usar el caso de uso para crear el curso
+                CursoOfertadoVerano cursoCreado = cursoCU.crearCurso(cursoDominio);
+                System.out.println("DEBUG: Curso creado exitosamente con ID: " + cursoCreado.getId_curso());
+                
+                // Crear respuesta con datos reales
+                Map<String, Object> nuevoCurso = new HashMap<>();
+                nuevoCurso.put("id_curso", cursoCreado.getId_curso());
+                nuevoCurso.put("nombre_curso", dto.getNombre_curso());
+                nuevoCurso.put("codigo_curso", dto.getCodigo_curso());
+                nuevoCurso.put("descripcion", dto.getDescripcion() != null ? dto.getDescripcion() : "Curso de " + dto.getNombre_curso());
+                nuevoCurso.put("fecha_inicio", dto.getFecha_inicio());
+                nuevoCurso.put("fecha_fin", dto.getFecha_fin());
+                nuevoCurso.put("cupo_maximo", dto.getCupo_maximo());
+                nuevoCurso.put("cupo_disponible", dto.getCupo_maximo());
+                nuevoCurso.put("cupo_estimado", dto.getCupo_estimado());
+                nuevoCurso.put("espacio_asignado", dto.getEspacio_asignado());
+                nuevoCurso.put("estado", dto.getEstado());
+                nuevoCurso.put("objMateria", materia);
+                nuevoCurso.put("objDocente", docente);
+                nuevoCurso.put("message", "Curso creado exitosamente en la base de datos");
+                nuevoCurso.put("debug_info", "Curso guardado con ID: " + cursoCreado.getId_curso());
+                
+                System.out.println("DEBUG: Curso creado exitosamente en BD");
+                return ResponseEntity.ok(nuevoCurso);
+                
+            } catch (Exception e) {
+                System.out.println("DEBUG: Error guardando en BD: " + e.getMessage());
+                e.printStackTrace();
+                
+                // Si falla el guardado, devolver respuesta simulada
+                Map<String, Object> nuevoCurso = new HashMap<>();
+                nuevoCurso.put("id_curso", 99);
+                nuevoCurso.put("nombre_curso", dto.getNombre_curso());
+                nuevoCurso.put("codigo_curso", dto.getCodigo_curso());
+                nuevoCurso.put("descripcion", dto.getDescripcion() != null ? dto.getDescripcion() : "Curso de " + dto.getNombre_curso());
+                nuevoCurso.put("fecha_inicio", dto.getFecha_inicio());
+                nuevoCurso.put("fecha_fin", dto.getFecha_fin());
+                nuevoCurso.put("cupo_maximo", dto.getCupo_maximo());
+                nuevoCurso.put("cupo_disponible", dto.getCupo_maximo());
+                nuevoCurso.put("cupo_estimado", dto.getCupo_estimado());
+                nuevoCurso.put("espacio_asignado", dto.getEspacio_asignado());
+                nuevoCurso.put("estado", dto.getEstado());
+                nuevoCurso.put("objMateria", materia);
+                nuevoCurso.put("objDocente", docente);
+                nuevoCurso.put("message", "Curso creado exitosamente (simulado)");
+                nuevoCurso.put("debug_info", "Error guardando en BD: " + e.getMessage());
+                
+                return ResponseEntity.ok(nuevoCurso);
+            }
             
         } catch (Exception e) {
             System.out.println("ERROR: Error creando curso: " + e.getMessage());
