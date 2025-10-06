@@ -25,7 +25,7 @@ public class GestionarSolicitudCursoVeranoCUAdapter implements GestionarSolicitu
     public GestionarSolicitudCursoVeranoCUAdapter(
         GestionarSolicitudCursoVeranoGatewayIntPort objGestionarSolicitudGateway,
         GestionarCursoOfertadoVeranoGatewayIntPort objCursoOfertado,
-        GestionarUsuarioGatewayIntPort objUsuario,
+        GestionarUsuarioGatewayIntPort objUsuario, 
         GestionarDocumentosGatewayIntPort objDocumentosGateway,
         GestionarNotificacionCUIntPort objNotificacion,
         FormateadorResultadosIntPort objFormateadorResultados
@@ -66,27 +66,52 @@ public class GestionarSolicitudCursoVeranoCUAdapter implements GestionarSolicitu
         if (solicitudCursoVerano.getObjCursoOfertadoVerano().getId_curso() == null) {
             this.objFormateadorResultados.retornarRespuestaErrorReglaDeNegocio("Debe seleccionar un curso válido");
         }   
+        
+        // Verificar si es un curso nuevo (ID = 0) - solicitud de apertura
+        if (solicitudCursoVerano.getObjCursoOfertadoVerano().getId_curso() == 0) {
+            // Para cursos nuevos, no necesitamos validar que exista en la base de datos
+            // Solo procedemos a crear la solicitud
+        } else {
+            // Para cursos existentes, validar que exista (sin validar estados)
         cursoABuscar = this.objCursoOfertado.obtenerCursoPorId(solicitudCursoVerano.getObjCursoOfertadoVerano().getId_curso());
+        System.out.println("🔍 DEBUG: Curso buscado con ID: " + solicitudCursoVerano.getObjCursoOfertadoVerano().getId_curso());
+        System.out.println("🔍 DEBUG: Curso encontrado: " + (cursoABuscar != null ? "SÍ" : "NO"));
+        
         if (cursoABuscar == null) {   
             this.objFormateadorResultados.retornarRespuestaErrorReglaDeNegocio("No se encontró el curso");
         }
-        if (cursoABuscar.getEstadosCursoOfertados().isEmpty()) {
-            this.objFormateadorResultados.retornarRespuestaErrorReglaDeNegocio("El curso no tiene estados asociados");
+        
+        System.out.println("🔍 DEBUG: Estados del curso: " + (cursoABuscar.getEstadosCursoOfertados() != null ? cursoABuscar.getEstadosCursoOfertados().size() : "NULL"));
+        
+        // Validación opcional de estados - solo si existen
+        if (cursoABuscar.getEstadosCursoOfertados() != null && !cursoABuscar.getEstadosCursoOfertados().isEmpty()) {
+            String ultimoEstado = cursoABuscar.getEstadosCursoOfertados().get(cursoABuscar.getEstadosCursoOfertados().size() - 1).getEstado_actual();
+            System.out.println("🔍 DEBUG: Último estado del curso: " + ultimoEstado);
+            // Solo validar si el estado es explícitamente "Cerrado" o "Cancelado"
+            if ("Cerrado".equals(ultimoEstado) || "Cancelado".equals(ultimoEstado)) {
+                this.objFormateadorResultados.retornarRespuestaErrorReglaDeNegocio("El curso está " + ultimoEstado.toLowerCase() + " y no acepta preinscripciones");
+            }
+        } else {
+            System.out.println("🔍 DEBUG: Curso sin estados - permitiendo preinscripción");
         }
-        if (!cursoABuscar.getEstadosCursoOfertados().get(cursoABuscar.getEstadosCursoOfertados().size() - 1).getEstado_actual().equals("Publicado")) {
-            this.objFormateadorResultados.retornarRespuestaErrorReglaDeNegocio("El curso no está en estado de publicado");
         }
 
         if (solicitudCursoVerano.getCodicion_solicitud() == null) {
             this.objFormateadorResultados.retornarRespuestaErrorReglaDeNegocio("Debe seleccionar una condición de solicitud válida");
         }
 
+        // Para cursos nuevos (ID = 0), no necesitamos verificar preinscripciones existentes
+        // ya que es una solicitud de apertura de curso
+        if (solicitudCursoVerano.getObjCursoOfertadoVerano().getId_curso() != 0) {
         preinscripcionBuscar = this.objGestionarSolicitudGateway.buscarSolicitudesPorUsuarioYCursoPre(
             usuarioBuscar.getId_usuario(), cursoABuscar.getId_curso()
         );
 
         if (preinscripcionBuscar != null) {
             this.objFormateadorResultados.retornarRespuestaErrorReglaDeNegocio("Ya existe una solicitud de preinscripción para este curso");
+            }
+        } else {
+            // Para cursos nuevos, no necesitamos verificar preinscripciones existentes
         }
 
         usuarioBuscar.getSolicitudes().add(solicitudCursoVerano);

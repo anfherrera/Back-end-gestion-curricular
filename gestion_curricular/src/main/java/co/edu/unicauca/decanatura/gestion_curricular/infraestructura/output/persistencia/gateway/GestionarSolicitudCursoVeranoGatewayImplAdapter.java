@@ -73,9 +73,15 @@ public class GestionarSolicitudCursoVeranoGatewayImplAdapter implements Gestiona
         CursoOfertadoVerano cursoOfertado = solicitudCursoVerano.getObjCursoOfertadoVerano();
         CursoOfertadoVeranoEntity cursoOfertadoVeranoEntity = null;
 
-        if(cursoOfertado != null && cursoOfertado.getId_curso() != null) {
+        if(cursoOfertado != null) {
             Integer idCurso = cursoOfertado.getId_curso();
-            if(cursoOfertadoVeranoRepository.existsById(idCurso)){
+            
+            // Si el ID es 0 o null, es un curso nuevo (solicitud de apertura)
+            if(idCurso == null || idCurso == 0) {
+                // Para cursos nuevos, no necesitamos crear la entidad del curso
+                // Solo guardamos la solicitud con la información del curso solicitado
+                cursoOfertadoVeranoEntity = null;
+            } else if(cursoOfertadoVeranoRepository.existsById(idCurso)){
                 cursoOfertadoVeranoEntity = cursoOfertadoVeranoRepository.findById(idCurso)
                         .orElseThrow(() -> new IllegalArgumentException("Curso ofertado no encontrado con ID: " + idCurso));
             } else {
@@ -88,16 +94,15 @@ public class GestionarSolicitudCursoVeranoGatewayImplAdapter implements Gestiona
                 DocenteEntity docenteEntity = solicitudMapper.map(cursoOfertado.getObjDocente(), DocenteEntity.class);
                 cursoOfertadoVeranoEntity.setObjMateria(materiaEntity);
                 cursoOfertadoVeranoEntity.setObjDocente(docenteEntity);
-                
             }
             solicitudCursoVeranoEntity.setObjCursoOfertadoVerano(cursoOfertadoVeranoEntity);
         }else{
-            throw new IllegalArgumentException("El curso ofertado no puede ser nulo o debe tener un ID válido.");
+            throw new IllegalArgumentException("El curso ofertado no puede ser nulo.");
         }
 
         SolicitudCursoVeranoPreinscripcionEntity solicitudCursoVeranoGuardado = solicitudRepository.save(solicitudCursoVeranoEntity);
 
-        return solicitudMapper.map(solicitudCursoVeranoGuardado,SolicitudCursoVeranoPreinscripcion.class); // Implementación pendiente
+        return solicitudMapper.map(solicitudCursoVeranoGuardado,SolicitudCursoVeranoPreinscripcion.class);
     }
 
 

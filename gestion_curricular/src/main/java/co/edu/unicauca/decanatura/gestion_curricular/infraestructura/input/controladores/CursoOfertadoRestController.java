@@ -92,6 +92,35 @@ public class CursoOfertadoRestController {
     }
 
     /**
+     * Obtener cursos disponibles para estudiantes
+     */
+    @GetMapping("/disponibles")
+    public ResponseEntity<List<CursosOfertadosDTORespuesta>> obtenerCursosDisponibles() {
+        try {
+            List<CursoOfertadoVerano> cursos = cursoCU.listarTodos();
+            // Filtrar solo cursos que estén en estado "Publicado" o "Preinscripcion"
+            List<CursoOfertadoVerano> cursosDisponibles = cursos.stream()
+                    .filter(curso -> {
+                        if (curso.getEstadosCursoOfertados() == null || curso.getEstadosCursoOfertados().isEmpty()) {
+                            return false;
+                        }
+                        String estadoActual = curso.getEstadosCursoOfertados().get(0).getEstado_actual();
+                        return "Publicado".equals(estadoActual) || 
+                               "Preinscripcion".equals(estadoActual) ||
+                               "Inscripcion".equals(estadoActual);
+                    })
+                    .collect(Collectors.toList());
+            
+            List<CursosOfertadosDTORespuesta> respuesta = cursosDisponibles.stream()
+                    .map(CursoMapper::mappearDeCursoOfertadoARespuesta)
+                    .collect(Collectors.toList());
+            return ResponseEntity.ok(respuesta);
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().build();
+        }
+    }
+
+    /**
      * Obtener preinscripciones por curso (para funcionarios)
      */
     @GetMapping("/preinscripciones/{idCurso}")

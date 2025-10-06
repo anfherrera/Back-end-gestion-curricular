@@ -15,11 +15,13 @@ import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 @Entity
 @Table(name = "Roles")
 @Data
 @AllArgsConstructor
+@EqualsAndHashCode(exclude = {"usuarios"})
 public class RolEntity {
 
     @Id

@@ -262,6 +262,11 @@ public class GestionarNotificacionGatewayImplAdapter implements GestionarNotific
         notificacion.setAccion("VER_SOLICITUD");
         notificacion.setUrlAccion("/solicitudes/" + idSolicitud);
         
+        // Establecer campos requeridos
+        notificacion.setFechaCreacion(new Date());
+        notificacion.setLeida(false);
+        notificacion.setEsUrgente(false); // Por defecto no es urgente
+        
         return crearNotificacion(notificacion);
     }
 

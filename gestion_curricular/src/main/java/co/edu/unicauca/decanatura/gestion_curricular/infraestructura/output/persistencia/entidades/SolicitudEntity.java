@@ -19,12 +19,14 @@ import jakarta.persistence.Inheritance;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 @Entity
 @Table(name = "Solicitudes")
 @Inheritance(strategy = InheritanceType.JOINED)
 @Data
 @AllArgsConstructor
+@EqualsAndHashCode(exclude = {"estadosSolicitud", "objUsuario", "documentos", "objCursoOfertadoVerano"})
 public class SolicitudEntity {
 
     @Id

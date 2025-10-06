@@ -20,6 +20,10 @@ public class SolicitudCurosoVeranoPreinscripcionDTOPeticion extends SolicitudDTO
     @Size(min = 3, max = 100, message = "{SolicitudVerano.nombreEstudiante.length}")
     private String nombre_estudiante;
 
+    @NotBlank(message = "{SolicitudVerano.codigoEstudiante.empty}")
+    @Size(min = 5, max = 20, message = "{SolicitudVerano.codigoEstudiante.length}")
+    private String codigo_estudiante;
+
     @NotNull(message = "{SolicitudVerano.objCursoOfertado.empty}")
     @Valid
     private CursosOfertadosDTOPeticion objCursoOfertado;
@@ -31,4 +35,7 @@ public class SolicitudCurosoVeranoPreinscripcionDTOPeticion extends SolicitudDTO
     @NotBlank(message = "{SolicitudVerano.observacion.empty}")
     @Size(min = 5, max = 255, message = "{SolicitudVerano.observacion.length}")
     private String observacion;
+
+    @NotNull(message = "{SolicitudVerano.usuarioId.empty}")
+    private Integer usuario_id;
 }
