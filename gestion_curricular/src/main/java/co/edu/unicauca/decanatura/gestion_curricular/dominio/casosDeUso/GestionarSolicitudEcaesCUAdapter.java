@@ -67,21 +67,9 @@ public class GestionarSolicitudEcaesCUAdapter implements GestionarSolicitudEcaes
             if (usuarioOpt.isEmpty()) {
                 this.objFormateadorResultados.retornarRespuestaErrorReglaDeNegocio("Usuario ID: " + idUsuario + " no encontrado");
             }
-            //version original se comento para evitar errores
-            // List<Documento> documentos = solicitud.getDocumentos();
-            // if(documentos == null || documentos.isEmpty()) {
-            //     this.objFormateadorResultados.retornarRespuestaErrorReglaDeNegocio("La solicitud debe tener al menos un documento");
-            // }
+
 
             SolicitudEcaes solicitudGuardada = this.objGestionarSolicitudEcaesGateway.guardar(solicitud);
-            //version original se comento para evitar errores======================
-            //Asociar documentos a la solicitud guardada
-            // for (Documento doc : solicitudGuardada.getDocumentos()) {
-            //     doc.setObjSolicitud(solicitudGuardada);
-            //     this.objDocumentosGateway.actualizarDocumento(doc);
-            // }
-            //==============
-            //buscar documentos sin solicitud pero en la solicitud guardada
             
             List<Documento> documentosSinSolicitud = this.objDocumentosGateway.buscarDocumentosSinSolicitud();
             
@@ -91,14 +79,7 @@ public class GestionarSolicitudEcaesCUAdapter implements GestionarSolicitudEcaes
                 this.objDocumentosGateway.actualizarDocumento(doc);
                 
             }
-            //==================
 
-
-            // for (EstadoSolicitud estado : solicitudGuardada.getEstadosSolicitud()) {
-            //     estado.setObjSolicitud(solicitudGuardada);
-            //     this.objGestionarEstadoSolicitudGateway.actualizarEstadoSolicitud(estado);
-            // }
-            //============================================
             EstadoSolicitud estadoInicial = new EstadoSolicitud();
             estadoInicial.setEstado_actual("Enviada");//Se pone por defecto el estado de Enviada
             estadoInicial.setFecha_registro_estado(new Date());
@@ -157,8 +138,9 @@ public class GestionarSolicitudEcaesCUAdapter implements GestionarSolicitudEcaes
         return objGestionarSolicitudEcaesGateway.listarFechasEcaes();
     }
 
-
-    
-
+    @Override
+    public List<SolicitudEcaes> listarSolicitudesToFuncionario() {
+        return objGestionarSolicitudEcaesGateway.listarSolicitudesToFuncionario();
+    }
 
 }

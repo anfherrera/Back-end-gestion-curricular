@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.entidades.SolicitudEcaesEntity;
+import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.entidades.SolicitudHomologacionEntity;
 
 public interface SolicitudEcaesRepositoryInt extends JpaRepository<SolicitudEcaesEntity, Integer> {
 
@@ -21,7 +22,23 @@ public interface SolicitudEcaesRepositoryInt extends JpaRepository<SolicitudEcae
     // Consulta JPQL: listar solicitudes con usuarios
     @Query("SELECT DISTINCT s FROM SolicitudEcaesEntity s LEFT JOIN FETCH s.objUsuario")
     List<SolicitudEcaesEntity> listarSolicitudesConUsuarios();
+
+    /**
+     * Busca las solicitudes Ecaes cuyo último estado sea "--"
+     * @return Lista de solicitudes con último estado "--"
+     */
+    @Query("SELECT s FROM SolicitudEcaesEntity s " +
+           "WHERE s.id_solicitud IN (" +
+           "    SELECT e.objSolicitud.id_solicitud " +
+           "    FROM EstadoSolicitudEntity e " +
+           "    WHERE e.estado_actual = :estado " +
+           "    AND e.fecha_registro_estado = (" +
+           "        SELECT MAX(e2.fecha_registro_estado) " +
+           "        FROM EstadoSolicitudEntity e2 " +
+           "        WHERE e2.objSolicitud.id_solicitud = e.objSolicitud.id_solicitud" +
+           "    )" +
+           ")")
+    List<SolicitudEcaesEntity> findByUltimoEstado(@Param("estado") String estado);
     
 
 }
-//reviar si las consultas estan correctas 

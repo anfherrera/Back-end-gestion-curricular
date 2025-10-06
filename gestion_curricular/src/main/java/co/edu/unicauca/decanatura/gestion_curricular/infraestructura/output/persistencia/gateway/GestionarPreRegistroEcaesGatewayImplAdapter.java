@@ -55,6 +55,13 @@ public class GestionarPreRegistroEcaesGatewayImplAdapter implements GestionarPre
     }
 
     @Override
+    public List<SolicitudEcaes> listarSolicitudesToFuncionario() {
+        return solicitudEcaesRepository.findByUltimoEstado("Enviada") .stream()
+            .map(entity -> mapper.map(entity, SolicitudEcaes.class))
+            .collect(Collectors.toList());
+    }
+
+    @Override
     public Optional<SolicitudEcaes> buscarPorId(Integer id) {
         return solicitudEcaesRepository.findById(id)
             .map(entity -> mapper.map(entity, SolicitudEcaes.class));
@@ -91,7 +98,6 @@ public class GestionarPreRegistroEcaesGatewayImplAdapter implements GestionarPre
             .map(entity -> mapper.map(entity, FechaEcaes.class))
             .collect(Collectors.toList());
     }
-    
     
 
 }

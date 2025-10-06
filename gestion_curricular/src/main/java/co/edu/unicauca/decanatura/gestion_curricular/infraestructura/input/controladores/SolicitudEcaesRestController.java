@@ -53,7 +53,13 @@ public class SolicitudEcaesRestController {
         List<SolicitudEcaesDTORespuesta> respuesta = solicitudMapperDominio.mappearListaDeSolicitudEcaesARespuesta(solicitudes);
         return ResponseEntity.ok(respuesta);
     }
-    
+
+    @GetMapping("/listarSolicitudes-Ecaes/Funcionario")
+    public ResponseEntity<List<SolicitudEcaesDTORespuesta>> listarSolicitudesToFuncionario() {
+        List<SolicitudEcaes> solicitudes = solicitudEcaesCU.listarSolicitudesToFuncionario();
+        List<SolicitudEcaesDTORespuesta> respuesta = solicitudMapperDominio.mappearListaDeSolicitudEcaesARespuesta(solicitudes);
+        return ResponseEntity.ok(respuesta);
+    }
     @GetMapping("/buscarSolicitud-Ecaes/{id}")
     public ResponseEntity<SolicitudEcaesDTORespuesta> obtenerPorId(@PathVariable Integer id) {
         SolicitudEcaes solicitud = solicitudEcaesCU.buscarPorId(id);
@@ -61,11 +67,6 @@ public class SolicitudEcaesRestController {
         return ResponseEntity.ok(respuesta);
     }
 
-    // @PutMapping("/cambiarEstado-Ecaes{id}")
-    // public ResponseEntity<Void> cambiarEstado(@PathVariable Integer id, @RequestParam EstadoSolicitudEcaes nuevoEstado) {
-    //     solicitudEcaesCU.cambiarEstadoSolicitudEcaes(id, nuevoEstado);
-    //     return ResponseEntity.noContent().build();
-    // }
 
     @PostMapping("/publicarFechasEcaes")
     public ResponseEntity<FechaEcaesDTORespuesta> publicarFechasEcaes(@RequestBody FechasEcaesDTOPeticion fechasEcaes) {
@@ -82,15 +83,7 @@ public class SolicitudEcaesRestController {
         return ResponseEntity.ok(respuesta);
     }
 
-    // //metodo para agregar un estado a la solicitud
-    // @PutMapping("/actualizarEstadoSolicitud")
-    // public ResponseEntity<Void> actualizarEstadoSolicitud(@RequestBody SolicitudEcaesDTOPeticion solicitudPeticion, EstadoSolicitudEcaes nuevoEstado) {
-    //     SolicitudEcaes solicitud = solicitudMapperDominio.mappearDeSolicitudEcaesDTOPeticionASolicitudEcaes(solicitudPeticion);
-    //     solicitudEcaesCU.cambiarEstadoSolicitudEcaes(solicitud.getId_solicitud(),nuevoEstado);
-    //     return ResponseEntity.noContent().build();
-    // }
-
-    // Intento de actualizar el estado de la solicitud
+    
     @PutMapping("/actualizarEstadoSolicitud")
     public ResponseEntity<Void> actualizarEstadoSolicitud(@RequestBody CambioEstadoSolicitudDTOPeticion solicitudPeticion) {
         CambioEstadoSolicitud solicitud = solicitudMapper.mappearDeCambioEstadoSolicitudDTOPeticionACambioEstadoSolicitud(solicitudPeticion);

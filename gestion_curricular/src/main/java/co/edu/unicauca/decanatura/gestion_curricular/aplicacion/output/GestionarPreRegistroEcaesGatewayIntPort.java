@@ -17,12 +17,12 @@ public interface GestionarPreRegistroEcaesGatewayIntPort {
 
     Optional<SolicitudEcaes> buscarOpcionalPorId(Integer id);
 
-    //Optional<Usuario> buscarUsuarioPorId(Integer idUsuario); usarlo en la interfaz de usuario
-
     void cambiarEstadoSolicitudEcaes(Integer idSolicitud, EstadoSolicitud nuevoEstado);
 
     FechaEcaes publicarFechasEcaes(FechaEcaes fechasEcaes);
 
     List<FechaEcaes> listarFechasEcaes();
+
+    List<SolicitudEcaes> listarSolicitudesToFuncionario();
 
 }

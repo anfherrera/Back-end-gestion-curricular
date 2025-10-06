@@ -4,6 +4,7 @@ public enum EstadosSolicitud {
     ENVIADA,
     APROBADA_FUNCIONARIO,
     APROBADA_COORDINADOR,
-    APROBADA ,
-    RECHAZADA
+    APROBADA,
+    RECHAZADA,
+    PRE_REGISTRADO
 }
