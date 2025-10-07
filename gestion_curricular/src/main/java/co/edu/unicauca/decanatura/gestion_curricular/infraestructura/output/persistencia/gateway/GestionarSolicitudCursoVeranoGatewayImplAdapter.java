@@ -3,6 +3,7 @@ package co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.per
 import java.util.Date;
 import java.util.List;
 import java.util.ArrayList;
+import java.util.Optional;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
@@ -64,6 +65,7 @@ public class GestionarSolicitudCursoVeranoGatewayImplAdapter implements Gestiona
 
         estadoSolicitudEntity = new EstadoSolicitudEntity();
         estadoSolicitudEntity.setFecha_registro_estado(new Date());
+        estadoSolicitudEntity.setEstado_actual("Enviada");
         estadoSolicitudEntity.setObjSolicitud(solicitudCursoVeranoEntity);
         
         List<EstadoSolicitudEntity> estadosSolcitud = solicitudCursoVeranoEntity.getEstadosSolicitud();
@@ -117,6 +119,7 @@ public class GestionarSolicitudCursoVeranoGatewayImplAdapter implements Gestiona
         
         estadoSolicitudEntity = new EstadoSolicitudEntity();
         estadoSolicitudEntity.setFecha_registro_estado(new Date());
+        estadoSolicitudEntity.setEstado_actual("Enviada");
         estadoSolicitudEntity.setObjSolicitud(solicitudCursoVeranoEntity);
         
         List<EstadoSolicitudEntity> estadosSolcitud = solicitudCursoVeranoEntity.getEstadosSolicitud();
@@ -259,13 +262,25 @@ public class GestionarSolicitudCursoVeranoGatewayImplAdapter implements Gestiona
     @Override
     @Transactional
     public SolicitudCursoVeranoPreinscripcion aprobarPreinscripcion(Integer idSolicitud, String comentarios) {
-        SolicitudEntity solicitudEntity = solicitudRepository.findById(idSolicitud)
-            .filter(entity -> entity instanceof SolicitudCursoVeranoPreinscripcionEntity)
-            .orElse(null);
+        System.out.println("DEBUG: Intentando aprobar preinscripción con ID: " + idSolicitud);
         
-        if (solicitudEntity == null) {
+        // Buscar la solicitud sin filtrar primero
+        Optional<SolicitudEntity> solicitudOpt = solicitudRepository.findById(idSolicitud);
+        if (!solicitudOpt.isPresent()) {
+            System.out.println("DEBUG: No se encontró ninguna solicitud con ID: " + idSolicitud);
             return null;
         }
+        
+        SolicitudEntity solicitudEntity = solicitudOpt.get();
+        System.out.println("DEBUG: Solicitud encontrada - Tipo: " + solicitudEntity.getClass().getSimpleName());
+        
+        // Verificar si es del tipo correcto
+        if (!(solicitudEntity instanceof SolicitudCursoVeranoPreinscripcionEntity)) {
+            System.out.println("DEBUG: La solicitud no es del tipo SolicitudCursoVeranoPreinscripcionEntity");
+            return null;
+        }
+        
+        System.out.println("DEBUG: Solicitud es del tipo correcto, procediendo con la aprobación...");
         
         // Crear nuevo estado "Aprobado"
         EstadoSolicitudEntity estadoEntity = new EstadoSolicitudEntity();
@@ -280,19 +295,36 @@ public class GestionarSolicitudCursoVeranoGatewayImplAdapter implements Gestiona
         solicitudEntity.getEstadosSolicitud().add(estadoEntity);
         SolicitudEntity solicitudActualizada = solicitudRepository.save(solicitudEntity);
         
-        return solicitudMapper.map(solicitudActualizada, SolicitudCursoVeranoPreinscripcion.class);
+        System.out.println("DEBUG: Solicitud actualizada guardada con ID: " + solicitudActualizada.getId_solicitud());
+        
+        SolicitudCursoVeranoPreinscripcion resultado = solicitudMapper.map(solicitudActualizada, SolicitudCursoVeranoPreinscripcion.class);
+        System.out.println("DEBUG: Mapeo completado, resultado: " + (resultado != null ? "OK" : "NULL"));
+        
+        return resultado;
     }
 
     @Override
     @Transactional
     public SolicitudCursoVeranoPreinscripcion rechazarPreinscripcion(Integer idSolicitud, String motivo) {
-        SolicitudEntity solicitudEntity = solicitudRepository.findById(idSolicitud)
-            .filter(entity -> entity instanceof SolicitudCursoVeranoPreinscripcionEntity)
-            .orElse(null);
+        System.out.println("DEBUG: Intentando rechazar preinscripción con ID: " + idSolicitud);
         
-        if (solicitudEntity == null) {
+        // Buscar la solicitud sin filtrar primero
+        Optional<SolicitudEntity> solicitudOpt = solicitudRepository.findById(idSolicitud);
+        if (!solicitudOpt.isPresent()) {
+            System.out.println("DEBUG: No se encontró ninguna solicitud con ID: " + idSolicitud);
             return null;
         }
+        
+        SolicitudEntity solicitudEntity = solicitudOpt.get();
+        System.out.println("DEBUG: Solicitud encontrada - Tipo: " + solicitudEntity.getClass().getSimpleName());
+        
+        // Verificar si es del tipo correcto
+        if (!(solicitudEntity instanceof SolicitudCursoVeranoPreinscripcionEntity)) {
+            System.out.println("DEBUG: La solicitud no es del tipo SolicitudCursoVeranoPreinscripcionEntity");
+            return null;
+        }
+        
+        System.out.println("DEBUG: Solicitud es del tipo correcto, procediendo con el rechazo...");
         
         // Crear nuevo estado "Rechazado"
         EstadoSolicitudEntity estadoEntity = new EstadoSolicitudEntity();
@@ -307,7 +339,12 @@ public class GestionarSolicitudCursoVeranoGatewayImplAdapter implements Gestiona
         solicitudEntity.getEstadosSolicitud().add(estadoEntity);
         SolicitudEntity solicitudActualizada = solicitudRepository.save(solicitudEntity);
         
-        return solicitudMapper.map(solicitudActualizada, SolicitudCursoVeranoPreinscripcion.class);
+        System.out.println("DEBUG: Solicitud actualizada guardada con ID: " + solicitudActualizada.getId_solicitud());
+        
+        SolicitudCursoVeranoPreinscripcion resultado = solicitudMapper.map(solicitudActualizada, SolicitudCursoVeranoPreinscripcion.class);
+        System.out.println("DEBUG: Mapeo completado, resultado: " + (resultado != null ? "OK" : "NULL"));
+        
+        return resultado;
     }
 
     @Override

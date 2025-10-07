@@ -261,11 +261,9 @@ public class GestionarNotificacionGatewayImplAdapter implements GestionarNotific
         }
         notificacion.setAccion("VER_SOLICITUD");
         notificacion.setUrlAccion("/solicitudes/" + idSolicitud);
-        
-        // Establecer campos requeridos
-        notificacion.setFechaCreacion(new Date());
-        notificacion.setLeida(false);
-        notificacion.setEsUrgente(false); // Por defecto no es urgente
+        notificacion.setEsUrgente(false); // ✅ AGREGAR ESTA LÍNEA
+        notificacion.setFechaCreacion(new Date()); // ✅ AGREGAR ESTA LÍNEA
+        notificacion.setLeida(false); // ✅ AGREGAR ESTA LÍNEA
         
         return crearNotificacion(notificacion);
     }
@@ -289,6 +287,7 @@ public class GestionarNotificacionGatewayImplAdapter implements GestionarNotific
         }
         notificacion.setAccion("VER_SOLICITUD");
         notificacion.setUrlAccion("/solicitudes/" + idSolicitud);
+        notificacion.setEsUrgente(false); // ✅ AGREGAR ESTA LÍNEA
         
         return crearNotificacion(notificacion);
     }
@@ -314,6 +313,9 @@ public class GestionarNotificacionGatewayImplAdapter implements GestionarNotific
         }
         notificacion.setAccion("VER_SOLICITUD");
         notificacion.setUrlAccion("/solicitudes/" + idSolicitud);
+        notificacion.setEsUrgente(false); // ✅ AGREGAR ESTA LÍNEA
+        notificacion.setFechaCreacion(new Date()); // ✅ AGREGAR ESTA LÍNEA
+        notificacion.setLeida(false); // ✅ AGREGAR ESTA LÍNEA
         
         return crearNotificacion(notificacion);
     }

@@ -2170,7 +2170,7 @@ public class CursosIntersemestralesRestController {
             Map<String, Object> respuesta = new HashMap<>();
             respuesta.put("success", true);
             respuesta.put("message", "Preinscripción aprobada exitosamente");
-            respuesta.put("solicitud", solicitudAprobada);
+            respuesta.put("id_solicitud", solicitudAprobada.getId_solicitud());
             
             return ResponseEntity.ok(respuesta);
         } catch (Exception e) {
@@ -2199,7 +2199,7 @@ public class CursosIntersemestralesRestController {
             Map<String, Object> respuesta = new HashMap<>();
             respuesta.put("success", true);
             respuesta.put("message", "Preinscripción rechazada");
-            respuesta.put("solicitud", solicitudRechazada);
+            respuesta.put("id_solicitud", solicitudRechazada.getId_solicitud());
             
             return ResponseEntity.ok(respuesta);
         } catch (Exception e) {
