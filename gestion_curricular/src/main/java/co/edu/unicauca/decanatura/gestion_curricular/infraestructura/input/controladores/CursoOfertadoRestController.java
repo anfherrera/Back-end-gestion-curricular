@@ -92,19 +92,20 @@ public class CursoOfertadoRestController {
     }
 
     /**
-     * Obtener cursos disponibles para estudiantes
+     * Obtener cursos disponibles para estudiantes (solo estados visibles)
      */
     @GetMapping("/disponibles")
     public ResponseEntity<List<CursosOfertadosDTORespuesta>> obtenerCursosDisponibles() {
         try {
             List<CursoOfertadoVerano> cursos = cursoCU.listarTodos();
-            // Filtrar solo cursos que estén en estado "Publicado" o "Preinscripcion"
+            // Filtrar solo cursos que estén en estados visibles para estudiantes
             List<CursoOfertadoVerano> cursosDisponibles = cursos.stream()
                     .filter(curso -> {
                         if (curso.getEstadosCursoOfertados() == null || curso.getEstadosCursoOfertados().isEmpty()) {
                             return false;
                         }
-                        String estadoActual = curso.getEstadosCursoOfertados().get(0).getEstado_actual();
+                        String estadoActual = curso.getEstadosCursoOfertados().get(curso.getEstadosCursoOfertados().size() - 1).getEstado_actual();
+                        // Solo estados visibles para estudiantes: Publicado, Preinscripcion, Inscripcion
                         return "Publicado".equals(estadoActual) || 
                                "Preinscripcion".equals(estadoActual) ||
                                "Inscripcion".equals(estadoActual);
@@ -112,6 +113,23 @@ public class CursoOfertadoRestController {
                     .collect(Collectors.toList());
             
             List<CursosOfertadosDTORespuesta> respuesta = cursosDisponibles.stream()
+                    .map(CursoMapper::mappearDeCursoOfertadoARespuesta)
+                    .collect(Collectors.toList());
+            return ResponseEntity.ok(respuesta);
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().build();
+        }
+    }
+    
+    /**
+     * Obtener todos los cursos para funcionarios (incluye estados no visibles)
+     */
+    @GetMapping("/todos")
+    public ResponseEntity<List<CursosOfertadosDTORespuesta>> obtenerTodosLosCursos() {
+        try {
+            List<CursoOfertadoVerano> cursos = cursoCU.listarTodos();
+            // Para funcionarios, mostrar todos los cursos sin filtro de estado
+            List<CursosOfertadosDTORespuesta> respuesta = cursos.stream()
                     .map(CursoMapper::mappearDeCursoOfertadoARespuesta)
                     .collect(Collectors.toList());
             return ResponseEntity.ok(respuesta);

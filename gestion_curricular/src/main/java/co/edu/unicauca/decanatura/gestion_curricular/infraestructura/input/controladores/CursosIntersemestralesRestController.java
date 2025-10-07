@@ -74,16 +74,47 @@ public class CursosIntersemestralesRestController {
     }
 
     /**
-     * Obtener cursos de verano disponibles para estudiantes
+     * Obtener cursos de verano disponibles para estudiantes (solo estados visibles)
      * GET /api/cursos-intersemestrales/cursos-verano/disponibles
      */
     @GetMapping("/cursos-verano/disponibles")
     public ResponseEntity<List<CursosOfertadosDTORespuesta>> obtenerCursosVeranoDisponibles() {
         try {
-            // Usar mapper específico para cursos disponibles (estado "Disponible")
             List<CursoOfertadoVerano> cursos = cursoCU.listarTodos();
-            List<CursosOfertadosDTORespuesta> respuesta = cursos.stream()
+            // Filtrar solo cursos visibles para estudiantes
+            List<CursoOfertadoVerano> cursosDisponibles = cursos.stream()
+                    .filter(curso -> {
+                        if (curso.getEstadosCursoOfertados() == null || curso.getEstadosCursoOfertados().isEmpty()) {
+                            return false;
+                        }
+                        String estadoActual = curso.getEstadosCursoOfertados().get(curso.getEstadosCursoOfertados().size() - 1).getEstado_actual();
+                        // Estados visibles para estudiantes: Publicado, Preinscripcion, Inscripcion
+                        return "Publicado".equals(estadoActual) || 
+                               "Preinscripcion".equals(estadoActual) ||
+                               "Inscripcion".equals(estadoActual);
+                    })
+                    .collect(Collectors.toList());
+            
+            List<CursosOfertadosDTORespuesta> respuesta = cursosDisponibles.stream()
                     .map(cursoMapper::mappearDeCursoOfertadoARespuestaDisponible)
+                    .collect(Collectors.toList());
+            return ResponseEntity.ok(respuesta);
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().build();
+        }
+    }
+    
+    /**
+     * Obtener todos los cursos de verano para funcionarios (incluye estados no visibles)
+     * GET /api/cursos-intersemestrales/cursos-verano/todos
+     */
+    @GetMapping("/cursos-verano/todos")
+    public ResponseEntity<List<CursosOfertadosDTORespuesta>> obtenerTodosLosCursosVerano() {
+        try {
+            List<CursoOfertadoVerano> cursos = cursoCU.listarTodos();
+            // Para funcionarios, mostrar todos los cursos sin filtro de estado
+            List<CursosOfertadosDTORespuesta> respuesta = cursos.stream()
+                    .map(cursoMapper::mappearDeCursoOfertadoARespuesta)
                     .collect(Collectors.toList());
             return ResponseEntity.ok(respuesta);
         } catch (Exception e) {
@@ -92,15 +123,53 @@ public class CursosIntersemestralesRestController {
     }
 
     /**
-     * Obtener cursos disponibles para preinscripción
+     * Obtener cursos disponibles para preinscripción (solo cursos en estado Preinscripción)
      * GET /api/cursos-intersemestrales/cursos/preinscripcion
      */
     @GetMapping("/cursos/preinscripcion")
     public ResponseEntity<List<CursosOfertadosDTORespuesta>> obtenerCursosPreinscripcion() {
         try {
             List<CursoOfertadoVerano> cursos = cursoCU.listarTodos();
-            // Mostrar todos los cursos disponibles para preinscripción
-            List<CursosOfertadosDTORespuesta> respuesta = cursos.stream()
+            // Filtrar solo cursos en estado de preinscripción
+            List<CursoOfertadoVerano> cursosPreinscripcion = cursos.stream()
+                    .filter(curso -> {
+                        if (curso.getEstadosCursoOfertados() == null || curso.getEstadosCursoOfertados().isEmpty()) {
+                            return false;
+                        }
+                        String estadoActual = curso.getEstadosCursoOfertados().get(curso.getEstadosCursoOfertados().size() - 1).getEstado_actual();
+                        return "Preinscripcion".equals(estadoActual);
+                    })
+                    .collect(Collectors.toList());
+            
+            List<CursosOfertadosDTORespuesta> respuesta = cursosPreinscripcion.stream()
+                    .map(cursoMapper::mappearDeCursoOfertadoARespuesta)
+                    .collect(Collectors.toList());
+            return ResponseEntity.ok(respuesta);
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().build();
+        }
+    }
+    
+    /**
+     * Obtener cursos disponibles para inscripción (solo cursos en estado Inscripción)
+     * GET /api/cursos-intersemestrales/cursos/inscripcion
+     */
+    @GetMapping("/cursos/inscripcion")
+    public ResponseEntity<List<CursosOfertadosDTORespuesta>> obtenerCursosInscripcion() {
+        try {
+            List<CursoOfertadoVerano> cursos = cursoCU.listarTodos();
+            // Filtrar solo cursos en estado de inscripción
+            List<CursoOfertadoVerano> cursosInscripcion = cursos.stream()
+                    .filter(curso -> {
+                        if (curso.getEstadosCursoOfertados() == null || curso.getEstadosCursoOfertados().isEmpty()) {
+                            return false;
+                        }
+                        String estadoActual = curso.getEstadosCursoOfertados().get(curso.getEstadosCursoOfertados().size() - 1).getEstado_actual();
+                        return "Inscripcion".equals(estadoActual);
+                    })
+                    .collect(Collectors.toList());
+            
+            List<CursosOfertadosDTORespuesta> respuesta = cursosInscripcion.stream()
                     .map(cursoMapper::mappearDeCursoOfertadoARespuesta)
                     .collect(Collectors.toList());
             return ResponseEntity.ok(respuesta);
@@ -738,6 +807,288 @@ public class CursosIntersemestralesRestController {
         }
     }
 
+    // ==================== MÉTODOS AUXILIARES PARA VALIDACIÓN DE ESTADOS ====================
+    
+    /**
+     * Obtener el estado actual de un curso
+     */
+    private String obtenerEstadoActual(CursoOfertadoVeranoEntity curso) {
+        if (curso.getEstadosCursoOfertados() == null || curso.getEstadosCursoOfertados().isEmpty()) {
+            return "Sin_Estado";
+        }
+        return curso.getEstadosCursoOfertados().get(curso.getEstadosCursoOfertados().size() - 1).getEstado_actual();
+    }
+    
+    /**
+     * Validar si una transición de estado es válida
+     */
+    private Map<String, Object> validarTransicionEstado(String estadoActual, String nuevoEstado, CursoOfertadoVeranoEntity curso) {
+        Map<String, Object> resultado = new HashMap<>();
+        resultado.put("valido", false);
+        
+        // Si es el mismo estado, es válido (no hay cambio)
+        if (estadoActual.equals(nuevoEstado)) {
+            resultado.put("valido", true);
+            return resultado;
+        }
+        
+        // Validar transiciones permitidas
+        switch (estadoActual) {
+            case "Sin_Estado":
+                // Desde sin estado, solo puede ir a Borrador
+                if ("Borrador".equals(nuevoEstado)) {
+                    resultado.put("valido", true);
+                } else {
+                    resultado.put("error", "Transición inválida");
+                    resultado.put("message", "Desde 'Sin Estado' solo se puede cambiar a 'Borrador'");
+                }
+                break;
+                
+            case "Borrador":
+                // Desde Borrador puede ir a Abierto o mantenerse en Borrador
+                if ("Abierto".equals(nuevoEstado)) {
+                    // Validar que el curso esté completo
+                    if (validarCompletitudCurso(curso)) {
+                        resultado.put("valido", true);
+                    } else {
+                        resultado.put("error", "Curso incompleto");
+                        resultado.put("message", "El curso debe tener materia, docente y cupo estimado para pasar a 'Abierto'");
+                    }
+                } else {
+                    resultado.put("error", "Transición inválida");
+                    resultado.put("message", "Desde 'Borrador' solo se puede cambiar a 'Abierto'");
+                }
+                break;
+                
+            case "Abierto":
+                // Desde Abierto puede ir a Publicado
+                if ("Publicado".equals(nuevoEstado)) {
+                    resultado.put("valido", true);
+                } else if ("Borrador".equals(nuevoEstado)) {
+                    // Permitir retroceder a Borrador para edición
+                    resultado.put("valido", true);
+                } else {
+                    resultado.put("error", "Transición inválida");
+                    resultado.put("message", "Desde 'Abierto' solo se puede cambiar a 'Publicado' o retroceder a 'Borrador'");
+                }
+                break;
+                
+            case "Publicado":
+                // Desde Publicado puede ir a Preinscripción
+                if ("Preinscripcion".equals(nuevoEstado)) {
+                    // Validar que haya solicitudes mínimas para el curso
+                    if (validarSolicitudesMinimas(curso.getId_curso())) {
+                        resultado.put("valido", true);
+                    } else {
+                        resultado.put("error", "Solicitudes insuficientes");
+                        resultado.put("message", "Debe haber al menos " + curso.getCupo_estimado() + " solicitudes para abrir preinscripciones");
+                    }
+                } else if ("Abierto".equals(nuevoEstado)) {
+                    // Permitir retroceder a Abierto
+                    resultado.put("valido", true);
+                } else {
+                    resultado.put("error", "Transición inválida");
+                    resultado.put("message", "Desde 'Publicado' solo se puede cambiar a 'Preinscripcion' o retroceder a 'Abierto'");
+                }
+                break;
+                
+            case "Preinscripcion":
+                // Desde Preinscripción puede ir a Inscripción o Cerrado
+                if ("Inscripcion".equals(nuevoEstado)) {
+                    // Validar que haya preinscripciones aprobadas suficientes
+                    if (validarPreinscripcionesAprobadas(curso.getId_curso())) {
+                        resultado.put("valido", true);
+                    } else {
+                        resultado.put("error", "Preinscripciones insuficientes");
+                        resultado.put("message", "Debe haber preinscripciones aprobadas suficientes para abrir inscripciones");
+                    }
+                } else if ("Cerrado".equals(nuevoEstado)) {
+                    resultado.put("valido", true);
+                } else if ("Publicado".equals(nuevoEstado)) {
+                    // Permitir retroceder a Publicado
+                    resultado.put("valido", true);
+                } else {
+                    resultado.put("error", "Transición inválida");
+                    resultado.put("message", "Desde 'Preinscripcion' solo se puede cambiar a 'Inscripcion', 'Cerrado' o retroceder a 'Publicado'");
+                }
+                break;
+                
+            case "Inscripcion":
+                // Desde Inscripción puede ir a Cerrado
+                if ("Cerrado".equals(nuevoEstado)) {
+                    resultado.put("valido", true);
+                } else if ("Preinscripcion".equals(nuevoEstado)) {
+                    // Permitir retroceder a Preinscripción
+                    resultado.put("valido", true);
+                } else {
+                    resultado.put("error", "Transición inválida");
+                    resultado.put("message", "Desde 'Inscripcion' solo se puede cambiar a 'Cerrado' o retroceder a 'Preinscripcion'");
+                }
+                break;
+                
+            case "Cerrado":
+                // Desde Cerrado no se puede cambiar a ningún otro estado (solo consulta)
+                resultado.put("error", "Estado final");
+                resultado.put("message", "El curso está cerrado y no se puede cambiar su estado");
+                break;
+                
+            default:
+                resultado.put("error", "Estado desconocido");
+                resultado.put("message", "Estado actual '" + estadoActual + "' no reconocido");
+                break;
+        }
+        
+        return resultado;
+    }
+    
+    /**
+     * Validar que un curso esté completo (tiene todos los campos obligatorios)
+     */
+    private boolean validarCompletitudCurso(CursoOfertadoVeranoEntity curso) {
+        return curso.getObjMateria() != null && 
+               curso.getObjDocente() != null && 
+               curso.getCupo_estimado() != null && 
+               curso.getCupo_estimado() > 0 &&
+               curso.getSalon() != null && 
+               !curso.getSalon().trim().isEmpty();
+    }
+    
+    /**
+     * Validar que haya solicitudes mínimas para abrir preinscripciones
+     */
+    private boolean validarSolicitudesMinimas(Integer idCurso) {
+        try {
+            // Por ahora, permitir siempre (se puede implementar lógica específica)
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
+    }
+    
+    /**
+     * Validar que haya preinscripciones aprobadas suficientes para abrir inscripciones
+     */
+    private boolean validarPreinscripcionesAprobadas(Integer idCurso) {
+        try {
+            // Por ahora, permitir siempre (se puede implementar lógica específica)
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
+    }
+    
+    /**
+     * Validar permisos de operación según el estado del curso y el rol del usuario
+     */
+    private Map<String, Object> validarPermisosPorEstado(String estadoCurso, String rolUsuario, String operacion) {
+        Map<String, Object> resultado = new HashMap<>();
+        resultado.put("permitido", false);
+        
+        // Definir matriz de permisos por estado y rol
+        Map<String, List<String>> permisosPorEstado = new HashMap<>();
+        
+        // Estado: Borrador
+        permisosPorEstado.put("Borrador", List.of(
+            "FUNCIONARIO:ver,editar_completo,eliminar,cambiar_estado",
+            "COORDINADOR:ver,editar_completo,eliminar,cambiar_estado",
+            "ESTUDIANTE:ninguno"
+        ));
+        
+        // Estado: Abierto
+        permisosPorEstado.put("Abierto", List.of(
+            "FUNCIONARIO:ver,editar_parcial,cambiar_estado",
+            "COORDINADOR:ver,editar_parcial,cambiar_estado",
+            "ESTUDIANTE:ninguno"
+        ));
+        
+        // Estado: Publicado
+        permisosPorEstado.put("Publicado", List.of(
+            "FUNCIONARIO:ver,gestionar_solicitudes,cambiar_estado",
+            "COORDINADOR:ver,gestionar_solicitudes,cambiar_estado",
+            "ESTUDIANTE:ver,solicitar_curso_nuevo"
+        ));
+        
+        // Estado: Preinscripción
+        permisosPorEstado.put("Preinscripcion", List.of(
+            "FUNCIONARIO:ver,gestionar_preinscripciones,cambiar_estado",
+            "COORDINADOR:ver,gestionar_preinscripciones,cambiar_estado",
+            "ESTUDIANTE:ver,preinscribirse"
+        ));
+        
+        // Estado: Inscripción
+        permisosPorEstado.put("Inscripcion", List.of(
+            "FUNCIONARIO:ver,gestionar_inscripciones,cambiar_estado",
+            "COORDINADOR:ver,gestionar_inscripciones,cambiar_estado",
+            "ESTUDIANTE:ver,inscribirse"
+        ));
+        
+        // Estado: Cerrado
+        permisosPorEstado.put("Cerrado", List.of(
+            "FUNCIONARIO:ver,consultar",
+            "COORDINADOR:ver,consultar",
+            "ESTUDIANTE:ver,consultar"
+        ));
+        
+        // Obtener permisos para el estado actual
+        List<String> permisosEstado = permisosPorEstado.get(estadoCurso);
+        if (permisosEstado == null) {
+            resultado.put("error", "Estado desconocido");
+            resultado.put("message", "No se pueden determinar permisos para el estado: " + estadoCurso);
+            return resultado;
+        }
+        
+        // Buscar permisos para el rol específico
+        String permisosRol = permisosEstado.stream()
+            .filter(permiso -> permiso.startsWith(rolUsuario + ":"))
+            .findFirst()
+            .orElse(null);
+        
+        if (permisosRol == null) {
+            resultado.put("error", "Rol no válido");
+            resultado.put("message", "No se encontraron permisos para el rol: " + rolUsuario);
+            return resultado;
+        }
+        
+        // Extraer las operaciones permitidas
+        String operacionesPermitidas = permisosRol.split(":")[1];
+        
+        if ("ninguno".equals(operacionesPermitidas)) {
+            resultado.put("error", "Sin permisos");
+            resultado.put("message", "Este rol no tiene permisos para realizar operaciones en el estado: " + estadoCurso);
+            return resultado;
+        }
+        
+        // Verificar si la operación específica está permitida
+        if (operacionesPermitidas.contains(operacion) || operacionesPermitidas.contains("todas")) {
+            resultado.put("permitido", true);
+            resultado.put("message", "Operación permitida");
+        } else {
+            resultado.put("error", "Operación no permitida");
+            resultado.put("message", "El rol " + rolUsuario + " no puede realizar la operación '" + operacion + "' en el estado " + estadoCurso);
+        }
+        
+        return resultado;
+    }
+    
+    /**
+     * Endpoint para obtener información de permisos por estado
+     * GET /api/cursos-intersemestrales/permisos-estado/{estado}/{rol}
+     */
+    @GetMapping("/permisos-estado/{estado}/{rol}")
+    public ResponseEntity<Map<String, Object>> obtenerPermisosPorEstado(
+            @PathVariable String estado,
+            @PathVariable String rol) {
+        try {
+            Map<String, Object> permisos = validarPermisosPorEstado(estado, rol, "consultar_permisos");
+            return ResponseEntity.ok(permisos);
+        } catch (Exception e) {
+            Map<String, Object> error = new HashMap<>();
+            error.put("error", "Error interno");
+            error.put("message", "Error obteniendo permisos: " + e.getMessage());
+            return ResponseEntity.internalServerError().body(error);
+        }
+    }
+
     /**
      * Endpoint temporal para debug - verificar datos en la base de datos
      * GET /api/cursos-intersemestrales/debug-solicitudes/{idUsuario}
@@ -1336,7 +1687,7 @@ public class CursosIntersemestralesRestController {
             
             // Validar estado
             if (dto.getEstado() != null) {
-                String[] estadosValidos = {"Abierto", "Publicado", "Preinscripcion", "Inscripcion", "Cerrado"};
+                String[] estadosValidos = {"Borrador", "Abierto", "Publicado", "Preinscripcion", "Inscripcion", "Cerrado"};
                 boolean estadoValido = false;
                 for (String estado : estadosValidos) {
                     if (estado.equals(dto.getEstado())) {
@@ -1347,7 +1698,7 @@ public class CursosIntersemestralesRestController {
                 if (!estadoValido) {
                     Map<String, Object> error = new HashMap<>();
                     error.put("error", "Estado inválido");
-                    error.put("message", "El estado debe ser uno de: Abierto, Publicado, Preinscripcion, Inscripcion, Cerrado");
+                    error.put("message", "El estado debe ser uno de: Borrador, Abierto, Publicado, Preinscripcion, Inscripcion, Cerrado");
                     return ResponseEntity.badRequest().body(error);
                 }
             }
@@ -1381,6 +1732,16 @@ public class CursosIntersemestralesRestController {
             // Crear nuevo estado si se proporciona
             EstadoCursoOfertadoEntity nuevoEstadoEntity = null;
             if (dto.getEstado() != null) {
+                // Validar transición de estado
+                String estadoActual = obtenerEstadoActual(cursoEntity);
+                String nuevoEstado = dto.getEstado();
+                
+                // Validar si la transición es válida
+                Map<String, Object> validacionTransicion = validarTransicionEstado(estadoActual, nuevoEstado, cursoEntity);
+                if (!(Boolean) validacionTransicion.get("valido")) {
+                    return ResponseEntity.badRequest().body(validacionTransicion);
+                }
+                
                 nuevoEstadoEntity = new EstadoCursoOfertadoEntity();
                 nuevoEstadoEntity.setEstado_actual(dto.getEstado());
                 nuevoEstadoEntity.setFecha_registro_estado(new java.util.Date());
@@ -1498,51 +1859,59 @@ public class CursosIntersemestralesRestController {
     }
 
     /**
-     * Obtener curso de verano por ID
+     * Obtener curso de verano por ID (datos reales de la base de datos)
      * GET /api/cursos-intersemestrales/cursos-verano/{id}
      */
     @GetMapping("/cursos-verano/{id}")
     public ResponseEntity<Map<String, Object>> getCursoPorId(@PathVariable Long id) {
         try {
-            // Simular obtención del curso por ID
+            System.out.println("DEBUG: Obteniendo información del curso ID: " + id);
+            
+            // Obtener curso real de la base de datos
+            CursoOfertadoVerano cursoReal = cursoCU.obtenerCursoPorId(id.intValue());
+            
+            if (cursoReal == null) {
+                System.out.println("WARNING: Curso no encontrado con ID: " + id);
+                return ResponseEntity.notFound().build();
+            }
+            
+            // Usar el mapper existente para obtener datos estructurados
+            CursosOfertadosDTORespuesta cursoDTO = cursoMapper.mappearDeCursoOfertadoARespuesta(cursoReal);
+            
+            // Mapear a estructura esperada por el frontend
             Map<String, Object> curso = new HashMap<>();
-            curso.put("id_curso", id);
-            curso.put("nombre_curso", "Curso " + id);
-            curso.put("codigo_curso", "CURSO-" + id);
-            curso.put("descripcion", "Descripción del curso " + id);
-            curso.put("fecha_inicio", "2024-06-01T08:00:00Z");
-            curso.put("fecha_fin", "2024-07-15T17:00:00Z");
-            curso.put("cupo_maximo", 25);
-            curso.put("cupo_disponible", 20);
-            curso.put("cupo_estimado", 25);
-            curso.put("espacio_asignado", "Aula 101");
-            curso.put("estado", "Abierto");
+            curso.put("id_curso", cursoDTO.getId_curso());
+            curso.put("nombre_curso", cursoDTO.getNombre_curso());
+            curso.put("codigo_curso", cursoDTO.getCodigo_curso());
+            curso.put("descripcion", cursoDTO.getDescripcion());
+            curso.put("fecha_inicio", cursoDTO.getFecha_inicio());
+            curso.put("fecha_fin", cursoDTO.getFecha_fin());
+            curso.put("cupo_maximo", cursoDTO.getCupo_maximo());
+            curso.put("cupo_disponible", cursoDTO.getCupo_disponible());
+            curso.put("cupo_estimado", cursoDTO.getCupo_estimado());
+            curso.put("espacio_asignado", cursoDTO.getEspacio_asignado());
+            curso.put("estado", cursoDTO.getEstado());
             
-            // Objeto materia simulado
-            Map<String, Object> materia = new HashMap<>();
-            materia.put("id_materia", 1);
-            materia.put("nombre_materia", "Materia " + id);
-            materia.put("codigo_materia", "MAT" + id);
-            materia.put("creditos", 3);
-            curso.put("objMateria", materia);
+            // Obtener conteo real de preinscripciones para este curso
+            try {
+                List<SolicitudCursoVeranoPreinscripcion> preinscripciones = solicitudCU.buscarPreinscripcionesPorCurso(id.intValue());
+                curso.put("solicitudes", preinscripciones.size());
+                System.out.println("DEBUG: Preinscripciones encontradas para el curso: " + preinscripciones.size());
+            } catch (Exception e) {
+                System.out.println("WARNING: Error obteniendo conteo de preinscripciones: " + e.getMessage());
+                curso.put("solicitudes", 0);
+            }
             
-            // Objeto docente simulado
-            Map<String, Object> docente = new HashMap<>();
-            docente.put("id_usuario", 1);
-            docente.put("nombre", "Docente");
-            docente.put("apellido", "Apellido");
-            docente.put("email", "docente@unicauca.edu.co");
-            docente.put("telefono", "3000000000");
+            // Usar la información del DTO que ya está mapeada correctamente
+            curso.put("objMateria", cursoDTO.getObjMateria());
+            curso.put("objDocente", cursoDTO.getObjDocente());
             
-            Map<String, Object> rol = new HashMap<>();
-            rol.put("id_rol", 2);
-            rol.put("nombre", "Docente");
-            docente.put("objRol", rol);
-            
-            curso.put("objDocente", docente);
+            System.out.println("SUCCESS: Información del curso obtenida correctamente");
             
             return ResponseEntity.ok(curso);
         } catch (Exception e) {
+            System.out.println("ERROR: Error obteniendo información del curso: " + e.getMessage());
+            e.printStackTrace();
             return ResponseEntity.status(500).build();
         }
     }
@@ -1641,127 +2010,95 @@ public class CursosIntersemestralesRestController {
     // ==================== ENDPOINTS PARA GESTIÓN DE PREINSCRIPCIONES ====================
 
     /**
-     * Obtener preinscripciones por curso
+     * Obtener preinscripciones por curso (datos reales de la base de datos)
      * GET /api/cursos-intersemestrales/preinscripciones/curso/{idCurso}
      */
     @GetMapping("/preinscripciones/curso/{idCurso}")
     public ResponseEntity<List<Map<String, Object>>> getPreinscripcionesPorCurso(
             @PathVariable Long idCurso) {
         try {
+            System.out.println("DEBUG: Obteniendo preinscripciones reales para curso ID: " + idCurso);
+            
             List<Map<String, Object>> preinscripciones = new ArrayList<>();
             
-            // Preinscripción 1
-            Map<String, Object> preinscripcion1 = new HashMap<>();
-            preinscripcion1.put("id_preinscripcion", 1);
-            preinscripcion1.put("fecha_preinscripcion", "2024-01-10T10:30:00Z");
-            preinscripcion1.put("estado", "Pendiente");
-            preinscripcion1.put("observaciones", "");
-            preinscripcion1.put("condicion", "Primera_Vez");
+            // Obtener preinscripciones reales de la base de datos
+            List<SolicitudCursoVeranoPreinscripcion> preinscripcionesReales = solicitudCU.buscarPreinscripcionesPorCurso(idCurso.intValue());
             
-            // Usuario estudiante
-            Map<String, Object> usuario1 = new HashMap<>();
-            usuario1.put("id_usuario", 4);
-            usuario1.put("nombre", "Juan");
-            usuario1.put("apellido", "Pérez");
-            usuario1.put("email", "juan@unicauca.edu.co");
-            usuario1.put("telefono", "3001111111");
-            usuario1.put("codigo_estudiante", "104612345660");
+            System.out.println("DEBUG: Preinscripciones encontradas: " + preinscripcionesReales.size());
             
-            Map<String, Object> rolEstudiante = new HashMap<>();
-            rolEstudiante.put("id_rol", 1);
-            rolEstudiante.put("nombre", "Estudiante");
-            usuario1.put("objRol", rolEstudiante);
+            for (SolicitudCursoVeranoPreinscripcion preinscripcion : preinscripcionesReales) {
+                Map<String, Object> preinscripcionMap = new HashMap<>();
+                
+                // Información básica de la preinscripción
+                preinscripcionMap.put("id_preinscripcion", preinscripcion.getId_solicitud());
+                preinscripcionMap.put("fecha_preinscripcion", preinscripcion.getFecha_registro_solicitud());
+                
+                // Estado de la solicitud
+                String estado = "Pendiente"; // Valor por defecto
+                if (preinscripcion.getEstadosSolicitud() != null && !preinscripcion.getEstadosSolicitud().isEmpty()) {
+                    estado = preinscripcion.getEstadosSolicitud().get(0).getEstado_actual();
+                }
+                preinscripcionMap.put("estado", estado);
+                
+                // Observaciones
+                preinscripcionMap.put("observaciones", preinscripcion.getObservacion() != null ? preinscripcion.getObservacion() : "");
+                
+                // Condición de la solicitud
+                preinscripcionMap.put("condicion", preinscripcion.getCodicion_solicitud() != null ? 
+                    preinscripcion.getCodicion_solicitud().toString() : "Primera_Vez");
+                
+                // Información del usuario/estudiante
+                if (preinscripcion.getObjUsuario() != null) {
+                    Map<String, Object> usuarioMap = new HashMap<>();
+                    usuarioMap.put("id_usuario", preinscripcion.getObjUsuario().getId_usuario());
+                    usuarioMap.put("nombre_completo", preinscripcion.getObjUsuario().getNombre_completo());
+                    usuarioMap.put("correo", preinscripcion.getObjUsuario().getCorreo());
+                    usuarioMap.put("codigo", preinscripcion.getObjUsuario().getCodigo());
+                    usuarioMap.put("codigo_estudiante", preinscripcion.getCodigo_estudiante());
+                    
+                    // Información del rol
+                    if (preinscripcion.getObjUsuario().getObjRol() != null) {
+                        Map<String, Object> rolMap = new HashMap<>();
+                        rolMap.put("id_rol", preinscripcion.getObjUsuario().getObjRol().getId_rol());
+                        rolMap.put("nombre", preinscripcion.getObjUsuario().getObjRol().getNombre());
+                        usuarioMap.put("objRol", rolMap);
+                    }
+                    
+                    preinscripcionMap.put("objUsuario", usuarioMap);
+                }
+                
+                // Información del curso usando el mapper existente
+                if (preinscripcion.getObjCursoOfertadoVerano() != null) {
+                    CursosOfertadosDTORespuesta cursoDTO = cursoMapper.mappearDeCursoOfertadoARespuesta(preinscripcion.getObjCursoOfertadoVerano());
+                    
+                    Map<String, Object> cursoMap = new HashMap<>();
+                    cursoMap.put("id_curso", cursoDTO.getId_curso());
+                    cursoMap.put("nombre_curso", cursoDTO.getNombre_curso());
+                    cursoMap.put("codigo_curso", cursoDTO.getCodigo_curso());
+                    cursoMap.put("descripcion", cursoDTO.getDescripcion());
+                    cursoMap.put("fecha_inicio", cursoDTO.getFecha_inicio());
+                    cursoMap.put("fecha_fin", cursoDTO.getFecha_fin());
+                    cursoMap.put("cupo_maximo", cursoDTO.getCupo_maximo());
+                    cursoMap.put("cupo_estimado", cursoDTO.getCupo_estimado());
+                    cursoMap.put("cupo_disponible", cursoDTO.getCupo_disponible());
+                    cursoMap.put("espacio_asignado", cursoDTO.getEspacio_asignado());
+                    cursoMap.put("estado", cursoDTO.getEstado());
+                    cursoMap.put("objMateria", cursoDTO.getObjMateria());
+                    cursoMap.put("objDocente", cursoDTO.getObjDocente());
+                    
+                    preinscripcionMap.put("objCurso", cursoMap);
+                }
+                
+                preinscripciones.add(preinscripcionMap);
+            }
             
-            preinscripcion1.put("objUsuario", usuario1);
-            
-            // Curso
-            Map<String, Object> curso1 = new HashMap<>();
-            curso1.put("id_curso", idCurso);
-            curso1.put("nombre_curso", "Algebra Lineal");
-            curso1.put("codigo_curso", "ALG-201");
-            curso1.put("descripcion", "Fundamentos de álgebra lineal");
-            curso1.put("fecha_inicio", "2024-01-15T00:00:00Z");
-            curso1.put("fecha_fin", "2024-03-15T00:00:00Z");
-            curso1.put("cupo_maximo", 30);
-            curso1.put("cupo_estimado", 25);
-            curso1.put("cupo_disponible", 20);
-            curso1.put("espacio_asignado", "Aula 301");
-            curso1.put("estado", "Preinscripcion");
-            
-            // Materia del curso
-            Map<String, Object> materia1 = new HashMap<>();
-            materia1.put("id_materia", 1);
-            materia1.put("nombre_materia", "Algebra Lineal");
-            materia1.put("codigo_materia", "ALG");
-            materia1.put("creditos", 4);
-            curso1.put("objMateria", materia1);
-            
-            // Docente del curso
-            Map<String, Object> docente1 = new HashMap<>();
-            docente1.put("id_usuario", 1);
-            docente1.put("nombre", "María");
-            docente1.put("apellido", "García");
-            docente1.put("email", "maria@unicauca.edu.co");
-            docente1.put("telefono", "3001234567");
-            
-            Map<String, Object> rolDocente = new HashMap<>();
-            rolDocente.put("id_rol", 2);
-            rolDocente.put("nombre", "Docente");
-            docente1.put("objRol", rolDocente);
-            
-            curso1.put("objDocente", docente1);
-            preinscripcion1.put("objCurso", curso1);
-            
-            preinscripciones.add(preinscripcion1);
-            
-            // Preinscripción 2
-            Map<String, Object> preinscripcion2 = new HashMap<>();
-            preinscripcion2.put("id_preinscripcion", 2);
-            preinscripcion2.put("fecha_preinscripcion", "2024-01-11T14:20:00Z");
-            preinscripcion2.put("estado", "Pendiente");
-            preinscripcion2.put("observaciones", "");
-            preinscripcion2.put("condicion", "Repitencia");
-            
-            // Usuario estudiante 2
-            Map<String, Object> usuario2 = new HashMap<>();
-            usuario2.put("id_usuario", 5);
-            usuario2.put("nombre", "María");
-            usuario2.put("apellido", "González");
-            usuario2.put("email", "maria.gonzalez@unicauca.edu.co");
-            usuario2.put("telefono", "3002222222");
-            usuario2.put("codigo_estudiante", "104612345661");
-            usuario2.put("objRol", rolEstudiante);
-            
-            preinscripcion2.put("objUsuario", usuario2);
-            preinscripcion2.put("objCurso", curso1); // Mismo curso
-            
-            preinscripciones.add(preinscripcion2);
-            
-            // Preinscripción 3
-            Map<String, Object> preinscripcion3 = new HashMap<>();
-            preinscripcion3.put("id_preinscripcion", 3);
-            preinscripcion3.put("fecha_preinscripcion", "2024-01-12T09:15:00Z");
-            preinscripcion3.put("estado", "Aprobado");
-            preinscripcion3.put("observaciones", "Estudiante con excelente rendimiento académico");
-            preinscripcion3.put("condicion", "Homologacion");
-            
-            // Usuario estudiante 3
-            Map<String, Object> usuario3 = new HashMap<>();
-            usuario3.put("id_usuario", 6);
-            usuario3.put("nombre", "Carlos");
-            usuario3.put("apellido", "López");
-            usuario3.put("email", "carlos.lopez@unicauca.edu.co");
-            usuario3.put("telefono", "3003333333");
-            usuario3.put("codigo_estudiante", "104612345662");
-            usuario3.put("objRol", rolEstudiante);
-            
-            preinscripcion3.put("objUsuario", usuario3);
-            preinscripcion3.put("objCurso", curso1); // Mismo curso
-            
-            preinscripciones.add(preinscripcion3);
+            System.out.println("SUCCESS: Preinscripciones procesadas: " + preinscripciones.size());
             
             return ResponseEntity.ok(preinscripciones);
+            
         } catch (Exception e) {
+            System.out.println("ERROR: Error obteniendo preinscripciones por curso: " + e.getMessage());
+            e.printStackTrace();
             return ResponseEntity.status(500).build();
         }
     }

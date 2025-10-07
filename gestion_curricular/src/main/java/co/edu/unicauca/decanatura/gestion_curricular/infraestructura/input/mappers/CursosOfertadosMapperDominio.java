@@ -47,7 +47,6 @@ public interface CursosOfertadosMapperDominio {
     @Mapping(source = "estadosCursoOfertados", target = "fecha_inicio", qualifiedByName = "obtenerFechaInicio")
     @Mapping(source = "estadosCursoOfertados", target = "fecha_fin", qualifiedByName = "obtenerFechaFin")
     @Mapping(source = "estadosCursoOfertados", target = "estado", qualifiedByName = "obtenerEstadoActual")
-    @Named("mappearDeCursoOfertadoARespuesta")
     CursosOfertadosDTORespuesta mappearDeCursoOfertadoARespuesta(CursoOfertadoVerano curso);
     
     // Mapper específico para cursos disponibles (estado "Disponible")
