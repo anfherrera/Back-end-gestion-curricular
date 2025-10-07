@@ -28,4 +28,7 @@ public interface GestionarSolicitudCursoVeranoGatewayIntPort {
     SolicitudCursoVeranoPreinscripcion rechazarPreinscripcion(Integer idSolicitud, String motivo);
     SolicitudCursoVeranoIncripcion validarPago(Integer idSolicitud, boolean esValido, String observaciones);
     SolicitudCursoVeranoIncripcion completarInscripcion(Integer idSolicitud);
+    
+    // Método para actualizar solicitud de curso verano
+    SolicitudCursoVeranoPreinscripcion actualizarSolicitudCursoVerano(SolicitudCursoVeranoPreinscripcion solicitud);
 }

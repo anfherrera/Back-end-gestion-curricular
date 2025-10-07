@@ -364,4 +364,32 @@ public class GestionarSolicitudCursoVeranoGatewayImplAdapter implements Gestiona
         return solicitudMapper.map(solicitudActualizada, SolicitudCursoVeranoIncripcion.class);
     }
 
+    @Override
+    @Transactional
+    public SolicitudCursoVeranoPreinscripcion actualizarSolicitudCursoVerano(SolicitudCursoVeranoPreinscripcion solicitud) {
+        if (solicitud == null || solicitud.getId_solicitud() == null) {
+            return null;
+        }
+        
+        // Buscar la entidad existente
+        SolicitudEntity solicitudEntity = solicitudRepository.findById(solicitud.getId_solicitud())
+            .filter(entity -> entity instanceof SolicitudCursoVeranoPreinscripcionEntity)
+            .orElse(null);
+        
+        if (solicitudEntity == null) {
+            return null;
+        }
+        
+        // Actualizar solo las observaciones
+        if (solicitud.getObservacion() != null && solicitudEntity instanceof SolicitudCursoVeranoPreinscripcionEntity) {
+            SolicitudCursoVeranoPreinscripcionEntity preinscripcionEntity = (SolicitudCursoVeranoPreinscripcionEntity) solicitudEntity;
+            preinscripcionEntity.setObservacion(solicitud.getObservacion());
+        }
+        
+        // Guardar los cambios
+        SolicitudEntity solicitudActualizada = solicitudRepository.save(solicitudEntity);
+        
+        return solicitudMapper.map(solicitudActualizada, SolicitudCursoVeranoPreinscripcion.class);
+    }
+
 }

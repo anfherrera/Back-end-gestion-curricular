@@ -2031,6 +2031,7 @@ public class CursosIntersemestralesRestController {
                 
                 // Información básica de la preinscripción
                 preinscripcionMap.put("id_preinscripcion", preinscripcion.getId_solicitud());
+                preinscripcionMap.put("id_solicitud", preinscripcion.getId_solicitud()); // Para compatibilidad con frontend
                 preinscripcionMap.put("fecha_preinscripcion", preinscripcion.getFecha_registro_solicitud());
                 
                 // Estado de la solicitud
@@ -2120,14 +2121,27 @@ public class CursosIntersemestralesRestController {
                 return ResponseEntity.badRequest().body(error);
             }
             
-            // Simular actualización de observaciones
+            // Buscar la solicitud en la base de datos
+            SolicitudCursoVeranoPreinscripcion solicitud = solicitudCU.buscarSolicitudPorId(idPreinscripcion.intValue());
+            if (solicitud == null) {
+                Map<String, Object> error = new HashMap<>();
+                error.put("error", "No se encontró la preinscripción con ID: " + idPreinscripcion);
+                return ResponseEntity.notFound().build();
+            }
+            
+            // Actualizar las observaciones directamente usando el gateway de solicitudes de curso verano
+            solicitud.setObservacion(observaciones);
+            SolicitudCursoVeranoPreinscripcion solicitudActualizada = solicitudGateway.actualizarSolicitudCursoVerano(solicitud);
+            
             Map<String, Object> respuesta = new HashMap<>();
             respuesta.put("message", "Observaciones actualizadas exitosamente");
+            respuesta.put("success", true);
             
             Map<String, Object> preinscripcion = new HashMap<>();
-            preinscripcion.put("id_preinscripcion", idPreinscripcion);
-            preinscripcion.put("observaciones", observaciones);
-            preinscripcion.put("estado", "Pendiente");
+            preinscripcion.put("id_preinscripcion", solicitudActualizada.getId_solicitud());
+            preinscripcion.put("observaciones", solicitudActualizada.getObservacion());
+            preinscripcion.put("estado", solicitudActualizada.getEstadosSolicitud() != null && !solicitudActualizada.getEstadosSolicitud().isEmpty() 
+                ? solicitudActualizada.getEstadosSolicitud().get(0).getEstado_actual() : "Pendiente");
             
             respuesta.put("preinscripcion", preinscripcion);
             
@@ -2136,6 +2150,62 @@ public class CursosIntersemestralesRestController {
             Map<String, Object> error = new HashMap<>();
             error.put("error", "Error interno del servidor");
             return ResponseEntity.status(500).body(error);
+        }
+    }
+
+    // ==================== ENDPOINTS PARA APROBAR Y RECHAZAR PREINSCRIPCIONES ====================
+
+    /**
+     * Aprobar preinscripción (para funcionarios)
+     * PUT /api/cursos-intersemestrales/preinscripciones/{idSolicitud}/aprobar
+     */
+    @PutMapping("/preinscripciones/{idSolicitud}/aprobar")
+    public ResponseEntity<Map<String, Object>> aprobarPreinscripcion(
+            @PathVariable Integer idSolicitud,
+            @RequestBody(required = false) Map<String, String> requestBody) {
+        try {
+            String comentarios = requestBody != null ? requestBody.get("comentarios") : null;
+            SolicitudCursoVeranoPreinscripcion solicitudAprobada = solicitudCU.aprobarPreinscripcion(idSolicitud, comentarios);
+            
+            Map<String, Object> respuesta = new HashMap<>();
+            respuesta.put("success", true);
+            respuesta.put("message", "Preinscripción aprobada exitosamente");
+            respuesta.put("solicitud", solicitudAprobada);
+            
+            return ResponseEntity.ok(respuesta);
+        } catch (Exception e) {
+            Map<String, Object> error = new HashMap<>();
+            error.put("error", "Error al aprobar preinscripción: " + e.getMessage());
+            return ResponseEntity.internalServerError().body(error);
+        }
+    }
+
+    /**
+     * Rechazar preinscripción (para funcionarios)
+     * PUT /api/cursos-intersemestrales/preinscripciones/{idSolicitud}/rechazar
+     */
+    @PutMapping("/preinscripciones/{idSolicitud}/rechazar")
+    public ResponseEntity<Map<String, Object>> rechazarPreinscripcion(
+            @PathVariable Integer idSolicitud,
+            @RequestBody Map<String, String> requestBody) {
+        try {
+            String motivo = requestBody.get("motivo");
+            if (motivo == null || motivo.trim().isEmpty()) {
+                return ResponseEntity.badRequest().body(Map.of("error", "Debe proporcionar un motivo para el rechazo"));
+            }
+            
+            SolicitudCursoVeranoPreinscripcion solicitudRechazada = solicitudCU.rechazarPreinscripcion(idSolicitud, motivo);
+            
+            Map<String, Object> respuesta = new HashMap<>();
+            respuesta.put("success", true);
+            respuesta.put("message", "Preinscripción rechazada");
+            respuesta.put("solicitud", solicitudRechazada);
+            
+            return ResponseEntity.ok(respuesta);
+        } catch (Exception e) {
+            Map<String, Object> error = new HashMap<>();
+            error.put("error", "Error al rechazar preinscripción: " + e.getMessage());
+            return ResponseEntity.internalServerError().body(error);
         }
     }
 
