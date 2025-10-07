@@ -23,4 +23,6 @@ public interface GestionarSolicitudEcaesCUIntPort {
 
     List<SolicitudEcaes> listarSolicitudesToFuncionario();
 
+    List<SolicitudEcaes> listarSolicitudesPorRol(String rol, Integer idUsuario);
+
 }

@@ -15,6 +15,7 @@ import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Documento;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.EstadoSolicitud;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.FechaEcaes;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.SolicitudEcaes;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.SolicitudHomologacion;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Usuario;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Enums.EstadosSolicitud;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.controladorExcepciones.excepcionesPropias.EntidadNoExisteException;
@@ -141,6 +142,28 @@ public class GestionarSolicitudEcaesCUAdapter implements GestionarSolicitudEcaes
     @Override
     public List<SolicitudEcaes> listarSolicitudesToFuncionario() {
         return objGestionarSolicitudEcaesGateway.listarSolicitudesToFuncionario();
+    }
+
+
+    @Override
+    public List<SolicitudEcaes> listarSolicitudesPorRol(String rol, Integer idUsuario) {
+        List<SolicitudEcaes> todas = objGestionarSolicitudEcaesGateway.listar();
+
+        return todas.stream().filter(solicitud -> {
+            List<EstadoSolicitud> estados = solicitud.getEstadosSolicitud();
+            EstadoSolicitud ultimoEstado = estados != null && !estados.isEmpty()
+                ? estados.get(estados.size() - 1)
+                : null;
+
+            switch (rol) {
+                case "ESTUDIANTE":
+                    return solicitud.getObjUsuario().getId_usuario().equals(idUsuario);
+                case "FUNCIONARIO":
+                    return ultimoEstado != null && "ENVIADA".equals(ultimoEstado.getEstado_actual());
+                default:
+                    return false;
+            }
+        }).toList();
     }
 
 }
