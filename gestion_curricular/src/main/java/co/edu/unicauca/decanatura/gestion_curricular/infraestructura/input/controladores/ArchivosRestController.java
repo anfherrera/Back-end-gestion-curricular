@@ -46,163 +46,127 @@ public class ArchivosRestController {
     private final GestionarSolicitudPazYSalvoCUIntPort solicitudPazYSalvoCU;
     private final GestionarSolicitudReingresoCUIntPort solicitudReingresoCU;
     @PostMapping("/subir/pdf")
-    public ResponseEntity<DocumentosDTORespuesta> subirPDF(
+    public ResponseEntity<Map<String, Object>> subirPDF(
             @RequestParam(name = "file", required = true) MultipartFile file,
-            @RequestParam(name = "idSolicitud", required = false) Integer idSolicitud) {
+            @RequestParam(name = "inscripcionId", required = false) String inscripcionId) {
         try {
-            String nombreOriginal = file.getOriginalFilename(); // ← nombre real del archivo
+            System.out.println("📁 [INSCRIPCIONES] ===== INICIANDO SUBIDA DE ARCHIVO PDF =====");
+            System.out.println("📁 [INSCRIPCIONES] Archivo: " + file.getOriginalFilename());
+            System.out.println("📁 [INSCRIPCIONES] Tamaño: " + file.getSize() + " bytes");
+            System.out.println("📁 [INSCRIPCIONES] Tipo: " + file.getContentType());
+            System.out.println("📁 [INSCRIPCIONES] Inscripción ID: " + inscripcionId);
+            System.out.println("📁 [INSCRIPCIONES] Archivo vacío: " + file.isEmpty());
             
-            // Validaciones
-            System.out.println("📁 Validando archivo: " + nombreOriginal);
+            String nombreOriginal = file.getOriginalFilename();
+            System.out.println("📁 [INSCRIPCIONES] Nombre original procesado: " + nombreOriginal);
             
-            // 1. Validar peso máximo (10MB = 10 * 1024 * 1024 bytes)
-            long maxFileSize = 10 * 1024 * 1024; // 10MB
-            if (file.getSize() > maxFileSize) {
-                System.err.println("❌ Archivo demasiado grande: " + file.getSize() + " bytes (máximo: " + maxFileSize + " bytes)");
-                return ResponseEntity.status(HttpStatus.PAYLOAD_TOO_LARGE)
-                    .body(null);
+            // 1. Validar que se proporcionó archivo
+            if (file.isEmpty()) {
+                System.err.println("❌ [INSCRIPCIONES] No se proporcionó archivo");
+                Map<String, Object> error = new HashMap<>();
+                error.put("error", "No se proporcionó archivo");
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
             }
             
-            // 2. Validar que no sea un archivo duplicado
-            if (idSolicitud != null) {
-                try {
-                    // Intentar buscar en solicitudes de homologación
-                    try {
-                        SolicitudHomologacion solicitudHomologacion = solicitudHomologacionCU.buscarPorId(idSolicitud);
-                        if (solicitudHomologacion != null && solicitudHomologacion.getDocumentos() != null) {
-                            for (Documento doc : solicitudHomologacion.getDocumentos()) {
-                                if (doc.getNombre() != null && doc.getNombre().equals(nombreOriginal)) {
-                                    System.err.println("❌ Archivo duplicado en homologación: " + nombreOriginal);
-                                    return ResponseEntity.status(HttpStatus.CONFLICT)
-                                        .body(null);
-                                }
-                            }
-                        }
-                    } catch (Exception e) {
-                        // Si no es homologación, intentar con paz y salvo
-                        try {
-                            SolicitudPazYSalvo solicitudPazSalvo = solicitudPazYSalvoCU.buscarPorId(idSolicitud);
-                            if (solicitudPazSalvo != null && solicitudPazSalvo.getDocumentos() != null) {
-                                for (Documento doc : solicitudPazSalvo.getDocumentos()) {
-                                    if (doc.getNombre() != null && doc.getNombre().equals(nombreOriginal)) {
-                                        System.err.println("❌ Archivo duplicado en paz y salvo: " + nombreOriginal);
-                                        return ResponseEntity.status(HttpStatus.CONFLICT)
-                                            .body(null);
-                                    }
-                                }
-                            }
-                        } catch (Exception e2) {
-                            // Si no es paz y salvo, intentar con reingreso
-                            try {
-                                SolicitudReingreso solicitudReingreso = solicitudReingresoCU.obtenerSolicitudReingresoPorId(idSolicitud);
-                                if (solicitudReingreso != null && solicitudReingreso.getDocumentos() != null) {
-                                    for (Documento doc : solicitudReingreso.getDocumentos()) {
-                                        if (doc.getNombre() != null && doc.getNombre().equals(nombreOriginal)) {
-                                            System.err.println("❌ Archivo duplicado en reingreso: " + nombreOriginal);
-                                            return ResponseEntity.status(HttpStatus.CONFLICT)
-                                                .body(null);
-                                        }
-                                    }
-                                }
-                            } catch (Exception e3) {
-                                System.err.println("⚠️ Error al verificar duplicados en reingreso: " + e3.getMessage());
-                            }
-                        }
-                    }
-                } catch (Exception e) {
-                    System.err.println("⚠️ Error al verificar duplicados: " + e.getMessage());
-                }
+            // 2. Validar peso máximo (15MB = 15 * 1024 * 1024 bytes)
+            long maxFileSize = 15 * 1024 * 1024; // 15MB
+            if (file.getSize() > maxFileSize) {
+                System.err.println("❌ [INSCRIPCIONES] Archivo demasiado grande: " + file.getSize() + " bytes (máximo: " + maxFileSize + " bytes)");
+                Map<String, Object> error = new HashMap<>();
+                error.put("error", "Archivo demasiado grande. Máximo permitido: 15MB");
+                return ResponseEntity.status(HttpStatus.PAYLOAD_TOO_LARGE).body(error);
             }
             
             // 3. Validar tipo de archivo
-            if (!nombreOriginal.toLowerCase().endsWith(".pdf")) {
-                System.err.println("❌ Tipo de archivo no válido: " + nombreOriginal);
-                return ResponseEntity.status(HttpStatus.UNSUPPORTED_MEDIA_TYPE)
-                    .body(null);
+            if (!file.getContentType().equals("application/pdf")) {
+                System.err.println("❌ [INSCRIPCIONES] Tipo de archivo no válido: " + file.getContentType());
+                Map<String, Object> error = new HashMap<>();
+                error.put("error", "Solo se permiten archivos PDF");
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
             }
             
-            System.out.println("✅ Validaciones pasadas, guardando archivo...");
-            this.objGestionarArchivos.saveFile(file, nombreOriginal, "pdf"); // ← guardar archivo
+            System.out.println("✅ [INSCRIPCIONES] Validaciones pasadas, guardando archivo...");
             
-            Documento doc = new Documento();
-            doc.setNombre(nombreOriginal);
-            doc.setRuta_documento(nombreOriginal);
-            doc.setFecha_documento(new Date());
-            doc.setEsValido(true);
-            
-            // Asociar solicitud si se proporciona idSolicitud
-            if (idSolicitud != null) {
-                try {
-                    // Intentar obtener la solicitud de homologación primero
-                    try {
-                        SolicitudHomologacion solicitudHomologacion = solicitudHomologacionCU.buscarPorId(idSolicitud);
-                        if (solicitudHomologacion != null) {
-                            // Crear objeto Solicitud para asociar
-                            Solicitud objSolicitud = new Solicitud();
-                            objSolicitud.setId_solicitud(idSolicitud);
-                            doc.setObjSolicitud(objSolicitud);
-                            System.out.println("📎 Asociando archivo '" + nombreOriginal + "' a solicitud de homologación ID: " + idSolicitud);
-                        }
-                    } catch (Exception e) {
-                        // Si no es homologación, intentar con paz y salvo
-                        try {
-                            SolicitudPazYSalvo solicitudPazSalvo = solicitudPazYSalvoCU.buscarPorId(idSolicitud);
-                            if (solicitudPazSalvo != null) {
-                                // Crear objeto Solicitud para asociar
-                                Solicitud objSolicitud = new Solicitud();
-                                objSolicitud.setId_solicitud(idSolicitud);
-                                doc.setObjSolicitud(objSolicitud);
-                                System.out.println("📎 Asociando archivo '" + nombreOriginal + "' a solicitud de paz y salvo ID: " + idSolicitud);
-                            } else {
-                                // Si no es paz y salvo, intentar con reingreso
-                                try {
-                                    System.out.println("🔍 Intentando obtener solicitud de reingreso con ID: " + idSolicitud);
-                                    SolicitudReingreso solicitudReingreso = solicitudReingresoCU.obtenerSolicitudReingresoPorId(idSolicitud);
-                                    if (solicitudReingreso != null) {
-                                        // Crear objeto Solicitud para asociar
-                                        Solicitud objSolicitud = new Solicitud();
-                                        objSolicitud.setId_solicitud(idSolicitud);
-                                        doc.setObjSolicitud(objSolicitud);
-                                        System.out.println("✅ Asociando archivo '" + nombreOriginal + "' a solicitud de reingreso ID: " + idSolicitud);
-                                        System.out.println("📋 Documento antes de guardar - idSolicitud: " + (doc.getObjSolicitud() != null ? doc.getObjSolicitud().getId_solicitud() : "NULL"));
-                                    } else {
-                                        System.out.println("❌ No se encontró solicitud de reingreso con ID: " + idSolicitud);
-                                    }
-                                } catch (Exception e3) {
-                                    System.err.println("❌ Error al obtener solicitud de reingreso: " + e3.getMessage());
-                                    e3.printStackTrace();
-                                }
-                            }
-                        } catch (Exception e2) {
-                            // Si no es paz y salvo, intentar con reingreso
-                            try {
-                                SolicitudReingreso solicitudReingreso = solicitudReingresoCU.obtenerSolicitudReingresoPorId(idSolicitud);
-                                if (solicitudReingreso != null) {
-                                    // Crear objeto Solicitud para asociar
-                                    Solicitud objSolicitud = new Solicitud();
-                                    objSolicitud.setId_solicitud(idSolicitud);
-                                    doc.setObjSolicitud(objSolicitud);
-                                    System.out.println("📎 Asociando archivo '" + nombreOriginal + "' a solicitud de reingreso ID: " + idSolicitud);
-                                }
-                            } catch (Exception e3) {
-                                System.err.println("❌ Error al obtener solicitud de reingreso: " + e3.getMessage());
-                            }
-                        }
-                    }
-                } catch (Exception e) {
-                    System.err.println("❌ Error al obtener solicitud: " + e.getMessage());
-                }
+            // 4. Guardar archivo con manejo de errores mejorado
+            String nombreArchivo;
+            try {
+                // Generar nombre único para evitar conflictos
+                String nombreUnico = System.currentTimeMillis() + "_" + nombreOriginal;
+                nombreArchivo = this.objGestionarArchivos.saveFile(file, nombreUnico, "pdf");
+                System.out.println("✅ [INSCRIPCIONES] Archivo guardado exitosamente: " + nombreArchivo);
+            } catch (Exception saveError) {
+                System.err.println("❌ [INSCRIPCIONES] Error al guardar archivo: " + saveError.getMessage());
+                saveError.printStackTrace();
+                Map<String, Object> error = new HashMap<>();
+                error.put("error", "Error al guardar archivo: " + saveError.getMessage());
+                error.put("detalle", "Verificar permisos de escritura en carpeta de archivos");
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(error);
             }
             
-            Documento documentoGuardado = this.objGestionarDocumentosGateway.crearDocumento(doc);
-            ResponseEntity<DocumentosDTORespuesta> respuesta = new ResponseEntity<DocumentosDTORespuesta>(
-                documentosMapperDominio.mappearDeDocumentoADTORespuesta(documentoGuardado), HttpStatus.CREATED
-            );
-            return respuesta;
+            // 5. Crear respuesta en el formato requerido
+            Map<String, Object> respuesta = new HashMap<>();
+            respuesta.put("id", System.currentTimeMillis()); // ID temporal
+            respuesta.put("nombre", nombreOriginal);
+            respuesta.put("ruta", "/uploads/archivos/" + nombreArchivo);
+            respuesta.put("tamaño", file.getSize());
+            respuesta.put("tipo", file.getContentType());
+            respuesta.put("fechaSubida", new java.util.Date().toString());
+            
+            if (inscripcionId != null && !inscripcionId.trim().isEmpty()) {
+                respuesta.put("inscripcionId", inscripcionId);
+            }
+            
+            System.out.println("✅ [INSCRIPCIONES] Archivo subido exitosamente: " + nombreOriginal);
+            return ResponseEntity.ok(respuesta);
         } catch (Exception e) {
-            System.err.println("❌ Error al subir PDF: " + e.getMessage());
+            System.err.println("❌ [INSCRIPCIONES] Error al subir PDF: " + e.getMessage());
             e.printStackTrace();
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+            Map<String, Object> error = new HashMap<>();
+            error.put("error", "Error interno del servidor: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(error);
+        }
+    }
+
+    /**
+     * Endpoint de prueba para verificar que el manejo de archivos multipart funciona
+     * POST /api/archivos/test-upload
+     */
+    @PostMapping("/test-upload")
+    public ResponseEntity<Map<String, Object>> testUpload(
+            @RequestParam(name = "file", required = false) MultipartFile file,
+            @RequestParam(name = "inscripcionId", required = false) String inscripcionId) {
+        try {
+            System.out.println("🧪 [TEST] Endpoint de prueba de subida de archivos");
+            System.out.println("🧪 [TEST] Archivo recibido: " + (file != null ? "SÍ" : "NO"));
+            System.out.println("🧪 [TEST] Inscripción ID: " + inscripcionId);
+            
+            if (file != null) {
+                System.out.println("🧪 [TEST] Nombre archivo: " + file.getOriginalFilename());
+                System.out.println("🧪 [TEST] Tamaño: " + file.getSize() + " bytes");
+                System.out.println("🧪 [TEST] Tipo: " + file.getContentType());
+                System.out.println("🧪 [TEST] Vacío: " + file.isEmpty());
+            }
+            
+            Map<String, Object> respuesta = new HashMap<>();
+            respuesta.put("success", true);
+            respuesta.put("message", "Endpoint de prueba funcionando correctamente");
+            respuesta.put("archivo_recibido", file != null);
+            respuesta.put("inscripcion_id", inscripcionId);
+            
+            if (file != null) {
+                respuesta.put("nombre_archivo", file.getOriginalFilename());
+                respuesta.put("tamaño_archivo", file.getSize());
+                respuesta.put("tipo_archivo", file.getContentType());
+            }
+            
+            return ResponseEntity.ok(respuesta);
+            
+        } catch (Exception e) {
+            System.err.println("❌ [TEST] Error en endpoint de prueba: " + e.getMessage());
+            e.printStackTrace();
+            Map<String, Object> error = new HashMap<>();
+            error.put("error", "Error en endpoint de prueba: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(error);
         }
     }
 

@@ -21,6 +21,7 @@ public class SeguridadConfig {
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
             .csrf(csrf -> csrf.disable())
+            .cors(cors -> {}) // Habilitar CORS
             .authorizeHttpRequests(auth -> auth
                 .anyRequest().permitAll()    //.authenticated() se pone para realizar autenticacion, eliminar el permitAll
             );
