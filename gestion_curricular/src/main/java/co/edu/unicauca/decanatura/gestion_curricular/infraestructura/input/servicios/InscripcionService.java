@@ -75,7 +75,7 @@ public class InscripcionService {
                 .map(s -> (SolicitudCursoVeranoInscripcionEntity) s);
         return entity.map(e -> {
             if (e.getEstadosSolicitud() != null && !e.getEstadosSolicitud().isEmpty()) {
-                return e.getEstadosSolicitud().get(0).getEstado_actual();
+                return e.getEstadosSolicitud().get(e.getEstadosSolicitud().size() - 1).getEstado_actual();
             }
             return null;
         }).orElse(null);
@@ -99,7 +99,7 @@ public class InscripcionService {
         map.put("estudianteId", entity.getObjUsuario() != null ? entity.getObjUsuario().getId_usuario() : null);
         map.put("fecha", entity.getFecha_registro_solicitud());
         map.put("estado", entity.getEstadosSolicitud() != null && !entity.getEstadosSolicitud().isEmpty() 
-                ? entity.getEstadosSolicitud().get(0).getEstado_actual() : null);
+                ? entity.getEstadosSolicitud().get(entity.getEstadosSolicitud().size() - 1).getEstado_actual() : null);
         map.put("archivoPagoId", null); // No hay archivo de pago en esta entidad
         return map;
     }

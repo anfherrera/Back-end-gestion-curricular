@@ -1227,7 +1227,7 @@ public class CursosIntersemestralesRestController {
                     preinscripcionMap.put("id", preinscripcion.getId_solicitud());
                     preinscripcionMap.put("fecha", preinscripcion.getFecha_registro_solicitud());
                     preinscripcionMap.put("estado", preinscripcion.getEstadosSolicitud() != null && !preinscripcion.getEstadosSolicitud().isEmpty() 
-                        ? preinscripcion.getEstadosSolicitud().get(0).getEstado_actual() : "Enviado");
+                        ? preinscripcion.getEstadosSolicitud().get(preinscripcion.getEstadosSolicitud().size() - 1).getEstado_actual() : "Enviado");
                     
                     // Determinar el tipo correcto de solicitud
                     String tipoSolicitud = "Preinscripción";
@@ -1279,6 +1279,48 @@ public class CursosIntersemestralesRestController {
                     preinscripcionMap.put("estudianteId", idUsuario);
                     preinscripcionMap.put("cursoId", preinscripcion.getObjCursoOfertadoVerano() != null 
                         ? preinscripcion.getObjCursoOfertadoVerano().getId_curso() : null);
+                    
+                    // Agregar información del estado del curso y acciones disponibles
+                    String estadoCurso = "No disponible";
+                    List<String> accionesDisponibles = new ArrayList<>();
+                    
+                    if (preinscripcion.getObjCursoOfertadoVerano() != null) {
+                        // Para cursos existentes, obtener el estado del curso
+                        CursoOfertadoVerano curso = preinscripcion.getObjCursoOfertadoVerano();
+                        if (curso.getEstadosCursoOfertados() != null && !curso.getEstadosCursoOfertados().isEmpty()) {
+                            estadoCurso = curso.getEstadosCursoOfertados().get(curso.getEstadosCursoOfertados().size() - 1).getEstado_actual();
+                        }
+                        
+                        // Determinar acciones disponibles basado en el estado de la preinscripción y del curso
+                        String estadoPreinscripcion = preinscripcion.getEstadosSolicitud() != null && !preinscripcion.getEstadosSolicitud().isEmpty() 
+                            ? preinscripcion.getEstadosSolicitud().get(preinscripcion.getEstadosSolicitud().size() - 1).getEstado_actual() : "Enviado";
+                        
+                        if ("Aprobado".equals(estadoPreinscripcion)) {
+                            if ("Inscripcion".equals(estadoCurso)) {
+                                accionesDisponibles.add("proceder_inscripcion");
+                            } else {
+                                accionesDisponibles.add("esperando_inscripcion");
+                            }
+                        } else if ("Enviada".equals(estadoPreinscripcion)) {
+                            accionesDisponibles.add("esperando_aprobacion");
+                        } else if ("Rechazada".equals(estadoPreinscripcion)) {
+                            accionesDisponibles.add("revisar_motivo_rechazo");
+                        }
+                    } else {
+                        // Para solicitudes de curso nuevo
+                        String estadoPreinscripcion = preinscripcion.getEstadosSolicitud() != null && !preinscripcion.getEstadosSolicitud().isEmpty() 
+                            ? preinscripcion.getEstadosSolicitud().get(preinscripcion.getEstadosSolicitud().size() - 1).getEstado_actual() : "Enviado";
+                        
+                        if ("Enviada".equals(estadoPreinscripcion)) {
+                            accionesDisponibles.add("esperando_aprobacion_curso");
+                        } else if ("Aprobado".equals(estadoPreinscripcion)) {
+                            accionesDisponibles.add("curso_aprobado_esperando_apertura");
+                        }
+                    }
+                    
+                    preinscripcionMap.put("estadoCurso", estadoCurso);
+                    preinscripcionMap.put("accionesDisponibles", accionesDisponibles);
+                    
                     preinscripciones.add(preinscripcionMap);
                 }
                 
@@ -2037,7 +2079,7 @@ public class CursosIntersemestralesRestController {
                 // Estado de la solicitud
                 String estado = "Pendiente"; // Valor por defecto
                 if (preinscripcion.getEstadosSolicitud() != null && !preinscripcion.getEstadosSolicitud().isEmpty()) {
-                    estado = preinscripcion.getEstadosSolicitud().get(0).getEstado_actual();
+                    estado = preinscripcion.getEstadosSolicitud().get(preinscripcion.getEstadosSolicitud().size() - 1).getEstado_actual();
                 }
                 preinscripcionMap.put("estado", estado);
                 
@@ -2141,7 +2183,7 @@ public class CursosIntersemestralesRestController {
             preinscripcion.put("id_preinscripcion", solicitudActualizada.getId_solicitud());
             preinscripcion.put("observaciones", solicitudActualizada.getObservacion());
             preinscripcion.put("estado", solicitudActualizada.getEstadosSolicitud() != null && !solicitudActualizada.getEstadosSolicitud().isEmpty() 
-                ? solicitudActualizada.getEstadosSolicitud().get(0).getEstado_actual() : "Pendiente");
+                ? solicitudActualizada.getEstadosSolicitud().get(solicitudActualizada.getEstadosSolicitud().size() - 1).getEstado_actual() : "Pendiente");
             
             respuesta.put("preinscripcion", preinscripcion);
             
