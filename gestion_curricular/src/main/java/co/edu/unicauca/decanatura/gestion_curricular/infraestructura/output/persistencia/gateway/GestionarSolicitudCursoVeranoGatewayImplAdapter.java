@@ -217,7 +217,7 @@ public class GestionarSolicitudCursoVeranoGatewayImplAdapter implements Gestiona
     @Override
     @Transactional(readOnly = true)
     public List<SolicitudCursoVeranoIncripcion> buscarInscripcionesPorCurso(Integer idCurso) {
-        List<SolicitudEntity> solicitudesEntity = solicitudRepository.buscarSolicitudesPorCurso(idCurso);
+        List<SolicitudEntity> solicitudesEntity = solicitudRepository.buscarInscripcionesPorCurso(idCurso);
         List<SolicitudCursoVeranoIncripcion> inscripciones = new ArrayList<>();
         
         for (SolicitudEntity entity : solicitudesEntity) {

@@ -180,7 +180,7 @@ public interface SolicitudRepositoryInt extends JpaRepository<SolicitudEntity, I
     @Query("SELECT s FROM SolicitudEntity s WHERE LOWER(s.nombre_solicitud) LIKE LOWER(CONCAT('%', :nombre, '%'))")
     List<SolicitudEntity> buscarPorNombre(@Param("nombre") String nombre);
 
-    @Query("SELECT u.solicitudes FROM UsuarioEntity u WHERE u.id_usuario = :idUsuario")
+    @Query("SELECT s FROM SolicitudCursoVeranoPreinscripcionEntity s WHERE s.objUsuario.id_usuario = :idUsuario")
     List<SolicitudEntity> buscarSolicitudesPorUsuario(@Param("idUsuario") Integer idUsuario);
 
     @Query(
@@ -235,8 +235,11 @@ public interface SolicitudRepositoryInt extends JpaRepository<SolicitudEntity, I
     void eliminarPorId(@Param("id") Integer id);
 
     // Métodos para cursos de verano
-    @Query("SELECT s FROM SolicitudEntity s WHERE s.objCursoOfertadoVerano.id_curso = :idCurso")
+    @Query("SELECT s FROM SolicitudCursoVeranoPreinscripcionEntity s WHERE s.objCursoOfertadoVerano.id_curso = :idCurso")
     List<SolicitudEntity> buscarSolicitudesPorCurso(@Param("idCurso") Integer idCurso);
+    
+    @Query("SELECT s FROM SolicitudCursoVeranoInscripcionEntity s WHERE s.objCursoOfertadoVerano.id_curso = :idCurso")
+    List<SolicitudEntity> buscarInscripcionesPorCurso(@Param("idCurso") Integer idCurso);
 
     @Query("SELECT COUNT(s) FROM SolicitudEntity s WHERE s.objCursoOfertadoVerano.id_curso = :idCurso")
     Integer contarSolicitudesPorCurso(@Param("idCurso") Integer idCurso);
