@@ -25,4 +25,7 @@ public class PreinscripcionCursoVeranoDTOPeticion {
     @NotBlank(message = "El nombre de la solicitud no puede estar vacío")
     @Size(min = 3, max = 100, message = "El nombre de la solicitud debe tener entre 3 y 100 caracteres")
     private String nombreSolicitud;
+
+    @Size(max = 50, message = "La condición no puede tener más de 50 caracteres")
+    private String condicion;
 }

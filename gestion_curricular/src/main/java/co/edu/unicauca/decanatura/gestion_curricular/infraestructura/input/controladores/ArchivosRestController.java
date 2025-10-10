@@ -7,7 +7,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.HashMap;
@@ -22,11 +21,7 @@ import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarS
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarSolicitudReingresoCUIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.GestionarDocumentosGatewayIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Documento;
-import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Solicitud;
-import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.SolicitudHomologacion;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.SolicitudPazYSalvo;
-import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.SolicitudReingreso;
-import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.DTORespuesta.DocumentosDTORespuesta;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.mappers.DocumentosMapperDominio;
 
 import org.springframework.web.multipart.MultipartFile;
@@ -103,7 +98,42 @@ public class ArchivosRestController {
                 return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(error);
             }
             
-            // 5. Crear respuesta en el formato requerido
+            // 5. Si se proporciona ID de inscripción, crear documento en BD
+            if (inscripcionId != null && !inscripcionId.trim().isEmpty()) {
+                try {
+                    System.out.println("📋 [INSCRIPCIONES] Creando documento en BD para inscripción ID: " + inscripcionId);
+                    
+                    // Crear documento
+                    Documento documento = new Documento();
+                    documento.setNombre(nombreArchivo);
+                    documento.setRuta_documento(nombreArchivo);
+                    documento.setFecha_documento(new java.util.Date());
+                    documento.setEsValido(true);
+                    documento.setComentario("Comprobante de pago - Inscripción curso verano");
+                    
+                    // Asociar a inscripción
+                    co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.SolicitudCursoVeranoIncripcion solicitud = 
+                        new co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.SolicitudCursoVeranoIncripcion();
+                    solicitud.setId_solicitud(Integer.parseInt(inscripcionId));
+                    documento.setObjSolicitud(solicitud);
+                    
+                    // Guardar documento en BD
+                    Documento documentoGuardado = objGestionarDocumentosGateway.crearDocumento(documento);
+                    
+                    if (documentoGuardado != null) {
+                        System.out.println("✅ [INSCRIPCIONES] Documento guardado en BD ID: " + documentoGuardado.getId_documento());
+                    } else {
+                        System.out.println("⚠️ [INSCRIPCIONES] Error al guardar documento en BD");
+                    }
+                    
+                } catch (Exception e) {
+                    System.err.println("❌ [INSCRIPCIONES] Error al crear documento en BD: " + e.getMessage());
+                    e.printStackTrace();
+                    // No fallar la operación por esto, pero logear el error
+                }
+            }
+            
+            // 6. Crear respuesta en el formato requerido
             Map<String, Object> respuesta = new HashMap<>();
             respuesta.put("id", System.currentTimeMillis()); // ID temporal
             respuesta.put("nombre", nombreOriginal);
@@ -118,7 +148,7 @@ public class ArchivosRestController {
             
             System.out.println("✅ [INSCRIPCIONES] Archivo subido exitosamente: " + nombreOriginal);
             return ResponseEntity.ok(respuesta);
-        } catch (Exception e) {
+                    } catch (Exception e) {
             System.err.println("❌ [INSCRIPCIONES] Error al subir PDF: " + e.getMessage());
             e.printStackTrace();
             Map<String, Object> error = new HashMap<>();

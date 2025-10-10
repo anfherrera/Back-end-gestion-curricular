@@ -402,6 +402,16 @@ public class GestionarSolicitudCursoVeranoGatewayImplAdapter implements Gestiona
     }
 
     @Override
+    @Transactional(readOnly = true)
+    public SolicitudCursoVeranoIncripcion buscarSolicitudInscripcionPorUsuarioYCurso(Integer idUsuario, Integer idCurso) {
+        SolicitudEntity solicitudEntity = solicitudRepository.buscarSolicitudesPorUsuarioyCursoIns(idUsuario, idCurso);
+        if (solicitudEntity != null && solicitudEntity instanceof SolicitudCursoVeranoInscripcionEntity) {
+            return solicitudMapper.map(solicitudEntity, SolicitudCursoVeranoIncripcion.class);
+        }
+        return null;
+    }
+
+    @Override
     @Transactional
     public SolicitudCursoVeranoPreinscripcion actualizarSolicitudCursoVerano(SolicitudCursoVeranoPreinscripcion solicitud) {
         if (solicitud == null || solicitud.getId_solicitud() == null) {

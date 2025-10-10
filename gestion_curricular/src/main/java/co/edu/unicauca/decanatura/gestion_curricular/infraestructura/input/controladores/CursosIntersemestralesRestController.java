@@ -2,21 +2,19 @@ package co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.cont
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.jdbc.core.JdbcTemplate;
 import jakarta.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;
 
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarCursoOfertadoVeranoCUIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarSolicitudCursoVeranoCUIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarMateriasCUIntPort;
-import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarUsuarioCUIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.GestionarSolicitudCursoVeranoGatewayIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.CursoOfertadoVerano;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.SolicitudCursoVeranoPreinscripcion;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.SolicitudCursoVeranoIncripcion;
-import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Documento;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.EstadoSolicitud;
+import java.util.Date;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Solicitud;
-import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.EstadoCursoOfertado;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Enums.CondicionSolicitudVerano;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.DTORespuesta.CursosOfertadosDTORespuesta;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.DTORespuesta.SolicitudCursoVeranoPreinscripcionDTORespuesta;
@@ -29,8 +27,6 @@ import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.mappe
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.servicios.InscripcionService;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.entidades.SolicitudEntity;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.repositorios.SolicitudRepositoryInt;
-import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarUsuarioCUIntPort;
-import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Usuario;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.repositorios.CursoOfertadoVeranoRepositoryInt;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.repositorios.EstadoCursoOfertadoRepositoryInt;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.entidades.CursoOfertadoVeranoEntity;
@@ -41,7 +37,6 @@ import java.util.Map;
 import java.util.HashMap;
 import java.util.ArrayList;
 import java.util.stream.Collectors;
-import java.io.UnsupportedEncodingException;
 
 @RestController
 @RequestMapping("/api/cursos-intersemestrales")
@@ -56,9 +51,7 @@ public class CursosIntersemestralesRestController {
     private final SolicitudCursoDeVeranoPreinscripcionMapperDominio solicitudMapper;
     private final InscripcionService inscripcionService;
     private final SolicitudRepositoryInt solicitudRepository;
-    private final GestionarUsuarioCUIntPort usuarioCU;
     private final CursoOfertadoVeranoRepositoryInt cursoRepository;
-    private final JdbcTemplate jdbcTemplate;
     private final EstadoCursoOfertadoRepositoryInt estadoRepository;
 
     /**
@@ -197,6 +190,129 @@ public class CursosIntersemestralesRestController {
                     .collect(Collectors.toList());
             return ResponseEntity.ok(respuesta);
         } catch (Exception e) {
+            return ResponseEntity.internalServerError().build();
+        }
+    }
+
+    /**
+     * Endpoint de debug para verificar preinscripciones en la base de datos
+     * GET /api/cursos-intersemestrales/debug/preinscripciones/{usuarioId}/{cursoId}
+     */
+    @GetMapping("/debug/preinscripciones/{usuarioId}/{cursoId}")
+    public ResponseEntity<Map<String, Object>> debugPreinscripciones(
+            @PathVariable Integer usuarioId, @PathVariable Integer cursoId) {
+        try {
+            System.out.println("🔍 [DEBUG] Verificando preinscripciones en BD para usuario: " + usuarioId + ", curso: " + cursoId);
+            
+            Map<String, Object> resultado = new HashMap<>();
+            
+            // 1. Buscar por consulta directa
+            Solicitud preinscripcionDirecta = solicitudGateway.buscarSolicitudesPorUsuarioYCursoPre(usuarioId, cursoId);
+            resultado.put("preinscripcion_directa", preinscripcionDirecta != null ? "ENCONTRADA" : "NO_ENCONTRADA");
+            
+            if (preinscripcionDirecta != null) {
+                resultado.put("preinscripcion_directa_id", preinscripcionDirecta.getId_solicitud());
+                if (preinscripcionDirecta instanceof SolicitudCursoVeranoPreinscripcion) {
+                    SolicitudCursoVeranoPreinscripcion preinscripcion = (SolicitudCursoVeranoPreinscripcion) preinscripcionDirecta;
+                    String estadoActual = "Sin estado";
+                    if (preinscripcion.getEstadosSolicitud() != null && !preinscripcion.getEstadosSolicitud().isEmpty()) {
+                        estadoActual = preinscripcion.getEstadosSolicitud()
+                            .get(preinscripcion.getEstadosSolicitud().size() - 1).getEstado_actual();
+                    }
+                    resultado.put("preinscripcion_directa_estado", estadoActual);
+                }
+            }
+            
+            // 2. Buscar todas las preinscripciones del usuario
+            List<SolicitudCursoVeranoPreinscripcion> preinscripcionesUsuario = solicitudCU.buscarSolicitudesPorUsuario(usuarioId);
+            resultado.put("total_preinscripciones_usuario", preinscripcionesUsuario.size());
+            
+            List<Map<String, Object>> preinscripcionesDetalle = new ArrayList<>();
+            for (SolicitudCursoVeranoPreinscripcion preinscripcion : preinscripcionesUsuario) {
+                Map<String, Object> detalle = new HashMap<>();
+                detalle.put("id", preinscripcion.getId_solicitud());
+                detalle.put("usuario", preinscripcion.getObjUsuario() != null ? preinscripcion.getObjUsuario().getId_usuario() : null);
+                detalle.put("curso", preinscripcion.getObjCursoOfertadoVerano() != null ? preinscripcion.getObjCursoOfertadoVerano().getId_curso() : null);
+                
+                String estadoActual = "Sin estado";
+                if (preinscripcion.getEstadosSolicitud() != null && !preinscripcion.getEstadosSolicitud().isEmpty()) {
+                    estadoActual = preinscripcion.getEstadosSolicitud()
+                        .get(preinscripcion.getEstadosSolicitud().size() - 1).getEstado_actual();
+                }
+                detalle.put("estado", estadoActual);
+                preinscripcionesDetalle.add(detalle);
+            }
+            resultado.put("preinscripciones_detalle", preinscripcionesDetalle);
+            
+            return ResponseEntity.ok(resultado);
+            
+        } catch (Exception e) {
+            System.err.println("❌ [DEBUG] Error: " + e.getMessage());
+            e.printStackTrace();
+            Map<String, Object> error = new HashMap<>();
+            error.put("error", e.getMessage());
+            return ResponseEntity.internalServerError().body(error);
+        }
+    }
+
+    /**
+     * Obtener preinscripciones de un usuario específico (endpoint que espera el frontend)
+     * GET /api/cursos-intersemestrales/preinscripciones/usuario/{id}
+     */
+    @GetMapping("/preinscripciones/usuario/{id}")
+    public ResponseEntity<List<Map<String, Object>>> obtenerPreinscripcionesPorUsuario(
+            @Min(value = 1) @PathVariable Integer id) {
+        try {
+            System.out.println("🔍 [PREINSCRIPCIONES] Obteniendo preinscripciones para usuario ID: " + id);
+            
+            List<Map<String, Object>> preinscripciones = new ArrayList<>();
+            
+            // Obtener preinscripciones reales de la base de datos
+            List<SolicitudCursoVeranoPreinscripcion> preinscripcionesReales = solicitudCU.buscarSolicitudesPorUsuario(id);
+            
+            System.out.println("🔍 [PREINSCRIPCIONES] Preinscripciones encontradas: " + preinscripcionesReales.size());
+            
+            for (SolicitudCursoVeranoPreinscripcion preinscripcion : preinscripcionesReales) {
+                Map<String, Object> preinscripcionMap = new HashMap<>();
+                preinscripcionMap.put("id", preinscripcion.getId_solicitud());
+                preinscripcionMap.put("fecha", preinscripcion.getFecha_registro_solicitud());
+                preinscripcionMap.put("estado", preinscripcion.getEstadosSolicitud() != null && !preinscripcion.getEstadosSolicitud().isEmpty() 
+                    ? preinscripcion.getEstadosSolicitud().get(preinscripcion.getEstadosSolicitud().size() - 1).getEstado_actual() : "Enviado");
+                preinscripcionMap.put("tipo", "Preinscripción");
+                preinscripcionMap.put("estudianteId", preinscripcion.getObjUsuario().getId_usuario());
+                
+                // Información del curso
+                if (preinscripcion.getObjCursoOfertadoVerano() != null) {
+                    preinscripcionMap.put("cursoId", preinscripcion.getObjCursoOfertadoVerano().getId_curso());
+                    if (preinscripcion.getObjCursoOfertadoVerano().getObjMateria() != null) {
+                        preinscripcionMap.put("cursoNombre", preinscripcion.getObjCursoOfertadoVerano().getObjMateria().getNombre());
+                    }
+                }
+                
+                // Acciones disponibles basadas en el estado
+                List<String> accionesDisponibles = new ArrayList<>();
+                String estadoActual = preinscripcion.getEstadosSolicitud() != null && !preinscripcion.getEstadosSolicitud().isEmpty() 
+                    ? preinscripcion.getEstadosSolicitud().get(preinscripcion.getEstadosSolicitud().size() - 1).getEstado_actual() : "Enviado";
+                
+                if ("Aprobado".equals(estadoActual)) {
+                    accionesDisponibles.add("inscribirse");
+                } else if ("Rechazado".equals(estadoActual)) {
+                    accionesDisponibles.add("ver_motivo");
+                } else {
+                    accionesDisponibles.add("esperando_respuesta");
+                }
+                
+                preinscripcionMap.put("accionesDisponibles", accionesDisponibles);
+                
+                preinscripciones.add(preinscripcionMap);
+            }
+            
+            System.out.println("✅ [PREINSCRIPCIONES] Respuesta preparada con " + preinscripciones.size() + " preinscripciones");
+            return ResponseEntity.ok(preinscripciones);
+            
+        } catch (Exception e) {
+            System.err.println("❌ [PREINSCRIPCIONES] Error: " + e.getMessage());
+            e.printStackTrace();
             return ResponseEntity.internalServerError().build();
         }
     }
@@ -430,9 +546,9 @@ public class CursosIntersemestralesRestController {
         try {
             System.out.println("DEBUG DEBUG: Verificando usuarios disponibles...");
             
-            // Buscar usuarios en la base de datos usando el caso de uso correcto
+            // Buscar usuarios en la base de datos - implementación temporal
             List<co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Usuario> usuarios = 
-                usuarioCU.listarUsuarios(); // Listar todos los usuarios disponibles
+                new ArrayList<>(); // TODO: Implementar búsqueda real de usuarios
             
             Map<String, Object> respuesta = new HashMap<>();
             respuesta.put("mensaje", "Usuarios encontrados");
@@ -532,17 +648,29 @@ public class CursosIntersemestralesRestController {
     @PostMapping("/cursos-verano/preinscripciones")
     public ResponseEntity<Map<String, Object>> crearPreinscripcion(@RequestBody PreinscripcionCursoVeranoDTOPeticion peticion) {
         try {
-            System.out.println("DEBUG DEBUG: Recibiendo preinscripción:");
+            System.out.println("📝 [PREINSCRIPCION] Recibiendo preinscripción:");
             System.out.println("  - ID Usuario: " + peticion.getIdUsuario());
             System.out.println("  - ID Curso: " + peticion.getIdCurso());
             System.out.println("  - Nombre Solicitud: " + peticion.getNombreSolicitud());
+            System.out.println("  - Condición: " + peticion.getCondicion());
             
             // Mapear el DTO a nuestro modelo de dominio
             SolicitudCursoVeranoPreinscripcion solicitudDominio = new SolicitudCursoVeranoPreinscripcion();
             solicitudDominio.setNombre_estudiante("Estudiante"); // Valor por defecto
             solicitudDominio.setCodigo_estudiante("EST001"); // Valor por defecto
             solicitudDominio.setObservacion(peticion.getNombreSolicitud());
-            solicitudDominio.setCodicion_solicitud(CondicionSolicitudVerano.Primera_Vez); // Valor por defecto
+            
+            // Usar la condición del frontend o valor por defecto
+            if (peticion.getCondicion() != null && !peticion.getCondicion().trim().isEmpty()) {
+                try {
+                    solicitudDominio.setCodicion_solicitud(CondicionSolicitudVerano.valueOf(peticion.getCondicion()));
+                } catch (IllegalArgumentException e) {
+                    System.out.println("⚠️ [PREINSCRIPCION] Condición inválida: " + peticion.getCondicion() + ", usando Primera_Vez");
+                    solicitudDominio.setCodicion_solicitud(CondicionSolicitudVerano.Primera_Vez);
+                }
+            } else {
+                solicitudDominio.setCodicion_solicitud(CondicionSolicitudVerano.Primera_Vez);
+            }
             
             System.out.println("DEBUG DEBUG: Solicitud dominio creada");
             
@@ -608,58 +736,157 @@ public class CursosIntersemestralesRestController {
     @PostMapping("/cursos-verano/inscripciones")
     public ResponseEntity<Map<String, Object>> crearInscripcion(@RequestBody PreinscripcionCursoVeranoDTOPeticion peticion) {
         try {
-            System.out.println("DEBUG DEBUG: Recibiendo inscripción:");
-            System.out.println("  - ID Usuario: " + peticion.getIdUsuario());
-            System.out.println("  - ID Curso: " + peticion.getIdCurso());
-            System.out.println("  - Nombre Solicitud: " + peticion.getNombreSolicitud());
+            System.out.println("🔍 DEBUG - Recibiendo inscripción:");
+            System.out.println("🔍 DEBUG - idUsuario: " + peticion.getIdUsuario());
+            System.out.println("🔍 DEBUG - idCurso: " + peticion.getIdCurso());
+            System.out.println("🔍 DEBUG - nombreSolicitud: " + peticion.getNombreSolicitud());
             
-            // Por ahora, crear una respuesta exitosa y preparar para guardado real
-            System.out.println("DEBUG DEBUG: Procesando inscripción para guardar en XAMPP...");
+            // 1. Verificar que existe una preinscripción válida para este usuario y curso
+            System.out.println("🔍 DEBUG - Buscando preinscripción aprobada...");
             
-            // Preparar datos para inserción manual en XAMPP
-            Map<String, Object> datosInscripcion = new HashMap<>();
-            datosInscripcion.put("nombre_solicitud", peticion.getNombreSolicitud());
-            datosInscripcion.put("fecha_creacion", new java.util.Date());
-            datosInscripcion.put("nombre_estudiante", "Estudiante");
-            datosInscripcion.put("observacion", peticion.getNombreSolicitud());
-            datosInscripcion.put("codicion_solicitud", "Primera_Vez");
-            datosInscripcion.put("idfkUsuario", peticion.getIdUsuario());
-            datosInscripcion.put("idfkCurso", peticion.getIdCurso());
-            datosInscripcion.put("idfkEstado", 1);
+            // Buscar preinscripción aprobada usando consulta específica
+            System.out.println("🔍 DEBUG - Usando consulta específica para buscar preinscripción...");
             
-            System.out.println("✅ Datos de inscripción preparados para XAMPP:");
-            System.out.println("  - Nombre: " + peticion.getNombreSolicitud());
-            System.out.println("  - Usuario: " + peticion.getIdUsuario());
-            System.out.println("  - Curso: " + peticion.getIdCurso());
+            // Primero intentar buscar directamente por usuario y curso
+            Solicitud preinscripcionExistente = solicitudGateway.buscarSolicitudesPorUsuarioYCursoPre(peticion.getIdUsuario(), peticion.getIdCurso());
+            System.out.println("🔍 DEBUG - Preinscripción encontrada por consulta directa: " + (preinscripcionExistente != null ? "SÍ" : "NO"));
             
-            // SQL para insertar manualmente en XAMPP
-            String sqlManual = "INSERT INTO solicitudes_cursos_verano_inscripcion " +
-                             "(nombre_solicitud, fecha_creacion, nombre_estudiante, observacion, codicion_solicitud, idfkUsuario, idfkCurso, idfkEstado) " +
-                             "VALUES ('" + peticion.getNombreSolicitud() + "', NOW(), 'Estudiante', '" + 
-                             peticion.getNombreSolicitud() + "', 'Primera_Vez', " + peticion.getIdUsuario() + 
-                             ", " + peticion.getIdCurso() + ", 1);";
+            SolicitudCursoVeranoPreinscripcion preinscripcionAprobada = null;
             
-            System.out.println("📋 SQL para ejecutar en XAMPP:");
-            System.out.println(sqlManual);
+            if (preinscripcionExistente != null && preinscripcionExistente instanceof SolicitudCursoVeranoPreinscripcion) {
+                preinscripcionAprobada = (SolicitudCursoVeranoPreinscripcion) preinscripcionExistente;
+                System.out.println("🔍 DEBUG - Preinscripción encontrada: ID=" + preinscripcionAprobada.getId_solicitud());
+                
+                // Verificar si está aprobada
+                String estadoActual = "Sin estado";
+                boolean estaAprobada = false;
+                
+                if (preinscripcionAprobada.getEstadosSolicitud() != null && !preinscripcionAprobada.getEstadosSolicitud().isEmpty()) {
+                    estadoActual = preinscripcionAprobada.getEstadosSolicitud()
+                        .get(preinscripcionAprobada.getEstadosSolicitud().size() - 1).getEstado_actual();
+                    estaAprobada = "Aprobada".equals(estadoActual) || "Aprobado".equals(estadoActual);
+                }
+                
+                System.out.println("🔍 DEBUG - Estado actual: '" + estadoActual + "', Está aprobada: " + estaAprobada);
+                
+                if (!estaAprobada) {
+                    preinscripcionAprobada = null;
+                    System.out.println("❌ DEBUG - Preinscripción encontrada pero NO está aprobada");
+                }
+            } else {
+                System.out.println("❌ DEBUG - No se encontró preinscripción para usuario " + peticion.getIdUsuario() + " y curso " + peticion.getIdCurso());
+                
+                // Fallback: buscar todas las preinscripciones del usuario
+                System.out.println("🔍 DEBUG - Intentando fallback: buscar todas las preinscripciones del usuario...");
+                List<SolicitudCursoVeranoPreinscripcion> preinscripciones = solicitudCU.buscarSolicitudesPorUsuario(peticion.getIdUsuario());
+                System.out.println("🔍 DEBUG - Preinscripciones encontradas: " + preinscripciones.size());
+                
+                for (SolicitudCursoVeranoPreinscripcion preinscripcion : preinscripciones) {
+                    System.out.println("🔍 DEBUG - Preinscripción: ID=" + preinscripcion.getId_solicitud() + 
+                                      ", Usuario=" + (preinscripcion.getObjUsuario() != null ? preinscripcion.getObjUsuario().getId_usuario() : "NULL") + 
+                                      ", Curso=" + (preinscripcion.getObjCursoOfertadoVerano() != null ? preinscripcion.getObjCursoOfertadoVerano().getId_curso() : "NULL"));
+                    
+                    // Verificar si coincide con el usuario y curso
+                    boolean coincideUsuario = preinscripcion.getObjUsuario() != null && 
+                        preinscripcion.getObjUsuario().getId_usuario().equals(peticion.getIdUsuario());
+                    boolean coincideCurso = preinscripcion.getObjCursoOfertadoVerano() != null &&
+                        preinscripcion.getObjCursoOfertadoVerano().getId_curso().equals(peticion.getIdCurso());
+                    
+                    System.out.println("🔍 DEBUG - Coincide usuario: " + coincideUsuario + ", Coincide curso: " + coincideCurso);
+                    
+                    if (coincideUsuario && coincideCurso) {
+                        // Verificar si está aprobada
+                        String estadoActual = "Sin estado";
+                        boolean estaAprobada = false;
+                        
+                        if (preinscripcion.getEstadosSolicitud() != null && !preinscripcion.getEstadosSolicitud().isEmpty()) {
+                            estadoActual = preinscripcion.getEstadosSolicitud()
+                                .get(preinscripcion.getEstadosSolicitud().size() - 1).getEstado_actual();
+                            estaAprobada = "Aprobada".equals(estadoActual) || "Aprobado".equals(estadoActual);
+                        }
+                        
+                        System.out.println("🔍 DEBUG - Estado actual: '" + estadoActual + "', Está aprobada: " + estaAprobada);
+                        
+                        if (estaAprobada) {
+                            preinscripcionAprobada = preinscripcion;
+                            System.out.println("✅ DEBUG - Preinscripción aprobada encontrada en fallback!");
+                            break;
+                        }
+                    }
+                }
+            }
             
-            // Respuesta simplificada para el frontend
+            if (preinscripcionAprobada == null) {
+                System.out.println("❌ DEBUG - No se encontró preinscripción aprobada");
+                Map<String, Object> error = new HashMap<>();
+                error.put("error", "No se encontró una preinscripción aprobada para este usuario y curso");
+                error.put("codigo", "PREINSCRIPCION_NO_APROBADA");
+                return ResponseEntity.badRequest().body(error);
+            }
+            
+            System.out.println("✅ [INSCRIPCION] Preinscripción aprobada encontrada ID: " + preinscripcionAprobada.getId_solicitud());
+            
+            // 2. Crear la inscripción usando el modelo de dominio
+            System.out.println("📝 [INSCRIPCION] Creando inscripción...");
+            
+            SolicitudCursoVeranoIncripcion nuevaInscripcion = new SolicitudCursoVeranoIncripcion();
+            nuevaInscripcion.setNombre_solicitud(peticion.getNombreSolicitud());
+            nuevaInscripcion.setFecha_registro_solicitud(new java.util.Date());
+            nuevaInscripcion.setObservacion("Inscripción creada desde preinscripción aprobada");
+            nuevaInscripcion.setObjUsuario(preinscripcionAprobada.getObjUsuario());
+            nuevaInscripcion.setObjCursoOfertadoVerano(preinscripcionAprobada.getObjCursoOfertadoVerano());
+            
+            // Campos obligatorios que faltaban
+            nuevaInscripcion.setNombre_estudiante("Estudiante"); // Valor por defecto
+            nuevaInscripcion.setCodicion_solicitud(CondicionSolicitudVerano.Primera_Vez); // Valor por defecto
+            
+            // 3. Guardar la inscripción en la base de datos
+            System.out.println("💾 [INSCRIPCION] Guardando en base de datos...");
+            SolicitudCursoVeranoIncripcion inscripcionGuardada = solicitudGateway.crearSolicitudCursoVeranoInscripcion(nuevaInscripcion);
+            
+            if (inscripcionGuardada == null || inscripcionGuardada.getId_solicitud() == null) {
+                System.out.println("❌ [INSCRIPCION] Error al guardar inscripción en BD");
+                Map<String, Object> error = new HashMap<>();
+                error.put("error", "Error al guardar la inscripción en la base de datos");
+                return ResponseEntity.internalServerError().body(error);
+            }
+            
+            System.out.println("✅ [INSCRIPCION] Inscripción guardada exitosamente ID: " + inscripcionGuardada.getId_solicitud());
+            
+            // 4. Asociar estudiante al curso en la tabla de relación
+            System.out.println("🔗 [INSCRIPCION] Asociando estudiante al curso...");
+            try {
+                int resultado = cursoRepository.insertarCursoEstudiante(
+                    peticion.getIdCurso(),
+                    peticion.getIdUsuario()
+                );
+                
+                if (resultado == 1) {
+                    System.out.println("✅ [INSCRIPCION] Estudiante asociado exitosamente al curso");
+                } else {
+                    System.out.println("⚠️ [INSCRIPCION] El estudiante ya estaba asociado al curso");
+                }
+            } catch (Exception e) {
+                System.out.println("⚠️ [INSCRIPCION] Error asociando estudiante al curso: " + e.getMessage());
+                // No fallar la operación por esto
+            }
+            
+            // 5. Preparar respuesta exitosa
             Map<String, Object> respuesta = new HashMap<>();
             respuesta.put("success", true);
             respuesta.put("message", "Inscripción creada exitosamente");
-            respuesta.put("id_solicitud", System.currentTimeMillis()); // ID temporal
+            respuesta.put("id_solicitud", inscripcionGuardada.getId_solicitud());
             respuesta.put("id_usuario", peticion.getIdUsuario());
             respuesta.put("id_curso", peticion.getIdCurso());
             respuesta.put("nombre_solicitud", peticion.getNombreSolicitud());
-            respuesta.put("timestamp", new java.util.Date());
+            respuesta.put("fecha_inscripcion", inscripcionGuardada.getFecha_registro_solicitud());
+            respuesta.put("estado", "Inscrito");
             
-            // Log para debugging (no se envía al frontend)
-            System.out.println("📋 SQL para XAMPP: " + sqlManual);
-            System.out.println("📊 Datos preparados: " + datosInscripcion);
-            
+            System.out.println("✅ [INSCRIPCION] Inscripción completada exitosamente");
             return ResponseEntity.ok(respuesta);
             
         } catch (Exception e) {
-            System.out.println("ERROR ERROR: " + e.getMessage());
+            System.out.println("❌ [INSCRIPCION] Error: " + e.getMessage());
             e.printStackTrace();
             Map<String, Object> error = new HashMap<>();
             error.put("error", "Error interno del servidor: " + e.getMessage());
@@ -2086,6 +2313,475 @@ public class CursosIntersemestralesRestController {
     }
 
     /**
+     * Obtener estudiantes elegibles para inscripción (con preinscripción aprobada y pago validado)
+     * GET /api/cursos-intersemestrales/inscripciones/estudiantes-elegibles/{idCurso}
+     */
+    @GetMapping("/inscripciones/estudiantes-elegibles/{idCurso}")
+    public ResponseEntity<List<Map<String, Object>>> getEstudiantesElegiblesParaInscripcion(
+            @PathVariable Long idCurso) {
+        try {
+            System.out.println("DEBUG: Obteniendo estudiantes elegibles para inscripción en curso ID: " + idCurso);
+            
+            List<Map<String, Object>> estudiantesElegibles = new ArrayList<>();
+            
+            // 1. Obtener todas las preinscripciones del curso
+            List<SolicitudCursoVeranoPreinscripcion> preinscripciones = solicitudCU.buscarPreinscripcionesPorCurso(idCurso.intValue());
+            System.out.println("DEBUG: Total preinscripciones encontradas: " + preinscripciones.size());
+            
+            // 2. Filtrar solo las preinscripciones APROBADAS
+            List<SolicitudCursoVeranoPreinscripcion> preinscripcionesAprobadas = new ArrayList<>();
+            
+            for (SolicitudCursoVeranoPreinscripcion preinscripcion : preinscripciones) {
+                System.out.println("DEBUG: Analizando preinscripción ID: " + preinscripcion.getId_solicitud());
+                
+                if (preinscripcion.getEstadosSolicitud() == null || preinscripcion.getEstadosSolicitud().isEmpty()) {
+                    System.out.println("DEBUG: Preinscripción ID " + preinscripcion.getId_solicitud() + " NO tiene estados");
+                    continue;
+                }
+                
+                String estadoActual = preinscripcion.getEstadosSolicitud()
+                    .get(preinscripcion.getEstadosSolicitud().size() - 1).getEstado_actual();
+                System.out.println("DEBUG: Preinscripción ID " + preinscripcion.getId_solicitud() + " tiene estado: '" + estadoActual + "'");
+                
+                if ("Aprobado".equals(estadoActual)) {
+                    preinscripcionesAprobadas.add(preinscripcion);
+                    System.out.println("✅ Preinscripción ID " + preinscripcion.getId_solicitud() + " APROBADA - Usuario: " + 
+                        (preinscripcion.getObjUsuario() != null ? preinscripcion.getObjUsuario().getId_usuario() : "NULL"));
+                } else {
+                    System.out.println("❌ Preinscripción ID " + preinscripcion.getId_solicitud() + " NO aprobada (estado: " + estadoActual + ")");
+                }
+            }
+            
+            System.out.println("DEBUG: Preinscripciones aprobadas: " + preinscripcionesAprobadas.size());
+            
+            // 3. Para cada preinscripción aprobada, verificar si tiene inscripción con pago validado
+            // MODIFICADO: También incluir estudiantes con solo preinscripción aprobada (sin inscripción formal)
+            for (SolicitudCursoVeranoPreinscripcion preinscripcionAprobada : preinscripcionesAprobadas) {
+                try {
+                    System.out.println("DEBUG: Procesando preinscripción aprobada para usuario ID: " + 
+                        preinscripcionAprobada.getObjUsuario().getId_usuario() + " en curso ID: " + idCurso);
+                    
+                    // Buscar inscripción del estudiante para este curso
+                    SolicitudCursoVeranoIncripcion inscripcion = solicitudGateway.buscarSolicitudInscripcionPorUsuarioYCurso(
+                        preinscripcionAprobada.getObjUsuario().getId_usuario(), 
+                        idCurso.intValue()
+                    );
+                    
+                    System.out.println("DEBUG: Resultado búsqueda inscripción: " + (inscripcion != null ? "ENCONTRADA" : "NO ENCONTRADA"));
+                    
+                    boolean incluirEstudiante = false;
+                    String motivoInclusion = "";
+                    
+                    // Si existe inscripción, verificar estado del pago
+                    if (inscripcion != null) {
+                        String estadoInscripcion = "Pendiente";
+                        if (inscripcion.getEstadosSolicitud() != null && !inscripcion.getEstadosSolicitud().isEmpty()) {
+                            estadoInscripcion = inscripcion.getEstadosSolicitud()
+                                .get(inscripcion.getEstadosSolicitud().size() - 1).getEstado_actual();
+                        }
+                        
+                        System.out.println("DEBUG: Inscripción ID " + inscripcion.getId_solicitud() + " tiene estado: '" + estadoInscripcion + "'");
+                        
+                        // Incluir si el pago está validado
+                        if ("Pago_Validado".equals(estadoInscripcion)) {
+                            incluirEstudiante = true;
+                            motivoInclusion = "Pago validado";
+                            System.out.println("✅ PAGO VALIDADO para usuario ID: " + preinscripcionAprobada.getObjUsuario().getId_usuario());
+                        } else {
+                            System.out.println("❌ Pago NO validado para usuario ID: " + 
+                                preinscripcionAprobada.getObjUsuario().getId_usuario() + " (estado: " + estadoInscripcion + ")");
+                        }
+                    } else {
+                        // NO hay inscripción formal, pero la preinscripción está aprobada
+                        // En tu sistema, esto significa que el estudiante está listo para inscripción directa
+                        incluirEstudiante = true;
+                        motivoInclusion = "Preinscripción aprobada (sin inscripción formal)";
+                        System.out.println("✅ PREINSCRIPCIÓN APROBADA para usuario ID: " + 
+                            preinscripcionAprobada.getObjUsuario().getId_usuario() + " - Listo para inscripción");
+                    }
+                    
+                    if (incluirEstudiante) {
+                        Map<String, Object> estudianteElegible = new HashMap<>();
+                        
+                        // Información del estudiante
+                        if (preinscripcionAprobada.getObjUsuario() != null) {
+                            Map<String, Object> usuarioMap = new HashMap<>();
+                            usuarioMap.put("id_usuario", preinscripcionAprobada.getObjUsuario().getId_usuario());
+                            usuarioMap.put("nombre_completo", preinscripcionAprobada.getObjUsuario().getNombre_completo());
+                            usuarioMap.put("correo", preinscripcionAprobada.getObjUsuario().getCorreo());
+                            usuarioMap.put("codigo", preinscripcionAprobada.getObjUsuario().getCodigo());
+                            usuarioMap.put("codigo_estudiante", preinscripcionAprobada.getCodigo_estudiante());
+                            
+                            estudianteElegible.put("objUsuario", usuarioMap);
+                        }
+                        
+                        // Información de la preinscripción
+                        estudianteElegible.put("id_preinscripcion", preinscripcionAprobada.getId_solicitud());
+                        estudianteElegible.put("fecha_preinscripcion", preinscripcionAprobada.getFecha_registro_solicitud());
+                        estudianteElegible.put("estado_preinscripcion", "Aprobado");
+                        estudianteElegible.put("motivo_inclusion", motivoInclusion);
+                        
+                        // Información de la inscripción (si existe)
+                        if (inscripcion != null) {
+                            estudianteElegible.put("id_inscripcion", inscripcion.getId_solicitud());
+                            estudianteElegible.put("fecha_inscripcion", inscripcion.getFecha_registro_solicitud());
+                            estudianteElegible.put("estado_inscripcion", inscripcion.getEstadosSolicitud() != null && !inscripcion.getEstadosSolicitud().isEmpty() ? 
+                                inscripcion.getEstadosSolicitud().get(inscripcion.getEstadosSolicitud().size() - 1).getEstado_actual() : "Pendiente");
+                        } else {
+                            estudianteElegible.put("id_inscripcion", null);
+                            estudianteElegible.put("fecha_inscripcion", null);
+                            estudianteElegible.put("estado_inscripcion", "Sin inscripción formal");
+                        }
+                        
+                        // Información del curso
+                        if (preinscripcionAprobada.getObjCursoOfertadoVerano() != null) {
+                            CursosOfertadosDTORespuesta cursoDTO = cursoMapper.mappearDeCursoOfertadoARespuesta(preinscripcionAprobada.getObjCursoOfertadoVerano());
+                            
+                            Map<String, Object> cursoMap = new HashMap<>();
+                            cursoMap.put("id_curso", cursoDTO.getId_curso());
+                            cursoMap.put("nombre_curso", cursoDTO.getNombre_curso());
+                            cursoMap.put("codigo_curso", cursoDTO.getCodigo_curso());
+                            cursoMap.put("descripcion", cursoDTO.getDescripcion());
+                            cursoMap.put("fecha_inicio", cursoDTO.getFecha_inicio());
+                            cursoMap.put("fecha_fin", cursoDTO.getFecha_fin());
+                            cursoMap.put("cupo_maximo", cursoDTO.getCupo_maximo());
+                            cursoMap.put("cupo_estimado", cursoDTO.getCupo_estimado());
+                            cursoMap.put("cupo_disponible", cursoDTO.getCupo_disponible());
+                            cursoMap.put("espacio_asignado", cursoDTO.getEspacio_asignado());
+                            cursoMap.put("estado", cursoDTO.getEstado());
+                            cursoMap.put("objMateria", cursoDTO.getObjMateria());
+                            cursoMap.put("objDocente", cursoDTO.getObjDocente());
+                            
+                            estudianteElegible.put("objCurso", cursoMap);
+                        }
+                        
+                        // Información del archivo de pago
+                        Map<String, Object> archivoPago = new HashMap<>();
+                        if (inscripcion != null) {
+                            archivoPago.put("id_documento", "pendiente_busqueda");
+                            archivoPago.put("nombre", "Comprobante de pago validado");
+                            archivoPago.put("url", "/uploads/comprobantes/");
+                            archivoPago.put("fecha", inscripcion.getFecha_registro_solicitud());
+                        } else {
+                            archivoPago.put("id_documento", null);
+                            archivoPago.put("nombre", "Sin comprobante (preinscripción aprobada)");
+                            archivoPago.put("url", null);
+                            archivoPago.put("fecha", null);
+                        }
+                        estudianteElegible.put("archivoPago", archivoPago);
+                        
+                        estudiantesElegibles.add(estudianteElegible);
+                        
+                        System.out.println("✅ Estudiante elegible encontrado: " + 
+                            preinscripcionAprobada.getObjUsuario().getNombre_completo() + 
+                            " (ID: " + preinscripcionAprobada.getObjUsuario().getId_usuario() + ") - Motivo: " + motivoInclusion);
+                    }
+                } catch (Exception e) {
+                    System.out.println("WARNING: Error procesando preinscripción ID " + 
+                        preinscripcionAprobada.getId_solicitud() + ": " + e.getMessage());
+                    e.printStackTrace();
+                }
+            }
+            
+            System.out.println("SUCCESS: Estudiantes elegibles para inscripción: " + estudiantesElegibles.size());
+            
+            return ResponseEntity.ok(estudiantesElegibles);
+            
+        } catch (Exception e) {
+            System.out.println("ERROR: Error obteniendo estudiantes elegibles: " + e.getMessage());
+            e.printStackTrace();
+            return ResponseEntity.status(500).build();
+        }
+    }
+
+    /**
+     * Endpoint temporal para debug - mostrar TODAS las preinscripciones sin filtros
+     * GET /api/cursos-intersemestrales/debug/preinscripciones/curso/{idCurso}
+     */
+    @GetMapping("/debug/preinscripciones/curso/{idCurso}")
+    public ResponseEntity<List<Map<String, Object>>> debugPreinscripcionesPorCurso(
+            @PathVariable Long idCurso) {
+        try {
+            System.out.println("🔍 DEBUG: Obteniendo TODAS las preinscripciones para curso ID: " + idCurso);
+            
+            List<Map<String, Object>> debugInfo = new ArrayList<>();
+            
+            // Obtener todas las preinscripciones del curso
+            List<SolicitudCursoVeranoPreinscripcion> preinscripciones = solicitudCU.buscarPreinscripcionesPorCurso(idCurso.intValue());
+            System.out.println("🔍 DEBUG: Total preinscripciones encontradas: " + preinscripciones.size());
+            
+            for (SolicitudCursoVeranoPreinscripcion preinscripcion : preinscripciones) {
+                Map<String, Object> debugMap = new HashMap<>();
+                
+                debugMap.put("id_preinscripcion", preinscripcion.getId_solicitud());
+                debugMap.put("usuario_id", preinscripcion.getObjUsuario() != null ? preinscripcion.getObjUsuario().getId_usuario() : "NULL");
+                debugMap.put("usuario_nombre", preinscripcion.getObjUsuario() != null ? preinscripcion.getObjUsuario().getNombre_completo() : "NULL");
+                debugMap.put("curso_id", preinscripcion.getObjCursoOfertadoVerano() != null ? preinscripcion.getObjCursoOfertadoVerano().getId_curso() : "NULL");
+                
+                // Estados
+                if (preinscripcion.getEstadosSolicitud() != null && !preinscripcion.getEstadosSolicitud().isEmpty()) {
+                    List<String> estados = new ArrayList<>();
+                    for (int i = 0; i < preinscripcion.getEstadosSolicitud().size(); i++) {
+                        String estado = preinscripcion.getEstadosSolicitud().get(i).getEstado_actual();
+                        String fecha = preinscripcion.getEstadosSolicitud().get(i).getFecha_registro_estado().toString();
+                        estados.add(estado + " (" + fecha + ")");
+                    }
+                    debugMap.put("estados", estados);
+                    debugMap.put("estado_actual", preinscripcion.getEstadosSolicitud().get(preinscripcion.getEstadosSolicitud().size() - 1).getEstado_actual());
+                } else {
+                    debugMap.put("estados", "SIN ESTADOS");
+                    debugMap.put("estado_actual", "SIN ESTADOS");
+                }
+                
+                // Buscar inscripción correspondiente
+                try {
+                    SolicitudCursoVeranoIncripcion inscripcion = solicitudGateway.buscarSolicitudInscripcionPorUsuarioYCurso(
+                        preinscripcion.getObjUsuario().getId_usuario(), 
+                        idCurso.intValue()
+                    );
+                    
+                    if (inscripcion != null) {
+                        debugMap.put("tiene_inscripcion", true);
+                        debugMap.put("inscripcion_id", inscripcion.getId_solicitud());
+                        
+                        if (inscripcion.getEstadosSolicitud() != null && !inscripcion.getEstadosSolicitud().isEmpty()) {
+                            String estadoInscripcion = inscripcion.getEstadosSolicitud()
+                                .get(inscripcion.getEstadosSolicitud().size() - 1).getEstado_actual();
+                            debugMap.put("estado_inscripcion", estadoInscripcion);
+                        } else {
+                            debugMap.put("estado_inscripcion", "SIN ESTADOS");
+                        }
+                    } else {
+                        debugMap.put("tiene_inscripcion", false);
+                        debugMap.put("estado_inscripcion", "NO EXISTE");
+                    }
+                } catch (Exception e) {
+                    debugMap.put("tiene_inscripcion", "ERROR: " + e.getMessage());
+                }
+                
+                debugInfo.add(debugMap);
+            }
+            
+            System.out.println("🔍 DEBUG: Información de debug generada para " + debugInfo.size() + " preinscripciones");
+            
+            return ResponseEntity.ok(debugInfo);
+            
+        } catch (Exception e) {
+            System.out.println("🔍 ERROR: Error en debug: " + e.getMessage());
+            e.printStackTrace();
+            return ResponseEntity.status(500).build();
+        }
+    }
+
+    /**
+     * Aceptar inscripción de estudiante (funcionario acepta inscripción final)
+     * PUT /api/cursos-intersemestrales/inscripciones/{idPreinscripcion}/aceptar
+     */
+    @PutMapping("/inscripciones/{idPreinscripcion}/aceptar")
+    public ResponseEntity<Map<String, Object>> aceptarInscripcionEstudiante(
+            @PathVariable Long idPreinscripcion,
+            @RequestBody Map<String, String> request) {
+        try {
+            System.out.println("🚀 DEBUG: Aceptando inscripción para preinscripción ID: " + idPreinscripcion);
+            System.out.println("🚀 DEBUG: Request body recibido: " + request);
+            
+            String observaciones = request.get("observaciones");
+            if (observaciones == null || observaciones.trim().isEmpty()) {
+                observaciones = "Inscripción aceptada por funcionario";
+            }
+            
+            // 1. Buscar la preinscripción
+            System.out.println("DEBUG: Buscando preinscripción con ID: " + idPreinscripcion.intValue());
+            SolicitudCursoVeranoPreinscripcion preinscripcion = solicitudCU.buscarSolicitudPorId(idPreinscripcion.intValue());
+            System.out.println("DEBUG: Resultado búsqueda preinscripción: " + (preinscripcion != null ? "ENCONTRADA" : "NO ENCONTRADA"));
+            if (preinscripcion == null) {
+                Map<String, Object> error = new HashMap<>();
+                error.put("error", "No se encontró la preinscripción con ID: " + idPreinscripcion);
+                return ResponseEntity.badRequest().body(error);
+            }
+            
+            // 2. Verificar que la preinscripción esté aprobada
+            if (preinscripcion.getEstadosSolicitud() == null || preinscripcion.getEstadosSolicitud().isEmpty()) {
+                Map<String, Object> error = new HashMap<>();
+                error.put("error", "La preinscripción no tiene estados válidos");
+                return ResponseEntity.badRequest().body(error);
+            }
+            
+            String estadoActual = preinscripcion.getEstadosSolicitud()
+                .get(preinscripcion.getEstadosSolicitud().size() - 1).getEstado_actual();
+            
+            if (!"Aprobado".equals(estadoActual)) {
+                Map<String, Object> error = new HashMap<>();
+                error.put("error", "La preinscripción no está aprobada. Estado actual: " + estadoActual);
+                return ResponseEntity.badRequest().body(error);
+            }
+            
+            // 3. Buscar si ya existe una inscripción formal
+            SolicitudCursoVeranoIncripcion inscripcionExistente = solicitudGateway.buscarSolicitudInscripcionPorUsuarioYCurso(
+                preinscripcion.getObjUsuario().getId_usuario(), 
+                preinscripcion.getObjCursoOfertadoVerano().getId_curso()
+            );
+            
+            SolicitudCursoVeranoIncripcion inscripcionFinalizada;
+            
+            if (inscripcionExistente != null) {
+                // Ya existe inscripción, completarla
+                System.out.println("DEBUG: Completando inscripción existente ID: " + inscripcionExistente.getId_solicitud());
+                inscripcionFinalizada = solicitudCU.completarInscripcion(inscripcionExistente.getId_solicitud());
+            } else {
+                // Crear nueva inscripción directamente completada
+                System.out.println("DEBUG: Creando nueva inscripción completada para usuario: " + 
+                    preinscripcion.getObjUsuario().getId_usuario());
+                
+                SolicitudCursoVeranoIncripcion nuevaInscripcion = new SolicitudCursoVeranoIncripcion();
+                nuevaInscripcion.setNombre_solicitud("Inscripción en " + 
+                    preinscripcion.getObjCursoOfertadoVerano().getObjMateria().getNombre());
+                nuevaInscripcion.setFecha_registro_solicitud(new java.util.Date());
+                nuevaInscripcion.setObservacion(observaciones);
+                nuevaInscripcion.setObjUsuario(preinscripcion.getObjUsuario());
+                nuevaInscripcion.setObjCursoOfertadoVerano(preinscripcion.getObjCursoOfertadoVerano());
+                
+                // Crear la inscripción
+                inscripcionFinalizada = solicitudGateway.crearSolicitudCursoVeranoInscripcion(nuevaInscripcion);
+                
+                // Completarla directamente
+                if (inscripcionFinalizada != null) {
+                    inscripcionFinalizada = solicitudCU.completarInscripcion(inscripcionFinalizada.getId_solicitud());
+                }
+            }
+            
+            if (inscripcionFinalizada == null) {
+                Map<String, Object> error = new HashMap<>();
+                error.put("error", "No se pudo completar la inscripción");
+                return ResponseEntity.internalServerError().body(error);
+            }
+            
+            // 4. Insertar en tabla cursosestudiantes (relación Many-to-Many)
+            try {
+                System.out.println("DEBUG: Insertando en tabla cursosestudiantes - Usuario: " + 
+                    preinscripcion.getObjUsuario().getId_usuario() + 
+                    ", Curso: " + preinscripcion.getObjCursoOfertadoVerano().getId_curso());
+                
+                // Usar el repositorio directamente para asociar usuario-curso
+                int resultado = cursoRepository.insertarCursoEstudiante(
+                    preinscripcion.getObjCursoOfertadoVerano().getId_curso(),
+                    preinscripcion.getObjUsuario().getId_usuario()
+                );
+                Boolean asociacionExitosa = (resultado == 1);
+                
+                if (asociacionExitosa) {
+                    System.out.println("✅ Estudiante asociado exitosamente al curso en tabla cursosestudiantes");
+                } else {
+                    System.out.println("⚠️ El estudiante ya estaba asociado al curso o hubo un problema");
+                }
+            } catch (Exception e) {
+                System.out.println("ERROR: Error asociando estudiante al curso: " + e.getMessage());
+                e.printStackTrace();
+                // No fallar la operación por esto, pero logear el error
+            }
+            
+            // 5. Preparar respuesta
+            Map<String, Object> respuesta = new HashMap<>();
+            respuesta.put("success", true);
+            respuesta.put("message", "Inscripción aceptada exitosamente");
+            respuesta.put("id_preinscripcion", idPreinscripcion);
+            respuesta.put("id_inscripcion", inscripcionFinalizada.getId_solicitud());
+            respuesta.put("estudiante_nombre", preinscripcion.getObjUsuario().getNombre_completo());
+            respuesta.put("curso_nombre", preinscripcion.getObjCursoOfertadoVerano().getObjMateria().getNombre());
+            respuesta.put("fecha_aceptacion", new java.util.Date());
+            respuesta.put("observaciones", observaciones);
+            
+            System.out.println("✅ Inscripción aceptada exitosamente para: " + 
+                preinscripcion.getObjUsuario().getNombre_completo() + 
+                " en curso ID: " + preinscripcion.getObjCursoOfertadoVerano().getId_curso());
+            
+            return ResponseEntity.ok(respuesta);
+            
+        } catch (Exception e) {
+            System.out.println("ERROR: Error aceptando inscripción: " + e.getMessage());
+            e.printStackTrace();
+            Map<String, Object> error = new HashMap<>();
+            error.put("error", "Error interno del servidor: " + e.getMessage());
+            return ResponseEntity.internalServerError().body(error);
+        }
+    }
+
+    /**
+     * Rechazar inscripción de estudiante (funcionario rechaza inscripción)
+     * PUT /api/cursos-intersemestrales/inscripciones/{idPreinscripcion}/rechazar
+     */
+    @PutMapping("/inscripciones/{idPreinscripcion}/rechazar")
+    public ResponseEntity<Map<String, Object>> rechazarInscripcionEstudiante(
+            @PathVariable Long idPreinscripcion,
+            @RequestBody Map<String, String> request) {
+        try {
+            System.out.println("DEBUG: Rechazando inscripción para preinscripción ID: " + idPreinscripcion);
+            
+            String motivo = request.get("motivo");
+            if (motivo == null || motivo.trim().isEmpty()) {
+                motivo = "Inscripción rechazada por funcionario";
+            }
+            
+            // 1. Buscar la preinscripción
+            SolicitudCursoVeranoPreinscripcion preinscripcion = solicitudCU.buscarSolicitudPorId(idPreinscripcion.intValue());
+            if (preinscripcion == null) {
+                Map<String, Object> error = new HashMap<>();
+                error.put("error", "No se encontró la preinscripción con ID: " + idPreinscripcion);
+                return ResponseEntity.badRequest().body(error);
+            }
+            
+            // 2. Crear nueva inscripción con estado rechazado
+            SolicitudCursoVeranoIncripcion inscripcionRechazada = new SolicitudCursoVeranoIncripcion();
+            inscripcionRechazada.setNombre_solicitud("Inscripción rechazada en " + 
+                preinscripcion.getObjCursoOfertadoVerano().getObjMateria().getNombre());
+            inscripcionRechazada.setFecha_registro_solicitud(new java.util.Date());
+            inscripcionRechazada.setObservacion(motivo);
+            inscripcionRechazada.setObjUsuario(preinscripcion.getObjUsuario());
+            inscripcionRechazada.setObjCursoOfertadoVerano(preinscripcion.getObjCursoOfertadoVerano());
+            
+            // Crear la inscripción
+            SolicitudCursoVeranoIncripcion inscripcionCreada = solicitudGateway.crearSolicitudCursoVeranoInscripcion(inscripcionRechazada);
+            
+            if (inscripcionCreada == null) {
+                Map<String, Object> error = new HashMap<>();
+                error.put("error", "No se pudo crear la inscripción rechazada");
+                return ResponseEntity.internalServerError().body(error);
+            }
+            
+            // 3. Marcar como rechazada (esto requeriría un método específico, por ahora usamos validarPago con false)
+            SolicitudCursoVeranoIncripcion inscripcionFinal = solicitudGateway.validarPago(
+                inscripcionCreada.getId_solicitud(), 
+                false, 
+                "Inscripción rechazada: " + motivo
+            );
+            
+            // 4. Preparar respuesta
+            Map<String, Object> respuesta = new HashMap<>();
+            respuesta.put("success", true);
+            respuesta.put("message", "Inscripción rechazada exitosamente");
+            respuesta.put("id_preinscripcion", idPreinscripcion);
+            respuesta.put("id_inscripcion", inscripcionFinal.getId_solicitud());
+            respuesta.put("estudiante_nombre", preinscripcion.getObjUsuario().getNombre_completo());
+            respuesta.put("curso_nombre", preinscripcion.getObjCursoOfertadoVerano().getObjMateria().getNombre());
+            respuesta.put("fecha_rechazo", new java.util.Date());
+            respuesta.put("motivo", motivo);
+            
+            System.out.println("❌ Inscripción rechazada para: " + 
+                preinscripcion.getObjUsuario().getNombre_completo() + 
+                " en curso ID: " + preinscripcion.getObjCursoOfertadoVerano().getId_curso());
+            
+            return ResponseEntity.ok(respuesta);
+            
+        } catch (Exception e) {
+            System.out.println("ERROR: Error rechazando inscripción: " + e.getMessage());
+            e.printStackTrace();
+            Map<String, Object> error = new HashMap<>();
+            error.put("error", "Error interno del servidor: " + e.getMessage());
+            return ResponseEntity.internalServerError().body(error);
+        }
+    }
+
+    /**
      * Actualizar observaciones de preinscripción
      * PUT /api/cursos-intersemestrales/preinscripciones/{idPreinscripcion}/observaciones
      */
@@ -2130,6 +2826,82 @@ public class CursosIntersemestralesRestController {
         } catch (Exception e) {
             Map<String, Object> error = new HashMap<>();
             error.put("error", "Error interno del servidor");
+            return ResponseEntity.status(500).body(error);
+        }
+    }
+
+    // ==================== ENDPOINT DE PRUEBA SIMPLE ====================
+    
+    /**
+     * Endpoint de prueba simple
+     * GET /api/cursos-intersemestrales/test
+     */
+    @GetMapping("/test")
+    public ResponseEntity<Map<String, Object>> testEndpoint() {
+        Map<String, Object> response = new HashMap<>();
+        response.put("success", true);
+        response.put("message", "Backend funcionando correctamente");
+        response.put("timestamp", new java.util.Date());
+        response.put("port", "5000");
+        return ResponseEntity.ok(response);
+    }
+
+    // ==================== ENDPOINT DE DEBUG PARA INSCRIPCIONES ====================
+    
+    /**
+     * Debug endpoint para verificar datos de inscripción
+     * GET /api/cursos-intersemestrales/debug/inscripcion/{id}
+     */
+    @GetMapping("/debug/inscripcion/{id}")
+    public ResponseEntity<Map<String, Object>> debugInscripcion(@PathVariable Long id) {
+        try {
+            System.out.println("🔍 DEBUG: Verificando inscripción ID: " + id);
+            Map<String, Object> debugInfo = new HashMap<>();
+            
+            // 1. Buscar en preinscripciones
+            try {
+                SolicitudCursoVeranoPreinscripcion preinscripcion = solicitudCU.buscarSolicitudPorId(id.intValue());
+                debugInfo.put("preinscripcion_encontrada", preinscripcion != null);
+                if (preinscripcion != null) {
+                    debugInfo.put("preinscripcion_id", preinscripcion.getId_solicitud());
+                    debugInfo.put("preinscripcion_usuario", preinscripcion.getObjUsuario() != null ? preinscripcion.getObjUsuario().getId_usuario() : "NULL");
+                    debugInfo.put("preinscripcion_curso", preinscripcion.getObjCursoOfertadoVerano() != null ? preinscripcion.getObjCursoOfertadoVerano().getId_curso() : "NULL");
+                    debugInfo.put("preinscripcion_estados", preinscripcion.getEstadosSolicitud() != null ? preinscripcion.getEstadosSolicitud().size() : 0);
+                }
+            } catch (Exception e) {
+                debugInfo.put("preinscripcion_error", e.getMessage());
+            }
+            
+            // 2. Buscar directamente en repositorio
+            try {
+                var entity = solicitudRepository.findById(id.intValue());
+                debugInfo.put("entity_encontrada", entity.isPresent());
+                if (entity.isPresent()) {
+                    debugInfo.put("entity_tipo", entity.get().getClass().getSimpleName());
+                    debugInfo.put("entity_id", entity.get().getId_solicitud());
+                }
+            } catch (Exception e) {
+                debugInfo.put("entity_error", e.getMessage());
+            }
+            
+            // 3. Verificar conexión a base de datos
+            try {
+                var count = solicitudRepository.count();
+                debugInfo.put("total_solicitudes_en_bd", count);
+                debugInfo.put("bd_conectada", true);
+            } catch (Exception e) {
+                debugInfo.put("bd_error", e.getMessage());
+                debugInfo.put("bd_conectada", false);
+            }
+            
+            System.out.println("🔍 DEBUG: Información de debug generada: " + debugInfo);
+            return ResponseEntity.ok(debugInfo);
+            
+        } catch (Exception e) {
+            System.out.println("🔍 ERROR: Error en debug: " + e.getMessage());
+            e.printStackTrace();
+            Map<String, Object> error = new HashMap<>();
+            error.put("error", "Error en debug: " + e.getMessage());
             return ResponseEntity.status(500).body(error);
         }
     }
@@ -2575,16 +3347,5 @@ public class CursosIntersemestralesRestController {
         }
     }
     
-    /**
-     * Método auxiliar para corregir la codificación de caracteres
-     */
-    private String fixEncoding(String text) {
-        if (text == null) return "";
-        try {
-            return new String(text.getBytes("ISO-8859-1"), "UTF-8");
-        } catch (UnsupportedEncodingException e) {
-            return text; // Si falla, devolver el texto original
-        }
-    }
     
 }
