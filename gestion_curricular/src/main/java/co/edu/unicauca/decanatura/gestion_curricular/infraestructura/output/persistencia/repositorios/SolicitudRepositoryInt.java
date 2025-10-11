@@ -259,4 +259,22 @@ public interface SolicitudRepositoryInt extends JpaRepository<SolicitudEntity, I
     """)
     List<SolicitudEntity> buscarCursosConAltaDemanda(@Param("limiteMinimo") Integer limiteMinimo);
 
+    // Consultas para validaciones de seguridad
+    @Query("SELECT s FROM SolicitudCursoVeranoInscripcionEntity s WHERE s.objUsuario.id_usuario = :idUsuario AND s.objCursoOfertadoVerano.id_curso = :idCurso")
+    List<SolicitudEntity> buscarInscripcionesPorUsuarioYCurso(@Param("idUsuario") Integer idUsuario, @Param("idCurso") Integer idCurso);
+
+    @Query("""
+        SELECT COUNT(s) 
+        FROM SolicitudCursoVeranoInscripcionEntity s 
+        JOIN s.estadosSolicitud e 
+        WHERE s.objCursoOfertadoVerano.id_curso = :idCurso 
+        AND e.estado_actual = :estado
+        AND e.fecha_registro_estado = (
+            SELECT MAX(e2.fecha_registro_estado)
+            FROM EstadoSolicitudEntity e2
+            WHERE e2.objSolicitud.id_solicitud = s.id_solicitud
+        )
+    """)
+    Integer contarInscripcionesPorEstado(@Param("idCurso") Integer idCurso, @Param("estado") String estado);
+
 }
