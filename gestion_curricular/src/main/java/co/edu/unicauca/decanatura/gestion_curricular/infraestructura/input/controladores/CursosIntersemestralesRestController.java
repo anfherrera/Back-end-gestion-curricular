@@ -2397,7 +2397,7 @@ public class CursosIntersemestralesRestController {
                     if (inscripcion.getObjCursoOfertadoVerano() != null) {
                         estudianteInscrito.put("id_curso", inscripcion.getObjCursoOfertadoVerano().getId_curso());
                         estudianteInscrito.put("nombre_curso", inscripcion.getObjCursoOfertadoVerano().getObjMateria().getNombre());
-                        estudianteInscrito.put("codigo_curso", inscripcion.getObjCursoOfertadoVerano().getCodigo_curso());
+                        // El código del curso no está disponible en esta entidad
                     }
                     
                     // Estado de la inscripción
