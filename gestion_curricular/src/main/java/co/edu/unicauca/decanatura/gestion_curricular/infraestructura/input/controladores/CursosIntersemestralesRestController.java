@@ -1599,11 +1599,75 @@ public class CursosIntersemestralesRestController {
                 preinscripciones = new ArrayList<>();
             }
             
-            // Obtener inscripciones reales del usuario (por ahora lista vacía hasta implementar la funcionalidad)
+            // Obtener inscripciones reales del usuario
             List<Map<String, Object>> inscripcionesUsuario = new ArrayList<>();
             
-            // TODO: Implementar obtención de inscripciones reales cuando esté disponible
-            // Por ahora se mantiene vacío para evitar mostrar datos simulados
+            try {
+                // Obtener inscripciones reales de la base de datos
+                List<SolicitudCursoVeranoIncripcion> inscripcionesReales = solicitudGateway.buscarInscripcionesPorUsuario(idUsuario);
+                
+                for (SolicitudCursoVeranoIncripcion inscripcion : inscripcionesReales) {
+                    Map<String, Object> inscripcionMap = new HashMap<>();
+                    inscripcionMap.put("id", inscripcion.getId_solicitud());
+                    inscripcionMap.put("fecha", inscripcion.getFecha_registro_solicitud());
+                    
+                    // Obtener el estado actual de la inscripción
+                    String estadoInscripcion = "Enviada";
+                    if (inscripcion.getEstadosSolicitud() != null && !inscripcion.getEstadosSolicitud().isEmpty()) {
+                        estadoInscripcion = inscripcion.getEstadosSolicitud().get(inscripcion.getEstadosSolicitud().size() - 1).getEstado_actual();
+                    }
+                    inscripcionMap.put("estado", estadoInscripcion);
+                    
+                    inscripcionMap.put("tipoSolicitud", "Inscripción");
+                    inscripcionMap.put("nombreSolicitud", inscripcion.getNombre_solicitud());
+                    
+                    // Información del curso - solo el nombre para evitar [object Object]
+                    String nombreCurso = "Curso no disponible";
+                    if (inscripcion.getObjCursoOfertadoVerano() != null && 
+                        inscripcion.getObjCursoOfertadoVerano().getObjMateria() != null) {
+                        nombreCurso = inscripcion.getObjCursoOfertadoVerano().getObjMateria().getNombre();
+                    }
+                    inscripcionMap.put("curso", nombreCurso);
+                    
+                    // Mapear estadoCurso basado en el estado de la inscripción
+                    String estadoCurso = "PENDIENTE";
+                    if ("Pago_Validado".equals(estadoInscripcion)) {
+                        estadoCurso = "INSCRITO";
+                    } else if ("Inscripcion_Completada".equals(estadoInscripcion)) {
+                        estadoCurso = "ACTIVO";
+                    } else if ("Curso_Aprobado".equals(estadoInscripcion)) {
+                        estadoCurso = "APROBADO";
+                    } else if ("Curso_Finalizado".equals(estadoInscripcion)) {
+                        estadoCurso = "FINALIZADO";
+                    } else if ("Enviada".equals(estadoInscripcion)) {
+                        estadoCurso = "PENDIENTE";
+                    } else if ("Pago_Rechazado".equals(estadoInscripcion)) {
+                        estadoCurso = "RECHAZADO";
+                    }
+                    inscripcionMap.put("estadoCurso", estadoCurso);
+                    
+                    // Determinar acciones disponibles basadas en el estado
+                    List<String> accionesDisponibles = new ArrayList<>();
+                    if ("Enviada".equals(estadoInscripcion)) {
+                        accionesDisponibles.add("esperando_validacion_pago");
+                    } else if ("Pago_Validado".equals(estadoInscripcion)) {
+                        accionesDisponibles.add("inscripcion_aceptada");
+                    } else if ("Pago_Rechazado".equals(estadoInscripcion)) {
+                        accionesDisponibles.add("pago_rechazado");
+                    }
+                    
+                    inscripcionMap.put("accionesDisponibles", accionesDisponibles);
+                    
+                    inscripcionesUsuario.add(inscripcionMap);
+                }
+                
+                System.out.println("INFO Inscripciones reales encontradas: " + inscripcionesUsuario.size());
+                
+            } catch (Exception e) {
+                System.out.println("WARNING Error obteniendo inscripciones reales: " + e.getMessage());
+                // En caso de error, devolver lista vacía
+                inscripcionesUsuario = new ArrayList<>();
+            }
             
             // Crear respuesta con estadísticas
             Map<String, Object> respuesta = new HashMap<>();

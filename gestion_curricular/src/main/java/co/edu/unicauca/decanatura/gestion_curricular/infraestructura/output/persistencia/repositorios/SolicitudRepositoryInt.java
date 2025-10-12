@@ -262,6 +262,9 @@ public interface SolicitudRepositoryInt extends JpaRepository<SolicitudEntity, I
     // Consultas para validaciones de seguridad
     @Query("SELECT s FROM SolicitudCursoVeranoInscripcionEntity s WHERE s.objUsuario.id_usuario = :idUsuario AND s.objCursoOfertadoVerano.id_curso = :idCurso")
     List<SolicitudEntity> buscarInscripcionesPorUsuarioYCurso(@Param("idUsuario") Integer idUsuario, @Param("idCurso") Integer idCurso);
+    
+    @Query("SELECT s FROM SolicitudCursoVeranoInscripcionEntity s WHERE s.objUsuario.id_usuario = :idUsuario")
+    List<SolicitudEntity> buscarInscripcionesPorUsuario(@Param("idUsuario") Integer idUsuario);
 
     @Query("""
         SELECT COUNT(s) 

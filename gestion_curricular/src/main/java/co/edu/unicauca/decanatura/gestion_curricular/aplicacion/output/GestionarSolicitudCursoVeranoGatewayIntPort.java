@@ -37,6 +37,7 @@ public interface GestionarSolicitudCursoVeranoGatewayIntPort {
     
     // Métodos para validaciones de seguridad
     List<SolicitudCursoVeranoIncripcion> buscarInscripcionesPorUsuarioYCurso(Integer idUsuario, Integer idCurso);
+    List<SolicitudCursoVeranoIncripcion> buscarInscripcionesPorUsuario(Integer idUsuario);
     Integer contarInscripcionesAceptadasPorCurso(Integer idCurso);
     Integer contarInscripcionesPorEstado(Integer idCurso, String estado);
 }

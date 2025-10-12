@@ -456,6 +456,21 @@ public class GestionarSolicitudCursoVeranoGatewayImplAdapter implements Gestiona
 
     @Override
     @Transactional(readOnly = true)
+    public List<SolicitudCursoVeranoIncripcion> buscarInscripcionesPorUsuario(Integer idUsuario) {
+        List<SolicitudEntity> solicitudesEntity = solicitudRepository.buscarInscripcionesPorUsuario(idUsuario);
+        List<SolicitudCursoVeranoIncripcion> inscripciones = new ArrayList<>();
+
+        for (SolicitudEntity entity : solicitudesEntity) {
+            if (entity instanceof SolicitudCursoVeranoInscripcionEntity) {
+                inscripciones.add(solicitudMapper.map(entity, SolicitudCursoVeranoIncripcion.class));
+            }
+        }
+
+        return inscripciones;
+    }
+
+    @Override
+    @Transactional(readOnly = true)
     public Integer contarInscripcionesAceptadasPorCurso(Integer idCurso) {
         return solicitudRepository.contarInscripcionesPorEstado(idCurso, "Pago_Validado");
     }
