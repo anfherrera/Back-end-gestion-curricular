@@ -169,13 +169,12 @@ public class SolicitudPazYSalvoRestController {
             doc.setFecha_documento(new Date());
             doc.setEsValido(true);
             
-            // Asociar solicitud
+            // Asociar solicitud - igual que en homologación
             try {
                 SolicitudPazYSalvo solicitud = solicitudPazYSalvoCU.buscarPorId(idSolicitud);
                 if (solicitud != null) {
-                    Solicitud objSolicitud = new Solicitud();
-                    objSolicitud.setId_solicitud(idSolicitud);
-                    doc.setObjSolicitud(objSolicitud);
+                    // Usar la solicitud real en lugar de crear una nueva
+                    doc.setObjSolicitud(solicitud);
                     System.out.println("📎 Asociando archivo '" + nombreOriginal + "' a solicitud de paz y salvo ID: " + idSolicitud);
                 } else {
                     System.err.println("❌ No se encontró la solicitud de paz y salvo con ID: " + idSolicitud);
@@ -279,21 +278,40 @@ public class SolicitudPazYSalvoRestController {
     @GetMapping("/obtenerDocumentos/{idSolicitud}")
     public ResponseEntity<List<Map<String, Object>>> obtenerDocumentosPazSalvo(@PathVariable Integer idSolicitud) {
         try {
-            System.out.println("📋 Obteniendo TODOS los documentos de paz y salvo para solicitud: " + idSolicitud);
+            System.out.println("🔍 [DEBUG] ===== INICIANDO OBTENCIÓN DE DOCUMENTOS =====");
+            System.out.println("🔍 [DEBUG] ID Solicitud recibido: " + idSolicitud);
             
             // Obtener la solicitud con sus documentos
+            System.out.println("🔍 [DEBUG] Llamando a solicitudPazYSalvoCU.buscarPorId(" + idSolicitud + ")");
             SolicitudPazYSalvo solicitud = solicitudPazYSalvoCU.buscarPorId(idSolicitud);
+            
             if (solicitud == null) {
-                System.err.println("❌ Solicitud de paz y salvo no encontrada: " + idSolicitud);
+                System.err.println("❌ [DEBUG] Solicitud de paz y salvo no encontrada: " + idSolicitud);
                 return ResponseEntity.notFound().build();
             }
             
+            System.out.println("✅ [DEBUG] Solicitud encontrada:");
+            System.out.println("✅ [DEBUG] - ID: " + solicitud.getId_solicitud());
+            System.out.println("✅ [DEBUG] - Nombre: " + solicitud.getNombre_solicitud());
+            
             // Buscar documentos asociados a esta solicitud
+            System.out.println("🔍 [DEBUG] Obteniendo documentos de la solicitud...");
             List<Documento> documentos = solicitud.getDocumentos();
-            if (documentos == null || documentos.isEmpty()) {
-                System.err.println("❌ No hay documentos asociados a la solicitud de paz y salvo: " + idSolicitud);
+            
+            System.out.println("🔍 [DEBUG] Documentos obtenidos: " + (documentos != null ? documentos.size() : "null"));
+            
+            if (documentos == null) {
+                System.err.println("❌ [DEBUG] La lista de documentos es NULL");
+                return ResponseEntity.ok(new ArrayList<>());
+            }
+            
+            if (documentos.isEmpty()) {
+                System.err.println("❌ [DEBUG] La lista de documentos está VACÍA");
+                System.err.println("❌ [DEBUG] No hay documentos asociados a la solicitud de paz y salvo: " + idSolicitud);
                 return ResponseEntity.ok(new ArrayList<>()); // Retornar lista vacía
             }
+            
+            System.out.println("✅ [DEBUG] Documentos encontrados: " + documentos.size());
             
             // Crear lista con TODOS los documentos (incluyendo los del estudiante)
             List<Map<String, Object>> todosDocumentos = new ArrayList<>();
@@ -336,13 +354,266 @@ public class SolicitudPazYSalvoRestController {
                 }
             }
             
-            System.out.println("✅ Total documentos encontrados: " + todosDocumentos.size());
+            System.out.println("✅ [DEBUG] Total documentos procesados: " + todosDocumentos.size());
+            System.out.println("✅ [DEBUG] ===== FINALIZANDO OBTENCIÓN DE DOCUMENTOS =====");
+            
+            if (todosDocumentos.isEmpty()) {
+                System.err.println("⚠️ [DEBUG] ADVERTENCIA: Se procesaron documentos pero la lista final está vacía");
+            }
+            
             return ResponseEntity.ok(todosDocumentos);
             
         } catch (Exception e) {
-            System.err.println("❌ Error al obtener documentos de paz y salvo: " + e.getMessage());
+            System.err.println("❌ [DEBUG] ERROR al obtener documentos de paz y salvo: " + e.getMessage());
+            System.err.println("❌ [DEBUG] Stack trace:");
             e.printStackTrace();
             return ResponseEntity.internalServerError().build();
+        }
+    }
+
+    /**
+     * Endpoint de debugging para verificar datos en la base de datos
+     */
+    @GetMapping("/debug/documentos/{idSolicitud}")
+    public ResponseEntity<Map<String, Object>> debugDocumentos(@PathVariable Integer idSolicitud) {
+        try {
+            System.out.println("🔍 [DEBUG-ENDPOINT] Verificando datos para solicitud: " + idSolicitud);
+            
+            Map<String, Object> debugInfo = new HashMap<>();
+            
+            // Verificar si la solicitud existe
+            SolicitudPazYSalvo solicitud = solicitudPazYSalvoCU.buscarPorId(idSolicitud);
+            if (solicitud == null) {
+                debugInfo.put("error", "Solicitud no encontrada");
+                debugInfo.put("solicitud_existe", false);
+                return ResponseEntity.ok(debugInfo);
+            }
+            
+            debugInfo.put("solicitud_existe", true);
+            debugInfo.put("solicitud_id", solicitud.getId_solicitud());
+            debugInfo.put("solicitud_nombre", solicitud.getNombre_solicitud());
+            debugInfo.put("solicitud_fecha", solicitud.getFecha_registro_solicitud());
+            
+            // Verificar documentos
+            List<Documento> documentos = solicitud.getDocumentos();
+            debugInfo.put("documentos_es_null", documentos == null);
+            debugInfo.put("documentos_cantidad", documentos != null ? documentos.size() : 0);
+            
+            if (documentos != null && !documentos.isEmpty()) {
+                List<Map<String, Object>> docsInfo = new ArrayList<>();
+                for (Documento doc : documentos) {
+                    Map<String, Object> docInfo = new HashMap<>();
+                    docInfo.put("id", doc.getId_documento());
+                    docInfo.put("nombre", doc.getNombre());
+                    docInfo.put("ruta", doc.getRuta_documento());
+                    docInfo.put("fecha", doc.getFecha_documento());
+                    docInfo.put("esValido", doc.isEsValido());
+                    docsInfo.add(docInfo);
+                }
+                debugInfo.put("documentos_detalle", docsInfo);
+            }
+            
+            return ResponseEntity.ok(debugInfo);
+            
+        } catch (Exception e) {
+            System.err.println("❌ [DEBUG-ENDPOINT] Error: " + e.getMessage());
+            e.printStackTrace();
+            
+            Map<String, Object> errorInfo = new HashMap<>();
+            errorInfo.put("error", e.getMessage());
+            errorInfo.put("stack_trace", e.getStackTrace());
+            return ResponseEntity.ok(errorInfo);
+        }
+    }
+
+    /**
+     * Endpoint para verificar y corregir documentos sin asociar
+     */
+    @GetMapping("/debug/documentos-sin-asociar")
+    public ResponseEntity<Map<String, Object>> verificarDocumentosSinAsociar() {
+        try {
+            System.out.println("🔍 [DEBUG] Verificando documentos sin asociar...");
+            
+            Map<String, Object> resultado = new HashMap<>();
+            
+            // Buscar documentos sin solicitud asociada
+            List<Documento> documentosSinSolicitud = objGestionarDocumentosGateway.buscarDocumentosSinSolicitud();
+            
+            resultado.put("documentos_sin_asociar", documentosSinSolicitud.size());
+            
+            if (!documentosSinSolicitud.isEmpty()) {
+                List<Map<String, Object>> docsInfo = new ArrayList<>();
+                for (Documento doc : documentosSinSolicitud) {
+                    Map<String, Object> docInfo = new HashMap<>();
+                    docInfo.put("id", doc.getId_documento());
+                    docInfo.put("nombre", doc.getNombre());
+                    docInfo.put("ruta", doc.getRuta_documento());
+                    docInfo.put("fecha", doc.getFecha_documento());
+                    docsInfo.add(docInfo);
+                }
+                resultado.put("documentos_detalle", docsInfo);
+            }
+            
+            System.out.println("🔍 [DEBUG] Documentos sin asociar encontrados: " + documentosSinSolicitud.size());
+            
+            return ResponseEntity.ok(resultado);
+            
+        } catch (Exception e) {
+            System.err.println("❌ [DEBUG] Error al verificar documentos sin asociar: " + e.getMessage());
+            e.printStackTrace();
+            
+            Map<String, Object> errorInfo = new HashMap<>();
+            errorInfo.put("error", e.getMessage());
+            return ResponseEntity.ok(errorInfo);
+        }
+    }
+
+    /**
+     * Endpoint para asociar documentos huérfanos a una solicitud
+     */
+    @PostMapping("/asociar-documentos/{idSolicitud}")
+    public ResponseEntity<Map<String, Object>> asociarDocumentosHuérfanos(@PathVariable Integer idSolicitud) {
+        try {
+            System.out.println("🔍 [DEBUG] Asociando documentos huérfanos a solicitud: " + idSolicitud);
+            
+            Map<String, Object> resultado = new HashMap<>();
+            
+            // Verificar que la solicitud existe
+            SolicitudPazYSalvo solicitud = solicitudPazYSalvoCU.buscarPorId(idSolicitud);
+            if (solicitud == null) {
+                resultado.put("error", "Solicitud no encontrada");
+                return ResponseEntity.ok(resultado);
+            }
+            
+            // Buscar documentos sin solicitud
+            List<Documento> documentosSinSolicitud = objGestionarDocumentosGateway.buscarDocumentosSinSolicitud();
+            
+            int documentosAsociados = 0;
+            for (Documento doc : documentosSinSolicitud) {
+                // Asociar documento a la solicitud
+                doc.setObjSolicitud(solicitud);
+                objGestionarDocumentosGateway.actualizarDocumento(doc);
+                documentosAsociados++;
+                System.out.println("✅ [DEBUG] Documento asociado: " + doc.getNombre());
+            }
+            
+            resultado.put("documentos_asociados", documentosAsociados);
+            resultado.put("solicitud_id", idSolicitud);
+            resultado.put("mensaje", "Documentos asociados exitosamente");
+            
+            System.out.println("✅ [DEBUG] Total documentos asociados: " + documentosAsociados);
+            
+            return ResponseEntity.ok(resultado);
+            
+        } catch (Exception e) {
+            System.err.println("❌ [DEBUG] Error al asociar documentos: " + e.getMessage());
+            e.printStackTrace();
+            
+            Map<String, Object> errorInfo = new HashMap<>();
+            errorInfo.put("error", e.getMessage());
+            return ResponseEntity.ok(errorInfo);
+        }
+    }
+
+    /**
+     * Endpoint para simular el proceso de subida de documentos como en homologación
+     */
+    @PostMapping("/simular-subida-documento")
+    public ResponseEntity<Map<String, Object>> simularSubidaDocumento(
+            @RequestParam("file") MultipartFile file) {
+        try {
+            System.out.println("🔍 [SIMULACIÓN] Simulando subida de documento como en homologación...");
+            
+            String nombreOriginal = file.getOriginalFilename();
+            System.out.println("🔍 [SIMULACIÓN] Archivo: " + nombreOriginal);
+            
+            // Validaciones básicas
+            if (!nombreOriginal.toLowerCase().endsWith(".pdf")) {
+                return ResponseEntity.status(HttpStatus.UNSUPPORTED_MEDIA_TYPE)
+                    .body(Map.of("error", "Solo se permiten archivos PDF"));
+            }
+            
+            // Guardar archivo
+            this.objGestionarArchivos.saveFile(file, nombreOriginal, "pdf");
+            
+            // Crear documento SIN asociar a solicitud (como en homologación)
+            Documento doc = new Documento();
+            doc.setNombre(nombreOriginal);
+            doc.setRuta_documento(nombreOriginal);
+            doc.setFecha_documento(new Date());
+            doc.setEsValido(true);
+            doc.setComentario("Documento subido para Paz y Salvo");
+            // NO asociar a solicitud - esto se hace después como en homologación
+            
+            Documento documentoGuardado = this.objGestionarDocumentosGateway.crearDocumento(doc);
+            
+            System.out.println("✅ [SIMULACIÓN] Documento creado sin asociar: " + documentoGuardado.getId_documento());
+            
+            Map<String, Object> respuesta = new HashMap<>();
+            respuesta.put("success", true);
+            respuesta.put("message", "Documento subido exitosamente (sin asociar)");
+            respuesta.put("documento_id", documentoGuardado.getId_documento());
+            respuesta.put("nombre", nombreOriginal);
+            
+            return ResponseEntity.ok(respuesta);
+            
+        } catch (Exception e) {
+            System.err.println("❌ [SIMULACIÓN] Error: " + e.getMessage());
+            e.printStackTrace();
+            
+            Map<String, Object> errorInfo = new HashMap<>();
+            errorInfo.put("error", e.getMessage());
+            return ResponseEntity.ok(errorInfo);
+        }
+    }
+
+    /**
+     * Endpoint para asociar documentos huérfanos a la solicitud ID 1 (como en homologación)
+     */
+    @PostMapping("/asociar-documentos-huerfanos")
+    public ResponseEntity<Map<String, Object>> asociarDocumentosHuerfanos() {
+        try {
+            System.out.println("🔍 [ASOCIACIÓN] Asociando documentos huérfanos a solicitud ID 1...");
+            
+            // Obtener la solicitud
+            SolicitudPazYSalvo solicitud = solicitudPazYSalvoCU.buscarPorId(1);
+            if (solicitud == null) {
+                Map<String, Object> error = new HashMap<>();
+                error.put("error", "Solicitud ID 1 no encontrada");
+                return ResponseEntity.ok(error);
+            }
+            
+            // Buscar documentos sin asociar (como en homologación)
+            List<Documento> documentosSinSolicitud = objGestionarDocumentosGateway.buscarDocumentosSinSolicitud();
+            
+            System.out.println("🔍 [ASOCIACIÓN] Documentos sin asociar encontrados: " + documentosSinSolicitud.size());
+            
+            int documentosAsociados = 0;
+            for (Documento doc : documentosSinSolicitud) {
+                // Asociar documento a la solicitud (igual que en homologación)
+                doc.setObjSolicitud(solicitud);
+                objGestionarDocumentosGateway.actualizarDocumento(doc);
+                documentosAsociados++;
+                System.out.println("✅ [ASOCIACIÓN] Documento asociado: " + doc.getNombre());
+            }
+            
+            Map<String, Object> resultado = new HashMap<>();
+            resultado.put("success", true);
+            resultado.put("documentos_asociados", documentosAsociados);
+            resultado.put("solicitud_id", 1);
+            resultado.put("mensaje", "Documentos asociados exitosamente");
+            
+            System.out.println("✅ [ASOCIACIÓN] Total documentos asociados: " + documentosAsociados);
+            
+            return ResponseEntity.ok(resultado);
+            
+        } catch (Exception e) {
+            System.err.println("❌ [ASOCIACIÓN] Error: " + e.getMessage());
+            e.printStackTrace();
+            
+            Map<String, Object> errorInfo = new HashMap<>();
+            errorInfo.put("error", e.getMessage());
+            return ResponseEntity.ok(errorInfo);
         }
     }
 
