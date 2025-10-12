@@ -72,7 +72,13 @@ public class GestionarSolicitudPazYSalvoGatewayImplAdapter implements GestionarS
     @Override
     public Optional<SolicitudPazYSalvo> buscarPorId(Integer idSolicitud) {
         return solicitudRepository.findById(idSolicitud)
-                .map(entity -> mapper.map(entity, SolicitudPazYSalvo.class));
+                .map(entity -> {
+                    // Forzar la carga de documentos
+                    if (entity.getDocumentos() != null) {
+                        entity.getDocumentos().size(); // Esto fuerza la carga lazy
+                    }
+                    return mapper.map(entity, SolicitudPazYSalvo.class);
+                });
     }
 
     @Override

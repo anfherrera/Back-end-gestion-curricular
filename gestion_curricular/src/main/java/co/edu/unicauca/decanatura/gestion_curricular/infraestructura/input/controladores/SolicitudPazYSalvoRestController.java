@@ -273,7 +273,155 @@ public class SolicitudPazYSalvoRestController {
     }
     
     /**
-     * Obtener oficios disponibles para una solicitud de paz y salvo
+     * Obtener TODOS los documentos de una solicitud de paz y salvo (incluyendo los del estudiante)
+     * Para funcionarios
+     */
+    @GetMapping("/obtenerDocumentos/{idSolicitud}")
+    public ResponseEntity<List<Map<String, Object>>> obtenerDocumentosPazSalvo(@PathVariable Integer idSolicitud) {
+        try {
+            System.out.println("📋 Obteniendo TODOS los documentos de paz y salvo para solicitud: " + idSolicitud);
+            
+            // Obtener la solicitud con sus documentos
+            SolicitudPazYSalvo solicitud = solicitudPazYSalvoCU.buscarPorId(idSolicitud);
+            if (solicitud == null) {
+                System.err.println("❌ Solicitud de paz y salvo no encontrada: " + idSolicitud);
+                return ResponseEntity.notFound().build();
+            }
+            
+            // Buscar documentos asociados a esta solicitud
+            List<Documento> documentos = solicitud.getDocumentos();
+            if (documentos == null || documentos.isEmpty()) {
+                System.err.println("❌ No hay documentos asociados a la solicitud de paz y salvo: " + idSolicitud);
+                return ResponseEntity.ok(new ArrayList<>()); // Retornar lista vacía
+            }
+            
+            // Crear lista con TODOS los documentos (incluyendo los del estudiante)
+            List<Map<String, Object>> todosDocumentos = new ArrayList<>();
+            for (Documento documento : documentos) {
+                if (documento.getNombre() != null) {
+                    Map<String, Object> doc = new HashMap<>();
+                    doc.put("id", documento.getId_documento());
+                    doc.put("nombre", documento.getNombre());
+                    doc.put("nombreArchivo", documento.getNombre());
+                    doc.put("ruta", documento.getRuta_documento());
+                    doc.put("fecha", documento.getFecha_documento());
+                    doc.put("esValido", documento.isEsValido());
+                    doc.put("comentario", documento.getComentario());
+                    
+                    // Determinar el tipo de documento
+                    String nombreArchivo = documento.getNombre().toLowerCase();
+                    String tipoDocumento = "Documento del Estudiante";
+                    
+                    if (nombreArchivo.contains("oficio") || nombreArchivo.contains("resolucion") || 
+                        nombreArchivo.contains("paz") || nombreArchivo.contains("salvo") || 
+                        nombreArchivo.contains("aprobacion")) {
+                        tipoDocumento = "Oficio/Resolución";
+                    } else if (nombreArchivo.contains("formato") || nombreArchivo.contains("pm_fo_4_for_27")) {
+                        tipoDocumento = "Formato PM-FO-4-FOR-27";
+                    } else if (nombreArchivo.contains("autorizacion") || nombreArchivo.contains("publicar")) {
+                        tipoDocumento = "Autorización de Publicación";
+                    } else if (nombreArchivo.contains("hoja") && nombreArchivo.contains("vida")) {
+                        tipoDocumento = "Hoja de Vida Académica";
+                    } else if (nombreArchivo.contains("comprobante") || nombreArchivo.contains("pago")) {
+                        tipoDocumento = "Comprobante de Pago";
+                    } else if (nombreArchivo.contains("trabajo") && nombreArchivo.contains("grado")) {
+                        tipoDocumento = "Documento de Trabajo de Grado";
+                    } else if (nombreArchivo.contains("saber") && nombreArchivo.contains("pro")) {
+                        tipoDocumento = "Resultado Saber Pro";
+                    }
+                    
+                    doc.put("tipo", tipoDocumento);
+                    todosDocumentos.add(doc);
+                    System.out.println("📋 Agregando documento: " + documento.getNombre() + " (Tipo: " + tipoDocumento + ")");
+                }
+            }
+            
+            System.out.println("✅ Total documentos encontrados: " + todosDocumentos.size());
+            return ResponseEntity.ok(todosDocumentos);
+            
+        } catch (Exception e) {
+            System.err.println("❌ Error al obtener documentos de paz y salvo: " + e.getMessage());
+            e.printStackTrace();
+            return ResponseEntity.internalServerError().build();
+        }
+    }
+
+    /**
+     * Obtener TODOS los documentos de una solicitud de paz y salvo (incluyendo los del estudiante)
+     * Para coordinadores
+     */
+    @GetMapping("/obtenerDocumentos/coordinador/{idSolicitud}")
+    public ResponseEntity<List<Map<String, Object>>> obtenerDocumentosPazSalvoCoordinador(@PathVariable Integer idSolicitud) {
+        try {
+            System.out.println("📋 [COORDINADOR] Obteniendo TODOS los documentos de paz y salvo para solicitud: " + idSolicitud);
+            
+            // Obtener la solicitud con sus documentos
+            SolicitudPazYSalvo solicitud = solicitudPazYSalvoCU.buscarPorId(idSolicitud);
+            if (solicitud == null) {
+                System.err.println("❌ [COORDINADOR] Solicitud de paz y salvo no encontrada: " + idSolicitud);
+                return ResponseEntity.notFound().build();
+            }
+            
+            // Buscar documentos asociados a esta solicitud
+            List<Documento> documentos = solicitud.getDocumentos();
+            if (documentos == null || documentos.isEmpty()) {
+                System.err.println("❌ [COORDINADOR] No hay documentos asociados a la solicitud de paz y salvo: " + idSolicitud);
+                return ResponseEntity.ok(new ArrayList<>()); // Retornar lista vacía
+            }
+            
+            // Crear lista con TODOS los documentos (incluyendo los del estudiante)
+            List<Map<String, Object>> todosDocumentos = new ArrayList<>();
+            for (Documento documento : documentos) {
+                if (documento.getNombre() != null) {
+                    Map<String, Object> doc = new HashMap<>();
+                    doc.put("id", documento.getId_documento());
+                    doc.put("nombre", documento.getNombre());
+                    doc.put("nombreArchivo", documento.getNombre());
+                    doc.put("ruta", documento.getRuta_documento());
+                    doc.put("fecha", documento.getFecha_documento());
+                    doc.put("esValido", documento.isEsValido());
+                    doc.put("comentario", documento.getComentario());
+                    
+                    // Determinar el tipo de documento
+                    String nombreArchivo = documento.getNombre().toLowerCase();
+                    String tipoDocumento = "Documento del Estudiante";
+                    
+                    if (nombreArchivo.contains("oficio") || nombreArchivo.contains("resolucion") || 
+                        nombreArchivo.contains("paz") || nombreArchivo.contains("salvo") || 
+                        nombreArchivo.contains("aprobacion")) {
+                        tipoDocumento = "Oficio/Resolución";
+                    } else if (nombreArchivo.contains("formato") || nombreArchivo.contains("pm_fo_4_for_27")) {
+                        tipoDocumento = "Formato PM-FO-4-FOR-27";
+                    } else if (nombreArchivo.contains("autorizacion") || nombreArchivo.contains("publicar")) {
+                        tipoDocumento = "Autorización de Publicación";
+                    } else if (nombreArchivo.contains("hoja") && nombreArchivo.contains("vida")) {
+                        tipoDocumento = "Hoja de Vida Académica";
+                    } else if (nombreArchivo.contains("comprobante") || nombreArchivo.contains("pago")) {
+                        tipoDocumento = "Comprobante de Pago";
+                    } else if (nombreArchivo.contains("trabajo") && nombreArchivo.contains("grado")) {
+                        tipoDocumento = "Documento de Trabajo de Grado";
+                    } else if (nombreArchivo.contains("saber") && nombreArchivo.contains("pro")) {
+                        tipoDocumento = "Resultado Saber Pro";
+                    }
+                    
+                    doc.put("tipo", tipoDocumento);
+                    todosDocumentos.add(doc);
+                    System.out.println("📋 [COORDINADOR] Agregando documento: " + documento.getNombre() + " (Tipo: " + tipoDocumento + ")");
+                }
+            }
+            
+            System.out.println("✅ [COORDINADOR] Total documentos encontrados: " + todosDocumentos.size());
+            return ResponseEntity.ok(todosDocumentos);
+            
+        } catch (Exception e) {
+            System.err.println("❌ [COORDINADOR] Error al obtener documentos de paz y salvo: " + e.getMessage());
+            e.printStackTrace();
+            return ResponseEntity.internalServerError().build();
+        }
+    }
+
+    /**
+     * Obtener oficios disponibles para una solicitud de paz y salvo (solo oficios/resoluciones)
      */
     @GetMapping("/obtenerOficios/{idSolicitud}")
     public ResponseEntity<List<Map<String, Object>>> obtenerOficiosPazSalvo(@PathVariable Integer idSolicitud) {
