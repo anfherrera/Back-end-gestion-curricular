@@ -19,9 +19,11 @@ import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarA
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarSolicitudHomologacionCUIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarSolicitudPazYSalvoCUIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarSolicitudReingresoCUIntPort;
+import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarSolicitudCursoVeranoCUIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.GestionarDocumentosGatewayIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Documento;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.SolicitudPazYSalvo;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.SolicitudCursoVeranoIncripcion;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.mappers.DocumentosMapperDominio;
 
 import org.springframework.web.multipart.MultipartFile;
@@ -40,6 +42,7 @@ public class ArchivosRestController {
     private final GestionarSolicitudHomologacionCUIntPort solicitudHomologacionCU;
     private final GestionarSolicitudPazYSalvoCUIntPort solicitudPazYSalvoCU;
     private final GestionarSolicitudReingresoCUIntPort solicitudReingresoCU;
+    private final GestionarSolicitudCursoVeranoCUIntPort solicitudCursoVeranoCU;
     @PostMapping("/subir/pdf")
     public ResponseEntity<Map<String, Object>> subirPDF(
             @RequestParam(name = "file", required = true) MultipartFile file,
@@ -85,8 +88,57 @@ public class ArchivosRestController {
             // 4. Guardar archivo con manejo de errores mejorado
             String nombreArchivo;
             try {
-                // Generar nombre único para evitar conflictos
-                String nombreUnico = System.currentTimeMillis() + "_" + nombreOriginal;
+                // Generar nombre usando el nombre original del archivo + nombre del estudiante
+                String nombreUnico = nombreOriginal;
+                if (inscripcionId != null && !inscripcionId.trim().isEmpty()) {
+                    try {
+                        // Buscar la inscripción para obtener el nombre del estudiante
+                        List<SolicitudCursoVeranoIncripcion> todasLasInscripciones = solicitudCursoVeranoCU.buscarInscripcionesPorCurso(1); // Buscar en curso 1
+                        SolicitudCursoVeranoIncripcion inscripcion = null;
+                        
+                        for (SolicitudCursoVeranoIncripcion ins : todasLasInscripciones) {
+                            if (ins.getId_solicitud().equals(Integer.parseInt(inscripcionId))) {
+                                inscripcion = ins;
+                                break;
+                            }
+                        }
+                        
+                        if (inscripcion != null && inscripcion.getObjUsuario() != null) {
+                            // Obtener el nombre del estudiante
+                            String nombreEstudiante = inscripcion.getObjUsuario().getNombre_completo();
+                            if (nombreEstudiante != null && !nombreEstudiante.trim().isEmpty()) {
+                                // Limpiar el nombre del estudiante para usar en archivo
+                                String nombreLimpio = nombreEstudiante.replaceAll("[^a-zA-Z0-9]", "_");
+                                
+                                // Extraer solo el nombre del archivo sin extensión
+                                String nombreSinExtension = nombreOriginal.substring(0, nombreOriginal.lastIndexOf('.'));
+                                String extension = nombreOriginal.substring(nombreOriginal.lastIndexOf('.'));
+                                
+                                // Crear nombre: nombreOriginal_nombreEstudiante_inscripcionId.extension
+                                nombreUnico = nombreSinExtension + "_" + nombreLimpio + "_" + inscripcionId + extension;
+                                System.out.println("✅ [INSCRIPCIONES] Nombre generado con estudiante: " + nombreUnico);
+                            } else {
+                                // Si no se puede obtener el nombre del estudiante, usar solo el ID
+                                String nombreSinExtension = nombreOriginal.substring(0, nombreOriginal.lastIndexOf('.'));
+                                String extension = nombreOriginal.substring(nombreOriginal.lastIndexOf('.'));
+                                nombreUnico = nombreSinExtension + "_" + inscripcionId + extension;
+                                System.out.println("⚠️ [INSCRIPCIONES] No se pudo obtener nombre del estudiante, usando solo ID: " + nombreUnico);
+                            }
+                        } else {
+                            // Si no se encuentra la inscripción, usar solo el ID
+                            String nombreSinExtension = nombreOriginal.substring(0, nombreOriginal.lastIndexOf('.'));
+                            String extension = nombreOriginal.substring(nombreOriginal.lastIndexOf('.'));
+                            nombreUnico = nombreSinExtension + "_" + inscripcionId + extension;
+                            System.out.println("⚠️ [INSCRIPCIONES] Inscripción no encontrada, usando solo ID: " + nombreUnico);
+                        }
+                    } catch (Exception e) {
+                        System.err.println("❌ [INSCRIPCIONES] Error al obtener información del estudiante: " + e.getMessage());
+                        // En caso de error, usar solo el ID
+                        String nombreSinExtension = nombreOriginal.substring(0, nombreOriginal.lastIndexOf('.'));
+                        String extension = nombreOriginal.substring(nombreOriginal.lastIndexOf('.'));
+                        nombreUnico = nombreSinExtension + "_" + inscripcionId + extension;
+                    }
+                }
                 nombreArchivo = this.objGestionarArchivos.saveFile(file, nombreUnico, "pdf");
                 System.out.println("✅ [INSCRIPCIONES] Archivo guardado exitosamente: " + nombreArchivo);
             } catch (Exception saveError) {

@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 
 import org.springframework.stereotype.Service;
 
@@ -44,11 +45,9 @@ public class GestionarArchivosGatewayImplAdapter implements GestionarArchivosGat
             throw new IOException("Invalid PDF file type:");
         }
 
-        Files.copy(file.getInputStream(), this.rootLocation.resolve(filename));
-        return filename;    
-        // Path destination = this.rootLocation.resolve(filename);
-        // Files.copy(file.getInputStream(), destination, StandardCopyOption.REPLACE_EXISTING);
-        // return destination.toAbsolutePath().toString();
+        Path destination = this.rootLocation.resolve(filename);
+        Files.copy(file.getInputStream(), destination, StandardCopyOption.REPLACE_EXISTING);
+        return filename;
     }
 
     @Override
