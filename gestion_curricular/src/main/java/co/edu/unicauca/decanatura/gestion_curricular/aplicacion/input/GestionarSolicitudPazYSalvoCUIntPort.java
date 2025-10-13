@@ -13,6 +13,8 @@ public interface GestionarSolicitudPazYSalvoCUIntPort {
 
     List<SolicitudPazYSalvo> listarSolicitudesToCoordinador();
 
+    List<SolicitudPazYSalvo> listarSolicitudesToSecretaria();
+
     SolicitudPazYSalvo buscarPorId(Integer idSolicitud);
 
     void cambiarEstadoSolicitud(Integer idSolicitud, String nuevoEstado);

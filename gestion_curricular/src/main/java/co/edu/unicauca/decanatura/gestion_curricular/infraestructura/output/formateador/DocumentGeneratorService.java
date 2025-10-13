@@ -252,6 +252,21 @@ public class DocumentGeneratorService {
         } else if ("PAZ_SALVO".equals(request.getTipoDocumento())) {
             replacements.put("TIPO_PROCESO", "paz y salvo académico");
             replacements.put("TITULO_DOCUMENTO", "PAZ Y SALVO ACADÉMICO");
+            
+            // Placeholders específicos para paz y salvo
+            replacements.put("FACULTAD", "FACULTAD DE INGENIERÍA ELECTRÓNICA Y TELECOMUNICACIONES");
+            replacements.put("NOMBRE_UNIVERSIDAD", "UNIVERSIDAD DEL CAUCA");
+            replacements.put("CIUDAD", "Popayán");
+            
+            // Fecha actual para paz y salvo
+            LocalDate fechaActual = LocalDate.now();
+            replacements.put("FECHA_ACTUAL", formatearFechaCompleta(fechaActual));
+            
+            // Fecha de firma (formateada)
+            replacements.put("DIA_FIRMA", formatearFechaCompleta(fechaActual));
+            replacements.put("DIA_NUMERO", String.valueOf(fechaActual.getDayOfMonth()));
+            replacements.put("MES_FIRMA", formatearMes(fechaActual.getMonthValue()));
+            replacements.put("AÑO_FIRMA", formatearAño(fechaActual.getYear()));
         } else if ("RESOLUCION_REINGRESO".equals(request.getTipoDocumento())) {
             replacements.put("TIPO_PROCESO", "reingreso al programa");
             replacements.put("TITULO_DOCUMENTO", "RESOLUCIÓN DE REINGRESO");

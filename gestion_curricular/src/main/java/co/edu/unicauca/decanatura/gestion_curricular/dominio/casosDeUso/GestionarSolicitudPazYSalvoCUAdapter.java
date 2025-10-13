@@ -96,6 +96,11 @@ public class GestionarSolicitudPazYSalvoCUAdapter implements GestionarSolicitudP
     }
 
     @Override
+    public List<SolicitudPazYSalvo> listarSolicitudesToSecretaria() {
+        return solicitudGateway.listarSolicitudesToSecretaria();
+    }
+
+    @Override
     public SolicitudPazYSalvo buscarPorId(Integer idSolicitud) {
         return solicitudGateway.buscarPorId(idSolicitud)
                 .orElseThrow(() -> new RuntimeException("Solicitud de Paz y Salvo no encontrada"));

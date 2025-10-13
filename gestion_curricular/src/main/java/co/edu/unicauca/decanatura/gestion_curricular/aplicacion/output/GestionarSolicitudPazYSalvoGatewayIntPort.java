@@ -16,6 +16,8 @@ public interface GestionarSolicitudPazYSalvoGatewayIntPort {
 
     List<SolicitudPazYSalvo> listarSolicitudesToCoordinador();
 
+    List<SolicitudPazYSalvo> listarSolicitudesToSecretaria();
+
     Optional<SolicitudPazYSalvo> buscarPorId(Integer idSolicitud);
 
     void cambiarEstadoSolicitud(Integer idSolicitud, EstadoSolicitud nuevoEstado);
