@@ -3,12 +3,15 @@ package co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.cont
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.HashMap;
+import java.util.ArrayList;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -285,6 +288,163 @@ public class NotificacionRestController {
             return ResponseEntity.ok(notificaciones);
         } catch (Exception e) {
             return ResponseEntity.internalServerError().build();
+        }
+    }
+
+    /**
+     * Obtener notificaciones del header para cualquier usuario (estudiantes y funcionarios)
+     * GET /api/notificaciones/header/{idUsuario}
+     */
+    @GetMapping("/header/{idUsuario}")
+    public ResponseEntity<Map<String, Object>> obtenerNotificacionesHeader(@PathVariable Integer idUsuario) {
+        try {
+            System.out.println("🔔 [NOTIFICACIONES_HEADER_GENERAL] Obteniendo notificaciones del header para usuario: " + idUsuario);
+            
+            // Obtener notificaciones no leídas del usuario
+            List<Notificacion> notificacionesNoLeidas = notificacionCU.buscarNoLeidasPorUsuario(idUsuario);
+            Integer totalNoLeidas = notificacionCU.contarNoLeidasPorUsuario(idUsuario);
+            
+            // Crear notificaciones mejoradas con más información
+            List<Map<String, Object>> notificacionesMejoradas = new ArrayList<>();
+            
+            for (Notificacion notificacion : notificacionesNoLeidas) {
+                Map<String, Object> notificacionMejorada = new HashMap<>();
+                notificacionMejorada.put("id", notificacion.getId_notificacion());
+                notificacionMejorada.put("titulo", notificacion.getTitulo());
+                notificacionMejorada.put("mensaje", notificacion.getMensaje());
+                notificacionMejorada.put("tipoSolicitud", notificacion.getTipoSolicitud());
+                notificacionMejorada.put("tipoNotificacion", notificacion.getTipoNotificacion());
+                notificacionMejorada.put("fechaCreacion", notificacion.getFechaCreacion());
+                notificacionMejorada.put("esUrgente", notificacion.getEsUrgente());
+                notificacionMejorada.put("accion", notificacion.getAccion());
+                notificacionMejorada.put("urlAccion", notificacion.getUrlAccion());
+                
+                // Agregar información adicional según el tipo
+                if ("CURSO_VERANO".equals(notificacion.getTipoSolicitud())) {
+                    notificacionMejorada.put("categoria", "Cursos Intersemestrales");
+                    notificacionMejorada.put("icono", "graduation-cap");
+                    notificacionMejorada.put("color", "blue");
+                } else if ("ECAES".equals(notificacion.getTipoSolicitud())) {
+                    notificacionMejorada.put("categoria", "ECAES");
+                    notificacionMejorada.put("icono", "book");
+                    notificacionMejorada.put("color", "green");
+                } else if ("REINGRESO".equals(notificacion.getTipoSolicitud())) {
+                    notificacionMejorada.put("categoria", "Reingreso");
+                    notificacionMejorada.put("icono", "user-plus");
+                    notificacionMejorada.put("color", "orange");
+                } else if ("HOMOLOGACION".equals(notificacion.getTipoSolicitud())) {
+                    notificacionMejorada.put("categoria", "Homologación");
+                    notificacionMejorada.put("icono", "exchange-alt");
+                    notificacionMejorada.put("color", "purple");
+                } else if ("PAZ_SALVO".equals(notificacion.getTipoSolicitud())) {
+                    notificacionMejorada.put("categoria", "Paz y Salvo");
+                    notificacionMejorada.put("icono", "check-circle");
+                    notificacionMejorada.put("color", "green");
+                } else {
+                    notificacionMejorada.put("categoria", "General");
+                    notificacionMejorada.put("icono", "bell");
+                    notificacionMejorada.put("color", "gray");
+                }
+                
+                // Agregar tiempo transcurrido
+                long tiempoTranscurrido = System.currentTimeMillis() - notificacion.getFechaCreacion().getTime();
+                long minutos = tiempoTranscurrido / (1000 * 60);
+                long horas = minutos / 60;
+                long dias = horas / 24;
+                
+                if (dias > 0) {
+                    notificacionMejorada.put("tiempoTranscurrido", dias + " día" + (dias > 1 ? "s" : "") + " atrás");
+                } else if (horas > 0) {
+                    notificacionMejorada.put("tiempoTranscurrido", horas + " hora" + (horas > 1 ? "s" : "") + " atrás");
+                } else if (minutos > 0) {
+                    notificacionMejorada.put("tiempoTranscurrido", minutos + " minuto" + (minutos > 1 ? "s" : "") + " atrás");
+                } else {
+                    notificacionMejorada.put("tiempoTranscurrido", "Hace un momento");
+                }
+                
+                notificacionesMejoradas.add(notificacionMejorada);
+            }
+            
+            // Crear respuesta
+            Map<String, Object> respuesta = new HashMap<>();
+            respuesta.put("totalNoLeidas", totalNoLeidas);
+            respuesta.put("notificaciones", notificacionesMejoradas);
+            respuesta.put("categorias", Map.of(
+                "CURSO_VERANO", notificacionesNoLeidas.stream().filter(n -> "CURSO_VERANO".equals(n.getTipoSolicitud())).count(),
+                "ECAES", notificacionesNoLeidas.stream().filter(n -> "ECAES".equals(n.getTipoSolicitud())).count(),
+                "REINGRESO", notificacionesNoLeidas.stream().filter(n -> "REINGRESO".equals(n.getTipoSolicitud())).count(),
+                "HOMOLOGACION", notificacionesNoLeidas.stream().filter(n -> "HOMOLOGACION".equals(n.getTipoSolicitud())).count(),
+                "PAZ_SALVO", notificacionesNoLeidas.stream().filter(n -> "PAZ_SALVO".equals(n.getTipoSolicitud())).count()
+            ));
+            
+            System.out.println("✅ [NOTIFICACIONES_HEADER_GENERAL] Notificaciones obtenidas: " + totalNoLeidas + " total");
+            
+            return ResponseEntity.ok(respuesta);
+            
+        } catch (Exception e) {
+            System.err.println("❌ [NOTIFICACIONES_HEADER_GENERAL] Error obteniendo notificaciones: " + e.getMessage());
+            e.printStackTrace();
+            Map<String, Object> error = new HashMap<>();
+            error.put("error", "Error obteniendo notificaciones: " + e.getMessage());
+            return ResponseEntity.internalServerError().body(error);
+        }
+    }
+
+    /**
+     * Marcar notificaciones como leídas desde el header (para cualquier usuario)
+     * PUT /api/notificaciones/header/{idUsuario}/marcar-leidas
+     */
+    @PutMapping("/header/{idUsuario}/marcar-leidas")
+    public ResponseEntity<Map<String, Object>> marcarNotificacionesComoLeidas(@PathVariable Integer idUsuario) {
+        try {
+            System.out.println("✅ [NOTIFICACIONES_HEADER_GENERAL] Marcando todas las notificaciones como leídas para usuario: " + idUsuario);
+            
+            boolean resultado = notificacionCU.marcarTodasComoLeidas(idUsuario);
+            
+            Map<String, Object> respuesta = new HashMap<>();
+            respuesta.put("success", resultado);
+            respuesta.put("message", resultado ? "Todas las notificaciones han sido marcadas como leídas" : "Error al marcar las notificaciones");
+            
+            return ResponseEntity.ok(respuesta);
+            
+        } catch (Exception e) {
+            System.err.println("❌ [NOTIFICACIONES_HEADER_GENERAL] Error marcando notificaciones como leídas: " + e.getMessage());
+            Map<String, Object> error = new HashMap<>();
+            error.put("error", "Error marcando notificaciones como leídas: " + e.getMessage());
+            return ResponseEntity.internalServerError().body(error);
+        }
+    }
+
+    /**
+     * Crear una notificación de prueba (para testing)
+     * POST /api/notificaciones/prueba/{idUsuario}
+     */
+    @PostMapping("/prueba/{idUsuario}")
+    public ResponseEntity<Map<String, Object>> crearNotificacionPrueba(@PathVariable Integer idUsuario) {
+        try {
+            System.out.println("🧪 [NOTIFICACIONES_PRUEBA] Creando notificación de prueba para usuario: " + idUsuario);
+            
+            Notificacion notificacion = notificacionCU.crearNotificacionAlerta(
+                "CURSO_VERANO", 
+                idUsuario, 
+                "Notificación de Prueba", 
+                "Esta es una notificación de prueba para verificar que el sistema funciona correctamente.",
+                false
+            );
+            
+            Map<String, Object> response = new HashMap<>();
+            response.put("success", true);
+            response.put("message", "Notificación de prueba creada exitosamente");
+            response.put("notificacion", notificacion);
+            
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            System.err.println("❌ [NOTIFICACIONES_PRUEBA] Error creando notificación de prueba: " + e.getMessage());
+            e.printStackTrace();
+            Map<String, Object> error = new HashMap<>();
+            error.put("success", false);
+            error.put("message", "Error al crear notificación de prueba: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(error);
         }
     }
 }

@@ -1,5 +1,6 @@
 package co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.gateway;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -336,5 +337,38 @@ public class GestionarNotificacionGatewayImplAdapter implements GestionarNotific
         notificacion.setObjUsuario(notificacionMapper.map(usuario, Usuario.class));
         
         return crearNotificacion(notificacion);
+    }
+
+    @Override
+    public List<Notificacion> buscarFuncionariosPorRol(String nombreRol) {
+        try {
+            // Buscar usuarios por rol
+            List<UsuarioEntity> usuarios = usuarioRepository.buscarPorRol(obtenerIdRolPorNombre(nombreRol));
+            
+            // Convertir a notificaciones (usando la estructura de notificación para transportar usuarios)
+            List<Notificacion> funcionarios = new ArrayList<>();
+            for (UsuarioEntity usuario : usuarios) {
+                Notificacion notificacion = new Notificacion();
+                notificacion.setObjUsuario(notificacionMapper.map(usuario, Usuario.class));
+                funcionarios.add(notificacion);
+            }
+            
+            return funcionarios;
+        } catch (Exception e) {
+            System.err.println("❌ [GATEWAY] Error buscando funcionarios por rol: " + e.getMessage());
+            return new ArrayList<>();
+        }
+    }
+    
+    private Integer obtenerIdRolPorNombre(String nombreRol) {
+        // Mapeo de nombres de rol a IDs (basado en import.sql)
+        switch (nombreRol) {
+            case "Administrador": return 1;
+            case "Estudiante": return 2;
+            case "Coordinador": return 3;
+            case "Secretario": return 4;
+            case "Funcionario": return 5;
+            default: return 5; // Por defecto funcionario
+        }
     }
 }

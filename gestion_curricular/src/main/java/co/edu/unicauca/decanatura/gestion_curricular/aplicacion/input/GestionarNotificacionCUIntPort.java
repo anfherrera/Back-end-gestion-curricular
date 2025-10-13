@@ -71,4 +71,10 @@ public interface GestionarNotificacionCUIntPort {
     Notificacion alertarCursoAltaDemanda(Integer idCurso, Integer cantidadSolicitudes);
     Notificacion alertarCursoPuntoEquilibrio(Integer idCurso, Integer cantidadSolicitudes, Integer cupoEstimado);
     Notificacion alertarFechaLimiteProxima(String tipoSolicitud, Date fechaLimite);
+    
+    // Métodos para notificar a funcionarios
+    void notificarFuncionariosNuevaSolicitud(String tipoSolicitud, Integer idSolicitud, String nombreEstudiante);
+    void notificarFuncionariosCambioEstado(String tipoSolicitud, Integer idSolicitud, String nombreEstudiante, String estadoAnterior, String estadoNuevo);
+    void notificarFuncionariosDocumentoSubido(String tipoSolicitud, Integer idSolicitud, String nombreEstudiante, String tipoDocumento);
+    List<Notificacion> buscarFuncionariosPorRol(String nombreRol);
 }

@@ -83,6 +83,12 @@ INSERT INTO `usuarios`(`idUsuario`, `codigo_usuario`, `nombre_usuario`, `correo`
 INSERT INTO `usuarios`(`idUsuario`, `codigo_usuario`, `nombre_usuario`, `correo`, `contrasena`, `idfkRol`) VALUES (NULL, '1063', 'Siler Amador Donado', 'samador@unicauca.edu.co', 'password123', 1);
 INSERT INTO `usuarios`(`idUsuario`, `codigo_usuario`, `nombre_usuario`, `correo`, `contrasena`, `idfkRol`) VALUES (NULL, '1064', 'Wilson Libardo Pantoja Yepez', 'wpantoja@unicauca.edu.co', 'password123', 1);
 
+-- Usuarios de prueba para roles de funcionarios
+INSERT INTO `usuarios`(`idUsuario`, `codigo_usuario`, `nombre_usuario`, `correo`, `contrasena`, `idfkRol`) VALUES (NULL, 'FUN001', 'Ana María Rodríguez', 'arodriguez@unicauca.edu.co', 'password123', 5);
+INSERT INTO `usuarios`(`idUsuario`, `codigo_usuario`, `nombre_usuario`, `correo`, `contrasena`, `idfkRol`) VALUES (NULL, 'FUN002', 'Pedro Sánchez López', 'psanchez@unicauca.edu.co', 'password123', 5);
+INSERT INTO `usuarios`(`idUsuario`, `codigo_usuario`, `nombre_usuario`, `correo`, `contrasena`, `idfkRol`) VALUES (NULL, 'COO001', 'María Elena Vargas', 'mvargas@unicauca.edu.co', 'password123', 3);
+INSERT INTO `usuarios`(`idUsuario`, `codigo_usuario`, `nombre_usuario`, `correo`, `contrasena`, `idfkRol`) VALUES (NULL, 'SEC001', 'Carlos Eduardo Torres', 'ctorres@unicauca.edu.co', 'password123', 4);
+
 -- Solo insertar cursos adicionales (el curso 1 ya existe)
 INSERT IGNORE INTO `cursos_ofertados`(`idCurso`, `idfkMateria`, `idfkDocente`, `grupo`, `cupo_estimado`, `salon`) VALUES (NULL, 2, 1, 'B', 25, 'A-102');
 INSERT IGNORE INTO `cursos_ofertados`(`idCurso`, `idfkMateria`, `idfkDocente`, `grupo`, `cupo_estimado`, `salon`) VALUES (NULL, 3, 1, 'C', 20, 'A-103');

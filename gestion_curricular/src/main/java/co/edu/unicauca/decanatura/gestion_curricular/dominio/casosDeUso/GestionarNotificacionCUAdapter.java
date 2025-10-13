@@ -4,6 +4,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.ArrayList;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -325,41 +326,42 @@ public class GestionarNotificacionCUAdapter implements GestionarNotificacionCUIn
     @Override
     public Notificacion notificarNuevaPreinscripcion(Integer idUsuario, Integer idSolicitud) {
         return this.crearNotificacionNuevaSolicitud("CURSO_VERANO", idUsuario, idSolicitud, 
-            "Has enviado una nueva preinscripción para un curso de verano. Te notificaremos cuando sea revisada.");
+            "✅ Preinscripción enviada exitosamente. Tu solicitud #" + idSolicitud + " ha sido recibida y está en proceso de revisión. Te notificaremos cuando sea evaluada por la coordinación académica.");
     }
 
     @Override
     public Notificacion notificarNuevaInscripcion(Integer idUsuario, Integer idSolicitud) {
         return this.crearNotificacionNuevaSolicitud("CURSO_VERANO", idUsuario, idSolicitud, 
-            "Has enviado una nueva inscripción para un curso de verano. Te notificaremos cuando sea revisada.");
+            "🎓 Inscripción enviada exitosamente. Tu solicitud #" + idSolicitud + " ha sido recibida y está en proceso de validación. Te notificaremos cuando tu comprobante de pago sea revisado.");
     }
 
     @Override
     public Notificacion notificarPreinscripcionAprobada(Integer idUsuario, Integer idSolicitud) {
         return this.crearNotificacionAprobacion("CURSO_VERANO", idUsuario, idSolicitud, true, 
-            "Tu preinscripción ha sido aprobada. Ahora puedes proceder con la inscripción.");
+            "🎉 ¡Excelente! Tu preinscripción #" + idSolicitud + " ha sido APROBADA por la coordinación académica. Ahora puedes proceder con la inscripción formal y el pago correspondiente.");
     }
 
     @Override
     public Notificacion notificarPreinscripcionRechazada(Integer idUsuario, Integer idSolicitud, String motivo) {
-        return this.crearNotificacionAprobacion("CURSO_VERANO", idUsuario, idSolicitud, false, motivo);
+        return this.crearNotificacionAprobacion("CURSO_VERANO", idUsuario, idSolicitud, false, 
+            "❌ Tu preinscripción #" + idSolicitud + " no pudo ser aprobada. Motivo: " + (motivo != null ? motivo : "No cumple con los requisitos establecidos") + ". Puedes contactar a la coordinación académica para más información.");
     }
 
     @Override
     public Notificacion notificarPagoValidado(Integer idUsuario, Integer idSolicitud, boolean esValido) {
         if (esValido) {
             return this.crearNotificacionAlerta("CURSO_VERANO", idUsuario, "Pago Validado", 
-                "Tu comprobante de pago ha sido validado correctamente.", false);
+                "💰 ¡Excelente! Tu comprobante de pago para la solicitud #" + idSolicitud + " ha sido VALIDADO correctamente. Tu inscripción está oficialmente confirmada.", false);
         } else {
             return this.crearNotificacionAlerta("CURSO_VERANO", idUsuario, "Pago Rechazado", 
-                "Tu comprobante de pago fue rechazado. Por favor, sube un documento válido.", true);
+                "⚠️ Tu comprobante de pago para la solicitud #" + idSolicitud + " fue RECHAZADO. Por favor, verifica que el documento sea legible y corresponda al pago correcto, luego súbelo nuevamente.", true);
         }
     }
 
     @Override
     public Notificacion notificarInscripcionCompletada(Integer idUsuario, Integer idSolicitud) {
         return this.crearNotificacionAlerta("CURSO_VERANO", idUsuario, "Inscripción Completada", 
-            "¡Felicidades! Tu inscripción al curso de verano ha sido completada exitosamente.", false);
+            "🎓 ¡Felicidades! Tu inscripción #" + idSolicitud + " al curso intersemestral ha sido COMPLETADA exitosamente. Ya estás oficialmente inscrito y recibirás más información sobre el inicio de clases.", false);
     }
 
     // Métodos para alertas automáticas
@@ -380,5 +382,112 @@ public class GestionarNotificacionCUAdapter implements GestionarNotificacionCUIn
     public Notificacion alertarFechaLimiteProxima(String tipoSolicitud, Date fechaLimite) {
         return this.crearNotificacionAlerta(tipoSolicitud, 1, "Fecha Límite Próxima", 
             "La fecha límite para " + tipoSolicitud + " es el " + fechaLimite + ". Revisa las solicitudes pendientes.", true);
+    }
+
+    // Métodos para notificar a funcionarios
+    @Override
+    public void notificarFuncionariosNuevaSolicitud(String tipoSolicitud, Integer idSolicitud, String nombreEstudiante) {
+        try {
+            // Buscar funcionarios por rol
+            List<Notificacion> funcionarios = this.objGestionarNotificacionGateway.buscarFuncionariosPorRol("Funcionario");
+            List<Notificacion> coordinadores = this.objGestionarNotificacionGateway.buscarFuncionariosPorRol("Coordinador");
+            List<Notificacion> secretarios = this.objGestionarNotificacionGateway.buscarFuncionariosPorRol("Secretario");
+            
+            // Combinar todas las listas
+            List<Notificacion> todosLosFuncionarios = new ArrayList<>();
+            todosLosFuncionarios.addAll(funcionarios);
+            todosLosFuncionarios.addAll(coordinadores);
+            todosLosFuncionarios.addAll(secretarios);
+            
+            // Crear notificación para cada funcionario
+            for (Notificacion funcionario : todosLosFuncionarios) {
+                String mensaje = "📋 Nueva solicitud de " + tipoSolicitud + " del estudiante " + nombreEstudiante + 
+                    " (Solicitud #" + idSolicitud + "). Requiere revisión y aprobación.";
+                
+                this.objGestionarNotificacionGateway.crearNotificacionAlerta(
+                    tipoSolicitud, 
+                    funcionario.getObjUsuario().getId_usuario(), 
+                    "Nueva Solicitud Pendiente", 
+                    mensaje, 
+                    true // Es urgente para funcionarios
+                );
+            }
+            
+            System.out.println("✅ [NOTIFICACIONES_FUNCIONARIOS] Notificaciones enviadas a " + todosLosFuncionarios.size() + " funcionarios para solicitud #" + idSolicitud);
+            
+        } catch (Exception e) {
+            System.err.println("❌ [NOTIFICACIONES_FUNCIONARIOS] Error notificando a funcionarios: " + e.getMessage());
+        }
+    }
+
+    @Override
+    public void notificarFuncionariosCambioEstado(String tipoSolicitud, Integer idSolicitud, String nombreEstudiante, String estadoAnterior, String estadoNuevo) {
+        try {
+            // Buscar funcionarios por rol
+            List<Notificacion> funcionarios = this.objGestionarNotificacionGateway.buscarFuncionariosPorRol("Funcionario");
+            List<Notificacion> coordinadores = this.objGestionarNotificacionGateway.buscarFuncionariosPorRol("Coordinador");
+            
+            // Combinar listas
+            List<Notificacion> todosLosFuncionarios = new ArrayList<>();
+            todosLosFuncionarios.addAll(funcionarios);
+            todosLosFuncionarios.addAll(coordinadores);
+            
+            // Crear notificación para cada funcionario
+            for (Notificacion funcionario : todosLosFuncionarios) {
+                String mensaje = "🔄 Cambio de estado en solicitud #" + idSolicitud + " del estudiante " + nombreEstudiante + 
+                    ". Estado: " + estadoAnterior + " → " + estadoNuevo;
+                
+                this.objGestionarNotificacionGateway.crearNotificacionAlerta(
+                    tipoSolicitud, 
+                    funcionario.getObjUsuario().getId_usuario(), 
+                    "Estado de Solicitud Actualizado", 
+                    mensaje, 
+                    false // No es urgente
+                );
+            }
+            
+            System.out.println("✅ [NOTIFICACIONES_FUNCIONARIOS] Notificaciones de cambio de estado enviadas a " + todosLosFuncionarios.size() + " funcionarios");
+            
+        } catch (Exception e) {
+            System.err.println("❌ [NOTIFICACIONES_FUNCIONARIOS] Error notificando cambio de estado: " + e.getMessage());
+        }
+    }
+
+    @Override
+    public void notificarFuncionariosDocumentoSubido(String tipoSolicitud, Integer idSolicitud, String nombreEstudiante, String tipoDocumento) {
+        try {
+            // Buscar funcionarios por rol
+            List<Notificacion> funcionarios = this.objGestionarNotificacionGateway.buscarFuncionariosPorRol("Funcionario");
+            List<Notificacion> secretarios = this.objGestionarNotificacionGateway.buscarFuncionariosPorRol("Secretario");
+            
+            // Combinar listas
+            List<Notificacion> todosLosFuncionarios = new ArrayList<>();
+            todosLosFuncionarios.addAll(funcionarios);
+            todosLosFuncionarios.addAll(secretarios);
+            
+            // Crear notificación para cada funcionario
+            for (Notificacion funcionario : todosLosFuncionarios) {
+                String mensaje = "📄 Nuevo documento subido: " + tipoDocumento + " para la solicitud #" + idSolicitud + 
+                    " del estudiante " + nombreEstudiante + ". Requiere validación.";
+                
+                this.objGestionarNotificacionGateway.crearNotificacionAlerta(
+                    tipoSolicitud, 
+                    funcionario.getObjUsuario().getId_usuario(), 
+                    "Documento Subido para Validación", 
+                    mensaje, 
+                    true // Es urgente para validación
+                );
+            }
+            
+            System.out.println("✅ [NOTIFICACIONES_FUNCIONARIOS] Notificaciones de documento subido enviadas a " + todosLosFuncionarios.size() + " funcionarios");
+            
+        } catch (Exception e) {
+            System.err.println("❌ [NOTIFICACIONES_FUNCIONARIOS] Error notificando documento subido: " + e.getMessage());
+        }
+    }
+
+    @Override
+    public List<Notificacion> buscarFuncionariosPorRol(String nombreRol) {
+        return this.objGestionarNotificacionGateway.buscarFuncionariosPorRol(nombreRol);
     }
 }

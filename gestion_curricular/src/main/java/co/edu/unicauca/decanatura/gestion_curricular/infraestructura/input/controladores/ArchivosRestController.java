@@ -20,6 +20,7 @@ import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarS
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarSolicitudPazYSalvoCUIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarSolicitudReingresoCUIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarSolicitudCursoVeranoCUIntPort;
+import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarNotificacionCUIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.GestionarDocumentosGatewayIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Documento;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.SolicitudPazYSalvo;
@@ -43,6 +44,7 @@ public class ArchivosRestController {
     private final GestionarSolicitudPazYSalvoCUIntPort solicitudPazYSalvoCU;
     private final GestionarSolicitudReingresoCUIntPort solicitudReingresoCU;
     private final GestionarSolicitudCursoVeranoCUIntPort solicitudCursoVeranoCU;
+    private final GestionarNotificacionCUIntPort objNotificacion;
     @PostMapping("/subir/pdf")
     public ResponseEntity<Map<String, Object>> subirPDF(
             @RequestParam(name = "file", required = true) MultipartFile file,

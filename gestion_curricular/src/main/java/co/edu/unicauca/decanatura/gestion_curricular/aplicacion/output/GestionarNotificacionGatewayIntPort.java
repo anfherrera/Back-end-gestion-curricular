@@ -54,4 +54,7 @@ public interface GestionarNotificacionGatewayIntPort {
     Notificacion crearNotificacionCambioEstado(String tipoSolicitud, Integer idUsuario, Integer idSolicitud, String estadoAnterior, String estadoNuevo);
     Notificacion crearNotificacionAprobacion(String tipoSolicitud, Integer idUsuario, Integer idSolicitud, boolean aprobado, String motivo);
     Notificacion crearNotificacionAlerta(String tipoSolicitud, Integer idUsuario, String titulo, String mensaje, boolean esUrgente);
+    
+    // Métodos para buscar funcionarios
+    List<Notificacion> buscarFuncionariosPorRol(String nombreRol);
 }
