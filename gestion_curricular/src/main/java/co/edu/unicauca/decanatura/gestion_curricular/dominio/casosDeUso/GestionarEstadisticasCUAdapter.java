@@ -2,6 +2,7 @@ package co.edu.unicauca.decanatura.gestion_curricular.dominio.casosDeUso;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarEstadisticasCUIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.FormateadorResultadosIntPort;
@@ -107,5 +108,98 @@ public class GestionarEstadisticasCUAdapter implements GestionarEstadisticasCUIn
         }
 
         return estadisticasGateway.obtenerEstadisticasPeriodoEstadoYPrograma(fechaInicio, fechaFin, idPrograma);
+    }
+
+    @Override
+    public Map<String, Object> obtenerEstadisticasGlobales() {
+        return estadisticasGateway.obtenerEstadisticasGlobales();
+    }
+
+    @Override
+    public Map<String, Object> obtenerEstadisticasPorProceso(String tipoProceso) {
+        if (tipoProceso == null || tipoProceso.isBlank()) {
+            formateadorResultados.retornarRespuestaErrorEntidadExiste("El tipo de proceso no puede estar vacío.");
+        }
+
+        return estadisticasGateway.obtenerEstadisticasPorProceso(tipoProceso);
+    }
+
+    @Override
+    public Map<String, Object> obtenerEstadisticasPorEstado(String estado) {
+        if (estado == null || estado.isBlank()) {
+            formateadorResultados.retornarRespuestaErrorEntidadExiste("El estado no puede estar vacío.");
+        }
+
+        return estadisticasGateway.obtenerEstadisticasPorEstado(estado);
+    }
+
+    @Override
+    public Map<String, Object> obtenerEstadisticasPorPrograma(Integer idPrograma) {
+        if (idPrograma == null || idPrograma <= 0) {
+            formateadorResultados.retornarRespuestaErrorEntidadExiste("El ID del programa debe ser válido.");
+        }
+
+        return estadisticasGateway.obtenerEstadisticasPorPrograma(idPrograma);
+    }
+
+    @Override
+    public Map<String, Object> obtenerEstadisticasPorPeriodo(Date fechaInicio, Date fechaFin) {
+        if (fechaInicio == null || fechaFin == null) {
+            formateadorResultados.retornarRespuestaErrorEntidadExiste("Las fechas de inicio y fin son requeridas.");
+        }
+
+        if (fechaInicio.after(fechaFin)) {
+            formateadorResultados.retornarRespuestaErrorEntidadExiste("La fecha de inicio no puede ser posterior a la fecha de fin.");
+        }
+
+        return estadisticasGateway.obtenerEstadisticasPorPeriodo(fechaInicio, fechaFin);
+    }
+
+    @Override
+    public Map<String, Object> obtenerEstadisticasPorProgramaYPeriodo(Integer idPrograma, Date fechaInicio, Date fechaFin) {
+        if (idPrograma == null || idPrograma <= 0) {
+            formateadorResultados.retornarRespuestaErrorEntidadExiste("El ID del programa debe ser válido.");
+        }
+
+        if (fechaInicio == null || fechaFin == null) {
+            formateadorResultados.retornarRespuestaErrorEntidadExiste("Las fechas de inicio y fin son requeridas.");
+        }
+
+        if (fechaInicio.after(fechaFin)) {
+            formateadorResultados.retornarRespuestaErrorEntidadExiste("La fecha de inicio no puede ser posterior a la fecha de fin.");
+        }
+
+        return estadisticasGateway.obtenerEstadisticasPorProgramaYPeriodo(idPrograma, fechaInicio, fechaFin);
+    }
+
+    @Override
+    public Map<String, Object> obtenerEstadisticasPorProcesoYEstado(String tipoProceso, String estado) {
+        if (tipoProceso == null || tipoProceso.isBlank()) {
+            formateadorResultados.retornarRespuestaErrorEntidadExiste("El tipo de proceso no puede estar vacío.");
+        }
+
+        if (estado == null || estado.isBlank()) {
+            formateadorResultados.retornarRespuestaErrorEntidadExiste("El estado no puede estar vacío.");
+        }
+
+        return estadisticasGateway.obtenerEstadisticasPorProcesoYEstado(tipoProceso, estado);
+    }
+
+    @Override
+    public Map<String, Object> obtenerResumenCompleto() {
+        return estadisticasGateway.obtenerResumenCompleto();
+    }
+
+    @Override
+    public Map<String, Object> obtenerTendenciasPorPeriodo(Date fechaInicio1, Date fechaFin1, Date fechaInicio2, Date fechaFin2) {
+        if (fechaInicio1 == null || fechaFin1 == null || fechaInicio2 == null || fechaFin2 == null) {
+            formateadorResultados.retornarRespuestaErrorEntidadExiste("Todas las fechas son requeridas para la comparación.");
+        }
+
+        if (fechaInicio1.after(fechaFin1) || fechaInicio2.after(fechaFin2)) {
+            formateadorResultados.retornarRespuestaErrorEntidadExiste("Las fechas de inicio no pueden ser posteriores a las fechas de fin.");
+        }
+
+        return estadisticasGateway.obtenerTendenciasPorPeriodo(fechaInicio1, fechaFin1, fechaInicio2, fechaFin2);
     }
 }
