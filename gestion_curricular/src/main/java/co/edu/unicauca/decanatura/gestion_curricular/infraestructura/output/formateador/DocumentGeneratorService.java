@@ -86,7 +86,7 @@ public class DocumentGeneratorService {
     private String obtenerRutaPlantilla(String tipoDocumento) {
         Map<String, String> rutas = new HashMap<>();
         rutas.put("OFICIO_HOMOLOGACION", "templates/oficio-homologacion.docx");
-        rutas.put("PAZ_SALVO", "templates/paz-salvo.docx");
+        rutas.put("PAZ_SALVO", "templates/paz-salvo-real.docx");
         rutas.put("RESOLUCION_REINGRESO", "templates/resolucion-reingreso.docx");
         
         return rutas.getOrDefault(tipoDocumento, "templates/documento-generico.docx");

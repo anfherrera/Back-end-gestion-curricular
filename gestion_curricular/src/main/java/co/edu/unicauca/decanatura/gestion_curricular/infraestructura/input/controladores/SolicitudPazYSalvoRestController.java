@@ -24,6 +24,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.HashMap;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpHeaders;
@@ -52,6 +53,7 @@ public class SolicitudPazYSalvoRestController {
     private final GestionarArchivosCUIntPort objGestionarArchivos;
     private final GestionarDocumentosGatewayIntPort objGestionarDocumentosGateway;
     private final DocumentosMapperDominio documentosMapperDominio;
+    private final co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.formateador.DocumentGeneratorService documentGeneratorService;
 
     @PostMapping("/crearSolicitud-PazYSalvo")
     public ResponseEntity<SolicitudPazYSalvoDTORespuesta> crearSolicitudPazYSalvo(
@@ -125,83 +127,188 @@ public class SolicitudPazYSalvoRestController {
     }
 
     /**
-     * Subir archivo para una solicitud de paz y salvo
+     * Subir archivo para paz y salvo (SIN asociar a solicitud - como en homologación)
+     * Los documentos se asocian automáticamente cuando se crea la solicitud
      */
-    @PostMapping("/{idSolicitud}/subir-archivo")
-    public ResponseEntity<DocumentosDTORespuesta> subirArchivoPazSalvo(
-            @PathVariable Integer idSolicitud,
+    @PostMapping("/subir-documento")
+    public ResponseEntity<Map<String, Object>> subirDocumentoPazSalvo(
             @RequestParam("file") MultipartFile file) {
         try {
-            System.out.println("📁 Subiendo archivo para solicitud de paz y salvo: " + idSolicitud);
+            System.out.println("📁 [PAZ Y SALVO] Subiendo documento sin asociar (como en homologación)...");
             
             String nombreOriginal = file.getOriginalFilename();
+            System.out.println("📁 [PAZ Y SALVO] Archivo: " + nombreOriginal);
             
-            // Validaciones
-            System.out.println("📁 Validando archivo: " + nombreOriginal);
+            // Validaciones básicas
+            if (!nombreOriginal.toLowerCase().endsWith(".pdf")) {
+                return ResponseEntity.status(HttpStatus.UNSUPPORTED_MEDIA_TYPE)
+                    .body(Map.of("error", "Solo se permiten archivos PDF"));
+            }
             
-            // 1. Validar peso máximo (10MB = 10 * 1024 * 1024 bytes)
+            // Validar peso máximo (10MB)
             long maxFileSize = 10 * 1024 * 1024; // 10MB
             if (file.getSize() > maxFileSize) {
-                System.err.println("❌ Archivo demasiado grande: " + file.getSize() + " bytes (máximo: " + maxFileSize + " bytes)");
-                return ResponseEntity.status(HttpStatus.PAYLOAD_TOO_LARGE).body(null);
+                System.err.println("❌ [PAZ Y SALVO] Archivo demasiado grande: " + file.getSize() + " bytes");
+                return ResponseEntity.status(HttpStatus.PAYLOAD_TOO_LARGE)
+                    .body(Map.of("error", "Archivo demasiado grande. Máximo 10MB"));
             }
             
-            // 2. Validar que no sea un archivo duplicado
-            try {
-                SolicitudPazYSalvo solicitud = solicitudPazYSalvoCU.buscarPorId(idSolicitud);
-                if (solicitud != null && solicitud.getDocumentos() != null) {
-                    for (Documento doc : solicitud.getDocumentos()) {
-                        if (doc.getNombre() != null && doc.getNombre().equals(nombreOriginal)) {
-                            System.err.println("❌ Archivo duplicado: " + nombreOriginal);
-                            return ResponseEntity.status(HttpStatus.CONFLICT).body(null);
-                        }
-                    }
-                }
-            } catch (Exception e) {
-                System.err.println("⚠️ Error al verificar duplicados: " + e.getMessage());
-            }
-            
-            // 3. Validar tipo de archivo
-            if (!nombreOriginal.toLowerCase().endsWith(".pdf")) {
-                System.err.println("❌ Tipo de archivo no válido: " + nombreOriginal);
-                return ResponseEntity.status(HttpStatus.UNSUPPORTED_MEDIA_TYPE).body(null);
-            }
-            
-            System.out.println("✅ Validaciones pasadas, guardando archivo...");
+            // Guardar archivo
             this.objGestionarArchivos.saveFile(file, nombreOriginal, "pdf");
             
+            // Crear documento SIN asociar a solicitud (como en homologación)
             Documento doc = new Documento();
             doc.setNombre(nombreOriginal);
             doc.setRuta_documento(nombreOriginal);
             doc.setFecha_documento(new Date());
             doc.setEsValido(true);
-            
-            // Asociar solicitud - igual que en homologación
-            try {
-                SolicitudPazYSalvo solicitud = solicitudPazYSalvoCU.buscarPorId(idSolicitud);
-                if (solicitud != null) {
-                    // Usar la solicitud real en lugar de crear una nueva
-                    doc.setObjSolicitud(solicitud);
-                    System.out.println("📎 Asociando archivo '" + nombreOriginal + "' a solicitud de paz y salvo ID: " + idSolicitud);
-                } else {
-                    System.err.println("❌ No se encontró la solicitud de paz y salvo con ID: " + idSolicitud);
-                }
-            } catch (Exception e) {
-                System.err.println("❌ Error al obtener solicitud de paz y salvo: " + e.getMessage());
-            }
+            // NO agregar comentario automático - solo funcionarios/coordinadores pueden comentar
+            // NO asociar a solicitud - esto se hace después como en homologación
             
             Documento documentoGuardado = this.objGestionarDocumentosGateway.crearDocumento(doc);
-            ResponseEntity<DocumentosDTORespuesta> respuesta = new ResponseEntity<>(
-                documentosMapperDominio.mappearDeDocumentoADTORespuesta(documentoGuardado), HttpStatus.CREATED
-            );
             
-            System.out.println("✅ Archivo subido exitosamente: " + nombreOriginal);
-            return respuesta;
+            System.out.println("✅ [PAZ Y SALVO] Documento creado sin asociar: " + documentoGuardado.getId_documento());
+            
+            Map<String, Object> respuesta = new HashMap<>();
+            respuesta.put("success", true);
+            respuesta.put("message", "Documento subido exitosamente (sin asociar)");
+            respuesta.put("documento_id", documentoGuardado.getId_documento());
+            respuesta.put("nombre", nombreOriginal);
+            respuesta.put("fecha", documentoGuardado.getFecha_documento());
+            
+            return ResponseEntity.ok(respuesta);
             
         } catch (Exception e) {
-            System.err.println("❌ Error al subir archivo de paz y salvo: " + e.getMessage());
+            System.err.println("❌ [PAZ Y SALVO] Error: " + e.getMessage());
             e.printStackTrace();
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+            
+            Map<String, Object> errorInfo = new HashMap<>();
+            errorInfo.put("error", e.getMessage());
+            return ResponseEntity.ok(errorInfo);
+        }
+    }
+
+    /**
+     * Descargar documento específico por nombre (igual que homologación)
+     */
+    @GetMapping("/descargar-documento")
+    public ResponseEntity<byte[]> descargarDocumento(@RequestParam("filename") String filename) {
+        try {
+            System.out.println("📥 Descargando documento: " + filename);
+            
+            // Obtener el archivo usando el servicio de archivos
+            byte[] archivo = objGestionarArchivos.getFile(filename);
+            
+            if (archivo == null || archivo.length == 0) {
+                System.err.println("❌ Archivo no encontrado: " + filename);
+                return ResponseEntity.notFound().build();
+            }
+            
+            System.out.println("✅ Documento encontrado: " + filename);
+            System.out.println("📄 Tamaño del archivo: " + archivo.length + " bytes");
+            
+            // Configurar respuesta igual que en homologación
+            String contentDisposition = "attachment; filename=\"" + filename + "\"";
+            
+            return ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_DISPOSITION, contentDisposition)
+                .contentType(MediaType.APPLICATION_PDF)
+                .body(archivo);
+                
+        } catch (Exception e) {
+            System.err.println("❌ Error al descargar documento: " + e.getMessage());
+            e.printStackTrace();
+            return ResponseEntity.internalServerError().build();
+        }
+    }
+
+
+    /**
+     * Generar documento de paz y salvo usando plantilla (igual que homologación)
+     */
+    @PostMapping("/generar-documento/{idSolicitud}")
+    public ResponseEntity<byte[]> generarDocumentoPazSalvo(
+            @PathVariable Integer idSolicitud,
+            @RequestParam("numeroDocumento") String numeroDocumento,
+            @RequestParam("fechaDocumento") String fechaDocumento,
+            @RequestParam(value = "observaciones", required = false) String observaciones) {
+        try {
+            System.out.println("📄 Generando documento de paz y salvo para solicitud: " + idSolicitud);
+            
+            // Obtener la solicitud
+            SolicitudPazYSalvo solicitud = solicitudPazYSalvoCU.buscarPorId(idSolicitud);
+            if (solicitud == null) {
+                System.err.println("❌ Solicitud no encontrada: " + idSolicitud);
+                return ResponseEntity.notFound().build();
+            }
+            
+            // Crear request para el generador de documentos (igual que homologación)
+            Map<String, Object> datosDocumento = new HashMap<>();
+            datosDocumento.put("numeroDocumento", numeroDocumento);
+            datosDocumento.put("fechaDocumento", fechaDocumento);
+            datosDocumento.put("observaciones", observaciones != null ? observaciones : "");
+            
+            Map<String, Object> datosSolicitud = new HashMap<>();
+            datosSolicitud.put("nombreEstudiante", solicitud.getObjUsuario().getNombre_completo());
+            datosSolicitud.put("codigoEstudiante", solicitud.getObjUsuario().getCodigo());
+            datosSolicitud.put("programa", "Ingeniería Electrónica y Telecomunicaciones");
+            datosSolicitud.put("fechaSolicitud", solicitud.getFecha_registro_solicitud());
+            
+            // Crear el request (igual que homologación)
+            co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.DTORespuesta.DocumentRequest request = 
+                new co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.DTORespuesta.DocumentRequest();
+            request.setTipoDocumento("PAZ_SALVO");
+            request.setDatosDocumento(datosDocumento);
+            request.setDatosSolicitud(datosSolicitud);
+            
+            // Generar documento usando el servicio (igual que homologación)
+            java.io.ByteArrayOutputStream documentBytes = documentGeneratorService.generarDocumento(request);
+            
+            // Generar nombre del archivo (igual que homologación)
+            String nombreEstudiante = solicitud.getObjUsuario().getNombre_completo();
+            String nombreLimpio = nombreEstudiante.replaceAll("[^a-zA-Z0-9]", "_");
+            String nombreArchivo = String.format("PAZ_SALVO_%s_%s.docx", nombreLimpio, numeroDocumento);
+            
+            System.out.println("✅ Documento de paz y salvo generado: " + nombreArchivo);
+            
+            return ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + nombreArchivo + "\"")
+                .contentType(MediaType.APPLICATION_OCTET_STREAM)
+                .body(documentBytes.toByteArray());
+                
+        } catch (Exception e) {
+            System.err.println("❌ Error al generar documento de paz y salvo: " + e.getMessage());
+            e.printStackTrace();
+            return ResponseEntity.internalServerError().build();
+        }
+    }
+
+    /**
+     * Obtener plantillas disponibles para paz y salvo
+     */
+    @GetMapping("/plantillas-disponibles")
+    public ResponseEntity<List<Map<String, Object>>> obtenerPlantillasDisponibles() {
+        try {
+            System.out.println("📋 Obteniendo plantillas disponibles para paz y salvo");
+            
+            List<Map<String, Object>> plantillas = new ArrayList<>();
+            
+            Map<String, Object> plantillaPazSalvo = new HashMap<>();
+            plantillaPazSalvo.put("id", "PAZ_SALVO");
+            plantillaPazSalvo.put("nombre", "Paz y Salvo");
+            plantillaPazSalvo.put("descripcion", "Documento que certifica que el estudiante no tiene pendientes académicos");
+            plantillaPazSalvo.put("camposRequeridos", Arrays.asList("numeroDocumento", "fechaDocumento"));
+            plantillaPazSalvo.put("camposOpcionales", Arrays.asList("observaciones"));
+            
+            plantillas.add(plantillaPazSalvo);
+            
+            System.out.println("✅ Plantillas obtenidas: " + plantillas.size());
+            return ResponseEntity.ok(plantillas);
+            
+        } catch (Exception e) {
+            System.err.println("❌ Error al obtener plantillas: " + e.getMessage());
+            e.printStackTrace();
+            return ResponseEntity.internalServerError().build();
         }
     }
 
@@ -522,71 +629,20 @@ public class SolicitudPazYSalvoRestController {
         }
     }
 
-    /**
-     * Endpoint para simular el proceso de subida de documentos como en homologación
-     */
-    @PostMapping("/simular-subida-documento")
-    public ResponseEntity<Map<String, Object>> simularSubidaDocumento(
-            @RequestParam("file") MultipartFile file) {
-        try {
-            System.out.println("🔍 [SIMULACIÓN] Simulando subida de documento como en homologación...");
-            
-            String nombreOriginal = file.getOriginalFilename();
-            System.out.println("🔍 [SIMULACIÓN] Archivo: " + nombreOriginal);
-            
-            // Validaciones básicas
-            if (!nombreOriginal.toLowerCase().endsWith(".pdf")) {
-                return ResponseEntity.status(HttpStatus.UNSUPPORTED_MEDIA_TYPE)
-                    .body(Map.of("error", "Solo se permiten archivos PDF"));
-            }
-            
-            // Guardar archivo
-            this.objGestionarArchivos.saveFile(file, nombreOriginal, "pdf");
-            
-            // Crear documento SIN asociar a solicitud (como en homologación)
-            Documento doc = new Documento();
-            doc.setNombre(nombreOriginal);
-            doc.setRuta_documento(nombreOriginal);
-            doc.setFecha_documento(new Date());
-            doc.setEsValido(true);
-            doc.setComentario("Documento subido para Paz y Salvo");
-            // NO asociar a solicitud - esto se hace después como en homologación
-            
-            Documento documentoGuardado = this.objGestionarDocumentosGateway.crearDocumento(doc);
-            
-            System.out.println("✅ [SIMULACIÓN] Documento creado sin asociar: " + documentoGuardado.getId_documento());
-            
-            Map<String, Object> respuesta = new HashMap<>();
-            respuesta.put("success", true);
-            respuesta.put("message", "Documento subido exitosamente (sin asociar)");
-            respuesta.put("documento_id", documentoGuardado.getId_documento());
-            respuesta.put("nombre", nombreOriginal);
-            
-            return ResponseEntity.ok(respuesta);
-            
-        } catch (Exception e) {
-            System.err.println("❌ [SIMULACIÓN] Error: " + e.getMessage());
-            e.printStackTrace();
-            
-            Map<String, Object> errorInfo = new HashMap<>();
-            errorInfo.put("error", e.getMessage());
-            return ResponseEntity.ok(errorInfo);
-        }
-    }
 
     /**
-     * Endpoint para asociar documentos huérfanos a la solicitud ID 1 (como en homologación)
+     * Endpoint para asociar documentos huérfanos a una solicitud específica (como en homologación)
      */
-    @PostMapping("/asociar-documentos-huerfanos")
-    public ResponseEntity<Map<String, Object>> asociarDocumentosHuerfanos() {
+    @PostMapping("/asociar-documentos-huerfanos/{idSolicitud}")
+    public ResponseEntity<Map<String, Object>> asociarDocumentosHuerfanos(@PathVariable Integer idSolicitud) {
         try {
-            System.out.println("🔍 [ASOCIACIÓN] Asociando documentos huérfanos a solicitud ID 1...");
+            System.out.println("🔍 [ASOCIACIÓN] Asociando documentos huérfanos a solicitud ID: " + idSolicitud);
             
             // Obtener la solicitud
-            SolicitudPazYSalvo solicitud = solicitudPazYSalvoCU.buscarPorId(1);
+            SolicitudPazYSalvo solicitud = solicitudPazYSalvoCU.buscarPorId(idSolicitud);
             if (solicitud == null) {
                 Map<String, Object> error = new HashMap<>();
-                error.put("error", "Solicitud ID 1 no encontrada");
+                error.put("error", "Solicitud ID " + idSolicitud + " no encontrada");
                 return ResponseEntity.ok(error);
             }
             
@@ -607,7 +663,7 @@ public class SolicitudPazYSalvoRestController {
             Map<String, Object> resultado = new HashMap<>();
             resultado.put("success", true);
             resultado.put("documentos_asociados", documentosAsociados);
-            resultado.put("solicitud_id", 1);
+            resultado.put("solicitud_id", idSolicitud);
             resultado.put("mensaje", "Documentos asociados exitosamente");
             
             System.out.println("✅ [ASOCIACIÓN] Total documentos asociados: " + documentosAsociados);
