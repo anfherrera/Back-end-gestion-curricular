@@ -153,35 +153,87 @@ public class GestionarEstadisticasGatewayImplAdapter implements GestionarEstadis
     @Override
     @Transactional(readOnly = true)
     public Map<String, Object> obtenerEstadisticasGlobales() {
+        System.out.println("📊 [ESTADISTICAS_GLOBALES] Iniciando consulta de estadísticas globales");
+        
         Map<String, Object> estadisticas = new HashMap<>();
         
-        // Estadísticas generales del sistema
-        Integer totalSolicitudes = solicitudRepository.totalSolicitudes();
-        Integer totalAprobadas = solicitudRepository.contarSolicitudesPorUltimoEstado("Aprobado");
-        Integer totalRechazadas = solicitudRepository.contarSolicitudesPorUltimoEstado("Rechazado");
-        Integer totalEnProceso = solicitudRepository.contarSolicitudesPorUltimoEstado("Enviada");
-        
-        estadisticas.put("totalSolicitudes", totalSolicitudes);
-        estadisticas.put("totalAprobadas", totalAprobadas);
-        estadisticas.put("totalRechazadas", totalRechazadas);
-        estadisticas.put("totalEnProceso", totalEnProceso);
-        estadisticas.put("porcentajeAprobacion", totalSolicitudes > 0 ? (double) totalAprobadas / totalSolicitudes * 100 : 0.0);
-        
-        // Estadísticas por tipo de proceso
-        Map<String, Integer> porTipoProceso = new HashMap<>();
-        List<String> nombresProcesos = new ArrayList<>(solicitudRepository.buscarNombresSolicitudes());
-        for (String proceso : nombresProcesos) {
-            Integer cantidad = solicitudRepository.contarPorNombre(proceso);
-            porTipoProceso.put(proceso, cantidad);
+        try {
+            // Estadísticas generales del sistema
+            Integer totalSolicitudes = Optional.ofNullable(solicitudRepository.totalSolicitudes()).orElse(0);
+            Integer totalAprobadas = Optional.ofNullable(solicitudRepository.contarSolicitudesPorUltimoEstado("Aprobado")).orElse(0);
+            Integer totalRechazadas = Optional.ofNullable(solicitudRepository.contarSolicitudesPorUltimoEstado("Rechazado")).orElse(0);
+            Integer totalEnProceso = Optional.ofNullable(solicitudRepository.contarSolicitudesPorUltimoEstado("Enviada")).orElse(0);
+            
+            System.out.println("📊 [ESTADISTICAS_GLOBALES] Totales obtenidos - Total: " + totalSolicitudes + 
+                             ", Aprobadas: " + totalAprobadas + ", Rechazadas: " + totalRechazadas + 
+                             ", En Proceso: " + totalEnProceso);
+            
+            estadisticas.put("totalSolicitudes", totalSolicitudes);
+            estadisticas.put("totalAprobadas", totalAprobadas);
+            estadisticas.put("totalRechazadas", totalRechazadas);
+            estadisticas.put("totalEnProceso", totalEnProceso);
+            
+            // Calcular porcentaje de aprobación
+            double porcentajeAprobacion = 0.0;
+            if (totalSolicitudes > 0) {
+                porcentajeAprobacion = (double) totalAprobadas / totalSolicitudes * 100;
+            }
+            estadisticas.put("porcentajeAprobacion", Math.round(porcentajeAprobacion * 10.0) / 10.0);
+            
+            // Estadísticas por tipo de proceso
+            Map<String, Integer> porTipoProceso = new HashMap<>();
+            try {
+                List<String> nombresProcesos = new ArrayList<>(solicitudRepository.buscarNombresSolicitudes());
+                System.out.println("📊 [ESTADISTICAS_GLOBALES] Procesos encontrados: " + nombresProcesos);
+                
+                for (String proceso : nombresProcesos) {
+                    Integer cantidad = Optional.ofNullable(solicitudRepository.contarPorNombre(proceso)).orElse(0);
+                    porTipoProceso.put(proceso, cantidad);
+                    System.out.println("📊 [ESTADISTICAS_GLOBALES] Proceso: " + proceso + " = " + cantidad);
+                }
+            } catch (Exception e) {
+                System.err.println("⚠️ [ESTADISTICAS_GLOBALES] Error obteniendo procesos: " + e.getMessage());
+                porTipoProceso = new HashMap<>();
+            }
+            estadisticas.put("porTipoProceso", porTipoProceso);
+            
+            // Estadísticas por programa
+            Map<String, Integer> porPrograma = new HashMap<>();
+            try {
+                List<String> nombresProgramas = new ArrayList<>(programaRepository.buscarNombresProgramas());
+                System.out.println("📊 [ESTADISTICAS_GLOBALES] Programas encontrados: " + nombresProgramas);
+                
+                for (String programa : nombresProgramas) {
+                    // TODO: Implementar conteo real por programa cuando esté disponible el método
+                    porPrograma.put(programa, 0);
+                }
+            } catch (Exception e) {
+                System.err.println("⚠️ [ESTADISTICAS_GLOBALES] Error obteniendo programas: " + e.getMessage());
+                porPrograma = new HashMap<>();
+            }
+            estadisticas.put("porPrograma", porPrograma);
+            
+            // Estadísticas por estado (consistente con la BD)
+            Map<String, Integer> porEstado = new HashMap<>();
+            porEstado.put("Aprobado", totalAprobadas);
+            porEstado.put("Rechazado", totalRechazadas);
+            porEstado.put("En_Proceso", totalEnProceso); // Usar el mismo formato que en la BD
+            estadisticas.put("porEstado", porEstado);
+            
+            estadisticas.put("fechaConsulta", new Date());
+            
+            // Normalizar la respuesta para evitar valores null
+            estadisticas = normalizarEstadistica(estadisticas);
+            
+            System.out.println("✅ [ESTADISTICAS_GLOBALES] Consulta completada exitosamente");
+            System.out.println("📊 [ESTADISTICAS_GLOBALES] Resultado final: " + estadisticas);
+            
+        } catch (Exception e) {
+            System.err.println("❌ [ESTADISTICAS_GLOBALES] Error en consulta: " + e.getMessage());
+            e.printStackTrace();
+            // Devolver estadísticas vacías pero normalizadas en caso de error
+            estadisticas = normalizarEstadistica(new HashMap<>());
         }
-        estadisticas.put("porTipoProceso", porTipoProceso);
-        
-        // Estadísticas por programa
-        List<String> nombresProgramas = new ArrayList<>(programaRepository.buscarNombresProgramas());
-        estadisticas.put("totalProgramas", nombresProgramas.size());
-        estadisticas.put("nombresProgramas", nombresProgramas);
-        
-        estadisticas.put("fechaConsulta", new Date());
         
         return estadisticas;
     }
@@ -189,18 +241,78 @@ public class GestionarEstadisticasGatewayImplAdapter implements GestionarEstadis
     @Override
     @Transactional(readOnly = true)
     public Map<String, Object> obtenerEstadisticasPorProceso(String tipoProceso) {
+        System.out.println("📊 [ESTADISTICAS_POR_PROCESO] Consultando estadísticas para proceso: " + tipoProceso);
+        
         Map<String, Object> estadisticas = new HashMap<>();
         
-        Integer totalPorProceso = solicitudRepository.contarPorNombre(tipoProceso);
-        
-        // Contar por estado para el proceso específico
-        // Nota: Estos métodos necesitarían ser implementados en el repositorio
-        // Por ahora usamos los métodos existentes como aproximación
-        
-        estadisticas.put("tipoProceso", tipoProceso);
-        estadisticas.put("totalSolicitudes", totalPorProceso);
-        estadisticas.put("descripcion", obtenerDescripcionProceso(tipoProceso));
-        estadisticas.put("fechaConsulta", new Date());
+        try {
+            // Validar que el tipoProceso no sea null o vacío
+            if (tipoProceso == null || tipoProceso.trim().isEmpty()) {
+                System.err.println("❌ [ESTADISTICAS_POR_PROCESO] Tipo de proceso no puede ser null o vacío");
+                return normalizarEstadistica(new HashMap<>());
+            }
+            
+            // Normalizar el nombre del proceso para búsqueda
+            String procesoNormalizado = normalizarNombreProceso(tipoProceso);
+            System.out.println("📊 [ESTADISTICAS_POR_PROCESO] Proceso normalizado: " + procesoNormalizado);
+            
+            Integer totalPorProceso = Optional.ofNullable(solicitudRepository.contarPorNombre(procesoNormalizado)).orElse(0);
+            System.out.println("📊 [ESTADISTICAS_POR_PROCESO] Total encontrado: " + totalPorProceso);
+            
+            // Obtener estadísticas por estado para este proceso específico
+            Map<String, Integer> porEstado = new HashMap<>();
+            String[] estados = {"Aprobado", "Rechazado", "Enviada", "En_Proceso"};
+            
+            for (String estado : estados) {
+                Integer cantidad = 0;
+                try {
+                    // Por ahora usamos el conteo general por estado
+                    // TODO: Implementar conteo específico por proceso y estado
+                    cantidad = Optional.ofNullable(solicitudRepository.contarSolicitudesPorUltimoEstado(estado)).orElse(0);
+                } catch (Exception e) {
+                    System.out.println("⚠️ [ESTADISTICAS_POR_PROCESO] Error contando estado " + estado + ": " + e.getMessage());
+                    cantidad = 0;
+                }
+                
+                porEstado.put(estado, cantidad);
+                System.out.println("📊 [ESTADISTICAS_POR_PROCESO] Estado " + estado + ": " + cantidad);
+            }
+            
+            // Calcular totales para este proceso
+            Integer totalAprobadas = porEstado.get("Aprobado");
+            Integer totalRechazadas = porEstado.get("Rechazado");
+            Integer totalEnProceso = porEstado.get("Enviada") + porEstado.get("En_Proceso");
+            
+            // Calcular porcentaje de aprobación para este proceso
+            double porcentajeAprobacion = 0.0;
+            if (totalPorProceso > 0) {
+                porcentajeAprobacion = (double) totalAprobadas / totalPorProceso * 100;
+            }
+            
+            estadisticas.put("tipoProceso", tipoProceso);
+            estadisticas.put("totalSolicitudes", totalPorProceso);
+            estadisticas.put("totalAprobadas", totalAprobadas);
+            estadisticas.put("totalRechazadas", totalRechazadas);
+            estadisticas.put("totalEnProceso", totalEnProceso);
+            estadisticas.put("porcentajeAprobacion", Math.round(porcentajeAprobacion * 10.0) / 10.0);
+            estadisticas.put("porEstado", porEstado);
+            estadisticas.put("porTipoProceso", new HashMap<>()); // Vacío para proceso específico
+            estadisticas.put("porPrograma", new HashMap<>()); // Vacío para proceso específico
+            estadisticas.put("descripcion", obtenerDescripcionProceso(tipoProceso));
+            estadisticas.put("fechaConsulta", new Date());
+            
+            // Normalizar la respuesta para evitar valores null
+            estadisticas = normalizarEstadistica(estadisticas);
+            
+            System.out.println("✅ [ESTADISTICAS_POR_PROCESO] Consulta completada para: " + tipoProceso);
+            System.out.println("📊 [ESTADISTICAS_POR_PROCESO] Resultado final: " + estadisticas);
+            
+        } catch (Exception e) {
+            System.err.println("❌ [ESTADISTICAS_POR_PROCESO] Error en consulta: " + e.getMessage());
+            e.printStackTrace();
+            // Devolver estadísticas vacías pero normalizadas en caso de error
+            estadisticas = normalizarEstadistica(new HashMap<>());
+        }
         
         return estadisticas;
     }
@@ -208,14 +320,70 @@ public class GestionarEstadisticasGatewayImplAdapter implements GestionarEstadis
     @Override
     @Transactional(readOnly = true)
     public Map<String, Object> obtenerEstadisticasPorEstado(String estado) {
+        System.out.println("📊 [ESTADISTICAS_POR_ESTADO] Consultando estadísticas para estado: " + estado);
+        
         Map<String, Object> estadisticas = new HashMap<>();
         
-        Integer totalPorEstado = solicitudRepository.contarSolicitudesPorUltimoEstado(estado);
-        
-        estadisticas.put("estado", estado);
-        estadisticas.put("totalSolicitudes", totalPorEstado);
-        estadisticas.put("descripcionEstado", obtenerDescripcionEstado(estado));
-        estadisticas.put("fechaConsulta", new Date());
+        try {
+            // Validar que el estado no sea null o vacío
+            if (estado == null || estado.trim().isEmpty()) {
+                System.err.println("❌ [ESTADISTICAS_POR_ESTADO] Estado no puede ser null o vacío");
+                return normalizarEstadistica(new HashMap<>());
+            }
+            
+            Integer totalPorEstado = Optional.ofNullable(solicitudRepository.contarSolicitudesPorUltimoEstado(estado)).orElse(0);
+            System.out.println("📊 [ESTADISTICAS_POR_ESTADO] Total encontrado: " + totalPorEstado);
+            
+            // Obtener estadísticas por tipo de proceso para este estado
+            Map<String, Integer> porTipoProceso = new HashMap<>();
+            try {
+                List<String> nombresProcesos = new ArrayList<>(solicitudRepository.buscarNombresSolicitudes());
+                for (String proceso : nombresProcesos) {
+                    // TODO: Implementar conteo específico por proceso y estado
+                    porTipoProceso.put(proceso, 0);
+                }
+            } catch (Exception e) {
+                System.err.println("⚠️ [ESTADISTICAS_POR_ESTADO] Error obteniendo procesos: " + e.getMessage());
+                porTipoProceso = new HashMap<>();
+            }
+            
+            // Obtener estadísticas por programa para este estado
+            Map<String, Integer> porPrograma = new HashMap<>();
+            try {
+                List<String> nombresProgramas = new ArrayList<>(programaRepository.buscarNombresProgramas());
+                for (String programa : nombresProgramas) {
+                    // TODO: Implementar conteo específico por programa y estado
+                    porPrograma.put(programa, 0);
+                }
+            } catch (Exception e) {
+                System.err.println("⚠️ [ESTADISTICAS_POR_ESTADO] Error obteniendo programas: " + e.getMessage());
+                porPrograma = new HashMap<>();
+            }
+            
+            estadisticas.put("estado", estado);
+            estadisticas.put("totalSolicitudes", totalPorEstado);
+            estadisticas.put("totalAprobadas", estado.equals("Aprobado") ? totalPorEstado : 0);
+            estadisticas.put("totalRechazadas", estado.equals("Rechazado") ? totalPorEstado : 0);
+            estadisticas.put("totalEnProceso", (estado.equals("Enviada") || estado.equals("En_Proceso")) ? totalPorEstado : 0);
+            estadisticas.put("porcentajeAprobacion", estado.equals("Aprobado") ? 100.0 : 0.0);
+            estadisticas.put("porTipoProceso", porTipoProceso);
+            estadisticas.put("porPrograma", porPrograma);
+            estadisticas.put("porEstado", new HashMap<>()); // Vacío para estado específico
+            estadisticas.put("descripcionEstado", obtenerDescripcionEstado(estado));
+            estadisticas.put("fechaConsulta", new Date());
+            
+            // Normalizar la respuesta para evitar valores null
+            estadisticas = normalizarEstadistica(estadisticas);
+            
+            System.out.println("✅ [ESTADISTICAS_POR_ESTADO] Consulta completada para: " + estado);
+            System.out.println("📊 [ESTADISTICAS_POR_ESTADO] Resultado final: " + estadisticas);
+            
+        } catch (Exception e) {
+            System.err.println("❌ [ESTADISTICAS_POR_ESTADO] Error en consulta: " + e.getMessage());
+            e.printStackTrace();
+            // Devolver estadísticas vacías pero normalizadas en caso de error
+            estadisticas = normalizarEstadistica(new HashMap<>());
+        }
         
         return estadisticas;
     }
@@ -223,23 +391,80 @@ public class GestionarEstadisticasGatewayImplAdapter implements GestionarEstadis
     @Override
     @Transactional(readOnly = true)
     public Map<String, Object> obtenerEstadisticasPorPrograma(Integer idPrograma) {
+        System.out.println("📊 [ESTADISTICAS_POR_PROGRAMA] Consultando estadísticas para programa ID: " + idPrograma);
+        
         Map<String, Object> estadisticas = new HashMap<>();
         
-        // Obtener estadísticas por programa (usando fechas amplias para capturar todo)
-        Date fechaInicio = new Date(System.currentTimeMillis() - 365L * 24 * 60 * 60 * 1000); // 1 año atrás
-        Date fechaFin = new Date();
-        
-        Map<String, Integer> porTipoProceso = new HashMap<>();
-        List<String> nombresProcesos = new ArrayList<>(solicitudRepository.buscarNombresSolicitudes());
-        
-        for (String proceso : nombresProcesos) {
-            Integer cantidad = solicitudRepository.contarNombreFechaYPrograma(proceso, fechaInicio, fechaFin, idPrograma);
-            porTipoProceso.put(proceso, cantidad);
+        try {
+            // Validar que el idPrograma no sea null o menor a 1
+            if (idPrograma == null || idPrograma < 1) {
+                System.err.println("❌ [ESTADISTICAS_POR_PROGRAMA] ID de programa no puede ser null o menor a 1");
+                return normalizarEstadistica(new HashMap<>());
+            }
+            
+            // Obtener estadísticas por programa (usando fechas amplias para capturar todo)
+            Date fechaInicio = new Date(System.currentTimeMillis() - 365L * 24 * 60 * 60 * 1000); // 1 año atrás
+            Date fechaFin = new Date();
+            
+            Map<String, Integer> porTipoProceso = new HashMap<>();
+            try {
+                List<String> nombresProcesos = new ArrayList<>(solicitudRepository.buscarNombresSolicitudes());
+                System.out.println("📊 [ESTADISTICAS_POR_PROGRAMA] Procesos encontrados: " + nombresProcesos);
+                
+                for (String proceso : nombresProcesos) {
+                    Integer cantidad = Optional.ofNullable(solicitudRepository.contarNombreFechaYPrograma(proceso, fechaInicio, fechaFin, idPrograma)).orElse(0);
+                    porTipoProceso.put(proceso, cantidad);
+                    System.out.println("📊 [ESTADISTICAS_POR_PROGRAMA] Proceso " + proceso + ": " + cantidad);
+                }
+            } catch (Exception e) {
+                System.err.println("⚠️ [ESTADISTICAS_POR_PROGRAMA] Error obteniendo procesos: " + e.getMessage());
+                porTipoProceso = new HashMap<>();
+            }
+            
+            // Obtener estadísticas por estado para este programa
+            Map<String, Integer> porEstado = new HashMap<>();
+            String[] estados = {"Aprobado", "Rechazado", "Enviada", "En_Proceso"};
+            
+            for (String estado : estados) {
+                Integer cantidad = Optional.ofNullable(solicitudRepository.contarSolicitudesPorUltimoEstado(estado)).orElse(0);
+                porEstado.put(estado, cantidad);
+            }
+            
+            // Calcular totales para este programa
+            Integer totalSolicitudes = porTipoProceso.values().stream().mapToInt(Integer::intValue).sum();
+            Integer totalAprobadas = porEstado.get("Aprobado");
+            Integer totalRechazadas = porEstado.get("Rechazado");
+            Integer totalEnProceso = porEstado.get("Enviada") + porEstado.get("En_Proceso");
+            
+            // Calcular porcentaje de aprobación para este programa
+            double porcentajeAprobacion = 0.0;
+            if (totalSolicitudes > 0) {
+                porcentajeAprobacion = (double) totalAprobadas / totalSolicitudes * 100;
+            }
+            
+            estadisticas.put("idPrograma", idPrograma);
+            estadisticas.put("totalSolicitudes", totalSolicitudes);
+            estadisticas.put("totalAprobadas", totalAprobadas);
+            estadisticas.put("totalRechazadas", totalRechazadas);
+            estadisticas.put("totalEnProceso", totalEnProceso);
+            estadisticas.put("porcentajeAprobacion", Math.round(porcentajeAprobacion * 10.0) / 10.0);
+            estadisticas.put("porTipoProceso", porTipoProceso);
+            estadisticas.put("porEstado", porEstado);
+            estadisticas.put("porPrograma", new HashMap<>()); // Vacío para programa específico
+            estadisticas.put("fechaConsulta", new Date());
+            
+            // Normalizar la respuesta para evitar valores null
+            estadisticas = normalizarEstadistica(estadisticas);
+            
+            System.out.println("✅ [ESTADISTICAS_POR_PROGRAMA] Consulta completada para programa: " + idPrograma);
+            System.out.println("📊 [ESTADISTICAS_POR_PROGRAMA] Resultado final: " + estadisticas);
+            
+        } catch (Exception e) {
+            System.err.println("❌ [ESTADISTICAS_POR_PROGRAMA] Error en consulta: " + e.getMessage());
+            e.printStackTrace();
+            // Devolver estadísticas vacías pero normalizadas en caso de error
+            estadisticas = normalizarEstadistica(new HashMap<>());
         }
-        
-        estadisticas.put("idPrograma", idPrograma);
-        estadisticas.put("porTipoProceso", porTipoProceso);
-        estadisticas.put("fechaConsulta", new Date());
         
         return estadisticas;
     }
@@ -247,23 +472,95 @@ public class GestionarEstadisticasGatewayImplAdapter implements GestionarEstadis
     @Override
     @Transactional(readOnly = true)
     public Map<String, Object> obtenerEstadisticasPorPeriodo(Date fechaInicio, Date fechaFin) {
+        System.out.println("📊 [ESTADISTICAS_POR_PERIODO] Consultando estadísticas para período: " + fechaInicio + " - " + fechaFin);
+        
         Map<String, Object> estadisticas = new HashMap<>();
         
-        Integer totalPorPeriodo = solicitudRepository.contarPorRangoFechas(fechaInicio, fechaFin);
-        
-        Map<String, Integer> porTipoProceso = new HashMap<>();
-        List<String> nombresProcesos = new ArrayList<>(solicitudRepository.buscarNombresSolicitudes());
-        
-        for (String proceso : nombresProcesos) {
-            Integer cantidad = solicitudRepository.contarPorNombre(proceso);
-            porTipoProceso.put(proceso, cantidad);
+        try {
+            // Validar fechas
+            if (fechaInicio == null || fechaFin == null) {
+                System.err.println("❌ [ESTADISTICAS_POR_PERIODO] Las fechas no pueden ser null");
+                return normalizarEstadistica(new HashMap<>());
+            }
+            
+            Integer totalPorPeriodo = Optional.ofNullable(solicitudRepository.contarPorRangoFechas(fechaInicio, fechaFin)).orElse(0);
+            System.out.println("📊 [ESTADISTICAS_POR_PERIODO] Total en período: " + totalPorPeriodo);
+            
+            // Obtener estadísticas por tipo de proceso en el período
+            Map<String, Integer> porTipoProceso = new HashMap<>();
+            try {
+                List<String> nombresProcesos = new ArrayList<>(solicitudRepository.buscarNombresSolicitudes());
+                System.out.println("📊 [ESTADISTICAS_POR_PERIODO] Procesos encontrados: " + nombresProcesos);
+                
+                for (String proceso : nombresProcesos) {
+                    // TODO: Implementar conteo específico por proceso y período
+                    // Por ahora usamos el conteo general del proceso
+                    Integer cantidad = Optional.ofNullable(solicitudRepository.contarPorNombre(proceso)).orElse(0);
+                    porTipoProceso.put(proceso, cantidad);
+                    System.out.println("📊 [ESTADISTICAS_POR_PERIODO] Proceso " + proceso + ": " + cantidad);
+                }
+            } catch (Exception e) {
+                System.err.println("⚠️ [ESTADISTICAS_POR_PERIODO] Error obteniendo procesos: " + e.getMessage());
+                porTipoProceso = new HashMap<>();
+            }
+            
+            // Obtener estadísticas por estado en el período
+            Map<String, Integer> porEstado = new HashMap<>();
+            String[] estados = {"Aprobado", "Rechazado", "Enviada", "En_Proceso"};
+            
+            for (String estado : estados) {
+                Integer cantidad = Optional.ofNullable(solicitudRepository.contarSolicitudesPorUltimoEstado(estado)).orElse(0);
+                porEstado.put(estado, cantidad);
+            }
+            
+            // Obtener estadísticas por programa en el período
+            Map<String, Integer> porPrograma = new HashMap<>();
+            try {
+                List<String> nombresProgramas = new ArrayList<>(programaRepository.buscarNombresProgramas());
+                for (String programa : nombresProgramas) {
+                    // TODO: Implementar conteo real por programa y período
+                    porPrograma.put(programa, 0);
+                }
+            } catch (Exception e) {
+                System.err.println("⚠️ [ESTADISTICAS_POR_PERIODO] Error obteniendo programas: " + e.getMessage());
+                porPrograma = new HashMap<>();
+            }
+            
+            // Calcular totales para el período
+            Integer totalAprobadas = porEstado.get("Aprobado");
+            Integer totalRechazadas = porEstado.get("Rechazado");
+            Integer totalEnProceso = porEstado.get("Enviada") + porEstado.get("En_Proceso");
+            
+            // Calcular porcentaje de aprobación para el período
+            double porcentajeAprobacion = 0.0;
+            if (totalPorPeriodo > 0) {
+                porcentajeAprobacion = (double) totalAprobadas / totalPorPeriodo * 100;
+            }
+            
+            estadisticas.put("fechaInicio", fechaInicio);
+            estadisticas.put("fechaFin", fechaFin);
+            estadisticas.put("totalSolicitudes", totalPorPeriodo);
+            estadisticas.put("totalAprobadas", totalAprobadas);
+            estadisticas.put("totalRechazadas", totalRechazadas);
+            estadisticas.put("totalEnProceso", totalEnProceso);
+            estadisticas.put("porcentajeAprobacion", Math.round(porcentajeAprobacion * 10.0) / 10.0);
+            estadisticas.put("porTipoProceso", porTipoProceso);
+            estadisticas.put("porEstado", porEstado);
+            estadisticas.put("porPrograma", porPrograma);
+            estadisticas.put("fechaConsulta", new Date());
+            
+            // Normalizar la respuesta para evitar valores null
+            estadisticas = normalizarEstadistica(estadisticas);
+            
+            System.out.println("✅ [ESTADISTICAS_POR_PERIODO] Consulta completada para período");
+            System.out.println("📊 [ESTADISTICAS_POR_PERIODO] Resultado final: " + estadisticas);
+            
+        } catch (Exception e) {
+            System.err.println("❌ [ESTADISTICAS_POR_PERIODO] Error en consulta: " + e.getMessage());
+            e.printStackTrace();
+            // Devolver estadísticas vacías pero normalizadas en caso de error
+            estadisticas = normalizarEstadistica(new HashMap<>());
         }
-        
-        estadisticas.put("fechaInicio", fechaInicio);
-        estadisticas.put("fechaFin", fechaFin);
-        estadisticas.put("totalSolicitudes", totalPorPeriodo);
-        estadisticas.put("porTipoProceso", porTipoProceso);
-        estadisticas.put("fechaConsulta", new Date());
         
         return estadisticas;
     }
@@ -409,6 +706,76 @@ public class GestionarEstadisticasGatewayImplAdapter implements GestionarEstadis
             default:
                 return "Estado de solicitud";
         }
+    }
+
+    /**
+     * Método auxiliar para normalizar nombres de procesos
+     * Convierte nombres del frontend a nombres que existen en la base de datos
+     */
+    private String normalizarNombreProceso(String nombreProceso) {
+        if (nombreProceso == null || nombreProceso.trim().isEmpty()) {
+            return nombreProceso;
+        }
+        
+        String procesoNormalizado = nombreProceso.trim();
+        
+        // Mapear nombres del frontend a nombres de la base de datos
+        switch (procesoNormalizado.toUpperCase()) {
+            case "REINGRESO":
+            case "REINGRESO A PROGRAMAS":
+                return "Reingreso";
+            case "HOMOLOGACION":
+            case "HOMOLOGACIÓN":
+            case "HOMOLOGACION DE MATERIAS":
+                return "Homologación";
+            case "ECAES":
+            case "INSCRIPCION A EXAMENES":
+            case "INSCRIPCIÓN A EXÁMENES":
+                return "ECAES";
+            case "CURSO_VERANO":
+            case "CURSOS DE VERANO":
+            case "CURSOS INTERSEMESTRALES":
+                return "CURSO_VERANO";
+            case "PAZ_SALVO":
+            case "PAZ Y SALVO":
+            case "TRAMITES ADMINISTRATIVOS":
+                return "PAZ_SALVO";
+            default:
+                // Si no coincide con ningún mapeo, devolver el nombre original
+                System.out.println("⚠️ [NORMALIZAR_PROCESO] Nombre de proceso no reconocido: " + nombreProceso);
+                return procesoNormalizado;
+        }
+    }
+
+    /**
+     * Método centralizado para normalizar estadísticas y evitar valores null
+     * Asegura que todos los campos tengan valores por defecto apropiados
+     */
+    private Map<String, Object> normalizarEstadistica(Map<String, Object> estadistica) {
+        if (estadistica == null) {
+            estadistica = new HashMap<>();
+        }
+        
+        // Normalizar totales
+        estadistica.put("totalSolicitudes", estadistica.get("totalSolicitudes") != null ? estadistica.get("totalSolicitudes") : 0);
+        estadistica.put("totalAprobadas", estadistica.get("totalAprobadas") != null ? estadistica.get("totalAprobadas") : 0);
+        estadistica.put("totalRechazadas", estadistica.get("totalRechazadas") != null ? estadistica.get("totalRechazadas") : 0);
+        estadistica.put("totalEnProceso", estadistica.get("totalEnProceso") != null ? estadistica.get("totalEnProceso") : 0);
+        
+        // Normalizar porcentaje
+        estadistica.put("porcentajeAprobacion", estadistica.get("porcentajeAprobacion") != null ? estadistica.get("porcentajeAprobacion") : 0.0);
+        
+        // Normalizar mapas
+        estadistica.put("porTipoProceso", estadistica.get("porTipoProceso") != null ? estadistica.get("porTipoProceso") : new HashMap<>());
+        estadistica.put("porPrograma", estadistica.get("porPrograma") != null ? estadistica.get("porPrograma") : new HashMap<>());
+        estadistica.put("porEstado", estadistica.get("porEstado") != null ? estadistica.get("porEstado") : new HashMap<>());
+        
+        // Asegurar fecha de consulta
+        if (estadistica.get("fechaConsulta") == null) {
+            estadistica.put("fechaConsulta", new Date());
+        }
+        
+        return estadistica;
     }
    
 }

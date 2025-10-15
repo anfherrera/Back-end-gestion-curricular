@@ -13,7 +13,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import lombok.extern.slf4j.Slf4j;
+
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -22,6 +25,7 @@ import java.util.stream.Collectors;
 @RequestMapping("/api/estadisticas")
 @RequiredArgsConstructor
 @Validated
+@Slf4j
 public class EstadisticasRestController {
 
     private final GestionarEstadisticasCUIntPort estadisticaCU;
@@ -126,9 +130,77 @@ public class EstadisticasRestController {
     @GetMapping("/globales")
     public ResponseEntity<Map<String, Object>> obtenerEstadisticasGlobales() {
         try {
+            log.info("📊 [ESTADISTICAS] Generando estadísticas globales...");
             Map<String, Object> estadisticas = estadisticaCU.obtenerEstadisticasGlobales();
+            log.info("📊 [ESTADISTICAS] Resultado final: {}", estadisticas);
             return ResponseEntity.ok(estadisticas);
         } catch (Exception e) {
+            log.error("❌ [ESTADISTICAS] Error obteniendo estadísticas globales: {}", e.getMessage(), e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
+    /**
+     * Endpoint mejorado para obtener estadísticas con filtros dinámicos.
+     * Maneja parámetros opcionales y devuelve la estructura JSON solicitada.
+     * 
+     * @param nombreProceso Tipo de proceso (opcional)
+     * @param idPrograma ID del programa (opcional)
+     * @param estado Estado de la solicitud (opcional)
+     * @param fechaInicio Fecha de inicio (opcional)
+     * @param fechaFin Fecha de fin (opcional)
+     * @return ResponseEntity con estadísticas filtradas
+     */
+    @GetMapping("/filtradas")
+    public ResponseEntity<Map<String, Object>> obtenerEstadisticasFiltradas(
+            @RequestParam(name = "nombreProceso", required = false) String nombreProceso,
+            @RequestParam(name = "idPrograma", required = false) Integer idPrograma,
+            @RequestParam(name = "estado", required = false) String estado,
+            @RequestParam(name = "fechaInicio", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") Date fechaInicio,
+            @RequestParam(name = "fechaFin", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") Date fechaFin) {
+        
+        try {
+            log.info("📊 [ESTADISTICAS] Obteniendo estadísticas filtradas");
+            log.info("📊 [ESTADISTICAS] Parámetros recibidos - nombreProceso: {}, idPrograma: {}, estado: {}, fechaInicio: {}, fechaFin: {}", 
+                    nombreProceso, idPrograma, estado, fechaInicio, fechaFin);
+            
+            Map<String, Object> estadisticas;
+            
+            // Determinar qué tipo de consulta realizar basado en los parámetros
+            if (nombreProceso != null && !nombreProceso.trim().isEmpty()) {
+                // Consulta por proceso específico
+                estadisticas = estadisticaCU.obtenerEstadisticasPorProceso(nombreProceso);
+            } else if (idPrograma != null && idPrograma > 0) {
+                // Consulta por programa específico
+                estadisticas = estadisticaCU.obtenerEstadisticasPorPrograma(idPrograma);
+            } else if (estado != null && !estado.trim().isEmpty()) {
+                // Consulta por estado específico
+                estadisticas = estadisticaCU.obtenerEstadisticasPorEstado(estado);
+            } else if (fechaInicio != null && fechaFin != null) {
+                // Consulta por período específico
+                estadisticas = estadisticaCU.obtenerEstadisticasPorPeriodo(fechaInicio, fechaFin);
+            } else {
+                // Consulta global (sin filtros)
+                estadisticas = estadisticaCU.obtenerEstadisticasGlobales();
+            }
+            
+            // Asegurar que la estructura JSON tenga el formato solicitado
+            Map<String, Object> respuesta = new HashMap<>();
+            respuesta.put("fechaConsulta", estadisticas.get("fechaConsulta"));
+            respuesta.put("totalSolicitudes", estadisticas.get("totalSolicitudes"));
+            respuesta.put("totalAprobadas", estadisticas.get("totalAprobadas"));
+            respuesta.put("totalRechazadas", estadisticas.get("totalRechazadas"));
+            respuesta.put("totalEnProceso", estadisticas.get("totalEnProceso"));
+            respuesta.put("porcentajeAprobacion", estadisticas.get("porcentajeAprobacion"));
+            respuesta.put("porTipoProceso", estadisticas.get("porTipoProceso"));
+            respuesta.put("porPrograma", estadisticas.get("porPrograma"));
+            respuesta.put("porEstado", estadisticas.get("porEstado"));
+            
+            log.info("📊 [ESTADISTICAS] Resultado final: {}", respuesta);
+            return ResponseEntity.ok(respuesta);
+            
+        } catch (Exception e) {
+            log.error("❌ [ESTADISTICAS] Error obteniendo estadísticas filtradas: {}", e.getMessage(), e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
@@ -379,5 +451,128 @@ public class EstadisticasRestController {
         }
         
         return (double) (totalAprobadas != null ? totalAprobadas : 0) / totalDecididas * 100;
+    }
+
+    /**
+     * Endpoint específico para manejar filtros dinámicos del frontend.
+     * Acepta parámetros como "{nombreProceso}" y los procesa dinámicamente.
+     * 
+     * @param filtros Map con todos los filtros posibles
+     * @return ResponseEntity con estadísticas filtradas
+     */
+    @PostMapping("/filtros-dinamicos")
+    public ResponseEntity<Map<String, Object>> obtenerEstadisticasConFiltrosDinamicos(
+            @RequestBody(required = false) Map<String, Object> filtros) {
+        
+        try {
+            log.info("📊 [ESTADISTICAS] Obteniendo estadísticas con filtros dinámicos");
+            log.info("📊 [ESTADISTICAS] Filtros recibidos: {}", filtros);
+            
+            if (filtros == null || filtros.isEmpty()) {
+                // Sin filtros, devolver estadísticas globales
+                Map<String, Object> estadisticas = estadisticaCU.obtenerEstadisticasGlobales();
+                return ResponseEntity.ok(estadisticas);
+            }
+            
+            // Extraer parámetros de los filtros
+            String nombreProceso = (String) filtros.get("nombreProceso");
+            Integer idPrograma = (Integer) filtros.get("idPrograma");
+            String estado = (String) filtros.get("estado");
+            String fechaInicioStr = (String) filtros.get("fechaInicio");
+            String fechaFinStr = (String) filtros.get("fechaFin");
+            
+            log.info("📊 [ESTADISTICAS] Parámetros extraídos - nombreProceso: {}, idPrograma: {}, estado: {}, fechaInicio: {}, fechaFin: {}", 
+                    nombreProceso, idPrograma, estado, fechaInicioStr, fechaFinStr);
+            
+            // Procesar fechas si están presentes
+            Date fechaInicio = null;
+            Date fechaFin = null;
+            
+            if (fechaInicioStr != null && !fechaInicioStr.trim().isEmpty()) {
+                try {
+                    fechaInicio = new java.text.SimpleDateFormat("yyyy-MM-dd").parse(fechaInicioStr);
+                } catch (Exception e) {
+                    log.warn("⚠️ [ESTADISTICAS] Error parseando fechaInicio: {}", e.getMessage());
+                }
+            }
+            
+            if (fechaFinStr != null && !fechaFinStr.trim().isEmpty()) {
+                try {
+                    fechaFin = new java.text.SimpleDateFormat("yyyy-MM-dd").parse(fechaFinStr);
+                } catch (Exception e) {
+                    log.warn("⚠️ [ESTADISTICAS] Error parseando fechaFin: {}", e.getMessage());
+                }
+            }
+            
+            Map<String, Object> estadisticas;
+            
+            // Determinar qué tipo de consulta realizar basado en los parámetros
+            if (nombreProceso != null && !nombreProceso.trim().isEmpty()) {
+                // Consulta por proceso específico
+                estadisticas = estadisticaCU.obtenerEstadisticasPorProceso(nombreProceso);
+            } else if (idPrograma != null && idPrograma > 0) {
+                // Consulta por programa específico
+                estadisticas = estadisticaCU.obtenerEstadisticasPorPrograma(idPrograma);
+            } else if (estado != null && !estado.trim().isEmpty()) {
+                // Consulta por estado específico
+                estadisticas = estadisticaCU.obtenerEstadisticasPorEstado(estado);
+            } else if (fechaInicio != null && fechaFin != null) {
+                // Consulta por período específico
+                estadisticas = estadisticaCU.obtenerEstadisticasPorPeriodo(fechaInicio, fechaFin);
+            } else {
+                // Consulta global (sin filtros)
+                estadisticas = estadisticaCU.obtenerEstadisticasGlobales();
+            }
+            
+            // Asegurar que la estructura JSON tenga el formato solicitado
+            Map<String, Object> respuesta = new HashMap<>();
+            respuesta.put("fechaConsulta", estadisticas.get("fechaConsulta"));
+            respuesta.put("totalSolicitudes", estadisticas.get("totalSolicitudes"));
+            respuesta.put("totalAprobadas", estadisticas.get("totalAprobadas"));
+            respuesta.put("totalRechazadas", estadisticas.get("totalRechazadas"));
+            respuesta.put("totalEnProceso", estadisticas.get("totalEnProceso"));
+            respuesta.put("porcentajeAprobacion", estadisticas.get("porcentajeAprobacion"));
+            respuesta.put("porTipoProceso", estadisticas.get("porTipoProceso"));
+            respuesta.put("porPrograma", estadisticas.get("porPrograma"));
+            respuesta.put("porEstado", estadisticas.get("porEstado"));
+            
+            log.info("📊 [ESTADISTICAS] Resultado final: {}", respuesta);
+            return ResponseEntity.ok(respuesta);
+            
+        } catch (Exception e) {
+            log.error("❌ [ESTADISTICAS] Error obteniendo estadísticas con filtros dinámicos: {}", e.getMessage(), e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
+    /**
+     * Endpoint para obtener consolidado general del sistema.
+     * Devuelve estadísticas globales con información adicional de programas.
+     * 
+     * @return ResponseEntity con consolidado general
+     */
+    @GetMapping("/consolidado")
+    public ResponseEntity<Map<String, Object>> obtenerConsolidadoGeneral() {
+        try {
+            log.info("📊 [ESTADISTICAS] Generando consolidado general...");
+            
+            // Obtener estadísticas globales
+            Map<String, Object> estadisticasGlobales = estadisticaCU.obtenerEstadisticasGlobales();
+            
+            // Crear consolidado con estructura específica
+            Map<String, Object> consolidado = new HashMap<>();
+            consolidado.put("estadisticasGlobales", estadisticasGlobales);
+            consolidado.put("porTipoProceso", estadisticasGlobales.get("porTipoProceso"));
+            consolidado.put("porEstado", estadisticasGlobales.get("porEstado"));
+            consolidado.put("totalProgramas", 3); // Número fijo de programas por ahora
+            consolidado.put("fechaGeneracion", new Date());
+            
+            log.info("📊 [ESTADISTICAS] Resultado final: {}", consolidado);
+            return ResponseEntity.ok(consolidado);
+            
+        } catch (Exception e) {
+            log.error("❌ [ESTADISTICAS] Error obteniendo consolidado general: {}", e.getMessage(), e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
     }
 }
