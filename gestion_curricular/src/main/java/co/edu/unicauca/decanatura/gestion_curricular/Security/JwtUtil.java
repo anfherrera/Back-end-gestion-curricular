@@ -12,10 +12,10 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class JwtUtil {
 
-    @Value("${jwt.secret:mi_clave_super_secreta_de_256_bits_minimo_para_produccion_segura}")
+    @Value("${app.jwt.secret:mi_clave_super_secreta_de_256_bits_minimo_para_produccion_segura}")
     private String SECRET_KEY;
     
-    @Value("${jwt.expiration:3600000}") // 1 hora por defecto
+    @Value("${app.jwt.expiration:3600000}") // 1 hora por defecto
     private Long EXPIRATION_TIME;
 
     public String generarToken(String correo) {

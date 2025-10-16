@@ -24,6 +24,18 @@ public interface GestionarEstadisticasGatewayIntPort {
     Map<String, Object> obtenerEstadisticasGlobales();
 
     /**
+     * Obtiene estadísticas globales del sistema combinando todos los procesos con filtros.
+     * Utiliza SolicitudRepositoryInt para obtener conteos totales.
+     * 
+     * @param proceso Tipo de proceso (opcional)
+     * @param idPrograma ID del programa (opcional)
+     * @param fechaInicio Fecha de inicio (opcional)
+     * @param fechaFin Fecha de fin (opcional)
+     * @return Map con estadísticas globales del sistema
+     */
+    Map<String, Object> obtenerEstadisticasGlobales(String proceso, Integer idPrograma, Date fechaInicio, Date fechaFin);
+
+    /**
      * Obtiene estadísticas específicas por tipo de proceso.
      * Utiliza SolicitudRepositoryInt para filtrar por tipo de solicitud.
      * 

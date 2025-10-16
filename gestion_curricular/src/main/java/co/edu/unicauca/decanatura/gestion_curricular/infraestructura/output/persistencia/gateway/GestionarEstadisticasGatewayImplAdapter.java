@@ -14,6 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.GestionarEstadisticasGatewayIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Estadistica;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.entidades.EstadisticaEntity;
+import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.entidades.ProgramaEntity;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.repositorios.EstadisticaRepositoryInt;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.repositorios.ProgramaRepositoryInt;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.repositorios.SolicitudRepositoryInt;
@@ -153,25 +154,32 @@ public class GestionarEstadisticasGatewayImplAdapter implements GestionarEstadis
     @Override
     @Transactional(readOnly = true)
     public Map<String, Object> obtenerEstadisticasGlobales() {
+        return obtenerEstadisticasGlobales(null, null, null, null);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Map<String, Object> obtenerEstadisticasGlobales(String proceso, Integer idPrograma, Date fechaInicio, Date fechaFin) {
         System.out.println("📊 [ESTADISTICAS_GLOBALES] Iniciando consulta de estadísticas globales");
         
         Map<String, Object> estadisticas = new HashMap<>();
         
         try {
-            // Estadísticas generales del sistema
-            Integer totalSolicitudes = Optional.ofNullable(solicitudRepository.totalSolicitudes()).orElse(0);
-            Integer totalAprobadas = Optional.ofNullable(solicitudRepository.contarSolicitudesPorUltimoEstado("Aprobado")).orElse(0);
-            Integer totalRechazadas = Optional.ofNullable(solicitudRepository.contarSolicitudesPorUltimoEstado("Rechazado")).orElse(0);
-            Integer totalEnProceso = Optional.ofNullable(solicitudRepository.contarSolicitudesPorUltimoEstado("Enviada")).orElse(0);
+            // Estadísticas generales del sistema (con filtros si se aplican)
+            Integer totalSolicitudes = Optional.ofNullable(solicitudRepository.contarSolicitudesConFiltros(proceso, idPrograma, fechaInicio, fechaFin)).orElse(0);
+            Integer totalAprobadas = Optional.ofNullable(solicitudRepository.contarSolicitudesPorEstadoConFiltros("Aprobado", proceso, idPrograma, fechaInicio, fechaFin)).orElse(0);
+            Integer totalRechazadas = Optional.ofNullable(solicitudRepository.contarSolicitudesPorEstadoConFiltros("Rechazado", proceso, idPrograma, fechaInicio, fechaFin)).orElse(0);
+            Integer totalEnProceso = Optional.ofNullable(solicitudRepository.contarSolicitudesPorEstadoConFiltros("En_Proceso", proceso, idPrograma, fechaInicio, fechaFin)).orElse(0);
+            Integer totalEnviadas = Optional.ofNullable(solicitudRepository.contarSolicitudesPorEstadoConFiltros("Enviada", proceso, idPrograma, fechaInicio, fechaFin)).orElse(0);
             
             System.out.println("📊 [ESTADISTICAS_GLOBALES] Totales obtenidos - Total: " + totalSolicitudes + 
                              ", Aprobadas: " + totalAprobadas + ", Rechazadas: " + totalRechazadas + 
-                             ", En Proceso: " + totalEnProceso);
+                             ", En Proceso: " + totalEnProceso + ", Enviadas: " + totalEnviadas);
             
             estadisticas.put("totalSolicitudes", totalSolicitudes);
             estadisticas.put("totalAprobadas", totalAprobadas);
             estadisticas.put("totalRechazadas", totalRechazadas);
-            estadisticas.put("totalEnProceso", totalEnProceso);
+            estadisticas.put("totalEnProceso", totalEnProceso + totalEnviadas); // Combinar ambos tipos
             
             // Calcular porcentaje de aprobación
             double porcentajeAprobacion = 0.0;
@@ -180,16 +188,16 @@ public class GestionarEstadisticasGatewayImplAdapter implements GestionarEstadis
             }
             estadisticas.put("porcentajeAprobacion", Math.round(porcentajeAprobacion * 10.0) / 10.0);
             
-            // Estadísticas por tipo de proceso
+            // Estadísticas por tipo de proceso (con filtros si se aplican)
             Map<String, Integer> porTipoProceso = new HashMap<>();
             try {
-                List<String> nombresProcesos = new ArrayList<>(solicitudRepository.buscarNombresSolicitudes());
+                List<String> nombresProcesos = new ArrayList<>(solicitudRepository.buscarNombresSolicitudesConFiltros(proceso, idPrograma, fechaInicio, fechaFin));
                 System.out.println("📊 [ESTADISTICAS_GLOBALES] Procesos encontrados: " + nombresProcesos);
                 
-                for (String proceso : nombresProcesos) {
-                    Integer cantidad = Optional.ofNullable(solicitudRepository.contarPorNombre(proceso)).orElse(0);
-                    porTipoProceso.put(proceso, cantidad);
-                    System.out.println("📊 [ESTADISTICAS_GLOBALES] Proceso: " + proceso + " = " + cantidad);
+                for (String nombreProceso : nombresProcesos) {
+                    Integer cantidad = Optional.ofNullable(solicitudRepository.contarPorNombreConFiltros(nombreProceso, proceso, idPrograma, fechaInicio, fechaFin)).orElse(0);
+                    porTipoProceso.put(nombreProceso, cantidad);
+                    System.out.println("📊 [ESTADISTICAS_GLOBALES] Proceso: " + nombreProceso + " = " + cantidad);
                 }
             } catch (Exception e) {
                 System.err.println("⚠️ [ESTADISTICAS_GLOBALES] Error obteniendo procesos: " + e.getMessage());
@@ -197,15 +205,19 @@ public class GestionarEstadisticasGatewayImplAdapter implements GestionarEstadis
             }
             estadisticas.put("porTipoProceso", porTipoProceso);
             
-            // Estadísticas por programa
+            // Estadísticas por programa (con filtros si se aplican)
             Map<String, Integer> porPrograma = new HashMap<>();
             try {
                 List<String> nombresProgramas = new ArrayList<>(programaRepository.buscarNombresProgramas());
                 System.out.println("📊 [ESTADISTICAS_GLOBALES] Programas encontrados: " + nombresProgramas);
                 
-                for (String programa : nombresProgramas) {
-                    // TODO: Implementar conteo real por programa cuando esté disponible el método
-                    porPrograma.put(programa, 0);
+                // Obtener todos los programas con sus IDs
+                List<ProgramaEntity> programas = programaRepository.findAll();
+                
+                for (ProgramaEntity programa : programas) {
+                    Integer cantidad = Optional.ofNullable(solicitudRepository.contarSolicitudesPorProgramaConFiltros(programa.getId_programa(), proceso, fechaInicio, fechaFin)).orElse(0);
+                    porPrograma.put(programa.getNombre_programa(), cantidad);
+                    System.out.println("📊 [ESTADISTICAS_GLOBALES] Programa: " + programa.getNombre_programa() + " = " + cantidad);
                 }
             } catch (Exception e) {
                 System.err.println("⚠️ [ESTADISTICAS_GLOBALES] Error obteniendo programas: " + e.getMessage());
@@ -217,7 +229,8 @@ public class GestionarEstadisticasGatewayImplAdapter implements GestionarEstadis
             Map<String, Integer> porEstado = new HashMap<>();
             porEstado.put("Aprobado", totalAprobadas);
             porEstado.put("Rechazado", totalRechazadas);
-            porEstado.put("En_Proceso", totalEnProceso); // Usar el mismo formato que en la BD
+            porEstado.put("En_Proceso", totalEnProceso);
+            porEstado.put("Enviada", totalEnviadas);
             estadisticas.put("porEstado", porEstado);
             
             estadisticas.put("fechaConsulta", new Date());

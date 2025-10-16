@@ -152,6 +152,69 @@ public interface SolicitudRepositoryInt extends JpaRepository<SolicitudEntity, I
     @Param("fechaInicio") Date fechaInicio, @Param("fechaFin") Date fechaFin,
     @Param("idPrograma") Integer idPrograma);
 
+    // Consulta JPQL: contar todas las solicitudes por programa
+    @Query("SELECT COUNT(s) FROM SolicitudEntity s WHERE s.objUsuario.objPrograma.id_programa = :idPrograma")
+    Integer contarSolicitudesPorPrograma(@Param("idPrograma") Integer idPrograma);
+
+    // Consulta JPQL: contar solicitudes con filtros combinados
+    @Query("SELECT COUNT(s) FROM SolicitudEntity s WHERE " +
+           "(:proceso IS NULL OR LOWER(s.nombre_solicitud) LIKE LOWER(CONCAT('%', :proceso, '%'))) AND " +
+           "(:idPrograma IS NULL OR s.objUsuario.objPrograma.id_programa = :idPrograma) AND " +
+           "(:fechaInicio IS NULL OR s.fecha_registro_solicitud >= :fechaInicio) AND " +
+           "(:fechaFin IS NULL OR s.fecha_registro_solicitud <= :fechaFin)")
+    Integer contarSolicitudesConFiltros(@Param("proceso") String proceso, 
+                                       @Param("idPrograma") Integer idPrograma,
+                                       @Param("fechaInicio") Date fechaInicio, 
+                                       @Param("fechaFin") Date fechaFin);
+
+    // Consulta JPQL: contar solicitudes por estado con filtros
+    @Query("SELECT COUNT(e) FROM EstadoSolicitudEntity e " +
+           "JOIN e.objSolicitud s " +
+           "WHERE e.estado_actual = :estado AND " +
+           "e.fecha_registro_estado = (SELECT MAX(e2.fecha_registro_estado) FROM EstadoSolicitudEntity e2 WHERE e2.objSolicitud.id_solicitud = s.id_solicitud) AND " +
+           "(:proceso IS NULL OR LOWER(s.nombre_solicitud) LIKE LOWER(CONCAT('%', :proceso, '%'))) AND " +
+           "(:idPrograma IS NULL OR s.objUsuario.objPrograma.id_programa = :idPrograma) AND " +
+           "(:fechaInicio IS NULL OR s.fecha_registro_solicitud >= :fechaInicio) AND " +
+           "(:fechaFin IS NULL OR s.fecha_registro_solicitud <= :fechaFin)")
+    Integer contarSolicitudesPorEstadoConFiltros(@Param("estado") String estado,
+                                                @Param("proceso") String proceso,
+                                                @Param("idPrograma") Integer idPrograma,
+                                                @Param("fechaInicio") Date fechaInicio,
+                                                @Param("fechaFin") Date fechaFin);
+
+    // Consulta JPQL: contar solicitudes por programa con filtros
+    @Query("SELECT COUNT(s) FROM SolicitudEntity s WHERE s.objUsuario.objPrograma.id_programa = :idPrograma AND " +
+           "(:proceso IS NULL OR LOWER(s.nombre_solicitud) LIKE LOWER(CONCAT('%', :proceso, '%'))) AND " +
+           "(:fechaInicio IS NULL OR s.fecha_registro_solicitud >= :fechaInicio) AND " +
+           "(:fechaFin IS NULL OR s.fecha_registro_solicitud <= :fechaFin)")
+    Integer contarSolicitudesPorProgramaConFiltros(@Param("idPrograma") Integer idPrograma,
+                                                  @Param("proceso") String proceso,
+                                                  @Param("fechaInicio") Date fechaInicio,
+                                                  @Param("fechaFin") Date fechaFin);
+
+    // Consulta JPQL: buscar nombres de solicitudes con filtros
+    @Query("SELECT DISTINCT s.nombre_solicitud FROM SolicitudEntity s WHERE " +
+           "(:proceso IS NULL OR LOWER(s.nombre_solicitud) LIKE LOWER(CONCAT('%', :proceso, '%'))) AND " +
+           "(:idPrograma IS NULL OR s.objUsuario.objPrograma.id_programa = :idPrograma) AND " +
+           "(:fechaInicio IS NULL OR s.fecha_registro_solicitud >= :fechaInicio) AND " +
+           "(:fechaFin IS NULL OR s.fecha_registro_solicitud <= :fechaFin)")
+    Set<String> buscarNombresSolicitudesConFiltros(@Param("proceso") String proceso,
+                                                   @Param("idPrograma") Integer idPrograma,
+                                                   @Param("fechaInicio") Date fechaInicio,
+                                                   @Param("fechaFin") Date fechaFin);
+
+    // Consulta JPQL: contar por nombre con filtros
+    @Query("SELECT COUNT(s) FROM SolicitudEntity s WHERE LOWER(s.nombre_solicitud) LIKE LOWER(CONCAT('%', :nombre, '%')) AND " +
+           "(:proceso IS NULL OR LOWER(s.nombre_solicitud) LIKE LOWER(CONCAT('%', :proceso, '%'))) AND " +
+           "(:idPrograma IS NULL OR s.objUsuario.objPrograma.id_programa = :idPrograma) AND " +
+           "(:fechaInicio IS NULL OR s.fecha_registro_solicitud >= :fechaInicio) AND " +
+           "(:fechaFin IS NULL OR s.fecha_registro_solicitud <= :fechaFin)")
+    Integer contarPorNombreConFiltros(@Param("nombre") String nombre,
+                                     @Param("proceso") String proceso,
+                                     @Param("idPrograma") Integer idPrograma,
+                                     @Param("fechaInicio") Date fechaInicio,
+                                     @Param("fechaFin") Date fechaFin);
+
     @Query(value =
         "SELECT COUNT(s) FROM SolicitudEntity s " +
         "JOIN s.estadosSolicitud est " +

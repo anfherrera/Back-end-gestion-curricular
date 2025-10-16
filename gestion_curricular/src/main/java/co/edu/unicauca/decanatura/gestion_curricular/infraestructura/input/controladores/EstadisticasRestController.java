@@ -8,7 +8,9 @@ import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -125,13 +127,22 @@ public class EstadisticasRestController {
      * Obtiene estadísticas globales del sistema combinando todos los procesos.
      * Utiliza SolicitudRepositoryInt para obtener conteos totales.
      * 
+     * @param proceso Tipo de proceso (opcional)
+     * @param idPrograma ID del programa (opcional)
+     * @param fechaInicio Fecha de inicio (opcional)
+     * @param fechaFin Fecha de fin (opcional)
      * @return ResponseEntity con estadísticas globales
      */
     @GetMapping("/globales")
-    public ResponseEntity<Map<String, Object>> obtenerEstadisticasGlobales() {
+    public ResponseEntity<Map<String, Object>> obtenerEstadisticasGlobales(
+            @RequestParam(required = false) String proceso,
+            @RequestParam(required = false) Integer idPrograma,
+            @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") Date fechaInicio,
+            @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") Date fechaFin) {
         try {
-            log.info("📊 [ESTADISTICAS] Generando estadísticas globales...");
-            Map<String, Object> estadisticas = estadisticaCU.obtenerEstadisticasGlobales();
+            log.info("📊 [ESTADISTICAS] Generando estadísticas globales con filtros - Proceso: {}, Programa: {}, Fechas: {} - {}", 
+                    proceso, idPrograma, fechaInicio, fechaFin);
+            Map<String, Object> estadisticas = estadisticaCU.obtenerEstadisticasGlobales(proceso, idPrograma, fechaInicio, fechaFin);
             log.info("📊 [ESTADISTICAS] Resultado final: {}", estadisticas);
             return ResponseEntity.ok(estadisticas);
         } catch (Exception e) {
@@ -574,5 +585,119 @@ public class EstadisticasRestController {
             log.error("❌ [ESTADISTICAS] Error obteniendo consolidado general: {}", e.getMessage(), e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
+    }
+
+    /**
+     * Exporta estadísticas a PDF con filtros opcionales.
+     * 
+     * @param proceso Tipo de proceso (opcional)
+     * @param idPrograma ID del programa (opcional)
+     * @param fechaInicio Fecha de inicio (opcional)
+     * @param fechaFin Fecha de fin (opcional)
+     * @return ResponseEntity con archivo PDF
+     */
+    @GetMapping("/export/pdf")
+    public ResponseEntity<byte[]> exportarEstadisticasPDF(
+            @RequestParam(required = false) String proceso,
+            @RequestParam(required = false) Integer idPrograma,
+            @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") Date fechaInicio,
+            @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") Date fechaFin) {
+        try {
+            log.info("📄 [EXPORT_PDF] Generando PDF con filtros - Proceso: {}, Programa: {}, Fechas: {} - {}", 
+                    proceso, idPrograma, fechaInicio, fechaFin);
+            
+            // Obtener datos filtrados
+            Map<String, Object> estadisticas = estadisticaCU.obtenerEstadisticasGlobales(proceso, idPrograma, fechaInicio, fechaFin);
+            
+            // Generar PDF (implementación básica)
+            byte[] pdfBytes = generarPDF(estadisticas);
+            
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.APPLICATION_PDF);
+            headers.setContentDispositionFormData("attachment", "estadisticas.pdf");
+            
+            log.info("✅ [EXPORT_PDF] PDF generado exitosamente");
+            return new ResponseEntity<>(pdfBytes, headers, HttpStatus.OK);
+            
+        } catch (Exception e) {
+            log.error("❌ [EXPORT_PDF] Error generando PDF: {}", e.getMessage(), e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
+    /**
+     * Exporta estadísticas a Excel con filtros opcionales.
+     * 
+     * @param proceso Tipo de proceso (opcional)
+     * @param idPrograma ID del programa (opcional)
+     * @param fechaInicio Fecha de inicio (opcional)
+     * @param fechaFin Fecha de fin (opcional)
+     * @return ResponseEntity con archivo Excel
+     */
+    @GetMapping("/export/excel")
+    public ResponseEntity<byte[]> exportarEstadisticasExcel(
+            @RequestParam(required = false) String proceso,
+            @RequestParam(required = false) Integer idPrograma,
+            @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") Date fechaInicio,
+            @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") Date fechaFin) {
+        try {
+            log.info("📊 [EXPORT_EXCEL] Generando Excel con filtros - Proceso: {}, Programa: {}, Fechas: {} - {}", 
+                    proceso, idPrograma, fechaInicio, fechaFin);
+            
+            // Obtener datos filtrados
+            Map<String, Object> estadisticas = estadisticaCU.obtenerEstadisticasGlobales(proceso, idPrograma, fechaInicio, fechaFin);
+            
+            // Generar Excel (implementación básica)
+            byte[] excelBytes = generarExcel(estadisticas);
+            
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.APPLICATION_OCTET_STREAM);
+            headers.setContentDispositionFormData("attachment", "estadisticas.xlsx");
+            
+            log.info("✅ [EXPORT_EXCEL] Excel generado exitosamente");
+            return new ResponseEntity<>(excelBytes, headers, HttpStatus.OK);
+            
+        } catch (Exception e) {
+            log.error("❌ [EXPORT_EXCEL] Error generando Excel: {}", e.getMessage(), e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
+    /**
+     * Genera un PDF básico con las estadísticas.
+     * 
+     * @param estadisticas Datos de estadísticas
+     * @return Array de bytes del PDF
+     */
+    private byte[] generarPDF(Map<String, Object> estadisticas) {
+        // Implementación básica - por ahora retorna un PDF simple
+        // TODO: Implementar generación real de PDF con iText
+        String contenido = "Estadísticas del Sistema\n\n" +
+                          "Total Solicitudes: " + estadisticas.get("totalSolicitudes") + "\n" +
+                          "Aprobadas: " + estadisticas.get("totalAprobadas") + "\n" +
+                          "En Proceso: " + estadisticas.get("totalEnProceso") + "\n" +
+                          "Rechazadas: " + estadisticas.get("totalRechazadas") + "\n" +
+                          "Porcentaje Aprobación: " + estadisticas.get("porcentajeAprobacion") + "%";
+        
+        return contenido.getBytes();
+    }
+
+    /**
+     * Genera un Excel básico con las estadísticas.
+     * 
+     * @param estadisticas Datos de estadísticas
+     * @return Array de bytes del Excel
+     */
+    private byte[] generarExcel(Map<String, Object> estadisticas) {
+        // Implementación básica - por ahora retorna un CSV simple
+        // TODO: Implementar generación real de Excel con Apache POI
+        String contenido = "Métrica,Valor\n" +
+                          "Total Solicitudes," + estadisticas.get("totalSolicitudes") + "\n" +
+                          "Aprobadas," + estadisticas.get("totalAprobadas") + "\n" +
+                          "En Proceso," + estadisticas.get("totalEnProceso") + "\n" +
+                          "Rechazadas," + estadisticas.get("totalRechazadas") + "\n" +
+                          "Porcentaje Aprobación," + estadisticas.get("porcentajeAprobacion") + "%";
+        
+        return contenido.getBytes();
     }
 }

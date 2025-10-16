@@ -116,6 +116,11 @@ public class GestionarEstadisticasCUAdapter implements GestionarEstadisticasCUIn
     }
 
     @Override
+    public Map<String, Object> obtenerEstadisticasGlobales(String proceso, Integer idPrograma, Date fechaInicio, Date fechaFin) {
+        return estadisticasGateway.obtenerEstadisticasGlobales(proceso, idPrograma, fechaInicio, fechaFin);
+    }
+
+    @Override
     public Map<String, Object> obtenerEstadisticasPorProceso(String tipoProceso) {
         if (tipoProceso == null || tipoProceso.isBlank()) {
             formateadorResultados.retornarRespuestaErrorEntidadExiste("El tipo de proceso no puede estar vacío.");
