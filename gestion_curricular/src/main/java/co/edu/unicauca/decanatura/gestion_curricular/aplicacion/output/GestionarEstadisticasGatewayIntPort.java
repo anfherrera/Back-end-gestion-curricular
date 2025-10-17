@@ -113,4 +113,36 @@ public interface GestionarEstadisticasGatewayIntPort {
      */
     Map<String, Object> obtenerTendenciasPorPeriodo(Date fechaInicio1, Date fechaFin1, Date fechaInicio2, Date fechaFin2);
 
+    /**
+     * Obtiene el número total de estudiantes en el sistema.
+     * Utiliza UsuarioRepositoryInt para contar usuarios con rol de estudiante.
+     * 
+     * @return Map con el conteo total de estudiantes
+     */
+    Map<String, Object> obtenerNumeroTotalEstudiantes();
+
+    /**
+     * Obtiene la distribución de estudiantes por programa académico.
+     * Utiliza UsuarioRepositoryInt para contar estudiantes por programa.
+     * 
+     * @return Map con la distribución de estudiantes por programa
+     */
+    Map<String, Object> obtenerEstudiantesPorPrograma();
+
+    /**
+     * Obtiene estadísticas detalladas por tipo de proceso.
+     * Incluye conteos, porcentajes y análisis por proceso.
+     * 
+     * @return Map con estadísticas detalladas por proceso
+     */
+    Map<String, Object> obtenerEstadisticasDetalladasPorProceso();
+
+    /**
+     * Obtiene estadísticas resumidas por tipo de proceso para el dashboard.
+     * Formato optimizado para gráficos y KPIs con colores y estilos.
+     * 
+     * @return Map con resumen por proceso
+     */
+    Map<String, Object> obtenerResumenPorProceso();
+
 }

@@ -207,4 +207,24 @@ public class GestionarEstadisticasCUAdapter implements GestionarEstadisticasCUIn
 
         return estadisticasGateway.obtenerTendenciasPorPeriodo(fechaInicio1, fechaFin1, fechaInicio2, fechaFin2);
     }
+
+    @Override
+    public Map<String, Object> obtenerNumeroTotalEstudiantes() {
+        return estadisticasGateway.obtenerNumeroTotalEstudiantes();
+    }
+
+    @Override
+    public Map<String, Object> obtenerEstudiantesPorPrograma() {
+        return estadisticasGateway.obtenerEstudiantesPorPrograma();
+    }
+
+    @Override
+    public Map<String, Object> obtenerEstadisticasDetalladasPorProceso() {
+        return estadisticasGateway.obtenerEstadisticasDetalladasPorProceso();
+    }
+
+    @Override
+    public Map<String, Object> obtenerResumenPorProceso() {
+        return estadisticasGateway.obtenerResumenPorProceso();
+    }
 }

@@ -920,4 +920,93 @@ public class EstadisticasRestController {
             return contenido.getBytes();
         }
     }
+
+    /**
+     * Obtiene el número total de estudiantes registrados en el sistema.
+     * Utiliza UsuarioRepositoryInt para contar usuarios con rol de estudiante.
+     * 
+     * @return ResponseEntity con el conteo total de estudiantes
+     */
+    @GetMapping("/total-estudiantes")
+    public ResponseEntity<Map<String, Object>> obtenerNumeroTotalEstudiantes() {
+        try {
+            log.info("👥 [ESTADISTICAS] Obteniendo número total de estudiantes...");
+            
+            Map<String, Object> resultado = estadisticaCU.obtenerNumeroTotalEstudiantes();
+            
+            log.info("👥 [ESTADISTICAS] Resultado: {} estudiantes", resultado.get("totalEstudiantes"));
+            return ResponseEntity.ok(resultado);
+            
+        } catch (Exception e) {
+            log.error("❌ [ESTADISTICAS] Error obteniendo número total de estudiantes: {}", e.getMessage(), e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
+    /**
+     * Obtiene la distribución de estudiantes por programa académico.
+     * Utiliza UsuarioRepositoryInt para contar estudiantes por programa.
+     * 
+     * @return ResponseEntity con la distribución de estudiantes por programa
+     */
+    @GetMapping("/estudiantes-por-programa")
+    public ResponseEntity<Map<String, Object>> obtenerEstudiantesPorPrograma() {
+        try {
+            log.info("📊 [ESTADISTICAS] Obteniendo distribución de estudiantes por programa...");
+            
+            Map<String, Object> resultado = estadisticaCU.obtenerEstudiantesPorPrograma();
+            
+            log.info("📊 [ESTADISTICAS] Resultado: {} programas con estudiantes", 
+                    ((Map<?, ?>) resultado.get("estudiantesPorPrograma")).size());
+            return ResponseEntity.ok(resultado);
+            
+        } catch (Exception e) {
+            log.error("❌ [ESTADISTICAS] Error obteniendo estudiantes por programa: {}", e.getMessage(), e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
+    /**
+     * Obtiene estadísticas detalladas por tipo de proceso.
+     * Incluye conteos, porcentajes y análisis por proceso.
+     * 
+     * @return ResponseEntity con estadísticas detalladas por proceso
+     */
+    @GetMapping("/estadisticas-por-proceso")
+    public ResponseEntity<Map<String, Object>> obtenerEstadisticasDetalladasPorProceso() {
+        try {
+            log.info("📈 [ESTADISTICAS] Obteniendo estadísticas detalladas por proceso...");
+            
+            Map<String, Object> resultado = estadisticaCU.obtenerEstadisticasDetalladasPorProceso();
+            
+            log.info("📈 [ESTADISTICAS] Resultado: {} procesos analizados", resultado.get("totalProcesos"));
+            return ResponseEntity.ok(resultado);
+            
+        } catch (Exception e) {
+            log.error("❌ [ESTADISTICAS] Error obteniendo estadísticas por proceso: {}", e.getMessage(), e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
+    /**
+     * Obtiene estadísticas resumidas por tipo de proceso para el dashboard.
+     * Formato optimizado para gráficos y KPIs.
+     * 
+     * @return ResponseEntity con estadísticas resumidas por proceso
+     */
+    @GetMapping("/resumen-por-proceso")
+    public ResponseEntity<Map<String, Object>> obtenerResumenPorProceso() {
+        try {
+            log.info("📊 [ESTADISTICAS] Obteniendo resumen por proceso...");
+            
+            Map<String, Object> resultado = estadisticaCU.obtenerResumenPorProceso();
+            
+            log.info("📊 [ESTADISTICAS] Resumen generado exitosamente");
+            return ResponseEntity.ok(resultado);
+            
+        } catch (Exception e) {
+            log.error("❌ [ESTADISTICAS] Error obteniendo resumen por proceso: {}", e.getMessage(), e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
 }

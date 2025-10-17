@@ -15,9 +15,11 @@ import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.Gestionar
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Estadistica;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.entidades.EstadisticaEntity;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.entidades.ProgramaEntity;
+import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.entidades.UsuarioEntity;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.repositorios.EstadisticaRepositoryInt;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.repositorios.ProgramaRepositoryInt;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.repositorios.SolicitudRepositoryInt;
+import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.repositorios.UsuarioRepositoryInt;
 
 @Service
 @Transactional
@@ -26,12 +28,14 @@ public class GestionarEstadisticasGatewayImplAdapter implements GestionarEstadis
     private final EstadisticaRepositoryInt estadisticaRepository;
     private final SolicitudRepositoryInt solicitudRepository;
     private final ProgramaRepositoryInt programaRepository;
+    private final UsuarioRepositoryInt usuarioRepository;
     private final ModelMapper estadisticaMapper;
 
-    public GestionarEstadisticasGatewayImplAdapter(EstadisticaRepositoryInt estadisticaRepository, ProgramaRepositoryInt programaRepository, SolicitudRepositoryInt solicitudRepository, ModelMapper estadisticaMapper) {
+    public GestionarEstadisticasGatewayImplAdapter(EstadisticaRepositoryInt estadisticaRepository, ProgramaRepositoryInt programaRepository, SolicitudRepositoryInt solicitudRepository, UsuarioRepositoryInt usuarioRepository, ModelMapper estadisticaMapper) {
         this.estadisticaRepository = estadisticaRepository;
         this.programaRepository = programaRepository;
         this.solicitudRepository = solicitudRepository;
+        this.usuarioRepository = usuarioRepository;
         this.estadisticaMapper = estadisticaMapper;
     }
 
@@ -789,6 +793,208 @@ public class GestionarEstadisticasGatewayImplAdapter implements GestionarEstadis
         }
         
         return estadistica;
+    }
+
+    @Override
+    public Map<String, Object> obtenerNumeroTotalEstudiantes() {
+        Map<String, Object> resultado = new HashMap<>();
+        
+        try {
+            // Contar usuarios con rol de estudiante (ID = 2)
+            long totalEstudiantes = usuarioRepository.buscarPorRol(2).size();
+            
+            resultado.put("totalEstudiantes", totalEstudiantes);
+            resultado.put("fechaConsulta", new Date());
+            resultado.put("descripcion", "Total de estudiantes registrados en el sistema");
+            
+            return resultado;
+        } catch (Exception e) {
+            // En caso de error, devolver 0
+            resultado.put("totalEstudiantes", 0);
+            resultado.put("fechaConsulta", new Date());
+            resultado.put("descripcion", "Error al obtener el conteo de estudiantes");
+            resultado.put("error", e.getMessage());
+            return resultado;
+        }
+    }
+
+    @Override
+    public Map<String, Object> obtenerEstudiantesPorPrograma() {
+        Map<String, Object> resultado = new HashMap<>();
+        
+        try {
+            // Obtener todos los estudiantes
+            List<UsuarioEntity> estudiantes = usuarioRepository.buscarPorRol(2);
+            
+            // Agrupar por programa
+            Map<String, Integer> estudiantesPorPrograma = new HashMap<>();
+            for (UsuarioEntity estudiante : estudiantes) {
+                String nombrePrograma = estudiante.getObjPrograma().getNombre_programa();
+                estudiantesPorPrograma.put(nombrePrograma, 
+                    estudiantesPorPrograma.getOrDefault(nombrePrograma, 0) + 1);
+            }
+            
+            resultado.put("estudiantesPorPrograma", estudiantesPorPrograma);
+            resultado.put("totalEstudiantes", estudiantes.size());
+            resultado.put("fechaConsulta", new Date());
+            resultado.put("descripcion", "Distribución de estudiantes por programa académico");
+            
+            return resultado;
+        } catch (Exception e) {
+            resultado.put("estudiantesPorPrograma", new HashMap<>());
+            resultado.put("totalEstudiantes", 0);
+            resultado.put("fechaConsulta", new Date());
+            resultado.put("descripcion", "Error al obtener distribución de estudiantes");
+            resultado.put("error", e.getMessage());
+            return resultado;
+        }
+    }
+
+    @Override
+    public Map<String, Object> obtenerEstadisticasDetalladasPorProceso() {
+        Map<String, Object> resultado = new HashMap<>();
+        
+        try {
+            // Obtener estadísticas globales que ya incluyen porTipoProceso
+            Map<String, Object> estadisticasGlobales = obtenerEstadisticasGlobales();
+            
+            // Extraer y procesar datos por proceso
+            @SuppressWarnings("unchecked")
+            Map<String, Object> porTipoProceso = (Map<String, Object>) estadisticasGlobales.get("porTipoProceso");
+            
+            if (porTipoProceso != null) {
+                Map<String, Object> estadisticasDetalladas = new HashMap<>();
+                
+                for (Map.Entry<String, Object> entry : porTipoProceso.entrySet()) {
+                    String nombreProceso = entry.getKey();
+                    Object conteo = entry.getValue();
+                    
+                    // Crear estadísticas detalladas para cada proceso
+                    Map<String, Object> detalleProceso = new HashMap<>();
+                    detalleProceso.put("totalSolicitudes", conteo);
+                    detalleProceso.put("proceso", nombreProceso);
+                    detalleProceso.put("descripcion", obtenerDescripcionProcesoDetallada(nombreProceso));
+                    
+                    estadisticasDetalladas.put(nombreProceso, detalleProceso);
+                }
+                
+                resultado.put("estadisticasPorProceso", estadisticasDetalladas);
+                resultado.put("totalProcesos", estadisticasDetalladas.size());
+            }
+            
+            resultado.put("fechaConsulta", new Date());
+            resultado.put("descripcion", "Estadísticas detalladas por tipo de proceso");
+            
+            return resultado;
+        } catch (Exception e) {
+            resultado.put("estadisticasPorProceso", new HashMap<>());
+            resultado.put("totalProcesos", 0);
+            resultado.put("fechaConsulta", new Date());
+            resultado.put("descripcion", "Error al obtener estadísticas por proceso");
+            resultado.put("error", e.getMessage());
+            return resultado;
+        }
+    }
+
+    /**
+     * Método auxiliar para obtener descripción de procesos (versión mejorada)
+     */
+    private String obtenerDescripcionProcesoDetallada(String nombreProceso) {
+        if (nombreProceso.contains("Reingreso")) {
+            return "Solicitudes de reingreso a programas académicos";
+        } else if (nombreProceso.contains("Homologacion")) {
+            return "Solicitudes de homologación de materias";
+        } else if (nombreProceso.contains("ECAES")) {
+            return "Solicitudes de inscripción a exámenes ECAES";
+        } else if (nombreProceso.contains("Curso Verano")) {
+            return "Solicitudes de cursos intersemestrales/verano";
+        } else if (nombreProceso.contains("Paz y Salvo")) {
+            return "Solicitudes de paz y salvo";
+        } else {
+            return "Proceso académico";
+        }
+    }
+
+    @Override
+    public Map<String, Object> obtenerResumenPorProceso() {
+        Map<String, Object> resultado = new HashMap<>();
+        
+        try {
+            // Obtener estadísticas globales
+            Map<String, Object> estadisticasGlobales = obtenerEstadisticasGlobales();
+            
+            // Procesar datos para crear resumen organizado
+            Map<String, Object> resumenProcesos = new HashMap<>();
+            Map<String, Object> coloresProcesos = new HashMap<>();
+            Map<String, Object> iconosProcesos = new HashMap<>();
+            
+            // Mapear tipos de procesos con colores y estilos
+            String[] tiposProcesos = {"Reingreso", "Homologacion", "ECAES", "Curso Verano", "Paz y Salvo"};
+            String[] colores = {"#007bff", "#28a745", "#ffc107", "#17a2b8", "#dc3545"};
+            String[] iconos = {"fas fa-user-plus", "fas fa-exchange-alt", "fas fa-graduation-cap", "fas fa-calendar-alt", "fas fa-check-circle"};
+            
+            // Contar solicitudes por tipo de proceso
+            @SuppressWarnings("unchecked")
+            Map<String, Object> porTipoProceso = (Map<String, Object>) estadisticasGlobales.get("porTipoProceso");
+            
+            if (porTipoProceso != null) {
+                for (String tipoProceso : tiposProcesos) {
+                    int contador = 0;
+                    String nombreLimpio = "";
+                    
+                    // Contar solicitudes de este tipo
+                    for (Map.Entry<String, Object> entry : porTipoProceso.entrySet()) {
+                        String nombreSolicitud = entry.getKey();
+                        if (nombreSolicitud.contains(tipoProceso)) {
+                            contador++;
+                            if (nombreLimpio.isEmpty()) {
+                                nombreLimpio = tipoProceso;
+                            }
+                        }
+                    }
+                    
+                    if (contador > 0) {
+                        // Crear objeto de proceso con estilo
+                        Map<String, Object> procesoInfo = new HashMap<>();
+                        procesoInfo.put("nombre", nombreLimpio);
+                        procesoInfo.put("cantidad", contador);
+                        procesoInfo.put("descripcion", obtenerDescripcionProcesoDetallada(nombreLimpio));
+                        procesoInfo.put("color", colores[getIndiceTipoProceso(tipoProceso)]);
+                        procesoInfo.put("icono", iconos[getIndiceTipoProceso(tipoProceso)]);
+                        
+                        resumenProcesos.put(nombreLimpio, procesoInfo);
+                    }
+                }
+            }
+            
+            resultado.put("procesos", resumenProcesos);
+            resultado.put("totalProcesos", resumenProcesos.size());
+            resultado.put("fechaConsulta", new Date());
+            resultado.put("descripcion", "Resumen de procesos con estilos para dashboard");
+            
+            return resultado;
+        } catch (Exception e) {
+            resultado.put("procesos", new HashMap<>());
+            resultado.put("totalProcesos", 0);
+            resultado.put("fechaConsulta", new Date());
+            resultado.put("descripcion", "Error al obtener resumen de procesos");
+            resultado.put("error", e.getMessage());
+            return resultado;
+        }
+    }
+
+    /**
+     * Método auxiliar para obtener índice del tipo de proceso
+     */
+    private int getIndiceTipoProceso(String tipoProceso) {
+        switch (tipoProceso) {
+            case "Reingreso": return 0;
+            case "Homologacion": return 1;
+            case "ECAES": return 2;
+            case "Curso Verano": return 3;
+            case "Paz y Salvo": return 4;
+            default: return 0;
+        }
     }
    
 }
