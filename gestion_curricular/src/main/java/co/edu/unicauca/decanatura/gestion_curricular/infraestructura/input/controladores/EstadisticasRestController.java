@@ -1119,4 +1119,26 @@ public class EstadisticasRestController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
+
+    /**
+     * Obtiene tendencias y comparativas del sistema.
+     * Incluye análisis de crecimiento, comparaciones entre períodos y tendencias estratégicas.
+     * 
+     * @return ResponseEntity con tendencias y comparativas
+     */
+    @GetMapping("/tendencias-comparativas")
+    public ResponseEntity<Map<String, Object>> obtenerTendenciasYComparativas() {
+        try {
+            log.info("📈 [ESTADISTICAS] Obteniendo tendencias y comparativas...");
+            
+            Map<String, Object> resultado = estadisticaCU.obtenerTendenciasYComparativas();
+            
+            log.info("📈 [ESTADISTICAS] Tendencias y comparativas generadas exitosamente");
+            return ResponseEntity.ok(resultado);
+            
+        } catch (Exception e) {
+            log.error("❌ [ESTADISTICAS] Error obteniendo tendencias y comparativas: {}", e.getMessage(), e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
 }

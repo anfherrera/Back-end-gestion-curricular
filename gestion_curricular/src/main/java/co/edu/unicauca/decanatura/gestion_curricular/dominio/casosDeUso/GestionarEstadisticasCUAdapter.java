@@ -252,4 +252,9 @@ public class GestionarEstadisticasCUAdapter implements GestionarEstadisticasCUIn
     public Map<String, Object> obtenerTiempoPromedioProcesamiento() {
         return estadisticasGateway.obtenerTiempoPromedioProcesamiento();
     }
+
+    @Override
+    public Map<String, Object> obtenerTendenciasYComparativas() {
+        return estadisticasGateway.obtenerTendenciasYComparativas();
+    }
 }

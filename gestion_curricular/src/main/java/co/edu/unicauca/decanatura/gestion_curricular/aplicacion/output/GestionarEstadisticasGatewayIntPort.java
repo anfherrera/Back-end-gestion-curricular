@@ -185,4 +185,12 @@ public interface GestionarEstadisticasGatewayIntPort {
      */
     Map<String, Object> obtenerTiempoPromedioProcesamiento();
 
+    /**
+     * Obtiene tendencias y comparativas del sistema.
+     * Incluye análisis de crecimiento, comparaciones entre períodos y tendencias estratégicas.
+     * 
+     * @return Map con tendencias y comparativas
+     */
+    Map<String, Object> obtenerTendenciasYComparativas();
+
 }
