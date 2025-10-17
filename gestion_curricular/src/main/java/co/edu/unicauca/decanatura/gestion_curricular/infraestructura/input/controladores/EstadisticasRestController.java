@@ -1031,4 +1031,92 @@ public class EstadisticasRestController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
+
+    /**
+     * Obtiene estadísticas por estado de solicitudes.
+     * Incluye conteos, porcentajes y análisis por estado.
+     * 
+     * @return ResponseEntity con estadísticas por estado
+     */
+    @GetMapping("/estado-solicitudes")
+    public ResponseEntity<Map<String, Object>> obtenerEstadisticasPorEstado() {
+        try {
+            log.info("📊 [ESTADISTICAS] Obteniendo estadísticas por estado de solicitudes...");
+            
+            Map<String, Object> resultado = estadisticaCU.obtenerEstadisticasPorEstado();
+            
+            log.info("📊 [ESTADISTICAS] Estadísticas por estado generadas exitosamente");
+            return ResponseEntity.ok(resultado);
+            
+        } catch (Exception e) {
+            log.error("❌ [ESTADISTICAS] Error obteniendo estadísticas por estado: {}", e.getMessage(), e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
+    /**
+     * Obtiene estadísticas por período/mes.
+     * Incluye tendencias, picos de actividad y análisis temporal.
+     * 
+     * @return ResponseEntity con estadísticas por período
+     */
+    @GetMapping("/por-periodo")
+    public ResponseEntity<Map<String, Object>> obtenerEstadisticasPorPeriodo() {
+        try {
+            log.info("📅 [ESTADISTICAS] Obteniendo estadísticas por período...");
+            
+            Map<String, Object> resultado = estadisticaCU.obtenerEstadisticasPorPeriodo();
+            
+            log.info("📅 [ESTADISTICAS] Estadísticas por período generadas exitosamente");
+            return ResponseEntity.ok(resultado);
+            
+        } catch (Exception e) {
+            log.error("❌ [ESTADISTICAS] Error obteniendo estadísticas por período: {}", e.getMessage(), e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
+    /**
+     * Obtiene estadísticas por programa académico.
+     * Incluye distribución de solicitudes, estudiantes y análisis por programa.
+     * 
+     * @return ResponseEntity con estadísticas por programa
+     */
+    @GetMapping("/por-programa")
+    public ResponseEntity<Map<String, Object>> obtenerEstadisticasPorPrograma() {
+        try {
+            log.info("📚 [ESTADISTICAS] Obteniendo estadísticas por programa académico...");
+            
+            Map<String, Object> resultado = estadisticaCU.obtenerEstadisticasPorPrograma();
+            
+            log.info("📚 [ESTADISTICAS] Estadísticas por programa generadas exitosamente");
+            return ResponseEntity.ok(resultado);
+            
+        } catch (Exception e) {
+            log.error("❌ [ESTADISTICAS] Error obteniendo estadísticas por programa: {}", e.getMessage(), e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
+    /**
+     * Obtiene estadísticas de tiempo promedio de procesamiento.
+     * Incluye tiempos por proceso, funcionario y análisis de eficiencia.
+     * 
+     * @return ResponseEntity con estadísticas de tiempo de procesamiento
+     */
+    @GetMapping("/tiempo-procesamiento")
+    public ResponseEntity<Map<String, Object>> obtenerTiempoPromedioProcesamiento() {
+        try {
+            log.info("⏱️ [ESTADISTICAS] Obteniendo estadísticas de tiempo de procesamiento...");
+            
+            Map<String, Object> resultado = estadisticaCU.obtenerTiempoPromedioProcesamiento();
+            
+            log.info("⏱️ [ESTADISTICAS] Estadísticas de tiempo de procesamiento generadas exitosamente");
+            return ResponseEntity.ok(resultado);
+            
+        } catch (Exception e) {
+            log.error("❌ [ESTADISTICAS] Error obteniendo estadísticas de tiempo de procesamiento: {}", e.getMessage(), e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
 }

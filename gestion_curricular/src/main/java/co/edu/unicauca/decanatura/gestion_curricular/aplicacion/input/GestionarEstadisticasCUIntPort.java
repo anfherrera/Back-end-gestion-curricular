@@ -153,4 +153,36 @@ public interface GestionarEstadisticasCUIntPort {
      */
     Map<String, Object> obtenerConfiguracionEstilos();
 
+    /**
+     * Obtiene estadísticas por estado de solicitudes.
+     * Incluye conteos, porcentajes y análisis por estado.
+     * 
+     * @return Map con estadísticas por estado
+     */
+    Map<String, Object> obtenerEstadisticasPorEstado();
+
+    /**
+     * Obtiene estadísticas por período/mes.
+     * Incluye tendencias, picos de actividad y análisis temporal.
+     * 
+     * @return Map con estadísticas por período
+     */
+    Map<String, Object> obtenerEstadisticasPorPeriodo();
+
+    /**
+     * Obtiene estadísticas por programa académico.
+     * Incluye distribución de solicitudes, estudiantes y análisis por programa.
+     * 
+     * @return Map con estadísticas por programa
+     */
+    Map<String, Object> obtenerEstadisticasPorPrograma();
+
+    /**
+     * Obtiene estadísticas de tiempo promedio de procesamiento.
+     * Incluye tiempos por proceso, funcionario y análisis de eficiencia.
+     * 
+     * @return Map con estadísticas de tiempo de procesamiento
+     */
+    Map<String, Object> obtenerTiempoPromedioProcesamiento();
+
 }

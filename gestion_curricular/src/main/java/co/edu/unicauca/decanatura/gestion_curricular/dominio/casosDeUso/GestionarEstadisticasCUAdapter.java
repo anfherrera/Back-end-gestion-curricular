@@ -232,4 +232,24 @@ public class GestionarEstadisticasCUAdapter implements GestionarEstadisticasCUIn
     public Map<String, Object> obtenerConfiguracionEstilos() {
         return estadisticasGateway.obtenerConfiguracionEstilos();
     }
+
+    @Override
+    public Map<String, Object> obtenerEstadisticasPorEstado() {
+        return estadisticasGateway.obtenerEstadisticasPorEstado();
+    }
+
+    @Override
+    public Map<String, Object> obtenerEstadisticasPorPeriodo() {
+        return estadisticasGateway.obtenerEstadisticasPorPeriodo();
+    }
+
+    @Override
+    public Map<String, Object> obtenerEstadisticasPorPrograma() {
+        return estadisticasGateway.obtenerEstadisticasPorPrograma();
+    }
+
+    @Override
+    public Map<String, Object> obtenerTiempoPromedioProcesamiento() {
+        return estadisticasGateway.obtenerTiempoPromedioProcesamiento();
+    }
 }
