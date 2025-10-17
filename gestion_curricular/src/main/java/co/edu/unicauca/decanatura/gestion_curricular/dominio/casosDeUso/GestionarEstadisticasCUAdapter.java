@@ -227,4 +227,9 @@ public class GestionarEstadisticasCUAdapter implements GestionarEstadisticasCUIn
     public Map<String, Object> obtenerResumenPorProceso() {
         return estadisticasGateway.obtenerResumenPorProceso();
     }
+
+    @Override
+    public Map<String, Object> obtenerConfiguracionEstilos() {
+        return estadisticasGateway.obtenerConfiguracionEstilos();
+    }
 }

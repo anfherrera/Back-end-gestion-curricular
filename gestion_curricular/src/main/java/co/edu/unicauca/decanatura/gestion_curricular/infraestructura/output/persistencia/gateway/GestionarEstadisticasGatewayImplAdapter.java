@@ -996,5 +996,79 @@ public class GestionarEstadisticasGatewayImplAdapter implements GestionarEstadis
             default: return 0;
         }
     }
+
+    @Override
+    public Map<String, Object> obtenerConfiguracionEstilos() {
+        Map<String, Object> resultado = new HashMap<>();
+        
+        try {
+            // Configuración de tema claro con fondo blanco
+            Map<String, Object> tema = new HashMap<>();
+            tema.put("nombre", "Tema Claro");
+            tema.put("fondoPrincipal", "#ffffff");
+            tema.put("fondoSecundario", "#f8f9fa");
+            tema.put("textoPrincipal", "#212529");
+            tema.put("textoSecundario", "#6c757d");
+            tema.put("borde", "#dee2e6");
+            tema.put("sombra", "0 2px 10px rgba(0, 0, 0, 0.1)");
+            
+            // Colores para las tarjetas de estadísticas
+            Map<String, Object> coloresTarjetas = new HashMap<>();
+            coloresTarjetas.put("estudiantes", "#007bff");
+            coloresTarjetas.put("procesos", "#6f42c1");
+            coloresTarjetas.put("aprobadas", "#28a745");
+            coloresTarjetas.put("enProceso", "#ffc107");
+            coloresTarjetas.put("rechazadas", "#dc3545");
+            coloresTarjetas.put("pendientes", "#17a2b8");
+            
+            // Configuración de gradientes para las tarjetas
+            Map<String, Object> gradientes = new HashMap<>();
+            gradientes.put("estudiantes", "linear-gradient(135deg, #007bff, #0056b3)");
+            gradientes.put("procesos", "linear-gradient(135deg, #6f42c1, #5a32a3)");
+            gradientes.put("aprobadas", "linear-gradient(135deg, #28a745, #1e7e34)");
+            gradientes.put("enProceso", "linear-gradient(135deg, #ffc107, #e0a800)");
+            gradientes.put("rechazadas", "linear-gradient(135deg, #dc3545, #c82333)");
+            gradientes.put("pendientes", "linear-gradient(135deg, #17a2b8, #138496)");
+            
+            // Configuración de iconos
+            Map<String, Object> iconos = new HashMap<>();
+            iconos.put("estudiantes", "fas fa-users");
+            iconos.put("procesos", "fas fa-chart-bar");
+            iconos.put("aprobadas", "fas fa-check-circle");
+            iconos.put("enProceso", "fas fa-clock");
+            iconos.put("rechazadas", "fas fa-times-circle");
+            iconos.put("pendientes", "fas fa-hourglass-half");
+            
+            // Configuración de estilos para componentes
+            Map<String, Object> estilos = new HashMap<>();
+            estilos.put("borderRadius", "12px");
+            estilos.put("padding", "20px");
+            estilos.put("margin", "10px");
+            estilos.put("fontFamily", "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif");
+            estilos.put("fontSizeTitulo", "1.5rem");
+            estilos.put("fontSizeSubtitulo", "1rem");
+            estilos.put("fontSizeNumero", "2.5rem");
+            
+            resultado.put("tema", tema);
+            resultado.put("coloresTarjetas", coloresTarjetas);
+            resultado.put("gradientes", gradientes);
+            resultado.put("iconos", iconos);
+            resultado.put("estilos", estilos);
+            resultado.put("fechaConsulta", new Date());
+            resultado.put("descripcion", "Configuración de estilos para dashboard con tema claro");
+            
+            return resultado;
+        } catch (Exception e) {
+            resultado.put("tema", new HashMap<>());
+            resultado.put("coloresTarjetas", new HashMap<>());
+            resultado.put("gradientes", new HashMap<>());
+            resultado.put("iconos", new HashMap<>());
+            resultado.put("estilos", new HashMap<>());
+            resultado.put("fechaConsulta", new Date());
+            resultado.put("descripcion", "Error al obtener configuración de estilos");
+            resultado.put("error", e.getMessage());
+            return resultado;
+        }
+    }
    
 }

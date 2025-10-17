@@ -1009,4 +1009,26 @@ public class EstadisticasRestController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
+
+    /**
+     * Obtiene configuración de estilos y colores para el dashboard.
+     * Incluye tema claro con fondo blanco.
+     * 
+     * @return ResponseEntity con configuración de estilos
+     */
+    @GetMapping("/configuracion-estilos")
+    public ResponseEntity<Map<String, Object>> obtenerConfiguracionEstilos() {
+        try {
+            log.info("🎨 [ESTADISTICAS] Obteniendo configuración de estilos...");
+            
+            Map<String, Object> resultado = estadisticaCU.obtenerConfiguracionEstilos();
+            
+            log.info("🎨 [ESTADISTICAS] Configuración de estilos generada exitosamente");
+            return ResponseEntity.ok(resultado);
+            
+        } catch (Exception e) {
+            log.error("❌ [ESTADISTICAS] Error obteniendo configuración de estilos: {}", e.getMessage(), e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
 }

@@ -64,6 +64,11 @@ INSERT INTO Materias(idMateria, codigo, nombre, creditos) VALUES (31, '11465', '
 
 INSERT INTO Usuarios(idUsuario, codigo, nombre_completo, correo, password, estado_usuario, idfkRol, idfkPrograma) VALUES (1, 'EST001', 'Juan Pérez', 'juan.perez@unicauca.edu.co', 'password123', 1, 2, 1);
 INSERT INTO Usuarios(idUsuario, codigo, nombre_completo, correo, password, estado_usuario, idfkRol, idfkPrograma) VALUES (2, 'EST002', 'María García', 'maria.garcia@unicauca.edu.co', 'password123', 1, 2, 2);
+INSERT INTO Usuarios(idUsuario, codigo, nombre_completo, correo, password, estado_usuario, idfkRol, idfkPrograma) VALUES (100, 'EST003', 'Ana Sofía Rodríguez', 'ana.rodriguez@unicauca.edu.co', 'password123', 1, 2, 3);
+INSERT INTO Usuarios(idUsuario, codigo, nombre_completo, correo, password, estado_usuario, idfkRol, idfkPrograma) VALUES (101, 'EST004', 'Carlos Eduardo Martínez', 'carlos.martinez@unicauca.edu.co', 'password123', 1, 2, 4);
+INSERT INTO Usuarios(idUsuario, codigo, nombre_completo, correo, password, estado_usuario, idfkRol, idfkPrograma) VALUES (102, 'EST005', 'Laura Valentina López', 'laura.lopez@unicauca.edu.co', 'password123', 1, 2, 1);
+INSERT INTO Usuarios(idUsuario, codigo, nombre_completo, correo, password, estado_usuario, idfkRol, idfkPrograma) VALUES (103, 'EST006', 'Diego Alejandro Herrera', 'diego.herrera@unicauca.edu.co', 'password123', 1, 2, 2);
+INSERT INTO Usuarios(idUsuario, codigo, nombre_completo, correo, password, estado_usuario, idfkRol, idfkPrograma) VALUES (104, 'EST007', 'Valentina Morales', 'valentina.morales@unicauca.edu.co', 'password123', 1, 2, 3);
 INSERT INTO Usuarios(idUsuario, codigo, nombre_completo, correo, password, estado_usuario, idfkRol, idfkPrograma) VALUES (3, 'DOC001', 'Carlos López', 'carlos.lopez@unicauca.edu.co', 'password123', 1, 1, 1);
 INSERT INTO Usuarios(idUsuario, codigo, nombre_completo, correo, password, estado_usuario, idfkRol, idfkPrograma) VALUES (4, '1047', 'Carlos Alberto Ardila Albarracin', 'cardila@unicauca.edu.co', 'password123', 1, 1, 2);
 INSERT INTO Usuarios(idUsuario, codigo, nombre_completo, correo, password, estado_usuario, idfkRol, idfkPrograma) VALUES (5, '1048', 'Carlos Alberto Cobos Lozada', 'ccobos@unicauca.edu.co', 'password123', 1, 1, 3);

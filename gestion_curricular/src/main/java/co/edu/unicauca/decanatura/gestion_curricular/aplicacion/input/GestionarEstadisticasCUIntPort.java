@@ -145,4 +145,12 @@ public interface GestionarEstadisticasCUIntPort {
      */
     Map<String, Object> obtenerResumenPorProceso();
 
+    /**
+     * Obtiene configuración de estilos y colores para el dashboard.
+     * Incluye tema claro con fondo blanco y colores optimizados.
+     * 
+     * @return Map con configuración de estilos
+     */
+    Map<String, Object> obtenerConfiguracionEstilos();
+
 }
