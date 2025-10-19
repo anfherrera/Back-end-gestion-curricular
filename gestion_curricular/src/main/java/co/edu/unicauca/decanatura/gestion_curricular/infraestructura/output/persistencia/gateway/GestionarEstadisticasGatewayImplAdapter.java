@@ -868,40 +868,165 @@ public class GestionarEstadisticasGatewayImplAdapter implements GestionarEstadis
         Map<String, Object> resultado = new HashMap<>();
         
         try {
-            // Obtener estadísticas globales que ya incluyen porTipoProceso
-            Map<String, Object> estadisticasGlobales = obtenerEstadisticasGlobales();
+            // Obtener datos reales del backend
+            List<SolicitudEntity> todasLasSolicitudes = solicitudRepository.findAll();
             
-            // Extraer y procesar datos por proceso
-            @SuppressWarnings("unchecked")
-            Map<String, Object> porTipoProceso = (Map<String, Object>) estadisticasGlobales.get("porTipoProceso");
+            // Inicializar contadores por proceso
+            Map<String, Integer> totalPorProceso = new HashMap<>();
+            Map<String, Integer> aprobadasPorProceso = new HashMap<>();
+            Map<String, Integer> rechazadasPorProceso = new HashMap<>();
+            Map<String, Integer> enviadasPorProceso = new HashMap<>();
+            Map<String, Integer> enProcesoPorProceso = new HashMap<>();
+            Map<String, List<Double>> tiemposPorProceso = new HashMap<>();
+            Map<String, List<Date>> fechasPorProceso = new HashMap<>();
             
-            if (porTipoProceso != null) {
-                Map<String, Object> estadisticasDetalladas = new HashMap<>();
-                
-                for (Map.Entry<String, Object> entry : porTipoProceso.entrySet()) {
-                    String nombreProceso = entry.getKey();
-                    Object conteo = entry.getValue();
-                    
-                    // Crear estadísticas detalladas para cada proceso
-                    Map<String, Object> detalleProceso = new HashMap<>();
-                    detalleProceso.put("totalSolicitudes", conteo);
-                    detalleProceso.put("proceso", nombreProceso);
-                    detalleProceso.put("descripcion", obtenerDescripcionProcesoDetallada(nombreProceso));
-                    
-                    estadisticasDetalladas.put(nombreProceso, detalleProceso);
-                }
-                
-                resultado.put("estadisticasPorProceso", estadisticasDetalladas);
-                resultado.put("totalProcesos", estadisticasDetalladas.size());
+            // Inicializar mapas
+            String[] procesos = {"Homologación", "Paz y Salvo", "Reingreso", "Cursos de Verano"};
+            for (String proceso : procesos) {
+                totalPorProceso.put(proceso, 0);
+                aprobadasPorProceso.put(proceso, 0);
+                rechazadasPorProceso.put(proceso, 0);
+                enviadasPorProceso.put(proceso, 0);
+                enProcesoPorProceso.put(proceso, 0);
+                tiemposPorProceso.put(proceso, new ArrayList<>());
+                fechasPorProceso.put(proceso, new ArrayList<>());
             }
             
+            // Procesar todas las solicitudes
+            for (SolicitudEntity solicitud : todasLasSolicitudes) {
+                String nombreProceso = obtenerNombreProcesoPorSolicitud(solicitud);
+                if (nombreProceso != null) {
+                    totalPorProceso.put(nombreProceso, totalPorProceso.get(nombreProceso) + 1);
+                    
+                    // Agregar fecha de creación para análisis temporal
+                    if (solicitud.getFecha_registro_solicitud() != null) {
+                        fechasPorProceso.get(nombreProceso).add(solicitud.getFecha_registro_solicitud());
+                    }
+                    
+                    // Analizar estado
+                    String estado = obtenerEstadoMasReciente(solicitud);
+                    if ("Aprobada".equals(estado)) {
+                        aprobadasPorProceso.put(nombreProceso, aprobadasPorProceso.get(nombreProceso) + 1);
+                    } else if ("Rechazada".equals(estado)) {
+                        rechazadasPorProceso.put(nombreProceso, rechazadasPorProceso.get(nombreProceso) + 1);
+                    } else if ("En Proceso".equals(estado)) {
+                        enProcesoPorProceso.put(nombreProceso, enProcesoPorProceso.get(nombreProceso) + 1);
+                    } else {
+                        enviadasPorProceso.put(nombreProceso, enviadasPorProceso.get(nombreProceso) + 1);
+                    }
+                    
+                    // Calcular tiempo de procesamiento si está completado
+                    if ("Aprobada".equals(estado) || "Rechazada".equals(estado)) {
+                        Date fechaCreacion = solicitud.getFecha_registro_solicitud();
+                        Date fechaActualizacion = obtenerFechaActualizacion(solicitud);
+                        
+                        if (fechaCreacion != null && fechaActualizacion != null) {
+                            long diferenciaMs = fechaActualizacion.getTime() - fechaCreacion.getTime();
+                            double tiempoDias = diferenciaMs / (1000.0 * 60 * 60 * 24);
+                            tiemposPorProceso.get(nombreProceso).add(tiempoDias);
+                        }
+                    }
+                }
+            }
+            
+            // Crear estadísticas detalladas por proceso
+            Map<String, Object> estadisticasDetalladas = new HashMap<>();
+            Map<String, Object> resumenComparativo = new HashMap<>();
+            
+            String procesoMasEficiente = null;
+            String procesoMasRapido = null;
+            String procesoMasDemandado = null;
+            double maxEficiencia = 0;
+            double minTiempo = Double.MAX_VALUE;
+            int maxDemanda = 0;
+            
+            for (String proceso : procesos) {
+                int total = totalPorProceso.get(proceso);
+                int aprobadas = aprobadasPorProceso.get(proceso);
+                int rechazadas = rechazadasPorProceso.get(proceso);
+                int enviadas = enviadasPorProceso.get(proceso);
+                int enProceso = enProcesoPorProceso.get(proceso);
+                
+                // Calcular eficiencia
+                double eficiencia = total > 0 ? (aprobadas * 100.0) / total : 0;
+                
+                // Calcular tiempo promedio
+                List<Double> tiempos = tiemposPorProceso.get(proceso);
+                double tiempoPromedio = tiempos.isEmpty() ? 0 : tiempos.stream().mapToDouble(Double::doubleValue).average().orElse(0);
+                double tiempoMinimo = tiempos.isEmpty() ? 0 : tiempos.stream().mapToDouble(Double::doubleValue).min().orElse(0);
+                double tiempoMaximo = tiempos.isEmpty() ? 0 : tiempos.stream().mapToDouble(Double::doubleValue).max().orElse(0);
+                
+                // Análisis de tendencia temporal (últimos 3 meses vs anteriores)
+                List<Date> fechas = fechasPorProceso.get(proceso);
+                String tendencia = "Estable";
+                if (fechas.size() >= 2) {
+                    // Simular análisis de tendencia basado en distribución de fechas
+                    long fechasRecientes = fechas.stream()
+                        .filter(fecha -> fecha.after(new Date(System.currentTimeMillis() - 90L * 24 * 60 * 60 * 1000)))
+                        .count();
+                    long fechasAnteriores = fechas.size() - fechasRecientes;
+                    
+                    if (fechasRecientes > fechasAnteriores) {
+                        tendencia = "Creciente";
+                    } else if (fechasRecientes < fechasAnteriores) {
+                        tendencia = "Decreciente";
+                    }
+                }
+                
+                // Crear detalle del proceso
+                Map<String, Object> detalleProceso = new HashMap<>();
+                detalleProceso.put("proceso", proceso);
+                detalleProceso.put("totalSolicitudes", total);
+                detalleProceso.put("aprobadas", aprobadas);
+                detalleProceso.put("rechazadas", rechazadas);
+                detalleProceso.put("enviadas", enviadas);
+                detalleProceso.put("enProceso", enProceso);
+                detalleProceso.put("eficiencia", Math.round(eficiencia * 100.0) / 100.0);
+                detalleProceso.put("tiempoPromedio", Math.round(tiempoPromedio * 100.0) / 100.0);
+                detalleProceso.put("tiempoMinimo", Math.round(tiempoMinimo * 100.0) / 100.0);
+                detalleProceso.put("tiempoMaximo", Math.round(tiempoMaximo * 100.0) / 100.0);
+                detalleProceso.put("tendencia", tendencia);
+                detalleProceso.put("descripcion", obtenerDescripcionProcesoDetallada(proceso));
+                detalleProceso.put("color", obtenerColorProceso(proceso));
+                detalleProceso.put("icono", obtenerIconoProceso(proceso));
+                
+                estadisticasDetalladas.put(proceso, detalleProceso);
+                
+                // Actualizar comparativas
+                if (eficiencia > maxEficiencia) {
+                    maxEficiencia = eficiencia;
+                    procesoMasEficiente = proceso;
+                }
+                
+                if (tiempoPromedio > 0 && tiempoPromedio < minTiempo) {
+                    minTiempo = tiempoPromedio;
+                    procesoMasRapido = proceso;
+                }
+                
+                if (total > maxDemanda) {
+                    maxDemanda = total;
+                    procesoMasDemandado = proceso;
+                }
+            }
+            
+            // Crear resumen comparativo
+            resumenComparativo.put("procesoMasEficiente", procesoMasEficiente);
+            resumenComparativo.put("procesoMasRapido", procesoMasRapido);
+            resumenComparativo.put("procesoMasDemandado", procesoMasDemandado);
+            resumenComparativo.put("eficienciaMaxima", Math.round(maxEficiencia * 100.0) / 100.0);
+            resumenComparativo.put("tiempoMinimo", Math.round(minTiempo * 100.0) / 100.0);
+            resumenComparativo.put("demandaMaxima", maxDemanda);
+            resumenComparativo.put("totalProcesos", procesos.length);
+            
+            resultado.put("estadisticasPorProceso", estadisticasDetalladas);
+            resultado.put("resumenComparativo", resumenComparativo);
             resultado.put("fechaConsulta", new Date());
-            resultado.put("descripcion", "Estadísticas detalladas por tipo de proceso");
+            resultado.put("descripcion", "Estadísticas detalladas por proceso con análisis de eficiencia y tiempo - DATOS REALES");
             
             return resultado;
         } catch (Exception e) {
             resultado.put("estadisticasPorProceso", new HashMap<>());
-            resultado.put("totalProcesos", 0);
+            resultado.put("resumenComparativo", new HashMap<>());
             resultado.put("fechaConsulta", new Date());
             resultado.put("descripcion", "Error al obtener estadísticas por proceso");
             resultado.put("error", e.getMessage());
@@ -1087,56 +1212,125 @@ public class GestionarEstadisticasGatewayImplAdapter implements GestionarEstadis
         Map<String, Object> resultado = new HashMap<>();
         
         try {
-            // Obtener estadísticas globales
-            Map<String, Object> estadisticasGlobales = obtenerEstadisticasGlobales();
+            // Obtener datos reales del backend
+            List<SolicitudEntity> todasLasSolicitudes = solicitudRepository.findAll();
             
-            // Procesar datos para crear estadísticas por estado
-            Map<String, Object> estados = new HashMap<>();
+            // Inicializar contadores por estado
+            Map<String, Integer> totalPorEstado = new HashMap<>();
+            Map<String, Map<String, Integer>> procesosPorEstado = new HashMap<>();
+            Map<String, Map<String, Integer>> programasPorEstado = new HashMap<>();
             
-            // Obtener totales de estados
-            @SuppressWarnings("unchecked")
-            Map<String, Object> porEstado = (Map<String, Object>) estadisticasGlobales.get("porEstado");
+            // Inicializar estados
+            String[] estados = {"Enviada", "En Proceso", "Aprobada", "Rechazada"};
             
-            if (porEstado != null) {
-                int totalSolicitudes = 0;
+            for (String estado : estados) {
+                totalPorEstado.put(estado, 0);
+                procesosPorEstado.put(estado, new HashMap<>());
+                programasPorEstado.put(estado, new HashMap<>());
+            }
+            
+            // Procesar todas las solicitudes
+            for (SolicitudEntity solicitud : todasLasSolicitudes) {
+                String estadoActual = obtenerEstadoMasReciente(solicitud);
+                String nombreProceso = obtenerNombreProcesoPorSolicitud(solicitud);
+                String nombrePrograma = null;
                 
-                // Calcular total de solicitudes
-                for (Object conteo : porEstado.values()) {
-                    if (conteo instanceof Number) {
-                        totalSolicitudes += ((Number) conteo).intValue();
-                    }
+                if (solicitud.getObjUsuario() != null && solicitud.getObjUsuario().getObjPrograma() != null) {
+                    nombrePrograma = solicitud.getObjUsuario().getObjPrograma().getNombre_programa();
                 }
                 
-                // Crear estadísticas detalladas por estado
-                for (Map.Entry<String, Object> entry : porEstado.entrySet()) {
-                    String estado = entry.getKey();
-                    Object conteo = entry.getValue();
+                // Contar por estado actual
+                totalPorEstado.put(estadoActual, totalPorEstado.getOrDefault(estadoActual, 0) + 1);
+                
+                // Contar procesos por estado
+                if (nombreProceso != null) {
+                    Map<String, Integer> procesos = procesosPorEstado.getOrDefault(estadoActual, new HashMap<>());
+                    procesos.put(nombreProceso, procesos.getOrDefault(nombreProceso, 0) + 1);
+                    procesosPorEstado.put(estadoActual, procesos);
+                }
+                
+                // Contar programas por estado
+                if (nombrePrograma != null) {
+                    Map<String, Integer> programas = programasPorEstado.getOrDefault(estadoActual, new HashMap<>());
+                    programas.put(nombrePrograma, programas.getOrDefault(nombrePrograma, 0) + 1);
+                    programasPorEstado.put(estadoActual, programas);
+                }
+            }
+            
+            // Crear estadísticas detalladas por estado
+            Map<String, Object> resumenPorEstado = new HashMap<>();
+            Map<String, Object> analisisComparativo = new HashMap<>();
+            
+            String estadoMasComun = null;
+            String estadoMenosComun = null;
+            String estadoMasEficiente = null;
+            int maxSolicitudes = 0;
+            int minSolicitudes = Integer.MAX_VALUE;
+            int totalSolicitudes = todasLasSolicitudes.size();
+            
+            for (String estado : estados) {
+                int total = totalPorEstado.getOrDefault(estado, 0);
+                
+                if (total > 0) {
+                    // Calcular porcentaje
+                    double porcentaje = (total * 100.0) / totalSolicitudes;
                     
-                    if (conteo instanceof Number) {
-                        int cantidad = ((Number) conteo).intValue();
-                        double porcentaje = totalSolicitudes > 0 ? (cantidad * 100.0) / totalSolicitudes : 0;
-                        
-                        Map<String, Object> estadoInfo = new HashMap<>();
-                        estadoInfo.put("cantidad", cantidad);
-                        estadoInfo.put("porcentaje", Math.round(porcentaje * 100.0) / 100.0);
-                        estadoInfo.put("descripcion", obtenerDescripcionEstado(estado));
-                        estadoInfo.put("color", obtenerColorEstado(estado));
-                        estadoInfo.put("icono", obtenerIconoEstado(estado));
-                        
-                        estados.put(estado, estadoInfo);
+                    // Crear detalle del estado
+                    Map<String, Object> detalleEstado = new HashMap<>();
+                    detalleEstado.put("estado", estado);
+                    detalleEstado.put("cantidad", total);
+                    detalleEstado.put("porcentaje", Math.round(porcentaje * 100.0) / 100.0);
+                    detalleEstado.put("procesos", procesosPorEstado.getOrDefault(estado, new HashMap<>()));
+                    detalleEstado.put("programas", programasPorEstado.getOrDefault(estado, new HashMap<>()));
+                    detalleEstado.put("color", obtenerColorEstado(estado));
+                    detalleEstado.put("icono", obtenerIconoEstado(estado));
+                    detalleEstado.put("descripcion", obtenerDescripcionEstado(estado));
+                    
+                    resumenPorEstado.put(estado, detalleEstado);
+                    
+                    // Actualizar comparativas
+                    if (total > maxSolicitudes) {
+                        maxSolicitudes = total;
+                        estadoMasComun = estado;
+                    }
+                    
+                    if (total < minSolicitudes) {
+                        minSolicitudes = total;
+                        estadoMenosComun = estado;
+                    }
+                    
+                    // Calcular eficiencia (aprobadas vs total)
+                    if ("Aprobada".equals(estado)) {
+                        estadoMasEficiente = estado;
                     }
                 }
             }
             
-            resultado.put("estados", estados);
-            resultado.put("totalSolicitudes", estadisticasGlobales.get("totalSolicitudes"));
+            // Crear análisis comparativo
+            analisisComparativo.put("estadoMasComun", estadoMasComun);
+            analisisComparativo.put("estadoMenosComun", estadoMenosComun);
+            analisisComparativo.put("estadoMasEficiente", estadoMasEficiente);
+            analisisComparativo.put("maxSolicitudes", maxSolicitudes);
+            analisisComparativo.put("minSolicitudes", minSolicitudes);
+            analisisComparativo.put("totalSolicitudes", totalSolicitudes);
+            analisisComparativo.put("estadosActivos", resumenPorEstado.size());
+            analisisComparativo.put("solicitudesPendientes", totalPorEstado.getOrDefault("Enviada", 0) + totalPorEstado.getOrDefault("En Proceso", 0));
+            analisisComparativo.put("solicitudesCompletadas", totalPorEstado.getOrDefault("Aprobada", 0) + totalPorEstado.getOrDefault("Rechazada", 0));
+            
+            // Calcular tasa de resolución
+            int completadas = totalPorEstado.getOrDefault("Aprobada", 0) + totalPorEstado.getOrDefault("Rechazada", 0);
+            double tasaResolucion = totalSolicitudes > 0 ? (completadas * 100.0) / totalSolicitudes : 0;
+            analisisComparativo.put("tasaResolucion", Math.round(tasaResolucion * 100.0) / 100.0);
+            
+            resultado.put("estados", resumenPorEstado);
+            resultado.put("analisis", analisisComparativo);
             resultado.put("fechaConsulta", new Date());
-            resultado.put("descripcion", "Estadísticas por estado de solicitudes");
+            resultado.put("descripcion", "Estadísticas por estado de solicitudes con análisis de distribución - DATOS REALES");
             
             return resultado;
         } catch (Exception e) {
             resultado.put("estados", new HashMap<>());
-            resultado.put("totalSolicitudes", 0);
+            resultado.put("analisis", new HashMap<>());
             resultado.put("fechaConsulta", new Date());
             resultado.put("descripcion", "Error al obtener estadísticas por estado");
             resultado.put("error", e.getMessage());
@@ -1204,45 +1398,185 @@ public class GestionarEstadisticasGatewayImplAdapter implements GestionarEstadis
         Map<String, Object> resultado = new HashMap<>();
         
         try {
-            // Crear datos de ejemplo basados en las fechas de import.sql
+            // Obtener datos reales del backend
+            List<SolicitudEntity> todasLasSolicitudes = solicitudRepository.findAll();
+            
+            // Inicializar contadores por mes
+            Map<String, Integer> totalPorMes = new HashMap<>();
+            Map<String, Integer> aprobadasPorMes = new HashMap<>();
+            Map<String, Integer> rechazadasPorMes = new HashMap<>();
+            Map<String, Integer> enviadasPorMes = new HashMap<>();
+            Map<String, List<Double>> tiemposPorMes = new HashMap<>();
+            Map<String, Map<String, Integer>> procesosPorMes = new HashMap<>();
+            
+            // Inicializar meses
+            String[] meses = {"Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", 
+                            "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"};
+            
+            for (String mes : meses) {
+                totalPorMes.put(mes, 0);
+                aprobadasPorMes.put(mes, 0);
+                rechazadasPorMes.put(mes, 0);
+                enviadasPorMes.put(mes, 0);
+                tiemposPorMes.put(mes, new ArrayList<>());
+                procesosPorMes.put(mes, new HashMap<>());
+            }
+            
+            // Procesar todas las solicitudes
+            for (SolicitudEntity solicitud : todasLasSolicitudes) {
+                Date fechaCreacion = solicitud.getFecha_registro_solicitud();
+                if (fechaCreacion != null) {
+                    Calendar cal = Calendar.getInstance();
+                    cal.setTime(fechaCreacion);
+                    int mesNumero = cal.get(Calendar.MONTH); // 0-11
+                    String nombreMes = meses[mesNumero];
+                    String nombreProceso = obtenerNombreProcesoPorSolicitud(solicitud);
+                    
+                    // Contar solicitudes por mes
+                    totalPorMes.put(nombreMes, totalPorMes.get(nombreMes) + 1);
+                    
+                    // Contar procesos por mes
+                    if (nombreProceso != null) {
+                        Map<String, Integer> procesos = procesosPorMes.get(nombreMes);
+                        procesos.put(nombreProceso, procesos.getOrDefault(nombreProceso, 0) + 1);
+                    }
+                    
+                    // Analizar estado
+                    String estado = obtenerEstadoMasReciente(solicitud);
+                    if ("Aprobada".equals(estado)) {
+                        aprobadasPorMes.put(nombreMes, aprobadasPorMes.get(nombreMes) + 1);
+                    } else if ("Rechazada".equals(estado)) {
+                        rechazadasPorMes.put(nombreMes, rechazadasPorMes.get(nombreMes) + 1);
+                    } else {
+                        enviadasPorMes.put(nombreMes, enviadasPorMes.get(nombreMes) + 1);
+                    }
+                    
+                    // Calcular tiempo de procesamiento si está completado
+                    if ("Aprobada".equals(estado) || "Rechazada".equals(estado)) {
+                        Date fechaActualizacion = obtenerFechaActualizacion(solicitud);
+                        
+                        if (fechaActualizacion != null) {
+                            long diferenciaMs = fechaActualizacion.getTime() - fechaCreacion.getTime();
+                            double tiempoDias = diferenciaMs / (1000.0 * 60 * 60 * 24);
+                            tiemposPorMes.get(nombreMes).add(tiempoDias);
+                        }
+                    }
+                }
+            }
+            
+            // Crear estadísticas detalladas por mes
             Map<String, Object> resumenPorMes = new HashMap<>();
+            Map<String, Object> analisisTendencias = new HashMap<>();
             
-            // Datos simulados basados en las fechas del import.sql (Julio-Agosto 2025)
-            Map<String, Object> julio = new HashMap<>();
-            julio.put("total", 15);
-            julio.put("aprobadas", 8);
-            julio.put("rechazadas", 2);
-            julio.put("enviadas", 5);
-            julio.put("en_proceso", 0);
-            julio.put("porcentaje", 32.61);
-            julio.put("color", "#fff3e0");
-            julio.put("icono", "fas fa-calendar-alt");
-            resumenPorMes.put("Julio", julio);
+            String mesMasActivo = null;
+            String mesMasEficiente = null;
+            String mesMasRapido = null;
+            int maxSolicitudes = 0;
+            double maxEficiencia = 0;
+            double minTiempo = Double.MAX_VALUE;
+            int totalSolicitudes = 0;
             
-            Map<String, Object> agosto = new HashMap<>();
-            agosto.put("total", 31);
-            agosto.put("aprobadas", 13);
-            agosto.put("rechazadas", 3);
-            agosto.put("enviadas", 15);
-            agosto.put("en_proceso", 0);
-            agosto.put("porcentaje", 67.39);
-            agosto.put("color", "#fff3e0");
-            agosto.put("icono", "fas fa-calendar-alt");
-            resumenPorMes.put("Agosto", agosto);
+            for (String mes : meses) {
+                int total = totalPorMes.get(mes);
+                int aprobadas = aprobadasPorMes.get(mes);
+                int rechazadas = rechazadasPorMes.get(mes);
+                int enviadas = enviadasPorMes.get(mes);
+                
+                if (total > 0) {
+                    totalSolicitudes += total;
+                    
+                    // Calcular eficiencia
+                    double eficiencia = (aprobadas * 100.0) / total;
+                    
+                    // Calcular tiempo promedio
+                    List<Double> tiempos = tiemposPorMes.get(mes);
+                    double tiempoPromedio = tiempos.isEmpty() ? 0 : tiempos.stream().mapToDouble(Double::doubleValue).average().orElse(0);
+                    
+                    // Calcular porcentaje del total
+                    double porcentaje = (total * 100.0) / todasLasSolicitudes.size();
+                    
+                    // Crear detalle del mes
+                    Map<String, Object> detalleMes = new HashMap<>();
+                    detalleMes.put("mes", mes);
+                    detalleMes.put("total", total);
+                    detalleMes.put("aprobadas", aprobadas);
+                    detalleMes.put("rechazadas", rechazadas);
+                    detalleMes.put("enviadas", enviadas);
+                    detalleMes.put("eficiencia", Math.round(eficiencia * 100.0) / 100.0);
+                    detalleMes.put("tiempoPromedio", Math.round(tiempoPromedio * 100.0) / 100.0);
+                    detalleMes.put("porcentaje", Math.round(porcentaje * 100.0) / 100.0);
+                    detalleMes.put("procesos", procesosPorMes.get(mes));
+                    detalleMes.put("color", obtenerColorMes(mes));
+                    detalleMes.put("icono", obtenerIconoMes(mes));
+                    detalleMes.put("descripcion", obtenerDescripcionMes(mes));
+                    
+                    resumenPorMes.put(mes, detalleMes);
+                    
+                    // Actualizar comparativas
+                    if (total > maxSolicitudes) {
+                        maxSolicitudes = total;
+                        mesMasActivo = mes;
+                    }
+                    
+                    if (eficiencia > maxEficiencia) {
+                        maxEficiencia = eficiencia;
+                        mesMasEficiente = mes;
+                    }
+                    
+                    if (tiempoPromedio > 0 && tiempoPromedio < minTiempo) {
+                        minTiempo = tiempoPromedio;
+                        mesMasRapido = mes;
+                    }
+                }
+            }
             
             // Análisis de tendencias
-            Map<String, Object> tendencias = new HashMap<>();
-            tendencias.put("mesConMasActividad", "Agosto");
-            tendencias.put("totalSolicitudes", 46);
-            tendencias.put("promedioPorMes", 3.83);
-            tendencias.put("mesesConActividad", 2);
-            tendencias.put("tendencia", "Creciente");
-            tendencias.put("crecimiento", "+106.67%");
+            List<String> mesesConDatos = new ArrayList<>();
+            for (String mes : meses) {
+                if (totalPorMes.get(mes) > 0) {
+                    mesesConDatos.add(mes);
+                }
+            }
+            
+            String tendenciaGeneral = "Estable";
+            double crecimientoPromedio = 0;
+            
+            if (mesesConDatos.size() >= 2) {
+                // Calcular tendencia basada en los últimos 2 meses con datos
+                String mesAnterior = mesesConDatos.get(mesesConDatos.size() - 2);
+                String mesActual = mesesConDatos.get(mesesConDatos.size() - 1);
+                
+                int solicitudesAnterior = totalPorMes.get(mesAnterior);
+                int solicitudesActual = totalPorMes.get(mesActual);
+                
+                if (solicitudesActual > solicitudesAnterior) {
+                    tendenciaGeneral = "Creciente";
+                    crecimientoPromedio = solicitudesAnterior > 0 ? 
+                        ((solicitudesActual - solicitudesAnterior) * 100.0) / solicitudesAnterior : 0;
+                } else if (solicitudesActual < solicitudesAnterior) {
+                    tendenciaGeneral = "Decreciente";
+                    crecimientoPromedio = solicitudesAnterior > 0 ? 
+                        ((solicitudesAnterior - solicitudesActual) * 100.0) / solicitudesAnterior : 0;
+                }
+            }
+            
+            // Crear análisis de tendencias
+            analisisTendencias.put("mesMasActivo", mesMasActivo);
+            analisisTendencias.put("mesMasEficiente", mesMasEficiente);
+            analisisTendencias.put("mesMasRapido", mesMasRapido);
+            analisisTendencias.put("maxSolicitudes", maxSolicitudes);
+            analisisTendencias.put("eficienciaMaxima", Math.round(maxEficiencia * 100.0) / 100.0);
+            analisisTendencias.put("tiempoMinimo", Math.round(minTiempo * 100.0) / 100.0);
+            analisisTendencias.put("tendenciaGeneral", tendenciaGeneral);
+            analisisTendencias.put("crecimientoPromedio", Math.round(crecimientoPromedio * 100.0) / 100.0);
+            analisisTendencias.put("mesesAnalizados", mesesConDatos.size());
+            analisisTendencias.put("totalSolicitudes", totalSolicitudes);
+            analisisTendencias.put("promedioMensual", mesesConDatos.size() > 0 ? Math.round((totalSolicitudes * 100.0) / mesesConDatos.size()) / 100.0 : 0);
             
             resultado.put("porMes", resumenPorMes);
-            resultado.put("tendencias", tendencias);
+            resultado.put("tendencias", analisisTendencias);
             resultado.put("fechaConsulta", new Date());
-            resultado.put("descripcion", "Estadísticas por período/mes con análisis de tendencias");
+            resultado.put("descripcion", "Estadísticas por período/mes con análisis de tendencias - DATOS REALES");
             
             return resultado;
         } catch (Exception e) {
@@ -1255,92 +1589,291 @@ public class GestionarEstadisticasGatewayImplAdapter implements GestionarEstadis
         }
     }
 
+    private String obtenerColorMes(String mes) {
+        switch (mes) {
+            case "Enero":
+                return "#FF6B6B"; // Rojo
+            case "Febrero":
+                return "#4ECDC4"; // Turquesa
+            case "Marzo":
+                return "#45B7D1"; // Azul
+            case "Abril":
+                return "#96CEB4"; // Verde
+            case "Mayo":
+                return "#FFEAA7"; // Amarillo
+            case "Junio":
+                return "#DDA0DD"; // Púrpura
+            case "Julio":
+                return "#98D8C8"; // Verde agua
+            case "Agosto":
+                return "#F7DC6F"; // Amarillo dorado
+            case "Septiembre":
+                return "#BB8FCE"; // Púrpura claro
+            case "Octubre":
+                return "#85C1E9"; // Azul claro
+            case "Noviembre":
+                return "#F8C471"; // Naranja
+            case "Diciembre":
+                return "#F1948A"; // Rosa
+            default:
+                return "#6B7280"; // Gris
+        }
+    }
+
+    private String obtenerIconoMes(String mes) {
+        switch (mes) {
+            case "Enero":
+                return "❄️";
+            case "Febrero":
+                return "💝";
+            case "Marzo":
+                return "🌸";
+            case "Abril":
+                return "🌷";
+            case "Mayo":
+                return "🌺";
+            case "Junio":
+                return "☀️";
+            case "Julio":
+                return "🏖️";
+            case "Agosto":
+                return "🌻";
+            case "Septiembre":
+                return "🍂";
+            case "Octubre":
+                return "🎃";
+            case "Noviembre":
+                return "🦃";
+            case "Diciembre":
+                return "🎄";
+            default:
+                return "📅";
+        }
+    }
+
+    private String obtenerDescripcionMes(String mes) {
+        switch (mes) {
+            case "Enero":
+                return "Mes de inicio de año académico - Período de inscripciones";
+            case "Febrero":
+                return "Mes de inicio de clases - Período de ajustes académicos";
+            case "Marzo":
+                return "Mes de estabilización académica - Período regular";
+            case "Abril":
+                return "Mes de evaluaciones parciales - Período de exámenes";
+            case "Mayo":
+                return "Mes de mitad de semestre - Período de seguimiento";
+            case "Junio":
+                return "Mes de finalización de semestre - Período de exámenes finales";
+            case "Julio":
+                return "Mes de vacaciones - Período de cursos de verano";
+            case "Agosto":
+                return "Mes de inicio de segundo semestre - Período de inscripciones";
+            case "Septiembre":
+                return "Mes de estabilización - Período regular de clases";
+            case "Octubre":
+                return "Mes de evaluaciones - Período de exámenes parciales";
+            case "Noviembre":
+                return "Mes de preparación final - Período de proyectos";
+            case "Diciembre":
+                return "Mes de finalización de año - Período de graduaciones";
+            default:
+                return "Período académico";
+        }
+    }
+
     @Override
     public Map<String, Object> obtenerEstadisticasPorPrograma() {
         Map<String, Object> resultado = new HashMap<>();
         
         try {
-            // Obtener estadísticas de estudiantes por programa (ya implementado)
-            Map<String, Object> estudiantesPorPrograma = obtenerEstadisticasGlobales();
+            // Obtener datos reales del backend
+            List<ProgramaEntity> todosLosProgramas = programaRepository.findAll();
+            List<SolicitudEntity> todasLasSolicitudes = solicitudRepository.findAll();
+            List<UsuarioEntity> todosLosEstudiantes = usuarioRepository.buscarPorRol(2);
             
-            // Crear datos de ejemplo basados en los programas del import.sql
+            // Inicializar contadores por programa
+            Map<String, Integer> estudiantesPorPrograma = new HashMap<>();
+            Map<String, Integer> solicitudesPorPrograma = new HashMap<>();
+            Map<String, Integer> aprobadasPorPrograma = new HashMap<>();
+            Map<String, Integer> rechazadasPorPrograma = new HashMap<>();
+            Map<String, Integer> enviadasPorPrograma = new HashMap<>();
+            Map<String, List<Double>> tiemposPorPrograma = new HashMap<>();
+            Map<String, List<Date>> fechasPorPrograma = new HashMap<>();
+            Map<String, Map<String, Integer>> procesosPorPrograma = new HashMap<>();
+            
+            // Inicializar mapas para cada programa
+            for (ProgramaEntity programa : todosLosProgramas) {
+                String nombrePrograma = programa.getNombre_programa();
+                estudiantesPorPrograma.put(nombrePrograma, 0);
+                solicitudesPorPrograma.put(nombrePrograma, 0);
+                aprobadasPorPrograma.put(nombrePrograma, 0);
+                rechazadasPorPrograma.put(nombrePrograma, 0);
+                enviadasPorPrograma.put(nombrePrograma, 0);
+                tiemposPorPrograma.put(nombrePrograma, new ArrayList<>());
+                fechasPorPrograma.put(nombrePrograma, new ArrayList<>());
+                procesosPorPrograma.put(nombrePrograma, new HashMap<>());
+            }
+            
+            // Contar estudiantes por programa
+            for (UsuarioEntity estudiante : todosLosEstudiantes) {
+                if (estudiante.getObjPrograma() != null) {
+                    String nombrePrograma = estudiante.getObjPrograma().getNombre_programa();
+                    estudiantesPorPrograma.put(nombrePrograma, estudiantesPorPrograma.get(nombrePrograma) + 1);
+                }
+            }
+            
+            // Procesar todas las solicitudes
+            for (SolicitudEntity solicitud : todasLasSolicitudes) {
+                if (solicitud.getObjUsuario() != null && solicitud.getObjUsuario().getObjPrograma() != null) {
+                    String nombrePrograma = solicitud.getObjUsuario().getObjPrograma().getNombre_programa();
+                    String nombreProceso = obtenerNombreProcesoPorSolicitud(solicitud);
+                    
+                    // Contar solicitudes por programa
+                    solicitudesPorPrograma.put(nombrePrograma, solicitudesPorPrograma.get(nombrePrograma) + 1);
+                    
+                    // Contar procesos por programa
+                    if (nombreProceso != null) {
+                        Map<String, Integer> procesos = procesosPorPrograma.get(nombrePrograma);
+                        procesos.put(nombreProceso, procesos.getOrDefault(nombreProceso, 0) + 1);
+                    }
+                    
+                    // Agregar fecha de creación para análisis temporal
+                    if (solicitud.getFecha_registro_solicitud() != null) {
+                        fechasPorPrograma.get(nombrePrograma).add(solicitud.getFecha_registro_solicitud());
+                    }
+                    
+                    // Analizar estado
+                    String estado = obtenerEstadoMasReciente(solicitud);
+                    if ("Aprobada".equals(estado)) {
+                        aprobadasPorPrograma.put(nombrePrograma, aprobadasPorPrograma.get(nombrePrograma) + 1);
+                    } else if ("Rechazada".equals(estado)) {
+                        rechazadasPorPrograma.put(nombrePrograma, rechazadasPorPrograma.get(nombrePrograma) + 1);
+                    } else {
+                        enviadasPorPrograma.put(nombrePrograma, enviadasPorPrograma.get(nombrePrograma) + 1);
+                    }
+                    
+                    // Calcular tiempo de procesamiento si está completado
+                    if ("Aprobada".equals(estado) || "Rechazada".equals(estado)) {
+                        Date fechaCreacion = solicitud.getFecha_registro_solicitud();
+                        Date fechaActualizacion = obtenerFechaActualizacion(solicitud);
+                        
+                        if (fechaCreacion != null && fechaActualizacion != null) {
+                            long diferenciaMs = fechaActualizacion.getTime() - fechaCreacion.getTime();
+                            double tiempoDias = diferenciaMs / (1000.0 * 60 * 60 * 24);
+                            tiemposPorPrograma.get(nombrePrograma).add(tiempoDias);
+                        }
+                    }
+                }
+            }
+            
+            // Crear estadísticas detalladas por programa
             Map<String, Object> resumenPorPrograma = new HashMap<>();
+            Map<String, Object> analisisComparativo = new HashMap<>();
             
-            // Datos simulados basados en los programas existentes
-            Map<String, Object> sistemas = new HashMap<>();
-            sistemas.put("nombre", "Ingeniería de Sistemas");
-            sistemas.put("codigo", "1046");
-            sistemas.put("totalSolicitudes", 18);
-            sistemas.put("estudiantes", 3);
-            sistemas.put("aprobadas", 8);
-            sistemas.put("rechazadas", 2);
-            sistemas.put("enviadas", 8);
-            sistemas.put("en_proceso", 0);
-            sistemas.put("porcentaje", 39.13);
-            sistemas.put("color", "#007bff");
-            sistemas.put("icono", "fas fa-laptop-code");
-            sistemas.put("descripcion", "Programa de Ingeniería de Sistemas");
-            resumenPorPrograma.put("Ingeniería de Sistemas", sistemas);
+            String programaMasActivo = null;
+            String programaConMasEstudiantes = null;
+            String programaMasEficiente = null;
+            String programaMasRapido = null;
+            int maxSolicitudes = 0;
+            int maxEstudiantes = 0;
+            double maxEficiencia = 0;
+            double minTiempo = Double.MAX_VALUE;
             
-            Map<String, Object> electronica = new HashMap<>();
-            electronica.put("nombre", "Ingeniería Electrónica y Telecomunicaciones");
-            electronica.put("codigo", "1047");
-            electronica.put("totalSolicitudes", 12);
-            electronica.put("estudiantes", 2);
-            electronica.put("aprobadas", 5);
-            electronica.put("rechazadas", 1);
-            electronica.put("enviadas", 6);
-            electronica.put("en_proceso", 0);
-            electronica.put("porcentaje", 26.09);
-            electronica.put("color", "#28a745");
-            electronica.put("icono", "fas fa-microchip");
-            electronica.put("descripcion", "Programa de Ingeniería Electrónica y Telecomunicaciones");
-            resumenPorPrograma.put("Ingeniería Electrónica y Telecomunicaciones", electronica);
+            for (ProgramaEntity programa : todosLosProgramas) {
+                String nombrePrograma = programa.getNombre_programa();
+                int estudiantes = estudiantesPorPrograma.get(nombrePrograma);
+                int solicitudes = solicitudesPorPrograma.get(nombrePrograma);
+                int aprobadas = aprobadasPorPrograma.get(nombrePrograma);
+                int rechazadas = rechazadasPorPrograma.get(nombrePrograma);
+                int enviadas = enviadasPorPrograma.get(nombrePrograma);
+                
+                // Calcular eficiencia
+                double eficiencia = solicitudes > 0 ? (aprobadas * 100.0) / solicitudes : 0;
+                
+                // Calcular tiempo promedio
+                List<Double> tiempos = tiemposPorPrograma.get(nombrePrograma);
+                double tiempoPromedio = tiempos.isEmpty() ? 0 : tiempos.stream().mapToDouble(Double::doubleValue).average().orElse(0);
+                
+                // Análisis de tendencia temporal
+                List<Date> fechas = fechasPorPrograma.get(nombrePrograma);
+                String tendencia = "Estable";
+                if (fechas.size() >= 2) {
+                    long fechasRecientes = fechas.stream()
+                        .filter(fecha -> fecha.after(new Date(System.currentTimeMillis() - 90L * 24 * 60 * 60 * 1000)))
+                        .count();
+                    long fechasAnteriores = fechas.size() - fechasRecientes;
+                    
+                    if (fechasRecientes > fechasAnteriores) {
+                        tendencia = "Creciente";
+                    } else if (fechasRecientes < fechasAnteriores) {
+                        tendencia = "Decreciente";
+                    }
+                }
+                
+                // Calcular porcentaje del total
+                int totalSolicitudesSistema = todasLasSolicitudes.size();
+                double porcentaje = totalSolicitudesSistema > 0 ? (solicitudes * 100.0) / totalSolicitudesSistema : 0;
+                
+                // Crear detalle del programa
+                Map<String, Object> detallePrograma = new HashMap<>();
+                detallePrograma.put("nombre", nombrePrograma);
+                detallePrograma.put("codigo", programa.getCodigo());
+                detallePrograma.put("totalSolicitudes", solicitudes);
+                detallePrograma.put("estudiantes", estudiantes);
+                detallePrograma.put("aprobadas", aprobadas);
+                detallePrograma.put("rechazadas", rechazadas);
+                detallePrograma.put("enviadas", enviadas);
+                detallePrograma.put("eficiencia", Math.round(eficiencia * 100.0) / 100.0);
+                detallePrograma.put("tiempoPromedio", Math.round(tiempoPromedio * 100.0) / 100.0);
+                detallePrograma.put("tendencia", tendencia);
+                detallePrograma.put("porcentaje", Math.round(porcentaje * 100.0) / 100.0);
+                detallePrograma.put("procesos", procesosPorPrograma.get(nombrePrograma));
+                detallePrograma.put("color", obtenerColorPrograma(nombrePrograma));
+                detallePrograma.put("icono", obtenerIconoPrograma(nombrePrograma));
+                detallePrograma.put("descripcion", obtenerDescripcionPrograma(nombrePrograma));
+                
+                resumenPorPrograma.put(nombrePrograma, detallePrograma);
+                
+                // Actualizar comparativas
+                if (solicitudes > maxSolicitudes) {
+                    maxSolicitudes = solicitudes;
+                    programaMasActivo = nombrePrograma;
+                }
+                
+                if (estudiantes > maxEstudiantes) {
+                    maxEstudiantes = estudiantes;
+                    programaConMasEstudiantes = nombrePrograma;
+                }
+                
+                if (eficiencia > maxEficiencia) {
+                    maxEficiencia = eficiencia;
+                    programaMasEficiente = nombrePrograma;
+                }
+                
+                if (tiempoPromedio > 0 && tiempoPromedio < minTiempo) {
+                    minTiempo = tiempoPromedio;
+                    programaMasRapido = nombrePrograma;
+                }
+            }
             
-            Map<String, Object> automatica = new HashMap<>();
-            automatica.put("nombre", "Ingeniería Automática Industrial");
-            automatica.put("codigo", "1048");
-            automatica.put("totalSolicitudes", 8);
-            automatica.put("estudiantes", 2);
-            automatica.put("aprobadas", 3);
-            automatica.put("rechazadas", 1);
-            automatica.put("enviadas", 4);
-            automatica.put("en_proceso", 0);
-            automatica.put("porcentaje", 17.39);
-            automatica.put("color", "#ffc107");
-            automatica.put("icono", "fas fa-cogs");
-            automatica.put("descripcion", "Programa de Ingeniería Automática Industrial");
-            resumenPorPrograma.put("Ingeniería Automática Industrial", automatica);
-            
-            Map<String, Object> telematica = new HashMap<>();
-            telematica.put("nombre", "Tecnología en Telemática");
-            telematica.put("codigo", "1049");
-            telematica.put("totalSolicitudes", 8);
-            telematica.put("estudiantes", 1);
-            telematica.put("aprobadas", 3);
-            telematica.put("rechazadas", 1);
-            telematica.put("enviadas", 4);
-            telematica.put("en_proceso", 0);
-            telematica.put("porcentaje", 17.39);
-            telematica.put("color", "#17a2b8");
-            telematica.put("icono", "fas fa-network-wired");
-            telematica.put("descripcion", "Programa de Tecnología en Telemática");
-            resumenPorPrograma.put("Tecnología en Telemática", telematica);
-            
-            // Análisis de programas
-            Map<String, Object> analisis = new HashMap<>();
-            analisis.put("programaConMasSolicitudes", "Ingeniería de Sistemas");
-            analisis.put("programaConMasEstudiantes", "Ingeniería de Sistemas");
-            analisis.put("totalProgramas", 4);
-            analisis.put("totalSolicitudes", 46);
-            analisis.put("totalEstudiantes", 7);
-            analisis.put("promedioSolicitudesPorPrograma", 11.5);
-            analisis.put("promedioEstudiantesPorPrograma", 1.75);
+            // Crear análisis comparativo
+            analisisComparativo.put("programaMasActivo", programaMasActivo);
+            analisisComparativo.put("programaConMasEstudiantes", programaConMasEstudiantes);
+            analisisComparativo.put("programaMasEficiente", programaMasEficiente);
+            analisisComparativo.put("programaMasRapido", programaMasRapido);
+            analisisComparativo.put("maxSolicitudes", maxSolicitudes);
+            analisisComparativo.put("maxEstudiantes", maxEstudiantes);
+            analisisComparativo.put("eficienciaMaxima", Math.round(maxEficiencia * 100.0) / 100.0);
+            analisisComparativo.put("tiempoMinimo", Math.round(minTiempo * 100.0) / 100.0);
+            analisisComparativo.put("totalProgramas", todosLosProgramas.size());
+            analisisComparativo.put("totalSolicitudes", todasLasSolicitudes.size());
+            analisisComparativo.put("totalEstudiantes", todosLosEstudiantes.size());
             
             resultado.put("porPrograma", resumenPorPrograma);
-            resultado.put("analisis", analisis);
+            resultado.put("analisis", analisisComparativo);
             resultado.put("fechaConsulta", new Date());
-            resultado.put("descripcion", "Estadísticas por programa académico con análisis detallado");
+            resultado.put("descripcion", "Estadísticas por programa académico con análisis de rendimiento - DATOS REALES");
             
             return resultado;
         } catch (Exception e) {
@@ -1350,6 +1883,51 @@ public class GestionarEstadisticasGatewayImplAdapter implements GestionarEstadis
             resultado.put("descripcion", "Error al obtener estadísticas por programa");
             resultado.put("error", e.getMessage());
             return resultado;
+        }
+    }
+
+    private String obtenerColorPrograma(String nombrePrograma) {
+        switch (nombrePrograma) {
+            case "Ingeniería de Sistemas":
+                return "#3B82F6"; // Azul
+            case "Ingeniería Electrónica y Telecomunicaciones":
+                return "#10B981"; // Verde
+            case "Ingeniería Automática Industrial":
+                return "#F59E0B"; // Amarillo
+            case "Tecnología en Telemática":
+                return "#8B5CF6"; // Púrpura
+            default:
+                return "#6B7280"; // Gris
+        }
+    }
+
+    private String obtenerIconoPrograma(String nombrePrograma) {
+        switch (nombrePrograma) {
+            case "Ingeniería de Sistemas":
+                return "💻";
+            case "Ingeniería Electrónica y Telecomunicaciones":
+                return "📡";
+            case "Ingeniería Automática Industrial":
+                return "⚙️";
+            case "Tecnología en Telemática":
+                return "📶";
+            default:
+                return "🎓";
+        }
+    }
+
+    private String obtenerDescripcionPrograma(String nombrePrograma) {
+        switch (nombrePrograma) {
+            case "Ingeniería de Sistemas":
+                return "Programa de Ingeniería de Sistemas - Desarrollo de software y sistemas informáticos";
+            case "Ingeniería Electrónica y Telecomunicaciones":
+                return "Programa de Ingeniería Electrónica y Telecomunicaciones - Sistemas electrónicos y comunicaciones";
+            case "Ingeniería Automática Industrial":
+                return "Programa de Ingeniería Automática Industrial - Automatización y control industrial";
+            case "Tecnología en Telemática":
+                return "Programa de Tecnología en Telemática - Redes y telecomunicaciones";
+            default:
+                return "Programa académico";
         }
     }
 
@@ -1566,7 +2144,7 @@ public class GestionarEstadisticasGatewayImplAdapter implements GestionarEstadis
                     solicitudesPorProceso.put(nombreProceso, solicitudesPorProceso.get(nombreProceso) + 1);
                     
                     String estado = obtenerEstadoMasReciente(solicitud);
-                    if ("aprobada".equalsIgnoreCase(estado)) {
+                    if ("Aprobada".equals(estado)) {
                         aprobadasPorProceso.put(nombreProceso, aprobadasPorProceso.get(nombreProceso) + 1);
                     }
                 }
@@ -1664,7 +2242,7 @@ public class GestionarEstadisticasGatewayImplAdapter implements GestionarEstadis
             resumenEstrategico.put("totalEstudiantes", todosLosEstudiantes.size());
             resumenEstrategico.put("totalProgramas", todosLosProgramas.size());
             resumenEstrategico.put("periodoAnalizado", "Últimos 12 meses");
-            resumenEstrategico.put("recomendacionEstrategica", generarRecomendacionEstrategica(tendenciaSolicitudes, procesoMasDemandado, programaMasActivo));
+            resumenEstrategico.put("recomendacionEstrategica", generarRecomendacionEstrategica(tendenciaSolicitudes, crecimientoSolicitudes, procesoMasDemandado, programaMasActivo, maxEficiencia, maxSolicitudes));
             
             resultado.put("crecimientoTemporal", crecimientoTemporal);
             resultado.put("comparativaProcesos", comparativaProcesos);
@@ -1686,24 +2264,79 @@ public class GestionarEstadisticasGatewayImplAdapter implements GestionarEstadis
         }
     }
     
-    private String generarRecomendacionEstrategica(String tendenciaSolicitudes, String procesoMasDemandado, String programaMasActivo) {
+    private String generarRecomendacionEstrategica(String tendenciaSolicitudes, double crecimientoSolicitudes, String procesoMasDemandado, String programaMasActivo, double maxEficiencia, int maxSolicitudes) {
         StringBuilder recomendacion = new StringBuilder();
         
+        // Análisis de tendencia con niveles de crecimiento
         if ("Creciente".equals(tendenciaSolicitudes)) {
-            recomendacion.append("📈 TENDENCIA CRECIENTE: Considerar aumentar recursos para ");
+            if (crecimientoSolicitudes > 50) {
+                recomendacion.append("📈 CRECIMIENTO ALTO: Urgente aumentar recursos para ");
+            } else if (crecimientoSolicitudes > 20) {
+                recomendacion.append("📈 CRECIMIENTO MODERADO: Considerar aumentar recursos para ");
+            } else {
+                recomendacion.append("📈 CRECIMIENTO BAJO: Monitorear recursos para ");
+            }
             recomendacion.append(procesoMasDemandado).append(". ");
         } else if ("Decreciente".equals(tendenciaSolicitudes)) {
-            recomendacion.append("📉 TENDENCIA DECRECIENTE: Evaluar estrategias de promoción para ");
+            if (crecimientoSolicitudes > 50) {
+                recomendacion.append("📉 DECRECIMIENTO ALTO: Evaluar estrategias de promoción para ");
+            } else {
+                recomendacion.append("📉 DECRECIMIENTO MODERADO: Revisar estrategias para ");
+            }
             recomendacion.append(procesoMasDemandado).append(". ");
         } else {
             recomendacion.append("📊 TENDENCIA ESTABLE: Mantener recursos actuales. ");
         }
         
+        // Análisis de eficiencia
+        if (maxEficiencia < 30) {
+            recomendacion.append("⚠️ BAJA EFICIENCIA: Revisar procesos de aprobación. ");
+        } else if (maxEficiencia < 60) {
+            recomendacion.append("⚠️ EFICIENCIA MODERADA: Optimizar procesos de aprobación. ");
+        }
+        
+        // Análisis de programa con nivel de demanda
         if (programaMasActivo != null) {
-            recomendacion.append("🎯 ENFOQUE: ").append(programaMasActivo).append(" requiere atención prioritaria.");
+            if (maxSolicitudes > 15) {
+                recomendacion.append("🎯 ENFOQUE: ").append(programaMasActivo).append(" requiere atención prioritaria (alta demanda).");
+            } else if (maxSolicitudes > 10) {
+                recomendacion.append("🎯 ENFOQUE: ").append(programaMasActivo).append(" requiere atención prioritaria (demanda moderada).");
+            } else {
+                recomendacion.append("🎯 ENFOQUE: ").append(programaMasActivo).append(" requiere atención prioritaria.");
+            }
         }
         
         return recomendacion.toString();
+    }
+
+    private String obtenerColorProceso(String nombreProceso) {
+        switch (nombreProceso) {
+            case "Homologación":
+                return "#3B82F6"; // Azul
+            case "Paz y Salvo":
+                return "#10B981"; // Verde
+            case "Reingreso":
+                return "#F59E0B"; // Amarillo
+            case "Cursos de Verano":
+                return "#8B5CF6"; // Púrpura
+            default:
+                return "#6B7280"; // Gris
+        }
+    }
+
+    private String obtenerIconoProceso(String nombreProceso) {
+        switch (nombreProceso) {
+            case "Homologación":
+                return "📋";
+            case "Paz y Salvo":
+                return "✅";
+            case "Reingreso":
+                return "🔄";
+            case "Cursos de Verano":
+                return "☀️";
+            default:
+                return "📄";
+        }
     }
 
     private String obtenerNombreProcesoPorSolicitud(SolicitudEntity solicitud) {
@@ -1725,13 +2358,47 @@ public class GestionarEstadisticasGatewayImplAdapter implements GestionarEstadis
 
     private String obtenerEstadoMasReciente(SolicitudEntity solicitud) {
         if (solicitud.getEstadosSolicitud() == null || solicitud.getEstadosSolicitud().isEmpty()) {
-            return "enviada";
+            return "Enviada";
         }
         
         return solicitud.getEstadosSolicitud().stream()
             .max(Comparator.comparing(EstadoSolicitudEntity::getFecha_registro_estado))
             .map(EstadoSolicitudEntity::getEstado_actual)
-            .orElse("enviada");
+            .map(this::normalizarEstado)
+            .orElse("Enviada");
+    }
+    
+    private String normalizarEstado(String estado) {
+        if (estado == null) return "Enviada";
+        
+        switch (estado.toLowerCase()) {
+            case "enviada":
+            case "enviado":
+                return "Enviada";
+            case "en proceso":
+            case "en_proceso":
+            case "enproceso":
+                return "En Proceso";
+            case "aprobada":
+            case "aprobado":
+                return "Aprobada";
+            case "rechazada":
+            case "rechazado":
+                return "Rechazada";
+            default:
+                return "Enviada";
+        }
+    }
+
+    private Date obtenerFechaActualizacion(SolicitudEntity solicitud) {
+        if (solicitud.getEstadosSolicitud() == null || solicitud.getEstadosSolicitud().isEmpty()) {
+            return solicitud.getFecha_registro_solicitud();
+        }
+        
+        return solicitud.getEstadosSolicitud().stream()
+            .map(EstadoSolicitudEntity::getFecha_registro_estado)
+            .max(Date::compareTo)
+            .orElse(solicitud.getFecha_registro_solicitud());
     }
 
    
