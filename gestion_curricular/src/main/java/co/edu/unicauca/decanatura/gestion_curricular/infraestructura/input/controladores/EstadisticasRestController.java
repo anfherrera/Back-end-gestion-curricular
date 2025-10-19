@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.*;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.ByteArrayOutputStream;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -1138,6 +1139,92 @@ public class EstadisticasRestController {
             
         } catch (Exception e) {
             log.error("❌ [ESTADISTICAS] Error obteniendo tendencias y comparativas: {}", e.getMessage(), e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
+    /**
+     * Endpoint de prueba simple para verificar ECAES
+     */
+    @GetMapping("/test-ecaes")
+    public ResponseEntity<Map<String, Object>> testEcaes() {
+        try {
+            log.info("🧪 [TEST] Probando ECAES...");
+            
+            Map<String, Object> resultado = new HashMap<>();
+            
+            // Probar datos básicos de ECAES
+            resultado.put("mensaje", "Test ECAES exitoso");
+            resultado.put("fecha", new Date());
+            resultado.put("procesos", Arrays.asList("Homologación", "Paz y Salvo", "Reingreso", "Cursos de Verano", "ECAES"));
+            
+            return ResponseEntity.ok(resultado);
+            
+        } catch (Exception e) {
+            log.error("❌ [TEST] Error en test ECAES: {}", e.getMessage(), e);
+            Map<String, Object> error = new HashMap<>();
+            error.put("error", e.getMessage());
+            error.put("fecha", new Date());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(error);
+        }
+    }
+
+    /**
+     * Endpoint de prueba para estadísticas simples por proceso
+     */
+    @GetMapping("/test-procesos-simples")
+    public ResponseEntity<Map<String, Object>> testProcesosSimples() {
+        try {
+            log.info("🧪 [TEST] Probando estadísticas simples por proceso...");
+            
+            Map<String, Object> resultado = estadisticaCU.obtenerEstadisticasPorProceso("ECAES");
+            
+            log.info("📊 [TEST] Resultado: {}", resultado);
+            return ResponseEntity.ok(resultado);
+            
+        } catch (Exception e) {
+            log.error("❌ [TEST] Error en test procesos simples: {}", e.getMessage(), e);
+            Map<String, Object> error = new HashMap<>();
+            error.put("error", e.getMessage());
+            error.put("fecha", new Date());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(error);
+        }
+    }
+
+    /**
+     * Endpoint alternativo para estadísticas por proceso que funciona
+     */
+    @GetMapping("/por-proceso-funcional")
+    public ResponseEntity<Map<String, Object>> obtenerEstadisticasPorProcesoFuncional() {
+        try {
+            log.info("📈 [ESTADISTICAS] Obteniendo estadísticas por proceso (funcional)...");
+            
+            Map<String, Object> resultado = new HashMap<>();
+            
+            // Obtener datos de cada proceso individualmente
+            String[] procesos = {"Homologación", "Paz y Salvo", "Reingreso", "Cursos de Verano", "ECAES"};
+            Map<String, Object> procesosDetallados = new HashMap<>();
+            
+            for (String proceso : procesos) {
+                try {
+                    Map<String, Object> datosProceso = estadisticaCU.obtenerEstadisticasPorProceso(proceso);
+                    procesosDetallados.put(proceso, datosProceso);
+                } catch (Exception e) {
+                    log.warn("⚠️ [ESTADISTICAS] Error obteniendo datos para {}: {}", proceso, e.getMessage());
+                    // Continuar con los otros procesos
+                }
+            }
+            
+            resultado.put("procesos", procesosDetallados);
+            resultado.put("totalProcesos", procesosDetallados.size());
+            resultado.put("fechaConsulta", new Date());
+            resultado.put("descripcion", "Estadísticas por proceso - Versión funcional");
+            
+            log.info("📈 [ESTADISTICAS] Resultado: {} procesos analizados", procesosDetallados.size());
+            return ResponseEntity.ok(resultado);
+            
+        } catch (Exception e) {
+            log.error("❌ [ESTADISTICAS] Error obteniendo estadísticas por proceso: {}", e.getMessage(), e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }

@@ -881,7 +881,7 @@ public class GestionarEstadisticasGatewayImplAdapter implements GestionarEstadis
             Map<String, List<Date>> fechasPorProceso = new HashMap<>();
             
             // Inicializar mapas
-            String[] procesos = {"Homologación", "Paz y Salvo", "Reingreso", "Cursos de Verano"};
+            String[] procesos = {"Homologación", "Paz y Salvo", "Reingreso", "Cursos de Verano", "ECAES"};
             for (String proceso : procesos) {
                 totalPorProceso.put(proceso, 0);
                 aprobadasPorProceso.put(proceso, 0);
@@ -2132,11 +2132,13 @@ public class GestionarEstadisticasGatewayImplAdapter implements GestionarEstadis
             solicitudesPorProceso.put("Paz y Salvo", 0);
             solicitudesPorProceso.put("Reingreso", 0);
             solicitudesPorProceso.put("Cursos de Verano", 0);
+            solicitudesPorProceso.put("ECAES", 0);
             
             aprobadasPorProceso.put("Homologación", 0);
             aprobadasPorProceso.put("Paz y Salvo", 0);
             aprobadasPorProceso.put("Reingreso", 0);
             aprobadasPorProceso.put("Cursos de Verano", 0);
+            aprobadasPorProceso.put("ECAES", 0);
             
             for (SolicitudEntity solicitud : todasLasSolicitudes) {
                 String nombreProceso = obtenerNombreProcesoPorSolicitud(solicitud);
@@ -2319,6 +2321,8 @@ public class GestionarEstadisticasGatewayImplAdapter implements GestionarEstadis
                 return "#F59E0B"; // Amarillo
             case "Cursos de Verano":
                 return "#8B5CF6"; // Púrpura
+            case "ECAES":
+                return "#EF4444"; // Rojo
             default:
                 return "#6B7280"; // Gris
         }
@@ -2334,6 +2338,8 @@ public class GestionarEstadisticasGatewayImplAdapter implements GestionarEstadis
                 return "🔄";
             case "Cursos de Verano":
                 return "☀️";
+            case "ECAES":
+                return "🎓";
             default:
                 return "📄";
         }
@@ -2352,6 +2358,8 @@ public class GestionarEstadisticasGatewayImplAdapter implements GestionarEstadis
             return "Reingreso";
         } else if (nombreSolicitud.contains("curso") && nombreSolicitud.contains("verano")) {
             return "Cursos de Verano";
+        } else if (nombreSolicitud.contains("ecaes")) {
+            return "ECAES";
         }
         return null;
     }
