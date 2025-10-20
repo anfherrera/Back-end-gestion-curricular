@@ -5,10 +5,12 @@ import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.pers
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+import org.springframework.stereotype.Repository;
 
 import java.util.List;
 import java.util.Set;
 
+@Repository
 public interface ProgramaRepositoryInt extends JpaRepository<ProgramaEntity, Integer> {
 
     // Se utiliza set para obtener nombres de los programas sin duplicados

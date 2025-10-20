@@ -193,4 +193,12 @@ public interface GestionarEstadisticasGatewayIntPort {
      */
     Map<String, Object> obtenerTendenciasYComparativas();
 
+    /**
+     * Obtiene estadísticas específicas para cursos de verano.
+     * Incluye análisis de demanda por materia, tendencias temporales y recomendaciones.
+     * 
+     * @return Map con estadísticas detalladas de cursos de verano
+     */
+    Map<String, Object> obtenerEstadisticasCursosVerano();
+
 }

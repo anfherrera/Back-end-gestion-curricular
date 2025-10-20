@@ -1192,6 +1192,28 @@ public class EstadisticasRestController {
     }
 
     /**
+     * Obtiene estadísticas específicas para cursos de verano.
+     * Incluye análisis de demanda por materia, tendencias temporales y recomendaciones.
+     * 
+     * @return ResponseEntity con estadísticas detalladas de cursos de verano
+     */
+    @GetMapping("/cursos-verano")
+    public ResponseEntity<Map<String, Object>> obtenerEstadisticasCursosVerano() {
+        try {
+            log.info("🏖️ [CURSOS_VERANO] Obteniendo estadísticas de cursos de verano...");
+            
+            Map<String, Object> resultado = estadisticaCU.obtenerEstadisticasCursosVerano();
+            
+            log.info("🏖️ [CURSOS_VERANO] Estadísticas de cursos de verano generadas exitosamente");
+            return ResponseEntity.ok(resultado);
+            
+        } catch (Exception e) {
+            log.error("❌ [CURSOS_VERANO] Error obteniendo estadísticas de cursos de verano: {}", e.getMessage(), e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
+    /**
      * Endpoint alternativo para estadísticas por proceso que funciona
      */
     @GetMapping("/por-proceso-funcional")
