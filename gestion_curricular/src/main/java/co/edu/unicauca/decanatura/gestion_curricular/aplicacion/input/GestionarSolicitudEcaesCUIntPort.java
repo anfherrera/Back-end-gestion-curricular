@@ -1,6 +1,7 @@
 package co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input;
 
 import java.util.List;
+import java.util.Optional;
 
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.FechaEcaes;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.SolicitudEcaes;
@@ -24,5 +25,15 @@ public interface GestionarSolicitudEcaesCUIntPort {
     List<SolicitudEcaes> listarSolicitudesToFuncionario();
 
     List<SolicitudEcaes> listarSolicitudesPorRol(String rol, Integer idUsuario);
+
+    /**
+     * Buscar fechas ECAES por período académico
+     */
+    Optional<FechaEcaes> buscarFechasPorPeriodo(String periodoAcademico);
+
+    /**
+     * Actualizar fechas ECAES existentes
+     */
+    FechaEcaes actualizarFechasEcaes(FechaEcaes fechasEcaes);
 
 }

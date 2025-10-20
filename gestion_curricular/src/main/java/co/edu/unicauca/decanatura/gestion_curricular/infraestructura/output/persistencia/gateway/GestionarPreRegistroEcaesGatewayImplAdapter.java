@@ -98,6 +98,37 @@ public class GestionarPreRegistroEcaesGatewayImplAdapter implements GestionarPre
             .map(entity -> mapper.map(entity, FechaEcaes.class))
             .collect(Collectors.toList());
     }
+
+    @Override
+    public Optional<FechaEcaes> buscarFechasPorPeriodo(String periodoAcademico) {
+        return fechaEcaesRepository.findByPeriodoAcademico(periodoAcademico)
+            .map(entity -> mapper.map(entity, FechaEcaes.class));
+    }
+
+    @Override
+    public FechaEcaes actualizarFechasEcaes(FechaEcaes fechasEcaes) {
+        // Buscar la entidad existente por período académico
+        Optional<FechaEcaesEntity> entidadExistente = fechaEcaesRepository.findByPeriodoAcademico(fechasEcaes.getPeriodoAcademico());
+        
+        if (entidadExistente.isPresent()) {
+            // Actualizar la entidad existente
+            FechaEcaesEntity entity = entidadExistente.get();
+            entity.setInscripcion_est_by_facultad(fechasEcaes.getInscripcion_est_by_facultad());
+            entity.setRegistro_recaudo_ordinario(fechasEcaes.getRegistro_recaudo_ordinario());
+            entity.setRegistro_recaudo_extraordinario(fechasEcaes.getRegistro_recaudo_extraordinario());
+            entity.setCitacion(fechasEcaes.getCitacion());
+            entity.setAplicacion(fechasEcaes.getAplicacion());
+            entity.setResultados_individuales(fechasEcaes.getResultados_individuales());
+            
+            FechaEcaesEntity saved = fechaEcaesRepository.save(entity);
+            return mapper.map(saved, FechaEcaes.class);
+        } else {
+            // Si no existe, crear nueva
+            FechaEcaesEntity entity = mapper.map(fechasEcaes, FechaEcaesEntity.class);
+            FechaEcaesEntity saved = fechaEcaesRepository.save(entity);
+            return mapper.map(saved, FechaEcaes.class);
+        }
+    }
     
 
 }

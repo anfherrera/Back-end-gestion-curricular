@@ -19,6 +19,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -103,7 +104,25 @@ public class SolicitudEcaesRestController {
         solicitudEcaesCU.cambiarEstadoSolicitud(solicitud.getIdSolicitud(), solicitud.getNuevoEstado());
         return ResponseEntity.noContent().build();
     }
-    
+
+    @GetMapping("/buscarFechasPorPeriodo/{periodoAcademico}")
+    public ResponseEntity<FechaEcaesDTORespuesta> buscarFechasPorPeriodo(@PathVariable String periodoAcademico) {
+        Optional<FechaEcaes> fechas = solicitudEcaesCU.buscarFechasPorPeriodo(periodoAcademico);
+        if (fechas.isPresent()) {
+            FechaEcaesDTORespuesta respuesta = solicitudMapperDominio.mappearDeFechaEcaesAFechaEcaesDTORespuesta(fechas.get());
+            return ResponseEntity.ok(respuesta);
+        } else {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
+    @PutMapping("/actualizarFechasEcaes")
+    public ResponseEntity<FechaEcaesDTORespuesta> actualizarFechasEcaes(@RequestBody FechasEcaesDTOPeticion fechasEcaes) {
+        FechaEcaes fechaEcaes = solicitudMapperDominio.mappearDeFechasEcaesDTOPeticionAFechaEcaes(fechasEcaes);
+        FechaEcaes fechaActualizada = solicitudEcaesCU.actualizarFechasEcaes(fechaEcaes);
+        FechaEcaesDTORespuesta respuesta = solicitudMapperDominio.mappearDeFechaEcaesAFechaEcaesDTORespuesta(fechaActualizada);
+        return ResponseEntity.ok(respuesta);
+    }
     
     
 }

@@ -165,4 +165,14 @@ public class GestionarSolicitudEcaesCUAdapter implements GestionarSolicitudEcaes
         }).toList();
     }
 
+    @Override
+    public Optional<FechaEcaes> buscarFechasPorPeriodo(String periodoAcademico) {
+        return objGestionarSolicitudEcaesGateway.buscarFechasPorPeriodo(periodoAcademico);
+    }
+
+    @Override
+    public FechaEcaes actualizarFechasEcaes(FechaEcaes fechasEcaes) {
+        return objGestionarSolicitudEcaesGateway.actualizarFechasEcaes(fechasEcaes);
+    }
+
 }

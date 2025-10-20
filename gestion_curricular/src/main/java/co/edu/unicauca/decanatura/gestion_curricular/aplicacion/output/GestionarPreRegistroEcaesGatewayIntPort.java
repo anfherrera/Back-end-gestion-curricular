@@ -25,4 +25,14 @@ public interface GestionarPreRegistroEcaesGatewayIntPort {
 
     List<SolicitudEcaes> listarSolicitudesToFuncionario();
 
+    /**
+     * Buscar fechas ECAES por período académico
+     */
+    Optional<FechaEcaes> buscarFechasPorPeriodo(String periodoAcademico);
+
+    /**
+     * Actualizar fechas ECAES existentes
+     */
+    FechaEcaes actualizarFechasEcaes(FechaEcaes fechasEcaes);
+
 }
