@@ -30,6 +30,13 @@ INSERT INTO Docentes(idDocente, codigo_docente, nombre_docente) VALUES (19, '106
 -- Datos de prueba para cursos de verano
 INSERT INTO Materias(idMateria, codigo, nombre, creditos) VALUES (1, 'BD001', 'Bases de Datos', 3);
 
+-- Agregar más solicitudes de cursos de verano para probar la actualización automática
+INSERT INTO Solicitudes(idSolicitud, fecha_solicitud, estado, observaciones, idUsuario, idMateria, idPrograma, tipo_solicitud) VALUES (15, '2025-08-20', 'Aprobada', 'Nueva solicitud de curso de verano - Bases de Datos', 1, 1, 1, 'CURSO_VERANO');
+INSERT INTO Solicitudes(idSolicitud, fecha_solicitud, estado, observaciones, idUsuario, idMateria, idPrograma, tipo_solicitud) VALUES (16, '2025-08-21', 'Enviada', 'Nueva solicitud de curso de verano - Calidad de Software', 2, 2, 1, 'CURSO_VERANO');
+INSERT INTO Solicitudes(idSolicitud, fecha_solicitud, estado, observaciones, idUsuario, idMateria, idPrograma, tipo_solicitud) VALUES (17, '2025-08-22', 'En Proceso', 'Nueva solicitud de curso de verano - Metodología de la Investigación', 3, 3, 2, 'CURSO_VERANO');
+INSERT INTO Solicitudes(idSolicitud, fecha_solicitud, estado, observaciones, idUsuario, idMateria, idPrograma, tipo_solicitud) VALUES (18, '2025-08-23', 'Aprobada', 'Nueva solicitud de curso de verano - Bases de Datos', 4, 1, 3, 'CURSO_VERANO');
+INSERT INTO Solicitudes(idSolicitud, fecha_solicitud, estado, observaciones, idUsuario, idMateria, idPrograma, tipo_solicitud) VALUES (19, '2025-08-24', 'Rechazada', 'Nueva solicitud de curso de verano - Calidad de Software', 5, 2, 4, 'CURSO_VERANO');
+
 -- Materias del programa de Ingeniería de Sistemas
 INSERT INTO Materias(idMateria, codigo, nombre, creditos) VALUES (2, 'SIS803', 'Calidad de Software', 3);
 INSERT INTO Materias(idMateria, codigo, nombre, creditos) VALUES (3, 'SIS801', 'Metodologia de la Investigacion', 3);

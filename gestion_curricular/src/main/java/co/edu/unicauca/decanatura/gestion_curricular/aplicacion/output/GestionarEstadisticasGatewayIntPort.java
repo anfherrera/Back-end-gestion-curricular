@@ -201,4 +201,11 @@ public interface GestionarEstadisticasGatewayIntPort {
      */
     Map<String, Object> obtenerEstadisticasCursosVerano();
 
+    /**
+     * Obtiene solo las tendencias temporales de cursos de verano de manera optimizada.
+     * 
+     * @return Map con tendencias temporales
+     */
+    Map<String, Object> obtenerTendenciasTemporalesCursosVerano();
+
 }

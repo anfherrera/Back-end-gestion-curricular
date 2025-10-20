@@ -590,7 +590,65 @@ public class EstadisticasRestController {
     }
 
     /**
-     * Exporta estadísticas a PDF con filtros opcionales.
+     * Exporta estadísticas generales a PDF (para Dashboard General).
+     * 
+     * @return ResponseEntity con archivo PDF
+     */
+    @GetMapping("/export/pdf/general")
+    public ResponseEntity<byte[]> exportarEstadisticasGeneralesPDF() {
+        try {
+            log.info("📄 [EXPORT_PDF_GENERAL] Generando PDF de estadísticas generales...");
+            
+            // Obtener solo estadísticas generales
+            Map<String, Object> estadisticas = estadisticaCU.obtenerEstadisticasGlobales();
+            
+            // Generar PDF solo con estadísticas generales
+            byte[] pdfBytes = generarPDFEstadisticasGenerales(estadisticas);
+            
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.APPLICATION_PDF);
+            headers.setContentDispositionFormData("attachment", "estadisticas_generales_dashboard.pdf");
+            
+            log.info("✅ [EXPORT_PDF_GENERAL] PDF generado exitosamente");
+            return new ResponseEntity<>(pdfBytes, headers, HttpStatus.OK);
+            
+        } catch (Exception e) {
+            log.error("❌ [EXPORT_PDF_GENERAL] Error generando PDF: {}", e.getMessage(), e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
+    /**
+     * Exporta estadísticas de cursos de verano a PDF (para Dashboard Cursos de Verano).
+     * 
+     * @return ResponseEntity con archivo PDF
+     */
+    @GetMapping("/export/pdf/cursos-verano")
+    public ResponseEntity<byte[]> exportarEstadisticasCursosVeranoPDF() {
+        try {
+            log.info("📄 [EXPORT_PDF_CURSOS_VERANO] Generando PDF de cursos de verano...");
+            
+            // Obtener solo datos de cursos de verano
+            Map<String, Object> datosCursosVerano = estadisticaCU.obtenerEstadisticasCursosVerano();
+            
+            // Generar PDF solo con datos de cursos de verano
+            byte[] pdfBytes = generarPDFCursosVerano(datosCursosVerano);
+            
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.APPLICATION_PDF);
+            headers.setContentDispositionFormData("attachment", "estadisticas_cursos_verano.pdf");
+            
+            log.info("✅ [EXPORT_PDF_CURSOS_VERANO] PDF generado exitosamente");
+            return new ResponseEntity<>(pdfBytes, headers, HttpStatus.OK);
+            
+        } catch (Exception e) {
+            log.error("❌ [EXPORT_PDF_CURSOS_VERANO] Error generando PDF: {}", e.getMessage(), e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
+    /**
+     * Exporta estadísticas a PDF con filtros opcionales (endpoint general).
      * 
      * @param proceso Tipo de proceso (opcional)
      * @param idPrograma ID del programa (opcional)
@@ -611,12 +669,23 @@ public class EstadisticasRestController {
             // Obtener datos filtrados
             Map<String, Object> estadisticas = estadisticaCU.obtenerEstadisticasGlobales(proceso, idPrograma, fechaInicio, fechaFin);
             
-            // Generar PDF (implementación básica)
-            byte[] pdfBytes = generarPDF(estadisticas);
+            // Obtener datos de cursos de verano si no hay filtros específicos o si se solicita
+            Map<String, Object> datosCursosVerano = null;
+            if (proceso == null || "CURSO_VERANO".equals(proceso)) {
+                try {
+                    datosCursosVerano = estadisticaCU.obtenerEstadisticasCursosVerano();
+                    log.info("📊 [EXPORT_PDF] Datos de cursos de verano obtenidos: {}", datosCursosVerano != null);
+                } catch (Exception e) {
+                    log.warn("⚠️ [EXPORT_PDF] No se pudieron obtener datos de cursos de verano: {}", e.getMessage());
+                }
+            }
+            
+            // Generar PDF con datos completos
+            byte[] pdfBytes = generarPDFCompleto(estadisticas, datosCursosVerano);
             
             HttpHeaders headers = new HttpHeaders();
-            headers.setContentType(MediaType.TEXT_PLAIN);
-            headers.setContentDispositionFormData("attachment", "estadisticas.txt");
+            headers.setContentType(MediaType.APPLICATION_PDF);
+            headers.setContentDispositionFormData("attachment", "estadisticas_generales.pdf");
             
             log.info("✅ [EXPORT_PDF] PDF generado exitosamente");
             return new ResponseEntity<>(pdfBytes, headers, HttpStatus.OK);
@@ -628,7 +697,65 @@ public class EstadisticasRestController {
     }
 
     /**
-     * Exporta estadísticas a Excel con filtros opcionales.
+     * Exporta estadísticas generales a Excel (para Dashboard General).
+     * 
+     * @return ResponseEntity con archivo Excel
+     */
+    @GetMapping("/export/excel/general")
+    public ResponseEntity<byte[]> exportarEstadisticasGeneralesExcel() {
+        try {
+            log.info("📊 [EXPORT_EXCEL_GENERAL] Generando Excel de estadísticas generales...");
+            
+            // Obtener solo estadísticas generales
+            Map<String, Object> estadisticas = estadisticaCU.obtenerEstadisticasGlobales();
+            
+            // Generar Excel solo con estadísticas generales
+            byte[] excelBytes = generarExcelEstadisticasGenerales(estadisticas);
+            
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.APPLICATION_OCTET_STREAM);
+            headers.setContentDispositionFormData("attachment", "estadisticas_generales_dashboard.xlsx");
+            
+            log.info("✅ [EXPORT_EXCEL_GENERAL] Excel generado exitosamente");
+            return new ResponseEntity<>(excelBytes, headers, HttpStatus.OK);
+            
+        } catch (Exception e) {
+            log.error("❌ [EXPORT_EXCEL_GENERAL] Error generando Excel: {}", e.getMessage(), e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
+    /**
+     * Exporta estadísticas de cursos de verano a Excel (para Dashboard Cursos de Verano).
+     * 
+     * @return ResponseEntity con archivo Excel
+     */
+    @GetMapping("/export/excel/cursos-verano")
+    public ResponseEntity<byte[]> exportarEstadisticasCursosVeranoExcel() {
+        try {
+            log.info("📊 [EXPORT_EXCEL_CURSOS_VERANO] Generando Excel de cursos de verano...");
+            
+            // Obtener solo datos de cursos de verano
+            Map<String, Object> datosCursosVerano = estadisticaCU.obtenerEstadisticasCursosVerano();
+            
+            // Generar Excel solo con datos de cursos de verano
+            byte[] excelBytes = generarExcelCursosVerano(datosCursosVerano);
+            
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.APPLICATION_OCTET_STREAM);
+            headers.setContentDispositionFormData("attachment", "estadisticas_cursos_verano.xlsx");
+            
+            log.info("✅ [EXPORT_EXCEL_CURSOS_VERANO] Excel generado exitosamente");
+            return new ResponseEntity<>(excelBytes, headers, HttpStatus.OK);
+            
+        } catch (Exception e) {
+            log.error("❌ [EXPORT_EXCEL_CURSOS_VERANO] Error generando Excel: {}", e.getMessage(), e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
+    /**
+     * Exporta estadísticas a Excel con filtros opcionales (endpoint general).
      * 
      * @param proceso Tipo de proceso (opcional)
      * @param idPrograma ID del programa (opcional)
@@ -649,12 +776,23 @@ public class EstadisticasRestController {
             // Obtener datos filtrados
             Map<String, Object> estadisticas = estadisticaCU.obtenerEstadisticasGlobales(proceso, idPrograma, fechaInicio, fechaFin);
             
-            // Generar Excel (implementación básica)
-            byte[] excelBytes = generarExcel(estadisticas);
+            // Obtener datos de cursos de verano si no hay filtros específicos o si se solicita
+            Map<String, Object> datosCursosVerano = null;
+            if (proceso == null || "CURSO_VERANO".equals(proceso)) {
+                try {
+                    datosCursosVerano = estadisticaCU.obtenerEstadisticasCursosVerano();
+                    log.info("📊 [EXPORT_EXCEL] Datos de cursos de verano obtenidos: {}", datosCursosVerano != null);
+                } catch (Exception e) {
+                    log.warn("⚠️ [EXPORT_EXCEL] No se pudieron obtener datos de cursos de verano: {}", e.getMessage());
+                }
+            }
+            
+            // Generar Excel con datos completos
+            byte[] excelBytes = generarExcelCompleto(estadisticas, datosCursosVerano);
             
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.APPLICATION_OCTET_STREAM);
-            headers.setContentDispositionFormData("attachment", "estadisticas.xlsx");
+            headers.setContentDispositionFormData("attachment", "estadisticas_generales.xlsx");
             
             log.info("✅ [EXPORT_EXCEL] Excel generado exitosamente");
             return new ResponseEntity<>(excelBytes, headers, HttpStatus.OK);
@@ -662,6 +800,236 @@ public class EstadisticasRestController {
         } catch (Exception e) {
             log.error("❌ [EXPORT_EXCEL] Error generando Excel: {}", e.getMessage(), e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
+    /**
+     * Genera un PDF solo con estadísticas generales (para Dashboard General).
+     * 
+     * @param estadisticas Datos de estadísticas generales
+     * @return Array de bytes del PDF
+     */
+    private byte[] generarPDFEstadisticasGenerales(Map<String, Object> estadisticas) {
+        System.out.println("🔧 [PDF_GENERAL] Iniciando generación de PDF de estadísticas generales...");
+        
+        ByteArrayOutputStream baos = null;
+        com.itextpdf.text.Document document = null;
+        
+        try {
+            baos = new ByteArrayOutputStream();
+            document = new com.itextpdf.text.Document(com.itextpdf.text.PageSize.A4);
+            com.itextpdf.text.pdf.PdfWriter writer = com.itextpdf.text.pdf.PdfWriter.getInstance(document, baos);
+            
+            document.open();
+            
+            // Título principal
+            com.itextpdf.text.Font titleFont = new com.itextpdf.text.Font(com.itextpdf.text.Font.FontFamily.HELVETICA, 18, com.itextpdf.text.Font.BOLD);
+            com.itextpdf.text.Paragraph title = new com.itextpdf.text.Paragraph("DASHBOARD GENERAL - ESTADÍSTICAS DEL SISTEMA", titleFont);
+            title.setAlignment(com.itextpdf.text.Element.ALIGN_CENTER);
+            title.setSpacingAfter(20);
+            document.add(title);
+            
+            // Fecha de generación
+            com.itextpdf.text.Font dateFont = new com.itextpdf.text.Font(com.itextpdf.text.Font.FontFamily.HELVETICA, 10);
+            com.itextpdf.text.Paragraph fecha = new com.itextpdf.text.Paragraph("Fecha de generación: " + new java.util.Date().toString(), dateFont);
+            fecha.setSpacingAfter(15);
+            document.add(fecha);
+            
+            // Sección: Estadísticas Generales
+            agregarSeccionEstadisticasGenerales(document, estadisticas);
+            
+            document.close();
+            return baos.toByteArray();
+            
+        } catch (Exception e) {
+            System.err.println("❌ [PDF_GENERAL] Error generando PDF: " + e.getMessage());
+            e.printStackTrace();
+            
+            // Generar PDF de error
+            try {
+                ByteArrayOutputStream errorBaos = new ByteArrayOutputStream();
+                com.itextpdf.text.Document errorDoc = new com.itextpdf.text.Document();
+                com.itextpdf.text.pdf.PdfWriter errorWriter = com.itextpdf.text.pdf.PdfWriter.getInstance(errorDoc, errorBaos);
+                
+                errorDoc.open();
+                com.itextpdf.text.Font errorFont = new com.itextpdf.text.Font(com.itextpdf.text.Font.FontFamily.HELVETICA, 12);
+                com.itextpdf.text.Paragraph errorMsg = new com.itextpdf.text.Paragraph("Error al generar el reporte: " + e.getMessage(), errorFont);
+                errorDoc.add(errorMsg);
+                errorDoc.close();
+                
+                return errorBaos.toByteArray();
+            } catch (Exception ex) {
+                System.err.println("❌ [PDF_GENERAL] Error generando PDF de error: " + ex.getMessage());
+                return new byte[0];
+            }
+        } finally {
+            try {
+                if (document != null && document.isOpen()) {
+                    document.close();
+                }
+                if (baos != null) {
+                    baos.close();
+                }
+            } catch (Exception e) {
+                System.err.println("❌ [PDF_GENERAL] Error cerrando recursos: " + e.getMessage());
+            }
+        }
+    }
+
+    /**
+     * Genera un PDF solo con estadísticas de cursos de verano (para Dashboard Cursos de Verano).
+     * 
+     * @param datosCursosVerano Datos de cursos de verano
+     * @return Array de bytes del PDF
+     */
+    private byte[] generarPDFCursosVerano(Map<String, Object> datosCursosVerano) {
+        System.out.println("🔧 [PDF_CURSOS_VERANO] Iniciando generación de PDF de cursos de verano...");
+        
+        ByteArrayOutputStream baos = null;
+        com.itextpdf.text.Document document = null;
+        
+        try {
+            baos = new ByteArrayOutputStream();
+            document = new com.itextpdf.text.Document(com.itextpdf.text.PageSize.A4);
+            com.itextpdf.text.pdf.PdfWriter writer = com.itextpdf.text.pdf.PdfWriter.getInstance(document, baos);
+            
+            document.open();
+            
+            // Título principal
+            com.itextpdf.text.Font titleFont = new com.itextpdf.text.Font(com.itextpdf.text.Font.FontFamily.HELVETICA, 18, com.itextpdf.text.Font.BOLD);
+            com.itextpdf.text.Paragraph title = new com.itextpdf.text.Paragraph("DASHBOARD CURSOS DE VERANO - ANÁLISIS DE DEMANDA", titleFont);
+            title.setAlignment(com.itextpdf.text.Element.ALIGN_CENTER);
+            title.setSpacingAfter(20);
+            document.add(title);
+            
+            // Fecha de generación
+            com.itextpdf.text.Font dateFont = new com.itextpdf.text.Font(com.itextpdf.text.Font.FontFamily.HELVETICA, 10);
+            com.itextpdf.text.Paragraph fecha = new com.itextpdf.text.Paragraph("Fecha de generación: " + new java.util.Date().toString(), dateFont);
+            fecha.setSpacingAfter(15);
+            document.add(fecha);
+            
+            // Sección: Estadísticas de Cursos de Verano
+            agregarSeccionCursosVerano(document, datosCursosVerano);
+            
+            document.close();
+            return baos.toByteArray();
+            
+        } catch (Exception e) {
+            System.err.println("❌ [PDF_CURSOS_VERANO] Error generando PDF: " + e.getMessage());
+            e.printStackTrace();
+            
+            // Generar PDF de error
+            try {
+                ByteArrayOutputStream errorBaos = new ByteArrayOutputStream();
+                com.itextpdf.text.Document errorDoc = new com.itextpdf.text.Document();
+                com.itextpdf.text.pdf.PdfWriter errorWriter = com.itextpdf.text.pdf.PdfWriter.getInstance(errorDoc, errorBaos);
+                
+                errorDoc.open();
+                com.itextpdf.text.Font errorFont = new com.itextpdf.text.Font(com.itextpdf.text.Font.FontFamily.HELVETICA, 12);
+                com.itextpdf.text.Paragraph errorMsg = new com.itextpdf.text.Paragraph("Error al generar el reporte: " + e.getMessage(), errorFont);
+                errorDoc.add(errorMsg);
+                errorDoc.close();
+                
+                return errorBaos.toByteArray();
+            } catch (Exception ex) {
+                System.err.println("❌ [PDF_CURSOS_VERANO] Error generando PDF de error: " + ex.getMessage());
+                return new byte[0];
+            }
+        } finally {
+            try {
+                if (document != null && document.isOpen()) {
+                    document.close();
+                }
+                if (baos != null) {
+                    baos.close();
+                }
+            } catch (Exception e) {
+                System.err.println("❌ [PDF_CURSOS_VERANO] Error cerrando recursos: " + e.getMessage());
+            }
+        }
+    }
+
+    /**
+     * Genera un PDF completo con estadísticas generales y de cursos de verano.
+     * 
+     * @param estadisticas Datos de estadísticas generales
+     * @param datosCursosVerano Datos de cursos de verano
+     * @return Array de bytes del PDF
+     */
+    private byte[] generarPDFCompleto(Map<String, Object> estadisticas, Map<String, Object> datosCursosVerano) {
+        System.out.println("🔧 [PDF_COMPLETO] Iniciando generación de PDF completo...");
+        System.out.println("🔧 [PDF_COMPLETO] Estadísticas generales: " + (estadisticas != null));
+        System.out.println("🔧 [PDF_COMPLETO] Datos cursos de verano: " + (datosCursosVerano != null));
+        
+        ByteArrayOutputStream baos = null;
+        com.itextpdf.text.Document document = null;
+        
+        try {
+            baos = new ByteArrayOutputStream();
+            document = new com.itextpdf.text.Document(com.itextpdf.text.PageSize.A4);
+            com.itextpdf.text.pdf.PdfWriter writer = com.itextpdf.text.pdf.PdfWriter.getInstance(document, baos);
+            
+            document.open();
+            
+            // Título principal
+            com.itextpdf.text.Font titleFont = new com.itextpdf.text.Font(com.itextpdf.text.Font.FontFamily.HELVETICA, 18, com.itextpdf.text.Font.BOLD);
+            com.itextpdf.text.Paragraph title = new com.itextpdf.text.Paragraph("REPORTE GENERAL DE ESTADÍSTICAS", titleFont);
+            title.setAlignment(com.itextpdf.text.Element.ALIGN_CENTER);
+            title.setSpacingAfter(20);
+            document.add(title);
+            
+            // Fecha de generación
+            com.itextpdf.text.Font dateFont = new com.itextpdf.text.Font(com.itextpdf.text.Font.FontFamily.HELVETICA, 10);
+            com.itextpdf.text.Paragraph fecha = new com.itextpdf.text.Paragraph("Fecha de generación: " + new java.util.Date().toString(), dateFont);
+            fecha.setSpacingAfter(15);
+            document.add(fecha);
+            
+            // Sección 1: Estadísticas Generales
+            if (estadisticas != null) {
+                agregarSeccionEstadisticasGenerales(document, estadisticas);
+            }
+            
+            // Sección 2: Estadísticas de Cursos de Verano
+            if (datosCursosVerano != null) {
+                document.newPage(); // Nueva página para cursos de verano
+                agregarSeccionCursosVerano(document, datosCursosVerano);
+            }
+            
+            document.close();
+            return baos.toByteArray();
+            
+        } catch (Exception e) {
+            System.err.println("❌ [PDF_COMPLETO] Error generando PDF completo: " + e.getMessage());
+            e.printStackTrace();
+            
+            // ✅ Generar un PDF de error en lugar de texto
+            try {
+                ByteArrayOutputStream errorBaos = new ByteArrayOutputStream();
+                com.itextpdf.text.Document errorDoc = new com.itextpdf.text.Document();
+                com.itextpdf.text.pdf.PdfWriter errorWriter = com.itextpdf.text.pdf.PdfWriter.getInstance(errorDoc, errorBaos);
+                
+                errorDoc.open();
+                com.itextpdf.text.Font errorFont = new com.itextpdf.text.Font(com.itextpdf.text.Font.FontFamily.HELVETICA, 12);
+                com.itextpdf.text.Paragraph errorMsg = new com.itextpdf.text.Paragraph("Error al generar el reporte: " + e.getMessage(), errorFont);
+                errorDoc.add(errorMsg);
+                errorDoc.close();
+                
+                return errorBaos.toByteArray();
+            } catch (Exception ex) {
+                System.err.println("❌ [PDF_COMPLETO] Error generando PDF de error: " + ex.getMessage());
+                return new byte[0]; // Devolver array vacío en caso de error crítico
+            }
+        } finally {
+            try {
+                if (document != null && document.isOpen()) {
+                    document.close();
+                }
+                if (baos != null) {
+                    baos.close();
+                }
+            } catch (Exception e) {
+                System.err.println("❌ [PDF_COMPLETO] Error cerrando recursos: " + e.getMessage());
+            }
         }
     }
 
@@ -1214,6 +1582,28 @@ public class EstadisticasRestController {
     }
 
     /**
+     * Endpoint optimizado para obtener solo las tendencias temporales de cursos de verano.
+     * 
+     * @return ResponseEntity con tendencias temporales
+     */
+    @GetMapping("/cursos-verano/tendencias-temporales")
+    public ResponseEntity<Map<String, Object>> obtenerTendenciasTemporalesCursosVerano() {
+        try {
+            log.info("📈 [TENDENCIAS_TEMPORALES] Obteniendo tendencias temporales de cursos de verano...");
+            
+            // Obtener solo las tendencias temporales de manera optimizada
+            Map<String, Object> tendencias = estadisticaCU.obtenerTendenciasTemporalesCursosVerano();
+            
+            log.info("📈 [TENDENCIAS_TEMPORALES] Tendencias obtenidas exitosamente");
+            return ResponseEntity.ok(tendencias);
+            
+        } catch (Exception e) {
+            log.error("❌ [TENDENCIAS_TEMPORALES] Error obteniendo tendencias: {}", e.getMessage(), e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
+    /**
      * Endpoint alternativo para estadísticas por proceso que funciona
      */
     @GetMapping("/por-proceso-funcional")
@@ -1248,6 +1638,408 @@ public class EstadisticasRestController {
         } catch (Exception e) {
             log.error("❌ [ESTADISTICAS] Error obteniendo estadísticas por proceso: {}", e.getMessage(), e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
+    /**
+     * Agrega la sección de estadísticas generales al PDF.
+     */
+    private void agregarSeccionEstadisticasGenerales(com.itextpdf.text.Document document, Map<String, Object> estadisticas) throws Exception {
+        // Título de sección
+        com.itextpdf.text.Font sectionFont = new com.itextpdf.text.Font(com.itextpdf.text.Font.FontFamily.HELVETICA, 14, com.itextpdf.text.Font.BOLD);
+        com.itextpdf.text.Paragraph sectionTitle = new com.itextpdf.text.Paragraph("1. ESTADÍSTICAS GENERALES", sectionFont);
+        sectionTitle.setSpacingAfter(10);
+        document.add(sectionTitle);
+        
+        // Estadísticas principales
+        com.itextpdf.text.Font normalFont = new com.itextpdf.text.Font(com.itextpdf.text.Font.FontFamily.HELVETICA, 10);
+        
+        // Total de solicitudes
+        Object totalSolicitudes = estadisticas.get("totalSolicitudes");
+        if (totalSolicitudes != null) {
+            document.add(new com.itextpdf.text.Paragraph("Total de Solicitudes: " + totalSolicitudes, normalFont));
+        }
+        
+        // Por tipo de proceso
+        @SuppressWarnings("unchecked")
+        Map<String, Object> porTipoProceso = (Map<String, Object>) estadisticas.get("porTipoProceso");
+        if (porTipoProceso != null && !porTipoProceso.isEmpty()) {
+            document.add(new com.itextpdf.text.Paragraph("\nEstadísticas por Tipo de Proceso:", normalFont));
+            for (Map.Entry<String, Object> entry : porTipoProceso.entrySet()) {
+                document.add(new com.itextpdf.text.Paragraph("  • " + entry.getKey() + ": " + entry.getValue(), normalFont));
+            }
+        }
+        
+        // Por estado
+        @SuppressWarnings("unchecked")
+        Map<String, Object> porEstado = (Map<String, Object>) estadisticas.get("porEstado");
+        if (porEstado != null && !porEstado.isEmpty()) {
+            document.add(new com.itextpdf.text.Paragraph("\nEstadísticas por Estado:", normalFont));
+            for (Map.Entry<String, Object> entry : porEstado.entrySet()) {
+                document.add(new com.itextpdf.text.Paragraph("  • " + entry.getKey() + ": " + entry.getValue(), normalFont));
+            }
+        }
+    }
+
+    /**
+     * Agrega la sección de cursos de verano al PDF.
+     */
+    private void agregarSeccionCursosVerano(com.itextpdf.text.Document document, Map<String, Object> datosCursosVerano) throws Exception {
+        // Título de sección
+        com.itextpdf.text.Font sectionFont = new com.itextpdf.text.Font(com.itextpdf.text.Font.FontFamily.HELVETICA, 14, com.itextpdf.text.Font.BOLD);
+        com.itextpdf.text.Paragraph sectionTitle = new com.itextpdf.text.Paragraph("2. ESTADÍSTICAS DE CURSOS DE VERANO", sectionFont);
+        sectionTitle.setSpacingAfter(10);
+        document.add(sectionTitle);
+        
+        com.itextpdf.text.Font normalFont = new com.itextpdf.text.Font(com.itextpdf.text.Font.FontFamily.HELVETICA, 10);
+        
+        // Resumen
+        @SuppressWarnings("unchecked")
+        Map<String, Object> resumen = (Map<String, Object>) datosCursosVerano.get("resumen");
+        if (resumen != null) {
+            document.add(new com.itextpdf.text.Paragraph("Resumen General:", normalFont));
+            document.add(new com.itextpdf.text.Paragraph("  • Total Solicitudes: " + resumen.get("totalSolicitudes"), normalFont));
+            document.add(new com.itextpdf.text.Paragraph("  • Materias Únicas: " + resumen.get("materiasUnicas"), normalFont));
+            document.add(new com.itextpdf.text.Paragraph("  • Programas Participantes: " + resumen.get("programasParticipantes"), normalFont));
+            document.add(new com.itextpdf.text.Paragraph("  • Tasa de Aprobación: " + resumen.get("tasaAprobacion") + "%", normalFont));
+        }
+        
+        // Top materias
+        @SuppressWarnings("unchecked")
+        List<Map<String, Object>> topMaterias = (List<Map<String, Object>>) datosCursosVerano.get("topMaterias");
+        if (topMaterias != null && !topMaterias.isEmpty()) {
+            document.add(new com.itextpdf.text.Paragraph("\nTop Materias por Demanda:", normalFont));
+            for (Map<String, Object> materia : topMaterias) {
+                document.add(new com.itextpdf.text.Paragraph("  • " + materia.get("nombre") + ": " + 
+                    materia.get("solicitudes") + " solicitudes (" + materia.get("porcentaje") + "%)", normalFont));
+            }
+        }
+        
+        // Análisis por programa
+        @SuppressWarnings("unchecked")
+        List<Map<String, Object>> analisisPorPrograma = (List<Map<String, Object>>) datosCursosVerano.get("analisisPorPrograma");
+        if (analisisPorPrograma != null && !analisisPorPrograma.isEmpty()) {
+            document.add(new com.itextpdf.text.Paragraph("\nAnálisis por Programa:", normalFont));
+            for (Map<String, Object> programa : analisisPorPrograma) {
+                document.add(new com.itextpdf.text.Paragraph("  • " + programa.get("nombre") + ": " + 
+                    programa.get("solicitudes") + " solicitudes (" + programa.get("porcentaje") + "%)", normalFont));
+            }
+        }
+        
+        // Predicciones
+        @SuppressWarnings("unchecked")
+        Map<String, Object> predicciones = (Map<String, Object>) datosCursosVerano.get("predicciones");
+        if (predicciones != null) {
+            document.add(new com.itextpdf.text.Paragraph("\nPredicciones:", normalFont));
+            document.add(new com.itextpdf.text.Paragraph("  • Demanda Estimada Próximo Período: " + predicciones.get("demandaEstimadaProximoPeriodo"), normalFont));
+            document.add(new com.itextpdf.text.Paragraph("  • Confiabilidad: " + predicciones.get("confiabilidad"), normalFont));
+            document.add(new com.itextpdf.text.Paragraph("  • Metodología: " + predicciones.get("metodologia"), normalFont));
+        }
+        
+        // Recomendaciones
+        @SuppressWarnings("unchecked")
+        List<Map<String, Object>> recomendaciones = (List<Map<String, Object>>) datosCursosVerano.get("recomendaciones");
+        if (recomendaciones != null && !recomendaciones.isEmpty()) {
+            document.add(new com.itextpdf.text.Paragraph("\nRecomendaciones:", normalFont));
+            for (Map<String, Object> rec : recomendaciones) {
+                document.add(new com.itextpdf.text.Paragraph("  • " + rec.get("titulo") + ": " + rec.get("descripcion"), normalFont));
+            }
+        }
+    }
+
+    /**
+     * Genera un Excel completo con estadísticas generales y de cursos de verano.
+     */
+    private byte[] generarExcelCompleto(Map<String, Object> estadisticas, Map<String, Object> datosCursosVerano) {
+        try {
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            org.apache.poi.xssf.usermodel.XSSFWorkbook workbook = new org.apache.poi.xssf.usermodel.XSSFWorkbook();
+            
+            // Hoja 1: Estadísticas Generales
+            if (estadisticas != null) {
+                crearHojaEstadisticasGenerales(workbook, estadisticas);
+            }
+            
+            // Hoja 2: Cursos de Verano
+            if (datosCursosVerano != null) {
+                crearHojaCursosVerano(workbook, datosCursosVerano);
+            }
+            
+            workbook.write(baos);
+            workbook.close();
+            
+            return baos.toByteArray();
+            
+        } catch (Exception e) {
+            System.err.println("❌ [EXCEL_COMPLETO] Error generando Excel completo: " + e.getMessage());
+            e.printStackTrace();
+            
+            // ✅ Generar un Excel de error en lugar de texto
+            try {
+                ByteArrayOutputStream errorBaos = new ByteArrayOutputStream();
+                org.apache.poi.xssf.usermodel.XSSFWorkbook errorWorkbook = new org.apache.poi.xssf.usermodel.XSSFWorkbook();
+                org.apache.poi.ss.usermodel.Sheet errorSheet = errorWorkbook.createSheet("Error");
+                
+                org.apache.poi.ss.usermodel.Row errorRow = errorSheet.createRow(0);
+                errorRow.createCell(0).setCellValue("Error al generar el reporte: " + e.getMessage());
+                
+                errorWorkbook.write(errorBaos);
+                errorWorkbook.close();
+                
+                return errorBaos.toByteArray();
+            } catch (Exception ex) {
+                System.err.println("❌ [EXCEL_COMPLETO] Error generando Excel de error: " + ex.getMessage());
+                return new byte[0]; // Devolver array vacío en caso de error crítico
+            }
+        }
+    }
+
+    /**
+     * Crea la hoja de estadísticas generales en el Excel.
+     */
+    private void crearHojaEstadisticasGenerales(org.apache.poi.xssf.usermodel.XSSFWorkbook workbook, Map<String, Object> estadisticas) {
+        org.apache.poi.ss.usermodel.Sheet sheet = workbook.createSheet("Estadísticas Generales");
+        
+        // Estilos
+        org.apache.poi.ss.usermodel.CellStyle titleStyle = workbook.createCellStyle();
+        org.apache.poi.ss.usermodel.Font titleFont = workbook.createFont();
+        titleFont.setBold(true);
+        titleFont.setFontHeightInPoints((short) 16);
+        titleStyle.setFont(titleFont);
+        
+        org.apache.poi.ss.usermodel.CellStyle headerStyle = workbook.createCellStyle();
+        org.apache.poi.ss.usermodel.Font headerFont = workbook.createFont();
+        headerFont.setBold(true);
+        headerFont.setFontHeightInPoints((short) 12);
+        headerStyle.setFont(headerFont);
+        
+        int rowNum = 0;
+        
+        // Título
+        org.apache.poi.ss.usermodel.Row titleRow = sheet.createRow(rowNum++);
+        org.apache.poi.ss.usermodel.Cell titleCell = titleRow.createCell(0);
+        titleCell.setCellValue("ESTADÍSTICAS GENERALES DEL SISTEMA");
+        titleCell.setCellStyle(titleStyle);
+        
+        rowNum++; // Espacio
+        
+        // Total de solicitudes
+        Object totalSolicitudes = estadisticas.get("totalSolicitudes");
+        if (totalSolicitudes != null) {
+            org.apache.poi.ss.usermodel.Row row = sheet.createRow(rowNum++);
+            row.createCell(0).setCellValue("Total de Solicitudes");
+            row.createCell(1).setCellValue(totalSolicitudes.toString());
+        }
+        
+        // Por tipo de proceso
+        @SuppressWarnings("unchecked")
+        Map<String, Object> porTipoProceso = (Map<String, Object>) estadisticas.get("porTipoProceso");
+        if (porTipoProceso != null && !porTipoProceso.isEmpty()) {
+            rowNum++; // Espacio
+            org.apache.poi.ss.usermodel.Row headerRow = sheet.createRow(rowNum++);
+            org.apache.poi.ss.usermodel.Cell headerCell = headerRow.createCell(0);
+            headerCell.setCellValue("ESTADÍSTICAS POR TIPO DE PROCESO");
+            headerCell.setCellStyle(headerStyle);
+            
+            for (Map.Entry<String, Object> entry : porTipoProceso.entrySet()) {
+                org.apache.poi.ss.usermodel.Row row = sheet.createRow(rowNum++);
+                row.createCell(0).setCellValue(entry.getKey());
+                row.createCell(1).setCellValue(entry.getValue().toString());
+            }
+        }
+        
+        // Por estado
+        @SuppressWarnings("unchecked")
+        Map<String, Object> porEstado = (Map<String, Object>) estadisticas.get("porEstado");
+        if (porEstado != null && !porEstado.isEmpty()) {
+            rowNum++; // Espacio
+            org.apache.poi.ss.usermodel.Row headerRow = sheet.createRow(rowNum++);
+            org.apache.poi.ss.usermodel.Cell headerCell = headerRow.createCell(0);
+            headerCell.setCellValue("ESTADÍSTICAS POR ESTADO");
+            headerCell.setCellStyle(headerStyle);
+            
+            for (Map.Entry<String, Object> entry : porEstado.entrySet()) {
+                org.apache.poi.ss.usermodel.Row row = sheet.createRow(rowNum++);
+                row.createCell(0).setCellValue(entry.getKey());
+                row.createCell(1).setCellValue(entry.getValue().toString());
+            }
+        }
+        
+        // Ajustar ancho de columnas
+        sheet.autoSizeColumn(0);
+        sheet.autoSizeColumn(1);
+    }
+
+    /**
+     * Crea la hoja de cursos de verano en el Excel.
+     */
+    private void crearHojaCursosVerano(org.apache.poi.xssf.usermodel.XSSFWorkbook workbook, Map<String, Object> datosCursosVerano) {
+        org.apache.poi.ss.usermodel.Sheet sheet = workbook.createSheet("Cursos de Verano");
+        
+        // Estilos
+        org.apache.poi.ss.usermodel.CellStyle titleStyle = workbook.createCellStyle();
+        org.apache.poi.ss.usermodel.Font titleFont = workbook.createFont();
+        titleFont.setBold(true);
+        titleFont.setFontHeightInPoints((short) 16);
+        titleStyle.setFont(titleFont);
+        
+        org.apache.poi.ss.usermodel.CellStyle headerStyle = workbook.createCellStyle();
+        org.apache.poi.ss.usermodel.Font headerFont = workbook.createFont();
+        headerFont.setBold(true);
+        headerFont.setFontHeightInPoints((short) 12);
+        headerStyle.setFont(headerFont);
+        
+        int rowNum = 0;
+        
+        // Título
+        org.apache.poi.ss.usermodel.Row titleRow = sheet.createRow(rowNum++);
+        org.apache.poi.ss.usermodel.Cell titleCell = titleRow.createCell(0);
+        titleCell.setCellValue("ESTADÍSTICAS DE CURSOS DE VERANO");
+        titleCell.setCellStyle(titleStyle);
+        
+        rowNum++; // Espacio
+        
+        // Resumen
+        @SuppressWarnings("unchecked")
+        Map<String, Object> resumen = (Map<String, Object>) datosCursosVerano.get("resumen");
+        if (resumen != null) {
+            org.apache.poi.ss.usermodel.Row headerRow = sheet.createRow(rowNum++);
+            org.apache.poi.ss.usermodel.Cell headerCell = headerRow.createCell(0);
+            headerCell.setCellValue("RESUMEN GENERAL");
+            headerCell.setCellStyle(headerStyle);
+            
+            for (Map.Entry<String, Object> entry : resumen.entrySet()) {
+                org.apache.poi.ss.usermodel.Row row = sheet.createRow(rowNum++);
+                row.createCell(0).setCellValue(entry.getKey());
+                row.createCell(1).setCellValue(entry.getValue().toString());
+            }
+            rowNum++; // Espacio
+        }
+        
+        // Top materias
+        @SuppressWarnings("unchecked")
+        List<Map<String, Object>> topMaterias = (List<Map<String, Object>>) datosCursosVerano.get("topMaterias");
+        if (topMaterias != null && !topMaterias.isEmpty()) {
+            org.apache.poi.ss.usermodel.Row headerRow = sheet.createRow(rowNum++);
+            org.apache.poi.ss.usermodel.Cell headerCell = headerRow.createCell(0);
+            headerCell.setCellValue("TOP MATERIAS POR DEMANDA");
+            headerCell.setCellStyle(headerStyle);
+            
+            for (Map<String, Object> materia : topMaterias) {
+                org.apache.poi.ss.usermodel.Row row = sheet.createRow(rowNum++);
+                row.createCell(0).setCellValue(materia.get("nombre").toString());
+                row.createCell(1).setCellValue(materia.get("solicitudes").toString());
+                row.createCell(2).setCellValue(materia.get("porcentaje").toString() + "%");
+            }
+            rowNum++; // Espacio
+        }
+        
+        // Análisis por programa
+        @SuppressWarnings("unchecked")
+        List<Map<String, Object>> analisisPorPrograma = (List<Map<String, Object>>) datosCursosVerano.get("analisisPorPrograma");
+        if (analisisPorPrograma != null && !analisisPorPrograma.isEmpty()) {
+            org.apache.poi.ss.usermodel.Row headerRow = sheet.createRow(rowNum++);
+            org.apache.poi.ss.usermodel.Cell headerCell = headerRow.createCell(0);
+            headerCell.setCellValue("ANÁLISIS POR PROGRAMA");
+            headerCell.setCellStyle(headerStyle);
+            
+            for (Map<String, Object> programa : analisisPorPrograma) {
+                org.apache.poi.ss.usermodel.Row row = sheet.createRow(rowNum++);
+                row.createCell(0).setCellValue(programa.get("nombre").toString());
+                row.createCell(1).setCellValue(programa.get("solicitudes").toString());
+                row.createCell(2).setCellValue(programa.get("porcentaje").toString() + "%");
+            }
+        }
+        
+        // Ajustar ancho de columnas
+        sheet.autoSizeColumn(0);
+        sheet.autoSizeColumn(1);
+        sheet.autoSizeColumn(2);
+    }
+
+    /**
+     * Genera un Excel solo con estadísticas generales (para Dashboard General).
+     * 
+     * @param estadisticas Datos de estadísticas generales
+     * @return Array de bytes del Excel
+     */
+    private byte[] generarExcelEstadisticasGenerales(Map<String, Object> estadisticas) {
+        try {
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            org.apache.poi.xssf.usermodel.XSSFWorkbook workbook = new org.apache.poi.xssf.usermodel.XSSFWorkbook();
+            
+            // Hoja: Estadísticas Generales
+            crearHojaEstadisticasGenerales(workbook, estadisticas);
+            
+            workbook.write(baos);
+            workbook.close();
+            
+            return baos.toByteArray();
+            
+        } catch (Exception e) {
+            System.err.println("❌ [EXCEL_GENERAL] Error generando Excel: " + e.getMessage());
+            e.printStackTrace();
+            
+            // Generar Excel de error
+            try {
+                ByteArrayOutputStream errorBaos = new ByteArrayOutputStream();
+                org.apache.poi.xssf.usermodel.XSSFWorkbook errorWorkbook = new org.apache.poi.xssf.usermodel.XSSFWorkbook();
+                org.apache.poi.ss.usermodel.Sheet errorSheet = errorWorkbook.createSheet("Error");
+                
+                org.apache.poi.ss.usermodel.Row errorRow = errorSheet.createRow(0);
+                errorRow.createCell(0).setCellValue("Error al generar el reporte: " + e.getMessage());
+                
+                errorWorkbook.write(errorBaos);
+                errorWorkbook.close();
+                
+                return errorBaos.toByteArray();
+            } catch (Exception ex) {
+                System.err.println("❌ [EXCEL_GENERAL] Error generando Excel de error: " + ex.getMessage());
+                return new byte[0];
+            }
+        }
+    }
+
+    /**
+     * Genera un Excel solo con estadísticas de cursos de verano (para Dashboard Cursos de Verano).
+     * 
+     * @param datosCursosVerano Datos de cursos de verano
+     * @return Array de bytes del Excel
+     */
+    private byte[] generarExcelCursosVerano(Map<String, Object> datosCursosVerano) {
+        try {
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            org.apache.poi.xssf.usermodel.XSSFWorkbook workbook = new org.apache.poi.xssf.usermodel.XSSFWorkbook();
+            
+            // Hoja: Cursos de Verano
+            crearHojaCursosVerano(workbook, datosCursosVerano);
+            
+            workbook.write(baos);
+            workbook.close();
+            
+            return baos.toByteArray();
+            
+        } catch (Exception e) {
+            System.err.println("❌ [EXCEL_CURSOS_VERANO] Error generando Excel: " + e.getMessage());
+            e.printStackTrace();
+            
+            // Generar Excel de error
+            try {
+                ByteArrayOutputStream errorBaos = new ByteArrayOutputStream();
+                org.apache.poi.xssf.usermodel.XSSFWorkbook errorWorkbook = new org.apache.poi.xssf.usermodel.XSSFWorkbook();
+                org.apache.poi.ss.usermodel.Sheet errorSheet = errorWorkbook.createSheet("Error");
+                
+                org.apache.poi.ss.usermodel.Row errorRow = errorSheet.createRow(0);
+                errorRow.createCell(0).setCellValue("Error al generar el reporte: " + e.getMessage());
+                
+                errorWorkbook.write(errorBaos);
+                errorWorkbook.close();
+                
+                return errorBaos.toByteArray();
+            } catch (Exception ex) {
+                System.err.println("❌ [EXCEL_CURSOS_VERANO] Error generando Excel de error: " + ex.getMessage());
+                return new byte[0];
+            }
         }
     }
 }

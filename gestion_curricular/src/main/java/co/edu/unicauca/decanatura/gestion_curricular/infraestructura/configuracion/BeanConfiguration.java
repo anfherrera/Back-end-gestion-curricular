@@ -169,6 +169,8 @@ public class BeanConfiguration {
         return new GestionarArchivosCUIAdapter(objGestionarArchivos, objFormateadorResultados);
     }
 
+    // GestionarEstadisticasGatewayImplAdapter ya está definido como @Service, no necesita definición adicional
+
     // JwtUtil ya está definido como @Component, no necesita definición adicional
     // DocumentGeneratorService ya está definido como @Service, no necesita definición adicional
 }

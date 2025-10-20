@@ -262,4 +262,9 @@ public class GestionarEstadisticasCUAdapter implements GestionarEstadisticasCUIn
     public Map<String, Object> obtenerEstadisticasCursosVerano() {
         return estadisticasGateway.obtenerEstadisticasCursosVerano();
     }
+
+    @Override
+    public Map<String, Object> obtenerTendenciasTemporalesCursosVerano() {
+        return estadisticasGateway.obtenerTendenciasTemporalesCursosVerano();
+    }
 }
