@@ -818,7 +818,7 @@ public class EstadisticasRestController {
         try {
             baos = new ByteArrayOutputStream();
             document = new com.itextpdf.text.Document(com.itextpdf.text.PageSize.A4);
-            com.itextpdf.text.pdf.PdfWriter writer = com.itextpdf.text.pdf.PdfWriter.getInstance(document, baos);
+            com.itextpdf.text.pdf.PdfWriter.getInstance(document, baos);
             
             document.open();
             
@@ -849,7 +849,7 @@ public class EstadisticasRestController {
             try {
                 ByteArrayOutputStream errorBaos = new ByteArrayOutputStream();
                 com.itextpdf.text.Document errorDoc = new com.itextpdf.text.Document();
-                com.itextpdf.text.pdf.PdfWriter errorWriter = com.itextpdf.text.pdf.PdfWriter.getInstance(errorDoc, errorBaos);
+                com.itextpdf.text.pdf.PdfWriter.getInstance(errorDoc, errorBaos);
                 
                 errorDoc.open();
                 com.itextpdf.text.Font errorFont = new com.itextpdf.text.Font(com.itextpdf.text.Font.FontFamily.HELVETICA, 12);
@@ -891,7 +891,7 @@ public class EstadisticasRestController {
         try {
             baos = new ByteArrayOutputStream();
             document = new com.itextpdf.text.Document(com.itextpdf.text.PageSize.A4);
-            com.itextpdf.text.pdf.PdfWriter writer = com.itextpdf.text.pdf.PdfWriter.getInstance(document, baos);
+            com.itextpdf.text.pdf.PdfWriter.getInstance(document, baos);
             
             document.open();
             
@@ -922,7 +922,7 @@ public class EstadisticasRestController {
             try {
                 ByteArrayOutputStream errorBaos = new ByteArrayOutputStream();
                 com.itextpdf.text.Document errorDoc = new com.itextpdf.text.Document();
-                com.itextpdf.text.pdf.PdfWriter errorWriter = com.itextpdf.text.pdf.PdfWriter.getInstance(errorDoc, errorBaos);
+                com.itextpdf.text.pdf.PdfWriter.getInstance(errorDoc, errorBaos);
                 
                 errorDoc.open();
                 com.itextpdf.text.Font errorFont = new com.itextpdf.text.Font(com.itextpdf.text.Font.FontFamily.HELVETICA, 12);
@@ -967,7 +967,7 @@ public class EstadisticasRestController {
         try {
             baos = new ByteArrayOutputStream();
             document = new com.itextpdf.text.Document(com.itextpdf.text.PageSize.A4);
-            com.itextpdf.text.pdf.PdfWriter writer = com.itextpdf.text.pdf.PdfWriter.getInstance(document, baos);
+            com.itextpdf.text.pdf.PdfWriter.getInstance(document, baos);
             
             document.open();
             
@@ -1006,7 +1006,7 @@ public class EstadisticasRestController {
             try {
                 ByteArrayOutputStream errorBaos = new ByteArrayOutputStream();
                 com.itextpdf.text.Document errorDoc = new com.itextpdf.text.Document();
-                com.itextpdf.text.pdf.PdfWriter errorWriter = com.itextpdf.text.pdf.PdfWriter.getInstance(errorDoc, errorBaos);
+                com.itextpdf.text.pdf.PdfWriter.getInstance(errorDoc, errorBaos);
                 
                 errorDoc.open();
                 com.itextpdf.text.Font errorFont = new com.itextpdf.text.Font(com.itextpdf.text.Font.FontFamily.HELVETICA, 12);
@@ -1033,262 +1033,7 @@ public class EstadisticasRestController {
         }
     }
 
-    /**
-     * Genera un PDF básico con las estadísticas.
-     * 
-     * @param estadisticas Datos de estadísticas
-     * @return Array de bytes del PDF
-     */
-    private byte[] generarPDF(Map<String, Object> estadisticas) {
-        System.out.println("🔧 [PDF] Iniciando generación de PDF...");
-        System.out.println("🔧 [PDF] Datos recibidos: " + estadisticas);
-        
-        ByteArrayOutputStream baos = null;
-        com.itextpdf.text.Document document = null;
-        
-        try {
-            baos = new ByteArrayOutputStream();
-            document = new com.itextpdf.text.Document(com.itextpdf.text.PageSize.A4);
-            com.itextpdf.text.pdf.PdfWriter writer = com.itextpdf.text.pdf.PdfWriter.getInstance(document, baos);
-            
-            System.out.println("🔧 [PDF] Documento y writer creados");
-            
-            document.open();
-            System.out.println("🔧 [PDF] Documento abierto");
-            
-            // Título
-            com.itextpdf.text.Font titleFont = new com.itextpdf.text.Font(com.itextpdf.text.Font.FontFamily.HELVETICA, 18, com.itextpdf.text.Font.BOLD);
-            com.itextpdf.text.Paragraph title = new com.itextpdf.text.Paragraph("ESTADISTICAS DEL SISTEMA DE GESTION CURRICULAR", titleFont);
-            title.setAlignment(com.itextpdf.text.Element.ALIGN_CENTER);
-            title.setSpacingAfter(20);
-            document.add(title);
-            System.out.println("🔧 [PDF] Título agregado");
-            
-            // Fecha de consulta
-            String fechaConsulta = (String) estadisticas.get("fechaConsulta");
-            if (fechaConsulta == null) fechaConsulta = "N/A";
-            com.itextpdf.text.Font dateFont = new com.itextpdf.text.Font(com.itextpdf.text.Font.FontFamily.HELVETICA, 10);
-            com.itextpdf.text.Paragraph fecha = new com.itextpdf.text.Paragraph("Fecha de consulta: " + fechaConsulta, dateFont);
-            fecha.setSpacingAfter(15);
-            document.add(fecha);
-            System.out.println("🔧 [PDF] Fecha agregada");
-            
-            // Estadísticas principales
-            com.itextpdf.text.Font headerFont = new com.itextpdf.text.Font(com.itextpdf.text.Font.FontFamily.HELVETICA, 14, com.itextpdf.text.Font.BOLD);
-            com.itextpdf.text.Font normalFont = new com.itextpdf.text.Font(com.itextpdf.text.Font.FontFamily.HELVETICA, 12);
-            
-            document.add(new com.itextpdf.text.Paragraph("RESUMEN GENERAL", headerFont));
-            document.add(new com.itextpdf.text.Paragraph("Total de Solicitudes: " + estadisticas.get("totalSolicitudes"), normalFont));
-            document.add(new com.itextpdf.text.Paragraph("Solicitudes Aprobadas: " + estadisticas.get("totalAprobadas"), normalFont));
-            document.add(new com.itextpdf.text.Paragraph("Solicitudes en Proceso: " + estadisticas.get("totalEnProceso"), normalFont));
-            document.add(new com.itextpdf.text.Paragraph("Solicitudes Rechazadas: " + estadisticas.get("totalRechazadas"), normalFont));
-            document.add(new com.itextpdf.text.Paragraph("Porcentaje de Aprobacion: " + estadisticas.get("porcentajeAprobacion") + "%", normalFont));
-            System.out.println("🔧 [PDF] Resumen general agregado");
-            
-            document.add(new com.itextpdf.text.Paragraph(" "));
-            
-            // Estadísticas por programa
-            @SuppressWarnings("unchecked")
-            Map<String, Object> porPrograma = (Map<String, Object>) estadisticas.get("porPrograma");
-            if (porPrograma != null && !porPrograma.isEmpty()) {
-                document.add(new com.itextpdf.text.Paragraph("ESTADISTICAS POR PROGRAMA", headerFont));
-                for (Map.Entry<String, Object> entry : porPrograma.entrySet()) {
-                    document.add(new com.itextpdf.text.Paragraph(entry.getKey() + ": " + entry.getValue(), normalFont));
-                }
-                document.add(new com.itextpdf.text.Paragraph(" "));
-                System.out.println("🔧 [PDF] Estadísticas por programa agregadas");
-            }
-            
-            // Estadísticas por estado
-            @SuppressWarnings("unchecked")
-            Map<String, Object> porEstado = (Map<String, Object>) estadisticas.get("porEstado");
-            if (porEstado != null && !porEstado.isEmpty()) {
-                document.add(new com.itextpdf.text.Paragraph("ESTADISTICAS POR ESTADO", headerFont));
-                for (Map.Entry<String, Object> entry : porEstado.entrySet()) {
-                    document.add(new com.itextpdf.text.Paragraph(entry.getKey() + ": " + entry.getValue(), normalFont));
-                }
-                System.out.println("🔧 [PDF] Estadísticas por estado agregadas");
-            }
-            
-            document.close();
-            System.out.println("🔧 [PDF] Documento cerrado");
-            
-            byte[] pdfBytes = baos.toByteArray();
-            System.out.println("🔧 [PDF] PDF generado exitosamente. Tamaño: " + pdfBytes.length + " bytes");
-            
-            return pdfBytes;
-            
-        } catch (Exception e) {
-            System.err.println("❌ [PDF] Error generando PDF: " + e.getMessage());
-            e.printStackTrace();
-            
-            // Fallback a texto simple si hay error
-            String contenido = "ESTADISTICAS DEL SISTEMA DE GESTION CURRICULAR\n\n";
-            contenido += "Fecha de consulta: " + estadisticas.get("fechaConsulta") + "\n\n";
-            contenido += "RESUMEN GENERAL:\n";
-            contenido += "Total de Solicitudes: " + estadisticas.get("totalSolicitudes") + "\n";
-            contenido += "Solicitudes Aprobadas: " + estadisticas.get("totalAprobadas") + "\n";
-            contenido += "Solicitudes en Proceso: " + estadisticas.get("totalEnProceso") + "\n";
-            contenido += "Solicitudes Rechazadas: " + estadisticas.get("totalRechazadas") + "\n";
-            contenido += "Porcentaje de Aprobacion: " + estadisticas.get("porcentajeAprobacion") + "%\n\n";
-            
-            @SuppressWarnings("unchecked")
-            Map<String, Object> porPrograma = (Map<String, Object>) estadisticas.get("porPrograma");
-            if (porPrograma != null && !porPrograma.isEmpty()) {
-                contenido += "ESTADISTICAS POR PROGRAMA:\n";
-                for (Map.Entry<String, Object> entry : porPrograma.entrySet()) {
-                    contenido += entry.getKey() + ": " + entry.getValue() + "\n";
-                }
-                contenido += "\n";
-            }
-            
-            @SuppressWarnings("unchecked")
-            Map<String, Object> porEstado = (Map<String, Object>) estadisticas.get("porEstado");
-            if (porEstado != null && !porEstado.isEmpty()) {
-                contenido += "ESTADISTICAS POR ESTADO:\n";
-                for (Map.Entry<String, Object> entry : porEstado.entrySet()) {
-                    contenido += entry.getKey() + ": " + entry.getValue() + "\n";
-                }
-            }
-            
-            return contenido.getBytes(java.nio.charset.StandardCharsets.UTF_8);
-        } finally {
-            try {
-                if (document != null && document.isOpen()) {
-                    document.close();
-                }
-                if (baos != null) {
-                    baos.close();
-                }
-            } catch (Exception e) {
-                System.err.println("❌ [PDF] Error cerrando recursos: " + e.getMessage());
-            }
-        }
-    }
 
-    /**
-     * Genera un Excel básico con las estadísticas.
-     * 
-     * @param estadisticas Datos de estadísticas
-     * @return Array de bytes del Excel
-     */
-    private byte[] generarExcel(Map<String, Object> estadisticas) {
-        try {
-            ByteArrayOutputStream baos = new ByteArrayOutputStream();
-            org.apache.poi.xssf.usermodel.XSSFWorkbook workbook = new org.apache.poi.xssf.usermodel.XSSFWorkbook();
-            
-            // Hoja principal
-            org.apache.poi.ss.usermodel.Sheet sheet = workbook.createSheet("Estadísticas Generales");
-            
-            // Estilos
-            org.apache.poi.ss.usermodel.CellStyle titleStyle = workbook.createCellStyle();
-            org.apache.poi.ss.usermodel.Font titleFont = workbook.createFont();
-            titleFont.setBold(true);
-            titleFont.setFontHeightInPoints((short) 16);
-            titleStyle.setFont(titleFont);
-            
-            org.apache.poi.ss.usermodel.CellStyle headerStyle = workbook.createCellStyle();
-            org.apache.poi.ss.usermodel.Font headerFont = workbook.createFont();
-            headerFont.setBold(true);
-            headerFont.setFontHeightInPoints((short) 12);
-            headerStyle.setFont(headerFont);
-            
-            int rowNum = 0;
-            
-            // Título
-            org.apache.poi.ss.usermodel.Row titleRow = sheet.createRow(rowNum++);
-            org.apache.poi.ss.usermodel.Cell titleCell = titleRow.createCell(0);
-            titleCell.setCellValue("ESTADÍSTICAS DEL SISTEMA DE GESTIÓN CURRICULAR");
-            titleCell.setCellStyle(titleStyle);
-            
-            // Fecha
-            rowNum++;
-            org.apache.poi.ss.usermodel.Row dateRow = sheet.createRow(rowNum++);
-            org.apache.poi.ss.usermodel.Cell dateCell = dateRow.createCell(0);
-            dateCell.setCellValue("Fecha de consulta: " + estadisticas.get("fechaConsulta"));
-            
-            // Espacio
-            rowNum++;
-            
-            // Resumen general
-            org.apache.poi.ss.usermodel.Row headerRow = sheet.createRow(rowNum++);
-            org.apache.poi.ss.usermodel.Cell headerCell = headerRow.createCell(0);
-            headerCell.setCellValue("RESUMEN GENERAL");
-            headerCell.setCellStyle(headerStyle);
-            
-            // Datos principales
-            String[][] datosPrincipales = {
-                {"Total de Solicitudes", estadisticas.get("totalSolicitudes").toString()},
-                {"Solicitudes Aprobadas", estadisticas.get("totalAprobadas").toString()},
-                {"Solicitudes en Proceso", estadisticas.get("totalEnProceso").toString()},
-                {"Solicitudes Rechazadas", estadisticas.get("totalRechazadas").toString()},
-                {"Porcentaje de Aprobación", estadisticas.get("porcentajeAprobacion").toString() + "%"}
-            };
-            
-            for (String[] dato : datosPrincipales) {
-                org.apache.poi.ss.usermodel.Row row = sheet.createRow(rowNum++);
-                row.createCell(0).setCellValue(dato[0]);
-                row.createCell(1).setCellValue(dato[1]);
-            }
-            
-            // Espacio
-            rowNum++;
-            
-            // Estadísticas por programa
-            @SuppressWarnings("unchecked")
-            Map<String, Object> porPrograma = (Map<String, Object>) estadisticas.get("porPrograma");
-            if (porPrograma != null && !porPrograma.isEmpty()) {
-                org.apache.poi.ss.usermodel.Row programaHeaderRow = sheet.createRow(rowNum++);
-                org.apache.poi.ss.usermodel.Cell programaHeaderCell = programaHeaderRow.createCell(0);
-                programaHeaderCell.setCellValue("ESTADÍSTICAS POR PROGRAMA");
-                programaHeaderCell.setCellStyle(headerStyle);
-                
-                for (Map.Entry<String, Object> entry : porPrograma.entrySet()) {
-                    org.apache.poi.ss.usermodel.Row row = sheet.createRow(rowNum++);
-                    row.createCell(0).setCellValue(entry.getKey());
-                    row.createCell(1).setCellValue(entry.getValue().toString());
-                }
-                
-                rowNum++;
-            }
-            
-            // Estadísticas por estado
-            @SuppressWarnings("unchecked")
-            Map<String, Object> porEstado = (Map<String, Object>) estadisticas.get("porEstado");
-            if (porEstado != null && !porEstado.isEmpty()) {
-                org.apache.poi.ss.usermodel.Row estadoHeaderRow = sheet.createRow(rowNum++);
-                org.apache.poi.ss.usermodel.Cell estadoHeaderCell = estadoHeaderRow.createCell(0);
-                estadoHeaderCell.setCellValue("ESTADÍSTICAS POR ESTADO");
-                estadoHeaderCell.setCellStyle(headerStyle);
-                
-                for (Map.Entry<String, Object> entry : porEstado.entrySet()) {
-                    org.apache.poi.ss.usermodel.Row row = sheet.createRow(rowNum++);
-                    row.createCell(0).setCellValue(entry.getKey());
-                    row.createCell(1).setCellValue(entry.getValue().toString());
-                }
-            }
-            
-            // Ajustar ancho de columnas
-            sheet.autoSizeColumn(0);
-            sheet.autoSizeColumn(1);
-            
-            workbook.write(baos);
-            workbook.close();
-            
-            return baos.toByteArray();
-            
-        } catch (Exception e) {
-            e.printStackTrace();
-            // Fallback a CSV simple si hay error
-            String contenido = "Métrica,Valor\n" +
-                              "Total Solicitudes," + estadisticas.get("totalSolicitudes") + "\n" +
-                              "Aprobadas," + estadisticas.get("totalAprobadas") + "\n" +
-                              "En Proceso," + estadisticas.get("totalEnProceso") + "\n" +
-                              "Rechazadas," + estadisticas.get("totalRechazadas") + "\n" +
-                              "Porcentaje Aprobación," + estadisticas.get("porcentajeAprobacion") + "%";
-            return contenido.getBytes();
-        }
-    }
 
     /**
      * Obtiene el número total de estudiantes registrados en el sistema.
