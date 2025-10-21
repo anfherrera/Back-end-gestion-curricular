@@ -299,9 +299,18 @@ public class GestionarEstadisticasGatewayImplAdapter implements GestionarEstadis
             for (String estado : estados) {
                 Integer cantidad = 0;
                 try {
-                    // Por ahora usamos el conteo general por estado
-                    // TODO: Implementar conteo específico por proceso y estado
-                    cantidad = Optional.ofNullable(solicitudRepository.contarSolicitudesPorUltimoEstado(estado)).orElse(0);
+                    // ✅ IMPLEMENTACIÓN REAL: Conteo específico por proceso y estado
+                    cantidad = solicitudRepository.findAll().stream()
+                        .filter(solicitud -> {
+                            String nombreProceso = obtenerNombreProcesoPorSolicitud(solicitud);
+                            return tipoProceso.equals(nombreProceso);
+                        })
+                        .filter(solicitud -> {
+                            String estadoSolicitud = obtenerEstadoMasReciente(solicitud);
+                            return estadoSolicitud != null && estadoSolicitud.equals(estado);
+                        })
+                        .mapToInt(solicitud -> 1)
+                        .sum();
                 } catch (Exception e) {
                     System.out.println("⚠️ [ESTADISTICAS_POR_PROCESO] Error contando estado " + estado + ": " + e.getMessage());
                     cantidad = 0;
@@ -368,12 +377,24 @@ public class GestionarEstadisticasGatewayImplAdapter implements GestionarEstadis
             System.out.println("📊 [ESTADISTICAS_POR_ESTADO] Total encontrado: " + totalPorEstado);
             
             // Obtener estadísticas por tipo de proceso para este estado
+            final String estadoNormalizado = estado;
             Map<String, Integer> porTipoProceso = new HashMap<>();
             try {
                 List<String> nombresProcesos = new ArrayList<>(solicitudRepository.buscarNombresSolicitudes());
                 for (String proceso : nombresProcesos) {
-                    // TODO: Implementar conteo específico por proceso y estado
-                    porTipoProceso.put(proceso, 0);
+                    // ✅ IMPLEMENTACIÓN REAL: Conteo específico por proceso y estado
+                    Integer cantidad = solicitudRepository.findAll().stream()
+                        .filter(solicitud -> {
+                            String nombreProceso = obtenerNombreProcesoPorSolicitud(solicitud);
+                            return proceso.equals(nombreProceso);
+                        })
+                        .filter(solicitud -> {
+                            String estadoSolicitud = obtenerEstadoMasReciente(solicitud);
+                            return estadoSolicitud != null && estadoSolicitud.equals(estadoNormalizado);
+                        })
+                        .mapToInt(solicitud -> 1)
+                        .sum();
+                    porTipoProceso.put(proceso, cantidad);
                 }
             } catch (Exception e) {
                 System.err.println("⚠️ [ESTADISTICAS_POR_ESTADO] Error obteniendo procesos: " + e.getMessage());
@@ -385,8 +406,23 @@ public class GestionarEstadisticasGatewayImplAdapter implements GestionarEstadis
             try {
                 List<String> nombresProgramas = new ArrayList<>(programaRepository.buscarNombresProgramas());
                 for (String programa : nombresProgramas) {
-                    // TODO: Implementar conteo específico por programa y estado
-                    porPrograma.put(programa, 0);
+                    // ✅ IMPLEMENTACIÓN REAL: Conteo específico por programa y estado
+                    Integer cantidad = solicitudRepository.findAll().stream()
+                        .filter(solicitud -> {
+                            // Verificar que tenga usuario y programa
+                            if (solicitud.getObjUsuario() == null || solicitud.getObjUsuario().getObjPrograma() == null) {
+                                return false;
+                            }
+                            String nombrePrograma = solicitud.getObjUsuario().getObjPrograma().getNombre_programa();
+                            return programa.equals(nombrePrograma);
+                        })
+                        .filter(solicitud -> {
+                            String estadoSolicitud = obtenerEstadoMasReciente(solicitud);
+                            return estadoSolicitud != null && estadoSolicitud.equals(estadoNormalizado);
+                        })
+                        .mapToInt(solicitud -> 1)
+                        .sum();
+                    porPrograma.put(programa, cantidad);
                 }
             } catch (Exception e) {
                 System.err.println("⚠️ [ESTADISTICAS_POR_ESTADO] Error obteniendo programas: " + e.getMessage());
@@ -526,9 +562,21 @@ public class GestionarEstadisticasGatewayImplAdapter implements GestionarEstadis
                 System.out.println("📊 [ESTADISTICAS_POR_PERIODO] Procesos encontrados: " + nombresProcesos);
                 
                 for (String proceso : nombresProcesos) {
-                    // TODO: Implementar conteo específico por proceso y período
-                    // Por ahora usamos el conteo general del proceso
-                    Integer cantidad = Optional.ofNullable(solicitudRepository.contarPorNombre(proceso)).orElse(0);
+                    // ✅ IMPLEMENTACIÓN REAL: Conteo específico por proceso y período
+                    Integer cantidad = solicitudRepository.findAll().stream()
+                        .filter(solicitud -> {
+                            String nombreProceso = obtenerNombreProcesoPorSolicitud(solicitud);
+                            return proceso.equals(nombreProceso);
+                        })
+                        .filter(solicitud -> {
+                            // Filtrar por rango de fechas
+                            Date fechaSolicitud = solicitud.getFecha_registro_solicitud();
+                            return fechaSolicitud != null && 
+                                   !fechaSolicitud.before(fechaInicio) && 
+                                   !fechaSolicitud.after(fechaFin);
+                        })
+                        .mapToInt(solicitud -> 1)
+                        .sum();
                     porTipoProceso.put(proceso, cantidad);
                     System.out.println("📊 [ESTADISTICAS_POR_PERIODO] Proceso " + proceso + ": " + cantidad);
                 }
@@ -542,7 +590,20 @@ public class GestionarEstadisticasGatewayImplAdapter implements GestionarEstadis
             String[] estados = {"Aprobado", "Rechazado", "Enviada", "En_Proceso"};
             
             for (String estado : estados) {
-                Integer cantidad = Optional.ofNullable(solicitudRepository.contarSolicitudesPorUltimoEstado(estado)).orElse(0);
+                // Filtrar por período
+                Integer cantidad = solicitudRepository.findAll().stream()
+                    .filter(solicitud -> {
+                        Date fechaSolicitud = solicitud.getFecha_registro_solicitud();
+                        return fechaSolicitud != null && 
+                               !fechaSolicitud.before(fechaInicio) && 
+                               !fechaSolicitud.after(fechaFin);
+                    })
+                    .filter(solicitud -> {
+                        String estadoSolicitud = obtenerEstadoMasReciente(solicitud);
+                        return estadoSolicitud != null && estadoSolicitud.equals(estado);
+                    })
+                    .mapToInt(solicitud -> 1)
+                    .sum();
                 porEstado.put(estado, cantidad);
             }
             
@@ -551,8 +612,26 @@ public class GestionarEstadisticasGatewayImplAdapter implements GestionarEstadis
             try {
                 List<String> nombresProgramas = new ArrayList<>(programaRepository.buscarNombresProgramas());
                 for (String programa : nombresProgramas) {
-                    // TODO: Implementar conteo real por programa y período
-                    porPrograma.put(programa, 0);
+                    // ✅ IMPLEMENTACIÓN REAL: Conteo real por programa y período
+                    Integer cantidad = solicitudRepository.findAll().stream()
+                        .filter(solicitud -> {
+                            // Filtrar por rango de fechas
+                            Date fechaSolicitud = solicitud.getFecha_registro_solicitud();
+                            return fechaSolicitud != null && 
+                                   !fechaSolicitud.before(fechaInicio) && 
+                                   !fechaSolicitud.after(fechaFin);
+                        })
+                        .filter(solicitud -> {
+                            // Verificar que tenga usuario y programa
+                            if (solicitud.getObjUsuario() == null || solicitud.getObjUsuario().getObjPrograma() == null) {
+                                return false;
+                            }
+                            String nombrePrograma = solicitud.getObjUsuario().getObjPrograma().getNombre_programa();
+                            return programa.equals(nombrePrograma);
+                        })
+                        .mapToInt(solicitud -> 1)
+                        .sum();
+                    porPrograma.put(programa, cantidad);
                 }
             } catch (Exception e) {
                 System.err.println("⚠️ [ESTADISTICAS_POR_PERIODO] Error obteniendo programas: " + e.getMessage());
