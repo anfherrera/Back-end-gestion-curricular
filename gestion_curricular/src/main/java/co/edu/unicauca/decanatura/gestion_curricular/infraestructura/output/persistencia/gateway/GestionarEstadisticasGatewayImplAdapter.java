@@ -257,6 +257,17 @@ public class GestionarEstadisticasGatewayImplAdapter implements GestionarEstadis
             // Normalizar la respuesta para evitar valores null
             estadisticas = normalizarEstadistica(estadisticas);
             
+            // ===== PREDICCIONES CON REGRESIÓN LINEAL =====
+            System.out.println("🔮 [PREDICCIONES_GLOBALES] Generando predicciones con regresión lineal...");
+            try {
+                Map<String, Object> predicciones = generarPrediccionesGlobales(porTipoProceso, porPrograma);
+                estadisticas.put("predicciones", predicciones);
+                System.out.println("✅ [PREDICCIONES_GLOBALES] Predicciones generadas exitosamente");
+            } catch (Exception e) {
+                System.err.println("⚠️ [PREDICCIONES_GLOBALES] Error generando predicciones: " + e.getMessage());
+                estadisticas.put("predicciones", new HashMap<>());
+            }
+            
             System.out.println("✅ [ESTADISTICAS_GLOBALES] Consulta completada exitosamente");
             System.out.println("📊 [ESTADISTICAS_GLOBALES] Resultado final: " + estadisticas);
             
@@ -767,8 +778,8 @@ public class GestionarEstadisticasGatewayImplAdapter implements GestionarEstadis
         Map<String, Object> periodo2 = obtenerEstadisticasPorPeriodo(fechaInicio2, fechaFin2);
         
         // Calcular tendencias
-        Integer total1 = (Integer) periodo1.get("totalSolicitudes");
-        Integer total2 = (Integer) periodo2.get("totalSolicitudes");
+        Integer total1 = ((Number) periodo1.get("totalSolicitudes")).intValue();
+        Integer total2 = ((Number) periodo2.get("totalSolicitudes")).intValue();
         
         double variacion = total1 > 0 ? ((double) (total2 - total1) / total1) * 100 : 0.0;
         
@@ -2499,6 +2510,9 @@ public class GestionarEstadisticasGatewayImplAdapter implements GestionarEstadis
             List<Map<String, Object>> topMaterias,
             List<Map<String, Object>> analisisPorPrograma) {
         
+        System.out.println("🚀🚀🚀 [INICIO] Método generarPrediccionesDemanda INICIADO - Versión NUEVA con regresión lineal 🚀🚀🚀");
+        System.out.println("📊 Datos de entrada: solicitudes=" + solicitudesCursosVerano.size() + ", materias=" + demandaPorMateria.size() + ", programas=" + demandaPorPrograma.size());
+        
         Map<String, Object> predicciones = new HashMap<>();
         
         try {
@@ -2516,13 +2530,13 @@ public class GestionarEstadisticasGatewayImplAdapter implements GestionarEstadis
             
             for (Map<String, Object> materia : topMaterias) {
                 String nombreMateria = (String) materia.get("nombre");
-                int solicitudesActuales = (Integer) materia.get("solicitudes");
+                int solicitudesActuales = ((Number) materia.get("solicitudes")).intValue();
                 
                 // ✅ USAR REGRESIÓN LINEAL para calcular demanda estimada por materia
                 Map<String, Object> prediccionRegresion = calcularDemandaEstimadaMateriaPorRegresion(
                     nombreMateria, solicitudesCursosVerano, solicitudesActuales);
                 
-                int demandaEstimada = (Integer) prediccionRegresion.get("demandaEstimada");
+                int demandaEstimada = ((Number) prediccionRegresion.get("demandaEstimada")).intValue();
                 String tendencia = (String) prediccionRegresion.get("tendencia");
                 Double pendiente = (Double) prediccionRegresion.getOrDefault("pendiente", 0.0);
                 Double rSquared = (Double) prediccionRegresion.getOrDefault("rSquared", 0.0);
@@ -2558,13 +2572,13 @@ public class GestionarEstadisticasGatewayImplAdapter implements GestionarEstadis
             
             for (Map<String, Object> programa : analisisPorPrograma) {
                 String nombrePrograma = (String) programa.get("nombre");
-                int solicitudesActuales = (Integer) programa.get("solicitudes");
+                int solicitudesActuales = ((Number) programa.get("solicitudes")).intValue();
                 
                 // ✅ USAR REGRESIÓN LINEAL para calcular demanda estimada por programa
                 Map<String, Object> prediccionRegresion = calcularDemandaEstimadaProgramaPorRegresion(
                     nombrePrograma, solicitudesCursosVerano, solicitudesActuales);
                 
-                int demandaEstimada = (Integer) prediccionRegresion.get("demandaEstimada");
+                int demandaEstimada = ((Number) prediccionRegresion.get("demandaEstimada")).intValue();
                 String tendencia = (String) prediccionRegresion.get("tendencia");
                 Double pendiente = (Double) prediccionRegresion.getOrDefault("pendiente", 0.0);
                 Double rSquared = (Double) prediccionRegresion.getOrDefault("rSquared", 0.0);
@@ -2600,98 +2614,280 @@ public class GestionarEstadisticasGatewayImplAdapter implements GestionarEstadis
             prediccionesTemporales.put("demandaEstimadaMesPico", demandaEstimadaMesPico);
             prediccionesTemporales.put("mesesRecomendados", Arrays.asList("Julio", "Agosto", "Septiembre"));
             
-            // 5. RECOMENDACIONES FUTURAS INTELIGENTES Y ESPECÍFICAS
-            System.out.println("💡 [RECOMENDACIONES] Generando recomendaciones basadas en predicciones...");
+            // 5. RECOMENDACIONES FUTURAS ACCIONABLES Y DETALLADAS
+            System.out.println("💡 [RECOMENDACIONES] Generando recomendaciones accionables basadas en predicciones...");
             List<Map<String, Object>> recomendacionesFuturas = new ArrayList<>();
             
-            // Recomendación detallada basada en materias con tendencia creciente
+            // 🎯 RECOMENDACIONES POR MATERIA (Más específicas y accionables)
             if (!materiasConTendenciaCreciente.isEmpty()) {
                 for (Map<String, Object> materia : materiasConTendenciaCreciente) {
                     String nombreMateria = (String) materia.get("nombre");
-                    int demandaActualMateria = (Integer) materia.get("demandaActual");
-                    int demandaEstimadaMateria = (Integer) materia.get("demandaEstimada");
-                    int variacion = (Integer) materia.get("variacion");
-                    int porcentajeVariacion = (Integer) materia.get("porcentajeVariacion");
+                    int demandaActualMateria = ((Number) materia.get("demandaActual")).intValue();
+                    int demandaEstimadaMateria = ((Number) materia.get("demandaEstimada")).intValue();
+                    int variacion = ((Number) materia.get("variacion")).intValue();
+                    int porcentajeVariacion = ((Number) materia.get("porcentajeVariacion")).intValue();
                     
-                    // Calcular grupos recomendados (asumiendo 20 estudiantes por grupo)
-                    int gruposActuales = (int) Math.ceil(demandaActualMateria / 20.0);
-                    int gruposRecomendados = (int) Math.ceil(demandaEstimadaMateria / 20.0);
+                    // Calcular recursos necesarios
+                    int gruposActuales = Math.max(1, (int) Math.ceil(demandaActualMateria / 20.0));
+                    int gruposRecomendados = Math.max(1, (int) Math.ceil(demandaEstimadaMateria / 20.0));
+                    int docentesNecesarios = gruposRecomendados;
+                    int aulasNecesarias = gruposRecomendados;
+                    
+                    // Determinar prioridad y urgencia
+                    String prioridad = porcentajeVariacion > 30 ? "ALTA" : 
+                                      porcentajeVariacion > 15 ? "MEDIA" : "BAJA";
                     
                     Map<String, Object> recomendacion = new HashMap<>();
-                    recomendacion.put("tipo", "MATERIA_CRECIENTE");
-                    recomendacion.put("titulo", "Preparar oferta para " + nombreMateria + " en crecimiento");
+                    recomendacion.put("id", "MAT_" + nombreMateria.replaceAll("\\s+", "_").toUpperCase());
+                    recomendacion.put("tipo", "OFERTA_MATERIA");
+                    recomendacion.put("categoria", "CURSOS_VERANO");
+                    recomendacion.put("prioridad", prioridad);
+                    recomendacion.put("titulo", "Ampliar oferta de " + nombreMateria);
                     recomendacion.put("materia", nombreMateria);
+                    
+                    // Datos actuales vs proyectados
                     recomendacion.put("demandaActual", demandaActualMateria);
-                    recomendacion.put("demandaEstimada", demandaEstimadaMateria);
-                    recomendacion.put("variacion", variacion);
-                    recomendacion.put("porcentajeVariacion", porcentajeVariacion);
+                    recomendacion.put("demandaProyectada", demandaEstimadaMateria);
+                    recomendacion.put("crecimiento", variacion);
+                    recomendacion.put("porcentajeCrecimiento", porcentajeVariacion);
+                    
+                    // Recursos necesarios
+                    Map<String, Object> recursos = new HashMap<>();
+                    recursos.put("docentes", docentesNecesarios);
+                    recursos.put("aulas", aulasNecesarias);
+                    recursos.put("laboratorios", nombreMateria.toLowerCase().contains("programacion") || 
+                                               nombreMateria.toLowerCase().contains("base") ? docentesNecesarios : 0);
+                    recursos.put("gruposActuales", gruposActuales);
+                    recursos.put("gruposRecomendados", gruposRecomendados);
+                    recursos.put("capacidadPorGrupo", 20);
+                    recomendacion.put("recursos", recursos);
+                    
+                    // Descripción detallada
                     recomendacion.put("descripcion", String.format(
-                        "%s muestra tendencia creciente con %d estudiantes actuales y predicción de %d estudiantes (+%d%%). ",
-                        nombreMateria, demandaActualMateria, demandaEstimadaMateria, porcentajeVariacion));
-                    recomendacion.put("prioridad", porcentajeVariacion > 20 ? "ALTA" : "MEDIA");
-                    recomendacion.put("accion", String.format(
-                        "Abrir %d grupo(s) de 20 estudiantes c/u. Considerar horarios adicionales.",
-                        gruposRecomendados));
-                    recomendacion.put("gruposActuales", gruposActuales);
-                    recomendacion.put("gruposRecomendados", gruposRecomendados);
+                        "La materia %s presenta una tendencia de crecimiento del %d%%, pasando de %d a %d estudiantes proyectados. " +
+                        "Se recomienda ampliar la oferta para garantizar cobertura completa.",
+                        nombreMateria, porcentajeVariacion, demandaActualMateria, demandaEstimadaMateria));
+                    
+                    // Acciones específicas
+                    List<String> acciones = new ArrayList<>();
+                    if (gruposRecomendados > gruposActuales) {
+                        acciones.add(String.format("Abrir %d grupo(s) adicional(es) de 20 estudiantes", 
+                                                  gruposRecomendados - gruposActuales));
+                    }
+                    acciones.add(String.format("Contratar %d docente(s) especializado(s)", docentesNecesarios));
+                    acciones.add(String.format("Reservar %d aula(s) o laboratorio(s)", aulasNecesarias));
+                    if (porcentajeVariacion > 30) {
+                        acciones.add("URGENTE: Iniciar gestión con 2 meses de anticipación");
+                    }
+                    acciones.add("Publicar oferta académica con suficiente antelación");
+                    recomendacion.put("acciones", acciones);
+                    
+                    // Justificación técnica
+                    recomendacion.put("justificacion", String.format(
+                        "Predicción basada en regresión lineal con datos históricos. " +
+                        "Modelo: %s. Crecimiento proyectado: +%d estudiantes.",
+                        materia.get("modeloUtilizado"), variacion));
+                    
+                    // Fechas recomendadas
+                    Map<String, String> cronograma = new HashMap<>();
+                    cronograma.put("inicioGestion", "2 meses antes del período");
+                    cronograma.put("publicacionOferta", "6 semanas antes");
+                    cronograma.put("contratacionDocentes", "4 semanas antes");
+                    cronograma.put("inicioInscripciones", "3 semanas antes");
+                    recomendacion.put("cronograma", cronograma);
+                    
+                    // Impacto esperado
+                    Map<String, Object> impacto = new HashMap<>();
+                    impacto.put("estudiantesAtendidos", demandaEstimadaMateria);
+                    impacto.put("estudiantesBeneficiados", variacion);
+                    impacto.put("tasaCoberturaObjetivo", "100%");
+                    impacto.put("inversionEstimada", String.format("$%.2f", docentesNecesarios * 3000000.0));
+                    recomendacion.put("impacto", impacto);
+                    
                     recomendacionesFuturas.add(recomendacion);
                 }
             }
             
-            // Recomendación detallada basada en programas con tendencia creciente
+            // 🎓 RECOMENDACIONES POR PROGRAMA (Enfoque estratégico)
             if (!programasConTendenciaCreciente.isEmpty()) {
                 for (Map<String, Object> programa : programasConTendenciaCreciente) {
                     String nombrePrograma = (String) programa.get("nombre");
-                    int demandaActualPrograma = (Integer) programa.get("demandaActual");
-                    int demandaEstimadaPrograma = (Integer) programa.get("demandaEstimada");
-                    int variacion = (Integer) programa.get("variacion");
-                    int porcentajeVariacion = (Integer) programa.get("porcentajeVariacion");
+                    int demandaActualPrograma = ((Number) programa.get("demandaActual")).intValue();
+                    int demandaEstimadaPrograma = ((Number) programa.get("demandaEstimada")).intValue();
+                    int variacion = ((Number) programa.get("variacion")).intValue();
+                    int porcentajeVariacion = ((Number) programa.get("porcentajeVariacion")).intValue();
+                    
+                    String prioridad = porcentajeVariacion > 25 ? "ALTA" : 
+                                      porcentajeVariacion > 10 ? "MEDIA" : "BAJA";
                     
                     Map<String, Object> recomendacion = new HashMap<>();
-                    recomendacion.put("tipo", "PROGRAMA_CRECIENTE");
-                    recomendacion.put("titulo", "Enfocar oferta en " + nombrePrograma);
+                    recomendacion.put("id", "PROG_" + nombrePrograma.replaceAll("\\s+", "_").toUpperCase());
+                    recomendacion.put("tipo", "ENFOQUE_PROGRAMA");
+                    recomendacion.put("categoria", "ESTRATEGIA_ACADEMICA");
+                    recomendacion.put("prioridad", prioridad);
+                    recomendacion.put("titulo", "Priorizar oferta para " + nombrePrograma);
                     recomendacion.put("programa", nombrePrograma);
-                    recomendacion.put("demandaActual", demandaActualPrograma);
-                    recomendacion.put("demandaEstimada", demandaEstimadaPrograma);
-                    recomendacion.put("variacion", variacion);
-                    recomendacion.put("porcentajeVariacion", porcentajeVariacion);
+                    
+                    // Datos del programa
+                    recomendacion.put("solicitudesActuales", demandaActualPrograma);
+                    recomendacion.put("solicitudesProyectadas", demandaEstimadaPrograma);
+                    recomendacion.put("incremento", variacion);
+                    recomendacion.put("porcentajeIncremento", porcentajeVariacion);
+                    
+                    // Descripción estratégica
                     recomendacion.put("descripcion", String.format(
-                        "%s presenta crecimiento con %d solicitudes actuales y predicción de %d solicitudes (+%d%%).",
-                        nombrePrograma, demandaActualPrograma, demandaEstimadaPrograma, porcentajeVariacion));
-                    recomendacion.put("prioridad", porcentajeVariacion > 15 ? "ALTA" : "MEDIA");
-                    recomendacion.put("accion", String.format(
-                        "Priorizar cursos que beneficien a %s. Preparar %d cupos adicionales.",
-                        nombrePrograma, variacion));
+                        "%s muestra un crecimiento significativo del %d%% en la demanda de cursos de verano. " +
+                        "Se proyectan %d solicitudes para el próximo período, con un incremento de %d estudiantes. " +
+                        "Es prioritario garantizar oferta académica suficiente para este programa.",
+                        nombrePrograma, porcentajeVariacion, demandaEstimadaPrograma, variacion));
+                    
+                    // Acciones estratégicas
+                    List<String> acciones = new ArrayList<>();
+                    acciones.add(String.format("Ampliar oferta de cursos de verano en %d cupo(s)", variacion));
+                    acciones.add("Identificar materias críticas del programa con mayor demanda");
+                    acciones.add("Coordinar con director(a) de programa para validar necesidades");
+                    acciones.add("Evaluar disponibilidad de docentes del programa");
+                    if (porcentajeVariacion > 25) {
+                        acciones.add("CRÍTICO: Programa de alta demanda requiere atención inmediata");
+                    }
+                    recomendacion.put("acciones", acciones);
+                    
+                    // Justificación
+                    recomendacion.put("justificacion", String.format(
+                        "Análisis predictivo indica crecimiento sostenido. " +
+                        "Modelo: %s. Representa oportunidad para mejorar indicadores académicos del programa.",
+                        programa.get("modeloUtilizado")));
+                    
+                    // Beneficios esperados
+                    List<String> beneficios = new ArrayList<>();
+                    beneficios.add("Reducción de deserción por pérdida de materias");
+                    beneficios.add("Mejora en tiempos de graduación");
+                    beneficios.add("Mayor satisfacción estudiantil");
+                    beneficios.add("Optimización de trayectorias académicas");
+                    recomendacion.put("beneficios", beneficios);
+                    
                     recomendacionesFuturas.add(recomendacion);
                 }
             }
             
-            // Recomendación temporal específica
+            // 📅 RECOMENDACIÓN TEMPORAL (Planificación estacional)
             if (demandaPorMes.get(mesPico) > 0) {
                 int demandaActualMes = demandaPorMes.get(mesPico);
                 int porcentajeCrecimientoMes = (int) Math.round(
                     ((double)(demandaEstimadaMesPico - demandaActualMes) / demandaActualMes) * 100.0);
                 
                 Map<String, Object> recomendacionTemporal = new HashMap<>();
-                recomendacionTemporal.put("tipo", "TEMPORAL");
-                recomendacionTemporal.put("titulo", "Planificar oferta para " + mesPico);
+                recomendacionTemporal.put("id", "TEMPORAL_" + mesPico.toUpperCase());
+                recomendacionTemporal.put("tipo", "PLANIFICACION_TEMPORAL");
+                recomendacionTemporal.put("categoria", "CALENDARIO_ACADEMICO");
+                recomendacionTemporal.put("prioridad", porcentajeCrecimientoMes > 20 ? "ALTA" : "MEDIA");
+                recomendacionTemporal.put("titulo", "Preparar oferta anticipada para " + mesPico);
+                
+                // Datos temporales
                 recomendacionTemporal.put("mesPico", mesPico);
-                recomendacionTemporal.put("demandaActual", demandaActualMes);
-                recomendacionTemporal.put("demandaEstimada", demandaEstimadaMesPico);
+                recomendacionTemporal.put("solicitudesActuales", demandaActualMes);
+                recomendacionTemporal.put("solicitudesProyectadas", demandaEstimadaMesPico);
+                recomendacionTemporal.put("incrementoEsperado", demandaEstimadaMesPico - demandaActualMes);
                 recomendacionTemporal.put("porcentajeCrecimiento", porcentajeCrecimientoMes);
+                
+                // Descripción
                 recomendacionTemporal.put("descripcion", String.format(
-                    "Se espera un aumento del %d%% en %s (de %d a %d solicitudes).",
-                    porcentajeCrecimientoMes, mesPico, demandaActualMes, demandaEstimadaMesPico));
-                recomendacionTemporal.put("prioridad", "ALTA");
-                recomendacionTemporal.put("accion", String.format(
-                    "Aumentar capacidad de atención en %s. Preparar recursos para %d estudiantes.",
-                    mesPico, demandaEstimadaMesPico));
+                    "%s es el mes pico de demanda para cursos de verano. Se proyecta un incremento del %d%%, " +
+                    "pasando de %d a %d solicitudes. Es fundamental anticipar la planificación académica y logística.",
+                    mesPico, porcentajeCrecimientoMes, demandaActualMes, demandaEstimadaMesPico));
+                
+                // Acciones temporales
+                List<String> accionesTempo = new ArrayList<>();
+                accionesTempo.add("Publicar calendario de cursos de verano 8 semanas antes de " + mesPico);
+                accionesTempo.add(String.format("Preparar capacidad para %d estudiantes", demandaEstimadaMesPico));
+                accionesTempo.add("Coordinar disponibilidad de docentes con 6 semanas de anticipación");
+                accionesTempo.add("Reservar aulas y laboratorios con 4 semanas de anticipación");
+                if (porcentajeCrecimientoMes > 20) {
+                    accionesTempo.add("URGENTE: Considerar contratación temporal adicional");
+                }
+                recomendacionTemporal.put("acciones", accionesTempo);
+                
+                // Cronograma específico
+                Map<String, String> cronogramaTemporal = new HashMap<>();
+                cronogramaTemporal.put("planificacionInicial", "8 semanas antes");
+                cronogramaTemporal.put("publicacionOferta", "6 semanas antes");
+                cronogramaTemporal.put("aperturaInscripciones", "4 semanas antes");
+                cronogramaTemporal.put("cierreInscripciones", "1 semana antes");
+                cronogramaTemporal.put("inicioCursos", mesPico);
+                recomendacionTemporal.put("cronograma", cronogramaTemporal);
+                
+                // Justificación
+                recomendacionTemporal.put("justificacion", String.format(
+                    "Análisis histórico indica que %s concentra el mayor volumen de solicitudes. " +
+                    "Planificación anticipada garantiza mejor experiencia estudiantil.",
+                    mesPico));
+                
                 recomendacionesFuturas.add(recomendacionTemporal);
             }
             
-            System.out.println("💡 [RECOMENDACIONES] Total de recomendaciones generadas: " + recomendacionesFuturas.size());
+            // 🚨 ALERTAS CRÍTICAS (Situaciones que requieren atención inmediata)
+            List<Map<String, Object>> alertasCriticas = new ArrayList<>();
             
-            // Construir resultado de predicciones
+            // Alerta: Materias con crecimiento muy alto (>50%)
+            for (Map<String, Object> materia : materiasConTendenciaCreciente) {
+                int porcentaje = ((Number) materia.get("porcentajeVariacion")).intValue();
+                if (porcentaje > 50) {
+                    Map<String, Object> alerta = new HashMap<>();
+                    alerta.put("id", "ALERTA_CRITICA_" + ((String) materia.get("nombre")).replaceAll("\\s+", "_").toUpperCase());
+                    alerta.put("tipo", "ALERTA_CAPACIDAD");
+                    alerta.put("categoria", "URGENTE");
+                    alerta.put("prioridad", "CRITICA");
+                    alerta.put("titulo", "⚠️ ALERTA: Crecimiento excepcional en " + materia.get("nombre"));
+                    alerta.put("materia", materia.get("nombre"));
+                    alerta.put("crecimientoProyectado", porcentaje + "%");
+                    alerta.put("descripcion", String.format(
+                        "ATENCIÓN: La materia %s presenta un crecimiento proyectado del %d%%, " +
+                        "significativamente superior al promedio. Se requiere acción inmediata para garantizar cobertura.",
+                        materia.get("nombre"), porcentaje));
+                    
+                    List<String> accionesUrgentes = new ArrayList<>();
+                    accionesUrgentes.add("🔴 ACCIÓN INMEDIATA REQUERIDA");
+                    accionesUrgentes.add("Convocar reunión urgente con coordinación académica");
+                    accionesUrgentes.add("Evaluar contratar docentes adicionales con carácter urgente");
+                    accionesUrgentes.add("Verificar disponibilidad de espacios físicos alternativos");
+                    accionesUrgentes.add("Considerar modalidad virtual/híbrida si no hay capacidad presencial");
+                    alerta.put("acciones", accionesUrgentes);
+                    
+                    alertasCriticas.add(alerta);
+                }
+            }
+            
+            // Alerta: Programas con demanda muy alta
+            for (Map<String, Object> programa : programasConTendenciaCreciente) {
+                int demanda = ((Number) programa.get("demandaEstimada")).intValue();
+                if (demanda > 10) { // Más de 10 solicitudes para un programa
+                    Map<String, Object> alerta = new HashMap<>();
+                    alerta.put("id", "ALERTA_PROGRAMA_" + ((String) programa.get("nombre")).replaceAll("\\s+", "_").toUpperCase());
+                    alerta.put("tipo", "ALERTA_PROGRAMA");
+                    alerta.put("categoria", "IMPORTANTE");
+                    alerta.put("prioridad", "ALTA");
+                    alerta.put("titulo", "📊 Demanda concentrada en " + programa.get("nombre"));
+                    alerta.put("programa", programa.get("nombre"));
+                    alerta.put("demandaProyectada", demanda);
+                    alerta.put("descripcion", String.format(
+                        "%s concentra una demanda proyectada de %d solicitudes, requiere estrategia específica.",
+                        programa.get("nombre"), demanda));
+                    
+                    List<String> estrategias = new ArrayList<>();
+                    estrategias.add("Coordinar con director(a) de programa");
+                    estrategias.add("Identificar materias críticas específicas del programa");
+                    estrategias.add("Evaluar docentes especializados del programa");
+                    estrategias.add("Planificar oferta diversificada para atender necesidades del programa");
+                    alerta.put("acciones", estrategias);
+                    
+                    alertasCriticas.add(alerta);
+                }
+            }
+            
+            System.out.println("💡 [RECOMENDACIONES] Total de recomendaciones: " + recomendacionesFuturas.size());
+            System.out.println("🚨 [ALERTAS] Total de alertas críticas: " + alertasCriticas.size());
+            
+            // Construir resultado de predicciones con estructura mejorada
             predicciones.put("demandaEstimadaProximoPeriodo", demandaEstimadaProximoPeriodo);
             predicciones.put("materiasConTendenciaCreciente", materiasConTendenciaCreciente);
             predicciones.put("materiasConTendenciaDecreciente", materiasConTendenciaDecreciente);
@@ -2700,9 +2896,29 @@ public class GestionarEstadisticasGatewayImplAdapter implements GestionarEstadis
             predicciones.put("programasConTendenciaDecreciente", programasConTendenciaDecreciente);
             predicciones.put("prediccionesTemporales", prediccionesTemporales);
             predicciones.put("recomendacionesFuturas", recomendacionesFuturas);
+            predicciones.put("alertasCriticas", alertasCriticas); // ⭐ NUEVO: Alertas críticas
             predicciones.put("confiabilidad", "MEDIA"); // Basado en datos históricos limitados
             predicciones.put("fechaPrediccion", new Date());
-            predicciones.put("metodologia", "Análisis de tendencias basado en datos históricos y patrones estacionales");
+            predicciones.put("metodologia", "Regresión Lineal Simple aplicada a datos históricos con umbral de tendencia del 5%");
+            
+            // Estadísticas de las recomendaciones
+            Map<String, Object> estadisticasRecomendaciones = new HashMap<>();
+            long recsAlta = recomendacionesFuturas.stream()
+                .filter(r -> "ALTA".equals(r.get("prioridad")))
+                .count();
+            long recsMedia = recomendacionesFuturas.stream()
+                .filter(r -> "MEDIA".equals(r.get("prioridad")))
+                .count();
+            long recsBaja = recomendacionesFuturas.stream()
+                .filter(r -> "BAJA".equals(r.get("prioridad")))
+                .count();
+            
+            estadisticasRecomendaciones.put("totalRecomendaciones", recomendacionesFuturas.size());
+            estadisticasRecomendaciones.put("prioridadAlta", recsAlta);
+            estadisticasRecomendaciones.put("prioridadMedia", recsMedia);
+            estadisticasRecomendaciones.put("prioridadBaja", recsBaja);
+            estadisticasRecomendaciones.put("alertasCriticas", alertasCriticas.size());
+            predicciones.put("estadisticasRecomendaciones", estadisticasRecomendaciones);
             
             System.out.println("🔮 [PREDICCIONES] Predicciones generadas exitosamente");
             
@@ -2836,7 +3052,7 @@ public class GestionarEstadisticasGatewayImplAdapter implements GestionarEstadis
                 int demandaEstimada = (int) Math.round(Math.max(prediccion, demandaActual * 0.8));
                 demandaEstimada = Math.min(demandaEstimada, demandaActual * 2); // Limitar al doble
                 
-                String tendencia = pendiente > 0.1 ? "CRECIENTE" : (pendiente < -0.1 ? "DECRECIENTE" : "ESTABLE");
+                String tendencia = pendiente > 0.05 ? "CRECIENTE" : (pendiente < -0.05 ? "DECRECIENTE" : "ESTABLE");
                 
                 resultado.put("demandaEstimada", demandaEstimada);
                 resultado.put("tendencia", tendencia);
@@ -2924,7 +3140,7 @@ public class GestionarEstadisticasGatewayImplAdapter implements GestionarEstadis
                 int demandaEstimada = (int) Math.round(Math.max(prediccion, demandaActual * 0.8));
                 demandaEstimada = Math.min(demandaEstimada, demandaActual * 2); // Limitar al doble
                 
-                String tendencia = pendiente > 0.1 ? "CRECIENTE" : (pendiente < -0.1 ? "DECRECIENTE" : "ESTABLE");
+                String tendencia = pendiente > 0.05 ? "CRECIENTE" : (pendiente < -0.05 ? "DECRECIENTE" : "ESTABLE");
                 
                 resultado.put("demandaEstimada", demandaEstimada);
                 resultado.put("tendencia", tendencia);
@@ -2990,6 +3206,230 @@ public class GestionarEstadisticasGatewayImplAdapter implements GestionarEstadis
             .map(EstadoSolicitudEntity::getFecha_registro_estado)
             .max(Date::compareTo)
             .orElse(solicitud.getFecha_registro_solicitud());
+    }
+
+    /**
+     * Genera predicciones globales para todos los procesos y programas usando Regresión Lineal
+     */
+    private Map<String, Object> generarPrediccionesGlobales(
+            Map<String, Integer> porTipoProceso, 
+            Map<String, Integer> porPrograma) {
+        
+        Map<String, Object> predicciones = new HashMap<>();
+        
+        try {
+            System.out.println("🚀 [PREDICCIONES_GLOBALES] Iniciando análisis predictivo...");
+            
+            // Obtener todas las solicitudes para análisis temporal
+            List<SolicitudEntity> todasLasSolicitudes = solicitudRepository.findAll();
+            
+            // 1. PREDICCIÓN DE DEMANDA TOTAL
+            Map<String, Integer> solicitudesPorMes = agruparSolicitudesPorMes(todasLasSolicitudes);
+            int demandaActualTotal = todasLasSolicitudes.size();
+            int demandaEstimadaTotal = calcularDemandaEstimada(demandaActualTotal, solicitudesPorMes);
+            
+            predicciones.put("demandaTotalActual", demandaActualTotal);
+            predicciones.put("demandaTotalEstimada", demandaEstimadaTotal);
+            predicciones.put("variacionTotal", demandaEstimadaTotal - demandaActualTotal);
+            predicciones.put("porcentajeVariacionTotal", demandaActualTotal > 0 ? 
+                Math.round(((double)(demandaEstimadaTotal - demandaActualTotal) / demandaActualTotal) * 100.0) : 0);
+            
+            System.out.println("📊 [PREDICCIONES_GLOBALES] Demanda total: " + demandaActualTotal + " → " + demandaEstimadaTotal);
+            
+            // 2. PREDICCIONES POR TIPO DE PROCESO
+            List<Map<String, Object>> procesosConTendenciaCreciente = new ArrayList<>();
+            List<Map<String, Object>> procesosConTendenciaDecreciente = new ArrayList<>();
+            List<Map<String, Object>> procesosEstables = new ArrayList<>();
+            
+            for (Map.Entry<String, Integer> entry : porTipoProceso.entrySet()) {
+                String nombreProceso = entry.getKey();
+                int demandaActual = entry.getValue();
+                
+                // Filtrar solicitudes de este proceso específico
+                List<SolicitudEntity> solicitudesProceso = todasLasSolicitudes.stream()
+                    .filter(s -> nombreProceso.equals(obtenerNombreProcesoPorSolicitud(s)))
+                    .collect(Collectors.toList());
+                
+                if (solicitudesProceso.isEmpty()) continue;
+                
+                // Calcular predicción con regresión
+                Map<String, Object> prediccion = calcularPrediccionPorCategoria(
+                    nombreProceso, solicitudesProceso, demandaActual, "PROCESO");
+                
+                String tendencia = (String) prediccion.get("tendencia");
+                if ("CRECIENTE".equals(tendencia)) {
+                    procesosConTendenciaCreciente.add(prediccion);
+                } else if ("DECRECIENTE".equals(tendencia)) {
+                    procesosConTendenciaDecreciente.add(prediccion);
+                } else {
+                    procesosEstables.add(prediccion);
+                }
+            }
+            
+            predicciones.put("procesosConTendenciaCreciente", procesosConTendenciaCreciente);
+            predicciones.put("procesosConTendenciaDecreciente", procesosConTendenciaDecreciente);
+            predicciones.put("procesosEstables", procesosEstables);
+            
+            System.out.println("📊 [PREDICCIONES_GLOBALES] Procesos - Crecientes: " + procesosConTendenciaCreciente.size() + 
+                             ", Decrecientes: " + procesosConTendenciaDecreciente.size() + 
+                             ", Estables: " + procesosEstables.size());
+            
+            // 3. PREDICCIONES POR PROGRAMA
+            List<Map<String, Object>> programasConTendenciaCreciente = new ArrayList<>();
+            List<Map<String, Object>> programasConTendenciaDecreciente = new ArrayList<>();
+            List<Map<String, Object>> programasEstables = new ArrayList<>();
+            
+            for (Map.Entry<String, Integer> entry : porPrograma.entrySet()) {
+                String nombrePrograma = entry.getKey();
+                int demandaActual = entry.getValue();
+                
+                // Filtrar solicitudes de este programa específico
+                List<SolicitudEntity> solicitudesPrograma = todasLasSolicitudes.stream()
+                    .filter(s -> s.getObjUsuario() != null && 
+                                s.getObjUsuario().getObjPrograma() != null &&
+                                nombrePrograma.equals(s.getObjUsuario().getObjPrograma().getNombre_programa()))
+                    .collect(Collectors.toList());
+                
+                if (solicitudesPrograma.isEmpty()) continue;
+                
+                // Calcular predicción con regresión
+                Map<String, Object> prediccion = calcularPrediccionPorCategoria(
+                    nombrePrograma, solicitudesPrograma, demandaActual, "PROGRAMA");
+                
+                String tendencia = (String) prediccion.get("tendencia");
+                if ("CRECIENTE".equals(tendencia)) {
+                    programasConTendenciaCreciente.add(prediccion);
+                } else if ("DECRECIENTE".equals(tendencia)) {
+                    programasConTendenciaDecreciente.add(prediccion);
+                } else {
+                    programasEstables.add(prediccion);
+                }
+            }
+            
+            predicciones.put("programasConTendenciaCreciente", programasConTendenciaCreciente);
+            predicciones.put("programasConTendenciaDecreciente", programasConTendenciaDecreciente);
+            predicciones.put("programasEstables", programasEstables);
+            
+            System.out.println("📊 [PREDICCIONES_GLOBALES] Programas - Crecientes: " + programasConTendenciaCreciente.size() + 
+                             ", Decrecientes: " + programasConTendenciaDecreciente.size() + 
+                             ", Estables: " + programasEstables.size());
+            
+            // 4. METADATA
+            predicciones.put("metodologia", "Regresión Lineal Simple aplicada a datos históricos");
+            predicciones.put("confiabilidad", solicitudesPorMes.size() >= 3 ? "ALTA" : "MEDIA");
+            predicciones.put("fechaPrediccion", new Date());
+            predicciones.put("umbralTendencia", 0.05); // 5% (estándar académico)
+            
+            System.out.println("🚀 [PREDICCIONES_GLOBALES] Análisis predictivo completado exitosamente");
+            
+        } catch (Exception e) {
+            System.err.println("❌ [PREDICCIONES_GLOBALES] Error: " + e.getMessage());
+            e.printStackTrace();
+        }
+        
+        return predicciones;
+    }
+    
+    /**
+     * Calcula predicción para una categoría específica (proceso o programa) usando regresión lineal
+     */
+    private Map<String, Object> calcularPrediccionPorCategoria(
+            String nombreCategoria, 
+            List<SolicitudEntity> solicitudes, 
+            int demandaActual,
+            String tipoCategoria) {
+        
+        Map<String, Object> prediccion = new HashMap<>();
+        
+        try {
+            // Agrupar solicitudes por mes
+            Map<Integer, Integer> solicitudesPorMes = new HashMap<>();
+            String[] meses = {"Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", 
+                            "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"};
+            
+            for (SolicitudEntity solicitud : solicitudes) {
+                Date fecha = solicitud.getFecha_registro_solicitud();
+                if (fecha != null) {
+                    Calendar cal = Calendar.getInstance();
+                    cal.setTime(fecha);
+                    int mesNumero = cal.get(Calendar.MONTH) + 1;
+                    solicitudesPorMes.put(mesNumero, solicitudesPorMes.getOrDefault(mesNumero, 0) + 1);
+                }
+            }
+            
+            // Usar regresión lineal si hay suficientes datos
+            int demandaEstimada;
+            double pendiente;
+            double rSquared = 0.0;
+            String modeloUtilizado;
+            
+            if (solicitudesPorMes.size() >= 2) {
+                SimpleRegression regression = new SimpleRegression();
+                for (Map.Entry<Integer, Integer> entry : solicitudesPorMes.entrySet()) {
+                    regression.addData(entry.getKey(), entry.getValue());
+                }
+                
+                double prediccionRaw = regression.predict(13);
+                demandaEstimada = (int) Math.round(Math.max(prediccionRaw, demandaActual * 0.8));
+                demandaEstimada = Math.min(demandaEstimada, demandaActual * 2);
+                pendiente = regression.getSlope();
+                rSquared = regression.getRSquare();
+                modeloUtilizado = "Regresión Lineal Simple";
+            } else {
+                // Estimación conservadora
+                double factor = tipoCategoria.equals("PROGRAMA") ? 1.08 : 1.05;
+                demandaEstimada = (int) Math.ceil(demandaActual * factor);
+                pendiente = factor - 1.0;
+                modeloUtilizado = "Estimación conservadora (+" + (int)((factor - 1.0) * 100) + "%)";
+            }
+            
+            String tendencia = pendiente > 0.05 ? "CRECIENTE" : (pendiente < -0.05 ? "DECRECIENTE" : "ESTABLE");
+            
+            prediccion.put("nombre", nombreCategoria);
+            prediccion.put("tipo", tipoCategoria);
+            prediccion.put("demandaActual", demandaActual);
+            prediccion.put("demandaEstimada", demandaEstimada);
+            prediccion.put("variacion", demandaEstimada - demandaActual);
+            prediccion.put("porcentajeVariacion", demandaActual > 0 ? 
+                Math.round(((double)(demandaEstimada - demandaActual) / demandaActual) * 100.0) : 0);
+            prediccion.put("tendencia", tendencia);
+            prediccion.put("pendiente", Math.round(pendiente * 10000.0) / 10000.0);
+            prediccion.put("rSquared", Math.round(rSquared * 100.0) / 100.0);
+            prediccion.put("modeloUtilizado", modeloUtilizado);
+            
+        } catch (Exception e) {
+            System.err.println("❌ Error calculando predicción para " + nombreCategoria + ": " + e.getMessage());
+        }
+        
+        return prediccion;
+    }
+    
+    /**
+     * Agrupa solicitudes por mes para análisis temporal
+     */
+    private Map<String, Integer> agruparSolicitudesPorMes(List<SolicitudEntity> solicitudes) {
+        Map<String, Integer> solicitudesPorMes = new HashMap<>();
+        String[] meses = {"Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", 
+                        "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"};
+        
+        // Inicializar todos los meses en 0
+        for (String mes : meses) {
+            solicitudesPorMes.put(mes, 0);
+        }
+        
+        // Contar solicitudes por mes
+        for (SolicitudEntity solicitud : solicitudes) {
+            Date fecha = solicitud.getFecha_registro_solicitud();
+            if (fecha != null) {
+                Calendar cal = Calendar.getInstance();
+                cal.setTime(fecha);
+                int mesNumero = cal.get(Calendar.MONTH);
+                String nombreMes = meses[mesNumero];
+                solicitudesPorMes.put(nombreMes, solicitudesPorMes.get(nombreMes) + 1);
+            }
+        }
+        
+        return solicitudesPorMes;
     }
 
     @Override
