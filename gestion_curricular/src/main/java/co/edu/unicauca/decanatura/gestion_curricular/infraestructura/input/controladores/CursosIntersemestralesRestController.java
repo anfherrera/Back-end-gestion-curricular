@@ -1952,11 +1952,11 @@ public class CursosIntersemestralesRestController {
                         .getEstado_actual();
                     
                     if ("Aprobado".equalsIgnoreCase(estadoActual)) {
-                        Map<String, Object> error = new HashMap<>();
+            Map<String, Object> error = new HashMap<>();
                         error.put("error", "No se puede cancelar");
                         error.put("message", "No se puede cancelar una inscripción que ya ha sido aprobada");
                         error.put("status", 400);
-                        error.put("timestamp", java.time.LocalDateTime.now().toString());
+            error.put("timestamp", java.time.LocalDateTime.now().toString());
                         return ResponseEntity.status(400).body(error);
                     }
                 }
@@ -2954,17 +2954,9 @@ public class CursosIntersemestralesRestController {
                 observaciones = "Inscripción aceptada por funcionario";
             }
             
-            // 1. Buscar la inscripción usando el método que funciona
+            // 1. Buscar la inscripción directamente por ID
             System.out.println("DEBUG: Buscando inscripción con ID: " + idInscripcion.intValue());
-            List<SolicitudCursoVeranoIncripcion> todasLasInscripciones = solicitudCU.buscarInscripcionesPorCurso(1); // Buscar en curso 1
-            SolicitudCursoVeranoIncripcion inscripcion = null;
-            
-            for (SolicitudCursoVeranoIncripcion ins : todasLasInscripciones) {
-                if (ins.getId_solicitud().equals(idInscripcion.intValue())) {
-                    inscripcion = ins;
-                    break;
-                }
-            }
+            SolicitudCursoVeranoIncripcion inscripcion = solicitudCU.buscarPorIdInscripcion(idInscripcion.intValue());
             
             System.out.println("DEBUG: Resultado búsqueda inscripción: " + (inscripcion != null ? "ENCONTRADA" : "NO ENCONTRADA"));
             if (inscripcion == null) {
@@ -3441,16 +3433,8 @@ public class CursosIntersemestralesRestController {
         try {
             System.out.println("📥 Descargando comprobante de pago para inscripción: " + idInscripcion);
             
-            // 1. Buscar la inscripción usando el método que funciona
-            List<SolicitudCursoVeranoIncripcion> todasLasInscripciones = solicitudCU.buscarInscripcionesPorCurso(1); // Buscar en curso 1
-            SolicitudCursoVeranoIncripcion inscripcion = null;
-            
-            for (SolicitudCursoVeranoIncripcion ins : todasLasInscripciones) {
-                if (ins.getId_solicitud().equals(idInscripcion.intValue())) {
-                    inscripcion = ins;
-                    break;
-                }
-            }
+            // 1. Buscar la inscripción directamente por ID
+            SolicitudCursoVeranoIncripcion inscripcion = solicitudCU.buscarPorIdInscripcion(idInscripcion.intValue());
             
             if (inscripcion == null) {
                 System.err.println("❌ Inscripción no encontrada: " + idInscripcion);
@@ -3506,16 +3490,8 @@ public class CursosIntersemestralesRestController {
         try {
             System.out.println("📥 Obteniendo información de inscripción: " + idInscripcion);
             
-            // 1. Buscar la inscripción usando el método que funciona
-            List<SolicitudCursoVeranoIncripcion> todasLasInscripciones = solicitudCU.buscarInscripcionesPorCurso(1); // Buscar en curso 1
-            SolicitudCursoVeranoIncripcion inscripcion = null;
-            
-            for (SolicitudCursoVeranoIncripcion ins : todasLasInscripciones) {
-                if (ins.getId_solicitud().equals(idInscripcion.intValue())) {
-                    inscripcion = ins;
-                    break;
-                }
-            }
+            // 1. Buscar la inscripción directamente por ID
+            SolicitudCursoVeranoIncripcion inscripcion = solicitudCU.buscarPorIdInscripcion(idInscripcion.intValue());
             
             Map<String, Object> resultado = new HashMap<>();
             

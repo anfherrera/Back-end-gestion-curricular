@@ -40,12 +40,6 @@ import co.edu.unicauca.decanatura.gestion_curricular.dominio.casosDeUso.Gestiona
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.casosDeUso.GestionarNotificacionCUAdapter;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.casosDeUso.GestionarSolicitudReingresoCUAdapter;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.casosDeUso.GestionarUsuarioCUAdapter;
-import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.gateway.GestionarEstadisticasGatewayImplAdapter;
-import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.repositorios.EstadisticaRepositoryInt;
-import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.repositorios.ProgramaRepositoryInt;
-import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.repositorios.SolicitudRepositoryInt;
-import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.repositorios.UsuarioRepositoryInt;
-import org.modelmapper.ModelMapper;
 
 @Configuration
 public class BeanConfiguration {
@@ -62,22 +56,8 @@ public class BeanConfiguration {
                  objGestionarMateriasGateway, objGestionarDocenteGateway, objFormateadorResultados);
             }
 
-    @Bean
-    public GestionarEstadisticasGatewayImplAdapter crearGestionarEstadisticasGatewayInt(
-            EstadisticaRepositoryInt estadisticaRepository,
-            ProgramaRepositoryInt programaRepository,
-            SolicitudRepositoryInt solicitudRepository,
-            UsuarioRepositoryInt usuarioRepository,
-            ModelMapper estadisticaMapper) {
-        return new GestionarEstadisticasGatewayImplAdapter(
-            estadisticaRepository, 
-            programaRepository, 
-            solicitudRepository, 
-            usuarioRepository, 
-            estadisticaMapper
-        );
-    }
-
+    // GestionarEstadisticasGatewayImplAdapter ya está definido como @Service, no necesita definición adicional
+    
     @Bean
     public GestionarEstadisticasCUAdapter crearGestionarEstadisticasCUInt(
             GestionarEstadisticasGatewayIntPort estadisticasGateway,

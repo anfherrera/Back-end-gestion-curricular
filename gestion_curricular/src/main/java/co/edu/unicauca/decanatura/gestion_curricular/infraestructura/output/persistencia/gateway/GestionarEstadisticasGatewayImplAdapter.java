@@ -13,6 +13,7 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.math3.stat.regression.SimpleRegression;
 import org.modelmapper.ModelMapper;
+import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.GestionarEstadisticasGatewayIntPort;
@@ -27,6 +28,7 @@ import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.pers
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.repositorios.SolicitudRepositoryInt;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.repositorios.UsuarioRepositoryInt;
 
+@Service
 @Transactional
 public class GestionarEstadisticasGatewayImplAdapter implements GestionarEstadisticasGatewayIntPort {
 
@@ -169,8 +171,6 @@ public class GestionarEstadisticasGatewayImplAdapter implements GestionarEstadis
     @Override
     @Transactional(readOnly = true)
     public Map<String, Object> obtenerEstadisticasGlobales(String proceso, Integer idPrograma, Date fechaInicio, Date fechaFin) {
-        System.out.println("📊 [ESTADISTICAS_GLOBALES] Iniciando consulta de estadísticas globales");
-        
         Map<String, Object> estadisticas = new HashMap<>();
         
         try {
@@ -207,17 +207,38 @@ public class GestionarEstadisticasGatewayImplAdapter implements GestionarEstadis
             }
             estadisticas.put("porcentajeAprobacion", Math.round(porcentajeAprobacion * 10.0) / 10.0);
             
-            // Estadísticas por tipo de proceso (con filtros si se aplican)
+            // Estadísticas por tipo de proceso (agrupadas por tipo, no por persona)
             Map<String, Integer> porTipoProceso = new HashMap<>();
             try {
-                List<String> nombresProcesos = new ArrayList<>(solicitudRepository.buscarNombresSolicitudesConFiltros(proceso, idPrograma, fechaInicio, fechaFin));
-                System.out.println("📊 [ESTADISTICAS_GLOBALES] Procesos encontrados: " + nombresProcesos);
+                // Obtener todas las solicitudes
+                List<SolicitudEntity> solicitudes = solicitudRepository.findAll();
                 
-                for (String nombreProceso : nombresProcesos) {
-                    Integer cantidad = Optional.ofNullable(solicitudRepository.contarPorNombreConFiltros(nombreProceso, proceso, idPrograma, fechaInicio, fechaFin)).orElse(0);
-                    porTipoProceso.put(nombreProceso, cantidad);
-                    System.out.println("📊 [ESTADISTICAS_GLOBALES] Proceso: " + nombreProceso + " = " + cantidad);
+                // Agrupar por tipo de proceso (extrayendo el tipo del nombre)
+                for (SolicitudEntity solicitud : solicitudes) {
+                    // Aplicar filtros manualmente si es necesario
+                    boolean cumpleFiltros = true;
+                    
+                    if (proceso != null && !solicitud.getNombre_solicitud().toLowerCase().contains(proceso.toLowerCase())) {
+                        cumpleFiltros = false;
+                    }
+                    if (idPrograma != null && solicitud.getObjUsuario() != null && 
+                        !solicitud.getObjUsuario().getObjPrograma().getId_programa().equals(idPrograma)) {
+                        cumpleFiltros = false;
+                    }
+                    if (fechaInicio != null && solicitud.getFecha_registro_solicitud().before(fechaInicio)) {
+                        cumpleFiltros = false;
+                    }
+                    if (fechaFin != null && solicitud.getFecha_registro_solicitud().after(fechaFin)) {
+                        cumpleFiltros = false;
+                    }
+                    
+                    if (cumpleFiltros) {
+                        String nombreCompleto = solicitud.getNombre_solicitud();
+                        String tipoProceso = extraerTipoProceso(nombreCompleto);
+                        porTipoProceso.put(tipoProceso, porTipoProceso.getOrDefault(tipoProceso, 0) + 1);
+                    }
                 }
+                
             } catch (Exception e) {
                 System.err.println("⚠️ [ESTADISTICAS_GLOBALES] Error obteniendo procesos: " + e.getMessage());
                 porTipoProceso = new HashMap<>();
@@ -257,18 +278,12 @@ public class GestionarEstadisticasGatewayImplAdapter implements GestionarEstadis
             // Normalizar la respuesta para evitar valores null
             estadisticas = normalizarEstadistica(estadisticas);
             
-            // ===== PREDICCIONES CON REGRESIÓN LINEAL =====
-            System.out.println("🔮 [PREDICCIONES_GLOBALES] Generando predicciones con regresión lineal...");
-            try {
-                Map<String, Object> predicciones = generarPrediccionesGlobales(porTipoProceso, porPrograma);
-                estadisticas.put("predicciones", predicciones);
-                System.out.println("✅ [PREDICCIONES_GLOBALES] Predicciones generadas exitosamente");
-            } catch (Exception e) {
-                System.err.println("⚠️ [PREDICCIONES_GLOBALES] Error generando predicciones: " + e.getMessage());
-                estadisticas.put("predicciones", new HashMap<>());
-            }
+            // ===== PREDICCIONES GLOBALES ELIMINADAS =====
+            // Decisión: Las predicciones solo se muestran en el dashboard de Cursos de Verano
+            // porque son más relevantes y accionables para ese contexto específico.
+            // El dashboard general se enfoca en datos consolidados sin predicciones.
             
-            System.out.println("✅ [ESTADISTICAS_GLOBALES] Consulta completada exitosamente");
+            System.out.println("✅ [ESTADISTICAS_GLOBALES] Consulta completada exitosamente (sin predicciones)");
             System.out.println("📊 [ESTADISTICAS_GLOBALES] Resultado final: " + estadisticas);
             
         } catch (Exception e) {
@@ -2510,20 +2525,14 @@ public class GestionarEstadisticasGatewayImplAdapter implements GestionarEstadis
             List<Map<String, Object>> topMaterias,
             List<Map<String, Object>> analisisPorPrograma) {
         
-        System.out.println("🚀🚀🚀 [INICIO] Método generarPrediccionesDemanda INICIADO - Versión NUEVA con regresión lineal 🚀🚀🚀");
-        System.out.println("📊 Datos de entrada: solicitudes=" + solicitudesCursosVerano.size() + ", materias=" + demandaPorMateria.size() + ", programas=" + demandaPorPrograma.size());
-        
         Map<String, Object> predicciones = new HashMap<>();
         
         try {
-            System.out.println("🔮 [PREDICCIONES] Generando predicciones de demanda...");
-            
             // 1. PREDICCIÓN DE DEMANDA TOTAL PARA EL PRÓXIMO PERÍODO
             int demandaActual = solicitudesCursosVerano.size();
             int demandaEstimadaProximoPeriodo = calcularDemandaEstimada(demandaActual, demandaPorMes);
             
             // 2. PREDICCIONES POR MATERIA CON REGRESIÓN LINEAL
-            System.out.println("📊 [PREDICCIONES_MATERIA] Aplicando regresión lineal por materia...");
             List<Map<String, Object>> materiasConTendenciaCreciente = new ArrayList<>();
             List<Map<String, Object>> materiasConTendenciaDecreciente = new ArrayList<>();
             List<Map<String, Object>> materiasEstables = new ArrayList<>();
@@ -2538,8 +2547,6 @@ public class GestionarEstadisticasGatewayImplAdapter implements GestionarEstadis
                 
                 int demandaEstimada = ((Number) prediccionRegresion.get("demandaEstimada")).intValue();
                 String tendencia = (String) prediccionRegresion.get("tendencia");
-                Double pendiente = (Double) prediccionRegresion.getOrDefault("pendiente", 0.0);
-                Double rSquared = (Double) prediccionRegresion.getOrDefault("rSquared", 0.0);
                 
                 Map<String, Object> prediccionMateria = new HashMap<>();
                 prediccionMateria.put("nombre", nombreMateria);
@@ -2549,9 +2556,7 @@ public class GestionarEstadisticasGatewayImplAdapter implements GestionarEstadis
                 prediccionMateria.put("variacion", demandaEstimada - solicitudesActuales);
                 prediccionMateria.put("porcentajeVariacion", solicitudesActuales > 0 ? 
                     Math.round(((double)(demandaEstimada - solicitudesActuales) / solicitudesActuales) * 100.0) : 0);
-                prediccionMateria.put("pendiente", pendiente);
-                prediccionMateria.put("rSquared", rSquared);
-                prediccionMateria.put("modeloUtilizado", prediccionRegresion.get("modeloUtilizado"));
+                // ❌ OCULTADO: Campos técnicos (pendiente, rSquared, modeloUtilizado) - no necesarios para usuarios finales
                 
                 if ("CRECIENTE".equals(tendencia)) {
                     materiasConTendenciaCreciente.add(prediccionMateria);
@@ -2580,8 +2585,6 @@ public class GestionarEstadisticasGatewayImplAdapter implements GestionarEstadis
                 
                 int demandaEstimada = ((Number) prediccionRegresion.get("demandaEstimada")).intValue();
                 String tendencia = (String) prediccionRegresion.get("tendencia");
-                Double pendiente = (Double) prediccionRegresion.getOrDefault("pendiente", 0.0);
-                Double rSquared = (Double) prediccionRegresion.getOrDefault("rSquared", 0.0);
                 
                 Map<String, Object> prediccionPrograma = new HashMap<>();
                 prediccionPrograma.put("nombre", nombrePrograma);
@@ -2591,9 +2594,7 @@ public class GestionarEstadisticasGatewayImplAdapter implements GestionarEstadis
                 prediccionPrograma.put("variacion", demandaEstimada - solicitudesActuales);
                 prediccionPrograma.put("porcentajeVariacion", solicitudesActuales > 0 ? 
                     Math.round(((double)(demandaEstimada - solicitudesActuales) / solicitudesActuales) * 100.0) : 0);
-                prediccionPrograma.put("pendiente", pendiente);
-                prediccionPrograma.put("rSquared", rSquared);
-                prediccionPrograma.put("modeloUtilizado", prediccionRegresion.get("modeloUtilizado"));
+                // ❌ OCULTADO: Campos técnicos (pendiente, rSquared, modeloUtilizado) - no necesarios para usuarios finales
                 
                 if ("CRECIENTE".equals(tendencia)) {
                     programasConTendenciaCreciente.add(prediccionPrograma);
@@ -2615,7 +2616,6 @@ public class GestionarEstadisticasGatewayImplAdapter implements GestionarEstadis
             prediccionesTemporales.put("mesesRecomendados", Arrays.asList("Julio", "Agosto", "Septiembre"));
             
             // 5. RECOMENDACIONES FUTURAS ACCIONABLES Y DETALLADAS
-            System.out.println("💡 [RECOMENDACIONES] Generando recomendaciones accionables basadas en predicciones...");
             List<Map<String, Object>> recomendacionesFuturas = new ArrayList<>();
             
             // 🎯 RECOMENDACIONES POR MATERIA (Más específicas y accionables)
@@ -2671,22 +2671,32 @@ public class GestionarEstadisticasGatewayImplAdapter implements GestionarEstadis
                     // Acciones específicas
                     List<String> acciones = new ArrayList<>();
                     if (gruposRecomendados > gruposActuales) {
-                        acciones.add(String.format("Abrir %d grupo(s) adicional(es) de 20 estudiantes", 
-                                                  gruposRecomendados - gruposActuales));
+                        int gruposAdicionales = gruposRecomendados - gruposActuales;
+                        acciones.add(String.format("Abrir %d %s %s de 20 estudiantes", 
+                                                  gruposAdicionales,
+                                                  gruposAdicionales == 1 ? "grupo" : "grupos",
+                                                  gruposAdicionales == 1 ? "adicional" : "adicionales"));
                     }
-                    acciones.add(String.format("Contratar %d docente(s) especializado(s)", docentesNecesarios));
-                    acciones.add(String.format("Reservar %d aula(s) o laboratorio(s)", aulasNecesarias));
+                    acciones.add(String.format("Contratar %d %s %s", 
+                                              docentesNecesarios,
+                                              docentesNecesarios == 1 ? "docente" : "docentes",
+                                              docentesNecesarios == 1 ? "especializado" : "especializados"));
+                    acciones.add(String.format("Reservar %d %s", 
+                                              aulasNecesarias,
+                                              aulasNecesarias == 1 ? "aula o laboratorio" : "aulas o laboratorios"));
                     if (porcentajeVariacion > 30) {
                         acciones.add("URGENTE: Iniciar gestión con 2 meses de anticipación");
                     }
                     acciones.add("Publicar oferta académica con suficiente antelación");
                     recomendacion.put("acciones", acciones);
                     
-                    // Justificación técnica
+                    // Justificación simplificada
                     recomendacion.put("justificacion", String.format(
-                        "Predicción basada en regresión lineal con datos históricos. " +
-                        "Modelo: %s. Crecimiento proyectado: +%d estudiantes.",
-                        materia.get("modeloUtilizado"), variacion));
+                        "Con base en las tendencias observadas en períodos anteriores, " +
+                        "se estima un incremento de %d %s (%d%% de crecimiento).",
+                        variacion, 
+                        variacion == 1 ? "estudiante" : "estudiantes",
+                        porcentajeVariacion));
                     
                     // Fechas recomendadas
                     Map<String, String> cronograma = new HashMap<>();
@@ -2701,7 +2711,7 @@ public class GestionarEstadisticasGatewayImplAdapter implements GestionarEstadis
                     impacto.put("estudiantesAtendidos", demandaEstimadaMateria);
                     impacto.put("estudiantesBeneficiados", variacion);
                     impacto.put("tasaCoberturaObjetivo", "100%");
-                    impacto.put("inversionEstimada", String.format("$%.2f", docentesNecesarios * 3000000.0));
+                    impacto.put("inversionEstimada", String.format("$%,d", docentesNecesarios * 3000000));
                     recomendacion.put("impacto", impacto);
                     
                     recomendacionesFuturas.add(recomendacion);
@@ -2737,13 +2747,16 @@ public class GestionarEstadisticasGatewayImplAdapter implements GestionarEstadis
                     // Descripción estratégica
                     recomendacion.put("descripcion", String.format(
                         "%s muestra un crecimiento significativo del %d%% en la demanda de cursos de verano. " +
-                        "Se proyectan %d solicitudes para el próximo período, con un incremento de %d estudiantes. " +
+                        "Se proyectan %d solicitudes para el próximo período, con un incremento de %d %s. " +
                         "Es prioritario garantizar oferta académica suficiente para este programa.",
-                        nombrePrograma, porcentajeVariacion, demandaEstimadaPrograma, variacion));
+                        nombrePrograma, porcentajeVariacion, demandaEstimadaPrograma, variacion,
+                        variacion == 1 ? "estudiante" : "estudiantes"));
                     
                     // Acciones estratégicas
                     List<String> acciones = new ArrayList<>();
-                    acciones.add(String.format("Ampliar oferta de cursos de verano en %d cupo(s)", variacion));
+                    acciones.add(String.format("Ampliar oferta de cursos de verano en %d %s", 
+                                              variacion, 
+                                              variacion == 1 ? "cupo" : "cupos"));
                     acciones.add("Identificar materias críticas del programa con mayor demanda");
                     acciones.add("Coordinar con director(a) de programa para validar necesidades");
                     acciones.add("Evaluar disponibilidad de docentes del programa");
@@ -2752,11 +2765,12 @@ public class GestionarEstadisticasGatewayImplAdapter implements GestionarEstadis
                     }
                     recomendacion.put("acciones", acciones);
                     
-                    // Justificación
+                    // Justificación simplificada
                     recomendacion.put("justificacion", String.format(
-                        "Análisis predictivo indica crecimiento sostenido. " +
-                        "Modelo: %s. Representa oportunidad para mejorar indicadores académicos del programa.",
-                        programa.get("modeloUtilizado")));
+                        "El análisis de tendencias históricas indica un crecimiento sostenido de %d %s. " +
+                        "Representa una oportunidad para mejorar los indicadores académicos del programa.",
+                        variacion,
+                        variacion == 1 ? "solicitud" : "solicitudes"));
                     
                     // Beneficios esperados
                     List<String> beneficios = new ArrayList<>();
@@ -2884,9 +2898,6 @@ public class GestionarEstadisticasGatewayImplAdapter implements GestionarEstadis
                 }
             }
             
-            System.out.println("💡 [RECOMENDACIONES] Total de recomendaciones: " + recomendacionesFuturas.size());
-            System.out.println("🚨 [ALERTAS] Total de alertas críticas: " + alertasCriticas.size());
-            
             // Construir resultado de predicciones con estructura mejorada
             predicciones.put("demandaEstimadaProximoPeriodo", demandaEstimadaProximoPeriodo);
             predicciones.put("materiasConTendenciaCreciente", materiasConTendenciaCreciente);
@@ -2895,11 +2906,9 @@ public class GestionarEstadisticasGatewayImplAdapter implements GestionarEstadis
             predicciones.put("programasConTendenciaCreciente", programasConTendenciaCreciente);
             predicciones.put("programasConTendenciaDecreciente", programasConTendenciaDecreciente);
             predicciones.put("prediccionesTemporales", prediccionesTemporales);
-            predicciones.put("recomendacionesFuturas", recomendacionesFuturas);
-            predicciones.put("alertasCriticas", alertasCriticas); // ⭐ NUEVO: Alertas críticas
-            predicciones.put("confiabilidad", "MEDIA"); // Basado en datos históricos limitados
-            predicciones.put("fechaPrediccion", new Date());
-            predicciones.put("metodologia", "Regresión Lineal Simple aplicada a datos históricos con umbral de tendencia del 5%");
+            predicciones.put("recomendaciones", recomendacionesFuturas); // ⭐ Recomendaciones (para acceso interno)
+            predicciones.put("alertasCriticas", alertasCriticas);
+            predicciones.put("confiabilidad", "MEDIA");
             
             // Estadísticas de las recomendaciones
             Map<String, Object> estadisticasRecomendaciones = new HashMap<>();
@@ -2920,8 +2929,6 @@ public class GestionarEstadisticasGatewayImplAdapter implements GestionarEstadis
             estadisticasRecomendaciones.put("alertasCriticas", alertasCriticas.size());
             predicciones.put("estadisticasRecomendaciones", estadisticasRecomendaciones);
             
-            System.out.println("🔮 [PREDICCIONES] Predicciones generadas exitosamente");
-            
         } catch (Exception e) {
             System.err.println("❌❌❌ [PREDICCIONES] ERROR CRÍTICO generando predicciones ❌❌❌");
             System.err.println("Tipo de error: " + e.getClass().getName());
@@ -2938,10 +2945,8 @@ public class GestionarEstadisticasGatewayImplAdapter implements GestionarEstadis
             predicciones.put("programasConTendenciaCreciente", new ArrayList<>());
             predicciones.put("programasConTendenciaDecreciente", new ArrayList<>());
             predicciones.put("prediccionesTemporales", new HashMap<>());
-            predicciones.put("recomendacionesFuturas", new ArrayList<>());
+            // ❌ ELIMINADO: recomendacionesFuturas (duplicado)
             predicciones.put("confiabilidad", "BAJA");
-            predicciones.put("fechaPrediccion", new Date());
-            predicciones.put("metodologia", "Predicción básica - datos insuficientes");
         }
         
         return predicciones;
@@ -3344,8 +3349,6 @@ public class GestionarEstadisticasGatewayImplAdapter implements GestionarEstadis
         try {
             // Agrupar solicitudes por mes
             Map<Integer, Integer> solicitudesPorMes = new HashMap<>();
-            String[] meses = {"Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", 
-                            "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"};
             
             for (SolicitudEntity solicitud : solicitudes) {
                 Date fecha = solicitud.getFecha_registro_solicitud();
@@ -3573,20 +3576,16 @@ public class GestionarEstadisticasGatewayImplAdapter implements GestionarEstadis
                 demandaPorMes, topMaterias, analisisPorPrograma
             );
             
-            // ✅ Usar las recomendaciones mejoradas de las predicciones
+            // ✅ Obtener recomendaciones del objeto interno (se generan en el método generarPrediccionesDemanda)
             @SuppressWarnings("unchecked")
             List<Map<String, Object>> recomendacionesMejoradas = 
-                (List<Map<String, Object>>) predicciones.getOrDefault("recomendacionesFuturas", new ArrayList<>());
-            
-            System.out.println("💡 [DEBUG] Total recomendaciones mejoradas: " + recomendacionesMejoradas.size());
-            System.out.println("📊 [DEBUG] Materias crecientes: " + predicciones.get("materiasConTendenciaCreciente"));
-            System.out.println("📊 [DEBUG] Programas crecientes: " + predicciones.get("programasConTendenciaCreciente"));
+                (List<Map<String, Object>>) predicciones.getOrDefault("recomendaciones", new ArrayList<>());
             
             resultado.put("topMaterias", topMaterias);
             resultado.put("analisisPorPrograma", analisisPorPrograma);
             resultado.put("tendenciasTemporales", tendenciasTemporales);
             resultado.put("estadosSolicitudes", estadosPorSolicitud);
-            resultado.put("recomendaciones", recomendacionesMejoradas); // ✅ Usar recomendaciones con regresión lineal
+            resultado.put("recomendaciones", recomendacionesMejoradas);
             resultado.put("predicciones", predicciones);
             
             System.out.println("🏖️ [CURSOS_VERANO] Análisis completado exitosamente");
@@ -3701,5 +3700,40 @@ public class GestionarEstadisticasGatewayImplAdapter implements GestionarEstadis
         }
         
         return resultado;
+    }
+    
+    /**
+     * Extrae el tipo de proceso del nombre completo de la solicitud
+     * Ejemplo: "Solicitud de Reingreso - Juan Perez" -> "Reingreso"
+     * Ejemplo: "Solicitud Curso Verano - Maria Lopez" -> "Cursos de Verano"
+     */
+    private String extraerTipoProceso(String nombreCompleto) {
+        if (nombreCompleto == null || nombreCompleto.isEmpty()) {
+            return "Desconocido";
+        }
+        
+        // Remover "Solicitud de " o "Solicitud " al inicio
+        String nombre = nombreCompleto.replace("Solicitud de ", "").replace("Solicitud ", "");
+        
+        // Extraer solo la parte antes del guion (si existe)
+        int indiceGuion = nombre.indexOf(" - ");
+        if (indiceGuion > 0) {
+            nombre = nombre.substring(0, indiceGuion).trim();
+        }
+        
+        // Normalizar nombres conocidos
+        if (nombre.toLowerCase().contains("curso") && nombre.toLowerCase().contains("verano")) {
+            return "Cursos de Verano";
+        } else if (nombre.toLowerCase().contains("reingreso")) {
+            return "Reingreso";
+        } else if (nombre.toLowerCase().contains("homolog")) {
+            return "Homologación";
+        } else if (nombre.toLowerCase().contains("paz") && nombre.toLowerCase().contains("salvo")) {
+            return "Paz y Salvo";
+        } else if (nombre.toLowerCase().contains("ecaes")) {
+            return "ECAES";
+        }
+        
+        return nombre;
     }
 }

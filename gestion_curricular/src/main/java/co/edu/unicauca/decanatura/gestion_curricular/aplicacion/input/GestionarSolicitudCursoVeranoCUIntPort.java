@@ -11,6 +11,7 @@ public interface GestionarSolicitudCursoVeranoCUIntPort {
     // Métodos para seguimiento de solicitudes
     List<SolicitudCursoVeranoPreinscripcion> buscarSolicitudesPorUsuario(Integer idUsuario);
     SolicitudCursoVeranoPreinscripcion buscarSolicitudPorId(Integer idSolicitud);
+    SolicitudCursoVeranoIncripcion buscarPorIdInscripcion(Integer idSolicitud);
     
     // Métodos para gestión de funcionarios
     List<SolicitudCursoVeranoPreinscripcion> buscarPreinscripcionesPorCurso(Integer idCurso);
