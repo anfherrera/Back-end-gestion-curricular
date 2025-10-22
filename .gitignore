@@ -22,3 +22,13 @@
 # virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
 hs_err_pid*
 replay_pid*
+
+# Archivos de testing temporal
+test_*.pdf
+test_*.xlsx
+temp*.pdf
+temp*.txt
+*_debug.pdf
+*_test.pdf
+*_debug.xlsx
+*_test.xlsx
