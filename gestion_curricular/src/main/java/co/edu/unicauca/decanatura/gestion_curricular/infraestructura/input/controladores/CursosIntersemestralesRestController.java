@@ -1810,11 +1810,15 @@ public class CursosIntersemestralesRestController {
                     
                     // Información del curso - solo el nombre para evitar [object Object]
                     String nombreCurso = "Curso no disponible";
+                    Integer cursoId = null;
                     if (inscripcion.getObjCursoOfertadoVerano() != null && 
                         inscripcion.getObjCursoOfertadoVerano().getObjMateria() != null) {
                         nombreCurso = inscripcion.getObjCursoOfertadoVerano().getObjMateria().getNombre();
+                        cursoId = inscripcion.getObjCursoOfertadoVerano().getId_curso();
                     }
                     inscripcionMap.put("curso", nombreCurso);
+                    inscripcionMap.put("cursoId", cursoId);
+                    inscripcionMap.put("estudianteId", idUsuario);
                     
                     // Mapear estadoCurso basado en el estado de la inscripción
                     String estadoCurso = "PENDIENTE";
