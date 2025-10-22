@@ -56,6 +56,8 @@ public class BeanConfiguration {
                  objGestionarMateriasGateway, objGestionarDocenteGateway, objFormateadorResultados);
             }
 
+    // GestionarEstadisticasGatewayImplAdapter ya está definido como @Service, no necesita definición adicional
+    
     @Bean
     public GestionarEstadisticasCUAdapter crearGestionarEstadisticasCUInt(
             GestionarEstadisticasGatewayIntPort estadisticasGateway,

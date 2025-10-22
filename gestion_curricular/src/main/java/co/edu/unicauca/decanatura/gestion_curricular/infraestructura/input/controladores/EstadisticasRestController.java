@@ -1543,29 +1543,29 @@ public class EstadisticasRestController {
      * Crea la hoja de estadísticas generales en el Excel.
      */
     private void crearHojaEstadisticasGenerales(org.apache.poi.xssf.usermodel.XSSFWorkbook workbook, Map<String, Object> estadisticas) {
-        org.apache.poi.ss.usermodel.Sheet sheet = workbook.createSheet("Estadísticas Generales");
-        
-        // Estilos
-        org.apache.poi.ss.usermodel.CellStyle titleStyle = workbook.createCellStyle();
-        org.apache.poi.ss.usermodel.Font titleFont = workbook.createFont();
-        titleFont.setBold(true);
-        titleFont.setFontHeightInPoints((short) 16);
-        titleStyle.setFont(titleFont);
-        
-        org.apache.poi.ss.usermodel.CellStyle headerStyle = workbook.createCellStyle();
-        org.apache.poi.ss.usermodel.Font headerFont = workbook.createFont();
-        headerFont.setBold(true);
-        headerFont.setFontHeightInPoints((short) 12);
-        headerStyle.setFont(headerFont);
-        
-        int rowNum = 0;
-        
-        // Título
-        org.apache.poi.ss.usermodel.Row titleRow = sheet.createRow(rowNum++);
-        org.apache.poi.ss.usermodel.Cell titleCell = titleRow.createCell(0);
+            org.apache.poi.ss.usermodel.Sheet sheet = workbook.createSheet("Estadísticas Generales");
+            
+            // Estilos
+            org.apache.poi.ss.usermodel.CellStyle titleStyle = workbook.createCellStyle();
+            org.apache.poi.ss.usermodel.Font titleFont = workbook.createFont();
+            titleFont.setBold(true);
+            titleFont.setFontHeightInPoints((short) 16);
+            titleStyle.setFont(titleFont);
+            
+            org.apache.poi.ss.usermodel.CellStyle headerStyle = workbook.createCellStyle();
+            org.apache.poi.ss.usermodel.Font headerFont = workbook.createFont();
+            headerFont.setBold(true);
+            headerFont.setFontHeightInPoints((short) 12);
+            headerStyle.setFont(headerFont);
+            
+            int rowNum = 0;
+            
+            // Título
+            org.apache.poi.ss.usermodel.Row titleRow = sheet.createRow(rowNum++);
+            org.apache.poi.ss.usermodel.Cell titleCell = titleRow.createCell(0);
         titleCell.setCellValue("ESTADÍSTICAS GENERALES DEL SISTEMA");
-        titleCell.setCellStyle(titleStyle);
-        
+            titleCell.setCellStyle(titleStyle);
+            
         rowNum++; // Espacio
         
         // Total de solicitudes
@@ -1591,10 +1591,10 @@ public class EstadisticasRestController {
                 row.createCell(0).setCellValue(entry.getKey());
                 row.createCell(1).setCellValue(entry.getValue().toString());
             }
-        }
-        
+            }
+            
         // Por estado
-        @SuppressWarnings("unchecked")
+            @SuppressWarnings("unchecked")
         Map<String, Object> porEstado = (Map<String, Object>) estadisticas.get("porEstado");
         if (porEstado != null && !porEstado.isEmpty()) {
             rowNum++; // Espacio
@@ -1604,9 +1604,9 @@ public class EstadisticasRestController {
             headerCell.setCellStyle(headerStyle);
             
             for (Map.Entry<String, Object> entry : porEstado.entrySet()) {
-                org.apache.poi.ss.usermodel.Row row = sheet.createRow(rowNum++);
-                row.createCell(0).setCellValue(entry.getKey());
-                row.createCell(1).setCellValue(entry.getValue().toString());
+                    org.apache.poi.ss.usermodel.Row row = sheet.createRow(rowNum++);
+                    row.createCell(0).setCellValue(entry.getKey());
+                    row.createCell(1).setCellValue(entry.getValue().toString());
             }
         }
         
@@ -1645,7 +1645,7 @@ public class EstadisticasRestController {
         rowNum++; // Espacio
         
         // Resumen
-        @SuppressWarnings("unchecked")
+            @SuppressWarnings("unchecked")
         Map<String, Object> resumen = (Map<String, Object>) datosCursosVerano.get("resumen");
         if (resumen != null) {
             org.apache.poi.ss.usermodel.Row headerRow = sheet.createRow(rowNum++);
@@ -1654,10 +1654,10 @@ public class EstadisticasRestController {
             headerCell.setCellStyle(headerStyle);
             
             for (Map.Entry<String, Object> entry : resumen.entrySet()) {
-                org.apache.poi.ss.usermodel.Row row = sheet.createRow(rowNum++);
-                row.createCell(0).setCellValue(entry.getKey());
-                row.createCell(1).setCellValue(entry.getValue().toString());
-            }
+                    org.apache.poi.ss.usermodel.Row row = sheet.createRow(rowNum++);
+                    row.createCell(0).setCellValue(entry.getKey());
+                    row.createCell(1).setCellValue(entry.getValue().toString());
+                }
             rowNum++; // Espacio
         }
         
@@ -1694,11 +1694,11 @@ public class EstadisticasRestController {
                 row.createCell(1).setCellValue(programa.get("solicitudes").toString());
                 row.createCell(2).setCellValue(programa.get("porcentaje").toString() + "%");
             }
-        }
-        
-        // Ajustar ancho de columnas
-        sheet.autoSizeColumn(0);
-        sheet.autoSizeColumn(1);
+            }
+            
+            // Ajustar ancho de columnas
+            sheet.autoSizeColumn(0);
+            sheet.autoSizeColumn(1);
         sheet.autoSizeColumn(2);
     }
 

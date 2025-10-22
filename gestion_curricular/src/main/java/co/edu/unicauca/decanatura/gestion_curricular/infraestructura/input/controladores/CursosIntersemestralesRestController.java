@@ -63,6 +63,7 @@ public class CursosIntersemestralesRestController {
     private final GestionarArchivosCUIntPort objGestionarArchivos;
     private final GestionarDocumentosGatewayIntPort objGestionarDocumentosGateway;
     private final EstadoCursoOfertadoRepositoryInt estadoRepository;
+    private final co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarUsuarioCUIntPort objGestionarUsuarioCU;
 
     /**
      * Obtener cursos de verano (endpoint principal que llama el frontend)
@@ -592,7 +593,7 @@ public class CursosIntersemestralesRestController {
             
             // ✅ IMPLEMENTACIÓN REAL: Buscar usuarios en la base de datos
             List<co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Usuario> usuarios = 
-                new ArrayList<>(); // TODO: Implementar búsqueda real de usuarios
+                objGestionarUsuarioCU.listarUsuarios();
             
             Map<String, Object> respuesta = new HashMap<>();
             respuesta.put("mensaje", "Usuarios encontrados");
@@ -1063,14 +1064,67 @@ public class CursosIntersemestralesRestController {
         try {
             System.out.println("DEBUG Obteniendo inscripciones para usuario ID: " + id_usuario);
             
-            // TODO: Implementar obtención de inscripciones reales de la base de datos
-            // Por ahora devolver lista vacía hasta que se implemente la funcionalidad de inscripciones
-            List<Map<String, Object>> inscripciones = new ArrayList<>();
+            // ✅ IMPLEMENTACIÓN REAL: Obtener inscripciones de la base de datos
+            List<SolicitudEntity> solicitudesEntity = solicitudRepository.buscarInscripcionesPorUsuario(id_usuario);
+            
+            List<Map<String, Object>> inscripciones = solicitudesEntity.stream().map(solicitud -> {
+                Map<String, Object> inscripcion = new HashMap<>();
+                inscripcion.put("id", solicitud.getId_solicitud());
+                inscripcion.put("nombre_solicitud", solicitud.getNombre_solicitud());
+                
+                // Obtener fecha de registro
+                inscripcion.put("fecha_solicitud", solicitud.getFecha_registro_solicitud());
+                
+                // Obtener estado más reciente
+                String estadoActual = "Sin Estado";
+                if (solicitud.getEstadosSolicitud() != null && !solicitud.getEstadosSolicitud().isEmpty()) {
+                    estadoActual = solicitud.getEstadosSolicitud()
+                        .get(solicitud.getEstadosSolicitud().size() - 1)
+                        .getEstado_actual();
+                }
+                inscripcion.put("estado", estadoActual);
+                
+                // Obtener observaciones si es solicitud de curso de verano
+                if (solicitud instanceof SolicitudCursoVeranoInscripcionEntity) {
+                    SolicitudCursoVeranoInscripcionEntity cursoInscripcion = (SolicitudCursoVeranoInscripcionEntity) solicitud;
+                    inscripcion.put("observaciones", cursoInscripcion.getObservacion());
+                } else {
+                    inscripcion.put("observaciones", "");
+                }
+                
+                // Obtener información del curso si existe
+                if (solicitud.getObjCursoOfertadoVerano() != null) {
+                    CursoOfertadoVeranoEntity curso = solicitud.getObjCursoOfertadoVerano();
+                    inscripcion.put("curso_id", curso.getId_curso());
+                    inscripcion.put("salon", curso.getSalon());
+                    inscripcion.put("grupo", curso.getGrupo() != null ? curso.getGrupo().toString() : "");
+                    
+                    // Obtener información de la materia
+                    if (curso.getObjMateria() != null) {
+                        inscripcion.put("materia", curso.getObjMateria().getNombre());
+                    }
+                    
+                    // Obtener información del docente
+                    if (curso.getObjDocente() != null) {
+                        inscripcion.put("docente", curso.getObjDocente().getNombre_docente());
+                    }
+                } else {
+                    inscripcion.put("curso_id", null);
+                    inscripcion.put("salon", "");
+                    inscripcion.put("grupo", "");
+                    inscripcion.put("materia", "");
+                    inscripcion.put("docente", "");
+                }
+                
+                return inscripcion;
+            }).collect(Collectors.toList());
             
             System.out.println("SUCCESS Inscripciones filtradas para usuario " + id_usuario + ": " + inscripciones.size() + " encontradas");
             
             return ResponseEntity.ok(inscripciones);
         } catch (Exception e) {
+            System.out.println("ERROR obteniendo inscripciones: " + e.getMessage());
+            e.printStackTrace();
             Map<String, Object> error = new HashMap<>();
             error.put("error", "Error interno del servidor");
             return ResponseEntity.internalServerError().body(List.of(error));
@@ -1756,11 +1810,15 @@ public class CursosIntersemestralesRestController {
                     
                     // Información del curso - solo el nombre para evitar [object Object]
                     String nombreCurso = "Curso no disponible";
+                    Integer cursoId = null;
                     if (inscripcion.getObjCursoOfertadoVerano() != null && 
                         inscripcion.getObjCursoOfertadoVerano().getObjMateria() != null) {
                         nombreCurso = inscripcion.getObjCursoOfertadoVerano().getObjMateria().getNombre();
+                        cursoId = inscripcion.getObjCursoOfertadoVerano().getId_curso();
                     }
                     inscripcionMap.put("curso", nombreCurso);
+                    inscripcionMap.put("cursoId", cursoId);
+                    inscripcionMap.put("estudianteId", idUsuario);
                     
                     // Mapear estadoCurso basado en el estado de la inscripción
                     String estadoCurso = "PENDIENTE";
@@ -1877,20 +1935,55 @@ public class CursosIntersemestralesRestController {
         try {
             System.out.println("DELETE Cancelando inscripción ID: " + id);
             
-            // TODO: Implementar cancelación de inscripciones reales de la base de datos
-            // Por ahora devolver error ya que no hay funcionalidad de inscripciones implementada
+            // ✅ IMPLEMENTACIÓN REAL: Cancelar inscripción de la base de datos
+            // Validar que la inscripción existe
+            if (!solicitudRepository.existsById(id)) {
+                Map<String, Object> error = new HashMap<>();
+                error.put("error", "Inscripción no encontrada");
+                error.put("message", "No existe una inscripción con el ID: " + id);
+                error.put("status", 404);
+                error.put("timestamp", java.time.LocalDateTime.now().toString());
+                return ResponseEntity.status(404).body(error);
+            }
             
+            // Obtener la solicitud para verificar su estado
+            SolicitudEntity solicitud = solicitudRepository.findById(id).orElse(null);
+            if (solicitud != null) {
+                // Verificar que no esté en estado "Aprobado" (no se puede cancelar una inscripción aprobada)
+                if (solicitud.getEstadosSolicitud() != null && !solicitud.getEstadosSolicitud().isEmpty()) {
+                    String estadoActual = solicitud.getEstadosSolicitud()
+                        .get(solicitud.getEstadosSolicitud().size() - 1)
+                        .getEstado_actual();
+                    
+                    if ("Aprobado".equalsIgnoreCase(estadoActual)) {
             Map<String, Object> error = new HashMap<>();
-            error.put("error", "Funcionalidad no implementada");
-            error.put("message", "La funcionalidad de inscripciones aún no está implementada");
-            error.put("status", 501);
+                        error.put("error", "No se puede cancelar");
+                        error.put("message", "No se puede cancelar una inscripción que ya ha sido aprobada");
+                        error.put("status", 400);
             error.put("timestamp", java.time.LocalDateTime.now().toString());
-            return ResponseEntity.status(501).body(error);
+                        return ResponseEntity.status(400).body(error);
+                    }
+                }
+            }
+            
+            // Eliminar la inscripción
+            solicitudRepository.deleteById(id);
+            
+            Map<String, Object> respuesta = new HashMap<>();
+            respuesta.put("mensaje", "Inscripción cancelada exitosamente");
+            respuesta.put("id_inscripcion", id);
+            respuesta.put("status", 200);
+            respuesta.put("timestamp", java.time.LocalDateTime.now().toString());
+            
+            System.out.println("SUCCESS Inscripción " + id + " cancelada exitosamente");
+            return ResponseEntity.ok(respuesta);
             
         } catch (Exception e) {
+            System.out.println("ERROR cancelando inscripción: " + e.getMessage());
+            e.printStackTrace();
             Map<String, Object> error = new HashMap<>();
             error.put("error", "Error interno del servidor");
-            error.put("message", "Ha ocurrido un error inesperado. Por favor, contacta al administrador.");
+            error.put("message", "Ha ocurrido un error inesperado: " + e.getMessage());
             error.put("status", 500);
             error.put("timestamp", java.time.LocalDateTime.now().toString());
             return ResponseEntity.status(500).body(error);
@@ -2865,17 +2958,9 @@ public class CursosIntersemestralesRestController {
                 observaciones = "Inscripción aceptada por funcionario";
             }
             
-            // 1. Buscar la inscripción usando el método que funciona
+            // 1. Buscar la inscripción directamente por ID
             System.out.println("DEBUG: Buscando inscripción con ID: " + idInscripcion.intValue());
-            List<SolicitudCursoVeranoIncripcion> todasLasInscripciones = solicitudCU.buscarInscripcionesPorCurso(1); // Buscar en curso 1
-            SolicitudCursoVeranoIncripcion inscripcion = null;
-            
-            for (SolicitudCursoVeranoIncripcion ins : todasLasInscripciones) {
-                if (ins.getId_solicitud().equals(idInscripcion.intValue())) {
-                    inscripcion = ins;
-                    break;
-                }
-            }
+            SolicitudCursoVeranoIncripcion inscripcion = solicitudCU.buscarPorIdInscripcion(idInscripcion.intValue());
             
             System.out.println("DEBUG: Resultado búsqueda inscripción: " + (inscripcion != null ? "ENCONTRADA" : "NO ENCONTRADA"));
             if (inscripcion == null) {
@@ -3352,16 +3437,8 @@ public class CursosIntersemestralesRestController {
         try {
             System.out.println("📥 Descargando comprobante de pago para inscripción: " + idInscripcion);
             
-            // 1. Buscar la inscripción usando el método que funciona
-            List<SolicitudCursoVeranoIncripcion> todasLasInscripciones = solicitudCU.buscarInscripcionesPorCurso(1); // Buscar en curso 1
-            SolicitudCursoVeranoIncripcion inscripcion = null;
-            
-            for (SolicitudCursoVeranoIncripcion ins : todasLasInscripciones) {
-                if (ins.getId_solicitud().equals(idInscripcion.intValue())) {
-                    inscripcion = ins;
-                    break;
-                }
-            }
+            // 1. Buscar la inscripción directamente por ID
+            SolicitudCursoVeranoIncripcion inscripcion = solicitudCU.buscarPorIdInscripcion(idInscripcion.intValue());
             
             if (inscripcion == null) {
                 System.err.println("❌ Inscripción no encontrada: " + idInscripcion);
@@ -3417,16 +3494,8 @@ public class CursosIntersemestralesRestController {
         try {
             System.out.println("📥 Obteniendo información de inscripción: " + idInscripcion);
             
-            // 1. Buscar la inscripción usando el método que funciona
-            List<SolicitudCursoVeranoIncripcion> todasLasInscripciones = solicitudCU.buscarInscripcionesPorCurso(1); // Buscar en curso 1
-            SolicitudCursoVeranoIncripcion inscripcion = null;
-            
-            for (SolicitudCursoVeranoIncripcion ins : todasLasInscripciones) {
-                if (ins.getId_solicitud().equals(idInscripcion.intValue())) {
-                    inscripcion = ins;
-                    break;
-                }
-            }
+            // 1. Buscar la inscripción directamente por ID
+            SolicitudCursoVeranoIncripcion inscripcion = solicitudCU.buscarPorIdInscripcion(idInscripcion.intValue());
             
             Map<String, Object> resultado = new HashMap<>();
             
