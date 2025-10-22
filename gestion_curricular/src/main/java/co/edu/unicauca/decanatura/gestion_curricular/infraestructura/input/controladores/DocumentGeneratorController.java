@@ -61,9 +61,17 @@ public class DocumentGeneratorController {
     }
 
     private String generarNombreArchivo(DocumentRequest request) {
-        String tipoDocumento = request.getTipoDocumento();
-        String nombreEstudiante = request.getDatosSolicitud().get("nombreEstudiante").toString();
-        String numeroDocumento = request.getDatosDocumento().get("numeroDocumento").toString();
+        String tipoDocumento = request.getTipoDocumento() != null ? request.getTipoDocumento() : "DOCUMENTO";
+        
+        String nombreEstudiante = "Estudiante";
+        if (request.getDatosSolicitud() != null && request.getDatosSolicitud().get("nombreEstudiante") != null) {
+            nombreEstudiante = request.getDatosSolicitud().get("nombreEstudiante").toString();
+        }
+        
+        String numeroDocumento = "001-2025";
+        if (request.getDatosDocumento() != null && request.getDatosDocumento().get("numeroDocumento") != null) {
+            numeroDocumento = request.getDatosDocumento().get("numeroDocumento").toString();
+        }
         
         // Limpiar nombre para archivo
         String nombreLimpio = nombreEstudiante.replaceAll("[^a-zA-Z0-9]", "_");

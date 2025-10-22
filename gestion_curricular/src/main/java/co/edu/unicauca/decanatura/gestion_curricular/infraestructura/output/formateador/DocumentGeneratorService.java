@@ -20,17 +20,33 @@ public class DocumentGeneratorService {
      * Generar documento Word usando plantilla
      */
     public ByteArrayOutputStream generarDocumento(DocumentRequest request) throws IOException {
+        System.out.println("🔍 [DOCUMENT_GENERATOR] Iniciando generación de documento...");
+        System.out.println("🔍 [DOCUMENT_GENERATOR] Tipo de documento: " + request.getTipoDocumento());
+        System.out.println("🔍 [DOCUMENT_GENERATOR] Datos del documento: " + request.getDatosDocumento());
+        System.out.println("🔍 [DOCUMENT_GENERATOR] Datos de la solicitud: " + request.getDatosSolicitud());
+        
         String templatePath = obtenerRutaPlantilla(request.getTipoDocumento());
+        System.out.println("🔍 [DOCUMENT_GENERATOR] Ruta de plantilla: " + templatePath);
         
         // Cargar plantilla
         ClassPathResource resource = new ClassPathResource(templatePath);
+        
+        if (!resource.exists()) {
+            System.err.println("❌ [DOCUMENT_GENERATOR] La plantilla no existe: " + templatePath);
+            throw new IOException("Plantilla no encontrada: " + templatePath);
+        }
+        
+        System.out.println("✅ [DOCUMENT_GENERATOR] Plantilla encontrada, cargando...");
         InputStream templateStream = resource.getInputStream();
         
         // Crear documento desde plantilla
         XWPFDocument document = new XWPFDocument(templateStream);
+        System.out.println("✅ [DOCUMENT_GENERATOR] Documento creado desde plantilla");
         
         // Reemplazar placeholders
+        System.out.println("🔍 [DOCUMENT_GENERATOR] Reemplazando placeholders...");
         reemplazarPlaceholders(document, request);
+        System.out.println("✅ [DOCUMENT_GENERATOR] Placeholders reemplazados");
         
         // Convertir a bytes con codificación UTF-8
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
@@ -38,6 +54,7 @@ public class DocumentGeneratorService {
         document.close();
         templateStream.close();
         
+        System.out.println("✅ [DOCUMENT_GENERATOR] Documento generado exitosamente");
         return outputStream;
     }
 
@@ -93,15 +110,24 @@ public class DocumentGeneratorService {
     }
 
     private void reemplazarPlaceholders(XWPFDocument document, DocumentRequest request) {
+        System.out.println("🔍 [DOCUMENT_GENERATOR] Creando mapa de reemplazos...");
         Map<String, String> replacements = crearMapaReemplazos(request);
+        System.out.println("✅ [DOCUMENT_GENERATOR] Mapa de reemplazos creado: " + replacements.size() + " elementos");
         
         // Reemplazar en párrafos
+        System.out.println("🔍 [DOCUMENT_GENERATOR] Reemplazando en párrafos...");
+        int paragraphCount = 0;
         for (XWPFParagraph paragraph : document.getParagraphs()) {
+            paragraphCount++;
             reemplazarEnParrafo(paragraph, replacements);
         }
+        System.out.println("✅ [DOCUMENT_GENERATOR] Reemplazos en párrafos completados: " + paragraphCount + " párrafos");
         
         // Reemplazar en tablas
+        System.out.println("🔍 [DOCUMENT_GENERATOR] Reemplazando en tablas...");
+        int tableCount = 0;
         for (XWPFTable table : document.getTables()) {
+            tableCount++;
             for (XWPFTableRow row : table.getRows()) {
                 for (XWPFTableCell cell : row.getTableCells()) {
                     for (XWPFParagraph paragraph : cell.getParagraphs()) {
@@ -110,10 +136,14 @@ public class DocumentGeneratorService {
                 }
             }
         }
+        System.out.println("✅ [DOCUMENT_GENERATOR] Reemplazos en tablas completados: " + tableCount + " tablas");
     }
 
     private void reemplazarEnParrafo(XWPFParagraph paragraph, Map<String, String> replacements) {
         String texto = paragraph.getText();
+        if (texto == null) {
+            texto = "";
+        }
         
         // Verificar si el párrafo contiene placeholders
         boolean tienePlaceholders = false;
@@ -138,10 +168,10 @@ public class DocumentGeneratorService {
         
         // Preservar el formato original del párrafo
         ParagraphAlignment alignment = paragraph.getAlignment();
-        boolean isBold = false;
-        boolean isItalic = false;
-        String fontFamily = "Arial";
-        int fontSize = 11;
+    boolean isBold = false;
+    boolean isItalic = false;
+    String fontFamily = "Arial";
+    int fontSize = 11;
         
         // Obtener formato del primer run si existe
         if (!paragraph.getRuns().isEmpty()) {
@@ -151,8 +181,19 @@ public class DocumentGeneratorService {
             if (firstRun.getFontFamily() != null) {
                 fontFamily = firstRun.getFontFamily();
             }
-            if (firstRun.getFontSizeAsDouble() != -1) {
-                fontSize = firstRun.getFontSizeAsDouble().intValue();
+            // Manejar tamaño de fuente de forma segura (puede ser null o -1)
+            try {
+                Double fs = firstRun.getFontSizeAsDouble();
+                if (fs != null && fs.intValue() > 0) {
+                    fontSize = fs.intValue();
+                } else {
+                    int fsInt = firstRun.getFontSize();
+                    if (fsInt > 0) {
+                        fontSize = fsInt;
+                    }
+                }
+            } catch (Exception ignore) {
+                // Mantener fontSize por defecto si hay cualquier problema
             }
         }
         
@@ -179,19 +220,32 @@ public class DocumentGeneratorService {
     }
 
     private Map<String, String> crearMapaReemplazos(DocumentRequest request) {
+        System.out.println("🔍 [DOCUMENT_GENERATOR] Creando mapa de reemplazos...");
         Map<String, String> replacements = new HashMap<>();
         
         // Datos del documento
         Map<String, Object> datosDocumento = request.getDatosDocumento();
-        replacements.put("NUMERO_DOCUMENTO", datosDocumento.get("numeroDocumento").toString());
+        if (datosDocumento == null) {
+            System.out.println("⚠️ [DOCUMENT_GENERATOR] datosDocumento es null, usando HashMap vacío");
+            datosDocumento = new HashMap<>();
+        } else {
+            System.out.println("✅ [DOCUMENT_GENERATOR] datosDocumento recibido: " + datosDocumento);
+        }
+        replacements.put("NUMERO_DOCUMENTO", datosDocumento.getOrDefault("numeroDocumento", "001-2025").toString());
         replacements.put("FECHA_DOCUMENTO", formatearFecha(datosDocumento.get("fechaDocumento")));
         replacements.put("OBSERVACIONES", datosDocumento.getOrDefault("observaciones", "").toString());
         
         // Datos de la solicitud
         Map<String, Object> datosSolicitud = request.getDatosSolicitud();
-        replacements.put("NOMBRE_ESTUDIANTE", datosSolicitud.get("nombreEstudiante").toString());
-        replacements.put("CODIGO_ESTUDIANTE", datosSolicitud.get("codigoEstudiante").toString());
-        replacements.put("PROGRAMA", datosSolicitud.get("programa").toString());
+        if (datosSolicitud == null) {
+            System.out.println("⚠️ [DOCUMENT_GENERATOR] datosSolicitud es null, usando HashMap vacío");
+            datosSolicitud = new HashMap<>();
+        } else {
+            System.out.println("✅ [DOCUMENT_GENERATOR] datosSolicitud recibido: " + datosSolicitud);
+        }
+        replacements.put("NOMBRE_ESTUDIANTE", datosSolicitud.getOrDefault("nombreEstudiante", "Estudiante").toString());
+        replacements.put("CODIGO_ESTUDIANTE", datosSolicitud.getOrDefault("codigoEstudiante", "000000000").toString());
+        replacements.put("PROGRAMA", datosSolicitud.getOrDefault("programa", "Programa").toString());
         replacements.put("FECHA_SOLICITUD", formatearFecha(datosSolicitud.get("fechaSolicitud")));
         
         // Datos de la universidad (predefinidos)
@@ -271,6 +325,9 @@ public class DocumentGeneratorService {
             replacements.put("TIPO_PROCESO", "reingreso al programa");
             replacements.put("TITULO_DOCUMENTO", "RESOLUCIÓN DE REINGRESO");
         }
+        
+        System.out.println("✅ [DOCUMENT_GENERATOR] Mapa de reemplazos creado exitosamente con " + replacements.size() + " elementos");
+        System.out.println("🔍 [DOCUMENT_GENERATOR] Elementos del mapa: " + replacements);
         
         return replacements;
     }

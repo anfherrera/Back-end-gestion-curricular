@@ -47,15 +47,24 @@ public class ArchivosRestController {
     private final GestionarNotificacionCUIntPort objNotificacion;
     @PostMapping("/subir/pdf")
     public ResponseEntity<Map<String, Object>> subirPDF(
-            @RequestParam(name = "file", required = true) MultipartFile file,
-            @RequestParam(name = "inscripcionId", required = false) String inscripcionId) {
+        @RequestParam(name = "file", required = true) MultipartFile file,
+        @RequestParam(name = "inscripcionId", required = false) String inscripcionId,
+        @RequestParam(name = "solicitudId", required = false) String solicitudId,
+        @RequestParam(name = "idSolicitud", required = false) String idSolicitudAlias,
+        @RequestParam(name = "tipoSolicitud", required = false) String tipoSolicitud) {
         try {
-            System.out.println("📁 [INSCRIPCIONES] ===== INICIANDO SUBIDA DE ARCHIVO PDF =====");
-            System.out.println("📁 [INSCRIPCIONES] Archivo: " + file.getOriginalFilename());
-            System.out.println("📁 [INSCRIPCIONES] Tamaño: " + file.getSize() + " bytes");
-            System.out.println("📁 [INSCRIPCIONES] Tipo: " + file.getContentType());
-            System.out.println("📁 [INSCRIPCIONES] Inscripción ID: " + inscripcionId);
-            System.out.println("📁 [INSCRIPCIONES] Archivo vacío: " + file.isEmpty());
+            System.out.println("📁 [ARCHIVOS] ===== INICIANDO SUBIDA DE ARCHIVO PDF =====");
+            System.out.println("📁 [ARCHIVOS] Archivo: " + file.getOriginalFilename());
+            System.out.println("📁 [ARCHIVOS] Tamaño: " + file.getSize() + " bytes");
+            System.out.println("📁 [ARCHIVOS] Tipo: " + file.getContentType());
+            System.out.println("📁 [ARCHIVOS] Inscripción ID: " + inscripcionId);
+            // Unificar parámetro de ID de solicitud (aceptar tanto 'solicitudId' como 'idSolicitud')
+            String solicitudIdUnificado = (solicitudId != null && !solicitudId.trim().isEmpty()) ? solicitudId : idSolicitudAlias;
+            System.out.println("📁 [ARCHIVOS] Solicitud ID (unificado): " + solicitudIdUnificado +
+                               (solicitudId != null ? " | solicitudId=" + solicitudId : "") +
+                               (idSolicitudAlias != null ? " | idSolicitud=" + idSolicitudAlias : ""));
+            System.out.println("📁 [ARCHIVOS] Tipo Solicitud: " + tipoSolicitud);
+            System.out.println("📁 [ARCHIVOS] Archivo vacío: " + file.isEmpty());
             
             String nombreOriginal = file.getOriginalFilename();
             System.out.println("📁 [INSCRIPCIONES] Nombre original procesado: " + nombreOriginal);
@@ -152,39 +161,71 @@ public class ArchivosRestController {
                 return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(error);
             }
             
-            // 5. Si se proporciona ID de inscripción, crear documento en BD
-            if (inscripcionId != null && !inscripcionId.trim().isEmpty()) {
-                try {
-                    System.out.println("📋 [INSCRIPCIONES] Creando documento en BD para inscripción ID: " + inscripcionId);
-                    
-                    // Crear documento
-                    Documento documento = new Documento();
-                    documento.setNombre(nombreArchivo);
-                    documento.setRuta_documento(nombreArchivo);
-                    documento.setFecha_documento(new java.util.Date());
-                    documento.setEsValido(true);
-                    documento.setComentario("Comprobante de pago - Inscripción curso verano");
-                    
-                    // Asociar a inscripción
-                    co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.SolicitudCursoVeranoIncripcion solicitud = 
-                        new co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.SolicitudCursoVeranoIncripcion();
-                    solicitud.setId_solicitud(Integer.parseInt(inscripcionId));
-                    documento.setObjSolicitud(solicitud);
-                    
-                    // Guardar documento en BD
-                    Documento documentoGuardado = objGestionarDocumentosGateway.crearDocumento(documento);
-                    
-                    if (documentoGuardado != null) {
-                        System.out.println("✅ [INSCRIPCIONES] Documento guardado en BD ID: " + documentoGuardado.getId_documento());
-                    } else {
-                        System.out.println("⚠️ [INSCRIPCIONES] Error al guardar documento en BD");
+            // 5. Crear documento en BD para cualquier tipo de solicitud
+            boolean documentoGuardadoEnBD = false;
+            try {
+                System.out.println("📋 [ARCHIVOS] Creando documento en BD...");
+                
+                // Crear documento
+                Documento documento = new Documento();
+                documento.setNombre(nombreArchivo);
+                documento.setRuta_documento(nombreArchivo);
+                documento.setFecha_documento(new java.util.Date());
+                documento.setEsValido(true);
+                
+                // Determinar el tipo de solicitud y comentario
+                // String comentario = "Documento adjunto";
+                // if (tipoSolicitud != null) {
+                //     switch (tipoSolicitud.toLowerCase()) {
+                //         case "ecaes":
+                //             comentario = "Documento para inscripción ECAES";
+                //             break;
+                //         case "homologacion":
+                //             comentario = "Documento para homologación de asignaturas";
+                //             break;
+                //         case "reingreso":
+                //             comentario = "Documento para reingreso de estudiante";
+                //             break;
+                //         case "pazsalvo":
+                //             comentario = "Documento para paz y salvo";
+                //             break;
+                //         case "cursoverano":
+                //             comentario = "Comprobante de pago - Inscripción curso verano";
+                //             break;
+                //         default:
+                //             comentario = "Documento adjunto";
+                //     }
+                // }
+                // documento.setComentario(comentario);
+                
+                // Si hay solicitudId, intentar asociarlo
+                if (solicitudIdUnificado != null && !solicitudIdUnificado.trim().isEmpty()) {
+                    try {
+                        // Crear solicitud genérica para asociar el documento
+                        co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Solicitud solicitud = 
+                            new co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Solicitud();
+                        solicitud.setId_solicitud(Integer.parseInt(solicitudIdUnificado));
+                        documento.setObjSolicitud(solicitud);
+                        System.out.println("📋 [ARCHIVOS] Documento asociado a solicitud ID: " + solicitudIdUnificado);
+                    } catch (NumberFormatException e) {
+                        System.err.println("⚠️ [ARCHIVOS] Error al parsear solicitudId: " + solicitudIdUnificado);
                     }
-                    
-                } catch (Exception e) {
-                    System.err.println("❌ [INSCRIPCIONES] Error al crear documento en BD: " + e.getMessage());
-                    e.printStackTrace();
-                    // No fallar la operación por esto, pero logear el error
                 }
+                
+                // Guardar documento en BD
+                Documento documentoGuardado = objGestionarDocumentosGateway.crearDocumento(documento);
+                
+                if (documentoGuardado != null) {
+                    System.out.println("✅ [ARCHIVOS] Documento guardado en BD ID: " + documentoGuardado.getId_documento());
+                    documentoGuardadoEnBD = true;
+                } else {
+                    System.out.println("⚠️ [ARCHIVOS] Error al guardar documento en BD");
+                }
+                
+            } catch (Exception e) {
+                System.err.println("❌ [ARCHIVOS] Error al crear documento en BD: " + e.getMessage());
+                e.printStackTrace();
+                // No fallar la operación por esto, pero logear el error
             }
             
             // 6. Crear respuesta en el formato requerido
@@ -195,15 +236,25 @@ public class ArchivosRestController {
             respuesta.put("tamaño", file.getSize());
             respuesta.put("tipo", file.getContentType());
             respuesta.put("fechaSubida", new java.util.Date().toString());
+            respuesta.put("guardadoEnBD", documentoGuardadoEnBD);
             
             if (inscripcionId != null && !inscripcionId.trim().isEmpty()) {
                 respuesta.put("inscripcionId", inscripcionId);
             }
             
-            System.out.println("✅ [INSCRIPCIONES] Archivo subido exitosamente: " + nombreOriginal);
+            if (solicitudIdUnificado != null && !solicitudIdUnificado.trim().isEmpty()) {
+                respuesta.put("solicitudId", solicitudIdUnificado);
+            }
+            
+            if (tipoSolicitud != null && !tipoSolicitud.trim().isEmpty()) {
+                respuesta.put("tipoSolicitud", tipoSolicitud);
+            }
+            
+            System.out.println("✅ [ARCHIVOS] Archivo subido exitosamente: " + nombreOriginal);
+            System.out.println("✅ [ARCHIVOS] Guardado en BD: " + documentoGuardadoEnBD);
             return ResponseEntity.ok(respuesta);
                     } catch (Exception e) {
-            System.err.println("❌ [INSCRIPCIONES] Error al subir PDF: " + e.getMessage());
+            System.err.println("❌ [ARCHIVOS] Error al subir PDF: " + e.getMessage());
             e.printStackTrace();
             Map<String, Object> error = new HashMap<>();
             error.put("error", "Error interno del servidor: " + e.getMessage());
