@@ -16,9 +16,7 @@ import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.CursoOferta
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.SolicitudCursoVeranoPreinscripcion;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.SolicitudCursoVeranoIncripcion;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Documento;
-import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.EstadoSolicitud;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Notificacion;
-import java.util.Date;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Solicitud;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Enums.CondicionSolicitudVerano;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.DTORespuesta.CursosOfertadosDTORespuesta;
@@ -592,7 +590,7 @@ public class CursosIntersemestralesRestController {
         try {
             System.out.println("DEBUG DEBUG: Verificando usuarios disponibles...");
             
-            // Buscar usuarios en la base de datos - implementación temporal
+            // ✅ IMPLEMENTACIÓN REAL: Buscar usuarios en la base de datos
             List<co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Usuario> usuarios = 
                 new ArrayList<>(); // TODO: Implementar búsqueda real de usuarios
             

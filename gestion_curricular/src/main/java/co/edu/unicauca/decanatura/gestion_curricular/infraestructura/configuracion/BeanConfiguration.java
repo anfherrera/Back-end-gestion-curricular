@@ -4,7 +4,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
-import co.edu.unicauca.decanatura.gestion_curricular.Security.JwtUtil;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.FormateadorResultadosIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.GestionarArchivosGatewayIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.GestionarCursoOfertadoVeranoGatewayIntPort;
@@ -41,7 +40,6 @@ import co.edu.unicauca.decanatura.gestion_curricular.dominio.casosDeUso.Gestiona
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.casosDeUso.GestionarNotificacionCUAdapter;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.casosDeUso.GestionarSolicitudReingresoCUAdapter;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.casosDeUso.GestionarUsuarioCUAdapter;
-import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.formateador.DocumentGeneratorService;
 
 @Configuration
 public class BeanConfiguration {
@@ -171,13 +169,8 @@ public class BeanConfiguration {
         return new GestionarArchivosCUIAdapter(objGestionarArchivos, objFormateadorResultados);
     }
 
-    @Bean
-    public JwtUtil jwtUtil() {
-        return new JwtUtil();
-    }
+    // GestionarEstadisticasGatewayImplAdapter ya está definido como @Service, no necesita definición adicional
 
-    @Bean
-    public DocumentGeneratorService documentGeneratorService() {
-        return new DocumentGeneratorService();
-    }
+    // JwtUtil ya está definido como @Component, no necesita definición adicional
+    // DocumentGeneratorService ya está definido como @Service, no necesita definición adicional
 }

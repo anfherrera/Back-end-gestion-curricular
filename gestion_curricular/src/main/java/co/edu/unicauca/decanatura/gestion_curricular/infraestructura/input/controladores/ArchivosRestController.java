@@ -16,16 +16,12 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarArchivosCUIntPort;
-import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarSolicitudHomologacionCUIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarSolicitudPazYSalvoCUIntPort;
-import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarSolicitudReingresoCUIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarSolicitudCursoVeranoCUIntPort;
-import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarNotificacionCUIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.GestionarDocumentosGatewayIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Documento;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.SolicitudPazYSalvo;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.SolicitudCursoVeranoIncripcion;
-import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.mappers.DocumentosMapperDominio;
 
 import org.springframework.web.multipart.MultipartFile;
 
@@ -38,13 +34,9 @@ import org.springframework.web.multipart.MultipartFile;
 @Validated
 public class ArchivosRestController {
     private final GestionarArchivosCUIntPort objGestionarArchivos;
-    private final DocumentosMapperDominio documentosMapperDominio;
     private final GestionarDocumentosGatewayIntPort objGestionarDocumentosGateway;
-    private final GestionarSolicitudHomologacionCUIntPort solicitudHomologacionCU;
     private final GestionarSolicitudPazYSalvoCUIntPort solicitudPazYSalvoCU;
-    private final GestionarSolicitudReingresoCUIntPort solicitudReingresoCU;
     private final GestionarSolicitudCursoVeranoCUIntPort solicitudCursoVeranoCU;
-    private final GestionarNotificacionCUIntPort objNotificacion;
     @PostMapping("/subir/pdf")
     public ResponseEntity<Map<String, Object>> subirPDF(
         @RequestParam(name = "file", required = true) MultipartFile file,
