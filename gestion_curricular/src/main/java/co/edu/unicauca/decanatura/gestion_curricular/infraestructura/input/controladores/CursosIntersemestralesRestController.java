@@ -212,8 +212,6 @@ public class CursosIntersemestralesRestController {
     @GetMapping("/debug/database-check")
     public ResponseEntity<Map<String, Object>> debugDatabaseCheck() {
         try {
-            System.out.println("🔍 [DEBUG_DB] Verificando base de datos...");
-            
             Map<String, Object> resultado = new HashMap<>();
             resultado.put("status", "OK");
             resultado.put("message", "Debug endpoint funcionando");
@@ -222,17 +220,13 @@ public class CursosIntersemestralesRestController {
             try {
                 List<SolicitudEntity> solicitudesUsuario2 = solicitudRepository.buscarSolicitudesPorUsuario(2);
                 resultado.put("solicitudes_usuario_2", solicitudesUsuario2.size());
-                System.out.println("🔍 [DEBUG_DB] Solicitudes usuario 2: " + solicitudesUsuario2.size());
             } catch (Exception e) {
                 resultado.put("error_usuario_2", e.getMessage());
-                System.out.println("❌ [DEBUG_DB] Error consultando usuario 2: " + e.getMessage());
             }
             
             return ResponseEntity.ok(resultado);
             
         } catch (Exception e) {
-            System.err.println("❌ [DEBUG_DB] Error: " + e.getMessage());
-            e.printStackTrace();
             Map<String, Object> error = new HashMap<>();
             error.put("error", e.getMessage());
             return ResponseEntity.internalServerError().body(error);

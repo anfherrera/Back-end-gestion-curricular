@@ -146,10 +146,7 @@ public class SolicitudPazYSalvoRestController {
     public ResponseEntity<Map<String, Object>> subirDocumentoPazSalvo(
             @RequestParam("file") MultipartFile file) {
         try {
-            System.out.println("📁 [PAZ Y SALVO] Subiendo documento sin asociar (como en homologación)...");
-            
             String nombreOriginal = file.getOriginalFilename();
-            System.out.println("📁 [PAZ Y SALVO] Archivo: " + nombreOriginal);
             
             // Validaciones básicas
             if (!nombreOriginal.toLowerCase().endsWith(".pdf")) {
@@ -160,7 +157,6 @@ public class SolicitudPazYSalvoRestController {
             // Validar peso máximo (10MB)
             long maxFileSize = 10 * 1024 * 1024; // 10MB
             if (file.getSize() > maxFileSize) {
-                System.err.println("❌ [PAZ Y SALVO] Archivo demasiado grande: " + file.getSize() + " bytes");
                 return ResponseEntity.status(HttpStatus.PAYLOAD_TOO_LARGE)
                     .body(Map.of("error", "Archivo demasiado grande. Máximo 10MB"));
             }
@@ -179,8 +175,6 @@ public class SolicitudPazYSalvoRestController {
             
             Documento documentoGuardado = this.objGestionarDocumentosGateway.crearDocumento(doc);
             
-            System.out.println("✅ [PAZ Y SALVO] Documento creado sin asociar: " + documentoGuardado.getId_documento());
-            
             Map<String, Object> respuesta = new HashMap<>();
             respuesta.put("success", true);
             respuesta.put("message", "Documento subido exitosamente (sin asociar)");
@@ -191,9 +185,6 @@ public class SolicitudPazYSalvoRestController {
             return ResponseEntity.ok(respuesta);
             
         } catch (Exception e) {
-            System.err.println("❌ [PAZ Y SALVO] Error: " + e.getMessage());
-            e.printStackTrace();
-            
             Map<String, Object> errorInfo = new HashMap<>();
             errorInfo.put("error", e.getMessage());
             return ResponseEntity.ok(errorInfo);
@@ -206,18 +197,12 @@ public class SolicitudPazYSalvoRestController {
     @GetMapping("/descargar-documento")
     public ResponseEntity<byte[]> descargarDocumento(@RequestParam("filename") String filename) {
         try {
-            System.out.println("📥 Descargando documento: " + filename);
-            
             // Obtener el archivo usando el servicio de archivos
             byte[] archivo = objGestionarArchivos.getFile(filename);
             
             if (archivo == null || archivo.length == 0) {
-                System.err.println("❌ Archivo no encontrado: " + filename);
                 return ResponseEntity.notFound().build();
             }
-            
-            System.out.println("✅ Documento encontrado: " + filename);
-            System.out.println("📄 Tamaño del archivo: " + archivo.length + " bytes");
             
             // Configurar respuesta igual que en homologación
             String contentDisposition = "attachment; filename=\"" + filename + "\"";
@@ -228,8 +213,6 @@ public class SolicitudPazYSalvoRestController {
                 .body(archivo);
                 
         } catch (Exception e) {
-            System.err.println("❌ Error al descargar documento: " + e.getMessage());
-            e.printStackTrace();
             return ResponseEntity.internalServerError().build();
         }
     }
@@ -248,12 +231,9 @@ public class SolicitudPazYSalvoRestController {
             @RequestParam(value = "tituloTrabajoGrado", required = false) String tituloTrabajoGrado,
             @RequestParam(value = "directorTrabajoGrado", required = false) String directorTrabajoGrado) {
         try {
-            System.out.println("📄 Generando documento de paz y salvo para solicitud: " + idSolicitud);
-            
             // Obtener la solicitud
             SolicitudPazYSalvo solicitud = solicitudPazYSalvoCU.buscarPorId(idSolicitud);
             if (solicitud == null) {
-                System.err.println("❌ Solicitud no encontrada: " + idSolicitud);
                 return ResponseEntity.notFound().build();
             }
             
@@ -288,16 +268,12 @@ public class SolicitudPazYSalvoRestController {
             String nombreLimpio = nombreEstudiante.replaceAll("[^a-zA-Z0-9]", "_");
             String nombreArchivo = String.format("PAZ_SALVO_%s_%s.docx", nombreLimpio, numeroDocumento);
             
-            System.out.println("✅ Documento de paz y salvo generado: " + nombreArchivo);
-            
             return ResponseEntity.ok()
                 .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + nombreArchivo + "\"")
                 .contentType(MediaType.APPLICATION_OCTET_STREAM)
                 .body(documentBytes.toByteArray());
                 
         } catch (Exception e) {
-            System.err.println("❌ Error al generar documento de paz y salvo: " + e.getMessage());
-            e.printStackTrace();
             return ResponseEntity.internalServerError().build();
         }
     }
@@ -308,17 +284,12 @@ public class SolicitudPazYSalvoRestController {
     @GetMapping("/plantillas-disponibles")
     public ResponseEntity<?> obtenerPlantillasDisponibles() {
         try {
-            System.out.println("📋 Obteniendo plantillas disponibles para paz y salvo desde el servicio");
-            
             // Usar el servicio real igual que homologación
             List<?> plantillas = documentGeneratorService.getTemplates("paz-salvo");
             
-            System.out.println("✅ Plantillas obtenidas del servicio: " + plantillas.size());
             return ResponseEntity.ok(plantillas);
             
         } catch (Exception e) {
-            System.err.println("❌ Error al obtener plantillas: " + e.getMessage());
-            e.printStackTrace();
             return ResponseEntity.internalServerError().build();
         }
     }
@@ -329,19 +300,15 @@ public class SolicitudPazYSalvoRestController {
     @GetMapping("/descargarOficio/{idSolicitud}")
     public ResponseEntity<byte[]> descargarOficioPazSalvo(@PathVariable Integer idSolicitud) {
         try {
-            System.out.println("📥 Descargando oficio de paz y salvo para solicitud: " + idSolicitud);
-            
             // Obtener la solicitud con sus documentos
             SolicitudPazYSalvo solicitud = solicitudPazYSalvoCU.buscarPorId(idSolicitud);
             if (solicitud == null) {
-                System.err.println("❌ Solicitud de paz y salvo no encontrada: " + idSolicitud);
                 return ResponseEntity.notFound().build();
             }
             
             // Buscar documentos asociados a esta solicitud
             List<Documento> documentos = solicitud.getDocumentos();
             if (documentos == null || documentos.isEmpty()) {
-                System.err.println("❌ No hay documentos asociados a la solicitud de paz y salvo: " + idSolicitud);
                 return ResponseEntity.notFound().build();
             }
             
@@ -359,17 +326,10 @@ public class SolicitudPazYSalvoRestController {
                     
                     if (esOficio) {
                         try {
-                            System.out.println("🔍 Probando oficio/resolución de paz y salvo: " + documento.getNombre());
                             byte[] archivo = objGestionarArchivos.getFile(documento.getNombre());
-                            
-                            System.out.println("✅ Oficio/resolución de paz y salvo encontrado: " + documento.getNombre());
-                            
-                            System.out.println("📄 Configurando respuesta para archivo: " + documento.getNombre());
-                            System.out.println("📄 Tamaño del archivo: " + archivo.length + " bytes");
                             
                             // Configurar el header Content-Disposition correctamente
                             String contentDisposition = "attachment; filename=\"" + documento.getNombre() + "\"";
-                            System.out.println("📄 Content-Disposition: " + contentDisposition);
                             
                             return ResponseEntity.ok()
                                 .header(HttpHeaders.CONTENT_DISPOSITION, contentDisposition)
@@ -377,21 +337,15 @@ public class SolicitudPazYSalvoRestController {
                                 .body(archivo);
                                 
                         } catch (Exception e) {
-                            System.out.println("❌ No encontrado: " + documento.getNombre());
                             continue; // Probar el siguiente documento
                         }
-                    } else {
-                        System.out.println("⏭️ Saltando archivo del estudiante: " + documento.getNombre());
                     }
                 }
             }
             
-            System.err.println("❌ No se encontró ningún archivo PDF para la solicitud de paz y salvo: " + idSolicitud);
             return ResponseEntity.notFound().build();
                 
         } catch (Exception e) {
-            System.err.println("❌ Error al descargar oficio de paz y salvo: " + e.getMessage());
-            e.printStackTrace();
             return ResponseEntity.internalServerError().build();
         }
     }
@@ -403,40 +357,23 @@ public class SolicitudPazYSalvoRestController {
     @GetMapping("/obtenerDocumentos/{idSolicitud}")
     public ResponseEntity<List<Map<String, Object>>> obtenerDocumentosPazSalvo(@PathVariable Integer idSolicitud) {
         try {
-            System.out.println("🔍 [DEBUG] ===== INICIANDO OBTENCIÓN DE DOCUMENTOS =====");
-            System.out.println("🔍 [DEBUG] ID Solicitud recibido: " + idSolicitud);
-            
             // Obtener la solicitud con sus documentos
-            System.out.println("🔍 [DEBUG] Llamando a solicitudPazYSalvoCU.buscarPorId(" + idSolicitud + ")");
             SolicitudPazYSalvo solicitud = solicitudPazYSalvoCU.buscarPorId(idSolicitud);
             
             if (solicitud == null) {
-                System.err.println("❌ [DEBUG] Solicitud de paz y salvo no encontrada: " + idSolicitud);
                 return ResponseEntity.notFound().build();
             }
             
-            System.out.println("✅ [DEBUG] Solicitud encontrada:");
-            System.out.println("✅ [DEBUG] - ID: " + solicitud.getId_solicitud());
-            System.out.println("✅ [DEBUG] - Nombre: " + solicitud.getNombre_solicitud());
-            
             // Buscar documentos asociados a esta solicitud
-            System.out.println("🔍 [DEBUG] Obteniendo documentos de la solicitud...");
             List<Documento> documentos = solicitud.getDocumentos();
             
-            System.out.println("🔍 [DEBUG] Documentos obtenidos: " + (documentos != null ? documentos.size() : "null"));
-            
             if (documentos == null) {
-                System.err.println("❌ [DEBUG] La lista de documentos es NULL");
                 return ResponseEntity.ok(new ArrayList<>());
             }
             
             if (documentos.isEmpty()) {
-                System.err.println("❌ [DEBUG] La lista de documentos está VACÍA");
-                System.err.println("❌ [DEBUG] No hay documentos asociados a la solicitud de paz y salvo: " + idSolicitud);
                 return ResponseEntity.ok(new ArrayList<>()); // Retornar lista vacía
             }
-            
-            System.out.println("✅ [DEBUG] Documentos encontrados: " + documentos.size());
             
             // Crear lista con TODOS los documentos (incluyendo los del estudiante)
             List<Map<String, Object>> todosDocumentos = new ArrayList<>();
@@ -475,23 +412,12 @@ public class SolicitudPazYSalvoRestController {
                     
                     doc.put("tipo", tipoDocumento);
                     todosDocumentos.add(doc);
-                    System.out.println("📋 Agregando documento: " + documento.getNombre() + " (Tipo: " + tipoDocumento + ")");
                 }
-            }
-            
-            System.out.println("✅ [DEBUG] Total documentos procesados: " + todosDocumentos.size());
-            System.out.println("✅ [DEBUG] ===== FINALIZANDO OBTENCIÓN DE DOCUMENTOS =====");
-            
-            if (todosDocumentos.isEmpty()) {
-                System.err.println("⚠️ [DEBUG] ADVERTENCIA: Se procesaron documentos pero la lista final está vacía");
             }
             
             return ResponseEntity.ok(todosDocumentos);
             
         } catch (Exception e) {
-            System.err.println("❌ [DEBUG] ERROR al obtener documentos de paz y salvo: " + e.getMessage());
-            System.err.println("❌ [DEBUG] Stack trace:");
-            e.printStackTrace();
             return ResponseEntity.internalServerError().build();
         }
     }
@@ -502,8 +428,6 @@ public class SolicitudPazYSalvoRestController {
     @GetMapping("/debug/documentos/{idSolicitud}")
     public ResponseEntity<Map<String, Object>> debugDocumentos(@PathVariable Integer idSolicitud) {
         try {
-            System.out.println("🔍 [DEBUG-ENDPOINT] Verificando datos para solicitud: " + idSolicitud);
-            
             Map<String, Object> debugInfo = new HashMap<>();
             
             // Verificar si la solicitud existe
@@ -541,9 +465,6 @@ public class SolicitudPazYSalvoRestController {
             return ResponseEntity.ok(debugInfo);
             
         } catch (Exception e) {
-            System.err.println("❌ [DEBUG-ENDPOINT] Error: " + e.getMessage());
-            e.printStackTrace();
-            
             Map<String, Object> errorInfo = new HashMap<>();
             errorInfo.put("error", e.getMessage());
             errorInfo.put("stack_trace", e.getStackTrace());

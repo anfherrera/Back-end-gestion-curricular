@@ -134,19 +134,15 @@ public class SolicitudHomologacionRestController {
     @GetMapping("/descargarOficio/{idSolicitud}")
     public ResponseEntity<byte[]> descargarOficio(@PathVariable Integer idSolicitud) {
         try {
-            System.out.println("📥 Descargando oficio para solicitud: " + idSolicitud);
-            
             // Obtener la solicitud con sus documentos
             SolicitudHomologacion solicitud = solicitudHomologacionCU.buscarPorId(idSolicitud);
             if (solicitud == null) {
-                System.err.println("❌ Solicitud no encontrada: " + idSolicitud);
                 return ResponseEntity.notFound().build();
             }
             
             // Buscar documentos asociados a esta solicitud
             List<Documento> documentos = solicitud.getDocumentos();
             if (documentos == null || documentos.isEmpty()) {
-                System.err.println("❌ No hay documentos asociados a la solicitud: " + idSolicitud);
                 return ResponseEntity.notFound().build();
             }
             
@@ -163,17 +159,10 @@ public class SolicitudHomologacionRestController {
                     
                     if (esOficio) {
                         try {
-                            System.out.println("🔍 Probando oficio/resolución: " + documento.getNombre());
                             byte[] archivo = objGestionarArchivos.getFile(documento.getNombre());
-                            
-                            System.out.println("✅ Oficio/resolución encontrado: " + documento.getNombre());
-                            
-                            System.out.println("📄 Configurando respuesta para archivo: " + documento.getNombre());
-                            System.out.println("📄 Tamaño del archivo: " + archivo.length + " bytes");
                             
                             // Configurar el header Content-Disposition correctamente
                             String contentDisposition = "attachment; filename=\"" + documento.getNombre() + "\"";
-                            System.out.println("📄 Content-Disposition: " + contentDisposition);
                             
                             return ResponseEntity.ok()
                                 .header(HttpHeaders.CONTENT_DISPOSITION, contentDisposition)
@@ -181,21 +170,15 @@ public class SolicitudHomologacionRestController {
                                 .body(archivo);
                                 
                         } catch (Exception e) {
-                            System.out.println("❌ No encontrado: " + documento.getNombre());
                             continue; // Probar el siguiente documento
                         }
-                    } else {
-                        System.out.println("⏭️ Saltando archivo del estudiante: " + documento.getNombre());
                     }
                 }
             }
             
-            System.err.println("❌ No se encontró ningún archivo PDF para la solicitud: " + idSolicitud);
             return ResponseEntity.notFound().build();
                 
         } catch (Exception e) {
-            System.err.println("❌ Error al descargar oficio: " + e.getMessage());
-            e.printStackTrace();
             return ResponseEntity.internalServerError().build();
         }
     }
@@ -206,19 +189,15 @@ public class SolicitudHomologacionRestController {
     @GetMapping("/obtenerOficios/{idSolicitud}")
     public ResponseEntity<List<Map<String, Object>>> obtenerOficios(@PathVariable Integer idSolicitud) {
         try {
-            System.out.println("📋 Obteniendo oficios para solicitud: " + idSolicitud);
-            
             // Obtener la solicitud con sus documentos
             SolicitudHomologacion solicitud = solicitudHomologacionCU.buscarPorId(idSolicitud);
             if (solicitud == null) {
-                System.err.println("❌ Solicitud no encontrada: " + idSolicitud);
                 return ResponseEntity.notFound().build();
             }
             
             // Buscar documentos asociados a esta solicitud
             List<Documento> documentos = solicitud.getDocumentos();
             if (documentos == null || documentos.isEmpty()) {
-                System.err.println("❌ No hay documentos asociados a la solicitud: " + idSolicitud);
                 return ResponseEntity.ok(new ArrayList<>()); // Retornar lista vacía
             }
             
@@ -241,19 +220,13 @@ public class SolicitudHomologacionRestController {
                         oficio.put("nombreArchivo", documento.getNombre());
                         oficio.put("ruta", documento.getRuta_documento());
                         oficios.add(oficio);
-                        System.out.println("📋 Agregando oficio/resolución: " + documento.getNombre());
-                    } else {
-                        System.out.println("⏭️ Saltando archivo del estudiante: " + documento.getNombre());
                     }
                 }
             }
             
-            System.out.println("✅ Oficios encontrados: " + oficios.size());
             return ResponseEntity.ok(oficios);
             
         } catch (Exception e) {
-            System.err.println("❌ Error al obtener oficios: " + e.getMessage());
-            e.printStackTrace();
             return ResponseEntity.internalServerError().build();
         }
     }
@@ -264,8 +237,6 @@ public class SolicitudHomologacionRestController {
     @GetMapping("/validarDocumentosRequeridos/{idSolicitud}")
     public ResponseEntity<Map<String, Object>> validarDocumentosRequeridos(@PathVariable Integer idSolicitud) {
         try {
-            System.out.println("📋 Validando documentos requeridos para solicitud: " + idSolicitud);
-            
             // Obtener la solicitud con sus documentos
             SolicitudHomologacion solicitud = solicitudHomologacionCU.buscarPorId(idSolicitud);
             if (solicitud == null) {
@@ -309,12 +280,9 @@ public class SolicitudHomologacionRestController {
             resultado.put("todosCompletos", todosCompletos);
             resultado.put("totalDocumentos", documentos.size());
             
-            System.out.println("✅ Validación completada. Todos completos: " + todosCompletos);
             return ResponseEntity.ok(resultado);
             
         } catch (Exception e) {
-            System.err.println("❌ Error al validar documentos: " + e.getMessage());
-            e.printStackTrace();
             return ResponseEntity.internalServerError().build();
         }
     }

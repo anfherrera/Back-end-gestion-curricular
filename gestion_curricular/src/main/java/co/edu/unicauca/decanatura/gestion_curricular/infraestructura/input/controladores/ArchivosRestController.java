@@ -45,25 +45,13 @@ public class ArchivosRestController {
         @RequestParam(name = "idSolicitud", required = false) String idSolicitudAlias,
         @RequestParam(name = "tipoSolicitud", required = false) String tipoSolicitud) {
         try {
-            System.out.println("📁 [ARCHIVOS] ===== INICIANDO SUBIDA DE ARCHIVO PDF =====");
-            System.out.println("📁 [ARCHIVOS] Archivo: " + file.getOriginalFilename());
-            System.out.println("📁 [ARCHIVOS] Tamaño: " + file.getSize() + " bytes");
-            System.out.println("📁 [ARCHIVOS] Tipo: " + file.getContentType());
-            System.out.println("📁 [ARCHIVOS] Inscripción ID: " + inscripcionId);
             // Unificar parámetro de ID de solicitud (aceptar tanto 'solicitudId' como 'idSolicitud')
             String solicitudIdUnificado = (solicitudId != null && !solicitudId.trim().isEmpty()) ? solicitudId : idSolicitudAlias;
-            System.out.println("📁 [ARCHIVOS] Solicitud ID (unificado): " + solicitudIdUnificado +
-                               (solicitudId != null ? " | solicitudId=" + solicitudId : "") +
-                               (idSolicitudAlias != null ? " | idSolicitud=" + idSolicitudAlias : ""));
-            System.out.println("📁 [ARCHIVOS] Tipo Solicitud: " + tipoSolicitud);
-            System.out.println("📁 [ARCHIVOS] Archivo vacío: " + file.isEmpty());
             
             String nombreOriginal = file.getOriginalFilename();
-            System.out.println("📁 [INSCRIPCIONES] Nombre original procesado: " + nombreOriginal);
             
             // 1. Validar que se proporcionó archivo
             if (file.isEmpty()) {
-                System.err.println("❌ [INSCRIPCIONES] No se proporcionó archivo");
                 Map<String, Object> error = new HashMap<>();
                 error.put("error", "No se proporcionó archivo");
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
@@ -72,7 +60,6 @@ public class ArchivosRestController {
             // 2. Validar peso máximo (15MB = 15 * 1024 * 1024 bytes)
             long maxFileSize = 15 * 1024 * 1024; // 15MB
             if (file.getSize() > maxFileSize) {
-                System.err.println("❌ [INSCRIPCIONES] Archivo demasiado grande: " + file.getSize() + " bytes (máximo: " + maxFileSize + " bytes)");
                 Map<String, Object> error = new HashMap<>();
                 error.put("error", "Archivo demasiado grande. Máximo permitido: 15MB");
                 return ResponseEntity.status(HttpStatus.PAYLOAD_TOO_LARGE).body(error);
@@ -80,13 +67,10 @@ public class ArchivosRestController {
             
             // 3. Validar tipo de archivo
             if (!file.getContentType().equals("application/pdf")) {
-                System.err.println("❌ [INSCRIPCIONES] Tipo de archivo no válido: " + file.getContentType());
                 Map<String, Object> error = new HashMap<>();
                 error.put("error", "Solo se permiten archivos PDF");
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
             }
-            
-            System.out.println("✅ [INSCRIPCIONES] Validaciones pasadas, guardando archivo...");
             
             // 4. Guardar archivo con manejo de errores mejorado
             String nombreArchivo;
@@ -119,23 +103,19 @@ public class ArchivosRestController {
                                 
                                 // Crear nombre: nombreOriginal_nombreEstudiante_inscripcionId.extension
                                 nombreUnico = nombreSinExtension + "_" + nombreLimpio + "_" + inscripcionId + extension;
-                                System.out.println("✅ [INSCRIPCIONES] Nombre generado con estudiante: " + nombreUnico);
                             } else {
                                 // Si no se puede obtener el nombre del estudiante, usar solo el ID
                                 String nombreSinExtension = nombreOriginal.substring(0, nombreOriginal.lastIndexOf('.'));
                                 String extension = nombreOriginal.substring(nombreOriginal.lastIndexOf('.'));
                                 nombreUnico = nombreSinExtension + "_" + inscripcionId + extension;
-                                System.out.println("⚠️ [INSCRIPCIONES] No se pudo obtener nombre del estudiante, usando solo ID: " + nombreUnico);
                             }
                         } else {
                             // Si no se encuentra la inscripción, usar solo el ID
                             String nombreSinExtension = nombreOriginal.substring(0, nombreOriginal.lastIndexOf('.'));
                             String extension = nombreOriginal.substring(nombreOriginal.lastIndexOf('.'));
                             nombreUnico = nombreSinExtension + "_" + inscripcionId + extension;
-                            System.out.println("⚠️ [INSCRIPCIONES] Inscripción no encontrada, usando solo ID: " + nombreUnico);
                         }
                     } catch (Exception e) {
-                        System.err.println("❌ [INSCRIPCIONES] Error al obtener información del estudiante: " + e.getMessage());
                         // En caso de error, usar solo el ID
                         String nombreSinExtension = nombreOriginal.substring(0, nombreOriginal.lastIndexOf('.'));
                         String extension = nombreOriginal.substring(nombreOriginal.lastIndexOf('.'));
@@ -143,10 +123,7 @@ public class ArchivosRestController {
                     }
                 }
                 nombreArchivo = this.objGestionarArchivos.saveFile(file, nombreUnico, "pdf");
-                System.out.println("✅ [INSCRIPCIONES] Archivo guardado exitosamente: " + nombreArchivo);
             } catch (Exception saveError) {
-                System.err.println("❌ [INSCRIPCIONES] Error al guardar archivo: " + saveError.getMessage());
-                saveError.printStackTrace();
                 Map<String, Object> error = new HashMap<>();
                 error.put("error", "Error al guardar archivo: " + saveError.getMessage());
                 error.put("detalle", "Verificar permisos de escritura en carpeta de archivos");
@@ -156,39 +133,12 @@ public class ArchivosRestController {
             // 5. Crear documento en BD para cualquier tipo de solicitud
             boolean documentoGuardadoEnBD = false;
             try {
-                System.out.println("📋 [ARCHIVOS] Creando documento en BD...");
-                
                 // Crear documento
                 Documento documento = new Documento();
                 documento.setNombre(nombreArchivo);
                 documento.setRuta_documento(nombreArchivo);
                 documento.setFecha_documento(new java.util.Date());
                 documento.setEsValido(true);
-                
-                // Determinar el tipo de solicitud y comentario
-                // String comentario = "Documento adjunto";
-                // if (tipoSolicitud != null) {
-                //     switch (tipoSolicitud.toLowerCase()) {
-                //         case "ecaes":
-                //             comentario = "Documento para inscripción ECAES";
-                //             break;
-                //         case "homologacion":
-                //             comentario = "Documento para homologación de asignaturas";
-                //             break;
-                //         case "reingreso":
-                //             comentario = "Documento para reingreso de estudiante";
-                //             break;
-                //         case "pazsalvo":
-                //             comentario = "Documento para paz y salvo";
-                //             break;
-                //         case "cursoverano":
-                //             comentario = "Comprobante de pago - Inscripción curso verano";
-                //             break;
-                //         default:
-                //             comentario = "Documento adjunto";
-                //     }
-                // }
-                // documento.setComentario(comentario);
                 
                 // Si hay solicitudId, intentar asociarlo
                 if (solicitudIdUnificado != null && !solicitudIdUnificado.trim().isEmpty()) {
@@ -198,9 +148,8 @@ public class ArchivosRestController {
                             new co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Solicitud();
                         solicitud.setId_solicitud(Integer.parseInt(solicitudIdUnificado));
                         documento.setObjSolicitud(solicitud);
-                        System.out.println("📋 [ARCHIVOS] Documento asociado a solicitud ID: " + solicitudIdUnificado);
                     } catch (NumberFormatException e) {
-                        System.err.println("⚠️ [ARCHIVOS] Error al parsear solicitudId: " + solicitudIdUnificado);
+                        // Ignorar error al parsear
                     }
                 }
                 
@@ -208,15 +157,10 @@ public class ArchivosRestController {
                 Documento documentoGuardado = objGestionarDocumentosGateway.crearDocumento(documento);
                 
                 if (documentoGuardado != null) {
-                    System.out.println("✅ [ARCHIVOS] Documento guardado en BD ID: " + documentoGuardado.getId_documento());
                     documentoGuardadoEnBD = true;
-                } else {
-                    System.out.println("⚠️ [ARCHIVOS] Error al guardar documento en BD");
                 }
                 
             } catch (Exception e) {
-                System.err.println("❌ [ARCHIVOS] Error al crear documento en BD: " + e.getMessage());
-                e.printStackTrace();
                 // No fallar la operación por esto, pero logear el error
             }
             
@@ -242,12 +186,8 @@ public class ArchivosRestController {
                 respuesta.put("tipoSolicitud", tipoSolicitud);
             }
             
-            System.out.println("✅ [ARCHIVOS] Archivo subido exitosamente: " + nombreOriginal);
-            System.out.println("✅ [ARCHIVOS] Guardado en BD: " + documentoGuardadoEnBD);
             return ResponseEntity.ok(respuesta);
                     } catch (Exception e) {
-            System.err.println("❌ [ARCHIVOS] Error al subir PDF: " + e.getMessage());
-            e.printStackTrace();
             Map<String, Object> error = new HashMap<>();
             error.put("error", "Error interno del servidor: " + e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(error);
@@ -263,17 +203,6 @@ public class ArchivosRestController {
             @RequestParam(name = "file", required = false) MultipartFile file,
             @RequestParam(name = "inscripcionId", required = false) String inscripcionId) {
         try {
-            System.out.println("🧪 [TEST] Endpoint de prueba de subida de archivos");
-            System.out.println("🧪 [TEST] Archivo recibido: " + (file != null ? "SÍ" : "NO"));
-            System.out.println("🧪 [TEST] Inscripción ID: " + inscripcionId);
-            
-            if (file != null) {
-                System.out.println("🧪 [TEST] Nombre archivo: " + file.getOriginalFilename());
-                System.out.println("🧪 [TEST] Tamaño: " + file.getSize() + " bytes");
-                System.out.println("🧪 [TEST] Tipo: " + file.getContentType());
-                System.out.println("🧪 [TEST] Vacío: " + file.isEmpty());
-            }
-            
             Map<String, Object> respuesta = new HashMap<>();
             respuesta.put("success", true);
             respuesta.put("message", "Endpoint de prueba funcionando correctamente");
@@ -289,8 +218,6 @@ public class ArchivosRestController {
             return ResponseEntity.ok(respuesta);
             
         } catch (Exception e) {
-            System.err.println("❌ [TEST] Error en endpoint de prueba: " + e.getMessage());
-            e.printStackTrace();
             Map<String, Object> error = new HashMap<>();
             error.put("error", "Error en endpoint de prueba: " + e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(error);
@@ -317,19 +244,15 @@ public class ArchivosRestController {
     @GetMapping("/descargarOficioPazSalvo/{idSolicitud}")
     public ResponseEntity<byte[]> descargarOficioPazSalvo(@PathVariable Integer idSolicitud) {
         try {
-            System.out.println("📥 Descargando oficio de paz y salvo para solicitud: " + idSolicitud);
-            
             // Obtener la solicitud con sus documentos
             SolicitudPazYSalvo solicitud = solicitudPazYSalvoCU.buscarPorId(idSolicitud);
             if (solicitud == null) {
-                System.err.println("❌ Solicitud de paz y salvo no encontrada: " + idSolicitud);
                 return ResponseEntity.notFound().build();
             }
             
             // Buscar documentos asociados a esta solicitud
             List<Documento> documentos = solicitud.getDocumentos();
             if (documentos == null || documentos.isEmpty()) {
-                System.err.println("❌ No hay documentos asociados a la solicitud de paz y salvo: " + idSolicitud);
                 return ResponseEntity.notFound().build();
             }
             
@@ -347,17 +270,10 @@ public class ArchivosRestController {
                     
                     if (esOficio) {
                         try {
-                            System.out.println("🔍 Probando oficio/resolución de paz y salvo: " + documento.getNombre());
                             byte[] archivo = objGestionarArchivos.getFile(documento.getNombre());
-                            
-                            System.out.println("✅ Oficio/resolución de paz y salvo encontrado: " + documento.getNombre());
-                            
-                            System.out.println("📄 Configurando respuesta para archivo: " + documento.getNombre());
-                            System.out.println("📄 Tamaño del archivo: " + archivo.length + " bytes");
                             
                             // Configurar el header Content-Disposition correctamente
                             String contentDisposition = "attachment; filename=\"" + documento.getNombre() + "\"";
-                            System.out.println("📄 Content-Disposition: " + contentDisposition);
                             
                             return ResponseEntity.ok()
                                 .header(HttpHeaders.CONTENT_DISPOSITION, contentDisposition)
@@ -365,21 +281,15 @@ public class ArchivosRestController {
                                 .body(archivo);
                                 
                         } catch (Exception e) {
-                            System.out.println("❌ No encontrado: " + documento.getNombre());
                             continue; // Probar el siguiente documento
                         }
-                    } else {
-                        System.out.println("⏭️ Saltando archivo del estudiante: " + documento.getNombre());
                     }
                 }
             }
             
-            System.err.println("❌ No se encontró ningún archivo PDF para la solicitud de paz y salvo: " + idSolicitud);
             return ResponseEntity.notFound().build();
                 
         } catch (Exception e) {
-            System.err.println("❌ Error al descargar oficio de paz y salvo: " + e.getMessage());
-            e.printStackTrace();
             return ResponseEntity.internalServerError().build();
         }
     }
@@ -390,8 +300,6 @@ public class ArchivosRestController {
     @GetMapping("/validarDocumentosRequeridosPazSalvo/{idSolicitud}")
     public ResponseEntity<Map<String, Object>> validarDocumentosRequeridosPazSalvo(@PathVariable Integer idSolicitud) {
         try {
-            System.out.println("📋 Validando documentos requeridos para solicitud de paz y salvo: " + idSolicitud);
-            
             // Obtener la solicitud con sus documentos
             SolicitudPazYSalvo solicitud = solicitudPazYSalvoCU.buscarPorId(idSolicitud);
             if (solicitud == null) {
@@ -445,12 +353,9 @@ public class ArchivosRestController {
             resultado.put("todosCompletos", todosCompletos);
             resultado.put("totalDocumentos", documentos.size());
             
-            System.out.println("✅ Validación de paz y salvo completada. Todos completos: " + todosCompletos);
             return ResponseEntity.ok(resultado);
             
         } catch (Exception e) {
-            System.err.println("❌ Error al validar documentos de paz y salvo: " + e.getMessage());
-            e.printStackTrace();
             return ResponseEntity.internalServerError().build();
         }
     }

@@ -188,12 +188,7 @@ public class GestionarEstadisticasGatewayImplAdapter implements GestionarEstadis
                 // Datos conocidos del frontend
                 totalEnProceso = 11;
                 totalEnviadas = 9;
-                System.out.println("📊 [ESTADISTICAS_GLOBALES] Aplicando corrección de estados - En Proceso: " + totalEnProceso + ", Enviadas: " + totalEnviadas);
             }
-            
-            System.out.println("📊 [ESTADISTICAS_GLOBALES] Totales obtenidos - Total: " + totalSolicitudes + 
-                             ", Aprobadas: " + totalAprobadas + ", Rechazadas: " + totalRechazadas + 
-                             ", En Proceso: " + totalEnProceso + ", Enviadas: " + totalEnviadas);
             
             estadisticas.put("totalSolicitudes", totalSolicitudes);
             estadisticas.put("totalAprobadas", totalAprobadas);

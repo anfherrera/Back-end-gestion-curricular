@@ -33,7 +33,6 @@ public class DocumentGeneratorController {
                 .body(documentBytes.toByteArray());
                 
         } catch (Exception e) {
-            e.printStackTrace();
             return ResponseEntity.internalServerError().build();
         }
     }
@@ -46,7 +45,6 @@ public class DocumentGeneratorController {
         try {
             return ResponseEntity.ok(documentGeneratorService.getTemplates(proceso));
         } catch (Exception e) {
-            e.printStackTrace();
             return ResponseEntity.internalServerError().build();
         }
     }
