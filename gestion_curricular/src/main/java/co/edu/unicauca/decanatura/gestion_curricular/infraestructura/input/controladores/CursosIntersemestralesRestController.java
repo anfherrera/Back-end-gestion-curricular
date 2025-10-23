@@ -10,13 +10,11 @@ import lombok.RequiredArgsConstructor;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarCursoOfertadoVeranoCUIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarSolicitudCursoVeranoCUIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarMateriasCUIntPort;
-import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarNotificacionCUIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.GestionarSolicitudCursoVeranoGatewayIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.CursoOfertadoVerano;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.SolicitudCursoVeranoPreinscripcion;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.SolicitudCursoVeranoIncripcion;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Documento;
-import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Notificacion;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Solicitud;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Enums.CondicionSolicitudVerano;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.DTORespuesta.CursosOfertadosDTORespuesta;
@@ -54,7 +52,6 @@ public class CursosIntersemestralesRestController {
     private final GestionarSolicitudCursoVeranoCUIntPort solicitudCU;
     private final GestionarSolicitudCursoVeranoGatewayIntPort solicitudGateway;
     private final GestionarMateriasCUIntPort materiaCU;
-    private final GestionarNotificacionCUIntPort notificacionCU;
     private final CursosOfertadosMapperDominio cursoMapper;
     private final SolicitudCursoDeVeranoPreinscripcionMapperDominio solicitudMapper;
     private final InscripcionService inscripcionService;
@@ -3764,137 +3761,4 @@ public class CursosIntersemestralesRestController {
         }
     }
 
-    /**
-     * Obtener notificaciones del header para cursos intersemestrales
-     * GET /api/cursos-intersemestrales/notificaciones-header/{idUsuario}
-     */
-    @GetMapping("/notificaciones-header/{idUsuario}")
-    public ResponseEntity<Map<String, Object>> obtenerNotificacionesHeader(@PathVariable Integer idUsuario) {
-        try {
-            System.out.println("🔔 [NOTIFICACIONES_HEADER] Obteniendo notificaciones del header para usuario: " + idUsuario);
-            
-            // Obtener notificaciones no leídas del usuario
-            List<Notificacion> notificacionesNoLeidas = notificacionCU.buscarNoLeidasPorUsuario(idUsuario);
-            Integer totalNoLeidas = notificacionCU.contarNoLeidasPorUsuario(idUsuario);
-            
-            // Obtener notificaciones específicas de cursos de verano
-            List<Notificacion> notificacionesCursosVerano = notificacionCU.buscarPorUsuarioYTipoSolicitud(idUsuario, "CURSO_VERANO");
-            
-            // Filtrar solo las no leídas de cursos de verano
-            List<Notificacion> cursosVeranoNoLeidas = notificacionesCursosVerano.stream()
-                .filter(n -> !n.getLeida())
-                .collect(Collectors.toList());
-            
-            // Crear notificaciones mejoradas con más información
-            List<Map<String, Object>> notificacionesMejoradas = new ArrayList<>();
-            
-            for (Notificacion notificacion : notificacionesNoLeidas) {
-                Map<String, Object> notificacionMejorada = new HashMap<>();
-                notificacionMejorada.put("id", notificacion.getId_notificacion());
-                notificacionMejorada.put("titulo", notificacion.getTitulo());
-                notificacionMejorada.put("mensaje", notificacion.getMensaje());
-                notificacionMejorada.put("tipoSolicitud", notificacion.getTipoSolicitud());
-                notificacionMejorada.put("tipoNotificacion", notificacion.getTipoNotificacion());
-                notificacionMejorada.put("fechaCreacion", notificacion.getFechaCreacion());
-                notificacionMejorada.put("esUrgente", notificacion.getEsUrgente());
-                notificacionMejorada.put("accion", notificacion.getAccion());
-                notificacionMejorada.put("urlAccion", notificacion.getUrlAccion());
-                
-                // Agregar información adicional según el tipo
-                if ("CURSO_VERANO".equals(notificacion.getTipoSolicitud())) {
-                    notificacionMejorada.put("categoria", "Cursos Intersemestrales");
-                    notificacionMejorada.put("icono", "graduation-cap");
-                    notificacionMejorada.put("color", "blue");
-                } else if ("ECAES".equals(notificacion.getTipoSolicitud())) {
-                    notificacionMejorada.put("categoria", "ECAES");
-                    notificacionMejorada.put("icono", "book");
-                    notificacionMejorada.put("color", "green");
-                } else if ("REINGRESO".equals(notificacion.getTipoSolicitud())) {
-                    notificacionMejorada.put("categoria", "Reingreso");
-                    notificacionMejorada.put("icono", "user-plus");
-                    notificacionMejorada.put("color", "orange");
-                } else if ("HOMOLOGACION".equals(notificacion.getTipoSolicitud())) {
-                    notificacionMejorada.put("categoria", "Homologación");
-                    notificacionMejorada.put("icono", "exchange-alt");
-                    notificacionMejorada.put("color", "purple");
-                } else if ("PAZ_SALVO".equals(notificacion.getTipoSolicitud())) {
-                    notificacionMejorada.put("categoria", "Paz y Salvo");
-                    notificacionMejorada.put("icono", "check-circle");
-                    notificacionMejorada.put("color", "green");
-                } else {
-                    notificacionMejorada.put("categoria", "General");
-                    notificacionMejorada.put("icono", "bell");
-                    notificacionMejorada.put("color", "gray");
-                }
-                
-                // Agregar tiempo transcurrido
-                long tiempoTranscurrido = System.currentTimeMillis() - notificacion.getFechaCreacion().getTime();
-                long minutos = tiempoTranscurrido / (1000 * 60);
-                long horas = minutos / 60;
-                long dias = horas / 24;
-                
-                if (dias > 0) {
-                    notificacionMejorada.put("tiempoTranscurrido", dias + " día" + (dias > 1 ? "s" : "") + " atrás");
-                } else if (horas > 0) {
-                    notificacionMejorada.put("tiempoTranscurrido", horas + " hora" + (horas > 1 ? "s" : "") + " atrás");
-                } else if (minutos > 0) {
-                    notificacionMejorada.put("tiempoTranscurrido", minutos + " minuto" + (minutos > 1 ? "s" : "") + " atrás");
-                } else {
-                    notificacionMejorada.put("tiempoTranscurrido", "Hace un momento");
-                }
-                
-                notificacionesMejoradas.add(notificacionMejorada);
-            }
-            
-            // Crear respuesta
-            Map<String, Object> respuesta = new HashMap<>();
-            respuesta.put("totalNoLeidas", totalNoLeidas);
-            respuesta.put("cursosVeranoNoLeidas", cursosVeranoNoLeidas.size());
-            respuesta.put("notificaciones", notificacionesMejoradas);
-            respuesta.put("categorias", Map.of(
-                "CURSO_VERANO", cursosVeranoNoLeidas.size(),
-                "ECAES", notificacionesNoLeidas.stream().filter(n -> "ECAES".equals(n.getTipoSolicitud())).count(),
-                "REINGRESO", notificacionesNoLeidas.stream().filter(n -> "REINGRESO".equals(n.getTipoSolicitud())).count(),
-                "HOMOLOGACION", notificacionesNoLeidas.stream().filter(n -> "HOMOLOGACION".equals(n.getTipoSolicitud())).count(),
-                "PAZ_SALVO", notificacionesNoLeidas.stream().filter(n -> "PAZ_SALVO".equals(n.getTipoSolicitud())).count()
-            ));
-            
-            System.out.println("✅ [NOTIFICACIONES_HEADER] Notificaciones obtenidas: " + totalNoLeidas + " total, " + cursosVeranoNoLeidas.size() + " de cursos de verano");
-            
-            return ResponseEntity.ok(respuesta);
-            
-        } catch (Exception e) {
-            System.err.println("❌ [NOTIFICACIONES_HEADER] Error obteniendo notificaciones: " + e.getMessage());
-            e.printStackTrace();
-            Map<String, Object> error = new HashMap<>();
-            error.put("error", "Error obteniendo notificaciones: " + e.getMessage());
-            return ResponseEntity.internalServerError().body(error);
-        }
-    }
-
-    /**
-     * Marcar notificaciones como leídas desde el header
-     * PUT /api/cursos-intersemestrales/notificaciones-header/{idUsuario}/marcar-leidas
-     */
-    @PutMapping("/notificaciones-header/{idUsuario}/marcar-leidas")
-    public ResponseEntity<Map<String, Object>> marcarNotificacionesComoLeidas(@PathVariable Integer idUsuario) {
-        try {
-            System.out.println("✅ [NOTIFICACIONES_HEADER] Marcando todas las notificaciones como leídas para usuario: " + idUsuario);
-            
-            boolean resultado = notificacionCU.marcarTodasComoLeidas(idUsuario);
-            
-            Map<String, Object> respuesta = new HashMap<>();
-            respuesta.put("success", resultado);
-            respuesta.put("message", resultado ? "Todas las notificaciones han sido marcadas como leídas" : "Error al marcar las notificaciones");
-            
-            return ResponseEntity.ok(respuesta);
-            
-        } catch (Exception e) {
-            System.err.println("❌ [NOTIFICACIONES_HEADER] Error marcando notificaciones como leídas: " + e.getMessage());
-            Map<String, Object> error = new HashMap<>();
-            error.put("error", "Error marcando notificaciones como leídas: " + e.getMessage());
-            return ResponseEntity.internalServerError().body(error);
-        }
-    }
-    
 }

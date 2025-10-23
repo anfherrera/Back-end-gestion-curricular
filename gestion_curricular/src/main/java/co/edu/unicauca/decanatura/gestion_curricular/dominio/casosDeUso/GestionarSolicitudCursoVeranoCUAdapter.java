@@ -1,7 +1,6 @@
 package co.edu.unicauca.decanatura.gestion_curricular.dominio.casosDeUso;
 
 import java.util.List;
-import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarNotificacionCUIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarSolicitudCursoVeranoCUIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.FormateadorResultadosIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.GestionarCursoOfertadoVeranoGatewayIntPort;
@@ -19,7 +18,6 @@ public class GestionarSolicitudCursoVeranoCUAdapter implements GestionarSolicitu
     private final GestionarSolicitudCursoVeranoGatewayIntPort objGestionarSolicitudGateway;
     private final GestionarCursoOfertadoVeranoGatewayIntPort objCursoOfertado;
     private final GestionarUsuarioGatewayIntPort objUsuario;
-    private final GestionarNotificacionCUIntPort objNotificacion;
     private final FormateadorResultadosIntPort objFormateadorResultados;
 
     public GestionarSolicitudCursoVeranoCUAdapter(
@@ -27,14 +25,12 @@ public class GestionarSolicitudCursoVeranoCUAdapter implements GestionarSolicitu
         GestionarCursoOfertadoVeranoGatewayIntPort objCursoOfertado,
         GestionarUsuarioGatewayIntPort objUsuario, 
         GestionarDocumentosGatewayIntPort objDocumentosGateway,
-        GestionarNotificacionCUIntPort objNotificacion,
         FormateadorResultadosIntPort objFormateadorResultados
     ) {
         this.objUsuario = objUsuario;
         this.objFormateadorResultados = objFormateadorResultados;
         this.objCursoOfertado = objCursoOfertado;
         this.objGestionarSolicitudGateway = objGestionarSolicitudGateway;
-        this.objNotificacion = objNotificacion;
     }
 
     @Override
@@ -120,14 +116,6 @@ public class GestionarSolicitudCursoVeranoCUAdapter implements GestionarSolicitu
         solicitudCursoVerano.setObjUsuario(usuarioBuscar);
 
         solicitudGuardada = this.objGestionarSolicitudGateway.crearSolicitudCursoVeranoPreinscripcion(solicitudCursoVerano);
-
-        // Crear notificación para el estudiante
-        if (solicitudGuardada != null) {
-            this.objNotificacion.notificarNuevaPreinscripcion(
-                usuarioBuscar.getId_usuario(), 
-                solicitudGuardada.getId_solicitud()
-            );
-        }
         
         return solicitudGuardada;
     }
@@ -197,14 +185,6 @@ public class GestionarSolicitudCursoVeranoCUAdapter implements GestionarSolicitu
         solicitudCursoVerano.setObjUsuario(usuarioBuscar);
 
         solicitudGuardada = this.objGestionarSolicitudGateway.crearSolicitudCursoVeranoInscripcion(solicitudCursoVerano);
-
-        // Crear notificación para el estudiante
-        if (solicitudGuardada != null) {
-            this.objNotificacion.notificarNuevaInscripcion(
-                usuarioBuscar.getId_usuario(), 
-                solicitudGuardada.getId_solicitud()
-            );
-        }
 
         return solicitudGuardada;
     }
@@ -286,14 +266,6 @@ public class GestionarSolicitudCursoVeranoCUAdapter implements GestionarSolicitu
         // Aprobar la solicitud
         SolicitudCursoVeranoPreinscripcion solicitudAprobada = this.objGestionarSolicitudGateway.aprobarPreinscripcion(idSolicitud, comentarios);
         
-        // Crear notificación para el estudiante
-        if (solicitudAprobada != null) {
-            this.objNotificacion.notificarPreinscripcionAprobada(
-                solicitud.getObjUsuario().getId_usuario(), 
-                solicitudAprobada.getId_solicitud()
-            );
-        }
-        
         return solicitudAprobada;
     }
 
@@ -322,15 +294,6 @@ public class GestionarSolicitudCursoVeranoCUAdapter implements GestionarSolicitu
         // Rechazar la solicitud
         SolicitudCursoVeranoPreinscripcion solicitudRechazada = this.objGestionarSolicitudGateway.rechazarPreinscripcion(idSolicitud, motivo);
         
-        // Crear notificación para el estudiante
-        if (solicitudRechazada != null) {
-            this.objNotificacion.notificarPreinscripcionRechazada(
-                solicitud.getObjUsuario().getId_usuario(), 
-                solicitudRechazada.getId_solicitud(),
-                motivo
-            );
-        }
-        
         return solicitudRechazada;
     }
 
@@ -355,15 +318,6 @@ public class GestionarSolicitudCursoVeranoCUAdapter implements GestionarSolicitu
         // Validar el pago
         SolicitudCursoVeranoIncripcion solicitudActualizada = this.objGestionarSolicitudGateway.validarPago(idSolicitud, esValido, observaciones);
         
-        // Crear notificación para el estudiante
-        if (solicitudActualizada != null) {
-            this.objNotificacion.notificarPagoValidado(
-                solicitud.getObjUsuario().getId_usuario(), 
-                solicitudActualizada.getId_solicitud(),
-                esValido
-            );
-        }
-        
         return solicitudActualizada;
     }
 
@@ -387,14 +341,6 @@ public class GestionarSolicitudCursoVeranoCUAdapter implements GestionarSolicitu
         
         // Completar la inscripción
         SolicitudCursoVeranoIncripcion solicitudCompletada = this.objGestionarSolicitudGateway.completarInscripcion(idSolicitud);
-        
-        // Crear notificación para el estudiante
-        if (solicitudCompletada != null) {
-            this.objNotificacion.notificarInscripcionCompletada(
-                solicitud.getObjUsuario().getId_usuario(), 
-                solicitudCompletada.getId_solicitud()
-            );
-        }
         
         return solicitudCompletada;
     }
