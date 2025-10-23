@@ -303,6 +303,13 @@ INSERT INTO EstadosSolicitudes(idEstado, estado_actual, fecha_registro_estado, i
 INSERT INTO EstadosSolicitudes(idEstado, estado_actual, fecha_registro_estado, idfkSolicitud) VALUES (46, 'Rechazado', '2025-09-15 14:20:00', 46);
 
 -- ==========================================
+-- ESTADOS CORRECTOS PARA PAZ Y SALVO (siguiendo el flujo)
+-- IDs 37-40: Estado 'Aprobado' (4 solicitudes aprobadas por coordinador para secretaria)
+-- ==========================================
+-- Cambiar los estados 'Aprobado' de paz y salvo a 'APROBADA_COORDINADOR' para que la secretaria las vea
+UPDATE EstadosSolicitudes SET estado_actual = 'APROBADA_COORDINADOR' WHERE idEstado IN (18, 19, 20, 21);
+
+-- ==========================================
 -- VALIDACIÓN DE DATOS CARGADOS
 -- ==========================================
 -- SELECT COUNT(*) FROM Solicitudes;

@@ -15,6 +15,8 @@ public interface GestionarSolicitudPazYSalvoCUIntPort {
 
     List<SolicitudPazYSalvo> listarSolicitudesToSecretaria();
 
+    List<SolicitudPazYSalvo> listarSolicitudesPorRol(String rol, Integer idUsuario);
+
     SolicitudPazYSalvo buscarPorId(Integer idSolicitud);
 
     void cambiarEstadoSolicitud(Integer idSolicitud, String nuevoEstado);

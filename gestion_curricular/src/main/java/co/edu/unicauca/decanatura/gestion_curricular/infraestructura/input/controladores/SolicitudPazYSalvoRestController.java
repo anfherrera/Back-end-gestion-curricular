@@ -24,7 +24,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.HashMap;
 import java.util.ArrayList;
-import java.util.Arrays;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpHeaders;
@@ -78,24 +77,37 @@ public class SolicitudPazYSalvoRestController {
         return ResponseEntity.ok(respuesta);
     }
 
-    @GetMapping("/listarSolicitud-PazYSalvo/funcionario")
+    @GetMapping("/listarSolicitud-PazYSalvo/Funcionario")
     public ResponseEntity<List<SolicitudPazYSalvoDTORespuesta>> listarSolicitudPazYSalvoFuncionario() {
         List<SolicitudPazYSalvo> solicitudes = solicitudPazYSalvoCU.listarSolicitudesToFuncionario();
         List<SolicitudPazYSalvoDTORespuesta> respuesta = solicitudMapperDominio.mappearListaDeSolicitudesARespuesta(solicitudes);
         return ResponseEntity.ok(respuesta);
     }
 
-    @GetMapping("/listarSolicitud-PazYSalvo/coordinador")
+    @GetMapping("/listarSolicitud-PazYSalvo/Coordinador")
     public ResponseEntity<List<SolicitudPazYSalvoDTORespuesta>> listarSolicitudPazYSalvoToCoordinador() {
         List<SolicitudPazYSalvo> solicitudes = solicitudPazYSalvoCU.listarSolicitudesToCoordinador();
         List<SolicitudPazYSalvoDTORespuesta> respuesta = solicitudMapperDominio.mappearListaDeSolicitudesARespuesta(solicitudes);
         return ResponseEntity.ok(respuesta);
     }
 
-    @GetMapping("/listarSolicitud-PazYSalvo/secretaria")
+    @GetMapping("/listarSolicitud-PazYSalvo/Secretaria")
     public ResponseEntity<List<SolicitudPazYSalvoDTORespuesta>> listarSolicitudPazYSalvoToSecretaria() {
         List<SolicitudPazYSalvo> solicitudes = solicitudPazYSalvoCU.listarSolicitudesToSecretaria();
         List<SolicitudPazYSalvoDTORespuesta> respuesta = solicitudMapperDominio.mappearListaDeSolicitudesARespuesta(solicitudes);
+        return ResponseEntity.ok(respuesta);
+    }
+
+    @GetMapping("/listarSolicitud-PazYSalvo/porRol")
+    public ResponseEntity<List<SolicitudPazYSalvoDTORespuesta>> listarSolicitudPorRol(
+            @RequestParam String rol,
+            @RequestParam(required = false) Integer idUsuario) {
+
+        List<SolicitudPazYSalvo> solicitudes = solicitudPazYSalvoCU.listarSolicitudesPorRol(rol, idUsuario);
+
+        List<SolicitudPazYSalvoDTORespuesta> respuesta =
+                solicitudMapperDominio.mappearListaDeSolicitudesARespuesta(solicitudes);
+
         return ResponseEntity.ok(respuesta);
     }
 
@@ -284,25 +296,17 @@ public class SolicitudPazYSalvoRestController {
     }
 
     /**
-     * Obtener plantillas disponibles para paz y salvo
+     * Obtener plantillas disponibles para paz y salvo (usa el servicio real como homologación)
      */
     @GetMapping("/plantillas-disponibles")
-    public ResponseEntity<List<Map<String, Object>>> obtenerPlantillasDisponibles() {
+    public ResponseEntity<?> obtenerPlantillasDisponibles() {
         try {
-            System.out.println("📋 Obteniendo plantillas disponibles para paz y salvo");
+            System.out.println("📋 Obteniendo plantillas disponibles para paz y salvo desde el servicio");
             
-            List<Map<String, Object>> plantillas = new ArrayList<>();
+            // Usar el servicio real igual que homologación
+            List<?> plantillas = documentGeneratorService.getTemplates("paz-salvo");
             
-            Map<String, Object> plantillaPazSalvo = new HashMap<>();
-            plantillaPazSalvo.put("id", "PAZ_SALVO");
-            plantillaPazSalvo.put("nombre", "Paz y Salvo");
-            plantillaPazSalvo.put("descripcion", "Documento que certifica que el estudiante no tiene pendientes académicos");
-            plantillaPazSalvo.put("camposRequeridos", Arrays.asList("numeroDocumento", "fechaDocumento"));
-            plantillaPazSalvo.put("camposOpcionales", Arrays.asList("observaciones"));
-            
-            plantillas.add(plantillaPazSalvo);
-            
-            System.out.println("✅ Plantillas obtenidas: " + plantillas.size());
+            System.out.println("✅ Plantillas obtenidas del servicio: " + plantillas.size());
             return ResponseEntity.ok(plantillas);
             
         } catch (Exception e) {

@@ -101,6 +101,31 @@ public class GestionarSolicitudPazYSalvoCUAdapter implements GestionarSolicitudP
     }
 
     @Override
+    public List<SolicitudPazYSalvo> listarSolicitudesPorRol(String rol, Integer idUsuario) {
+        List<SolicitudPazYSalvo> todas = solicitudGateway.listarSolicitudes();
+
+        return todas.stream().filter(solicitud -> {
+            List<EstadoSolicitud> estados = solicitud.getEstadosSolicitud();
+            EstadoSolicitud ultimoEstado = estados != null && !estados.isEmpty()
+                ? estados.get(estados.size() - 1)
+                : null;
+
+            switch (rol) {
+                case "ESTUDIANTE":
+                    return solicitud.getObjUsuario().getId_usuario().equals(idUsuario);
+                case "FUNCIONARIO":
+                    return ultimoEstado != null && "Enviada".equals(ultimoEstado.getEstado_actual());
+                case "COORDINADOR":
+                    return ultimoEstado != null && "APROBADA_FUNCIONARIO".equals(ultimoEstado.getEstado_actual());
+                case "SECRETARIA":
+                    return ultimoEstado != null && "APROBADA_COORDINADOR".equals(ultimoEstado.getEstado_actual());
+                default:
+                    return false;
+            }
+        }).toList();
+    }
+
+    @Override
     public SolicitudPazYSalvo buscarPorId(Integer idSolicitud) {
         return solicitudGateway.buscarPorId(idSolicitud)
                 .orElseThrow(() -> new RuntimeException("Solicitud de Paz y Salvo no encontrada"));
