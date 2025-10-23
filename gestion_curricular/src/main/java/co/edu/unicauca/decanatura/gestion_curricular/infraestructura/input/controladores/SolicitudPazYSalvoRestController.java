@@ -243,7 +243,10 @@ public class SolicitudPazYSalvoRestController {
             @PathVariable Integer idSolicitud,
             @RequestParam("numeroDocumento") String numeroDocumento,
             @RequestParam("fechaDocumento") String fechaDocumento,
-            @RequestParam(value = "observaciones", required = false) String observaciones) {
+            @RequestParam(value = "observaciones", required = false) String observaciones,
+            @RequestParam(value = "cedulaEstudiante", required = false) String cedulaEstudiante,
+            @RequestParam(value = "tituloTrabajoGrado", required = false) String tituloTrabajoGrado,
+            @RequestParam(value = "directorTrabajoGrado", required = false) String directorTrabajoGrado) {
         try {
             System.out.println("📄 Generando documento de paz y salvo para solicitud: " + idSolicitud);
             
@@ -263,8 +266,12 @@ public class SolicitudPazYSalvoRestController {
             Map<String, Object> datosSolicitud = new HashMap<>();
             datosSolicitud.put("nombreEstudiante", solicitud.getObjUsuario().getNombre_completo());
             datosSolicitud.put("codigoEstudiante", solicitud.getObjUsuario().getCodigo());
-            datosSolicitud.put("programa", "Ingeniería Electrónica y Telecomunicaciones");
+            datosSolicitud.put("programa", solicitud.getObjUsuario().getObjPrograma() != null ? 
+                solicitud.getObjUsuario().getObjPrograma().getNombre_programa() : "Ingeniería Electrónica y Telecomunicaciones");
             datosSolicitud.put("fechaSolicitud", solicitud.getFecha_registro_solicitud());
+            datosSolicitud.put("cedulaEstudiante", cedulaEstudiante != null ? cedulaEstudiante : "No especificada");
+            datosSolicitud.put("tituloTrabajoGrado", tituloTrabajoGrado != null ? tituloTrabajoGrado : "Trabajo de grado");
+            datosSolicitud.put("directorTrabajoGrado", directorTrabajoGrado != null ? directorTrabajoGrado : "Director asignado");
             
             // Crear el request (igual que homologación)
             co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.DTORespuesta.DocumentRequest request = 

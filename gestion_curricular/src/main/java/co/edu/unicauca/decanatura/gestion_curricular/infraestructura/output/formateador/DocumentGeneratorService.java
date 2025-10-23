@@ -103,7 +103,7 @@ public class DocumentGeneratorService {
     private String obtenerRutaPlantilla(String tipoDocumento) {
         Map<String, String> rutas = new HashMap<>();
         rutas.put("OFICIO_HOMOLOGACION", "templates/oficio-homologacion.docx");
-        rutas.put("PAZ_SALVO", "templates/paz-salvo-real.docx");
+        rutas.put("PAZ_SALVO", "templates/oficio-paz-salvo.docx");
         rutas.put("RESOLUCION_REINGRESO", "templates/resolucion-reingreso.docx");
         
         return rutas.getOrDefault(tipoDocumento, "templates/documento-generico.docx");
@@ -312,6 +312,15 @@ public class DocumentGeneratorService {
             replacements.put("NOMBRE_UNIVERSIDAD", "UNIVERSIDAD DEL CAUCA");
             replacements.put("CIUDAD", "Popayán");
             
+            // Cédula del estudiante
+            replacements.put("CEDULA_ESTUDIANTE", datosSolicitud.getOrDefault("cedulaEstudiante", "No especificada").toString());
+            
+            // Título de trabajo de grado
+            replacements.put("TITULO_TRABAJO_GRADO", datosSolicitud.getOrDefault("tituloTrabajoGrado", "Trabajo de grado").toString());
+            
+            // Director de trabajo de grado
+            replacements.put("DIRECTOR_TRABAJO_GRADO", datosSolicitud.getOrDefault("directorTrabajoGrado", "Director asignado").toString());
+            
             // Fecha actual para paz y salvo
             LocalDate fechaActual = LocalDate.now();
             replacements.put("FECHA_ACTUAL", formatearFechaCompleta(fechaActual));
@@ -321,6 +330,25 @@ public class DocumentGeneratorService {
             replacements.put("DIA_NUMERO", String.valueOf(fechaActual.getDayOfMonth()));
             replacements.put("MES_FIRMA", formatearMes(fechaActual.getMonthValue()));
             replacements.put("AÑO_FIRMA", formatearAño(fechaActual.getYear()));
+            
+            // Fecha del documento (extraída de FECHA_DOCUMENTO)
+            Object fechaDocumento = datosDocumento.get("fechaDocumento");
+            if (fechaDocumento != null) {
+                LocalDate fechaDoc = parsearFecha(fechaDocumento);
+                if (fechaDoc != null) {
+                    replacements.put("DIA_DOCUMENTO", String.valueOf(fechaDoc.getDayOfMonth()));
+                    replacements.put("MES_DOCUMENTO", formatearMes(fechaDoc.getMonthValue()));
+                    replacements.put("AÑO_DOCUMENTO", formatearAño(fechaDoc.getYear()));
+                } else {
+                    replacements.put("DIA_DOCUMENTO", "");
+                    replacements.put("MES_DOCUMENTO", "");
+                    replacements.put("AÑO_DOCUMENTO", "");
+                }
+            } else {
+                replacements.put("DIA_DOCUMENTO", "");
+                replacements.put("MES_DOCUMENTO", "");
+                replacements.put("AÑO_DOCUMENTO", "");
+            }
         } else if ("RESOLUCION_REINGRESO".equals(request.getTipoDocumento())) {
             replacements.put("TIPO_PROCESO", "reingreso al programa");
             replacements.put("TITULO_DOCUMENTO", "RESOLUCIÓN DE REINGRESO");
