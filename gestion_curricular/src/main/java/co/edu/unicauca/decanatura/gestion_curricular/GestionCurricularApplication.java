@@ -12,3 +12,12 @@ public class GestionCurricularApplication {
 		SpringApplication.run(GestionCurricularApplication.class, args);
 	}
 }
+
+
+
+
+
+
+
+
+

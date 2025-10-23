@@ -1,14 +1,10 @@
-package co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output;
+package co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input;
 
 import java.util.List;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Programa;
 
-public interface GestionarProgramaGatewayIntPort {
-    
-    // Método original (mantener compatibilidad)
-    Programa buscarPorIdPrograma(Integer idPrograma);
-    
-    // Nuevos métodos CRUD
+public interface GestionarProgramasCUIntPort {
+
     Programa guardarPrograma(Programa programa);
 
     Programa actualizarPrograma(Programa programa);
@@ -25,3 +21,4 @@ public interface GestionarProgramaGatewayIntPort {
 
     List<Programa> listarProgramas();
 }
+

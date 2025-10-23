@@ -1,14 +1,10 @@
-package co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output;
+package co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input;
 
 import java.util.List;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Docente;
 
-public interface GestionarDocenteGatewayIntPort {
-    
-    // Método original (mantener compatibilidad)
-    Docente buscarDocentePorId(Integer idDocente);
-    
-    // Nuevos métodos CRUD
+public interface GestionarDocentesCUIntPort {
+
     Docente guardarDocente(Docente docente);
 
     Docente actualizarDocente(Docente docente);
@@ -25,3 +21,4 @@ public interface GestionarDocenteGatewayIntPort {
 
     List<Docente> listarDocentes();
 }
+

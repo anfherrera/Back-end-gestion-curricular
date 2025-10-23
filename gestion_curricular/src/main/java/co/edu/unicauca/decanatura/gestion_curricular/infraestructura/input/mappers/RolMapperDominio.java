@@ -1,20 +1,22 @@
 package co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.mappers;
 
 import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
+import java.util.List;
 
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Rol;
-import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.DTOPeticion.RolDTOPeticion;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.DTORespuesta.RolDTORespuesta;
+import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.DTOPeticion.RolDTOPeticion;
 
 @Mapper(componentModel = "spring")
 public interface RolMapperDominio {
 
-    // DTO Petición -> Dominio
-    @Mapping(target = "id_rol", source = "id_rol") // Se ignora, porque en DTOPeticion no se envía el id
-    @Mapping(target = "usuarios", ignore = true) // Se ignora, porque en
+    // Dominio -> DTO de respuesta
+    RolDTORespuesta mappearDeRolARolDTORespuesta(Rol rol);
+
+    List<RolDTORespuesta> mappearDeRolesARolesDTORespuesta(List<Rol> roles);
+
+    // DTO de petición -> Dominio
     Rol mappearDeRolDTOPeticionARol(RolDTOPeticion peticion);
 
-    // Dominio -> DTO Respuesta
-    RolDTORespuesta mappearDeRolARolDTORespuesta(Rol rol);
+    List<Rol> mappearDeRolDTOPeticionARoles(List<RolDTOPeticion> peticiones);
 }

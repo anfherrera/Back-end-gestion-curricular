@@ -27,9 +27,12 @@ import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.Gestionar
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.GestionarUsuarioGatewayIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.casosDeUso.GestionarArchivosCUIAdapter;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.casosDeUso.GestionarCursoOfertadoVeranoCUAdapter;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.casosDeUso.GestionarDocentesCUAdapter;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.casosDeUso.GestionarDocumentosCUAdapter;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.casosDeUso.GestionarEstadisticasCUAdapter;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.casosDeUso.GestionarMateriasCUAdapter;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.casosDeUso.GestionarProgramasCUAdapter;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.casosDeUso.GestionarRolesCUAdapter;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.casosDeUso.GestionarSolicitudCUAdapter;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.casosDeUso.GestionarSolicitudCursoVeranoCUAdapter;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.casosDeUso.GestionarSolicitudEcaesCUAdapter;
@@ -148,6 +151,27 @@ public class BeanConfiguration {
 
     @Bean    public GestionarArchivosCUIAdapter crearGestionarArchivosCUInt(GestionarArchivosGatewayIntPort objGestionarArchivos, FormateadorResultadosIntPort objFormateadorResultados){
         return new GestionarArchivosCUIAdapter(objGestionarArchivos, objFormateadorResultados);
+    }
+
+    @Bean
+    public GestionarDocentesCUAdapter crearGestionarDocentesCUInt(
+            GestionarDocenteGatewayIntPort docentesGateway,
+            FormateadorResultadosIntPort formateadorResultados) {
+        return new GestionarDocentesCUAdapter(docentesGateway, formateadorResultados);
+    }
+
+    @Bean
+    public GestionarProgramasCUAdapter crearGestionarProgramasCUInt(
+            GestionarProgramaGatewayIntPort programasGateway,
+            FormateadorResultadosIntPort formateadorResultados) {
+        return new GestionarProgramasCUAdapter(programasGateway, formateadorResultados);
+    }
+
+    @Bean
+    public GestionarRolesCUAdapter crearGestionarRolesCUInt(
+            GestionarRolGatewayIntPort rolesGateway,
+            FormateadorResultadosIntPort formateadorResultados) {
+        return new GestionarRolesCUAdapter(rolesGateway, formateadorResultados);
     }
 
     // GestionarEstadisticasGatewayImplAdapter ya está definido como @Service, no necesita definición adicional

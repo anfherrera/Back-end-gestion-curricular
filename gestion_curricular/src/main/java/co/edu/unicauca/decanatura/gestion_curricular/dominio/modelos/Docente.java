@@ -5,10 +5,10 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
-@NoArgsConstructor
 @AllArgsConstructor
+@NoArgsConstructor
 public class Docente {
     private Integer id_docente;
     private String codigo_docente;
-    private String nombre_docente;  
+    private String nombre_docente;
 }

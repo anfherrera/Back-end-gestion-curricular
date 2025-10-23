@@ -10,14 +10,13 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class DocenteDTOPeticion {
-
     private Integer id_docente;
 
     @NotBlank(message = "{Docente.codigo.empty}")
-    @Size(min = 3, max = 15, message = "{Docente.codigo.length}")
+    @Size(min = 3, max = 12, message = "{Docente.codigo.length}")
     private String codigo_docente;
 
     @NotBlank(message = "{Docente.nombre.empty}")
-    @Size(min = 3, max = 50, message = "{Docente.nombre.length}")
+    @Size(min = 3, max = 100, message = "{Docente.nombre.length}")
     private String nombre_docente;
 }

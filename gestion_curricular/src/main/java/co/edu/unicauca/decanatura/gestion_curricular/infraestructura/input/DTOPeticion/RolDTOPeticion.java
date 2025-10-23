@@ -10,12 +10,9 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class RolDTOPeticion {
-
     private Integer id_rol;
 
     @NotBlank(message = "{Rol.nombre.empty}")
-    @Size(min = 3, max = 30, message = "{Rol.nombre.length}")
+    @Size(min = 3, max = 100, message = "{Rol.nombre.length}")
     private String nombre;
-
-    
 }
