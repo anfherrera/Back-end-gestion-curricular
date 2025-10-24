@@ -62,7 +62,7 @@ public class DocenteRestController {
     @DeleteMapping("/eliminarDocente/{id}")
     public ResponseEntity<Boolean> eliminarDocente(@Min(value = 1) @PathVariable Integer id) {
         boolean eliminado = objDocenteCUIntPort.eliminarDocente(id);
-        return new ResponseEntity<>(eliminado ? HttpStatus.OK : HttpStatus.NOT_FOUND);
+        return new ResponseEntity<>(eliminado, eliminado ? HttpStatus.OK : HttpStatus.NOT_FOUND);
     }
 
     @GetMapping("/buscarPorNombre")

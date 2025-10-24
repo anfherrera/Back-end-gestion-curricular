@@ -7,6 +7,8 @@ import java.util.Map;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.ConstraintViolationException;
 
+import org.springframework.core.Ordered;
+import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
@@ -22,33 +24,24 @@ import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.cont
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.controladorExcepciones.excepcionesPropias.ReglaNegocioExcepcion;
 
 @ControllerAdvice
+@Order(Ordered.HIGHEST_PRECEDENCE)
 public class RestApiExceptionHandler {
 
-        @ExceptionHandler(Exception.class)
-        public ResponseEntity<Error> handleGenericException(final HttpServletRequest req,
-                        final Exception ex, final Locale locale) {
-                final Error error = ErrorUtils
-                                .crearError(CodigoError.ERROR_GENERICO.getCodigo(),
-                                                CodigoError.ERROR_GENERICO.getLlaveMensaje(),
-                                                HttpStatus.INTERNAL_SERVER_ERROR.value())
-                                .setUrl(req.getRequestURL().toString()).setMetodo(req.getMethod());
-                return new ResponseEntity<>(error, HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-
         @ExceptionHandler(EntidadYaExisteException.class)
-        public ResponseEntity<Error> handleGenericException(final HttpServletRequest req,
+        public ResponseEntity<Error> handleEntidadYaExisteException(final HttpServletRequest req,
                         final EntidadYaExisteException ex) {
+                System.out.println("🔴 Manejando EntidadYaExisteException: " + ex.getMessage());
                 final Error error = ErrorUtils
                                 .crearError(CodigoError.ENTIDAD_YA_EXISTE.getCodigo(),
                                                 String.format("%s, %s", CodigoError.ENTIDAD_YA_EXISTE.getLlaveMensaje(),
                                                                 ex.getMessage()),
-                                                HttpStatus.NOT_ACCEPTABLE.value())
+                                                HttpStatus.CONFLICT.value())
                                 .setUrl(req.getRequestURL().toString()).setMetodo(req.getMethod());
-                return new ResponseEntity<>(error, HttpStatus.NOT_ACCEPTABLE);
+                return new ResponseEntity<>(error, HttpStatus.CONFLICT);
         }
 
         @ExceptionHandler(ReglaNegocioExcepcion.class)
-        public ResponseEntity<Error> handleGenericException(final HttpServletRequest req,
+        public ResponseEntity<Error> handleReglaNegocioException(final HttpServletRequest req,
                         final ReglaNegocioExcepcion ex, final Locale locale) {
                 final Error error = ErrorUtils
                                 .crearError(CodigoError.VIOLACION_REGLA_DE_NEGOCIO.getCodigo(), ex.formatException(),
@@ -58,7 +51,7 @@ public class RestApiExceptionHandler {
         }
 
         @ExceptionHandler(EntidadNoExisteException.class)
-        public ResponseEntity<Error> handleGenericException(final HttpServletRequest req,
+        public ResponseEntity<Error> handleEntidadNoExisteException(final HttpServletRequest req,
                         final EntidadNoExisteException ex, final Locale locale) {
                 final Error error = ErrorUtils
                                 .crearError(CodigoError.ENTIDAD_NO_ENCONTRADA.getCodigo(),
@@ -68,6 +61,19 @@ public class RestApiExceptionHandler {
                                                 HttpStatus.NOT_FOUND.value())
                                 .setUrl(req.getRequestURL().toString()).setMetodo(req.getMethod());
                 return new ResponseEntity<>(error, HttpStatus.NOT_FOUND);
+        }
+
+        @ExceptionHandler(Exception.class)
+        @Order(Ordered.LOWEST_PRECEDENCE)
+        public ResponseEntity<Error> handleGenericException(final HttpServletRequest req,
+                        final Exception ex, final Locale locale) {
+                System.out.println("⚠️ Manejando Exception genérica: " + ex.getClass().getName() + " - " + ex.getMessage());
+                final Error error = ErrorUtils
+                                .crearError(CodigoError.ERROR_GENERICO.getCodigo(),
+                                                CodigoError.ERROR_GENERICO.getLlaveMensaje(),
+                                                HttpStatus.INTERNAL_SERVER_ERROR.value())
+                                .setUrl(req.getRequestURL().toString()).setMetodo(req.getMethod());
+                return new ResponseEntity<>(error, HttpStatus.INTERNAL_SERVER_ERROR);
         }
 
         @ExceptionHandler(MethodArgumentNotValidException.class)

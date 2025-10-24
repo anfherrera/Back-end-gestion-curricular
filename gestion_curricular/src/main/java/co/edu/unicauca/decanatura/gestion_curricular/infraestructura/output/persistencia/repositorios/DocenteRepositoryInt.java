@@ -22,6 +22,6 @@ public interface DocenteRepositoryInt extends JpaRepository<DocenteEntity, Integ
     Optional<DocenteEntity> buscarPorCodigo(@Param("codigo") String codigo);
 
     @Modifying
-    @Query("DELETE FROM DocenteEntity d WHERE d.id_docente = :id")
+    @Query(value = "DELETE FROM Docentes WHERE idDocente = :id", nativeQuery = true)
     void eliminarPorId(@Param("id") Integer id);
 }

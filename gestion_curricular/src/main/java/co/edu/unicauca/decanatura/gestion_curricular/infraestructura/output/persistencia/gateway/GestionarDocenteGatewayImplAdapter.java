@@ -11,16 +11,21 @@ import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.Gestionar
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Docente;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.entidades.DocenteEntity;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.repositorios.DocenteRepositoryInt;
+import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.repositorios.CursoOfertadoVeranoRepositoryInt;
 
 @Service
 @Transactional
 public class GestionarDocenteGatewayImplAdapter implements GestionarDocenteGatewayIntPort {
 
     private final DocenteRepositoryInt docenteRepository;
+    private final CursoOfertadoVeranoRepositoryInt cursoOfertadoRepository;
     private final ModelMapper docenteMapper;
 
-    public GestionarDocenteGatewayImplAdapter(DocenteRepositoryInt docenteRepository, ModelMapper docenteMapper) {
+    public GestionarDocenteGatewayImplAdapter(DocenteRepositoryInt docenteRepository,
+                                               CursoOfertadoVeranoRepositoryInt cursoOfertadoRepository,
+                                               ModelMapper docenteMapper) {
         this.docenteRepository = docenteRepository;
+        this.cursoOfertadoRepository = cursoOfertadoRepository;
         this.docenteMapper = docenteMapper;
     }
 
@@ -121,5 +126,11 @@ public class GestionarDocenteGatewayImplAdapter implements GestionarDocenteGatew
             }).toList();
         }
         return docentesRetornar;
+    }
+    
+    @Override
+    @Transactional(readOnly = true)
+    public boolean tieneCursosAsignados(Integer idDocente) {
+        return !cursoOfertadoRepository.buscarPorDocente(idDocente).isEmpty();
     }
 }

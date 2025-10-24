@@ -151,6 +151,23 @@ public class UsuarioRestController {
         return ResponseEntity.ok(respuesta);
     }
     
+    @PutMapping("/cambiarEstado/{id}")
+    public ResponseEntity<UsuarioDTORespuesta> cambiarEstadoUsuario(@Min(value = 1) @PathVariable Integer id) {
+        Usuario usuario = objUsuarioCUIntPort.obtenerUsuarioPorId(id);
+        if (usuario == null) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+        
+        // Cambiar el estado (toggle)
+        usuario.setEstado_usuario(!usuario.isEstado_usuario());
+        
+        Usuario usuarioActualizado = objUsuarioCUIntPort.actualizarUsuario(usuario);
+        return new ResponseEntity<>(
+            objUsuarioMapperDominio.mappearDeUsuarioAUsuarioDTORespuesta(usuarioActualizado), 
+            HttpStatus.OK
+        );
+    }
+
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody LoginDTOPeticion request) {
         try {

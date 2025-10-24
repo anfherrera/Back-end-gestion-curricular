@@ -24,4 +24,6 @@ public interface GestionarDocenteGatewayIntPort {
     List<Docente> buscarPorNombreParcial(String nombreParcial);
 
     List<Docente> listarDocentes();
+    
+    boolean tieneCursosAsignados(Integer idDocente);
 }
