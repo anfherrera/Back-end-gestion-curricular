@@ -137,6 +137,61 @@ public class SolicitudPazYSalvoRestController {
     public ResponseEntity<String> test() {
         return ResponseEntity.ok("✅ Controlador de Paz y Salvo funcionando correctamente");
     }
+    
+    /**
+     * Endpoint de diagnóstico para ver qué headers está enviando el frontend
+     */
+    @PostMapping("/debug-upload")
+    public ResponseEntity<Map<String, Object>> debugUpload(
+            jakarta.servlet.http.HttpServletRequest request,
+            @RequestParam(value = "file", required = false) MultipartFile file) {
+        
+        Map<String, Object> debug = new HashMap<>();
+        
+        System.out.println("========================================");
+        System.out.println("🔍 DEBUG UPLOAD - PAZ Y SALVO");
+        System.out.println("========================================");
+        
+        // Información del request
+        debug.put("content_type", request.getContentType());
+        debug.put("method", request.getMethod());
+        debug.put("content_length", request.getContentLength());
+        
+        System.out.println("📋 Content-Type: " + request.getContentType());
+        System.out.println("📊 Content-Length: " + request.getContentLength());
+        System.out.println("🔧 Method: " + request.getMethod());
+        
+        // Todos los headers
+        Map<String, String> headers = new HashMap<>();
+        java.util.Enumeration<String> headerNames = request.getHeaderNames();
+        while (headerNames.hasMoreElements()) {
+            String headerName = headerNames.nextElement();
+            String headerValue = request.getHeader(headerName);
+            headers.put(headerName, headerValue);
+            System.out.println("   " + headerName + ": " + headerValue);
+        }
+        debug.put("headers", headers);
+        
+        // Información del archivo
+        if (file != null && !file.isEmpty()) {
+            Map<String, Object> fileInfo = new HashMap<>();
+            fileInfo.put("nombre", file.getOriginalFilename());
+            fileInfo.put("tamaño", file.getSize());
+            fileInfo.put("content_type", file.getContentType());
+            debug.put("archivo_recibido", fileInfo);
+            
+            System.out.println("✅ Archivo recibido: " + file.getOriginalFilename());
+            System.out.println("   Tamaño: " + file.getSize() + " bytes");
+            System.out.println("   Content-Type: " + file.getContentType());
+        } else {
+            debug.put("archivo_recibido", "NO SE RECIBIÓ ARCHIVO");
+            System.out.println("❌ NO SE RECIBIÓ NINGÚN ARCHIVO");
+        }
+        
+        System.out.println("========================================");
+        
+        return ResponseEntity.ok(debug);
+    }
 
     /**
      * Subir archivo para paz y salvo (SIN asociar a solicitud - como en homologación)

@@ -166,11 +166,12 @@ cd gestion_curricular
 
 | Documento | Descripción | Ubicación |
 |-----------|-------------|-----------|
-| **REPORTE_PRUEBAS.md** | Reporte detallado completo (4000+ líneas) | `gestion_curricular/` |
-| **TESTING_QUICKSTART.md** | Guía rápida de ejecución | `gestion_curricular/` |
+| **PRUEBAS_AUTOMATIZADAS.md** | 📖 **Guía completa consolidada** (TODO EN UNO) | `gestion_curricular/` |
 | **RESUMEN_FINAL_PRUEBAS.md** | Este documento (resumen ejecutivo) | `gestion_curricular/` |
-| **Código Fuente** | 2 archivos Java con 27 tests | `src/test/java/` |
+| **REPORTE_PRUEBAS.md** | Reporte técnico detallado (referencia) | `gestion_curricular/` |
+| **Código Fuente** | 2 archivos Java con 28 tests | `src/test/java/` |
 | **Configuración** | application-test.properties + test-data.sql | `src/test/resources/` |
+| **Scripts .bat** | 3 archivos para ejecutar pruebas | `gestion_curricular/` |
 
 ---
 
