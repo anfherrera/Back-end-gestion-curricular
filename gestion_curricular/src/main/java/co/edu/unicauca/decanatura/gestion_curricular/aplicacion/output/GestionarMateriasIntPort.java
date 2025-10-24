@@ -21,4 +21,6 @@ public interface GestionarMateriasIntPort {
     List<Materia> buscarPorCreditos(Integer creditos);
 
     List<Materia> listarMaterias();
+    
+    boolean tieneCursosAsociados(Integer idMateria);
 }

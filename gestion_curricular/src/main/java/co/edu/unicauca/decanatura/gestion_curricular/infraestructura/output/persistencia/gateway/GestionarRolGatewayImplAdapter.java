@@ -11,16 +11,21 @@ import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.Gestionar
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Rol;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.entidades.RolEntity;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.repositorios.RolRepositoryInt;
+import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.repositorios.UsuarioRepositoryInt;
 
 @Service
 @Transactional
 public class GestionarRolGatewayImplAdapter implements GestionarRolGatewayIntPort {
 
     private final RolRepositoryInt objrolRepository;
+    private final UsuarioRepositoryInt usuarioRepository;
     private final ModelMapper rolMapper;
     
-    public GestionarRolGatewayImplAdapter(RolRepositoryInt objrolRepository, ModelMapper rolMapper) {
+    public GestionarRolGatewayImplAdapter(RolRepositoryInt objrolRepository, 
+                                          UsuarioRepositoryInt usuarioRepository,
+                                          ModelMapper rolMapper) {
         this.objrolRepository = objrolRepository;
+        this.usuarioRepository = usuarioRepository;
         this.rolMapper = rolMapper;
     }
 
@@ -114,5 +119,11 @@ public class GestionarRolGatewayImplAdapter implements GestionarRolGatewayIntPor
             }).toList();
         }
         return rolesRetornar;
+    }
+    
+    @Override
+    @Transactional(readOnly = true)
+    public boolean tieneUsuariosAsociados(Integer idRol) {
+        return !usuarioRepository.buscarPorRol(idRol).isEmpty();
     }
 }

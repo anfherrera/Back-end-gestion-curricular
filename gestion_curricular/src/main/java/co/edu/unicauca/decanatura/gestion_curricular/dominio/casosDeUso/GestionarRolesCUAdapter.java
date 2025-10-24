@@ -59,6 +59,14 @@ public class GestionarRolesCUAdapter implements GestionarRolesCUIntPort {
             formateadorResultados.retornarRespuestaErrorEntidadExiste("No se encontró el rol a eliminar.");
         }
 
+        // ✅ VALIDACIÓN: Verificar si el rol tiene usuarios asociados
+        if (rolesGateway.tieneUsuariosAsociados(idRol)) {
+            formateadorResultados.retornarRespuestaErrorReglaDeNegocio(
+                "No se puede eliminar el rol porque tiene usuarios asociados. " +
+                "Por favor, reasigne los usuarios a otro rol antes de eliminar."
+            );
+        }
+
         return rolesGateway.eliminarRol(idRol);
     }
 

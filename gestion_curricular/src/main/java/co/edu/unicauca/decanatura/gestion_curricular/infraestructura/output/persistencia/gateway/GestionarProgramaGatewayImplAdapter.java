@@ -11,16 +11,21 @@ import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.Gestionar
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Programa;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.entidades.ProgramaEntity;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.repositorios.ProgramaRepositoryInt;
+import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.repositorios.UsuarioRepositoryInt;
 
 @Service
 @Transactional
 public class GestionarProgramaGatewayImplAdapter implements GestionarProgramaGatewayIntPort {
 
     private final ProgramaRepositoryInt programaRepository;
+    private final UsuarioRepositoryInt usuarioRepository;
     private final ModelMapper programaMapper;
 
-    public GestionarProgramaGatewayImplAdapter(ProgramaRepositoryInt programaRepository, ModelMapper programaMapper) {
+    public GestionarProgramaGatewayImplAdapter(ProgramaRepositoryInt programaRepository, 
+                                                UsuarioRepositoryInt usuarioRepository,
+                                                ModelMapper programaMapper) {
         this.programaRepository = programaRepository;
+        this.usuarioRepository = usuarioRepository;
         this.programaMapper = programaMapper;
     }
 
@@ -121,5 +126,11 @@ public class GestionarProgramaGatewayImplAdapter implements GestionarProgramaGat
             }).toList();
         }
         return programasRetornar;
+    }
+    
+    @Override
+    @Transactional(readOnly = true)
+    public boolean tieneUsuariosAsociados(Integer idPrograma) {
+        return !usuarioRepository.buscarPorPrograma(idPrograma).isEmpty();
     }
 }

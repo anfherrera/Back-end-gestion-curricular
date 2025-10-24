@@ -9,6 +9,7 @@ import jakarta.validation.ConstraintViolationException;
 
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
@@ -61,6 +62,33 @@ public class RestApiExceptionHandler {
                                                 HttpStatus.NOT_FOUND.value())
                                 .setUrl(req.getRequestURL().toString()).setMetodo(req.getMethod());
                 return new ResponseEntity<>(error, HttpStatus.NOT_FOUND);
+        }
+
+        @ExceptionHandler(DataIntegrityViolationException.class)
+        public ResponseEntity<Error> handleDataIntegrityViolation(final HttpServletRequest req,
+                        final DataIntegrityViolationException ex) {
+                System.out.println("🔴 Manejando DataIntegrityViolationException: " + ex.getMessage());
+                
+                // Analizar el mensaje para dar una respuesta más amigable
+                String mensajeUsuario = "No se puede eliminar el registro porque tiene elementos asociados.";
+                
+                if (ex.getMessage() != null) {
+                        String mensaje = ex.getMessage().toLowerCase();
+                        if (mensaje.contains("usuarios") || mensaje.contains("idfkprograma") || mensaje.contains("idfkrol")) {
+                                mensajeUsuario = "No se puede eliminar porque tiene usuarios asociados. Por favor, reasigne o elimine los usuarios primero.";
+                        } else if (mensaje.contains("cursos") || mensaje.contains("docente") || mensaje.contains("materia")) {
+                                mensajeUsuario = "No se puede eliminar porque tiene cursos asociados. Por favor, reasigne o elimine los cursos primero.";
+                        } else if (mensaje.contains("solicitudes")) {
+                                mensajeUsuario = "No se puede eliminar porque tiene solicitudes asociadas.";
+                        }
+                }
+                
+                final Error error = ErrorUtils
+                                .crearError(CodigoError.VIOLACION_REGLA_DE_NEGOCIO.getCodigo(),
+                                                mensajeUsuario,
+                                                HttpStatus.CONFLICT.value())
+                                .setUrl(req.getRequestURL().toString()).setMetodo(req.getMethod());
+                return new ResponseEntity<>(error, HttpStatus.CONFLICT);
         }
 
         @ExceptionHandler(Exception.class)

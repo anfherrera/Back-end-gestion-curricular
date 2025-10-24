@@ -23,4 +23,6 @@ public interface GestionarRolGatewayIntPort {
     boolean existeRolPorNombre(String nombre);
 
     List<Rol> listarRoles();
+    
+    boolean tieneUsuariosAsociados(Integer idRol);
 }

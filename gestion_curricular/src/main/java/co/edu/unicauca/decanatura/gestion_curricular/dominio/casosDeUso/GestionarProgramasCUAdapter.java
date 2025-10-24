@@ -59,6 +59,14 @@ public class GestionarProgramasCUAdapter implements GestionarProgramasCUIntPort 
             formateadorResultados.retornarRespuestaErrorEntidadExiste("No se encontró el programa a eliminar.");
         }
 
+        // ✅ VALIDACIÓN: Verificar si el programa tiene usuarios asociados
+        if (programasGateway.tieneUsuariosAsociados(idPrograma)) {
+            formateadorResultados.retornarRespuestaErrorReglaDeNegocio(
+                "No se puede eliminar el programa porque tiene usuarios asociados. " +
+                "Por favor, reasigne los usuarios a otro programa antes de eliminar."
+            );
+        }
+
         return programasGateway.eliminarPrograma(idPrograma);
     }
 

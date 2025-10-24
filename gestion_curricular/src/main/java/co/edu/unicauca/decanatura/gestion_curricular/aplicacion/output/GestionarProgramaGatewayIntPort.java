@@ -24,4 +24,6 @@ public interface GestionarProgramaGatewayIntPort {
     List<Programa> buscarPorNombreParcial(String nombreParcial);
 
     List<Programa> listarProgramas();
+    
+    boolean tieneUsuariosAsociados(Integer idPrograma);
 }
