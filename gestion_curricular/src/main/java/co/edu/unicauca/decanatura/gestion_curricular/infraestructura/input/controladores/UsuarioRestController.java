@@ -25,6 +25,15 @@ import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.DTORe
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.DTORespuesta.UsuarioDTORespuesta;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.mappers.UsuarioMapperDominio;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -41,6 +50,7 @@ import java.util.stream.Collectors;
 @RequestMapping("/api/usuarios")
 @RequiredArgsConstructor
 @Validated
+@Tag(name = "Usuarios", description = "API para la gestión de usuarios del sistema")
 public class UsuarioRestController {
     private final GestionarUsuarioCUIntPort objUsuarioCUIntPort;
     private final UsuarioMapperDominio objUsuarioMapperDominio;
@@ -151,8 +161,20 @@ public class UsuarioRestController {
         return ResponseEntity.ok(respuesta);
     }
     
+    @Operation(
+        summary = "Cambiar estado de un usuario",
+        description = "Activa o desactiva un usuario. Si está activo lo desactiva y viceversa."
+    )
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Estado cambiado exitosamente",
+            content = @Content(schema = @Schema(implementation = UsuarioDTORespuesta.class))),
+        @ApiResponse(responseCode = "404", description = "Usuario no encontrado",
+            content = @Content)
+    })
     @PutMapping("/cambiarEstado/{id}")
-    public ResponseEntity<UsuarioDTORespuesta> cambiarEstadoUsuario(@Min(value = 1) @PathVariable Integer id) {
+    public ResponseEntity<UsuarioDTORespuesta> cambiarEstadoUsuario(
+            @Parameter(description = "ID del usuario", required = true)
+            @Min(value = 1) @PathVariable Integer id) {
         Usuario usuario = objUsuarioCUIntPort.obtenerUsuarioPorId(id);
         if (usuario == null) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
@@ -168,6 +190,17 @@ public class UsuarioRestController {
         );
     }
 
+    @Operation(
+        summary = "Iniciar sesión",
+        description = "Autentica un usuario y devuelve un token JWT para acceder a los endpoints protegidos",
+        security = {}  // Este endpoint NO requiere autenticación
+    )
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Login exitoso",
+            content = @Content(schema = @Schema(implementation = LoginDTORespuesta.class))),
+        @ApiResponse(responseCode = "401", description = "Credenciales incorrectas",
+            content = @Content)
+    })
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody LoginDTOPeticion request) {
         try {

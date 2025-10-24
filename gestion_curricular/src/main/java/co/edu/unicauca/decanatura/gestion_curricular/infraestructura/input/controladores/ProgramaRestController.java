@@ -14,6 +14,14 @@ import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.DTOPe
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.DTORespuesta.ProgramaDTORespuesta;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.mappers.ProgramaMapperDominio;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
+
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -22,11 +30,24 @@ import java.util.stream.Collectors;
 @RequestMapping("/api/programas")
 @RequiredArgsConstructor
 @Validated
+@Tag(name = "Programas Académicos", description = "API para la gestión de programas académicos de la FIET")
 public class ProgramaRestController {
 
     private final GestionarProgramasCUIntPort objProgramaCUIntPort;
     private final ProgramaMapperDominio objProgramaMapperDominio;
 
+    @Operation(
+        summary = "Crear un nuevo programa académico",
+        description = "Crea un nuevo programa académico en el sistema. El código del programa debe ser único."
+    )
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "201", description = "Programa creado exitosamente",
+            content = @Content(schema = @Schema(implementation = ProgramaDTORespuesta.class))),
+        @ApiResponse(responseCode = "400", description = "Datos inválidos o programa ya existe",
+            content = @Content),
+        @ApiResponse(responseCode = "409", description = "Ya existe un programa con ese código",
+            content = @Content)
+    })
     @PostMapping("/crearPrograma")
     public ResponseEntity<ProgramaDTORespuesta> crearPrograma(@RequestBody @Valid ProgramaDTOPeticion peticion) {
         Programa programa = objProgramaMapperDominio.mappearDeProgramaDTOPeticionAPrograma(peticion);
@@ -86,6 +107,14 @@ public class ProgramaRestController {
         );
     }
 
+    @Operation(
+        summary = "Listar todos los programas académicos",
+        description = "Obtiene una lista de todos los programas académicos registrados en el sistema"
+    )
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Lista obtenida exitosamente",
+            content = @Content(schema = @Schema(implementation = ProgramaDTORespuesta.class)))
+    })
     @GetMapping("/listarProgramas")
     public ResponseEntity<List<ProgramaDTORespuesta>> listarProgramas() {
         List<Programa> programas = objProgramaCUIntPort.listarProgramas();
