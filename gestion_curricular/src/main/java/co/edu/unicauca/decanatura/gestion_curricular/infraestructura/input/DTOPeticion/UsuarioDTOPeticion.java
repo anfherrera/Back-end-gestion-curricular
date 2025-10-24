@@ -1,10 +1,10 @@
 package co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.DTOPeticion;
 
-import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.Min;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -21,12 +21,12 @@ public class UsuarioDTOPeticion {
     @Size(min = 3, max = 100, message = "{Usuario.nombre_completo.length}")
     private String nombre_completo;
 
-    private RolDTOPeticion rol;
-    // private Integer rol;
+    @NotNull(message = "{Usuario.rol.notnull}")
+    @Min(value = 1, message = "{Usuario.rol.min}")
+    private Integer id_rol;
 
     @NotBlank(message = "{Usuario.codigo.empty}")
-    @Size(min = 12, max = 12, message = "{Usuario.codigo.length}")
-    @Pattern(message = "{Usuario.codigo.pattern}", regexp = "^1046\\d{8}$")
+    @Size(min = 3, max = 50, message = "{Usuario.codigo.length}")
     private String codigo;
 
     @NotBlank(message = "{Usuario.correo.empty}")
@@ -34,14 +34,11 @@ public class UsuarioDTOPeticion {
     @Pattern(regexp = "^[\\w.%+-]+@unicauca\\.edu\\.co$", message = "{Usuario.correo.unicauca}")
     private String correo;
 
-    // @NotBlank(message = "{Usuario.password.empty}")
-    // @Size(min = 8, max = 20, message = "{Usuario.password.length}")
     private String password;
 
     private boolean estado_usuario;
 
     @NotNull(message = "{Usuario.objPrograma.notnull}")
-    @Valid
-    private ProgramaDTOPeticion objPrograma;
-    // private Integer objPrograma;
+    @Min(value = 1, message = "{Usuario.programa.min}")
+    private Integer id_programa;
 }

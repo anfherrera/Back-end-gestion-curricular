@@ -51,20 +51,61 @@ public class UsuarioRestController {
 
     @PostMapping("/crearUsuario")
     public ResponseEntity<UsuarioDTORespuesta> crearUsuario(@RequestBody @Valid UsuarioDTOPeticion peticion) {
-        Usuario usuario = objUsuarioMapperDominio.mappearDeUsuarioDTOPeticionAUsuario(peticion);
+        Usuario usuario = new Usuario();
+        usuario.setNombre_completo(peticion.getNombre_completo());
+        usuario.setCodigo(peticion.getCodigo());
+        usuario.setCorreo(peticion.getCorreo());
+        usuario.setPassword(peticion.getPassword());
+        usuario.setEstado_usuario(peticion.isEstado_usuario());
+        
+        // Crear objetos Rol y Programa con solo el ID
+        co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Rol rol = 
+            new co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Rol();
+        rol.setId_rol(peticion.getId_rol());
+        usuario.setObjRol(rol);
+        
+        co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Programa programa = 
+            new co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Programa();
+        programa.setId_programa(peticion.getId_programa());
+        usuario.setObjPrograma(programa);
+        
         Usuario usuarioCreado = objUsuarioCUIntPort.crearUsuario(usuario);
-        ResponseEntity<UsuarioDTORespuesta> objRespuesta = new ResponseEntity<UsuarioDTORespuesta>( 
-            objUsuarioMapperDominio.mappearDeUsuarioAUsuarioDTORespuesta(usuarioCreado), HttpStatus.CREATED);
-        return objRespuesta;
+        return new ResponseEntity<>(
+            objUsuarioMapperDominio.mappearDeUsuarioAUsuarioDTORespuesta(usuarioCreado), 
+            HttpStatus.CREATED
+        );
     }
     
     @PutMapping("/actualizarUsuario")
     public ResponseEntity<UsuarioDTORespuesta> actualizarrUsuario(@RequestBody @Valid UsuarioDTOPeticion peticion) {
-        Usuario usuario = objUsuarioMapperDominio.mappearDeUsuarioDTOPeticionAUsuario(peticion);
+        Usuario usuario = new Usuario();
+        usuario.setId_usuario(peticion.getId_usuario());
+        usuario.setNombre_completo(peticion.getNombre_completo());
+        usuario.setCodigo(peticion.getCodigo());
+        usuario.setCorreo(peticion.getCorreo());
+        usuario.setEstado_usuario(peticion.isEstado_usuario());
+        
+        // Solo actualizar password si se proporciona
+        if (peticion.getPassword() != null && !peticion.getPassword().trim().isEmpty()) {
+            usuario.setPassword(peticion.getPassword());
+        }
+        
+        // Crear objetos Rol y Programa con solo el ID
+        co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Rol rol = 
+            new co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Rol();
+        rol.setId_rol(peticion.getId_rol());
+        usuario.setObjRol(rol);
+        
+        co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Programa programa = 
+            new co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Programa();
+        programa.setId_programa(peticion.getId_programa());
+        usuario.setObjPrograma(programa);
+        
         Usuario usuarioActualizado = objUsuarioCUIntPort.actualizarUsuario(usuario);
-        ResponseEntity<UsuarioDTORespuesta> objRespuesta = new ResponseEntity<UsuarioDTORespuesta>( 
-            objUsuarioMapperDominio.mappearDeUsuarioAUsuarioDTORespuesta(usuarioActualizado), HttpStatus.ACCEPTED);
-        return objRespuesta;
+        return new ResponseEntity<>(
+            objUsuarioMapperDominio.mappearDeUsuarioAUsuarioDTORespuesta(usuarioActualizado), 
+            HttpStatus.ACCEPTED
+        );
     }
 
     @GetMapping("/buscarUsuarioPorId/{id}")

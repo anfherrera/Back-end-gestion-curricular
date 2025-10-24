@@ -63,7 +63,6 @@ public Usuario crearUsuario(Usuario usuario) {
         this.objFormateadorResultados.retornarRespuestaErrorEntidadExiste("El rol con ID: '" + usuario.getObjRol().getId_rol() + "' no existe.");
     }
     String passwordCodificada = passwordEncoder.encode(usuario.getPassword());
-    System.out.println("contraseña codificada: " + passwordCodificada);
     usuario.setPassword(passwordCodificada);
     objRol.getUsuarios().add(usuario);
     usuario.setObjRol(objRol);
@@ -86,7 +85,6 @@ public Usuario crearUsuario(Usuario usuario) {
             this.objFormateadorResultados.retornarRespuestaErrorEntidadExiste("El ID del usuario no puede ser nulo.");
 
         }
-        //this.objFormateadorResultados.retornarRespuestaErrorEntidadExiste("usuario id" + usuario.getId_usuario());
 
         Usuario existente = this.objGestionarUsuarioGateway.obtenerUsuarioPorId(usuario.getId_usuario());
         if (existente == null) {
@@ -120,6 +118,15 @@ public Usuario crearUsuario(Usuario usuario) {
         objRol = this.objGestionarRolGateway.bucarRolPorId(usuario.getObjRol().getId_rol());
         if (objRol == null) {
             this.objFormateadorResultados.retornarRespuestaErrorEntidadExiste("El rol enviado no existe.");
+        }
+
+        // Manejar password: si se proporciona, codificarla; si no, mantener la existente
+        if (usuario.getPassword() != null && !usuario.getPassword().trim().isEmpty()) {
+            String passwordCodificada = passwordEncoder.encode(usuario.getPassword());
+            usuario.setPassword(passwordCodificada);
+        } else {
+            // Mantener la password existente
+            usuario.setPassword(existente.getPassword());
         }
 
         objRol.getUsuarios().add(usuario);

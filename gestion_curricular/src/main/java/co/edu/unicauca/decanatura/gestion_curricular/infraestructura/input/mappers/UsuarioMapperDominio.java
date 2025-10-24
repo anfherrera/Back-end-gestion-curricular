@@ -25,13 +25,4 @@ public interface UsuarioMapperDominio {
     UsuarioDTORespuesta mappearDeUsuarioAUsuarioDTORespuesta(Usuario usuario);
 
     List<UsuarioDTORespuesta> mappearListaDeUsuarioAUsuarioDTORespuesta(List<Usuario> usuarios);
-
-    // De DTO de petición → modelo
-    @Mapping(target = "id_usuario", source = "id_usuario") // Mapea el ID del usuario
-    @Mapping(target = "objRol", source = "rol") // Mapea el objeto Rol
-    @Mapping(target = "cursosOfertadosInscritos", ignore = true) // Se ignora, porque en DTOPeticion tienes solo el id del programa
-    @Mapping(target = "solicitudes", ignore = true) // Se ignora, porque en DTOPeticion tienes solo el id del programa
-    Usuario mappearDeUsuarioDTOPeticionAUsuario(UsuarioDTOPeticion usuarioDTOPeticion);
-
-    List<Usuario> mappearListaUsuarioDTOPeticionAListaUsuario(List<UsuarioDTOPeticion> usuarios);
 }
