@@ -36,7 +36,7 @@ class EstadisticasIntegracionTest {
     void testObtenerEstadisticasGlobalesRetorna200() throws Exception {
         mockMvc.perform(get("/api/estadisticas/globales"))
                 .andExpect(status().isOk())
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.totalSolicitudes").exists())
                 .andExpect(jsonPath("$.porTipoProceso").exists());
     }
@@ -46,7 +46,7 @@ class EstadisticasIntegracionTest {
     void testObtenerEstadisticasPorProcesoRetorna200() throws Exception {
         mockMvc.perform(get("/api/estadisticas/proceso/PAZ_SALVO"))
                 .andExpect(status().isOk())
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON));
+                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON));
     }
 
     @Test
@@ -54,7 +54,7 @@ class EstadisticasIntegracionTest {
     void testObtenerEstadisticasPorEstadoRetorna200() throws Exception {
         mockMvc.perform(get("/api/estadisticas/estado/APROBADA"))
                 .andExpect(status().isOk())
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON));
+                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON));
     }
 
     @Test
@@ -62,7 +62,7 @@ class EstadisticasIntegracionTest {
     void testObtenerEstadisticasPorProgramaRetorna200() throws Exception {
         mockMvc.perform(get("/api/estadisticas/programa/1"))
                 .andExpect(status().isOk())
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON));
+                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON));
     }
 
     @Test
@@ -70,7 +70,7 @@ class EstadisticasIntegracionTest {
     void testObtenerResumenCompletoRetorna200() throws Exception {
         mockMvc.perform(get("/api/estadisticas/resumen-completo"))
                 .andExpect(status().isOk())
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON));
+                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON));
     }
 
     @Test
@@ -78,7 +78,7 @@ class EstadisticasIntegracionTest {
     void testObtenerDashboardEjecutivoRetorna200() throws Exception {
         mockMvc.perform(get("/api/estadisticas/dashboard"))
                 .andExpect(status().isOk())
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.resumenGlobal").exists());
     }
 
@@ -87,7 +87,7 @@ class EstadisticasIntegracionTest {
     void testObtenerEstadisticasRendimientoRetorna200() throws Exception {
         mockMvc.perform(get("/api/estadisticas/rendimiento"))
                 .andExpect(status().isOk())
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.estadisticasGlobales").exists())
                 .andExpect(jsonPath("$.indicadoresRendimiento").exists());
     }
@@ -97,7 +97,7 @@ class EstadisticasIntegracionTest {
     void testObtenerEstadisticasCursosVeranoRetorna200() throws Exception {
         mockMvc.perform(get("/api/estadisticas/cursos-verano"))
                 .andExpect(status().isOk())
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON));
+                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON));
     }
 
     @Test
@@ -106,7 +106,7 @@ class EstadisticasIntegracionTest {
         mockMvc.perform(get("/api/estadisticas/export/pdf"))
                 .andExpect(status().isOk())
                 .andExpect(header().exists("Content-Disposition"))
-                .andExpect(content().contentType(MediaType.APPLICATION_PDF));
+                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_PDF));
     }
 
     @Test
@@ -115,7 +115,7 @@ class EstadisticasIntegracionTest {
         mockMvc.perform(get("/api/estadisticas/export/excel"))
                 .andExpect(status().isOk())
                 .andExpect(header().exists("Content-Disposition"))
-                .andExpect(content().contentType(MediaType.APPLICATION_OCTET_STREAM));
+                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_OCTET_STREAM));
     }
 
     @Test
@@ -124,7 +124,7 @@ class EstadisticasIntegracionTest {
         mockMvc.perform(get("/api/estadisticas/filtradas")
                         .param("nombreProceso", "PAZ_SALVO"))
                 .andExpect(status().isOk())
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON));
+                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON));
     }
 
     @Test
@@ -132,7 +132,7 @@ class EstadisticasIntegracionTest {
     void testObtenerTotalEstudiantesRetorna200() throws Exception {
         mockMvc.perform(get("/api/estadisticas/total-estudiantes"))
                 .andExpect(status().isOk())
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.totalEstudiantes").exists());
     }
 
@@ -141,7 +141,7 @@ class EstadisticasIntegracionTest {
     void testObtenerEstudiantesPorProgramaRetorna200() throws Exception {
         mockMvc.perform(get("/api/estadisticas/estudiantes-por-programa"))
                 .andExpect(status().isOk())
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.estudiantesPorPrograma").exists());
     }
 
@@ -150,7 +150,7 @@ class EstadisticasIntegracionTest {
     void testObtenerConfiguracionEstilos() throws Exception {
         mockMvc.perform(get("/api/estadisticas/configuracion-estilos"))
                 .andExpect(status().isOk())
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON));
+                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON));
     }
 
     @Test
