@@ -63,11 +63,39 @@
 			<artifactId>lombok</artifactId>
 			<optional>true</optional>
 		</dependency>
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-test</artifactId>
-			<scope>test</scope>
-		</dependency>
+	<dependency>
+		<groupId>org.springframework.boot</groupId>
+		<artifactId>spring-boot-starter-test</artifactId>
+		<scope>test</scope>
+	</dependency>
+	
+	<!-- Base de datos H2 para pruebas -->
+	<dependency>
+		<groupId>com.h2database</groupId>
+		<artifactId>h2</artifactId>
+		<scope>test</scope>
+	</dependency>
+	
+	<!-- Spring Security Test -->
+	<dependency>
+		<groupId>org.springframework.security</groupId>
+		<artifactId>spring-security-test</artifactId>
+		<scope>test</scope>
+	</dependency>
+	
+	<!-- REST Assured para pruebas de API -->
+	<dependency>
+		<groupId>io.rest-assured</groupId>
+		<artifactId>rest-assured</artifactId>
+		<scope>test</scope>
+	</dependency>
+	
+	<!-- AssertJ para assertions más expresivas -->
+	<dependency>
+		<groupId>org.assertj</groupId>
+		<artifactId>assertj-core</artifactId>
+		<scope>test</scope>
+	</dependency>
 		<dependency>
 			<groupId>org.mapstruct</groupId>
 			<artifactId>mapstruct</artifactId>
