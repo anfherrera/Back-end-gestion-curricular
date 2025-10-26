@@ -1,6 +1,6 @@
 package co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.DTORespuesta;
 
-import java.sql.Date;
+import java.time.LocalDate;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 
@@ -16,20 +16,20 @@ public class FechaEcaesDTORespuesta {
     private String periodoAcademico; // Ejemplo: "2025-2"
     
     @JsonFormat(pattern = "yyyy-MM-dd")
-    private Date inscripcion_est_by_facultad;
+    private LocalDate inscripcion_est_by_facultad;
     
     @JsonFormat(pattern = "yyyy-MM-dd")
-    private Date registro_recaudo_ordinario;
+    private LocalDate registro_recaudo_ordinario;
     
     @JsonFormat(pattern = "yyyy-MM-dd")
-    private Date registro_recaudo_extraordinario;
+    private LocalDate registro_recaudo_extraordinario;
     
     @JsonFormat(pattern = "yyyy-MM-dd")
-    private Date citacion;
+    private LocalDate citacion;
     
     @JsonFormat(pattern = "yyyy-MM-dd")
-    private Date aplicacion;
+    private LocalDate aplicacion;
     
     @JsonFormat(pattern = "yyyy-MM-dd")
-    private Date resultados_individuales;
+    private LocalDate resultados_individuales;
 }

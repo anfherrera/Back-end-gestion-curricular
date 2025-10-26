@@ -1,6 +1,6 @@
 package co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.DTOPeticion;
 
-import java.sql.Date;
+import java.time.LocalDate;
 
 import org.springframework.format.annotation.DateTimeFormat;
 
@@ -16,20 +16,20 @@ public class FechasEcaesDTOPeticion {
     private String periodoAcademico; // Ejemplo: "2025-2"
     
     @DateTimeFormat(pattern = "yyyy-MM-dd")
-    private Date inscripcion_est_by_facultad;
+    private LocalDate inscripcion_est_by_facultad;
     
     @DateTimeFormat(pattern = "yyyy-MM-dd")
-    private Date registro_recaudo_ordinario;
+    private LocalDate registro_recaudo_ordinario;
     
     @DateTimeFormat(pattern = "yyyy-MM-dd")
-    private Date registro_recaudo_extraordinario;
+    private LocalDate registro_recaudo_extraordinario;
     
     @DateTimeFormat(pattern = "yyyy-MM-dd")
-    private Date citacion;
+    private LocalDate citacion;
     
     @DateTimeFormat(pattern = "yyyy-MM-dd")
-    private Date aplicacion;
+    private LocalDate aplicacion;
     
     @DateTimeFormat(pattern = "yyyy-MM-dd")
-    private Date resultados_individuales;
+    private LocalDate resultados_individuales;
 }

@@ -1,6 +1,6 @@
 package co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.entidades;
 
-import java.sql.Date;
+import java.time.LocalDate;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -24,16 +24,16 @@ public class FechaEcaesEntity {
     @Column(nullable = false)
     private String periodoAcademico; // Ejemplo: "2025-2"
     @Column(nullable = false)
-    private Date inscripcion_est_by_facultad;
+    private LocalDate inscripcion_est_by_facultad;
     @Column(nullable = false)
-    private Date registro_recaudo_ordinario;
+    private LocalDate registro_recaudo_ordinario;
     @Column(nullable = false)
-    private Date registro_recaudo_extraordinario;
+    private LocalDate registro_recaudo_extraordinario;
     @Column(nullable = false)
-    private Date citacion;
+    private LocalDate citacion;
     @Column(nullable = false)
-    private Date aplicacion;
+    private LocalDate aplicacion;
     @Column(nullable = false)
-    private Date resultados_individuales;
+    private LocalDate resultados_individuales;
 
 }

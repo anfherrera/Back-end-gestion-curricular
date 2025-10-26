@@ -1,6 +1,6 @@
 package co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos;
 
-import java.sql.Date;
+import java.time.LocalDate;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -12,11 +12,11 @@ import lombok.NoArgsConstructor;
 public class FechaEcaes {
     private Integer idFechaEcaes;
     private String periodoAcademico; // Ejemplo: "2025-2"
-    private Date inscripcion_est_by_facultad;
-    private Date registro_recaudo_ordinario;
-    private Date registro_recaudo_extraordinario;
-    private Date citacion;
-    private Date aplicacion;
-    private Date resultados_individuales;
+    private LocalDate inscripcion_est_by_facultad;
+    private LocalDate registro_recaudo_ordinario;
+    private LocalDate registro_recaudo_extraordinario;
+    private LocalDate citacion;
+    private LocalDate aplicacion;
+    private LocalDate resultados_individuales;
 
 }
