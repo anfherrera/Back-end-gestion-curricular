@@ -44,14 +44,14 @@ public class SolicitudEntity {
 
     private Boolean esSeleccionado;
 
-    @OneToMany( mappedBy = "objSolicitud", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "objSolicitud", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<EstadoSolicitudEntity> estadosSolicitud;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "idUsuario")
     private UsuarioEntity objUsuario;
 
-    @OneToMany(mappedBy = "objSolicitud", cascade = {CascadeType.PERSIST, CascadeType.REMOVE}, orphanRemoval = true)
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "objSolicitud", cascade = {CascadeType.PERSIST, CascadeType.REMOVE}, orphanRemoval = true)
     private List<DocumentoEntity> documentos;
 
     @ManyToOne(fetch = FetchType.LAZY)
