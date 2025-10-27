@@ -279,12 +279,16 @@ public class GestionarEstadisticasGatewayImplAdapter implements GestionarEstadis
             }
             estadisticas.put("porPrograma", porPrograma);
             
-            // Estadísticas por estado (consistente con la BD)
+            // Estadísticas por estado (valores INDIVIDUALES del estado más reciente)
+            // IMPORTANTE: Cada estado se cuenta por separado usando contarEstado (con comparación exacta)
             Map<String, Integer> porEstado = new HashMap<>();
-            porEstado.put("APROBADA", totalAprobadas);
-            porEstado.put("RECHAZADA", totalRechazadas);
-            porEstado.put("APROBADA_FUNCIONARIO", totalEnProceso);
-            porEstado.put("ENVIADA", totalEnviadas);
+            
+            porEstado.put("APROBADA", totalAprobadas);  // 21 (ahora contarEstado usa = en vez de LIKE)
+            porEstado.put("RECHAZADA", totalRechazadas);  // 5
+            porEstado.put("APROBADA_FUNCIONARIO", enProcesoFuncionario);  // 11
+            porEstado.put("APROBADA_COORDINADOR", enProcesoCoordinador);  // 4
+            porEstado.put("ENVIADA", totalEnviadas);  // 9
+            
             estadisticas.put("porEstado", porEstado);
             
             estadisticas.put("fechaConsulta", new Date());

@@ -325,6 +325,15 @@ INSERT INTO EstadosSolicitudes(idEstado, estado_actual, fecha_registro_estado, i
 UPDATE EstadosSolicitudes SET estado_actual = 'APROBADA_COORDINADOR' WHERE idEstado IN (18, 19, 20, 21);
 
 -- ==========================================
+-- ESTADOS PARA INSCRIPCIONES DE CURSOS DE VERANO (IDs 100-103)
+-- Agregando los 4 estados faltantes para completar las 50 solicitudes
+-- ==========================================
+INSERT INTO EstadosSolicitudes(idEstado, estado_actual, fecha_registro_estado, idfkSolicitud) VALUES (47, 'APROBADA', '2025-07-15 11:00:00', 100);
+INSERT INTO EstadosSolicitudes(idEstado, estado_actual, fecha_registro_estado, idfkSolicitud) VALUES (48, 'APROBADA', '2025-07-16 15:00:00', 101);
+INSERT INTO EstadosSolicitudes(idEstado, estado_actual, fecha_registro_estado, idfkSolicitud) VALUES (49, 'APROBADA', '2025-07-17 10:00:00', 102);
+INSERT INTO EstadosSolicitudes(idEstado, estado_actual, fecha_registro_estado, idfkSolicitud) VALUES (50, 'APROBADA', '2025-07-18 17:00:00', 103);
+
+-- ==========================================
 -- VALIDACIÓN DE DATOS CARGADOS
 -- ==========================================
 -- SELECT COUNT(*) FROM Solicitudes;

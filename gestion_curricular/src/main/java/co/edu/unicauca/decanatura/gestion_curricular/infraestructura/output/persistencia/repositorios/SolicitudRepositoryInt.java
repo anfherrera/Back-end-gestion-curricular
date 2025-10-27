@@ -230,9 +230,14 @@ public interface SolicitudRepositoryInt extends JpaRepository<SolicitudEntity, I
         @Param("idPrograma") Integer idPrograma);
 
     @Query(
-    "SELECT COUNT(s) FROM SolicitudEntity s " +
+    "SELECT COUNT(DISTINCT s) FROM SolicitudEntity s " +
     "JOIN s.estadosSolicitud est " +
-    "WHERE LOWER(est.estado_actual) LIKE LOWER(CONCAT('%', :estado, '%'))")
+    "WHERE UPPER(est.estado_actual) = UPPER(:estado) " +
+    "AND est.fecha_registro_estado = (" +
+    "   SELECT MAX(e2.fecha_registro_estado) " +
+    "   FROM EstadoSolicitudEntity e2 " +
+    "   WHERE e2.objSolicitud.id_solicitud = s.id_solicitud" +
+    ")")
     Integer contarEstado(
     @Param("estado") String estado);
 
