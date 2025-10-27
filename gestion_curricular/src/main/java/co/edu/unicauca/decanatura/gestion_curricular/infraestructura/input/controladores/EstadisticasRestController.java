@@ -128,12 +128,20 @@ public class EstadisticasRestController {
     /**
      * Obtiene estadísticas globales del sistema combinando todos los procesos.
      * Utiliza SolicitudRepositoryInt para obtener conteos totales.
+     * Acepta MÚLTIPLES FILTROS SIMULTÁNEOS (con AND).
      * 
-     * @param proceso Tipo de proceso (opcional)
+     * @param proceso Tipo de proceso (opcional) - ej: "Reingreso", "Paz y Salvo", "Homologación"
      * @param idPrograma ID del programa (opcional)
-     * @param fechaInicio Fecha de inicio (opcional)
-     * @param fechaFin Fecha de fin (opcional)
-     * @return ResponseEntity con estadísticas globales
+     * @param fechaInicio Fecha de inicio (opcional) - formato: yyyy-MM-dd
+     * @param fechaFin Fecha de fin (opcional) - formato: yyyy-MM-dd
+     * @return ResponseEntity con estadísticas globales filtradas
+     * 
+     * Ejemplos de uso:
+     * - Sin filtros: GET /api/estadisticas/globales
+     * - Por proceso: GET /api/estadisticas/globales?proceso=Reingreso
+     * - Por programa: GET /api/estadisticas/globales?idPrograma=1
+     * - Por fechas: GET /api/estadisticas/globales?fechaInicio=2025-07-01&fechaFin=2025-09-30
+     * - Combinados: GET /api/estadisticas/globales?proceso=Paz%20y%20Salvo&idPrograma=1&fechaInicio=2025-07-01&fechaFin=2025-09-30
      */
     @GetMapping("/globales")
     public ResponseEntity<Map<String, Object>> obtenerEstadisticasGlobales(
@@ -142,9 +150,12 @@ public class EstadisticasRestController {
             @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") Date fechaInicio,
             @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") Date fechaFin) {
         try {
-            log.info("📊 [ESTADISTICAS] Generando estadísticas globales con filtros - Proceso: {}, Programa: {}, Fechas: {} - {}", 
+            log.info("📊 [ESTADISTICAS] Generando estadísticas globales con filtros múltiples - Proceso: {}, Programa: {}, Fechas: {} - {}", 
                     proceso, idPrograma, fechaInicio, fechaFin);
+            
+            // El método obtenerEstadisticasGlobales ya acepta TODOS los filtros simultáneamente
             Map<String, Object> estadisticas = estadisticaCU.obtenerEstadisticasGlobales(proceso, idPrograma, fechaInicio, fechaFin);
+            
             log.info("📊 [ESTADISTICAS] Resultado final: {}", estadisticas);
             return ResponseEntity.ok(estadisticas);
         } catch (Exception e) {
