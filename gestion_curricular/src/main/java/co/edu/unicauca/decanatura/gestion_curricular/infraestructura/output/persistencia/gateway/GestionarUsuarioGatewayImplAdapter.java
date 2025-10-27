@@ -171,8 +171,9 @@ public class GestionarUsuarioGatewayImplAdapter implements GestionarUsuarioGatew
         List<SimpleGrantedAuthority> authorities = new ArrayList<>();
         authorities.add(new SimpleGrantedAuthority("ROLE_" + usuario.getObjRol().getNombre()));
 
-        System.out.println("Usuario autenticado: " + usuario.getCorreo());
-        System.out.println("Contraseña encontrada en BD: " + usuario.getPassword());
+        // SEGURIDAD: No loguear información sensible en producción
+        // System.out.println("Usuario autenticado: " + usuario.getCorreo());
+        // System.out.println("Contraseña encontrada en BD: " + usuario.getPassword());
 
         return new org.springframework.security.core.userdetails.User(
                 usuario.getCorreo(),
