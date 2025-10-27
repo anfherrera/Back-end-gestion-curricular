@@ -2595,6 +2595,8 @@ public class GestionarEstadisticasGatewayImplAdapter implements GestionarEstadis
             System.out.println("📊 [PREDICCIONES_PROGRAMA] Aplicando regresión lineal por programa...");
             List<Map<String, Object>> programasConTendenciaCreciente = new ArrayList<>();
             List<Map<String, Object>> programasConTendenciaDecreciente = new ArrayList<>();
+            List<Map<String, Object>> programasEstables = new ArrayList<>();
+            List<Map<String, Object>> todasLasPrediccionesPorPrograma = new ArrayList<>(); // ✅ Lista completa para frontend
             
             for (Map<String, Object> programa : analisisPorPrograma) {
                 String nombrePrograma = (String) programa.get("nombre");
@@ -2617,14 +2619,22 @@ public class GestionarEstadisticasGatewayImplAdapter implements GestionarEstadis
                     Math.round(((double)(demandaEstimada - solicitudesActuales) / solicitudesActuales) * 100.0) : 0);
                 // ❌ OCULTADO: Campos técnicos (pendiente, rSquared, modeloUtilizado) - no necesarios para usuarios finales
                 
+                // ✅ Clasificar por tendencia
                 if ("CRECIENTE".equals(tendencia)) {
                     programasConTendenciaCreciente.add(prediccionPrograma);
                 } else if ("DECRECIENTE".equals(tendencia)) {
                     programasConTendenciaDecreciente.add(prediccionPrograma);
+                } else {
+                    programasEstables.add(prediccionPrograma);
                 }
+                
+                // ✅ Agregar a lista completa (para visualización en frontend)
+                todasLasPrediccionesPorPrograma.add(prediccionPrograma);
             }
             System.out.println("📊 [PREDICCIONES_PROGRAMA] Programas crecientes: " + programasConTendenciaCreciente.size() + 
-                             ", Decrecientes: " + programasConTendenciaDecreciente.size());
+                             ", Decrecientes: " + programasConTendenciaDecreciente.size() +
+                             ", Estables: " + programasEstables.size() +
+                             ", Total: " + todasLasPrediccionesPorPrograma.size());
             
             // 4. PREDICCIONES TEMPORALES
             Map<String, Object> prediccionesTemporales = new HashMap<>();
@@ -2926,10 +2936,13 @@ public class GestionarEstadisticasGatewayImplAdapter implements GestionarEstadis
             predicciones.put("materiasEstables", materiasEstables);
             predicciones.put("programasConTendenciaCreciente", programasConTendenciaCreciente);
             predicciones.put("programasConTendenciaDecreciente", programasConTendenciaDecreciente);
+            predicciones.put("programasEstables", programasEstables); // ✅ Agregado
+            predicciones.put("todasLasPrediccionesPorPrograma", todasLasPrediccionesPorPrograma); // ✅ Lista completa
             predicciones.put("prediccionesTemporales", prediccionesTemporales);
             predicciones.put("recomendaciones", recomendacionesFuturas); // ⭐ Recomendaciones (para acceso interno)
             predicciones.put("alertasCriticas", alertasCriticas);
             predicciones.put("confiabilidad", "MEDIA");
+            predicciones.put("fechaPrediccion", new Date()); // ✅ Fecha de predicción
             
             // Estadísticas de las recomendaciones
             Map<String, Object> estadisticasRecomendaciones = new HashMap<>();
