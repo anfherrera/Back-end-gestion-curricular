@@ -13,6 +13,8 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.math3.stat.regression.SimpleRegression;
 import org.modelmapper.ModelMapper;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -48,6 +50,7 @@ public class GestionarEstadisticasGatewayImplAdapter implements GestionarEstadis
 
     @Override
     @Transactional
+    @CacheEvict(value = "estadisticasGlobales", allEntries = true)
     public Estadistica crearEstadistica(Estadistica estadistica) {
         if(solicitudRepository.count() <= 0) {
             throw new RuntimeException("No hay solicitudes disponibles para crear estadísticas.");
@@ -69,6 +72,7 @@ public class GestionarEstadisticasGatewayImplAdapter implements GestionarEstadis
 
     @Override
     @Transactional
+    @CacheEvict(value = "estadisticasGlobales", allEntries = true)
     public Estadistica actualizarEstadistica(Estadistica estadistica) {
         estadisticaRepository.findById(estadistica.getId_estadistica())
             .orElseThrow(() -> new RuntimeException("Estadistica no encontrada con ID: " + estadistica.getId_estadistica()));
@@ -85,6 +89,7 @@ public class GestionarEstadisticasGatewayImplAdapter implements GestionarEstadis
 
     @Override
     @Transactional
+    @CacheEvict(value = "estadisticasGlobales", allEntries = true)
     public Boolean eliminarEstadistica(Integer idEstadistica) {
         boolean eliminado = false;
         Optional<EstadisticaEntity> estadisticaEntity = estadisticaRepository.findById(idEstadistica);
@@ -164,12 +169,14 @@ public class GestionarEstadisticasGatewayImplAdapter implements GestionarEstadis
 
     @Override
     @Transactional(readOnly = true)
+    @Cacheable(value = "estadisticasGlobales", key = "'globales'")
     public Map<String, Object> obtenerEstadisticasGlobales() {
         return obtenerEstadisticasGlobales(null, null, null, null);
     }
 
     @Override
     @Transactional(readOnly = true)
+    @Cacheable(value = "estadisticasGlobales", key = "#proceso + '_' + #idPrograma + '_' + #fechaInicio + '_' + #fechaFin")
     public Map<String, Object> obtenerEstadisticasGlobales(String proceso, Integer idPrograma, Date fechaInicio, Date fechaFin) {
         Map<String, Object> estadisticas = new HashMap<>();
         
