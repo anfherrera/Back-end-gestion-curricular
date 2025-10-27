@@ -15,7 +15,6 @@ import java.util.Map;
  */
 @RestController
 @RequestMapping("/api/tipos-documento")
-@CrossOrigin(origins = "*")
 public class TipoDocumentoController {
 
     /**

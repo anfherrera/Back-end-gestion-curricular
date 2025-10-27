@@ -15,7 +15,6 @@ import java.util.Map;
  */
 @RestController
 @RequestMapping("/api/periodos-academicos")
-@CrossOrigin(origins = "*")
 public class PeriodoAcademicoController {
 
     /**
