@@ -1039,18 +1039,18 @@ public class GestionarEstadisticasGatewayImplAdapter implements GestionarEstadis
                     
                     // Analizar estado
                     String estado = obtenerEstadoMasReciente(solicitud);
-                    if ("Aprobada".equals(estado)) {
+                    if ("APROBADA".equals(estado)) {
                         aprobadasPorProceso.put(nombreProceso, aprobadasPorProceso.get(nombreProceso) + 1);
-                    } else if ("Rechazada".equals(estado)) {
+                    } else if ("RECHAZADA".equals(estado)) {
                         rechazadasPorProceso.put(nombreProceso, rechazadasPorProceso.get(nombreProceso) + 1);
-                    } else if ("En Proceso".equals(estado)) {
+                    } else if ("APROBADA_FUNCIONARIO".equals(estado) || "APROBADA_COORDINADOR".equals(estado)) {
                         enProcesoPorProceso.put(nombreProceso, enProcesoPorProceso.get(nombreProceso) + 1);
                     } else {
                         enviadasPorProceso.put(nombreProceso, enviadasPorProceso.get(nombreProceso) + 1);
                     }
                     
                     // Calcular tiempo de procesamiento si está completado
-                    if ("Aprobada".equals(estado) || "Rechazada".equals(estado)) {
+                    if ("APROBADA".equals(estado) || "RECHAZADA".equals(estado)) {
                         Date fechaCreacion = solicitud.getFecha_registro_solicitud();
                         Date fechaActualizacion = obtenerFechaActualizacion(solicitud);
                         
@@ -1434,7 +1434,7 @@ public class GestionarEstadisticasGatewayImplAdapter implements GestionarEstadis
                     }
                     
                     // Calcular eficiencia (aprobadas vs total)
-                    if ("Aprobada".equals(estado)) {
+                    if ("APROBADA".equals(estado)) {
                         estadoMasEficiente = estado;
                     }
                 }
@@ -1577,16 +1577,16 @@ public class GestionarEstadisticasGatewayImplAdapter implements GestionarEstadis
                     
                     // Analizar estado
                     String estado = obtenerEstadoMasReciente(solicitud);
-                    if ("Aprobada".equals(estado)) {
+                    if ("APROBADA".equals(estado)) {
                         aprobadasPorMes.put(nombreMes, aprobadasPorMes.get(nombreMes) + 1);
-                    } else if ("Rechazada".equals(estado)) {
+                    } else if ("RECHAZADA".equals(estado)) {
                         rechazadasPorMes.put(nombreMes, rechazadasPorMes.get(nombreMes) + 1);
                     } else {
                         enviadasPorMes.put(nombreMes, enviadasPorMes.get(nombreMes) + 1);
                     }
                     
                     // Calcular tiempo de procesamiento si está completado
-                    if ("Aprobada".equals(estado) || "Rechazada".equals(estado)) {
+                    if ("APROBADA".equals(estado) || "RECHAZADA".equals(estado)) {
                         Date fechaActualizacion = obtenerFechaActualizacion(solicitud);
                         
                         if (fechaActualizacion != null) {
@@ -1879,16 +1879,16 @@ public class GestionarEstadisticasGatewayImplAdapter implements GestionarEstadis
                     
                     // Analizar estado
                     String estado = obtenerEstadoMasReciente(solicitud);
-                    if ("Aprobada".equals(estado)) {
+                    if ("APROBADA".equals(estado)) {
                         aprobadasPorPrograma.put(nombrePrograma, aprobadasPorPrograma.get(nombrePrograma) + 1);
-                    } else if ("Rechazada".equals(estado)) {
+                    } else if ("RECHAZADA".equals(estado)) {
                         rechazadasPorPrograma.put(nombrePrograma, rechazadasPorPrograma.get(nombrePrograma) + 1);
                     } else {
                         enviadasPorPrograma.put(nombrePrograma, enviadasPorPrograma.get(nombrePrograma) + 1);
                     }
                     
                     // Calcular tiempo de procesamiento si está completado
-                    if ("Aprobada".equals(estado) || "Rechazada".equals(estado)) {
+                    if ("APROBADA".equals(estado) || "RECHAZADA".equals(estado)) {
                         Date fechaCreacion = solicitud.getFecha_registro_solicitud();
                         Date fechaActualizacion = obtenerFechaActualizacion(solicitud);
                         
@@ -2280,7 +2280,7 @@ public class GestionarEstadisticasGatewayImplAdapter implements GestionarEstadis
                     solicitudesPorProceso.put(nombreProceso, solicitudesPorProceso.get(nombreProceso) + 1);
                     
                     String estado = obtenerEstadoMasReciente(solicitud);
-                    if ("Aprobada".equals(estado)) {
+                    if ("APROBADA".equals(estado)) {
                         aprobadasPorProceso.put(nombreProceso, aprobadasPorProceso.get(nombreProceso) + 1);
                     }
                 }
@@ -3579,8 +3579,8 @@ public class GestionarEstadisticasGatewayImplAdapter implements GestionarEstadis
             resultado.put("fechaConsulta", new Date());
             resultado.put("descripcion", "Estadísticas detalladas de cursos de verano - Análisis de demanda y recomendaciones");
             
-            // Calcular tasa de aprobación
-            int aprobadas = estadosPorSolicitud.getOrDefault("Aprobada", 0);
+            // Calcular tasa de aprobación (usar el nombre de estado estandarizado)
+            int aprobadas = estadosPorSolicitud.getOrDefault("APROBADA", 0);
             int total = solicitudesCursosVerano.size();
             double tasaAprobacion = total > 0 ? (aprobadas * 100.0) / total : 0;
             
@@ -3610,6 +3610,7 @@ public class GestionarEstadisticasGatewayImplAdapter implements GestionarEstadis
             resultado.put("predicciones", predicciones);
             
             System.out.println("🏖️ [CURSOS_VERANO] Análisis completado exitosamente");
+            System.out.println("📊 [DEBUG] Estados: " + estadosPorSolicitud);
             System.out.println("📦 [DEBUG] Estructura de predicciones: " + predicciones.keySet());
             return resultado;
             
