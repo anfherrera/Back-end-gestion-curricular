@@ -95,7 +95,8 @@ public class RestApiExceptionHandler {
         @Order(Ordered.LOWEST_PRECEDENCE)
         public ResponseEntity<Error> handleGenericException(final HttpServletRequest req,
                         final Exception ex, final Locale locale) {
-                System.out.println("⚠️ Manejando Exception genérica: " + ex.getClass().getName() + " - " + ex.getMessage());
+                // SEGURIDAD: No loguear excepciones detalladas en producción
+                // System.out.println("⚠️ Manejando Exception genérica: " + ex.getClass().getName() + " - " + ex.getMessage());
                 final Error error = ErrorUtils
                                 .crearError(CodigoError.ERROR_GENERICO.getCodigo(),
                                                 CodigoError.ERROR_GENERICO.getLlaveMensaje(),
