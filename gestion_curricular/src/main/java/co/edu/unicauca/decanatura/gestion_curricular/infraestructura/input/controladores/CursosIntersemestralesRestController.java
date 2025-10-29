@@ -3518,6 +3518,14 @@ public class CursosIntersemestralesRestController {
                     documentosInfo.add(docInfo);
                 }
                 resultado.put("documentos", documentosInfo);
+                
+                // Agregar información específica del archivo para descarga
+                Documento primerDocumento = documentos.get(0);
+                resultado.put("archivo_pago", Map.of(
+                    "nombre_archivo", primerDocumento.getNombre(),
+                    "ruta_archivo", primerDocumento.getRuta_documento(),
+                    "id_documento", primerDocumento.getId_documento()
+                ));
             }
             
             System.out.println("✅ Información de inscripción obtenida exitosamente");
@@ -3707,6 +3715,74 @@ public class CursosIntersemestralesRestController {
             Map<String, Object> error = new HashMap<>();
             error.put("error", "Error obteniendo estadísticas: " + e.getMessage());
             return ResponseEntity.status(500).body(error);
+        }
+    }
+
+    /**
+     * Descargar comprobante de pago por ID de inscripción (genérico para cualquier estudiante)
+     * GET /api/cursos-intersemestrales/inscripciones/{idInscripcion}/comprobante
+     */
+    @GetMapping("/inscripciones/{idInscripcion}/comprobante")
+    public ResponseEntity<byte[]> descargarComprobantePago(@PathVariable Long idInscripcion) {
+        try {
+            System.out.println("📥 Descargando comprobante de pago para inscripción: " + idInscripcion);
+            
+            // 1. Buscar la inscripción
+            SolicitudCursoVeranoIncripcion inscripcion = solicitudCU.buscarPorIdInscripcion(idInscripcion.intValue());
+            if (inscripcion == null) {
+                System.out.println("❌ Inscripción no encontrada: " + idInscripcion);
+                return ResponseEntity.notFound().build();
+            }
+            
+            System.out.println("✅ Inscripción encontrada: " + inscripcion.getNombre_solicitud());
+            
+            // 2. Buscar documentos asociados
+            List<Documento> documentos = inscripcion.getDocumentos();
+            if (documentos == null || documentos.isEmpty()) {
+                System.out.println("❌ No hay documentos asociados a la inscripción: " + idInscripcion);
+                return ResponseEntity.notFound().build();
+            }
+            
+            System.out.println("🔍 Documentos asociados: " + documentos.size());
+            
+            // 3. Buscar el primer documento PDF (comprobante de pago)
+            for (Documento documento : documentos) {
+                if (documento.getNombre() != null && documento.getNombre().toLowerCase().endsWith(".pdf")) {
+                    try {
+                        System.out.println("📄 Documento encontrado: " + documento.getNombre());
+                        
+                        // Obtener el archivo
+                        byte[] archivo = objGestionarArchivos.getFile(documento.getNombre());
+                        
+                        if (archivo == null || archivo.length == 0) {
+                            System.out.println("❌ Archivo no encontrado en disco: " + documento.getNombre());
+                            continue; // Probar el siguiente documento
+                        }
+                        
+                        System.out.println("✅ Archivo obtenido exitosamente: " + documento.getNombre());
+                        
+                        // Configurar headers para descarga
+                        String contentDisposition = "attachment; filename=\"" + documento.getNombre() + "\"";
+                        
+                        return ResponseEntity.ok()
+                            .header(HttpHeaders.CONTENT_DISPOSITION, contentDisposition)
+                            .contentType(MediaType.APPLICATION_PDF)
+                            .body(archivo);
+                            
+                    } catch (Exception e) {
+                        System.out.println("❌ Error procesando documento: " + documento.getNombre() + " - " + e.getMessage());
+                        continue; // Probar el siguiente documento
+                    }
+                }
+            }
+            
+            System.out.println("❌ No se encontró ningún documento PDF válido");
+            return ResponseEntity.notFound().build();
+                
+        } catch (Exception e) {
+            System.out.println("❌ Error descargando comprobante: " + e.getMessage());
+            e.printStackTrace();
+            return ResponseEntity.internalServerError().build();
         }
     }
 
