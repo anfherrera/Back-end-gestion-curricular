@@ -3039,31 +3039,67 @@ public class CursosIntersemestralesRestController {
                 motivo = "Inscripción rechazada por funcionario";
             }
             
-            // 1. Buscar la inscripción usando el método que funciona
-            List<SolicitudCursoVeranoIncripcion> todasLasInscripciones = solicitudCU.buscarInscripcionesPorCurso(1); // Buscar en curso 1
-            SolicitudCursoVeranoIncripcion inscripcion = null;
-            
-            for (SolicitudCursoVeranoIncripcion ins : todasLasInscripciones) {
-                if (ins.getId_solicitud().equals(idInscripcion.intValue())) {
-                    inscripcion = ins;
-                    break;
-                }
-            }
+            // 1. Buscar la inscripción directamente por ID
+            SolicitudCursoVeranoIncripcion inscripcion = solicitudCU.buscarPorIdInscripcion(idInscripcion.intValue());
             
             if (inscripcion == null) {
+                System.out.println("❌ No se encontró la inscripción con ID: " + idInscripcion);
                 Map<String, Object> error = new HashMap<>();
                 error.put("error", "No se encontró la inscripción con ID: " + idInscripcion);
                 return ResponseEntity.badRequest().body(error);
             }
             
-            // 2. Marcar como rechazada (usar validarPago con false)
-            SolicitudCursoVeranoIncripcion inscripcionRechazada = solicitudGateway.validarPago(
-                inscripcion.getId_solicitud(), 
-                false, 
-                "Inscripción rechazada: " + motivo
-            );
+            System.out.println("✅ Inscripción encontrada: " + inscripcion.getNombre_solicitud());
+            String estadoActual = null;
+            if (inscripcion.getEstadosSolicitud() != null && !inscripcion.getEstadosSolicitud().isEmpty()) {
+                co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.EstadoSolicitud ultimo = inscripcion.getEstadosSolicitud().get(inscripcion.getEstadosSolicitud().size() - 1);
+                estadoActual = ultimo.getEstado_actual();
+            }
+            System.out.println("📊 Estado actual: " + estadoActual);
+            System.out.println("👤 Estudiante: " + inscripcion.getObjUsuario().getNombre_completo());
+            System.out.println("📚 Curso: " + inscripcion.getObjCursoOfertadoVerano().getObjMateria().getNombre());
             
-            // 3. Preparar respuesta
+            // 2. Verificar que la inscripción esté en estado válido para rechazar
+            if (!"Enviada".equals(estadoActual) && !"Pago_Validado".equals(estadoActual)) {
+                System.out.println("❌ Estado inválido para rechazar: " + estadoActual);
+                Map<String, Object> error = new HashMap<>();
+                error.put("error", "La inscripción no puede ser rechazada en su estado actual: " + estadoActual);
+                return ResponseEntity.badRequest().body(error);
+            }
+            
+            // 3. Marcar como rechazada usando el caso de uso
+            System.out.println("🔄 Procesando rechazo...");
+            SolicitudCursoVeranoIncripcion inscripcionRechazada;
+            try {
+                inscripcionRechazada = solicitudCU.validarPago(
+                    inscripcion.getId_solicitud(), 
+                    false, 
+                    "Inscripción rechazada: " + motivo
+                );
+            } catch (Exception e) {
+                System.out.println("❌ Error en validarPago: " + e.getMessage());
+                e.printStackTrace();
+                Map<String, Object> error = new HashMap<>();
+                error.put("error", "Error al rechazar la inscripción: " + e.getMessage());
+                return ResponseEntity.badRequest().body(error);
+            }
+            
+            if (inscripcionRechazada == null) {
+                System.out.println("❌ Error al actualizar el estado de la inscripción - resultado es null");
+                Map<String, Object> error = new HashMap<>();
+                error.put("error", "No se pudo actualizar el estado de la inscripción");
+                return ResponseEntity.internalServerError().body(error);
+            }
+            
+            System.out.println("✅ Estado actualizado exitosamente");
+            String nuevoEstado = null;
+            if (inscripcionRechazada.getEstadosSolicitud() != null && !inscripcionRechazada.getEstadosSolicitud().isEmpty()) {
+                co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.EstadoSolicitud ultimoNuevo = inscripcionRechazada.getEstadosSolicitud().get(inscripcionRechazada.getEstadosSolicitud().size() - 1);
+                nuevoEstado = ultimoNuevo.getEstado_actual();
+            }
+            System.out.println("📊 Nuevo estado: " + nuevoEstado);
+            
+            // 4. Preparar respuesta
             Map<String, Object> respuesta = new HashMap<>();
             respuesta.put("success", true);
             respuesta.put("message", "Inscripción rechazada exitosamente");
@@ -3072,6 +3108,7 @@ public class CursosIntersemestralesRestController {
             respuesta.put("curso_nombre", inscripcion.getObjCursoOfertadoVerano().getObjMateria().getNombre());
             respuesta.put("fecha_rechazo", new java.util.Date());
             respuesta.put("motivo", motivo);
+            respuesta.put("nuevo_estado", nuevoEstado);
             
             System.out.println("❌ Inscripción rechazada para: " + 
                 inscripcion.getObjUsuario().getNombre_completo() + 
@@ -3419,66 +3456,7 @@ public class CursosIntersemestralesRestController {
 
     // ==================== ENDPOINT PARA DESCARGAR COMPROBANTE DE PAGO ====================
 
-    /**
-     * Descargar comprobante de pago de inscripción
-     * GET /api/cursos-intersemestrales/inscripciones/{idInscripcion}/comprobante
-     */
-    @GetMapping("/inscripciones/{idInscripcion}/comprobante")
-    public ResponseEntity<byte[]> descargarComprobantePago(@PathVariable Long idInscripcion) {
-        try {
-            System.out.println("📥 Descargando comprobante de pago para inscripción: " + idInscripcion);
-            
-            // 1. Buscar la inscripción directamente por ID
-            SolicitudCursoVeranoIncripcion inscripcion = solicitudCU.buscarPorIdInscripcion(idInscripcion.intValue());
-            
-            if (inscripcion == null) {
-                System.err.println("❌ Inscripción no encontrada: " + idInscripcion);
-                return ResponseEntity.notFound().build();
-            }
-            
-            System.out.println("✅ Inscripción encontrada: " + inscripcion.getNombre_solicitud());
-            
-            // 2. Buscar documentos asociados a esta inscripción
-            List<Documento> documentos = inscripcion.getDocumentos();
-            System.out.println("🔍 Documentos asociados: " + (documentos != null ? documentos.size() : "NULL"));
-            
-            if (documentos == null || documentos.isEmpty()) {
-                System.err.println("❌ No hay documentos asociados a la inscripción: " + idInscripcion);
-                return ResponseEntity.notFound().build();
-            }
-            
-            // 3. Buscar cualquier documento (no solo comprobantes)
-            for (Documento documento : documentos) {
-                System.out.println("📄 Documento encontrado: " + documento.getNombre());
-                
-                if (documento.getNombre() != null) {
-                    // 4. Obtener el archivo
-                    try {
-                        byte[] archivo = objGestionarArchivos.getFile(documento.getNombre());
-                        if (archivo != null) {
-                            System.out.println("✅ Archivo obtenido exitosamente: " + documento.getNombre());
-                            return ResponseEntity.ok()
-                                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + documento.getNombre() + "\"")
-                                .contentType(MediaType.APPLICATION_PDF)
-                                .body(archivo);
-                        } else {
-                            System.err.println("❌ No se pudo obtener el archivo: " + documento.getNombre());
-                        }
-                    } catch (Exception e) {
-                        System.err.println("❌ Error obteniendo archivo " + documento.getNombre() + ": " + e.getMessage());
-                    }
-                }
-            }
-            
-            System.err.println("❌ No se encontró ningún archivo válido para la inscripción: " + idInscripcion);
-            return ResponseEntity.notFound().build();
-            
-        } catch (Exception e) {
-            System.err.println("❌ Error descargando comprobante: " + e.getMessage());
-            e.printStackTrace();
-            return ResponseEntity.internalServerError().build();
-        }
-    }
+    
 
     @GetMapping("/inscripciones/{idInscripcion}/info")
     public ResponseEntity<Map<String, Object>> infoInscripcion(@PathVariable Long idInscripcion) {
