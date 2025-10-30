@@ -259,9 +259,11 @@ public class SolicitudPazYSalvoRestController {
                 return ResponseEntity.notFound().build();
             }
             
-            // Configurar respuesta igual que en homologación
-            String contentDisposition = "attachment; filename=\"" + filename + "\"";
-            
+            // Configurar Content-Disposition con filename y filename* (UTF-8)
+            String encoded = java.net.URLEncoder.encode(filename, java.nio.charset.StandardCharsets.UTF_8)
+                .replace("+", "%20");
+            String contentDisposition = "attachment; filename=\"" + filename + "\"; filename*=UTF-8''" + encoded;
+
             return ResponseEntity.ok()
                 .header(HttpHeaders.CONTENT_DISPOSITION, contentDisposition)
                 .contentType(MediaType.APPLICATION_PDF)
@@ -383,9 +385,12 @@ public class SolicitudPazYSalvoRestController {
                         try {
                             byte[] archivo = objGestionarArchivos.getFile(documento.getNombre());
                             
-                            // Configurar el header Content-Disposition correctamente
-                            String contentDisposition = "attachment; filename=\"" + documento.getNombre() + "\"";
-                            
+                            // Configurar el header Content-Disposition con filename y filename* (UTF-8)
+                            String original = documento.getNombre();
+                            String encoded = java.net.URLEncoder.encode(original, java.nio.charset.StandardCharsets.UTF_8)
+                                .replace("+", "%20");
+                            String contentDisposition = "attachment; filename=\"" + original + "\"; filename*=UTF-8''" + encoded;
+
                             return ResponseEntity.ok()
                                 .header(HttpHeaders.CONTENT_DISPOSITION, contentDisposition)
                                 .contentType(MediaType.APPLICATION_PDF)
@@ -941,4 +946,53 @@ public ResponseEntity<DocumentosDTORespuesta> guardarOficioPazSalvo(
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
     }
 }
+
+    /**
+     * Subir oficio PDF de Secretaría y asociarlo a una solicitud de paz y salvo
+     */
+    @PostMapping("/subir-oficio-pdf/{idSolicitud}")
+    public ResponseEntity<DocumentosDTORespuesta> subirOficioPdfPazYSalvo(
+            @PathVariable Integer idSolicitud,
+            @RequestParam("file") MultipartFile file) {
+        try {
+            System.out.println("📄 [PAZ Y SALVO] Subiendo oficio PDF para solicitud: " + idSolicitud);
+
+            if (file == null || file.isEmpty()) {
+                return ResponseEntity.badRequest().build();
+            }
+
+            String nombreOriginal = file.getOriginalFilename();
+            if (nombreOriginal == null || !nombreOriginal.toLowerCase().endsWith(".pdf")) {
+                return ResponseEntity.status(HttpStatus.UNSUPPORTED_MEDIA_TYPE).build();
+            }
+
+            // Validar que la solicitud exista
+            SolicitudPazYSalvo solicitud = solicitudPazYSalvoCU.buscarPorId(idSolicitud);
+            if (solicitud == null) {
+                return ResponseEntity.notFound().build();
+            }
+
+            // Guardar archivo físico
+            objGestionarArchivos.saveFile(file, nombreOriginal, "pdf");
+
+            // Registrar documento y asociar
+            Documento documento = new Documento();
+            documento.setNombre(nombreOriginal);
+            documento.setRuta_documento(nombreOriginal);
+            documento.setFecha_documento(new Date());
+            documento.setEsValido(true);
+
+            Solicitud objSolicitud = new Solicitud();
+            objSolicitud.setId_solicitud(idSolicitud);
+            documento.setObjSolicitud(objSolicitud);
+
+            Documento documentoGuardado = objGestionarDocumentosGateway.crearDocumento(documento);
+
+            return new ResponseEntity<>(
+                    documentosMapperDominio.mappearDeDocumentoADTORespuesta(documentoGuardado),
+                    HttpStatus.CREATED);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
 }
