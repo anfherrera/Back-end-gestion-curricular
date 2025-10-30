@@ -246,7 +246,7 @@ class GestionCursosVeranoFuncionalTest {
         // Paso 3: Realizar preinscripción
         String jsonPreinscripcion = """
             {
-                "idUsuario": 1,
+                "idUsuario": 7,
                 "idCurso": 1,
                 "fecha_solicitud": "2025-01-15"
             }
@@ -258,7 +258,7 @@ class GestionCursosVeranoFuncionalTest {
                 .andExpect(status().isCreated());
 
         // Paso 4: Consultar preinscripciones del estudiante
-        mockMvc.perform(get("/api/cursos-intersemestrales/solicitudes/preinscripcion/estudiante/1"))
+        mockMvc.perform(get("/api/cursos-intersemestrales/solicitudes/preinscripcion/estudiante/7"))
                 .andExpect(status().isOk());
     }
 
