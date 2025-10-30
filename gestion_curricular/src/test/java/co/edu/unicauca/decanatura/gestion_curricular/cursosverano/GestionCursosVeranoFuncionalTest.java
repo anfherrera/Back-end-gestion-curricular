@@ -98,10 +98,10 @@ class GestionCursosVeranoFuncionalTest {
         mockMvc.perform(get("/api/cursos-intersemestrales/cursos-verano"))
                 .andExpect(status().isOk());
 
-        // Paso 2: Realizar preinscripción
+        // Paso 2: Realizar preinscripción (usando usuario 6 para evitar duplicados)
         String jsonPreinscripcion = """
             {
-                "idUsuario": 1,
+                "idUsuario": 6,
                 "idCurso": 1,
                 "fecha_solicitud": "2025-01-15"
             }

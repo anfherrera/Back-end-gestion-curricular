@@ -145,8 +145,8 @@ class CursosVeranoUnidadTest {
         // Assert
         assertThat(resultado).isNotNull();
         assertThat(resultado.getId_curso()).isEqualTo(1);
-        // El adapter llama al gateway 2 veces (líneas 239 y 243 del adapter)
-        verify(cursoVeranoGateway, times(2)).obtenerCursoPorId(idBuscado);
+        // El adapter llama al gateway 1 vez
+        verify(cursoVeranoGateway, times(1)).obtenerCursoPorId(idBuscado);
     }
 
     @Test
@@ -157,7 +157,7 @@ class CursosVeranoUnidadTest {
         when(cursoVeranoGateway.obtenerCursoPorId(idInexistente))
                 .thenReturn(null);
         doThrow(new RuntimeException("No se encuentra el curso"))
-                .when(formateadorResultados).retornarRespuestaErrorEntidadExiste(anyString());
+                .when(formateadorResultados).retornarRespuestaErrorEntidadNoExiste(anyString());
 
         // Act & Assert
         assertThatThrownBy(() -> cursosVeranoCU.obtenerCursoPorId(idInexistente))
