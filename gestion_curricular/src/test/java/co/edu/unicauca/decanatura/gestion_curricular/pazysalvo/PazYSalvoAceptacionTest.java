@@ -1,4 +1,4 @@
-package co.edu.unicauca.decanatura.gestion_curricular.aceptacion;
+package co.edu.unicauca.decanatura.gestion_curricular.pazysalvo;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -99,7 +99,7 @@ class PazYSalvoAceptacionTest {
             }
             """;
 
-        mockMvc.perform(put("/api/solicitudes-pazysalvo/cambiarEstadoSolicitud/1")
+        mockMvc.perform(put("/api/solicitudes-pazysalvo/cambiarEstadoSolicitud/37")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(jsonAprobacion))
                 .andExpect(status().isOk());
@@ -125,10 +125,10 @@ class PazYSalvoAceptacionTest {
          *       AND debe sugerir nombre de archivo descriptivo
          */
         
-        mockMvc.perform(get("/api/solicitudes-pazysalvo/generarDocumentoPazYSalvo/1/pdf"))
+        mockMvc.perform(get("/api/solicitudes-pazysalvo/generarDocumentoPazYSalvo/37/pdf"))
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_PDF))
-                .andExpect(header().string("Content-Disposition", "attachment; filename=\"PazYSalvo_1.pdf\""));
+                .andExpect(header().string("Content-Disposition", "attachment; filename=\"PazYSalvo_37.pdf\""));
     }
 
     @Test
@@ -145,10 +145,10 @@ class PazYSalvoAceptacionTest {
          *       AND debe permitir edición posterior en Microsoft Word
          */
         
-        mockMvc.perform(get("/api/solicitudes-pazysalvo/generarDocumentoPazYSalvo/1/docx"))
+        mockMvc.perform(get("/api/solicitudes-pazysalvo/generarDocumentoPazYSalvo/37/docx"))
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_OCTET_STREAM))
-                .andExpect(header().string("Content-Disposition", "attachment; filename=\"PazYSalvo_1.docx\""));
+                .andExpect(header().string("Content-Disposition", "attachment; filename=\"PazYSalvo_37.docx\""));
     }
 
     // ==================== CA-GEPA4-04: ESTUDIANTE SOLO VE SUS PROPIAS SOLICITUDES ====================
@@ -168,7 +168,8 @@ class PazYSalvoAceptacionTest {
          *       AND debe retornar una lista (puede estar vacía si no tiene solicitudes)
          */
         
-        mockMvc.perform(get("/api/solicitudes-pazysalvo/listarSolicitud-PazYSalvo/1"))
+        // Usuario 12 tiene solicitud de Paz y Salvo (ID 37 en BD)
+        mockMvc.perform(get("/api/solicitudes-pazysalvo/listarSolicitud-PazYSalvo/12"))
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON));
     }

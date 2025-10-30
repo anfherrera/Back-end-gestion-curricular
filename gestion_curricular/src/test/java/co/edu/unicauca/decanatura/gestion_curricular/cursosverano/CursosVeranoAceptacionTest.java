@@ -1,4 +1,4 @@
-package co.edu.unicauca.decanatura.gestion_curricular.aceptacion;
+package co.edu.unicauca.decanatura.gestion_curricular.cursosverano;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -45,7 +45,7 @@ class CursosVeranoAceptacionTest {
     void testEstudiantePuedeConsultarCursosDisponibles() throws Exception {
         /*
          * GIVEN: Un estudiante autenticado en el sistema
-         *        AND existen cursos de verano ofertados para el próximo periodo
+         *        AND existen cursos de verano ofertados para el próximo period
          * 
          * WHEN: El estudiante consulta la lista de cursos disponibles
          * 

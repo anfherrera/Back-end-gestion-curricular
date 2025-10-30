@@ -1,4 +1,4 @@
-package co.edu.unicauca.decanatura.gestion_curricular.funcionales;
+package co.edu.unicauca.decanatura.gestion_curricular.cursosverano;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

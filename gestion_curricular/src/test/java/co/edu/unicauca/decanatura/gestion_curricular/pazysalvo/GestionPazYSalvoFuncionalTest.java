@@ -1,4 +1,4 @@
-package co.edu.unicauca.decanatura.gestion_curricular.funcionales;
+package co.edu.unicauca.decanatura.gestion_curricular.pazysalvo;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -97,14 +97,14 @@ class GestionPazYSalvoFuncionalTest {
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON));
 
-        // Paso 2: Coordinador aprueba una solicitud
+        // Paso 2: Coordinador aprueba una solicitud (usando ID 37 que existe en BD)
         String jsonAprobacion = """
             {
                 "nuevoEstado": "APROBADO"
             }
             """;
         
-        mockMvc.perform(put("/api/solicitudes-pazysalvo/cambiarEstadoSolicitud/1")
+        mockMvc.perform(put("/api/solicitudes-pazysalvo/cambiarEstadoSolicitud/37")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(jsonAprobacion))
                 .andExpect(status().isOk());
@@ -150,11 +150,11 @@ class GestionPazYSalvoFuncionalTest {
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON));
 
-        // Paso 2: Secretaria genera documento oficial
-        mockMvc.perform(get("/api/solicitudes-pazysalvo/generarDocumentoPazYSalvo/1/pdf"))
+        // Paso 2: Secretaria genera documento oficial (usando ID 37 que existe en BD)
+        mockMvc.perform(get("/api/solicitudes-pazysalvo/generarDocumentoPazYSalvo/37/pdf"))
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_PDF))
-                .andExpect(header().string("Content-Disposition", "attachment; filename=\"PazYSalvo_1.pdf\""));
+                .andExpect(header().string("Content-Disposition", "attachment; filename=\"PazYSalvo_37.pdf\""));
     }
 
     // ==================== FLUJO 3: GENERACIÓN DE DOCUMENTOS ====================
@@ -172,13 +172,13 @@ class GestionPazYSalvoFuncionalTest {
          * RESULTADO ESPERADO: Documentos generados en ambos formatos
          */
         
-        // Paso 1: Generar PDF
-        mockMvc.perform(get("/api/solicitudes-pazysalvo/generarDocumentoPazYSalvo/1/pdf"))
+        // Paso 1: Generar PDF (usando ID 37 que existe en BD)
+        mockMvc.perform(get("/api/solicitudes-pazysalvo/generarDocumentoPazYSalvo/37/pdf"))
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_PDF));
 
-        // Paso 2: Generar DOCX
-        mockMvc.perform(get("/api/solicitudes-pazysalvo/generarDocumentoPazYSalvo/1/docx"))
+        // Paso 2: Generar DOCX (usando ID 37 que existe en BD)
+        mockMvc.perform(get("/api/solicitudes-pazysalvo/generarDocumentoPazYSalvo/37/docx"))
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_OCTET_STREAM));
     }
@@ -317,20 +317,20 @@ class GestionPazYSalvoFuncionalTest {
         mockMvc.perform(get("/api/solicitudes-pazysalvo/listarSolicitud-PazYSalvo"))
                 .andExpect(status().isOk());
 
-        // Paso 3: Aprobar solicitud
+        // Paso 3: Aprobar solicitud (usando ID 37 que existe en BD)
         String jsonAprobacion = """
             {
                 "nuevoEstado": "APROBADO"
             }
             """;
         
-        mockMvc.perform(put("/api/solicitudes-pazysalvo/cambiarEstadoSolicitud/1")
+        mockMvc.perform(put("/api/solicitudes-pazysalvo/cambiarEstadoSolicitud/37")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(jsonAprobacion))
                 .andExpect(status().isOk());
 
-        // Paso 4: Generar documento final
-        mockMvc.perform(get("/api/solicitudes-pazysalvo/generarDocumentoPazYSalvo/1/pdf"))
+        // Paso 4: Generar documento final (usando ID 37 que existe en BD)
+        mockMvc.perform(get("/api/solicitudes-pazysalvo/generarDocumentoPazYSalvo/37/pdf"))
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_PDF));
     }

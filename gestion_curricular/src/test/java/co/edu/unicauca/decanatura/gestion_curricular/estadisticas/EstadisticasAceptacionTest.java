@@ -1,4 +1,4 @@
-package co.edu.unicauca.decanatura.gestion_curricular.aceptacion;
+package co.edu.unicauca.decanatura.gestion_curricular.estadisticas;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
