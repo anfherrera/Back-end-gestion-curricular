@@ -13,6 +13,9 @@ public class CursosOfertadosDTORespuesta {
     
     private Integer id_curso;
     
+    // Campo adicional para compatibilidad con pruebas de aceptación
+    private Integer idCurso;
+    
     // Campos que espera el frontend
     private String codigo_curso;
     private String nombre_curso;

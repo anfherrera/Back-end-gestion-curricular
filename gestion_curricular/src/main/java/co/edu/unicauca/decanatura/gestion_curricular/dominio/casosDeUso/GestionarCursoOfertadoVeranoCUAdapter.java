@@ -238,9 +238,9 @@ public class GestionarCursoOfertadoVeranoCUAdapter implements GestionarCursoOfer
         CursoOfertadoVerano cursosABuscar=null;
         cursosABuscar = this.objGestionarCursoOfertadoVeranoGateway.obtenerCursoPorId(idCurso);
         if(cursosABuscar == null){
-            this.objFormateadorResultados.retornarRespuestaErrorEntidadExiste("No se encuentra el curso");
+            this.objFormateadorResultados.retornarRespuestaErrorEntidadNoExiste("No se encuentra el curso");
         }
-        return this.objGestionarCursoOfertadoVeranoGateway.obtenerCursoPorId(idCurso);
+        return cursosABuscar;
     }
 
     @Override

@@ -100,7 +100,7 @@ class CursosVeranoAceptacionTest {
         
         String jsonPreinscripcion = """
             {
-                "idUsuario": 1,
+                "idUsuario": 5,
                 "idCurso": 1,
                 "fecha_solicitud": "2025-01-15"
             }

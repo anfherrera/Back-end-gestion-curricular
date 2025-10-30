@@ -72,6 +72,7 @@ public class CursosIntersemestralesRestController {
             List<CursoOfertadoVerano> cursos = cursoCU.listarTodos();
             List<CursosOfertadosDTORespuesta> respuesta = cursos.stream()
                     .map(cursoMapper::mappearDeCursoOfertadoARespuestaDisponible)
+                    .map(cursoMapper::postMapCurso) // Asignar idCurso
                     .collect(Collectors.toList());
             return ResponseEntity.ok(respuesta);
         } catch (Exception e) {
@@ -351,6 +352,16 @@ public class CursosIntersemestralesRestController {
             e.printStackTrace();
             return ResponseEntity.internalServerError().build();
         }
+    }
+
+    /**
+     * Obtener preinscripciones por estudiante (alias para compatibilidad con pruebas)
+     * GET /api/cursos-intersemestrales/solicitudes/preinscripcion/estudiante/{id}
+     */
+    @GetMapping("/solicitudes/preinscripcion/estudiante/{id}")
+    public ResponseEntity<List<Map<String, Object>>> obtenerPreinscripcionesPorEstudianteAlias(@PathVariable Integer id) {
+        // Delegar al método principal
+        return obtenerPreinscripcionesPorUsuario(id);
     }
 
     /**
@@ -690,11 +701,19 @@ public class CursosIntersemestralesRestController {
             System.out.println("  - Nombre Solicitud: " + peticion.getNombreSolicitud());
             System.out.println("  - Condición: " + peticion.getCondicion());
             
+            // Validar datos obligatorios
+            if (peticion.getIdUsuario() == null || peticion.getIdCurso() == null) {
+                Map<String, Object> error = new HashMap<>();
+                error.put("error", "Los campos idUsuario e idCurso son obligatorios");
+                error.put("codigo", "VALIDATION_ERROR");
+                return ResponseEntity.badRequest().body(error);
+            }
+            
             // Mapear el DTO a nuestro modelo de dominio
             SolicitudCursoVeranoPreinscripcion solicitudDominio = new SolicitudCursoVeranoPreinscripcion();
             solicitudDominio.setNombre_estudiante("Estudiante"); // Valor por defecto
             solicitudDominio.setCodigo_estudiante("EST001"); // Valor por defecto
-            solicitudDominio.setObservacion(peticion.getNombreSolicitud());
+            solicitudDominio.setObservacion(peticion.getNombreSolicitud() != null ? peticion.getNombreSolicitud() : "Preinscripción curso de verano");
             
             // Usar la condición del frontend o valor por defecto
             if (peticion.getCondicion() != null && !peticion.getCondicion().trim().isEmpty()) {
@@ -755,7 +774,7 @@ public class CursosIntersemestralesRestController {
             respuesta.put("mensaje", "Preinscripción creada exitosamente");
             
             System.out.println("DEBUG DEBUG: Respuesta creada exitosamente");
-            return ResponseEntity.ok(respuesta);
+            return ResponseEntity.status(201).body(respuesta);
         } catch (Exception e) {
             System.out.println("ERROR ERROR: " + e.getMessage());
             e.printStackTrace();
@@ -988,6 +1007,16 @@ public class CursosIntersemestralesRestController {
             error.put("error", "Error interno del servidor: " + e.getMessage());
             return ResponseEntity.internalServerError().body(error);
         }
+    }
+
+    /**
+     * Crear preinscripción a curso de verano (alias para compatibilidad con pruebas)
+     * POST /api/cursos-intersemestrales/solicitudes/preinscripcion
+     */
+    @PostMapping("/solicitudes/preinscripcion")
+    public ResponseEntity<Map<String, Object>> crearPreinscripcionAlias(@RequestBody PreinscripcionCursoVeranoDTOPeticion peticion) {
+        // Delegar al método principal
+        return crearPreinscripcion(peticion);
     }
 
     /**
@@ -2454,55 +2483,85 @@ public class CursosIntersemestralesRestController {
      */
     @GetMapping("/cursos-verano/{id}")
     public ResponseEntity<Map<String, Object>> getCursoPorId(@PathVariable Long id) {
+        System.out.println("DEBUG: Obteniendo información del curso ID: " + id);
+        
+        // Obtener curso real de la base de datos - lanza EntidadNoExisteException si no existe
+        CursoOfertadoVerano cursoReal = cursoCU.obtenerCursoPorId(id.intValue());
+        
+        // Usar el mapper existente para obtener datos estructurados
+        CursosOfertadosDTORespuesta cursoDTO = cursoMapper.mappearDeCursoOfertadoARespuesta(cursoReal);
+        
+        // Mapear a estructura esperada por el frontend
+        Map<String, Object> curso = new HashMap<>();
+        curso.put("id_curso", cursoDTO.getId_curso());
+        curso.put("idCurso", cursoDTO.getId_curso()); // Compatibilidad con pruebas
+        curso.put("nombre_curso", cursoDTO.getNombre_curso());
+        curso.put("codigo_curso", cursoDTO.getCodigo_curso());
+        curso.put("descripcion", cursoDTO.getDescripcion());
+        curso.put("fecha_inicio", cursoDTO.getFecha_inicio());
+        curso.put("fecha_fin", cursoDTO.getFecha_fin());
+        curso.put("cupo_maximo", cursoDTO.getCupo_maximo());
+        curso.put("cupo_disponible", cursoDTO.getCupo_disponible());
+        curso.put("cupo_estimado", cursoDTO.getCupo_estimado());
+        curso.put("espacio_asignado", cursoDTO.getEspacio_asignado());
+        curso.put("estado", cursoDTO.getEstado());
+        
+        // Obtener conteo real de preinscripciones para este curso
         try {
-            System.out.println("DEBUG: Obteniendo información del curso ID: " + id);
-            
-            // Obtener curso real de la base de datos
-            CursoOfertadoVerano cursoReal = cursoCU.obtenerCursoPorId(id.intValue());
-            
-            if (cursoReal == null) {
-                System.out.println("WARNING: Curso no encontrado con ID: " + id);
-                return ResponseEntity.notFound().build();
-            }
-            
-            // Usar el mapper existente para obtener datos estructurados
-            CursosOfertadosDTORespuesta cursoDTO = cursoMapper.mappearDeCursoOfertadoARespuesta(cursoReal);
-            
-            // Mapear a estructura esperada por el frontend
-            Map<String, Object> curso = new HashMap<>();
-            curso.put("id_curso", cursoDTO.getId_curso());
-            curso.put("nombre_curso", cursoDTO.getNombre_curso());
-            curso.put("codigo_curso", cursoDTO.getCodigo_curso());
-            curso.put("descripcion", cursoDTO.getDescripcion());
-            curso.put("fecha_inicio", cursoDTO.getFecha_inicio());
-            curso.put("fecha_fin", cursoDTO.getFecha_fin());
-            curso.put("cupo_maximo", cursoDTO.getCupo_maximo());
-            curso.put("cupo_disponible", cursoDTO.getCupo_disponible());
-            curso.put("cupo_estimado", cursoDTO.getCupo_estimado());
-            curso.put("espacio_asignado", cursoDTO.getEspacio_asignado());
-            curso.put("estado", cursoDTO.getEstado());
-            
-            // Obtener conteo real de preinscripciones para este curso
-            try {
-                List<SolicitudCursoVeranoPreinscripcion> preinscripciones = solicitudCU.buscarPreinscripcionesPorCurso(id.intValue());
-                curso.put("solicitudes", preinscripciones.size());
-                System.out.println("DEBUG: Preinscripciones encontradas para el curso: " + preinscripciones.size());
-            } catch (Exception e) {
-                System.out.println("WARNING: Error obteniendo conteo de preinscripciones: " + e.getMessage());
-                curso.put("solicitudes", 0);
-            }
-            
-            // Usar la información del DTO que ya está mapeada correctamente
-            curso.put("objMateria", cursoDTO.getObjMateria());
-            curso.put("objDocente", cursoDTO.getObjDocente());
-            
-            System.out.println("SUCCESS: Información del curso obtenida correctamente");
-            
-            return ResponseEntity.ok(curso);
+            List<SolicitudCursoVeranoPreinscripcion> preinscripciones = solicitudCU.buscarPreinscripcionesPorCurso(id.intValue());
+            curso.put("solicitudes", preinscripciones.size());
+            System.out.println("DEBUG: Preinscripciones encontradas para el curso: " + preinscripciones.size());
         } catch (Exception e) {
-            System.out.println("ERROR: Error obteniendo información del curso: " + e.getMessage());
-            e.printStackTrace();
-            return ResponseEntity.status(500).build();
+            System.out.println("WARNING: Error obteniendo conteo de preinscripciones: " + e.getMessage());
+            curso.put("solicitudes", 0);
+        }
+        
+        // Usar la información del DTO que ya está mapeada correctamente
+        curso.put("objMateria", cursoDTO.getObjMateria());
+        curso.put("objDocente", cursoDTO.getObjDocente());
+        
+        System.out.println("SUCCESS: Información del curso obtenida correctamente");
+        
+        return ResponseEntity.ok(curso);
+    }
+
+    /**
+     * Filtrar cursos por periodo académico
+     * GET /api/cursos-intersemestrales/cursos-verano/periodo/{periodo}
+     */
+    @GetMapping("/cursos-verano/periodo/{periodo}")
+    public ResponseEntity<List<CursosOfertadosDTORespuesta>> filtrarCursosPorPeriodo(@PathVariable String periodo) {
+        try {
+            // Por ahora, retornar todos los cursos (implementación futura)
+            List<CursoOfertadoVerano> cursos = cursoCU.listarTodos();
+            List<CursosOfertadosDTORespuesta> respuesta = cursos.stream()
+                    .map(cursoMapper::mappearDeCursoOfertadoARespuestaDisponible)
+                    .map(cursoMapper::postMapCurso) // Asignar idCurso
+                    .collect(Collectors.toList());
+            return ResponseEntity.ok(respuesta);
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().build();
+        }
+    }
+
+    /**
+     * Filtrar cursos por materia
+     * GET /api/cursos-intersemestrales/cursos-verano/materia/{idMateria}
+     */
+    @GetMapping("/cursos-verano/materia/{idMateria}")
+    public ResponseEntity<List<CursosOfertadosDTORespuesta>> filtrarCursosPorMateria(@PathVariable Integer idMateria) {
+        try {
+            List<CursoOfertadoVerano> cursos = cursoCU.listarTodos();
+            // Filtrar cursos por materia
+            List<CursosOfertadosDTORespuesta> respuesta = cursos.stream()
+                    .filter(curso -> curso.getObjMateria() != null && 
+                                   curso.getObjMateria().getId_materia().equals(idMateria))
+                    .map(cursoMapper::mappearDeCursoOfertadoARespuestaDisponible)
+                    .map(cursoMapper::postMapCurso) // Asignar idCurso
+                    .collect(Collectors.toList());
+            return ResponseEntity.ok(respuesta);
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().build();
         }
     }
 
