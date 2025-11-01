@@ -16,7 +16,6 @@ public class documentoDto {
     private boolean esValido;
     private String comentario;
 
-    private String tipoDocumentoSolicitudPazYSalvo;
     private Integer idSolicitud; // opcional, depende del flujo
 
 }

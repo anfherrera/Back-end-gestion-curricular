@@ -2,11 +2,8 @@ package co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.per
 
 import java.util.Date;
 
-import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.entidades.Enums.TipoDocumentoSolicitudPazYSalvoEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -39,9 +36,6 @@ public class DocumentoEntity {
     private boolean esValido;
     @Column(length = 100)
     private String comentario; // comentario de funcionario o coordinador
-
-    @Enumerated(EnumType.STRING)
-    private TipoDocumentoSolicitudPazYSalvoEntity tipoDocumentoSolicitudPazYSalvo;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "idSolicitud")

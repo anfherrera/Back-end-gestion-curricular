@@ -2,7 +2,6 @@ package co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.DTOR
 
 import java.util.Date;
 
-import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Enums.TipoDocumentoSolicitudPazYSalvo;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -17,5 +16,4 @@ public class DocumentosDTORespuesta {
     private Date fecha_documento;
     private boolean esValido;
     private String comentario; // observación
-    private TipoDocumentoSolicitudPazYSalvo tipoDocumentoSolicitudPazYSalvo;
 }

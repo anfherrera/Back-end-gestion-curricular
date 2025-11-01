@@ -37,8 +37,4 @@ public class DocumentosDTOPeticion {
     private String comentario;//El estudiante no sube esto
 
 
-    @NotBlank(message = "{Documento.tipo.empty}")
-    @Size(min = 3, max = 50, message = "{Documento.tipo.length}")
-    private String tipoDocumentoSolicitudPazYSalvo; //este atributo no deberia ser obligatorio
-
 }
