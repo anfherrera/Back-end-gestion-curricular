@@ -37,6 +37,12 @@ INSERT INTO Materias(idMateria, codigo, nombre, creditos) VALUES (1, 'BD001', 'B
 -- INSERT INTO Solicitudes(idSolicitud, fecha_solicitud, estado, observaciones, idUsuario, idMateria, idPrograma, tipo_solicitud) VALUES (17, '2025-08-22', 'En Proceso', 'Nueva solicitud de curso de verano - Metodología de la Investigación', 3, 3, 2, 'CURSO_VERANO');
 -- INSERT INTO Solicitudes(idSolicitud, fecha_solicitud, estado, observaciones, idUsuario, idMateria, idPrograma, tipo_solicitud) VALUES (18, '2025-08-23', 'Aprobada', 'Nueva solicitud de curso de verano - Bases de Datos', 4, 1, 3, 'CURSO_VERANO');
 -- INSERT INTO Solicitudes(idSolicitud, fecha_solicitud, estado, observaciones, idUsuario, idMateria, idPrograma, tipo_solicitud) VALUES (19, '2025-08-24', 'Rechazada', 'Nueva solicitud de curso de verano - Calidad de Software', 5, 2, 4, 'CURSO_VERANO');
+-- NOTA: Estas líneas están comentadas porque usan columnas obsoletas (fecha_solicitud, estado, tipo_solicitud, etc.) que no existen en la entidad actual
+-- INSERT INTO Solicitudes(idSolicitud, fecha_solicitud, estado, observaciones, idUsuario, idMateria, idPrograma, tipo_solicitud) VALUES (15, '2025-08-20', 'Aprobada', 'Nueva solicitud de curso de verano - Bases de Datos', 1, 1, 1, 'CURSO_VERANO');
+-- INSERT INTO Solicitudes(idSolicitud, fecha_solicitud, estado, observaciones, idUsuario, idMateria, idPrograma, tipo_solicitud) VALUES (16, '2025-08-21', 'Enviada', 'Nueva solicitud de curso de verano - Calidad de Software', 2, 2, 1, 'CURSO_VERANO');
+-- INSERT INTO Solicitudes(idSolicitud, fecha_solicitud, estado, observaciones, idUsuario, idMateria, idPrograma, tipo_solicitud) VALUES (17, '2025-08-22', 'En Proceso', 'Nueva solicitud de curso de verano - Metodología de la Investigación', 3, 3, 2, 'CURSO_VERANO');
+-- INSERT INTO Solicitudes(idSolicitud, fecha_solicitud, estado, observaciones, idUsuario, idMateria, idPrograma, tipo_solicitud) VALUES (18, '2025-08-23', 'Aprobada', 'Nueva solicitud de curso de verano - Bases de Datos', 4, 1, 3, 'CURSO_VERANO');
+-- INSERT INTO Solicitudes(idSolicitud, fecha_solicitud, estado, observaciones, idUsuario, idMateria, idPrograma, tipo_solicitud) VALUES (19, '2025-08-24', 'Rechazada', 'Nueva solicitud de curso de verano - Calidad de Software', 5, 2, 4, 'CURSO_VERANO');
 
 -- Materias del programa de Ingeniería de Sistemas
 INSERT INTO Materias(idMateria, codigo, nombre, creditos) VALUES (2, 'SIS803', 'Calidad de Software', 3);
@@ -187,6 +193,17 @@ INSERT INTO Solicitudes(idSolicitud, nombre_solicitud, fecha_registro_solicitud,
 INSERT INTO Solicitudes(idSolicitud, nombre_solicitud, fecha_registro_solicitud, esSeleccionado, idUsuario, idCurso) VALUES (26, 'Solicitud Curso Verano - Mauricio Gomez', '2025-08-15 12:00:00', false, 1, 3);
 
 -- Tabla específica de cursos de verano (usando la tabla existente)
+-- NOTA: Estas líneas están comentadas porque faltan campos obligatorios (nombre_estudiante, etc.)
+-- Los registros de las líneas 115-118 ya contienen datos completos de inscripciones
+-- INSERT INTO Solicitudes_Cursos_Verano_Inscripcion(idSolicitud) VALUES (18);
+-- INSERT INTO Solicitudes_Cursos_Verano_Inscripcion(idSolicitud) VALUES (19);
+-- INSERT INTO Solicitudes_Cursos_Verano_Inscripcion(idSolicitud) VALUES (20);
+-- INSERT INTO Solicitudes_Cursos_Verano_Inscripcion(idSolicitud) VALUES (21);
+-- INSERT INTO Solicitudes_Cursos_Verano_Inscripcion(idSolicitud) VALUES (22);
+-- INSERT INTO Solicitudes_Cursos_Verano_Inscripcion(idSolicitud) VALUES (23);
+-- INSERT INTO Solicitudes_Cursos_Verano_Inscripcion(idSolicitud) VALUES (24);
+-- INSERT INTO Solicitudes_Cursos_Verano_Inscripcion(idSolicitud) VALUES (25);
+-- INSERT INTO Solicitudes_Cursos_Verano_Inscripcion(idSolicitud) VALUES (26);
 -- NOTA: Estas líneas están comentadas porque faltan campos obligatorios (nombre_estudiante, etc.)
 -- Los registros de las líneas 115-118 ya contienen datos completos de inscripciones
 -- INSERT INTO Solicitudes_Cursos_Verano_Inscripcion(idSolicitud) VALUES (18);
