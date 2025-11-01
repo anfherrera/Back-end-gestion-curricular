@@ -63,25 +63,47 @@ public class SolicitudPazYSalvoRestController {
     public ResponseEntity<?> crearSolicitudPazYSalvo(
             @RequestBody Object peticion) {
         try {
+            if (peticion == null) {
+                return respuestaBadRequest("Los datos de la solicitud son requeridos");
+            }
+
             if (peticion instanceof Map<?, ?>) {
                 @SuppressWarnings("unchecked")
                 Map<String, Object> mapPeticion = (Map<String, Object>) peticion;
 
+                if (mapPeticion.isEmpty()) {
+                    return respuestaBadRequest("Los datos de la solicitud son requeridos");
+                }
+
                 if (mapPeticion.containsKey("idUsuario")) {
+                    Object idUsuario = mapPeticion.get("idUsuario");
+                    if (idUsuario == null || idUsuario.toString().isBlank()) {
+                        return respuestaBadRequest("El campo idUsuario es obligatorio");
+                    }
+
                     SolicitudPazYSalvo solicitud = construirSolicitudBasica(mapPeticion);
                     return guardarSolicitudDominio(solicitud);
                 }
 
                 SolicitudPazYSalvoDTOPeticion dtoPeticion = objectMapper.convertValue(mapPeticion,
                         SolicitudPazYSalvoDTOPeticion.class);
+                String mensajeValidacion = validarSolicitudDto(dtoPeticion);
+                if (mensajeValidacion != null) {
+                    return respuestaBadRequest(mensajeValidacion);
+                }
+
                 return guardarSolicitudDesdeDto(dtoPeticion);
             } else if (peticion instanceof SolicitudPazYSalvoDTOPeticion dtoPeticion) {
+                String mensajeValidacion = validarSolicitudDto(dtoPeticion);
+                if (mensajeValidacion != null) {
+                    return respuestaBadRequest(mensajeValidacion);
+                }
                 return guardarSolicitudDesdeDto(dtoPeticion);
             }
 
-            return ResponseEntity.badRequest().body(Map.of("error", "Formato de solicitud no soportado"));
+            return respuestaBadRequest("Formato de solicitud no soportado");
         } catch (IllegalArgumentException e) {
-            return ResponseEntity.badRequest().body(Map.of("error", "Formato de solicitud inválido: " + e.getMessage()));
+            return respuestaBadRequest("Formato de solicitud inválido: " + e.getMessage());
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
         }
@@ -106,7 +128,7 @@ public class SolicitudPazYSalvoRestController {
     }
 
     private SolicitudPazYSalvo construirSolicitudBasica(Map<String, Object> mapPeticion) {
-        Integer idUsuario = Integer.valueOf(mapPeticion.get("idUsuario").toString());
+        Integer idUsuario = Integer.valueOf(mapPeticion.get("idUsuario").toString().trim());
 
         SolicitudPazYSalvo solicitud = new SolicitudPazYSalvo();
         solicitud.setNombre_solicitud("Paz y Salvo");
@@ -128,6 +150,10 @@ public class SolicitudPazYSalvoRestController {
             }
         }
 
+        if (solicitud.getFecha_registro_solicitud() == null) {
+            solicitud.setFecha_registro_solicitud(new Date());
+        }
+
         return solicitud;
     }
 
@@ -141,6 +167,30 @@ public class SolicitudPazYSalvoRestController {
         } catch (NumberFormatException e) {
             return false;
         }
+    }
+
+    private String validarSolicitudDto(SolicitudPazYSalvoDTOPeticion dtoPeticion) {
+        if (dtoPeticion == null) {
+            return "Los datos de la solicitud son requeridos";
+        }
+
+        if (dtoPeticion.getObjUsuario() == null || dtoPeticion.getObjUsuario().getId_usuario() == null) {
+            return "El usuario de la solicitud es obligatorio";
+        }
+
+        if (dtoPeticion.getNombre_solicitud() == null || dtoPeticion.getNombre_solicitud().isBlank()) {
+            return "El nombre de la solicitud es obligatorio";
+        }
+
+        if (dtoPeticion.getFecha_registro_solicitud() == null) {
+            return "La fecha de la solicitud es obligatoria";
+        }
+
+        return null;
+    }
+
+    private ResponseEntity<Map<String, String>> respuestaBadRequest(String mensaje) {
+        return ResponseEntity.badRequest().body(Map.of("error", mensaje));
     }
 
     private List<SolicitudPazYSalvo> obtenerSolicitudesPorRol(String rol) {
