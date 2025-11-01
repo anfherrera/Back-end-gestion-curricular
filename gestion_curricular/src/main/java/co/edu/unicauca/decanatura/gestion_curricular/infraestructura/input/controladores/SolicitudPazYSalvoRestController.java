@@ -1,5 +1,6 @@
 package co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.controladores;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -17,13 +18,15 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.bind.annotation.RequestParam;
 import java.util.Date;
 
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeParseException;
 import java.util.List;
 import java.util.Map;
 import java.util.HashMap;
 import java.util.ArrayList;
+import java.util.Collections;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpHeaders;
@@ -39,6 +42,7 @@ import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.Gestionar
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.DTORespuesta.DocumentosDTORespuesta;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.mappers.DocumentosMapperDominio;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Solicitud;
+import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.controladorExcepciones.excepcionesPropias.EntidadNoExisteException;
 
 @RestController
 @CrossOrigin(origins = "http://localhost:4200")
@@ -53,54 +57,107 @@ public class SolicitudPazYSalvoRestController {
     private final GestionarDocumentosGatewayIntPort objGestionarDocumentosGateway;
     private final DocumentosMapperDominio documentosMapperDominio;
     private final co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.formateador.DocumentGeneratorService documentGeneratorService;
+    private final ObjectMapper objectMapper;
 
     @PostMapping("/crearSolicitud-PazYSalvo")
     public ResponseEntity<?> crearSolicitudPazYSalvo(
             @RequestBody Object peticion) {
         try {
-            // Intentar mapear como SolicitudPazYSalvoSimpleDTOPeticion (para pruebas)
-            if (peticion instanceof Map) {
+            if (peticion instanceof Map<?, ?>) {
                 @SuppressWarnings("unchecked")
                 Map<String, Object> mapPeticion = (Map<String, Object>) peticion;
-                
-                // Verificar si tiene idUsuario (formato de prueba)
+
                 if (mapPeticion.containsKey("idUsuario")) {
-                    Integer idUsuario = Integer.valueOf(mapPeticion.get("idUsuario").toString());
-                    
-                    // Crear solicitud básica
-                    SolicitudPazYSalvo solicitud = new SolicitudPazYSalvo();
-                    solicitud.setNombre_solicitud("Paz y Salvo");
-                    
-                    // Crear usuario con ID
-                    co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Usuario usuario = 
-                        new co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Usuario();
-                    usuario.setId_usuario(idUsuario);
-                    solicitud.setObjUsuario(usuario);
-                    
-                    // Guardar
-                    SolicitudPazYSalvo solicitudCreada = solicitudPazYSalvoCU.guardar(solicitud);
-                    
-                    SolicitudPazYSalvoDTORespuesta respuesta = solicitudMapperDominio.mappearDeSolicitudARespuesta(solicitudCreada);
-                    return new ResponseEntity<>(respuesta, HttpStatus.CREATED);
+                    SolicitudPazYSalvo solicitud = construirSolicitudBasica(mapPeticion);
+                    return guardarSolicitudDominio(solicitud);
                 }
+
+                SolicitudPazYSalvoDTOPeticion dtoPeticion = objectMapper.convertValue(mapPeticion,
+                        SolicitudPazYSalvoDTOPeticion.class);
+                return guardarSolicitudDesdeDto(dtoPeticion);
+            } else if (peticion instanceof SolicitudPazYSalvoDTOPeticion dtoPeticion) {
+                return guardarSolicitudDesdeDto(dtoPeticion);
             }
-            
-            // Si no es formato de prueba, intentar como DTO normal
-            @SuppressWarnings("unchecked")
-            SolicitudPazYSalvoDTOPeticion dtoPeticion = (SolicitudPazYSalvoDTOPeticion) peticion;
 
-            SolicitudPazYSalvo solicitud = solicitudMapperDominio
-                    .mappearDeSolicitudDTOPeticionASolicitud(dtoPeticion);
-
-            SolicitudPazYSalvo solicitudCreada = solicitudPazYSalvoCU.guardar(solicitud);
-
-            ResponseEntity<SolicitudPazYSalvoDTORespuesta> respuesta = new ResponseEntity<>(
-                    solicitudMapperDominio.mappearDeSolicitudARespuesta(solicitudCreada),
-                    HttpStatus.CREATED);
-
-            return respuesta;
+            return ResponseEntity.badRequest().body(Map.of("error", "Formato de solicitud no soportado"));
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(Map.of("error", "Formato de solicitud inválido: " + e.getMessage()));
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
+        }
+    }
+
+    private ResponseEntity<SolicitudPazYSalvoDTORespuesta> guardarSolicitudDesdeDto(
+            SolicitudPazYSalvoDTOPeticion dtoPeticion) {
+
+        SolicitudPazYSalvo solicitud = solicitudMapperDominio
+                .mappearDeSolicitudDTOPeticionASolicitud(dtoPeticion);
+
+        return guardarSolicitudDominio(solicitud);
+    }
+
+    private ResponseEntity<SolicitudPazYSalvoDTORespuesta> guardarSolicitudDominio(
+            SolicitudPazYSalvo solicitud) {
+
+        SolicitudPazYSalvo solicitudCreada = solicitudPazYSalvoCU.guardar(solicitud);
+        SolicitudPazYSalvoDTORespuesta respuesta = solicitudMapperDominio.mappearDeSolicitudARespuesta(solicitudCreada);
+
+        return new ResponseEntity<>(respuesta, HttpStatus.CREATED);
+    }
+
+    private SolicitudPazYSalvo construirSolicitudBasica(Map<String, Object> mapPeticion) {
+        Integer idUsuario = Integer.valueOf(mapPeticion.get("idUsuario").toString());
+
+        SolicitudPazYSalvo solicitud = new SolicitudPazYSalvo();
+        solicitud.setNombre_solicitud("Paz y Salvo");
+
+        co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Usuario usuario =
+                new co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Usuario();
+        usuario.setId_usuario(idUsuario);
+        solicitud.setObjUsuario(usuario);
+
+        if (mapPeticion.containsKey("fecha_solicitud") && mapPeticion.get("fecha_solicitud") != null) {
+            String fechaSolicitud = mapPeticion.get("fecha_solicitud").toString();
+            if (!fechaSolicitud.isBlank()) {
+                try {
+                    LocalDate fecha = LocalDate.parse(fechaSolicitud);
+                    solicitud.setFecha_registro_solicitud(java.sql.Date.valueOf(fecha));
+                } catch (DateTimeParseException e) {
+                    throw new IllegalArgumentException("fecha_solicitud con formato inválido (yyyy-MM-dd)");
+                }
+            }
+        }
+
+        return solicitud;
+    }
+
+    private boolean esIdentificadorNumerico(String valor) {
+        if (valor == null) {
+            return false;
+        }
+        try {
+            Integer.parseInt(valor.trim());
+            return true;
+        } catch (NumberFormatException e) {
+            return false;
+        }
+    }
+
+    private List<SolicitudPazYSalvo> obtenerSolicitudesPorRol(String rol) {
+        String rolNormalizado = rol != null ? rol.trim().toLowerCase() : "";
+
+        switch (rolNormalizado) {
+            case "coordinador":
+                return solicitudPazYSalvoCU.listarSolicitudesToCoordinador();
+            case "funcionario":
+                return solicitudPazYSalvoCU.listarSolicitudesToFuncionario();
+            case "secretaria":
+                return solicitudPazYSalvoCU.listarSolicitudesToSecretaria();
+            case "":
+                return solicitudPazYSalvoCU.listarSolicitudes();
+            default:
+                List<SolicitudPazYSalvo> solicitudes = solicitudPazYSalvoCU.listarSolicitudesPorRol(rol, null);
+                return solicitudes != null ? solicitudes : Collections.emptyList();
         }
     }
 
@@ -159,20 +216,24 @@ public class SolicitudPazYSalvoRestController {
     @GetMapping("/listarSolicitud-PazYSalvo/{id}")
     public ResponseEntity<?> listarPazYSalvoByIdOrRole(@PathVariable String id) {
         try {
-            // Intentar parsear como Integer (ID de usuario)
-            Integer idNumero = Integer.parseInt(id);
-            
-            // Listar todas las solicitudes del usuario
-            List<SolicitudPazYSalvo> solicitudes = solicitudPazYSalvoCU.listarSolicitudes();
-            List<SolicitudPazYSalvo> solicitudesFiltradas = solicitudes.stream()
-                .filter(s -> s.getObjUsuario() != null && s.getObjUsuario().getId_usuario().equals(idNumero))
-                .collect(java.util.stream.Collectors.toList());
-            
-            List<SolicitudPazYSalvoDTORespuesta> respuesta = solicitudMapperDominio.mappearListaDeSolicitudesARespuesta(solicitudesFiltradas);
+            if (esIdentificadorNumerico(id)) {
+                Integer idNumero = Integer.valueOf(id);
+                try {
+                    SolicitudPazYSalvo solicitud = solicitudPazYSalvoCU.buscarPorId(idNumero);
+                    SolicitudPazYSalvoDTORespuesta respuesta = solicitudMapperDominio.mappearDeSolicitudARespuesta(solicitud);
+                    return ResponseEntity.ok(respuesta);
+                } catch (EntidadNoExisteException ex) {
+                    List<SolicitudPazYSalvo> solicitudes = solicitudPazYSalvoCU.listarSolicitudesPorRol("ESTUDIANTE", idNumero);
+                    List<SolicitudPazYSalvoDTORespuesta> respuesta = solicitudMapperDominio
+                            .mappearListaDeSolicitudesARespuesta(solicitudes);
+                    return ResponseEntity.ok(respuesta);
+                }
+            }
+
+            List<SolicitudPazYSalvo> solicitudes = obtenerSolicitudesPorRol(id);
+            List<SolicitudPazYSalvoDTORespuesta> respuesta = solicitudMapperDominio
+                    .mappearListaDeSolicitudesARespuesta(solicitudes);
             return ResponseEntity.ok(respuesta);
-        } catch (NumberFormatException e) {
-            // No es un número, devolver lista vacía (es mejor que fallar con 500)
-            return ResponseEntity.ok(new ArrayList<SolicitudPazYSalvoDTORespuesta>());
         } catch (Exception e) {
             return ResponseEntity.internalServerError().body(Map.of("error", e.getMessage()));
         }
