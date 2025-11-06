@@ -1905,6 +1905,95 @@ public class CursosIntersemestralesRestController {
     }
 
     /**
+     * Obtener estadísticas del dashboard de cursos intersemestrales
+     * GET /api/cursos-intersemestrales/dashboard/estadisticas
+     */
+    @GetMapping("/dashboard/estadisticas")
+    public ResponseEntity<Map<String, Object>> obtenerEstadisticasDashboard() {
+        try {
+            System.out.println("INFO: Obteniendo estadísticas del dashboard");
+            
+            Map<String, Object> estadisticas = new HashMap<>();
+            
+            // 1. Contar cursos activos (estados: Publicado, Preinscripcion, Inscripcion)
+            List<CursoOfertadoVerano> todosLosCursos = cursoCU.listarTodos();
+            int cursosActivos = 0;
+            int cursosGestionados = 0;
+            
+            for (CursoOfertadoVerano curso : todosLosCursos) {
+                if (curso.getEstadosCursoOfertados() != null && !curso.getEstadosCursoOfertados().isEmpty()) {
+                    String estadoActual = curso.getEstadosCursoOfertados()
+                        .get(curso.getEstadosCursoOfertados().size() - 1)
+                        .getEstado_actual();
+                    
+                    // Cursos activos: Publicado, Preinscripcion, Inscripcion
+                    if ("Publicado".equals(estadoActual) || 
+                        "Preinscripcion".equals(estadoActual) || 
+                        "Inscripcion".equals(estadoActual)) {
+                        cursosActivos++;
+                    }
+                    
+                    // Cursos gestionados: cualquier curso que tenga al menos un estado
+                    cursosGestionados++;
+                }
+            }
+            
+            // 2. Contar total de preinscripciones
+            int totalPreinscripciones = 0;
+            try {
+                List<SolicitudEntity> todasLasSolicitudes = solicitudRepository.findAll();
+                for (SolicitudEntity solicitud : todasLasSolicitudes) {
+                    if (solicitud instanceof SolicitudCursoVeranoPreinscripcionEntity) {
+                        totalPreinscripciones++;
+                    }
+                }
+            } catch (Exception e) {
+                System.err.println("ERROR: Error contando preinscripciones: " + e.getMessage());
+            }
+            
+            // 3. Contar total de inscripciones
+            int totalInscripciones = 0;
+            try {
+                List<SolicitudEntity> todasLasSolicitudes = solicitudRepository.findAll();
+                for (SolicitudEntity solicitud : todasLasSolicitudes) {
+                    if (solicitud instanceof SolicitudCursoVeranoInscripcionEntity) {
+                        totalInscripciones++;
+                    }
+                }
+            } catch (Exception e) {
+                System.err.println("ERROR: Error contando inscripciones: " + e.getMessage());
+            }
+            
+            // 4. Calcular progreso de gestión
+            int totalCursos = todosLosCursos.size();
+            double porcentajeProgreso = totalCursos > 0 ? (cursosGestionados * 100.0 / totalCursos) : 0;
+            
+            // Construir respuesta
+            estadisticas.put("cursosActivos", cursosActivos);
+            estadisticas.put("totalPreinscripciones", totalPreinscripciones);
+            estadisticas.put("totalInscripciones", totalInscripciones);
+            estadisticas.put("cursosGestionados", cursosGestionados);
+            estadisticas.put("totalCursos", totalCursos);
+            estadisticas.put("porcentajeProgreso", Math.round(porcentajeProgreso));
+            
+            System.out.println("INFO: Estadísticas del dashboard generadas exitosamente");
+            System.out.println("  - Cursos Activos: " + cursosActivos);
+            System.out.println("  - Preinscripciones: " + totalPreinscripciones);
+            System.out.println("  - Inscripciones: " + totalInscripciones);
+            System.out.println("  - Progreso: " + cursosGestionados + " de " + totalCursos + " (" + Math.round(porcentajeProgreso) + "%)");
+            
+            return ResponseEntity.ok(estadisticas);
+            
+        } catch (Exception e) {
+            System.err.println("ERROR: Error obteniendo estadísticas del dashboard: " + e.getMessage());
+            e.printStackTrace();
+            Map<String, Object> error = new HashMap<>();
+            error.put("error", "Error interno del servidor");
+            return ResponseEntity.internalServerError().body(error);
+        }
+    }
+
+    /**
      * Endpoint temporal para debug - verificar TODAS las preinscripciones
      * GET /api/cursos-intersemestrales/debug-todas-solicitudes
      */
