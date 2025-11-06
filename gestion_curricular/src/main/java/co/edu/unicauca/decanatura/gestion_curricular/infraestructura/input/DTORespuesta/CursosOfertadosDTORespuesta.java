@@ -26,6 +26,7 @@ public class CursosOfertadosDTORespuesta {
     private Integer cupo_disponible;
     private String espacio_asignado;
     private String estado;
+    private String periodo; // Período académico calculado (ej: "2025-1", "2025-2")
 
     private MateriaDTORespuesta objMateria;
 

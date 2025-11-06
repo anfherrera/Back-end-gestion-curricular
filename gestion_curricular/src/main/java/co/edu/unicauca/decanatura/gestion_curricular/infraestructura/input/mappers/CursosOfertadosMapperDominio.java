@@ -47,6 +47,7 @@ public interface CursosOfertadosMapperDominio {
     @Mapping(source = "estadosCursoOfertados", target = "fecha_inicio", qualifiedByName = "obtenerFechaInicio")
     @Mapping(source = "estadosCursoOfertados", target = "fecha_fin", qualifiedByName = "obtenerFechaFin")
     @Mapping(source = "estadosCursoOfertados", target = "estado", qualifiedByName = "obtenerEstadoActual")
+    @Mapping(source = "estadosCursoOfertados", target = "periodo", qualifiedByName = "calcularPeriodoAcademico")
     CursosOfertadosDTORespuesta mappearDeCursoOfertadoARespuesta(CursoOfertadoVerano curso);
     
     // Método post-mapping para asignar idCurso desde id_curso
@@ -74,6 +75,7 @@ public interface CursosOfertadosMapperDominio {
     @Mapping(source = "estadosCursoOfertados", target = "fecha_inicio", qualifiedByName = "obtenerFechaInicio")
     @Mapping(source = "estadosCursoOfertados", target = "fecha_fin", qualifiedByName = "obtenerFechaFin")
     @Mapping(source = "estadosCursoOfertados", target = "estado", qualifiedByName = "obtenerEstadoActual")
+    @Mapping(source = "estadosCursoOfertados", target = "periodo", qualifiedByName = "calcularPeriodoAcademico")
     @Named("mappearDeCursoOfertadoARespuestaDisponible")
     CursosOfertadosDTORespuesta mappearDeCursoOfertadoARespuestaDisponible(CursoOfertadoVerano curso);
 
@@ -169,5 +171,34 @@ public interface CursosOfertadosMapperDominio {
         
         // Asegurar que no sea negativo
         return Math.max(0, cupoDisponible);
+    }
+    
+    @Named("calcularPeriodoAcademico")
+    default String calcularPeriodoAcademico(List<co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.EstadoCursoOfertado> estados) {
+        if (estados == null || estados.isEmpty()) {
+            return "N/A";
+        }
+        
+        // Obtener la fecha del estado más reciente (fecha de inicio del curso)
+        java.util.Date fechaInicio = estados.get(estados.size() - 1).getFecha_registro_estado();
+        if (fechaInicio == null) {
+            return "N/A";
+        }
+        
+        // Convertir Date a LocalDate para facilitar el cálculo
+        java.time.LocalDate fecha = fechaInicio.toInstant()
+            .atZone(java.time.ZoneId.systemDefault())
+            .toLocalDate();
+        
+        int año = fecha.getYear();
+        int mes = fecha.getMonthValue();
+        
+        // Lógica para determinar el período académico:
+        // Primer período: Enero a Junio (meses 1-6)
+        // Segundo período: Julio a Diciembre (meses 7-12)
+        int numeroPeriodo = (mes <= 6) ? 1 : 2;
+        
+        // Retornar en formato "YYYY-P" (ej: "2025-1", "2025-2")
+        return año + "-" + numeroPeriodo;
     }
 }
