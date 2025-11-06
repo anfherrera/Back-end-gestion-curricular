@@ -2,10 +2,15 @@ package co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.cont
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 import jakarta.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;
+
+import java.io.ByteArrayOutputStream;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarCursoOfertadoVeranoCUIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarSolicitudCursoVeranoCUIntPort;
@@ -1640,6 +1645,262 @@ public class CursosIntersemestralesRestController {
             System.err.println("ERROR: Error obteniendo solicitudes: " + e.getMessage());
             e.printStackTrace();
             return ResponseEntity.internalServerError().build();
+        }
+    }
+
+    /**
+     * Exportar todas las solicitudes de cursos intersemestrales a Excel
+     * GET /api/cursos-intersemestrales/solicitudes/export/excel
+     */
+    @GetMapping("/solicitudes/export/excel")
+    public ResponseEntity<byte[]> exportarSolicitudesExcel() {
+        try {
+            System.out.println("INFO: Exportando solicitudes de cursos intersemestrales a Excel");
+            
+            // Obtener todas las solicitudes usando la misma lógica del endpoint anterior
+            List<SolicitudEntity> todasLasSolicitudes = solicitudRepository.findAll();
+            
+            List<Map<String, Object>> solicitudesFormateadas = new ArrayList<>();
+            
+            for (SolicitudEntity solicitud : todasLasSolicitudes) {
+                // Solo procesar solicitudes de cursos intersemestrales
+                if (solicitud instanceof SolicitudCursoVeranoPreinscripcionEntity || 
+                    solicitud instanceof SolicitudCursoVeranoInscripcionEntity) {
+                    
+                    Map<String, Object> solicitudInfo = new HashMap<>();
+                    
+                    // Información básica
+                    solicitudInfo.put("id", solicitud.getId_solicitud());
+                    solicitudInfo.put("fecha", solicitud.getFecha_registro_solicitud());
+                    solicitudInfo.put("tipo", solicitud instanceof SolicitudCursoVeranoPreinscripcionEntity ? 
+                        "Preinscripción" : "Inscripción");
+                    
+                    // Motivo de la solicitud
+                    String motivoSolicitud = "No especificado";
+                    
+                    if (solicitud instanceof SolicitudCursoVeranoPreinscripcionEntity) {
+                        SolicitudCursoVeranoPreinscripcionEntity preinscripcion = (SolicitudCursoVeranoPreinscripcionEntity) solicitud;
+                        if (preinscripcion.getObservacion() != null && !preinscripcion.getObservacion().trim().isEmpty()) {
+                            motivoSolicitud = preinscripcion.getObservacion();
+                        } else if (preinscripcion.getNombre_solicitud() != null && !preinscripcion.getNombre_solicitud().trim().isEmpty()) {
+                            motivoSolicitud = preinscripcion.getNombre_solicitud();
+                        }
+                    } else if (solicitud instanceof SolicitudCursoVeranoInscripcionEntity) {
+                        SolicitudCursoVeranoInscripcionEntity inscripcion = (SolicitudCursoVeranoInscripcionEntity) solicitud;
+                        if (inscripcion.getObservacion() != null && !inscripcion.getObservacion().trim().isEmpty()) {
+                            motivoSolicitud = inscripcion.getObservacion();
+                        } else if (inscripcion.getNombre_solicitud() != null && !inscripcion.getNombre_solicitud().trim().isEmpty()) {
+                            motivoSolicitud = inscripcion.getNombre_solicitud();
+                        }
+                    }
+                    
+                    solicitudInfo.put("motivoSolicitud", motivoSolicitud);
+                    
+                    // Información del usuario
+                    if (solicitud.getObjUsuario() != null) {
+                        solicitudInfo.put("nombreCompleto", solicitud.getObjUsuario().getNombre_completo());
+                        solicitudInfo.put("codigo", solicitud.getObjUsuario().getCodigo());
+                    } else {
+                        solicitudInfo.put("nombreCompleto", "Usuario no disponible");
+                        solicitudInfo.put("codigo", "N/A");
+                    }
+                    
+                    // Información del curso
+                    String nombreCurso = "Curso no disponible";
+                    String condicion = "N/A";
+                    
+                    if (solicitud instanceof SolicitudCursoVeranoPreinscripcionEntity) {
+                        SolicitudCursoVeranoPreinscripcionEntity preinscripcion = (SolicitudCursoVeranoPreinscripcionEntity) solicitud;
+                        
+                        if (preinscripcion.getObjCursoOfertadoVerano() != null && 
+                            preinscripcion.getObjCursoOfertadoVerano().getObjMateria() != null) {
+                            nombreCurso = preinscripcion.getObjCursoOfertadoVerano().getObjMateria().getNombre();
+                        } else if (preinscripcion.getObservacion() != null && !preinscripcion.getObservacion().isEmpty()) {
+                            // Para solicitudes de curso nuevo
+                            String observacion = preinscripcion.getObservacion();
+                            if (observacion.contains(": ")) {
+                                nombreCurso = observacion.split(": ")[1].trim();
+                            } else {
+                                nombreCurso = observacion;
+                            }
+                        }
+                        
+                        // Estado de la preinscripción
+                        String estadoPreinscripcion = "Enviada";
+                        if (preinscripcion.getEstadosSolicitud() != null && !preinscripcion.getEstadosSolicitud().isEmpty()) {
+                            estadoPreinscripcion = preinscripcion.getEstadosSolicitud().get(preinscripcion.getEstadosSolicitud().size() - 1).getEstado_actual();
+                        }
+                        solicitudInfo.put("estado", estadoPreinscripcion);
+                        
+                        // Condición académica del estudiante (Primera Vez, Repitencia, Habilitación, etc.)
+                        String condicionAcademica = "PRIMERA_VEZ";
+                        if (preinscripcion.getCodicion_solicitud() != null) {
+                            condicionAcademica = preinscripcion.getCodicion_solicitud().toString();
+                        }
+                        solicitudInfo.put("condicion", condicionAcademica);
+                        
+                    } else if (solicitud instanceof SolicitudCursoVeranoInscripcionEntity) {
+                        SolicitudCursoVeranoInscripcionEntity inscripcion = (SolicitudCursoVeranoInscripcionEntity) solicitud;
+                        
+                        if (inscripcion.getObjCursoOfertadoVerano() != null && 
+                            inscripcion.getObjCursoOfertadoVerano().getObjMateria() != null) {
+                            nombreCurso = inscripcion.getObjCursoOfertadoVerano().getObjMateria().getNombre();
+                        }
+                        
+                        // Condición de la inscripción
+                        if (inscripcion.getCodicion_solicitud() != null) {
+                            condicion = inscripcion.getCodicion_solicitud().toString();
+                        }
+                        
+                        // Estado de la inscripción
+                        String estadoInscripcion = "Enviada";
+                        if (inscripcion.getEstadosSolicitud() != null && !inscripcion.getEstadosSolicitud().isEmpty()) {
+                            estadoInscripcion = inscripcion.getEstadosSolicitud().get(inscripcion.getEstadosSolicitud().size() - 1).getEstado_actual();
+                        }
+                        solicitudInfo.put("estado", estadoInscripcion);
+                        solicitudInfo.put("condicion", condicion);
+                    }
+                    
+                    solicitudInfo.put("curso", nombreCurso);
+                    
+                    solicitudesFormateadas.add(solicitudInfo);
+                }
+            }
+            
+            // Generar Excel
+            byte[] excelBytes = generarExcelSolicitudes(solicitudesFormateadas);
+            
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.APPLICATION_OCTET_STREAM);
+            String nombreArchivo = "solicitudes_cursos_intersemestrales_" + new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date()) + ".xlsx";
+            headers.setContentDispositionFormData("attachment", nombreArchivo);
+            
+            System.out.println("INFO: Excel generado exitosamente con " + solicitudesFormateadas.size() + " solicitudes");
+            
+            return new ResponseEntity<>(excelBytes, headers, HttpStatus.OK);
+            
+        } catch (Exception e) {
+            System.err.println("ERROR: Error exportando solicitudes a Excel: " + e.getMessage());
+            e.printStackTrace();
+            return ResponseEntity.internalServerError().build();
+        }
+    }
+
+    /**
+     * Genera un archivo Excel con las solicitudes de cursos intersemestrales
+     */
+    private byte[] generarExcelSolicitudes(List<Map<String, Object>> solicitudes) {
+        try {
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            org.apache.poi.xssf.usermodel.XSSFWorkbook workbook = new org.apache.poi.xssf.usermodel.XSSFWorkbook();
+            
+            // Crear hoja de solicitudes
+            org.apache.poi.ss.usermodel.Sheet sheet = workbook.createSheet("Solicitudes Cursos Intersemestrales");
+            
+            // Estilos
+            org.apache.poi.ss.usermodel.CellStyle titleStyle = workbook.createCellStyle();
+            org.apache.poi.ss.usermodel.Font titleFont = workbook.createFont();
+            titleFont.setBold(true);
+            titleFont.setFontHeightInPoints((short) 16);
+            titleStyle.setFont(titleFont);
+            
+            org.apache.poi.ss.usermodel.CellStyle headerStyle = workbook.createCellStyle();
+            org.apache.poi.ss.usermodel.Font headerFont = workbook.createFont();
+            headerFont.setBold(true);
+            headerFont.setFontHeightInPoints((short) 12);
+            headerStyle.setFont(headerFont);
+            headerStyle.setFillForegroundColor(org.apache.poi.ss.usermodel.IndexedColors.GREY_25_PERCENT.getIndex());
+            headerStyle.setFillPattern(org.apache.poi.ss.usermodel.FillPatternType.SOLID_FOREGROUND);
+            
+            int rowNum = 0;
+            
+            // Título
+            org.apache.poi.ss.usermodel.Row titleRow = sheet.createRow(rowNum++);
+            org.apache.poi.ss.usermodel.Cell titleCell = titleRow.createCell(0);
+            titleCell.setCellValue("SOLICITUDES DE CURSOS INTERSEMESTRALES DE VERANO");
+            titleCell.setCellStyle(titleStyle);
+            
+            rowNum++; // Espacio
+            
+            // Fecha de generación
+            org.apache.poi.ss.usermodel.Row fechaRow = sheet.createRow(rowNum++);
+            fechaRow.createCell(0).setCellValue("Fecha de generación: " + new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(new Date()));
+            
+            rowNum++; // Espacio
+            
+            // Encabezados
+            org.apache.poi.ss.usermodel.Row headerRow = sheet.createRow(rowNum++);
+            String[] headers = {"Nombre Completo", "Código", "Curso", "Condición", "Motivo de la Solicitud", "Estado", "Fecha", "Tipo"};
+            for (int i = 0; i < headers.length; i++) {
+                org.apache.poi.ss.usermodel.Cell cell = headerRow.createCell(i);
+                cell.setCellValue(headers[i]);
+                cell.setCellStyle(headerStyle);
+            }
+            
+            // Datos
+            SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm");
+            for (Map<String, Object> solicitud : solicitudes) {
+                org.apache.poi.ss.usermodel.Row row = sheet.createRow(rowNum++);
+                
+                int colNum = 0;
+                row.createCell(colNum++).setCellValue(solicitud.get("nombreCompleto") != null ? solicitud.get("nombreCompleto").toString() : "");
+                row.createCell(colNum++).setCellValue(solicitud.get("codigo") != null ? solicitud.get("codigo").toString() : "");
+                row.createCell(colNum++).setCellValue(solicitud.get("curso") != null ? solicitud.get("curso").toString() : "");
+                
+                // Condición - formatear para que sea más legible
+                String condicion = solicitud.get("condicion") != null ? solicitud.get("condicion").toString() : "";
+                if (condicion.equals("PRIMERA_VEZ")) {
+                    condicion = "PRIMERA VEZ";
+                }
+                row.createCell(colNum++).setCellValue(condicion);
+                
+                row.createCell(colNum++).setCellValue(solicitud.get("motivoSolicitud") != null ? solicitud.get("motivoSolicitud").toString() : "");
+                row.createCell(colNum++).setCellValue(solicitud.get("estado") != null ? solicitud.get("estado").toString() : "");
+                
+                // Fecha formateada
+                if (solicitud.get("fecha") != null) {
+                    Date fecha = (Date) solicitud.get("fecha");
+                    row.createCell(colNum++).setCellValue(dateFormat.format(fecha));
+                } else {
+                    row.createCell(colNum++).setCellValue("");
+                }
+                
+                row.createCell(colNum++).setCellValue(solicitud.get("tipo") != null ? solicitud.get("tipo").toString() : "");
+            }
+            
+            // Ajustar ancho de columnas
+            for (int i = 0; i < headers.length; i++) {
+                sheet.autoSizeColumn(i);
+                // Aumentar un poco más el ancho para mejor legibilidad
+                sheet.setColumnWidth(i, sheet.getColumnWidth(i) + 1000);
+            }
+            
+            workbook.write(baos);
+            workbook.close();
+            
+            return baos.toByteArray();
+            
+        } catch (Exception e) {
+            System.err.println("ERROR: Error generando Excel: " + e.getMessage());
+            e.printStackTrace();
+            
+            // Generar Excel de error
+            try {
+                ByteArrayOutputStream errorBaos = new ByteArrayOutputStream();
+                org.apache.poi.xssf.usermodel.XSSFWorkbook errorWorkbook = new org.apache.poi.xssf.usermodel.XSSFWorkbook();
+                org.apache.poi.ss.usermodel.Sheet errorSheet = errorWorkbook.createSheet("Error");
+                
+                org.apache.poi.ss.usermodel.Row errorRow = errorSheet.createRow(0);
+                errorRow.createCell(0).setCellValue("Error al generar el reporte: " + e.getMessage());
+                
+                errorWorkbook.write(errorBaos);
+                errorWorkbook.close();
+                
+                return errorBaos.toByteArray();
+            } catch (Exception ex) {
+                System.err.println("ERROR: Error generando Excel de error: " + ex.getMessage());
+                return new byte[0];
+            }
         }
     }
 
