@@ -75,12 +75,33 @@ public class CursosIntersemestralesRestController {
     public ResponseEntity<List<CursosOfertadosDTORespuesta>> obtenerCursosVerano() {
         try {
             List<CursoOfertadoVerano> cursos = cursoCU.listarTodos();
+            System.out.println("INFO: Total de cursos encontrados: " + cursos.size());
+            
             List<CursosOfertadosDTORespuesta> respuesta = cursos.stream()
-                    .map(cursoMapper::mappearDeCursoOfertadoARespuestaDisponible)
-                    .map(cursoMapper::postMapCurso) // Asignar idCurso
+                    .map(curso -> {
+                        // Log para verificar docente antes del mapeo
+                        if (curso.getObjDocente() == null) {
+                            System.out.println("WARNING: Curso ID " + curso.getId_curso() + " no tiene docente asignado");
+                        } else {
+                            System.out.println("INFO: Curso ID " + curso.getId_curso() + " tiene docente: " + curso.getObjDocente().getNombre_docente());
+                        }
+                        return cursoMapper.mappearDeCursoOfertadoARespuestaDisponible(curso);
+                    })
+                    .map(dto -> {
+                        // Log para verificar docente después del mapeo
+                        if (dto.getObjDocente() == null) {
+                            System.out.println("WARNING: DTO del curso ID " + dto.getId_curso() + " no tiene docente en el mapeo");
+                        } else {
+                            System.out.println("INFO: DTO del curso ID " + dto.getId_curso() + " tiene docente: " + dto.getObjDocente().getNombre_docente());
+                        }
+                        return cursoMapper.postMapCurso(dto);
+                    })
                     .collect(Collectors.toList());
+            
             return ResponseEntity.ok(respuesta);
         } catch (Exception e) {
+            System.err.println("ERROR: Error obteniendo cursos: " + e.getMessage());
+            e.printStackTrace();
             return ResponseEntity.internalServerError().build();
         }
     }
