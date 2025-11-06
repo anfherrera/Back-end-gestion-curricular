@@ -1,5 +1,6 @@
 package co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.controladores;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -17,13 +18,15 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.bind.annotation.RequestParam;
 import java.util.Date;
 
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeParseException;
 import java.util.List;
 import java.util.Map;
 import java.util.HashMap;
 import java.util.ArrayList;
+import java.util.Collections;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpHeaders;
@@ -39,6 +42,7 @@ import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.Gestionar
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.DTORespuesta.DocumentosDTORespuesta;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.mappers.DocumentosMapperDominio;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Solicitud;
+import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.controladorExcepciones.excepcionesPropias.EntidadNoExisteException;
 
 @RestController
 @CrossOrigin(origins = "http://localhost:4200")
@@ -53,21 +57,158 @@ public class SolicitudPazYSalvoRestController {
     private final GestionarDocumentosGatewayIntPort objGestionarDocumentosGateway;
     private final DocumentosMapperDominio documentosMapperDominio;
     private final co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.formateador.DocumentGeneratorService documentGeneratorService;
+    private final ObjectMapper objectMapper;
 
     @PostMapping("/crearSolicitud-PazYSalvo")
-    public ResponseEntity<SolicitudPazYSalvoDTORespuesta> crearSolicitudPazYSalvo(
-            @Valid @RequestBody SolicitudPazYSalvoDTOPeticion peticion) {
+    public ResponseEntity<?> crearSolicitudPazYSalvo(
+            @RequestBody Object peticion) {
+        try {
+            if (peticion == null) {
+                return respuestaBadRequest("Los datos de la solicitud son requeridos");
+            }
+
+            if (peticion instanceof Map<?, ?>) {
+                @SuppressWarnings("unchecked")
+                Map<String, Object> mapPeticion = (Map<String, Object>) peticion;
+
+                if (mapPeticion.isEmpty()) {
+                    return respuestaBadRequest("Los datos de la solicitud son requeridos");
+                }
+
+                if (mapPeticion.containsKey("idUsuario")) {
+                    Object idUsuario = mapPeticion.get("idUsuario");
+                    if (idUsuario == null || idUsuario.toString().isBlank()) {
+                        return respuestaBadRequest("El campo idUsuario es obligatorio");
+                    }
+
+                    SolicitudPazYSalvo solicitud = construirSolicitudBasica(mapPeticion);
+                    return guardarSolicitudDominio(solicitud);
+                }
+
+                SolicitudPazYSalvoDTOPeticion dtoPeticion = objectMapper.convertValue(mapPeticion,
+                        SolicitudPazYSalvoDTOPeticion.class);
+                String mensajeValidacion = validarSolicitudDto(dtoPeticion);
+                if (mensajeValidacion != null) {
+                    return respuestaBadRequest(mensajeValidacion);
+                }
+
+                return guardarSolicitudDesdeDto(dtoPeticion);
+            } else if (peticion instanceof SolicitudPazYSalvoDTOPeticion dtoPeticion) {
+                String mensajeValidacion = validarSolicitudDto(dtoPeticion);
+                if (mensajeValidacion != null) {
+                    return respuestaBadRequest(mensajeValidacion);
+                }
+                return guardarSolicitudDesdeDto(dtoPeticion);
+            }
+
+            return respuestaBadRequest("Formato de solicitud no soportado");
+        } catch (IllegalArgumentException e) {
+            return respuestaBadRequest("Formato de solicitud inválido: " + e.getMessage());
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
+        }
+    }
+
+    private ResponseEntity<SolicitudPazYSalvoDTORespuesta> guardarSolicitudDesdeDto(
+            SolicitudPazYSalvoDTOPeticion dtoPeticion) {
 
         SolicitudPazYSalvo solicitud = solicitudMapperDominio
-                .mappearDeSolicitudDTOPeticionASolicitud(peticion);
+                .mappearDeSolicitudDTOPeticionASolicitud(dtoPeticion);
+
+        return guardarSolicitudDominio(solicitud);
+    }
+
+    private ResponseEntity<SolicitudPazYSalvoDTORespuesta> guardarSolicitudDominio(
+            SolicitudPazYSalvo solicitud) {
 
         SolicitudPazYSalvo solicitudCreada = solicitudPazYSalvoCU.guardar(solicitud);
+        SolicitudPazYSalvoDTORespuesta respuesta = solicitudMapperDominio.mappearDeSolicitudARespuesta(solicitudCreada);
 
-        ResponseEntity<SolicitudPazYSalvoDTORespuesta> respuesta = new ResponseEntity<>(
-                solicitudMapperDominio.mappearDeSolicitudARespuesta(solicitudCreada),
-                HttpStatus.CREATED);
+        return new ResponseEntity<>(respuesta, HttpStatus.CREATED);
+    }
 
-        return respuesta;
+    private SolicitudPazYSalvo construirSolicitudBasica(Map<String, Object> mapPeticion) {
+        Integer idUsuario = Integer.valueOf(mapPeticion.get("idUsuario").toString().trim());
+
+        SolicitudPazYSalvo solicitud = new SolicitudPazYSalvo();
+        solicitud.setNombre_solicitud("Paz y Salvo");
+
+        co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Usuario usuario =
+                new co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Usuario();
+        usuario.setId_usuario(idUsuario);
+        solicitud.setObjUsuario(usuario);
+
+        if (mapPeticion.containsKey("fecha_solicitud") && mapPeticion.get("fecha_solicitud") != null) {
+            String fechaSolicitud = mapPeticion.get("fecha_solicitud").toString();
+            if (!fechaSolicitud.isBlank()) {
+                try {
+                    LocalDate fecha = LocalDate.parse(fechaSolicitud);
+                    solicitud.setFecha_registro_solicitud(java.sql.Date.valueOf(fecha));
+                } catch (DateTimeParseException e) {
+                    throw new IllegalArgumentException("fecha_solicitud con formato inválido (yyyy-MM-dd)");
+                }
+            }
+        }
+
+        if (solicitud.getFecha_registro_solicitud() == null) {
+            solicitud.setFecha_registro_solicitud(new Date());
+        }
+
+        return solicitud;
+    }
+
+    private boolean esIdentificadorNumerico(String valor) {
+        if (valor == null) {
+            return false;
+        }
+        try {
+            Integer.parseInt(valor.trim());
+            return true;
+        } catch (NumberFormatException e) {
+            return false;
+        }
+    }
+
+    private String validarSolicitudDto(SolicitudPazYSalvoDTOPeticion dtoPeticion) {
+        if (dtoPeticion == null) {
+            return "Los datos de la solicitud son requeridos";
+        }
+
+        if (dtoPeticion.getObjUsuario() == null || dtoPeticion.getObjUsuario().getId_usuario() == null) {
+            return "El usuario de la solicitud es obligatorio";
+        }
+
+        if (dtoPeticion.getNombre_solicitud() == null || dtoPeticion.getNombre_solicitud().isBlank()) {
+            return "El nombre de la solicitud es obligatorio";
+        }
+
+        if (dtoPeticion.getFecha_registro_solicitud() == null) {
+            return "La fecha de la solicitud es obligatoria";
+        }
+
+        return null;
+    }
+
+    private ResponseEntity<Map<String, String>> respuestaBadRequest(String mensaje) {
+        return ResponseEntity.badRequest().body(Map.of("error", mensaje));
+    }
+
+    private List<SolicitudPazYSalvo> obtenerSolicitudesPorRol(String rol) {
+        String rolNormalizado = rol != null ? rol.trim().toLowerCase() : "";
+
+        switch (rolNormalizado) {
+            case "coordinador":
+                return solicitudPazYSalvoCU.listarSolicitudesToCoordinador();
+            case "funcionario":
+                return solicitudPazYSalvoCU.listarSolicitudesToFuncionario();
+            case "secretaria":
+                return solicitudPazYSalvoCU.listarSolicitudesToSecretaria();
+            case "":
+                return solicitudPazYSalvoCU.listarSolicitudes();
+            default:
+                List<SolicitudPazYSalvo> solicitudes = solicitudPazYSalvoCU.listarSolicitudesPorRol(rol, null);
+                return solicitudes != null ? solicitudes : Collections.emptyList();
+        }
     }
 
     @GetMapping("/listarSolicitud-PazYSalvo")
@@ -111,11 +252,41 @@ public class SolicitudPazYSalvoRestController {
         return ResponseEntity.ok(respuesta);
     }
 
+    @GetMapping("/listarSolicitud-PazYSalvo/id/{id}")
+    public ResponseEntity<?> listarPazYSalvoById(@PathVariable Integer id) {
+        try {
+            SolicitudPazYSalvo solicitud = solicitudPazYSalvoCU.buscarPorId(id);
+            SolicitudPazYSalvoDTORespuesta respuesta = solicitudMapperDominio.mappearDeSolicitudARespuesta(solicitud);
+            return ResponseEntity.ok(respuesta);
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().body(Map.of("error", e.getMessage()));
+        }
+    }
+
     @GetMapping("/listarSolicitud-PazYSalvo/{id}")
-    public ResponseEntity<SolicitudPazYSalvoDTORespuesta> listarPazYSalvoById(@PathVariable Integer id) {
-        SolicitudPazYSalvo solicitud = solicitudPazYSalvoCU.buscarPorId(id);
-        SolicitudPazYSalvoDTORespuesta respuesta = solicitudMapperDominio.mappearDeSolicitudARespuesta(solicitud);
-        return ResponseEntity.ok(respuesta);
+    public ResponseEntity<?> listarPazYSalvoByIdOrRole(@PathVariable String id) {
+        try {
+            if (esIdentificadorNumerico(id)) {
+                Integer idNumero = Integer.valueOf(id);
+                try {
+                    SolicitudPazYSalvo solicitud = solicitudPazYSalvoCU.buscarPorId(idNumero);
+                    SolicitudPazYSalvoDTORespuesta respuesta = solicitudMapperDominio.mappearDeSolicitudARespuesta(solicitud);
+                    return ResponseEntity.ok(respuesta);
+                } catch (EntidadNoExisteException ex) {
+                    List<SolicitudPazYSalvo> solicitudes = solicitudPazYSalvoCU.listarSolicitudesPorRol("ESTUDIANTE", idNumero);
+                    List<SolicitudPazYSalvoDTORespuesta> respuesta = solicitudMapperDominio
+                            .mappearListaDeSolicitudesARespuesta(solicitudes);
+                    return ResponseEntity.ok(respuesta);
+                }
+            }
+
+            List<SolicitudPazYSalvo> solicitudes = obtenerSolicitudesPorRol(id);
+            List<SolicitudPazYSalvoDTORespuesta> respuesta = solicitudMapperDominio
+                    .mappearListaDeSolicitudesARespuesta(solicitudes);
+            return ResponseEntity.ok(respuesta);
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().body(Map.of("error", e.getMessage()));
+        }
     }
 
     @PutMapping("/actualizarEstadoSolicitud")
@@ -128,6 +299,125 @@ public class SolicitudPazYSalvoRestController {
         solicitudPazYSalvoCU.cambiarEstadoSolicitud(solicitud.getIdSolicitud(), solicitud.getNuevoEstado());
 
         return ResponseEntity.noContent().build();
+    }
+
+    /**
+     * Cambiar estado de solicitud por ID (alias para compatibilidad con pruebas)
+     * PUT /api/solicitudes-pazysalvo/cambiarEstadoSolicitud/{id}
+     */
+    @PutMapping("/cambiarEstadoSolicitud/{id}")
+    public ResponseEntity<Map<String, Object>> cambiarEstadoSolicitudPorId(
+            @PathVariable Integer id,
+            @RequestBody Map<String, String> requestBody) {
+        String nuevoEstado = requestBody.get("nuevoEstado");
+        if (nuevoEstado == null || nuevoEstado.isEmpty()) {
+            return ResponseEntity.badRequest().body(Map.of("error", "nuevoEstado es requerido"));
+        }
+        
+        solicitudPazYSalvoCU.cambiarEstadoSolicitud(id, nuevoEstado);
+        
+        Map<String, Object> respuesta = new HashMap<>();
+        respuesta.put("idSolicitud", id);
+        respuesta.put("nuevoEstado", nuevoEstado);
+        respuesta.put("mensaje", "Estado actualizado exitosamente");
+        
+        return ResponseEntity.ok(respuesta);
+    }
+
+    /**
+     * Generar documento PDF de Paz y Salvo
+     * GET /api/solicitudes-pazysalvo/generarDocumentoPazYSalvo/{id}/pdf
+     */
+    @GetMapping("/generarDocumentoPazYSalvo/{id}/pdf")
+    public ResponseEntity<byte[]> generarDocumentoPazYSalvoPDF(@PathVariable Integer id) {
+        try {
+            // Buscar la solicitud
+            SolicitudPazYSalvo solicitud = solicitudPazYSalvoCU.buscarPorId(id);
+            if (solicitud == null) {
+                return ResponseEntity.notFound().build();
+            }
+            
+            // Crear datos del documento
+            Map<String, Object> datosDocumento = new HashMap<>();
+            datosDocumento.put("numeroDocumento", "PYS-" + id);
+            datosDocumento.put("fechaDocumento", java.time.LocalDate.now().toString());
+            datosDocumento.put("observaciones", "Paz y Salvo generado");
+            
+            Map<String, Object> datosSolicitud = new HashMap<>();
+            datosSolicitud.put("nombreEstudiante", solicitud.getObjUsuario().getNombre_completo());
+            datosSolicitud.put("codigoEstudiante", solicitud.getObjUsuario().getCodigo());
+            datosSolicitud.put("programa", solicitud.getObjUsuario().getObjPrograma() != null ? 
+                solicitud.getObjUsuario().getObjPrograma().getNombre_programa() : "Ingeniería Electrónica y Telecomunicaciones");
+            datosSolicitud.put("fechaSolicitud", solicitud.getFecha_registro_solicitud());
+            
+            // Crear request para generador de documentos
+            co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.DTORespuesta.DocumentRequest request = 
+                new co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.DTORespuesta.DocumentRequest();
+            request.setTipoDocumento("PAZ_SALVO");
+            request.setDatosDocumento(datosDocumento);
+            request.setDatosSolicitud(datosSolicitud);
+            
+            // Generar documento
+            java.io.ByteArrayOutputStream documentBytes = documentGeneratorService.generarDocumento(request);
+            
+            String nombreArchivo = String.format("PazYSalvo_%s.pdf", id);
+            
+            return ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + nombreArchivo + "\"")
+                .contentType(MediaType.APPLICATION_PDF)
+                .body(documentBytes.toByteArray());
+                
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().build();
+        }
+    }
+
+    /**
+     * Generar documento DOCX de Paz y Salvo
+     * GET /api/solicitudes-pazysalvo/generarDocumentoPazYSalvo/{id}/docx
+     */
+    @GetMapping("/generarDocumentoPazYSalvo/{id}/docx")
+    public ResponseEntity<byte[]> generarDocumentoPazYSalvoDOCX(@PathVariable Integer id) {
+        try {
+            // Buscar la solicitud
+            SolicitudPazYSalvo solicitud = solicitudPazYSalvoCU.buscarPorId(id);
+            if (solicitud == null) {
+                return ResponseEntity.notFound().build();
+            }
+            
+            // Crear datos del documento
+            Map<String, Object> datosDocumento = new HashMap<>();
+            datosDocumento.put("numeroDocumento", "PYS-" + id);
+            datosDocumento.put("fechaDocumento", java.time.LocalDate.now().toString());
+            datosDocumento.put("observaciones", "Paz y Salvo generado");
+            
+            Map<String, Object> datosSolicitud = new HashMap<>();
+            datosSolicitud.put("nombreEstudiante", solicitud.getObjUsuario().getNombre_completo());
+            datosSolicitud.put("codigoEstudiante", solicitud.getObjUsuario().getCodigo());
+            datosSolicitud.put("programa", solicitud.getObjUsuario().getObjPrograma() != null ? 
+                solicitud.getObjUsuario().getObjPrograma().getNombre_programa() : "Ingeniería Electrónica y Telecomunicaciones");
+            datosSolicitud.put("fechaSolicitud", solicitud.getFecha_registro_solicitud());
+            
+            // Crear request para generador de documentos
+            co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.DTORespuesta.DocumentRequest request = 
+                new co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.DTORespuesta.DocumentRequest();
+            request.setTipoDocumento("PAZ_SALVO");
+            request.setDatosDocumento(datosDocumento);
+            request.setDatosSolicitud(datosSolicitud);
+            
+            // Generar documento
+            java.io.ByteArrayOutputStream documentBytes = documentGeneratorService.generarDocumento(request);
+            
+            String nombreArchivo = String.format("PazYSalvo_%s.docx", id);
+            
+            return ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + nombreArchivo + "\"")
+                .contentType(MediaType.APPLICATION_OCTET_STREAM)
+                .body(documentBytes.toByteArray());
+                
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError().build();
+        }
     }
 
     /**
@@ -259,9 +549,11 @@ public class SolicitudPazYSalvoRestController {
                 return ResponseEntity.notFound().build();
             }
             
-            // Configurar respuesta igual que en homologación
-            String contentDisposition = "attachment; filename=\"" + filename + "\"";
-            
+            // Configurar Content-Disposition con filename y filename* (UTF-8)
+            String encoded = java.net.URLEncoder.encode(filename, java.nio.charset.StandardCharsets.UTF_8)
+                .replace("+", "%20");
+            String contentDisposition = "attachment; filename=\"" + filename + "\"; filename*=UTF-8''" + encoded;
+
             return ResponseEntity.ok()
                 .header(HttpHeaders.CONTENT_DISPOSITION, contentDisposition)
                 .contentType(MediaType.APPLICATION_PDF)
@@ -383,9 +675,12 @@ public class SolicitudPazYSalvoRestController {
                         try {
                             byte[] archivo = objGestionarArchivos.getFile(documento.getNombre());
                             
-                            // Configurar el header Content-Disposition correctamente
-                            String contentDisposition = "attachment; filename=\"" + documento.getNombre() + "\"";
-                            
+                            // Configurar el header Content-Disposition con filename y filename* (UTF-8)
+                            String original = documento.getNombre();
+                            String encoded = java.net.URLEncoder.encode(original, java.nio.charset.StandardCharsets.UTF_8)
+                                .replace("+", "%20");
+                            String contentDisposition = "attachment; filename=\"" + original + "\"; filename*=UTF-8''" + encoded;
+
                             return ResponseEntity.ok()
                                 .header(HttpHeaders.CONTENT_DISPOSITION, contentDisposition)
                                 .contentType(MediaType.APPLICATION_PDF)
@@ -941,4 +1236,53 @@ public ResponseEntity<DocumentosDTORespuesta> guardarOficioPazSalvo(
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
     }
 }
+
+    /**
+     * Subir oficio PDF de Secretaría y asociarlo a una solicitud de paz y salvo
+     */
+    @PostMapping("/subir-oficio-pdf/{idSolicitud}")
+    public ResponseEntity<DocumentosDTORespuesta> subirOficioPdfPazYSalvo(
+            @PathVariable Integer idSolicitud,
+            @RequestParam("file") MultipartFile file) {
+        try {
+            System.out.println("📄 [PAZ Y SALVO] Subiendo oficio PDF para solicitud: " + idSolicitud);
+
+            if (file == null || file.isEmpty()) {
+                return ResponseEntity.badRequest().build();
+            }
+
+            String nombreOriginal = file.getOriginalFilename();
+            if (nombreOriginal == null || !nombreOriginal.toLowerCase().endsWith(".pdf")) {
+                return ResponseEntity.status(HttpStatus.UNSUPPORTED_MEDIA_TYPE).build();
+            }
+
+            // Validar que la solicitud exista
+            SolicitudPazYSalvo solicitud = solicitudPazYSalvoCU.buscarPorId(idSolicitud);
+            if (solicitud == null) {
+                return ResponseEntity.notFound().build();
+            }
+
+            // Guardar archivo físico
+            objGestionarArchivos.saveFile(file, nombreOriginal, "pdf");
+
+            // Registrar documento y asociar
+            Documento documento = new Documento();
+            documento.setNombre(nombreOriginal);
+            documento.setRuta_documento(nombreOriginal);
+            documento.setFecha_documento(new Date());
+            documento.setEsValido(true);
+
+            Solicitud objSolicitud = new Solicitud();
+            objSolicitud.setId_solicitud(idSolicitud);
+            documento.setObjSolicitud(objSolicitud);
+
+            Documento documentoGuardado = objGestionarDocumentosGateway.crearDocumento(documento);
+
+            return new ResponseEntity<>(
+                    documentosMapperDominio.mappearDeDocumentoADTORespuesta(documentoGuardado),
+                    HttpStatus.CREATED);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
 }

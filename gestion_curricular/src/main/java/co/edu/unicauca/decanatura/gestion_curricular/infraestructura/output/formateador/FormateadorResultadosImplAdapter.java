@@ -3,6 +3,7 @@ package co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.for
 import org.springframework.stereotype.Service;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.FormateadorResultadosIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.controladorExcepciones.excepcionesPropias.EntidadYaExisteException;
+import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.controladorExcepciones.excepcionesPropias.EntidadNoExisteException;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.controladorExcepciones.excepcionesPropias.ReglaNegocioExcepcion;
 
 @Service
@@ -17,6 +18,12 @@ public class FormateadorResultadosImplAdapter implements FormateadorResultadosIn
     @Override
     public void retornarRespuestaErrorReglaDeNegocio(String mensaje) {
         ReglaNegocioExcepcion objException = new ReglaNegocioExcepcion(mensaje);
+        throw objException;
+    }
+
+    @Override
+    public void retornarRespuestaErrorEntidadNoExiste(String mensaje) {
+        EntidadNoExisteException objException = new EntidadNoExisteException(mensaje);
         throw objException;
     }
     

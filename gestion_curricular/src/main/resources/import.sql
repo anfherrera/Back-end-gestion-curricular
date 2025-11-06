@@ -37,6 +37,12 @@ INSERT INTO Materias(idMateria, codigo, nombre, creditos) VALUES (1, 'BD001', 'B
 -- INSERT INTO Solicitudes(idSolicitud, fecha_solicitud, estado, observaciones, idUsuario, idMateria, idPrograma, tipo_solicitud) VALUES (17, '2025-08-22', 'En Proceso', 'Nueva solicitud de curso de verano - Metodología de la Investigación', 3, 3, 2, 'CURSO_VERANO');
 -- INSERT INTO Solicitudes(idSolicitud, fecha_solicitud, estado, observaciones, idUsuario, idMateria, idPrograma, tipo_solicitud) VALUES (18, '2025-08-23', 'Aprobada', 'Nueva solicitud de curso de verano - Bases de Datos', 4, 1, 3, 'CURSO_VERANO');
 -- INSERT INTO Solicitudes(idSolicitud, fecha_solicitud, estado, observaciones, idUsuario, idMateria, idPrograma, tipo_solicitud) VALUES (19, '2025-08-24', 'Rechazada', 'Nueva solicitud de curso de verano - Calidad de Software', 5, 2, 4, 'CURSO_VERANO');
+-- NOTA: Estas líneas están comentadas porque usan columnas obsoletas (fecha_solicitud, estado, tipo_solicitud, etc.) que no existen en la entidad actual
+-- INSERT INTO Solicitudes(idSolicitud, fecha_solicitud, estado, observaciones, idUsuario, idMateria, idPrograma, tipo_solicitud) VALUES (15, '2025-08-20', 'Aprobada', 'Nueva solicitud de curso de verano - Bases de Datos', 1, 1, 1, 'CURSO_VERANO');
+-- INSERT INTO Solicitudes(idSolicitud, fecha_solicitud, estado, observaciones, idUsuario, idMateria, idPrograma, tipo_solicitud) VALUES (16, '2025-08-21', 'Enviada', 'Nueva solicitud de curso de verano - Calidad de Software', 2, 2, 1, 'CURSO_VERANO');
+-- INSERT INTO Solicitudes(idSolicitud, fecha_solicitud, estado, observaciones, idUsuario, idMateria, idPrograma, tipo_solicitud) VALUES (17, '2025-08-22', 'En Proceso', 'Nueva solicitud de curso de verano - Metodología de la Investigación', 3, 3, 2, 'CURSO_VERANO');
+-- INSERT INTO Solicitudes(idSolicitud, fecha_solicitud, estado, observaciones, idUsuario, idMateria, idPrograma, tipo_solicitud) VALUES (18, '2025-08-23', 'Aprobada', 'Nueva solicitud de curso de verano - Bases de Datos', 4, 1, 3, 'CURSO_VERANO');
+-- INSERT INTO Solicitudes(idSolicitud, fecha_solicitud, estado, observaciones, idUsuario, idMateria, idPrograma, tipo_solicitud) VALUES (19, '2025-08-24', 'Rechazada', 'Nueva solicitud de curso de verano - Calidad de Software', 5, 2, 4, 'CURSO_VERANO');
 
 -- Materias del programa de Ingeniería de Sistemas
 INSERT INTO Materias(idMateria, codigo, nombre, creditos) VALUES (2, 'SIS803', 'Calidad de Software', 3);
@@ -115,16 +121,16 @@ INSERT INTO EstadosCursos(idEstado, estado_actual, fecha_registro_estado, idfkCu
 -- Datos de prueba para inscripciones en cursos de verano
 -- NOTA: Con herencia JOINED, primero se inserta en Solicitudes (tabla padre), luego en la tabla hija
 -- Inscripciones de cursos de verano (extendiendo de Solicitudes)
-INSERT INTO Solicitudes(idSolicitud, nombre_solicitud, fecha_registro_solicitud, esSeleccionado, idUsuario, idCurso) VALUES (100, 'Inscripcion - Matematicas Basicas - Ana', '2025-07-15 10:30:00', false, 1, 1);
+INSERT INTO Solicitudes(idSolicitud, nombre_solicitud, fecha_registro_solicitud, esSeleccionado, idUsuario, idCurso) VALUES (100, 'Curso de Verano - Inscripcion - Matematicas Basicas - Ana', '2025-07-15 10:30:00', false, 1, 1);
 INSERT INTO Solicitudes_Cursos_Verano_Inscripcion(idSolicitud, nombre_estudiante, codicion_solicitud, observacion) VALUES (100, 'Ana Gonzalez', 'Primera_Vez', 'Inscripcion en curso de verano');
 
-INSERT INTO Solicitudes(idSolicitud, nombre_solicitud, fecha_registro_solicitud, esSeleccionado, idUsuario, idCurso) VALUES (101, 'Inscripcion - Programacion I - Carlos', '2025-07-16 14:20:00', false, 2, 2);
+INSERT INTO Solicitudes(idSolicitud, nombre_solicitud, fecha_registro_solicitud, esSeleccionado, idUsuario, idCurso) VALUES (101, 'Curso de Verano - Inscripcion - Programacion I - Carlos', '2025-07-16 14:20:00', false, 2, 2);
 INSERT INTO Solicitudes_Cursos_Verano_Inscripcion(idSolicitud, nombre_estudiante, codicion_solicitud, observacion) VALUES (101, 'Carlos Lopez', 'Primera_Vez', 'Inscripcion en curso de verano');
 
-INSERT INTO Solicitudes(idSolicitud, nombre_solicitud, fecha_registro_solicitud, esSeleccionado, idUsuario, idCurso) VALUES (102, 'Inscripcion - Matematicas Basicas - Maria', '2025-07-17 09:15:00', false, 3, 1);
+INSERT INTO Solicitudes(idSolicitud, nombre_solicitud, fecha_registro_solicitud, esSeleccionado, idUsuario, idCurso) VALUES (102, 'Curso de Verano - Inscripcion - Matematicas Basicas - Maria', '2025-07-17 09:15:00', false, 3, 1);
 INSERT INTO Solicitudes_Cursos_Verano_Inscripcion(idSolicitud, nombre_estudiante, codicion_solicitud, observacion) VALUES (102, 'Maria Rodriguez', 'Primera_Vez', 'Inscripcion validada');
 
-INSERT INTO Solicitudes(idSolicitud, nombre_solicitud, fecha_registro_solicitud, esSeleccionado, idUsuario, idCurso) VALUES (103, 'Inscripcion - Bases de Datos - Pedro', '2025-07-18 16:45:00', false, 4, 3);
+INSERT INTO Solicitudes(idSolicitud, nombre_solicitud, fecha_registro_solicitud, esSeleccionado, idUsuario, idCurso) VALUES (103, 'Curso de Verano - Inscripcion - Bases de Datos - Pedro', '2025-07-18 16:45:00', false, 4, 3);
 INSERT INTO Solicitudes_Cursos_Verano_Inscripcion(idSolicitud, nombre_estudiante, codicion_solicitud, observacion) VALUES (103, 'Pedro Martinez', 'Primera_Vez', 'Inscripcion en curso de verano');
 
 -- ==========================================
@@ -198,6 +204,17 @@ INSERT INTO Solicitudes(idSolicitud, nombre_solicitud, fecha_registro_solicitud,
 -- INSERT INTO Solicitudes_Cursos_Verano_Inscripcion(idSolicitud) VALUES (24);
 -- INSERT INTO Solicitudes_Cursos_Verano_Inscripcion(idSolicitud) VALUES (25);
 -- INSERT INTO Solicitudes_Cursos_Verano_Inscripcion(idSolicitud) VALUES (26);
+-- NOTA: Estas líneas están comentadas porque faltan campos obligatorios (nombre_estudiante, etc.)
+-- Los registros de las líneas 115-118 ya contienen datos completos de inscripciones
+-- INSERT INTO Solicitudes_Cursos_Verano_Inscripcion(idSolicitud) VALUES (18);
+-- INSERT INTO Solicitudes_Cursos_Verano_Inscripcion(idSolicitud) VALUES (19);
+-- INSERT INTO Solicitudes_Cursos_Verano_Inscripcion(idSolicitud) VALUES (20);
+-- INSERT INTO Solicitudes_Cursos_Verano_Inscripcion(idSolicitud) VALUES (21);
+-- INSERT INTO Solicitudes_Cursos_Verano_Inscripcion(idSolicitud) VALUES (22);
+-- INSERT INTO Solicitudes_Cursos_Verano_Inscripcion(idSolicitud) VALUES (23);
+-- INSERT INTO Solicitudes_Cursos_Verano_Inscripcion(idSolicitud) VALUES (24);
+-- INSERT INTO Solicitudes_Cursos_Verano_Inscripcion(idSolicitud) VALUES (25);
+-- INSERT INTO Solicitudes_Cursos_Verano_Inscripcion(idSolicitud) VALUES (26);
 
 -- ==========================================
 -- DATOS PARA SOLICITUDES ECAES (10 solicitudes)
@@ -252,74 +269,83 @@ INSERT INTO Solicitudes_PazYSalvo(idSolicitud) VALUES (45);
 INSERT INTO Solicitudes_PazYSalvo(idSolicitud) VALUES (46);
 
 -- ==========================================
--- ESTADOS DE SOLICITUDES CON DISTRIBUCIÓN CORRECTA
--- Total: 46 solicitudes
+-- ESTADOS DE SOLICITUDES CON DISTRIBUCIÓN EQUILIBRADA POR PROCESO
+-- Total: 50 solicitudes
 -- 45% Aprobadas = 21 solicitudes
--- 25% En Proceso = 11 solicitudes  
+-- 25% En Proceso (APROBADA_FUNCIONARIO + APROBADA_COORDINADOR) = 15 solicitudes  
 -- 20% Enviadas = 9 solicitudes
 -- 10% Rechazadas = 5 solicitudes
 -- ==========================================
 
--- Estados APROBADAS (21 solicitudes - 45%)
-INSERT INTO EstadosSolicitudes(idEstado, estado_actual, fecha_registro_estado, idfkSolicitud) VALUES (1, 'Aprobado', '2025-07-25 10:00:00', 1);
-INSERT INTO EstadosSolicitudes(idEstado, estado_actual, fecha_registro_estado, idfkSolicitud) VALUES (2, 'Aprobado', '2025-07-26 11:30:00', 2);
-INSERT INTO EstadosSolicitudes(idEstado, estado_actual, fecha_registro_estado, idfkSolicitud) VALUES (3, 'Aprobado', '2025-07-27 14:15:00', 3);
-INSERT INTO EstadosSolicitudes(idEstado, estado_actual, fecha_registro_estado, idfkSolicitud) VALUES (4, 'Aprobado', '2025-07-28 09:45:00', 4);
-INSERT INTO EstadosSolicitudes(idEstado, estado_actual, fecha_registro_estado, idfkSolicitud) VALUES (5, 'Aprobado', '2025-07-29 16:20:00', 5);
-INSERT INTO EstadosSolicitudes(idEstado, estado_actual, fecha_registro_estado, idfkSolicitud) VALUES (6, 'Aprobado', '2025-08-03 08:30:00', 10);
-INSERT INTO EstadosSolicitudes(idEstado, estado_actual, fecha_registro_estado, idfkSolicitud) VALUES (7, 'Aprobado', '2025-08-04 10:45:00', 11);
-INSERT INTO EstadosSolicitudes(idEstado, estado_actual, fecha_registro_estado, idfkSolicitud) VALUES (8, 'Aprobado', '2025-08-05 14:30:00', 12);
-INSERT INTO EstadosSolicitudes(idEstado, estado_actual, fecha_registro_estado, idfkSolicitud) VALUES (9, 'Aprobado', '2025-08-06 11:20:00', 13);
-INSERT INTO EstadosSolicitudes(idEstado, estado_actual, fecha_registro_estado, idfkSolicitud) VALUES (10, 'Aprobado', '2025-08-11 09:30:00', 18);
-INSERT INTO EstadosSolicitudes(idEstado, estado_actual, fecha_registro_estado, idfkSolicitud) VALUES (11, 'Aprobado', '2025-08-12 11:15:00', 19);
-INSERT INTO EstadosSolicitudes(idEstado, estado_actual, fecha_registro_estado, idfkSolicitud) VALUES (12, 'Aprobado', '2025-08-13 14:45:00', 20);
-INSERT INTO EstadosSolicitudes(idEstado, estado_actual, fecha_registro_estado, idfkSolicitud) VALUES (13, 'Aprobado', '2025-08-14 10:20:00', 21);
-INSERT INTO EstadosSolicitudes(idEstado, estado_actual, fecha_registro_estado, idfkSolicitud) VALUES (14, 'Aprobado', '2025-08-20 09:45:00', 27);
-INSERT INTO EstadosSolicitudes(idEstado, estado_actual, fecha_registro_estado, idfkSolicitud) VALUES (15, 'Aprobado', '2025-08-21 11:30:00', 28);
-INSERT INTO EstadosSolicitudes(idEstado, estado_actual, fecha_registro_estado, idfkSolicitud) VALUES (16, 'Aprobado', '2025-08-22 14:15:00', 29);
-INSERT INTO EstadosSolicitudes(idEstado, estado_actual, fecha_registro_estado, idfkSolicitud) VALUES (17, 'Aprobado', '2025-08-23 10:40:00', 30);
-INSERT INTO EstadosSolicitudes(idEstado, estado_actual, fecha_registro_estado, idfkSolicitud) VALUES (18, 'Aprobado', '2025-09-06 09:20:00', 37);
-INSERT INTO EstadosSolicitudes(idEstado, estado_actual, fecha_registro_estado, idfkSolicitud) VALUES (19, 'Aprobado', '2025-09-07 11:10:00', 38);
-INSERT INTO EstadosSolicitudes(idEstado, estado_actual, fecha_registro_estado, idfkSolicitud) VALUES (20, 'Aprobado', '2025-09-08 14:40:00', 39);
-INSERT INTO EstadosSolicitudes(idEstado, estado_actual, fecha_registro_estado, idfkSolicitud) VALUES (21, 'Aprobado', '2025-09-09 10:25:00', 40);
+-- ========== REINGRESO (IDs 1-9) - 9 solicitudes ==========
+-- 4 Aprobadas, 2 En Proceso, 2 Enviadas, 1 Rechazada
+INSERT INTO EstadosSolicitudes(idEstado, estado_actual, fecha_registro_estado, idfkSolicitud) VALUES (1, 'APROBADA', '2025-07-25 10:00:00', 1);
+INSERT INTO EstadosSolicitudes(idEstado, estado_actual, fecha_registro_estado, idfkSolicitud) VALUES (2, 'APROBADA', '2025-07-26 11:30:00', 2);
+INSERT INTO EstadosSolicitudes(idEstado, estado_actual, fecha_registro_estado, idfkSolicitud) VALUES (3, 'APROBADA', '2025-07-27 14:15:00', 3);
+INSERT INTO EstadosSolicitudes(idEstado, estado_actual, fecha_registro_estado, idfkSolicitud) VALUES (4, 'APROBADA', '2025-07-28 09:45:00', 4);
+INSERT INTO EstadosSolicitudes(idEstado, estado_actual, fecha_registro_estado, idfkSolicitud) VALUES (5, 'RECHAZADA', '2025-07-29 16:20:00', 5);
+INSERT INTO EstadosSolicitudes(idEstado, estado_actual, fecha_registro_estado, idfkSolicitud) VALUES (6, 'APROBADA_FUNCIONARIO', '2025-07-30 08:30:00', 6);
+INSERT INTO EstadosSolicitudes(idEstado, estado_actual, fecha_registro_estado, idfkSolicitud) VALUES (7, 'APROBADA_FUNCIONARIO', '2025-07-31 13:10:00', 7);
+INSERT INTO EstadosSolicitudes(idEstado, estado_actual, fecha_registro_estado, idfkSolicitud) VALUES (8, 'ENVIADA', '2025-08-01 12:00:00', 8);
+INSERT INTO EstadosSolicitudes(idEstado, estado_actual, fecha_registro_estado, idfkSolicitud) VALUES (9, 'ENVIADA', '2025-08-02 12:00:00', 9);
 
--- Estados EN PROCESO (11 solicitudes - 25%)
-INSERT INTO EstadosSolicitudes(idEstado, estado_actual, fecha_registro_estado, idfkSolicitud) VALUES (22, 'En Proceso', '2025-07-30 08:30:00', 6);
-INSERT INTO EstadosSolicitudes(idEstado, estado_actual, fecha_registro_estado, idfkSolicitud) VALUES (23, 'En Proceso', '2025-07-31 13:10:00', 7);
-INSERT INTO EstadosSolicitudes(idEstado, estado_actual, fecha_registro_estado, idfkSolicitud) VALUES (24, 'En Proceso', '2025-08-07 15:40:00', 14);
-INSERT INTO EstadosSolicitudes(idEstado, estado_actual, fecha_registro_estado, idfkSolicitud) VALUES (25, 'En Proceso', '2025-08-08 12:00:00', 15);
-INSERT INTO EstadosSolicitudes(idEstado, estado_actual, fecha_registro_estado, idfkSolicitud) VALUES (26, 'En Proceso', '2025-08-15 15:30:00', 22);
-INSERT INTO EstadosSolicitudes(idEstado, estado_actual, fecha_registro_estado, idfkSolicitud) VALUES (27, 'En Proceso', '2025-08-16 08:45:00', 23);
-INSERT INTO EstadosSolicitudes(idEstado, estado_actual, fecha_registro_estado, idfkSolicitud) VALUES (28, 'En Proceso', '2025-08-24 15:25:00', 31);
-INSERT INTO EstadosSolicitudes(idEstado, estado_actual, fecha_registro_estado, idfkSolicitud) VALUES (29, 'En Proceso', '2025-08-25 08:55:00', 32);
-INSERT INTO EstadosSolicitudes(idEstado, estado_actual, fecha_registro_estado, idfkSolicitud) VALUES (30, 'En Proceso', '2025-09-10 15:15:00', 41);
-INSERT INTO EstadosSolicitudes(idEstado, estado_actual, fecha_registro_estado, idfkSolicitud) VALUES (31, 'En Proceso', '2025-09-11 08:35:00', 42);
-INSERT INTO EstadosSolicitudes(idEstado, estado_actual, fecha_registro_estado, idfkSolicitud) VALUES (32, 'En Proceso', '2025-09-12 13:45:00', 43);
+-- ========== HOMOLOGACIÓN (IDs 10-17) - 8 solicitudes ==========
+-- 3 Aprobadas, 2 En Proceso, 2 Enviadas, 1 Rechazada
+INSERT INTO EstadosSolicitudes(idEstado, estado_actual, fecha_registro_estado, idfkSolicitud) VALUES (10, 'APROBADA', '2025-08-03 08:30:00', 10);
+INSERT INTO EstadosSolicitudes(idEstado, estado_actual, fecha_registro_estado, idfkSolicitud) VALUES (11, 'APROBADA', '2025-08-04 10:45:00', 11);
+INSERT INTO EstadosSolicitudes(idEstado, estado_actual, fecha_registro_estado, idfkSolicitud) VALUES (12, 'APROBADA', '2025-08-05 14:30:00', 12);
+INSERT INTO EstadosSolicitudes(idEstado, estado_actual, fecha_registro_estado, idfkSolicitud) VALUES (13, 'RECHAZADA', '2025-08-06 11:20:00', 13);
+INSERT INTO EstadosSolicitudes(idEstado, estado_actual, fecha_registro_estado, idfkSolicitud) VALUES (14, 'APROBADA_FUNCIONARIO', '2025-08-07 15:40:00', 14);
+INSERT INTO EstadosSolicitudes(idEstado, estado_actual, fecha_registro_estado, idfkSolicitud) VALUES (15, 'APROBADA_FUNCIONARIO', '2025-08-08 12:00:00', 15);
+INSERT INTO EstadosSolicitudes(idEstado, estado_actual, fecha_registro_estado, idfkSolicitud) VALUES (16, 'ENVIADA', '2025-08-09 16:10:00', 16);
+INSERT INTO EstadosSolicitudes(idEstado, estado_actual, fecha_registro_estado, idfkSolicitud) VALUES (17, 'ENVIADA', '2025-08-10 12:00:00', 17);
 
--- Estados EnviadaS (9 solicitudes - 20%)
-INSERT INTO EstadosSolicitudes(idEstado, estado_actual, fecha_registro_estado, idfkSolicitud) VALUES (33, 'Enviada', '2025-08-01 12:00:00', 8);
-INSERT INTO EstadosSolicitudes(idEstado, estado_actual, fecha_registro_estado, idfkSolicitud) VALUES (34, 'Enviada', '2025-08-02 12:00:00', 9);
-INSERT INTO EstadosSolicitudes(idEstado, estado_actual, fecha_registro_estado, idfkSolicitud) VALUES (35, 'Enviada', '2025-08-09 16:10:00', 16);
-INSERT INTO EstadosSolicitudes(idEstado, estado_actual, fecha_registro_estado, idfkSolicitud) VALUES (36, 'Enviada', '2025-08-10 12:00:00', 17);
-INSERT INTO EstadosSolicitudes(idEstado, estado_actual, fecha_registro_estado, idfkSolicitud) VALUES (37, 'Enviada', '2025-08-17 13:20:00', 24);
-INSERT INTO EstadosSolicitudes(idEstado, estado_actual, fecha_registro_estado, idfkSolicitud) VALUES (38, 'Enviada', '2025-08-18 16:10:00', 25);
-INSERT INTO EstadosSolicitudes(idEstado, estado_actual, fecha_registro_estado, idfkSolicitud) VALUES (39, 'Enviada', '2025-08-26 12:15:00', 33);
-INSERT INTO EstadosSolicitudes(idEstado, estado_actual, fecha_registro_estado, idfkSolicitud) VALUES (40, 'Enviada', '2025-08-27 14:50:00', 34);
-INSERT INTO EstadosSolicitudes(idEstado, estado_actual, fecha_registro_estado, idfkSolicitud) VALUES (41, 'Enviada', '2025-09-13 16:30:00', 44);
+-- ========== CURSOS DE VERANO - PREINSCRIPCIONES (IDs 18-26) - 9 solicitudes ==========
+-- 4 Aprobadas, 2 En Proceso, 2 Enviadas, 1 Rechazada
+INSERT INTO EstadosSolicitudes(idEstado, estado_actual, fecha_registro_estado, idfkSolicitud) VALUES (18, 'APROBADA', '2025-08-11 09:30:00', 18);
+INSERT INTO EstadosSolicitudes(idEstado, estado_actual, fecha_registro_estado, idfkSolicitud) VALUES (19, 'APROBADA', '2025-08-12 11:15:00', 19);
+INSERT INTO EstadosSolicitudes(idEstado, estado_actual, fecha_registro_estado, idfkSolicitud) VALUES (20, 'APROBADA', '2025-08-13 14:45:00', 20);
+INSERT INTO EstadosSolicitudes(idEstado, estado_actual, fecha_registro_estado, idfkSolicitud) VALUES (21, 'APROBADA', '2025-08-14 10:20:00', 21);
+INSERT INTO EstadosSolicitudes(idEstado, estado_actual, fecha_registro_estado, idfkSolicitud) VALUES (22, 'APROBADA_FUNCIONARIO', '2025-08-15 15:30:00', 22);
+INSERT INTO EstadosSolicitudes(idEstado, estado_actual, fecha_registro_estado, idfkSolicitud) VALUES (23, 'APROBADA_FUNCIONARIO', '2025-08-16 08:45:00', 23);
+INSERT INTO EstadosSolicitudes(idEstado, estado_actual, fecha_registro_estado, idfkSolicitud) VALUES (24, 'ENVIADA', '2025-08-17 13:20:00', 24);
+INSERT INTO EstadosSolicitudes(idEstado, estado_actual, fecha_registro_estado, idfkSolicitud) VALUES (25, 'ENVIADA', '2025-08-18 16:10:00', 25);
+INSERT INTO EstadosSolicitudes(idEstado, estado_actual, fecha_registro_estado, idfkSolicitud) VALUES (26, 'RECHAZADA', '2025-08-19 10:40:00', 26);
 
--- Estados RechazadoS (5 solicitudes - 10%)
-INSERT INTO EstadosSolicitudes(idEstado, estado_actual, fecha_registro_estado, idfkSolicitud) VALUES (42, 'Rechazado', '2025-08-19 10:40:00', 26);
-INSERT INTO EstadosSolicitudes(idEstado, estado_actual, fecha_registro_estado, idfkSolicitud) VALUES (43, 'Rechazado', '2025-08-28 15:25:00', 35);
-INSERT INTO EstadosSolicitudes(idEstado, estado_actual, fecha_registro_estado, idfkSolicitud) VALUES (44, 'Rechazado', '2025-08-29 08:55:00', 36);
-INSERT INTO EstadosSolicitudes(idEstado, estado_actual, fecha_registro_estado, idfkSolicitud) VALUES (45, 'Rechazado', '2025-09-14 12:05:00', 45);
-INSERT INTO EstadosSolicitudes(idEstado, estado_actual, fecha_registro_estado, idfkSolicitud) VALUES (46, 'Rechazado', '2025-09-15 14:20:00', 46);
+-- ========== ECAES (IDs 27-36) - 10 solicitudes ==========
+-- 3 Aprobadas, 4 En Proceso, 2 Enviadas, 1 Rechazada
+INSERT INTO EstadosSolicitudes(idEstado, estado_actual, fecha_registro_estado, idfkSolicitud) VALUES (27, 'APROBADA', '2025-08-20 09:45:00', 27);
+INSERT INTO EstadosSolicitudes(idEstado, estado_actual, fecha_registro_estado, idfkSolicitud) VALUES (28, 'APROBADA', '2025-08-21 11:30:00', 28);
+INSERT INTO EstadosSolicitudes(idEstado, estado_actual, fecha_registro_estado, idfkSolicitud) VALUES (29, 'APROBADA', '2025-08-22 14:15:00', 29);
+INSERT INTO EstadosSolicitudes(idEstado, estado_actual, fecha_registro_estado, idfkSolicitud) VALUES (30, 'RECHAZADA', '2025-08-23 10:40:00', 30);
+INSERT INTO EstadosSolicitudes(idEstado, estado_actual, fecha_registro_estado, idfkSolicitud) VALUES (31, 'APROBADA_COORDINADOR', '2025-08-24 15:25:00', 31);
+INSERT INTO EstadosSolicitudes(idEstado, estado_actual, fecha_registro_estado, idfkSolicitud) VALUES (32, 'APROBADA_COORDINADOR', '2025-08-25 08:55:00', 32);
+INSERT INTO EstadosSolicitudes(idEstado, estado_actual, fecha_registro_estado, idfkSolicitud) VALUES (33, 'APROBADA_COORDINADOR', '2025-08-26 12:15:00', 33);
+INSERT INTO EstadosSolicitudes(idEstado, estado_actual, fecha_registro_estado, idfkSolicitud) VALUES (34, 'APROBADA_COORDINADOR', '2025-08-27 14:50:00', 34);
+INSERT INTO EstadosSolicitudes(idEstado, estado_actual, fecha_registro_estado, idfkSolicitud) VALUES (35, 'ENVIADA', '2025-08-28 15:25:00', 35);
+INSERT INTO EstadosSolicitudes(idEstado, estado_actual, fecha_registro_estado, idfkSolicitud) VALUES (36, 'ENVIADA', '2025-08-29 08:55:00', 36);
+
+-- ========== PAZ Y SALVO (IDs 37-46) - 10 solicitudes ==========
+-- 3 Aprobadas, 5 En Proceso, 1 Enviada, 1 Rechazada
+INSERT INTO EstadosSolicitudes(idEstado, estado_actual, fecha_registro_estado, idfkSolicitud) VALUES (37, 'APROBADA', '2025-09-06 09:20:00', 37);
+INSERT INTO EstadosSolicitudes(idEstado, estado_actual, fecha_registro_estado, idfkSolicitud) VALUES (38, 'APROBADA', '2025-09-07 11:10:00', 38);
+INSERT INTO EstadosSolicitudes(idEstado, estado_actual, fecha_registro_estado, idfkSolicitud) VALUES (39, 'APROBADA', '2025-09-08 14:40:00', 39);
+INSERT INTO EstadosSolicitudes(idEstado, estado_actual, fecha_registro_estado, idfkSolicitud) VALUES (40, 'APROBADA_COORDINADOR', '2025-09-09 10:25:00', 40);
+INSERT INTO EstadosSolicitudes(idEstado, estado_actual, fecha_registro_estado, idfkSolicitud) VALUES (41, 'APROBADA_FUNCIONARIO', '2025-09-10 15:15:00', 41);
+INSERT INTO EstadosSolicitudes(idEstado, estado_actual, fecha_registro_estado, idfkSolicitud) VALUES (42, 'APROBADA_FUNCIONARIO', '2025-09-11 08:35:00', 42);
+INSERT INTO EstadosSolicitudes(idEstado, estado_actual, fecha_registro_estado, idfkSolicitud) VALUES (43, 'APROBADA_FUNCIONARIO', '2025-09-12 13:45:00', 43);
+INSERT INTO EstadosSolicitudes(idEstado, estado_actual, fecha_registro_estado, idfkSolicitud) VALUES (44, 'APROBADA_FUNCIONARIO', '2025-09-13 16:30:00', 44);
+INSERT INTO EstadosSolicitudes(idEstado, estado_actual, fecha_registro_estado, idfkSolicitud) VALUES (45, 'ENVIADA', '2025-09-14 12:05:00', 45);
+INSERT INTO EstadosSolicitudes(idEstado, estado_actual, fecha_registro_estado, idfkSolicitud) VALUES (46, 'RECHAZADA', '2025-09-15 14:20:00', 46);
 
 -- ==========================================
--- ESTADOS CORRECTOS PARA PAZ Y SALVO (siguiendo el flujo)
--- IDs 37-40: Estado 'Aprobado' (4 solicitudes aprobadas por coordinador para secretaria)
+-- ESTADOS PARA INSCRIPCIONES DE CURSOS DE VERANO (IDs 100-103)
+-- Agregando los 4 estados faltantes para completar las 50 solicitudes
 -- ==========================================
--- Cambiar los estados 'Aprobado' de paz y salvo a 'APROBADA_COORDINADOR' para que la secretaria las vea
-UPDATE EstadosSolicitudes SET estado_actual = 'APROBADA_COORDINADOR' WHERE idEstado IN (18, 19, 20, 21);
+INSERT INTO EstadosSolicitudes(idEstado, estado_actual, fecha_registro_estado, idfkSolicitud) VALUES (47, 'APROBADA', '2025-07-15 11:00:00', 100);
+INSERT INTO EstadosSolicitudes(idEstado, estado_actual, fecha_registro_estado, idfkSolicitud) VALUES (48, 'APROBADA', '2025-07-16 15:00:00', 101);
+INSERT INTO EstadosSolicitudes(idEstado, estado_actual, fecha_registro_estado, idfkSolicitud) VALUES (49, 'APROBADA', '2025-07-17 10:00:00', 102);
+INSERT INTO EstadosSolicitudes(idEstado, estado_actual, fecha_registro_estado, idfkSolicitud) VALUES (50, 'APROBADA', '2025-07-18 17:00:00', 103);
 
 -- ==========================================
 -- VALIDACIÓN DE DATOS CARGADOS

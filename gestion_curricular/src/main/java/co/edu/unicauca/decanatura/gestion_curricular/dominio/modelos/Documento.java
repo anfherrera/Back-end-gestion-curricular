@@ -2,7 +2,6 @@ package co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos;
 
 import java.util.Date;
 
-import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Enums.TipoDocumentoSolicitudPazYSalvo;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -18,8 +17,6 @@ public class Documento {
     private Date fecha_documento;
     private boolean esValido;
     private String comentario; // observacion
-
-    private TipoDocumentoSolicitudPazYSalvo tipoDocumentoSolicitudPazYSalvo;
 
     private Solicitud objSolicitud;
     

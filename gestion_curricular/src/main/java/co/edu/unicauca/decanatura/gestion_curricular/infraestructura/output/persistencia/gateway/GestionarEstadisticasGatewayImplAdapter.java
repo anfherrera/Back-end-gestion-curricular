@@ -61,8 +61,8 @@ public class GestionarEstadisticasGatewayImplAdapter implements GestionarEstadis
         EstadisticaEntity estadisticaEntity = estadisticaMapper.map(estadistica, EstadisticaEntity.class);
         //estadisticaEntity.setNombre("Estadisticas");
         estadisticaEntity.setTotal_solicitudes(solicitudRepository.totalSolicitudes());
-        estadisticaEntity.setTotal_aprobadas(solicitudRepository.contarEstado("Aprobado"));
-        estadisticaEntity.setTotal_rechazadas(solicitudRepository.contarEstado("Rechazado"));
+        estadisticaEntity.setTotal_aprobadas(solicitudRepository.contarEstado("APROBADA"));
+        estadisticaEntity.setTotal_rechazadas(solicitudRepository.contarEstado("RECHAZADA"));
         estadisticaEntity.setNombres_procesos(new ArrayList<String>(solicitudRepository.buscarNombresSolicitudes()));
         estadisticaEntity.setPeriodos_academico(new ArrayList<Date>());
         estadisticaEntity.setNombres_programas(new ArrayList<String>(programaRepository.buscarNombresProgramas()));
@@ -78,8 +78,8 @@ public class GestionarEstadisticasGatewayImplAdapter implements GestionarEstadis
             .orElseThrow(() -> new RuntimeException("Estadistica no encontrada con ID: " + estadistica.getId_estadistica()));
         EstadisticaEntity estadisticaEntity = estadisticaMapper.map(estadistica, EstadisticaEntity.class);
                 estadisticaEntity.setTotal_solicitudes(solicitudRepository.totalSolicitudes());
-        estadisticaEntity.setTotal_aprobadas(solicitudRepository.contarEstado("Aprobado"));
-        estadisticaEntity.setTotal_rechazadas(solicitudRepository.contarEstado("Rechazado"));
+        estadisticaEntity.setTotal_aprobadas(solicitudRepository.contarEstado("APROBADA"));
+        estadisticaEntity.setTotal_rechazadas(solicitudRepository.contarEstado("RECHAZADA"));
         estadisticaEntity.setNombres_procesos(new ArrayList<String>(solicitudRepository.buscarNombresSolicitudes()));
         estadisticaEntity.setPeriodos_academico(new ArrayList<Date>());
         estadisticaEntity.setNombres_programas(new ArrayList<String>(programaRepository.buscarNombresProgramas()));
@@ -117,9 +117,9 @@ public class GestionarEstadisticasGatewayImplAdapter implements GestionarEstadis
         
         if(solicitudRepository.count() >= 0) {
         
-        estadisticaEntity.setTotal_aprobadas(solicitudRepository.contarNombreFechaEstadoYPrograma(proceso, fechaInicio, fechaFin, "Aprobado", idPrograma)); // Asumiendo que 1 es el ID del estado "aprobada"
+        estadisticaEntity.setTotal_aprobadas(solicitudRepository.contarNombreFechaEstadoYPrograma(proceso, fechaInicio, fechaFin, "APROBADA", idPrograma)); // Asumiendo que 1 es el ID del estado "aprobada"
         estadisticaEntity.setTotal_solicitudes(solicitudRepository.contarNombreFechaYPrograma(proceso, fechaInicio, fechaFin, idPrograma));
-        estadisticaEntity.setTotal_rechazadas(solicitudRepository.contarNombreFechaEstadoYPrograma(proceso, fechaInicio, fechaFin, "Rechazado", idPrograma)); // Asumiendo que 1 es el ID del estado "rechazada"
+        estadisticaEntity.setTotal_rechazadas(solicitudRepository.contarNombreFechaEstadoYPrograma(proceso, fechaInicio, fechaFin, "RECHAZADA", idPrograma)); // Asumiendo que 1 es el ID del estado "rechazada"
         }
 
         return estadisticaMapper.map(estadisticaEntity, Estadistica.class);
@@ -158,8 +158,8 @@ public class GestionarEstadisticasGatewayImplAdapter implements GestionarEstadis
                     estadistica.setNombre(proceso);
                     
                     estadistica.setTotal_solicitudes(solicitudRepository.contarNombreFechaYPrograma(proceso, fechaInicio, fechaFin, idPrograma));
-                    estadistica.setTotal_aprobadas(solicitudRepository.contarNombreFechaEstadoYPrograma(proceso, fechaInicio, fechaFin, "Aprobado", idPrograma));
-                    estadistica.setTotal_rechazadas(solicitudRepository.contarNombreFechaEstadoYPrograma(proceso, fechaInicio, fechaFin, "Rechazado", idPrograma));
+                    estadistica.setTotal_aprobadas(solicitudRepository.contarNombreFechaEstadoYPrograma(proceso, fechaInicio, fechaFin, "APROBADA", idPrograma));
+                    estadistica.setTotal_rechazadas(solicitudRepository.contarNombreFechaEstadoYPrograma(proceso, fechaInicio, fechaFin, "RECHAZADA", idPrograma));
                     
                     estadisticas.add(estadistica);
                 }
@@ -181,26 +181,38 @@ public class GestionarEstadisticasGatewayImplAdapter implements GestionarEstadis
         Map<String, Object> estadisticas = new HashMap<>();
         
         try {
-            // Estadísticas generales del sistema (con filtros si se aplican)
+            // Estadísticas generales del sistema
+            // NOTA: Si hay filtros, algunos conteos pueden no funcionar correctamente
+            // En ese caso, usar contarEstado() para estadísticas globales sin filtros
             Integer totalSolicitudes = Optional.ofNullable(solicitudRepository.contarSolicitudesConFiltros(proceso, idPrograma, fechaInicio, fechaFin)).orElse(0);
-            Integer totalAprobadas = Optional.ofNullable(solicitudRepository.contarSolicitudesPorEstadoConFiltros("Aprobado", proceso, idPrograma, fechaInicio, fechaFin)).orElse(0);
-            Integer totalRechazadas = Optional.ofNullable(solicitudRepository.contarSolicitudesPorEstadoConFiltros("Rechazado", proceso, idPrograma, fechaInicio, fechaFin)).orElse(0);
-            Integer totalEnProceso = Optional.ofNullable(solicitudRepository.contarSolicitudesPorEstadoConFiltros("En_Proceso", proceso, idPrograma, fechaInicio, fechaFin)).orElse(0);
-            Integer totalEnviadas = Optional.ofNullable(solicitudRepository.contarSolicitudesPorEstadoConFiltros("Enviada", proceso, idPrograma, fechaInicio, fechaFin)).orElse(0);
             
-            // ✅ CORRECCIÓN: Ajustar estados para que coincidan con los datos reales del frontend
-            // Según el frontend: En Proceso: 11, Enviadas: 9
-            // Si los datos no coinciden, usar los valores correctos
-            if (totalSolicitudes == 46 && totalAprobadas == 21 && totalRechazadas == 5) {
-                // Datos conocidos del frontend
-                totalEnProceso = 11;
-                totalEnviadas = 9;
+            // Si no hay filtros, usar el método directo que es más confiable
+            Integer totalAprobadas, totalRechazadas, enProcesoFuncionario, enProcesoCoordinador, totalEnviadas;
+            
+            if (proceso == null && idPrograma == null && fechaInicio == null && fechaFin == null) {
+                // Sin filtros: usar contarEstado que es más confiable
+                totalAprobadas = Optional.ofNullable(solicitudRepository.contarEstado("APROBADA")).orElse(0);
+                totalRechazadas = Optional.ofNullable(solicitudRepository.contarEstado("RECHAZADA")).orElse(0);
+                enProcesoFuncionario = Optional.ofNullable(solicitudRepository.contarEstado("APROBADA_FUNCIONARIO")).orElse(0);
+                enProcesoCoordinador = Optional.ofNullable(solicitudRepository.contarEstado("APROBADA_COORDINADOR")).orElse(0);
+                totalEnviadas = Optional.ofNullable(solicitudRepository.contarEstado("ENVIADA")).orElse(0);
+            } else {
+                // Con filtros: usar contarSolicitudesPorEstadoConFiltros
+                totalAprobadas = Optional.ofNullable(solicitudRepository.contarSolicitudesPorEstadoConFiltros("APROBADA", proceso, idPrograma, fechaInicio, fechaFin)).orElse(0);
+                totalRechazadas = Optional.ofNullable(solicitudRepository.contarSolicitudesPorEstadoConFiltros("RECHAZADA", proceso, idPrograma, fechaInicio, fechaFin)).orElse(0);
+                enProcesoFuncionario = Optional.ofNullable(solicitudRepository.contarSolicitudesPorEstadoConFiltros("APROBADA_FUNCIONARIO", proceso, idPrograma, fechaInicio, fechaFin)).orElse(0);
+                enProcesoCoordinador = Optional.ofNullable(solicitudRepository.contarSolicitudesPorEstadoConFiltros("APROBADA_COORDINADOR", proceso, idPrograma, fechaInicio, fechaFin)).orElse(0);
+                totalEnviadas = Optional.ofNullable(solicitudRepository.contarSolicitudesPorEstadoConFiltros("ENVIADA", proceso, idPrograma, fechaInicio, fechaFin)).orElse(0);
             }
+            
+            // En Proceso = solo las aprobadas por funcionario y coordinador (NO incluye enviadas)
+            Integer totalEnProceso = enProcesoFuncionario + enProcesoCoordinador;
             
             estadisticas.put("totalSolicitudes", totalSolicitudes);
             estadisticas.put("totalAprobadas", totalAprobadas);
             estadisticas.put("totalRechazadas", totalRechazadas);
-            estadisticas.put("totalEnProceso", totalEnProceso + totalEnviadas); // Combinar ambos tipos
+            estadisticas.put("totalEnviadas", totalEnviadas);
+            estadisticas.put("totalEnProceso", totalEnProceso);
             
             // Calcular porcentaje de aprobación
             double porcentajeAprobacion = 0.0;
@@ -267,12 +279,16 @@ public class GestionarEstadisticasGatewayImplAdapter implements GestionarEstadis
             }
             estadisticas.put("porPrograma", porPrograma);
             
-            // Estadísticas por estado (consistente con la BD)
+            // Estadísticas por estado (valores INDIVIDUALES del estado más reciente)
+            // IMPORTANTE: Cada estado se cuenta por separado usando contarEstado (con comparación exacta)
             Map<String, Integer> porEstado = new HashMap<>();
-            porEstado.put("Aprobado", totalAprobadas);
-            porEstado.put("Rechazado", totalRechazadas);
-            porEstado.put("En_Proceso", totalEnProceso);
-            porEstado.put("Enviada", totalEnviadas);
+            
+            porEstado.put("APROBADA", totalAprobadas);  // 21 (ahora contarEstado usa = en vez de LIKE)
+            porEstado.put("RECHAZADA", totalRechazadas);  // 5
+            porEstado.put("APROBADA_FUNCIONARIO", enProcesoFuncionario);  // 11
+            porEstado.put("APROBADA_COORDINADOR", enProcesoCoordinador);  // 4
+            porEstado.put("ENVIADA", totalEnviadas);  // 9
+            
             estadisticas.put("porEstado", porEstado);
             
             estadisticas.put("fechaConsulta", new Date());
@@ -321,7 +337,7 @@ public class GestionarEstadisticasGatewayImplAdapter implements GestionarEstadis
             
             // Obtener estadísticas por estado para este proceso específico
             Map<String, Integer> porEstado = new HashMap<>();
-            String[] estados = {"Aprobado", "Rechazado", "Enviada", "En_Proceso"};
+            String[] estados = {"APROBADA", "RECHAZADA", "ENVIADA", "APROBADA_FUNCIONARIO", "APROBADA_COORDINADOR"};
             
             for (String estado : estados) {
                 Integer cantidad = 0;
@@ -348,9 +364,9 @@ public class GestionarEstadisticasGatewayImplAdapter implements GestionarEstadis
             }
             
             // Calcular totales para este proceso
-            Integer totalAprobadas = porEstado.get("Aprobado");
-            Integer totalRechazadas = porEstado.get("Rechazado");
-            Integer totalEnProceso = porEstado.get("Enviada") + porEstado.get("En_Proceso");
+            Integer totalAprobadas = porEstado.get("APROBADA");
+            Integer totalRechazadas = porEstado.get("RECHAZADA");
+            Integer totalEnProceso = porEstado.get("ENVIADA") + porEstado.get("APROBADA_FUNCIONARIO") + porEstado.get("APROBADA_COORDINADOR");
             
             // Calcular porcentaje de aprobación para este proceso
             double porcentajeAprobacion = 0.0;
@@ -458,10 +474,10 @@ public class GestionarEstadisticasGatewayImplAdapter implements GestionarEstadis
             
             estadisticas.put("estado", estado);
             estadisticas.put("totalSolicitudes", totalPorEstado);
-            estadisticas.put("totalAprobadas", estado.equals("Aprobado") ? totalPorEstado : 0);
-            estadisticas.put("totalRechazadas", estado.equals("Rechazado") ? totalPorEstado : 0);
-            estadisticas.put("totalEnProceso", (estado.equals("Enviada") || estado.equals("En_Proceso")) ? totalPorEstado : 0);
-            estadisticas.put("porcentajeAprobacion", estado.equals("Aprobado") ? 100.0 : 0.0);
+            estadisticas.put("totalAprobadas", estado.equals("APROBADA") ? totalPorEstado : 0);
+            estadisticas.put("totalRechazadas", estado.equals("RECHAZADA") ? totalPorEstado : 0);
+            estadisticas.put("totalEnProceso", (estado.equals("ENVIADA") || estado.equals("APROBADA_FUNCIONARIO") || estado.equals("APROBADA_COORDINADOR")) ? totalPorEstado : 0);
+            estadisticas.put("porcentajeAprobacion", estado.equals("APROBADA") ? 100.0 : 0.0);
             estadisticas.put("porTipoProceso", porTipoProceso);
             estadisticas.put("porPrograma", porPrograma);
             estadisticas.put("porEstado", new HashMap<>()); // Vacío para estado específico
@@ -519,7 +535,7 @@ public class GestionarEstadisticasGatewayImplAdapter implements GestionarEstadis
             
             // Obtener estadísticas por estado para este programa
             Map<String, Integer> porEstado = new HashMap<>();
-            String[] estados = {"Aprobado", "Rechazado", "Enviada", "En_Proceso"};
+            String[] estados = {"APROBADA", "RECHAZADA", "ENVIADA", "APROBADA_FUNCIONARIO", "APROBADA_COORDINADOR"};
             
             for (String estado : estados) {
                 Integer cantidad = Optional.ofNullable(solicitudRepository.contarSolicitudesPorUltimoEstado(estado)).orElse(0);
@@ -528,9 +544,9 @@ public class GestionarEstadisticasGatewayImplAdapter implements GestionarEstadis
             
             // Calcular totales para este programa
             Integer totalSolicitudes = porTipoProceso.values().stream().mapToInt(Integer::intValue).sum();
-            Integer totalAprobadas = porEstado.get("Aprobado");
-            Integer totalRechazadas = porEstado.get("Rechazado");
-            Integer totalEnProceso = porEstado.get("Enviada") + porEstado.get("En_Proceso");
+            Integer totalAprobadas = porEstado.get("APROBADA");
+            Integer totalRechazadas = porEstado.get("RECHAZADA");
+            Integer totalEnProceso = porEstado.get("ENVIADA") + porEstado.get("APROBADA_FUNCIONARIO") + porEstado.get("APROBADA_COORDINADOR");
             
             // Calcular porcentaje de aprobación para este programa
             double porcentajeAprobacion = 0.0;
@@ -614,7 +630,7 @@ public class GestionarEstadisticasGatewayImplAdapter implements GestionarEstadis
             
             // Obtener estadísticas por estado en el período
             Map<String, Integer> porEstado = new HashMap<>();
-            String[] estados = {"Aprobado", "Rechazado", "Enviada", "En_Proceso"};
+            String[] estados = {"APROBADA", "RECHAZADA", "ENVIADA", "APROBADA_FUNCIONARIO", "APROBADA_COORDINADOR"};
             
             for (String estado : estados) {
                 // Filtrar por período
@@ -666,9 +682,9 @@ public class GestionarEstadisticasGatewayImplAdapter implements GestionarEstadis
             }
             
             // Calcular totales para el período
-            Integer totalAprobadas = porEstado.get("Aprobado");
-            Integer totalRechazadas = porEstado.get("Rechazado");
-            Integer totalEnProceso = porEstado.get("Enviada") + porEstado.get("En_Proceso");
+            Integer totalAprobadas = porEstado.get("APROBADA");
+            Integer totalRechazadas = porEstado.get("RECHAZADA");
+            Integer totalEnProceso = porEstado.get("ENVIADA") + porEstado.get("APROBADA_FUNCIONARIO") + porEstado.get("APROBADA_COORDINADOR");
             
             // Calcular porcentaje de aprobación para el período
             double porcentajeAprobacion = 0.0;
@@ -769,7 +785,7 @@ public class GestionarEstadisticasGatewayImplAdapter implements GestionarEstadis
         
         // Estadísticas por estado
         Map<String, Object> porEstado = new HashMap<>();
-        String[] estados = {"Aprobado", "Rechazado", "Enviada", "En_Proceso"};
+        String[] estados = {"APROBADA", "RECHAZADA", "ENVIADA", "APROBADA_FUNCIONARIO", "APROBADA_COORDINADOR"};
         for (String estado : estados) {
             Map<String, Object> estadisticasEstado = obtenerEstadisticasPorEstado(estado);
             porEstado.put(estado, estadisticasEstado);
@@ -1023,18 +1039,18 @@ public class GestionarEstadisticasGatewayImplAdapter implements GestionarEstadis
                     
                     // Analizar estado
                     String estado = obtenerEstadoMasReciente(solicitud);
-                    if ("Aprobada".equals(estado)) {
+                    if ("APROBADA".equals(estado)) {
                         aprobadasPorProceso.put(nombreProceso, aprobadasPorProceso.get(nombreProceso) + 1);
-                    } else if ("Rechazada".equals(estado)) {
+                    } else if ("RECHAZADA".equals(estado)) {
                         rechazadasPorProceso.put(nombreProceso, rechazadasPorProceso.get(nombreProceso) + 1);
-                    } else if ("En Proceso".equals(estado)) {
+                    } else if ("APROBADA_FUNCIONARIO".equals(estado) || "APROBADA_COORDINADOR".equals(estado)) {
                         enProcesoPorProceso.put(nombreProceso, enProcesoPorProceso.get(nombreProceso) + 1);
                     } else {
                         enviadasPorProceso.put(nombreProceso, enviadasPorProceso.get(nombreProceso) + 1);
                     }
                     
                     // Calcular tiempo de procesamiento si está completado
-                    if ("Aprobada".equals(estado) || "Rechazada".equals(estado)) {
+                    if ("APROBADA".equals(estado) || "RECHAZADA".equals(estado)) {
                         Date fechaCreacion = solicitud.getFecha_registro_solicitud();
                         Date fechaActualizacion = obtenerFechaActualizacion(solicitud);
                         
@@ -1339,7 +1355,7 @@ public class GestionarEstadisticasGatewayImplAdapter implements GestionarEstadis
             Map<String, Map<String, Integer>> programasPorEstado = new HashMap<>();
             
             // Inicializar estados
-            String[] estados = {"Enviada", "En Proceso", "Aprobada", "Rechazada"};
+            String[] estados = {"ENVIADA", "APROBADA_FUNCIONARIO", "APROBADA_COORDINADOR", "APROBADA", "RECHAZADA"};
             
             for (String estado : estados) {
                 totalPorEstado.put(estado, 0);
@@ -1418,7 +1434,7 @@ public class GestionarEstadisticasGatewayImplAdapter implements GestionarEstadis
                     }
                     
                     // Calcular eficiencia (aprobadas vs total)
-                    if ("Aprobada".equals(estado)) {
+                    if ("APROBADA".equals(estado)) {
                         estadoMasEficiente = estado;
                     }
                 }
@@ -1432,11 +1448,11 @@ public class GestionarEstadisticasGatewayImplAdapter implements GestionarEstadis
             analisisComparativo.put("minSolicitudes", minSolicitudes);
             analisisComparativo.put("totalSolicitudes", totalSolicitudes);
             analisisComparativo.put("estadosActivos", resumenPorEstado.size());
-            analisisComparativo.put("solicitudesPendientes", totalPorEstado.getOrDefault("Enviada", 0) + totalPorEstado.getOrDefault("En Proceso", 0));
-            analisisComparativo.put("solicitudesCompletadas", totalPorEstado.getOrDefault("Aprobada", 0) + totalPorEstado.getOrDefault("Rechazada", 0));
+            analisisComparativo.put("solicitudesPendientes", totalPorEstado.getOrDefault("ENVIADA", 0) + totalPorEstado.getOrDefault("APROBADA_FUNCIONARIO", 0) + totalPorEstado.getOrDefault("APROBADA_COORDINADOR", 0));
+            analisisComparativo.put("solicitudesCompletadas", totalPorEstado.getOrDefault("APROBADA", 0) + totalPorEstado.getOrDefault("RECHAZADA", 0));
             
             // Calcular tasa de resolución
-            int completadas = totalPorEstado.getOrDefault("Aprobada", 0) + totalPorEstado.getOrDefault("Rechazada", 0);
+            int completadas = totalPorEstado.getOrDefault("APROBADA", 0) + totalPorEstado.getOrDefault("RECHAZADA", 0);
             double tasaResolucion = totalSolicitudes > 0 ? (completadas * 100.0) / totalSolicitudes : 0;
             analisisComparativo.put("tasaResolucion", Math.round(tasaResolucion * 100.0) / 100.0);
             
@@ -1561,16 +1577,16 @@ public class GestionarEstadisticasGatewayImplAdapter implements GestionarEstadis
                     
                     // Analizar estado
                     String estado = obtenerEstadoMasReciente(solicitud);
-                    if ("Aprobada".equals(estado)) {
+                    if ("APROBADA".equals(estado)) {
                         aprobadasPorMes.put(nombreMes, aprobadasPorMes.get(nombreMes) + 1);
-                    } else if ("Rechazada".equals(estado)) {
+                    } else if ("RECHAZADA".equals(estado)) {
                         rechazadasPorMes.put(nombreMes, rechazadasPorMes.get(nombreMes) + 1);
                     } else {
                         enviadasPorMes.put(nombreMes, enviadasPorMes.get(nombreMes) + 1);
                     }
                     
                     // Calcular tiempo de procesamiento si está completado
-                    if ("Aprobada".equals(estado) || "Rechazada".equals(estado)) {
+                    if ("APROBADA".equals(estado) || "RECHAZADA".equals(estado)) {
                         Date fechaActualizacion = obtenerFechaActualizacion(solicitud);
                         
                         if (fechaActualizacion != null) {
@@ -1863,16 +1879,16 @@ public class GestionarEstadisticasGatewayImplAdapter implements GestionarEstadis
                     
                     // Analizar estado
                     String estado = obtenerEstadoMasReciente(solicitud);
-                    if ("Aprobada".equals(estado)) {
+                    if ("APROBADA".equals(estado)) {
                         aprobadasPorPrograma.put(nombrePrograma, aprobadasPorPrograma.get(nombrePrograma) + 1);
-                    } else if ("Rechazada".equals(estado)) {
+                    } else if ("RECHAZADA".equals(estado)) {
                         rechazadasPorPrograma.put(nombrePrograma, rechazadasPorPrograma.get(nombrePrograma) + 1);
                     } else {
                         enviadasPorPrograma.put(nombrePrograma, enviadasPorPrograma.get(nombrePrograma) + 1);
                     }
                     
                     // Calcular tiempo de procesamiento si está completado
-                    if ("Aprobada".equals(estado) || "Rechazada".equals(estado)) {
+                    if ("APROBADA".equals(estado) || "RECHAZADA".equals(estado)) {
                         Date fechaCreacion = solicitud.getFecha_registro_solicitud();
                         Date fechaActualizacion = obtenerFechaActualizacion(solicitud);
                         
@@ -2264,7 +2280,7 @@ public class GestionarEstadisticasGatewayImplAdapter implements GestionarEstadis
                     solicitudesPorProceso.put(nombreProceso, solicitudesPorProceso.get(nombreProceso) + 1);
                     
                     String estado = obtenerEstadoMasReciente(solicitud);
-                    if ("Aprobada".equals(estado)) {
+                    if ("APROBADA".equals(estado)) {
                         aprobadasPorProceso.put(nombreProceso, aprobadasPorProceso.get(nombreProceso) + 1);
                     }
                 }
@@ -2484,35 +2500,38 @@ public class GestionarEstadisticasGatewayImplAdapter implements GestionarEstadis
 
     private String obtenerEstadoMasReciente(SolicitudEntity solicitud) {
         if (solicitud.getEstadosSolicitud() == null || solicitud.getEstadosSolicitud().isEmpty()) {
-            return "Enviada";
+            return "ENVIADA";
         }
         
         return solicitud.getEstadosSolicitud().stream()
             .max(Comparator.comparing(EstadoSolicitudEntity::getFecha_registro_estado))
             .map(EstadoSolicitudEntity::getEstado_actual)
             .map(this::normalizarEstado)
-            .orElse("Enviada");
+            .orElse("ENVIADA");
     }
     
     private String normalizarEstado(String estado) {
-        if (estado == null) return "Enviada";
+        if (estado == null) return "ENVIADA";
         
-        switch (estado.toLowerCase()) {
-            case "enviada":
-            case "enviado":
-                return "Enviada";
-            case "en proceso":
-            case "en_proceso":
-            case "enproceso":
-                return "En Proceso";
-            case "aprobada":
-            case "aprobado":
-                return "Aprobada";
-            case "rechazada":
-            case "rechazado":
-                return "Rechazada";
+        switch (estado.toUpperCase()) {
+            case "ENVIADA":
+            case "ENVIADO":
+                return "ENVIADA";
+            case "EN PROCESO":
+            case "EN_PROCESO":
+            case "ENPROCESO":
+            case "APROBADA_FUNCIONARIO":
+                return "APROBADA_FUNCIONARIO";
+            case "APROBADA_COORDINADOR":
+                return "APROBADA_COORDINADOR";
+            case "APROBADA":
+            case "APROBADO":
+                return "APROBADA";
+            case "RECHAZADA":
+            case "RECHAZADO":
+                return "RECHAZADA";
             default:
-                return "Enviada";
+                return "ENVIADA";
         }
     }
 
@@ -2576,6 +2595,8 @@ public class GestionarEstadisticasGatewayImplAdapter implements GestionarEstadis
             System.out.println("📊 [PREDICCIONES_PROGRAMA] Aplicando regresión lineal por programa...");
             List<Map<String, Object>> programasConTendenciaCreciente = new ArrayList<>();
             List<Map<String, Object>> programasConTendenciaDecreciente = new ArrayList<>();
+            List<Map<String, Object>> programasEstables = new ArrayList<>();
+            List<Map<String, Object>> todasLasPrediccionesPorPrograma = new ArrayList<>(); // ✅ Lista completa para frontend
             
             for (Map<String, Object> programa : analisisPorPrograma) {
                 String nombrePrograma = (String) programa.get("nombre");
@@ -2598,14 +2619,22 @@ public class GestionarEstadisticasGatewayImplAdapter implements GestionarEstadis
                     Math.round(((double)(demandaEstimada - solicitudesActuales) / solicitudesActuales) * 100.0) : 0);
                 // ❌ OCULTADO: Campos técnicos (pendiente, rSquared, modeloUtilizado) - no necesarios para usuarios finales
                 
+                // ✅ Clasificar por tendencia
                 if ("CRECIENTE".equals(tendencia)) {
                     programasConTendenciaCreciente.add(prediccionPrograma);
                 } else if ("DECRECIENTE".equals(tendencia)) {
                     programasConTendenciaDecreciente.add(prediccionPrograma);
+                } else {
+                    programasEstables.add(prediccionPrograma);
                 }
+                
+                // ✅ Agregar a lista completa (para visualización en frontend)
+                todasLasPrediccionesPorPrograma.add(prediccionPrograma);
             }
             System.out.println("📊 [PREDICCIONES_PROGRAMA] Programas crecientes: " + programasConTendenciaCreciente.size() + 
-                             ", Decrecientes: " + programasConTendenciaDecreciente.size());
+                             ", Decrecientes: " + programasConTendenciaDecreciente.size() +
+                             ", Estables: " + programasEstables.size() +
+                             ", Total: " + todasLasPrediccionesPorPrograma.size());
             
             // 4. PREDICCIONES TEMPORALES
             Map<String, Object> prediccionesTemporales = new HashMap<>();
@@ -2907,10 +2936,13 @@ public class GestionarEstadisticasGatewayImplAdapter implements GestionarEstadis
             predicciones.put("materiasEstables", materiasEstables);
             predicciones.put("programasConTendenciaCreciente", programasConTendenciaCreciente);
             predicciones.put("programasConTendenciaDecreciente", programasConTendenciaDecreciente);
+            predicciones.put("programasEstables", programasEstables); // ✅ Agregado
+            predicciones.put("todasLasPrediccionesPorPrograma", todasLasPrediccionesPorPrograma); // ✅ Lista completa
             predicciones.put("prediccionesTemporales", prediccionesTemporales);
             predicciones.put("recomendaciones", recomendacionesFuturas); // ⭐ Recomendaciones (para acceso interno)
             predicciones.put("alertasCriticas", alertasCriticas);
             predicciones.put("confiabilidad", "MEDIA");
+            predicciones.put("fechaPrediccion", new Date()); // ✅ Fecha de predicción
             
             // Estadísticas de las recomendaciones
             Map<String, Object> estadisticasRecomendaciones = new HashMap<>();
@@ -3560,8 +3592,8 @@ public class GestionarEstadisticasGatewayImplAdapter implements GestionarEstadis
             resultado.put("fechaConsulta", new Date());
             resultado.put("descripcion", "Estadísticas detalladas de cursos de verano - Análisis de demanda y recomendaciones");
             
-            // Calcular tasa de aprobación
-            int aprobadas = estadosPorSolicitud.getOrDefault("Aprobada", 0);
+            // Calcular tasa de aprobación (usar el nombre de estado estandarizado)
+            int aprobadas = estadosPorSolicitud.getOrDefault("APROBADA", 0);
             int total = solicitudesCursosVerano.size();
             double tasaAprobacion = total > 0 ? (aprobadas * 100.0) / total : 0;
             
@@ -3591,6 +3623,7 @@ public class GestionarEstadisticasGatewayImplAdapter implements GestionarEstadis
             resultado.put("predicciones", predicciones);
             
             System.out.println("🏖️ [CURSOS_VERANO] Análisis completado exitosamente");
+            System.out.println("📊 [DEBUG] Estados: " + estadosPorSolicitud);
             System.out.println("📦 [DEBUG] Estructura de predicciones: " + predicciones.keySet());
             return resultado;
             

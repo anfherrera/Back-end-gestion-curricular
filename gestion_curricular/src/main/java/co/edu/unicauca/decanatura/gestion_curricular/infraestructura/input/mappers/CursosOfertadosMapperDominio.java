@@ -49,6 +49,14 @@ public interface CursosOfertadosMapperDominio {
     @Mapping(source = "estadosCursoOfertados", target = "estado", qualifiedByName = "obtenerEstadoActual")
     CursosOfertadosDTORespuesta mappearDeCursoOfertadoARespuesta(CursoOfertadoVerano curso);
     
+    // Método post-mapping para asignar idCurso desde id_curso
+    default CursosOfertadosDTORespuesta postMapCurso(CursosOfertadosDTORespuesta dto) {
+        if (dto != null && dto.getId_curso() != null) {
+            dto.setIdCurso(dto.getId_curso());
+        }
+        return dto;
+    }
+    
     // Mapper específico para cursos disponibles (estado "Disponible")
     @Mapping(source = "objMateria.codigo", target = "codigo_curso")
     @Mapping(source = "objMateria.nombre", target = "nombre_curso")
@@ -76,6 +84,7 @@ public interface CursosOfertadosMapperDominio {
         }
         return cursos.stream()
                 .map(this::mappearDeCursoOfertadoARespuesta)
+                .map(this::postMapCurso) // Asignar idCurso
                 .collect(java.util.stream.Collectors.toList());
     }
     
@@ -85,6 +94,7 @@ public interface CursosOfertadosMapperDominio {
         }
         return cursos.stream()
                 .map(this::mappearDeCursoOfertadoARespuestaDisponible)
+                .map(this::postMapCurso) // Asignar idCurso
                 .collect(java.util.stream.Collectors.toList());
     }
     

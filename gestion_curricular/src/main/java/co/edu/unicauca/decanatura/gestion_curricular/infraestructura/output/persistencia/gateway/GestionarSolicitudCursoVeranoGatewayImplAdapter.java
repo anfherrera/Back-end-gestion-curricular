@@ -255,7 +255,11 @@ public class GestionarSolicitudCursoVeranoGatewayImplAdapter implements Gestiona
     public SolicitudCursoVeranoIncripcion buscarSolicitudInscripcionPorId(Integer idSolicitud) {
         return solicitudRepository.findById(idSolicitud)
             .filter(entity -> entity instanceof SolicitudCursoVeranoInscripcionEntity)
-            .map(entity -> solicitudMapper.map(entity, SolicitudCursoVeranoIncripcion.class))
+            .map(entity -> {
+                // Inicializar la colección de documentos para evitar LazyInitializationException
+                entity.getDocumentos().size();
+                return solicitudMapper.map(entity, SolicitudCursoVeranoIncripcion.class);
+            })
             .orElse(null);
     }
 

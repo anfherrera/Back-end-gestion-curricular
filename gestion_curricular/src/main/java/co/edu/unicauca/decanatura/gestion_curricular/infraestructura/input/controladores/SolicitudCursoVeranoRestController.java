@@ -80,6 +80,10 @@ public class SolicitudCursoVeranoRestController {
             @RequestParam(name = "file", required = true) MultipartFile file,
             @RequestParam(name = "idSolicitud", required = true) @Min(value = 1) Integer idSolicitud) {
         try {
+            System.out.println("📤 [SUBIR_COMPROBANTE] Iniciando subida de comprobante...");
+            System.out.println("📤 [SUBIR_COMPROBANTE] ID Solicitud: " + idSolicitud);
+            System.out.println("📤 [SUBIR_COMPROBANTE] Archivo: " + file.getOriginalFilename());
+            
             String nombreOriginal = file.getOriginalFilename();
             
             if (nombreOriginal == null || nombreOriginal.trim().isEmpty()) {
@@ -91,10 +95,23 @@ public class SolicitudCursoVeranoRestController {
                     .body(Map.of("error", "Solo se permiten archivos PDF"));
             }
             
-            // Guardar archivo
+            // 1. Verificar que la inscripción existe
+            System.out.println("🔍 [SUBIR_COMPROBANTE] Verificando inscripción ID: " + idSolicitud);
+            SolicitudCursoVeranoIncripcion inscripcionExistente = solicitudCU.buscarPorIdInscripcion(idSolicitud);
+            
+            if (inscripcionExistente == null) {
+                System.out.println("❌ [SUBIR_COMPROBANTE] Inscripción no encontrada: " + idSolicitud);
+                return ResponseEntity.badRequest().body(Map.of("error", "Inscripción no encontrada"));
+            }
+            
+            System.out.println("✅ [SUBIR_COMPROBANTE] Inscripción encontrada: " + inscripcionExistente.getNombre_solicitud());
+            
+            // 2. Guardar archivo
+            System.out.println("💾 [SUBIR_COMPROBANTE] Guardando archivo: " + nombreOriginal);
             this.objGestionarArchivos.saveFile(file, nombreOriginal, "pdf");
             
-            // Crear documento
+            // 3. Crear documento
+            System.out.println("📄 [SUBIR_COMPROBANTE] Creando documento...");
             Documento doc = new Documento();
             doc.setNombre(nombreOriginal);
             doc.setRuta_documento(nombreOriginal);
@@ -102,22 +119,29 @@ public class SolicitudCursoVeranoRestController {
             doc.setEsValido(true);
             doc.setComentario("Comprobante de pago - Curso de Verano");
             
-            // Asociar a solicitud
-            SolicitudCursoVeranoIncripcion solicitud = new SolicitudCursoVeranoIncripcion();
-            solicitud.setId_solicitud(idSolicitud);
-            doc.setObjSolicitud(solicitud);
+            // 4. Asociar a la inscripción REAL (no crear una nueva)
+            System.out.println("🔗 [SUBIR_COMPROBANTE] Asociando documento a inscripción real...");
+            doc.setObjSolicitud(inscripcionExistente);
             
-            this.objGestionarDocumentosGateway.crearDocumento(doc);
+            // 5. Guardar documento
+            System.out.println("💾 [SUBIR_COMPROBANTE] Guardando documento en BD...");
+            Documento documentoGuardado = this.objGestionarDocumentosGateway.crearDocumento(doc);
+            
+            System.out.println("✅ [SUBIR_COMPROBANTE] Documento guardado con ID: " + documentoGuardado.getId_documento());
             
             Map<String, Object> respuesta = new HashMap<>();
             respuesta.put("success", true);
             respuesta.put("message", "Comprobante de pago subido exitosamente");
             respuesta.put("nombreArchivo", nombreOriginal);
             respuesta.put("idSolicitud", idSolicitud);
+            respuesta.put("documentoId", documentoGuardado.getId_documento());
             
+            System.out.println("✅ [SUBIR_COMPROBANTE] Proceso completado exitosamente");
             return ResponseEntity.ok(respuesta);
             
         } catch (Exception e) {
+            System.out.println("❌ [SUBIR_COMPROBANTE] Error: " + e.getMessage());
+            e.printStackTrace();
             return ResponseEntity.internalServerError()
                 .body(Map.of("error", "Error al subir archivo: " + e.getMessage()));
         }

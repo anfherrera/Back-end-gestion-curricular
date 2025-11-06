@@ -8,6 +8,7 @@ import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.Gestionar
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.GestionarSolicitudCursoVeranoGatewayIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.GestionarUsuarioGatewayIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.CursoOfertadoVerano;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.EstadoSolicitud;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Solicitud;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.SolicitudCursoVeranoIncripcion;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.SolicitudCursoVeranoPreinscripcion;
@@ -309,10 +310,15 @@ public class GestionarSolicitudCursoVeranoCUAdapter implements GestionarSolicitu
             this.objFormateadorResultados.retornarRespuestaErrorEntidadExiste("No se encontró la solicitud de inscripción con ID: " + idSolicitud);
         }
         
-        // Verificar que esté en estado "Enviada"
-        if (solicitud.getEstadosSolicitud().isEmpty() || 
-            !solicitud.getEstadosSolicitud().get(solicitud.getEstadosSolicitud().size() - 1).getEstado_actual().equals("Enviada")) {
-            this.objFormateadorResultados.retornarRespuestaErrorReglaDeNegocio("La solicitud no está en estado 'Enviada' para validar el pago");
+        // Verificar que esté en estado "Enviada" o "Pago_Validado" usando el último estado
+        String estadoActual = null;
+        if (solicitud.getEstadosSolicitud() != null && !solicitud.getEstadosSolicitud().isEmpty()) {
+            EstadoSolicitud ultimoEstado = solicitud.getEstadosSolicitud().get(solicitud.getEstadosSolicitud().size() - 1);
+            estadoActual = ultimoEstado.getEstado_actual();
+        }
+        
+        if (estadoActual == null || (!estadoActual.equals("Enviada") && !estadoActual.equals("Pago_Validado"))) {
+            this.objFormateadorResultados.retornarRespuestaErrorReglaDeNegocio("La solicitud no está en estado 'Enviada' o 'Pago_Validado' para validar el pago. Estado actual: " + estadoActual);
         }
         
         // Validar el pago

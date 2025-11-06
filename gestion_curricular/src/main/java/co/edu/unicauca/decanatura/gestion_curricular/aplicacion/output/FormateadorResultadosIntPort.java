@@ -6,4 +6,6 @@ public interface FormateadorResultadosIntPort {
 
     void retornarRespuestaErrorReglaDeNegocio(String mensaje);
 
+    void retornarRespuestaErrorEntidadNoExiste(String mensaje);
+
 }

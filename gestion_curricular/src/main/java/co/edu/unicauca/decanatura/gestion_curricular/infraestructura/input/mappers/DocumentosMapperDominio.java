@@ -19,7 +19,6 @@ public interface DocumentosMapperDominio {
     @Mapping(source = "fecha_documento",                target = "fecha_documento")
     @Mapping(source = "esValido",                       target = "esValido")
     @Mapping(source = "comentario",                     target = "comentario")
-    @Mapping(source = "tipoDocumentoSolicitudPazYSalvo",target = "tipoDocumentoSolicitudPazYSalvo")
     DocumentosDTORespuesta mappearDeDocumentoADTORespuesta(Documento documento);
 
     List<DocumentosDTORespuesta> mappearListaDeDocumentoADTORespuesta(List<Documento> documentos);
@@ -31,10 +30,6 @@ public interface DocumentosMapperDominio {
     @Mapping(source = "fecha_documento",                target = "fecha_documento")
     @Mapping(source = "esValido",                       target = "esValido")
     @Mapping(source = "comentario",                     target = "comentario")
-    /* Si tu dominio usa un enum (TipoDocumentoSolicitudPazYSalvo) y
-       en el DTO recibes un String, necesitarás lógica adicional o
-       un mapper específico; por ahora lo ignoramos: */
-    @Mapping(source = "tipoDocumentoSolicitudPazYSalvo",target = "tipoDocumentoSolicitudPazYSalvo")
     @Mapping(target = "objSolicitud", ignore = true) // Ignoramos el usuario, si no es necesario
     /* -------------  */
     Documento mappearDeDTOPeticionADocumento(DocumentosDTOPeticion peticion);

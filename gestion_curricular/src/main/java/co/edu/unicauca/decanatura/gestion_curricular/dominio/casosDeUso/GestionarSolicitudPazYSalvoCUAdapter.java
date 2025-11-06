@@ -14,6 +14,7 @@ import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Documento;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.EstadoSolicitud;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.SolicitudPazYSalvo;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Usuario;
+import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.controladorExcepciones.excepcionesPropias.EntidadNoExisteException;
 
 public class GestionarSolicitudPazYSalvoCUAdapter implements GestionarSolicitudPazYSalvoCUIntPort {
 
@@ -128,7 +129,7 @@ public class GestionarSolicitudPazYSalvoCUAdapter implements GestionarSolicitudP
     @Override
     public SolicitudPazYSalvo buscarPorId(Integer idSolicitud) {
         return solicitudGateway.buscarPorId(idSolicitud)
-                .orElseThrow(() -> new RuntimeException("Solicitud de Paz y Salvo no encontrada"));
+                .orElseThrow(() -> new EntidadNoExisteException("Solicitud de Paz y Salvo no encontrada con ID: " + idSolicitud));
     }
 
     @Override
