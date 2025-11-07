@@ -23,19 +23,22 @@ import java.util.List;
 @Configuration
 public class OpenAPIConfig {
 
-    @Value("${server.port:5000}")
-    private String serverPort;
+    @Value("${app.openapi.dev-url:http://localhost:5000}")
+    private String devUrl;
+
+    @Value("${app.openapi.prod-url:https://back-end-gestion-curricular.onrender.com}")
+    private String prodUrl;
 
     @Bean
     public OpenAPI gestionCurricularOpenAPI() {
         // Servidor de desarrollo
         Server devServer = new Server();
-        devServer.setUrl("http://localhost:" + serverPort);
+        devServer.setUrl(devUrl);
         devServer.setDescription("Servidor de Desarrollo");
 
         // Servidor de producción (ajustar según necesidad)
         Server prodServer = new Server();
-        prodServer.setUrl("https://api-gestion-curricular.unicauca.edu.co");
+        prodServer.setUrl(prodUrl);
         prodServer.setDescription("Servidor de Producción");
 
         // Información de contacto
