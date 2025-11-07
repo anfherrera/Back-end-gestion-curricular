@@ -21,6 +21,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.HashMap;
 import java.util.ArrayList;
+import java.util.Locale;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpHeaders;
@@ -148,8 +149,8 @@ public class SolicitudHomologacionRestController {
             
             // Buscar documentos que sean oficios/resoluciones (subidos por secretaria)
             for (Documento documento : documentos) {
-                if (documento.getNombre() != null && documento.getNombre().toLowerCase().endsWith(".pdf")) {
-                    String nombreArchivo = documento.getNombre().toLowerCase();
+                if (documento.getNombre() != null) {
+                    String nombreArchivo = documento.getNombre().toLowerCase(Locale.ROOT);
                     
                     // Filtrar solo archivos que parecen ser oficios/resoluciones
                     boolean esOficio = nombreArchivo.contains("oficio") || 
@@ -204,8 +205,8 @@ public class SolicitudHomologacionRestController {
             // Crear lista de oficios basada en los documentos reales (solo oficios/resoluciones)
             List<Map<String, Object>> oficios = new ArrayList<>();
             for (Documento documento : documentos) {
-                if (documento.getNombre() != null && documento.getNombre().toLowerCase().endsWith(".pdf")) {
-                    String nombreArchivo = documento.getNombre().toLowerCase();
+                if (documento.getNombre() != null) {
+                    String nombreArchivo = documento.getNombre().toLowerCase(Locale.ROOT);
                     
                     // Filtrar solo archivos que parecen ser oficios/resoluciones
                     boolean esOficio = nombreArchivo.contains("oficio") || 
