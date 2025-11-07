@@ -20,6 +20,7 @@ import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarS
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarSolicitudCursoVeranoCUIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.GestionarDocumentosGatewayIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Documento;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Solicitud;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.SolicitudPazYSalvo;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.SolicitudCursoVeranoIncripcion;
 
@@ -158,18 +159,31 @@ public class ArchivosRestController {
                 
                 // Si hay solicitudId, intentar asociarlo a la inscripción REAL
                 if (solicitudIdUnificado != null && !solicitudIdUnificado.trim().isEmpty()) {
+                    Integer solicitudIdParsed = null;
                     try {
-                        System.out.println("🔗 [ARCHIVOS] Asociando documento a inscripción ID: " + solicitudIdUnificado);
-                        // Buscar la inscripción real para asociar el documento
-                        SolicitudCursoVeranoIncripcion inscripcionReal = solicitudCursoVeranoCU.buscarPorIdInscripcion(Integer.parseInt(solicitudIdUnificado));
+                        solicitudIdParsed = Integer.parseInt(solicitudIdUnificado);
+                    } catch (NumberFormatException e) {
+                        System.out.println("❌ [ARCHIVOS] Error parseando ID de solicitud: " + e.getMessage());
+                    }
+
+                    if (solicitudIdParsed != null) {
+                        SolicitudCursoVeranoIncripcion inscripcionReal = null;
+                        try {
+                            System.out.println("🔗 [ARCHIVOS] Asociando documento a inscripción ID: " + solicitudIdParsed);
+                            inscripcionReal = solicitudCursoVeranoCU.buscarPorIdInscripcion(solicitudIdParsed);
+                        } catch (Exception e) {
+                            System.out.println("❌ [ARCHIVOS] Error consultando inscripción de curso intersemestral: " + e.getMessage());
+                        }
+
                         if (inscripcionReal != null) {
                             System.out.println("✅ [ARCHIVOS] Inscripción real encontrada, asociando documento");
                             documento.setObjSolicitud(inscripcionReal);
                         } else {
-                            System.out.println("❌ [ARCHIVOS] Inscripción no encontrada, documento sin asociar");
+                            System.out.println("ℹ️ [ARCHIVOS] No se encontró inscripción; asociando solicitud genérica para otros procesos");
+                            Solicitud solicitudGenerica = new Solicitud();
+                            solicitudGenerica.setId_solicitud(solicitudIdParsed);
+                            documento.setObjSolicitud(solicitudGenerica);
                         }
-                    } catch (NumberFormatException e) {
-                        System.out.println("❌ [ARCHIVOS] Error parseando ID de solicitud: " + e.getMessage());
                     }
                 }
                 
