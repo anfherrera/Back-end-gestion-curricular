@@ -27,6 +27,8 @@ public class EstadoSolicitudEntity {
     private String estado_actual;
     @Column(nullable = false)
     private Date fecha_registro_estado;
+    @Column(length = 500)
+    private String comentario;
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "idfkSolicitud", referencedColumnName = "idSolicitud", nullable = true)
     private SolicitudEntity objSolicitud;

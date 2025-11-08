@@ -13,6 +13,7 @@ public class EstadoSolicitudDTORespuesta {
     private Integer id_estado;
     private String estado_actual;
     private Date fecha_registro_estado;
+    private String comentario;
     private SolicitudDTORespuesta objSolicitud;
 
 }

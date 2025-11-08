@@ -339,8 +339,19 @@ public class CursosIntersemestralesRestController {
                 Map<String, Object> preinscripcionMap = new HashMap<>();
                 preinscripcionMap.put("id", preinscripcion.getId_solicitud());
                 preinscripcionMap.put("fecha", preinscripcion.getFecha_registro_solicitud());
-                preinscripcionMap.put("estado", preinscripcion.getEstadosSolicitud() != null && !preinscripcion.getEstadosSolicitud().isEmpty() 
-                    ? preinscripcion.getEstadosSolicitud().get(preinscripcion.getEstadosSolicitud().size() - 1).getEstado_actual() : "Enviado");
+                String estadoActual = preinscripcion.getEstadosSolicitud() != null && !preinscripcion.getEstadosSolicitud().isEmpty() 
+                    ? preinscripcion.getEstadosSolicitud().get(preinscripcion.getEstadosSolicitud().size() - 1).getEstado_actual()
+                    : "Enviado";
+                preinscripcionMap.put("estado", estadoActual);
+                String comentarioEstado = null;
+                if (preinscripcion.getEstadosSolicitud() != null && !preinscripcion.getEstadosSolicitud().isEmpty()) {
+                    co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.EstadoSolicitud ultimoEstado =
+                        preinscripcion.getEstadosSolicitud().get(preinscripcion.getEstadosSolicitud().size() - 1);
+                    comentarioEstado = ultimoEstado.getComentario();
+                }
+                if (comentarioEstado != null && !comentarioEstado.trim().isEmpty()) {
+                    preinscripcionMap.put("comentarioEstado", comentarioEstado);
+                }
                 preinscripcionMap.put("tipo", "Preinscripción");
                 preinscripcionMap.put("estudianteId", preinscripcion.getObjUsuario().getId_usuario());
                 
@@ -354,8 +365,6 @@ public class CursosIntersemestralesRestController {
                 
                 // Acciones disponibles basadas en el estado
                 List<String> accionesDisponibles = new ArrayList<>();
-                String estadoActual = preinscripcion.getEstadosSolicitud() != null && !preinscripcion.getEstadosSolicitud().isEmpty() 
-                    ? preinscripcion.getEstadosSolicitud().get(preinscripcion.getEstadosSolicitud().size() - 1).getEstado_actual() : "Enviado";
                 
                 if ("Aprobado".equals(estadoActual)) {
                     accionesDisponibles.add("inscribirse");
@@ -3467,6 +3476,8 @@ public class CursosIntersemestralesRestController {
             String motivo = request.get("motivo");
             if (motivo == null || motivo.trim().isEmpty()) {
                 motivo = "Inscripción rechazada por funcionario";
+            } else {
+                motivo = motivo.trim();
             }
             
             // 1. Buscar la inscripción directamente por ID
@@ -3661,6 +3672,7 @@ public class CursosIntersemestralesRestController {
             if (motivo == null || motivo.trim().isEmpty()) {
                 return ResponseEntity.badRequest().body(Map.of("error", "Debe proporcionar un motivo para el rechazo"));
             }
+            motivo = motivo.trim();
             
             SolicitudCursoVeranoPreinscripcion solicitudRechazada = solicitudCU.rechazarPreinscripcion(idSolicitud, motivo);
             
@@ -3668,6 +3680,7 @@ public class CursosIntersemestralesRestController {
             respuesta.put("success", true);
             respuesta.put("message", "Preinscripción rechazada");
             respuesta.put("id_solicitud", solicitudRechazada.getId_solicitud());
+            respuesta.put("motivo", motivo);
             
             return ResponseEntity.ok(respuesta);
         } catch (Exception e) {
