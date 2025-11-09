@@ -254,7 +254,6 @@ public class SolicitudHomologacionRestController {
             documentosRequeridos.put("formulario_homologacion", false);
             documentosRequeridos.put("certificado_notas", false);
             documentosRequeridos.put("programa_academico", false);
-            documentosRequeridos.put("documento_a_o_b", false);
             
             // Verificar qué documentos están presentes
             for (Documento documento : documentos) {
@@ -267,8 +266,6 @@ public class SolicitudHomologacionRestController {
                         documentosRequeridos.put("certificado_notas", true);
                     } else if (nombre.contains("programa") && nombre.contains("academico")) {
                         documentosRequeridos.put("programa_academico", true);
-                    } else if (nombre.contains("documento_a") || nombre.contains("documento_b")) {
-                        documentosRequeridos.put("documento_a_o_b", true);
                     }
                 }
             }
