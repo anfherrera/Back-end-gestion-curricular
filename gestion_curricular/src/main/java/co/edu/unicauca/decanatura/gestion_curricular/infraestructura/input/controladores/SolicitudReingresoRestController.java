@@ -93,6 +93,12 @@ public class SolicitudReingresoRestController {
         return ResponseEntity.ok(respuesta);
     }
 
+    @GetMapping("/listarSolicitud-Reingreso/Secretaria/Aprobadas")
+    public ResponseEntity<List<SolicitudReingresoDTORespuesta>> listarSolicitudReingresoAprobadasToSecretaria() {
+        List<SolicitudReingreso> solicitudes = solicitudService.listarSolicitudesAprobadasToSecretaria();
+        List<SolicitudReingresoDTORespuesta> respuesta = solicitudReingresoMapper.mappearDeListaSolicitudReingresoASolicitudReingresoDTORespuesta(solicitudes);
+        return ResponseEntity.ok(respuesta);
+    }
 
     @GetMapping("/listarSolicitud-Reingreo/{id}")
     public ResponseEntity<SolicitudReingresoDTORespuesta> listarReingresoById(@PathVariable Integer id) {

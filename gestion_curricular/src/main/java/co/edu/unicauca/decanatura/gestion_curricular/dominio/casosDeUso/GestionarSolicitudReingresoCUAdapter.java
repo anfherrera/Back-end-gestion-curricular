@@ -105,6 +105,11 @@ public class GestionarSolicitudReingresoCUAdapter  implements GestionarSolicitud
     }
 
     @Override
+    public List<SolicitudReingreso> listarSolicitudesAprobadasToSecretaria() {
+        return objGestionarSolicitudReingresoGateway.listarSolicitudesAprobadasToSecretaria();
+    }
+
+    @Override
     public List<SolicitudReingreso> listarSolicitudesReingresoPorRol(String rol, Integer idUsuario) {
        List<SolicitudReingreso> todas = objGestionarSolicitudReingresoGateway.listarSolicitudesReingreso();
 
@@ -138,6 +143,8 @@ public class GestionarSolicitudReingresoCUAdapter  implements GestionarSolicitud
         estado.setFecha_registro_estado(new Date());
         objGestionarSolicitudReingresoGateway.cambiarEstadoSolicitudReingreso(idSolicitud, estado);
     }
+
+    
 
     
 

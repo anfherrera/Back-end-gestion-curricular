@@ -17,6 +17,8 @@ public interface GestionarSolicitudHomologacionCUIntPort {
 
     List<SolicitudHomologacion> listarSolicitudesPorRol(String rol, Integer idUsuario);
 
+    List<SolicitudHomologacion> listarSolicitudesAprobadasToSecretaria();
+    
     SolicitudHomologacion buscarPorId(Integer idSolicitud);
 
     void cambiarEstadoSolicitud(Integer idSolicitud, String nuevoEstado);

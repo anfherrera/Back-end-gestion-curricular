@@ -107,6 +107,13 @@ public class SolicitudHomologacionRestController {
         return ResponseEntity.ok(respuesta);
     }
 
+    @GetMapping("/listarSolicitud-Homologacion/Secretaria/Aprobadas")
+    public ResponseEntity<List<SolicitudHomologacionDTORespuesta>> listarSolicitudHomologacionAprobadasToSecretaria() {
+        List<SolicitudHomologacion> solicitudes = solicitudHomologacionCU.listarSolicitudesAprobadasToSecretaria();
+        List<SolicitudHomologacionDTORespuesta> respuesta = solicitudMapperDominio.mappearListaDeSolicitudHomologacionARespuesta(solicitudes);
+        return ResponseEntity.ok(respuesta);
+    }
+
 
     @GetMapping("/listarSolicitud-Homologacion/{id}")
     public ResponseEntity<SolicitudHomologacionDTORespuesta> listarHomologacionById(@PathVariable Integer id) {
