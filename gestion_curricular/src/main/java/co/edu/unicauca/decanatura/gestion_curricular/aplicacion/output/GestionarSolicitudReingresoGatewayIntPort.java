@@ -18,6 +18,8 @@ public interface GestionarSolicitudReingresoGatewayIntPort {
 
     List<SolicitudReingreso> listarSolicitudesReingresoToCoordinador();
 
+    List<SolicitudReingreso> listarSolicitudesAprobadasToSecretaria();
+
     Optional<SolicitudReingreso> buscarPorId(Integer id);
 
     void cambiarEstadoSolicitudReingreso(Integer idSolicitud, EstadoSolicitud nuevoEstado);

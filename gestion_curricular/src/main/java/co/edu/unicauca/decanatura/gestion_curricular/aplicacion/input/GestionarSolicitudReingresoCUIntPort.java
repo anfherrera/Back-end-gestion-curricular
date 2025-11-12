@@ -18,6 +18,8 @@ public interface GestionarSolicitudReingresoCUIntPort {
 
     List<SolicitudReingreso> listarSolicitudesReingresoToCoordinador();
 
+    List<SolicitudReingreso> listarSolicitudesAprobadasToSecretaria();
+
     SolicitudReingreso obtenerSolicitudReingresoPorId(Integer id);
 
     void cambiarEstadoSolicitudReingreso(Integer idSolicitud, String nuevoEstado);
