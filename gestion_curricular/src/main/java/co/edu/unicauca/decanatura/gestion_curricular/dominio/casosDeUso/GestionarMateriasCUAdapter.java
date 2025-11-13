@@ -63,7 +63,7 @@ public class GestionarMateriasCUAdapter implements GestionarMateriasCUIntPort {
             formateadorResultados.retornarRespuestaErrorEntidadExiste("No se encontró la materia a eliminar.");
         }
 
-        // VALIDACIÓN: Verificar si la materia tiene cursos asociados
+        // Verificar si la materia tiene cursos asociados antes de eliminarla
         if (materiasGateway.tieneCursosAsociados(idMateria)) {
             formateadorResultados.retornarRespuestaErrorReglaDeNegocio(
                 "No se puede eliminar la materia porque tiene cursos asociados. " +
