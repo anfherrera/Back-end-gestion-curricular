@@ -131,9 +131,9 @@ public class SolicitudHomologacionRestController {
 
     // @GetMapping(" ")
     // public ResponseEntity<SolicitudHomologacionDTORespuesta> obtenerSolicitudHomologacionSeleccionada() {
-    //     SolicitudHomologacion solicitud = solicitudHomologacionCU. obtenerSolicitudHomologacion();
-    //     SolicitudHomologacionDTORespuesta respuesta = solicitudMapperDominio.mappearDeSolicitudHomologacionASolicitudHomologacionDTORespuesta(solicitud);
-    //     return ResponseEntity.ok(respuesta);
+    //    SolicitudHomologacion solicitud = solicitudHomologacionCU. obtenerSolicitudHomologacion();
+    //    SolicitudHomologacionDTORespuesta respuesta = solicitudMapperDominio.mappearDeSolicitudHomologacionASolicitudHomologacionDTORespuesta(solicitud);
+    //    return ResponseEntity.ok(respuesta);
     // }
 
     /**

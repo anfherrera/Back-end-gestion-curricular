@@ -29,11 +29,11 @@ public class JwtUtil {
     }
 
     // public String extraerCorreo(String token) {
-    //     return Jwts.parser()
-    //             .setSigningKey(SECRET_KEY)
-    //             .parseClaimsJws(token)
-    //             .getBody()
-    //             .getSubject();
+    //    return Jwts.parser()
+    //            .setSigningKey(SECRET_KEY)
+    //            .parseClaimsJws(token)
+    //            .getBody()
+    //            .getSubject();
     // }
 
     public String extraerCorreoDesdeToken(String token) {
@@ -50,22 +50,22 @@ public class JwtUtil {
     }
 
     // public boolean validarToken(String token, UserDetails userDetails) {
-    //     final String correo = extraerCorreo(token);
-    //     return (correo.equals(userDetails.getUsername()) && !estaExpirado(token));
+    //    final String correo = extraerCorreo(token);
+    //    return (correo.equals(userDetails.getUsername()) && !estaExpirado(token));
     // }
 
     // public boolean validarToken(String token) {
-    //     try {
-    //         Key key = Keys.hmacShaKeyFor(SECRET_KEY.getBytes(StandardCharsets.UTF_8));
-    //         Jwts.parserBuilder()
-    //             .setSigningKey(key)
-    //             .build()
-    //             .parseClaimsJws(token); // lanza excepción si es inválido
-    //         return true;
-    //     } catch (Exception e) {
-    //         e.printStackTrace(); // o log.warn("Token inválido", e);
-    //         return false;
-    //     }
+    //    try {
+    //        Key key = Keys.hmacShaKeyFor(SECRET_KEY.getBytes(StandardCharsets.UTF_8));
+    //        Jwts.parserBuilder()
+    //            .setSigningKey(key)
+    //            .build()
+    //            .parseClaimsJws(token); // lanza excepción si es inválido
+    //        return true;
+    //    } catch (Exception e) {
+    //        e.printStackTrace(); // o log.warn("Token inválido", e);
+    //        return false;
+    //    }
     // }
     
     public boolean validarToken(String token) {

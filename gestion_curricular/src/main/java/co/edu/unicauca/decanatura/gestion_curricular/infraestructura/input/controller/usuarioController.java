@@ -21,28 +21,28 @@
 // @RequestMapping("/usuarios")
 // public class usuarioController {
     
-//     private final GestionarUsuarioCUIntPort usuarioCU;
-//     private final Mapper mapper;
+//    private final GestionarUsuarioCUIntPort usuarioCU;
+//    private final Mapper mapper;
 
-//     public usuarioController(GestionarUsuarioCUIntPort usuarioCU, Mapper mapper) {
-//         this.usuarioCU = usuarioCU;
-//         this.mapper = mapper;
-//     }
+//    public usuarioController(GestionarUsuarioCUIntPort usuarioCU, Mapper mapper) {
+//        this.usuarioCU = usuarioCU;
+//        this.mapper = mapper;
+//    }
 
-//     @PostMapping
-//     public ResponseEntity<usuarioSalidaDto> crearUsuario(@RequestBody usuarioEntradaDto dto) {
-//         Usuario usuarioDominio = mapper.usuarioEntradaDtoAUsuario(dto);
-//         Usuario usuarioCreado = usuarioCU.crearUsuario(usuarioDominio);
-//         usuarioSalidaDto respuesta = mapper.usuarioAUsuarioSalidaDto(usuarioCreado);
-//         return new ResponseEntity<>(respuesta, HttpStatus.CREATED);
-//     }
-//     @GetMapping
-//     public ResponseEntity<List<usuarioSalidaDto>> obtenerUsuarios() {
-//         List<Usuario> usuarios = usuarioCU.listarUsuarios();
-//         List<usuarioSalidaDto> respuesta = usuarios.stream()
-//                 .map(mapper::usuarioAUsuarioSalidaDto)
-//                 .collect(Collectors.toList());
-//         return ResponseEntity.ok(respuesta);
-//     }
+//    @PostMapping
+//    public ResponseEntity<usuarioSalidaDto> crearUsuario(@RequestBody usuarioEntradaDto dto) {
+//        Usuario usuarioDominio = mapper.usuarioEntradaDtoAUsuario(dto);
+//        Usuario usuarioCreado = usuarioCU.crearUsuario(usuarioDominio);
+//        usuarioSalidaDto respuesta = mapper.usuarioAUsuarioSalidaDto(usuarioCreado);
+//        return new ResponseEntity<>(respuesta, HttpStatus.CREATED);
+//    }
+//    @GetMapping
+//    public ResponseEntity<List<usuarioSalidaDto>> obtenerUsuarios() {
+//        List<Usuario> usuarios = usuarioCU.listarUsuarios();
+//        List<usuarioSalidaDto> respuesta = usuarios.stream()
+//                .map(mapper::usuarioAUsuarioSalidaDto)
+//                .collect(Collectors.toList());
+//        return ResponseEntity.ok(respuesta);
+//    }
 
 // }

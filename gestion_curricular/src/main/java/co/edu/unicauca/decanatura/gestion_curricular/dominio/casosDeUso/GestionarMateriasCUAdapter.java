@@ -27,7 +27,7 @@ public class GestionarMateriasCUAdapter implements GestionarMateriasCUIntPort {
         materia.setId_materia(null); // Asegurarse de que el ID sea nulo para una nueva creación
 
         // if (materia.getCodigo() == null || materia.getCodigo().isBlank()) {
-        //     formateadorResultados.retornarRespuestaErrorEntidadExiste("El código de la materia es obligatorio.");
+        //    formateadorResultados.retornarRespuestaErrorEntidadExiste("El código de la materia es obligatorio.");
         // }
 
         if (materiasGateway.existeMateriaPorCodigo(materia.getCodigo())) {
@@ -63,7 +63,7 @@ public class GestionarMateriasCUAdapter implements GestionarMateriasCUIntPort {
             formateadorResultados.retornarRespuestaErrorEntidadExiste("No se encontró la materia a eliminar.");
         }
 
-        // ✅ VALIDACIÓN: Verificar si la materia tiene cursos asociados
+        // VALIDACIÓN: Verificar si la materia tiene cursos asociados
         if (materiasGateway.tieneCursosAsociados(idMateria)) {
             formateadorResultados.retornarRespuestaErrorReglaDeNegocio(
                 "No se puede eliminar la materia porque tiene cursos asociados. " +

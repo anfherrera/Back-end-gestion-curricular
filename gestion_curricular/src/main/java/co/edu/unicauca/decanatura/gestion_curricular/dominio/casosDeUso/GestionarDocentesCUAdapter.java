@@ -59,7 +59,7 @@ public class GestionarDocentesCUAdapter implements GestionarDocentesCUIntPort {
             formateadorResultados.retornarRespuestaErrorEntidadExiste("No se encontró el docente a eliminar.");
         }
 
-        // ✅ VALIDACIÓN: Verificar si el docente tiene cursos asignados
+        // VALIDACIÓN: Verificar si el docente tiene cursos asignados
         if (docentesGateway.tieneCursosAsignados(idDocente)) {
             formateadorResultados.retornarRespuestaErrorReglaDeNegocio(
                 "No se puede eliminar el docente porque tiene cursos asignados. " +
