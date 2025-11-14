@@ -10,9 +10,7 @@ import lombok.Data;
 public class EstadoCursoOfertado {
     private Integer id_estado;
     private String estado_actual;
-    private Date fecha_registro_estado; // Fecha de inicio del curso
-    private Date fecha_fin; // Fecha de fin del curso (opcional, si no se proporciona se calcula)
-    private String periodo_academico; // Período académico proporcionado por el usuario (ej: "2025-1", "2025-2")
+    private Date fecha_registro_estado; // Fecha en que se registró este estado (cuando cambió de estado)
 
     private CursoOfertadoVerano objCursoOfertadoVerano;
 

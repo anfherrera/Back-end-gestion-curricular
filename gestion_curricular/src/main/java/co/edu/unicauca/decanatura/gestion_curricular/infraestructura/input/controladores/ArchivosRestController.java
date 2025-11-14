@@ -265,6 +265,112 @@ public class ArchivosRestController {
     }
     
     /**
+     * Descargar comprobante de pago por ID de inscripción
+     * GET /api/archivos/descargar/pdf/inscripcion/{idInscripcion}
+     * Este endpoint es el que usa el frontend actualmente
+     */
+    @GetMapping("/descargar/pdf/inscripcion/{idInscripcion}")
+    public ResponseEntity<?> descargarComprobantePorInscripcion(@PathVariable Long idInscripcion) {
+        try {
+            log.info("INFO: [ARCHIVOS] Descargando comprobante para inscripcion ID: {}", idInscripcion);
+            
+            // Validar ID
+            if (idInscripcion == null || idInscripcion <= 0) {
+                log.error("ERROR: [ARCHIVOS] ID de inscripcion invalido: {}", idInscripcion);
+                return ResponseEntity.badRequest()
+                    .header("Content-Type", "application/json")
+                    .body("{\"error\":\"ID de inscripcion invalido\"}");
+            }
+            
+            // 1. Buscar la inscripcion
+            log.info("INFO: [ARCHIVOS] Buscando inscripcion con ID: {}", idInscripcion.intValue());
+            SolicitudCursoVeranoIncripcion inscripcion = solicitudCursoVeranoCU.buscarPorIdInscripcion(idInscripcion.intValue());
+            
+            if (inscripcion == null) {
+                log.error("ERROR: [ARCHIVOS] Inscripcion no encontrada: {}", idInscripcion);
+                return ResponseEntity.status(404)
+                    .header("Content-Type", "application/json")
+                    .body("{\"error\":\"Inscripcion no encontrada\",\"idInscripcion\":" + idInscripcion + "}");
+            }
+            
+            log.info("INFO: [ARCHIVOS] Inscripcion encontrada: {} (ID: {})", 
+                inscripcion.getNombre_solicitud(), inscripcion.getId_solicitud());
+            
+            // 2. Buscar documentos asociados
+            List<Documento> documentos = inscripcion.getDocumentos();
+            if (documentos == null || documentos.isEmpty()) {
+                log.error("ERROR: [ARCHIVOS] No hay documentos asociados a la inscripcion: {}", idInscripcion);
+                return ResponseEntity.status(404)
+                    .header("Content-Type", "application/json")
+                    .body("{\"error\":\"No hay documentos asociados a esta inscripcion\",\"idInscripcion\":" + idInscripcion + "}");
+            }
+            
+            log.info("INFO: [ARCHIVOS] Documentos asociados: {}", documentos.size());
+            
+            // 3. Buscar el primer documento PDF (comprobante de pago)
+            for (Documento documento : documentos) {
+                log.debug("INFO: [ARCHIVOS] Revisando documento: {}, ID: {}", 
+                    documento.getNombre() != null ? documento.getNombre() : "NOMBRE_NULL",
+                    documento.getId_documento());
+                
+                if (documento.getNombre() != null && documento.getNombre().toLowerCase().endsWith(".pdf")) {
+                    try {
+                        log.info("INFO: [ARCHIVOS] Documento PDF encontrado: {}", documento.getNombre());
+                        log.debug("INFO: [ARCHIVOS] Ruta del documento: {}", documento.getRuta_documento());
+                        
+                        // Obtener el archivo usando el nombre del documento
+                        byte[] archivo = objGestionarArchivos.getFile(documento.getNombre());
+                        
+                        if (archivo == null || archivo.length == 0) {
+                            log.warn("WARNING: [ARCHIVOS] Archivo no encontrado en disco: {}", documento.getNombre());
+                            // Intentar con la ruta del documento
+                            if (documento.getRuta_documento() != null && !documento.getRuta_documento().equals(documento.getNombre())) {
+                                log.info("INFO: [ARCHIVOS] Intentando con ruta alternativa: {}", documento.getRuta_documento());
+                                archivo = objGestionarArchivos.getFile(documento.getRuta_documento());
+                            }
+                            
+                            if (archivo == null || archivo.length == 0) {
+                                log.warn("WARNING: [ARCHIVOS] Archivo no disponible, probando siguiente documento");
+                                continue; // Probar el siguiente documento
+                            }
+                        }
+                        
+                        log.info("INFO: [ARCHIVOS] Archivo obtenido exitosamente: {} ({} bytes)", 
+                            documento.getNombre(), archivo.length);
+                        
+                        // Configurar headers para descarga
+                        String contentDisposition = "attachment; filename=\"" + documento.getNombre() + "\"";
+                        
+                        return ResponseEntity.ok()
+                            .header(HttpHeaders.CONTENT_DISPOSITION, contentDisposition)
+                            .contentType(MediaType.APPLICATION_PDF)
+                            .body(archivo);
+                            
+                    } catch (Exception e) {
+                        log.error("ERROR: [ARCHIVOS] Error procesando documento: {} - {}", 
+                            documento.getNombre(), e.getMessage(), e);
+                        continue; // Probar el siguiente documento
+                    }
+                } else {
+                    log.debug("INFO: [ARCHIVOS] Documento ignorado (no es PDF): {}", 
+                        documento.getNombre() != null ? documento.getNombre() : "NOMBRE_NULL");
+                }
+            }
+            
+            log.error("ERROR: [ARCHIVOS] No se encontro ningun documento PDF valido para la inscripcion: {}", idInscripcion);
+            return ResponseEntity.status(404)
+                .header("Content-Type", "application/json")
+                .body("{\"error\":\"No se encontro ningun comprobante PDF valido\",\"idInscripcion\":" + idInscripcion + "}");
+                
+        } catch (Exception e) {
+            log.error("ERROR: [ARCHIVOS] Error descargando comprobante: {}", e.getMessage(), e);
+            return ResponseEntity.status(500)
+                .header("Content-Type", "application/json")
+                .body("{\"error\":\"Error interno del servidor al descargar comprobante\",\"message\":\"" + e.getMessage() + "\"}");
+        }
+    }
+    
+    /**
      * Descargar oficio de paz y salvo por ID de solicitud
      */
     @GetMapping("/descargarOficioPazSalvo/{idSolicitud}")

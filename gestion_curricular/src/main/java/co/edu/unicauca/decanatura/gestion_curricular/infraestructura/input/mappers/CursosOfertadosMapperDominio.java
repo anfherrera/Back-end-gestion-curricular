@@ -29,6 +29,9 @@ public interface CursosOfertadosMapperDominio {
     @Mapping(target = "estadosCursoOfertados", ignore = true)
     @Mapping(target = "estudiantesInscritos", ignore = true)
     @Mapping(target = "solicitudes" , ignore = true)
+    @Mapping(target = "fecha_inicio", ignore = true) // Se asigna manualmente en el controlador
+    @Mapping(target = "fecha_fin", ignore = true) // Se asigna manualmente en el controlador
+    @Mapping(target = "periodo_academico", ignore = true) // Se asigna manualmente en el controlador
     CursoOfertadoVerano mappearDeDTOPeticionACursoOfertado(CursosOfertadosDTOPeticion peticion);
 
     // Dominio → DTO Respuesta
@@ -47,10 +50,10 @@ public interface CursosOfertadosMapperDominio {
     @Mapping(source = "estadosCursoOfertados", target = "estadosCursoOfertados")
     @Mapping(source = "estudiantesInscritos", target = "estudiantesInscritos")
     @Mapping(source = "objMateria.nombre", target = "descripcion", qualifiedByName = "crearDescripcion")
-    @Mapping(source = "estadosCursoOfertados", target = "fecha_inicio", qualifiedByName = "obtenerFechaInicio")
-    @Mapping(source = "estadosCursoOfertados", target = "fecha_fin", qualifiedByName = "obtenerFechaFin")
+    @Mapping(source = "fecha_inicio", target = "fecha_inicio", qualifiedByName = "formatearFecha")
+    @Mapping(source = ".", target = "fecha_fin", qualifiedByName = "calcularFechaFin")
     @Mapping(source = "estadosCursoOfertados", target = "estado", qualifiedByName = "obtenerEstadoActual")
-    @Mapping(source = "estadosCursoOfertados", target = "periodo", qualifiedByName = "calcularPeriodoAcademico")
+    @Mapping(source = ".", target = "periodo", qualifiedByName = "calcularPeriodoDesdeCurso")
     CursosOfertadosDTORespuesta mappearDeCursoOfertadoARespuesta(CursoOfertadoVerano curso);
     
     // Método post-mapping para asignar idCurso desde id_curso
@@ -77,10 +80,10 @@ public interface CursosOfertadosMapperDominio {
     @Mapping(source = "estadosCursoOfertados", target = "estadosCursoOfertados")
     @Mapping(source = "estudiantesInscritos", target = "estudiantesInscritos")
     @Mapping(source = "objMateria.nombre", target = "descripcion", qualifiedByName = "crearDescripcion")
-    @Mapping(source = "estadosCursoOfertados", target = "fecha_inicio", qualifiedByName = "obtenerFechaInicio")
-    @Mapping(source = "estadosCursoOfertados", target = "fecha_fin", qualifiedByName = "obtenerFechaFin")
+    @Mapping(source = "fecha_inicio", target = "fecha_inicio", qualifiedByName = "formatearFecha")
+    @Mapping(source = ".", target = "fecha_fin", qualifiedByName = "calcularFechaFin")
     @Mapping(source = "estadosCursoOfertados", target = "estado", qualifiedByName = "obtenerEstadoActual")
-    @Mapping(source = "estadosCursoOfertados", target = "periodo", qualifiedByName = "calcularPeriodoAcademico")
+    @Mapping(source = ".", target = "periodo", qualifiedByName = "calcularPeriodoDesdeCurso")
     @Named("mappearDeCursoOfertadoARespuestaDisponible")
     CursosOfertadosDTORespuesta mappearDeCursoOfertadoARespuestaDisponible(CursoOfertadoVerano curso);
 
@@ -138,29 +141,8 @@ public interface CursosOfertadosMapperDominio {
         return new java.text.SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'").format(fecha);
     }
     
-    @Named("obtenerFechaFin")
-    default String obtenerFechaFin(List<EstadoCursoOfertado> estados) {
-        if (estados == null || estados.isEmpty()) {
-            return "2024-07-15T17:00:00Z";
-        }
-        // Obtener el estado más reciente
-        EstadoCursoOfertado estadoMasReciente = estados.get(estados.size() - 1);
-        
-        // Si hay fecha_fin almacenada, usarla
-        if (estadoMasReciente.getFecha_fin() != null) {
-            return new java.text.SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'").format(estadoMasReciente.getFecha_fin());
-        }
-        
-        // Si no hay fecha_fin, calcular basada en la fecha de inicio + 6 semanas (compatibilidad con datos antiguos)
-        java.util.Date fechaInicio = estadoMasReciente.getFecha_registro_estado();
-        if (fechaInicio == null) {
-            return "2024-07-15T17:00:00Z";
-        }
-        java.util.Calendar cal = java.util.Calendar.getInstance();
-        cal.setTime(fechaInicio);
-        cal.add(java.util.Calendar.WEEK_OF_YEAR, 6); // 6 semanas después
-        return new java.text.SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'").format(cal.getTime());
-    }
+    // Métodos obsoletos eliminados: obtenerFechaFin y calcularPeriodoAcademico
+    // Ya no son necesarios porque fecha_fin y periodo_academico ahora están directamente en el curso
     
     @Named("calcularCupoDisponible")
     default Integer calcularCupoDisponible(CursoOfertadoVerano curso) {
@@ -186,40 +168,57 @@ public interface CursosOfertadosMapperDominio {
         return Math.max(0, cupoDisponible);
     }
     
-    @Named("calcularPeriodoAcademico")
-    default String calcularPeriodoAcademico(List<EstadoCursoOfertado> estados) {
-        if (estados == null || estados.isEmpty()) {
-            return "N/A";
+    @Named("formatearFecha")
+    default String formatearFecha(java.util.Date fecha) {
+        if (fecha == null) {
+            // Para cursos antiguos que no tienen fecha, calcular una por defecto (6 meses desde ahora)
+            java.util.Calendar cal = java.util.Calendar.getInstance();
+            cal.add(java.util.Calendar.MONTH, 6);
+            fecha = cal.getTime();
         }
-        
-        // Obtener el estado más reciente
-        EstadoCursoOfertado estadoMasReciente = estados.get(estados.size() - 1);
-        
-        // Si hay período académico guardado, usarlo (tiene prioridad)
-        if (estadoMasReciente.getPeriodo_academico() != null && !estadoMasReciente.getPeriodo_academico().trim().isEmpty()) {
-            return estadoMasReciente.getPeriodo_academico().trim();
+        return new java.text.SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'").format(fecha);
+    }
+    
+    @Named("calcularFechaFin")
+    default String calcularFechaFin(CursoOfertadoVerano curso) {
+        // Si hay fecha_fin guardada, usarla
+        if (curso.getFecha_fin() != null) {
+            return new java.text.SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'").format(curso.getFecha_fin());
         }
-        
-        // Si no hay período guardado, calcular basándose en la fecha de inicio (compatibilidad con datos antiguos)
-        java.util.Date fechaInicio = estadoMasReciente.getFecha_registro_estado();
-        if (fechaInicio == null) {
-            return "N/A";
+        // Si no hay fecha_fin pero hay fecha_inicio, calcular fecha_inicio + 6 semanas (para cursos antiguos)
+        if (curso.getFecha_inicio() != null) {
+            java.util.Calendar cal = java.util.Calendar.getInstance();
+            cal.setTime(curso.getFecha_inicio());
+            cal.add(java.util.Calendar.WEEK_OF_YEAR, 6);
+            return new java.text.SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'").format(cal.getTime());
         }
-        
-        // Convertir Date a LocalDate para facilitar el cálculo
-        java.time.LocalDate fecha = fechaInicio.toInstant()
-            .atZone(java.time.ZoneId.systemDefault())
-            .toLocalDate();
-        
-        int año = fecha.getYear();
-        int mes = fecha.getMonthValue();
-        
-        // Lógica para determinar el período académico:
-        // Primer período: Enero a Junio (meses 1-6)
-        // Segundo período: Julio a Diciembre (meses 7-12)
+        // Si no hay ninguna fecha, calcular por defecto (7 meses desde ahora)
+        java.util.Calendar cal = java.util.Calendar.getInstance();
+        cal.add(java.util.Calendar.MONTH, 7);
+        return new java.text.SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'").format(cal.getTime());
+    }
+    
+    @Named("calcularPeriodoDesdeCurso")
+    default String calcularPeriodoDesdeCurso(CursoOfertadoVerano curso) {
+        // Si hay período académico guardado, usarlo
+        if (curso.getPeriodo_academico() != null && !curso.getPeriodo_academico().trim().isEmpty()) {
+            return curso.getPeriodo_academico().trim();
+        }
+        // Si no hay período pero hay fecha_inicio, calcular desde la fecha (para cursos antiguos)
+        if (curso.getFecha_inicio() != null) {
+            java.time.LocalDate fecha = curso.getFecha_inicio().toInstant()
+                .atZone(java.time.ZoneId.systemDefault())
+                .toLocalDate();
+            int año = fecha.getYear();
+            int mes = fecha.getMonthValue();
+            int numeroPeriodo = (mes <= 6) ? 1 : 2;
+            return año + "-" + numeroPeriodo;
+        }
+        // Si no hay nada, calcular desde la fecha actual
+        java.time.LocalDate ahora = java.time.LocalDate.now();
+        int año = ahora.getYear();
+        int mes = ahora.getMonthValue();
         int numeroPeriodo = (mes <= 6) ? 1 : 2;
-        
-        // Retornar en formato "YYYY-P" (ej: "2025-1", "2025-2")
         return año + "-" + numeroPeriodo;
     }
 }

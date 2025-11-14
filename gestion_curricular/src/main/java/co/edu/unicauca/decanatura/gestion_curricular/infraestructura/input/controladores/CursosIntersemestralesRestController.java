@@ -2651,6 +2651,50 @@ public class CursosIntersemestralesRestController {
                 // Grupo: siempre se asigna como "A" por defecto
                 cursoDominio.setGrupo(co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Enums.GrupoCursoVerano.A);
                 
+                // Parsear fecha de inicio (ANTES de usarla)
+                java.util.Date fechaInicioDate;
+                try {
+                    java.text.SimpleDateFormat sdf = new java.text.SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
+                    sdf.setLenient(false);
+                    try {
+                        fechaInicioDate = sdf.parse(dto.getFecha_inicio());
+                    } catch (java.text.ParseException e) {
+                        // Intentar con formato más simple
+                        sdf = new java.text.SimpleDateFormat("yyyy-MM-dd");
+                        fechaInicioDate = sdf.parse(dto.getFecha_inicio());
+                    }
+                } catch (java.text.ParseException e) {
+                    // Si falla el parsing, usar la fecha actual
+                    System.out.println("DEBUG: WARNING - No se pudo parsear la fecha de inicio, usando fecha actual");
+                    fechaInicioDate = new java.util.Date();
+                }
+                
+                // Parsear fecha de fin (ANTES de usarla)
+                java.util.Date fechaFinDate;
+                try {
+                    java.text.SimpleDateFormat sdf = new java.text.SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
+                    sdf.setLenient(false);
+                    try {
+                        fechaFinDate = sdf.parse(dto.getFecha_fin());
+                    } catch (java.text.ParseException e) {
+                        // Intentar con formato más simple
+                        sdf = new java.text.SimpleDateFormat("yyyy-MM-dd");
+                        fechaFinDate = sdf.parse(dto.getFecha_fin());
+                    }
+                } catch (java.text.ParseException e) {
+                    // Si falla el parsing, calcular como fecha_inicio + 6 semanas
+                    System.out.println("DEBUG: WARNING - No se pudo parsear la fecha de fin, calculando como fecha_inicio + 6 semanas");
+                    java.util.Calendar cal = java.util.Calendar.getInstance();
+                    cal.setTime(fechaInicioDate);
+                    cal.add(java.util.Calendar.WEEK_OF_YEAR, 6);
+                    fechaFinDate = cal.getTime();
+                }
+                
+                // Guardar fechas y período directamente en el curso (no en estados)
+                cursoDominio.setFecha_inicio(fechaInicioDate);
+                cursoDominio.setFecha_fin(fechaFinDate);
+                cursoDominio.setPeriodo_academico(periodoAcademicoTrimmed);
+                
                 // Obtener materia real de la base de datos
                 co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Materia materiaDominio = 
                     materiaCU.obtenerMateriaPorId(dto.getId_materia().intValue());
@@ -2710,50 +2754,11 @@ public class CursosIntersemestralesRestController {
                     System.out.println("DEBUG: WARNING - Estado inválido proporcionado, usando 'Abierto' por defecto");
                 }
                 
-                // Parsear fecha de inicio para usarla como fecha_registro_estado
-                java.util.Date fechaInicioDate;
-                try {
-                    java.text.SimpleDateFormat sdf = new java.text.SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
-                    sdf.setLenient(false);
-                    try {
-                        fechaInicioDate = sdf.parse(dto.getFecha_inicio());
-                    } catch (java.text.ParseException e) {
-                        // Intentar con formato más simple
-                        sdf = new java.text.SimpleDateFormat("yyyy-MM-dd");
-                        fechaInicioDate = sdf.parse(dto.getFecha_inicio());
-                    }
-                } catch (java.text.ParseException e) {
-                    // Si falla el parsing, usar la fecha actual
-                    System.out.println("DEBUG: WARNING - No se pudo parsear la fecha de inicio, usando fecha actual");
-                    fechaInicioDate = new java.util.Date();
-                }
-                
-                // Parsear fecha de fin
-                java.util.Date fechaFinDate;
-                try {
-                    java.text.SimpleDateFormat sdf = new java.text.SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
-                    sdf.setLenient(false);
-                    try {
-                        fechaFinDate = sdf.parse(dto.getFecha_fin());
-                    } catch (java.text.ParseException e) {
-                        // Intentar con formato más simple
-                        sdf = new java.text.SimpleDateFormat("yyyy-MM-dd");
-                        fechaFinDate = sdf.parse(dto.getFecha_fin());
-                    }
-                } catch (java.text.ParseException e) {
-                    // Si falla el parsing, calcular como fecha_inicio + 6 semanas
-                    System.out.println("DEBUG: WARNING - No se pudo parsear la fecha de fin, calculando como fecha_inicio + 6 semanas");
-                    java.util.Calendar cal = java.util.Calendar.getInstance();
-                    cal.setTime(fechaInicioDate);
-                    cal.add(java.util.Calendar.WEEK_OF_YEAR, 6);
-                    fechaFinDate = cal.getTime();
-                }
-                
+                // Crear estado inicial (solo con fecha de registro del estado, las fechas del curso van en el curso)
                 EstadoCursoOfertado estadoCurso = new EstadoCursoOfertado();
                 estadoCurso.setEstado_actual(estadoInicial);
-                estadoCurso.setFecha_registro_estado(fechaInicioDate); // Fecha de inicio
-                estadoCurso.setFecha_fin(fechaFinDate); // Fecha de fin
-                estadoCurso.setPeriodo_academico(periodoAcademicoTrimmed); // Guardar período académico validado (usando enum)
+                estadoCurso.setFecha_registro_estado(fechaInicioDate); // Fecha en que se registra este estado (coincide con fecha_inicio del curso al crearlo)
+                // fecha_fin y periodo_academico ahora están solo en el curso, no en estados
                 List<EstadoCursoOfertado> estados = new ArrayList<>();
                 estados.add(estadoCurso);
                 cursoDominio.setEstadosCursoOfertados(estados);
@@ -4331,43 +4336,69 @@ public class CursosIntersemestralesRestController {
      * GET /api/cursos-intersemestrales/inscripciones/{idInscripcion}/comprobante
      */
     @GetMapping("/inscripciones/{idInscripcion}/comprobante")
-    public ResponseEntity<byte[]> descargarComprobantePago(@PathVariable Long idInscripcion) {
+    public ResponseEntity<?> descargarComprobantePago(@PathVariable Long idInscripcion) {
         try {
-            System.out.println(" Descargando comprobante de pago para inscripcion: " + idInscripcion);
+            System.out.println("INFO: [DESCARGAR_COMPROBANTE] Iniciando descarga para inscripcion ID: " + idInscripcion);
             
-            // 1. Buscar la inscripcion
-            SolicitudCursoVeranoIncripcion inscripcion = solicitudCU.buscarPorIdInscripcion(idInscripcion.intValue());
-            if (inscripcion == null) {
-                System.out.println("Inscripcion no encontrada: " + idInscripcion);
-                return ResponseEntity.notFound().build();
+            // Validar ID
+            if (idInscripcion == null || idInscripcion <= 0) {
+                System.out.println("ERROR: [DESCARGAR_COMPROBANTE] ID de inscripcion invalido: " + idInscripcion);
+                return ResponseEntity.badRequest().body("ID de inscripcion invalido");
             }
             
-            System.out.println("Inscripcion encontrada: " + inscripcion.getNombre_solicitud());
+            // 1. Buscar la inscripcion
+            System.out.println("INFO: [DESCARGAR_COMPROBANTE] Buscando inscripcion con ID: " + idInscripcion.intValue());
+            SolicitudCursoVeranoIncripcion inscripcion = solicitudCU.buscarPorIdInscripcion(idInscripcion.intValue());
+            
+            if (inscripcion == null) {
+                System.out.println("ERROR: [DESCARGAR_COMPROBANTE] Inscripcion no encontrada: " + idInscripcion);
+                return ResponseEntity.status(404)
+                    .header("Content-Type", "application/json")
+                    .body("{\"error\":\"Inscripcion no encontrada\",\"idInscripcion\":" + idInscripcion + "}");
+            }
+            
+            System.out.println("INFO: [DESCARGAR_COMPROBANTE] Inscripcion encontrada: " + inscripcion.getNombre_solicitud() + " (ID: " + inscripcion.getId_solicitud() + ")");
             
             // 2. Buscar documentos asociados
             List<Documento> documentos = inscripcion.getDocumentos();
             if (documentos == null || documentos.isEmpty()) {
-                System.out.println("No hay documentos asociados a la inscripcion: " + idInscripcion);
-                return ResponseEntity.notFound().build();
+                System.out.println("ERROR: [DESCARGAR_COMPROBANTE] No hay documentos asociados a la inscripcion: " + idInscripcion);
+                return ResponseEntity.status(404)
+                    .header("Content-Type", "application/json")
+                    .body("{\"error\":\"No hay documentos asociados a esta inscripcion\",\"idInscripcion\":" + idInscripcion + "}");
             }
             
-            System.out.println("Documentos asociados: " + documentos.size());
+            System.out.println("INFO: [DESCARGAR_COMPROBANTE] Documentos asociados: " + documentos.size());
             
             // 3. Buscar el primer documento PDF (comprobante de pago)
             for (Documento documento : documentos) {
+                System.out.println("INFO: [DESCARGAR_COMPROBANTE] Revisando documento: " + 
+                    (documento.getNombre() != null ? documento.getNombre() : "NOMBRE_NULL") +
+                    ", ID: " + documento.getId_documento());
+                
                 if (documento.getNombre() != null && documento.getNombre().toLowerCase().endsWith(".pdf")) {
                     try {
-                        System.out.println("Documento encontrado: " + documento.getNombre());
+                        System.out.println("INFO: [DESCARGAR_COMPROBANTE] Documento PDF encontrado: " + documento.getNombre());
+                        System.out.println("INFO: [DESCARGAR_COMPROBANTE] Ruta del documento: " + documento.getRuta_documento());
                         
-                        // Obtener el archivo
+                        // Obtener el archivo usando el nombre del documento
                         byte[] archivo = objGestionarArchivos.getFile(documento.getNombre());
                         
                         if (archivo == null || archivo.length == 0) {
-                            System.out.println("Archivo no encontrado en disco: " + documento.getNombre());
-                            continue; // Probar el siguiente documento
+                            System.out.println("WARNING: [DESCARGAR_COMPROBANTE] Archivo no encontrado en disco: " + documento.getNombre());
+                            // Intentar con la ruta del documento
+                            if (documento.getRuta_documento() != null && !documento.getRuta_documento().equals(documento.getNombre())) {
+                                System.out.println("INFO: [DESCARGAR_COMPROBANTE] Intentando con ruta alternativa: " + documento.getRuta_documento());
+                                archivo = objGestionarArchivos.getFile(documento.getRuta_documento());
+                            }
+                            
+                            if (archivo == null || archivo.length == 0) {
+                                System.out.println("WARNING: [DESCARGAR_COMPROBANTE] Archivo no disponible, probando siguiente documento");
+                                continue; // Probar el siguiente documento
+                            }
                         }
                         
-                        System.out.println("Archivo obtenido exitosamente: " + documento.getNombre());
+                        System.out.println("INFO: [DESCARGAR_COMPROBANTE] Archivo obtenido exitosamente: " + documento.getNombre() + " (" + archivo.length + " bytes)");
                         
                         // Configurar headers para descarga
                         String contentDisposition = "attachment; filename=\"" + documento.getNombre() + "\"";
@@ -4378,19 +4409,27 @@ public class CursosIntersemestralesRestController {
                             .body(archivo);
                             
                     } catch (Exception e) {
-                        System.out.println("Error procesando documento: " + documento.getNombre() + " - " + e.getMessage());
+                        System.out.println("ERROR: [DESCARGAR_COMPROBANTE] Error procesando documento: " + documento.getNombre() + " - " + e.getMessage());
+                        e.printStackTrace();
                         continue; // Probar el siguiente documento
                     }
+                } else {
+                    System.out.println("INFO: [DESCARGAR_COMPROBANTE] Documento ignorado (no es PDF): " + 
+                        (documento.getNombre() != null ? documento.getNombre() : "NOMBRE_NULL"));
                 }
             }
             
-            System.out.println("No se encontro ningun documento PDF valido");
-            return ResponseEntity.notFound().build();
+            System.out.println("ERROR: [DESCARGAR_COMPROBANTE] No se encontro ningun documento PDF valido para la inscripcion: " + idInscripcion);
+            return ResponseEntity.status(404)
+                .header("Content-Type", "application/json")
+                .body("{\"error\":\"No se encontro ningun comprobante PDF valido\",\"idInscripcion\":" + idInscripcion + "}");
                 
         } catch (Exception e) {
-            System.out.println("Error descargando comprobante: " + e.getMessage());
+            System.out.println("ERROR: [DESCARGAR_COMPROBANTE] Error descargando comprobante: " + e.getMessage());
             e.printStackTrace();
-            return ResponseEntity.internalServerError().build();
+            return ResponseEntity.status(500)
+                .header("Content-Type", "application/json")
+                .body("{\"error\":\"Error interno del servidor al descargar comprobante\",\"message\":\"" + e.getMessage() + "\"}");
         }
     }
 

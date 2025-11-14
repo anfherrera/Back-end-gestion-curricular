@@ -41,6 +41,12 @@ public class CursoOfertadoVeranoEntity {
     private Integer cupo_estimado; // Valor mínimo para abrir un curso
     @Column(nullable = false, length = 100)
     private String salon;
+    @Column(nullable = true)
+    private java.util.Date fecha_inicio; // Fecha de inicio del curso
+    @Column(nullable = true)
+    private java.util.Date fecha_fin; // Fecha de fin del curso (opcional)
+    @Column(nullable = true, length = 10)
+    private String periodo_academico; // Período académico (ej: "2025-1", "2025-2")
     
     @OneToOne
     @JoinColumn(name = "idfkMateria", referencedColumnName = "idMateria", nullable = false)

@@ -12,8 +12,7 @@ import lombok.NoArgsConstructor;
 public class EstadoCursoOfertadoDTORespuesta {
     private Integer id_estado;
     private String estado_actual;
-    private Date fecha_registro_estado; // Fecha de inicio
-    private Date fecha_fin; // Fecha de fin (opcional)
+    private Date fecha_registro_estado; // Fecha en que se registró este estado (cuando cambió de estado)
 
     // Si deseas incluir información del curso ofertado, puedes agregarlo así:
     private CursosOfertadosDTORespuesta objCursoOfertadoVerano;

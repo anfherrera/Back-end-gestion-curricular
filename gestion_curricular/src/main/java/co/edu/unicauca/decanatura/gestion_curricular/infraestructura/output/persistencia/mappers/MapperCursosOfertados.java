@@ -62,8 +62,7 @@ public class MapperCursosOfertados {
                         estadoEntity.setId_estado(estado.getId_estado());
                         estadoEntity.setEstado_actual(estado.getEstado_actual());
                         estadoEntity.setFecha_registro_estado(estado.getFecha_registro_estado());
-                        estadoEntity.setFecha_fin(estado.getFecha_fin()); // Mapear fecha de fin
-                        estadoEntity.setPeriodo_academico(estado.getPeriodo_academico()); // Mapear período académico
+                        // fecha_fin y periodo_academico ahora están solo en el curso, no en estados
                         estadoEntity.setObjCursoOfertadoVerano(null); // corta la recursividad
 
                         estadosCurso.add(estadoEntity);
@@ -117,14 +116,18 @@ public class MapperCursosOfertados {
                     estado.setId_estado(estadoEntity.getId_estado());
                     estado.setEstado_actual(estadoEntity.getEstado_actual());
                     estado.setFecha_registro_estado(estadoEntity.getFecha_registro_estado());
-                    estado.setFecha_fin(estadoEntity.getFecha_fin()); // Mapear fecha de fin
-                    estado.setPeriodo_academico(estadoEntity.getPeriodo_academico()); // Mapear período académico
+                    // fecha_fin y periodo_academico ahora están solo en el curso, no en estados
                     estado.setObjCursoOfertadoVerano(null); // cortar recursividad
 
                     estadosCurso.add(estado);
                 }
             }
             destination.setEstadosCursoOfertados(estadosCurso);
+            
+            // Mapear fechas y período académico directamente desde el curso (ya no desde estados)
+            destination.setFecha_inicio(source.getFecha_inicio());
+            destination.setFecha_fin(source.getFecha_fin());
+            destination.setPeriodo_academico(source.getPeriodo_academico());
 
             // Mapeo manual de usuarios SIN usar modelMapper.map
             List<Usuario> estudiantes = new ArrayList<>();
