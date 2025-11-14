@@ -11,6 +11,7 @@ public class EstadoSolicitud {
     private Integer id_estado;
     private String estado_actual;
     private Date fecha_registro_estado;
+    private String comentario;
 
     private Solicitud objSolicitud;
 

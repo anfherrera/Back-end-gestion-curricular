@@ -76,7 +76,7 @@ public class GestionarCursoOfertadoVeranoCUAdapter implements GestionarCursoOfer
         }
         // estadoCursoOfertado = this.objGestionarEstadoCursoOfertadoGateway.buscarPorIEstadoCursoOfertado(idEstado);
         // if(estadoCursoOfertado == null){
-        //     this.objFormateadorResultados.retornarRespuestaErrorEntidadExiste("No existe el estado con el ID: " + idEstado);
+        //    this.objFormateadorResultados.retornarRespuestaErrorEntidadExiste("No existe el estado con el ID: " + idEstado);
         // }
         if(estadoCurso.getEstado_actual() == null){
             this.objFormateadorResultados.retornarRespuestaErrorEntidadExiste("No hay datos en el estado actual");
@@ -152,7 +152,7 @@ public class GestionarCursoOfertadoVeranoCUAdapter implements GestionarCursoOfer
                     for (Usuario usuarioRemover : estudiantesInscritos) {
                         // bandera = this.objGestionarCursoOfertadoVeranoGateway.desasociarUsuarioCurso(usuarioRemover.getId_usuario(), idCurso);
                         // if(bandera == false){
-                        //     this.objFormateadorResultados.retornarRespuestaErrorEntidadExiste("No se pudo desasociar el usuario del curso");
+                        //    this.objFormateadorResultados.retornarRespuestaErrorEntidadExiste("No se pudo desasociar el usuario del curso");
                         // }
                         cursoABuscar.getEstudiantesInscritos().remove(usuarioRemover);
                     }                

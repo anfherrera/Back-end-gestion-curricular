@@ -105,6 +105,11 @@ public class GestionarSolicitudHomologacionCUAdapter implements GestionarSolicit
     }
 
     @Override
+    public List<SolicitudHomologacion> listarSolicitudesAprobadasToSecretaria() {
+        return objGestionarSolicitudHomologacionGateway.listarSolicitudesAprobadasToSecretaria();
+    }
+
+    @Override
     public List<SolicitudHomologacion> listarSolicitudesPorRol(String rol, Integer idUsuario) {
         List<SolicitudHomologacion> todas = objGestionarSolicitudHomologacionGateway.listarSolicitudes();
 
@@ -141,6 +146,7 @@ public class GestionarSolicitudHomologacionCUAdapter implements GestionarSolicit
         estado.setFecha_registro_estado(new Date());
         objGestionarSolicitudHomologacionGateway.cambiarEstadoSolicitud(idSolicitud, estado);
     }
+    
     
 
 }

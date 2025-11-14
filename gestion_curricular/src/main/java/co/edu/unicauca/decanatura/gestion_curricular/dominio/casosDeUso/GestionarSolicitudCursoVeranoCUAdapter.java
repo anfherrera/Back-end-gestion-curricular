@@ -71,25 +71,25 @@ public class GestionarSolicitudCursoVeranoCUAdapter implements GestionarSolicitu
         } else {
             // Para cursos existentes, validar que exista (sin validar estados)
         cursoABuscar = this.objCursoOfertado.obtenerCursoPorId(solicitudCursoVerano.getObjCursoOfertadoVerano().getId_curso());
-        System.out.println("🔍 DEBUG: Curso buscado con ID: " + solicitudCursoVerano.getObjCursoOfertadoVerano().getId_curso());
-        System.out.println("🔍 DEBUG: Curso encontrado: " + (cursoABuscar != null ? "SÍ" : "NO"));
+        System.out.println(" DEBUG: Curso buscado con ID: " + solicitudCursoVerano.getObjCursoOfertadoVerano().getId_curso());
+        System.out.println(" DEBUG: Curso encontrado: " + (cursoABuscar != null ? "SÍ" : "NO"));
         
         if (cursoABuscar == null) {   
             this.objFormateadorResultados.retornarRespuestaErrorReglaDeNegocio("No se encontró el curso");
         }
         
-        System.out.println("🔍 DEBUG: Estados del curso: " + (cursoABuscar.getEstadosCursoOfertados() != null ? cursoABuscar.getEstadosCursoOfertados().size() : "NULL"));
+        System.out.println(" DEBUG: Estados del curso: " + (cursoABuscar.getEstadosCursoOfertados() != null ? cursoABuscar.getEstadosCursoOfertados().size() : "NULL"));
         
         // Validación opcional de estados - solo si existen
         if (cursoABuscar.getEstadosCursoOfertados() != null && !cursoABuscar.getEstadosCursoOfertados().isEmpty()) {
             String ultimoEstado = cursoABuscar.getEstadosCursoOfertados().get(cursoABuscar.getEstadosCursoOfertados().size() - 1).getEstado_actual();
-            System.out.println("🔍 DEBUG: Último estado del curso: " + ultimoEstado);
+            System.out.println(" DEBUG: Último estado del curso: " + ultimoEstado);
             // Solo validar si el estado es explícitamente "Cerrado" o "Cancelado"
             if ("Cerrado".equals(ultimoEstado) || "Cancelado".equals(ultimoEstado)) {
                 this.objFormateadorResultados.retornarRespuestaErrorReglaDeNegocio("El curso está " + ultimoEstado.toLowerCase() + " y no acepta preinscripciones");
             }
         } else {
-            System.out.println("🔍 DEBUG: Curso sin estados - permitiendo preinscripción");
+            System.out.println(" DEBUG: Curso sin estados - permitiendo preinscripción");
         }
         }
 

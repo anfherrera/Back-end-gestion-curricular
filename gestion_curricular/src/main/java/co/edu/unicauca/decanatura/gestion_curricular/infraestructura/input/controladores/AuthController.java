@@ -23,30 +23,30 @@
 // @RequestMapping("/api/auth")
 // @Validated
 // public class AuthController {
-//     private final AuthenticationManager authManager;
-//     private final JwtUtil jwtUtil;
-//     private final UserDetailsService userDetailsService;
+//    private final AuthenticationManager authManager;
+//    private final JwtUtil jwtUtil;
+//    private final UserDetailsService userDetailsService;
 
-//     public AuthController(AuthenticationManager authManager, JwtUtil jwtUtil, UserDetailsService userDetailsService) {
-//         this.authManager = authManager;
-//         this.jwtUtil = jwtUtil;
-//         this.userDetailsService = userDetailsService;
-//     }
+//    public AuthController(AuthenticationManager authManager, JwtUtil jwtUtil, UserDetailsService userDetailsService) {
+//        this.authManager = authManager;
+//        this.jwtUtil = jwtUtil;
+//        this.userDetailsService = userDetailsService;
+//    }
 
-//     @PostMapping("/login")
-//     public ResponseEntity<?> login(@RequestBody LoginDTOPeticion request) {
-//         try {
-//             Authentication authentication = authManager.authenticate(
-//                     new UsernamePasswordAuthenticationToken(request.getCorreo(), request.getPassword())
-//             );
+//    @PostMapping("/login")
+//    public ResponseEntity<?> login(@RequestBody LoginDTOPeticion request) {
+//        try {
+//            Authentication authentication = authManager.authenticate(
+//                    new UsernamePasswordAuthenticationToken(request.getCorreo(), request.getPassword())
+//            );
 
-//             UserDetails userDetails = userDetailsService.loadUserByUsername(request.getCorreo());
-//             String token = jwtUtil.generarToken(userDetails.getUsername());
+//            UserDetails userDetails = userDetailsService.loadUserByUsername(request.getCorreo());
+//            String token = jwtUtil.generarToken(userDetails.getUsername());
 
-//             return ResponseEntity.ok(new LoginDTORespuesta(token));
+//            return ResponseEntity.ok(new LoginDTORespuesta(token));
 
-//         } catch (BadCredentialsException ex) {
-//             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Credenciales incorrectas");
-//         }
-//     }
+//        } catch (BadCredentialsException ex) {
+//            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Credenciales incorrectas");
+//        }
+//    }
 // }

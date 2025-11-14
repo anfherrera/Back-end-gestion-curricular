@@ -291,6 +291,9 @@ public class GestionarSolicitudCursoVeranoGatewayImplAdapter implements Gestiona
         estadoEntity.setFecha_registro_estado(new Date());
         estadoEntity.setEstado_actual("Aprobado");
         estadoEntity.setObjSolicitud(solicitudEntity);
+        if (comentarios != null && !comentarios.trim().isEmpty()) {
+            estadoEntity.setComentario(comentarios.trim());
+        }
         
         // Guardar el estado
         estadoSolicitudRepository.save(estadoEntity);
@@ -335,6 +338,7 @@ public class GestionarSolicitudCursoVeranoGatewayImplAdapter implements Gestiona
         estadoEntity.setFecha_registro_estado(new Date());
         estadoEntity.setEstado_actual("Rechazado");
         estadoEntity.setObjSolicitud(solicitudEntity);
+        estadoEntity.setComentario(motivo.trim());
         
         // Guardar el estado
         estadoSolicitudRepository.save(estadoEntity);
@@ -367,6 +371,9 @@ public class GestionarSolicitudCursoVeranoGatewayImplAdapter implements Gestiona
         estadoEntity.setFecha_registro_estado(new Date());
         estadoEntity.setEstado_actual(esValido ? "Pago_Validado" : "Pago_Rechazado");
         estadoEntity.setObjSolicitud(solicitudEntity);
+        if (observaciones != null && !observaciones.trim().isEmpty()) {
+            estadoEntity.setComentario(observaciones.trim());
+        }
         
         // Guardar el estado
         estadoSolicitudRepository.save(estadoEntity);

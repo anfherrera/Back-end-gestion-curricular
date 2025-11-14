@@ -277,6 +277,7 @@ public class CursoOfertadoRestController {
             if (motivo == null || motivo.trim().isEmpty()) {
                 return ResponseEntity.badRequest().body(Map.of("error", "Debe proporcionar un motivo para el rechazo"));
             }
+            motivo = motivo.trim();
             
             SolicitudCursoVeranoPreinscripcion solicitudRechazada = solicitudCU.rechazarPreinscripcion(idSolicitud, motivo);
             
@@ -284,6 +285,7 @@ public class CursoOfertadoRestController {
             respuesta.put("success", true);
             respuesta.put("message", "Preinscripción rechazada");
             respuesta.put("solicitud", solicitudRechazada);
+            respuesta.put("motivo", motivo);
             
             return ResponseEntity.ok(respuesta);
         } catch (Exception e) {

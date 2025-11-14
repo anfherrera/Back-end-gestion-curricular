@@ -31,7 +31,7 @@ public class RestApiExceptionHandler {
         @ExceptionHandler(EntidadYaExisteException.class)
         public ResponseEntity<Error> handleEntidadYaExisteException(final HttpServletRequest req,
                         final EntidadYaExisteException ex) {
-                System.out.println("🔴 Manejando EntidadYaExisteException: " + ex.getMessage());
+                System.out.println(" Manejando EntidadYaExisteException: " + ex.getMessage());
                 final Error error = ErrorUtils
                                 .crearError(CodigoError.ENTIDAD_YA_EXISTE.getCodigo(),
                                                 String.format("%s, %s", CodigoError.ENTIDAD_YA_EXISTE.getLlaveMensaje(),
@@ -67,7 +67,7 @@ public class RestApiExceptionHandler {
         @ExceptionHandler(DataIntegrityViolationException.class)
         public ResponseEntity<Error> handleDataIntegrityViolation(final HttpServletRequest req,
                         final DataIntegrityViolationException ex) {
-                System.out.println("🔴 Manejando DataIntegrityViolationException: " + ex.getMessage());
+                System.out.println(" Manejando DataIntegrityViolationException: " + ex.getMessage());
                 
                 // Analizar el mensaje para dar una respuesta más amigable
                 String mensajeUsuario = "No se puede eliminar el registro porque tiene elementos asociados.";
@@ -95,8 +95,7 @@ public class RestApiExceptionHandler {
         @Order(Ordered.LOWEST_PRECEDENCE)
         public ResponseEntity<Error> handleGenericException(final HttpServletRequest req,
                         final Exception ex, final Locale locale) {
-                // SEGURIDAD: No loguear excepciones detalladas en producción
-                // System.out.println("⚠️ Manejando Exception genérica: " + ex.getClass().getName() + " - " + ex.getMessage());
+                // Por seguridad no se imprime información sensible de la excepción en producción
                 final Error error = ErrorUtils
                                 .crearError(CodigoError.ERROR_GENERICO.getCodigo(),
                                                 CodigoError.ERROR_GENERICO.getLlaveMensaje(),

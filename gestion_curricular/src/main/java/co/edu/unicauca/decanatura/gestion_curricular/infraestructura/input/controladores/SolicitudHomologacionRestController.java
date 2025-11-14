@@ -21,6 +21,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.HashMap;
 import java.util.ArrayList;
+import java.util.Locale;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpHeaders;
@@ -106,6 +107,13 @@ public class SolicitudHomologacionRestController {
         return ResponseEntity.ok(respuesta);
     }
 
+    @GetMapping("/listarSolicitud-Homologacion/Secretaria/Aprobadas")
+    public ResponseEntity<List<SolicitudHomologacionDTORespuesta>> listarSolicitudHomologacionAprobadasToSecretaria() {
+        List<SolicitudHomologacion> solicitudes = solicitudHomologacionCU.listarSolicitudesAprobadasToSecretaria();
+        List<SolicitudHomologacionDTORespuesta> respuesta = solicitudMapperDominio.mappearListaDeSolicitudHomologacionARespuesta(solicitudes);
+        return ResponseEntity.ok(respuesta);
+    }
+
 
     @GetMapping("/listarSolicitud-Homologacion/{id}")
     public ResponseEntity<SolicitudHomologacionDTORespuesta> listarHomologacionById(@PathVariable Integer id) {
@@ -123,9 +131,9 @@ public class SolicitudHomologacionRestController {
 
     // @GetMapping(" ")
     // public ResponseEntity<SolicitudHomologacionDTORespuesta> obtenerSolicitudHomologacionSeleccionada() {
-    //     SolicitudHomologacion solicitud = solicitudHomologacionCU. obtenerSolicitudHomologacion();
-    //     SolicitudHomologacionDTORespuesta respuesta = solicitudMapperDominio.mappearDeSolicitudHomologacionASolicitudHomologacionDTORespuesta(solicitud);
-    //     return ResponseEntity.ok(respuesta);
+    //    SolicitudHomologacion solicitud = solicitudHomologacionCU. obtenerSolicitudHomologacion();
+    //    SolicitudHomologacionDTORespuesta respuesta = solicitudMapperDominio.mappearDeSolicitudHomologacionASolicitudHomologacionDTORespuesta(solicitud);
+    //    return ResponseEntity.ok(respuesta);
     // }
 
     /**
@@ -148,8 +156,8 @@ public class SolicitudHomologacionRestController {
             
             // Buscar documentos que sean oficios/resoluciones (subidos por secretaria)
             for (Documento documento : documentos) {
-                if (documento.getNombre() != null && documento.getNombre().toLowerCase().endsWith(".pdf")) {
-                    String nombreArchivo = documento.getNombre().toLowerCase();
+                if (documento.getNombre() != null) {
+                    String nombreArchivo = documento.getNombre().toLowerCase(Locale.ROOT);
                     
                     // Filtrar solo archivos que parecen ser oficios/resoluciones
                     boolean esOficio = nombreArchivo.contains("oficio") || 
@@ -204,8 +212,8 @@ public class SolicitudHomologacionRestController {
             // Crear lista de oficios basada en los documentos reales (solo oficios/resoluciones)
             List<Map<String, Object>> oficios = new ArrayList<>();
             for (Documento documento : documentos) {
-                if (documento.getNombre() != null && documento.getNombre().toLowerCase().endsWith(".pdf")) {
-                    String nombreArchivo = documento.getNombre().toLowerCase();
+                if (documento.getNombre() != null) {
+                    String nombreArchivo = documento.getNombre().toLowerCase(Locale.ROOT);
                     
                     // Filtrar solo archivos que parecen ser oficios/resoluciones
                     boolean esOficio = nombreArchivo.contains("oficio") || 
@@ -253,7 +261,6 @@ public class SolicitudHomologacionRestController {
             documentosRequeridos.put("formulario_homologacion", false);
             documentosRequeridos.put("certificado_notas", false);
             documentosRequeridos.put("programa_academico", false);
-            documentosRequeridos.put("documento_a_o_b", false);
             
             // Verificar qué documentos están presentes
             for (Documento documento : documentos) {
@@ -266,8 +273,6 @@ public class SolicitudHomologacionRestController {
                         documentosRequeridos.put("certificado_notas", true);
                     } else if (nombre.contains("programa") && nombre.contains("academico")) {
                         documentosRequeridos.put("programa_academico", true);
-                    } else if (nombre.contains("documento_a") || nombre.contains("documento_b")) {
-                        documentosRequeridos.put("documento_a_o_b", true);
                     }
                 }
             }

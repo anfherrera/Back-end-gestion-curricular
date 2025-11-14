@@ -10,14 +10,14 @@
 // @NoArgsConstructor
 // @AllArgsConstructor
 // public class usuarioEntradaDto {
-//     private String nombre_completo;
-//     private String codigo;
-//     private String correo;
-//     private String password;
-//     private boolean estado_usuario;
+//    private String nombre_completo;
+//    private String codigo;
+//    private String correo;
+//    private String password;
+//    private boolean estado_usuario;
 
-//     private Integer idRol;
-//     private Integer idPrograma;
+//    private Integer idRol;
+//    private Integer idPrograma;
     
 
 

@@ -425,7 +425,7 @@ public class SolicitudPazYSalvoRestController {
      */
     @GetMapping("/test")
     public ResponseEntity<String> test() {
-        return ResponseEntity.ok("✅ Controlador de Paz y Salvo funcionando correctamente");
+        return ResponseEntity.ok("Controlador de Paz y Salvo funcionando correctamente");
     }
     
     /**
@@ -439,7 +439,7 @@ public class SolicitudPazYSalvoRestController {
         Map<String, Object> debug = new HashMap<>();
         
         System.out.println("========================================");
-        System.out.println("🔍 DEBUG UPLOAD - PAZ Y SALVO");
+        System.out.println("DEBUG UPLOAD - PAZ Y SALVO");
         System.out.println("========================================");
         
         // Información del request
@@ -447,9 +447,9 @@ public class SolicitudPazYSalvoRestController {
         debug.put("method", request.getMethod());
         debug.put("content_length", request.getContentLength());
         
-        System.out.println("📋 Content-Type: " + request.getContentType());
-        System.out.println("📊 Content-Length: " + request.getContentLength());
-        System.out.println("🔧 Method: " + request.getMethod());
+        System.out.println("Content-Type: " + request.getContentType());
+        System.out.println("Content-Length: " + request.getContentLength());
+        System.out.println("Method: " + request.getMethod());
         
         // Todos los headers
         Map<String, String> headers = new HashMap<>();
@@ -470,12 +470,12 @@ public class SolicitudPazYSalvoRestController {
             fileInfo.put("content_type", file.getContentType());
             debug.put("archivo_recibido", fileInfo);
             
-            System.out.println("✅ Archivo recibido: " + file.getOriginalFilename());
+            System.out.println("Archivo recibido: " + file.getOriginalFilename());
             System.out.println("   Tamaño: " + file.getSize() + " bytes");
             System.out.println("   Content-Type: " + file.getContentType());
         } else {
             debug.put("archivo_recibido", "NO SE RECIBIÓ ARCHIVO");
-            System.out.println("❌ NO SE RECIBIÓ NINGÚN ARCHIVO");
+            System.out.println("NO SE RECIBIÓ NINGÚN ARCHIVO");
         }
         
         System.out.println("========================================");
@@ -828,7 +828,7 @@ public class SolicitudPazYSalvoRestController {
     @GetMapping("/debug/documentos-sin-asociar")
     public ResponseEntity<Map<String, Object>> verificarDocumentosSinAsociar() {
         try {
-            System.out.println("🔍 [DEBUG] Verificando documentos sin asociar...");
+            System.out.println("Verificando documentos que aun no estan asociados a una solicitud...");
             
             Map<String, Object> resultado = new HashMap<>();
             
@@ -850,12 +850,12 @@ public class SolicitudPazYSalvoRestController {
                 resultado.put("documentos_detalle", docsInfo);
             }
             
-            System.out.println("🔍 [DEBUG] Documentos sin asociar encontrados: " + documentosSinSolicitud.size());
+            System.out.println("Documentos sin asociar encontrados: " + documentosSinSolicitud.size());
             
             return ResponseEntity.ok(resultado);
             
         } catch (Exception e) {
-            System.err.println("❌ [DEBUG] Error al verificar documentos sin asociar: " + e.getMessage());
+            System.err.println("Se presento un error al revisar documentos sin asociar: " + e.getMessage());
             e.printStackTrace();
             
             Map<String, Object> errorInfo = new HashMap<>();
@@ -870,7 +870,7 @@ public class SolicitudPazYSalvoRestController {
     @PostMapping("/asociar-documentos/{idSolicitud}")
     public ResponseEntity<Map<String, Object>> asociarDocumentosHuérfanos(@PathVariable Integer idSolicitud) {
         try {
-            System.out.println("🔍 [DEBUG] Asociando documentos huérfanos a solicitud: " + idSolicitud);
+            System.out.println("Asociando documentos huerfanos a la solicitud " + idSolicitud + ".");
             
             Map<String, Object> resultado = new HashMap<>();
             
@@ -890,19 +890,19 @@ public class SolicitudPazYSalvoRestController {
                 doc.setObjSolicitud(solicitud);
                 objGestionarDocumentosGateway.actualizarDocumento(doc);
                 documentosAsociados++;
-                System.out.println("✅ [DEBUG] Documento asociado: " + doc.getNombre());
+                System.out.println("Documento asociado: " + doc.getNombre());
             }
             
             resultado.put("documentos_asociados", documentosAsociados);
             resultado.put("solicitud_id", idSolicitud);
             resultado.put("mensaje", "Documentos asociados exitosamente");
             
-            System.out.println("✅ [DEBUG] Total documentos asociados: " + documentosAsociados);
+            System.out.println("Total de documentos asociados: " + documentosAsociados);
             
             return ResponseEntity.ok(resultado);
             
         } catch (Exception e) {
-            System.err.println("❌ [DEBUG] Error al asociar documentos: " + e.getMessage());
+            System.err.println("Se presento un error al asociar documentos: " + e.getMessage());
             e.printStackTrace();
             
             Map<String, Object> errorInfo = new HashMap<>();
@@ -918,7 +918,7 @@ public class SolicitudPazYSalvoRestController {
     @PostMapping("/asociar-documentos-huerfanos/{idSolicitud}")
     public ResponseEntity<Map<String, Object>> asociarDocumentosHuerfanos(@PathVariable Integer idSolicitud) {
         try {
-            System.out.println("🔍 [ASOCIACIÓN] Asociando documentos huérfanos a solicitud ID: " + idSolicitud);
+            System.out.println("[ASOCIACIÓN] Asociando documentos huérfanos a solicitud ID: " + idSolicitud);
             
             // Obtener la solicitud
             SolicitudPazYSalvo solicitud = solicitudPazYSalvoCU.buscarPorId(idSolicitud);
@@ -931,7 +931,7 @@ public class SolicitudPazYSalvoRestController {
             // Buscar documentos sin asociar (como en homologación)
             List<Documento> documentosSinSolicitud = objGestionarDocumentosGateway.buscarDocumentosSinSolicitud();
             
-            System.out.println("🔍 [ASOCIACIÓN] Documentos sin asociar encontrados: " + documentosSinSolicitud.size());
+            System.out.println("[ASOCIACIÓN] Documentos sin asociar encontrados: " + documentosSinSolicitud.size());
             
             int documentosAsociados = 0;
             for (Documento doc : documentosSinSolicitud) {
@@ -939,7 +939,7 @@ public class SolicitudPazYSalvoRestController {
                 doc.setObjSolicitud(solicitud);
                 objGestionarDocumentosGateway.actualizarDocumento(doc);
                 documentosAsociados++;
-                System.out.println("✅ [ASOCIACIÓN] Documento asociado: " + doc.getNombre());
+                System.out.println("[ASOCIACIÓN] Documento asociado: " + doc.getNombre());
             }
             
             Map<String, Object> resultado = new HashMap<>();
@@ -948,12 +948,12 @@ public class SolicitudPazYSalvoRestController {
             resultado.put("solicitud_id", idSolicitud);
             resultado.put("mensaje", "Documentos asociados exitosamente");
             
-            System.out.println("✅ [ASOCIACIÓN] Total documentos asociados: " + documentosAsociados);
+            System.out.println("[ASOCIACIÓN] Total documentos asociados: " + documentosAsociados);
             
             return ResponseEntity.ok(resultado);
             
         } catch (Exception e) {
-            System.err.println("❌ [ASOCIACIÓN] Error: " + e.getMessage());
+            System.err.println("[ASOCIACIÓN] Error: " + e.getMessage());
             e.printStackTrace();
             
             Map<String, Object> errorInfo = new HashMap<>();
@@ -969,19 +969,19 @@ public class SolicitudPazYSalvoRestController {
     @GetMapping("/obtenerDocumentos/coordinador/{idSolicitud}")
     public ResponseEntity<List<Map<String, Object>>> obtenerDocumentosPazSalvoCoordinador(@PathVariable Integer idSolicitud) {
         try {
-            System.out.println("📋 [COORDINADOR] Obteniendo TODOS los documentos de paz y salvo para solicitud: " + idSolicitud);
+            System.out.println("Coordinador - Obteniendo TODOS los documentos de paz y salvo para solicitud: " + idSolicitud);
             
             // Obtener la solicitud con sus documentos
             SolicitudPazYSalvo solicitud = solicitudPazYSalvoCU.buscarPorId(idSolicitud);
             if (solicitud == null) {
-                System.err.println("❌ [COORDINADOR] Solicitud de paz y salvo no encontrada: " + idSolicitud);
+                System.err.println("Coordinador - Solicitud de paz y salvo no encontrada: " + idSolicitud);
                 return ResponseEntity.notFound().build();
             }
             
             // Buscar documentos asociados a esta solicitud
             List<Documento> documentos = solicitud.getDocumentos();
             if (documentos == null || documentos.isEmpty()) {
-                System.err.println("❌ [COORDINADOR] No hay documentos asociados a la solicitud de paz y salvo: " + idSolicitud);
+                System.err.println("Coordinador - No hay documentos asociados a la solicitud de paz y salvo: " + idSolicitud);
                 return ResponseEntity.ok(new ArrayList<>()); // Retornar lista vacía
             }
             
@@ -1022,15 +1022,15 @@ public class SolicitudPazYSalvoRestController {
                     
                     doc.put("tipo", tipoDocumento);
                     todosDocumentos.add(doc);
-                    System.out.println("📋 [COORDINADOR] Agregando documento: " + documento.getNombre() + " (Tipo: " + tipoDocumento + ")");
+                    System.out.println("Coordinador - Agregando documento: " + documento.getNombre() + " (Tipo: " + tipoDocumento + ")");
                 }
             }
             
-            System.out.println("✅ [COORDINADOR] Total documentos encontrados: " + todosDocumentos.size());
+            System.out.println("Coordinador - Total documentos encontrados: " + todosDocumentos.size());
             return ResponseEntity.ok(todosDocumentos);
             
         } catch (Exception e) {
-            System.err.println("❌ [COORDINADOR] Error al obtener documentos de paz y salvo: " + e.getMessage());
+            System.err.println("Coordinador - Error al obtener documentos de paz y salvo: " + e.getMessage());
             e.printStackTrace();
             return ResponseEntity.internalServerError().build();
         }
@@ -1042,19 +1042,19 @@ public class SolicitudPazYSalvoRestController {
     @GetMapping("/obtenerOficios/{idSolicitud}")
     public ResponseEntity<List<Map<String, Object>>> obtenerOficiosPazSalvo(@PathVariable Integer idSolicitud) {
         try {
-            System.out.println("📋 Obteniendo oficios de paz y salvo para solicitud: " + idSolicitud);
+            System.out.println("Obteniendo oficios de paz y salvo para solicitud: " + idSolicitud);
             
             // Obtener la solicitud con sus documentos
             SolicitudPazYSalvo solicitud = solicitudPazYSalvoCU.buscarPorId(idSolicitud);
             if (solicitud == null) {
-                System.err.println("❌ Solicitud de paz y salvo no encontrada: " + idSolicitud);
+                System.err.println("Solicitud de paz y salvo no encontrada: " + idSolicitud);
                 return ResponseEntity.notFound().build();
             }
             
             // Buscar documentos asociados a esta solicitud
             List<Documento> documentos = solicitud.getDocumentos();
             if (documentos == null || documentos.isEmpty()) {
-                System.err.println("❌ No hay documentos asociados a la solicitud de paz y salvo: " + idSolicitud);
+                System.err.println("No hay documentos asociados a la solicitud de paz y salvo: " + idSolicitud);
                 return ResponseEntity.ok(new ArrayList<>()); // Retornar lista vacía
             }
             
@@ -1078,18 +1078,18 @@ public class SolicitudPazYSalvoRestController {
                         oficio.put("nombreArchivo", documento.getNombre());
                         oficio.put("ruta", documento.getRuta_documento());
                         oficios.add(oficio);
-                        System.out.println("📋 Agregando oficio/resolución de paz y salvo: " + documento.getNombre());
+                        System.out.println("Agregando oficio/resolución de paz y salvo: " + documento.getNombre());
                     } else {
-                        System.out.println("⏭️ Saltando archivo del estudiante: " + documento.getNombre());
+                        System.out.println("Saltando archivo del estudiante: " + documento.getNombre());
                     }
                 }
             }
             
-            System.out.println("✅ Oficios de paz y salvo encontrados: " + oficios.size());
+            System.out.println("Oficios de paz y salvo encontrados: " + oficios.size());
             return ResponseEntity.ok(oficios);
             
         } catch (Exception e) {
-            System.err.println("❌ Error al obtener oficios de paz y salvo: " + e.getMessage());
+            System.err.println("Error al obtener oficios de paz y salvo: " + e.getMessage());
             e.printStackTrace();
             return ResponseEntity.internalServerError().build();
         }
@@ -1101,7 +1101,7 @@ public class SolicitudPazYSalvoRestController {
     @GetMapping("/validarDocumentosRequeridos/{idSolicitud}")
     public ResponseEntity<Map<String, Object>> validarDocumentosRequeridosPazSalvo(@PathVariable Integer idSolicitud) {
         try {
-            System.out.println("📋 Validando documentos requeridos para solicitud de paz y salvo: " + idSolicitud);
+            System.out.println("Validando documentos requeridos para solicitud de paz y salvo: " + idSolicitud);
             
             // Obtener la solicitud con sus documentos
             SolicitudPazYSalvo solicitud = solicitudPazYSalvoCU.buscarPorId(idSolicitud);
@@ -1156,11 +1156,11 @@ public class SolicitudPazYSalvoRestController {
             resultado.put("todosCompletos", todosCompletos);
             resultado.put("totalDocumentos", documentos.size());
             
-            System.out.println("✅ Validación de paz y salvo completada. Todos completos: " + todosCompletos);
+            System.out.println("Validación de paz y salvo completada. Todos completos: " + todosCompletos);
             return ResponseEntity.ok(resultado);
             
         } catch (Exception e) {
-            System.err.println("❌ Error al validar documentos de paz y salvo: " + e.getMessage());
+            System.err.println("Error al validar documentos de paz y salvo: " + e.getMessage());
             e.printStackTrace();
             return ResponseEntity.internalServerError().build();
         }
@@ -1178,22 +1178,22 @@ public ResponseEntity<DocumentosDTORespuesta> guardarOficioPazSalvo(
         @RequestParam(value = "observaciones", required = false) String observaciones) {
     
     try {
-        System.out.println("📄 Guardando oficio de paz y salvo para solicitud: " + idSolicitud);
-        System.out.println("📄 Tipo documento: " + tipoDocumento);
-        System.out.println("📄 Número documento: " + numeroDocumento);
-        System.out.println("📄 Fecha documento: " + fechaDocumento);
+        System.out.println("Guardando oficio de paz y salvo para solicitud: " + idSolicitud);
+        System.out.println("Tipo documento: " + tipoDocumento);
+        System.out.println("Número documento: " + numeroDocumento);
+        System.out.println("Fecha documento: " + fechaDocumento);
         
         String nombreOriginal = file.getOriginalFilename();
-        System.out.println("📄 Nombre archivo: " + nombreOriginal);
+        System.out.println("Nombre archivo: " + nombreOriginal);
         
         // Validaciones
         if (file.isEmpty()) {
-            System.err.println("❌ Archivo vacío");
+            System.err.println("Archivo vacío");
             return ResponseEntity.badRequest().body(null);
         }
         
         if (!nombreOriginal.toLowerCase().endsWith(".docx")) {
-            System.err.println("❌ Tipo de archivo no válido: " + nombreOriginal);
+            System.err.println("Tipo de archivo no válido: " + nombreOriginal);
             return ResponseEntity.status(HttpStatus.UNSUPPORTED_MEDIA_TYPE).body(null);
         }
         
@@ -1215,7 +1215,7 @@ public ResponseEntity<DocumentosDTORespuesta> guardarOficioPazSalvo(
             doc.setObjSolicitud(objSolicitud);
             System.out.println("�� Asociando oficio '" + nombreOriginal + "' a solicitud de paz y salvo ID: " + idSolicitud);
         } else {
-            System.err.println("❌ No se encontró la solicitud de paz y salvo con ID: " + idSolicitud);
+            System.err.println("No se encontró la solicitud de paz y salvo con ID: " + idSolicitud);
             return ResponseEntity.notFound().build();
         }
         
@@ -1227,11 +1227,11 @@ public ResponseEntity<DocumentosDTORespuesta> guardarOficioPazSalvo(
             HttpStatus.CREATED
         );
         
-        System.out.println("✅ Oficio de paz y salvo guardado exitosamente: " + nombreOriginal);
+        System.out.println("Oficio de paz y salvo guardado exitosamente: " + nombreOriginal);
         return respuesta;
         
     } catch (Exception e) {
-        System.err.println("❌ Error al guardar oficio de paz y salvo: " + e.getMessage());
+        System.err.println("Error al guardar oficio de paz y salvo: " + e.getMessage());
         e.printStackTrace();
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
     }
@@ -1245,7 +1245,7 @@ public ResponseEntity<DocumentosDTORespuesta> guardarOficioPazSalvo(
             @PathVariable Integer idSolicitud,
             @RequestParam("file") MultipartFile file) {
         try {
-            System.out.println("📄 [PAZ Y SALVO] Subiendo oficio PDF para solicitud: " + idSolicitud);
+            System.out.println("[PAZ Y SALVO] Subiendo oficio PDF para solicitud: " + idSolicitud);
 
             if (file == null || file.isEmpty()) {
                 return ResponseEntity.badRequest().build();
