@@ -12,7 +12,6 @@ import java.io.ByteArrayOutputStream;
 
 @RestController
 @RequestMapping("/api/documentos")
-@CrossOrigin(origins = "http://localhost:4200")
 public class DocumentGeneratorController {
 
     @Autowired

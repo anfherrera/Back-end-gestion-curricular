@@ -1,6 +1,7 @@
 package co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.controladores;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -26,10 +27,8 @@ import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.SolicitudCu
 
 import org.springframework.web.multipart.MultipartFile;
 
-
-
+@Slf4j
 @RestController
-@CrossOrigin(origins = "http://localhost:4200")
 @RequestMapping("/api/archivos")
 @RequiredArgsConstructor
 @Validated
@@ -47,16 +46,10 @@ public class ArchivosRestController {
         @RequestParam(name = "idSolicitud", required = false) String idSolicitudAlias,
         @RequestParam(name = "tipoSolicitud", required = false) String tipoSolicitud) {
         
-        System.out.println("📤 [ARCHIVOS] ===== INICIANDO SUBIDA DE PDF =====");
-        System.out.println("📤 [ARCHIVOS] Archivo: " + file.getOriginalFilename());
-        System.out.println("📤 [ARCHIVOS] Tamaño: " + file.getSize() + " bytes");
-        System.out.println("📤 [ARCHIVOS] inscripcionId: " + inscripcionId);
-        System.out.println("📤 [ARCHIVOS] solicitudId: " + solicitudId);
-        System.out.println("📤 [ARCHIVOS] idSolicitudAlias: " + idSolicitudAlias);
-        System.out.println("📤 [ARCHIVOS] tipoSolicitud: " + tipoSolicitud);
+        log.debug("Subida de archivo PDF: nombre={}, tamaño={} bytes, inscripcionId={}, solicitudId={}, tipoSolicitud={}", 
+            file.getOriginalFilename(), file.getSize(), inscripcionId, solicitudId, tipoSolicitud);
+        
         try {
-            // Unificar parámetro de ID de solicitud (aceptar tanto 'solicitudId' como 'idSolicitud')
-            // Unificar IDs: priorizar inscripcionId, luego solicitudId, luego idSolicitudAlias
             String solicitudIdUnificado = null;
             if (inscripcionId != null && !inscripcionId.trim().isEmpty()) {
                 solicitudIdUnificado = inscripcionId;
@@ -65,7 +58,6 @@ public class ArchivosRestController {
             } else if (idSolicitudAlias != null && !idSolicitudAlias.trim().isEmpty()) {
                 solicitudIdUnificado = idSolicitudAlias;
             }
-            System.out.println("📤 [ARCHIVOS] Solicitud ID unificado: " + solicitudIdUnificado);
             
             String nombreOriginal = file.getOriginalFilename();
             
@@ -98,10 +90,8 @@ public class ArchivosRestController {
                 String nombreUnico = nombreOriginal;
                 if (inscripcionId != null && !inscripcionId.trim().isEmpty()) {
                     try {
-                        // Buscar la inscripción directamente por ID
-                        System.out.println("🔍 [ARCHIVOS] Buscando inscripción ID: " + inscripcionId);
+                        log.debug("Buscando inscripción con ID: {}", inscripcionId);
                         SolicitudCursoVeranoIncripcion inscripcion = solicitudCursoVeranoCU.buscarPorIdInscripcion(Integer.parseInt(inscripcionId));
-                        System.out.println("🔍 [ARCHIVOS] Inscripción encontrada: " + (inscripcion != null ? "SÍ" : "NO"));
                         
                         if (inscripcion != null && inscripcion.getObjUsuario() != null) {
                             // Obtener el nombre del estudiante
@@ -143,43 +133,33 @@ public class ArchivosRestController {
                 return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(error);
             }
             
-            // 5. Crear documento en BD para cualquier tipo de solicitud
-            System.out.println("📄 [ARCHIVOS] Creando documento en BD...");
-            System.out.println("📄 [ARCHIVOS] Nombre archivo: " + nombreArchivo);
-            System.out.println("📄 [ARCHIVOS] Solicitud ID unificado: " + solicitudIdUnificado);
-            
             boolean documentoGuardadoEnBD = false;
             try {
-                // Crear documento
                 Documento documento = new Documento();
                 documento.setNombre(nombreArchivo);
                 documento.setRuta_documento(nombreArchivo);
                 documento.setFecha_documento(new java.util.Date());
                 documento.setEsValido(true);
                 
-                // Si hay solicitudId, intentar asociarlo a la inscripción REAL
                 if (solicitudIdUnificado != null && !solicitudIdUnificado.trim().isEmpty()) {
                     Integer solicitudIdParsed = null;
                     try {
                         solicitudIdParsed = Integer.parseInt(solicitudIdUnificado);
                     } catch (NumberFormatException e) {
-                        System.out.println("❌ [ARCHIVOS] Error parseando ID de solicitud: " + e.getMessage());
+                        log.warn("Error al parsear ID de solicitud: {}", solicitudIdUnificado, e);
                     }
 
                     if (solicitudIdParsed != null) {
                         SolicitudCursoVeranoIncripcion inscripcionReal = null;
                         try {
-                            System.out.println("🔗 [ARCHIVOS] Asociando documento a inscripción ID: " + solicitudIdParsed);
                             inscripcionReal = solicitudCursoVeranoCU.buscarPorIdInscripcion(solicitudIdParsed);
                         } catch (Exception e) {
-                            System.out.println("❌ [ARCHIVOS] Error consultando inscripción de curso intersemestral: " + e.getMessage());
+                            log.debug("No se encontró inscripción para ID: {}", solicitudIdParsed);
                         }
 
                         if (inscripcionReal != null) {
-                            System.out.println("✅ [ARCHIVOS] Inscripción real encontrada, asociando documento");
                             documento.setObjSolicitud(inscripcionReal);
                         } else {
-                            System.out.println("ℹ️ [ARCHIVOS] No se encontró inscripción; asociando solicitud genérica para otros procesos");
                             Solicitud solicitudGenerica = new Solicitud();
                             solicitudGenerica.setId_solicitud(solicitudIdParsed);
                             documento.setObjSolicitud(solicitudGenerica);
@@ -187,19 +167,17 @@ public class ArchivosRestController {
                     }
                 }
                 
-                // Guardar documento en BD
-                System.out.println("💾 [ARCHIVOS] Guardando documento en BD...");
                 Documento documentoGuardado = objGestionarDocumentosGateway.crearDocumento(documento);
                 
                 if (documentoGuardado != null) {
                     documentoGuardadoEnBD = true;
-                    System.out.println("✅ [ARCHIVOS] Documento guardado exitosamente con ID: " + documentoGuardado.getId_documento());
+                    log.info("Documento guardado: nombre={}, id={}", nombreArchivo, documentoGuardado.getId_documento());
                 } else {
-                    System.out.println("❌ [ARCHIVOS] Error al guardar documento en BD");
+                    log.warn("No se pudo guardar el documento en BD: {}", nombreArchivo);
                 }
                 
             } catch (Exception e) {
-                // No fallar la operación por esto, pero logear el error
+                log.error("Error al guardar documento en BD: {}", nombreArchivo, e);
             }
             
             // 6. Crear respuesta en el formato requerido
@@ -265,24 +243,23 @@ public class ArchivosRestController {
     @GetMapping("/descargar/pdf")
     public ResponseEntity<byte[]> bajarPDF(@RequestParam(name = "filename", required = true) String filename) {
         try {
-            System.out.println("📥 [DESCARGAR] Solicitando archivo: " + filename);
+            log.debug("Solicitud de descarga: {}", filename);
             
             byte[] archivos = this.objGestionarArchivos.getFile(filename);
             
             if (archivos == null || archivos.length == 0) {
-                System.out.println("❌ [DESCARGAR] Archivo no encontrado: " + filename);
+                log.warn("Archivo no encontrado: {}", filename);
                 return ResponseEntity.notFound().build();
             }
             
-            System.out.println("✅ [DESCARGAR] Archivo encontrado, tamaño: " + archivos.length + " bytes");
+            log.debug("Archivo descargado: {}, tamaño={} bytes", filename, archivos.length);
             
             return ResponseEntity.ok()
                 .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + filename + "\"")
                 .contentType(MediaType.APPLICATION_PDF)
                 .body(archivos);
         } catch (Exception e) {
-            System.out.println("❌ [DESCARGAR] Error: " + e.getMessage());
-            e.printStackTrace();
+            log.error("Error al descargar archivo: {}", filename, e);
             return ResponseEntity.notFound().build();
         }
     }

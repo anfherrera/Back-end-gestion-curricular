@@ -5,7 +5,7 @@ import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 /**
- * Configuración de CORS para permitir peticiones desde el frontend Angular
+ * Configuración de CORS para permitir peticiones desde el frontend Angular y Postman
  * 
  * @author Sistema de Gestión Curricular
  * @version 1.0
@@ -16,10 +16,10 @@ public class WebConfig implements WebMvcConfigurer {
     @Override
     public void addCorsMappings(CorsRegistry registry) {
         registry.addMapping("/api/**")
-                .allowedOrigins("http://localhost:4200")
-                .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
+                .allowedOriginPatterns("*") // Permite cualquier origen, incluyendo Postman (null origin) y Angular
+                .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH")
                 .allowedHeaders("*")
-                .allowCredentials(true)
+                .allowCredentials(false) // Deshabilitado para permitir Postman; habilitar si el frontend necesita cookies
                 .maxAge(3600);
     }
 }
