@@ -15,12 +15,14 @@ import java.util.Date;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarCursoOfertadoVeranoCUIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarSolicitudCursoVeranoCUIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarMateriasCUIntPort;
+import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarDocentesCUIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.GestionarSolicitudCursoVeranoGatewayIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.CursoOfertadoVerano;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.SolicitudCursoVeranoPreinscripcion;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.SolicitudCursoVeranoIncripcion;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Documento;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Solicitud;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.EstadoCursoOfertado;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Enums.CondicionSolicitudVerano;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.DTORespuesta.CursosOfertadosDTORespuesta;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.DTORespuesta.SolicitudCursoVeranoPreinscripcionDTORespuesta;
@@ -57,6 +59,7 @@ public class CursosIntersemestralesRestController {
     private final GestionarSolicitudCursoVeranoCUIntPort solicitudCU;
     private final GestionarSolicitudCursoVeranoGatewayIntPort solicitudGateway;
     private final GestionarMateriasCUIntPort materiaCU;
+    private final GestionarDocentesCUIntPort docenteCU;
     private final CursosOfertadosMapperDominio cursoMapper;
     private final SolicitudCursoDeVeranoPreinscripcionMapperDominio solicitudMapper;
     private final InscripcionService inscripcionService;
@@ -2489,13 +2492,23 @@ public class CursosIntersemestralesRestController {
     @PostMapping("/cursos-verano")
     public ResponseEntity<Map<String, Object>> crearCurso(@RequestBody CreateCursoDTO dto) {
         try {
-            System.out.println("DEBUG: Creando nuevo curso:");
+            System.out.println("DEBUG: ===== RECIBIENDO PETICIÓN PARA CREAR CURSO =====");
+            System.out.println("DEBUG: DTO completo recibido:");
             System.out.println("  - Nombre: " + dto.getNombre_curso());
             System.out.println("  - Codigo: " + dto.getCodigo_curso());
-            System.out.println("  - ID Materia: " + dto.getId_materia());
-            System.out.println("  - ID Docente: " + dto.getId_docente());
+            System.out.println("  - ID Materia: " + dto.getId_materia() + " (tipo: " + (dto.getId_materia() != null ? dto.getId_materia().getClass().getSimpleName() : "null") + ")");
+            System.out.println("  - ID Docente: " + dto.getId_docente() + " (tipo: " + (dto.getId_docente() != null ? dto.getId_docente().getClass().getSimpleName() : "null") + ")");
             System.out.println("  - Cupo Estimado: " + dto.getCupo_estimado());
             System.out.println("  - Estado: " + dto.getEstado());
+            
+            // Validar que el ID del docente sea válido
+            if (dto.getId_docente() != null && dto.getId_docente() <= 0) {
+                Map<String, Object> error = new HashMap<>();
+                error.put("error", "ID de docente inválido");
+                error.put("message", "El ID del docente debe ser mayor a 0. ID recibido: " + dto.getId_docente());
+                System.out.println("DEBUG: ERROR - ID de docente inválido: " + dto.getId_docente());
+                return ResponseEntity.badRequest().body(error);
+            }
             
             // Validaciones basicas
             if (dto.getNombre_curso() == null || dto.getNombre_curso().trim().isEmpty()) {
@@ -2529,49 +2542,50 @@ public class CursosIntersemestralesRestController {
             // Obtener informacion real de la materia
             Map<String, Object> materia = new HashMap<>();
             try {
-                // Aqui deberias obtener la materia real de la base de datos
-                // Por ahora usamos datos simulados basados en el ID
-                materia.put("id_materia", dto.getId_materia());
-                materia.put("nombre_materia", "Materia " + dto.getId_materia());
-                materia.put("codigo_materia", "MAT" + dto.getId_materia());
-                materia.put("creditos", 3);
-                System.out.println("DEBUG: Materia obtenida: " + materia.get("nombre_materia"));
+                co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Materia materiaReal = 
+                    materiaCU.obtenerMateriaPorId(dto.getId_materia().intValue());
+                if (materiaReal != null) {
+                    materia.put("id_materia", materiaReal.getId_materia());
+                    materia.put("nombre_materia", materiaReal.getNombre());
+                    materia.put("codigo_materia", materiaReal.getCodigo());
+                    materia.put("creditos", materiaReal.getCreditos());
+                } else {
+                    throw new RuntimeException("Materia no encontrada con ID: " + dto.getId_materia());
+                }
             } catch (Exception e) {
-                System.out.println("DEBUG: Error obteniendo materia, usando datos simulados");
-                materia.put("id_materia", dto.getId_materia());
-                materia.put("nombre_materia", "Materia " + dto.getId_materia());
-                materia.put("codigo_materia", "MAT" + dto.getId_materia());
-                materia.put("creditos", 3);
+                Map<String, Object> error = new HashMap<>();
+                error.put("error", "Error obteniendo materia");
+                error.put("message", "No se pudo obtener la materia: " + e.getMessage());
+                return ResponseEntity.badRequest().body(error);
             }
             
             // Obtener informacion real del docente
             Map<String, Object> docente = new HashMap<>();
             try {
-                // Aqui deberias obtener el docente real de la base de datos
-                // Por ahora usamos datos simulados basados en el ID
-                docente.put("id_usuario", dto.getId_docente());
-                docente.put("nombre", "Docente " + dto.getId_docente());
-                docente.put("apellido", "Apellido");
-                docente.put("email", "docente" + dto.getId_docente() + "@unicauca.edu.co");
-                docente.put("telefono", "3000000000");
+                Integer idDocenteInt = dto.getId_docente().intValue();
+                System.out.println("DEBUG: Buscando docente con ID: " + idDocenteInt + " (convertido desde Long: " + dto.getId_docente() + ")");
                 
-                Map<String, Object> rol = new HashMap<>();
-                rol.put("id_rol", 1);
-                rol.put("nombre", "Docente");
-                docente.put("objRol", rol);
-                System.out.println("DEBUG: Docente obtenido: " + docente.get("nombre"));
+                co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Docente docenteReal = 
+                    docenteCU.obtenerDocentePorId(idDocenteInt);
+                
+                if (docenteReal != null) {
+                    System.out.println("DEBUG: Docente encontrado - ID: " + docenteReal.getId_docente() + 
+                                     ", Nombre: " + docenteReal.getNombre_docente());
+                    docente.put("id_docente", docenteReal.getId_docente());
+                    docente.put("nombre_docente", docenteReal.getNombre_docente());
+                    docente.put("codigo_docente", docenteReal.getCodigo_docente());
+                } else {
+                    System.out.println("DEBUG: ERROR - Docente no encontrado con ID: " + idDocenteInt);
+                    throw new RuntimeException("Docente no encontrado con ID: " + dto.getId_docente());
+                }
             } catch (Exception e) {
-                System.out.println("DEBUG: Error obteniendo docente, usando datos simulados");
-                docente.put("id_usuario", dto.getId_docente());
-                docente.put("nombre", "Docente " + dto.getId_docente());
-                docente.put("apellido", "Apellido");
-                docente.put("email", "docente" + dto.getId_docente() + "@unicauca.edu.co");
-                docente.put("telefono", "3000000000");
-                
-                Map<String, Object> rol = new HashMap<>();
-                rol.put("id_rol", 1);
-                rol.put("nombre", "Docente");
-                docente.put("objRol", rol);
+                System.out.println("DEBUG: ERROR al obtener docente - " + e.getMessage());
+                e.printStackTrace();
+                Map<String, Object> error = new HashMap<>();
+                error.put("error", "Error obteniendo docente");
+                error.put("message", "No se pudo obtener el docente: " + e.getMessage());
+                error.put("id_docente_recibido", dto.getId_docente());
+                return ResponseEntity.badRequest().body(error);
             }
             
             // Crear el curso usando el caso de uso existente
@@ -2584,24 +2598,66 @@ public class CursosIntersemestralesRestController {
                 cursoDominio.setSalon(dto.getEspacio_asignado() != null ? dto.getEspacio_asignado() : "Aula 101");
                 cursoDominio.setGrupo(co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Enums.GrupoCursoVerano.A);
                 
-                // Crear materia de dominio
-                co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Materia materiaDominio = new co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Materia();
-                materiaDominio.setId_materia(dto.getId_materia().intValue());
-                materiaDominio.setNombre(dto.getNombre_curso());
-                materiaDominio.setCodigo(dto.getCodigo_curso());
+                // Obtener materia real de la base de datos
+                co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Materia materiaDominio = 
+                    materiaCU.obtenerMateriaPorId(dto.getId_materia().intValue());
+                if (materiaDominio == null) {
+                    Map<String, Object> error = new HashMap<>();
+                    error.put("error", "Materia no encontrada");
+                    error.put("message", "La materia con ID " + dto.getId_materia() + " no existe");
+                    return ResponseEntity.badRequest().body(error);
+                }
                 cursoDominio.setObjMateria(materiaDominio);
                 
-                // Crear docente de dominio
-                co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Docente docenteDominio = new co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Docente();
-                docenteDominio.setId_docente(dto.getId_docente().intValue());
-                docenteDominio.setNombre_docente("Docente " + dto.getId_docente());
+                // Obtener docente real de la base de datos
+                Integer idDocenteParaCurso = dto.getId_docente().intValue();
+                System.out.println("DEBUG: Asignando docente al curso - ID recibido en DTO: " + dto.getId_docente() + 
+                                 ", ID convertido a Integer: " + idDocenteParaCurso);
+                
+                co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Docente docenteDominio = 
+                    docenteCU.obtenerDocentePorId(idDocenteParaCurso);
+                if (docenteDominio == null) {
+                    System.out.println("DEBUG: ERROR - Docente no encontrado con ID: " + idDocenteParaCurso);
+                    Map<String, Object> error = new HashMap<>();
+                    error.put("error", "Docente no encontrado");
+                    error.put("message", "El docente con ID " + dto.getId_docente() + " no existe");
+                    error.put("id_docente_recibido", dto.getId_docente());
+                    return ResponseEntity.badRequest().body(error);
+                }
+                
+                System.out.println("DEBUG: Docente asignado al cursoDominio - ID: " + docenteDominio.getId_docente() + 
+                                 ", Nombre: " + docenteDominio.getNombre_docente());
                 cursoDominio.setObjDocente(docenteDominio);
+                
+                // Verificar que el docente fue asignado correctamente
+                if (cursoDominio.getObjDocente() == null) {
+                    System.out.println("DEBUG: ERROR - El docente no se asignó correctamente al cursoDominio");
+                } else {
+                    System.out.println("DEBUG: Verificación - CursoDominio tiene docente ID: " + 
+                                     cursoDominio.getObjDocente().getId_docente());
+                }
+                
+                // Crear estado inicial del curso con el estado que viene del frontend
+                EstadoCursoOfertado estadoInicial = new EstadoCursoOfertado();
+                estadoInicial.setEstado_actual(dto.getEstado() != null ? dto.getEstado() : "Abierto");
+                estadoInicial.setFecha_registro_estado(new java.util.Date());
+                List<EstadoCursoOfertado> estados = new ArrayList<>();
+                estados.add(estadoInicial);
+                cursoDominio.setEstadosCursoOfertados(estados);
                 
                 // Usar el caso de uso para crear el curso
                 CursoOfertadoVerano cursoCreado = cursoCU.crearCurso(cursoDominio);
                 System.out.println("DEBUG: Curso creado exitosamente con ID: " + cursoCreado.getId_curso());
                 
-                // Crear respuesta con datos reales
+                // Verificar que el curso creado tiene el docente correcto
+                if (cursoCreado.getObjDocente() != null) {
+                    System.out.println("DEBUG: Docente del curso creado - ID: " + cursoCreado.getObjDocente().getId_docente() + 
+                                     ", Nombre: " + cursoCreado.getObjDocente().getNombre_docente());
+                } else {
+                    System.out.println("DEBUG: WARNING - El curso creado no tiene docente asignado");
+                }
+                
+                // Crear respuesta con datos reales del curso creado
                 Map<String, Object> nuevoCurso = new HashMap<>();
                 nuevoCurso.put("id_curso", cursoCreado.getId_curso());
                 nuevoCurso.put("nombre_curso", dto.getNombre_curso());
@@ -2615,7 +2671,19 @@ public class CursosIntersemestralesRestController {
                 nuevoCurso.put("espacio_asignado", dto.getEspacio_asignado());
                 nuevoCurso.put("estado", dto.getEstado());
                 nuevoCurso.put("objMateria", materia);
-                nuevoCurso.put("objDocente", docente);
+                
+                // Usar el docente del curso creado en lugar del Map previo
+                if (cursoCreado.getObjDocente() != null) {
+                    Map<String, Object> docenteCreado = new HashMap<>();
+                    docenteCreado.put("id_docente", cursoCreado.getObjDocente().getId_docente());
+                    docenteCreado.put("nombre_docente", cursoCreado.getObjDocente().getNombre_docente());
+                    docenteCreado.put("codigo_docente", cursoCreado.getObjDocente().getCodigo_docente());
+                    nuevoCurso.put("objDocente", docenteCreado);
+                } else {
+                    // Si por alguna razón no tiene docente, usar el Map previo
+                    nuevoCurso.put("objDocente", docente);
+                }
+                
                 nuevoCurso.put("message", "Curso creado exitosamente en la base de datos");
                 nuevoCurso.put("debug_info", "Curso guardado con ID: " + cursoCreado.getId_curso());
                 
@@ -3034,50 +3102,41 @@ public class CursosIntersemestralesRestController {
     @GetMapping("/docentes")
     public ResponseEntity<List<Map<String, Object>>> getTodosLosDocentes() {
         try {
-            System.out.println("DEBUG: Obteniendo todos los docentes");
-
-            // Crear lista de docentes reales (los que agregamos al import.sql)
-            List<Map<String, Object>> docentes = new ArrayList<>();
+            System.out.println("DEBUG: Obteniendo todos los docentes desde la base de datos");
             
-            // Docentes reales de la base de datos
-            String[][] docentesData = {
-                {"1047", "Carlos Alberto Ardila Albarracin", "cardila@unicauca.edu.co"},
-                {"1048", "Carlos Alberto Cobos Lozada", "ccobos@unicauca.edu.co"},
-                {"1049", "Carolina Gonzalez Serrano", "cgonzals@unicauca.edu.co"},
-                {"1050", "Cesar Alberto Collazos Ordonez", "ccollazo@unicauca.edu.co"},
-                {"1051", "Ember Ubeimar Martinez Flor", "eumartinez@unicauca.edu.co"},
-                {"1052", "Erwin Meza Vega", "emezav@unicauca.edu.co"},
-                {"1053", "Francisco Jose Pino Correa", "fjpino@unicauca.edu.co"},
-                {"1054", "Jorge Jair Moreno Chaustre", "jjmoreno@unicauca.edu.co"},
-                {"1055", "Julio Ariel Hurtado Alegria", "ahurtado@unicauca.edu.co"},
-                {"1056", "Luz Marina Sierra Martinez", "lsierra@unicauca.edu.co"},
-                {"1057", "Martha Eliana Mendoza Becerra", "mmendoza@unicauca.edu.co"},
-                {"1058", "Miguel Angel Nino Zambrano", "manzamb@unicauca.edu.co"},
-                {"1059", "Nestor Milciades Diaz Marino", "nediaz@unicauca.edu.co"},
-                {"1060", "Pablo Augusto Mage Imbachi", "pmage@unicauca.edu.co"},
-                {"1061", "Roberto Carlos Naranjo Cuervo", "rnaranjo@unicauca.edu.co"},
-                {"1062", "Sandra Milena Roa Martinez", "smroa@unicauca.edu.co"},
-                {"1063", "Siler Amador Donado", "samador@unicauca.edu.co"},
-                {"1064", "Wilson Libardo Pantoja Yepez", "wpantoja@unicauca.edu.co"}
-            };
+            // Obtener docentes reales de la base de datos
+            List<co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Docente> docentesDominio = 
+                docenteCU.listarDocentes();
             
-            for (int i = 0; i < docentesData.length; i++) {
-                Map<String, Object> docente = new HashMap<>();
-                docente.put("id_usuario", i + 1);
-                docente.put("codigo_usuario", docentesData[i][0]);
-                docente.put("nombre_usuario", docentesData[i][1]);
-                docente.put("correo", docentesData[i][2]);
-                docente.put("telefono", "3000000000");
-                
-                Map<String, Object> rol = new HashMap<>();
-                rol.put("id_rol", 1);
-                rol.put("nombre", "Docente");
-                docente.put("objRol", rol);
-                
-                docentes.add(docente);
+            if (docentesDominio == null || docentesDominio.isEmpty()) {
+                System.out.println("DEBUG: No se encontraron docentes en la base de datos");
+                return ResponseEntity.ok(new ArrayList<>());
             }
+            
+            System.out.println("DEBUG: Se encontraron " + docentesDominio.size() + " docentes en la base de datos");
+            
+            // Mapear docentes de dominio a formato de respuesta para el frontend
+            List<Map<String, Object>> docentes = docentesDominio.stream()
+                .map(docente -> {
+                    Map<String, Object> docenteMap = new HashMap<>();
+                    // Campo crítico: id_docente (NO id_usuario)
+                    docenteMap.put("id_docente", docente.getId_docente());
+                    docenteMap.put("codigo_docente", docente.getCodigo_docente());
+                    docenteMap.put("nombre_docente", docente.getNombre_docente());
+                    // Mantener compatibilidad con frontend (si lo necesita)
+                    docenteMap.put("id_usuario", docente.getId_docente()); // Usar id_docente como id_usuario para compatibilidad
+                    docenteMap.put("codigo_usuario", docente.getCodigo_docente());
+                    docenteMap.put("nombre_usuario", docente.getNombre_docente());
+                    
+                    System.out.println("DEBUG: Docente mapeado - ID: " + docente.getId_docente() + 
+                                     ", Nombre: " + docente.getNombre_docente() + 
+                                     ", Código: " + docente.getCodigo_docente());
+                    
+                    return docenteMap;
+                })
+                .collect(Collectors.toList());
 
-            System.out.println("DEBUG: Se encontraron " + docentes.size() + " docentes");
+            System.out.println("DEBUG: Total de docentes devueltos: " + docentes.size());
             return ResponseEntity.ok(docentes);
         } catch (Exception e) {
             System.out.println("ERROR: Error obteniendo docentes: " + e.getMessage());
