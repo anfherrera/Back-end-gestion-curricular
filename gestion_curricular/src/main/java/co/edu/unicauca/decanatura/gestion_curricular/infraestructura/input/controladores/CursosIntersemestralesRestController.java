@@ -1999,21 +1999,31 @@ public class CursosIntersemestralesRestController {
             
             // 4. Calcular progreso de gestion
             int totalCursos = todosLosCursos.size();
-            double porcentajeProgreso = totalCursos > 0 ? (cursosGestionados * 100.0 / totalCursos) : 0;
             
-            // Construir respuesta
-            estadisticas.put("cursosActivos", cursosActivos);
-            estadisticas.put("totalPreinscripciones", totalPreinscripciones);
-            estadisticas.put("totalInscripciones", totalInscripciones);
-            estadisticas.put("cursosGestionados", cursosGestionados);
-            estadisticas.put("totalCursos", totalCursos);
+            // Validar valores para evitar datos inconsistentes
+            int cursosGestionadosValido = Math.max(0, cursosGestionados); // No permitir negativos
+            int totalCursosValido = Math.max(0, totalCursos); // No permitir negativos
+            
+            // Calcular porcentaje asegurando que esté entre 0 y 100
+            double porcentajeProgreso = 0;
+            if (totalCursosValido > 0) {
+                porcentajeProgreso = (cursosGestionadosValido * 100.0 / totalCursosValido);
+                porcentajeProgreso = Math.max(0, Math.min(100, porcentajeProgreso)); // Asegurar entre 0 y 100
+            }
+            
+            // Construir respuesta con valores validados
+            estadisticas.put("cursosActivos", Math.max(0, cursosActivos));
+            estadisticas.put("totalPreinscripciones", Math.max(0, totalPreinscripciones));
+            estadisticas.put("totalInscripciones", Math.max(0, totalInscripciones));
+            estadisticas.put("cursosGestionados", cursosGestionadosValido);
+            estadisticas.put("totalCursos", totalCursosValido);
             estadisticas.put("porcentajeProgreso", Math.round(porcentajeProgreso));
             
             System.out.println("INFO: Estadisticas del dashboard generadas exitosamente");
-            System.out.println("  - Cursos Activos: " + cursosActivos);
-            System.out.println("  - Preinscripciones: " + totalPreinscripciones);
-            System.out.println("  - Inscripciones: " + totalInscripciones);
-            System.out.println("  - Progreso: " + cursosGestionados + " de " + totalCursos + " (" + Math.round(porcentajeProgreso) + "%)");
+            System.out.println("  - Cursos Activos: " + Math.max(0, cursosActivos));
+            System.out.println("  - Preinscripciones: " + Math.max(0, totalPreinscripciones));
+            System.out.println("  - Inscripciones: " + Math.max(0, totalInscripciones));
+            System.out.println("  - Progreso: " + cursosGestionadosValido + " de " + totalCursosValido + " (" + Math.round(porcentajeProgreso) + "%)");
             
             return ResponseEntity.ok(estadisticas);
             
@@ -2494,12 +2504,14 @@ public class CursosIntersemestralesRestController {
         try {
             System.out.println("DEBUG: ===== RECIBIENDO PETICIÓN PARA CREAR CURSO =====");
             System.out.println("DEBUG: DTO completo recibido:");
-            System.out.println("  - Nombre: " + dto.getNombre_curso());
-            System.out.println("  - Codigo: " + dto.getCodigo_curso());
             System.out.println("  - ID Materia: " + dto.getId_materia() + " (tipo: " + (dto.getId_materia() != null ? dto.getId_materia().getClass().getSimpleName() : "null") + ")");
             System.out.println("  - ID Docente: " + dto.getId_docente() + " (tipo: " + (dto.getId_docente() != null ? dto.getId_docente().getClass().getSimpleName() : "null") + ")");
             System.out.println("  - Cupo Estimado: " + dto.getCupo_estimado());
-            System.out.println("  - Estado: " + dto.getEstado());
+            System.out.println("  - Fecha Inicio: " + dto.getFecha_inicio());
+            System.out.println("  - Fecha Fin: " + dto.getFecha_fin());
+            System.out.println("  - Período Académico: " + dto.getPeriodoAcademico());
+            System.out.println("  - Espacio Asignado: " + dto.getEspacio_asignado());
+            System.out.println("  - Estado: " + (dto.getEstado() != null ? dto.getEstado() : "Abierto (por defecto)"));
             
             // Validar que el ID del docente sea válido
             if (dto.getId_docente() != null && dto.getId_docente() <= 0) {
@@ -2510,18 +2522,12 @@ public class CursosIntersemestralesRestController {
                 return ResponseEntity.badRequest().body(error);
             }
             
-            // Validaciones basicas
-            if (dto.getNombre_curso() == null || dto.getNombre_curso().trim().isEmpty()) {
+            // Validar que el ID de la materia sea válido
+            if (dto.getId_materia() != null && dto.getId_materia() <= 0) {
                 Map<String, Object> error = new HashMap<>();
-                error.put("error", "Nombre requerido");
-                error.put("message", "El nombre del curso es obligatorio");
-                return ResponseEntity.badRequest().body(error);
-            }
-            
-            if (dto.getCodigo_curso() == null || dto.getCodigo_curso().trim().isEmpty()) {
-                Map<String, Object> error = new HashMap<>();
-                error.put("error", "Codigo requerido");
-                error.put("message", "El codigo del curso es obligatorio");
+                error.put("error", "ID de materia inválido");
+                error.put("message", "El ID de la materia debe ser mayor a 0. ID recibido: " + dto.getId_materia());
+                System.out.println("DEBUG: ERROR - ID de materia inválido: " + dto.getId_materia());
                 return ResponseEntity.badRequest().body(error);
             }
             
@@ -2539,52 +2545,93 @@ public class CursosIntersemestralesRestController {
                 return ResponseEntity.badRequest().body(error);
             }
             
-            // Obtener informacion real de la materia
-            Map<String, Object> materia = new HashMap<>();
-            try {
-                co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Materia materiaReal = 
-                    materiaCU.obtenerMateriaPorId(dto.getId_materia().intValue());
-                if (materiaReal != null) {
-                    materia.put("id_materia", materiaReal.getId_materia());
-                    materia.put("nombre_materia", materiaReal.getNombre());
-                    materia.put("codigo_materia", materiaReal.getCodigo());
-                    materia.put("creditos", materiaReal.getCreditos());
-                } else {
-                    throw new RuntimeException("Materia no encontrada con ID: " + dto.getId_materia());
-                }
-            } catch (Exception e) {
+            if (dto.getCupo_estimado() == null) {
                 Map<String, Object> error = new HashMap<>();
-                error.put("error", "Error obteniendo materia");
-                error.put("message", "No se pudo obtener la materia: " + e.getMessage());
+                error.put("error", "Cupo estimado requerido");
+                error.put("message", "Debe proporcionar un cupo estimado");
                 return ResponseEntity.badRequest().body(error);
             }
             
-            // Obtener informacion real del docente
-            Map<String, Object> docente = new HashMap<>();
+            // Validar fechas
+            if (dto.getFecha_inicio() == null || dto.getFecha_inicio().trim().isEmpty()) {
+                Map<String, Object> error = new HashMap<>();
+                error.put("error", "Fecha de inicio requerida");
+                error.put("message", "Debe proporcionar una fecha de inicio");
+                return ResponseEntity.badRequest().body(error);
+            }
+            
+            if (dto.getFecha_fin() == null || dto.getFecha_fin().trim().isEmpty()) {
+                Map<String, Object> error = new HashMap<>();
+                error.put("error", "Fecha de fin requerida");
+                error.put("message", "Debe proporcionar una fecha de fin");
+                return ResponseEntity.badRequest().body(error);
+            }
+            
+            // Validar período académico
+            if (dto.getPeriodoAcademico() == null || dto.getPeriodoAcademico().trim().isEmpty()) {
+                Map<String, Object> error = new HashMap<>();
+                error.put("error", "Período académico requerido");
+                error.put("message", "Debe seleccionar un período académico");
+                return ResponseEntity.badRequest().body(error);
+            }
+            
+            // Validar formato del período académico (debe ser "YYYY-P" donde P es 1 o 2)
+            String periodoPattern = "^\\d{4}-[12]$";
+            if (!dto.getPeriodoAcademico().matches(periodoPattern)) {
+                Map<String, Object> error = new HashMap<>();
+                error.put("error", "Formato de período académico inválido");
+                error.put("message", "El período académico debe tener el formato 'YYYY-P' (ej: '2025-1', '2025-2')");
+                return ResponseEntity.badRequest().body(error);
+            }
+            
+            // Validar que la fecha de fin sea posterior a la fecha de inicio
             try {
-                Integer idDocenteInt = dto.getId_docente().intValue();
-                System.out.println("DEBUG: Buscando docente con ID: " + idDocenteInt + " (convertido desde Long: " + dto.getId_docente() + ")");
+                java.text.SimpleDateFormat sdf = new java.text.SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
+                sdf.setLenient(false);
+                java.util.Date fechaInicio;
+                java.util.Date fechaFin;
                 
-                co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Docente docenteReal = 
-                    docenteCU.obtenerDocentePorId(idDocenteInt);
+                try {
+                    fechaInicio = sdf.parse(dto.getFecha_inicio());
+                } catch (java.text.ParseException e) {
+                    // Intentar con formato más simple
+                    try {
+                        sdf = new java.text.SimpleDateFormat("yyyy-MM-dd");
+                        fechaInicio = sdf.parse(dto.getFecha_inicio());
+                    } catch (java.text.ParseException e2) {
+                        Map<String, Object> error = new HashMap<>();
+                        error.put("error", "Formato de fecha de inicio inválido");
+                        error.put("message", "La fecha de inicio debe estar en formato ISO 8601 (ej: '2025-01-15T08:00:00Z' o '2025-01-15')");
+                        return ResponseEntity.badRequest().body(error);
+                    }
+                }
                 
-                if (docenteReal != null) {
-                    System.out.println("DEBUG: Docente encontrado - ID: " + docenteReal.getId_docente() + 
-                                     ", Nombre: " + docenteReal.getNombre_docente());
-                    docente.put("id_docente", docenteReal.getId_docente());
-                    docente.put("nombre_docente", docenteReal.getNombre_docente());
-                    docente.put("codigo_docente", docenteReal.getCodigo_docente());
-                } else {
-                    System.out.println("DEBUG: ERROR - Docente no encontrado con ID: " + idDocenteInt);
-                    throw new RuntimeException("Docente no encontrado con ID: " + dto.getId_docente());
+                try {
+                    sdf = new java.text.SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
+                    fechaFin = sdf.parse(dto.getFecha_fin());
+                } catch (java.text.ParseException e) {
+                    // Intentar con formato más simple
+                    try {
+                        sdf = new java.text.SimpleDateFormat("yyyy-MM-dd");
+                        fechaFin = sdf.parse(dto.getFecha_fin());
+                    } catch (java.text.ParseException e2) {
+                        Map<String, Object> error = new HashMap<>();
+                        error.put("error", "Formato de fecha de fin inválido");
+                        error.put("message", "La fecha de fin debe estar en formato ISO 8601 (ej: '2025-01-15T08:00:00Z' o '2025-01-15')");
+                        return ResponseEntity.badRequest().body(error);
+                    }
+                }
+                
+                if (fechaFin.before(fechaInicio) || fechaFin.equals(fechaInicio)) {
+                    Map<String, Object> error = new HashMap<>();
+                    error.put("error", "Fechas inválidas");
+                    error.put("message", "La fecha de fin debe ser posterior a la fecha de inicio");
+                    return ResponseEntity.badRequest().body(error);
                 }
             } catch (Exception e) {
-                System.out.println("DEBUG: ERROR al obtener docente - " + e.getMessage());
-                e.printStackTrace();
                 Map<String, Object> error = new HashMap<>();
-                error.put("error", "Error obteniendo docente");
-                error.put("message", "No se pudo obtener el docente: " + e.getMessage());
-                error.put("id_docente_recibido", dto.getId_docente());
+                error.put("error", "Error validando fechas");
+                error.put("message", "No se pudieron validar las fechas: " + e.getMessage());
                 return ResponseEntity.badRequest().body(error);
             }
             
@@ -2595,7 +2642,11 @@ public class CursosIntersemestralesRestController {
                 // Crear objeto de dominio del curso
                 CursoOfertadoVerano cursoDominio = new CursoOfertadoVerano();
                 cursoDominio.setCupo_estimado(dto.getCupo_estimado());
-                cursoDominio.setSalon(dto.getEspacio_asignado() != null ? dto.getEspacio_asignado() : "Aula 101");
+                // Espacio asignado: usar el proporcionado o "Aula 101" por defecto
+                cursoDominio.setSalon(dto.getEspacio_asignado() != null && !dto.getEspacio_asignado().trim().isEmpty() 
+                    ? dto.getEspacio_asignado().trim() 
+                    : "Aula 101");
+                // Grupo: siempre se asigna como "A" por defecto
                 cursoDominio.setGrupo(co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Enums.GrupoCursoVerano.A);
                 
                 // Obtener materia real de la base de datos
@@ -2637,13 +2688,77 @@ public class CursosIntersemestralesRestController {
                                      cursoDominio.getObjDocente().getId_docente());
                 }
                 
-                // Crear estado inicial del curso con el estado que viene del frontend
-                EstadoCursoOfertado estadoInicial = new EstadoCursoOfertado();
-                estadoInicial.setEstado_actual(dto.getEstado() != null ? dto.getEstado() : "Abierto");
-                estadoInicial.setFecha_registro_estado(new java.util.Date());
+                // Crear estado inicial del curso
+                // Validar estado: debe ser uno de los estados válidos
+                String estadoInicial = (dto.getEstado() != null && !dto.getEstado().trim().isEmpty()) 
+                    ? dto.getEstado().trim() 
+                    : "Abierto";
+                
+                // Validar que el estado sea válido
+                String[] estadosValidos = {"Borrador", "Abierto", "Publicado", "Preinscripcion", "Inscripcion", "Cerrado"};
+                boolean estadoValido = false;
+                for (String estadoVal : estadosValidos) {
+                    if (estadoVal.equals(estadoInicial)) {
+                        estadoValido = true;
+                        break;
+                    }
+                }
+                if (!estadoValido) {
+                    estadoInicial = "Abierto"; // Por defecto si el estado no es válido
+                    System.out.println("DEBUG: WARNING - Estado inválido proporcionado, usando 'Abierto' por defecto");
+                }
+                
+                // Parsear fecha de inicio para usarla como fecha_registro_estado
+                java.util.Date fechaInicioDate;
+                try {
+                    java.text.SimpleDateFormat sdf = new java.text.SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
+                    sdf.setLenient(false);
+                    try {
+                        fechaInicioDate = sdf.parse(dto.getFecha_inicio());
+                    } catch (java.text.ParseException e) {
+                        // Intentar con formato más simple
+                        sdf = new java.text.SimpleDateFormat("yyyy-MM-dd");
+                        fechaInicioDate = sdf.parse(dto.getFecha_inicio());
+                    }
+                } catch (java.text.ParseException e) {
+                    // Si falla el parsing, usar la fecha actual
+                    System.out.println("DEBUG: WARNING - No se pudo parsear la fecha de inicio, usando fecha actual");
+                    fechaInicioDate = new java.util.Date();
+                }
+                
+                // Parsear fecha de fin
+                java.util.Date fechaFinDate;
+                try {
+                    java.text.SimpleDateFormat sdf = new java.text.SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
+                    sdf.setLenient(false);
+                    try {
+                        fechaFinDate = sdf.parse(dto.getFecha_fin());
+                    } catch (java.text.ParseException e) {
+                        // Intentar con formato más simple
+                        sdf = new java.text.SimpleDateFormat("yyyy-MM-dd");
+                        fechaFinDate = sdf.parse(dto.getFecha_fin());
+                    }
+                } catch (java.text.ParseException e) {
+                    // Si falla el parsing, calcular como fecha_inicio + 6 semanas
+                    System.out.println("DEBUG: WARNING - No se pudo parsear la fecha de fin, calculando como fecha_inicio + 6 semanas");
+                    java.util.Calendar cal = java.util.Calendar.getInstance();
+                    cal.setTime(fechaInicioDate);
+                    cal.add(java.util.Calendar.WEEK_OF_YEAR, 6);
+                    fechaFinDate = cal.getTime();
+                }
+                
+                EstadoCursoOfertado estadoCurso = new EstadoCursoOfertado();
+                estadoCurso.setEstado_actual(estadoInicial);
+                estadoCurso.setFecha_registro_estado(fechaInicioDate); // Fecha de inicio
+                estadoCurso.setFecha_fin(fechaFinDate); // Fecha de fin
                 List<EstadoCursoOfertado> estados = new ArrayList<>();
-                estados.add(estadoInicial);
+                estados.add(estadoCurso);
                 cursoDominio.setEstadosCursoOfertados(estados);
+                
+                System.out.println("DEBUG: Estado inicial del curso: " + estadoInicial);
+                System.out.println("DEBUG: Fecha de inicio del curso: " + fechaInicioDate);
+                System.out.println("DEBUG: Fecha de fin del curso: " + fechaFinDate);
+                System.out.println("DEBUG: Período académico: " + dto.getPeriodoAcademico());
                 
                 // Usar el caso de uso para crear el curso
                 CursoOfertadoVerano cursoCreado = cursoCU.crearCurso(cursoDominio);
@@ -2657,62 +2772,47 @@ public class CursosIntersemestralesRestController {
                     System.out.println("DEBUG: WARNING - El curso creado no tiene docente asignado");
                 }
                 
+                // Obtener información completa del curso creado desde la BD para la respuesta
+                // Usar el mapper para obtener la información estructurada
+                CursosOfertadosDTORespuesta cursoDTO = cursoMapper.mappearDeCursoOfertadoARespuesta(cursoCreado);
+                
                 // Crear respuesta con datos reales del curso creado
+                // Usar las fechas y período académico proporcionados por el usuario en lugar de los calculados
                 Map<String, Object> nuevoCurso = new HashMap<>();
                 nuevoCurso.put("id_curso", cursoCreado.getId_curso());
-                nuevoCurso.put("nombre_curso", dto.getNombre_curso());
-                nuevoCurso.put("codigo_curso", dto.getCodigo_curso());
-                nuevoCurso.put("descripcion", dto.getDescripcion() != null ? dto.getDescripcion() : "Curso de " + dto.getNombre_curso());
-                nuevoCurso.put("fecha_inicio", dto.getFecha_inicio());
-                nuevoCurso.put("fecha_fin", dto.getFecha_fin());
-                nuevoCurso.put("cupo_maximo", dto.getCupo_maximo());
-                nuevoCurso.put("cupo_disponible", dto.getCupo_maximo());
-                nuevoCurso.put("cupo_estimado", dto.getCupo_estimado());
-                nuevoCurso.put("espacio_asignado", dto.getEspacio_asignado());
-                nuevoCurso.put("estado", dto.getEstado());
-                nuevoCurso.put("objMateria", materia);
-                
-                // Usar el docente del curso creado en lugar del Map previo
-                if (cursoCreado.getObjDocente() != null) {
-                    Map<String, Object> docenteCreado = new HashMap<>();
-                    docenteCreado.put("id_docente", cursoCreado.getObjDocente().getId_docente());
-                    docenteCreado.put("nombre_docente", cursoCreado.getObjDocente().getNombre_docente());
-                    docenteCreado.put("codigo_docente", cursoCreado.getObjDocente().getCodigo_docente());
-                    nuevoCurso.put("objDocente", docenteCreado);
-                } else {
-                    // Si por alguna razón no tiene docente, usar el Map previo
-                    nuevoCurso.put("objDocente", docente);
-                }
+                nuevoCurso.put("nombre_curso", cursoDTO.getNombre_curso()); // De la materia
+                nuevoCurso.put("codigo_curso", cursoDTO.getCodigo_curso()); // De la materia
+                nuevoCurso.put("descripcion", cursoDTO.getDescripcion()); // Generada automáticamente
+                nuevoCurso.put("fecha_inicio", dto.getFecha_inicio()); // Usar la fecha proporcionada por el usuario
+                nuevoCurso.put("fecha_fin", dto.getFecha_fin()); // Usar la fecha proporcionada por el usuario
+                nuevoCurso.put("periodo", dto.getPeriodoAcademico()); // Usar el período académico proporcionado por el usuario
+                nuevoCurso.put("cupo_maximo", cursoDTO.getCupo_maximo()); // Igual a cupo_estimado
+                nuevoCurso.put("cupo_disponible", cursoDTO.getCupo_disponible()); // Igual a cupo_estimado inicialmente
+                nuevoCurso.put("cupo_estimado", cursoDTO.getCupo_estimado());
+                nuevoCurso.put("espacio_asignado", cursoDTO.getEspacio_asignado());
+                nuevoCurso.put("estado", cursoDTO.getEstado()); // Estado actual
+                nuevoCurso.put("objMateria", cursoDTO.getObjMateria());
+                nuevoCurso.put("objDocente", cursoDTO.getObjDocente());
                 
                 nuevoCurso.put("message", "Curso creado exitosamente en la base de datos");
-                nuevoCurso.put("debug_info", "Curso guardado con ID: " + cursoCreado.getId_curso());
                 
-                System.out.println("DEBUG: Curso creado exitosamente en BD");
+                System.out.println("DEBUG: Curso creado exitosamente en BD - ID: " + cursoCreado.getId_curso() + 
+                                 ", Nombre: " + cursoDTO.getNombre_curso() + 
+                                 ", Docente: " + (cursoDTO.getObjDocente() != null ? cursoDTO.getObjDocente().getNombre_docente() : "null") +
+                                 ", Período: " + dto.getPeriodoAcademico() +
+                                 ", Fecha Inicio: " + dto.getFecha_inicio() +
+                                 ", Fecha Fin: " + dto.getFecha_fin());
                 return ResponseEntity.ok(nuevoCurso);
                 
             } catch (Exception e) {
                 System.out.println("DEBUG: Error guardando en BD: " + e.getMessage());
                 e.printStackTrace();
                 
-                // Si falla el guardado, devolver respuesta simulada
-                Map<String, Object> nuevoCurso = new HashMap<>();
-                nuevoCurso.put("id_curso", 99);
-                nuevoCurso.put("nombre_curso", dto.getNombre_curso());
-                nuevoCurso.put("codigo_curso", dto.getCodigo_curso());
-                nuevoCurso.put("descripcion", dto.getDescripcion() != null ? dto.getDescripcion() : "Curso de " + dto.getNombre_curso());
-                nuevoCurso.put("fecha_inicio", dto.getFecha_inicio());
-                nuevoCurso.put("fecha_fin", dto.getFecha_fin());
-                nuevoCurso.put("cupo_maximo", dto.getCupo_maximo());
-                nuevoCurso.put("cupo_disponible", dto.getCupo_maximo());
-                nuevoCurso.put("cupo_estimado", dto.getCupo_estimado());
-                nuevoCurso.put("espacio_asignado", dto.getEspacio_asignado());
-                nuevoCurso.put("estado", dto.getEstado());
-                nuevoCurso.put("objMateria", materia);
-                nuevoCurso.put("objDocente", docente);
-                nuevoCurso.put("message", "Curso creado exitosamente (simulado)");
-                nuevoCurso.put("debug_info", "Error guardando en BD: " + e.getMessage());
-                
-                return ResponseEntity.ok(nuevoCurso);
+                // Si falla el guardado, devolver error
+                Map<String, Object> error = new HashMap<>();
+                error.put("error", "Error al crear el curso");
+                error.put("message", "No se pudo crear el curso en la base de datos: " + e.getMessage());
+                return ResponseEntity.status(500).body(error);
             }
             
         } catch (Exception e) {
@@ -2936,8 +3036,26 @@ public class CursosIntersemestralesRestController {
         // Obtener curso real de la base de datos - lanza EntidadNoExisteException si no existe
         CursoOfertadoVerano cursoReal = cursoCU.obtenerCursoPorId(id.intValue());
         
+        // Verificar docente antes del mapeo
+        if (cursoReal.getObjDocente() == null) {
+            System.out.println("ERROR: El curso ID " + id + " NO tiene docente asignado en el dominio");
+        } else {
+            System.out.println("DEBUG: Curso ID " + id + " tiene docente en dominio - ID: " + cursoReal.getObjDocente().getId_docente() + 
+                             ", Nombre: " + cursoReal.getObjDocente().getNombre_docente() +
+                             ", Código: " + cursoReal.getObjDocente().getCodigo_docente());
+        }
+        
         // Usar el mapper existente para obtener datos estructurados
         CursosOfertadosDTORespuesta cursoDTO = cursoMapper.mappearDeCursoOfertadoARespuesta(cursoReal);
+        
+        // Verificar docente después del mapeo
+        if (cursoDTO.getObjDocente() == null) {
+            System.out.println("ERROR: El DTO del curso ID " + id + " NO tiene docente después del mapeo");
+        } else {
+            System.out.println("DEBUG: DTO del curso ID " + id + " tiene docente - ID: " + cursoDTO.getObjDocente().getId_docente() + 
+                             ", Nombre: " + cursoDTO.getObjDocente().getNombre_docente() +
+                             ", Código: " + cursoDTO.getObjDocente().getCodigo_docente());
+        }
         
         // Mapear a estructura esperada por el frontend
         Map<String, Object> curso = new HashMap<>();
@@ -2967,6 +3085,13 @@ public class CursosIntersemestralesRestController {
         // Usar la informacion del DTO que ya esta mapeada correctamente
         curso.put("objMateria", cursoDTO.getObjMateria());
         curso.put("objDocente", cursoDTO.getObjDocente());
+        
+        // Log final para verificar que el docente está en la respuesta
+        if (curso.get("objDocente") == null) {
+            System.out.println("ERROR: objDocente es NULL en la respuesta final para el curso ID " + id);
+        } else {
+            System.out.println("SUCCESS: objDocente incluido en la respuesta para el curso ID " + id);
+        }
         
         System.out.println("SUCCESS: Informacion del curso obtenida correctamente");
         

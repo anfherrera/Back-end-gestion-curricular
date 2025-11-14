@@ -8,6 +8,7 @@ import org.mapstruct.Mapping;
 import org.mapstruct.Named;
 
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.CursoOfertadoVerano;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.EstadoCursoOfertado;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.DTOPeticion.CursosOfertadosDTOPeticion;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.DTORespuesta.CursosOfertadosDTORespuesta;
 
@@ -31,6 +32,8 @@ public interface CursosOfertadosMapperDominio {
     CursoOfertadoVerano mappearDeDTOPeticionACursoOfertado(CursosOfertadosDTOPeticion peticion);
 
     // Dominio → DTO Respuesta
+    @Mapping(source = "id_curso", target = "id_curso")
+    @Mapping(target = "idCurso", ignore = true) // Se asignará en post-mapping
     @Mapping(source = "objMateria.codigo", target = "codigo_curso")
     @Mapping(source = "objMateria.nombre", target = "nombre_curso")
     @Mapping(source = "objMateria", target = "objMateria")
@@ -59,6 +62,8 @@ public interface CursosOfertadosMapperDominio {
     }
     
     // Mapper específico para cursos disponibles (estado "Disponible")
+    @Mapping(source = "id_curso", target = "id_curso")
+    @Mapping(target = "idCurso", ignore = true) // Se asignará en post-mapping
     @Mapping(source = "objMateria.codigo", target = "codigo_curso")
     @Mapping(source = "objMateria.nombre", target = "nombre_curso")
     @Mapping(source = "objMateria", target = "objMateria")
@@ -112,7 +117,7 @@ public interface CursosOfertadosMapperDominio {
     }
     
     @Named("obtenerEstadoActual")
-    default String obtenerEstadoActual(List<co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.EstadoCursoOfertado> estados) {
+    default String obtenerEstadoActual(List<EstadoCursoOfertado> estados) {
         if (estados == null || estados.isEmpty()) {
             return "Abierto";
         }
@@ -121,7 +126,7 @@ public interface CursosOfertadosMapperDominio {
     }
     
     @Named("obtenerFechaInicio")
-    default String obtenerFechaInicio(List<co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.EstadoCursoOfertado> estados) {
+    default String obtenerFechaInicio(List<EstadoCursoOfertado> estados) {
         if (estados == null || estados.isEmpty()) {
             return "2024-06-01T08:00:00Z";
         }
@@ -134,12 +139,20 @@ public interface CursosOfertadosMapperDominio {
     }
     
     @Named("obtenerFechaFin")
-    default String obtenerFechaFin(List<co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.EstadoCursoOfertado> estados) {
+    default String obtenerFechaFin(List<EstadoCursoOfertado> estados) {
         if (estados == null || estados.isEmpty()) {
             return "2024-07-15T17:00:00Z";
         }
-        // Calcular fecha fin basada en la fecha de inicio + 6 semanas
-        java.util.Date fechaInicio = estados.get(estados.size() - 1).getFecha_registro_estado();
+        // Obtener el estado más reciente
+        EstadoCursoOfertado estadoMasReciente = estados.get(estados.size() - 1);
+        
+        // Si hay fecha_fin almacenada, usarla
+        if (estadoMasReciente.getFecha_fin() != null) {
+            return new java.text.SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'").format(estadoMasReciente.getFecha_fin());
+        }
+        
+        // Si no hay fecha_fin, calcular basada en la fecha de inicio + 6 semanas (compatibilidad con datos antiguos)
+        java.util.Date fechaInicio = estadoMasReciente.getFecha_registro_estado();
         if (fechaInicio == null) {
             return "2024-07-15T17:00:00Z";
         }
@@ -174,7 +187,7 @@ public interface CursosOfertadosMapperDominio {
     }
     
     @Named("calcularPeriodoAcademico")
-    default String calcularPeriodoAcademico(List<co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.EstadoCursoOfertado> estados) {
+    default String calcularPeriodoAcademico(List<EstadoCursoOfertado> estados) {
         if (estados == null || estados.isEmpty()) {
             return "N/A";
         }

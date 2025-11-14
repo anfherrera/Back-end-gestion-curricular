@@ -27,7 +27,9 @@ public class EstadoCursoOfertadoEntity {
     @Column(nullable = false, length = 100)
     private String estado_actual;
     //@Column(nullable = false)
-    private Date fecha_registro_estado;
+    private Date fecha_registro_estado; // Fecha de inicio del curso
+    @Column(nullable = true)
+    private Date fecha_fin; // Fecha de fin del curso (opcional)
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "idfkCurso", referencedColumnName = "idCurso", nullable = true)

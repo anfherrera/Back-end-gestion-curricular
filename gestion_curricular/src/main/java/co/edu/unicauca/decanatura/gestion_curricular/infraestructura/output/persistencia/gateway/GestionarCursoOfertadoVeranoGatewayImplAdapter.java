@@ -104,6 +104,7 @@ public class GestionarCursoOfertadoVeranoGatewayImplAdapter implements Gestionar
                 estadoCursoEntity.setEstado_actual(estadoCurso.getEstado_actual());
                 estadoCursoEntity.setFecha_registro_estado(estadoCurso.getFecha_registro_estado() != null ? 
                     estadoCurso.getFecha_registro_estado() : new Date());
+                estadoCursoEntity.setFecha_fin(estadoCurso.getFecha_fin()); // Guardar fecha de fin
                 estadoCursoEntity.setObjCursoOfertadoVerano(cursoEntity);
                 estadosCursoEntity.add(estadoCursoEntity);
             }
@@ -112,6 +113,7 @@ public class GestionarCursoOfertadoVeranoGatewayImplAdapter implements Gestionar
             EstadoCursoOfertadoEntity estadoCurso = new EstadoCursoOfertadoEntity();
             estadoCurso.setFecha_registro_estado(new Date());
             estadoCurso.setEstado_actual("Abierto");
+            estadoCurso.setFecha_fin(null); // Sin fecha de fin por defecto
             estadoCurso.setObjCursoOfertadoVerano(cursoEntity);
             estadosCursoEntity.add(estadoCurso);
         }

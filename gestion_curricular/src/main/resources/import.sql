@@ -116,6 +116,8 @@ INSERT INTO Cursos_ofertados(idCurso, idfkMateria, idfkDocente, grupo, cupo_esti
 INSERT INTO Cursos_ofertados(idCurso, idfkMateria, idfkDocente, grupo, cupo_estimado, salon) VALUES (3, 3, 3, 'C', 20, 'A-103');
 
 -- Solo insertar estados adicionales
+-- NOTA: La columna fecha_fin se crea automáticamente en desarrollo por Hibernate (ddl-auto=create-drop)
+-- En producción, ejecutar el script MIGRACION_FECHA_FIN.sql manualmente ANTES de iniciar la app
 INSERT INTO EstadosCursos(idEstado, estado_actual, fecha_registro_estado, idfkCurso) VALUES (1, 'Publicado', '2025-07-01 08:00:00', 1);
 INSERT INTO EstadosCursos(idEstado, estado_actual, fecha_registro_estado, idfkCurso) VALUES (2, 'Preinscripcion', '2025-07-02 08:00:00', 2);
 INSERT INTO EstadosCursos(idEstado, estado_actual, fecha_registro_estado, idfkCurso) VALUES (3, 'Inscripcion', '2025-07-03 08:00:00', 3);
