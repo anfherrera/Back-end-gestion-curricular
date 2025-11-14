@@ -30,6 +30,8 @@ public class EstadoCursoOfertadoEntity {
     private Date fecha_registro_estado; // Fecha de inicio del curso
     @Column(nullable = true)
     private Date fecha_fin; // Fecha de fin del curso (opcional)
+    @Column(nullable = true, length = 10)
+    private String periodo_academico; // Período académico proporcionado por el usuario (ej: "2025-1", "2025-2")
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "idfkCurso", referencedColumnName = "idCurso", nullable = true)

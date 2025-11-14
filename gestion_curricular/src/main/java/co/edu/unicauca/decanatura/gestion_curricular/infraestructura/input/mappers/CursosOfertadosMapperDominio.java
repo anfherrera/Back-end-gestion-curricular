@@ -192,8 +192,16 @@ public interface CursosOfertadosMapperDominio {
             return "N/A";
         }
         
-        // Obtener la fecha del estado más reciente (fecha de inicio del curso)
-        java.util.Date fechaInicio = estados.get(estados.size() - 1).getFecha_registro_estado();
+        // Obtener el estado más reciente
+        EstadoCursoOfertado estadoMasReciente = estados.get(estados.size() - 1);
+        
+        // Si hay período académico guardado, usarlo (tiene prioridad)
+        if (estadoMasReciente.getPeriodo_academico() != null && !estadoMasReciente.getPeriodo_academico().trim().isEmpty()) {
+            return estadoMasReciente.getPeriodo_academico().trim();
+        }
+        
+        // Si no hay período guardado, calcular basándose en la fecha de inicio (compatibilidad con datos antiguos)
+        java.util.Date fechaInicio = estadoMasReciente.getFecha_registro_estado();
         if (fechaInicio == null) {
             return "N/A";
         }

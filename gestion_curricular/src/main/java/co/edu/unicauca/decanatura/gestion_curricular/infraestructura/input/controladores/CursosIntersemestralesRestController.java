@@ -24,6 +24,7 @@ import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Documento;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Solicitud;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.EstadoCursoOfertado;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Enums.CondicionSolicitudVerano;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Enums.PeriodoAcademicoEnum;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.DTORespuesta.CursosOfertadosDTORespuesta;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.DTORespuesta.SolicitudCursoVeranoPreinscripcionDTORespuesta;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.DTOPeticion.SolicitudCursoNuevoDTOPeticion;
@@ -2575,12 +2576,13 @@ public class CursosIntersemestralesRestController {
                 return ResponseEntity.badRequest().body(error);
             }
             
-            // Validar formato del período académico (debe ser "YYYY-P" donde P es 1 o 2)
-            String periodoPattern = "^\\d{4}-[12]$";
-            if (!dto.getPeriodoAcademico().matches(periodoPattern)) {
+            // Validar que el período académico sea válido usando el enum (consistencia con ECAES)
+            String periodoAcademicoTrimmed = dto.getPeriodoAcademico().trim();
+            if (!PeriodoAcademicoEnum.esValido(periodoAcademicoTrimmed)) {
                 Map<String, Object> error = new HashMap<>();
-                error.put("error", "Formato de período académico inválido");
-                error.put("message", "El período académico debe tener el formato 'YYYY-P' (ej: '2025-1', '2025-2')");
+                error.put("error", "Período académico inválido");
+                error.put("message", "El período académico '" + periodoAcademicoTrimmed + "' no es válido. Debe ser un período válido como '2025-1' o '2025-2'");
+                error.put("periodosValidos", PeriodoAcademicoEnum.getPeriodosRecientes());
                 return ResponseEntity.badRequest().body(error);
             }
             
@@ -2751,6 +2753,7 @@ public class CursosIntersemestralesRestController {
                 estadoCurso.setEstado_actual(estadoInicial);
                 estadoCurso.setFecha_registro_estado(fechaInicioDate); // Fecha de inicio
                 estadoCurso.setFecha_fin(fechaFinDate); // Fecha de fin
+                estadoCurso.setPeriodo_academico(periodoAcademicoTrimmed); // Guardar período académico validado (usando enum)
                 List<EstadoCursoOfertado> estados = new ArrayList<>();
                 estados.add(estadoCurso);
                 cursoDominio.setEstadosCursoOfertados(estados);
@@ -2758,7 +2761,7 @@ public class CursosIntersemestralesRestController {
                 System.out.println("DEBUG: Estado inicial del curso: " + estadoInicial);
                 System.out.println("DEBUG: Fecha de inicio del curso: " + fechaInicioDate);
                 System.out.println("DEBUG: Fecha de fin del curso: " + fechaFinDate);
-                System.out.println("DEBUG: Período académico: " + dto.getPeriodoAcademico());
+                System.out.println("DEBUG: Período académico validado: " + periodoAcademicoTrimmed);
                 
                 // Usar el caso de uso para crear el curso
                 CursoOfertadoVerano cursoCreado = cursoCU.crearCurso(cursoDominio);
@@ -2785,7 +2788,7 @@ public class CursosIntersemestralesRestController {
                 nuevoCurso.put("descripcion", cursoDTO.getDescripcion()); // Generada automáticamente
                 nuevoCurso.put("fecha_inicio", dto.getFecha_inicio()); // Usar la fecha proporcionada por el usuario
                 nuevoCurso.put("fecha_fin", dto.getFecha_fin()); // Usar la fecha proporcionada por el usuario
-                nuevoCurso.put("periodo", dto.getPeriodoAcademico()); // Usar el período académico proporcionado por el usuario
+                nuevoCurso.put("periodo", periodoAcademicoTrimmed); // Usar el período académico validado (enum)
                 nuevoCurso.put("cupo_maximo", cursoDTO.getCupo_maximo()); // Igual a cupo_estimado
                 nuevoCurso.put("cupo_disponible", cursoDTO.getCupo_disponible()); // Igual a cupo_estimado inicialmente
                 nuevoCurso.put("cupo_estimado", cursoDTO.getCupo_estimado());
@@ -2799,7 +2802,7 @@ public class CursosIntersemestralesRestController {
                 System.out.println("DEBUG: Curso creado exitosamente en BD - ID: " + cursoCreado.getId_curso() + 
                                  ", Nombre: " + cursoDTO.getNombre_curso() + 
                                  ", Docente: " + (cursoDTO.getObjDocente() != null ? cursoDTO.getObjDocente().getNombre_docente() : "null") +
-                                 ", Período: " + dto.getPeriodoAcademico() +
+                                 ", Período: " + periodoAcademicoTrimmed +
                                  ", Fecha Inicio: " + dto.getFecha_inicio() +
                                  ", Fecha Fin: " + dto.getFecha_fin());
                 return ResponseEntity.ok(nuevoCurso);

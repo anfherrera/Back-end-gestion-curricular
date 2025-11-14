@@ -12,6 +12,7 @@ public class EstadoCursoOfertado {
     private String estado_actual;
     private Date fecha_registro_estado; // Fecha de inicio del curso
     private Date fecha_fin; // Fecha de fin del curso (opcional, si no se proporciona se calcula)
+    private String periodo_academico; // Período académico proporcionado por el usuario (ej: "2025-1", "2025-2")
 
     private CursoOfertadoVerano objCursoOfertadoVerano;
 

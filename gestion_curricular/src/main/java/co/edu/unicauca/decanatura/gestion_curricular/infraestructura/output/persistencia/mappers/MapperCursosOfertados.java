@@ -63,6 +63,7 @@ public class MapperCursosOfertados {
                         estadoEntity.setEstado_actual(estado.getEstado_actual());
                         estadoEntity.setFecha_registro_estado(estado.getFecha_registro_estado());
                         estadoEntity.setFecha_fin(estado.getFecha_fin()); // Mapear fecha de fin
+                        estadoEntity.setPeriodo_academico(estado.getPeriodo_academico()); // Mapear período académico
                         estadoEntity.setObjCursoOfertadoVerano(null); // corta la recursividad
 
                         estadosCurso.add(estadoEntity);
@@ -117,6 +118,7 @@ public class MapperCursosOfertados {
                     estado.setEstado_actual(estadoEntity.getEstado_actual());
                     estado.setFecha_registro_estado(estadoEntity.getFecha_registro_estado());
                     estado.setFecha_fin(estadoEntity.getFecha_fin()); // Mapear fecha de fin
+                    estado.setPeriodo_academico(estadoEntity.getPeriodo_academico()); // Mapear período académico
                     estado.setObjCursoOfertadoVerano(null); // cortar recursividad
 
                     estadosCurso.add(estado);

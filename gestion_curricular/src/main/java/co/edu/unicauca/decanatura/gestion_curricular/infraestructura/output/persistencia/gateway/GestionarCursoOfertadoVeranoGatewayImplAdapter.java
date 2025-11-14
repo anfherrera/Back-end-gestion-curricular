@@ -105,6 +105,7 @@ public class GestionarCursoOfertadoVeranoGatewayImplAdapter implements Gestionar
                 estadoCursoEntity.setFecha_registro_estado(estadoCurso.getFecha_registro_estado() != null ? 
                     estadoCurso.getFecha_registro_estado() : new Date());
                 estadoCursoEntity.setFecha_fin(estadoCurso.getFecha_fin()); // Guardar fecha de fin
+                estadoCursoEntity.setPeriodo_academico(estadoCurso.getPeriodo_academico()); // Guardar período académico
                 estadoCursoEntity.setObjCursoOfertadoVerano(cursoEntity);
                 estadosCursoEntity.add(estadoCursoEntity);
             }
