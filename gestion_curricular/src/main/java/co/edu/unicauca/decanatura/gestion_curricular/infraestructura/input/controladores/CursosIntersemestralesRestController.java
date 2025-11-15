@@ -2588,40 +2588,25 @@ public class CursosIntersemestralesRestController {
             
             // Validar que la fecha de fin sea posterior a la fecha de inicio
             try {
-                java.text.SimpleDateFormat sdf = new java.text.SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
-                sdf.setLenient(false);
                 java.util.Date fechaInicio;
                 java.util.Date fechaFin;
                 
                 try {
-                    fechaInicio = sdf.parse(dto.getFecha_inicio());
+                    fechaInicio = parsearFecha(dto.getFecha_inicio());
                 } catch (java.text.ParseException e) {
-                    // Intentar con formato más simple
-                    try {
-                        sdf = new java.text.SimpleDateFormat("yyyy-MM-dd");
-                        fechaInicio = sdf.parse(dto.getFecha_inicio());
-                    } catch (java.text.ParseException e2) {
-                        Map<String, Object> error = new HashMap<>();
-                        error.put("error", "Formato de fecha de inicio inválido");
-                        error.put("message", "La fecha de inicio debe estar en formato ISO 8601 (ej: '2025-01-15T08:00:00Z' o '2025-01-15')");
-                        return ResponseEntity.badRequest().body(error);
-                    }
+                    Map<String, Object> error = new HashMap<>();
+                    error.put("error", "Formato de fecha de inicio inválido");
+                    error.put("message", "La fecha de inicio debe estar en formato ISO 8601 (ej: '2025-01-15T08:00:00Z' o '2025-01-15')");
+                    return ResponseEntity.badRequest().body(error);
                 }
                 
                 try {
-                    sdf = new java.text.SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
-                    fechaFin = sdf.parse(dto.getFecha_fin());
+                    fechaFin = parsearFecha(dto.getFecha_fin());
                 } catch (java.text.ParseException e) {
-                    // Intentar con formato más simple
-                    try {
-                        sdf = new java.text.SimpleDateFormat("yyyy-MM-dd");
-                        fechaFin = sdf.parse(dto.getFecha_fin());
-                    } catch (java.text.ParseException e2) {
-                        Map<String, Object> error = new HashMap<>();
-                        error.put("error", "Formato de fecha de fin inválido");
-                        error.put("message", "La fecha de fin debe estar en formato ISO 8601 (ej: '2025-01-15T08:00:00Z' o '2025-01-15')");
-                        return ResponseEntity.badRequest().body(error);
-                    }
+                    Map<String, Object> error = new HashMap<>();
+                    error.put("error", "Formato de fecha de fin inválido");
+                    error.put("message", "La fecha de fin debe estar en formato ISO 8601 (ej: '2025-01-15T08:00:00Z' o '2025-01-15')");
+                    return ResponseEntity.badRequest().body(error);
                 }
                 
                 if (fechaFin.before(fechaInicio) || fechaFin.equals(fechaInicio)) {
@@ -2654,15 +2639,7 @@ public class CursosIntersemestralesRestController {
                 // Parsear fecha de inicio (ANTES de usarla)
                 java.util.Date fechaInicioDate;
                 try {
-                    java.text.SimpleDateFormat sdf = new java.text.SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
-                    sdf.setLenient(false);
-                    try {
-                        fechaInicioDate = sdf.parse(dto.getFecha_inicio());
-                    } catch (java.text.ParseException e) {
-                        // Intentar con formato más simple
-                        sdf = new java.text.SimpleDateFormat("yyyy-MM-dd");
-                        fechaInicioDate = sdf.parse(dto.getFecha_inicio());
-                    }
+                    fechaInicioDate = parsearFecha(dto.getFecha_inicio());
                 } catch (java.text.ParseException e) {
                     // Si falla el parsing, usar la fecha actual
                     System.out.println("DEBUG: WARNING - No se pudo parsear la fecha de inicio, usando fecha actual");
@@ -2672,19 +2649,11 @@ public class CursosIntersemestralesRestController {
                 // Parsear fecha de fin (ANTES de usarla)
                 java.util.Date fechaFinDate;
                 try {
-                    java.text.SimpleDateFormat sdf = new java.text.SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
-                    sdf.setLenient(false);
-                    try {
-                        fechaFinDate = sdf.parse(dto.getFecha_fin());
-                    } catch (java.text.ParseException e) {
-                        // Intentar con formato más simple
-                        sdf = new java.text.SimpleDateFormat("yyyy-MM-dd");
-                        fechaFinDate = sdf.parse(dto.getFecha_fin());
-                    }
+                    fechaFinDate = parsearFecha(dto.getFecha_fin());
                 } catch (java.text.ParseException e) {
                     // Si falla el parsing, calcular como fecha_inicio + 6 semanas
                     System.out.println("DEBUG: WARNING - No se pudo parsear la fecha de fin, calculando como fecha_inicio + 6 semanas");
-                    java.util.Calendar cal = java.util.Calendar.getInstance();
+                    java.util.Calendar cal = java.util.Calendar.getInstance(java.util.TimeZone.getTimeZone("UTC"));
                     cal.setTime(fechaInicioDate);
                     cal.add(java.util.Calendar.WEEK_OF_YEAR, 6);
                     fechaFinDate = cal.getTime();
@@ -4481,6 +4450,56 @@ public class CursosIntersemestralesRestController {
             error.put("status", "ERROR");
             error.put("message", "Error verificando inscripcion: " + e.getMessage());
             return ResponseEntity.status(500).body(error);
+        }
+    }
+
+    /**
+     * Método auxiliar para parsear fechas correctamente, evitando problemas de zona horaria.
+     * Si la fecha viene sin hora (formato yyyy-MM-dd), se establece al final del día (23:59:59) en UTC.
+     * 
+     * @param fechaStr String con la fecha a parsear
+     * @return Date parseado correctamente
+     * @throws java.text.ParseException si no se puede parsear la fecha
+     */
+    private java.util.Date parsearFecha(String fechaStr) throws java.text.ParseException {
+        if (fechaStr == null || fechaStr.trim().isEmpty()) {
+            throw new java.text.ParseException("Fecha vacía", 0);
+        }
+        
+        // Intentar primero con formato ISO completo (con hora y zona horaria)
+        try {
+            java.text.SimpleDateFormat sdf = new java.text.SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
+            sdf.setTimeZone(java.util.TimeZone.getTimeZone("UTC"));
+            sdf.setLenient(false);
+            return sdf.parse(fechaStr);
+        } catch (java.text.ParseException e) {
+            // Si falla, intentar con formato ISO sin la Z
+            try {
+                java.text.SimpleDateFormat sdf = new java.text.SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
+                sdf.setTimeZone(java.util.TimeZone.getTimeZone("UTC"));
+                sdf.setLenient(false);
+                return sdf.parse(fechaStr);
+            } catch (java.text.ParseException e2) {
+                // Si falla, intentar con formato simple (solo fecha)
+                try {
+                    java.text.SimpleDateFormat sdf = new java.text.SimpleDateFormat("yyyy-MM-dd");
+                    sdf.setTimeZone(java.util.TimeZone.getTimeZone("UTC"));
+                    sdf.setLenient(false);
+                    java.util.Date fecha = sdf.parse(fechaStr);
+                    
+                    // Si es formato simple, establecer la hora al final del día (23:59:59) en UTC
+                    // para evitar problemas de zona horaria que muestren un día anterior
+                    java.util.Calendar cal = java.util.Calendar.getInstance(java.util.TimeZone.getTimeZone("UTC"));
+                    cal.setTime(fecha);
+                    cal.set(java.util.Calendar.HOUR_OF_DAY, 23);
+                    cal.set(java.util.Calendar.MINUTE, 59);
+                    cal.set(java.util.Calendar.SECOND, 59);
+                    cal.set(java.util.Calendar.MILLISECOND, 999);
+                    return cal.getTime();
+                } catch (java.text.ParseException e3) {
+                    throw new java.text.ParseException("Formato de fecha inválido: " + fechaStr, 0);
+                }
+            }
         }
     }
 

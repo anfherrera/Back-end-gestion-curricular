@@ -138,7 +138,9 @@ public interface CursosOfertadosMapperDominio {
         if (fecha == null) {
             return "2024-06-01T08:00:00Z";
         }
-        return new java.text.SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'").format(fecha);
+        java.text.SimpleDateFormat sdf = new java.text.SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
+        sdf.setTimeZone(java.util.TimeZone.getTimeZone("UTC"));
+        return sdf.format(fecha);
     }
     
     // Métodos obsoletos eliminados: obtenerFechaFin y calcularPeriodoAcademico
@@ -172,30 +174,35 @@ public interface CursosOfertadosMapperDominio {
     default String formatearFecha(java.util.Date fecha) {
         if (fecha == null) {
             // Para cursos antiguos que no tienen fecha, calcular una por defecto (6 meses desde ahora)
-            java.util.Calendar cal = java.util.Calendar.getInstance();
+            java.util.Calendar cal = java.util.Calendar.getInstance(java.util.TimeZone.getTimeZone("UTC"));
             cal.add(java.util.Calendar.MONTH, 6);
             fecha = cal.getTime();
         }
-        return new java.text.SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'").format(fecha);
+        java.text.SimpleDateFormat sdf = new java.text.SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
+        sdf.setTimeZone(java.util.TimeZone.getTimeZone("UTC"));
+        return sdf.format(fecha);
     }
     
     @Named("calcularFechaFin")
     default String calcularFechaFin(CursoOfertadoVerano curso) {
+        java.text.SimpleDateFormat sdf = new java.text.SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
+        sdf.setTimeZone(java.util.TimeZone.getTimeZone("UTC"));
+        
         // Si hay fecha_fin guardada, usarla
         if (curso.getFecha_fin() != null) {
-            return new java.text.SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'").format(curso.getFecha_fin());
+            return sdf.format(curso.getFecha_fin());
         }
         // Si no hay fecha_fin pero hay fecha_inicio, calcular fecha_inicio + 6 semanas (para cursos antiguos)
         if (curso.getFecha_inicio() != null) {
-            java.util.Calendar cal = java.util.Calendar.getInstance();
+            java.util.Calendar cal = java.util.Calendar.getInstance(java.util.TimeZone.getTimeZone("UTC"));
             cal.setTime(curso.getFecha_inicio());
             cal.add(java.util.Calendar.WEEK_OF_YEAR, 6);
-            return new java.text.SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'").format(cal.getTime());
+            return sdf.format(cal.getTime());
         }
         // Si no hay ninguna fecha, calcular por defecto (7 meses desde ahora)
-        java.util.Calendar cal = java.util.Calendar.getInstance();
+        java.util.Calendar cal = java.util.Calendar.getInstance(java.util.TimeZone.getTimeZone("UTC"));
         cal.add(java.util.Calendar.MONTH, 7);
-        return new java.text.SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'").format(cal.getTime());
+        return sdf.format(cal.getTime());
     }
     
     @Named("calcularPeriodoDesdeCurso")
