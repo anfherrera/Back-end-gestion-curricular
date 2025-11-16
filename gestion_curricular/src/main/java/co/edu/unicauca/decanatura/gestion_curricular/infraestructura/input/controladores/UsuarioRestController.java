@@ -6,6 +6,7 @@ import lombok.RequiredArgsConstructor;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -17,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import co.edu.unicauca.decanatura.gestion_curricular.Security.JwtUtil;
+import co.edu.unicauca.decanatura.gestion_curricular.Security.SecurityAuditService;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarUsuarioCUIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Usuario;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.DTOPeticion.LoginDTOPeticion;
@@ -39,6 +41,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
+import jakarta.servlet.http.HttpServletRequest;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -55,9 +58,11 @@ public class UsuarioRestController {
     private final AuthenticationManager authManager;
     private final JwtUtil jwtUtil;
     private final UserDetailsService userDetailsService;
+    private final SecurityAuditService securityAuditService;
 
 
     @PostMapping("/crearUsuario")
+    @PreAuthorize("hasRole('Administrador') or hasRole('Coordinador')")
     public ResponseEntity<UsuarioDTORespuesta> crearUsuario(@RequestBody @Valid UsuarioDTOPeticion peticion) {
         Usuario usuario = new Usuario();
         usuario.setNombre_completo(peticion.getNombre_completo());
@@ -85,6 +90,7 @@ public class UsuarioRestController {
     }
     
     @PutMapping("/actualizarUsuario")
+    @PreAuthorize("hasRole('Administrador') or hasRole('Coordinador')")
     public ResponseEntity<UsuarioDTORespuesta> actualizarrUsuario(@RequestBody @Valid UsuarioDTOPeticion peticion) {
         Usuario usuario = new Usuario();
         usuario.setId_usuario(peticion.getId_usuario());
@@ -129,6 +135,7 @@ public class UsuarioRestController {
     }
 
     @DeleteMapping("/eliminarUsuario/{id}")
+    @PreAuthorize("hasRole('Administrador')")
     public ResponseEntity<Boolean> eliminarUsuario(@Min(value = 1) @PathVariable Integer id) {
         boolean respuesta = objUsuarioCUIntPort.eliminarUsuario(id);
         ResponseEntity<Boolean> objRespuesta = null;
@@ -200,7 +207,7 @@ public class UsuarioRestController {
             content = @Content)
     })
     @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody LoginDTOPeticion request) {
+    public ResponseEntity<?> login(@RequestBody LoginDTOPeticion request, HttpServletRequest httpRequest) {
         try {
             authManager.authenticate(
                     new UsernamePasswordAuthenticationToken(request.getCorreo(), request.getPassword())
@@ -212,9 +219,25 @@ public class UsuarioRestController {
             Usuario usuario = objUsuarioCUIntPort.buscarUsuarioPorCorreo(request.getCorreo());
             UsuarioDTORespuesta usuarioDTO = objUsuarioMapperDominio.mappearDeUsuarioAUsuarioDTORespuesta(usuario);
 
+            // Registrar login exitoso en auditoría de seguridad
+            securityAuditService.logSecurityEvent(
+                SecurityAuditService.SecurityEventType.LOGIN_SUCCESS,
+                "Login exitoso",
+                request.getCorreo(),
+                httpRequest
+            );
+
             return ResponseEntity.ok(new LoginDTORespuesta(token, usuarioDTO));
 
         } catch (BadCredentialsException ex) {
+            // Registrar intento de login fallido en auditoría de seguridad
+            securityAuditService.logSecurityEvent(
+                SecurityAuditService.SecurityEventType.LOGIN_FAILED,
+                "Credenciales incorrectas para: " + request.getCorreo(),
+                null,
+                httpRequest
+            );
+            
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Credenciales incorrectas");
         }
     }

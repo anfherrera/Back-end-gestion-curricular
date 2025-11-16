@@ -23,6 +23,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private final JwtUtil jwtUtil;
     private final UserDetailsService userDetailsService;
+    private final SecurityAuditService securityAuditService;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, 
@@ -71,6 +72,22 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             }
         } catch (Exception e) {
             log.error("Error al procesar el token JWT: {}", e.getMessage());
+            
+            // Registrar evento de seguridad para token inválido/expirado
+            if (jwt != null) {
+                String tokenType = jwtUtil.estaExpirado(jwt) ? "Token expirado" : "Token inválido";
+                SecurityAuditService.SecurityEventType eventType = jwtUtil.estaExpirado(jwt) 
+                    ? SecurityAuditService.SecurityEventType.TOKEN_EXPIRED 
+                    : SecurityAuditService.SecurityEventType.TOKEN_INVALID;
+                
+                securityAuditService.logSecurityEvent(
+                    eventType,
+                    tokenType + " en URI: " + request.getRequestURI(),
+                    null,
+                    request
+                );
+            }
+            
             // No establecer autenticación si hay error
         }
 
