@@ -914,7 +914,7 @@ public class EstadisticasRestController {
      * @return Array de bytes del PDF
      */
     private byte[] generarPDFEstadisticasGenerales(Map<String, Object> estadisticas) {
-        System.out.println("Iniciando la generación del PDF con estadísticas generales...");
+        log.debug("Iniciando la generación del PDF con estadísticas generales...");
         
         ByteArrayOutputStream baos = null;
         com.itextpdf.text.Document document = null;
@@ -946,8 +946,7 @@ public class EstadisticasRestController {
             return baos.toByteArray();
             
         } catch (Exception e) {
-            System.err.println("Error al generar el PDF de estadísticas generales: " + e.getMessage());
-            e.printStackTrace();
+            log.error("Error al generar el PDF de estadísticas generales: {}", e.getMessage(), e);
             
             // Generar PDF de error
             try {
@@ -963,7 +962,7 @@ public class EstadisticasRestController {
                 
                 return errorBaos.toByteArray();
             } catch (Exception ex) {
-                System.err.println("No se pudo generar el PDF alterno con información de error: " + ex.getMessage());
+                log.error("No se pudo generar el PDF alterno con información de error: {}", ex.getMessage(), ex);
                 return new byte[0];
             }
         } finally {
@@ -975,7 +974,7 @@ public class EstadisticasRestController {
                     baos.close();
                 }
             } catch (Exception e) {
-                System.err.println("Ocurrió un error al cerrar los recursos del PDF general: " + e.getMessage());
+                log.error("Ocurrió un error al cerrar los recursos del PDF general: {}", e.getMessage(), e);
             }
         }
     }
@@ -987,7 +986,7 @@ public class EstadisticasRestController {
      * @return Array de bytes del PDF
      */
     private byte[] generarPDFCursosVerano(Map<String, Object> datosCursosVerano) {
-        System.out.println("Iniciando la generación del PDF con información de cursos de verano...");
+        log.debug("Iniciando la generación del PDF con información de cursos de verano...");
         
         ByteArrayOutputStream baos = null;
         com.itextpdf.text.Document document = null;
@@ -1019,8 +1018,7 @@ public class EstadisticasRestController {
             return baos.toByteArray();
             
         } catch (Exception e) {
-            System.err.println("Error al generar el PDF de cursos de verano: " + e.getMessage());
-            e.printStackTrace();
+            log.error("Error al generar el PDF de cursos de verano: {}", e.getMessage(), e);
             
             // Generar PDF de error
             try {
@@ -1036,7 +1034,7 @@ public class EstadisticasRestController {
                 
                 return errorBaos.toByteArray();
             } catch (Exception ex) {
-                System.err.println("No se pudo generar el PDF de error para cursos de verano: " + ex.getMessage());
+                log.error("No se pudo generar el PDF de error para cursos de verano: {}", ex.getMessage(), ex);
                 return new byte[0];
             }
         } finally {
@@ -1048,7 +1046,7 @@ public class EstadisticasRestController {
                     baos.close();
                 }
             } catch (Exception e) {
-                System.err.println("Ocurrió un error al cerrar los recursos del PDF de cursos de verano: " + e.getMessage());
+                log.error("Ocurrió un error al cerrar los recursos del PDF de cursos de verano: {}", e.getMessage(), e);
             }
         }
     }
@@ -1061,9 +1059,9 @@ public class EstadisticasRestController {
      * @return Array de bytes del PDF
      */
     private byte[] generarPDFCompleto(Map<String, Object> estadisticas, Map<String, Object> datosCursosVerano) {
-        System.out.println("Iniciando la generación del PDF completo con estadísticas generales y de cursos de verano...");
-        System.out.println("¿Se recibieron estadísticas generales? " + (estadisticas != null));
-        System.out.println("¿Se recibieron datos de cursos de verano? " + (datosCursosVerano != null));
+        log.debug("Iniciando la generación del PDF completo con estadísticas generales y de cursos de verano...");
+        log.debug("¿Se recibieron estadísticas generales? {} - ¿Se recibieron datos de cursos de verano? {}", 
+            estadisticas != null, datosCursosVerano != null);
         
         ByteArrayOutputStream baos = null;
         com.itextpdf.text.Document document = null;
@@ -1103,8 +1101,7 @@ public class EstadisticasRestController {
             return baos.toByteArray();
             
         } catch (Exception e) {
-            System.err.println("Error al generar el PDF completo: " + e.getMessage());
-            e.printStackTrace();
+            log.error("Error al generar el PDF completo: {}", e.getMessage(), e);
             
             // Generar un PDF de error en lugar de texto
             try {
@@ -1120,7 +1117,7 @@ public class EstadisticasRestController {
                 
                 return errorBaos.toByteArray();
             } catch (Exception ex) {
-                System.err.println("No se pudo generar el PDF de error para el reporte completo: " + ex.getMessage());
+                log.error("No se pudo generar el PDF de error para el reporte completo: {}", ex.getMessage(), ex);
                 return new byte[0]; // Devolver array vacío en caso de error crítico
             }
         } finally {
@@ -1132,7 +1129,7 @@ public class EstadisticasRestController {
                     baos.close();
                 }
             } catch (Exception e) {
-                System.err.println("Ocurrió un error al cerrar los recursos del PDF completo: " + e.getMessage());
+                log.error("Ocurrió un error al cerrar los recursos del PDF completo: {}", e.getMessage(), e);
             }
         }
     }
@@ -1620,8 +1617,7 @@ public class EstadisticasRestController {
             return baos.toByteArray();
             
         } catch (Exception e) {
-            System.err.println("Excel completo - Error generando Excel completo: " + e.getMessage());
-            e.printStackTrace();
+            log.error("Excel completo - Error generando Excel completo: {}", e.getMessage(), e);
             
             // Generar un Excel de error en lugar de texto
             try {
@@ -1637,7 +1633,7 @@ public class EstadisticasRestController {
                 
                 return errorBaos.toByteArray();
             } catch (Exception ex) {
-                System.err.println("Excel completo - Error generando Excel de error: " + ex.getMessage());
+                log.error("Excel completo - Error generando Excel de error: {}", ex.getMessage(), ex);
                 return new byte[0]; // Devolver array vacío en caso de error crítico
             }
         }
@@ -1826,8 +1822,7 @@ public class EstadisticasRestController {
             return baos.toByteArray();
             
         } catch (Exception e) {
-            System.err.println("Excel general - Error generando Excel: " + e.getMessage());
-            e.printStackTrace();
+            log.error("Excel general - Error generando Excel: {}", e.getMessage(), e);
             
             // Generar Excel de error
             try {
@@ -1843,7 +1838,7 @@ public class EstadisticasRestController {
                 
                 return errorBaos.toByteArray();
             } catch (Exception ex) {
-                System.err.println("Excel general - Error generando Excel de error: " + ex.getMessage());
+                log.error("Excel general - Error generando Excel de error: {}", ex.getMessage(), ex);
                 return new byte[0];
             }
         }
@@ -1869,8 +1864,7 @@ public class EstadisticasRestController {
             return baos.toByteArray();
             
         } catch (Exception e) {
-            System.err.println("Excel cursos verano - Error generando Excel: " + e.getMessage());
-            e.printStackTrace();
+            log.error("Excel cursos verano - Error generando Excel: {}", e.getMessage(), e);
             
             // Generar Excel de error
             try {
@@ -1886,7 +1880,7 @@ public class EstadisticasRestController {
                 
                 return errorBaos.toByteArray();
             } catch (Exception ex) {
-                System.err.println("Excel cursos verano - Error generando Excel de error: " + ex.getMessage());
+                log.error("Excel cursos verano - Error generando Excel de error: {}", ex.getMessage(), ex);
                 return new byte[0];
             }
         }

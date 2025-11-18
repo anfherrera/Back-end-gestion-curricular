@@ -7,6 +7,7 @@ import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.DTORe
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.mappers.DocumentosMapperDominio;
 import jakarta.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -16,6 +17,7 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api/documentos")
 @RequiredArgsConstructor
 @Validated
+@Slf4j
 public class DocumentoRestController {
 
     private final GestionarDocumentosCUIntPort documentoCU;
@@ -35,7 +37,7 @@ public class DocumentoRestController {
 
     @PutMapping("/añadirComentario")
     public ResponseEntity<Void> añadirComentario(@RequestBody ComentarioDocumentoDTOPeticion peticion) {
-        System.out.println("Añadiendo comentario"+peticion.getComentario()+"al documento con ID: " + peticion.getIdDocumento());
+        log.debug("Añadiendo comentario: {} al documento con ID: {}", peticion.getComentario(), peticion.getIdDocumento());
         documentoCU.añadirComentario(peticion.getIdDocumento(), peticion.getComentario());
         return new ResponseEntity<>(HttpStatus.CREATED);
     }

@@ -29,6 +29,7 @@ import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.DTORe
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.mappers.SolicitudMapperDominio;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.mappers.SolicitudReingresoMapperDominio;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 
@@ -36,6 +37,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 @RestController
 @RequestMapping("/api/solicitudes-reingreso")   
 @RequiredArgsConstructor
+@Slf4j
 public class SolicitudReingresoRestController {
 
     private final SolicitudReingresoMapperDominio solicitudReingresoMapper;
@@ -124,19 +126,19 @@ public class SolicitudReingresoRestController {
     @GetMapping("/descargarOficio/{idSolicitud}")
     public ResponseEntity<byte[]> descargarOficio(@PathVariable Integer idSolicitud) {
         try {
-            System.out.println("📥 Descargando oficio de reingreso para solicitud: " + idSolicitud);
+            log.debug("Descargando oficio de reingreso para solicitud: {}", idSolicitud);
             
             // Obtener la solicitud con sus documentos
             SolicitudReingreso solicitud = solicitudService.obtenerSolicitudReingresoPorId(idSolicitud);
             if (solicitud == null) {
-                System.err.println("❌ Solicitud de reingreso no encontrada: " + idSolicitud);
+                log.warn("Solicitud de reingreso no encontrada: {}", idSolicitud);
                 return ResponseEntity.notFound().build();
             }
             
             // Buscar documentos asociados a esta solicitud
             List<Documento> documentos = solicitud.getDocumentos();
             if (documentos == null || documentos.isEmpty()) {
-                System.err.println("❌ No hay documentos asociados a la solicitud de reingreso: " + idSolicitud);
+                log.warn("No hay documentos asociados a la solicitud de reingreso: {}", idSolicitud);
                 return ResponseEntity.notFound().build();
             }
             
@@ -153,17 +155,15 @@ public class SolicitudReingresoRestController {
                     
                     if (esOficio) {
                         try {
-                            System.out.println("🔍 Probando oficio/resolución de reingreso: " + documento.getNombre());
+                            log.debug("Probando oficio/resolución de reingreso: {}", documento.getNombre());
                             byte[] archivo = objGestionarArchivos.getFile(documento.getNombre());
                             
-                            System.out.println("✅ Oficio/resolución de reingreso encontrado: " + documento.getNombre());
-                            
-                            System.out.println("📄 Configurando respuesta para archivo: " + documento.getNombre());
-                            System.out.println("📄 Tamaño del archivo: " + archivo.length + " bytes");
+                            log.debug("Oficio/resolución de reingreso encontrado: {}, tamaño: {} bytes", 
+                                documento.getNombre(), archivo.length);
                             
                             // Configurar el header Content-Disposition correctamente
                             String contentDisposition = "attachment; filename=\"" + documento.getNombre() + "\"";
-                            System.out.println("📄 Content-Disposition: " + contentDisposition);
+                            log.debug("Content-Disposition: {}", contentDisposition);
                             
                             return ResponseEntity.ok()
                                 .header(HttpHeaders.CONTENT_DISPOSITION, contentDisposition)
@@ -171,21 +171,20 @@ public class SolicitudReingresoRestController {
                                 .body(archivo);
                                 
                         } catch (Exception e) {
-                            System.out.println("❌ No encontrado: " + documento.getNombre());
+                            log.warn("No encontrado: {}", documento.getNombre());
                             continue; // Probar el siguiente documento
                         }
                     } else {
-                        System.out.println("⏭️ Saltando archivo del estudiante: " + documento.getNombre());
+                        log.debug("Saltando archivo del estudiante: {}", documento.getNombre());
                     }
                 }
             }
             
-            System.err.println("❌ No se encontró ningún archivo PDF para la solicitud de reingreso: " + idSolicitud);
+            log.warn("No se encontró ningún archivo PDF para la solicitud de reingreso: {}", idSolicitud);
             return ResponseEntity.notFound().build();
                 
         } catch (Exception e) {
-            System.err.println("❌ Error al descargar oficio de reingreso: " + e.getMessage());
-            e.printStackTrace();
+            log.error("Error al descargar oficio de reingreso: {}", e.getMessage(), e);
             return ResponseEntity.internalServerError().build();
         }
     }
@@ -196,19 +195,19 @@ public class SolicitudReingresoRestController {
     @GetMapping("/obtenerOficios/{idSolicitud}")
     public ResponseEntity<List<Map<String, Object>>> obtenerOficios(@PathVariable Integer idSolicitud) {
         try {
-            System.out.println("📋 Obteniendo oficios de reingreso para solicitud: " + idSolicitud);
+            log.debug("Obteniendo oficios de reingreso para solicitud: {}", idSolicitud);
             
             // Obtener la solicitud con sus documentos
             SolicitudReingreso solicitud = solicitudService.obtenerSolicitudReingresoPorId(idSolicitud);
             if (solicitud == null) {
-                System.err.println("❌ Solicitud de reingreso no encontrada: " + idSolicitud);
+                log.warn("Solicitud de reingreso no encontrada: {}", idSolicitud);
                 return ResponseEntity.notFound().build();
             }
             
             // Buscar documentos asociados a esta solicitud
             List<Documento> documentos = solicitud.getDocumentos();
             if (documentos == null || documentos.isEmpty()) {
-                System.err.println("❌ No hay documentos asociados a la solicitud de reingreso: " + idSolicitud);
+                log.warn("No hay documentos asociados a la solicitud de reingreso: {}", idSolicitud);
                 return ResponseEntity.ok(new ArrayList<>()); // Retornar lista vacía
             }
             
@@ -231,19 +230,18 @@ public class SolicitudReingresoRestController {
                         oficio.put("nombreArchivo", documento.getNombre());
                         oficio.put("ruta", documento.getRuta_documento());
                         oficios.add(oficio);
-                        System.out.println("📋 Agregando oficio/resolución de reingreso: " + documento.getNombre());
+                        log.debug("Agregando oficio/resolución de reingreso: {}", documento.getNombre());
                     } else {
-                        System.out.println("⏭️ Saltando archivo del estudiante: " + documento.getNombre());
+                        log.debug("Saltando archivo del estudiante: {}", documento.getNombre());
                     }
                 }
             }
             
-            System.out.println("✅ Oficios de reingreso encontrados: " + oficios.size());
+            log.debug("Oficios de reingreso encontrados: {}", oficios.size());
             return ResponseEntity.ok(oficios);
             
         } catch (Exception e) {
-            System.err.println("❌ Error al obtener oficios de reingreso: " + e.getMessage());
-            e.printStackTrace();
+            log.error("Error al obtener oficios de reingreso: {}", e.getMessage(), e);
             return ResponseEntity.internalServerError().build();
         }
     }
@@ -255,27 +253,26 @@ public class SolicitudReingresoRestController {
     public ResponseEntity<Map<String, Object>> subirArchivo(@PathVariable Integer idSolicitud, 
                                                            @RequestParam("file") MultipartFile archivo) {
         try {
-            System.out.println("📤 Subiendo archivo para solicitud de reingreso: " + idSolicitud);
-            System.out.println("📁 Nombre del archivo: " + archivo.getOriginalFilename());
-            System.out.println("📊 Tamaño del archivo: " + archivo.getSize() + " bytes");
+            log.debug("Subiendo archivo para solicitud de reingreso: {}, nombre: {}, tamaño: {} bytes", 
+                idSolicitud, archivo.getOriginalFilename(), archivo.getSize());
 
             // Validar que la solicitud existe
             SolicitudReingreso solicitud = solicitudService.obtenerSolicitudReingresoPorId(idSolicitud);
             if (solicitud == null) {
-                System.err.println("❌ Solicitud de reingreso no encontrada: " + idSolicitud);
+                log.warn("Solicitud de reingreso no encontrada: {}", idSolicitud);
                 return ResponseEntity.notFound().build();
             }
 
             // Validar que el archivo no esté vacío
             if (archivo.isEmpty()) {
-                System.err.println("❌ El archivo está vacío");
+                log.warn("El archivo está vacío");
                 return ResponseEntity.badRequest().body(Map.of("error", "El archivo está vacío"));
             }
 
             // Validar que sea un PDF
             String contentType = archivo.getContentType();
             if (contentType == null || !contentType.equals("application/pdf")) {
-                System.err.println("❌ El archivo no es un PDF. Tipo: " + contentType);
+                log.warn("El archivo no es un PDF. Tipo: {}", contentType);
                 return ResponseEntity.badRequest().body(Map.of("error", "Solo se permiten archivos PDF"));
             }
 
@@ -285,7 +282,7 @@ public class SolicitudReingresoRestController {
                 nombreArchivo = "archivo_reingreso_" + idSolicitud + ".pdf";
             }
 
-            System.out.println("💾 Guardando archivo: " + nombreArchivo);
+            log.debug("Guardando archivo: {}", nombreArchivo);
             objGestionarArchivos.saveFile(archivo, nombreArchivo, "pdf");
 
             // Crear documento y asociarlo a la solicitud
@@ -305,8 +302,8 @@ public class SolicitudReingresoRestController {
             // Guardar la solicitud actualizada
             solicitudService.crearSolicitudReingreso(solicitud);
 
-            System.out.println("✅ Archivo subido exitosamente para solicitud: " + idSolicitud);
-            System.out.println("📋 Documento creado: " + documento.getNombre());
+            log.debug("Archivo subido exitosamente para solicitud: {}, documento creado: {}", 
+                idSolicitud, documento.getNombre());
 
             Map<String, Object> respuesta = new HashMap<>();
             respuesta.put("success", true);
@@ -317,8 +314,7 @@ public class SolicitudReingresoRestController {
             return ResponseEntity.ok(respuesta);
 
         } catch (Exception e) {
-            System.err.println("❌ Error al subir archivo de reingreso: " + e.getMessage());
-            e.printStackTrace();
+            log.error("Error al subir archivo de reingreso: {}", e.getMessage(), e);
             return ResponseEntity.internalServerError().body(Map.of("error", "Error interno del servidor"));
         }
     }
@@ -329,7 +325,7 @@ public class SolicitudReingresoRestController {
     @GetMapping("/validarDocumentosRequeridos/{idSolicitud}")
     public ResponseEntity<Map<String, Object>> validarDocumentosRequeridos(@PathVariable Integer idSolicitud) {
         try {
-            System.out.println("📋 Validando documentos requeridos para solicitud de reingreso: " + idSolicitud);
+            log.debug("Validando documentos requeridos para solicitud de reingreso: {}", idSolicitud);
             
             // Obtener la solicitud con sus documentos
             SolicitudReingreso solicitud = solicitudService.obtenerSolicitudReingresoPorId(idSolicitud);
@@ -380,12 +376,11 @@ public class SolicitudReingresoRestController {
             resultado.put("todosCompletos", todosCompletos);
             resultado.put("totalDocumentos", documentos.size());
             
-            System.out.println("✅ Validación de reingreso completada. Todos completos: " + todosCompletos);
+            log.debug("Validación de reingreso completada. Todos completos: {}", todosCompletos);
             return ResponseEntity.ok(resultado);
             
         } catch (Exception e) {
-            System.err.println("❌ Error al validar documentos de reingreso: " + e.getMessage());
-            e.printStackTrace();
+            log.error("Error al validar documentos de reingreso: {}", e.getMessage(), e);
             return ResponseEntity.internalServerError().build();
         }
     }

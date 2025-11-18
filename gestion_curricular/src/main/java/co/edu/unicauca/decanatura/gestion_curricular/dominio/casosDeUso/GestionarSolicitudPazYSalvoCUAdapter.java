@@ -102,6 +102,11 @@ public class GestionarSolicitudPazYSalvoCUAdapter implements GestionarSolicitudP
     }
 
     @Override
+    public List<SolicitudPazYSalvo> listarSolicitudesAprobadasToSecretaria() {
+        return solicitudGateway.listarSolicitudesAprobadasToSecretaria();
+    }
+
+    @Override
     public List<SolicitudPazYSalvo> listarSolicitudesPorRol(String rol, Integer idUsuario) {
         List<SolicitudPazYSalvo> todas = solicitudGateway.listarSolicitudes();
 

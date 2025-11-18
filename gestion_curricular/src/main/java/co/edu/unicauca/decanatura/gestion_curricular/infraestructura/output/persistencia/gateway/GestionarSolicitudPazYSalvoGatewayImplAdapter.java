@@ -83,6 +83,13 @@ public class GestionarSolicitudPazYSalvoGatewayImplAdapter implements GestionarS
     }
 
     @Override
+    public List<SolicitudPazYSalvo> listarSolicitudesAprobadasToSecretaria() {
+        return solicitudRepository.findByUltimoEstado("APROBADA").stream()
+                .map(entity -> mapper.map(entity, SolicitudPazYSalvo.class))
+                .toList();
+    }
+
+    @Override
     public Optional<SolicitudPazYSalvo> buscarPorId(Integer idSolicitud) {
         return solicitudRepository.findById(idSolicitud)
                 .map(entity -> {

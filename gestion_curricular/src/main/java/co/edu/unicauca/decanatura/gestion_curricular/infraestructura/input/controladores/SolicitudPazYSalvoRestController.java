@@ -239,6 +239,20 @@ public class SolicitudPazYSalvoRestController {
         return ResponseEntity.ok(respuesta);
     }
 
+    /**
+     * Listar solicitudes de Paz y Salvo ya procesadas por la secretaría (estado APROBADA)
+     * GET /api/solicitudes-pazysalvo/listarSolicitud-PazYSalvo/Secretaria/Aprobadas
+     * 
+     * Este endpoint permite a la secretaría ver un historial de las solicitudes 
+     * que ya ha procesado y enviado al estudiante.
+     */
+    @GetMapping("/listarSolicitud-PazYSalvo/Secretaria/Aprobadas")
+    public ResponseEntity<List<SolicitudPazYSalvoDTORespuesta>> listarSolicitudPazYSalvoAprobadasToSecretaria() {
+        List<SolicitudPazYSalvo> solicitudes = solicitudPazYSalvoCU.listarSolicitudesAprobadasToSecretaria();
+        List<SolicitudPazYSalvoDTORespuesta> respuesta = solicitudMapperDominio.mappearListaDeSolicitudesARespuesta(solicitudes);
+        return ResponseEntity.ok(respuesta);
+    }
+
     @GetMapping("/listarSolicitud-PazYSalvo/porRol")
     public ResponseEntity<List<SolicitudPazYSalvoDTORespuesta>> listarSolicitudPorRol(
             @RequestParam String rol,
@@ -1143,22 +1157,20 @@ public ResponseEntity<DocumentosDTORespuesta> guardarOficioPazSalvo(
         @RequestParam(value = "observaciones", required = false) String observaciones) {
     
     try {
-        System.out.println("Guardando oficio de paz y salvo para solicitud: " + idSolicitud);
-        System.out.println("Tipo documento: " + tipoDocumento);
-        System.out.println("Número documento: " + numeroDocumento);
-        System.out.println("Fecha documento: " + fechaDocumento);
+        log.debug("Guardando oficio de paz y salvo para solicitud: {}, tipo: {}, número: {}, fecha: {}", 
+            idSolicitud, tipoDocumento, numeroDocumento, fechaDocumento);
         
         String nombreOriginal = file.getOriginalFilename();
-        System.out.println("Nombre archivo: " + nombreOriginal);
+        log.debug("Nombre archivo: {}", nombreOriginal);
         
         // Validaciones
         if (file.isEmpty()) {
-            System.err.println("Archivo vacío");
+            log.warn("Archivo vacío recibido");
             return ResponseEntity.badRequest().body(null);
         }
         
         if (!nombreOriginal.toLowerCase().endsWith(".docx")) {
-            System.err.println("Tipo de archivo no válido: " + nombreOriginal);
+            log.warn("Tipo de archivo no válido: {}", nombreOriginal);
             return ResponseEntity.status(HttpStatus.UNSUPPORTED_MEDIA_TYPE).body(null);
         }
         
@@ -1178,9 +1190,9 @@ public ResponseEntity<DocumentosDTORespuesta> guardarOficioPazSalvo(
             Solicitud objSolicitud = new Solicitud();
             objSolicitud.setId_solicitud(idSolicitud);
             doc.setObjSolicitud(objSolicitud);
-            System.out.println("�� Asociando oficio '" + nombreOriginal + "' a solicitud de paz y salvo ID: " + idSolicitud);
+                        log.debug("Asociando oficio '{}' a solicitud de paz y salvo ID: {}", nombreOriginal, idSolicitud);
         } else {
-            System.err.println("No se encontró la solicitud de paz y salvo con ID: " + idSolicitud);
+            log.warn("No se encontró la solicitud de paz y salvo con ID: {}", idSolicitud);
             return ResponseEntity.notFound().build();
         }
         
@@ -1192,12 +1204,11 @@ public ResponseEntity<DocumentosDTORespuesta> guardarOficioPazSalvo(
             HttpStatus.CREATED
         );
         
-        System.out.println("Oficio de paz y salvo guardado exitosamente: " + nombreOriginal);
+        log.debug("Oficio de paz y salvo guardado exitosamente: {}", nombreOriginal);
         return respuesta;
         
     } catch (Exception e) {
-        System.err.println("Error al guardar oficio de paz y salvo: " + e.getMessage());
-        e.printStackTrace();
+        log.error("Error al guardar oficio de paz y salvo: {}", e.getMessage(), e);
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
     }
 }

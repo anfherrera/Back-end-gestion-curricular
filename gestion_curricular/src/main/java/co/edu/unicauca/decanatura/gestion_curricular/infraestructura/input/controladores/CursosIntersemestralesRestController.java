@@ -7,6 +7,7 @@ import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 import jakarta.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 import java.io.ByteArrayOutputStream;
 import java.text.SimpleDateFormat;
@@ -54,6 +55,7 @@ import java.util.stream.Collectors;
 @RestController
 @RequestMapping("/api/cursos-intersemestrales")
 @RequiredArgsConstructor
+@Slf4j
 public class CursosIntersemestralesRestController {
 
     private final GestionarCursoOfertadoVeranoCUIntPort cursoCU;
@@ -79,24 +81,24 @@ public class CursosIntersemestralesRestController {
     public ResponseEntity<List<CursosOfertadosDTORespuesta>> obtenerCursosVerano() {
         try {
             List<CursoOfertadoVerano> cursos = cursoCU.listarTodos();
-            System.out.println("INFO: Total de cursos encontrados: " + cursos.size());
+            log.debug("Total de cursos encontrados: {}", cursos.size());
             
             List<CursosOfertadosDTORespuesta> respuesta = cursos.stream()
                     .map(curso -> {
                         // Log para verificar docente antes del mapeo
                         if (curso.getObjDocente() == null) {
-                            System.out.println("WARNING: Curso ID " + curso.getId_curso() + " no tiene docente asignado");
+                            log.warn("Curso ID {} no tiene docente asignado", curso.getId_curso());
                         } else {
-                            System.out.println("INFO: Curso ID " + curso.getId_curso() + " tiene docente: " + curso.getObjDocente().getNombre_docente());
+                            log.debug("Curso ID {} tiene docente: {}", curso.getId_curso(), curso.getObjDocente().getNombre_docente());
                         }
                         return cursoMapper.mappearDeCursoOfertadoARespuestaDisponible(curso);
                     })
                     .map(dto -> {
                         // Log para verificar docente despues del mapeo
                         if (dto.getObjDocente() == null) {
-                            System.out.println("WARNING: DTO del curso ID " + dto.getId_curso() + " no tiene docente en el mapeo");
+                            log.warn("DTO del curso ID {} no tiene docente en el mapeo", dto.getId_curso());
                         } else {
-                            System.out.println("INFO: DTO del curso ID " + dto.getId_curso() + " tiene docente: " + dto.getObjDocente().getNombre_docente());
+                            log.debug("DTO del curso ID {} tiene docente: {}", dto.getId_curso(), dto.getObjDocente().getNombre_docente());
                         }
                         return cursoMapper.postMapCurso(dto);
                     })
@@ -104,8 +106,7 @@ public class CursosIntersemestralesRestController {
             
             return ResponseEntity.ok(respuesta);
         } catch (Exception e) {
-            System.err.println("ERROR: Error obteniendo cursos: " + e.getMessage());
-            e.printStackTrace();
+            log.error("Error obteniendo cursos: {}", e.getMessage(), e);
             return ResponseEntity.internalServerError().build();
         }
     }
@@ -269,7 +270,7 @@ public class CursosIntersemestralesRestController {
     public ResponseEntity<Map<String, Object>> debugPreinscripciones(
             @PathVariable Integer usuarioId, @PathVariable Integer cursoId) {
         try {
-            System.out.println("Verificando preinscripciones en la base de datos para el usuario " + usuarioId + " y el curso " + cursoId);
+            log.debug("Verificando preinscripciones en la base de datos para el usuario {} y el curso {}", usuarioId, cursoId);
             
             Map<String, Object> resultado = new HashMap<>();
             
@@ -314,8 +315,7 @@ public class CursosIntersemestralesRestController {
             return ResponseEntity.ok(resultado);
             
         } catch (Exception e) {
-            System.err.println("Se presento un error mientras se revisaban las preinscripciones: " + e.getMessage());
-            e.printStackTrace();
+            log.error("Error revisando preinscripciones: {}", e.getMessage(), e);
             Map<String, Object> error = new HashMap<>();
             error.put("error", e.getMessage());
             return ResponseEntity.internalServerError().body(error);
@@ -330,14 +330,14 @@ public class CursosIntersemestralesRestController {
     public ResponseEntity<List<Map<String, Object>>> obtenerPreinscripcionesPorUsuario(
             @Min(value = 1) @PathVariable Integer id) {
         try {
-            System.out.println("Preinscripciones - Obteniendo preinscripciones para usuario ID: " + id);
+            log.debug("Preinscripciones - Obteniendo preinscripciones para usuario ID: {}", id);
             
             List<Map<String, Object>> preinscripciones = new ArrayList<>();
             
             // Obtener preinscripciones reales de la base de datos
             List<SolicitudCursoVeranoPreinscripcion> preinscripcionesReales = solicitudCU.buscarSolicitudesPorUsuario(id);
             
-            System.out.println("Preinscripciones - Preinscripciones encontradas: " + preinscripcionesReales.size());
+            log.debug("Preinscripciones - Preinscripciones encontradas: {}", preinscripcionesReales.size());
             
             for (SolicitudCursoVeranoPreinscripcion preinscripcion : preinscripcionesReales) {
                 Map<String, Object> preinscripcionMap = new HashMap<>();
@@ -383,12 +383,11 @@ public class CursosIntersemestralesRestController {
                 preinscripciones.add(preinscripcionMap);
             }
             
-            System.out.println("Preinscripciones - Respuesta preparada con " + preinscripciones.size() + " preinscripciones");
+            log.debug("Preinscripciones - Respuesta preparada con {} preinscripciones", preinscripciones.size());
             return ResponseEntity.ok(preinscripciones);
             
         } catch (Exception e) {
-            System.err.println("Preinscripciones - Error: " + e.getMessage());
-            e.printStackTrace();
+            log.error("Preinscripciones - Error: {}", e.getMessage(), e);
             return ResponseEntity.internalServerError().build();
         }
     }
@@ -472,8 +471,7 @@ public class CursosIntersemestralesRestController {
             
             return ResponseEntity.ok(materiasDisponibles);
         } catch (Exception e) {
-            System.out.println("ERROR obteniendo materias disponibles: " + e.getMessage());
-            e.printStackTrace();
+            log.error("Error obteniendo materias disponibles: {}", e.getMessage(), e);
             return ResponseEntity.internalServerError().build();
         }
     }
@@ -503,12 +501,9 @@ public class CursosIntersemestralesRestController {
     @PostMapping("/solicitudes-curso-nuevo")
     public ResponseEntity<Map<String, Object>> crearSolicitudCursoNuevo(@RequestBody SolicitudCursoNuevoDTOPeticion peticion) {
         try {
-            System.out.println("Se recibio una solicitud de curso nuevo:");
-            System.out.println("  - Nombre completo: " + peticion.getNombreCompleto());
-            System.out.println("  - Codigo: " + peticion.getCodigo());
-            System.out.println("  - Curso: " + peticion.getCurso());
-            System.out.println("  - Condicion: " + peticion.getCondicion());
-            System.out.println("  - ID de usuario: " + peticion.getIdUsuario());
+            log.debug("Se recibio una solicitud de curso nuevo: nombre={}, codigo={}, curso={}, condicion={}, idUsuario={}", 
+                peticion.getNombreCompleto(), peticion.getCodigo(), peticion.getCurso(), 
+                peticion.getCondicion(), peticion.getIdUsuario());
 
             // Mapear el DTO a nuestro modelo de dominio
             SolicitudCursoVeranoPreinscripcion solicitudDominio = new SolicitudCursoVeranoPreinscripcion();
@@ -519,7 +514,7 @@ public class CursosIntersemestralesRestController {
             try {
                 solicitudDominio.setCodicion_solicitud(CondicionSolicitudVerano.valueOf(peticion.getCondicion()));
             } catch (IllegalArgumentException e) {
-                System.out.println("La condicion es invalida: " + peticion.getCondicion());
+                log.warn("La condicion es invalida: {}", peticion.getCondicion());
                 throw new IllegalArgumentException("Condicion invalida: " + peticion.getCondicion() + ". Valores validos: " + java.util.Arrays.toString(CondicionSolicitudVerano.values()));
             }
             
@@ -541,12 +536,12 @@ public class CursosIntersemestralesRestController {
             usuarioTemporal.setId_usuario(peticion.getIdUsuario());
             solicitudDominio.setObjUsuario(usuarioTemporal);
 
-            System.out.println("La solicitud de dominio se creo; se invoca el caso de uso.");
+            log.debug("La solicitud de dominio se creo; se invoca el caso de uso.");
 
             // Llamar al caso de uso
             SolicitudCursoVeranoPreinscripcion solicitudGuardada = solicitudCU.crearSolicitudCursoVeranoPreinscripcion(solicitudDominio);
             
-            System.out.println("Solicitud guardada con ID: " + (solicitudGuardada != null ? solicitudGuardada.getId_solicitud() : "NULL"));
+            log.debug("Solicitud guardada con ID: {}", solicitudGuardada != null ? solicitudGuardada.getId_solicitud() : "NULL");
 
             // Crear respuesta JSON con la estructura esperada
             Map<String, Object> respuesta = new HashMap<>();
@@ -564,17 +559,16 @@ public class CursosIntersemestralesRestController {
             usuario.put("nombre_completo", peticion.getNombreCompleto());
             respuesta.put("objUsuario", usuario);
             
-            System.out.println("La respuesta de la solicitud se construyo correctamente.");
+            log.debug("La respuesta de la solicitud se construyo correctamente.");
             return ResponseEntity.ok(respuesta);
         } catch (IllegalArgumentException e) {
-            System.out.println("Fallo una validacion: " + e.getMessage());
+            log.warn("Fallo una validacion: {}", e.getMessage());
             Map<String, Object> error = new HashMap<>();
             error.put("error", "Error de validacion: " + e.getMessage());
             error.put("tipo", "VALIDATION_ERROR");
             return ResponseEntity.badRequest().body(error);
         } catch (Exception e) {
-            System.out.println("Error interno al procesar la solicitud: " + e.getMessage());
-            e.printStackTrace(); // Imprimir el stack trace completo para debug
+            log.error("Error interno al procesar la solicitud: {}", e.getMessage(), e);
             Map<String, Object> error = new HashMap<>();
             error.put("error", "Error interno del servidor: " + e.getMessage());
             error.put("tipo", "INTERNAL_SERVER_ERROR");
@@ -589,7 +583,7 @@ public class CursosIntersemestralesRestController {
      */
     @GetMapping("/test-simple")
     public ResponseEntity<Map<String, Object>> testSimple() {
-        System.out.println("Se invoco el endpoint de prueba simple.");
+        log.debug("Se invoco el endpoint de prueba simple.");
         Map<String, Object> respuesta = new HashMap<>();
         respuesta.put("mensaje", "Endpoint funcionando correctamente");
         respuesta.put("timestamp", new java.util.Date().toString());
@@ -604,8 +598,7 @@ public class CursosIntersemestralesRestController {
     @PostMapping("/test-post-simple")
     public ResponseEntity<Map<String, Object>> testPostSimple(@RequestBody Map<String, Object> datos) {
         try {
-            System.out.println("Se recibio una llamada al endpoint POST de prueba.");
-            System.out.println("Datos recibidos: " + datos);
+            log.debug("Se recibio una llamada al endpoint POST de prueba. Datos recibidos: {}", datos);
             
             Map<String, Object> respuesta = new HashMap<>();
             respuesta.put("mensaje", "POST funcionando correctamente");
@@ -615,8 +608,7 @@ public class CursosIntersemestralesRestController {
             
             return ResponseEntity.ok(respuesta);
         } catch (Exception e) {
-            System.out.println("Se presento un problema en el POST de prueba: " + e.getMessage());
-            e.printStackTrace();
+            log.error("Error en POST de prueba: {}", e.getMessage(), e);
             Map<String, Object> error = new HashMap<>();
             error.put("error", "Error en POST de prueba: " + e.getMessage());
             return ResponseEntity.internalServerError().body(error);
@@ -630,7 +622,7 @@ public class CursosIntersemestralesRestController {
     @GetMapping("/usuarios-disponibles")
     public ResponseEntity<Map<String, Object>> verificarUsuariosDisponibles() {
         try {
-            System.out.println("Verificando usuarios disponibles...");
+            log.debug("Verificando usuarios disponibles...");
             
             // Consultar la lista de usuarios directamente en la base de datos
             List<co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Usuario> usuarios = 
@@ -643,8 +635,7 @@ public class CursosIntersemestralesRestController {
             
             return ResponseEntity.ok(respuesta);
         } catch (Exception e) {
-            System.out.println("Error al verificar usuarios: " + e.getMessage());
-            e.printStackTrace();
+            log.error("Error al verificar usuarios: {}", e.getMessage(), e);
             
             Map<String, Object> error = new HashMap<>();
             error.put("error", "Error verificando usuarios: " + e.getMessage());
@@ -662,8 +653,7 @@ public class CursosIntersemestralesRestController {
     @PostMapping("/test-solicitud-exacta")
     public ResponseEntity<Map<String, Object>> testSolicitudExacta(@RequestBody SolicitudCursoNuevoDTOPeticion peticion) {
         try {
-            System.out.println("Se invoco el endpoint de test exacto.");
-            System.out.println("Peticion recibida: " + peticion);
+            log.debug("Se invoco el endpoint de test exacto. Peticion recibida: {}", peticion);
             
             // Simular el procesamiento sin llamar al caso de uso real
             Map<String, Object> respuesta = new HashMap<>();
@@ -678,8 +668,7 @@ public class CursosIntersemestralesRestController {
             
             return ResponseEntity.ok(respuesta);
         } catch (Exception e) {
-            System.out.println("Error en el endpoint de test exacto: " + e.getMessage());
-            e.printStackTrace();
+            log.error("Error en el endpoint de test exacto: {}", e.getMessage(), e);
             Map<String, Object> error = new HashMap<>();
             error.put("error", "Error en test exacto: " + e.getMessage());
             error.put("tipo", "TEST_EXACTO_ERROR");
@@ -694,7 +683,7 @@ public class CursosIntersemestralesRestController {
     @GetMapping("/test-solicitud-curso-nuevo")
     public ResponseEntity<Map<String, Object>> testSolicitudCursoNuevo() {
         try {
-            System.out.println("Se esta probando el endpoint de solicitud de curso nuevo.");
+            log.debug("Se esta probando el endpoint de solicitud de curso nuevo.");
             
             // Crear datos de prueba
             SolicitudCursoNuevoDTOPeticion peticionPrueba = new SolicitudCursoNuevoDTOPeticion();
@@ -704,12 +693,12 @@ public class CursosIntersemestralesRestController {
             peticionPrueba.setCondicion("Primera_Vez");
             peticionPrueba.setIdUsuario(1);
             
-            System.out.println("Datos de prueba generados; se llamara al endpoint principal.");
+            log.debug("Datos de prueba generados; se llamara al endpoint principal.");
             
             // Llamar al metodo principal
             ResponseEntity<Map<String, Object>> respuesta = crearSolicitudCursoNuevo(peticionPrueba);
             
-            System.out.println("Respuesta del endpoint: " + respuesta.getStatusCode());
+            log.debug("Respuesta del endpoint: {}", respuesta.getStatusCode());
             
             Map<String, Object> resultado = new HashMap<>();
             resultado.put("mensaje", "Prueba completada");
@@ -718,8 +707,7 @@ public class CursosIntersemestralesRestController {
             
             return ResponseEntity.ok(resultado);
         } catch (Exception e) {
-            System.out.println("Error durante la prueba del endpoint: " + e.getMessage());
-            e.printStackTrace();
+            log.error("Error durante la prueba del endpoint: {}", e.getMessage(), e);
             Map<String, Object> error = new HashMap<>();
             error.put("error", "Error en prueba: " + e.getMessage());
             error.put("tipo", "TEST_ERROR");
@@ -734,11 +722,8 @@ public class CursosIntersemestralesRestController {
     @PostMapping("/cursos-verano/preinscripciones")
     public ResponseEntity<Map<String, Object>> crearPreinscripcion(@RequestBody PreinscripcionCursoVeranoDTOPeticion peticion) {
         try {
-            System.out.println("Preinscripcion - Recibiendo preinscripcion:");
-            System.out.println("  - ID Usuario: " + peticion.getIdUsuario());
-            System.out.println("  - ID Curso: " + peticion.getIdCurso());
-            System.out.println("  - Nombre Solicitud: " + peticion.getNombreSolicitud());
-            System.out.println("  - Condicion: " + peticion.getCondicion());
+            log.debug("Preinscripcion - Recibiendo preinscripcion: idUsuario={}, idCurso={}, nombreSolicitud={}, condicion={}", 
+                peticion.getIdUsuario(), peticion.getIdCurso(), peticion.getNombreSolicitud(), peticion.getCondicion());
             
             // Validar datos obligatorios
             if (peticion.getIdUsuario() == null || peticion.getIdCurso() == null) {
@@ -759,21 +744,21 @@ public class CursosIntersemestralesRestController {
                 try {
                     solicitudDominio.setCodicion_solicitud(CondicionSolicitudVerano.valueOf(peticion.getCondicion()));
                 } catch (IllegalArgumentException e) {
-                    System.out.println("La condicion recibida es invalida (" + peticion.getCondicion() + "); se usara Primera_Vez.");
+                    log.warn("La condicion recibida es invalida ({}); se usara Primera_Vez.", peticion.getCondicion());
                     solicitudDominio.setCodicion_solicitud(CondicionSolicitudVerano.Primera_Vez);
                 }
             } else {
                 solicitudDominio.setCodicion_solicitud(CondicionSolicitudVerano.Primera_Vez);
             }
             
-            System.out.println("La solicitud de dominio se construyo correctamente.");
+            log.debug("La solicitud de dominio se construyo correctamente.");
             
             // Crear curso con el ID real
             CursoOfertadoVerano curso = new CursoOfertadoVerano();
             curso.setId_curso(peticion.getIdCurso());
             solicitudDominio.setObjCursoOfertadoVerano(curso);
             
-            System.out.println("Curso asignado con ID: " + peticion.getIdCurso());
+            log.debug("Curso asignado con ID: {}", peticion.getIdCurso());
             
             // Crear usuario
             co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Usuario usuario = 
@@ -781,26 +766,26 @@ public class CursosIntersemestralesRestController {
             usuario.setId_usuario(peticion.getIdUsuario());
             solicitudDominio.setObjUsuario(usuario);
 
-            System.out.println("Usuario asignado con ID: " + peticion.getIdUsuario());
+            log.debug("Usuario asignado con ID: {}", peticion.getIdUsuario());
             
             // Verificar si ya existe una preinscripcion para este usuario y curso
-            System.out.println("Verificando preinscripciones existentes para evitar duplicados...");
+            log.debug("Verificando preinscripciones existentes para evitar duplicados...");
             Solicitud preinscripcionExistente = solicitudGateway.buscarSolicitudesPorUsuarioYCursoPre(peticion.getIdUsuario(), peticion.getIdCurso());
             
             if (preinscripcionExistente != null) {
-                System.out.println("Ya existe una preinscripcion registrada para este usuario y curso.");
+                log.debug("Ya existe una preinscripcion registrada para este usuario y curso.");
                 Map<String, Object> error = new HashMap<>();
                 error.put("error", "Ya tienes una preinscripcion activa para este curso");
                 error.put("codigo", "DUPLICATE_PREINSCRIPTION");
                 return ResponseEntity.badRequest().body(error);
             }
             
-            System.out.println("No se encontraron preinscripciones previas; se guardara la nueva solicitud.");
+            log.debug("No se encontraron preinscripciones previas; se guardara la nueva solicitud.");
 
             // Llamar al gateway directamente para guardar en la base de datos
             SolicitudCursoVeranoPreinscripcion solicitudGuardada = solicitudGateway.crearSolicitudCursoVeranoPreinscripcion(solicitudDominio);
 
-            System.out.println("La solicitud se guardo con ID: " + (solicitudGuardada != null ? solicitudGuardada.getId_solicitud() : "NULL"));
+            log.debug("La solicitud se guardo con ID: {}", solicitudGuardada != null ? solicitudGuardada.getId_solicitud() : "NULL");
 
             // Crear respuesta JSON con la estructura esperada
             Map<String, Object> respuesta = new HashMap<>();
@@ -812,11 +797,10 @@ public class CursosIntersemestralesRestController {
             respuesta.put("estado", "Pendiente");
             respuesta.put("mensaje", "Preinscripcion creada exitosamente");
             
-            System.out.println("La respuesta para el cliente se preparo exitosamente.");
+            log.debug("La respuesta para el cliente se preparo exitosamente.");
             return ResponseEntity.status(201).body(respuesta);
         } catch (Exception e) {
-            System.out.println("Ocurrio un error al crear la preinscripcion: " + e.getMessage());
-            e.printStackTrace();
+            log.error("Error al crear la preinscripcion: {}", e.getMessage(), e);
             Map<String, Object> error = new HashMap<>();
             error.put("error", "Error interno del servidor: " + e.getMessage());
             return ResponseEntity.internalServerError().body(error);
@@ -830,26 +814,24 @@ public class CursosIntersemestralesRestController {
     @PostMapping("/cursos-verano/inscripciones")
     public ResponseEntity<Map<String, Object>> crearInscripcion(@RequestBody PreinscripcionCursoVeranoDTOPeticion peticion) {
         try {
-            System.out.println("Recibiendo inscripcion:");
-            System.out.println("idUsuario: " + peticion.getIdUsuario());
-            System.out.println("idCurso: " + peticion.getIdCurso());
-            System.out.println("nombreSolicitud: " + peticion.getNombreSolicitud());
+            log.debug("Recibiendo inscripcion: idUsuario={}, idCurso={}, nombreSolicitud={}", 
+                peticion.getIdUsuario(), peticion.getIdCurso(), peticion.getNombreSolicitud());
             
             // 1. Verificar que existe una preinscripcion valida para este usuario y curso
-            System.out.println("Buscando preinscripcion aprobada...");
+            log.debug("Buscando preinscripcion aprobada...");
             
             // Buscar preinscripcion aprobada usando consulta especifica
-            System.out.println("Usando consulta especifica para buscar preinscripcion...");
+            log.debug("Usando consulta especifica para buscar preinscripcion...");
             
             // Primero intentar buscar directamente por usuario y curso
             Solicitud preinscripcionExistente = solicitudGateway.buscarSolicitudesPorUsuarioYCursoPre(peticion.getIdUsuario(), peticion.getIdCurso());
-            System.out.println("Preinscripcion encontrada por consulta directa: " + (preinscripcionExistente != null ? "SI" : "NO"));
+            log.debug("Preinscripcion encontrada por consulta directa: {}", preinscripcionExistente != null ? "SI" : "NO");
             
             SolicitudCursoVeranoPreinscripcion preinscripcionAprobada = null;
             
             if (preinscripcionExistente != null && preinscripcionExistente instanceof SolicitudCursoVeranoPreinscripcion) {
                 preinscripcionAprobada = (SolicitudCursoVeranoPreinscripcion) preinscripcionExistente;
-                System.out.println("Preinscripcion encontrada: ID=" + preinscripcionAprobada.getId_solicitud());
+                log.debug("Preinscripcion encontrada: ID={}", preinscripcionAprobada.getId_solicitud());
                 
                 // Verificar si esta aprobada
                 String estadoActual = "Sin estado";
@@ -861,24 +843,25 @@ public class CursosIntersemestralesRestController {
                     estaAprobada = "Aprobada".equals(estadoActual) || "Aprobado".equals(estadoActual);
                 }
                 
-                System.out.println("Estado actual: '" + estadoActual + "', Esta aprobada: " + estaAprobada);
+                log.debug("Estado actual: '{}', Esta aprobada: {}", estadoActual, estaAprobada);
                 
                 if (!estaAprobada) {
                     preinscripcionAprobada = null;
-                    System.out.println("Preinscripcion encontrada pero NO esta aprobada");
+                    log.debug("Preinscripcion encontrada pero NO esta aprobada");
                 }
             } else {
-                System.out.println("No se encontro preinscripcion para usuario " + peticion.getIdUsuario() + " y curso " + peticion.getIdCurso());
+                log.debug("No se encontro preinscripcion para usuario {} y curso {}", peticion.getIdUsuario(), peticion.getIdCurso());
                 
                 // Fallback: buscar todas las preinscripciones del usuario
-                System.out.println("Intentando fallback: buscar todas las preinscripciones del usuario...");
+                log.debug("Intentando fallback: buscar todas las preinscripciones del usuario...");
                 List<SolicitudCursoVeranoPreinscripcion> preinscripciones = solicitudCU.buscarSolicitudesPorUsuario(peticion.getIdUsuario());
-                System.out.println("Preinscripciones encontradas: " + preinscripciones.size());
+                log.debug("Preinscripciones encontradas: {}", preinscripciones.size());
                 
                 for (SolicitudCursoVeranoPreinscripcion preinscripcion : preinscripciones) {
-                    System.out.println("Preinscripcion: ID=" + preinscripcion.getId_solicitud() + 
-                                      ", Usuario=" + (preinscripcion.getObjUsuario() != null ? preinscripcion.getObjUsuario().getId_usuario() : "NULL") + 
-                                      ", Curso=" + (preinscripcion.getObjCursoOfertadoVerano() != null ? preinscripcion.getObjCursoOfertadoVerano().getId_curso() : "NULL"));
+                    log.debug("Preinscripcion: ID={}, Usuario={}, Curso={}", 
+                        preinscripcion.getId_solicitud(),
+                        preinscripcion.getObjUsuario() != null ? preinscripcion.getObjUsuario().getId_usuario() : "NULL",
+                        preinscripcion.getObjCursoOfertadoVerano() != null ? preinscripcion.getObjCursoOfertadoVerano().getId_curso() : "NULL");
                     
                     // Verificar si coincide con el usuario y curso
                     boolean coincideUsuario = preinscripcion.getObjUsuario() != null && 
@@ -886,7 +869,7 @@ public class CursosIntersemestralesRestController {
                     boolean coincideCurso = preinscripcion.getObjCursoOfertadoVerano() != null &&
                         preinscripcion.getObjCursoOfertadoVerano().getId_curso().equals(peticion.getIdCurso());
                     
-                    System.out.println("Coincide usuario: " + coincideUsuario + ", Coincide curso: " + coincideCurso);
+                    log.debug("Coincide usuario: {}, Coincide curso: {}", coincideUsuario, coincideCurso);
                     
                     if (coincideUsuario && coincideCurso) {
                         // Verificar si esta aprobada
@@ -899,11 +882,11 @@ public class CursosIntersemestralesRestController {
                             estaAprobada = "Aprobada".equals(estadoActual) || "Aprobado".equals(estadoActual);
                         }
                         
-                        System.out.println("Estado actual: '" + estadoActual + "', Esta aprobada: " + estaAprobada);
+                        log.debug("Estado actual: '{}', Esta aprobada: {}", estadoActual, estaAprobada);
                         
                         if (estaAprobada) {
                             preinscripcionAprobada = preinscripcion;
-                            System.out.println("Preinscripcion aprobada encontrada en fallback!");
+                            log.debug("Preinscripcion aprobada encontrada en fallback!");
                             break;
                         }
                     }
@@ -911,17 +894,17 @@ public class CursosIntersemestralesRestController {
             }
             
             if (preinscripcionAprobada == null) {
-                System.out.println("No se encontro preinscripcion aprobada");
+                log.debug("No se encontro preinscripcion aprobada");
                 Map<String, Object> error = new HashMap<>();
                 error.put("error", "No se encontro una preinscripcion aprobada para este usuario y curso");
                 error.put("codigo", "PREINSCRIPCION_NO_APROBADA");
                 return ResponseEntity.badRequest().body(error);
             }
             
-            System.out.println("Preinscripcion aprobada encontrada ID: " + preinscripcionAprobada.getId_solicitud());
+            log.debug("Preinscripcion aprobada encontrada ID: {}", preinscripcionAprobada.getId_solicitud());
             
             // 1.5. VALIDACIONES DE SEGURIDAD
-            System.out.println("Ejecutando validaciones de seguridad...");
+            log.debug("Ejecutando validaciones de seguridad...");
             
             // Validacion 1: Verificar que no tenga una inscripcion activa para este curso
             List<SolicitudCursoVeranoIncripcion> inscripcionesExistentes = solicitudGateway.buscarInscripcionesPorUsuarioYCurso(
@@ -940,7 +923,7 @@ public class CursosIntersemestralesRestController {
                     });
                 
                 if (tieneInscripcionActiva) {
-                    System.out.println("Usuario ya tiene una inscripcion activa para este curso");
+                    log.debug("Usuario ya tiene una inscripcion activa para este curso");
                     Map<String, Object> error = new HashMap<>();
                     error.put("error", "Ya tienes una inscripcion activa para este curso");
                     error.put("codigo", "INSCRIPCION_DUPLICADA");
@@ -951,19 +934,19 @@ public class CursosIntersemestralesRestController {
             // Validacion 2: Verificar cupos disponibles (opcional - requiere obtener el curso)
             try {
                 Integer inscripcionesAceptadas = solicitudGateway.contarInscripcionesAceptadasPorCurso(peticion.getIdCurso());
-                System.out.println("Inscripciones aceptadas en el curso: " + inscripcionesAceptadas);
+                log.debug("Inscripciones aceptadas en el curso: {}", inscripcionesAceptadas);
                 
                 // Nota: Aqui podrias agregar validacion de cupos si tienes acceso al cupo del curso
                 // Por ahora solo logueamos la informacion
             } catch (Exception e) {
-                System.out.println("No se pudo verificar cupos: " + e.getMessage());
+                log.warn("No se pudo verificar cupos: {}", e.getMessage());
                 // No fallar la operacion por esto
             }
             
-            System.out.println("Validaciones de seguridad pasadas");
+            log.debug("Validaciones de seguridad pasadas");
             
             // 2. Crear la inscripcion usando el modelo de dominio
-            System.out.println("Creando inscripcion...");
+            log.debug("Creando inscripcion...");
             
             SolicitudCursoVeranoIncripcion nuevaInscripcion = new SolicitudCursoVeranoIncripcion();
             nuevaInscripcion.setNombre_solicitud(peticion.getNombreSolicitud());
@@ -977,38 +960,37 @@ public class CursosIntersemestralesRestController {
             nuevaInscripcion.setCodicion_solicitud(CondicionSolicitudVerano.Primera_Vez); // Valor por defecto
             
             // 3. Guardar la inscripcion en la base de datos
-            System.out.println("Guardando en base de datos...");
+            log.debug("Guardando en base de datos...");
             SolicitudCursoVeranoIncripcion inscripcionGuardada = solicitudGateway.crearSolicitudCursoVeranoInscripcion(nuevaInscripcion);
             
             if (inscripcionGuardada == null || inscripcionGuardada.getId_solicitud() == null) {
-                System.out.println("Error al guardar inscripcion en BD");
+                log.debug("Error al guardar inscripcion en BD");
                 Map<String, Object> error = new HashMap<>();
                 error.put("error", "Error al guardar la inscripcion en la base de datos");
                 return ResponseEntity.internalServerError().body(error);
             }
             
-            System.out.println("Inscripcion guardada exitosamente ID: " + inscripcionGuardada.getId_solicitud());
+            log.debug("Inscripcion guardada exitosamente ID: {}", inscripcionGuardada.getId_solicitud());
             
             // 4. Asociar documentos sin solicitud a la inscripcion recien creada
-            System.out.println("Asociando documentos a la inscripcion...");
+            log.debug("Asociando documentos a la inscripcion...");
             try {
                 List<Documento> documentosSinSolicitud = objGestionarDocumentosGateway.buscarDocumentosSinSolicitud();
-                System.out.println("Documentos sin solicitud encontrados: " + documentosSinSolicitud.size());
+                log.debug("Documentos sin solicitud encontrados: {}", documentosSinSolicitud.size());
                 
                 for (Documento doc : documentosSinSolicitud) {
-                    System.out.println("Asociando documento: " + doc.getNombre());
+                    log.debug("Asociando documento: {}", doc.getNombre());
                     doc.setObjSolicitud(inscripcionGuardada);
                     objGestionarDocumentosGateway.actualizarDocumento(doc);
-                    System.out.println("Documento asociado exitosamente");
+                    log.debug("Documento asociado exitosamente");
                 }
             } catch (Exception e) {
-                System.out.println("Error asociando documentos: " + e.getMessage());
-                e.printStackTrace();
+                log.error("Error asociando documentos: {}", e.getMessage(), e);
                 // No fallar la operacion por esto
             }
             
             // 5. Asociar estudiante al curso en la tabla de relacion
-            System.out.println("Asociando estudiante al curso...");
+            log.debug("Asociando estudiante al curso...");
             try {
                 int resultado = cursoRepository.insertarCursoEstudiante(
                     peticion.getIdCurso(),
@@ -1016,12 +998,12 @@ public class CursosIntersemestralesRestController {
                 );
                 
                 if (resultado == 1) {
-                    System.out.println("Estudiante asociado exitosamente al curso");
+                    log.debug("Estudiante asociado exitosamente al curso");
                 } else {
-                    System.out.println("El estudiante ya estaba asociado al curso");
+                    log.debug("El estudiante ya estaba asociado al curso");
                 }
             } catch (Exception e) {
-                System.out.println("Error asociando estudiante al curso: " + e.getMessage());
+                log.error("Error asociando estudiante al curso: {}", e.getMessage(), e);
                 // No fallar la operacion por esto
             }
             
@@ -1036,12 +1018,11 @@ public class CursosIntersemestralesRestController {
             respuesta.put("fecha_inscripcion", inscripcionGuardada.getFecha_registro_solicitud());
             respuesta.put("estado", "Inscrito");
             
-            System.out.println("Inscripcion completada exitosamente");
+            log.debug("Inscripcion completada exitosamente");
             return ResponseEntity.ok(respuesta);
             
         } catch (Exception e) {
-            System.out.println("Error: " + e.getMessage());
-            e.printStackTrace();
+            log.error("Error al crear inscripcion: {}", e.getMessage(), e);
             Map<String, Object> error = new HashMap<>();
             error.put("error", "Error interno del servidor: " + e.getMessage());
             return ResponseEntity.internalServerError().body(error);
@@ -1067,11 +1048,11 @@ public class CursosIntersemestralesRestController {
         try {
             // Obtener inscripciones reales de la base de datos
             List<Map<String, Object>> inscripciones = new ArrayList<>();
-            System.out.println("INFO Obteniendo inscripciones reales de la base de datos");
+            log.debug("INFO Obteniendo inscripciones reales de la base de datos");
             
             // Obtener todas las inscripciones usando el servicio
             List<Map<String, Object>> inscripcionesReales = inscripcionService.findAll();
-            System.out.println("INFO Inscripciones encontradas en BD: " + inscripcionesReales.size());
+            log.debug("Inscripciones encontradas en BD: {}", inscripcionesReales.size());
             
             // Procesar inscripciones reales de la base de datos
             for (Map<String, Object> inscripcionReal : inscripcionesReales) {
@@ -1104,7 +1085,7 @@ public class CursosIntersemestralesRestController {
                 inscripciones.add(inscripcionFormateada);
             }
             
-            System.out.println("SUCCESS Inscripciones reales procesadas: " + inscripciones.size() + " inscripciones");
+            log.debug("Inscripciones reales procesadas: {} inscripciones", inscripciones.size());
             
             return ResponseEntity.ok(inscripciones);
         } catch (Exception e) {
@@ -1121,7 +1102,7 @@ public class CursosIntersemestralesRestController {
     @GetMapping("/inscripciones-reales/{id_usuario}")
     public ResponseEntity<List<Map<String, Object>>> obtenerInscripcionesReales(@PathVariable Integer id_usuario) {
         try {
-            System.out.println("Obteniendo inscripciones para el usuario con ID: " + id_usuario);
+            log.debug("Obteniendo inscripciones para el usuario con ID: {}", id_usuario);
             
             // Consultar las inscripciones guardadas en la base de datos
             List<SolicitudEntity> solicitudesEntity = solicitudRepository.buscarInscripcionesPorUsuario(id_usuario);
@@ -1178,12 +1159,11 @@ public class CursosIntersemestralesRestController {
                 return inscripcion;
             }).collect(Collectors.toList());
             
-            System.out.println("SUCCESS Inscripciones filtradas para usuario " + id_usuario + ": " + inscripciones.size() + " encontradas");
+            log.debug("Inscripciones filtradas para usuario {}: {} encontradas", id_usuario, inscripciones.size());
             
             return ResponseEntity.ok(inscripciones);
         } catch (Exception e) {
-            System.out.println("ERROR obteniendo inscripciones: " + e.getMessage());
-            e.printStackTrace();
+            log.error("Error obteniendo inscripciones: {}", e.getMessage(), e);
             Map<String, Object> error = new HashMap<>();
             error.put("error", "Error interno del servidor");
             return ResponseEntity.internalServerError().body(List.of(error));
@@ -1479,7 +1459,7 @@ public class CursosIntersemestralesRestController {
     @GetMapping("/debug-solicitudes/{idUsuario}")
     public ResponseEntity<Map<String, Object>> debugSolicitudes(@PathVariable Integer idUsuario) {
         try {
-            System.out.println("Buscando solicitudes para el usuario con ID " + idUsuario + ".");
+            log.debug("Buscando solicitudes para el usuario con ID {}", idUsuario);
             
             // Buscar todas las solicitudes del usuario
             List<SolicitudCursoVeranoPreinscripcion> preinscripciones = solicitudCU.buscarSolicitudesPorUsuario(idUsuario);
@@ -1489,7 +1469,7 @@ public class CursosIntersemestralesRestController {
             debug.put("preinscripcionesEncontradas", preinscripciones.size());
             debug.put("preinscripciones", preinscripciones);
             
-            System.out.println("Se encontraron " + preinscripciones.size() + " preinscripciones asociadas.");
+            log.debug("Se encontraron {} preinscripciones asociadas", preinscripciones.size());
             
             return ResponseEntity.ok(debug);
         } catch (Exception e) {
@@ -1506,7 +1486,7 @@ public class CursosIntersemestralesRestController {
     @GetMapping("/debug-seguimiento/{idUsuario}")
     public ResponseEntity<Map<String, Object>> debugSeguimiento(@PathVariable Integer idUsuario) {
         try {
-            System.out.println("Iniciando seguimiento de solicitudes para el usuario " + idUsuario + ".");
+            log.debug("Iniciando seguimiento de solicitudes para el usuario {}", idUsuario);
             
             List<SolicitudCursoVeranoPreinscripcion> preinscripcionesReales = solicitudCU.buscarSolicitudesPorUsuario(idUsuario);
             
@@ -1559,7 +1539,7 @@ public class CursosIntersemestralesRestController {
     @GetMapping("/solicitudes")
     public ResponseEntity<List<Map<String, Object>>> obtenerTodasLasSolicitudes() {
         try {
-            System.out.println("INFO: Obteniendo todas las solicitudes de cursos intersemestrales para funcionarios");
+            log.info("Obteniendo todas las solicitudes de cursos intersemestrales para funcionarios");
             
             // Buscar todas las solicitudes usando el repositorio directamente
             List<SolicitudEntity> todasLasSolicitudes = solicitudRepository.findAll();
@@ -1671,13 +1651,13 @@ public class CursosIntersemestralesRestController {
                 }
             }
             
-            System.out.println("INFO: Procesadas " + solicitudesFormateadas.size() + " solicitudes de cursos intersemestrales");
+            log.debug("Procesadas {} solicitudes de cursos intersemestrales", solicitudesFormateadas.size());
             
             return ResponseEntity.ok(solicitudesFormateadas);
             
         } catch (Exception e) {
-            System.err.println("ERROR: Error obteniendo solicitudes: " + e.getMessage());
-            e.printStackTrace();
+            log.error("Error obteniendo solicitudes: {}", e.getMessage(), e);
+            log.error("Error: {}", e.getMessage(), e);
             return ResponseEntity.internalServerError().build();
         }
     }
@@ -1689,7 +1669,7 @@ public class CursosIntersemestralesRestController {
     @GetMapping("/solicitudes/export/excel")
     public ResponseEntity<byte[]> exportarSolicitudesExcel() {
         try {
-            System.out.println("INFO: Exportando solicitudes de cursos intersemestrales a Excel");
+            log.info("Exportando solicitudes de cursos intersemestrales a Excel");
             
             // Obtener todas las solicitudes usando la misma logica del endpoint anterior
             List<SolicitudEntity> todasLasSolicitudes = solicitudRepository.findAll();
@@ -1809,13 +1789,12 @@ public class CursosIntersemestralesRestController {
             String nombreArchivo = "solicitudes_cursos_intersemestrales_" + new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date()) + ".xlsx";
             headers.setContentDispositionFormData("attachment", nombreArchivo);
             
-            System.out.println("INFO: Excel generado exitosamente con " + solicitudesFormateadas.size() + " solicitudes");
+            log.debug("Excel generado exitosamente con {} solicitudes", solicitudesFormateadas.size());
             
             return new ResponseEntity<>(excelBytes, headers, HttpStatus.OK);
             
         } catch (Exception e) {
-            System.err.println("ERROR: Error exportando solicitudes a Excel: " + e.getMessage());
-            e.printStackTrace();
+            log.error("Error exportando solicitudes a Excel: {}", e.getMessage(), e);
             return ResponseEntity.internalServerError().build();
         }
     }
@@ -1915,8 +1894,8 @@ public class CursosIntersemestralesRestController {
             return baos.toByteArray();
             
         } catch (Exception e) {
-            System.err.println("ERROR: Error generando Excel: " + e.getMessage());
-            e.printStackTrace();
+            log.error("Error generando Excel: {}", e.getMessage(), e);
+            log.error("Error: {}", e.getMessage(), e);
             
             // Generar Excel de error
             try {
@@ -1932,7 +1911,7 @@ public class CursosIntersemestralesRestController {
                 
                 return errorBaos.toByteArray();
             } catch (Exception ex) {
-                System.err.println("ERROR: Error generando Excel de error: " + ex.getMessage());
+                log.error("Error generando Excel de error: {}", ex.getMessage(), ex);
                 return new byte[0];
             }
         }
@@ -1945,7 +1924,7 @@ public class CursosIntersemestralesRestController {
     @GetMapping("/dashboard/estadisticas")
     public ResponseEntity<Map<String, Object>> obtenerEstadisticasDashboard() {
         try {
-            System.out.println("INFO: Obteniendo estadisticas del dashboard");
+            log.info("Obteniendo estadisticas del dashboard");
             
             Map<String, Object> estadisticas = new HashMap<>();
             
@@ -1982,7 +1961,7 @@ public class CursosIntersemestralesRestController {
                     }
                 }
             } catch (Exception e) {
-                System.err.println("ERROR: Error contando preinscripciones: " + e.getMessage());
+                log.error("Error contando preinscripciones: {}", e.getMessage(), e);
             }
             
             // 3. Contar total de inscripciones
@@ -1995,7 +1974,7 @@ public class CursosIntersemestralesRestController {
                     }
                 }
             } catch (Exception e) {
-                System.err.println("ERROR: Error contando inscripciones: " + e.getMessage());
+                log.error("Error contando inscripciones: {}", e.getMessage(), e);
             }
             
             // 4. Calcular progreso de gestion
@@ -2020,17 +1999,15 @@ public class CursosIntersemestralesRestController {
             estadisticas.put("totalCursos", totalCursosValido);
             estadisticas.put("porcentajeProgreso", Math.round(porcentajeProgreso));
             
-            System.out.println("INFO: Estadisticas del dashboard generadas exitosamente");
-            System.out.println("  - Cursos Activos: " + Math.max(0, cursosActivos));
-            System.out.println("  - Preinscripciones: " + Math.max(0, totalPreinscripciones));
-            System.out.println("  - Inscripciones: " + Math.max(0, totalInscripciones));
-            System.out.println("  - Progreso: " + cursosGestionadosValido + " de " + totalCursosValido + " (" + Math.round(porcentajeProgreso) + "%)");
+            log.info("Estadisticas del dashboard generadas exitosamente");
+            log.debug("  - Cursos Activos: {}, Preinscripciones: {}, Inscripciones: {}, Progreso: {} de {} ({}%)", 
+                Math.max(0, cursosActivos), Math.max(0, totalPreinscripciones), Math.max(0, totalInscripciones),
+                cursosGestionadosValido, totalCursosValido, Math.round(porcentajeProgreso));
             
             return ResponseEntity.ok(estadisticas);
             
         } catch (Exception e) {
-            System.err.println("ERROR: Error obteniendo estadisticas del dashboard: " + e.getMessage());
-            e.printStackTrace();
+            log.error("Error obteniendo estadisticas del dashboard: {}", e.getMessage(), e);
             Map<String, Object> error = new HashMap<>();
             error.put("error", "Error interno del servidor");
             return ResponseEntity.internalServerError().body(error);
@@ -2044,7 +2021,7 @@ public class CursosIntersemestralesRestController {
     @GetMapping("/debug-todas-solicitudes")
     public ResponseEntity<Map<String, Object>> debugTodasSolicitudes() {
         try {
-            System.out.println("Consultando todas las solicitudes en la base de datos.");
+            log.debug("Consultando todas las solicitudes en la base de datos.");
             
             // Buscar todas las solicitudes usando el repositorio directamente
             List<SolicitudEntity> todasLasSolicitudes = solicitudRepository.findAll();
@@ -2064,7 +2041,7 @@ public class CursosIntersemestralesRestController {
             
             debug.put("solicitudes", solicitudesInfo);
             
-            System.out.println("Se encontraron " + todasLasSolicitudes.size() + " solicitudes en total.");
+            log.debug("Se encontraron {} solicitudes en total", todasLasSolicitudes.size());
             
             return ResponseEntity.ok(debug);
         } catch (Exception e) {
@@ -2081,7 +2058,7 @@ public class CursosIntersemestralesRestController {
     @GetMapping("/seguimiento/{idUsuario}")
     public ResponseEntity<Map<String, Object>> obtenerSeguimientoActividades(@PathVariable Integer idUsuario) {
         try {
-            System.out.println("INFO Obteniendo seguimiento de actividades para usuario ID: " + idUsuario);
+            log.debug("Obteniendo seguimiento de actividades para usuario ID: {}", idUsuario);
             
             // Obtener preinscripciones reales de la base de datos
             List<Map<String, Object>> preinscripciones = new ArrayList<>();
@@ -2192,10 +2169,10 @@ public class CursosIntersemestralesRestController {
                     preinscripciones.add(preinscripcionMap);
                 }
                 
-                System.out.println("INFO Preinscripciones reales encontradas: " + preinscripciones.size());
+                log.debug("Preinscripciones reales encontradas: {}", preinscripciones.size());
                 
             } catch (Exception e) {
-                System.out.println("WARNING Error obteniendo preinscripciones reales: " + e.getMessage());
+                log.warn("Error obteniendo preinscripciones reales: {}", e.getMessage());
                 // En caso de error, devolver lista vacia en lugar de datos simulados
                 preinscripciones = new ArrayList<>();
             }
@@ -2266,10 +2243,10 @@ public class CursosIntersemestralesRestController {
                     inscripcionesUsuario.add(inscripcionMap);
                 }
                 
-                System.out.println("INFO Inscripciones reales encontradas: " + inscripcionesUsuario.size());
+                log.debug("Inscripciones reales encontradas: {}", inscripcionesUsuario.size());
                 
             } catch (Exception e) {
-                System.out.println("WARNING Error obteniendo inscripciones reales: " + e.getMessage());
+                log.warn("Error obteniendo inscripciones reales: {}", e.getMessage());
                 // En caso de error, devolver lista vacia
                 inscripcionesUsuario = new ArrayList<>();
             }
@@ -2282,13 +2259,13 @@ public class CursosIntersemestralesRestController {
             respuesta.put("totalInscripciones", inscripcionesUsuario.size());
             respuesta.put("totalActividades", preinscripciones.size() + inscripcionesUsuario.size());
             
-            System.out.println("SUCCESS Seguimiento obtenido: " + preinscripciones.size() + " preinscripciones reales, " + 
-                             inscripcionesUsuario.size() + " inscripciones");
+            log.debug("Seguimiento obtenido: {} preinscripciones reales, {} inscripciones", 
+                preinscripciones.size(), inscripcionesUsuario.size());
             
             return ResponseEntity.ok(respuesta);
             
         } catch (Exception e) {
-            System.out.println("ERROR Error en seguimiento: " + e.getMessage());
+            log.error("Error en seguimiento: {}", e.getMessage(), e);
             Map<String, Object> error = new HashMap<>();
             error.put("error", "Error interno del servidor");
             return ResponseEntity.internalServerError().body(error);
@@ -2347,7 +2324,7 @@ public class CursosIntersemestralesRestController {
     @DeleteMapping("/inscripciones/{id}")
     public ResponseEntity<Map<String, Object>> cancelarInscripcion(@PathVariable Integer id) {
         try {
-            System.out.println("Cancelando inscripcion con ID: " + id);
+            log.debug("Cancelando inscripcion con ID: {}", id);
             
             // Se valida y elimina la inscripcion registrada en la base de datos
             // Validar que la inscripcion existe
@@ -2389,12 +2366,11 @@ public class CursosIntersemestralesRestController {
             respuesta.put("status", 200);
             respuesta.put("timestamp", java.time.LocalDateTime.now().toString());
             
-            System.out.println("SUCCESS Inscripcion " + id + " cancelada exitosamente");
+            log.debug("Inscripcion {} cancelada exitosamente", id);
             return ResponseEntity.ok(respuesta);
             
         } catch (Exception e) {
-            System.out.println("ERROR cancelando inscripcion: " + e.getMessage());
-            e.printStackTrace();
+            log.error("Error cancelando inscripcion: {}", e.getMessage(), e);
             Map<String, Object> error = new HashMap<>();
             error.put("error", "Error interno del servidor");
             error.put("message", "Ha ocurrido un error inesperado: " + e.getMessage());
@@ -2503,23 +2479,20 @@ public class CursosIntersemestralesRestController {
     @PostMapping("/cursos-verano")
     public ResponseEntity<Map<String, Object>> crearCurso(@RequestBody CreateCursoDTO dto) {
         try {
-            System.out.println("DEBUG: ===== RECIBIENDO PETICIÓN PARA CREAR CURSO =====");
-            System.out.println("DEBUG: DTO completo recibido:");
-            System.out.println("  - ID Materia: " + dto.getId_materia() + " (tipo: " + (dto.getId_materia() != null ? dto.getId_materia().getClass().getSimpleName() : "null") + ")");
-            System.out.println("  - ID Docente: " + dto.getId_docente() + " (tipo: " + (dto.getId_docente() != null ? dto.getId_docente().getClass().getSimpleName() : "null") + ")");
-            System.out.println("  - Cupo Estimado: " + dto.getCupo_estimado());
-            System.out.println("  - Fecha Inicio: " + dto.getFecha_inicio());
-            System.out.println("  - Fecha Fin: " + dto.getFecha_fin());
-            System.out.println("  - Período Académico: " + dto.getPeriodoAcademico());
-            System.out.println("  - Espacio Asignado: " + dto.getEspacio_asignado());
-            System.out.println("  - Estado: " + (dto.getEstado() != null ? dto.getEstado() : "Abierto (por defecto)"));
+            log.debug("DEBUG: ===== RECIBIENDO PETICIÓN PARA CREAR CURSO =====");
+            log.debug("DEBUG: DTO completo recibido: idMateria={} (tipo={}), idDocente={} (tipo={}), cupo={}, fechaInicio={}, fechaFin={}, periodo={}, espacio={}, estado={}", 
+                dto.getId_materia(), dto.getId_materia() != null ? dto.getId_materia().getClass().getSimpleName() : "null",
+                dto.getId_docente(), dto.getId_docente() != null ? dto.getId_docente().getClass().getSimpleName() : "null",
+                dto.getCupo_estimado(), dto.getFecha_inicio(), dto.getFecha_fin(), 
+                dto.getPeriodoAcademico(), dto.getEspacio_asignado(), 
+                dto.getEstado() != null ? dto.getEstado() : "Abierto (por defecto)");
             
             // Validar que el ID del docente sea válido
             if (dto.getId_docente() != null && dto.getId_docente() <= 0) {
                 Map<String, Object> error = new HashMap<>();
                 error.put("error", "ID de docente inválido");
                 error.put("message", "El ID del docente debe ser mayor a 0. ID recibido: " + dto.getId_docente());
-                System.out.println("DEBUG: ERROR - ID de docente inválido: " + dto.getId_docente());
+                log.warn("DEBUG: ERROR - ID de docente inválido: {}", dto.getId_docente());
                 return ResponseEntity.badRequest().body(error);
             }
             
@@ -2528,7 +2501,7 @@ public class CursosIntersemestralesRestController {
                 Map<String, Object> error = new HashMap<>();
                 error.put("error", "ID de materia inválido");
                 error.put("message", "El ID de la materia debe ser mayor a 0. ID recibido: " + dto.getId_materia());
-                System.out.println("DEBUG: ERROR - ID de materia inválido: " + dto.getId_materia());
+                log.warn("DEBUG: ERROR - ID de materia inválido: {}", dto.getId_materia());
                 return ResponseEntity.badRequest().body(error);
             }
             
@@ -2624,7 +2597,7 @@ public class CursosIntersemestralesRestController {
             
             // Crear el curso usando el caso de uso existente
             try {
-                System.out.println("DEBUG: Creando curso usando caso de uso");
+                log.debug("DEBUG: Creando curso usando caso de uso");
                 
                 // Crear objeto de dominio del curso
                 CursoOfertadoVerano cursoDominio = new CursoOfertadoVerano();
@@ -2642,7 +2615,7 @@ public class CursosIntersemestralesRestController {
                     fechaInicioDate = parsearFecha(dto.getFecha_inicio());
                 } catch (java.text.ParseException e) {
                     // Si falla el parsing, usar la fecha actual
-                    System.out.println("DEBUG: WARNING - No se pudo parsear la fecha de inicio, usando fecha actual");
+                    log.debug("DEBUG: WARNING - No se pudo parsear la fecha de inicio, usando fecha actual");
                     fechaInicioDate = new java.util.Date();
                 }
                 
@@ -2652,7 +2625,7 @@ public class CursosIntersemestralesRestController {
                     fechaFinDate = parsearFecha(dto.getFecha_fin());
                 } catch (java.text.ParseException e) {
                     // Si falla el parsing, calcular como fecha_inicio + 6 semanas
-                    System.out.println("DEBUG: WARNING - No se pudo parsear la fecha de fin, calculando como fecha_inicio + 6 semanas");
+                    log.debug("DEBUG: WARNING - No se pudo parsear la fecha de fin, calculando como fecha_inicio + 6 semanas");
                     java.util.Calendar cal = java.util.Calendar.getInstance(java.util.TimeZone.getTimeZone("UTC"));
                     cal.setTime(fechaInicioDate);
                     cal.add(java.util.Calendar.WEEK_OF_YEAR, 6);
@@ -2677,13 +2650,13 @@ public class CursosIntersemestralesRestController {
                 
                 // Obtener docente real de la base de datos
                 Integer idDocenteParaCurso = dto.getId_docente().intValue();
-                System.out.println("DEBUG: Asignando docente al curso - ID recibido en DTO: " + dto.getId_docente() + 
-                                 ", ID convertido a Integer: " + idDocenteParaCurso);
+                log.debug("DEBUG: Asignando docente al curso - ID recibido en DTO: {}, ID convertido a Integer: {}", 
+                    dto.getId_docente(), idDocenteParaCurso);
                 
                 co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Docente docenteDominio = 
                     docenteCU.obtenerDocentePorId(idDocenteParaCurso);
                 if (docenteDominio == null) {
-                    System.out.println("DEBUG: ERROR - Docente no encontrado con ID: " + idDocenteParaCurso);
+                    log.warn("DEBUG: ERROR - Docente no encontrado con ID: {}", idDocenteParaCurso);
                     Map<String, Object> error = new HashMap<>();
                     error.put("error", "Docente no encontrado");
                     error.put("message", "El docente con ID " + dto.getId_docente() + " no existe");
@@ -2691,16 +2664,16 @@ public class CursosIntersemestralesRestController {
                     return ResponseEntity.badRequest().body(error);
                 }
                 
-                System.out.println("DEBUG: Docente asignado al cursoDominio - ID: " + docenteDominio.getId_docente() + 
-                                 ", Nombre: " + docenteDominio.getNombre_docente());
+                log.debug("DEBUG: Docente asignado al cursoDominio - ID: {}, Nombre: {}", 
+                    docenteDominio.getId_docente(), docenteDominio.getNombre_docente());
                 cursoDominio.setObjDocente(docenteDominio);
                 
                 // Verificar que el docente fue asignado correctamente
                 if (cursoDominio.getObjDocente() == null) {
-                    System.out.println("DEBUG: ERROR - El docente no se asignó correctamente al cursoDominio");
+                    log.debug("DEBUG: ERROR - El docente no se asignó correctamente al cursoDominio");
                 } else {
-                    System.out.println("DEBUG: Verificación - CursoDominio tiene docente ID: " + 
-                                     cursoDominio.getObjDocente().getId_docente());
+                    log.debug("DEBUG: Verificación - CursoDominio tiene docente ID: {}", 
+                        cursoDominio.getObjDocente().getId_docente());
                 }
                 
                 // Crear estado inicial del curso
@@ -2720,7 +2693,7 @@ public class CursosIntersemestralesRestController {
                 }
                 if (!estadoValido) {
                     estadoInicial = "Abierto"; // Por defecto si el estado no es válido
-                    System.out.println("DEBUG: WARNING - Estado inválido proporcionado, usando 'Abierto' por defecto");
+                    log.debug("DEBUG: WARNING - Estado inválido proporcionado, usando 'Abierto' por defecto");
                 }
                 
                 // Crear estado inicial (solo con fecha de registro del estado, las fechas del curso van en el curso)
@@ -2732,21 +2705,19 @@ public class CursosIntersemestralesRestController {
                 estados.add(estadoCurso);
                 cursoDominio.setEstadosCursoOfertados(estados);
                 
-                System.out.println("DEBUG: Estado inicial del curso: " + estadoInicial);
-                System.out.println("DEBUG: Fecha de inicio del curso: " + fechaInicioDate);
-                System.out.println("DEBUG: Fecha de fin del curso: " + fechaFinDate);
-                System.out.println("DEBUG: Período académico validado: " + periodoAcademicoTrimmed);
+                log.debug("DEBUG: Estado inicial del curso: {}, Fecha inicio: {}, Fecha fin: {}, Período: {}", 
+                    estadoInicial, fechaInicioDate, fechaFinDate, periodoAcademicoTrimmed);
                 
                 // Usar el caso de uso para crear el curso
                 CursoOfertadoVerano cursoCreado = cursoCU.crearCurso(cursoDominio);
-                System.out.println("DEBUG: Curso creado exitosamente con ID: " + cursoCreado.getId_curso());
+                log.debug("DEBUG: Curso creado exitosamente con ID: {}", cursoCreado.getId_curso());
                 
                 // Verificar que el curso creado tiene el docente correcto
                 if (cursoCreado.getObjDocente() != null) {
-                    System.out.println("DEBUG: Docente del curso creado - ID: " + cursoCreado.getObjDocente().getId_docente() + 
-                                     ", Nombre: " + cursoCreado.getObjDocente().getNombre_docente());
+                    log.debug("DEBUG: Docente del curso creado - ID: {}, Nombre: {}", 
+                        cursoCreado.getObjDocente().getId_docente(), cursoCreado.getObjDocente().getNombre_docente());
                 } else {
-                    System.out.println("DEBUG: WARNING - El curso creado no tiene docente asignado");
+                    log.debug("DEBUG: WARNING - El curso creado no tiene docente asignado");
                 }
                 
                 // Obtener información completa del curso creado desde la BD para la respuesta
@@ -2773,17 +2744,14 @@ public class CursosIntersemestralesRestController {
                 
                 nuevoCurso.put("message", "Curso creado exitosamente en la base de datos");
                 
-                System.out.println("DEBUG: Curso creado exitosamente en BD - ID: " + cursoCreado.getId_curso() + 
-                                 ", Nombre: " + cursoDTO.getNombre_curso() + 
-                                 ", Docente: " + (cursoDTO.getObjDocente() != null ? cursoDTO.getObjDocente().getNombre_docente() : "null") +
-                                 ", Período: " + periodoAcademicoTrimmed +
-                                 ", Fecha Inicio: " + dto.getFecha_inicio() +
-                                 ", Fecha Fin: " + dto.getFecha_fin());
+                log.debug("DEBUG: Curso creado exitosamente en BD - ID: {}, Nombre: {}, Docente: {}, Período: {}, Fecha Inicio: {}, Fecha Fin: {}", 
+                    cursoCreado.getId_curso(), cursoDTO.getNombre_curso(), 
+                    cursoDTO.getObjDocente() != null ? cursoDTO.getObjDocente().getNombre_docente() : "null",
+                    periodoAcademicoTrimmed, dto.getFecha_inicio(), dto.getFecha_fin());
                 return ResponseEntity.ok(nuevoCurso);
                 
             } catch (Exception e) {
-                System.out.println("DEBUG: Error guardando en BD: " + e.getMessage());
-                e.printStackTrace();
+                log.error("DEBUG: Error guardando en BD: {}", e.getMessage(), e);
                 
                 // Si falla el guardado, devolver error
                 Map<String, Object> error = new HashMap<>();
@@ -2793,8 +2761,7 @@ public class CursosIntersemestralesRestController {
             }
             
         } catch (Exception e) {
-            System.out.println("ERROR: Error creando curso: " + e.getMessage());
-            e.printStackTrace();
+            log.error("ERROR: Error creando curso: {}", e.getMessage(), e);
             Map<String, Object> error = new HashMap<>();
             error.put("error", "Error interno del servidor");
             error.put("message", "No se pudo crear el curso: " + e.getMessage());
@@ -2811,8 +2778,7 @@ public class CursosIntersemestralesRestController {
             @PathVariable Long id, 
             @RequestBody UpdateCursoDTO dto) {
         try {
-            System.out.println("DEBUG: Actualizando curso ID: " + id);
-            System.out.println("DEBUG: Datos recibidos: " + dto);
+            log.debug("DEBUG: Actualizando curso ID: {}, Datos recibidos: {}", id, dto);
             
             // Validaciones basicas
             if (dto.getCupo_estimado() != null && (dto.getCupo_estimado() < 1 || dto.getCupo_estimado() > 100)) {
@@ -2856,7 +2822,7 @@ public class CursosIntersemestralesRestController {
                 return ResponseEntity.notFound().build();
             }
             
-            System.out.println("DEBUG: Curso encontrado: " + (cursoEntity.getObjMateria() != null ? cursoEntity.getObjMateria().getNombre() : "Sin materia"));
+            log.debug("DEBUG: Curso encontrado: {}", cursoEntity.getObjMateria() != null ? cursoEntity.getObjMateria().getNombre() : "Sin materia");
             
             // Aplicar cambios al objeto
             boolean cursoModificado = false;
@@ -2864,13 +2830,13 @@ public class CursosIntersemestralesRestController {
             if (dto.getCupo_estimado() != null) {
                 cursoEntity.setCupo_estimado(dto.getCupo_estimado());
                 cursoModificado = true;
-                System.out.println("DEBUG: Cupo actualizado a: " + dto.getCupo_estimado());
+                log.debug("DEBUG: Cupo actualizado a: {}", dto.getCupo_estimado());
             }
             
             if (dto.getEspacio_asignado() != null) {
                 cursoEntity.setSalon(dto.getEspacio_asignado());
                 cursoModificado = true;
-                System.out.println("DEBUG: Espacio actualizado a: " + dto.getEspacio_asignado());
+                log.debug("DEBUG: Espacio actualizado a: {}", dto.getEspacio_asignado());
             }
             
             // Crear nuevo estado si se proporciona
@@ -2891,7 +2857,7 @@ public class CursosIntersemestralesRestController {
                 nuevoEstadoEntity.setFecha_registro_estado(new java.util.Date());
                 nuevoEstadoEntity.setObjCursoOfertadoVerano(cursoEntity);
                 cursoModificado = true;
-                System.out.println("DEBUG: Estado actualizado a: " + dto.getEstado());
+                log.debug("DEBUG: Estado actualizado a: {}", dto.getEstado());
             }
             
             if (!cursoModificado) {
@@ -2903,17 +2869,17 @@ public class CursosIntersemestralesRestController {
             
             // Guardar cambios en la base de datos
             try {
-                System.out.println("DEBUG: Guardando cambios en la base de datos");
+                log.debug("DEBUG: Guardando cambios en la base de datos");
                 CursoOfertadoVeranoEntity cursoActualizado = cursoRepository.save(cursoEntity);
                 
                 // Si hay nuevo estado, guardarlo tambien
                 if (nuevoEstadoEntity != null) {
-                    System.out.println("DEBUG: Guardando nuevo estado: " + nuevoEstadoEntity.getEstado_actual());
+                    log.debug("DEBUG: Guardando nuevo estado: {}", nuevoEstadoEntity.getEstado_actual());
                     estadoRepository.save(nuevoEstadoEntity);
-                    System.out.println("DEBUG: Nuevo estado guardado exitosamente en BD");
+                    log.debug("DEBUG: Nuevo estado guardado exitosamente en BD");
                 }
                 
-                System.out.println("DEBUG: Cambios guardados exitosamente en BD");
+                log.debug("DEBUG: Cambios guardados exitosamente en BD");
                 
                 // Crear respuesta con los datos actualizados
                 Map<String, Object> resultado = new HashMap<>();
@@ -2929,7 +2895,7 @@ public class CursosIntersemestralesRestController {
                 return ResponseEntity.ok(resultado);
                 
             } catch (Exception e) {
-                System.out.println("DEBUG: Error guardando en BD: " + e.getMessage());
+                log.error("DEBUG: Error guardando en BD: {}", e.getMessage(), e);
                 Map<String, Object> error = new HashMap<>();
                 error.put("error", "Error guardando en base de datos");
                 error.put("message", "No se pudo guardar los cambios: " + e.getMessage());
@@ -2937,8 +2903,8 @@ public class CursosIntersemestralesRestController {
             }
             
         } catch (Exception e) {
-            System.out.println("ERROR: Error actualizando curso: " + e.getMessage());
-            e.printStackTrace();
+            log.error("ERROR: Error actualizando curso: {}", e.getMessage(), e);
+            log.error("Error: {}", e.getMessage(), e);
             Map<String, Object> error = new HashMap<>();
             error.put("error", "Error interno del servidor");
             error.put("message", "No se pudo actualizar el curso: " + e.getMessage());
@@ -2955,7 +2921,7 @@ public class CursosIntersemestralesRestController {
     @DeleteMapping("/cursos-verano/{id}")
     public ResponseEntity<Map<String, Object>> eliminarCurso(@PathVariable Long id) {
         try {
-            System.out.println("DEBUG: Eliminando curso ID: " + id);
+            log.debug("DEBUG: Eliminando curso ID: {}", id);
             
             // Verificar que el curso existe
             CursoOfertadoVerano cursoExistente = cursoCU.obtenerCursoPorId(id.intValue());
@@ -2984,7 +2950,7 @@ public class CursosIntersemestralesRestController {
                 resultado.put("id_curso_eliminado", id);
                 resultado.put("nombre_curso", cursoExistente.getObjMateria() != null ? cursoExistente.getObjMateria().getNombre() : "Curso");
                 
-                System.out.println("DEBUG: Curso eliminado exitosamente");
+                log.debug("DEBUG: Curso eliminado exitosamente");
                 return ResponseEntity.ok(resultado);
             } else {
                 Map<String, Object> error = new HashMap<>();
@@ -2993,8 +2959,8 @@ public class CursosIntersemestralesRestController {
                 return ResponseEntity.status(500).body(error);
             }
         } catch (Exception e) {
-            System.out.println("ERROR: Error eliminando curso: " + e.getMessage());
-            e.printStackTrace();
+            log.error("ERROR: Error eliminando curso: {}", e.getMessage(), e);
+            log.error("Error: {}", e.getMessage(), e);
             Map<String, Object> error = new HashMap<>();
             error.put("error", "Error interno del servidor");
             error.put("message", "No se pudo eliminar el curso: " + e.getMessage());
@@ -3008,18 +2974,19 @@ public class CursosIntersemestralesRestController {
      */
     @GetMapping("/cursos-verano/{id}")
     public ResponseEntity<Map<String, Object>> getCursoPorId(@PathVariable Long id) {
-        System.out.println("DEBUG: Obteniendo informacion del curso ID: " + id);
+        log.debug("DEBUG: Obteniendo informacion del curso ID: {}", id);
         
         // Obtener curso real de la base de datos - lanza EntidadNoExisteException si no existe
         CursoOfertadoVerano cursoReal = cursoCU.obtenerCursoPorId(id.intValue());
         
         // Verificar docente antes del mapeo
         if (cursoReal.getObjDocente() == null) {
-            System.out.println("ERROR: El curso ID " + id + " NO tiene docente asignado en el dominio");
+            log.warn("ERROR: El curso ID {} NO tiene docente asignado en el dominio", id);
         } else {
-            System.out.println("DEBUG: Curso ID " + id + " tiene docente en dominio - ID: " + cursoReal.getObjDocente().getId_docente() + 
-                             ", Nombre: " + cursoReal.getObjDocente().getNombre_docente() +
-                             ", Código: " + cursoReal.getObjDocente().getCodigo_docente());
+            log.debug("DEBUG: Curso ID {} tiene docente en dominio - ID: {}, Nombre: {}, Código: {}", 
+                id, cursoReal.getObjDocente().getId_docente(), 
+                cursoReal.getObjDocente().getNombre_docente(),
+                cursoReal.getObjDocente().getCodigo_docente());
         }
         
         // Usar el mapper existente para obtener datos estructurados
@@ -3027,11 +2994,12 @@ public class CursosIntersemestralesRestController {
         
         // Verificar docente después del mapeo
         if (cursoDTO.getObjDocente() == null) {
-            System.out.println("ERROR: El DTO del curso ID " + id + " NO tiene docente después del mapeo");
+            log.warn("ERROR: El DTO del curso ID {} NO tiene docente después del mapeo", id);
         } else {
-            System.out.println("DEBUG: DTO del curso ID " + id + " tiene docente - ID: " + cursoDTO.getObjDocente().getId_docente() + 
-                             ", Nombre: " + cursoDTO.getObjDocente().getNombre_docente() +
-                             ", Código: " + cursoDTO.getObjDocente().getCodigo_docente());
+            log.debug("DEBUG: DTO del curso ID {} tiene docente - ID: {}, Nombre: {}, Código: {}", 
+                id, cursoDTO.getObjDocente().getId_docente(),
+                cursoDTO.getObjDocente().getNombre_docente(),
+                cursoDTO.getObjDocente().getCodigo_docente());
         }
         
         // Mapear a estructura esperada por el frontend
@@ -3053,9 +3021,9 @@ public class CursosIntersemestralesRestController {
         try {
             List<SolicitudCursoVeranoPreinscripcion> preinscripciones = solicitudCU.buscarPreinscripcionesPorCurso(id.intValue());
             curso.put("solicitudes", preinscripciones.size());
-            System.out.println("DEBUG: Preinscripciones encontradas para el curso: " + preinscripciones.size());
+            log.debug("Preinscripciones encontradas para el curso: {}", preinscripciones.size());
         } catch (Exception e) {
-            System.out.println("WARNING: Error obteniendo conteo de preinscripciones: " + e.getMessage());
+            log.warn("Error obteniendo conteo de preinscripciones: {}", e.getMessage());
             curso.put("solicitudes", 0);
         }
         
@@ -3065,12 +3033,12 @@ public class CursosIntersemestralesRestController {
         
         // Log final para verificar que el docente está en la respuesta
         if (curso.get("objDocente") == null) {
-            System.out.println("ERROR: objDocente es NULL en la respuesta final para el curso ID " + id);
+            log.warn("objDocente es NULL en la respuesta final para el curso ID {}", id);
         } else {
-            System.out.println("SUCCESS: objDocente incluido en la respuesta para el curso ID " + id);
+            log.debug("objDocente incluido en la respuesta para el curso ID {}", id);
         }
         
-        System.out.println("SUCCESS: Informacion del curso obtenida correctamente");
+        log.debug("SUCCESS: Informacion del curso obtenida correctamente");
         
         return ResponseEntity.ok(curso);
     }
@@ -3141,8 +3109,7 @@ public class CursosIntersemestralesRestController {
             
             return ResponseEntity.ok(materias);
         } catch (Exception e) {
-            System.out.println("ERROR obteniendo materias: " + e.getMessage());
-            e.printStackTrace();
+            log.error("Error obteniendo materias: {}", e.getMessage(), e);
             return ResponseEntity.status(500).build();
         }
     }
@@ -3154,7 +3121,7 @@ public class CursosIntersemestralesRestController {
     @GetMapping("/materias-filtro")
     public ResponseEntity<List<Map<String, Object>>> obtenerMateriasParaFiltro() {
         try {
-            System.out.println("INFO: Obteniendo materias para el filtro de solicitudes");
+            log.info("Obteniendo materias para el filtro de solicitudes");
             
             // Obtener todas las materias de la base de datos
             List<co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Materia> materiasReales = 
@@ -3178,12 +3145,11 @@ public class CursosIntersemestralesRestController {
                 materiasFiltro.add(materiaMap);
             }
             
-            System.out.println("INFO: Materias para filtro obtenidas: " + materiasFiltro.size());
+            log.debug("Materias para filtro obtenidas: {}", materiasFiltro.size());
             
             return ResponseEntity.ok(materiasFiltro);
         } catch (Exception e) {
-            System.out.println("ERROR obteniendo materias para filtro: " + e.getMessage());
-            e.printStackTrace();
+            log.error("Error obteniendo materias para filtro: {}", e.getMessage(), e);
             
             // En caso de error, devolver al menos la opcion "Todas las materias"
             List<Map<String, Object>> fallback = new ArrayList<>();
@@ -3204,18 +3170,18 @@ public class CursosIntersemestralesRestController {
     @GetMapping("/docentes")
     public ResponseEntity<List<Map<String, Object>>> getTodosLosDocentes() {
         try {
-            System.out.println("DEBUG: Obteniendo todos los docentes desde la base de datos");
+            log.debug("DEBUG: Obteniendo todos los docentes desde la base de datos");
             
             // Obtener docentes reales de la base de datos
             List<co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Docente> docentesDominio = 
                 docenteCU.listarDocentes();
             
             if (docentesDominio == null || docentesDominio.isEmpty()) {
-                System.out.println("DEBUG: No se encontraron docentes en la base de datos");
+                log.debug("DEBUG: No se encontraron docentes en la base de datos");
                 return ResponseEntity.ok(new ArrayList<>());
             }
             
-            System.out.println("DEBUG: Se encontraron " + docentesDominio.size() + " docentes en la base de datos");
+            log.debug("Se encontraron {} docentes en la base de datos", docentesDominio.size());
             
             // Mapear docentes de dominio a formato de respuesta para el frontend
             List<Map<String, Object>> docentes = docentesDominio.stream()
@@ -3230,19 +3196,17 @@ public class CursosIntersemestralesRestController {
                     docenteMap.put("codigo_usuario", docente.getCodigo_docente());
                     docenteMap.put("nombre_usuario", docente.getNombre_docente());
                     
-                    System.out.println("DEBUG: Docente mapeado - ID: " + docente.getId_docente() + 
-                                     ", Nombre: " + docente.getNombre_docente() + 
-                                     ", Código: " + docente.getCodigo_docente());
+                    log.debug("Docente mapeado - ID: {}, Nombre: {}, Código: {}", 
+                        docente.getId_docente(), docente.getNombre_docente(), docente.getCodigo_docente());
                     
                     return docenteMap;
                 })
                 .collect(Collectors.toList());
 
-            System.out.println("DEBUG: Total de docentes devueltos: " + docentes.size());
+            log.debug("Total de docentes devueltos: {}", docentes.size());
             return ResponseEntity.ok(docentes);
         } catch (Exception e) {
-            System.out.println("ERROR: Error obteniendo docentes: " + e.getMessage());
-            e.printStackTrace();
+            log.error("Error obteniendo docentes: {}", e.getMessage(), e);
             return ResponseEntity.status(500).build();
         }
     }
@@ -3257,14 +3221,14 @@ public class CursosIntersemestralesRestController {
     public ResponseEntity<List<Map<String, Object>>> getPreinscripcionesPorCurso(
             @PathVariable Long idCurso) {
         try {
-            System.out.println("DEBUG: Obteniendo preinscripciones reales para curso ID: " + idCurso);
+            log.debug("Obteniendo preinscripciones reales para curso ID: {}", idCurso);
             
             List<Map<String, Object>> preinscripciones = new ArrayList<>();
             
             // Obtener preinscripciones reales de la base de datos
             List<SolicitudCursoVeranoPreinscripcion> preinscripcionesReales = solicitudCU.buscarPreinscripcionesPorCurso(idCurso.intValue());
             
-            System.out.println("DEBUG: Preinscripciones encontradas: " + preinscripcionesReales.size());
+            log.debug("Preinscripciones encontradas: {}", preinscripcionesReales.size());
             
             for (SolicitudCursoVeranoPreinscripcion preinscripcion : preinscripcionesReales) {
                 Map<String, Object> preinscripcionMap = new HashMap<>();
@@ -3333,13 +3297,12 @@ public class CursosIntersemestralesRestController {
                 preinscripciones.add(preinscripcionMap);
             }
             
-            System.out.println("SUCCESS: Preinscripciones procesadas: " + preinscripciones.size());
+            log.debug("Preinscripciones procesadas: {}", preinscripciones.size());
             
             return ResponseEntity.ok(preinscripciones);
             
         } catch (Exception e) {
-            System.out.println("ERROR: Error obteniendo preinscripciones por curso: " + e.getMessage());
-            e.printStackTrace();
+            log.error("Error obteniendo preinscripciones por curso: {}", e.getMessage(), e);
             return ResponseEntity.status(500).build();
         }
     }
@@ -3352,29 +3315,30 @@ public class CursosIntersemestralesRestController {
     public ResponseEntity<List<Map<String, Object>>> getEstudiantesElegiblesParaInscripcion(
             @PathVariable Long idCurso) {
         try {
-            System.out.println("[ESTUDIANTES_INSCRITOS] Obteniendo estudiantes inscritos en curso ID: " + idCurso);
+            log.debug("[ESTUDIANTES_INSCRITOS] Obteniendo estudiantes inscritos en curso ID: {}", idCurso);
             
             List<Map<String, Object>> estudiantesInscritos = new ArrayList<>();
             
             // 1. Obtener todas las inscripciones del curso (no preinscripciones)
-            System.out.println("[ESTUDIANTES_INSCRITOS] Buscando inscripciones para curso ID: " + idCurso);
+            log.debug("[ESTUDIANTES_INSCRITOS] Buscando inscripciones para curso ID: {}", idCurso);
             List<SolicitudCursoVeranoIncripcion> inscripciones = solicitudCU.buscarInscripcionesPorCurso(idCurso.intValue());
-            System.out.println("[ESTUDIANTES_INSCRITOS] Total inscripciones encontradas: " + inscripciones.size());
+            log.debug("[ESTUDIANTES_INSCRITOS] Total inscripciones encontradas: {}", inscripciones.size());
             
             // Debug: Mostrar detalles de cada inscripcion encontrada
             for (SolicitudCursoVeranoIncripcion inscripcion : inscripciones) {
-                System.out.println("[ESTUDIANTES_INSCRITOS] Inscripcion encontrada - ID: " + inscripcion.getId_solicitud() + 
-                    ", Usuario: " + (inscripcion.getObjUsuario() != null ? inscripcion.getObjUsuario().getId_usuario() : "NULL") +
-                    ", Curso: " + (inscripcion.getObjCursoOfertadoVerano() != null ? inscripcion.getObjCursoOfertadoVerano().getId_curso() : "NULL"));
+                log.debug("[ESTUDIANTES_INSCRITOS] Inscripcion encontrada - ID: {}, Usuario: {}, Curso: {}", 
+                    inscripcion.getId_solicitud(),
+                    inscripcion.getObjUsuario() != null ? inscripcion.getObjUsuario().getId_usuario() : "NULL",
+                    inscripcion.getObjCursoOfertadoVerano() != null ? inscripcion.getObjCursoOfertadoVerano().getId_curso() : "NULL");
             }
             
             // 2. Procesar cada inscripcion encontrada
-            System.out.println("[ESTUDIANTES_INSCRITOS] Procesando inscripciones encontradas...");
+            log.debug("[ESTUDIANTES_INSCRITOS] Procesando inscripciones encontradas...");
             
             for (SolicitudCursoVeranoIncripcion inscripcion : inscripciones) {
                 try {
-                    System.out.println("[ESTUDIANTES_INSCRITOS] Procesando inscripcion ID: " + inscripcion.getId_solicitud() + 
-                        " para usuario ID: " + inscripcion.getObjUsuario().getId_usuario() + " en curso ID: " + idCurso);
+                    log.debug("[ESTUDIANTES_INSCRITOS] Procesando inscripcion ID: {} para usuario ID: {} en curso ID: {}", 
+                        inscripcion.getId_solicitud(), inscripcion.getObjUsuario().getId_usuario(), idCurso);
                     
                     // 2.1. Verificar el estado de la inscripcion - SOLO mostrar las que NO estan aceptadas
                     String estadoActual = "Inscrito"; // Estado por defecto
@@ -3384,13 +3348,13 @@ public class CursosIntersemestralesRestController {
                     
                     // Si la inscripcion ya fue aceptada (Pago_Validado), no la mostrar en la lista
                     if ("Pago_Validado".equals(estadoActual)) {
-                        System.out.println("[ESTUDIANTES_INSCRITOS] Inscripcion ID " + inscripcion.getId_solicitud() + 
-                            " ya fue aceptada (Pago_Validado), omitiendo de la lista");
+                        log.debug("[ESTUDIANTES_INSCRITOS] Inscripcion ID {} ya fue aceptada (Pago_Validado), omitiendo de la lista", 
+                            inscripcion.getId_solicitud());
                         continue; // Saltar esta inscripcion
                     }
                     
-                    System.out.println("[ESTUDIANTES_INSCRITOS] Inscripcion ID " + inscripcion.getId_solicitud() + 
-                        " en estado '" + estadoActual + "', incluyendo en la lista");
+                    log.debug("[ESTUDIANTES_INSCRITOS] Inscripcion ID {} en estado '{}', incluyendo en la lista", 
+                        inscripcion.getId_solicitud(), estadoActual);
                     
                     // Crear informacion del estudiante inscrito
                     Map<String, Object> estudianteInscrito = new HashMap<>();
@@ -3432,23 +3396,22 @@ public class CursosIntersemestralesRestController {
                     
                     estudiantesInscritos.add(estudianteInscrito);
                     
-                    System.out.println("Estudiante inscrito encontrado: " + 
-                        inscripcion.getObjUsuario().getNombre_completo() + 
-                        " (ID: " + inscripcion.getObjUsuario().getId_usuario() + ")");
+                    log.debug("Estudiante inscrito encontrado: {} (ID: {})", 
+                        inscripcion.getObjUsuario().getNombre_completo(), 
+                        inscripcion.getObjUsuario().getId_usuario());
                 } catch (Exception e) {
-                    System.out.println("[ESTUDIANTES_INSCRITOS] Error procesando inscripcion ID " + 
-                        inscripcion.getId_solicitud() + ": " + e.getMessage());
-                    e.printStackTrace();
+                    log.warn("[ESTUDIANTES_INSCRITOS] Error procesando inscripcion ID {}: {}", 
+                        inscripcion.getId_solicitud(), e.getMessage());
+                    log.error("Error: {}", e.getMessage(), e);
                 }
             }
             
-            System.out.println("[ESTUDIANTES_INSCRITOS] Total estudiantes inscritos encontrados: " + estudiantesInscritos.size());
+            log.debug("[ESTUDIANTES_INSCRITOS] Total estudiantes inscritos encontrados: {}", estudiantesInscritos.size());
             
             return ResponseEntity.ok(estudiantesInscritos);
             
         } catch (Exception e) {
-            System.out.println("[ESTUDIANTES_INSCRITOS] Error obteniendo estudiantes inscritos: " + e.getMessage());
-            e.printStackTrace();
+            log.error("[ESTUDIANTES_INSCRITOS] Error obteniendo estudiantes inscritos: {}", e.getMessage(), e);
             return ResponseEntity.status(500).build();
         }
     }
@@ -3461,13 +3424,13 @@ public class CursosIntersemestralesRestController {
     public ResponseEntity<List<Map<String, Object>>> debugPreinscripcionesPorCurso(
             @PathVariable Long idCurso) {
         try {
-            System.out.println("DEBUG: Obteniendo TODAS las preinscripciones para curso ID: " + idCurso);
+            log.debug("Obteniendo TODAS las preinscripciones para curso ID: {}", idCurso);
             
             List<Map<String, Object>> debugInfo = new ArrayList<>();
             
             // Obtener todas las preinscripciones del curso
             List<SolicitudCursoVeranoPreinscripcion> preinscripciones = solicitudCU.buscarPreinscripcionesPorCurso(idCurso.intValue());
-            System.out.println("DEBUG: Total preinscripciones encontradas: " + preinscripciones.size());
+            log.debug("Total preinscripciones encontradas: {}", preinscripciones.size());
             
             for (SolicitudCursoVeranoPreinscripcion preinscripcion : preinscripciones) {
                 Map<String, Object> debugMap = new HashMap<>();
@@ -3521,13 +3484,12 @@ public class CursosIntersemestralesRestController {
                 debugInfo.add(debugMap);
             }
             
-            System.out.println("DEBUG: Informacion de debug generada para " + debugInfo.size() + " preinscripciones");
+            log.debug("Informacion de debug generada para {} preinscripciones", debugInfo.size());
             
             return ResponseEntity.ok(debugInfo);
             
         } catch (Exception e) {
-            System.out.println("ERROR: Error en debug: " + e.getMessage());
-            e.printStackTrace();
+            log.error("Error en debug: {}", e.getMessage(), e);
             return ResponseEntity.status(500).build();
         }
     }
@@ -3541,8 +3503,7 @@ public class CursosIntersemestralesRestController {
             @PathVariable Long idInscripcion,
             @RequestBody Map<String, String> request) {
         try {
-            System.out.println("DEBUG: Aceptando inscripcion para inscripcion ID: " + idInscripcion);
-            System.out.println("DEBUG: Request body recibido: " + request);
+            log.debug("Aceptando inscripcion para inscripcion ID: {}, Request body recibido: {}", idInscripcion, request);
             
             String observaciones = request.get("observaciones");
             if (observaciones == null || observaciones.trim().isEmpty()) {
@@ -3550,10 +3511,10 @@ public class CursosIntersemestralesRestController {
             }
             
             // 1. Buscar la inscripcion directamente por ID
-            System.out.println("DEBUG: Buscando inscripcion con ID: " + idInscripcion.intValue());
+            log.debug("Buscando inscripcion con ID: {}", idInscripcion.intValue());
             SolicitudCursoVeranoIncripcion inscripcion = solicitudCU.buscarPorIdInscripcion(idInscripcion.intValue());
             
-            System.out.println("DEBUG: Resultado busqueda inscripcion: " + (inscripcion != null ? "ENCONTRADA" : "NO ENCONTRADA"));
+            log.debug("Resultado busqueda inscripcion: {}", inscripcion != null ? "ENCONTRADA" : "NO ENCONTRADA");
             if (inscripcion == null) {
                 Map<String, Object> error = new HashMap<>();
                 error.put("error", "No se encontro la inscripcion con ID: " + idInscripcion);
@@ -3561,7 +3522,7 @@ public class CursosIntersemestralesRestController {
             }
             
             // 2. Validar pago de la inscripcion (marcar como aceptada)
-            System.out.println("DEBUG: Validando pago para inscripcion ID: " + inscripcion.getId_solicitud());
+            log.debug("Validando pago para inscripcion ID: {}", inscripcion.getId_solicitud());
             SolicitudCursoVeranoIncripcion inscripcionAceptada = solicitudGateway.validarPago(
                 inscripcion.getId_solicitud(), 
                 true, 
@@ -3576,9 +3537,9 @@ public class CursosIntersemestralesRestController {
             
             // 3. Insertar en tabla cursosestudiantes (relacion Many-to-Many)
             try {
-                System.out.println("DEBUG: Insertando en tabla cursosestudiantes - Usuario: " + 
-                    inscripcion.getObjUsuario().getId_usuario() + 
-                    ", Curso: " + inscripcion.getObjCursoOfertadoVerano().getId_curso());
+                log.debug("Insertando en tabla cursosestudiantes - Usuario: {}, Curso: {}", 
+                    inscripcion.getObjUsuario().getId_usuario(), 
+                    inscripcion.getObjCursoOfertadoVerano().getId_curso());
                 
                 // Usar el repositorio directamente para asociar usuario-curso
                 int resultado = cursoRepository.insertarCursoEstudiante(
@@ -3588,13 +3549,12 @@ public class CursosIntersemestralesRestController {
                 Boolean asociacionExitosa = (resultado == 1);
                 
                 if (asociacionExitosa) {
-                    System.out.println("Estudiante asociado exitosamente al curso en tabla cursosestudiantes");
+                    log.debug("Estudiante asociado exitosamente al curso en tabla cursosestudiantes");
                 } else {
-                    System.out.println("El estudiante ya estaba asociado al curso o hubo un problema");
+                    log.debug("El estudiante ya estaba asociado al curso o hubo un problema");
                 }
             } catch (Exception e) {
-                System.out.println("ERROR: Error asociando estudiante al curso: " + e.getMessage());
-                e.printStackTrace();
+                log.error("Error asociando estudiante al curso: {}", e.getMessage(), e);
                 // No fallar la operacion por esto, pero logear el error
             }
             
@@ -3608,15 +3568,14 @@ public class CursosIntersemestralesRestController {
             respuesta.put("fecha_aceptacion", new java.util.Date());
             respuesta.put("observaciones", observaciones);
             
-            System.out.println("Inscripcion aceptada exitosamente para: " + 
-                inscripcion.getObjUsuario().getNombre_completo() + 
-                " en curso ID: " + inscripcion.getObjCursoOfertadoVerano().getId_curso());
+            log.debug("Inscripcion aceptada exitosamente para: {} en curso ID: {}", 
+                inscripcion.getObjUsuario().getNombre_completo(), 
+                inscripcion.getObjCursoOfertadoVerano().getId_curso());
             
             return ResponseEntity.ok(respuesta);
             
         } catch (Exception e) {
-            System.out.println("ERROR: Error aceptando inscripcion: " + e.getMessage());
-            e.printStackTrace();
+            log.error("Error aceptando inscripcion: {}", e.getMessage(), e);
             Map<String, Object> error = new HashMap<>();
             error.put("error", "Error interno del servidor: " + e.getMessage());
             return ResponseEntity.internalServerError().body(error);
@@ -3632,7 +3591,7 @@ public class CursosIntersemestralesRestController {
             @PathVariable Long idInscripcion,
             @RequestBody Map<String, String> request) {
         try {
-            System.out.println("DEBUG: Rechazando inscripcion para inscripcion ID: " + idInscripcion);
+            log.debug("Rechazando inscripcion para inscripcion ID: {}", idInscripcion);
             
             String motivo = request.get("motivo");
             if (motivo == null || motivo.trim().isEmpty()) {
@@ -3645,32 +3604,33 @@ public class CursosIntersemestralesRestController {
             SolicitudCursoVeranoIncripcion inscripcion = solicitudCU.buscarPorIdInscripcion(idInscripcion.intValue());
             
             if (inscripcion == null) {
-                System.out.println("No se encontro la inscripcion con ID: " + idInscripcion);
+                log.warn("No se encontro la inscripcion con ID: {}", idInscripcion);
                 Map<String, Object> error = new HashMap<>();
                 error.put("error", "No se encontro la inscripcion con ID: " + idInscripcion);
                 return ResponseEntity.badRequest().body(error);
             }
             
-            System.out.println("Inscripcion encontrada: " + inscripcion.getNombre_solicitud());
+            log.debug("Inscripcion encontrada: {}", inscripcion.getNombre_solicitud());
             String estadoActual = null;
             if (inscripcion.getEstadosSolicitud() != null && !inscripcion.getEstadosSolicitud().isEmpty()) {
                 co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.EstadoSolicitud ultimo = inscripcion.getEstadosSolicitud().get(inscripcion.getEstadosSolicitud().size() - 1);
                 estadoActual = ultimo.getEstado_actual();
             }
-            System.out.println("Estado actual: " + estadoActual);
-            System.out.println(" Estudiante: " + inscripcion.getObjUsuario().getNombre_completo());
-            System.out.println("Curso: " + inscripcion.getObjCursoOfertadoVerano().getObjMateria().getNombre());
+            log.debug("Estado actual: {}, Estudiante: {}, Curso: {}", 
+                estadoActual, 
+                inscripcion.getObjUsuario().getNombre_completo(),
+                inscripcion.getObjCursoOfertadoVerano().getObjMateria().getNombre());
             
             // 2. Verificar que la inscripcion este en estado valido para rechazar
             if (!"Enviada".equals(estadoActual) && !"Pago_Validado".equals(estadoActual)) {
-                System.out.println("Estado invalido para rechazar: " + estadoActual);
+                log.warn("Estado invalido para rechazar: {}", estadoActual);
                 Map<String, Object> error = new HashMap<>();
                 error.put("error", "La inscripcion no puede ser rechazada en su estado actual: " + estadoActual);
                 return ResponseEntity.badRequest().body(error);
             }
             
             // 3. Marcar como rechazada usando el caso de uso
-            System.out.println(" Procesando rechazo...");
+            log.debug(" Procesando rechazo...");
             SolicitudCursoVeranoIncripcion inscripcionRechazada;
             try {
                 inscripcionRechazada = solicitudCU.validarPago(
@@ -3679,27 +3639,26 @@ public class CursosIntersemestralesRestController {
                     "Inscripcion rechazada: " + motivo
                 );
             } catch (Exception e) {
-                System.out.println("Error en validarPago: " + e.getMessage());
-                e.printStackTrace();
+                log.error("Error en validarPago: {}", e.getMessage(), e);
                 Map<String, Object> error = new HashMap<>();
                 error.put("error", "Error al rechazar la inscripcion: " + e.getMessage());
                 return ResponseEntity.badRequest().body(error);
             }
             
             if (inscripcionRechazada == null) {
-                System.out.println("Error al actualizar el estado de la inscripcion - resultado es null");
+                log.debug("Error al actualizar el estado de la inscripcion - resultado es null");
                 Map<String, Object> error = new HashMap<>();
                 error.put("error", "No se pudo actualizar el estado de la inscripcion");
                 return ResponseEntity.internalServerError().body(error);
             }
             
-            System.out.println("Estado actualizado exitosamente");
+            log.debug("Estado actualizado exitosamente");
             String nuevoEstado = null;
             if (inscripcionRechazada.getEstadosSolicitud() != null && !inscripcionRechazada.getEstadosSolicitud().isEmpty()) {
                 co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.EstadoSolicitud ultimoNuevo = inscripcionRechazada.getEstadosSolicitud().get(inscripcionRechazada.getEstadosSolicitud().size() - 1);
                 nuevoEstado = ultimoNuevo.getEstado_actual();
             }
-            System.out.println("Nuevo estado: " + nuevoEstado);
+            log.debug("Nuevo estado: {}", nuevoEstado);
             
             // 4. Preparar respuesta
             Map<String, Object> respuesta = new HashMap<>();
@@ -3712,15 +3671,14 @@ public class CursosIntersemestralesRestController {
             respuesta.put("motivo", motivo);
             respuesta.put("nuevo_estado", nuevoEstado);
             
-            System.out.println("Inscripcion rechazada para: " + 
-                inscripcion.getObjUsuario().getNombre_completo() + 
-                " en curso ID: " + inscripcion.getObjCursoOfertadoVerano().getId_curso());
+            log.debug("Inscripcion rechazada para: {} en curso ID: {}", 
+                inscripcion.getObjUsuario().getNombre_completo(), 
+                inscripcion.getObjCursoOfertadoVerano().getId_curso());
             
             return ResponseEntity.ok(respuesta);
             
         } catch (Exception e) {
-            System.out.println("ERROR: Error rechazando inscripcion: " + e.getMessage());
-            e.printStackTrace();
+            log.error("Error rechazando inscripcion: {}", e.getMessage(), e);
             Map<String, Object> error = new HashMap<>();
             error.put("error", "Error interno del servidor: " + e.getMessage());
             return ResponseEntity.internalServerError().body(error);
@@ -4065,7 +4023,7 @@ public class CursosIntersemestralesRestController {
     @GetMapping("/inscripciones/{idInscripcion}/info")
     public ResponseEntity<Map<String, Object>> infoInscripcion(@PathVariable Long idInscripcion) {
         try {
-            System.out.println(" Obteniendo informacion de inscripcion: " + idInscripcion);
+            log.debug(" Obteniendo informacion de inscripcion: " + " {}", idInscripcion);
             
             // 1. Buscar la inscripcion directamente por ID
             SolicitudCursoVeranoIncripcion inscripcion = solicitudCU.buscarPorIdInscripcion(idInscripcion.intValue());
@@ -4110,12 +4068,11 @@ public class CursosIntersemestralesRestController {
                 ));
             }
             
-            System.out.println("Informacion de inscripcion obtenida exitosamente");
+            log.debug("Informacion de inscripcion obtenida exitosamente");
             return ResponseEntity.ok(resultado);
             
         } catch (Exception e) {
-            System.err.println("Error obteniendo informacion de inscripcion: " + e.getMessage());
-            e.printStackTrace();
+            log.error("Error obteniendo informacion de inscripcion: {}", e.getMessage(), e);
             
             Map<String, Object> error = new HashMap<>();
             error.put("error", "Error obteniendo informacion: " + e.getMessage());
@@ -4263,7 +4220,7 @@ public class CursosIntersemestralesRestController {
     @GetMapping("/inscripciones/curso/{idCurso}/estadisticas")
     public ResponseEntity<Map<String, Object>> obtenerEstadisticasInscripciones(@PathVariable Long idCurso) {
         try {
-            System.out.println("[ESTADISTICAS] Obteniendo estadisticas para curso ID: " + idCurso);
+            log.debug("[ESTADISTICAS] Obteniendo estadisticas para curso ID: " + " {}", idCurso);
             
             Map<String, Object> estadisticas = new HashMap<>();
             
@@ -4272,13 +4229,13 @@ public class CursosIntersemestralesRestController {
             Integer aceptadas = solicitudGateway.contarInscripcionesPorEstado(idCurso.intValue(), "Pago_Validado");
             Integer rechazadas = solicitudGateway.contarInscripcionesPorEstado(idCurso.intValue(), "Pago_Rechazado");
             
-            System.out.println("[ESTADISTICAS] Conteos individuales:");
-            System.out.println("[ESTADISTICAS] - Pendientes (Enviada): " + pendientes);
-            System.out.println("[ESTADISTICAS] - Aceptadas (Pago_Validado): " + aceptadas);
-            System.out.println("[ESTADISTICAS] - Rechazadas (Pago_Rechazado): " + rechazadas);
+            log.debug("[ESTADISTICAS] Conteos individuales:");
+            log.debug("[ESTADISTICAS] - Pendientes (Enviada): {}", pendientes);
+            log.debug("[ESTADISTICAS] - Aceptadas (Pago_Validado): {}", aceptadas);
+            log.debug("[ESTADISTICAS] - Rechazadas (Pago_Rechazado): {}", rechazadas);
             
             Integer totalInscripciones = pendientes + aceptadas + rechazadas;
-            System.out.println("[ESTADISTICAS] - Total: " + totalInscripciones);
+            log.debug("[ESTADISTICAS] - Total: {}", totalInscripciones);
             
             estadisticas.put("total_inscripciones", totalInscripciones);
             estadisticas.put("pendientes_revision", pendientes);
@@ -4287,12 +4244,12 @@ public class CursosIntersemestralesRestController {
             estadisticas.put("curso_id", idCurso);
             estadisticas.put("fecha_consulta", new java.util.Date());
             
-            System.out.println("[ESTADISTICAS] Estadisticas generadas: " + estadisticas);
+            log.debug("[ESTADISTICAS] Estadisticas generadas: " + " {}", estadisticas);
             return ResponseEntity.ok(estadisticas);
             
         } catch (Exception e) {
-            System.err.println("[ESTADISTICAS] Error obteniendo estadisticas: " + e.getMessage());
-            e.printStackTrace();
+            log.error("[ESTADISTICAS] Error obteniendo estadisticas: " + e.getMessage());
+            log.error("Error: {}", e.getMessage(), e);
             
             Map<String, Object> error = new HashMap<>();
             error.put("error", "Error obteniendo estadisticas: " + e.getMessage());
@@ -4307,67 +4264,69 @@ public class CursosIntersemestralesRestController {
     @GetMapping("/inscripciones/{idInscripcion}/comprobante")
     public ResponseEntity<?> descargarComprobantePago(@PathVariable Long idInscripcion) {
         try {
-            System.out.println("INFO: [DESCARGAR_COMPROBANTE] Iniciando descarga para inscripcion ID: " + idInscripcion);
+            log.debug("[DESCARGAR_COMPROBANTE] Iniciando descarga para inscripcion ID: {}", idInscripcion);
             
             // Validar ID
             if (idInscripcion == null || idInscripcion <= 0) {
-                System.out.println("ERROR: [DESCARGAR_COMPROBANTE] ID de inscripcion invalido: " + idInscripcion);
+                log.warn("[DESCARGAR_COMPROBANTE] ID de inscripcion invalido: {}", idInscripcion);
                 return ResponseEntity.badRequest().body("ID de inscripcion invalido");
             }
             
             // 1. Buscar la inscripcion
-            System.out.println("INFO: [DESCARGAR_COMPROBANTE] Buscando inscripcion con ID: " + idInscripcion.intValue());
+            log.debug("[DESCARGAR_COMPROBANTE] Buscando inscripcion con ID: {}", idInscripcion.intValue());
             SolicitudCursoVeranoIncripcion inscripcion = solicitudCU.buscarPorIdInscripcion(idInscripcion.intValue());
             
             if (inscripcion == null) {
-                System.out.println("ERROR: [DESCARGAR_COMPROBANTE] Inscripcion no encontrada: " + idInscripcion);
+                log.warn("[DESCARGAR_COMPROBANTE] Inscripcion no encontrada: {}", idInscripcion);
                 return ResponseEntity.status(404)
                     .header("Content-Type", "application/json")
                     .body("{\"error\":\"Inscripcion no encontrada\",\"idInscripcion\":" + idInscripcion + "}");
             }
             
-            System.out.println("INFO: [DESCARGAR_COMPROBANTE] Inscripcion encontrada: " + inscripcion.getNombre_solicitud() + " (ID: " + inscripcion.getId_solicitud() + ")");
+            log.debug("[DESCARGAR_COMPROBANTE] Inscripcion encontrada: {} (ID: {})", 
+                inscripcion.getNombre_solicitud(), inscripcion.getId_solicitud());
             
             // 2. Buscar documentos asociados
             List<Documento> documentos = inscripcion.getDocumentos();
             if (documentos == null || documentos.isEmpty()) {
-                System.out.println("ERROR: [DESCARGAR_COMPROBANTE] No hay documentos asociados a la inscripcion: " + idInscripcion);
+                log.warn("[DESCARGAR_COMPROBANTE] No hay documentos asociados a la inscripcion: {}", idInscripcion);
                 return ResponseEntity.status(404)
                     .header("Content-Type", "application/json")
                     .body("{\"error\":\"No hay documentos asociados a esta inscripcion\",\"idInscripcion\":" + idInscripcion + "}");
             }
             
-            System.out.println("INFO: [DESCARGAR_COMPROBANTE] Documentos asociados: " + documentos.size());
+            log.debug("[DESCARGAR_COMPROBANTE] Documentos asociados: {}", documentos.size());
             
             // 3. Buscar el primer documento PDF (comprobante de pago)
             for (Documento documento : documentos) {
-                System.out.println("INFO: [DESCARGAR_COMPROBANTE] Revisando documento: " + 
-                    (documento.getNombre() != null ? documento.getNombre() : "NOMBRE_NULL") +
-                    ", ID: " + documento.getId_documento());
+                log.debug("[DESCARGAR_COMPROBANTE] Revisando documento: {}, ID: {}", 
+                    documento.getNombre() != null ? documento.getNombre() : "NOMBRE_NULL",
+                    documento.getId_documento());
                 
                 if (documento.getNombre() != null && documento.getNombre().toLowerCase().endsWith(".pdf")) {
                     try {
-                        System.out.println("INFO: [DESCARGAR_COMPROBANTE] Documento PDF encontrado: " + documento.getNombre());
-                        System.out.println("INFO: [DESCARGAR_COMPROBANTE] Ruta del documento: " + documento.getRuta_documento());
+                        log.debug("[DESCARGAR_COMPROBANTE] Documento PDF encontrado: {}, Ruta: {}", 
+                            documento.getNombre(), documento.getRuta_documento());
                         
                         // Obtener el archivo usando el nombre del documento
                         byte[] archivo = objGestionarArchivos.getFile(documento.getNombre());
                         
                         if (archivo == null || archivo.length == 0) {
-                            System.out.println("WARNING: [DESCARGAR_COMPROBANTE] Archivo no encontrado en disco: " + documento.getNombre());
+                            log.warn("[DESCARGAR_COMPROBANTE] Archivo no encontrado en disco: {}", documento.getNombre());
                             // Intentar con la ruta del documento
                             if (documento.getRuta_documento() != null && !documento.getRuta_documento().equals(documento.getNombre())) {
-                                System.out.println("INFO: [DESCARGAR_COMPROBANTE] Intentando con ruta alternativa: " + documento.getRuta_documento());
+                                log.debug("[DESCARGAR_COMPROBANTE] Intentando con ruta alternativa: {}", documento.getRuta_documento());
                                 archivo = objGestionarArchivos.getFile(documento.getRuta_documento());
                             }
                             
                             if (archivo == null || archivo.length == 0) {
-                                System.out.println("WARNING: [DESCARGAR_COMPROBANTE] Archivo no disponible, probando siguiente documento");
+                                log.warn("[DESCARGAR_COMPROBANTE] Archivo no disponible, probando siguiente documento");
                                 continue; // Probar el siguiente documento
                             }
                         }
                         
-                        System.out.println("INFO: [DESCARGAR_COMPROBANTE] Archivo obtenido exitosamente: " + documento.getNombre() + " (" + archivo.length + " bytes)");
+                        log.debug("[DESCARGAR_COMPROBANTE] Archivo obtenido exitosamente: {} ({} bytes)", 
+                            documento.getNombre(), archivo.length);
                         
                         // Configurar headers para descarga
                         String contentDisposition = "attachment; filename=\"" + documento.getNombre() + "\"";
@@ -4378,24 +4337,23 @@ public class CursosIntersemestralesRestController {
                             .body(archivo);
                             
                     } catch (Exception e) {
-                        System.out.println("ERROR: [DESCARGAR_COMPROBANTE] Error procesando documento: " + documento.getNombre() + " - " + e.getMessage());
-                        e.printStackTrace();
+                        log.error("[DESCARGAR_COMPROBANTE] Error procesando documento: {} - {}", 
+                            documento.getNombre(), e.getMessage(), e);
                         continue; // Probar el siguiente documento
                     }
                 } else {
-                    System.out.println("INFO: [DESCARGAR_COMPROBANTE] Documento ignorado (no es PDF): " + 
-                        (documento.getNombre() != null ? documento.getNombre() : "NOMBRE_NULL"));
+                    log.debug("[DESCARGAR_COMPROBANTE] Documento ignorado (no es PDF): {}", 
+                        documento.getNombre() != null ? documento.getNombre() : "NOMBRE_NULL");
                 }
             }
             
-            System.out.println("ERROR: [DESCARGAR_COMPROBANTE] No se encontro ningun documento PDF valido para la inscripcion: " + idInscripcion);
+            log.warn("[DESCARGAR_COMPROBANTE] No se encontro ningun documento PDF valido para la inscripcion: {}", idInscripcion);
             return ResponseEntity.status(404)
                 .header("Content-Type", "application/json")
                 .body("{\"error\":\"No se encontro ningun comprobante PDF valido\",\"idInscripcion\":" + idInscripcion + "}");
                 
         } catch (Exception e) {
-            System.out.println("ERROR: [DESCARGAR_COMPROBANTE] Error descargando comprobante: " + e.getMessage());
-            e.printStackTrace();
+            log.error("[DESCARGAR_COMPROBANTE] Error descargando comprobante: {}", e.getMessage(), e);
             return ResponseEntity.status(500)
                 .header("Content-Type", "application/json")
                 .body("{\"error\":\"Error interno del servidor al descargar comprobante\",\"message\":\"" + e.getMessage() + "\"}");
@@ -4405,7 +4363,7 @@ public class CursosIntersemestralesRestController {
     @GetMapping("/debug/inscripcion/{idInscripcion}")
     public ResponseEntity<Map<String, Object>> debugInscripcion(@PathVariable Long idInscripcion) {
         try {
-            System.out.println("Verificando la inscripcion con ID " + idInscripcion + ".");
+            log.debug("Verificando la inscripcion con ID {}", idInscripcion);
             
             // Buscar la inscripcion
             SolicitudCursoVeranoIncripcion inscripcion = solicitudGateway.buscarSolicitudInscripcionPorId(idInscripcion.intValue());
@@ -4439,12 +4397,12 @@ public class CursosIntersemestralesRestController {
                 }
             }
             
-            System.out.println("La verificacion de la inscripcion finalizo correctamente.");
+            log.debug("La verificacion de la inscripcion finalizo correctamente.");
             return ResponseEntity.ok(resultado);
             
         } catch (Exception e) {
-            System.err.println("Se presento un error al verificar la inscripcion: " + e.getMessage());
-            e.printStackTrace();
+            log.error("Se presento un error al verificar la inscripcion: " + e.getMessage());
+            log.error("Error: {}", e.getMessage(), e);
             
             Map<String, Object> error = new HashMap<>();
             error.put("status", "ERROR");

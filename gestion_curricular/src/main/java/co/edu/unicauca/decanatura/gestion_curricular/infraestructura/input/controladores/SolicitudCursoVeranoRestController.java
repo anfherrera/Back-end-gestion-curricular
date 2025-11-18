@@ -25,10 +25,12 @@ import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarA
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.GestionarDocumentosGatewayIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Documento;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 @RestController
 @RequestMapping("/api/solicitudes-curso-verano")
 @RequiredArgsConstructor
+@Slf4j
 public class SolicitudCursoVeranoRestController {
 
    
@@ -80,9 +82,8 @@ public class SolicitudCursoVeranoRestController {
             @RequestParam(name = "file", required = true) MultipartFile file,
             @RequestParam(name = "idSolicitud", required = true) @Min(value = 1) Integer idSolicitud) {
         try {
-            System.out.println("📤 [SUBIR_COMPROBANTE] Iniciando subida de comprobante...");
-            System.out.println("📤 [SUBIR_COMPROBANTE] ID Solicitud: " + idSolicitud);
-            System.out.println("📤 [SUBIR_COMPROBANTE] Archivo: " + file.getOriginalFilename());
+            log.debug("Iniciando subida de comprobante. ID Solicitud: {}, Archivo: {}", 
+                idSolicitud, file.getOriginalFilename());
             
             String nombreOriginal = file.getOriginalFilename();
             
@@ -96,22 +97,22 @@ public class SolicitudCursoVeranoRestController {
             }
             
             // 1. Verificar que la inscripción existe
-            System.out.println("🔍 [SUBIR_COMPROBANTE] Verificando inscripción ID: " + idSolicitud);
+            log.debug("Verificando inscripción ID: {}", idSolicitud);
             SolicitudCursoVeranoIncripcion inscripcionExistente = solicitudCU.buscarPorIdInscripcion(idSolicitud);
             
             if (inscripcionExistente == null) {
-                System.out.println("❌ [SUBIR_COMPROBANTE] Inscripción no encontrada: " + idSolicitud);
+                log.warn("Inscripción no encontrada: {}", idSolicitud);
                 return ResponseEntity.badRequest().body(Map.of("error", "Inscripción no encontrada"));
             }
             
-            System.out.println("✅ [SUBIR_COMPROBANTE] Inscripción encontrada: " + inscripcionExistente.getNombre_solicitud());
+            log.debug("Inscripción encontrada: {}", inscripcionExistente.getNombre_solicitud());
             
             // 2. Guardar archivo
-            System.out.println("💾 [SUBIR_COMPROBANTE] Guardando archivo: " + nombreOriginal);
+            log.debug("Guardando archivo: {}", nombreOriginal);
             this.objGestionarArchivos.saveFile(file, nombreOriginal, "pdf");
             
             // 3. Crear documento
-            System.out.println("📄 [SUBIR_COMPROBANTE] Creando documento...");
+            log.debug("Creando documento...");
             Documento doc = new Documento();
             doc.setNombre(nombreOriginal);
             doc.setRuta_documento(nombreOriginal);
@@ -120,14 +121,14 @@ public class SolicitudCursoVeranoRestController {
             doc.setComentario("Comprobante de pago - Curso de Verano");
             
             // 4. Asociar a la inscripción REAL (no crear una nueva)
-            System.out.println("🔗 [SUBIR_COMPROBANTE] Asociando documento a inscripción real...");
+            log.debug("Asociando documento a inscripción real...");
             doc.setObjSolicitud(inscripcionExistente);
             
             // 5. Guardar documento
-            System.out.println("💾 [SUBIR_COMPROBANTE] Guardando documento en BD...");
+            log.debug("Guardando documento en BD...");
             Documento documentoGuardado = this.objGestionarDocumentosGateway.crearDocumento(doc);
             
-            System.out.println("✅ [SUBIR_COMPROBANTE] Documento guardado con ID: " + documentoGuardado.getId_documento());
+            log.debug("Documento guardado con ID: {}", documentoGuardado.getId_documento());
             
             Map<String, Object> respuesta = new HashMap<>();
             respuesta.put("success", true);
@@ -136,12 +137,11 @@ public class SolicitudCursoVeranoRestController {
             respuesta.put("idSolicitud", idSolicitud);
             respuesta.put("documentoId", documentoGuardado.getId_documento());
             
-            System.out.println("✅ [SUBIR_COMPROBANTE] Proceso completado exitosamente");
+            log.debug("Proceso completado exitosamente");
             return ResponseEntity.ok(respuesta);
             
         } catch (Exception e) {
-            System.out.println("❌ [SUBIR_COMPROBANTE] Error: " + e.getMessage());
-            e.printStackTrace();
+            log.error("Error al subir comprobante: {}", e.getMessage(), e);
             return ResponseEntity.internalServerError()
                 .body(Map.of("error", "Error al subir archivo: " + e.getMessage()));
         }
@@ -230,16 +230,14 @@ public class SolicitudCursoVeranoRestController {
             SolicitudCursoVeranoPreinscripcion solicitudDominio = solicitudCursoVeranoPreinscripcionMapper
                     .mappearDePeticionASolicitudCursoVeranoPreinscripcion(solicitudDTO);
 
-            System.out.println("🔍 DEBUG: Creando solicitud con datos:");
-            System.out.println("  - Nombre: " + nombreCompleto);
-            System.out.println("  - Código: " + codigo);
-            System.out.println("  - Curso: " + curso);
-            System.out.println("  - Usuario ID: " + idUsuario);
+            log.debug("Creando solicitud con datos: Nombre: {}, Código: {}, Curso: {}, Usuario ID: {}", 
+                nombreCompleto, codigo, curso, idUsuario);
 
             SolicitudCursoVeranoPreinscripcion solicitudGuardada = solicitudCU
                     .crearSolicitudCursoVeranoPreinscripcion(solicitudDominio);
 
-            System.out.println("🔍 DEBUG: Solicitud guardada con ID: " + (solicitudGuardada != null ? solicitudGuardada.getId_solicitud() : "NULL"));
+            log.debug("Solicitud guardada con ID: {}", 
+                solicitudGuardada != null ? solicitudGuardada.getId_solicitud() : "NULL");
 
             // Respuesta exitosa
             Map<String, Object> respuesta = new HashMap<>();
