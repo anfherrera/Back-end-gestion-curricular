@@ -2,11 +2,13 @@ package co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.serv
 
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.entidades.SolicitudCursoVeranoInscripcionEntity;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.repositorios.SolicitudRepositoryInt;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import java.util.*;
 import java.util.stream.Collectors;
 
+@Slf4j
 @Service
 public class InscripcionService {
     
@@ -47,7 +49,7 @@ public class InscripcionService {
     }
     
     public void updateEstado(Integer id, String nuevoEstado) {
-        System.out.println("🔄 Actualizando estado de inscripción ID: " + id + " a: " + nuevoEstado);
+        log.debug("Actualizando estado de inscripción ID: {} a: {}", id, nuevoEstado);
         
         Optional<SolicitudCursoVeranoInscripcionEntity> entityOpt = solicitudRepository.findById(id)
                 .filter(s -> s instanceof SolicitudCursoVeranoInscripcionEntity)
@@ -60,12 +62,12 @@ public class InscripcionService {
             if (entity.getEstadosSolicitud() != null && !entity.getEstadosSolicitud().isEmpty()) {
                 entity.getEstadosSolicitud().get(0).setEstado_actual(nuevoEstado);
                 solicitudRepository.save(entity);
-                System.out.println("✅ Estado actualizado exitosamente");
+                log.debug("Estado actualizado exitosamente para inscripción ID: {}", id);
             } else {
-                System.out.println("⚠️ No se encontraron estados para la inscripción ID: " + id);
+                log.warn("No se encontraron estados para la inscripción ID: {}", id);
             }
         } else {
-            System.out.println("❌ No se encontró la inscripción con ID: " + id);
+            log.warn("No se encontró la inscripción con ID: {}", id);
         }
     }
     
