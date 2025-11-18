@@ -1495,27 +1495,36 @@ public class GestionarEstadisticasGatewayImplAdapter implements GestionarEstadis
             int minSolicitudes = Integer.MAX_VALUE;
             int totalSolicitudes = todasLasSolicitudes.size();
             
-            for (String estado : estados) {
+            // ⚠️ IMPORTANTE: Incluir TODOS los estados principales, incluso si tienen 0 solicitudes
+            // Esto permite que el frontend muestre siempre los 4 estados principales: Aprobada, Enviada, En Proceso, Rechazada
+            String[] estadosPrincipales = {"APROBADA", "ENVIADA", "RECHAZADA"};
+            
+            // Calcular total "En Proceso" (suma de funcionario + coordinador)
+            int totalEnProcesoCombinado = totalPorEstado.getOrDefault("APROBADA_FUNCIONARIO", 0) + 
+                                         totalPorEstado.getOrDefault("APROBADA_COORDINADOR", 0);
+            
+            // Procesar estados principales
+            for (String estado : estadosPrincipales) {
                 int total = totalPorEstado.getOrDefault(estado, 0);
                 
+                // Calcular porcentaje
+                double porcentaje = totalSolicitudes > 0 ? (total * 100.0) / totalSolicitudes : 0.0;
+                
+                // Crear detalle del estado (SIEMPRE, incluso si total es 0)
+                Map<String, Object> detalleEstado = new HashMap<>();
+                detalleEstado.put("estado", estado);
+                detalleEstado.put("cantidad", total);
+                detalleEstado.put("porcentaje", Math.round(porcentaje * 100.0) / 100.0);
+                detalleEstado.put("procesos", procesosPorEstado.getOrDefault(estado, new HashMap<>()));
+                detalleEstado.put("programas", programasPorEstado.getOrDefault(estado, new HashMap<>()));
+                detalleEstado.put("color", obtenerColorEstado(estado));
+                detalleEstado.put("icono", obtenerIconoEstado(estado));
+                detalleEstado.put("descripcion", obtenerDescripcionEstado(estado));
+                
+                resumenPorEstado.put(estado, detalleEstado);
+                
+                // Actualizar comparativas (solo si hay solicitudes)
                 if (total > 0) {
-                    // Calcular porcentaje
-                    double porcentaje = (total * 100.0) / totalSolicitudes;
-                    
-                    // Crear detalle del estado
-                    Map<String, Object> detalleEstado = new HashMap<>();
-                    detalleEstado.put("estado", estado);
-                    detalleEstado.put("cantidad", total);
-                    detalleEstado.put("porcentaje", Math.round(porcentaje * 100.0) / 100.0);
-                    detalleEstado.put("procesos", procesosPorEstado.getOrDefault(estado, new HashMap<>()));
-                    detalleEstado.put("programas", programasPorEstado.getOrDefault(estado, new HashMap<>()));
-                    detalleEstado.put("color", obtenerColorEstado(estado));
-                    detalleEstado.put("icono", obtenerIconoEstado(estado));
-                    detalleEstado.put("descripcion", obtenerDescripcionEstado(estado));
-                    
-                    resumenPorEstado.put(estado, detalleEstado);
-                    
-                    // Actualizar comparativas
                     if (total > maxSolicitudes) {
                         maxSolicitudes = total;
                         estadoMasComun = estado;
@@ -1531,6 +1540,45 @@ public class GestionarEstadisticasGatewayImplAdapter implements GestionarEstadis
                         estadoMasEficiente = estado;
                     }
                 }
+            }
+            
+            // Agregar estado "EN_PROCESO" combinado (suma de funcionario + coordinador)
+            Map<String, Object> detalleEnProceso = new HashMap<>();
+            detalleEnProceso.put("estado", "EN_PROCESO");
+            detalleEnProceso.put("cantidad", totalEnProcesoCombinado);
+            double porcentajeEnProceso = totalSolicitudes > 0 ? (totalEnProcesoCombinado * 100.0) / totalSolicitudes : 0.0;
+            detalleEnProceso.put("porcentaje", Math.round(porcentajeEnProceso * 100.0) / 100.0);
+            
+            // Combinar procesos de ambos estados en proceso
+            Map<String, Integer> procesosEnProcesoCombinados = new HashMap<>();
+            Map<String, Integer> procesosFuncionario = procesosPorEstado.getOrDefault("APROBADA_FUNCIONARIO", new HashMap<>());
+            Map<String, Integer> procesosCoordinador = procesosPorEstado.getOrDefault("APROBADA_COORDINADOR", new HashMap<>());
+            procesosFuncionario.forEach((proceso, cantidad) -> 
+                procesosEnProcesoCombinados.put(proceso, procesosEnProcesoCombinados.getOrDefault(proceso, 0) + cantidad));
+            procesosCoordinador.forEach((proceso, cantidad) -> 
+                procesosEnProcesoCombinados.put(proceso, procesosEnProcesoCombinados.getOrDefault(proceso, 0) + cantidad));
+            detalleEnProceso.put("procesos", procesosEnProcesoCombinados);
+            
+            // Combinar programas
+            Map<String, Integer> programasEnProcesoCombinados = new HashMap<>();
+            Map<String, Integer> programasFuncionario = programasPorEstado.getOrDefault("APROBADA_FUNCIONARIO", new HashMap<>());
+            Map<String, Integer> programasCoordinador = programasPorEstado.getOrDefault("APROBADA_COORDINADOR", new HashMap<>());
+            programasFuncionario.forEach((programa, cantidad) -> 
+                programasEnProcesoCombinados.put(programa, programasEnProcesoCombinados.getOrDefault(programa, 0) + cantidad));
+            programasCoordinador.forEach((programa, cantidad) -> 
+                programasEnProcesoCombinados.put(programa, programasEnProcesoCombinados.getOrDefault(programa, 0) + cantidad));
+            detalleEnProceso.put("programas", programasEnProcesoCombinados);
+            
+            detalleEnProceso.put("color", obtenerColorEstado("EN_PROCESO"));
+            detalleEnProceso.put("icono", obtenerIconoEstado("EN_PROCESO"));
+            detalleEnProceso.put("descripcion", "Solicitudes en proceso de revisión");
+            
+            resumenPorEstado.put("EN_PROCESO", detalleEnProceso);
+            
+            // Actualizar comparativas para En Proceso
+            if (totalEnProcesoCombinado > 0 && totalEnProcesoCombinado > maxSolicitudes) {
+                maxSolicitudes = totalEnProcesoCombinado;
+                estadoMasComun = "EN_PROCESO";
             }
             
             // Crear analisis comparativo
@@ -2393,19 +2441,8 @@ public class GestionarEstadisticasGatewayImplAdapter implements GestionarEstadis
                 crecimientoEstudiantes = 0.0;
             }
             
-            // Si solo hay un mes con datos y tiene solicitudes, calcular crecimiento basado en el promedio histórico
-            // Esto da un contexto más útil que solo mostrar "Nueva" con 0%
-            if (mesesConDatos.size() == 1 && todasLasSolicitudes.size() > 0) {
-                // Usar la primera mitad del año como referencia (meses inicializados en 0)
-                int mesesReferencia = meses.length / 2;
-                int solicitudesEnMesUnico = solicitudesPorMes.get(mesesConDatos.get(0));
-                if (solicitudesEnMesUnico > 0 && mesesReferencia > 0) {
-                    // Estimar crecimiento como positivo si hay actividad reciente
-                    tendenciaSolicitudes = "Nueva";
-                    // Calcular como si el promedio de los meses anteriores fuera 0
-                    crecimientoSolicitudes = solicitudesEnMesUnico > 0 ? 100.0 : 0.0;
-                }
-            }
+            // Si solo hay un mes con datos, mantener 0.0% de crecimiento (no hay comparación posible)
+            // La tendencia "Nueva" ya indica que es el primer mes con datos
             
             crecimientoTemporal.put("tendenciaSolicitudes", tendenciaSolicitudes);
             crecimientoTemporal.put("crecimientoSolicitudes", Math.round(crecimientoSolicitudes * 100.0) / 100.0);
@@ -3867,37 +3904,24 @@ public class GestionarEstadisticasGatewayImplAdapter implements GestionarEstadis
             }
             
             // Crear tendencias temporales optimizadas
+            // ⚠️ IMPORTANTE: Incluir TODOS los meses, incluso con 0 solicitudes, para que el frontend muestre la tendencia completa
             List<Map<String, Object>> tendenciasTemporales = new ArrayList<>();
             
-            // Si solo hay datos en un mes, generar datos de ejemplo para mostrar tendencias
-            boolean soloUnMesConDatos = demandaPorMes.values().stream().mapToInt(Integer::intValue).sum() == 
-                                       demandaPorMes.values().stream().mapToInt(Integer::intValue).max().orElse(0);
-            
-            if (soloUnMesConDatos && solicitudesCursosVerano.size() > 0) {
-                // Generar datos de ejemplo para mostrar tendencias
-                String[] mesesTendencia = {"Mayo", "Junio", "Julio", "Agosto", "Septiembre"};
-                int[] distribucionEjemplo = {1, 2, 3, solicitudesCursosVerano.size(), 2}; // Distribucion realista
-                
-                for (int i = 0; i < mesesTendencia.length; i++) {
-                    Map<String, Object> tendencia = new HashMap<>();
-                    tendencia.put("mes", mesesTendencia[i]);
-                    tendencia.put("solicitudes", distribucionEjemplo[i]);
-                    tendencia.put("porcentaje", Math.round((distribucionEjemplo[i] * 100.0) / (solicitudesCursosVerano.size() + 8) * 100.0) / 100.0);
-                    tendenciasTemporales.add(tendencia);
-                }
-            } else {
-                // Usar datos reales si hay suficientes
-                for (String mes : meses) {
-                    int solicitudes = demandaPorMes.get(mes);
-                    if (solicitudes > 0) {
-                        Map<String, Object> tendencia = new HashMap<>();
-                        tendencia.put("mes", mes);
-                        tendencia.put("solicitudes", solicitudes);
-                        tendencia.put("porcentaje", Math.round((solicitudes * 100.0) / solicitudesCursosVerano.size() * 100.0) / 100.0);
-                        tendenciasTemporales.add(tendencia);
-                    }
-                }
+            // Incluir TODOS los meses (Enero a Diciembre), incluso si tienen 0 solicitudes
+            for (String mes : meses) {
+                int solicitudes = demandaPorMes.getOrDefault(mes, 0);
+                Map<String, Object> tendencia = new HashMap<>();
+                tendencia.put("mes", mes);
+                tendencia.put("solicitudes", solicitudes);
+                // Calcular porcentaje solo si hay solicitudes totales
+                double porcentaje = solicitudesCursosVerano.size() > 0 ? 
+                    Math.round((solicitudes * 100.0) / solicitudesCursosVerano.size() * 100.0) / 100.0 : 0.0;
+                tendencia.put("porcentaje", porcentaje);
+                tendenciasTemporales.add(tendencia);
             }
+            
+            // Agregar también un array con los nombres de los meses para facilitar el renderizado
+            resultado.put("todosLosMeses", Arrays.asList(meses));
             
             resultado.put("tendenciasTemporales", tendenciasTemporales);
             resultado.put("totalSolicitudes", solicitudesCursosVerano.size());
