@@ -384,7 +384,8 @@ public class GestionarEstadisticasGatewayImplAdapter implements GestionarEstadis
             // Calcular totales para este proceso
             Integer totalAprobadas = porEstado.get("APROBADA");
             Integer totalRechazadas = porEstado.get("RECHAZADA");
-            Integer totalEnProceso = porEstado.get("ENVIADA") + porEstado.get("APROBADA_FUNCIONARIO") + porEstado.get("APROBADA_COORDINADOR");
+            // En Proceso = solo las aprobadas por funcionario y coordinador (NO incluye enviadas)
+            Integer totalEnProceso = porEstado.getOrDefault("APROBADA_FUNCIONARIO", 0) + porEstado.getOrDefault("APROBADA_COORDINADOR", 0);
             
             // Calcular porcentaje de aprobacion para este proceso
             double porcentajeAprobacion = 0.0;
@@ -494,7 +495,8 @@ public class GestionarEstadisticasGatewayImplAdapter implements GestionarEstadis
             estadisticas.put("totalSolicitudes", totalPorEstado);
             estadisticas.put("totalAprobadas", estado.equals("APROBADA") ? totalPorEstado : 0);
             estadisticas.put("totalRechazadas", estado.equals("RECHAZADA") ? totalPorEstado : 0);
-            estadisticas.put("totalEnProceso", (estado.equals("ENVIADA") || estado.equals("APROBADA_FUNCIONARIO") || estado.equals("APROBADA_COORDINADOR")) ? totalPorEstado : 0);
+            // En Proceso = solo las aprobadas por funcionario y coordinador (NO incluye enviadas)
+            estadisticas.put("totalEnProceso", (estado.equals("APROBADA_FUNCIONARIO") || estado.equals("APROBADA_COORDINADOR")) ? totalPorEstado : 0);
             estadisticas.put("porcentajeAprobacion", estado.equals("APROBADA") ? 100.0 : 0.0);
             estadisticas.put("porTipoProceso", porTipoProceso);
             estadisticas.put("porPrograma", porPrograma);
@@ -564,7 +566,8 @@ public class GestionarEstadisticasGatewayImplAdapter implements GestionarEstadis
             Integer totalSolicitudes = porTipoProceso.values().stream().mapToInt(Integer::intValue).sum();
             Integer totalAprobadas = porEstado.get("APROBADA");
             Integer totalRechazadas = porEstado.get("RECHAZADA");
-            Integer totalEnProceso = porEstado.get("ENVIADA") + porEstado.get("APROBADA_FUNCIONARIO") + porEstado.get("APROBADA_COORDINADOR");
+            // En Proceso = solo las aprobadas por funcionario y coordinador (NO incluye enviadas)
+            Integer totalEnProceso = porEstado.getOrDefault("APROBADA_FUNCIONARIO", 0) + porEstado.getOrDefault("APROBADA_COORDINADOR", 0);
             
             // Calcular porcentaje de aprobacion para este programa
             double porcentajeAprobacion = 0.0;
@@ -702,7 +705,8 @@ public class GestionarEstadisticasGatewayImplAdapter implements GestionarEstadis
             // Calcular totales para el periodo
             Integer totalAprobadas = porEstado.get("APROBADA");
             Integer totalRechazadas = porEstado.get("RECHAZADA");
-            Integer totalEnProceso = porEstado.get("ENVIADA") + porEstado.get("APROBADA_FUNCIONARIO") + porEstado.get("APROBADA_COORDINADOR");
+            // En Proceso = solo las aprobadas por funcionario y coordinador (NO incluye enviadas)
+            Integer totalEnProceso = porEstado.getOrDefault("APROBADA_FUNCIONARIO", 0) + porEstado.getOrDefault("APROBADA_COORDINADOR", 0);
             
             // Calcular porcentaje de aprobacion para el periodo
             double porcentajeAprobacion = 0.0;
