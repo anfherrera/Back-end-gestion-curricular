@@ -1540,6 +1540,8 @@ public class GestionarEstadisticasGatewayImplAdapter implements GestionarEstadis
             
             resultado.put("estados", resumenPorEstado);
             resultado.put("analisis", analisisComparativo);
+            // Agregar total de solicitudes en el nivel raíz para que el frontend lo pueda usar fácilmente
+            resultado.put("totalSolicitudes", totalSolicitudes);
             resultado.put("fechaConsulta", new Date());
             resultado.put("descripcion", "Estadisticas por estado de solicitudes con analisis de distribucion - DATOS REALES");
             
@@ -2374,11 +2376,27 @@ public class GestionarEstadisticasGatewayImplAdapter implements GestionarEstadis
                 crecimientoEstudiantes = 0.0;
             }
             
+            // Si solo hay un mes con datos y tiene solicitudes, calcular crecimiento basado en el promedio histórico
+            // Esto da un contexto más útil que solo mostrar "Nueva" con 0%
+            if (mesesConDatos.size() == 1 && todasLasSolicitudes.size() > 0) {
+                // Usar la primera mitad del año como referencia (meses inicializados en 0)
+                int mesesReferencia = meses.length / 2;
+                int solicitudesEnMesUnico = solicitudesPorMes.get(mesesConDatos.get(0));
+                if (solicitudesEnMesUnico > 0 && mesesReferencia > 0) {
+                    // Estimar crecimiento como positivo si hay actividad reciente
+                    tendenciaSolicitudes = "Nueva";
+                    // Calcular como si el promedio de los meses anteriores fuera 0
+                    crecimientoSolicitudes = solicitudesEnMesUnico > 0 ? 100.0 : 0.0;
+                }
+            }
+            
             crecimientoTemporal.put("tendenciaSolicitudes", tendenciaSolicitudes);
             crecimientoTemporal.put("crecimientoSolicitudes", Math.round(crecimientoSolicitudes * 100.0) / 100.0);
             crecimientoTemporal.put("tendenciaEstudiantes", tendenciaEstudiantes);
             crecimientoTemporal.put("crecimientoEstudiantes", Math.round(crecimientoEstudiantes * 100.0) / 100.0);
             crecimientoTemporal.put("mesesAnalizados", mesesConDatos.size());
+            crecimientoTemporal.put("totalSolicitudes", todasLasSolicitudes.size());
+            crecimientoTemporal.put("totalEstudiantes", todosLosEstudiantes.size());
             // Agregar datos por mes para que el frontend pueda mostrar la tendencia completa
             crecimientoTemporal.put("solicitudesPorMes", solicitudesPorMes);
             crecimientoTemporal.put("estudiantesPorMes", estudiantesPorMes);
