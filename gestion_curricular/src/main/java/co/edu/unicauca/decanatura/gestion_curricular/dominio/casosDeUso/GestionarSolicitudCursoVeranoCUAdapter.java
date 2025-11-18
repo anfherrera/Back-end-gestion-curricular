@@ -1,6 +1,7 @@
 package co.edu.unicauca.decanatura.gestion_curricular.dominio.casosDeUso;
 
 import java.util.List;
+import lombok.extern.slf4j.Slf4j;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarArchivosCUIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarSolicitudCursoVeranoCUIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.FormateadorResultadosIntPort;
@@ -16,6 +17,7 @@ import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.SolicitudCu
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.SolicitudCursoVeranoPreinscripcion;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Usuario;
 
+@Slf4j
 public class GestionarSolicitudCursoVeranoCUAdapter implements GestionarSolicitudCursoVeranoCUIntPort {
 
     private final GestionarSolicitudCursoVeranoGatewayIntPort objGestionarSolicitudGateway;
@@ -78,25 +80,25 @@ public class GestionarSolicitudCursoVeranoCUAdapter implements GestionarSolicitu
         } else {
             // Para cursos existentes, validar que exista (sin validar estados)
         cursoABuscar = this.objCursoOfertado.obtenerCursoPorId(solicitudCursoVerano.getObjCursoOfertadoVerano().getId_curso());
-        System.out.println(" DEBUG: Curso buscado con ID: " + solicitudCursoVerano.getObjCursoOfertadoVerano().getId_curso());
-        System.out.println(" DEBUG: Curso encontrado: " + (cursoABuscar != null ? "SÍ" : "NO"));
+        log.debug("Curso buscado con ID: {}", solicitudCursoVerano.getObjCursoOfertadoVerano().getId_curso());
+        log.debug("Curso encontrado: {}", cursoABuscar != null ? "SÍ" : "NO");
         
         if (cursoABuscar == null) {   
             this.objFormateadorResultados.retornarRespuestaErrorReglaDeNegocio("No se encontró el curso");
         }
         
-        System.out.println(" DEBUG: Estados del curso: " + (cursoABuscar.getEstadosCursoOfertados() != null ? cursoABuscar.getEstadosCursoOfertados().size() : "NULL"));
+        log.debug("Estados del curso: {}", cursoABuscar.getEstadosCursoOfertados() != null ? cursoABuscar.getEstadosCursoOfertados().size() : "NULL");
         
         // Validación opcional de estados - solo si existen
         if (cursoABuscar.getEstadosCursoOfertados() != null && !cursoABuscar.getEstadosCursoOfertados().isEmpty()) {
             String ultimoEstado = cursoABuscar.getEstadosCursoOfertados().get(cursoABuscar.getEstadosCursoOfertados().size() - 1).getEstado_actual();
-            System.out.println(" DEBUG: Último estado del curso: " + ultimoEstado);
+            log.debug("Último estado del curso: {}", ultimoEstado);
             // Solo validar si el estado es explícitamente "Cerrado" o "Cancelado"
             if ("Cerrado".equals(ultimoEstado) || "Cancelado".equals(ultimoEstado)) {
                 this.objFormateadorResultados.retornarRespuestaErrorReglaDeNegocio("El curso está " + ultimoEstado.toLowerCase() + " y no acepta preinscripciones");
             }
         } else {
-            System.out.println(" DEBUG: Curso sin estados - permitiendo preinscripción");
+            log.debug("Curso sin estados - permitiendo preinscripción");
         }
         }
 

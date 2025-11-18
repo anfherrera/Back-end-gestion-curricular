@@ -31,3 +31,22 @@ build/
 
 ### VS Code ###
 .vscode/
+
+### Testing Scripts ###
+test_seguridad.ps1
+test_seguridad.sh
+test-results.txt
+*.test-results.txt
+
+### SQL Scripts de Desarrollo/Migración ###
+CREAR_ADMIN.sql
+MIGRACION_*.sql
+
+### Documentación de Tests ###
+INFORME_RESULTADOS_TESTS.md
+
+### Archivos Node.js (no aplican para proyecto Java) ###
+package-lock.json
+
+### Archivos Postman (opcional) ###
+*.postman_collection.json
