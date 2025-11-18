@@ -1648,17 +1648,17 @@ public class GestionarEstadisticasGatewayImplAdapter implements GestionarEstadis
                     // Asegurar que el índice está en el rango válido
                     if (mesNumero >= 0 && mesNumero < meses.length) {
                         String nombreMes = meses[mesNumero];
-                    String nombreProceso = obtenerNombreProcesoPorSolicitud(solicitud);
-                    
-                    // Contar solicitudes por mes
-                    totalPorMes.put(nombreMes, totalPorMes.get(nombreMes) + 1);
-                    
-                    // Contar procesos por mes
-                    if (nombreProceso != null) {
-                        Map<String, Integer> procesos = procesosPorMes.get(nombreMes);
-                        procesos.put(nombreProceso, procesos.getOrDefault(nombreProceso, 0) + 1);
-                    }
-                    
+                        String nombreProceso = obtenerNombreProcesoPorSolicitud(solicitud);
+                        
+                        // Contar solicitudes por mes
+                        totalPorMes.put(nombreMes, totalPorMes.get(nombreMes) + 1);
+                        
+                        // Contar procesos por mes
+                        if (nombreProceso != null) {
+                            Map<String, Integer> procesos = procesosPorMes.get(nombreMes);
+                            procesos.put(nombreProceso, procesos.getOrDefault(nombreProceso, 0) + 1);
+                        }
+                        
                         // Analizar estado
                         String estado = obtenerEstadoMasReciente(solicitud);
                         if ("APROBADA".equals(estado)) {
@@ -1942,7 +1942,7 @@ public class GestionarEstadisticasGatewayImplAdapter implements GestionarEstadis
             for (UsuarioEntity estudiante : todosLosEstudiantes) {
                 if (estudiante.getObjPrograma() != null) {
                     String nombrePrograma = estudiante.getObjPrograma().getNombre_programa();
-                    estudiantesPorPrograma.put(nombrePrograma, estudiantesPorPrograma.get(nombrePrograma) + 1);
+                    estudiantesPorPrograma.put(nombrePrograma, estudiantesPorPrograma.getOrDefault(nombrePrograma, 0) + 1);
                 }
             }
             
@@ -1953,7 +1953,7 @@ public class GestionarEstadisticasGatewayImplAdapter implements GestionarEstadis
                     String nombreProceso = obtenerNombreProcesoPorSolicitud(solicitud);
                     
                     // Contar solicitudes por programa
-                    solicitudesPorPrograma.put(nombrePrograma, solicitudesPorPrograma.get(nombrePrograma) + 1);
+                    solicitudesPorPrograma.put(nombrePrograma, solicitudesPorPrograma.getOrDefault(nombrePrograma, 0) + 1);
                     
                     // Contar procesos por programa
                     if (nombreProceso != null) {
@@ -3581,8 +3581,13 @@ public class GestionarEstadisticasGatewayImplAdapter implements GestionarEstadis
                 Calendar cal = Calendar.getInstance();
                 cal.setTime(fecha);
                 int mesNumero = cal.get(Calendar.MONTH);
-                String nombreMes = meses[mesNumero];
-                solicitudesPorMes.put(nombreMes, solicitudesPorMes.get(nombreMes) + 1);
+                // Asegurar que el índice está en el rango válido
+                if (mesNumero >= 0 && mesNumero < meses.length) {
+                    String nombreMes = meses[mesNumero];
+                    solicitudesPorMes.put(nombreMes, solicitudesPorMes.get(nombreMes) + 1);
+                } else {
+                    log.warn("Mes numero fuera de rango: {} en agruparSolicitudesPorMes", mesNumero);
+                }
             }
         }
         
@@ -3641,8 +3646,13 @@ public class GestionarEstadisticasGatewayImplAdapter implements GestionarEstadis
                     Calendar cal = Calendar.getInstance();
                     cal.setTime(fechaCreacion);
                     int mesNumero = cal.get(Calendar.MONTH);
-                    String nombreMes = meses[mesNumero];
-                    demandaPorMes.put(nombreMes, demandaPorMes.get(nombreMes) + 1);
+                    // Asegurar que el índice está en el rango válido
+                    if (mesNumero >= 0 && mesNumero < meses.length) {
+                        String nombreMes = meses[mesNumero];
+                        demandaPorMes.put(nombreMes, demandaPorMes.get(nombreMes) + 1);
+                    } else {
+                        log.warn("Mes numero fuera de rango: {} para solicitud de curso de verano ID: {}", mesNumero, solicitud.getId_solicitud());
+                    }
                 }
                 
                 // Analisis por estado
