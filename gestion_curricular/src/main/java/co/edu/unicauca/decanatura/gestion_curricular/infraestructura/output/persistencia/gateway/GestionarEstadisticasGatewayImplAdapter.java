@@ -1798,6 +1798,19 @@ public class GestionarEstadisticasGatewayImplAdapter implements GestionarEstadis
             
             resultado.put("porMes", resumenPorMes);
             resultado.put("tendencias", analisisTendencias);
+            // Agregar array con todos los meses para que el frontend sepa qué meses debe mostrar
+            // Esto asegura que el frontend muestre todos los meses, incluso si tienen 0 solicitudes
+            resultado.put("todosLosMeses", Arrays.asList(meses));
+            // Agregar también como lista ordenada de objetos para facilitar el renderizado en el frontend
+            List<Map<String, Object>> mesesOrdenados = new ArrayList<>();
+            for (String mes : meses) {
+                @SuppressWarnings("unchecked")
+                Map<String, Object> detalleMes = (Map<String, Object>) resumenPorMes.get(mes);
+                if (detalleMes != null) {
+                    mesesOrdenados.add(detalleMes);
+                }
+            }
+            resultado.put("mesesOrdenados", mesesOrdenados);
             resultado.put("fechaConsulta", new Date());
             resultado.put("descripcion", "Estadisticas por periodo/mes con analisis de tendencias - DATOS REALES");
             
