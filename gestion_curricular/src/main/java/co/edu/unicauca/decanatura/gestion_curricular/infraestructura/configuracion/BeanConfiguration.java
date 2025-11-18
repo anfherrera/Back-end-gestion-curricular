@@ -4,6 +4,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
+import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarArchivosCUIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.FormateadorResultadosIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.GestionarArchivosGatewayIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.GestionarCursoOfertadoVeranoGatewayIntPort;
@@ -94,8 +95,9 @@ public class BeanConfiguration {
         GestionarCursoOfertadoVeranoGatewayIntPort objCursoOfertado,
         GestionarUsuarioGatewayIntPort objUsuario, 
         GestionarDocumentosGatewayIntPort objDocumentosGateway,
-        FormateadorResultadosIntPort objFormateadorResultados) {
-        return new GestionarSolicitudCursoVeranoCUAdapter(objGestionarSolicitudGateway, objCursoOfertado, objUsuario, objDocumentosGateway, objFormateadorResultados);
+        FormateadorResultadosIntPort objFormateadorResultados,
+        GestionarArchivosCUIntPort objGestionarArchivos) {
+        return new GestionarSolicitudCursoVeranoCUAdapter(objGestionarSolicitudGateway, objCursoOfertado, objUsuario, objDocumentosGateway, objFormateadorResultados, objGestionarArchivos);
     }
 
     @Bean
@@ -104,13 +106,15 @@ public class BeanConfiguration {
             GestionarUsuarioGatewayIntPort objUsuario, 
             GestionarDocumentosGatewayIntPort objDocumentosGateway,
             GestionarEstadoSolicitudGatewayIntPort objGestionarEstadoSolicitudGateway,
-            FormateadorResultadosIntPort objFormateadorResultados) {
+            FormateadorResultadosIntPort objFormateadorResultados,
+            GestionarArchivosCUIntPort objGestionarArchivos) {
         return new GestionarSolicitudPazYSalvoCUAdapter(
                 objGestionarSolicitudGateway,
                 objUsuario,
                 objDocumentosGateway,
                 objGestionarEstadoSolicitudGateway,
-                objFormateadorResultados
+                objFormateadorResultados,
+                objGestionarArchivos
         );
     }
 

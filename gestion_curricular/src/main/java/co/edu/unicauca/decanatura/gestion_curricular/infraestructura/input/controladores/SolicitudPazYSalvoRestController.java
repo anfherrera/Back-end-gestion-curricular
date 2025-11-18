@@ -253,6 +253,34 @@ public class SolicitudPazYSalvoRestController {
         return ResponseEntity.ok(respuesta);
     }
 
+    /**
+     * Listar solicitudes de Paz y Salvo ya procesadas por el funcionario (estado APROBADA_FUNCIONARIO)
+     * GET /api/solicitudes-pazysalvo/listarSolicitud-PazYSalvo/Funcionario/Aprobadas
+     * 
+     * Este endpoint permite al funcionario ver un historial de las solicitudes 
+     * que ya ha procesado y enviado al coordinador.
+     */
+    @GetMapping("/listarSolicitud-PazYSalvo/Funcionario/Aprobadas")
+    public ResponseEntity<List<SolicitudPazYSalvoDTORespuesta>> listarSolicitudPazYSalvoAprobadasToFuncionario() {
+        List<SolicitudPazYSalvo> solicitudes = solicitudPazYSalvoCU.listarSolicitudesAprobadasToFuncionario();
+        List<SolicitudPazYSalvoDTORespuesta> respuesta = solicitudMapperDominio.mappearListaDeSolicitudesARespuesta(solicitudes);
+        return ResponseEntity.ok(respuesta);
+    }
+
+    /**
+     * Listar solicitudes de Paz y Salvo ya procesadas por el coordinador (estado APROBADA_COORDINADOR)
+     * GET /api/solicitudes-pazysalvo/listarSolicitud-PazYSalvo/Coordinador/Aprobadas
+     * 
+     * Este endpoint permite al coordinador ver un historial de las solicitudes 
+     * que ya ha procesado y enviado a la secretaría.
+     */
+    @GetMapping("/listarSolicitud-PazYSalvo/Coordinador/Aprobadas")
+    public ResponseEntity<List<SolicitudPazYSalvoDTORespuesta>> listarSolicitudPazYSalvoAprobadasToCoordinador() {
+        List<SolicitudPazYSalvo> solicitudes = solicitudPazYSalvoCU.listarSolicitudesAprobadasToCoordinador();
+        List<SolicitudPazYSalvoDTORespuesta> respuesta = solicitudMapperDominio.mappearListaDeSolicitudesARespuesta(solicitudes);
+        return ResponseEntity.ok(respuesta);
+    }
+
     @GetMapping("/listarSolicitud-PazYSalvo/porRol")
     public ResponseEntity<List<SolicitudPazYSalvoDTORespuesta>> listarSolicitudPorRol(
             @RequestParam String rol,
@@ -508,13 +536,14 @@ public class SolicitudPazYSalvoRestController {
                     .body(Map.of("error", "Archivo demasiado grande. Máximo 10MB"));
             }
             
-            // Guardar archivo
-            this.objGestionarArchivos.saveFile(file, nombreOriginal, "pdf");
+            // Guardar archivo (sin ID de solicitud, se guarda en raíz para documentos huérfanos)
+            // Nota: Este endpoint es para documentos sin asociar, se mantiene en raíz
+            String rutaArchivo = this.objGestionarArchivos.saveFile(file, nombreOriginal, "pdf");
             
             // Crear documento SIN asociar a solicitud (como en homologación)
             Documento doc = new Documento();
             doc.setNombre(nombreOriginal);
-            doc.setRuta_documento(nombreOriginal);
+            doc.setRuta_documento(rutaArchivo);
             doc.setFecha_documento(new Date());
             doc.setEsValido(true);
             // NO agregar comentario automático - solo funcionarios/coordinadores pueden comentar
@@ -539,29 +568,63 @@ public class SolicitudPazYSalvoRestController {
     }
 
     /**
-     * Descargar documento específico por nombre (igual que homologación)
+     * Descargar documento específico por nombre
+     * Busca el documento en la BD para obtener su ruta completa (incluye subcarpetas)
      */
     @GetMapping("/descargar-documento")
     public ResponseEntity<byte[]> descargarDocumento(@RequestParam("filename") String filename) {
         try {
-            // Obtener el archivo usando el servicio de archivos
-            byte[] archivo = objGestionarArchivos.getFile(filename);
+            log.debug("Descargando documento: {}", filename);
+            
+            // Buscar el documento en la BD por nombre para obtener su ruta completa
+            String rutaArchivo = filename; // Por defecto usar el nombre recibido
+            
+            // Buscar en todas las solicitudes de paz y salvo
+            List<SolicitudPazYSalvo> solicitudes = solicitudPazYSalvoCU.listarSolicitudes();
+            for (SolicitudPazYSalvo solicitud : solicitudes) {
+                if (solicitud.getDocumentos() != null) {
+                    for (Documento doc : solicitud.getDocumentos()) {
+                        // Comparar por nombre (sin ruta)
+                        String nombreDoc = doc.getNombre();
+                        if (nombreDoc != null && nombreDoc.equals(filename)) {
+                            // Usar la ruta completa si está disponible
+                            if (doc.getRuta_documento() != null && !doc.getRuta_documento().isEmpty()) {
+                                rutaArchivo = doc.getRuta_documento();
+                                log.debug("Documento encontrado en BD, usando ruta completa: {}", rutaArchivo);
+                            }
+                            break;
+                        }
+                    }
+                }
+            }
+            
+            // Obtener el archivo usando la ruta (puede ser nombre simple o ruta completa)
+            byte[] archivo = objGestionarArchivos.getFile(rutaArchivo);
             
             if (archivo == null || archivo.length == 0) {
+                log.warn("Archivo no encontrado: {}", rutaArchivo);
                 return ResponseEntity.notFound().build();
             }
             
+            // Extraer solo el nombre del archivo para el header (sin la ruta)
+            String nombreArchivo = filename;
+            if (rutaArchivo.contains("/")) {
+                nombreArchivo = rutaArchivo.substring(rutaArchivo.lastIndexOf("/") + 1);
+            }
+            
             // Configurar Content-Disposition con filename y filename* (UTF-8)
-            String encoded = java.net.URLEncoder.encode(filename, java.nio.charset.StandardCharsets.UTF_8)
+            String encoded = java.net.URLEncoder.encode(nombreArchivo, java.nio.charset.StandardCharsets.UTF_8)
                 .replace("+", "%20");
-            String contentDisposition = "attachment; filename=\"" + filename + "\"; filename*=UTF-8''" + encoded;
+            String contentDisposition = "attachment; filename=\"" + nombreArchivo + "\"; filename*=UTF-8''" + encoded;
 
+            log.debug("Archivo descargado exitosamente: {}", nombreArchivo);
             return ResponseEntity.ok()
                 .header(HttpHeaders.CONTENT_DISPOSITION, contentDisposition)
                 .contentType(MediaType.APPLICATION_PDF)
                 .body(archivo);
                 
         } catch (Exception e) {
+            log.error("Error al descargar documento: {}", filename, e);
             return ResponseEntity.internalServerError().build();
         }
     }
@@ -675,7 +738,10 @@ public class SolicitudPazYSalvoRestController {
                     
                     if (esOficio) {
                         try {
-                            byte[] archivo = objGestionarArchivos.getFile(documento.getNombre());
+                            // Usar getFile que maneja tanto rutas simples como rutas con subcarpetas
+                            byte[] archivo = objGestionarArchivos.getFile(
+                                documento.getRuta_documento() != null ? documento.getRuta_documento() : documento.getNombre()
+                            );
                             
                             // Configurar el header Content-Disposition con filename y filename* (UTF-8)
                             String original = documento.getNombre();
@@ -1174,13 +1240,13 @@ public ResponseEntity<DocumentosDTORespuesta> guardarOficioPazSalvo(
             return ResponseEntity.status(HttpStatus.UNSUPPORTED_MEDIA_TYPE).body(null);
         }
         
-        // Guardar archivo
-        this.objGestionarArchivos.saveFile(file, nombreOriginal, "docx");
+            // Guardar archivo organizado en subcarpetas
+            String rutaArchivo = this.objGestionarArchivos.saveFile(file, nombreOriginal, "docx", "pazysalvo", idSolicitud);
         
         // Crear documento
         Documento doc = new Documento();
         doc.setNombre(nombreOriginal);
-        doc.setRuta_documento(nombreOriginal);
+        doc.setRuta_documento(rutaArchivo); // Guardar ruta completa con subcarpetas
         doc.setFecha_documento(new Date());
         doc.setEsValido(true);
         
@@ -1238,13 +1304,13 @@ public ResponseEntity<DocumentosDTORespuesta> guardarOficioPazSalvo(
                 return ResponseEntity.notFound().build();
             }
 
-            // Guardar archivo físico
-            objGestionarArchivos.saveFile(file, nombreOriginal, "pdf");
+            // Guardar archivo organizado en subcarpetas
+            String rutaArchivo = objGestionarArchivos.saveFile(file, nombreOriginal, "pdf", "pazysalvo", idSolicitud);
 
             // Registrar documento y asociar
             Documento documento = new Documento();
             documento.setNombre(nombreOriginal);
-            documento.setRuta_documento(nombreOriginal);
+            documento.setRuta_documento(rutaArchivo); // Guardar ruta completa con subcarpetas
             documento.setFecha_documento(new Date());
             documento.setEsValido(true);
 

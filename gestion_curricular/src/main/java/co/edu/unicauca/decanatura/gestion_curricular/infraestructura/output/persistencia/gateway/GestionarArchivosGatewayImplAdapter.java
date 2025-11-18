@@ -51,9 +51,117 @@ public class GestionarArchivosGatewayImplAdapter implements GestionarArchivosGat
     }
 
     @Override
+    public String saveFile(MultipartFile file, String name, String fileType, String tipoSolicitud, Integer idSolicitud) throws IOException {
+        String extension = getFileExtension(file.getOriginalFilename());
+        
+        if (name == null) {
+            throw new IOException("nombre nulo");
+        }
+        
+        if (tipoSolicitud == null || tipoSolicitud.trim().isEmpty()) {
+            throw new IOException("tipo de solicitud no puede ser nulo o vacío");
+        }
+        
+        if (idSolicitud == null) {
+            throw new IOException("ID de solicitud no puede ser nulo");
+        }
+
+        // Validar tipo de archivo
+        if (fileType.equalsIgnoreCase("image") && !isValidImageFile(extension)) {
+            throw new IOException("Invalid image file type:");
+        }
+        if (fileType.equalsIgnoreCase("pdf") && !"pdf".equalsIgnoreCase(extension)) {
+            throw new IOException("Invalid PDF file type:");
+        }
+
+        // Construir ruta organizada: tipoSolicitud/solicitud_id/nombre
+        String tipoSolicitudNormalizado = tipoSolicitud.toLowerCase().replaceAll("[^a-z0-9-_]", "_");
+        String subfolder = tipoSolicitudNormalizado + "/solicitud_" + idSolicitud;
+        Path targetFolder = this.rootLocation.resolve(subfolder);
+        
+        // Crear carpeta si no existe
+        if (!Files.exists(targetFolder)) {
+            Files.createDirectories(targetFolder);
+        }
+        
+        // Guardar archivo en la subcarpeta
+        Path destination = targetFolder.resolve(name);
+        Files.copy(file.getInputStream(), destination, StandardCopyOption.REPLACE_EXISTING);
+        
+        // Retornar ruta relativa completa para guardar en BD
+        String rutaRelativa = subfolder + "/" + name;
+        return rutaRelativa;
+    }
+
+    @Override
     public byte[] getFile(String filename) throws IOException {
-        Path filPath = this.rootLocation.resolve(filename);
-        return Files.readAllBytes(filPath);
+        // Primero intentar buscar en la raíz (retrocompatibilidad)
+        Path filePath = this.rootLocation.resolve(filename);
+        if (Files.exists(filePath)) {
+            return Files.readAllBytes(filePath);
+        }
+        
+        // Si no existe en la raíz, intentar como ruta relativa completa
+        return getFileByPath(filename);
+    }
+
+    @Override
+    public byte[] getFileByPath(String relativePath) throws IOException {
+        if (relativePath == null || relativePath.trim().isEmpty()) {
+            throw new IOException("Ruta del archivo no puede ser nula o vacía");
+        }
+        
+        Path filePath = this.rootLocation.resolve(relativePath);
+        if (!Files.exists(filePath)) {
+            throw new IOException("Archivo no encontrado en la ruta: " + relativePath);
+        }
+        return Files.readAllBytes(filePath);
+    }
+
+    @Override
+    public String moverArchivoAOrganizado(String rutaActual, String nombreArchivo, String tipoSolicitud, Integer idSolicitud) throws IOException {
+        if (rutaActual == null || rutaActual.trim().isEmpty()) {
+            throw new IOException("Ruta actual del archivo no puede ser nula o vacía");
+        }
+        if (nombreArchivo == null || nombreArchivo.trim().isEmpty()) {
+            throw new IOException("Nombre del archivo no puede ser nulo o vacío");
+        }
+        if (tipoSolicitud == null || tipoSolicitud.trim().isEmpty()) {
+            throw new IOException("Tipo de solicitud no puede ser nulo o vacío");
+        }
+        if (idSolicitud == null) {
+            throw new IOException("ID de solicitud no puede ser nulo");
+        }
+        
+        // Si la ruta actual ya está organizada, no mover
+        if (rutaActual.contains("/")) {
+            // Ya está organizado, retornar la ruta actual
+            return rutaActual;
+        }
+        
+        // Buscar el archivo en la raíz
+        Path archivoOrigen = this.rootLocation.resolve(rutaActual);
+        if (!Files.exists(archivoOrigen)) {
+            throw new IOException("Archivo no encontrado en la ruta: " + rutaActual);
+        }
+        
+        // Construir ruta destino organizada
+        String tipoSolicitudNormalizado = tipoSolicitud.toLowerCase().replaceAll("[^a-z0-9-_]", "_");
+        String subfolder = tipoSolicitudNormalizado + "/solicitud_" + idSolicitud;
+        Path targetFolder = this.rootLocation.resolve(subfolder);
+        
+        // Crear carpeta destino si no existe
+        if (!Files.exists(targetFolder)) {
+            Files.createDirectories(targetFolder);
+        }
+        
+        // Mover archivo a la nueva ubicación
+        Path archivoDestino = targetFolder.resolve(nombreArchivo);
+        Files.move(archivoOrigen, archivoDestino, StandardCopyOption.REPLACE_EXISTING);
+        
+        // Retornar nueva ruta relativa
+        String nuevaRuta = subfolder + "/" + nombreArchivo;
+        return nuevaRuta;
     }
 
     @Override

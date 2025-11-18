@@ -107,15 +107,15 @@ public class SolicitudCursoVeranoRestController {
             
             log.debug("Inscripción encontrada: {}", inscripcionExistente.getNombre_solicitud());
             
-            // 2. Guardar archivo
+            // 2. Guardar archivo organizado en subcarpetas
             log.debug("Guardando archivo: {}", nombreOriginal);
-            this.objGestionarArchivos.saveFile(file, nombreOriginal, "pdf");
+            String rutaArchivo = this.objGestionarArchivos.saveFile(file, nombreOriginal, "pdf", "curso-verano", idSolicitud);
             
             // 3. Crear documento
             log.debug("Creando documento...");
             Documento doc = new Documento();
             doc.setNombre(nombreOriginal);
-            doc.setRuta_documento(nombreOriginal);
+            doc.setRuta_documento(rutaArchivo); // Guardar ruta completa con subcarpetas
             doc.setFecha_documento(new Date());
             doc.setEsValido(true);
             doc.setComentario("Comprobante de pago - Curso de Verano");

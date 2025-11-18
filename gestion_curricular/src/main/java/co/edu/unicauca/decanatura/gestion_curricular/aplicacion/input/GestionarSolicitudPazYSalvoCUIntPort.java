@@ -17,6 +17,10 @@ public interface GestionarSolicitudPazYSalvoCUIntPort {
 
     List<SolicitudPazYSalvo> listarSolicitudesAprobadasToSecretaria();
 
+    List<SolicitudPazYSalvo> listarSolicitudesAprobadasToFuncionario();
+
+    List<SolicitudPazYSalvo> listarSolicitudesAprobadasToCoordinador();
+
     List<SolicitudPazYSalvo> listarSolicitudesPorRol(String rol, Integer idUsuario);
 
     SolicitudPazYSalvo buscarPorId(Integer idSolicitud);

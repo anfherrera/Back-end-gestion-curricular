@@ -972,7 +972,7 @@ public class CursosIntersemestralesRestController {
             
             log.debug("Inscripcion guardada exitosamente ID: {}", inscripcionGuardada.getId_solicitud());
             
-            // 4. Asociar documentos sin solicitud a la inscripcion recien creada
+            // 4. Asociar documentos sin solicitud a la inscripcion recien creada y moverlos a carpeta organizada
             log.debug("Asociando documentos a la inscripcion...");
             try {
                 List<Documento> documentosSinSolicitud = objGestionarDocumentosGateway.buscarDocumentosSinSolicitud();
@@ -980,6 +980,23 @@ public class CursosIntersemestralesRestController {
                 
                 for (Documento doc : documentosSinSolicitud) {
                     log.debug("Asociando documento: {}", doc.getNombre());
+                    
+                    // Mover archivo a carpeta organizada si está en la raíz
+                    String rutaActual = doc.getRuta_documento() != null ? doc.getRuta_documento() : doc.getNombre();
+                    if (rutaActual != null && !rutaActual.contains("/")) {
+                        // El archivo está en la raíz, moverlo a carpeta organizada
+                        String nuevaRuta = objGestionarArchivos.moverArchivoAOrganizado(
+                            rutaActual, 
+                            doc.getNombre(), 
+                            "curso-verano", 
+                            inscripcionGuardada.getId_solicitud()
+                        );
+                        if (nuevaRuta != null) {
+                            doc.setRuta_documento(nuevaRuta);
+                            log.debug("Archivo movido a: {}", nuevaRuta);
+                        }
+                    }
+                    
                     doc.setObjSolicitud(inscripcionGuardada);
                     objGestionarDocumentosGateway.actualizarDocumento(doc);
                     log.debug("Documento asociado exitosamente");
@@ -4308,15 +4325,16 @@ public class CursosIntersemestralesRestController {
                         log.debug("[DESCARGAR_COMPROBANTE] Documento PDF encontrado: {}, Ruta: {}", 
                             documento.getNombre(), documento.getRuta_documento());
                         
-                        // Obtener el archivo usando el nombre del documento
-                        byte[] archivo = objGestionarArchivos.getFile(documento.getNombre());
+                        // Obtener el archivo usando la ruta completa si está disponible, sino usar nombre
+                        String rutaArchivo = documento.getRuta_documento() != null ? documento.getRuta_documento() : documento.getNombre();
+                        byte[] archivo = objGestionarArchivos.getFile(rutaArchivo);
                         
                         if (archivo == null || archivo.length == 0) {
-                            log.warn("[DESCARGAR_COMPROBANTE] Archivo no encontrado en disco: {}", documento.getNombre());
-                            // Intentar con la ruta del documento
+                            log.warn("[DESCARGAR_COMPROBANTE] Archivo no encontrado en disco: {}", rutaArchivo);
+                            // Intentar con el nombre si la ruta no funcionó
                             if (documento.getRuta_documento() != null && !documento.getRuta_documento().equals(documento.getNombre())) {
-                                log.debug("[DESCARGAR_COMPROBANTE] Intentando con ruta alternativa: {}", documento.getRuta_documento());
-                                archivo = objGestionarArchivos.getFile(documento.getRuta_documento());
+                                log.debug("[DESCARGAR_COMPROBANTE] Intentando con nombre alternativo: {}", documento.getNombre());
+                                archivo = objGestionarArchivos.getFile(documento.getNombre());
                             }
                             
                             if (archivo == null || archivo.length == 0) {

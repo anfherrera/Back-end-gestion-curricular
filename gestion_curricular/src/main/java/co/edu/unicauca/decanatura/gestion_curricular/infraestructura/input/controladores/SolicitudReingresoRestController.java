@@ -156,7 +156,10 @@ public class SolicitudReingresoRestController {
                     if (esOficio) {
                         try {
                             log.debug("Probando oficio/resolución de reingreso: {}", documento.getNombre());
-                            byte[] archivo = objGestionarArchivos.getFile(documento.getNombre());
+                            // Usar ruta completa si está disponible, sino usar nombre
+                            byte[] archivo = objGestionarArchivos.getFile(
+                                documento.getRuta_documento() != null ? documento.getRuta_documento() : documento.getNombre()
+                            );
                             
                             log.debug("Oficio/resolución de reingreso encontrado: {}, tamaño: {} bytes", 
                                 documento.getNombre(), archivo.length);
@@ -283,12 +286,13 @@ public class SolicitudReingresoRestController {
             }
 
             log.debug("Guardando archivo: {}", nombreArchivo);
-            objGestionarArchivos.saveFile(archivo, nombreArchivo, "pdf");
+            // Guardar archivo organizado en subcarpetas
+            String rutaArchivo = objGestionarArchivos.saveFile(archivo, nombreArchivo, "pdf", "reingreso", idSolicitud);
 
             // Crear documento y asociarlo a la solicitud
             Documento documento = new Documento();
             documento.setNombre(nombreArchivo);
-            documento.setRuta_documento(nombreArchivo); // La ruta es el nombre del archivo
+            documento.setRuta_documento(rutaArchivo); // Guardar ruta completa con subcarpetas
             documento.setFecha_documento(new Date());
             documento.setEsValido(true);
             documento.setComentario("Archivo subido por secretaría");

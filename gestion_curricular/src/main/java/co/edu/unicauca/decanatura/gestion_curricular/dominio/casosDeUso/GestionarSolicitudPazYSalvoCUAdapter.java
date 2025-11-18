@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarArchivosCUIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarSolicitudPazYSalvoCUIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.FormateadorResultadosIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.GestionarDocumentosGatewayIntPort;
@@ -23,18 +24,21 @@ public class GestionarSolicitudPazYSalvoCUAdapter implements GestionarSolicitudP
     private final GestionarDocumentosGatewayIntPort documentosGateway;
     private final GestionarEstadoSolicitudGatewayIntPort estadoSolicitudGateway;
     private final FormateadorResultadosIntPort formateadorResultados;
+    private final GestionarArchivosCUIntPort gestionarArchivos;
 
     public GestionarSolicitudPazYSalvoCUAdapter(
             GestionarSolicitudPazYSalvoGatewayIntPort solicitudGateway,
             GestionarUsuarioGatewayIntPort usuarioGateway,
             GestionarDocumentosGatewayIntPort documentosGateway,
             GestionarEstadoSolicitudGatewayIntPort estadoSolicitudGateway,
-            FormateadorResultadosIntPort formateadorResultados) {
+            FormateadorResultadosIntPort formateadorResultados,
+            GestionarArchivosCUIntPort gestionarArchivos) {
         this.solicitudGateway = solicitudGateway;
         this.usuarioGateway = usuarioGateway;
         this.documentosGateway = documentosGateway;
         this.estadoSolicitudGateway = estadoSolicitudGateway;
         this.formateadorResultados = formateadorResultados;
+        this.gestionarArchivos = gestionarArchivos;
     }
 
     @Override
@@ -55,9 +59,25 @@ public class GestionarSolicitudPazYSalvoCUAdapter implements GestionarSolicitudP
         // Guardar solicitud
         SolicitudPazYSalvo solicitudGuardada = solicitudGateway.guardar(solicitud);
 
-        // Asociar documentos sin solicitud
+        // Asociar documentos sin solicitud y moverlos a carpeta organizada
         List<Documento> documentosSinSolicitud = documentosGateway.buscarDocumentosSinSolicitud();
         for (Documento doc : documentosSinSolicitud) {
+            // Mover archivo a carpeta organizada si está en la raíz
+            String rutaActual = doc.getRuta_documento() != null ? doc.getRuta_documento() : doc.getNombre();
+            if (rutaActual != null && !rutaActual.contains("/")) {
+                // El archivo está en la raíz, moverlo a carpeta organizada
+                String nuevaRuta = gestionarArchivos.moverArchivoAOrganizado(
+                    rutaActual, 
+                    doc.getNombre(), 
+                    "pazysalvo", 
+                    solicitudGuardada.getId_solicitud()
+                );
+                if (nuevaRuta != null) {
+                    doc.setRuta_documento(nuevaRuta);
+                }
+            }
+            
+            // Asociar documento a la solicitud
             doc.setObjSolicitud(solicitudGuardada);
             documentosGateway.actualizarDocumento(doc);
         }
@@ -104,6 +124,16 @@ public class GestionarSolicitudPazYSalvoCUAdapter implements GestionarSolicitudP
     @Override
     public List<SolicitudPazYSalvo> listarSolicitudesAprobadasToSecretaria() {
         return solicitudGateway.listarSolicitudesAprobadasToSecretaria();
+    }
+
+    @Override
+    public List<SolicitudPazYSalvo> listarSolicitudesAprobadasToFuncionario() {
+        return solicitudGateway.listarSolicitudesAprobadasToFuncionario();
+    }
+
+    @Override
+    public List<SolicitudPazYSalvo> listarSolicitudesAprobadasToCoordinador() {
+        return solicitudGateway.listarSolicitudesAprobadasToCoordinador();
     }
 
     @Override

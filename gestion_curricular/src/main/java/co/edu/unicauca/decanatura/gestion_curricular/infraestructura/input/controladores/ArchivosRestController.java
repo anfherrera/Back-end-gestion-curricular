@@ -125,7 +125,48 @@ public class ArchivosRestController {
                         nombreUnico = nombreSinExtension + "_" + inscripcionId + extension;
                     }
                 }
-                nombreArchivo = this.objGestionarArchivos.saveFile(file, nombreUnico, "pdf");
+                
+                // Guardar archivo organizado si se proporciona tipoSolicitud e ID
+                if (tipoSolicitud != null && !tipoSolicitud.trim().isEmpty() && 
+                    solicitudIdUnificado != null && !solicitudIdUnificado.trim().isEmpty()) {
+                    try {
+                        Integer idSolicitudInt = Integer.parseInt(solicitudIdUnificado);
+                        nombreArchivo = this.objGestionarArchivos.saveFile(file, nombreUnico, "pdf", tipoSolicitud, idSolicitudInt);
+                        log.debug("Archivo guardado organizado: {} para tipo: {}, ID: {}", nombreArchivo, tipoSolicitud, idSolicitudInt);
+                    } catch (NumberFormatException e) {
+                        // Si no se puede parsear el ID, usar método antiguo
+                        log.warn("No se pudo parsear ID de solicitud, guardando en raíz: {}", solicitudIdUnificado);
+                        nombreArchivo = this.objGestionarArchivos.saveFile(file, nombreUnico, "pdf");
+                    }
+                } else if (inscripcionId != null && !inscripcionId.trim().isEmpty()) {
+                    // Si hay inscripcionId pero no tipoSolicitud, inferir que es curso-verano y usar organización
+                    try {
+                        Integer idInscripcionInt = Integer.parseInt(inscripcionId);
+                        // Verificar que la inscripción existe antes de organizar
+                        try {
+                            SolicitudCursoVeranoIncripcion inscripcion = solicitudCursoVeranoCU.buscarPorIdInscripcion(idInscripcionInt);
+                            if (inscripcion != null) {
+                                nombreArchivo = this.objGestionarArchivos.saveFile(file, nombreUnico, "pdf", "curso-verano", inscripcion.getId_solicitud());
+                                log.debug("Archivo guardado organizado automáticamente para inscripción: {}", idInscripcionInt);
+                            } else {
+                                // Inscripción no existe aún, guardar en raíz (se moverá después)
+                                log.debug("Inscripción no existe aún, guardando en raíz (se moverá después): {}", inscripcionId);
+                                nombreArchivo = this.objGestionarArchivos.saveFile(file, nombreUnico, "pdf");
+                            }
+                        } catch (Exception e) {
+                            // Inscripción no existe o error, guardar en raíz (se moverá después)
+                            log.debug("Error buscando inscripción, guardando en raíz (se moverá después): {}", e.getMessage());
+                            nombreArchivo = this.objGestionarArchivos.saveFile(file, nombreUnico, "pdf");
+                        }
+                    } catch (NumberFormatException e) {
+                        log.warn("No se pudo parsear inscripcionId, guardando en raíz: {}", inscripcionId);
+                        nombreArchivo = this.objGestionarArchivos.saveFile(file, nombreUnico, "pdf");
+                    }
+                } else {
+                    // Si no hay tipoSolicitud ni inscripcionId, guardar en raíz (retrocompatibilidad)
+                    log.debug("Sin tipoSolicitud ni inscripcionId, guardando en raíz");
+                    nombreArchivo = this.objGestionarArchivos.saveFile(file, nombreUnico, "pdf");
+                }
             } catch (Exception saveError) {
                 Map<String, Object> error = new HashMap<>();
                 error.put("error", "Error al guardar archivo: " + saveError.getMessage());
@@ -136,7 +177,12 @@ public class ArchivosRestController {
             boolean documentoGuardadoEnBD = false;
             try {
                 Documento documento = new Documento();
-                documento.setNombre(nombreArchivo);
+                // Extraer solo el nombre del archivo (sin la ruta) para el campo nombre
+                String nombreArchivoSimple = nombreArchivo.contains("/") 
+                    ? nombreArchivo.substring(nombreArchivo.lastIndexOf("/") + 1) 
+                    : nombreArchivo;
+                documento.setNombre(nombreArchivoSimple);
+                // Guardar la ruta completa en ruta_documento
                 documento.setRuta_documento(nombreArchivo);
                 documento.setFecha_documento(new java.util.Date());
                 documento.setEsValido(true);
@@ -318,15 +364,16 @@ public class ArchivosRestController {
                         log.info("INFO: [ARCHIVOS] Documento PDF encontrado: {}", documento.getNombre());
                         log.debug("INFO: [ARCHIVOS] Ruta del documento: {}", documento.getRuta_documento());
                         
-                        // Obtener el archivo usando el nombre del documento
-                        byte[] archivo = objGestionarArchivos.getFile(documento.getNombre());
+                        // Obtener el archivo usando la ruta completa si está disponible, sino usar nombre
+                        String rutaArchivo = documento.getRuta_documento() != null ? documento.getRuta_documento() : documento.getNombre();
+                        byte[] archivo = objGestionarArchivos.getFile(rutaArchivo);
                         
                         if (archivo == null || archivo.length == 0) {
-                            log.warn("WARNING: [ARCHIVOS] Archivo no encontrado en disco: {}", documento.getNombre());
-                            // Intentar con la ruta del documento
+                            log.warn("WARNING: [ARCHIVOS] Archivo no encontrado en disco: {}", rutaArchivo);
+                            // Intentar con el nombre si la ruta no funcionó
                             if (documento.getRuta_documento() != null && !documento.getRuta_documento().equals(documento.getNombre())) {
-                                log.info("INFO: [ARCHIVOS] Intentando con ruta alternativa: {}", documento.getRuta_documento());
-                                archivo = objGestionarArchivos.getFile(documento.getRuta_documento());
+                                log.info("INFO: [ARCHIVOS] Intentando con nombre alternativo: {}", documento.getNombre());
+                                archivo = objGestionarArchivos.getFile(documento.getNombre());
                             }
                             
                             if (archivo == null || archivo.length == 0) {
@@ -402,7 +449,9 @@ public class ArchivosRestController {
                     
                     if (esOficio) {
                         try {
-                            byte[] archivo = objGestionarArchivos.getFile(documento.getNombre());
+                            // Usar ruta completa si está disponible, sino usar nombre
+                            String rutaArchivo = documento.getRuta_documento() != null ? documento.getRuta_documento() : documento.getNombre();
+                            byte[] archivo = objGestionarArchivos.getFile(rutaArchivo);
                             
                             // Configurar el header Content-Disposition correctamente
                             String contentDisposition = "attachment; filename=\"" + documento.getNombre() + "\"";
