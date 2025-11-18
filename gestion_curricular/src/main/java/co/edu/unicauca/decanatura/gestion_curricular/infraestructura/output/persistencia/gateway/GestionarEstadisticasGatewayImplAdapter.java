@@ -305,7 +305,13 @@ public class GestionarEstadisticasGatewayImplAdapter implements GestionarEstadis
                     // Aplicar filtros manualmente si es necesario
                     boolean cumpleFiltros = true;
                     
-                    if (proceso != null && !solicitud.getNombre_solicitud().toLowerCase().contains(proceso.toLowerCase())) {
+                    String nombreSolicitud = solicitud.getNombre_solicitud();
+                    if (proceso != null && nombreSolicitud != null && 
+                        !nombreSolicitud.toLowerCase().contains(proceso.toLowerCase())) {
+                        cumpleFiltros = false;
+                    }
+                    // Si hay filtro de proceso pero la solicitud no tiene nombre, excluirla
+                    if (proceso != null && nombreSolicitud == null) {
                         cumpleFiltros = false;
                     }
                     if (idPrograma != null && solicitud.getObjUsuario() != null && 
@@ -313,16 +319,20 @@ public class GestionarEstadisticasGatewayImplAdapter implements GestionarEstadis
                         !solicitud.getObjUsuario().getObjPrograma().getId_programa().equals(idPrograma)) {
                         cumpleFiltros = false;
                     }
-                    if (fechaInicio != null && solicitud.getFecha_registro_solicitud().before(fechaInicio)) {
+                    Date fechaSolicitud = solicitud.getFecha_registro_solicitud();
+                    if (fechaInicio != null && fechaSolicitud != null && fechaSolicitud.before(fechaInicio)) {
                         cumpleFiltros = false;
                     }
-                    if (fechaFin != null && solicitud.getFecha_registro_solicitud().after(fechaFin)) {
+                    if (fechaFin != null && fechaSolicitud != null && fechaSolicitud.after(fechaFin)) {
+                        cumpleFiltros = false;
+                    }
+                    // Si la solicitud no tiene fecha y hay filtros de fecha, excluirla
+                    if ((fechaInicio != null || fechaFin != null) && fechaSolicitud == null) {
                         cumpleFiltros = false;
                     }
                     
-                    if (cumpleFiltros) {
-                        String nombreCompleto = solicitud.getNombre_solicitud();
-                        String tipoProceso = extraerTipoProceso(nombreCompleto);
+                    if (cumpleFiltros && nombreSolicitud != null) {
+                        String tipoProceso = extraerTipoProceso(nombreSolicitud);
                         porTipoProceso.put(tipoProceso, porTipoProceso.getOrDefault(tipoProceso, 0) + 1);
                     }
                 }
@@ -343,9 +353,16 @@ public class GestionarEstadisticasGatewayImplAdapter implements GestionarEstadis
                 List<ProgramaEntity> programas = programaRepository.findAll();
                 
                 for (ProgramaEntity programa : programas) {
-                    Integer cantidad = Optional.ofNullable(solicitudRepository.contarSolicitudesPorProgramaConFiltros(programa.getId_programa(), proceso, fechaInicio, fechaFin)).orElse(0);
-                    porPrograma.put(programa.getNombre_programa(), cantidad);
-                    log.debug("Estadisticas globales - Programa: {} = {}", programa.getNombre_programa(), cantidad);
+                    try {
+                        if (programa != null && programa.getId_programa() != null && programa.getNombre_programa() != null) {
+                            Integer cantidad = Optional.ofNullable(solicitudRepository.contarSolicitudesPorProgramaConFiltros(programa.getId_programa(), proceso, fechaInicio, fechaFin)).orElse(0);
+                            porPrograma.put(programa.getNombre_programa(), cantidad);
+                            log.debug("Estadisticas globales - Programa: {} = {}", programa.getNombre_programa(), cantidad);
+                        }
+                    } catch (Exception e) {
+                        log.debug("Estadisticas globales - Error contando solicitudes para programa {}: {}", programa != null ? programa.getNombre_programa() : "null", e.getMessage());
+                        // Continuar con el siguiente programa
+                    }
                 }
             } catch (Exception e) {
                 log.error("Estadisticas globales - Error obteniendo programas: {}", e.getMessage());
