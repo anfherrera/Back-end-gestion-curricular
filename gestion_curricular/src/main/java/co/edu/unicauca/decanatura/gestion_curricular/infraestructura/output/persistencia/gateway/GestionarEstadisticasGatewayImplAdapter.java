@@ -187,10 +187,14 @@ public class GestionarEstadisticasGatewayImplAdapter implements GestionarEstadis
             // Estadisticas generales del sistema
             // NOTA: Si hay filtros, algunos conteos pueden no funcionar correctamente
             // En ese caso, usar contarEstado() para estadisticas globales sin filtros
-            Integer totalSolicitudes;
             
-            // Si no hay filtros, usar el metodo directo que es mas confiable
-            Integer totalAprobadas, totalRechazadas, enProcesoFuncionario, enProcesoCoordinador, totalEnviadas;
+            // Inicializar variables con valores por defecto para evitar null
+            Integer totalSolicitudes = 0;
+            Integer totalAprobadas = 0;
+            Integer totalRechazadas = 0;
+            Integer enProcesoFuncionario = 0;
+            Integer enProcesoCoordinador = 0;
+            Integer totalEnviadas = 0;
             
             if (proceso == null && idPrograma == null && fechaInicio == null && fechaFin == null) {
                 // Sin filtros: usar contarEstado que es mas confiable
@@ -199,18 +203,34 @@ public class GestionarEstadisticasGatewayImplAdapter implements GestionarEstadis
                     totalRechazadas = Optional.ofNullable(solicitudRepository.contarEstado("RECHAZADA")).orElse(0);
                     enProcesoFuncionario = Optional.ofNullable(solicitudRepository.contarEstado("APROBADA_FUNCIONARIO")).orElse(0);
                     enProcesoCoordinador = Optional.ofNullable(solicitudRepository.contarEstado("APROBADA_COORDINADOR")).orElse(0);
+                    
                     // Contar ENVIADA (contarEstado usa UPPER() así que cuenta "ENVIADA" y "Enviada")
-                    // También contar PRE_REGISTRADO que se trata como ENVIADA para estadísticas
                     Integer enviadas = Optional.ofNullable(solicitudRepository.contarEstado("ENVIADA")).orElse(0);
-                    Integer preRegistrado = Optional.ofNullable(solicitudRepository.contarEstado("PRE_REGISTRADO")).orElse(0);
-                    totalEnviadas = enviadas + preRegistrado;
+                    // También contar PRE_REGISTRADO que se trata como ENVIADA para estadísticas
+                    Integer preRegistrado = 0;
+                    try {
+                        preRegistrado = Optional.ofNullable(solicitudRepository.contarEstado("PRE_REGISTRADO")).orElse(0);
+                    } catch (Exception e) {
+                        log.debug("Estadisticas globales - PRE_REGISTRADO no encontrado o error: {}", e.getMessage());
+                        preRegistrado = 0;
+                    }
+                    totalEnviadas = (enviadas != null ? enviadas : 0) + (preRegistrado != null ? preRegistrado : 0);
                     
                     // Calcular total como suma de todos los estados (más confiable que contarSolicitudesConFiltros)
-                    totalSolicitudes = totalAprobadas + totalRechazadas + enProcesoFuncionario + enProcesoCoordinador + totalEnviadas;
+                    totalSolicitudes = (totalAprobadas != null ? totalAprobadas : 0) + 
+                                     (totalRechazadas != null ? totalRechazadas : 0) + 
+                                     (enProcesoFuncionario != null ? enProcesoFuncionario : 0) + 
+                                     (enProcesoCoordinador != null ? enProcesoCoordinador : 0) + 
+                                     totalEnviadas;
                     
                     // Si la suma es 0 pero hay solicitudes, usar el método directo del repositorio como fallback
-                    if (totalSolicitudes == 0) {
-                        totalSolicitudes = Optional.ofNullable(solicitudRepository.totalSolicitudes()).orElse(0);
+                    if (totalSolicitudes == null || totalSolicitudes == 0) {
+                        try {
+                            totalSolicitudes = Optional.ofNullable(solicitudRepository.totalSolicitudes()).orElse(0);
+                        } catch (Exception e) {
+                            log.debug("Estadisticas globales - Error obteniendo totalSolicitudes: {}", e.getMessage());
+                            totalSolicitudes = 0;
+                        }
                     }
                 } catch (Exception e) {
                     log.error("Estadisticas globales - Error obteniendo conteos sin filtros: {}", e.getMessage(), e);
@@ -234,8 +254,12 @@ public class GestionarEstadisticasGatewayImplAdapter implements GestionarEstadis
                     totalSolicitudes = Optional.ofNullable(solicitudRepository.contarSolicitudesConFiltros(proceso, idPrograma, fechaInicio, fechaFin)).orElse(0);
                     
                     // Si contarSolicitudesConFiltros falla, calcular como suma de estados
-                    if (totalSolicitudes == 0) {
-                        totalSolicitudes = totalAprobadas + totalRechazadas + enProcesoFuncionario + enProcesoCoordinador + totalEnviadas;
+                    if (totalSolicitudes == null || totalSolicitudes == 0) {
+                        totalSolicitudes = (totalAprobadas != null ? totalAprobadas : 0) + 
+                                         (totalRechazadas != null ? totalRechazadas : 0) + 
+                                         (enProcesoFuncionario != null ? enProcesoFuncionario : 0) + 
+                                         (enProcesoCoordinador != null ? enProcesoCoordinador : 0) + 
+                                         (totalEnviadas != null ? totalEnviadas : 0);
                     }
                 } catch (Exception e) {
                     log.error("Estadisticas globales - Error obteniendo conteos con filtros: {}", e.getMessage(), e);
@@ -249,18 +273,24 @@ public class GestionarEstadisticasGatewayImplAdapter implements GestionarEstadis
             }
             
             // En Proceso = solo las aprobadas por funcionario y coordinador (NO incluye enviadas)
-            Integer totalEnProceso = enProcesoFuncionario + enProcesoCoordinador;
+            Integer totalEnProceso = (enProcesoFuncionario != null ? enProcesoFuncionario : 0) + 
+                                    (enProcesoCoordinador != null ? enProcesoCoordinador : 0);
             
-            estadisticas.put("totalSolicitudes", totalSolicitudes);
-            estadisticas.put("totalAprobadas", totalAprobadas);
-            estadisticas.put("totalRechazadas", totalRechazadas);
-            estadisticas.put("totalEnviadas", totalEnviadas);
-            estadisticas.put("totalEnProceso", totalEnProceso);
+            // Asegurar que todos los valores sean no-null antes de agregarlos al map
+            estadisticas.put("totalSolicitudes", totalSolicitudes != null ? totalSolicitudes : 0);
+            estadisticas.put("totalAprobadas", totalAprobadas != null ? totalAprobadas : 0);
+            estadisticas.put("totalRechazadas", totalRechazadas != null ? totalRechazadas : 0);
+            estadisticas.put("totalEnviadas", totalEnviadas != null ? totalEnviadas : 0);
+            estadisticas.put("totalEnProceso", totalEnProceso != null ? totalEnProceso : 0);
             
             // Calcular porcentaje de aprobacion
             double porcentajeAprobacion = 0.0;
-            if (totalSolicitudes > 0) {
+            if (totalSolicitudes != null && totalSolicitudes > 0 && totalAprobadas != null) {
                 porcentajeAprobacion = (double) totalAprobadas / totalSolicitudes * 100;
+                // Validar que no sea NaN o Infinity
+                if (Double.isNaN(porcentajeAprobacion) || Double.isInfinite(porcentajeAprobacion)) {
+                    porcentajeAprobacion = 0.0;
+                }
             }
             estadisticas.put("porcentajeAprobacion", Math.round(porcentajeAprobacion * 10.0) / 10.0);
             
@@ -1498,8 +1528,10 @@ public class GestionarEstadisticasGatewayImplAdapter implements GestionarEstadis
             analisisComparativo.put("solicitudesCompletadas", totalPorEstado.getOrDefault("APROBADA", 0) + totalPorEstado.getOrDefault("RECHAZADA", 0));
             
             // Calcular tasa de resolucion
+            // totalSolicitudes puede ser 0 si no se contaron correctamente, usar el tamaño real de la lista
+            int totalSolicitudesReales = todasLasSolicitudes != null ? todasLasSolicitudes.size() : 0;
             int completadas = totalPorEstado.getOrDefault("APROBADA", 0) + totalPorEstado.getOrDefault("RECHAZADA", 0);
-            double tasaResolucion = totalSolicitudes > 0 ? (completadas * 100.0) / totalSolicitudes : 0.0;
+            double tasaResolucion = totalSolicitudesReales > 0 ? (completadas * 100.0) / totalSolicitudesReales : 0.0;
             // Redondear a 2 decimales y asegurar que no sea NaN o Infinity
             if (Double.isNaN(tasaResolucion) || Double.isInfinite(tasaResolucion)) {
                 tasaResolucion = 0.0;
@@ -1666,48 +1698,50 @@ public class GestionarEstadisticasGatewayImplAdapter implements GestionarEstadis
             int totalSolicitudes = 0;
             
             for (String mes : meses) {
-                int total = totalPorMes.get(mes);
-                int aprobadas = aprobadasPorMes.get(mes);
-                int rechazadas = rechazadasPorMes.get(mes);
-                int enviadas = enviadasPorMes.get(mes);
+                int total = totalPorMes.getOrDefault(mes, 0);
+                int aprobadas = aprobadasPorMes.getOrDefault(mes, 0);
+                int rechazadas = rechazadasPorMes.getOrDefault(mes, 0);
+                int enviadas = enviadasPorMes.getOrDefault(mes, 0);
                 
+                // Incluir TODOS los meses en el resultado, incluso si tienen 0 solicitudes
+                // Esto permite que el frontend muestre correctamente la tendencia
+                totalSolicitudes += total;
+                
+                // Calcular eficiencia (solo si hay solicitudes)
+                double eficiencia = total > 0 ? (aprobadas * 100.0) / total : 0.0;
+                
+                // Calcular tiempo promedio
+                List<Double> tiempos = tiemposPorMes.getOrDefault(mes, new ArrayList<>());
+                double tiempoPromedio = tiempos.isEmpty() ? 0 : tiempos.stream().mapToDouble(Double::doubleValue).average().orElse(0);
+                
+                // Calcular porcentaje del total (usar total real de solicitudes, no solo meses con datos)
+                double porcentaje = todasLasSolicitudes.size() > 0 ? (total * 100.0) / todasLasSolicitudes.size() : 0.0;
+                
+                // Crear detalle del mes (SIEMPRE, incluso si total es 0)
+                Map<String, Object> detalleMes = new HashMap<>();
+                detalleMes.put("mes", mes);
+                detalleMes.put("total", total);
+                detalleMes.put("aprobadas", aprobadas);
+                detalleMes.put("rechazadas", rechazadas);
+                detalleMes.put("enviadas", enviadas);
+                detalleMes.put("eficiencia", Math.round(eficiencia * 100.0) / 100.0);
+                detalleMes.put("tiempoPromedio", Math.round(tiempoPromedio * 100.0) / 100.0);
+                detalleMes.put("porcentaje", Math.round(porcentaje * 100.0) / 100.0);
+                detalleMes.put("procesos", procesosPorMes.getOrDefault(mes, new HashMap<>()));
+                detalleMes.put("color", obtenerColorMes(mes));
+                detalleMes.put("icono", obtenerIconoMes(mes));
+                detalleMes.put("descripcion", obtenerDescripcionMes(mes));
+                
+                resumenPorMes.put(mes, detalleMes);
+                
+                // Actualizar comparativas (solo si hay datos)
                 if (total > 0) {
-                    totalSolicitudes += total;
-                    
-                    // Calcular eficiencia
-                    double eficiencia = (aprobadas * 100.0) / total;
-                    
-                    // Calcular tiempo promedio
-                    List<Double> tiempos = tiemposPorMes.get(mes);
-                    double tiempoPromedio = tiempos.isEmpty() ? 0 : tiempos.stream().mapToDouble(Double::doubleValue).average().orElse(0);
-                    
-                    // Calcular porcentaje del total
-                    double porcentaje = (total * 100.0) / todasLasSolicitudes.size();
-                    
-                    // Crear detalle del mes
-                    Map<String, Object> detalleMes = new HashMap<>();
-                    detalleMes.put("mes", mes);
-                    detalleMes.put("total", total);
-                    detalleMes.put("aprobadas", aprobadas);
-                    detalleMes.put("rechazadas", rechazadas);
-                    detalleMes.put("enviadas", enviadas);
-                    detalleMes.put("eficiencia", Math.round(eficiencia * 100.0) / 100.0);
-                    detalleMes.put("tiempoPromedio", Math.round(tiempoPromedio * 100.0) / 100.0);
-                    detalleMes.put("porcentaje", Math.round(porcentaje * 100.0) / 100.0);
-                    detalleMes.put("procesos", procesosPorMes.get(mes));
-                    detalleMes.put("color", obtenerColorMes(mes));
-                    detalleMes.put("icono", obtenerIconoMes(mes));
-                    detalleMes.put("descripcion", obtenerDescripcionMes(mes));
-                    
-                    resumenPorMes.put(mes, detalleMes);
-                    
-                    // Actualizar comparativas
                     if (total > maxSolicitudes) {
                         maxSolicitudes = total;
                         mesMasActivo = mes;
                     }
                     
-                    if (eficiencia > maxEficiencia) {
+                    if (eficiencia > maxEficiencia && total > 0) {
                         maxEficiencia = eficiencia;
                         mesMasEficiente = mes;
                     }
@@ -1971,11 +2005,11 @@ public class GestionarEstadisticasGatewayImplAdapter implements GestionarEstadis
             
             for (ProgramaEntity programa : todosLosProgramas) {
                 String nombrePrograma = programa.getNombre_programa();
-                int estudiantes = estudiantesPorPrograma.get(nombrePrograma);
-                int solicitudes = solicitudesPorPrograma.get(nombrePrograma);
-                int aprobadas = aprobadasPorPrograma.get(nombrePrograma);
-                int rechazadas = rechazadasPorPrograma.get(nombrePrograma);
-                int enviadas = enviadasPorPrograma.get(nombrePrograma);
+                int estudiantes = estudiantesPorPrograma.getOrDefault(nombrePrograma, 0);
+                int solicitudes = solicitudesPorPrograma.getOrDefault(nombrePrograma, 0);
+                int aprobadas = aprobadasPorPrograma.getOrDefault(nombrePrograma, 0);
+                int rechazadas = rechazadasPorPrograma.getOrDefault(nombrePrograma, 0);
+                int enviadas = enviadasPorPrograma.getOrDefault(nombrePrograma, 0);
                 
                 // Calcular eficiencia
                 double eficiencia = solicitudes > 0 ? (aprobadas * 100.0) / solicitudes : 0;
@@ -2060,6 +2094,8 @@ public class GestionarEstadisticasGatewayImplAdapter implements GestionarEstadis
             analisisComparativo.put("totalEstudiantes", todosLosEstudiantes.size());
             
             resultado.put("porPrograma", resumenPorPrograma);
+            resultado.put("estudiantesPorPrograma", estudiantesPorPrograma);
+            resultado.put("solicitudesPorPrograma", solicitudesPorPrograma);
             resultado.put("analisis", analisisComparativo);
             resultado.put("fechaConsulta", new Date());
             resultado.put("descripcion", "Estadisticas por programa academico con analisis de rendimiento - DATOS REALES");
@@ -2276,39 +2312,53 @@ public class GestionarEstadisticasGatewayImplAdapter implements GestionarEstadis
             
             String tendenciaSolicitudes = "Estable";
             String tendenciaEstudiantes = "Estable";
-            double crecimientoSolicitudes = 0;
-            double crecimientoEstudiantes = 0;
+            double crecimientoSolicitudes = 0.0;
+            double crecimientoEstudiantes = 0.0;
             
             if (mesesConDatos.size() >= 2) {
                 String mesAnterior = mesesConDatos.get(mesesConDatos.size() - 2);
                 String mesActual = mesesConDatos.get(mesesConDatos.size() - 1);
                 
-                int solicitudesAnterior = solicitudesPorMes.get(mesAnterior);
-                int solicitudesActual = solicitudesPorMes.get(mesActual);
-                int estudiantesAnterior = estudiantesPorMes.get(mesAnterior);
-                int estudiantesActual = estudiantesPorMes.get(mesActual);
+                int solicitudesAnterior = solicitudesPorMes.getOrDefault(mesAnterior, 0);
+                int solicitudesActual = solicitudesPorMes.getOrDefault(mesActual, 0);
+                int estudiantesAnterior = estudiantesPorMes.getOrDefault(mesAnterior, 0);
+                int estudiantesActual = estudiantesPorMes.getOrDefault(mesActual, 0);
                 
                 // Calcular tendencia de solicitudes
                 if (solicitudesActual > solicitudesAnterior) {
                     tendenciaSolicitudes = "Creciente";
                     crecimientoSolicitudes = solicitudesAnterior > 0 ? 
-                        ((solicitudesActual - solicitudesAnterior) * 100.0) / solicitudesAnterior : 0;
+                        ((solicitudesActual - solicitudesAnterior) * 100.0) / solicitudesAnterior : 0.0;
                 } else if (solicitudesActual < solicitudesAnterior) {
                     tendenciaSolicitudes = "Decreciente";
                     crecimientoSolicitudes = solicitudesAnterior > 0 ? 
-                        ((solicitudesAnterior - solicitudesActual) * 100.0) / solicitudesAnterior : 0;
+                        ((solicitudesAnterior - solicitudesActual) * 100.0) / solicitudesAnterior : 0.0;
                 }
                 
                 // Calcular tendencia de estudiantes
                 if (estudiantesActual > estudiantesAnterior) {
                     tendenciaEstudiantes = "Creciente";
                     crecimientoEstudiantes = estudiantesAnterior > 0 ? 
-                        ((estudiantesActual - estudiantesAnterior) * 100.0) / estudiantesAnterior : 0;
+                        ((estudiantesActual - estudiantesAnterior) * 100.0) / estudiantesAnterior : 0.0;
                 } else if (estudiantesActual < estudiantesAnterior) {
                     tendenciaEstudiantes = "Decreciente";
                     crecimientoEstudiantes = estudiantesAnterior > 0 ? 
-                        ((estudiantesAnterior - estudiantesActual) * 100.0) / estudiantesAnterior : 0;
+                        ((estudiantesAnterior - estudiantesActual) * 100.0) / estudiantesAnterior : 0.0;
                 }
+            } else if (mesesConDatos.size() == 1) {
+                // Si solo hay un mes con datos, la tendencia es "Nueva" o "Estable" con 0% de crecimiento
+                tendenciaSolicitudes = "Nueva";
+                tendenciaEstudiantes = "Nueva";
+                crecimientoSolicitudes = 0.0;
+                crecimientoEstudiantes = 0.0;
+            }
+            
+            // Asegurar que los valores no sean NaN o Infinity
+            if (Double.isNaN(crecimientoSolicitudes) || Double.isInfinite(crecimientoSolicitudes)) {
+                crecimientoSolicitudes = 0.0;
+            }
+            if (Double.isNaN(crecimientoEstudiantes) || Double.isInfinite(crecimientoEstudiantes)) {
+                crecimientoEstudiantes = 0.0;
             }
             
             crecimientoTemporal.put("tendenciaSolicitudes", tendenciaSolicitudes);
@@ -2316,6 +2366,9 @@ public class GestionarEstadisticasGatewayImplAdapter implements GestionarEstadis
             crecimientoTemporal.put("tendenciaEstudiantes", tendenciaEstudiantes);
             crecimientoTemporal.put("crecimientoEstudiantes", Math.round(crecimientoEstudiantes * 100.0) / 100.0);
             crecimientoTemporal.put("mesesAnalizados", mesesConDatos.size());
+            // Agregar datos por mes para que el frontend pueda mostrar la tendencia completa
+            crecimientoTemporal.put("solicitudesPorMes", solicitudesPorMes);
+            crecimientoTemporal.put("estudiantesPorMes", estudiantesPorMes);
             
             // Analisis comparativo por proceso
             Map<String, Object> comparativaProcesos = new HashMap<>();
@@ -2392,7 +2445,7 @@ public class GestionarEstadisticasGatewayImplAdapter implements GestionarEstadis
             for (SolicitudEntity solicitud : todasLasSolicitudes) {
                 if (solicitud.getObjUsuario() != null && solicitud.getObjUsuario().getObjPrograma() != null) {
                     String nombrePrograma = solicitud.getObjUsuario().getObjPrograma().getNombre_programa();
-                    solicitudesPorPrograma.put(nombrePrograma, solicitudesPorPrograma.get(nombrePrograma) + 1);
+                    solicitudesPorPrograma.put(nombrePrograma, solicitudesPorPrograma.getOrDefault(nombrePrograma, 0) + 1);
                 }
             }
             
@@ -2400,7 +2453,7 @@ public class GestionarEstadisticasGatewayImplAdapter implements GestionarEstadis
             for (UsuarioEntity estudiante : todosLosEstudiantes) {
                 if (estudiante.getObjPrograma() != null) {
                     String nombrePrograma = estudiante.getObjPrograma().getNombre_programa();
-                    estudiantesPorPrograma.put(nombrePrograma, estudiantesPorPrograma.get(nombrePrograma) + 1);
+                    estudiantesPorPrograma.put(nombrePrograma, estudiantesPorPrograma.getOrDefault(nombrePrograma, 0) + 1);
                 }
             }
             
@@ -2412,7 +2465,7 @@ public class GestionarEstadisticasGatewayImplAdapter implements GestionarEstadis
             for (Map.Entry<String, Integer> entry : solicitudesPorPrograma.entrySet()) {
                 String programa = entry.getKey();
                 int solicitudes = entry.getValue();
-                int estudiantes = estudiantesPorPrograma.get(programa);
+                int estudiantes = estudiantesPorPrograma.getOrDefault(programa, 0);
                 
                 if (solicitudes > maxSolicitudes) {
                     maxSolicitudes = solicitudes;
