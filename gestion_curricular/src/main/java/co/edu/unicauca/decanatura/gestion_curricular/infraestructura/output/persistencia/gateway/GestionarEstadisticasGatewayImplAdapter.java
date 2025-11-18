@@ -186,7 +186,7 @@ public class GestionarEstadisticasGatewayImplAdapter implements GestionarEstadis
             // Estadisticas generales del sistema
             // NOTA: Si hay filtros, algunos conteos pueden no funcionar correctamente
             // En ese caso, usar contarEstado() para estadisticas globales sin filtros
-            Integer totalSolicitudes = Optional.ofNullable(solicitudRepository.contarSolicitudesConFiltros(proceso, idPrograma, fechaInicio, fechaFin)).orElse(0);
+            Integer totalSolicitudes;
             
             // Si no hay filtros, usar el metodo directo que es mas confiable
             Integer totalAprobadas, totalRechazadas, enProcesoFuncionario, enProcesoCoordinador, totalEnviadas;
@@ -198,6 +198,14 @@ public class GestionarEstadisticasGatewayImplAdapter implements GestionarEstadis
                 enProcesoFuncionario = Optional.ofNullable(solicitudRepository.contarEstado("APROBADA_FUNCIONARIO")).orElse(0);
                 enProcesoCoordinador = Optional.ofNullable(solicitudRepository.contarEstado("APROBADA_COORDINADOR")).orElse(0);
                 totalEnviadas = Optional.ofNullable(solicitudRepository.contarEstado("ENVIADA")).orElse(0);
+                
+                // Calcular total como suma de todos los estados (más confiable que contarSolicitudesConFiltros)
+                totalSolicitudes = totalAprobadas + totalRechazadas + enProcesoFuncionario + enProcesoCoordinador + totalEnviadas;
+                
+                // Si la suma es 0 pero hay solicitudes, usar el método directo del repositorio como fallback
+                if (totalSolicitudes == 0) {
+                    totalSolicitudes = Optional.ofNullable(solicitudRepository.totalSolicitudes()).orElse(0);
+                }
             } else {
                 // Con filtros: usar contarSolicitudesPorEstadoConFiltros
                 totalAprobadas = Optional.ofNullable(solicitudRepository.contarSolicitudesPorEstadoConFiltros("APROBADA", proceso, idPrograma, fechaInicio, fechaFin)).orElse(0);
@@ -205,6 +213,14 @@ public class GestionarEstadisticasGatewayImplAdapter implements GestionarEstadis
                 enProcesoFuncionario = Optional.ofNullable(solicitudRepository.contarSolicitudesPorEstadoConFiltros("APROBADA_FUNCIONARIO", proceso, idPrograma, fechaInicio, fechaFin)).orElse(0);
                 enProcesoCoordinador = Optional.ofNullable(solicitudRepository.contarSolicitudesPorEstadoConFiltros("APROBADA_COORDINADOR", proceso, idPrograma, fechaInicio, fechaFin)).orElse(0);
                 totalEnviadas = Optional.ofNullable(solicitudRepository.contarSolicitudesPorEstadoConFiltros("ENVIADA", proceso, idPrograma, fechaInicio, fechaFin)).orElse(0);
+                
+                // Con filtros: usar contarSolicitudesConFiltros o calcular como suma
+                totalSolicitudes = Optional.ofNullable(solicitudRepository.contarSolicitudesConFiltros(proceso, idPrograma, fechaInicio, fechaFin)).orElse(0);
+                
+                // Si contarSolicitudesConFiltros falla, calcular como suma de estados
+                if (totalSolicitudes == 0) {
+                    totalSolicitudes = totalAprobadas + totalRechazadas + enProcesoFuncionario + enProcesoCoordinador + totalEnviadas;
+                }
             }
             
             // En Proceso = solo las aprobadas por funcionario y coordinador (NO incluye enviadas)
