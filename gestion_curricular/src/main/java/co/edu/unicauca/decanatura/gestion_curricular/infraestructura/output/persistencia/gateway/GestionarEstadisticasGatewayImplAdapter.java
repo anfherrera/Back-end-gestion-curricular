@@ -178,7 +178,8 @@ public class GestionarEstadisticasGatewayImplAdapter implements GestionarEstadis
 
     @Override
     @Transactional(readOnly = true)
-    @Cacheable(value = "estadisticasGlobales", key = "#proceso + '_' + #idPrograma + '_' + #fechaInicio + '_' + #fechaFin")
+    // Cache temporalmente deshabilitado para debug - puede causar problemas si la cache está corrupta
+    // @Cacheable(value = "estadisticasGlobales", key = "#proceso + '_' + #idPrograma + '_' + #fechaInicio + '_' + #fechaFin")
     public Map<String, Object> obtenerEstadisticasGlobales(String proceso, Integer idPrograma, Date fechaInicio, Date fechaFin) {
         Map<String, Object> estadisticas = new HashMap<>();
         
@@ -193,33 +194,53 @@ public class GestionarEstadisticasGatewayImplAdapter implements GestionarEstadis
             
             if (proceso == null && idPrograma == null && fechaInicio == null && fechaFin == null) {
                 // Sin filtros: usar contarEstado que es mas confiable
-                totalAprobadas = Optional.ofNullable(solicitudRepository.contarEstado("APROBADA")).orElse(0);
-                totalRechazadas = Optional.ofNullable(solicitudRepository.contarEstado("RECHAZADA")).orElse(0);
-                enProcesoFuncionario = Optional.ofNullable(solicitudRepository.contarEstado("APROBADA_FUNCIONARIO")).orElse(0);
-                enProcesoCoordinador = Optional.ofNullable(solicitudRepository.contarEstado("APROBADA_COORDINADOR")).orElse(0);
-                totalEnviadas = Optional.ofNullable(solicitudRepository.contarEstado("ENVIADA")).orElse(0);
-                
-                // Calcular total como suma de todos los estados (más confiable que contarSolicitudesConFiltros)
-                totalSolicitudes = totalAprobadas + totalRechazadas + enProcesoFuncionario + enProcesoCoordinador + totalEnviadas;
-                
-                // Si la suma es 0 pero hay solicitudes, usar el método directo del repositorio como fallback
-                if (totalSolicitudes == 0) {
-                    totalSolicitudes = Optional.ofNullable(solicitudRepository.totalSolicitudes()).orElse(0);
+                try {
+                    totalAprobadas = Optional.ofNullable(solicitudRepository.contarEstado("APROBADA")).orElse(0);
+                    totalRechazadas = Optional.ofNullable(solicitudRepository.contarEstado("RECHAZADA")).orElse(0);
+                    enProcesoFuncionario = Optional.ofNullable(solicitudRepository.contarEstado("APROBADA_FUNCIONARIO")).orElse(0);
+                    enProcesoCoordinador = Optional.ofNullable(solicitudRepository.contarEstado("APROBADA_COORDINADOR")).orElse(0);
+                    totalEnviadas = Optional.ofNullable(solicitudRepository.contarEstado("ENVIADA")).orElse(0);
+                    
+                    // Calcular total como suma de todos los estados (más confiable que contarSolicitudesConFiltros)
+                    totalSolicitudes = totalAprobadas + totalRechazadas + enProcesoFuncionario + enProcesoCoordinador + totalEnviadas;
+                    
+                    // Si la suma es 0 pero hay solicitudes, usar el método directo del repositorio como fallback
+                    if (totalSolicitudes == 0) {
+                        totalSolicitudes = Optional.ofNullable(solicitudRepository.totalSolicitudes()).orElse(0);
+                    }
+                } catch (Exception e) {
+                    log.error("Estadisticas globales - Error obteniendo conteos sin filtros: {}", e.getMessage(), e);
+                    totalAprobadas = 0;
+                    totalRechazadas = 0;
+                    enProcesoFuncionario = 0;
+                    enProcesoCoordinador = 0;
+                    totalEnviadas = 0;
+                    totalSolicitudes = 0;
                 }
             } else {
                 // Con filtros: usar contarSolicitudesPorEstadoConFiltros
-                totalAprobadas = Optional.ofNullable(solicitudRepository.contarSolicitudesPorEstadoConFiltros("APROBADA", proceso, idPrograma, fechaInicio, fechaFin)).orElse(0);
-                totalRechazadas = Optional.ofNullable(solicitudRepository.contarSolicitudesPorEstadoConFiltros("RECHAZADA", proceso, idPrograma, fechaInicio, fechaFin)).orElse(0);
-                enProcesoFuncionario = Optional.ofNullable(solicitudRepository.contarSolicitudesPorEstadoConFiltros("APROBADA_FUNCIONARIO", proceso, idPrograma, fechaInicio, fechaFin)).orElse(0);
-                enProcesoCoordinador = Optional.ofNullable(solicitudRepository.contarSolicitudesPorEstadoConFiltros("APROBADA_COORDINADOR", proceso, idPrograma, fechaInicio, fechaFin)).orElse(0);
-                totalEnviadas = Optional.ofNullable(solicitudRepository.contarSolicitudesPorEstadoConFiltros("ENVIADA", proceso, idPrograma, fechaInicio, fechaFin)).orElse(0);
-                
-                // Con filtros: usar contarSolicitudesConFiltros o calcular como suma
-                totalSolicitudes = Optional.ofNullable(solicitudRepository.contarSolicitudesConFiltros(proceso, idPrograma, fechaInicio, fechaFin)).orElse(0);
-                
-                // Si contarSolicitudesConFiltros falla, calcular como suma de estados
-                if (totalSolicitudes == 0) {
-                    totalSolicitudes = totalAprobadas + totalRechazadas + enProcesoFuncionario + enProcesoCoordinador + totalEnviadas;
+                try {
+                    totalAprobadas = Optional.ofNullable(solicitudRepository.contarSolicitudesPorEstadoConFiltros("APROBADA", proceso, idPrograma, fechaInicio, fechaFin)).orElse(0);
+                    totalRechazadas = Optional.ofNullable(solicitudRepository.contarSolicitudesPorEstadoConFiltros("RECHAZADA", proceso, idPrograma, fechaInicio, fechaFin)).orElse(0);
+                    enProcesoFuncionario = Optional.ofNullable(solicitudRepository.contarSolicitudesPorEstadoConFiltros("APROBADA_FUNCIONARIO", proceso, idPrograma, fechaInicio, fechaFin)).orElse(0);
+                    enProcesoCoordinador = Optional.ofNullable(solicitudRepository.contarSolicitudesPorEstadoConFiltros("APROBADA_COORDINADOR", proceso, idPrograma, fechaInicio, fechaFin)).orElse(0);
+                    totalEnviadas = Optional.ofNullable(solicitudRepository.contarSolicitudesPorEstadoConFiltros("ENVIADA", proceso, idPrograma, fechaInicio, fechaFin)).orElse(0);
+                    
+                    // Con filtros: usar contarSolicitudesConFiltros o calcular como suma
+                    totalSolicitudes = Optional.ofNullable(solicitudRepository.contarSolicitudesConFiltros(proceso, idPrograma, fechaInicio, fechaFin)).orElse(0);
+                    
+                    // Si contarSolicitudesConFiltros falla, calcular como suma de estados
+                    if (totalSolicitudes == 0) {
+                        totalSolicitudes = totalAprobadas + totalRechazadas + enProcesoFuncionario + enProcesoCoordinador + totalEnviadas;
+                    }
+                } catch (Exception e) {
+                    log.error("Estadisticas globales - Error obteniendo conteos con filtros: {}", e.getMessage(), e);
+                    totalAprobadas = 0;
+                    totalRechazadas = 0;
+                    enProcesoFuncionario = 0;
+                    enProcesoCoordinador = 0;
+                    totalEnviadas = 0;
+                    totalSolicitudes = 0;
                 }
             }
             
@@ -254,6 +275,7 @@ public class GestionarEstadisticasGatewayImplAdapter implements GestionarEstadis
                         cumpleFiltros = false;
                     }
                     if (idPrograma != null && solicitud.getObjUsuario() != null && 
+                        solicitud.getObjUsuario().getObjPrograma() != null &&
                         !solicitud.getObjUsuario().getObjPrograma().getId_programa().equals(idPrograma)) {
                         cumpleFiltros = false;
                     }

@@ -160,7 +160,19 @@ public class EstadisticasRestController {
             return ResponseEntity.ok(estadisticas);
         } catch (Exception e) {
             log.error("Error obteniendo estadísticas globales: {}", e.getMessage(), e);
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+            // Devolver un objeto con estructura válida en lugar de solo status 500
+            Map<String, Object> errorResponse = new HashMap<>();
+            errorResponse.put("totalSolicitudes", 0);
+            errorResponse.put("totalAprobadas", 0);
+            errorResponse.put("totalRechazadas", 0);
+            errorResponse.put("totalEnviadas", 0);
+            errorResponse.put("totalEnProceso", 0);
+            errorResponse.put("porcentajeAprobacion", 0.0);
+            errorResponse.put("porTipoProceso", new HashMap<>());
+            errorResponse.put("porPrograma", new HashMap<>());
+            errorResponse.put("porEstado", new HashMap<>());
+            errorResponse.put("fechaConsulta", new Date());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
         }
     }
 
