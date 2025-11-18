@@ -199,7 +199,11 @@ public class GestionarEstadisticasGatewayImplAdapter implements GestionarEstadis
                     totalRechazadas = Optional.ofNullable(solicitudRepository.contarEstado("RECHAZADA")).orElse(0);
                     enProcesoFuncionario = Optional.ofNullable(solicitudRepository.contarEstado("APROBADA_FUNCIONARIO")).orElse(0);
                     enProcesoCoordinador = Optional.ofNullable(solicitudRepository.contarEstado("APROBADA_COORDINADOR")).orElse(0);
-                    totalEnviadas = Optional.ofNullable(solicitudRepository.contarEstado("ENVIADA")).orElse(0);
+                    // Contar ENVIADA (contarEstado usa UPPER() así que cuenta "ENVIADA" y "Enviada")
+                    // También contar PRE_REGISTRADO que se trata como ENVIADA para estadísticas
+                    Integer enviadas = Optional.ofNullable(solicitudRepository.contarEstado("ENVIADA")).orElse(0);
+                    Integer preRegistrado = Optional.ofNullable(solicitudRepository.contarEstado("PRE_REGISTRADO")).orElse(0);
+                    totalEnviadas = enviadas + preRegistrado;
                     
                     // Calcular total como suma de todos los estados (más confiable que contarSolicitudesConFiltros)
                     totalSolicitudes = totalAprobadas + totalRechazadas + enProcesoFuncionario + enProcesoCoordinador + totalEnviadas;
@@ -1495,7 +1499,11 @@ public class GestionarEstadisticasGatewayImplAdapter implements GestionarEstadis
             
             // Calcular tasa de resolucion
             int completadas = totalPorEstado.getOrDefault("APROBADA", 0) + totalPorEstado.getOrDefault("RECHAZADA", 0);
-            double tasaResolucion = totalSolicitudes > 0 ? (completadas * 100.0) / totalSolicitudes : 0;
+            double tasaResolucion = totalSolicitudes > 0 ? (completadas * 100.0) / totalSolicitudes : 0.0;
+            // Redondear a 2 decimales y asegurar que no sea NaN o Infinity
+            if (Double.isNaN(tasaResolucion) || Double.isInfinite(tasaResolucion)) {
+                tasaResolucion = 0.0;
+            }
             analisisComparativo.put("tasaResolucion", Math.round(tasaResolucion * 100.0) / 100.0);
             
             resultado.put("estados", resumenPorEstado);
@@ -1585,7 +1593,7 @@ public class GestionarEstadisticasGatewayImplAdapter implements GestionarEstadis
             Map<String, List<Double>> tiemposPorMes = new HashMap<>();
             Map<String, Map<String, Integer>> procesosPorMes = new HashMap<>();
             
-            // Inicializar meses
+            // Inicializar meses (Calendar.MONTH devuelve 0-11: 0=Enero, 1=Febrero, ..., 11=Diciembre)
             String[] meses = {"Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", 
                             "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"};
             
@@ -1604,8 +1612,10 @@ public class GestionarEstadisticasGatewayImplAdapter implements GestionarEstadis
                 if (fechaCreacion != null) {
                     Calendar cal = Calendar.getInstance();
                     cal.setTime(fechaCreacion);
-                    int mesNumero = cal.get(Calendar.MONTH); // 0-11
-                    String nombreMes = meses[mesNumero];
+                    int mesNumero = cal.get(Calendar.MONTH); // 0-11 (0=Enero, 11=Diciembre)
+                    // Asegurar que el índice está en el rango válido
+                    if (mesNumero >= 0 && mesNumero < meses.length) {
+                        String nombreMes = meses[mesNumero];
                     String nombreProceso = obtenerNombreProcesoPorSolicitud(solicitud);
                     
                     // Contar solicitudes por mes
@@ -1617,25 +1627,28 @@ public class GestionarEstadisticasGatewayImplAdapter implements GestionarEstadis
                         procesos.put(nombreProceso, procesos.getOrDefault(nombreProceso, 0) + 1);
                     }
                     
-                    // Analizar estado
-                    String estado = obtenerEstadoMasReciente(solicitud);
-                    if ("APROBADA".equals(estado)) {
-                        aprobadasPorMes.put(nombreMes, aprobadasPorMes.get(nombreMes) + 1);
-                    } else if ("RECHAZADA".equals(estado)) {
-                        rechazadasPorMes.put(nombreMes, rechazadasPorMes.get(nombreMes) + 1);
-                    } else {
-                        enviadasPorMes.put(nombreMes, enviadasPorMes.get(nombreMes) + 1);
-                    }
-                    
-                    // Calcular tiempo de procesamiento si esta completado
-                    if ("APROBADA".equals(estado) || "RECHAZADA".equals(estado)) {
-                        Date fechaActualizacion = obtenerFechaActualizacion(solicitud);
-                        
-                        if (fechaActualizacion != null) {
-                            long diferenciaMs = fechaActualizacion.getTime() - fechaCreacion.getTime();
-                            double tiempoDias = diferenciaMs / (1000.0 * 60 * 60 * 24);
-                            tiemposPorMes.get(nombreMes).add(tiempoDias);
+                        // Analizar estado
+                        String estado = obtenerEstadoMasReciente(solicitud);
+                        if ("APROBADA".equals(estado)) {
+                            aprobadasPorMes.put(nombreMes, aprobadasPorMes.get(nombreMes) + 1);
+                        } else if ("RECHAZADA".equals(estado)) {
+                            rechazadasPorMes.put(nombreMes, rechazadasPorMes.get(nombreMes) + 1);
+                        } else {
+                            enviadasPorMes.put(nombreMes, enviadasPorMes.get(nombreMes) + 1);
                         }
+                        
+                        // Calcular tiempo de procesamiento si esta completado
+                        if ("APROBADA".equals(estado) || "RECHAZADA".equals(estado)) {
+                            Date fechaActualizacion = obtenerFechaActualizacion(solicitud);
+                            
+                            if (fechaActualizacion != null) {
+                                long diferenciaMs = fechaActualizacion.getTime() - fechaCreacion.getTime();
+                                double tiempoDias = diferenciaMs / (1000.0 * 60 * 60 * 24);
+                                tiemposPorMes.get(nombreMes).add(tiempoDias);
+                            }
+                        }
+                    } else {
+                        log.warn("Mes numero fuera de rango: {} para solicitud ID: {}", mesNumero, solicitud.getId_solicitud());
                     }
                 }
             }
@@ -2219,7 +2232,7 @@ public class GestionarEstadisticasGatewayImplAdapter implements GestionarEstadis
             Map<String, Integer> solicitudesPorMes = new HashMap<>();
             Map<String, Integer> estudiantesPorMes = new HashMap<>();
             
-            // Inicializar meses
+            // Inicializar meses (Calendar.MONTH devuelve 0-11: 0=Enero, 1=Febrero, ..., 11=Diciembre)
             String[] meses = {"Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", 
                             "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"};
             
@@ -2234,9 +2247,14 @@ public class GestionarEstadisticasGatewayImplAdapter implements GestionarEstadis
                 if (fechaCreacion != null) {
                     Calendar cal = Calendar.getInstance();
                     cal.setTime(fechaCreacion);
-                    int mesNumero = cal.get(Calendar.MONTH);
-                    String nombreMes = meses[mesNumero];
-                    solicitudesPorMes.put(nombreMes, solicitudesPorMes.get(nombreMes) + 1);
+                    int mesNumero = cal.get(Calendar.MONTH); // 0-11 (0=Enero, 11=Diciembre)
+                    // Asegurar que el índice está en el rango válido
+                    if (mesNumero >= 0 && mesNumero < meses.length) {
+                        String nombreMes = meses[mesNumero];
+                        solicitudesPorMes.put(nombreMes, solicitudesPorMes.get(nombreMes) + 1);
+                    } else {
+                        log.warn("Mes numero fuera de rango: {} para solicitud ID: {}", mesNumero, solicitud.getId_solicitud());
+                    }
                 }
             }
             
@@ -2572,7 +2590,13 @@ public class GestionarEstadisticasGatewayImplAdapter implements GestionarEstadis
             case "RECHAZADA":
             case "RECHAZADO":
                 return "RECHAZADA";
+            case "PRE_REGISTRADO":
+            case "PREREGISTRADO":
+            case "PRE REGISTRADO":
+                // PRE_REGISTRADO se trata como ENVIADA para estadísticas
+                return "ENVIADA";
             default:
+                // Cualquier estado desconocido se trata como ENVIADA por defecto
                 return "ENVIADA";
         }
     }
@@ -3705,7 +3729,7 @@ public class GestionarEstadisticasGatewayImplAdapter implements GestionarEstadis
                 })
                 .collect(Collectors.toList());
             
-            // Inicializar meses
+            // Inicializar meses (Calendar.MONTH devuelve 0-11: 0=Enero, 1=Febrero, ..., 11=Diciembre)
             String[] meses = {"Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", 
                             "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"};
             
@@ -3720,9 +3744,14 @@ public class GestionarEstadisticasGatewayImplAdapter implements GestionarEstadis
                 if (fechaCreacion != null) {
                     Calendar cal = Calendar.getInstance();
                     cal.setTime(fechaCreacion);
-                    int mesNumero = cal.get(Calendar.MONTH);
-                    String nombreMes = meses[mesNumero];
-                    demandaPorMes.put(nombreMes, demandaPorMes.get(nombreMes) + 1);
+                    int mesNumero = cal.get(Calendar.MONTH); // 0-11 (0=Enero, 11=Diciembre)
+                    // Asegurar que el índice está en el rango válido
+                    if (mesNumero >= 0 && mesNumero < meses.length) {
+                        String nombreMes = meses[mesNumero];
+                        demandaPorMes.put(nombreMes, demandaPorMes.get(nombreMes) + 1);
+                    } else {
+                        log.warn("Mes numero fuera de rango: {} para solicitud ID: {}", mesNumero, solicitud.getId_solicitud());
+                    }
                 }
             }
             
