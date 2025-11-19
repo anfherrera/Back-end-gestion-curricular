@@ -161,6 +161,7 @@ public class EstadisticasRestController {
         } catch (Exception e) {
             log.error("Error obteniendo estadísticas globales: {}", e.getMessage(), e);
             // Devolver un objeto con estructura válida en lugar de solo status 500
+            // IMPORTANTE: Agregar bandera para indicar al frontend que debe usar endpoints alternativos
             Map<String, Object> errorResponse = new HashMap<>();
             errorResponse.put("totalSolicitudes", 0);
             errorResponse.put("totalAprobadas", 0);
@@ -172,6 +173,10 @@ public class EstadisticasRestController {
             errorResponse.put("porPrograma", new HashMap<>());
             errorResponse.put("porEstado", new HashMap<>());
             errorResponse.put("fechaConsulta", new Date());
+            // Bandera para indicar al frontend que debe usar endpoints alternativos
+            errorResponse.put("usarEndpointsAlternativos", true);
+            errorResponse.put("error", true);
+            errorResponse.put("mensaje", "Error al obtener estadísticas globales. Usar endpoints alternativos: /api/estadisticas/estado-solicitudes, /api/estadisticas/estadisticas-por-proceso, /api/estadisticas/estudiantes-por-programa");
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
         }
     }
