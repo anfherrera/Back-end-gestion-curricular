@@ -15,6 +15,7 @@ import org.apache.commons.math3.stat.regression.SimpleRegression;
 import org.modelmapper.ModelMapper;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import lombok.extern.slf4j.Slf4j;
@@ -177,7 +178,7 @@ public class GestionarEstadisticasGatewayImplAdapter implements GestionarEstadis
     }
 
     @Override
-    @Transactional(readOnly = true)
+    @Transactional(readOnly = true, noRollbackFor = {DataAccessException.class, RuntimeException.class, Exception.class})
     // Cache temporalmente deshabilitado para debug - puede causar problemas si la cache está corrupta
     // @Cacheable(value = "estadisticasGlobales", key = "#proceso + '_' + #idPrograma + '_' + #fechaInicio + '_' + #fechaFin")
     public Map<String, Object> obtenerEstadisticasGlobales(String proceso, Integer idPrograma, Date fechaInicio, Date fechaFin) {
@@ -297,11 +298,21 @@ public class GestionarEstadisticasGatewayImplAdapter implements GestionarEstadis
             // Estadisticas por tipo de proceso (agrupadas por tipo, no por persona)
             Map<String, Integer> porTipoProceso = new HashMap<>();
             try {
-                // Obtener todas las solicitudes
-                List<SolicitudEntity> solicitudes = solicitudRepository.findAll();
+                // Obtener todas las solicitudes con manejo de errores robusto
+                List<SolicitudEntity> solicitudes;
+                try {
+                    solicitudes = solicitudRepository.findAll();
+                    if (solicitudes == null) {
+                        solicitudes = new ArrayList<>();
+                    }
+                } catch (Exception e) {
+                    log.error("Estadisticas globales - Error obteniendo todas las solicitudes: {}", e.getMessage(), e);
+                    solicitudes = new ArrayList<>();
+                }
                 
                 // Agrupar por tipo de proceso (extrayendo el tipo del nombre)
                 for (SolicitudEntity solicitud : solicitudes) {
+                    try {
                     // Aplicar filtros manualmente si es necesario
                     boolean cumpleFiltros = true;
                     
@@ -332,13 +343,24 @@ public class GestionarEstadisticasGatewayImplAdapter implements GestionarEstadis
                     }
                     
                     if (cumpleFiltros && nombreSolicitud != null) {
-                        String tipoProceso = extraerTipoProceso(nombreSolicitud);
-                        porTipoProceso.put(tipoProceso, porTipoProceso.getOrDefault(tipoProceso, 0) + 1);
+                        try {
+                            String tipoProceso = extraerTipoProceso(nombreSolicitud);
+                            porTipoProceso.put(tipoProceso, porTipoProceso.getOrDefault(tipoProceso, 0) + 1);
+                        } catch (Exception e) {
+                            log.debug("Estadisticas globales - Error extrayendo tipo de proceso para solicitud ID {}: {}", 
+                                    solicitud != null ? solicitud.getId_solicitud() : "null", e.getMessage());
+                            // Continuar con la siguiente solicitud
+                        }
+                    }
+                    } catch (Exception e) {
+                        log.debug("Estadisticas globales - Error procesando solicitud ID {}: {}", 
+                                solicitud != null ? solicitud.getId_solicitud() : "null", e.getMessage());
+                        // Continuar con la siguiente solicitud
                     }
                 }
                 
             } catch (Exception e) {
-                log.error("Estadisticas globales - Error obteniendo procesos: {}", e.getMessage());
+                log.error("Estadisticas globales - Error obteniendo procesos: {}", e.getMessage(), e);
                 porTipoProceso = new HashMap<>();
             }
             estadisticas.put("porTipoProceso", porTipoProceso);
@@ -346,11 +368,32 @@ public class GestionarEstadisticasGatewayImplAdapter implements GestionarEstadis
             // Estadisticas por programa (con filtros si se aplican)
             Map<String, Integer> porPrograma = new HashMap<>();
             try {
-                List<String> nombresProgramas = new ArrayList<>(programaRepository.buscarNombresProgramas());
+                List<String> nombresProgramas;
+                try {
+                    nombresProgramas = new ArrayList<>(programaRepository.buscarNombresProgramas());
+                } catch (DataAccessException e) {
+                    log.error("Estadisticas globales - Error de acceso a datos obteniendo nombres de programas: {}", e.getMessage(), e);
+                    nombresProgramas = new ArrayList<>();
+                } catch (Exception e) {
+                    log.error("Estadisticas globales - Error obteniendo nombres de programas: {}", e.getMessage(), e);
+                    nombresProgramas = new ArrayList<>();
+                }
                 log.debug("Estadisticas globales - Programas encontrados: {}", nombresProgramas);
                 
                 // Obtener todos los programas con sus IDs
-                List<ProgramaEntity> programas = programaRepository.findAll();
+                List<ProgramaEntity> programas;
+                try {
+                    programas = programaRepository.findAll();
+                    if (programas == null) {
+                        programas = new ArrayList<>();
+                    }
+                } catch (DataAccessException e) {
+                    log.error("Estadisticas globales - Error de acceso a datos obteniendo todos los programas: {}", e.getMessage(), e);
+                    programas = new ArrayList<>();
+                } catch (Exception e) {
+                    log.error("Estadisticas globales - Error obteniendo todos los programas: {}", e.getMessage(), e);
+                    programas = new ArrayList<>();
+                }
                 
                 for (ProgramaEntity programa : programas) {
                     try {
@@ -385,7 +428,21 @@ public class GestionarEstadisticasGatewayImplAdapter implements GestionarEstadis
             estadisticas.put("fechaConsulta", new Date());
             
             // Normalizar la respuesta para evitar valores null
-            estadisticas = normalizarEstadistica(estadisticas);
+            try {
+                estadisticas = normalizarEstadistica(estadisticas);
+            } catch (Exception e) {
+                log.error("Estadisticas globales - Error normalizando estadisticas: {}", e.getMessage(), e);
+                // Si la normalizacion falla, asegurar al menos los campos básicos
+                if (estadisticas.get("totalSolicitudes") == null) estadisticas.put("totalSolicitudes", 0);
+                if (estadisticas.get("totalAprobadas") == null) estadisticas.put("totalAprobadas", 0);
+                if (estadisticas.get("totalRechazadas") == null) estadisticas.put("totalRechazadas", 0);
+                if (estadisticas.get("totalEnviadas") == null) estadisticas.put("totalEnviadas", 0);
+                if (estadisticas.get("totalEnProceso") == null) estadisticas.put("totalEnProceso", 0);
+                if (estadisticas.get("porcentajeAprobacion") == null) estadisticas.put("porcentajeAprobacion", 0.0);
+                if (estadisticas.get("porTipoProceso") == null) estadisticas.put("porTipoProceso", new HashMap<>());
+                if (estadisticas.get("porPrograma") == null) estadisticas.put("porPrograma", new HashMap<>());
+                if (estadisticas.get("porEstado") == null) estadisticas.put("porEstado", new HashMap<>());
+            }
             
             // ===== PREDICCIONES GLOBALES ELIMINADAS =====
             // Decision: Las predicciones solo se muestran en el dashboard de Cursos de Verano
@@ -396,10 +453,26 @@ public class GestionarEstadisticasGatewayImplAdapter implements GestionarEstadis
             log.debug("Estadisticas globales - Resultado final: {}", estadisticas);
             
         } catch (Exception e) {
-            log.error("Estadisticas globales - Error en consulta: {}", e.getMessage());
-            log.error("Error en estadísticas", e);
+            log.error("Estadisticas globales - Error en consulta: {}", e.getMessage(), e);
+            log.error("Estadisticas globales - Stack trace completo:", e);
             // Devolver estadisticas vacias pero normalizadas en caso de error
-            estadisticas = normalizarEstadistica(new HashMap<>());
+            try {
+                estadisticas = normalizarEstadistica(new HashMap<>());
+            } catch (Exception e2) {
+                log.error("Estadisticas globales - Error incluso al normalizar mapa vacio: {}", e2.getMessage(), e2);
+                // Como último recurso, crear un mapa básico manualmente
+                estadisticas = new HashMap<>();
+                estadisticas.put("totalSolicitudes", 0);
+                estadisticas.put("totalAprobadas", 0);
+                estadisticas.put("totalRechazadas", 0);
+                estadisticas.put("totalEnviadas", 0);
+                estadisticas.put("totalEnProceso", 0);
+                estadisticas.put("porcentajeAprobacion", 0.0);
+                estadisticas.put("porTipoProceso", new HashMap<>());
+                estadisticas.put("porPrograma", new HashMap<>());
+                estadisticas.put("porEstado", new HashMap<>());
+                estadisticas.put("fechaConsulta", new Date());
+            }
         }
         
         return estadisticas;
@@ -3770,47 +3843,42 @@ public class GestionarEstadisticasGatewayImplAdapter implements GestionarEstadis
                 })
                 .collect(Collectors.toList());
             
-            // Pendiente: generar tendencias temporales con un conjunto de datos mas completo
+            // Generar tendencias temporales: incluir TODOS los 12 meses, incluso con 0 solicitudes
+            // ⚠️ IMPORTANTE: Incluir TODOS los meses para que el frontend muestre la tendencia completa
             List<Map<String, Object>> tendenciasTemporales = new ArrayList<>();
             
-            // Si solo hay datos en un mes, generar datos de ejemplo para mostrar tendencias
-            boolean soloUnMesConDatos = demandaPorMes.values().stream().mapToInt(Integer::intValue).sum() == 
-                                       demandaPorMes.values().stream().mapToInt(Integer::intValue).max().orElse(0);
-            
-            if (soloUnMesConDatos && solicitudesCursosVerano.size() > 0) {
-                // Generar datos de ejemplo para mostrar tendencias
-                String[] mesesTendencia = {"Mayo", "Junio", "Julio", "Agosto", "Septiembre"};
-                int[] distribucionEjemplo = {1, 2, 3, solicitudesCursosVerano.size(), 2}; // Distribucion realista
-                
-                for (int i = 0; i < mesesTendencia.length; i++) {
-                    Map<String, Object> tendencia = new HashMap<>();
-                    tendencia.put("mes", mesesTendencia[i]);
-                    tendencia.put("solicitudes", distribucionEjemplo[i]);
-                    tendencia.put("porcentaje", Math.round((distribucionEjemplo[i] * 100.0) / (solicitudesCursosVerano.size() + 8) * 100.0) / 100.0);
-                    tendenciasTemporales.add(tendencia);
-                }
-            } else {
-                // Usar datos reales si hay suficientes
-                for (String mes : meses) {
-                    int solicitudes = demandaPorMes.get(mes);
-                    if (solicitudes > 0) {
-                        Map<String, Object> tendencia = new HashMap<>();
-                        tendencia.put("mes", mes);
-                        tendencia.put("solicitudes", solicitudes);
-                        tendencia.put("porcentaje", Math.round((solicitudes * 100.0) / solicitudesCursosVerano.size() * 100.0) / 100.0);
-                        tendenciasTemporales.add(tendencia);
-                    }
-                }
+            // Incluir TODOS los meses (Enero a Diciembre), incluso si tienen 0 solicitudes
+            for (String mes : meses) {
+                int solicitudes = demandaPorMes.getOrDefault(mes, 0);
+                Map<String, Object> tendencia = new HashMap<>();
+                tendencia.put("mes", mes);
+                tendencia.put("solicitudes", solicitudes);
+                // Calcular porcentaje solo si hay solicitudes totales
+                double porcentaje = solicitudesCursosVerano.size() > 0 ? 
+                    Math.round((solicitudes * 100.0) / solicitudesCursosVerano.size() * 100.0) / 100.0 : 0.0;
+                tendencia.put("porcentaje", porcentaje);
+                tendenciasTemporales.add(tendencia);
             }
+            
+            // Agregar también un array con los nombres de los meses para facilitar el renderizado
+            resultado.put("todosLosMeses", Arrays.asList(meses));
             
             // Construir resultado final
             resultado.put("fechaConsulta", new Date());
             resultado.put("descripcion", "Estadisticas detalladas de cursos de verano - Analisis de demanda y recomendaciones");
             
-            // Calcular tasa de aprobacion (usar el nombre de estado estandarizado)
+            // Calcular tasa de aprobacion (solo contar las completamente aprobadas, no las en proceso)
             int aprobadas = estadosPorSolicitud.getOrDefault("APROBADA", 0);
             int total = solicitudesCursosVerano.size();
-            double tasaAprobacion = total > 0 ? (aprobadas * 100.0) / total : 0;
+            double tasaAprobacion = 0.0;
+            
+            if (total > 0) {
+                tasaAprobacion = (aprobadas * 100.0) / total;
+                // Validar que no sea NaN o Infinity
+                if (Double.isNaN(tasaAprobacion) || Double.isInfinite(tasaAprobacion)) {
+                    tasaAprobacion = 0.0;
+                }
+            }
             
             resultado.put("resumen", Map.of(
                 "totalSolicitudes", solicitudesCursosVerano.size(),
