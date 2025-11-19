@@ -17,6 +17,7 @@ import org.springframework.cache.annotation.Cacheable;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import lombok.extern.slf4j.Slf4j;
 
@@ -178,9 +179,10 @@ public class GestionarEstadisticasGatewayImplAdapter implements GestionarEstadis
     }
 
     @Override
-    @Transactional(readOnly = true, noRollbackFor = {DataAccessException.class, RuntimeException.class, Exception.class})
+    @Transactional(propagation = Propagation.NOT_SUPPORTED, readOnly = true)
     // Cache temporalmente deshabilitado para debug - puede causar problemas si la cache está corrupta
     // @Cacheable(value = "estadisticasGlobales", key = "#proceso + '_' + #idPrograma + '_' + #fechaInicio + '_' + #fechaFin")
+    // NOTA: Propagation.NOT_SUPPORTED suspende cualquier transacción existente, evitando rollback-only cuando fallan consultas
     public Map<String, Object> obtenerEstadisticasGlobales(String proceso, Integer idPrograma, Date fechaInicio, Date fechaFin) {
         Map<String, Object> estadisticas = new HashMap<>();
         
@@ -3898,10 +3900,56 @@ public class GestionarEstadisticasGatewayImplAdapter implements GestionarEstadis
             List<Map<String, Object>> recomendacionesMejoradas = 
                 (List<Map<String, Object>>) predicciones.getOrDefault("recomendaciones", new ArrayList<>());
             
+            // ⚠️ IMPORTANTE: Estructurar estados de la misma forma que /estado-solicitudes
+            // Incluir TODOS los estados principales, incluso si tienen 0 solicitudes
+            Map<String, Object> estadosSolicitudesEstructurados = new HashMap<>();
+            
+            // Calcular total "En Proceso" (suma de funcionario + coordinador)
+            int totalEnProcesoCombinado = estadosPorSolicitud.getOrDefault("APROBADA_FUNCIONARIO", 0) + 
+                                         estadosPorSolicitud.getOrDefault("APROBADA_COORDINADOR", 0);
+            
+            // Calcular total de solicitudes
+            int totalSolicitudesCursosVerano = solicitudesCursosVerano.size();
+            
+            // Incluir los 4 estados principales con su estructura completa
+            String[] estadosPrincipales = {"APROBADA", "ENVIADA", "RECHAZADA"};
+            for (String estado : estadosPrincipales) {
+                int cantidad = estadosPorSolicitud.getOrDefault(estado, 0);
+                double porcentaje = totalSolicitudesCursosVerano > 0 ? (cantidad * 100.0) / totalSolicitudesCursosVerano : 0.0;
+                
+                Map<String, Object> detalleEstado = new HashMap<>();
+                detalleEstado.put("estado", estado);
+                detalleEstado.put("cantidad", cantidad);
+                detalleEstado.put("porcentaje", Math.round(porcentaje * 100.0) / 100.0);
+                
+                estadosSolicitudesEstructurados.put(estado, detalleEstado);
+            }
+            
+            // Agregar estado "EN_PROCESO" combinado
+            Map<String, Object> detalleEnProceso = new HashMap<>();
+            detalleEnProceso.put("estado", "EN_PROCESO");
+            detalleEnProceso.put("cantidad", totalEnProcesoCombinado);
+            double porcentajeEnProceso = totalSolicitudesCursosVerano > 0 ? (totalEnProcesoCombinado * 100.0) / totalSolicitudesCursosVerano : 0.0;
+            detalleEnProceso.put("porcentaje", Math.round(porcentajeEnProceso * 100.0) / 100.0);
+            
+            estadosSolicitudesEstructurados.put("EN_PROCESO", detalleEnProceso);
+            
+            // Asegurar que el mapa simple también incluya los 4 estados principales, incluso con 0
+            // Esto es para compatibilidad con frontend que use estadosSolicitudes directamente
+            Map<String, Integer> estadosSolicitudesCompleto = new HashMap<>();
+            estadosSolicitudesCompleto.put("APROBADA", estadosPorSolicitud.getOrDefault("APROBADA", 0));
+            estadosSolicitudesCompleto.put("ENVIADA", estadosPorSolicitud.getOrDefault("ENVIADA", 0));
+            estadosSolicitudesCompleto.put("EN_PROCESO", totalEnProcesoCombinado);
+            estadosSolicitudesCompleto.put("RECHAZADA", estadosPorSolicitud.getOrDefault("RECHAZADA", 0));
+            
+            // Agregar el mapa simple con los 4 estados principales siempre presentes
+            resultado.put("estadosSolicitudes", estadosSolicitudesCompleto);
+            // Agregar la estructura completa para que el frontend la use
+            resultado.put("estadosSolicitudesEstructurados", estadosSolicitudesEstructurados);
+            
             resultado.put("topMaterias", topMaterias);
             resultado.put("analisisPorPrograma", analisisPorPrograma);
             resultado.put("tendenciasTemporales", tendenciasTemporales);
-            resultado.put("estadosSolicitudes", estadosPorSolicitud);
             resultado.put("recomendaciones", recomendacionesMejoradas);
             resultado.put("predicciones", predicciones);
             
