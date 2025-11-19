@@ -65,4 +65,11 @@ public class CreateCursoDTO {
      * Si no se proporciona, se asigna "Abierto" por defecto
      */
     private String estado; // Por defecto: "Abierto"
+    
+    /**
+     * Grupo del curso - Opcional
+     * Valores válidos: 'A', 'B', 'C', 'D'
+     * Si no se proporciona, se asigna "A" por defecto
+     */
+    private String grupo; // Por defecto: "A"
 }

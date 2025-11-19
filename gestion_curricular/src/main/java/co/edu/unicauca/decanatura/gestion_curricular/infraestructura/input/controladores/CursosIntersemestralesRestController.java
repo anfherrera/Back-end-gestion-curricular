@@ -1741,16 +1741,21 @@ public class CursosIntersemestralesRestController {
                     String condicion = "N/A";
                     Integer idMateria = null;
                     Integer idCurso = null;
+                    String codigoMateria = null;
+                    String grupoCurso = null;
                     
                     if (solicitud instanceof SolicitudCursoVeranoPreinscripcionEntity) {
                         SolicitudCursoVeranoPreinscripcionEntity preinscripcion = (SolicitudCursoVeranoPreinscripcionEntity) solicitud;
                         
                         if (preinscripcion.getObjCursoOfertadoVerano() != null) {
                             idCurso = preinscripcion.getObjCursoOfertadoVerano().getId_curso();
+                            grupoCurso = preinscripcion.getObjCursoOfertadoVerano().getGrupo() != null ? 
+                                preinscripcion.getObjCursoOfertadoVerano().getGrupo().toString() : null;
                             
                             if (preinscripcion.getObjCursoOfertadoVerano().getObjMateria() != null) {
                                 nombreCurso = preinscripcion.getObjCursoOfertadoVerano().getObjMateria().getNombre();
                                 idMateria = preinscripcion.getObjCursoOfertadoVerano().getObjMateria().getId_materia();
+                                codigoMateria = preinscripcion.getObjCursoOfertadoVerano().getObjMateria().getCodigo();
                             }
                         } else if (preinscripcion.getObservacion() != null && !preinscripcion.getObservacion().isEmpty()) {
                             // Para solicitudes de curso nuevo
@@ -1781,10 +1786,13 @@ public class CursosIntersemestralesRestController {
                         
                         if (inscripcion.getObjCursoOfertadoVerano() != null) {
                             idCurso = inscripcion.getObjCursoOfertadoVerano().getId_curso();
+                            grupoCurso = inscripcion.getObjCursoOfertadoVerano().getGrupo() != null ? 
+                                inscripcion.getObjCursoOfertadoVerano().getGrupo().toString() : null;
                             
                             if (inscripcion.getObjCursoOfertadoVerano().getObjMateria() != null) {
                                 nombreCurso = inscripcion.getObjCursoOfertadoVerano().getObjMateria().getNombre();
                                 idMateria = inscripcion.getObjCursoOfertadoVerano().getObjMateria().getId_materia();
+                                codigoMateria = inscripcion.getObjCursoOfertadoVerano().getObjMateria().getCodigo();
                             }
                         }
                         
@@ -1805,6 +1813,8 @@ public class CursosIntersemestralesRestController {
                     solicitudInfo.put("curso", nombreCurso);
                     solicitudInfo.put("idMateria", idMateria);
                     solicitudInfo.put("idCurso", idCurso);
+                    solicitudInfo.put("codigoMateria", codigoMateria);
+                    solicitudInfo.put("grupoCurso", grupoCurso);
                     
                     solicitudesFormateadas.add(solicitudInfo);
                 }
@@ -1872,7 +1882,7 @@ public class CursosIntersemestralesRestController {
             
             // Encabezados
             org.apache.poi.ss.usermodel.Row headerRow = sheet.createRow(rowNum++);
-            String[] headers = {"Nombre Completo", "Codigo", "ID Curso", "ID Materia", "Curso", "Condicion", "Motivo de la Solicitud", "Estado", "Fecha", "Tipo"};
+            String[] headers = {"Nombre Completo", "Codigo", "ID Curso", "ID Materia", "Codigo Materia", "Grupo", "Curso", "Condicion", "Motivo de la Solicitud", "Estado", "Fecha", "Tipo"};
             for (int i = 0; i < headers.length; i++) {
                 org.apache.poi.ss.usermodel.Cell cell = headerRow.createCell(i);
                 cell.setCellValue(headers[i]);
@@ -1898,6 +1908,20 @@ public class CursosIntersemestralesRestController {
                 // ID Materia
                 if (solicitud.get("idMateria") != null) {
                     row.createCell(colNum++).setCellValue(solicitud.get("idMateria").toString());
+                } else {
+                    row.createCell(colNum++).setCellValue("");
+                }
+                
+                // Codigo Materia
+                if (solicitud.get("codigoMateria") != null) {
+                    row.createCell(colNum++).setCellValue(solicitud.get("codigoMateria").toString());
+                } else {
+                    row.createCell(colNum++).setCellValue("");
+                }
+                
+                // Grupo
+                if (solicitud.get("grupoCurso") != null) {
+                    row.createCell(colNum++).setCellValue(solicitud.get("grupoCurso").toString());
                 } else {
                     row.createCell(colNum++).setCellValue("");
                 }
@@ -2650,8 +2674,20 @@ public class CursosIntersemestralesRestController {
                 cursoDominio.setSalon(dto.getEspacio_asignado() != null && !dto.getEspacio_asignado().trim().isEmpty() 
                     ? dto.getEspacio_asignado().trim() 
                     : "Aula 101");
-                // Grupo: siempre se asigna como "A" por defecto
-                cursoDominio.setGrupo(co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Enums.GrupoCursoVerano.A);
+                
+                // Grupo: usar el proporcionado o "A" por defecto
+                co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Enums.GrupoCursoVerano grupo;
+                if (dto.getGrupo() != null && !dto.getGrupo().trim().isEmpty()) {
+                    try {
+                        grupo = co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Enums.GrupoCursoVerano.valueOf(dto.getGrupo().trim().toUpperCase());
+                    } catch (IllegalArgumentException e) {
+                        log.warn("Grupo inválido proporcionado: {}, usando 'A' por defecto", dto.getGrupo());
+                        grupo = co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Enums.GrupoCursoVerano.A;
+                    }
+                } else {
+                    grupo = co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Enums.GrupoCursoVerano.A;
+                }
+                cursoDominio.setGrupo(grupo);
                 
                 // Parsear fecha de inicio (ANTES de usarla)
                 java.util.Date fechaInicioDate;
@@ -2749,21 +2785,30 @@ public class CursosIntersemestralesRestController {
                 estados.add(estadoCurso);
                 cursoDominio.setEstadosCursoOfertados(estados);
                 
-                log.debug("DEBUG: Estado inicial del curso: {}, Fecha inicio: {}, Fecha fin: {}, Período: {}", 
-                    estadoInicial, fechaInicioDate, fechaFinDate, periodoAcademicoTrimmed);
+                log.debug("DEBUG: Estado inicial del curso: {}, Fecha inicio: {}, Fecha fin: {}, Período: {}, Grupo: {}", 
+                    estadoInicial, fechaInicioDate, fechaFinDate, periodoAcademicoTrimmed, grupo);
                 
-                // Validar que no exista un curso duplicado (misma materia, docente y período académico)
-                List<CursoOfertadoVeranoEntity> cursosExistentes = cursoRepository.buscarPorMateriaDocentePeriodo(
+                // Validar que no exista un curso duplicado (misma materia, docente, período académico Y grupo)
+                // Esto permite crear grupos A, B, C, D de la misma materia con el mismo docente en el mismo período
+                co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.entidades.Enums.GrupoCursoVeranoEntity grupoEntity;
+                try {
+                    grupoEntity = co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.entidades.Enums.GrupoCursoVeranoEntity.valueOf(grupo.toString());
+                } catch (Exception e) {
+                    grupoEntity = co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.entidades.Enums.GrupoCursoVeranoEntity.A;
+                }
+                
+                List<CursoOfertadoVeranoEntity> cursosExistentes = cursoRepository.buscarPorMateriaDocentePeriodoGrupo(
                     dto.getId_materia().intValue(), 
                     dto.getId_docente().intValue(), 
-                    periodoAcademicoTrimmed
+                    periodoAcademicoTrimmed,
+                    grupoEntity
                 );
                 
                 if (!cursosExistentes.isEmpty()) {
-                    log.warn("DEBUG: ERROR - Ya existe un curso con la misma materia, docente y período académico");
+                    log.warn("DEBUG: ERROR - Ya existe un curso con la misma materia, docente, período académico y grupo");
                     Map<String, Object> error = new HashMap<>();
                     error.put("error", "Curso duplicado");
-                    error.put("message", "Ya existe un curso con la misma materia, docente y período académico. No se pueden crear cursos duplicados.");
+                    error.put("message", "Ya existe un curso con la misma materia, docente, período académico y grupo '" + grupo + "'. Puedes crear grupos diferentes (A, B, C, D) para la misma materia y docente.");
                     error.put("codigo", "CURSO_DUPLICADO");
                     return ResponseEntity.badRequest().body(error);
                 }
