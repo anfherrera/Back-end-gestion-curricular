@@ -41,7 +41,7 @@ public interface CursosOfertadosMapperDominio {
     @Mapping(source = "objMateria.nombre", target = "nombre_curso")
     @Mapping(source = "objMateria", target = "objMateria")
     @Mapping(source = "objDocente", target = "objDocente")
-    @Mapping(source = "grupo", target = "grupo")
+    @Mapping(source = "grupo", target = "grupo", qualifiedByName = "convertirGrupoAString")
     @Mapping(source = "cupo_estimado", target = "cupo_estimado")
     @Mapping(source = "salon", target = "salon")
     @Mapping(source = "salon", target = "espacio_asignado")
@@ -71,7 +71,7 @@ public interface CursosOfertadosMapperDominio {
     @Mapping(source = "objMateria.nombre", target = "nombre_curso")
     @Mapping(source = "objMateria", target = "objMateria")
     @Mapping(source = "objDocente", target = "objDocente")
-    @Mapping(source = "grupo", target = "grupo")
+    @Mapping(source = "grupo", target = "grupo", qualifiedByName = "convertirGrupoAString")
     @Mapping(source = "cupo_estimado", target = "cupo_estimado")
     @Mapping(source = "salon", target = "salon")
     @Mapping(source = "salon", target = "espacio_asignado")
@@ -227,5 +227,13 @@ public interface CursosOfertadosMapperDominio {
         int mes = ahora.getMonthValue();
         int numeroPeriodo = (mes <= 6) ? 1 : 2;
         return año + "-" + numeroPeriodo;
+    }
+    
+    @Named("convertirGrupoAString")
+    default String convertirGrupoAString(co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Enums.GrupoCursoVerano grupo) {
+        if (grupo == null) {
+            return "A"; // Valor por defecto
+        }
+        return grupo.toString();
     }
 }
