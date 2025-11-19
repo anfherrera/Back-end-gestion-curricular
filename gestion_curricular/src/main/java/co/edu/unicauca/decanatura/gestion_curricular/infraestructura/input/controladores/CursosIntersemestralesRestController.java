@@ -2752,6 +2752,22 @@ public class CursosIntersemestralesRestController {
                 log.debug("DEBUG: Estado inicial del curso: {}, Fecha inicio: {}, Fecha fin: {}, Período: {}", 
                     estadoInicial, fechaInicioDate, fechaFinDate, periodoAcademicoTrimmed);
                 
+                // Validar que no exista un curso duplicado (misma materia, docente y período académico)
+                List<CursoOfertadoVeranoEntity> cursosExistentes = cursoRepository.buscarPorMateriaDocentePeriodo(
+                    dto.getId_materia().intValue(), 
+                    dto.getId_docente().intValue(), 
+                    periodoAcademicoTrimmed
+                );
+                
+                if (!cursosExistentes.isEmpty()) {
+                    log.warn("DEBUG: ERROR - Ya existe un curso con la misma materia, docente y período académico");
+                    Map<String, Object> error = new HashMap<>();
+                    error.put("error", "Curso duplicado");
+                    error.put("message", "Ya existe un curso con la misma materia, docente y período académico. No se pueden crear cursos duplicados.");
+                    error.put("codigo", "CURSO_DUPLICADO");
+                    return ResponseEntity.badRequest().body(error);
+                }
+                
                 // Usar el caso de uso para crear el curso
                 CursoOfertadoVerano cursoCreado = cursoCU.crearCurso(cursoDominio);
                 log.debug("DEBUG: Curso creado exitosamente con ID: {}", cursoCreado.getId_curso());
