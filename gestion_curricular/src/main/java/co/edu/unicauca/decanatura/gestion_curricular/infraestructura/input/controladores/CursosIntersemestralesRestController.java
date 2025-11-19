@@ -143,14 +143,14 @@ public class CursosIntersemestralesRestController {
     }
     
     /**
-     * Obtener todos los cursos de verano para funcionarios (incluye estados no visibles)
+     * Obtener todos los cursos de verano para funcionarios y coordinadores (incluye estados no visibles)
      * GET /api/cursos-intersemestrales/cursos-verano/todos
      */
     @GetMapping("/cursos-verano/todos")
     public ResponseEntity<List<CursosOfertadosDTORespuesta>> obtenerTodosLosCursosVerano() {
         try {
             List<CursoOfertadoVerano> cursos = cursoCU.listarTodos();
-            // Para funcionarios, mostrar todos los cursos sin filtro de estado
+            // Para funcionarios y coordinadores, mostrar todos los cursos sin filtro de estado
             List<CursosOfertadosDTORespuesta> respuesta = cursos.stream()
                     .map(cursoMapper::mappearDeCursoOfertadoARespuesta)
                     .collect(Collectors.toList());
@@ -1550,13 +1550,13 @@ public class CursosIntersemestralesRestController {
     }
 
     /**
-     * Obtener todas las solicitudes de cursos intersemestrales para funcionarios
+     * Obtener todas las solicitudes de cursos intersemestrales para funcionarios y coordinadores
      * GET /api/cursos-intersemestrales/solicitudes
      */
     @GetMapping("/solicitudes")
     public ResponseEntity<List<Map<String, Object>>> obtenerTodasLasSolicitudes() {
         try {
-            log.info("Obteniendo todas las solicitudes de cursos intersemestrales para funcionarios");
+            log.info("Obteniendo todas las solicitudes de cursos intersemestrales para funcionarios y coordinadores");
             
             // Buscar todas las solicitudes usando el repositorio directamente
             List<SolicitudEntity> todasLasSolicitudes = solicitudRepository.findAll();
@@ -1739,13 +1739,19 @@ public class CursosIntersemestralesRestController {
                     // Informacion del curso
                     String nombreCurso = "Curso no disponible";
                     String condicion = "N/A";
+                    Integer idMateria = null;
+                    Integer idCurso = null;
                     
                     if (solicitud instanceof SolicitudCursoVeranoPreinscripcionEntity) {
                         SolicitudCursoVeranoPreinscripcionEntity preinscripcion = (SolicitudCursoVeranoPreinscripcionEntity) solicitud;
                         
-                        if (preinscripcion.getObjCursoOfertadoVerano() != null && 
-                            preinscripcion.getObjCursoOfertadoVerano().getObjMateria() != null) {
-                            nombreCurso = preinscripcion.getObjCursoOfertadoVerano().getObjMateria().getNombre();
+                        if (preinscripcion.getObjCursoOfertadoVerano() != null) {
+                            idCurso = preinscripcion.getObjCursoOfertadoVerano().getId_curso();
+                            
+                            if (preinscripcion.getObjCursoOfertadoVerano().getObjMateria() != null) {
+                                nombreCurso = preinscripcion.getObjCursoOfertadoVerano().getObjMateria().getNombre();
+                                idMateria = preinscripcion.getObjCursoOfertadoVerano().getObjMateria().getId_materia();
+                            }
                         } else if (preinscripcion.getObservacion() != null && !preinscripcion.getObservacion().isEmpty()) {
                             // Para solicitudes de curso nuevo
                             String observacion = preinscripcion.getObservacion();
@@ -1773,9 +1779,13 @@ public class CursosIntersemestralesRestController {
                     } else if (solicitud instanceof SolicitudCursoVeranoInscripcionEntity) {
                         SolicitudCursoVeranoInscripcionEntity inscripcion = (SolicitudCursoVeranoInscripcionEntity) solicitud;
                         
-                        if (inscripcion.getObjCursoOfertadoVerano() != null && 
-                            inscripcion.getObjCursoOfertadoVerano().getObjMateria() != null) {
-                            nombreCurso = inscripcion.getObjCursoOfertadoVerano().getObjMateria().getNombre();
+                        if (inscripcion.getObjCursoOfertadoVerano() != null) {
+                            idCurso = inscripcion.getObjCursoOfertadoVerano().getId_curso();
+                            
+                            if (inscripcion.getObjCursoOfertadoVerano().getObjMateria() != null) {
+                                nombreCurso = inscripcion.getObjCursoOfertadoVerano().getObjMateria().getNombre();
+                                idMateria = inscripcion.getObjCursoOfertadoVerano().getObjMateria().getId_materia();
+                            }
                         }
                         
                         // Condicion de la inscripcion
@@ -1793,6 +1803,8 @@ public class CursosIntersemestralesRestController {
                     }
                     
                     solicitudInfo.put("curso", nombreCurso);
+                    solicitudInfo.put("idMateria", idMateria);
+                    solicitudInfo.put("idCurso", idCurso);
                     
                     solicitudesFormateadas.add(solicitudInfo);
                 }
@@ -1860,7 +1872,7 @@ public class CursosIntersemestralesRestController {
             
             // Encabezados
             org.apache.poi.ss.usermodel.Row headerRow = sheet.createRow(rowNum++);
-            String[] headers = {"Nombre Completo", "Codigo", "Curso", "Condicion", "Motivo de la Solicitud", "Estado", "Fecha", "Tipo"};
+            String[] headers = {"Nombre Completo", "Codigo", "ID Curso", "ID Materia", "Curso", "Condicion", "Motivo de la Solicitud", "Estado", "Fecha", "Tipo"};
             for (int i = 0; i < headers.length; i++) {
                 org.apache.poi.ss.usermodel.Cell cell = headerRow.createCell(i);
                 cell.setCellValue(headers[i]);
@@ -1875,6 +1887,21 @@ public class CursosIntersemestralesRestController {
                 int colNum = 0;
                 row.createCell(colNum++).setCellValue(solicitud.get("nombreCompleto") != null ? solicitud.get("nombreCompleto").toString() : "");
                 row.createCell(colNum++).setCellValue(solicitud.get("codigo") != null ? solicitud.get("codigo").toString() : "");
+                
+                // ID Curso
+                if (solicitud.get("idCurso") != null) {
+                    row.createCell(colNum++).setCellValue(solicitud.get("idCurso").toString());
+                } else {
+                    row.createCell(colNum++).setCellValue("");
+                }
+                
+                // ID Materia
+                if (solicitud.get("idMateria") != null) {
+                    row.createCell(colNum++).setCellValue(solicitud.get("idMateria").toString());
+                } else {
+                    row.createCell(colNum++).setCellValue("");
+                }
+                
                 row.createCell(colNum++).setCellValue(solicitud.get("curso") != null ? solicitud.get("curso").toString() : "");
                 
                 // Condicion - formatear para que sea mas legible
@@ -3512,7 +3539,7 @@ public class CursosIntersemestralesRestController {
     }
 
     /**
-     * Aceptar inscripcion de estudiante (funcionario acepta inscripcion final)
+     * Aceptar inscripcion de estudiante (funcionario/coordinador acepta inscripcion final)
      * PUT /api/cursos-intersemestrales/inscripciones/{idInscripcion}/aceptar
      */
     @PutMapping("/inscripciones/{idInscripcion}/aceptar")
@@ -3524,7 +3551,7 @@ public class CursosIntersemestralesRestController {
             
             String observaciones = request.get("observaciones");
             if (observaciones == null || observaciones.trim().isEmpty()) {
-                observaciones = "Inscripcion aceptada por funcionario";
+                observaciones = "Inscripcion aceptada por funcionario/coordinador";
             }
             
             // 1. Buscar la inscripcion directamente por ID
@@ -3600,7 +3627,7 @@ public class CursosIntersemestralesRestController {
     }
 
     /**
-     * Rechazar inscripcion de estudiante (funcionario rechaza inscripcion)
+     * Rechazar inscripcion de estudiante (funcionario/coordinador rechaza inscripcion)
      * PUT /api/cursos-intersemestrales/inscripciones/{idInscripcion}/rechazar
      */
     @PutMapping("/inscripciones/{idInscripcion}/rechazar")
@@ -3612,7 +3639,7 @@ public class CursosIntersemestralesRestController {
             
             String motivo = request.get("motivo");
             if (motivo == null || motivo.trim().isEmpty()) {
-                motivo = "Inscripcion rechazada por funcionario";
+                motivo = "Inscripcion rechazada por funcionario/coordinador";
             } else {
                 motivo = motivo.trim();
             }
@@ -3771,7 +3798,7 @@ public class CursosIntersemestralesRestController {
     // ==================== ENDPOINTS PARA APROBAR Y RECHAZAR PREINSCRIPCIONES ====================
 
     /**
-     * Aprobar preinscripcion (para funcionarios)
+     * Aprobar preinscripcion (para funcionarios y coordinadores)
      * PUT /api/cursos-intersemestrales/preinscripciones/{idSolicitud}/aprobar
      */
     @PutMapping("/preinscripciones/{idSolicitud}/aprobar")
@@ -3796,7 +3823,7 @@ public class CursosIntersemestralesRestController {
     }
 
     /**
-     * Rechazar preinscripcion (para funcionarios)
+     * Rechazar preinscripcion (para funcionarios y coordinadores)
      * PUT /api/cursos-intersemestrales/preinscripciones/{idSolicitud}/rechazar
      */
     @PutMapping("/preinscripciones/{idSolicitud}/rechazar")
@@ -3914,7 +3941,7 @@ public class CursosIntersemestralesRestController {
             @PathVariable Long id,
             @RequestBody(required = false) Map<String, String> request) {
         try {
-            String motivo = request != null ? request.get("motivo") : "Solicitud rechazada por el funcionario";
+            String motivo = request != null ? request.get("motivo") : "Solicitud rechazada por funcionario/coordinador";
             
             // Simular rechazo de solicitud
             Map<String, Object> solicitud = new HashMap<>();
