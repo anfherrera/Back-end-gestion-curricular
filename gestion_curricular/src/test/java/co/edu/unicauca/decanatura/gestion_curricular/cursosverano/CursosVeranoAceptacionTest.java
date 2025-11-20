@@ -1,13 +1,24 @@
 package co.edu.unicauca.decanatura.gestion_curricular.cursosverano;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.entidades.ProgramaEntity;
+import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.entidades.RolEntity;
+import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.entidades.UsuarioEntity;
+import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.repositorios.ProgramaRepositoryInt;
+import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.repositorios.RolRepositoryInt;
+import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.repositorios.UsuarioRepositoryInt;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -38,6 +49,103 @@ class CursosVeranoAceptacionTest {
     @Autowired
     private MockMvc mockMvc;
 
+    @Autowired
+    private ObjectMapper objectMapper;
+
+    @Autowired
+    private UsuarioRepositoryInt usuarioRepository;
+
+    @Autowired
+    private RolRepositoryInt rolRepository;
+
+    @Autowired
+    private ProgramaRepositoryInt programaRepository;
+
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+
+    private static final String PASSWORD = "password123";
+    private static final String ESTUDIANTE_EMAIL = "estudiante.test@unicauca.edu.co";
+    private static final String COORDINADOR_EMAIL = "coordinador.test@unicauca.edu.co";
+    private static final String TEST_PROGRAMA_CODIGO = "TEST-IET";
+    private static final String TEST_PROGRAMA_NOMBRE = "Ingeniería de Pruebas";
+
+    private String tokenEstudiante;
+    private String tokenCoordinador;
+
+    @BeforeEach
+    void setUpTokens() throws Exception {
+        ensureUsuariosDePrueba();
+        if (tokenEstudiante == null) {
+            tokenEstudiante = "Bearer " + obtenerToken(ESTUDIANTE_EMAIL);
+        }
+        if (tokenCoordinador == null) {
+            tokenCoordinador = "Bearer " + obtenerToken(COORDINADOR_EMAIL);
+        }
+    }
+
+    private void ensureUsuariosDePrueba() {
+        ProgramaEntity programa = programaRepository.buscarPorCodigo(TEST_PROGRAMA_CODIGO)
+                .orElseGet(() -> {
+                    ProgramaEntity nuevoPrograma = new ProgramaEntity();
+                    nuevoPrograma.setCodigo(TEST_PROGRAMA_CODIGO);
+                    nuevoPrograma.setNombre_programa(TEST_PROGRAMA_NOMBRE);
+                    return programaRepository.save(nuevoPrograma);
+                });
+
+        RolEntity rolEstudiante = rolRepository.buscarPorNombre("ESTUDIANTE")
+                .orElseGet(() -> {
+                    RolEntity rol = new RolEntity();
+                    rol.setNombre("ESTUDIANTE");
+                    return rolRepository.save(rol);
+                });
+
+        RolEntity rolCoordinador = rolRepository.buscarPorNombre("COORDINADOR")
+                .orElseGet(() -> {
+                    RolEntity rol = new RolEntity();
+                    rol.setNombre("COORDINADOR");
+                    return rolRepository.save(rol);
+                });
+
+        crearUsuarioSiNoExiste(ESTUDIANTE_EMAIL, "EST-TEST-001", "Juan Pérez Estudiante", rolEstudiante, programa);
+        crearUsuarioSiNoExiste(COORDINADOR_EMAIL, "COO-TEST-001", "Carlos Ramírez Coordinador", rolCoordinador, programa);
+    }
+
+    private void crearUsuarioSiNoExiste(String correo, String codigo, String nombreCompleto,
+                                        RolEntity rol, ProgramaEntity programa) {
+        usuarioRepository.buscarPorCorreo(correo).orElseGet(() -> {
+            UsuarioEntity nuevoUsuario = new UsuarioEntity();
+            nuevoUsuario.setNombre_completo(nombreCompleto);
+            nuevoUsuario.setCodigo(codigo);
+            nuevoUsuario.setCorreo(correo);
+            nuevoUsuario.setPassword(passwordEncoder.encode(PASSWORD));
+            nuevoUsuario.setEstado_usuario(true);
+            nuevoUsuario.setObjRol(rol);
+            nuevoUsuario.setObjPrograma(programa);
+            return usuarioRepository.save(nuevoUsuario);
+        });
+    }
+
+    private String obtenerToken(String correo) throws Exception {
+        String loginRequest = """
+            {
+                "correo": "%s",
+                "password": "%s"
+            }
+            """.formatted(correo, PASSWORD);
+
+        String clientIp = "test-suite-" + correo + "-" + System.nanoTime();
+        MvcResult result = mockMvc.perform(post("/api/usuarios/login")
+                        .header("X-Forwarded-For", clientIp)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(loginRequest))
+                .andExpect(status().isOk())
+                .andReturn();
+
+        JsonNode json = objectMapper.readTree(result.getResponse().getContentAsString());
+        return json.get("token").asText();
+    }
+
     // ==================== CA-GCV5-01: ESTUDIANTE PUEDE CONSULTAR CURSOS ====================
 
     @Test
@@ -54,7 +162,8 @@ class CursosVeranoAceptacionTest {
          *       AND cada curso debe incluir información relevante (materia, horario, docente, cupos)
          */
         
-        mockMvc.perform(get("/api/cursos-intersemestrales/cursos-verano"))
+        mockMvc.perform(get("/api/cursos-intersemestrales/cursos-verano")
+                        .header("Authorization", tokenEstudiante))
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON));
     }
@@ -73,7 +182,8 @@ class CursosVeranoAceptacionTest {
          *       AND debe mostrar cupos disponibles y totales
          */
         
-        mockMvc.perform(get("/api/cursos-intersemestrales/cursos-verano/1"))
+        mockMvc.perform(get("/api/cursos-intersemestrales/cursos-verano/1")
+                        .header("Authorization", tokenEstudiante))
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.idCurso").value(1));
@@ -107,6 +217,7 @@ class CursosVeranoAceptacionTest {
             """;
 
         mockMvc.perform(post("/api/cursos-intersemestrales/solicitudes/preinscripcion")
+                        .header("Authorization", tokenEstudiante)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(jsonPreinscripcion))
                 .andExpect(status().isCreated());
@@ -128,7 +239,8 @@ class CursosVeranoAceptacionTest {
          *       AND debe excluir cursos de otros periodos
          */
         
-        mockMvc.perform(get("/api/cursos-intersemestrales/cursos-verano/periodo/2025-1"))
+        mockMvc.perform(get("/api/cursos-intersemestrales/cursos-verano/periodo/2025-1")
+                        .header("Authorization", tokenCoordinador))
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON));
     }
@@ -146,7 +258,8 @@ class CursosVeranoAceptacionTest {
          *       AND debe incluir cursos de diferentes periodos si aplica
          */
         
-        mockMvc.perform(get("/api/cursos-intersemestrales/cursos-verano/materia/1"))
+        mockMvc.perform(get("/api/cursos-intersemestrales/cursos-verano/materia/1")
+                        .header("Authorization", tokenCoordinador))
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON));
     }
@@ -177,6 +290,7 @@ class CursosVeranoAceptacionTest {
             """;
 
         mockMvc.perform(post("/api/cursos-intersemestrales/solicitudes/preinscripcion")
+                        .header("Authorization", tokenEstudiante)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(jsonInvalido))
                 .andExpect(status().isBadRequest());
@@ -200,7 +314,8 @@ class CursosVeranoAceptacionTest {
          *       AND debe mostrar estado actual de cada preinscripción
          */
         
-        mockMvc.perform(get("/api/cursos-intersemestrales/solicitudes/preinscripcion/estudiante/1"))
+        mockMvc.perform(get("/api/cursos-intersemestrales/solicitudes/preinscripcion/estudiante/1")
+                        .header("Authorization", tokenEstudiante))
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON));
     }
@@ -221,7 +336,8 @@ class CursosVeranoAceptacionTest {
          *       AND NO debe retornar error genérico del servidor
          */
         
-        mockMvc.perform(get("/api/cursos-intersemestrales/cursos-verano/999"))
+        mockMvc.perform(get("/api/cursos-intersemestrales/cursos-verano/999")
+                        .header("Authorization", tokenEstudiante))
                 .andExpect(status().isNotFound());
     }
 
@@ -241,7 +357,8 @@ class CursosVeranoAceptacionTest {
          *       AND la respuesta debe ser legible y bien estructurada
          */
         
-        mockMvc.perform(get("/api/cursos-intersemestrales/cursos-verano"))
+        mockMvc.perform(get("/api/cursos-intersemestrales/cursos-verano")
+                        .header("Authorization", tokenEstudiante))
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON));
     }
@@ -266,11 +383,13 @@ class CursosVeranoAceptacionTest {
          */
         
         // Paso 1: Consultar cursos disponibles
-        mockMvc.perform(get("/api/cursos-intersemestrales/cursos-verano"))
+        mockMvc.perform(get("/api/cursos-intersemestrales/cursos-verano")
+                        .header("Authorization", tokenEstudiante))
                 .andExpect(status().isOk());
 
         // Paso 2: Ver detalles de curso específico
-        mockMvc.perform(get("/api/cursos-intersemestrales/cursos-verano/1"))
+        mockMvc.perform(get("/api/cursos-intersemestrales/cursos-verano/1")
+                        .header("Authorization", tokenEstudiante))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.idCurso").value(1));
 
@@ -284,12 +403,14 @@ class CursosVeranoAceptacionTest {
             """;
 
         mockMvc.perform(post("/api/cursos-intersemestrales/solicitudes/preinscripcion")
+                        .header("Authorization", tokenEstudiante)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(jsonPreinscripcion))
                 .andExpect(status().isCreated());
 
         // Paso 4: Consultar confirmación
-        mockMvc.perform(get("/api/cursos-intersemestrales/solicitudes/preinscripcion/estudiante/1"))
+        mockMvc.perform(get("/api/cursos-intersemestrales/solicitudes/preinscripcion/estudiante/1")
+                        .header("Authorization", tokenEstudiante))
                 .andExpect(status().isOk());
     }
 }

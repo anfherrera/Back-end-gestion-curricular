@@ -1,13 +1,24 @@
 package co.edu.unicauca.decanatura.gestion_curricular.cursosverano;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.entidades.ProgramaEntity;
+import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.entidades.RolEntity;
+import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.entidades.UsuarioEntity;
+import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.repositorios.ProgramaRepositoryInt;
+import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.repositorios.RolRepositoryInt;
+import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.repositorios.UsuarioRepositoryInt;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -38,6 +49,108 @@ class GestionCursosVeranoFuncionalTest {
     @Autowired
     private MockMvc mockMvc;
 
+    @Autowired
+    private ObjectMapper objectMapper;
+
+    @Autowired
+    private UsuarioRepositoryInt usuarioRepository;
+
+    @Autowired
+    private RolRepositoryInt rolRepository;
+
+    @Autowired
+    private ProgramaRepositoryInt programaRepository;
+
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+
+    private static final String PASSWORD = "password123";
+    private static final String ESTUDIANTE_EMAIL = "estudiante.test@unicauca.edu.co";
+    private static final String COORDINADOR_EMAIL = "coordinador.test@unicauca.edu.co";
+    private static final String SECRETARIA_EMAIL = "secretaria.test@unicauca.edu.co";
+    private static final String TEST_PROGRAMA_CODIGO = "TEST-IET";
+    private static final String TEST_PROGRAMA_NOMBRE = "Ingeniería de Pruebas";
+
+    private String tokenEstudiante;
+    private String tokenCoordinador;
+    private String tokenSecretaria;
+
+    @BeforeEach
+    void setUpTokens() throws Exception {
+        ensureUsuariosDePrueba();
+        if (tokenEstudiante == null) {
+            tokenEstudiante = "Bearer " + obtenerToken(ESTUDIANTE_EMAIL);
+        }
+        if (tokenCoordinador == null) {
+            tokenCoordinador = "Bearer " + obtenerToken(COORDINADOR_EMAIL);
+        }
+        if (tokenSecretaria == null) {
+            tokenSecretaria = "Bearer " + obtenerToken(SECRETARIA_EMAIL);
+        }
+    }
+
+    private void ensureUsuariosDePrueba() {
+        ProgramaEntity programa = programaRepository.buscarPorCodigo(TEST_PROGRAMA_CODIGO)
+                .orElseGet(() -> {
+                    ProgramaEntity nuevoPrograma = new ProgramaEntity();
+                    nuevoPrograma.setCodigo(TEST_PROGRAMA_CODIGO);
+                    nuevoPrograma.setNombre_programa(TEST_PROGRAMA_NOMBRE);
+                    return programaRepository.save(nuevoPrograma);
+                });
+
+        RolEntity rolEstudiante = obtenerORCrearRol("ESTUDIANTE");
+        RolEntity rolCoordinador = obtenerORCrearRol("COORDINADOR");
+        RolEntity rolSecretaria = obtenerORCrearRol("SECRETARIA");
+
+        crearUsuarioSiNoExiste(ESTUDIANTE_EMAIL, "EST-TEST-001", "Juan Pérez Estudiante", rolEstudiante, programa);
+        crearUsuarioSiNoExiste(COORDINADOR_EMAIL, "COO-TEST-001", "Carlos Ramírez Coordinador", rolCoordinador, programa);
+        crearUsuarioSiNoExiste(SECRETARIA_EMAIL, "SEC-TEST-001", "Ana López Secretaria", rolSecretaria, programa);
+    }
+
+    private RolEntity obtenerORCrearRol(String nombreRol) {
+        return rolRepository.buscarPorNombre(nombreRol)
+                .orElseGet(() -> {
+                    RolEntity rol = new RolEntity();
+                    rol.setNombre(nombreRol);
+                    return rolRepository.save(rol);
+                });
+    }
+
+    private void crearUsuarioSiNoExiste(String correo, String codigo, String nombreCompleto,
+                                        RolEntity rol, ProgramaEntity programa) {
+        usuarioRepository.buscarPorCorreo(correo).orElseGet(() -> {
+            UsuarioEntity usuario = new UsuarioEntity();
+            usuario.setNombre_completo(nombreCompleto);
+            usuario.setCodigo(codigo);
+            usuario.setCorreo(correo);
+            usuario.setPassword(passwordEncoder.encode(PASSWORD));
+            usuario.setEstado_usuario(true);
+            usuario.setObjRol(rol);
+            usuario.setObjPrograma(programa);
+            return usuarioRepository.save(usuario);
+        });
+    }
+
+    private String obtenerToken(String correo) throws Exception {
+        String loginRequest = """
+            {
+                "correo": "%s",
+                "password": "%s"
+            }
+            """.formatted(correo, PASSWORD);
+
+        String clientIp = "test-suite-" + correo + "-" + System.nanoTime();
+        MvcResult result = mockMvc.perform(post("/api/usuarios/login")
+                        .header("X-Forwarded-For", clientIp)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(loginRequest))
+                .andExpect(status().isOk())
+                .andReturn();
+
+        JsonNode json = objectMapper.readTree(result.getResponse().getContentAsString());
+        return json.get("token").asText();
+    }
+
     // ==================== FLUJO 1: OFERTA DE CURSOS ====================
 
     @Test
@@ -54,7 +167,8 @@ class GestionCursosVeranoFuncionalTest {
          */
         
         // Paso 1: Consultar cursos ofertados
-        mockMvc.perform(get("/api/cursos-intersemestrales/cursos-verano"))
+        mockMvc.perform(get("/api/cursos-intersemestrales/cursos-verano")
+                        .header("Authorization", tokenCoordinador))
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON));
     }
@@ -72,7 +186,8 @@ class GestionCursosVeranoFuncionalTest {
          * RESULTADO ESPERADO: Información detallada del curso
          */
         
-        mockMvc.perform(get("/api/cursos-intersemestrales/cursos-verano/1"))
+        mockMvc.perform(get("/api/cursos-intersemestrales/cursos-verano/1")
+                        .header("Authorization", tokenCoordinador))
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.idCurso").value(1));
@@ -95,7 +210,8 @@ class GestionCursosVeranoFuncionalTest {
          */
         
         // Paso 1: Consultar cursos disponibles
-        mockMvc.perform(get("/api/cursos-intersemestrales/cursos-verano"))
+        mockMvc.perform(get("/api/cursos-intersemestrales/cursos-verano")
+                        .header("Authorization", tokenEstudiante))
                 .andExpect(status().isOk());
 
         // Paso 2: Realizar preinscripción (usando usuario 6 para evitar duplicados)
@@ -108,6 +224,7 @@ class GestionCursosVeranoFuncionalTest {
             """;
 
         mockMvc.perform(post("/api/cursos-intersemestrales/solicitudes/preinscripcion")
+                        .header("Authorization", tokenEstudiante)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(jsonPreinscripcion))
                 .andExpect(status().isCreated());
@@ -135,6 +252,7 @@ class GestionCursosVeranoFuncionalTest {
             """;
 
         mockMvc.perform(post("/api/cursos-intersemestrales/solicitudes/preinscripcion")
+                        .header("Authorization", tokenEstudiante)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(jsonInvalido))
                 .andExpect(status().isBadRequest());
@@ -155,7 +273,8 @@ class GestionCursosVeranoFuncionalTest {
          * RESULTADO ESPERADO: Lista de preinscripciones del estudiante
          */
         
-        mockMvc.perform(get("/api/cursos-intersemestrales/solicitudes/preinscripcion/estudiante/1"))
+        mockMvc.perform(get("/api/cursos-intersemestrales/solicitudes/preinscripcion/estudiante/1")
+                        .header("Authorization", tokenEstudiante))
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON));
     }
@@ -175,7 +294,8 @@ class GestionCursosVeranoFuncionalTest {
          * RESULTADO ESPERADO: Lista filtrada de cursos
          */
         
-        mockMvc.perform(get("/api/cursos-intersemestrales/cursos-verano/periodo/2025-1"))
+        mockMvc.perform(get("/api/cursos-intersemestrales/cursos-verano/periodo/2025-1")
+                        .header("Authorization", tokenCoordinador))
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON));
     }
@@ -193,7 +313,8 @@ class GestionCursosVeranoFuncionalTest {
          * RESULTADO ESPERADO: Cursos de la materia solicitada
          */
         
-        mockMvc.perform(get("/api/cursos-intersemestrales/cursos-verano/materia/1"))
+        mockMvc.perform(get("/api/cursos-intersemestrales/cursos-verano/materia/1")
+                        .header("Authorization", tokenEstudiante))
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON));
     }
@@ -213,7 +334,8 @@ class GestionCursosVeranoFuncionalTest {
          * RESULTADO ESPERADO: Error 404 Not Found
          */
         
-        mockMvc.perform(get("/api/cursos-intersemestrales/cursos-verano/999"))
+        mockMvc.perform(get("/api/cursos-intersemestrales/cursos-verano/999")
+                        .header("Authorization", tokenSecretaria))
                 .andExpect(status().isNotFound());
     }
 
@@ -235,11 +357,13 @@ class GestionCursosVeranoFuncionalTest {
          */
         
         // Paso 1: Consultar cursos ofertados (como coordinador)
-        mockMvc.perform(get("/api/cursos-intersemestrales/cursos-verano"))
+        mockMvc.perform(get("/api/cursos-intersemestrales/cursos-verano")
+                        .header("Authorization", tokenCoordinador))
                 .andExpect(status().isOk());
 
         // Paso 2: Buscar curso específico (como estudiante)
-        mockMvc.perform(get("/api/cursos-intersemestrales/cursos-verano/1"))
+        mockMvc.perform(get("/api/cursos-intersemestrales/cursos-verano/1")
+                        .header("Authorization", tokenEstudiante))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.idCurso").value(1));
 
@@ -253,12 +377,14 @@ class GestionCursosVeranoFuncionalTest {
             """;
 
         mockMvc.perform(post("/api/cursos-intersemestrales/solicitudes/preinscripcion")
+                        .header("Authorization", tokenEstudiante)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(jsonPreinscripcion))
                 .andExpect(status().isCreated());
 
         // Paso 4: Consultar preinscripciones del estudiante
-        mockMvc.perform(get("/api/cursos-intersemestrales/solicitudes/preinscripcion/estudiante/7"))
+        mockMvc.perform(get("/api/cursos-intersemestrales/solicitudes/preinscripcion/estudiante/7")
+                        .header("Authorization", tokenEstudiante))
                 .andExpect(status().isOk());
     }
 
@@ -277,15 +403,18 @@ class GestionCursosVeranoFuncionalTest {
          */
         
         // Paso 1: Ver todos los cursos
-        mockMvc.perform(get("/api/cursos-intersemestrales/cursos-verano"))
+        mockMvc.perform(get("/api/cursos-intersemestrales/cursos-verano")
+                        .header("Authorization", tokenEstudiante))
                 .andExpect(status().isOk());
 
         // Paso 2: Filtrar por periodo
-        mockMvc.perform(get("/api/cursos-intersemestrales/cursos-verano/periodo/2025-1"))
+        mockMvc.perform(get("/api/cursos-intersemestrales/cursos-verano/periodo/2025-1")
+                        .header("Authorization", tokenEstudiante))
                 .andExpect(status().isOk());
 
         // Paso 3: Buscar materia específica
-        mockMvc.perform(get("/api/cursos-intersemestrales/cursos-verano/materia/1"))
+        mockMvc.perform(get("/api/cursos-intersemestrales/cursos-verano/materia/1")
+                        .header("Authorization", tokenEstudiante))
                 .andExpect(status().isOk());
     }
 }
