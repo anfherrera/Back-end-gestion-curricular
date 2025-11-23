@@ -4,6 +4,7 @@ import java.util.List;
 import lombok.extern.slf4j.Slf4j;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarArchivosCUIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarSolicitudCursoVeranoCUIntPort;
+import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarNotificacionCUIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.FormateadorResultadosIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.GestionarCursoOfertadoVeranoGatewayIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.GestionarDocumentosGatewayIntPort;
@@ -26,6 +27,7 @@ public class GestionarSolicitudCursoVeranoCUAdapter implements GestionarSolicitu
     private final GestionarDocumentosGatewayIntPort objDocumentosGateway;
     private final FormateadorResultadosIntPort objFormateadorResultados;
     private final GestionarArchivosCUIntPort gestionarArchivos;
+    private final GestionarNotificacionCUIntPort objGestionarNotificacionCU;
 
     public GestionarSolicitudCursoVeranoCUAdapter(
         GestionarSolicitudCursoVeranoGatewayIntPort objGestionarSolicitudGateway,
@@ -33,7 +35,8 @@ public class GestionarSolicitudCursoVeranoCUAdapter implements GestionarSolicitu
         GestionarUsuarioGatewayIntPort objUsuario, 
         GestionarDocumentosGatewayIntPort objDocumentosGateway,
         FormateadorResultadosIntPort objFormateadorResultados,
-        GestionarArchivosCUIntPort gestionarArchivos
+        GestionarArchivosCUIntPort gestionarArchivos,
+        GestionarNotificacionCUIntPort objGestionarNotificacionCU
     ) {
         this.objUsuario = objUsuario;
         this.objFormateadorResultados = objFormateadorResultados;
@@ -41,6 +44,7 @@ public class GestionarSolicitudCursoVeranoCUAdapter implements GestionarSolicitu
         this.objGestionarSolicitudGateway = objGestionarSolicitudGateway;
         this.objDocumentosGateway = objDocumentosGateway;
         this.gestionarArchivos = gestionarArchivos;
+        this.objGestionarNotificacionCU = objGestionarNotificacionCU;
     }
 
     @Override
@@ -126,6 +130,15 @@ public class GestionarSolicitudCursoVeranoCUAdapter implements GestionarSolicitu
         solicitudCursoVerano.setObjUsuario(usuarioBuscar);
 
         solicitudGuardada = this.objGestionarSolicitudGateway.crearSolicitudCursoVeranoPreinscripcion(solicitudCursoVerano);
+        
+        // Crear notificación automática para el estudiante
+        try {
+            this.objGestionarNotificacionCU.notificarCreacionSolicitud(solicitudGuardada, "CURSO_VERANO_PREINSCRIPCION");
+        } catch (Exception e) {
+            // Log del error pero no interrumpir el flujo principal
+            System.err.println("Error al crear notificación: " + e.getMessage());
+            e.printStackTrace();
+        }
         
         return solicitudGuardada;
     }
@@ -217,6 +230,15 @@ public class GestionarSolicitudCursoVeranoCUAdapter implements GestionarSolicitu
             // Asociar documento a la solicitud
             doc.setObjSolicitud(solicitudGuardada);
             this.objDocumentosGateway.actualizarDocumento(doc);
+        }
+
+        // Crear notificación automática para el estudiante
+        try {
+            this.objGestionarNotificacionCU.notificarCreacionSolicitud(solicitudGuardada, "CURSO_VERANO_INSCRIPCION");
+        } catch (Exception e) {
+            // Log del error pero no interrumpir el flujo principal
+            System.err.println("Error al crear notificación: " + e.getMessage());
+            e.printStackTrace();
         }
 
         return solicitudGuardada;

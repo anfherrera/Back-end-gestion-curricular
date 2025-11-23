@@ -26,6 +26,8 @@ import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.Gestionar
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.GestionarSolicitudReingresoGatewayIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.GestionarSolicitudPazYSalvoGatewayIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.GestionarUsuarioGatewayIntPort;
+import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarNotificacionCUIntPort;
+import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.GestionarNotificacionGatewayIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.casosDeUso.GestionarArchivosCUIAdapter;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.casosDeUso.GestionarCursoOfertadoVeranoCUAdapter;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.casosDeUso.GestionarDocentesCUAdapter;
@@ -41,6 +43,7 @@ import co.edu.unicauca.decanatura.gestion_curricular.dominio.casosDeUso.Gestiona
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.casosDeUso.GestionarSolicitudPazYSalvoCUAdapter;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.casosDeUso.GestionarSolicitudReingresoCUAdapter;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.casosDeUso.GestionarUsuarioCUAdapter;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.casosDeUso.GestionarNotificacionCUAdapter;
 
 @Configuration
 public class BeanConfiguration {
@@ -52,9 +55,10 @@ public class BeanConfiguration {
             GestionarMateriasIntPort objGestionarMateriasGateway,
             GestionarDocenteGatewayIntPort objGestionarDocenteGateway,
             GestionarEstadoCursoOfertadoGatewayIntPort objGestionarEstadoCursoOfertadoGateway,
-            FormateadorResultadosIntPort objFormateadorResultados){
+            FormateadorResultadosIntPort objFormateadorResultados,
+            GestionarNotificacionCUIntPort objGestionarNotificacionCU){
                 return new GestionarCursoOfertadoVeranoCUAdapter(objGestionarCursoOfertadoVeranoGateway, objGestionarSolicitudGateway, objGestionarUsuarioGateway,
-                 objGestionarMateriasGateway, objGestionarDocenteGateway, objFormateadorResultados);
+                 objGestionarMateriasGateway, objGestionarDocenteGateway, objFormateadorResultados, objGestionarNotificacionCU);
             }
 
     // GestionarEstadisticasGatewayImplAdapter ya está definido como @Service, no necesita definición adicional
@@ -96,8 +100,9 @@ public class BeanConfiguration {
         GestionarUsuarioGatewayIntPort objUsuario, 
         GestionarDocumentosGatewayIntPort objDocumentosGateway,
         FormateadorResultadosIntPort objFormateadorResultados,
-        GestionarArchivosCUIntPort objGestionarArchivos) {
-        return new GestionarSolicitudCursoVeranoCUAdapter(objGestionarSolicitudGateway, objCursoOfertado, objUsuario, objDocumentosGateway, objFormateadorResultados, objGestionarArchivos);
+        GestionarArchivosCUIntPort objGestionarArchivos,
+        GestionarNotificacionCUIntPort objGestionarNotificacionCU) {
+        return new GestionarSolicitudCursoVeranoCUAdapter(objGestionarSolicitudGateway, objCursoOfertado, objUsuario, objDocumentosGateway, objFormateadorResultados, objGestionarArchivos, objGestionarNotificacionCU);
     }
 
     @Bean
@@ -107,14 +112,16 @@ public class BeanConfiguration {
             GestionarDocumentosGatewayIntPort objDocumentosGateway,
             GestionarEstadoSolicitudGatewayIntPort objGestionarEstadoSolicitudGateway,
             FormateadorResultadosIntPort objFormateadorResultados,
-            GestionarArchivosCUIntPort objGestionarArchivos) {
+            GestionarArchivosCUIntPort objGestionarArchivos,
+            GestionarNotificacionCUIntPort objGestionarNotificacionCU) {
         return new GestionarSolicitudPazYSalvoCUAdapter(
                 objGestionarSolicitudGateway,
                 objUsuario,
                 objDocumentosGateway,
                 objGestionarEstadoSolicitudGateway,
                 objFormateadorResultados,
-                objGestionarArchivos
+                objGestionarArchivos,
+                objGestionarNotificacionCU
         );
     }
 
@@ -124,27 +131,30 @@ public class BeanConfiguration {
             GestionarPreRegistroEcaesGatewayIntPort objGestionarSolicitudEcaesGateway,FormateadorResultadosIntPort objFormateadorResultados
             ,GestionarDocumentosGatewayIntPort objDocumentosGateway,
             GestionarEstadoSolicitudGatewayIntPort objGestionarEstadoSolicitudGateway,
-            GestionarUsuarioGatewayIntPort objGestionarUsuarioGateway
+            GestionarUsuarioGatewayIntPort objGestionarUsuarioGateway,
+            GestionarNotificacionCUIntPort objGestionarNotificacionCU
             ) {
-        return new GestionarSolicitudEcaesCUAdapter(objGestionarSolicitudEcaesGateway,objFormateadorResultados,objDocumentosGateway,objGestionarEstadoSolicitudGateway,objGestionarUsuarioGateway);
+        return new GestionarSolicitudEcaesCUAdapter(objGestionarSolicitudEcaesGateway,objFormateadorResultados,objDocumentosGateway,objGestionarEstadoSolicitudGateway,objGestionarUsuarioGateway,objGestionarNotificacionCU);
     }
 
     @Bean
     public GestionarSolicitudHomologacionCUAdapter crearGestionarSolicitudHomologacionCUInt(
             FormateadorResultadosIntPort formateadorResultados, GestionarSolicitudHomologacionGatewayIntPort gestionarSolicitudHomologacionGateway
     ,GestionarUsuarioGatewayIntPort gestionarUsuarioGateway, GestionarDocumentosGatewayIntPort gestionarDocumentosGateway,
-    GestionarEstadoSolicitudGatewayIntPort gestionarEstadoSolicitudGateway
+    GestionarEstadoSolicitudGatewayIntPort gestionarEstadoSolicitudGateway,
+    GestionarNotificacionCUIntPort objGestionarNotificacionCU
     ) {
-        return new GestionarSolicitudHomologacionCUAdapter(formateadorResultados, gestionarSolicitudHomologacionGateway, gestionarUsuarioGateway, gestionarDocumentosGateway, gestionarEstadoSolicitudGateway);
+        return new GestionarSolicitudHomologacionCUAdapter(formateadorResultados, gestionarSolicitudHomologacionGateway, gestionarUsuarioGateway, gestionarDocumentosGateway, gestionarEstadoSolicitudGateway, objGestionarNotificacionCU);
     }
 
     @Bean
     public GestionarSolicitudReingresoCUAdapter crearGestionarSolicitudReingresoCUInt(
         GestionarUsuarioGatewayIntPort gestionarUsuarioGateway, GestionarDocumentosGatewayIntPort gestionarDocumentosGateway,
         GestionarEstadoSolicitudGatewayIntPort gestionarEstadoSolicitudGateway,
-        FormateadorResultadosIntPort formateadorResultados,GestionarSolicitudReingresoGatewayIntPort gestionarSolicitudReingresoGateway
+        FormateadorResultadosIntPort formateadorResultados,GestionarSolicitudReingresoGatewayIntPort gestionarSolicitudReingresoGateway,
+        GestionarNotificacionCUIntPort objGestionarNotificacionCU
     ) {
-        return new GestionarSolicitudReingresoCUAdapter(gestionarUsuarioGateway, gestionarDocumentosGateway, gestionarEstadoSolicitudGateway, formateadorResultados, gestionarSolicitudReingresoGateway);
+        return new GestionarSolicitudReingresoCUAdapter(gestionarUsuarioGateway, gestionarDocumentosGateway, gestionarEstadoSolicitudGateway, formateadorResultados, gestionarSolicitudReingresoGateway, objGestionarNotificacionCU);
     }
 
     @Bean
@@ -178,7 +188,19 @@ public class BeanConfiguration {
         return new GestionarRolesCUAdapter(rolesGateway, formateadorResultados);
     }
 
+    @Bean
+    public GestionarNotificacionCUAdapter crearGestionarNotificacionCUInt(
+            GestionarNotificacionGatewayIntPort objGestionarNotificacionGateway,
+            GestionarUsuarioGatewayIntPort objGestionarUsuarioGateway,
+            GestionarRolGatewayIntPort objGestionarRolGateway) {
+        return new GestionarNotificacionCUAdapter(
+                objGestionarNotificacionGateway,
+                objGestionarUsuarioGateway,
+                objGestionarRolGateway);
+    }
+
     // GestionarEstadisticasGatewayImplAdapter ya está definido como @Service, no necesita definición adicional
+    // GestionarNotificacionGatewayImplAdapter ya está definido como @Service, no necesita definición adicional
 
     // JwtUtil ya está definido como @Component, no necesita definición adicional
     // DocumentGeneratorService ya está definido como @Service, no necesita definición adicional

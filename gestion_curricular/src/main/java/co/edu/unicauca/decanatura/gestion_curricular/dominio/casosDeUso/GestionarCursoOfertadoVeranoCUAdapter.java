@@ -5,6 +5,7 @@ import java.util.Date;
 import java.util.List;
 
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarCursoOfertadoVeranoCUIntPort;
+import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarNotificacionCUIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.FormateadorResultadosIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.GestionarCursoOfertadoVeranoGatewayIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.GestionarDocenteGatewayIntPort;
@@ -27,19 +28,22 @@ public class GestionarCursoOfertadoVeranoCUAdapter implements GestionarCursoOfer
     private final GestionarMateriasIntPort objGestionarMateriasGateway;
     private final GestionarDocenteGatewayIntPort objGestionarDocenteGateway;
     private final FormateadorResultadosIntPort objFormateadorResultados;
+    private final GestionarNotificacionCUIntPort objGestionarNotificacionCU;
 
     public GestionarCursoOfertadoVeranoCUAdapter(GestionarCursoOfertadoVeranoGatewayIntPort objGestionarCursoOfertadoVeranoGateway,
             GestionarSolicitudGatewayIntPort objGestionarSolicitudGateway, 
             GestionarUsuarioGatewayIntPort objGestionarUsuarioGateway,
             GestionarMateriasIntPort objGestionarMateriasGateway,
             GestionarDocenteGatewayIntPort objGestionarDocenteGateway,
-            FormateadorResultadosIntPort objFormateadorResultados) {
+            FormateadorResultadosIntPort objFormateadorResultados,
+            GestionarNotificacionCUIntPort objGestionarNotificacionCU) {
         this.objGestionarCursoOfertadoVeranoGateway = objGestionarCursoOfertadoVeranoGateway;
         this.objGestionarSolicitudGateway = objGestionarSolicitudGateway;
         this.objGestionarUsuarioGateway = objGestionarUsuarioGateway;
         this.objGestionarMateriasGateway = objGestionarMateriasGateway;
         this.objGestionarDocenteGateway = objGestionarDocenteGateway;
         this.objFormateadorResultados = objFormateadorResultados;
+        this.objGestionarNotificacionCU = objGestionarNotificacionCU;
     }
 
     @Override
@@ -95,6 +99,10 @@ public class GestionarCursoOfertadoVeranoCUAdapter implements GestionarCursoOfer
                     this.objFormateadorResultados.retornarRespuestaErrorReglaDeNegocio("No se puede publicar el curso, porque no se alcanzo el cupo estimado");
                 }
                     for (Solicitud solicitud : solicitudes) {
+                        String estadoAnterior = solicitud.getEstadosSolicitud() != null && !solicitud.getEstadosSolicitud().isEmpty()
+                                ? solicitud.getEstadosSolicitud().get(solicitud.getEstadosSolicitud().size() - 1).getEstado_actual()
+                                : "Pendiente";
+                        
                         estadoSolicitud = new EstadoSolicitud();
                         estadoSolicitud.setFecha_registro_estado(new Date());
                             if(solicitud.getEsSeleccionado() == true){
@@ -105,10 +113,27 @@ public class GestionarCursoOfertadoVeranoCUAdapter implements GestionarCursoOfer
                                 if(bandera == false){
                                     this.objFormateadorResultados.retornarRespuestaErrorEntidadExiste("No se pudo asociar el usuario al curso");
                                 }
+                                
+                                // Notificar cambio de estado - Preinscripción Aprobada
+                                try {
+                                    this.objGestionarNotificacionCU.notificarCambioEstadoSolicitud(
+                                        solicitud, estadoAnterior, "Aprobado", "CURSO_VERANO_PREINSCRIPCION"
+                                    );
+                                } catch (Exception e) {
+                                    System.err.println("Error al crear notificación de cambio de estado: " + e.getMessage());
+                                }
                             }else{
                                 estadoSolicitud.setEstado_actual("Rechazado");
                                 solicitud = this.objGestionarSolicitudGateway.actualizarSolicitud(solicitud, estadoSolicitud);
-
+                                
+                                // Notificar cambio de estado - Preinscripción Rechazada
+                                try {
+                                    this.objGestionarNotificacionCU.notificarCambioEstadoSolicitud(
+                                        solicitud, estadoAnterior, "Rechazado", "CURSO_VERANO_PREINSCRIPCION"
+                                    );
+                                } catch (Exception e) {
+                                    System.err.println("Error al crear notificación de cambio de estado: " + e.getMessage());
+                                }
                             }
                     }
                     
@@ -129,6 +154,10 @@ public class GestionarCursoOfertadoVeranoCUAdapter implements GestionarCursoOfer
                 }
                 estudiantesInscritos = new ArrayList<Usuario>(cursoABuscar.getEstudiantesInscritos());
                 for (Solicitud solicitud : solicitudes) {
+                    String estadoAnterior = solicitud.getEstadosSolicitud() != null && !solicitud.getEstadosSolicitud().isEmpty()
+                            ? solicitud.getEstadosSolicitud().get(solicitud.getEstadosSolicitud().size() - 1).getEstado_actual()
+                            : "Pendiente";
+                    
                     estadoSolicitud = new EstadoSolicitud();
                     estadoSolicitud.setFecha_registro_estado(new Date());
                         if(solicitud.getEsSeleccionado() == true){
@@ -142,9 +171,27 @@ public class GestionarCursoOfertadoVeranoCUAdapter implements GestionarCursoOfer
                                         }
                                     }
                                 }
+                                
+                                // Notificar cambio de estado - Inscripción Aprobada
+                                try {
+                                    this.objGestionarNotificacionCU.notificarCambioEstadoSolicitud(
+                                        solicitud, estadoAnterior, "Aprobado", "CURSO_VERANO_INSCRIPCION"
+                                    );
+                                } catch (Exception e) {
+                                    System.err.println("Error al crear notificación de cambio de estado: " + e.getMessage());
+                                }
                         }else{
                             estadoSolicitud.setEstado_actual("Rechazado");
-                            solicitud = this.objGestionarSolicitudGateway.actualizarSolicitud(solicitud, estadoSolicitud); 
+                            solicitud = this.objGestionarSolicitudGateway.actualizarSolicitud(solicitud, estadoSolicitud);
+                            
+                            // Notificar cambio de estado - Inscripción Rechazada
+                            try {
+                                this.objGestionarNotificacionCU.notificarCambioEstadoSolicitud(
+                                    solicitud, estadoAnterior, "Rechazado", "CURSO_VERANO_INSCRIPCION"
+                                );
+                            } catch (Exception e) {
+                                System.err.println("Error al crear notificación de cambio de estado: " + e.getMessage());
+                            }
                         }
                 }
                 if(estudiantesInscritos != null){

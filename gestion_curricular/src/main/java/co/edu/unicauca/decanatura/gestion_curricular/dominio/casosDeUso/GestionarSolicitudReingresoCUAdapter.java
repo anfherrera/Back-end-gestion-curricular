@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Optional;
 
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarSolicitudReingresoCUIntPort;
+import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarNotificacionCUIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.FormateadorResultadosIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.GestionarDocumentosGatewayIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.GestionarEstadoSolicitudGatewayIntPort;
@@ -23,17 +24,20 @@ public class GestionarSolicitudReingresoCUAdapter  implements GestionarSolicitud
     private final GestionarEstadoSolicitudGatewayIntPort objGestionarEstadoSolicitudGateway;
     private final FormateadorResultadosIntPort objFormateadorResultados;
     private final GestionarSolicitudReingresoGatewayIntPort objGestionarSolicitudReingresoGateway;
+    private final GestionarNotificacionCUIntPort objGestionarNotificacionCU;
 
     public GestionarSolicitudReingresoCUAdapter(GestionarUsuarioGatewayIntPort objGestionarUsuarioGateway,
             GestionarDocumentosGatewayIntPort objGestionarDocumentosGateway,
             GestionarEstadoSolicitudGatewayIntPort objGestionarEstadoSolicitudGateway,
             FormateadorResultadosIntPort objFormateadorResultados,
-            GestionarSolicitudReingresoGatewayIntPort objGestionarSolicitudReingresoGateway) {
+            GestionarSolicitudReingresoGatewayIntPort objGestionarSolicitudReingresoGateway,
+            GestionarNotificacionCUIntPort objGestionarNotificacionCU) {
         this.objGestionarUsuarioGateway = objGestionarUsuarioGateway;
         this.objGestionarDocumentosGateway = objGestionarDocumentosGateway;
         this.objGestionarEstadoSolicitudGateway = objGestionarEstadoSolicitudGateway;
         this.objFormateadorResultados = objFormateadorResultados;
         this.objGestionarSolicitudReingresoGateway = objGestionarSolicitudReingresoGateway;
+        this.objGestionarNotificacionCU = objGestionarNotificacionCU;
     }
 
     @Override
@@ -81,6 +85,14 @@ public class GestionarSolicitudReingresoCUAdapter  implements GestionarSolicitud
         usuarioOpt.get().getSolicitudes().add(solicitudGuardada);
         this.objGestionarUsuarioGateway.actualizarUsuario(usuarioOpt.get());
         
+        // Crear notificación automática para el estudiante
+        try {
+            this.objGestionarNotificacionCU.notificarCreacionSolicitud(solicitudGuardada, "REINGRESO");
+        } catch (Exception e) {
+            // Log del error pero no interrumpir el flujo principal
+            System.err.println("Error al crear notificación: " + e.getMessage());
+            e.printStackTrace();
+        }
 
         return solicitudGuardada;
     }
@@ -138,10 +150,26 @@ public class GestionarSolicitudReingresoCUAdapter  implements GestionarSolicitud
     }
     @Override
     public void cambiarEstadoSolicitudReingreso(Integer idSolicitud, String nuevoEstado) {
+        // Obtener el estado anterior
+        SolicitudReingreso solicitud = obtenerSolicitudReingresoPorId(idSolicitud);
+        String estadoAnterior = solicitud.getEstadosSolicitud() != null && !solicitud.getEstadosSolicitud().isEmpty()
+                ? solicitud.getEstadosSolicitud().get(solicitud.getEstadosSolicitud().size() - 1).getEstado_actual()
+                : "ENVIADA";
+        
         EstadoSolicitud estado = new EstadoSolicitud();
         estado.setEstado_actual(nuevoEstado);
         estado.setFecha_registro_estado(new Date());
         objGestionarSolicitudReingresoGateway.cambiarEstadoSolicitudReingreso(idSolicitud, estado);
+        
+        // Crear notificación automática del cambio de estado
+        try {
+            solicitud = obtenerSolicitudReingresoPorId(idSolicitud); // Recargar con el nuevo estado
+            this.objGestionarNotificacionCU.notificarCambioEstadoSolicitud(solicitud, estadoAnterior, nuevoEstado, "REINGRESO");
+        } catch (Exception e) {
+            // Log del error pero no interrumpir el flujo principal
+            System.err.println("Error al crear notificación de cambio de estado: " + e.getMessage());
+            e.printStackTrace();
+        }
     }
 
     

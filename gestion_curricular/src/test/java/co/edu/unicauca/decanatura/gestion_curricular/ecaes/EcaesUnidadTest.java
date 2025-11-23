@@ -1,6 +1,7 @@
 package co.edu.unicauca.decanatura.gestion_curricular.ecaes;
 
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarSolicitudEcaesCUIntPort;
+import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarNotificacionCUIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.*;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.casosDeUso.GestionarSolicitudEcaesCUAdapter;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.FechaEcaes;
@@ -55,6 +56,9 @@ class EcaesUnidadTest {
     @Mock
     private FormateadorResultadosIntPort formateadorResultados;
 
+    @Mock
+    private GestionarNotificacionCUIntPort notificacionCU;
+
     private GestionarSolicitudEcaesCUIntPort solicitudEcaesCU;
 
     private SolicitudEcaes solicitudEjemplo;
@@ -67,7 +71,8 @@ class EcaesUnidadTest {
                 formateadorResultados,
                 documentosGateway,
                 estadoSolicitudGateway,
-                usuarioGateway
+                usuarioGateway,
+                notificacionCU
         );
 
         // Crear solicitud de ejemplo

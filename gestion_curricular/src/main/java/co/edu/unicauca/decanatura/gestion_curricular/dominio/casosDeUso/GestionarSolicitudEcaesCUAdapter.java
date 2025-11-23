@@ -11,6 +11,7 @@ import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.Gestionar
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.GestionarEstadoSolicitudGatewayIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.GestionarPreRegistroEcaesGatewayIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.GestionarUsuarioGatewayIntPort;
+import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarNotificacionCUIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Documento;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.EstadoSolicitud;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.FechaEcaes;
@@ -27,19 +28,22 @@ public class GestionarSolicitudEcaesCUAdapter implements GestionarSolicitudEcaes
     private final GestionarDocumentosGatewayIntPort objDocumentosGateway;
     private final GestionarEstadoSolicitudGatewayIntPort objGestionarEstadoSolicitudGateway;
     private final GestionarUsuarioGatewayIntPort objGestionarUsuarioGateway;
+    private final GestionarNotificacionCUIntPort objGestionarNotificacionCU;
 
 
     public GestionarSolicitudEcaesCUAdapter(GestionarPreRegistroEcaesGatewayIntPort objGestionarSolicitudEcaesGateway,
             FormateadorResultadosIntPort objFormateadorResultados,
             GestionarDocumentosGatewayIntPort objDocumentosGateway,
             GestionarEstadoSolicitudGatewayIntPort objGestionarEstadoSolicitudGateway,
-            GestionarUsuarioGatewayIntPort objGestionarUsuarioGateway
+            GestionarUsuarioGatewayIntPort objGestionarUsuarioGateway,
+            GestionarNotificacionCUIntPort objGestionarNotificacionCU
             ) {
         this.objGestionarSolicitudEcaesGateway = objGestionarSolicitudEcaesGateway;
         this.objFormateadorResultados = objFormateadorResultados;
         this.objDocumentosGateway = objDocumentosGateway;   
         this.objGestionarEstadoSolicitudGateway = objGestionarEstadoSolicitudGateway;
         this.objGestionarUsuarioGateway = objGestionarUsuarioGateway;
+        this.objGestionarNotificacionCU = objGestionarNotificacionCU;
     
     }
 
@@ -94,6 +98,13 @@ public class GestionarSolicitudEcaesCUAdapter implements GestionarSolicitudEcaes
             usuarioOpt.get().getSolicitudes().add(solicitudGuardada);
             this.objGestionarUsuarioGateway.actualizarUsuario(usuarioOpt.get());
         
+            // Crear notificación automática para el estudiante
+            try {
+                this.objGestionarNotificacionCU.notificarCreacionSolicitud(solicitudGuardada, "ECAES");
+            } catch (Exception e) {
+                // Log del error pero no interrumpir el flujo principal
+                System.err.println("Error al crear notificación: " + e.getMessage());
+            }
 
             return solicitudGuardada;
     
@@ -121,11 +132,26 @@ public class GestionarSolicitudEcaesCUAdapter implements GestionarSolicitudEcaes
     //Metodo que solo pide Id y el nuevo estado como String
     @Override
     public void cambiarEstadoSolicitud(Integer idSolicitud, String nuevoEstado) {
+        // Obtener el estado anterior
+        SolicitudEcaes solicitud = buscarPorId(idSolicitud);
+        String estadoAnterior = solicitud.getEstadosSolicitud() != null && !solicitud.getEstadosSolicitud().isEmpty()
+                ? solicitud.getEstadosSolicitud().get(solicitud.getEstadosSolicitud().size() - 1).getEstado_actual()
+                : "ENVIADA";
+        
         EstadoSolicitud nuevo = new EstadoSolicitud();
         nuevo.setEstado_actual(nuevoEstado);
         nuevo.setFecha_registro_estado(new Date());
 
         objGestionarSolicitudEcaesGateway.cambiarEstadoSolicitudEcaes(idSolicitud, nuevo);
+        
+        // Crear notificación automática del cambio de estado
+        try {
+            solicitud = buscarPorId(idSolicitud); // Recargar con el nuevo estado
+            this.objGestionarNotificacionCU.notificarCambioEstadoSolicitud(solicitud, estadoAnterior, nuevoEstado, "ECAES");
+        } catch (Exception e) {
+            // Log del error pero no interrumpir el flujo principal
+            System.err.println("Error al crear notificación de cambio de estado: " + e.getMessage());
+        }
     }
 
     @Override

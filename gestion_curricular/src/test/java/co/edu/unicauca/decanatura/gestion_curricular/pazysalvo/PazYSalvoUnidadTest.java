@@ -2,6 +2,7 @@ package co.edu.unicauca.decanatura.gestion_curricular.pazysalvo;
 
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarArchivosCUIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarSolicitudPazYSalvoCUIntPort;
+import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarNotificacionCUIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.*;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.casosDeUso.GestionarSolicitudPazYSalvoCUAdapter;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.SolicitudPazYSalvo;
@@ -57,6 +58,9 @@ class PazYSalvoUnidadTest {
     @Mock
     private GestionarArchivosCUIntPort gestionarArchivos;
 
+    @Mock
+    private GestionarNotificacionCUIntPort notificacionCU;
+
     private GestionarSolicitudPazYSalvoCUIntPort solicitudPazYSalvoCU;
 
     private SolicitudPazYSalvo solicitudEjemplo;
@@ -70,7 +74,8 @@ class PazYSalvoUnidadTest {
                 documentosGateway,
                 estadoSolicitudGateway,
                 formateadorResultados,
-                gestionarArchivos
+                gestionarArchivos,
+                notificacionCU
         );
 
         // Crear solicitud de ejemplo

@@ -357,6 +357,15 @@ INSERT INTO EstadosSolicitudes(idEstado, estado_actual, fecha_registro_estado, i
 INSERT INTO EstadosSolicitudes(idEstado, estado_actual, fecha_registro_estado, idfkSolicitud) VALUES (50, 'APROBADA', '2025-07-18 17:00:00', 103);
 
 -- ==========================================
+-- TABLA DE NOTIFICACIONES
+-- ==========================================
+-- La tabla Notificaciones se crea automáticamente mediante JPA/Hibernate
+-- Las notificaciones se generan automáticamente cuando:
+-- - Se crea una nueva solicitud
+-- - Se cambia el estado de una solicitud
+-- No se requieren datos iniciales para esta tabla
+
+-- ==========================================
 -- VALIDACIÓN DE DATOS CARGADOS
 -- ==========================================
 -- SELECT COUNT(*) FROM Solicitudes;
@@ -366,3 +375,4 @@ INSERT INTO EstadosSolicitudes(idEstado, estado_actual, fecha_registro_estado, i
 -- SELECT COUNT(*) FROM Solicitudes_CursoVeranoInscripcion;
 -- SELECT COUNT(*) FROM Solicitudes_Ecaes;
 -- SELECT COUNT(*) FROM Solicitudes_PazYSalvo;
+-- SELECT COUNT(*) FROM Notificaciones;

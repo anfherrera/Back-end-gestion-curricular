@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Optional;
 
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarSolicitudHomologacionCUIntPort;
+import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarNotificacionCUIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.FormateadorResultadosIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.GestionarDocumentosGatewayIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.GestionarEstadoSolicitudGatewayIntPort;
@@ -23,14 +24,17 @@ public class GestionarSolicitudHomologacionCUAdapter implements GestionarSolicit
     private final GestionarUsuarioGatewayIntPort objGestionarUsuarioGateway;
     private final GestionarDocumentosGatewayIntPort objGestionarDocumentosGateway;
     private final GestionarEstadoSolicitudGatewayIntPort objGestionarEstadoSolicitudGateway;
+    private final GestionarNotificacionCUIntPort objGestionarNotificacionCU;
 
     public GestionarSolicitudHomologacionCUAdapter(FormateadorResultadosIntPort formateadorResultados, GestionarSolicitudHomologacionGatewayIntPort gestionarSolicitudHomologacionGateway
-    ,GestionarUsuarioGatewayIntPort gestionarUsuarioGateway, GestionarDocumentosGatewayIntPort gestionarDocumentosGateway, GestionarEstadoSolicitudGatewayIntPort gestionarEstadoSolicitudGateway) {
+    ,GestionarUsuarioGatewayIntPort gestionarUsuarioGateway, GestionarDocumentosGatewayIntPort gestionarDocumentosGateway, GestionarEstadoSolicitudGatewayIntPort gestionarEstadoSolicitudGateway,
+    GestionarNotificacionCUIntPort objGestionarNotificacionCU) {
         this.objFormateadorResultados = formateadorResultados;
         this.objGestionarSolicitudHomologacionGateway = gestionarSolicitudHomologacionGateway;
         this.objGestionarUsuarioGateway = gestionarUsuarioGateway;
         this.objGestionarDocumentosGateway = gestionarDocumentosGateway;
         this.objGestionarEstadoSolicitudGateway = gestionarEstadoSolicitudGateway;
+        this.objGestionarNotificacionCU = objGestionarNotificacionCU;
     }
     @Override
     public SolicitudHomologacion guardar(SolicitudHomologacion solicitud) {
@@ -80,6 +84,14 @@ public class GestionarSolicitudHomologacionCUAdapter implements GestionarSolicit
         usuarioOpt.get().getSolicitudes().add(solicitudGuardada);
         this.objGestionarUsuarioGateway.actualizarUsuario(usuarioOpt.get());
         
+        // Crear notificación automática para el estudiante
+        try {
+            this.objGestionarNotificacionCU.notificarCreacionSolicitud(solicitudGuardada, "HOMOLOGACION");
+        } catch (Exception e) {
+            // Log del error pero no interrumpir el flujo principal
+            System.err.println("Error al crear notificación: " + e.getMessage());
+            e.printStackTrace();
+        }
 
         return solicitudGuardada;
         
@@ -141,10 +153,26 @@ public class GestionarSolicitudHomologacionCUAdapter implements GestionarSolicit
 
     @Override
     public void cambiarEstadoSolicitud(Integer idSolicitud, String nuevoEstado) {
+        // Obtener el estado anterior
+        SolicitudHomologacion solicitud = buscarPorId(idSolicitud);
+        String estadoAnterior = solicitud.getEstadosSolicitud() != null && !solicitud.getEstadosSolicitud().isEmpty()
+                ? solicitud.getEstadosSolicitud().get(solicitud.getEstadosSolicitud().size() - 1).getEstado_actual()
+                : "ENVIADA";
+        
         EstadoSolicitud estado = new EstadoSolicitud();
         estado.setEstado_actual(nuevoEstado);
         estado.setFecha_registro_estado(new Date());
         objGestionarSolicitudHomologacionGateway.cambiarEstadoSolicitud(idSolicitud, estado);
+        
+        // Crear notificación automática del cambio de estado
+        try {
+            solicitud = buscarPorId(idSolicitud); // Recargar con el nuevo estado
+            this.objGestionarNotificacionCU.notificarCambioEstadoSolicitud(solicitud, estadoAnterior, nuevoEstado, "HOMOLOGACION");
+        } catch (Exception e) {
+            // Log del error pero no interrumpir el flujo principal
+            System.err.println("Error al crear notificación de cambio de estado: " + e.getMessage());
+            e.printStackTrace();
+        }
     }
     
     
