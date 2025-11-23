@@ -149,6 +149,7 @@ public class NotificacionRestController {
                     .map(notificacionMapper::mappearDeNotificacionARespuesta)
                     .collect(Collectors.toList());
             
+            log.debug("Notificaciones no leídas encontradas para usuario {}: {}", idUsuario, respuesta.size());
             return ResponseEntity.ok(respuesta);
         } catch (Exception e) {
             log.error("Error al obtener notificaciones no leídas del usuario {}", idUsuario, e);
@@ -323,10 +324,13 @@ public class NotificacionRestController {
         try {
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
             if (authentication == null || !authentication.isAuthenticated()) {
+                log.warn("Autenticación nula o no autenticado al validar permisos para usuario {}", idUsuario);
                 return false;
             }
 
             String email = authentication.getName();
+            log.debug("Validando permisos para usuario {} (email autenticado: {})", idUsuario, email);
+            
             Usuario usuarioAutenticado = usuarioGateway.buscarUsuarioPorCorreo(email);
             
             if (usuarioAutenticado == null) {
@@ -336,6 +340,7 @@ public class NotificacionRestController {
 
             // Si es el mismo usuario, siempre puede ver sus notificaciones
             if (usuarioAutenticado.getId_usuario().equals(idUsuario)) {
+                log.debug("Permiso concedido: mismo usuario (ID: {})", idUsuario);
                 return true;
             }
 
@@ -344,13 +349,23 @@ public class NotificacionRestController {
                     ? usuarioAutenticado.getObjRol().getNombre() 
                     : null;
 
+            log.debug("Usuario autenticado ID: {}, Rol: {}, Solicitando notificaciones de usuario: {}", 
+                    usuarioAutenticado.getId_usuario(), rolNombre, idUsuario);
+
             // Funcionarios, coordinadores, secretarios y administradores pueden ver notificaciones de otros
-            return "Funcionario".equals(rolNombre) || 
+            boolean tienePermiso = "Funcionario".equals(rolNombre) || 
                    "Coordinador".equals(rolNombre) || 
                    "Secretario".equals(rolNombre) ||
                    "Administrador".equals(rolNombre);
+            
+            if (!tienePermiso) {
+                log.warn("Permiso denegado: usuario {} (rol: {}) intentando acceder a notificaciones de usuario {}", 
+                        usuarioAutenticado.getId_usuario(), rolNombre, idUsuario);
+            }
+            
+            return tienePermiso;
         } catch (Exception e) {
-            log.error("Error al validar permisos para ver notificaciones", e);
+            log.error("Error al validar permisos para ver notificaciones del usuario {}", idUsuario, e);
             return false;
         }
     }
