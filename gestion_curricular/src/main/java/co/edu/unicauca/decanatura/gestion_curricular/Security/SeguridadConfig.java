@@ -2,6 +2,7 @@ package co.edu.unicauca.decanatura.gestion_curricular.Security;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -36,7 +37,7 @@ public class SeguridadConfig {
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
             .csrf(csrf -> csrf.disable()) // Deshabilitado porque usamos JWT stateless
-            .cors(cors -> {}) // Habilitar CORS usando WebConfig
+            .cors(cors -> cors.configurationSource(corsConfigurationSource())) // Usar nuestra configuración de CORS
             .sessionManagement(session -> session
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS) // Stateless porque usamos JWT
             )
@@ -77,10 +78,12 @@ public class SeguridadConfig {
                     "/swagger-resources/**",
                     "/webjars/**"
                 ).permitAll()
-                // Permitir acceso a login sin autenticación
+                // Permitir acceso a login sin autenticación (incluye OPTIONS para preflight)
                 .requestMatchers("/api/usuarios/login").permitAll()
                 // Permitir acceso a estadísticas sin autenticación (compatible con despliegue actual)
                 .requestMatchers("/api/estadisticas/**").permitAll()
+                // Permitir todas las peticiones OPTIONS (preflight CORS)
+                .requestMatchers(org.springframework.http.HttpMethod.OPTIONS, "/**").permitAll()
                 // Todos los demás endpoints requieren autenticación
                 .anyRequest().authenticated()
             )
@@ -99,13 +102,17 @@ public class SeguridadConfig {
         if (allowedOrigins.equals("*")) {
             origins = Arrays.asList("*");
         } else {
-            origins = Arrays.asList(allowedOrigins.split(","));
+            // Limpiar espacios en blanco de los orígenes
+            origins = Arrays.stream(allowedOrigins.split(","))
+                    .map(String::trim)
+                    .filter(s -> !s.isEmpty())
+                    .collect(Collectors.toList());
         }
         
         configuration.setAllowedOriginPatterns(origins);
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"));
-        configuration.setAllowedHeaders(Arrays.asList("Authorization", "Content-Type", "X-Requested-With", "accept", "Origin", "Access-Control-Request-Method", "Access-Control-Request-Headers"));
-        configuration.setExposedHeaders(Arrays.asList("Authorization"));
+        configuration.setAllowedHeaders(Arrays.asList("*")); // Permitir todos los headers para mayor compatibilidad
+        configuration.setExposedHeaders(Arrays.asList("Authorization", "Content-Type"));
         // Usar false para consistencia con WebConfig (JWT en headers, no cookies)
         configuration.setAllowCredentials(false);
         configuration.setMaxAge(3600L);
