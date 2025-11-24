@@ -19,9 +19,16 @@ public class WebConfig implements WebMvcConfigurer {
 
     @Override
     public void addCorsMappings(CorsRegistry registry) {
-        String[] origins = allowedOrigins.equals("*") 
-                ? new String[]{"*"} 
-                : allowedOrigins.split(",");
+        String[] origins;
+        if (allowedOrigins.equals("*")) {
+            origins = new String[]{"*"};
+        } else {
+            // Limpiar espacios en blanco de los orígenes para mayor robustez
+            origins = java.util.Arrays.stream(allowedOrigins.split(","))
+                    .map(String::trim)
+                    .filter(s -> !s.isEmpty())
+                    .toArray(String[]::new);
+        }
         
         registry.addMapping("/api/**")
                 // Usar variables de entorno para producción: 
