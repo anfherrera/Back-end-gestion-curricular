@@ -66,6 +66,8 @@ public class SeguridadConfig {
                 )
             )
             .authorizeHttpRequests(auth -> auth
+                // CRÍTICO: Permitir todas las peticiones OPTIONS (preflight) sin autenticación
+                .requestMatchers(org.springframework.http.HttpMethod.OPTIONS, "/**").permitAll()
                 // Permitir acceso a Actuator health checks (requerido por Render/Railway)
                 .requestMatchers("/actuator/health", "/actuator/info").permitAll()
                 // Permitir acceso a Swagger UI y OpenAPI docs sin autenticación
@@ -94,17 +96,66 @@ public class SeguridadConfig {
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
         
-        // Procesar orígenes permitidos
+        // IMPORTANTE: Cuando allowCredentials es true, NO se puede usar "*" directamente
+        // Usar patrones específicos o orígenes exactos
+        
         if ("*".equals(allowedOrigins)) {
-            configuration.setAllowedOriginPatterns(List.of("*"));
+            // Si es *, usar patrones que permitan todos los orígenes de Vercel y localhost
+            configuration.setAllowedOriginPatterns(Arrays.asList(
+                "https://*.vercel.app",
+                "http://localhost:*",
+                "http://127.0.0.1:*"
+            ));
         } else {
-            configuration.setAllowedOriginPatterns(Arrays.asList(allowedOrigins.split(",")));
+            // Si hay orígenes específicos, procesarlos
+            List<String> origins = Arrays.asList(allowedOrigins.split(","));
+            List<String> exactOrigins = new java.util.ArrayList<>();
+            List<String> patterns = new java.util.ArrayList<>();
+            
+            for (String origin : origins) {
+                origin = origin.trim();
+                if ("*".equals(origin)) {
+                    // Si hay *, agregar patrones de Vercel
+                    patterns.add("https://*.vercel.app");
+                    patterns.add("http://localhost:*");
+                } else if (origin.contains("*")) {
+                    // Es un patrón
+                    patterns.add(origin);
+                } else {
+                    // Es un origen exacto
+                    exactOrigins.add(origin);
+                }
+            }
+            
+            if (!exactOrigins.isEmpty()) {
+                configuration.setAllowedOrigins(exactOrigins);
+            }
+            if (!patterns.isEmpty()) {
+                configuration.setAllowedOriginPatterns(patterns);
+            }
         }
         
+        // Métodos permitidos (incluyendo OPTIONS para preflight)
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH", "HEAD"));
-        configuration.setAllowedHeaders(List.of("*"));
+        
+        // Headers permitidos (incluyendo los que el frontend necesita)
+        configuration.setAllowedHeaders(Arrays.asList(
+            "Content-Type", 
+            "Authorization", 
+            "Accept",
+            "X-Requested-With",
+            "Origin",
+            "Access-Control-Request-Method",
+            "Access-Control-Request-Headers"
+        ));
+        
+        // Headers expuestos para que el frontend pueda leerlos
         configuration.setExposedHeaders(Arrays.asList("Authorization", "Content-Type"));
-        configuration.setAllowCredentials(false);
+        
+        // IMPORTANTE: Permitir credenciales (el frontend lo requiere)
+        configuration.setAllowCredentials(true);
+        
+        // Cache de preflight requests (1 hora)
         configuration.setMaxAge(3600L);
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
