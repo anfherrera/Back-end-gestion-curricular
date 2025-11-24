@@ -93,14 +93,16 @@ public class SeguridadConfig {
         
         // Permitir todos los orígenes (comportamiento original)
         configuration.setAllowedOriginPatterns(Arrays.asList("*"));
-        configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"));
+        configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH", "HEAD"));
         configuration.setAllowedHeaders(Arrays.asList("*")); // Permitir todos los headers para mayor compatibilidad
-        configuration.setExposedHeaders(Arrays.asList("Authorization", "Content-Type"));
+        configuration.setExposedHeaders(Arrays.asList("Authorization", "Content-Type", "Access-Control-Allow-Origin", "Access-Control-Allow-Credentials"));
         // Usar false para consistencia con WebConfig (JWT en headers, no cookies)
+        // Cuando allowCredentials es false, se puede usar "*" en allowedOriginPatterns
         configuration.setAllowCredentials(false);
         configuration.setMaxAge(3600L);
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        // Registrar CORS para todas las rutas
         source.registerCorsConfiguration("/**", configuration);
         return source;
     }
