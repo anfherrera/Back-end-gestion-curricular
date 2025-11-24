@@ -35,23 +35,25 @@ public class SeguridadConfig {
             .sessionManagement(session -> session
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS) // Stateless porque usamos JWT
             )
-            // Configurar headers de seguridad HTTP
+            // Configurar headers de seguridad HTTP (relajados para producción con CORS)
             .headers(headers -> headers
+                // CSP relajado para permitir conexiones desde cualquier origen (necesario para CORS)
                 .contentSecurityPolicy(csp -> csp
                     .policyDirectives("default-src 'self'; " +
                         "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; " +
                         "font-src 'self' https://fonts.gstatic.com; " +
                         "script-src 'self'; " +
                         "img-src 'self' data: https:; " +
-                        "connect-src 'self' http://localhost:* https://*")
+                        "connect-src *") // Permitir todas las conexiones para CORS
                 )
-                .frameOptions(frame -> frame.deny()) // X-Frame-Options: DENY (protección clickjacking)
+                .frameOptions(frame -> frame.sameOrigin()) // Cambiar a sameOrigin para permitir iframes del mismo origen
                 .contentTypeOptions(contentType -> {}) // X-Content-Type-Options: nosniff
-                .httpStrictTransportSecurity(hsts -> hsts
-                    .maxAgeInSeconds(31536000) // 1 año
-                    .includeSubDomains(true)
-                    .preload(true)
-                )
+                // HSTS deshabilitado temporalmente para evitar problemas con CORS
+                // .httpStrictTransportSecurity(hsts -> hsts
+                //     .maxAgeInSeconds(31536000) // 1 año
+                //     .includeSubDomains(true)
+                //     .preload(true)
+                // )
                 .xssProtection(xss -> {}) // X-XSS-Protection: 1; mode=block
                 .referrerPolicy(referrer -> referrer
                     .policy(org.springframework.security.web.header.writers.ReferrerPolicyHeaderWriter.ReferrerPolicy.STRICT_ORIGIN_WHEN_CROSS_ORIGIN)
