@@ -4,8 +4,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -25,13 +23,31 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 @Configuration
 @EnableWebSecurity
 @EnableMethodSecurity
-@RequiredArgsConstructor
 public class SeguridadConfig {
     
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
+    private final org.springframework.core.env.Environment environment;
     
-    @Value("${app.cors.allowed-origins:*}")
-    private String allowedOrigins;
+    public SeguridadConfig(JwtAuthenticationFilter jwtAuthenticationFilter, 
+                          org.springframework.core.env.Environment environment) {
+        this.jwtAuthenticationFilter = jwtAuthenticationFilter;
+        this.environment = environment;
+    }
+    
+    private String getAllowedOrigins() {
+        // Buscar primero CORS_ALLOWED_ORIGIN (sin S) para compatibilidad con Render
+        String origin = environment.getProperty("CORS_ALLOWED_ORIGIN");
+        if (origin != null && !origin.isEmpty()) {
+            return origin;
+        }
+        // Si no existe, buscar CORS_ALLOWED_ORIGINS (con S)
+        origin = environment.getProperty("CORS_ALLOWED_ORIGINS");
+        if (origin != null && !origin.isEmpty()) {
+            return origin;
+        }
+        // Si no existe ninguna, usar el valor de application.properties o "*"
+        return environment.getProperty("app.cors.allowed-origins", "*");
+    }
     
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
@@ -98,6 +114,7 @@ public class SeguridadConfig {
         CorsConfiguration configuration = new CorsConfiguration();
         
         // Usar la misma configuración que WebConfig (variables de entorno)
+        String allowedOrigins = getAllowedOrigins();
         List<String> origins;
         if (allowedOrigins.equals("*")) {
             origins = Arrays.asList("*");

@@ -1,7 +1,7 @@
 package co.edu.unicauca.decanatura.gestion_curricular.infraestructura.configuracion;
 
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.env.Environment;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
@@ -14,11 +14,30 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 @Configuration
 public class WebConfig implements WebMvcConfigurer {
 
-    @Value("${app.cors.allowed-origins:*}")
-    private String allowedOrigins;
+    private final Environment environment;
+
+    public WebConfig(Environment environment) {
+        this.environment = environment;
+    }
+
+    private String getAllowedOrigins() {
+        // Buscar primero CORS_ALLOWED_ORIGIN (sin S) para compatibilidad con Render
+        String origin = environment.getProperty("CORS_ALLOWED_ORIGIN");
+        if (origin != null && !origin.isEmpty()) {
+            return origin;
+        }
+        // Si no existe, buscar CORS_ALLOWED_ORIGINS (con S)
+        origin = environment.getProperty("CORS_ALLOWED_ORIGINS");
+        if (origin != null && !origin.isEmpty()) {
+            return origin;
+        }
+        // Si no existe ninguna, usar el valor de application.properties o "*"
+        return environment.getProperty("app.cors.allowed-origins", "*");
+    }
 
     @Override
     public void addCorsMappings(CorsRegistry registry) {
+        String allowedOrigins = getAllowedOrigins();
         String[] origins;
         if (allowedOrigins.equals("*")) {
             origins = new String[]{"*"};
