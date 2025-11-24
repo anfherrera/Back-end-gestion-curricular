@@ -129,10 +129,18 @@ El artefacto empaquetado queda en `gestion_curricular/target/gestion_curricular-
 2. Seleccionar la rama `backend`.
 3. Configurar:
    - **Build Command**: `./mvnw -DskipTests package`
-   - **Start Command**: `java -jar target/gestion_curricular-0.0.1-SNAPSHOT.jar`
-   - **Environment**: `Docker` / `Native` (cualquiera funciona)
+   - **Start Command**: 
+     - Si usas Docker: El Dockerfile ya incluye configuración de memoria optimizada
+     - Si usas Native: `java -Xmx512m -Xms256m -XX:+UseG1GC -XX:MaxGCPauseMillis=200 -XX:+UseContainerSupport -XX:MaxRAMPercentage=75.0 -jar target/gestion_curricular-0.0.1-SNAPSHOT.jar`
+   - **Environment**: `Docker` (recomendado) o `Native`
 4. Definir las variables de entorno listadas arriba.
 5. Conectar la base de datos (MySQL externo o un servicio existente).
+
+**⚠️ IMPORTANTE - Configuración de Memoria:**
+- El Dockerfile está configurado con `-Xmx512m` (máximo 512MB heap)
+- Si tienes un plan con más memoria, ajusta `-Xmx` en el Dockerfile o Start Command
+- Para planes Free/Starter: `-Xmx512m` es suficiente
+- Para planes con más RAM: puedes aumentar a `-Xmx1024m` o `-Xmx2048m`
 6. Desplegar y verificar la URL pública (`/swagger-ui.html`).
 
 > También puedes usar Railway o Fly.io siguiendo la misma configuración de comandos y variables.
