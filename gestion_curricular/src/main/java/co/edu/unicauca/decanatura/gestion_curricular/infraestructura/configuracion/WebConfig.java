@@ -23,14 +23,14 @@ public class WebConfig implements WebMvcConfigurer {
                 ? new String[]{"*"} 
                 : allowedOrigins.split(",");
         
-        registry.addMapping("/api/**")
-                // Usar variables de entorno para producción: 
-                // app.cors.allowed-origins=http://localhost:4200,https://tu-dominio.com
-                // Para desarrollo, permite cualquier origen (solo en desarrollo)
+        // Configurar CORS para todas las rutas (incluyendo /api/** y /actuator/**)
+        registry.addMapping("/**")
+                // Si CORS_ALLOWED_ORIGINS no está definida, permite todos los orígenes (*)
+                // Para restringir orígenes, definir: CORS_ALLOWED_ORIGINS=https://tu-dominio.com,https://otro-dominio.com
                 .allowedOriginPatterns(origins)
-                .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH")
-                .allowedHeaders("Authorization", "Content-Type", "X-Requested-With", "accept", "Origin", "Access-Control-Request-Method", "Access-Control-Request-Headers")
-                .exposedHeaders("Authorization") // Exponer el header Authorization para que el frontend pueda leerlo
+                .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH", "HEAD")
+                .allowedHeaders("*") // Permitir todos los headers
+                .exposedHeaders("Authorization", "Content-Type") // Exponer headers importantes
                 .allowCredentials(false) // Deshabilitado porque usamos JWT en headers, no cookies
                 .maxAge(3600); // Cachear preflight requests por 1 hora
     }
