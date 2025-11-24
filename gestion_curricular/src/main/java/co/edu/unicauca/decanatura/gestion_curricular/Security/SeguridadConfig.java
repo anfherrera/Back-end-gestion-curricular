@@ -61,6 +61,8 @@ public class SeguridadConfig {
                 )
             )
             .authorizeHttpRequests(auth -> auth
+                // Permitir acceso a Actuator health checks (requerido por Render/Railway)
+                .requestMatchers("/actuator/health", "/actuator/info").permitAll()
                 // Permitir acceso a Swagger UI y OpenAPI docs sin autenticación
                 .requestMatchers(
                     "/swagger-ui/**",
