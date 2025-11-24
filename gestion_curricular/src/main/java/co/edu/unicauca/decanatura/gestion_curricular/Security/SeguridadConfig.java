@@ -101,7 +101,9 @@ public class SeguridadConfig {
         
         if ("*".equals(allowedOrigins)) {
             // Si es *, usar patrones que permitan todos los orígenes de Vercel y localhost
+            // IMPORTANTE: Incluir el origen específico del frontend
             configuration.setAllowedOriginPatterns(Arrays.asList(
+                "https://front-end-gestion-git-6132f1-andres-herreras-projects-2e8b8ec1.vercel.app",
                 "https://*.vercel.app",
                 "http://localhost:*",
                 "http://127.0.0.1:*"
