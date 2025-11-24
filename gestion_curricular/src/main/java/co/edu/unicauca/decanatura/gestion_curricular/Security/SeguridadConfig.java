@@ -31,29 +31,27 @@ public class SeguridadConfig {
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
             .csrf(csrf -> csrf.disable()) // Deshabilitado porque usamos JWT stateless
-            .cors(cors -> cors.configurationSource(corsConfigurationSource())) // Usar nuestra configuración de CORS
+            .cors(cors -> {}) // Habilitar CORS usando WebConfig
             .sessionManagement(session -> session
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS) // Stateless porque usamos JWT
             )
-            // Configurar headers de seguridad HTTP (relajados para producción con CORS)
+            // Configurar headers de seguridad HTTP
             .headers(headers -> headers
-                // CSP relajado para permitir conexiones desde cualquier origen (necesario para CORS)
                 .contentSecurityPolicy(csp -> csp
                     .policyDirectives("default-src 'self'; " +
                         "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; " +
                         "font-src 'self' https://fonts.gstatic.com; " +
                         "script-src 'self'; " +
                         "img-src 'self' data: https:; " +
-                        "connect-src *") // Permitir todas las conexiones para CORS
+                        "connect-src 'self' http://localhost:* https://*")
                 )
-                .frameOptions(frame -> frame.sameOrigin()) // Cambiar a sameOrigin para permitir iframes del mismo origen
+                .frameOptions(frame -> frame.deny()) // X-Frame-Options: DENY (protección clickjacking)
                 .contentTypeOptions(contentType -> {}) // X-Content-Type-Options: nosniff
-                // HSTS deshabilitado temporalmente para evitar problemas con CORS
-                // .httpStrictTransportSecurity(hsts -> hsts
-                //     .maxAgeInSeconds(31536000) // 1 año
-                //     .includeSubDomains(true)
-                //     .preload(true)
-                // )
+                .httpStrictTransportSecurity(hsts -> hsts
+                    .maxAgeInSeconds(31536000) // 1 año
+                    .includeSubDomains(true)
+                    .preload(true)
+                )
                 .xssProtection(xss -> {}) // X-XSS-Protection: 1; mode=block
                 .referrerPolicy(referrer -> referrer
                     .policy(org.springframework.security.web.header.writers.ReferrerPolicyHeaderWriter.ReferrerPolicy.STRICT_ORIGIN_WHEN_CROSS_ORIGIN)
@@ -63,8 +61,6 @@ public class SeguridadConfig {
                 )
             )
             .authorizeHttpRequests(auth -> auth
-                // Permitir acceso a Actuator health checks (requerido por Render/Railway)
-                .requestMatchers("/actuator/health", "/actuator/info").permitAll()
                 // Permitir acceso a Swagger UI y OpenAPI docs sin autenticación
                 .requestMatchers(
                     "/swagger-ui/**",
@@ -74,12 +70,10 @@ public class SeguridadConfig {
                     "/swagger-resources/**",
                     "/webjars/**"
                 ).permitAll()
-                // Permitir acceso a login sin autenticación (incluye OPTIONS para preflight)
+                // Permitir acceso a login sin autenticación
                 .requestMatchers("/api/usuarios/login").permitAll()
                 // Permitir acceso a estadísticas sin autenticación (compatible con despliegue actual)
                 .requestMatchers("/api/estadisticas/**").permitAll()
-                // Permitir todas las peticiones OPTIONS (preflight CORS)
-                .requestMatchers(org.springframework.http.HttpMethod.OPTIONS, "/**").permitAll()
                 // Todos los demás endpoints requieren autenticación
                 .anyRequest().authenticated()
             )
@@ -92,19 +86,16 @@ public class SeguridadConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        
-        // Permitir todos los orígenes (comportamiento original)
-        configuration.setAllowedOriginPatterns(Arrays.asList("*"));
-        configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH", "HEAD"));
-        configuration.setAllowedHeaders(Arrays.asList("*")); // Permitir todos los headers para mayor compatibilidad
-        configuration.setExposedHeaders(Arrays.asList("Authorization", "Content-Type", "Access-Control-Allow-Origin", "Access-Control-Allow-Credentials"));
-        // Usar false para consistencia con WebConfig (JWT en headers, no cookies)
-        // Cuando allowCredentials es false, se puede usar "*" en allowedOriginPatterns
-        configuration.setAllowCredentials(false);
-        configuration.setMaxAge(3600L);
+        configuration.setAllowedOriginPatterns(Arrays.asList(
+            "http://localhost:4200",
+            "https://front-end-gestion-curricular.vercel.app",
+            "https://*.vercel.app"
+        ));
+        configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+        configuration.setAllowedHeaders(Arrays.asList("*"));
+        configuration.setAllowCredentials(true);
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        // Registrar CORS para todas las rutas
         source.registerCorsConfiguration("/**", configuration);
         return source;
     }
