@@ -1,9 +1,8 @@
 package co.edu.unicauca.decanatura.gestion_curricular.Security;
 
 import java.util.Arrays;
-import java.util.List;
-import java.util.stream.Collectors;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -23,31 +22,10 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 @Configuration
 @EnableWebSecurity
 @EnableMethodSecurity
+@RequiredArgsConstructor
 public class SeguridadConfig {
     
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
-    private final org.springframework.core.env.Environment environment;
-    
-    public SeguridadConfig(JwtAuthenticationFilter jwtAuthenticationFilter, 
-                          org.springframework.core.env.Environment environment) {
-        this.jwtAuthenticationFilter = jwtAuthenticationFilter;
-        this.environment = environment;
-    }
-    
-    private String getAllowedOrigins() {
-        // Buscar primero CORS_ALLOWED_ORIGIN (sin S) para compatibilidad con Render
-        String origin = environment.getProperty("CORS_ALLOWED_ORIGIN");
-        if (origin != null && !origin.isEmpty()) {
-            return origin;
-        }
-        // Si no existe, buscar CORS_ALLOWED_ORIGINS (con S)
-        origin = environment.getProperty("CORS_ALLOWED_ORIGINS");
-        if (origin != null && !origin.isEmpty()) {
-            return origin;
-        }
-        // Si no existe ninguna, usar el valor de application.properties o "*"
-        return environment.getProperty("app.cors.allowed-origins", "*");
-    }
     
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
@@ -113,20 +91,8 @@ public class SeguridadConfig {
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
         
-        // Usar la misma configuración que WebConfig (variables de entorno)
-        String allowedOrigins = getAllowedOrigins();
-        List<String> origins;
-        if (allowedOrigins.equals("*")) {
-            origins = Arrays.asList("*");
-        } else {
-            // Limpiar espacios en blanco de los orígenes
-            origins = Arrays.stream(allowedOrigins.split(","))
-                    .map(String::trim)
-                    .filter(s -> !s.isEmpty())
-                    .collect(Collectors.toList());
-        }
-        
-        configuration.setAllowedOriginPatterns(origins);
+        // Permitir todos los orígenes (comportamiento original)
+        configuration.setAllowedOriginPatterns(Arrays.asList("*"));
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"));
         configuration.setAllowedHeaders(Arrays.asList("*")); // Permitir todos los headers para mayor compatibilidad
         configuration.setExposedHeaders(Arrays.asList("Authorization", "Content-Type"));
