@@ -29,17 +29,17 @@ public class CorsFilter implements Filter {
 
         String origin = httpRequest.getHeader("Origin");
         
+        // CRÍTICO: Siempre establecer headers CORS antes de procesar la petición
+        // Esto asegura que los headers estén presentes incluso si hay errores
+        
         // Permitir el origen específico del frontend de Vercel y localhost
-        if (origin != null) {
-            // Permitir el origen específico de Vercel o localhost
-            if (origin.contains("vercel.app") || 
-                origin.startsWith("http://localhost") ||
-                origin.startsWith("http://127.0.0.1")) {
-                httpResponse.setHeader("Access-Control-Allow-Origin", origin);
-            } else {
-                // Para otros orígenes, también permitirlos (útil para desarrollo)
-                httpResponse.setHeader("Access-Control-Allow-Origin", origin);
-            }
+        if (origin != null && (origin.contains("vercel.app") || 
+            origin.startsWith("http://localhost") ||
+            origin.startsWith("http://127.0.0.1"))) {
+            httpResponse.setHeader("Access-Control-Allow-Origin", origin);
+        } else if (origin != null) {
+            // Permitir cualquier origen válido (útil para desarrollo)
+            httpResponse.setHeader("Access-Control-Allow-Origin", origin);
         } else {
             // Si no hay Origin header, permitir el origen específico de Vercel por defecto
             httpResponse.setHeader("Access-Control-Allow-Origin", 
