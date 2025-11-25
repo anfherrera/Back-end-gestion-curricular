@@ -8,7 +8,6 @@ import org.springframework.context.annotation.ComponentScan;
 /**
  * Clase principal de la aplicación de Gestión Curricular
  */
-
 @SpringBootApplication
 @ComponentScan(basePackages = "co.edu.unicauca.decanatura")
 @EnableCaching
