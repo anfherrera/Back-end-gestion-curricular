@@ -29,27 +29,34 @@ public class CorsFilter implements Filter {
 
         String origin = httpRequest.getHeader("Origin");
         
-        // Permitir el origen del frontend de Vercel
-        if (origin != null && (
-            origin.contains("vercel.app") || 
-            origin.startsWith("http://localhost") ||
-            origin.startsWith("http://127.0.0.1")
-        )) {
-            httpResponse.setHeader("Access-Control-Allow-Origin", origin);
-        } else if (origin != null) {
-            // Permitir cualquier origen de Vercel
-            httpResponse.setHeader("Access-Control-Allow-Origin", origin);
+        // Permitir el origen específico del frontend de Vercel y localhost
+        if (origin != null) {
+            // Permitir el origen específico de Vercel o localhost
+            if (origin.contains("vercel.app") || 
+                origin.startsWith("http://localhost") ||
+                origin.startsWith("http://127.0.0.1")) {
+                httpResponse.setHeader("Access-Control-Allow-Origin", origin);
+            } else {
+                // Para otros orígenes, también permitirlos (útil para desarrollo)
+                httpResponse.setHeader("Access-Control-Allow-Origin", origin);
+            }
+        } else {
+            // Si no hay Origin header, permitir el origen específico de Vercel por defecto
+            httpResponse.setHeader("Access-Control-Allow-Origin", 
+                "https://front-end-gestion-git-6132f1-andres-herreras-projects-2e8b8ec1.vercel.app");
         }
 
+        // Headers CORS esenciales
         httpResponse.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS, PATCH, HEAD");
         httpResponse.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization, Accept, X-Requested-With, Origin, Access-Control-Request-Method, Access-Control-Request-Headers");
         httpResponse.setHeader("Access-Control-Expose-Headers", "Authorization, Content-Type");
         httpResponse.setHeader("Access-Control-Allow-Credentials", "true");
         httpResponse.setHeader("Access-Control-Max-Age", "3600");
 
-        // Si es una petición OPTIONS (preflight), responder inmediatamente
+        // Si es una petición OPTIONS (preflight), responder inmediatamente con 204 No Content
         if ("OPTIONS".equalsIgnoreCase(httpRequest.getMethod())) {
-            httpResponse.setStatus(HttpServletResponse.SC_OK);
+            httpResponse.setStatus(HttpServletResponse.SC_NO_CONTENT); // 204
+            httpResponse.setContentLength(0);
             return;
         }
 
