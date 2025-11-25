@@ -18,8 +18,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import co.edu.unicauca.decanatura.gestion_curricular.Security.JwtUtil;
-import co.edu.unicauca.decanatura.gestion_curricular.Security.LoginRateLimiter;
-import co.edu.unicauca.decanatura.gestion_curricular.Security.SecurityAuditService;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarUsuarioCUIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Usuario;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.DTOPeticion.LoginDTOPeticion;
@@ -42,7 +40,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
-import jakarta.servlet.http.HttpServletRequest;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -59,8 +56,6 @@ public class UsuarioRestController {
     private final AuthenticationManager authManager;
     private final JwtUtil jwtUtil;
     private final UserDetailsService userDetailsService;
-    private final SecurityAuditService securityAuditService;
-    private final LoginRateLimiter loginRateLimiter;
 
 
     @PostMapping("/crearUsuario")
@@ -209,22 +204,8 @@ public class UsuarioRestController {
             content = @Content)
     })
     @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody LoginDTOPeticion request, HttpServletRequest httpRequest) {
+    public ResponseEntity<?> login(@RequestBody LoginDTOPeticion request) {
         try {
-            // Rate limiting por correo e IP
-            String ip = httpRequest.getHeader("X-Forwarded-For");
-            if (ip == null || ip.isBlank()) {
-                ip = httpRequest.getRemoteAddr();
-            }
-            var lockedUntil = loginRateLimiter.checkAllowed(request.getCorreo(), ip);
-            if (lockedUntil != null) {
-                // 429 Too Many Requests con Retry-After aproximado
-                long retryAfterSeconds = Math.max(1, java.time.Duration.between(java.time.Instant.now(), lockedUntil).getSeconds());
-                return ResponseEntity.status(HttpStatus.TOO_MANY_REQUESTS)
-                    .header("Retry-After", String.valueOf(retryAfterSeconds))
-                    .body("Demasiados intentos fallidos. Intenta nuevamente en " + retryAfterSeconds + " segundos.");
-            }
-
             authManager.authenticate(
                     new UsernamePasswordAuthenticationToken(request.getCorreo(), request.getPassword())
             );
@@ -235,35 +216,9 @@ public class UsuarioRestController {
             Usuario usuario = objUsuarioCUIntPort.buscarUsuarioPorCorreo(request.getCorreo());
             UsuarioDTORespuesta usuarioDTO = objUsuarioMapperDominio.mappearDeUsuarioAUsuarioDTORespuesta(usuario);
 
-            // Limpiar contadores por éxito
-            loginRateLimiter.onSuccess(request.getCorreo(), ip);
-
-            // Registrar login exitoso en auditoría de seguridad
-            securityAuditService.logSecurityEvent(
-                SecurityAuditService.SecurityEventType.LOGIN_SUCCESS,
-                "Login exitoso",
-                request.getCorreo(),
-                httpRequest
-            );
-
             return ResponseEntity.ok(new LoginDTORespuesta(token, usuarioDTO));
 
         } catch (BadCredentialsException ex) {
-            // Registrar intento fallido en limitador
-            String ip = httpRequest.getHeader("X-Forwarded-For");
-            if (ip == null || ip.isBlank()) {
-                ip = httpRequest.getRemoteAddr();
-            }
-            loginRateLimiter.onFailure(request.getCorreo(), ip);
-
-            // Registrar intento de login fallido en auditoría de seguridad
-            securityAuditService.logSecurityEvent(
-                SecurityAuditService.SecurityEventType.LOGIN_FAILED,
-                "Credenciales incorrectas para: " + request.getCorreo(),
-                null,
-                httpRequest
-            );
-            
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Credenciales incorrectas");
         }
     }

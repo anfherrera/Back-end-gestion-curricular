@@ -23,7 +23,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private final JwtUtil jwtUtil;
     private final UserDetailsService userDetailsService;
-    private final SecurityAuditService securityAuditService;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, 
@@ -43,51 +42,38 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         jwt = authHeader.substring(7);
         
         try {
+            // Validar el token primero (más rápido)
+            if (!jwtUtil.validarToken(jwt)) {
+                filterChain.doFilter(request, response);
+                return;
+            }
+            
             // Extraer el email del token
             userEmail = jwtUtil.extraerCorreoDesdeToken(jwt);
             
             // Si el email no es null y no hay autenticación en el contexto
             if (userEmail != null && SecurityContextHolder.getContext().getAuthentication() == null) {
                 
-                // Cargar los detalles del usuario
+                // Cargar los detalles del usuario solo si es necesario
                 UserDetails userDetails = this.userDetailsService.loadUserByUsername(userEmail);
                 
-                // Validar el token
-                if (jwtUtil.validarToken(jwt)) {
-                    // Crear el token de autenticación
-                    UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
-                        userDetails,
-                        null,
-                        userDetails.getAuthorities()
-                    );
-                    
-                    // Establecer los detalles de la autenticación
-                    authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-                    
-                    // Establecer la autenticación en el contexto de seguridad
-                    SecurityContextHolder.getContext().setAuthentication(authToken);
-                    
-                    log.debug("Usuario autenticado: {}", userEmail);
-                }
+                // Crear el token de autenticación
+                UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
+                    userDetails,
+                    null,
+                    userDetails.getAuthorities()
+                );
+                
+                // Establecer los detalles de la autenticación
+                authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+                
+                // Establecer la autenticación en el contexto de seguridad
+                SecurityContextHolder.getContext().setAuthentication(authToken);
+                
+                log.debug("Usuario autenticado: {}", userEmail);
             }
         } catch (Exception e) {
             log.error("Error al procesar el token JWT: {}", e.getMessage());
-            
-            // Registrar evento de seguridad para token inválido/expirado
-            if (jwt != null) {
-                String tokenType = jwtUtil.estaExpirado(jwt) ? "Token expirado" : "Token inválido";
-                SecurityAuditService.SecurityEventType eventType = jwtUtil.estaExpirado(jwt) 
-                    ? SecurityAuditService.SecurityEventType.TOKEN_EXPIRED 
-                    : SecurityAuditService.SecurityEventType.TOKEN_INVALID;
-                
-                securityAuditService.logSecurityEvent(
-                    eventType,
-                    tokenType + " en URI: " + request.getRequestURI(),
-                    null,
-                    request
-                );
-            }
-            
             // No establecer autenticación si hay error
         }
 

@@ -40,31 +40,6 @@ public class SeguridadConfig {
             .sessionManagement(session -> session
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS) // Stateless porque usamos JWT
             )
-            // Configurar headers de seguridad HTTP
-            .headers(headers -> headers
-                .contentSecurityPolicy(csp -> csp
-                    .policyDirectives("default-src 'self'; " +
-                        "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; " +
-                        "font-src 'self' https://fonts.gstatic.com; " +
-                        "script-src 'self'; " +
-                        "img-src 'self' data: https:; " +
-                        "connect-src 'self' http://localhost:* https://*")
-                )
-                .frameOptions(frame -> frame.deny()) // X-Frame-Options: DENY (protección clickjacking)
-                .contentTypeOptions(contentType -> {}) // X-Content-Type-Options: nosniff
-                .httpStrictTransportSecurity(hsts -> hsts
-                    .maxAgeInSeconds(31536000) // 1 año
-                    .includeSubDomains(true)
-                    .preload(true)
-                )
-                .xssProtection(xss -> {}) // X-XSS-Protection: 1; mode=block
-                .referrerPolicy(referrer -> referrer
-                    .policy(org.springframework.security.web.header.writers.ReferrerPolicyHeaderWriter.ReferrerPolicy.STRICT_ORIGIN_WHEN_CROSS_ORIGIN)
-                )
-                .permissionsPolicy(permissions -> permissions
-                    .policy("geolocation=(), microphone=(), camera=()")
-                )
-            )
             .authorizeHttpRequests(auth -> auth
                 // CRÍTICO: Permitir todas las peticiones OPTIONS (preflight) sin autenticación
                 .requestMatchers(org.springframework.http.HttpMethod.OPTIONS, "/**").permitAll()
