@@ -1690,7 +1690,7 @@ public class CursosIntersemestralesRestController {
             log.info("Exportando solicitudes de cursos intersemestrales a Excel");
             
             // Obtener todas las solicitudes usando la misma logica del endpoint anterior
-            List<SolicitudEntity> todasLasSolicitudes = solicitudRepository.findAll();
+            List<SolicitudEntity> todasLasSolicitudes = solicitudRepository.findAllWithJoins();
             
             List<Map<String, Object>> solicitudesFormateadas = new ArrayList<>();
             
