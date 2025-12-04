@@ -2920,7 +2920,7 @@ public class CursosIntersemestralesRestController {
             }
             
             // Obtener el curso existente directamente del repositorio
-            CursoOfertadoVeranoEntity cursoEntity = cursoRepository.findById(id.intValue()).orElse(null);
+            CursoOfertadoVeranoEntity cursoEntity = cursoRepository.findByIdConEstados(id.intValue());
             if (cursoEntity == null) {
                 Map<String, Object> error = new HashMap<>();
                 error.put("error", "Curso no encontrado");
