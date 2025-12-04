@@ -1559,7 +1559,8 @@ public class CursosIntersemestralesRestController {
             log.info("Obteniendo todas las solicitudes de cursos intersemestrales para funcionarios y coordinadores");
             
             // Buscar todas las solicitudes usando el repositorio directamente
-            List<SolicitudEntity> todasLasSolicitudes = solicitudRepository.findAll();
+            List<SolicitudEntity> todasLasSolicitudes = solicitudRepository.findAllWithJoins();
+
             
             List<Map<String, Object>> solicitudesFormateadas = new ArrayList<>();
             

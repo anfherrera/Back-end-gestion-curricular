@@ -349,4 +349,13 @@ public interface SolicitudRepositoryInt extends JpaRepository<SolicitudEntity, I
     """)
     Integer contarInscripcionesPorEstado(@Param("idCurso") Integer idCurso, @Param("estado") String estado);
 
+    @Query("""
+    SELECT s FROM SolicitudEntity s
+    JOIN FETCH s.objUsuario u
+    LEFT JOIN FETCH s.estadosSolicitud es
+    LEFT JOIN FETCH s.objCursoOfertadoVerano c
+    LEFT JOIN FETCH c.objMateria m
+    """)
+    List<SolicitudEntity> findAllWithJoins();
+
 }
