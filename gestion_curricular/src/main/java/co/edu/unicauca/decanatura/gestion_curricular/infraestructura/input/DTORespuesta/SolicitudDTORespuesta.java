@@ -16,7 +16,6 @@ public class SolicitudDTORespuesta {
     private String nombre_solicitud;
     private String periodo_academico; // Período académico en formato YYYY-P (ej: "2024-2")
     private Date fecha_registro_solicitud;
-    private Boolean esSeleccionado;
     private List<EstadoSolicitudDTORespuesta> estadosSolicitud;
     private UsuarioDTORespuesta objUsuario;
     private List<DocumentosDTORespuesta> documentos;

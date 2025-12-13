@@ -105,36 +105,24 @@ public class GestionarCursoOfertadoVeranoCUAdapter implements GestionarCursoOfer
                         
                         estadoSolicitud = new EstadoSolicitud();
                         estadoSolicitud.setFecha_registro_estado(new Date());
-                            if(solicitud.getEsSeleccionado() == true){
-                                estadoSolicitud.setEstado_actual("Aprobado");
-                                solicitud = this.objGestionarSolicitudGateway.actualizarSolicitud(solicitud, estadoSolicitud);
-                                usuario = this.objGestionarUsuarioGateway.buscarUsuarioPorSolicitud(solicitud.getId_solicitud());
-                                bandera = this.objGestionarCursoOfertadoVeranoGateway.asociarUsuarioCurso(usuario.getId_usuario(), idCurso);
-                                if(bandera == false){
-                                    this.objFormateadorResultados.retornarRespuestaErrorEntidadExiste("No se pudo asociar el usuario al curso");
-                                }
-                                
-                                // Notificar cambio de estado - Preinscripción Aprobada
-                                try {
-                                    this.objGestionarNotificacionCU.notificarCambioEstadoSolicitud(
-                                        solicitud, estadoAnterior, "Aprobado", "CURSO_VERANO_PREINSCRIPCION"
-                                    );
-                                } catch (Exception e) {
-                                    System.err.println("Error al crear notificación de cambio de estado: " + e.getMessage());
-                                }
-                            }else{
-                                estadoSolicitud.setEstado_actual("Rechazado");
-                                solicitud = this.objGestionarSolicitudGateway.actualizarSolicitud(solicitud, estadoSolicitud);
-                                
-                                // Notificar cambio de estado - Preinscripción Rechazada
-                                try {
-                                    this.objGestionarNotificacionCU.notificarCambioEstadoSolicitud(
-                                        solicitud, estadoAnterior, "Rechazado", "CURSO_VERANO_PREINSCRIPCION"
-                                    );
-                                } catch (Exception e) {
-                                    System.err.println("Error al crear notificación de cambio de estado: " + e.getMessage());
-                                }
-                            }
+                        // Nota: La lógica de aprobación/rechazo basada en esSeleccionado fue eliminada
+                        // Todas las solicitudes se aprueban por defecto
+                        estadoSolicitud.setEstado_actual("Aprobado");
+                        solicitud = this.objGestionarSolicitudGateway.actualizarSolicitud(solicitud, estadoSolicitud);
+                        usuario = this.objGestionarUsuarioGateway.buscarUsuarioPorSolicitud(solicitud.getId_solicitud());
+                        bandera = this.objGestionarCursoOfertadoVeranoGateway.asociarUsuarioCurso(usuario.getId_usuario(), idCurso);
+                        if(bandera == false){
+                            this.objFormateadorResultados.retornarRespuestaErrorEntidadExiste("No se pudo asociar el usuario al curso");
+                        }
+                        
+                        // Notificar cambio de estado - Preinscripción Aprobada
+                        try {
+                            this.objGestionarNotificacionCU.notificarCambioEstadoSolicitud(
+                                solicitud, estadoAnterior, "Aprobado", "CURSO_VERANO_PREINSCRIPCION"
+                            );
+                        } catch (Exception e) {
+                            System.err.println("Error al crear notificación de cambio de estado: " + e.getMessage());
+                        }
                     }
                     
 
@@ -160,39 +148,27 @@ public class GestionarCursoOfertadoVeranoCUAdapter implements GestionarCursoOfer
                     
                     estadoSolicitud = new EstadoSolicitud();
                     estadoSolicitud.setFecha_registro_estado(new Date());
-                        if(solicitud.getEsSeleccionado() == true){
-                            estadoSolicitud.setEstado_actual("Aprobado");
-                            solicitud = this.objGestionarSolicitudGateway.actualizarSolicitud(solicitud, estadoSolicitud);
-                            usuario = this.objGestionarUsuarioGateway.buscarUsuarioPorSolicitud(solicitud.getId_solicitud());
-                                if(solicitudes.size() < cursoABuscar.getEstudiantesInscritos().size()){
-                                    for (Usuario usuarioViejo : estudiantesInscritos) {
-                                        if (usuarioViejo.getId_usuario().equals(usuario.getId_usuario())) {
-                                            usuariosRemovidos.add(usuarioViejo);
-                                        }
-                                    }
-                                }
-                                
-                                // Notificar cambio de estado - Inscripción Aprobada
-                                try {
-                                    this.objGestionarNotificacionCU.notificarCambioEstadoSolicitud(
-                                        solicitud, estadoAnterior, "Aprobado", "CURSO_VERANO_INSCRIPCION"
-                                    );
-                                } catch (Exception e) {
-                                    System.err.println("Error al crear notificación de cambio de estado: " + e.getMessage());
-                                }
-                        }else{
-                            estadoSolicitud.setEstado_actual("Rechazado");
-                            solicitud = this.objGestionarSolicitudGateway.actualizarSolicitud(solicitud, estadoSolicitud);
-                            
-                            // Notificar cambio de estado - Inscripción Rechazada
-                            try {
-                                this.objGestionarNotificacionCU.notificarCambioEstadoSolicitud(
-                                    solicitud, estadoAnterior, "Rechazado", "CURSO_VERANO_INSCRIPCION"
-                                );
-                            } catch (Exception e) {
-                                System.err.println("Error al crear notificación de cambio de estado: " + e.getMessage());
+                    // Nota: La lógica de aprobación/rechazo basada en esSeleccionado fue eliminada
+                    // Todas las solicitudes se aprueban por defecto
+                    estadoSolicitud.setEstado_actual("Aprobado");
+                    solicitud = this.objGestionarSolicitudGateway.actualizarSolicitud(solicitud, estadoSolicitud);
+                    usuario = this.objGestionarUsuarioGateway.buscarUsuarioPorSolicitud(solicitud.getId_solicitud());
+                    if(solicitudes.size() < cursoABuscar.getEstudiantesInscritos().size()){
+                        for (Usuario usuarioViejo : estudiantesInscritos) {
+                            if (usuarioViejo.getId_usuario().equals(usuario.getId_usuario())) {
+                                usuariosRemovidos.add(usuarioViejo);
                             }
                         }
+                    }
+                    
+                    // Notificar cambio de estado - Inscripción Aprobada
+                    try {
+                        this.objGestionarNotificacionCU.notificarCambioEstadoSolicitud(
+                            solicitud, estadoAnterior, "Aprobado", "CURSO_VERANO_INSCRIPCION"
+                        );
+                    } catch (Exception e) {
+                        System.err.println("Error al crear notificación de cambio de estado: " + e.getMessage());
+                    }
                 }
                 if(estudiantesInscritos != null){
                     estudiantesInscritos.removeAll(usuariosRemovidos);

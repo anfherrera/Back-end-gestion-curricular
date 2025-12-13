@@ -26,4 +26,22 @@ public interface SolicitudReingresoRepositoryInt extends JpaRepository<Solicitud
            "    )" +
            ")")
     List<SolicitudReingresoEntity> findByUltimoEstado(@Param("estado") String estado);
+
+    /**
+     * Busca las solicitudes de reingreso cuyo último estado sea el especificado
+     * y que pertenezcan a un programa académico específico
+     */
+    @Query("SELECT s FROM SolicitudReingresoEntity s " +
+           "WHERE s.objUsuario.objPrograma.id_programa = :idPrograma " +
+           "AND s.id_solicitud IN (" +
+           "    SELECT e.objSolicitud.id_solicitud " +
+           "    FROM EstadoSolicitudEntity e " +
+           "    WHERE e.estado_actual = :estado " +
+           "    AND e.fecha_registro_estado = (" +
+           "        SELECT MAX(e2.fecha_registro_estado) " +
+           "        FROM EstadoSolicitudEntity e2 " +
+           "        WHERE e2.objSolicitud.id_solicitud = e.objSolicitud.id_solicitud" +
+           "    )" +
+           ")")
+    List<SolicitudReingresoEntity> findByUltimoEstadoAndPrograma(@Param("estado") String estado, @Param("idPrograma") Integer idPrograma);
 }

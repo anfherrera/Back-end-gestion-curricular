@@ -18,6 +18,13 @@ public interface GestionarSolicitudReingresoGatewayIntPort {
 
     List<SolicitudReingreso> listarSolicitudesReingresoToCoordinador();
 
+    /**
+     * Lista solicitudes de reingreso para coordinador filtradas por programa académico
+     * @param idPrograma ID del programa académico del coordinador
+     * @return Lista de solicitudes del programa específico
+     */
+    List<SolicitudReingreso> listarSolicitudesReingresoToCoordinadorPorPrograma(Integer idPrograma);
+
     List<SolicitudReingreso> listarSolicitudesAprobadasToSecretaria();
 
     Optional<SolicitudReingreso> buscarPorId(Integer id);

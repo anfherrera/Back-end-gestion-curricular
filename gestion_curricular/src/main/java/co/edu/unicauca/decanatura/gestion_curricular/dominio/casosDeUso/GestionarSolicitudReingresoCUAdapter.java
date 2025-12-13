@@ -117,6 +117,11 @@ public class GestionarSolicitudReingresoCUAdapter  implements GestionarSolicitud
     }
 
     @Override
+    public List<SolicitudReingreso> listarSolicitudesReingresoToCoordinadorPorPrograma(Integer idPrograma) {
+        return objGestionarSolicitudReingresoGateway.listarSolicitudesReingresoToCoordinadorPorPrograma(idPrograma);
+    }
+
+    @Override
     public List<SolicitudReingreso> listarSolicitudesAprobadasToSecretaria() {
         return objGestionarSolicitudReingresoGateway.listarSolicitudesAprobadasToSecretaria();
     }

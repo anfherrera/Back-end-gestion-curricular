@@ -18,8 +18,6 @@ public class Solicitud {
     private Date fecha_ceremonia; // Fecha de la ceremonia de graduación (para filtrar por ceremonias: marzo, junio, diciembre, etc.)
     private Date fecha_registro_solicitud;
 
-    private Boolean esSeleccionado;
-
     private List<EstadoSolicitud> estadosSolicitud;
 
     private Usuario objUsuario;

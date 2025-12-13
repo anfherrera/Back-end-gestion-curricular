@@ -524,7 +524,6 @@ public class CursosIntersemestralesRestController {
             // Inicializar campos obligatorios de la clase padre
             solicitudDominio.setNombre_solicitud("Solicitud de apertura de curso: " + peticion.getCurso());
             solicitudDominio.setFecha_registro_solicitud(new java.util.Date());
-            solicitudDominio.setEsSeleccionado(false);
             
             // Crear un curso temporal con ID = 0 para indicar que es un curso nuevo
             CursoOfertadoVerano cursoTemporal = new CursoOfertadoVerano();

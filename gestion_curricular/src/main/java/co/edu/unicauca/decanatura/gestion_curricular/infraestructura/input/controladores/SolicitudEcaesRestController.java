@@ -15,8 +15,13 @@ import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.DTORe
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.DTORespuesta.SolicitudEcaesDTORespuesta;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.mappers.SolicitudEcaesMapperDominio;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.mappers.SolicitudMapperDominio;
+import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.GestionarUsuarioGatewayIntPort;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Usuario;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 import java.util.List;
 import java.util.Optional;
@@ -34,11 +39,13 @@ import org.springframework.web.bind.annotation.PathVariable;
 @RestController
 @RequestMapping("/api/solicitudes-ecaes")
 @RequiredArgsConstructor
+@Slf4j
 public class SolicitudEcaesRestController {
 
     private final GestionarSolicitudEcaesCUIntPort solicitudEcaesCU;
     private final SolicitudEcaesMapperDominio solicitudMapperDominio;
     private final SolicitudMapperDominio solicitudMapper;
+    private final GestionarUsuarioGatewayIntPort usuarioGateway;
     
     @PostMapping("/crearSolicitud-Ecaes")
     public ResponseEntity<SolicitudEcaesDTORespuesta> crearSolicitud(@Valid @RequestBody SolicitudEcaesDTOPeticion peticion) {
@@ -75,6 +82,21 @@ public class SolicitudEcaesRestController {
             @RequestParam(required = false) Integer idUsuario) {
 
         List<SolicitudEcaes> solicitudes = solicitudEcaesCU.listarSolicitudesPorRol(rol, idUsuario);
+
+        // Si es coordinador, filtrar adicionalmente por programa
+        if ("COORDINADOR".equalsIgnoreCase(rol)) {
+            Integer idPrograma = obtenerProgramaCoordinadorAutenticado();
+            if (idPrograma != null) {
+                solicitudes = solicitudes.stream()
+                        .filter(s -> s.getObjUsuario() != null 
+                                && s.getObjUsuario().getObjPrograma() != null
+                                && s.getObjUsuario().getObjPrograma().getId_programa() != null
+                                && s.getObjUsuario().getObjPrograma().getId_programa().equals(idPrograma))
+                        .toList();
+            } else {
+                log.warn("No se pudo obtener el programa del coordinador para ECAES, retornando todas las solicitudes");
+            }
+        }
 
         List<SolicitudEcaesDTORespuesta> respuesta =
                 solicitudMapperDominio.mappearListaDeSolicitudEcaesARespuesta(solicitudes);
@@ -123,6 +145,48 @@ public class SolicitudEcaesRestController {
         FechaEcaesDTORespuesta respuesta = solicitudMapperDominio.mappearDeFechaEcaesAFechaEcaesDTORespuesta(fechaActualizada);
         return ResponseEntity.ok(respuesta);
     }
-    
+
+    /**
+     * Obtiene el ID del programa académico del coordinador autenticado.
+     * @return ID del programa o null si no se puede obtener
+     */
+    private Integer obtenerProgramaCoordinadorAutenticado() {
+        try {
+            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+            if (authentication == null || !authentication.isAuthenticated()) {
+                log.warn("No hay usuario autenticado");
+                return null;
+            }
+
+            String email = authentication.getName();
+            Usuario usuarioAutenticado = usuarioGateway.buscarUsuarioPorCorreo(email);
+            
+            if (usuarioAutenticado == null) {
+                log.warn("Usuario autenticado no encontrado: {}", email);
+                return null;
+            }
+
+            // Verificar que sea coordinador
+            String rolNombre = usuarioAutenticado.getObjRol() != null 
+                    ? usuarioAutenticado.getObjRol().getNombre() 
+                    : null;
+            
+            if (!"Coordinador".equals(rolNombre)) {
+                log.warn("El usuario autenticado no es coordinador: {}", rolNombre);
+                return null;
+            }
+
+            // Obtener el programa del coordinador
+            if (usuarioAutenticado.getObjPrograma() != null && usuarioAutenticado.getObjPrograma().getId_programa() != null) {
+                return usuarioAutenticado.getObjPrograma().getId_programa();
+            }
+
+            log.warn("El coordinador no tiene programa asignado");
+            return null;
+        } catch (Exception e) {
+            log.error("Error al obtener programa del coordinador autenticado", e);
+            return null;
+        }
+    }
     
 }

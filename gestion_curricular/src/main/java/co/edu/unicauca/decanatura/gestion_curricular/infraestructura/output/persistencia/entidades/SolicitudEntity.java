@@ -45,8 +45,6 @@ public class SolicitudEntity {
     @Column(nullable = false)
     private Date fecha_registro_solicitud;
 
-    private Boolean esSeleccionado;
-
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "objSolicitud", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<EstadoSolicitudEntity> estadosSolicitud;
 

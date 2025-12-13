@@ -14,8 +14,13 @@ import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.DTOPe
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.DTORespuesta.SolicitudHomologacionDTORespuesta;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.mappers.SolicitudHomologacioneMapperDominio;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.mappers.SolicitudMapperDominio;
+import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.GestionarUsuarioGatewayIntPort;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Usuario;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 import java.util.List;
 import java.util.Map;
@@ -39,11 +44,13 @@ import org.springframework.web.bind.annotation.PutMapping;
 @RestController
 @RequestMapping("/api/solicitudes-homologacion")
 @RequiredArgsConstructor
+@Slf4j
 public class SolicitudHomologacionRestController {
     private final GestionarSolicitudHomologacionCUIntPort solicitudHomologacionCU;
     private final SolicitudHomologacioneMapperDominio solicitudMapperDominio;
     private final SolicitudMapperDominio solicitudMapper;
     private final GestionarArchivosCUIntPort objGestionarArchivos;
+    private final GestionarUsuarioGatewayIntPort usuarioGateway;
 
     @PostMapping("/crearSolicitud-Homologacion")
     public ResponseEntity<SolicitudHomologacionDTORespuesta> crearSolicitudHomologacion(@Valid @RequestBody SolicitudHomologacionDTOPeticion peticion) {
@@ -71,7 +78,19 @@ public class SolicitudHomologacionRestController {
 
     @GetMapping("/listarSolicitud-Homologacion/Coordinador")
     public ResponseEntity<List<SolicitudHomologacionDTORespuesta>> listarSolicitudHomologacionToCoordinador() {
-        List<SolicitudHomologacion> solicitudes = solicitudHomologacionCU.listarSolicitudesToCoordinador();
+        // Obtener el programa del coordinador autenticado
+        Integer idPrograma = obtenerProgramaCoordinadorAutenticado();
+        
+        List<SolicitudHomologacion> solicitudes;
+        if (idPrograma != null) {
+            // Filtrar por programa del coordinador
+            solicitudes = solicitudHomologacionCU.listarSolicitudesToCoordinadorPorPrograma(idPrograma);
+        } else {
+            // Si no se puede obtener el programa, retornar todas (fallback)
+            log.warn("No se pudo obtener el programa del coordinador, retornando todas las solicitudes");
+            solicitudes = solicitudHomologacionCU.listarSolicitudesToCoordinador();
+        }
+        
         List<SolicitudHomologacionDTORespuesta> respuesta = solicitudMapperDominio.mappearListaDeSolicitudHomologacionARespuesta(solicitudes);
         return ResponseEntity.ok(respuesta);
     }
@@ -282,7 +301,48 @@ public class SolicitudHomologacionRestController {
             return ResponseEntity.internalServerError().build();
         }
     }
-    
 
+    /**
+     * Obtiene el ID del programa académico del coordinador autenticado.
+     * @return ID del programa o null si no se puede obtener
+     */
+    private Integer obtenerProgramaCoordinadorAutenticado() {
+        try {
+            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+            if (authentication == null || !authentication.isAuthenticated()) {
+                log.warn("No hay usuario autenticado");
+                return null;
+            }
+
+            String email = authentication.getName();
+            Usuario usuarioAutenticado = usuarioGateway.buscarUsuarioPorCorreo(email);
+            
+            if (usuarioAutenticado == null) {
+                log.warn("Usuario autenticado no encontrado: {}", email);
+                return null;
+            }
+
+            // Verificar que sea coordinador
+            String rolNombre = usuarioAutenticado.getObjRol() != null 
+                    ? usuarioAutenticado.getObjRol().getNombre() 
+                    : null;
+            
+            if (!"Coordinador".equals(rolNombre)) {
+                log.warn("El usuario autenticado no es coordinador: {}", rolNombre);
+                return null;
+            }
+
+            // Obtener el programa del coordinador
+            if (usuarioAutenticado.getObjPrograma() != null && usuarioAutenticado.getObjPrograma().getId_programa() != null) {
+                return usuarioAutenticado.getObjPrograma().getId_programa();
+            }
+
+            log.warn("El coordinador no tiene programa asignado");
+            return null;
+        } catch (Exception e) {
+            log.error("Error al obtener programa del coordinador autenticado", e);
+            return null;
+        }
+    }
 
 }

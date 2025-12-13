@@ -42,8 +42,12 @@ import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.Gestionar
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.DTORespuesta.DocumentosDTORespuesta;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.mappers.DocumentosMapperDominio;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Solicitud;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Usuario;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Enums.PeriodoAcademicoEnum;
+import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.GestionarUsuarioGatewayIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.controladorExcepciones.excepcionesPropias.EntidadNoExisteException;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 
 @Slf4j
 @RestController
@@ -59,6 +63,7 @@ public class SolicitudPazYSalvoRestController {
     private final DocumentosMapperDominio documentosMapperDominio;
     private final co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.formateador.DocumentGeneratorService documentGeneratorService;
     private final ObjectMapper objectMapper;
+    private final GestionarUsuarioGatewayIntPort usuarioGateway;
 
     @PostMapping("/crearSolicitud-PazYSalvo")
     public ResponseEntity<?> crearSolicitudPazYSalvo(
@@ -249,7 +254,19 @@ public class SolicitudPazYSalvoRestController {
 
     @GetMapping("/listarSolicitud-PazYSalvo/Coordinador")
     public ResponseEntity<List<SolicitudPazYSalvoDTORespuesta>> listarSolicitudPazYSalvoToCoordinador() {
-        List<SolicitudPazYSalvo> solicitudes = solicitudPazYSalvoCU.listarSolicitudesToCoordinador();
+        // Obtener el programa del coordinador autenticado
+        Integer idPrograma = obtenerProgramaCoordinadorAutenticado();
+        
+        List<SolicitudPazYSalvo> solicitudes;
+        if (idPrograma != null) {
+            // Filtrar por programa del coordinador
+            solicitudes = solicitudPazYSalvoCU.listarSolicitudesToCoordinadorPorPrograma(idPrograma);
+        } else {
+            // Si no se puede obtener el programa, retornar todas (fallback)
+            log.warn("No se pudo obtener el programa del coordinador, retornando todas las solicitudes");
+            solicitudes = solicitudPazYSalvoCU.listarSolicitudesToCoordinador();
+        }
+        
         List<SolicitudPazYSalvoDTORespuesta> respuesta = solicitudMapperDominio.mappearListaDeSolicitudesARespuesta(solicitudes);
         return ResponseEntity.ok(respuesta);
     }
@@ -1347,6 +1364,49 @@ public ResponseEntity<DocumentosDTORespuesta> guardarOficioPazSalvo(
                     HttpStatus.CREATED);
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
+    /**
+     * Obtiene el ID del programa académico del coordinador autenticado.
+     * @return ID del programa o null si no se puede obtener
+     */
+    private Integer obtenerProgramaCoordinadorAutenticado() {
+        try {
+            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+            if (authentication == null || !authentication.isAuthenticated()) {
+                log.warn("No hay usuario autenticado");
+                return null;
+            }
+
+            String email = authentication.getName();
+            Usuario usuarioAutenticado = usuarioGateway.buscarUsuarioPorCorreo(email);
+            
+            if (usuarioAutenticado == null) {
+                log.warn("Usuario autenticado no encontrado: {}", email);
+                return null;
+            }
+
+            // Verificar que sea coordinador
+            String rolNombre = usuarioAutenticado.getObjRol() != null 
+                    ? usuarioAutenticado.getObjRol().getNombre() 
+                    : null;
+            
+            if (!"Coordinador".equals(rolNombre)) {
+                log.warn("El usuario autenticado no es coordinador: {}", rolNombre);
+                return null;
+            }
+
+            // Obtener el programa del coordinador
+            if (usuarioAutenticado.getObjPrograma() != null && usuarioAutenticado.getObjPrograma().getId_programa() != null) {
+                return usuarioAutenticado.getObjPrograma().getId_programa();
+            }
+
+            log.warn("El coordinador no tiene programa asignado");
+            return null;
+        } catch (Exception e) {
+            log.error("Error al obtener programa del coordinador autenticado", e);
+            return null;
         }
     }
 }

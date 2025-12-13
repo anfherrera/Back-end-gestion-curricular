@@ -26,7 +26,6 @@ public interface SolicitudPazYSalvoMapperDominio {
     @Mapping(source = "nombre_solicitud", target = "nombre_solicitud")
     @Mapping(source = "periodo_academico", target = "periodo_academico")
     @Mapping(source = "fecha_registro_solicitud", target = "fecha_registro_solicitud")
-    @Mapping(source = "esSeleccionado", target = "esSeleccionado")
     @Mapping(source = "estadosSolicitud", target = "estadosSolicitud") // CORREGIDO
     @Mapping(source = "objUsuario", target = "objUsuario")
     @Mapping(source = "documentos", target = "documentos") 
@@ -36,7 +35,6 @@ public interface SolicitudPazYSalvoMapperDominio {
 
     // DTO Petición → Modelo
     @Mapping(target = "estadosSolicitud", ignore = true) 
-    @Mapping(source = "esSeleccionado", target = "esSeleccionado")
     @Mapping(target = "objCursoOfertadoVerano", ignore = true) 
     @Mapping(target = "documentos", ignore = true)
     @Mapping(target = "fecha_ceremonia", ignore = true) // Se asigna desde el caso de uso si es necesario

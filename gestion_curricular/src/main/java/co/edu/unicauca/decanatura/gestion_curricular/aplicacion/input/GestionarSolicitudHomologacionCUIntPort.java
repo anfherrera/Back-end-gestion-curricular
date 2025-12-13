@@ -13,6 +13,13 @@ public interface GestionarSolicitudHomologacionCUIntPort {
 
     List<SolicitudHomologacion> listarSolicitudesToCoordinador();
 
+    /**
+     * Lista solicitudes de homologación para coordinador filtradas por programa académico
+     * @param idPrograma ID del programa académico del coordinador
+     * @return Lista de solicitudes del programa específico
+     */
+    List<SolicitudHomologacion> listarSolicitudesToCoordinadorPorPrograma(Integer idPrograma);
+
     List<SolicitudHomologacion> listarSolicitudesToSecretaria();
 
     List<SolicitudHomologacion> listarSolicitudesPorRol(String rol, Integer idUsuario);

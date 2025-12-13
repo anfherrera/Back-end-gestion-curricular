@@ -66,6 +66,17 @@ public class GestionarSolicitudReingresoImplAdapter implements GestionarSolicitu
     }
 
     @Override
+    public List<SolicitudReingreso> listarSolicitudesReingresoToCoordinadorPorPrograma(Integer idPrograma) {
+        if (idPrograma == null) {
+            return listarSolicitudesReingresoToCoordinador();
+        }
+        return solicitudReingresoRepository.findByUltimoEstadoAndPrograma("APROBADA_FUNCIONARIO", idPrograma)
+                .stream()
+                .map(entity -> mapper.map(entity, SolicitudReingreso.class))
+                .toList();
+    }
+
+    @Override
     public List<SolicitudReingreso> listarSolicitudesAprobadasToSecretaria() {
         return solicitudReingresoRepository.findByUltimoEstado("APROBADA")
                 .stream()

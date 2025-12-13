@@ -130,6 +130,11 @@ public class GestionarSolicitudPazYSalvoCUAdapter implements GestionarSolicitudP
     }
 
     @Override
+    public List<SolicitudPazYSalvo> listarSolicitudesToCoordinadorPorPrograma(Integer idPrograma) {
+        return solicitudGateway.listarSolicitudesToCoordinadorPorPrograma(idPrograma);
+    }
+
+    @Override
     public List<SolicitudPazYSalvo> listarSolicitudesToSecretaria() {
         return solicitudGateway.listarSolicitudesToSecretaria();
     }
@@ -147,6 +152,11 @@ public class GestionarSolicitudPazYSalvoCUAdapter implements GestionarSolicitudP
     @Override
     public List<SolicitudPazYSalvo> listarSolicitudesAprobadasToCoordinador() {
         return solicitudGateway.listarSolicitudesAprobadasToCoordinador();
+    }
+
+    @Override
+    public List<SolicitudPazYSalvo> listarSolicitudesAprobadasToCoordinadorPorPrograma(Integer idPrograma) {
+        return solicitudGateway.listarSolicitudesAprobadasToCoordinadorPorPrograma(idPrograma);
     }
 
     @Override

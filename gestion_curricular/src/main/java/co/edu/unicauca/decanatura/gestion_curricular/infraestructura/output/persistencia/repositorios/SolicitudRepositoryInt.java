@@ -47,13 +47,6 @@ public interface SolicitudRepositoryInt extends JpaRepository<SolicitudEntity, I
     );
 
 
-    @Query("SELECT s FROM SolicitudCursoVeranoInscripcionEntity s WHERE s.objCursoOfertadoVerano.id_curso = :idCurso "+
-    "AND s.esSeleccionado = :seleccionado")
-    List<SolicitudEntity> buscarPorNombreCursoYSeleccionadoIns(@Param("idCurso") Integer idCurso, @Param("seleccionado") boolean seleccionado);
-    
-    @Query("SELECT s FROM SolicitudCursoVeranoPreinscripcionEntity s WHERE s.objCursoOfertadoVerano.id_curso = :idCurso "+
-    "AND s.esSeleccionado = :seleccionado")
-    List<SolicitudEntity> buscarPorNombreCursoYSeleccionadoPre(@Param("idCurso") Integer idCurso, @Param("seleccionado") boolean seleccionado);
     
 
     @Query("SELECT s FROM SolicitudCursoVeranoInscripcionEntity s WHERE s.objCursoOfertadoVerano.id_curso = :idCurso")

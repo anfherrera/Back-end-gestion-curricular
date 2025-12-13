@@ -76,6 +76,16 @@ public class GestionarSolicitudPazYSalvoGatewayImplAdapter implements GestionarS
     }
 
     @Override
+    public List<SolicitudPazYSalvo> listarSolicitudesToCoordinadorPorPrograma(Integer idPrograma) {
+        if (idPrograma == null) {
+            return listarSolicitudesToCoordinador();
+        }
+        return solicitudRepository.findByUltimoEstadoAndPrograma("APROBADA_FUNCIONARIO", idPrograma).stream()
+                .map(entity -> mapper.map(entity, SolicitudPazYSalvo.class))
+                .toList();
+    }
+
+    @Override
     public List<SolicitudPazYSalvo> listarSolicitudesToSecretaria() {
         return solicitudRepository.findByUltimoEstado("APROBADA_COORDINADOR").stream()
                 .map(entity -> mapper.map(entity, SolicitudPazYSalvo.class))
@@ -101,6 +111,16 @@ public class GestionarSolicitudPazYSalvoGatewayImplAdapter implements GestionarS
     public List<SolicitudPazYSalvo> listarSolicitudesAprobadasToCoordinador() {
         // Solicitudes que el coordinador ya procesó (aprobó) y pasaron a secretaría
         return solicitudRepository.findByUltimoEstado("APROBADA_COORDINADOR").stream()
+                .map(entity -> mapper.map(entity, SolicitudPazYSalvo.class))
+                .toList();
+    }
+
+    @Override
+    public List<SolicitudPazYSalvo> listarSolicitudesAprobadasToCoordinadorPorPrograma(Integer idPrograma) {
+        if (idPrograma == null) {
+            return listarSolicitudesAprobadasToCoordinador();
+        }
+        return solicitudRepository.findByUltimoEstadoAndPrograma("APROBADA_COORDINADOR", idPrograma).stream()
                 .map(entity -> mapper.map(entity, SolicitudPazYSalvo.class))
                 .toList();
     }

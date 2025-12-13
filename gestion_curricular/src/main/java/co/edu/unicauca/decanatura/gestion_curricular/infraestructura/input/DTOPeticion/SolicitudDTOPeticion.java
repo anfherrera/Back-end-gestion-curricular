@@ -32,8 +32,6 @@ public class SolicitudDTOPeticion {
     @Pattern(regexp = "^\\d{4}-[12]$", message = "{Solicitud.periodo_academico.format}")
     private String periodo_academico; // Período académico en formato YYYY-P (ej: "2024-2")
 
-    private Boolean esSeleccionado;
-
     @Valid
     private EstadoSolicitudDTOPeticion estado_actual;
 

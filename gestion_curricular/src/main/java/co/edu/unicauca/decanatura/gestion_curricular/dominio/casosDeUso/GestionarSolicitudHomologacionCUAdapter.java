@@ -112,6 +112,11 @@ public class GestionarSolicitudHomologacionCUAdapter implements GestionarSolicit
     }
 
     @Override
+    public List<SolicitudHomologacion> listarSolicitudesToCoordinadorPorPrograma(Integer idPrograma) {
+        return objGestionarSolicitudHomologacionGateway.listarSolicitudesToCoordinadorPorPrograma(idPrograma);
+    }
+
+    @Override
     public List<SolicitudHomologacion> listarSolicitudesToSecretaria() {
         return objGestionarSolicitudHomologacionGateway.listarSolicitudesToSecretaria();
     }
