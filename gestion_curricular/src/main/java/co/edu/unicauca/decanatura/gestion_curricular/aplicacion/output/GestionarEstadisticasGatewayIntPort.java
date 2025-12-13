@@ -208,4 +208,38 @@ public interface GestionarEstadisticasGatewayIntPort {
      */
     Map<String, Object> obtenerTendenciasTemporalesCursosVerano();
 
+    /**
+     * Obtiene estadísticas agrupadas por año.
+     * 
+     * @param anio Año a consultar
+     * @return Map con estadísticas del año
+     */
+    Map<String, Object> obtenerEstadisticasPorAnio(Integer anio);
+
+    /**
+     * Obtiene estadísticas agrupadas por semestre (año y número de semestre).
+     * 
+     * @param anio Año a consultar
+     * @param semestre Número de semestre (1 o 2)
+     * @return Map con estadísticas del semestre
+     */
+    Map<String, Object> obtenerEstadisticasPorSemestre(Integer anio, Integer semestre);
+
+    /**
+     * Obtiene historial de estadísticas por períodos académicos.
+     * 
+     * @param anioInicio Año de inicio (opcional)
+     * @param anioFin Año de fin (opcional)
+     * @return Lista de estadísticas por período ordenadas cronológicamente
+     */
+    List<Map<String, Object>> obtenerHistorialEstadisticas(Integer anioInicio, Integer anioFin);
+
+    /**
+     * Obtiene estadísticas por período académico usando formato YYYY-P.
+     * 
+     * @param periodoAcademico Período en formato "YYYY-P" (ej: "2024-2")
+     * @return Map con estadísticas del período
+     */
+    Map<String, Object> obtenerEstadisticasPorPeriodoAcademico(String periodoAcademico);
+
 }

@@ -1,6 +1,5 @@
 package co.edu.unicauca.decanatura.gestion_curricular.estadisticas;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,9 +26,6 @@ class EstadisticasIntegracionTest {
 
     @Autowired
     private MockMvc mockMvc;
-
-    @Autowired
-    private ObjectMapper objectMapper;
 
     @Test
     @DisplayName("Test 1: Obtener estadísticas globales retorna 200 OK")

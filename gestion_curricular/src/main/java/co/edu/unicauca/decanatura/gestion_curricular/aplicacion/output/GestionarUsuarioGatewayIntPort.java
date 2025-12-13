@@ -21,6 +21,8 @@ public interface GestionarUsuarioGatewayIntPort {
 
     Usuario buscarUsuarioPorCorreo(String correo);
 
+    Usuario buscarUsuarioPorCedula(String cedula);
+
     Usuario buscarUsuarioPorNombre(String nombre);
 
     Usuario buscarSolicitudesUsuarioPorCodigo(String codigo);

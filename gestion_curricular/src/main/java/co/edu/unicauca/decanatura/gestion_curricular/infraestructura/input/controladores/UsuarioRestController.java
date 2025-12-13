@@ -35,7 +35,6 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -69,6 +68,7 @@ public class UsuarioRestController {
         Usuario usuario = new Usuario();
         usuario.setNombre_completo(peticion.getNombre_completo());
         usuario.setCodigo(peticion.getCodigo());
+        usuario.setCedula(peticion.getCedula());
         usuario.setCorreo(peticion.getCorreo());
         usuario.setPassword(peticion.getPassword());
         usuario.setEstado_usuario(peticion.isEstado_usuario());
@@ -98,6 +98,7 @@ public class UsuarioRestController {
         usuario.setId_usuario(peticion.getId_usuario());
         usuario.setNombre_completo(peticion.getNombre_completo());
         usuario.setCodigo(peticion.getCodigo());
+        usuario.setCedula(peticion.getCedula());
         usuario.setCorreo(peticion.getCorreo());
         usuario.setEstado_usuario(peticion.isEstado_usuario());
         

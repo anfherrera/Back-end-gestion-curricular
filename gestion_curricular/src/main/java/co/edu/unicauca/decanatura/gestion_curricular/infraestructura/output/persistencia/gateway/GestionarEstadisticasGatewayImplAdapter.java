@@ -4094,4 +4094,144 @@ public class GestionarEstadisticasGatewayImplAdapter implements GestionarEstadis
         
         return nombre;
     }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Map<String, Object> obtenerEstadisticasPorAnio(Integer anio) {
+        log.debug("Estadisticas por año - Consultando datos del año: {}", anio);
+        
+        // Calcular fechas del año completo
+        java.time.LocalDate fechaInicio = java.time.LocalDate.of(anio, 1, 1);
+        java.time.LocalDate fechaFin = java.time.LocalDate.of(anio, 12, 31);
+        
+        Date fechaInicioDate = java.sql.Date.valueOf(fechaInicio);
+        Date fechaFinDate = java.sql.Date.valueOf(fechaFin);
+        
+        // Obtener estadísticas del año completo
+        Map<String, Object> estadisticasAnio = obtenerEstadisticasPorPeriodo(fechaInicioDate, fechaFinDate);
+        
+        // Agregar información específica del año
+        estadisticasAnio.put("anio", anio);
+        estadisticasAnio.put("tipoConsulta", "porAnio");
+        
+        // Agregar desglose por semestre
+        Map<String, Object> semestre1 = obtenerEstadisticasPorSemestre(anio, 1);
+        Map<String, Object> semestre2 = obtenerEstadisticasPorSemestre(anio, 2);
+        
+        Map<String, Object> desgloseSemestres = new HashMap<>();
+        desgloseSemestres.put("semestre1", semestre1);
+        desgloseSemestres.put("semestre2", semestre2);
+        estadisticasAnio.put("desgloseSemestres", desgloseSemestres);
+        
+        return estadisticasAnio;
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Map<String, Object> obtenerEstadisticasPorSemestre(Integer anio, Integer semestre) {
+        log.debug("Estadisticas por semestre - Consultando datos del año: {}, semestre: {}", anio, semestre);
+        
+        // Calcular fechas del semestre
+        java.time.LocalDate fechaInicio;
+        java.time.LocalDate fechaFin;
+        
+        if (semestre == 1) {
+            fechaInicio = java.time.LocalDate.of(anio, 1, 1);
+            fechaFin = java.time.LocalDate.of(anio, 6, 30);
+        } else {
+            fechaInicio = java.time.LocalDate.of(anio, 7, 1);
+            fechaFin = java.time.LocalDate.of(anio, 12, 31);
+        }
+        
+        Date fechaInicioDate = java.sql.Date.valueOf(fechaInicio);
+        Date fechaFinDate = java.sql.Date.valueOf(fechaFin);
+        
+        // Obtener estadísticas del semestre
+        Map<String, Object> estadisticasSemestre = obtenerEstadisticasPorPeriodo(fechaInicioDate, fechaFinDate);
+        
+        // Agregar información específica del semestre
+        estadisticasSemestre.put("anio", anio);
+        estadisticasSemestre.put("semestre", semestre);
+        estadisticasSemestre.put("periodoAcademico", anio + "-" + semestre);
+        estadisticasSemestre.put("tipoConsulta", "porSemestre");
+        estadisticasSemestre.put("descripcion", (semestre == 1 ? "Primer" : "Segundo") + " Semestre " + anio);
+        
+        return estadisticasSemestre;
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<Map<String, Object>> obtenerHistorialEstadisticas(Integer anioInicio, Integer anioFin) {
+        log.debug("Historial de estadísticas - Consultando desde año: {} hasta año: {}", anioInicio, anioFin);
+        
+        List<Map<String, Object>> historial = new ArrayList<>();
+        
+        // Si no se proporcionan años, usar los últimos 5 años
+        int añoActual = java.time.Year.now().getValue();
+        int añoInicioConsulta = anioInicio != null ? anioInicio : Math.max(2020, añoActual - 4);
+        int añoFinConsulta = anioFin != null ? anioFin : añoActual;
+        
+        // Iterar por cada año y semestre
+        for (int año = añoInicioConsulta; año <= añoFinConsulta; año++) {
+            for (int semestre = 1; semestre <= 2; semestre++) {
+                Map<String, Object> estadisticasSemestre = obtenerEstadisticasPorSemestre(año, semestre);
+                
+                // Agregar información adicional para el historial
+                Map<String, Object> entradaHistorial = new HashMap<>();
+                entradaHistorial.put("periodo", año + "-" + semestre);
+                entradaHistorial.put("anio", año);
+                entradaHistorial.put("semestre", semestre);
+                entradaHistorial.put("descripcion", (semestre == 1 ? "Primer" : "Segundo") + " Semestre " + año);
+                entradaHistorial.put("totalSolicitudes", estadisticasSemestre.get("totalSolicitudes"));
+                entradaHistorial.put("totalAprobadas", estadisticasSemestre.get("totalAprobadas"));
+                entradaHistorial.put("totalRechazadas", estadisticasSemestre.get("totalRechazadas"));
+                entradaHistorial.put("totalEnProceso", estadisticasSemestre.get("totalEnProceso"));
+                entradaHistorial.put("porcentajeAprobacion", estadisticasSemestre.get("porcentajeAprobacion"));
+                entradaHistorial.put("fechaInicio", estadisticasSemestre.get("fechaInicio"));
+                entradaHistorial.put("fechaFin", estadisticasSemestre.get("fechaFin"));
+                
+                historial.add(entradaHistorial);
+            }
+        }
+        
+        // Ordenar por año y semestre (más reciente primero)
+        historial.sort((a, b) -> {
+            Integer añoA = (Integer) a.get("anio");
+            Integer añoB = (Integer) b.get("anio");
+            int comparacionAño = añoB.compareTo(añoA); // Descendente
+            if (comparacionAño != 0) {
+                return comparacionAño;
+            }
+            Integer semestreA = (Integer) a.get("semestre");
+            Integer semestreB = (Integer) b.get("semestre");
+            return semestreB.compareTo(semestreA); // Descendente
+        });
+        
+        return historial;
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Map<String, Object> obtenerEstadisticasPorPeriodoAcademico(String periodoAcademico) {
+        log.debug("Estadisticas por período académico - Consultando período: {}", periodoAcademico);
+        
+        // Validar formato del período
+        if (periodoAcademico == null || !periodoAcademico.matches("^\\d{4}-[12]$")) {
+            log.error("Formato de período académico inválido: {}", periodoAcademico);
+            Map<String, Object> error = new HashMap<>();
+            error.put("error", "Formato de período académico inválido. Use formato: YYYY-P (ej: 2024-2)");
+            return error;
+        }
+        
+        // Parsear período
+        String[] partes = periodoAcademico.split("-");
+        int año = Integer.parseInt(partes[0]);
+        int semestre = Integer.parseInt(partes[1]);
+        
+        // Obtener estadísticas del semestre
+        Map<String, Object> estadisticas = obtenerEstadisticasPorSemestre(año, semestre);
+        estadisticas.put("periodoAcademico", periodoAcademico);
+        
+        return estadisticas;
+    }
 }

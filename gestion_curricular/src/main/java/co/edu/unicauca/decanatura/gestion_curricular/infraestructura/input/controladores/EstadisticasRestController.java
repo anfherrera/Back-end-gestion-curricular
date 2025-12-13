@@ -2,6 +2,7 @@ package co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.cont
 
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarEstadisticasCUIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Estadistica;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Enums.PeriodoAcademicoEnum;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.DTORespuesta.EstadisticaDTORespuesta;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.mappers.EstadisticaMapperDominio;
 import jakarta.validation.Valid;
@@ -18,6 +19,7 @@ import org.springframework.web.bind.annotation.*;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.ByteArrayOutputStream;
+import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
@@ -304,20 +306,107 @@ public class EstadisticasRestController {
     /**
      * Obtiene estadísticas por período académico.
      * Utiliza SolicitudRepositoryInt para filtrar por rango de fechas.
+     * Ahora acepta tanto fechas como formato de período académico (YYYY-P).
      * 
-     * @param fechaInicio Fecha de inicio del período
-     * @param fechaFin Fecha de fin del período
+     * @param periodoAcademico Período en formato "YYYY-P" (opcional, ej: "2024-2")
+     * @param fechaInicio Fecha de inicio del período (opcional si se proporciona periodoAcademico)
+     * @param fechaFin Fecha de fin del período (opcional si se proporciona periodoAcademico)
      * @return ResponseEntity con estadísticas del período
      */
     @GetMapping("/periodo")
     public ResponseEntity<Map<String, Object>> obtenerEstadisticasPorPeriodo(
-            @RequestParam(name = "fechaInicio", required = true) @DateTimeFormat(pattern = "yyyy-MM-dd") Date fechaInicio,
-            @RequestParam(name = "fechaFin", required = true) @DateTimeFormat(pattern = "yyyy-MM-dd") Date fechaFin) {
+            @RequestParam(name = "periodoAcademico", required = false) String periodoAcademico,
+            @RequestParam(name = "fechaInicio", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") Date fechaInicio,
+            @RequestParam(name = "fechaFin", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") Date fechaFin) {
         try {
-            Map<String, Object> estadisticas = estadisticaCU.obtenerEstadisticasPorPeriodo(fechaInicio, fechaFin);
+            Map<String, Object> estadisticas;
+            
+            // Si se proporciona período académico, usarlo
+            if (periodoAcademico != null && !periodoAcademico.trim().isEmpty()) {
+                estadisticas = estadisticaCU.obtenerEstadisticasPorPeriodoAcademico(periodoAcademico.trim());
+            } 
+            // Si se proporcionan fechas, usarlas
+            else if (fechaInicio != null && fechaFin != null) {
+                estadisticas = estadisticaCU.obtenerEstadisticasPorPeriodo(fechaInicio, fechaFin);
+            } 
+            // Si no se proporciona nada, retornar error
+            else {
+                Map<String, Object> error = new HashMap<>();
+                error.put("error", "Debe proporcionar 'periodoAcademico' (ej: '2024-2') o 'fechaInicio' y 'fechaFin'");
+                return ResponseEntity.badRequest().body(error);
+            }
+            
             return ResponseEntity.ok(estadisticas);
         } catch (Exception e) {
+            log.error("Error al obtener estadísticas por período: {}", e.getMessage(), e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
+    /**
+     * Obtiene estadísticas del último período académico.
+     * Calcula automáticamente el último período basado en la fecha actual
+     * y obtiene las estadísticas correspondientes.
+     * 
+     * @return ResponseEntity con estadísticas del último período
+     */
+    @GetMapping("/ultimo-periodo")
+    public ResponseEntity<Map<String, Object>> obtenerEstadisticasUltimoPeriodo() {
+        try {
+            log.info("Obteniendo estadísticas del último período académico");
+            
+            // Obtener el último período académico
+            PeriodoAcademicoEnum ultimoPeriodo = PeriodoAcademicoEnum.getPeriodoActual();
+            
+            if (ultimoPeriodo == null) {
+                log.warn("No se pudo determinar el último período académico");
+                Map<String, Object> errorResponse = new HashMap<>();
+                errorResponse.put("success", false);
+                errorResponse.put("message", "No se pudo determinar el último período académico");
+                return ResponseEntity.badRequest().body(errorResponse);
+            }
+            
+            // Convertir período a fechas
+            int año = ultimoPeriodo.getAño();
+            int numeroPeriodo = ultimoPeriodo.getNumeroPeriodo();
+            
+            LocalDate fechaInicioLocal;
+            LocalDate fechaFinLocal;
+            
+            if (numeroPeriodo == 1) {
+                // Primer período: enero a junio
+                fechaInicioLocal = LocalDate.of(año, 1, 1);
+                fechaFinLocal = LocalDate.of(año, 6, 30);
+            } else {
+                // Segundo período: julio a diciembre
+                fechaInicioLocal = LocalDate.of(año, 7, 1);
+                fechaFinLocal = LocalDate.of(año, 12, 31);
+            }
+            
+            // Convertir LocalDate a Date
+            Date fechaInicio = java.sql.Date.valueOf(fechaInicioLocal);
+            Date fechaFin = java.sql.Date.valueOf(fechaFinLocal);
+            
+            log.info("Último período: {} - Fechas: {} a {}", ultimoPeriodo.getValor(), fechaInicioLocal, fechaFinLocal);
+            
+            // Obtener estadísticas del período
+            Map<String, Object> estadisticas = estadisticaCU.obtenerEstadisticasPorPeriodo(fechaInicio, fechaFin);
+            
+            // Agregar información del período a la respuesta
+            estadisticas.put("periodoAcademico", ultimoPeriodo.getValor());
+            estadisticas.put("año", año);
+            estadisticas.put("numeroPeriodo", numeroPeriodo);
+            estadisticas.put("descripcionPeriodo", ultimoPeriodo.getDescripcion());
+            estadisticas.put("fechaInicio", fechaInicioLocal.toString());
+            estadisticas.put("fechaFin", fechaFinLocal.toString());
+            
+            return ResponseEntity.ok(estadisticas);
+        } catch (Exception e) {
+            log.error("Error al obtener estadísticas del último período: {}", e.getMessage(), e);
+            Map<String, Object> errorResponse = new HashMap<>();
+            errorResponse.put("success", false);
+            errorResponse.put("message", "Error al obtener estadísticas del último período: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
         }
     }
 
@@ -1818,6 +1907,86 @@ public class EstadisticasRestController {
             sheet.autoSizeColumn(0);
             sheet.autoSizeColumn(1);
         sheet.autoSizeColumn(2);
+    }
+
+    /**
+     * Obtiene estadísticas agrupadas por año.
+     * 
+     * @param anio Año a consultar
+     * @return ResponseEntity con estadísticas del año
+     */
+    @GetMapping("/por-anio/{anio}")
+    public ResponseEntity<Map<String, Object>> obtenerEstadisticasPorAnio(
+            @PathVariable Integer anio) {
+        try {
+            log.info("Obteniendo estadísticas por año: {}", anio);
+            Map<String, Object> estadisticas = estadisticaCU.obtenerEstadisticasPorAnio(anio);
+            return ResponseEntity.ok(estadisticas);
+        } catch (Exception e) {
+            log.error("Error al obtener estadísticas por año: {}", e.getMessage(), e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
+    /**
+     * Obtiene estadísticas agrupadas por semestre.
+     * 
+     * @param anio Año a consultar
+     * @param semestre Número de semestre (1 o 2)
+     * @return ResponseEntity con estadísticas del semestre
+     */
+    @GetMapping("/por-semestre")
+    public ResponseEntity<Map<String, Object>> obtenerEstadisticasPorSemestre(
+            @RequestParam(name = "anio", required = true) Integer anio,
+            @RequestParam(name = "semestre", required = true) Integer semestre) {
+        try {
+            log.info("Obteniendo estadísticas por semestre - Año: {}, Semestre: {}", anio, semestre);
+            Map<String, Object> estadisticas = estadisticaCU.obtenerEstadisticasPorSemestre(anio, semestre);
+            return ResponseEntity.ok(estadisticas);
+        } catch (Exception e) {
+            log.error("Error al obtener estadísticas por semestre: {}", e.getMessage(), e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
+    /**
+     * Obtiene historial de estadísticas por períodos académicos.
+     * 
+     * @param anioInicio Año de inicio (opcional, por defecto últimos 5 años)
+     * @param anioFin Año de fin (opcional, por defecto año actual)
+     * @return ResponseEntity con lista de estadísticas por período
+     */
+    @GetMapping("/historial")
+    public ResponseEntity<List<Map<String, Object>>> obtenerHistorialEstadisticas(
+            @RequestParam(name = "anioInicio", required = false) Integer anioInicio,
+            @RequestParam(name = "anioFin", required = false) Integer anioFin) {
+        try {
+            log.info("Obteniendo historial de estadísticas - Desde año: {} hasta año: {}", anioInicio, anioFin);
+            List<Map<String, Object>> historial = estadisticaCU.obtenerHistorialEstadisticas(anioInicio, anioFin);
+            return ResponseEntity.ok(historial);
+        } catch (Exception e) {
+            log.error("Error al obtener historial de estadísticas: {}", e.getMessage(), e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
+    /**
+     * Obtiene estadísticas por período académico usando formato YYYY-P.
+     * 
+     * @param periodoAcademico Período en formato "YYYY-P" (ej: "2024-2")
+     * @return ResponseEntity con estadísticas del período
+     */
+    @GetMapping("/periodo-academico/{periodoAcademico}")
+    public ResponseEntity<Map<String, Object>> obtenerEstadisticasPorPeriodoAcademico(
+            @PathVariable String periodoAcademico) {
+        try {
+            log.info("Obteniendo estadísticas por período académico: {}", periodoAcademico);
+            Map<String, Object> estadisticas = estadisticaCU.obtenerEstadisticasPorPeriodoAcademico(periodoAcademico);
+            return ResponseEntity.ok(estadisticas);
+        } catch (Exception e) {
+            log.error("Error al obtener estadísticas por período académico: {}", e.getMessage(), e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
     }
 
     /**

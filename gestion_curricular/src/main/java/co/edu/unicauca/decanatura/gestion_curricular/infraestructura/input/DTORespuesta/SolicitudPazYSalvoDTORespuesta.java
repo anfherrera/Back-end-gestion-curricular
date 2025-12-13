@@ -14,9 +14,9 @@ public class SolicitudPazYSalvoDTORespuesta extends SolicitudDTORespuesta  {
     }
 
     // Constructor con parámetros para todos los campos de la clase base y de esta clase
-    public SolicitudPazYSalvoDTORespuesta (Integer id_solicitud, String nombre_solicitud, Date fecha_registro_solicitud, Boolean esSeleccionado,
+    public SolicitudPazYSalvoDTORespuesta (Integer id_solicitud, String nombre_solicitud, String periodo_academico, Date fecha_registro_solicitud, Boolean esSeleccionado,
                                              List<EstadoSolicitudDTORespuesta> estadosSolicitud, UsuarioDTORespuesta objUsuario, List<DocumentosDTORespuesta > documentos) {
-        // Llamamos al constructor de la clase base
-        super(id_solicitud, nombre_solicitud, fecha_registro_solicitud, esSeleccionado, estadosSolicitud, objUsuario, documentos);
+        // Llamamos al constructor de la clase base (orden: id, nombre, periodo, fecha, esSeleccionado, estados, usuario, documentos)
+        super(id_solicitud, nombre_solicitud, periodo_academico, fecha_registro_solicitud, esSeleccionado, estadosSolicitud, objUsuario, documentos);
     }  
 }

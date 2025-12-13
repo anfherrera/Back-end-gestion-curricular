@@ -36,8 +36,11 @@ public class SolicitudEntity {
     @Column(nullable = false, length = 100)
     private String nombre_solicitud;
 
-    // @Column(nullable = false, length = 50)
-    // private String periodo_academico;
+    @Column(nullable = true, length = 10)
+    private String periodo_academico; // Período académico de la solicitud (ej: "2024-2")
+
+    @Column(nullable = true)
+    private Date fecha_ceremonia; // Fecha de la ceremonia de graduación (para filtrar por ceremonias: marzo, junio, diciembre, etc.)
 
     @Column(nullable = false)
     private Date fecha_registro_solicitud;

@@ -29,6 +29,10 @@ public class UsuarioDTOPeticion {
     @Size(min = 3, max = 50, message = "{Usuario.codigo.length}")
     private String codigo;
 
+    @Size(min = 5, max = 20, message = "{Usuario.cedula.length}")
+    @Pattern(regexp = "^[0-9]{5,20}$", message = "{Usuario.cedula.format}")
+    private String cedula;
+
     @NotBlank(message = "{Usuario.correo.empty}")
     @Size(min = 5, max = 50, message = "{Usuario.correo.length}")
     @Pattern(regexp = "^[\\w.%+-]+@unicauca\\.edu\\.co$", message = "{Usuario.correo.unicauca}")

@@ -47,6 +47,14 @@ public Usuario crearUsuario(Usuario usuario) {
     if (usuarioExistenteCodigo != null) {
         this.objFormateadorResultados.retornarRespuestaErrorEntidadExiste("Ya existe un usuario con ese código.");
     }
+
+    // Validar unicidad de cédula si se proporciona
+    if (usuario.getCedula() != null && !usuario.getCedula().trim().isEmpty()) {
+        Usuario usuarioExistenteCedula = objGestionarUsuarioGateway.buscarUsuarioPorCedula(usuario.getCedula());
+        if (usuarioExistenteCedula != null) {
+            this.objFormateadorResultados.retornarRespuestaErrorEntidadExiste("Ya existe un usuario con esa cédula.");
+        }
+    }
     
 
     if (usuario.getObjPrograma() == null) {
@@ -118,6 +126,14 @@ public Usuario crearUsuario(Usuario usuario) {
         objRol = this.objGestionarRolGateway.bucarRolPorId(usuario.getObjRol().getId_rol());
         if (objRol == null) {
             this.objFormateadorResultados.retornarRespuestaErrorEntidadExiste("El rol enviado no existe.");
+        }
+
+        // Validar unicidad de cédula si se proporciona y es diferente a la existente
+        if (usuario.getCedula() != null && !usuario.getCedula().trim().isEmpty()) {
+            Usuario usuarioExistenteCedula = objGestionarUsuarioGateway.buscarUsuarioPorCedula(usuario.getCedula());
+            if (usuarioExistenteCedula != null && !usuarioExistenteCedula.getId_usuario().equals(usuario.getId_usuario())) {
+                this.objFormateadorResultados.retornarRespuestaErrorEntidadExiste("Ya existe otro usuario con esa cédula.");
+            }
         }
 
         // Manejar password: si se proporciona, codificarla; si no, mantener la existente

@@ -164,12 +164,8 @@ public class DocumentGeneratorService {
                 Double fs = firstRun.getFontSizeAsDouble();
                 if (fs != null && fs.intValue() > 0) {
                     fontSize = fs.intValue();
-                } else {
-                    int fsInt = firstRun.getFontSize();
-                    if (fsInt > 0) {
-                        fontSize = fsInt;
-                    }
                 }
+                // Nota: getFontSize() está deprecado, usar solo getFontSizeAsDouble()
             } catch (Exception ignore) {
                 // Mantener fontSize por defecto si hay cualquier problema
             }

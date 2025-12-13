@@ -14,6 +14,8 @@ public class Solicitud {
     
     private Integer id_solicitud;
     private String nombre_solicitud;
+    private String periodo_academico; // Período académico de la solicitud (ej: "2024-2")
+    private Date fecha_ceremonia; // Fecha de la ceremonia de graduación (para filtrar por ceremonias: marzo, junio, diciembre, etc.)
     private Date fecha_registro_solicitud;
 
     private Boolean esSeleccionado;

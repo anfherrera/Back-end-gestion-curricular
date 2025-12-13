@@ -7,6 +7,7 @@ import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.PastOrPresent;
+import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 
 import lombok.AllArgsConstructor;
@@ -28,7 +29,8 @@ public class SolicitudDTOPeticion {
     @PastOrPresent(message = "{Solicitud.fecha.pastorpresent}")
     private Date fecha_registro_solicitud;
 
-    // private String periodo_academico;
+    @Pattern(regexp = "^\\d{4}-[12]$", message = "{Solicitud.periodo_academico.format}")
+    private String periodo_academico; // Período académico en formato YYYY-P (ej: "2024-2")
 
     private Boolean esSeleccionado;
 

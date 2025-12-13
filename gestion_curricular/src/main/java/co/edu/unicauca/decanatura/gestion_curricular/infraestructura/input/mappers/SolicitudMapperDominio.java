@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
+import org.mapstruct.ReportingPolicy;
 
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.CambioEstadoSolicitud;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Solicitud;
@@ -13,6 +14,7 @@ import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.DTOPe
 
 @Mapper(
     componentModel = "spring",
+    unmappedTargetPolicy = ReportingPolicy.IGNORE,
     uses = {
         EstadoSolicitudMapperDominio.class,
         UsuarioMapperDominio.class,
@@ -24,6 +26,7 @@ public interface SolicitudMapperDominio {
     // Modelo → DTO Respuesta
     @Mapping(source = "id_solicitud", target = "id_solicitud")
     @Mapping(source = "nombre_solicitud", target = "nombre_solicitud")
+    @Mapping(source = "periodo_academico", target = "periodo_academico")
     @Mapping(source = "fecha_registro_solicitud", target = "fecha_registro_solicitud")
     @Mapping(source = "estadosSolicitud", target = "estadosSolicitud")
     @Mapping(source = "esSeleccionado", target = "esSeleccionado")
@@ -37,7 +40,8 @@ public interface SolicitudMapperDominio {
     @Mapping(target = "estadosSolicitud", ignore = true) // No viene en el DTO de petición
     @Mapping(target = "esSeleccionado", source = "esSeleccionado")
     @Mapping(target = "objCursoOfertadoVerano", ignore = true) 
-    @Mapping(target = "documentos", ignore = true) 
+    @Mapping(target = "documentos", ignore = true)
+    @Mapping(target = "fecha_ceremonia", ignore = true) // Se asigna desde el caso de uso si es necesario
     Solicitud mappearDeSolicitudDTOPeticionASolicitud(SolicitudDTOPeticion peticion);
 
     List<Solicitud> mappearListaDeSolicitudDTOPeticionAListaSolicitud(List<SolicitudDTOPeticion> peticiones);

@@ -267,4 +267,46 @@ public class GestionarEstadisticasCUAdapter implements GestionarEstadisticasCUIn
     public Map<String, Object> obtenerTendenciasTemporalesCursosVerano() {
         return estadisticasGateway.obtenerTendenciasTemporalesCursosVerano();
     }
+
+    @Override
+    public Map<String, Object> obtenerEstadisticasPorAnio(Integer anio) {
+        if (anio == null || anio < 2020 || anio > 2030) {
+            formateadorResultados.retornarRespuestaErrorEntidadExiste("Año inválido. Debe estar entre 2020 y 2030.");
+        }
+        return estadisticasGateway.obtenerEstadisticasPorAnio(anio);
+    }
+
+    @Override
+    public Map<String, Object> obtenerEstadisticasPorSemestre(Integer anio, Integer semestre) {
+        if (anio == null || anio < 2020 || anio > 2030) {
+            formateadorResultados.retornarRespuestaErrorEntidadExiste("Año inválido. Debe estar entre 2020 y 2030.");
+        }
+        if (semestre == null || (semestre != 1 && semestre != 2)) {
+            formateadorResultados.retornarRespuestaErrorEntidadExiste("Semestre inválido. Debe ser 1 o 2.");
+        }
+        return estadisticasGateway.obtenerEstadisticasPorSemestre(anio, semestre);
+    }
+
+    @Override
+    public List<Map<String, Object>> obtenerHistorialEstadisticas(Integer anioInicio, Integer anioFin) {
+        // Validar años si se proporcionan
+        if (anioInicio != null && (anioInicio < 2020 || anioInicio > 2030)) {
+            formateadorResultados.retornarRespuestaErrorEntidadExiste("Año de inicio inválido. Debe estar entre 2020 y 2030.");
+        }
+        if (anioFin != null && (anioFin < 2020 || anioFin > 2030)) {
+            formateadorResultados.retornarRespuestaErrorEntidadExiste("Año de fin inválido. Debe estar entre 2020 y 2030.");
+        }
+        if (anioInicio != null && anioFin != null && anioInicio > anioFin) {
+            formateadorResultados.retornarRespuestaErrorEntidadExiste("El año de inicio no puede ser mayor al año de fin.");
+        }
+        return estadisticasGateway.obtenerHistorialEstadisticas(anioInicio, anioFin);
+    }
+
+    @Override
+    public Map<String, Object> obtenerEstadisticasPorPeriodoAcademico(String periodoAcademico) {
+        if (periodoAcademico == null || periodoAcademico.trim().isEmpty()) {
+            formateadorResultados.retornarRespuestaErrorEntidadExiste("El período académico no puede estar vacío.");
+        }
+        return estadisticasGateway.obtenerEstadisticasPorPeriodoAcademico(periodoAcademico.trim());
+    }
 }

@@ -15,6 +15,7 @@ public class Usuario {
     private String nombre_completo;
     private Rol objRol;
     private String codigo;
+    private String cedula;
     private String correo;
     private String password;
     private boolean estado_usuario;

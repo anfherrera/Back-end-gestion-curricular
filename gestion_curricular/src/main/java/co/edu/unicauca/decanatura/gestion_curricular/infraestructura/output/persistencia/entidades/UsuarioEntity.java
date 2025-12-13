@@ -36,6 +36,8 @@ public class UsuarioEntity {
     private String nombre_completo;
     @Column(nullable = false, length = 12)
     private String codigo;
+    @Column(nullable = true, unique = true, length = 20)
+    private String cedula;
     @Column(nullable = false, unique = true, length = 100)
     private String correo;
     @Column(nullable = false, length = 100)

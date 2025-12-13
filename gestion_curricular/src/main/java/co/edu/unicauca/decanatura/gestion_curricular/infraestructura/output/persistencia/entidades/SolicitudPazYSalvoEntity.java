@@ -17,9 +17,9 @@ public class SolicitudPazYSalvoEntity extends SolicitudEntity {
     public SolicitudPazYSalvoEntity(){
         super();
     }
-    public SolicitudPazYSalvoEntity(Integer id_solicitud, String nombre_solicitud, Date fecha_registro_solicitud, Boolean esSeleccionado,
+    public SolicitudPazYSalvoEntity(Integer id_solicitud, String nombre_solicitud, String periodo_academico, Date fecha_ceremonia, Date fecha_registro_solicitud, Boolean esSeleccionado,
                                 List<EstadoSolicitudEntity> estadosSolicitud, UsuarioEntity objUsuario, List<DocumentoEntity> documentos, CursoOfertadoVeranoEntity objCursoOfertadoVerano) {
-        super(id_solicitud, nombre_solicitud, fecha_registro_solicitud, esSeleccionado, estadosSolicitud, objUsuario, documentos, objCursoOfertadoVerano);
+        super(id_solicitud, nombre_solicitud, periodo_academico, fecha_ceremonia, fecha_registro_solicitud, esSeleccionado, estadosSolicitud, objUsuario, documentos, objCursoOfertadoVerano);
     }
     
 }

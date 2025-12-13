@@ -26,6 +26,10 @@ public interface UsuarioRepositoryInt extends JpaRepository<UsuarioEntity, Integ
     @Query("SELECT u FROM UsuarioEntity u WHERE u.correo = :correo")
     Optional<UsuarioEntity> buscarPorCorreo(@Param("correo") String correo);
 
+    // Buscar por cédula exacta
+    @Query("SELECT u FROM UsuarioEntity u WHERE u.cedula = :cedula")
+    Optional<UsuarioEntity> buscarPorCedula(@Param("cedula") String cedula);
+
     // Buscar por nombre parcial, sin importar mayúsculas
     @Query("SELECT u FROM UsuarioEntity u WHERE LOWER(u.nombre_completo) LIKE LOWER(CONCAT('%', :nombreParcial, '%')) ORDER BY u.nombre_completo ASC")
     List<UsuarioEntity> buscarPorNombreParcial(@Param("nombreParcial") String nombreParcial);

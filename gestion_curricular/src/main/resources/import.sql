@@ -1,3 +1,49 @@
+-- =========================================
+-- MIGRACIONES DE ESQUEMA
+-- =========================================
+-- Nota: Estos cambios de esquema se ejecutan antes de los INSERTs
+-- Si la columna ya existe, el script fallará silenciosamente (depende de la configuración)
+
+-- Agregar campo cédula a Usuarios (si no existe)
+SET @exist_cedula := (SELECT COUNT(*) FROM INFORMATION_SCHEMA.COLUMNS 
+                      WHERE TABLE_SCHEMA = DATABASE() 
+                      AND TABLE_NAME = 'Usuarios' 
+                      AND COLUMN_NAME = 'cedula');
+SET @sql_cedula := IF(@exist_cedula = 0, 
+    'ALTER TABLE Usuarios ADD COLUMN cedula VARCHAR(20) NULL UNIQUE',
+    'SELECT ''La columna cedula ya existe'' AS mensaje');
+PREPARE stmt_cedula FROM @sql_cedula;
+EXECUTE stmt_cedula;
+DEALLOCATE PREPARE stmt_cedula;
+
+-- Agregar campo periodo_academico a Solicitudes (si no existe)
+SET @exist_periodo := (SELECT COUNT(*) FROM INFORMATION_SCHEMA.COLUMNS 
+                       WHERE TABLE_SCHEMA = DATABASE() 
+                       AND TABLE_NAME = 'Solicitudes' 
+                       AND COLUMN_NAME = 'periodo_academico');
+SET @sql_periodo := IF(@exist_periodo = 0, 
+    'ALTER TABLE Solicitudes ADD COLUMN periodo_academico VARCHAR(10) NULL',
+    'SELECT ''La columna periodo_academico ya existe'' AS mensaje');
+PREPARE stmt_periodo FROM @sql_periodo;
+EXECUTE stmt_periodo;
+DEALLOCATE PREPARE stmt_periodo;
+
+-- Agregar campo fecha_ceremonia a Solicitudes (si no existe)
+SET @exist_fecha_ceremonia := (SELECT COUNT(*) FROM INFORMATION_SCHEMA.COLUMNS 
+                                WHERE TABLE_SCHEMA = DATABASE() 
+                                AND TABLE_NAME = 'Solicitudes' 
+                                AND COLUMN_NAME = 'fecha_ceremonia');
+SET @sql_fecha_ceremonia := IF(@exist_fecha_ceremonia = 0, 
+    'ALTER TABLE Solicitudes ADD COLUMN fecha_ceremonia DATE NULL',
+    'SELECT ''La columna fecha_ceremonia ya existe'' AS mensaje');
+PREPARE stmt_fecha_ceremonia FROM @sql_fecha_ceremonia;
+EXECUTE stmt_fecha_ceremonia;
+DEALLOCATE PREPARE stmt_fecha_ceremonia;
+
+-- =========================================
+-- DATOS INICIALES
+-- =========================================
+
 INSERT INTO Roles(idRol, nombre) VALUES (1,'Administrador');
 INSERT INTO Roles(idRol, nombre) VALUES (2,'Estudiante');
 INSERT INTO Roles(idRol, nombre) VALUES (3,'Coordinador');

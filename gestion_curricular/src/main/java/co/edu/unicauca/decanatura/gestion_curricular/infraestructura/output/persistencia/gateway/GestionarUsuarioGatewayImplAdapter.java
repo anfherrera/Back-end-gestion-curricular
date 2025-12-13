@@ -99,6 +99,16 @@ public class GestionarUsuarioGatewayImplAdapter implements GestionarUsuarioGatew
 
     @Override
     @Transactional(readOnly = true)
+    public Usuario buscarUsuarioPorCedula(String cedula) {
+        if (cedula == null || cedula.trim().isEmpty()) {
+            return null;
+        }
+        Optional<UsuarioEntity> usuarioEntity = usuarioRepository.buscarPorCedula(cedula.trim());
+        return usuarioEntity.map(entity -> usuarioMapper.map(entity, Usuario.class)).orElse(null);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
     public Usuario buscarUsuarioPorNombre(String nombre) {
         List<UsuarioEntity> usuarios = usuarioRepository.buscarPorNombreParcial(nombre);
         return usuarios.isEmpty() ? null : usuarioMapper.map(usuarios.get(0), Usuario.class);

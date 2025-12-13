@@ -7,7 +7,6 @@ import org.mapstruct.Mapping;
 
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Usuario;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.DTORespuesta.UsuarioDTORespuesta;
-import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.DTOPeticion.UsuarioDTOPeticion;
 
 
 @Mapper(componentModel = "spring", uses = {ProgramaMapperDominio.class,
@@ -19,6 +18,7 @@ public interface UsuarioMapperDominio {
     @Mapping(source = "nombre_completo", target = "nombre_completo")
     @Mapping(source = "objRol", target = "rol")
     @Mapping(source = "codigo", target = "codigo")
+    @Mapping(source = "cedula", target = "cedula")
     @Mapping(source = "correo", target = "correo")
     @Mapping(source = "estado_usuario", target = "estado_usuario")
     @Mapping(source = "objPrograma", target = "objPrograma")

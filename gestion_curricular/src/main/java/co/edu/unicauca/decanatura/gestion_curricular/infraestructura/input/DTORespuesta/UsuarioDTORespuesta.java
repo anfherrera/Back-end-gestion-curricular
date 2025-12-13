@@ -13,6 +13,7 @@ public class UsuarioDTORespuesta {
     private String nombre_completo;
     private RolDTORespuesta rol;
     private String codigo;
+    private String cedula;
     private String correo;
     private boolean estado_usuario;
     private ProgramaDTORespuesta objPrograma;

@@ -42,6 +42,7 @@ import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.Gestionar
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.DTORespuesta.DocumentosDTORespuesta;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.mappers.DocumentosMapperDominio;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Solicitud;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Enums.PeriodoAcademicoEnum;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.controladorExcepciones.excepcionesPropias.EntidadNoExisteException;
 
 @Slf4j
@@ -154,6 +155,19 @@ public class SolicitudPazYSalvoRestController {
             solicitud.setFecha_registro_solicitud(new Date());
         }
 
+        // Agregar período académico si se proporciona
+        if (mapPeticion.containsKey("periodo_academico") && mapPeticion.get("periodo_academico") != null) {
+            String periodoAcademico = mapPeticion.get("periodo_academico").toString().trim();
+            if (!periodoAcademico.isBlank()) {
+                // Validar formato del período académico
+                if (PeriodoAcademicoEnum.esValido(periodoAcademico)) {
+                    solicitud.setPeriodo_academico(periodoAcademico);
+                } else {
+                    throw new IllegalArgumentException("Período académico inválido. Use formato: YYYY-P (ej: 2024-2)");
+                }
+            }
+        }
+
         return solicitud;
     }
 
@@ -176,6 +190,14 @@ public class SolicitudPazYSalvoRestController {
 
         if (dtoPeticion.getObjUsuario() == null || dtoPeticion.getObjUsuario().getId_usuario() == null) {
             return "El usuario de la solicitud es obligatorio";
+        }
+
+        // Validar período académico si se proporciona
+        if (dtoPeticion.getPeriodo_academico() != null && !dtoPeticion.getPeriodo_academico().trim().isEmpty()) {
+            String periodoAcademico = dtoPeticion.getPeriodo_academico().trim();
+            if (!PeriodoAcademicoEnum.esValido(periodoAcademico)) {
+                return "Período académico inválido. Use formato: YYYY-P (ej: 2024-2)";
+            }
         }
 
         if (dtoPeticion.getNombre_solicitud() == null || dtoPeticion.getNombre_solicitud().isBlank()) {
