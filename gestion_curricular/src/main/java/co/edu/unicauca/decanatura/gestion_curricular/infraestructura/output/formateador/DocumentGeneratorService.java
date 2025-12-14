@@ -258,6 +258,11 @@ public class DocumentGeneratorService {
             Map<String, Boolean> placeholderEnNegrilla, Map<String, String> replacements,
             boolean isBoldBase, boolean isItalicBase, String fontFamily, int fontSize) {
         
+        // Forzar negrilla para NOMBRE_ESTUDIANTE si existe (siempre debe estar en negrilla)
+        if (replacements.containsKey("NOMBRE_ESTUDIANTE") && !placeholderEnNegrilla.containsKey("NOMBRE_ESTUDIANTE")) {
+            placeholderEnNegrilla.put("NOMBRE_ESTUDIANTE", true);
+        }
+        
         // Si no hay placeholders en negrilla, crear un solo run
         if (placeholderEnNegrilla.isEmpty() || !placeholderEnNegrilla.containsValue(true)) {
             XWPFRun run = paragraph.createRun();
@@ -304,9 +309,31 @@ public class DocumentGeneratorService {
                         String valorLower = valor.toLowerCase();
                         inicio = 0;
                         while ((inicio = textoLower.indexOf(valorLower, inicio)) != -1) {
+                            // Usar la posición encontrada en el texto original (no en lowercase)
                             int fin = inicio + valor.length();
                             rangosNegrilla.add(new int[]{inicio, fin});
                             inicio = fin;
+                        }
+                    }
+                    
+                    // Si aún no se encontró para NOMBRE_ESTUDIANTE, buscar en el texto original antes del reemplazo
+                    if (rangosNegrilla.isEmpty() && entry.getKey().equals("NOMBRE_ESTUDIANTE")) {
+                        // Buscar el patrón "el (la) estudiante [NOMBRE]" y aplicar negrilla al nombre
+                        String patron = "el \\(la\\) estudiante ";
+                        int posPatron = textoReemplazado.toLowerCase().indexOf(patron);
+                        if (posPatron != -1) {
+                            int inicioNombre = posPatron + patron.length();
+                            // Buscar hasta la siguiente coma o "identificado"
+                            int finNombre = textoReemplazado.indexOf(",", inicioNombre);
+                            if (finNombre == -1) {
+                                finNombre = textoReemplazado.indexOf(" identificado", inicioNombre);
+                            }
+                            if (finNombre == -1) {
+                                finNombre = textoReemplazado.length();
+                            }
+                            if (finNombre > inicioNombre) {
+                                rangosNegrilla.add(new int[]{inicioNombre, finNombre});
+                            }
                         }
                     }
                 }
@@ -763,8 +790,27 @@ public class DocumentGeneratorService {
             } else if (fecha instanceof String) {
                 String fechaStr = fecha.toString().trim();
                 
-                // Verificar si es formato en inglés como "Sun Dec 14" o "Sun Dec 14 2025"
-                if (fechaStr.matches("^[A-Za-z]{3}\\s+[A-Za-z]{3}\\s+\\d{1,2}(\\s+\\d{4})?$")) {
+                // Verificar si es formato con timezone como "Sun Dec 14 2025 00:00:00 GMT-0500 (hora estándar de Colombia)"
+                if (fechaStr.contains("GMT") || fechaStr.contains("hora estándar") || fechaStr.matches(".*\\d{4}\\s+\\d{2}:\\d{2}:\\d{2}.*")) {
+                    try {
+                        // Intentar parsear formato completo con timezone
+                        // Formato: "Sun Dec 14 2025 00:00:00 GMT-0500 (hora estándar de Colombia)"
+                        // Extraer la parte relevante: "Sun Dec 14 2025"
+                        java.util.regex.Pattern patron = java.util.regex.Pattern.compile("([A-Za-z]{3}\\s+[A-Za-z]{3}\\s+\\d{1,2}\\s+\\d{4})");
+                        java.util.regex.Matcher matcher = patron.matcher(fechaStr);
+                        if (matcher.find()) {
+                            String fechaParte = matcher.group(1);
+                            java.text.SimpleDateFormat formatoIngles = new java.text.SimpleDateFormat("EEE MMM dd yyyy", java.util.Locale.ENGLISH);
+                            java.util.Date date = formatoIngles.parse(fechaParte);
+                            localDate = date.toInstant().atZone(java.time.ZoneId.systemDefault()).toLocalDate();
+                        }
+                    } catch (Exception ex) {
+                        // Si falla, intentar otros formatos
+                    }
+                }
+                
+                // Si aún no se parseó, verificar si es formato en inglés simple como "Sun Dec 14" o "Sun Dec 14 2025"
+                if (localDate == null && fechaStr.matches("^[A-Za-z]{3}\\s+[A-Za-z]{3}\\s+\\d{1,2}(\\s+\\d{4})?$")) {
                     try {
                         // Intentar parsear formato en inglés
                         java.text.SimpleDateFormat formatoIngles;
@@ -784,14 +830,20 @@ public class DocumentGeneratorService {
                             }
                         }
                     }
-                } else if (fechaStr.contains("T") || fechaStr.contains(" ")) {
+                }
+                
+                // Si aún no se parseó, intentar formato ISO
+                if (localDate == null && (fechaStr.contains("T") || fechaStr.contains(" "))) {
                     // Si viene como string ISO con hora (ej: "2025-12-14 11:06:13.0" o "2025-12-14T11:06:13.000+00:00")
                     // Extraer solo la parte de la fecha (primeros 10 caracteres)
                     String fechaSolo = fechaStr.substring(0, Math.min(10, fechaStr.length()));
                     if (fechaSolo.matches("\\d{4}-\\d{2}-\\d{2}")) {
                         localDate = LocalDate.parse(fechaSolo);
                     }
-                } else if (fechaStr.matches("\\d{4}-\\d{2}-\\d{2}")) {
+                }
+                
+                // Si aún no se parseó, intentar formato simple
+                if (localDate == null && fechaStr.matches("\\d{4}-\\d{2}-\\d{2}")) {
                     // Si viene como string simple (ej: "2025-09-30")
                     localDate = LocalDate.parse(fechaStr);
                 }
@@ -805,7 +857,25 @@ public class DocumentGeneratorService {
             // Si hay error, intentar parsear el string de diferentes formas
             String fechaStr = fecha.toString().trim();
             
-            // Intentar parsear formato en inglés como "Sun Dec 14" o "Sun Dec 14 2025"
+            // Intentar parsear formato con timezone como "Sun Dec 14 2025 00:00:00 GMT-0500 (hora estándar de Colombia)"
+            if (fechaStr.contains("GMT") || fechaStr.contains("hora estándar") || fechaStr.matches(".*\\d{4}\\s+\\d{2}:\\d{2}:\\d{2}.*")) {
+                try {
+                    java.util.regex.Pattern patron = java.util.regex.Pattern.compile("([A-Za-z]{3}\\s+[A-Za-z]{3}\\s+\\d{1,2}\\s+\\d{4})");
+                    java.util.regex.Matcher matcher = patron.matcher(fechaStr);
+                    if (matcher.find()) {
+                        String fechaParte = matcher.group(1);
+                        java.text.SimpleDateFormat formatoIngles = new java.text.SimpleDateFormat("EEE MMM dd yyyy", java.util.Locale.ENGLISH);
+                        java.util.Date date = formatoIngles.parse(fechaParte);
+                        LocalDate localDate = date.toInstant().atZone(java.time.ZoneId.systemDefault()).toLocalDate();
+                        return localDate.format(DateTimeFormatter.ofPattern("dd 'de' MMMM 'de' yyyy", 
+                            new java.util.Locale("es", "CO")));
+                    }
+                } catch (Exception ex) {
+                    // Si falla, continuar con otros intentos
+                }
+            }
+            
+            // Intentar parsear formato en inglés simple como "Sun Dec 14" o "Sun Dec 14 2025"
             if (fechaStr.matches("^[A-Za-z]{3}\\s+[A-Za-z]{3}\\s+\\d{1,2}(\\s+\\d{4})?$")) {
                 try {
                     java.text.SimpleDateFormat formatoIngles;
