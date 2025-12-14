@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
+import org.mapstruct.ReportingPolicy;
 
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.SolicitudHomologacion;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.DTOPeticion.SolicitudHomologacionDTOPeticion;
@@ -11,6 +12,7 @@ import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.DTORe
 
 @Mapper(
     componentModel = "spring",
+    unmappedTargetPolicy = ReportingPolicy.IGNORE,
     uses = {
         EstadoSolicitudMapperDominio.class,
         UsuarioMapperDominio.class,
@@ -24,6 +26,11 @@ public interface SolicitudHomologacioneMapperDominio {
     @Mapping(target = "objCursoOfertadoVerano", ignore = true) // Propiedad no mapeada
     @Mapping(target = "ruta_PM_FO_4_FOR_27", ignore = true) // Propiedad no mapeada
     @Mapping(target = "ruta_contenido_programatico", ignore = true) // Propiedad no mapeada
+    @Mapping(target = "fecha_ceremonia", ignore = true) // Se asigna desde el caso de uso si es necesario
+    @Mapping(target = "objUsuario.cursosOfertadosInscritos", ignore = true)
+    @Mapping(target = "objUsuario.objPrograma", ignore = true)
+    @Mapping(target = "objUsuario.objRol", ignore = true)
+    @Mapping(target = "objUsuario.solicitudes", ignore = true)
     SolicitudHomologacion mappearDeSolicitudHomologacionDTOPeticionASolicitudHomologacion(SolicitudHomologacionDTOPeticion peticion);
 
     // Dominio → DTO Respuesta
