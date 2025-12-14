@@ -92,6 +92,49 @@ public class GestionarSolicitudReingresoImplAdapter implements GestionarSolicitu
     }
 
     @Override
+    public List<SolicitudReingreso> listarSolicitudesReingresoToFuncionarioPorPeriodo(String periodoAcademico) {
+        return solicitudReingresoRepository.findByUltimoEstadoAndPeriodoAcademico("Enviada", periodoAcademico).stream()
+                .map(entity -> mapper.map(entity, SolicitudReingreso.class))
+                .toList();
+    }
+
+    @Override
+    public List<SolicitudReingreso> listarSolicitudesReingresoToCoordinadorPorProgramaYPeriodo(Integer idPrograma, String periodoAcademico) {
+        if (idPrograma == null) {
+            return listarSolicitudesReingresoToCoordinador();
+        }
+        return solicitudReingresoRepository.findByUltimoEstadoAndProgramaAndPeriodoAcademico("APROBADA_FUNCIONARIO", idPrograma, periodoAcademico).stream()
+                .map(entity -> mapper.map(entity, SolicitudReingreso.class))
+                .toList();
+    }
+
+    @Override
+    public List<SolicitudReingreso> listarSolicitudesReingresoToSecretariaPorPeriodo(String periodoAcademico) {
+        return solicitudReingresoRepository.findByUltimoEstadoAndPeriodoAcademico("APROBADA_COORDINADOR", periodoAcademico).stream()
+                .map(entity -> mapper.map(entity, SolicitudReingreso.class))
+                .toList();
+    }
+
+    @Override
+    public List<SolicitudReingreso> listarSolicitudesAprobadasToSecretariaPorPeriodo(String periodoAcademico) {
+        return solicitudReingresoRepository.findByUltimoEstadoAndPeriodoAcademico("APROBADA", periodoAcademico).stream()
+                .map(entity -> mapper.map(entity, SolicitudReingreso.class))
+                .toList();
+    }
+
+    @Override
+    public List<SolicitudReingreso> listarSolicitudesReingresoPorUsuarioYPeriodo(Integer idUsuario, String periodoAcademico) {
+        // Para estudiantes, buscamos todas las solicitudes del usuario (sin filtro de estado)
+        // pero filtramos por período académico
+        return solicitudReingresoRepository.findAll().stream()
+                .filter(entity -> entity.getObjUsuario() != null && 
+                                 entity.getObjUsuario().getId_usuario().equals(idUsuario) &&
+                                 (periodoAcademico == null || periodoAcademico.equals(entity.getPeriodo_academico())))
+                .map(entity -> mapper.map(entity, SolicitudReingreso.class))
+                .toList();
+    }
+
+    @Override
     public void cambiarEstadoSolicitudReingreso(Integer idSolicitud, EstadoSolicitud nuevoEstado) {
       SolicitudReingresoEntity solicitudEntity = (SolicitudReingresoEntity) solicitudReingresoRepository.findById(idSolicitud)
               .orElseThrow(() -> new EntidadNoExisteException("Solicitud de Reingreso no encontrada con ID: " + idSolicitud));

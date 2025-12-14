@@ -17,6 +17,7 @@ import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.mappe
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.mappers.SolicitudMapperDominio;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.GestionarUsuarioGatewayIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Usuario;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Enums.PeriodoAcademicoEnum;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import jakarta.validation.Valid;
@@ -57,15 +58,53 @@ public class SolicitudEcaesRestController {
     }
 
     @GetMapping("/listarSolicitudes-Ecaes")
-    public ResponseEntity<List<SolicitudEcaesDTORespuesta>> listarSolicitudes() {
+    public ResponseEntity<List<SolicitudEcaesDTORespuesta>> listarSolicitudes(
+            @RequestParam(required = false) String periodoAcademico) {
+        
+        // Si no se proporciona período, usar el período académico actual basado en la fecha
+        if (periodoAcademico == null || periodoAcademico.trim().isEmpty()) {
+            PeriodoAcademicoEnum periodoActual = PeriodoAcademicoEnum.getPeriodoActual();
+            if (periodoActual != null) {
+                periodoAcademico = periodoActual.getValor();
+                log.debug("Usando período académico actual automático: {}", periodoAcademico);
+            }
+        }
+        
         List<SolicitudEcaes> solicitudes = solicitudEcaesCU.listarSolicitudes();
+        
+        // Filtrar por período académico si se proporcionó
+        if (periodoAcademico != null && !periodoAcademico.trim().isEmpty()) {
+            final String periodoFiltro = periodoAcademico.trim();
+            solicitudes = solicitudes.stream()
+                    .filter(s -> s.getPeriodo_academico() != null 
+                            && s.getPeriodo_academico().equals(periodoFiltro))
+                    .toList();
+            log.debug("Filtrando solicitudes por período académico: {}", periodoFiltro);
+        }
+        
         List<SolicitudEcaesDTORespuesta> respuesta = solicitudMapperDominio.mappearListaDeSolicitudEcaesARespuesta(solicitudes);
         return ResponseEntity.ok(respuesta);
     }
 
     @GetMapping("/listarSolicitudes-Ecaes/Funcionario")
-    public ResponseEntity<List<SolicitudEcaesDTORespuesta>> listarSolicitudesToFuncionario() {
-        List<SolicitudEcaes> solicitudes = solicitudEcaesCU.listarSolicitudesToFuncionario();
+    public ResponseEntity<List<SolicitudEcaesDTORespuesta>> listarSolicitudesToFuncionario(
+            @RequestParam(required = false) String periodoAcademico) {
+        // Si no se proporciona período, usar el período académico actual basado en la fecha
+        if (periodoAcademico == null || periodoAcademico.trim().isEmpty()) {
+            PeriodoAcademicoEnum periodoActual = PeriodoAcademicoEnum.getPeriodoActual();
+            if (periodoActual != null) {
+                periodoAcademico = periodoActual.getValor();
+                log.debug("Usando período académico actual automático: {}", periodoAcademico);
+            }
+        }
+        
+        List<SolicitudEcaes> solicitudes;
+        if (periodoAcademico != null && !periodoAcademico.trim().isEmpty()) {
+            solicitudes = solicitudEcaesCU.listarSolicitudesToFuncionarioPorPeriodo(periodoAcademico.trim());
+        } else {
+            solicitudes = solicitudEcaesCU.listarSolicitudesToFuncionario();
+        }
+        
         List<SolicitudEcaesDTORespuesta> respuesta = solicitudMapperDominio.mappearListaDeSolicitudEcaesARespuesta(solicitudes);
         return ResponseEntity.ok(respuesta);
     }
@@ -79,14 +118,28 @@ public class SolicitudEcaesRestController {
     @GetMapping("/listarSolicitud-ecaes/porRol")
     public ResponseEntity<List<SolicitudEcaesDTORespuesta>> listarSolicitudPorRol(
             @RequestParam String rol,
-            @RequestParam(required = false) Integer idUsuario) {
+            @RequestParam(required = false) Integer idUsuario,
+            @RequestParam(required = false) String periodoAcademico) {
 
-        List<SolicitudEcaes> solicitudes = solicitudEcaesCU.listarSolicitudesPorRol(rol, idUsuario);
+        // Si no se proporciona período, usar el período académico actual basado en la fecha
+        if (periodoAcademico == null || periodoAcademico.trim().isEmpty()) {
+            PeriodoAcademicoEnum periodoActual = PeriodoAcademicoEnum.getPeriodoActual();
+            if (periodoActual != null) {
+                periodoAcademico = periodoActual.getValor();
+                log.debug("Usando período académico actual automático: {}", periodoAcademico);
+            }
+        }
 
-        // Si es coordinador, filtrar adicionalmente por programa
+        List<SolicitudEcaes> solicitudes;
+        
+        // Si es coordinador, filtrar por programa y período
         if ("COORDINADOR".equalsIgnoreCase(rol)) {
             Integer idPrograma = obtenerProgramaCoordinadorAutenticado();
-            if (idPrograma != null) {
+            if (idPrograma != null && periodoAcademico != null && !periodoAcademico.trim().isEmpty()) {
+                solicitudes = solicitudEcaesCU.listarSolicitudesToCoordinadorPorProgramaYPeriodo(idPrograma, periodoAcademico.trim());
+            } else if (idPrograma != null) {
+                // Filtrar solo por programa si no hay período
+                solicitudes = solicitudEcaesCU.listarSolicitudesPorRol(rol, idUsuario);
                 solicitudes = solicitudes.stream()
                         .filter(s -> s.getObjUsuario() != null 
                                 && s.getObjUsuario().getObjPrograma() != null
@@ -95,7 +148,12 @@ public class SolicitudEcaesRestController {
                         .toList();
             } else {
                 log.warn("No se pudo obtener el programa del coordinador para ECAES, retornando todas las solicitudes");
+                solicitudes = solicitudEcaesCU.listarSolicitudesPorRol(rol, idUsuario);
             }
+        } else if ("ESTUDIANTE".equalsIgnoreCase(rol) && idUsuario != null && periodoAcademico != null && !periodoAcademico.trim().isEmpty()) {
+            solicitudes = solicitudEcaesCU.listarSolicitudesPorUsuarioYPeriodo(idUsuario, periodoAcademico.trim());
+        } else {
+            solicitudes = solicitudEcaesCU.listarSolicitudesPorRol(rol, idUsuario);
         }
 
         List<SolicitudEcaesDTORespuesta> respuesta =

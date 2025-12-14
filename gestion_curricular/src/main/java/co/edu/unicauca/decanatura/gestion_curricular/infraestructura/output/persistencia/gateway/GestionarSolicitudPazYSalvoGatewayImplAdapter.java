@@ -138,6 +138,66 @@ public class GestionarSolicitudPazYSalvoGatewayImplAdapter implements GestionarS
     }
 
     @Override
+    public List<SolicitudPazYSalvo> listarSolicitudesToFuncionarioPorPeriodo(String periodoAcademico) {
+        return solicitudRepository.findByUltimoEstadoAndPeriodoAcademico("Enviada", periodoAcademico).stream()
+                .map(entity -> mapper.map(entity, SolicitudPazYSalvo.class))
+                .toList();
+    }
+
+    @Override
+    public List<SolicitudPazYSalvo> listarSolicitudesAprobadasToFuncionarioPorPeriodo(String periodoAcademico) {
+        return solicitudRepository.findByUltimoEstadoAndPeriodoAcademico("APROBADA_FUNCIONARIO", periodoAcademico).stream()
+                .map(entity -> mapper.map(entity, SolicitudPazYSalvo.class))
+                .toList();
+    }
+
+    @Override
+    public List<SolicitudPazYSalvo> listarSolicitudesToCoordinadorPorProgramaYPeriodo(Integer idPrograma, String periodoAcademico) {
+        if (idPrograma == null) {
+            return listarSolicitudesToCoordinador();
+        }
+        return solicitudRepository.findByUltimoEstadoAndProgramaAndPeriodoAcademico("APROBADA_FUNCIONARIO", idPrograma, periodoAcademico).stream()
+                .map(entity -> mapper.map(entity, SolicitudPazYSalvo.class))
+                .toList();
+    }
+
+    @Override
+    public List<SolicitudPazYSalvo> listarSolicitudesAprobadasToCoordinadorPorProgramaYPeriodo(Integer idPrograma, String periodoAcademico) {
+        if (idPrograma == null) {
+            return listarSolicitudesAprobadasToCoordinador();
+        }
+        return solicitudRepository.findByUltimoEstadoAndProgramaAndPeriodoAcademico("APROBADA_COORDINADOR", idPrograma, periodoAcademico).stream()
+                .map(entity -> mapper.map(entity, SolicitudPazYSalvo.class))
+                .toList();
+    }
+
+    @Override
+    public List<SolicitudPazYSalvo> listarSolicitudesToSecretariaPorPeriodo(String periodoAcademico) {
+        return solicitudRepository.findByUltimoEstadoAndPeriodoAcademico("APROBADA_COORDINADOR", periodoAcademico).stream()
+                .map(entity -> mapper.map(entity, SolicitudPazYSalvo.class))
+                .toList();
+    }
+
+    @Override
+    public List<SolicitudPazYSalvo> listarSolicitudesAprobadasToSecretariaPorPeriodo(String periodoAcademico) {
+        return solicitudRepository.findByUltimoEstadoAndPeriodoAcademico("APROBADA", periodoAcademico).stream()
+                .map(entity -> mapper.map(entity, SolicitudPazYSalvo.class))
+                .toList();
+    }
+
+    @Override
+    public List<SolicitudPazYSalvo> listarSolicitudesPorUsuarioYPeriodo(Integer idUsuario, String periodoAcademico) {
+        // Para estudiantes, buscamos todas las solicitudes del usuario (sin filtro de estado)
+        // pero filtramos por período académico
+        return solicitudRepository.findAll().stream()
+                .filter(entity -> entity.getObjUsuario() != null && 
+                                 entity.getObjUsuario().getId_usuario().equals(idUsuario) &&
+                                 (periodoAcademico == null || periodoAcademico.equals(entity.getPeriodo_academico())))
+                .map(entity -> mapper.map(entity, SolicitudPazYSalvo.class))
+                .toList();
+    }
+
+    @Override
     public void cambiarEstadoSolicitud(Integer idSolicitud, EstadoSolicitud nuevoEstado) {
         SolicitudPazYSalvoEntity solicitudEntity = solicitudRepository.findById(idSolicitud)
                 .orElseThrow(() -> new EntidadNoExisteException("Solicitud de Paz y Salvo no encontrada con ID: " + idSolicitud));

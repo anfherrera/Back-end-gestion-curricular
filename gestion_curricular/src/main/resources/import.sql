@@ -4,6 +4,13 @@
 -- Nota: Las columnas cedula, periodo_academico y fecha_ceremonia se crean
 -- automáticamente por Hibernate cuando ddl-auto=create, ya que están
 -- definidas en las entidades JPA (UsuarioEntity y SolicitudEntity)
+--
+-- IMPORTANTE: La tabla PeriodosAcademicos se crea automáticamente por Hibernate
+-- cuando ddl-auto=create. Los datos iniciales se insertan a continuación.
+-- 
+-- IMPORTANTE: Todas las solicitudes incluyen el campo periodo_academico.
+-- Las solicitudes de julio-septiembre 2025 pertenecen al período 2025-2
+-- (según el calendario académico: Período 2 = 14 julio - 24 diciembre)
 
 INSERT INTO Roles(idRol, nombre) VALUES (1,'Administrador');
 INSERT INTO Roles(idRol, nombre) VALUES (2,'Estudiante');
@@ -114,12 +121,7 @@ INSERT INTO Usuarios(idUsuario, codigo, nombre_completo, correo, password, estad
 -- Usuarios de prueba para roles de funcionarios
 INSERT INTO Usuarios(idUsuario, codigo, nombre_completo, correo, password, estado_usuario, idfkRol, idfkPrograma, cedula) VALUES (22, 'FUN001', 'Ana María Rodríguez', 'arodriguez@unicauca.edu.co', 'password123', 1, 5, 1, '1818181818');
 INSERT INTO Usuarios(idUsuario, codigo, nombre_completo, correo, password, estado_usuario, idfkRol, idfkPrograma, cedula) VALUES (23, 'FUN002', 'Pedro Sánchez López', 'psanchez@unicauca.edu.co', 'password123', 1, 5, 2, '1919191919');
--- Coordinadores (uno por cada programa académico)
-INSERT INTO Usuarios(idUsuario, codigo, nombre_completo, correo, password, estado_usuario, idfkRol, idfkPrograma, cedula) VALUES (24, 'COO001', 'María Elena Vargas', 'mvargas@unicauca.edu.co', 'password123', 1, 3, 1, '2020202020'); -- Coordinador Ingeniería de Sistemas
-INSERT INTO Usuarios(idUsuario, codigo, nombre_completo, correo, password, estado_usuario, idfkRol, idfkPrograma, cedula) VALUES (27, 'COO002', 'Roberto Carlos Méndez', 'rmendez@unicauca.edu.co', 'password123', 1, 3, 2, '2222222222'); -- Coordinador Ingeniería Electrónica y Telecomunicaciones
-INSERT INTO Usuarios(idUsuario, codigo, nombre_completo, correo, password, estado_usuario, idfkRol, idfkPrograma, cedula) VALUES (28, 'COO003', 'Patricia Alejandra Ramírez', 'pramirez@unicauca.edu.co', 'password123', 1, 3, 3, '2323232323'); -- Coordinador Ingeniería Automática Industrial
-INSERT INTO Usuarios(idUsuario, codigo, nombre_completo, correo, password, estado_usuario, idfkRol, idfkPrograma, cedula) VALUES (29, 'COO004', 'Fernando José Gutiérrez', 'fgutierrez@unicauca.edu.co', 'password123', 1, 3, 4, '2424242424'); -- Coordinador Tecnología en Telemática
-
+INSERT INTO Usuarios(idUsuario, codigo, nombre_completo, correo, password, estado_usuario, idfkRol, idfkPrograma, cedula) VALUES (24, 'COO001', 'María Elena Vargas', 'mvargas@unicauca.edu.co', 'password123', 1, 3, 3, '2020202020');
 INSERT INTO Usuarios(idUsuario, codigo, nombre_completo, correo, password, estado_usuario, idfkRol, idfkPrograma, cedula) VALUES (25, 'SEC001', 'Carlos Eduardo Torres', 'ctorres@unicauca.edu.co', 'password123', 1, 4, 4, '2121212121');
 
 -- Usuario Administrador por defecto (para desarrollo y pruebas)
@@ -127,6 +129,42 @@ INSERT INTO Usuarios(idUsuario, codigo, nombre_completo, correo, password, estad
 -- Password: password123 (hash BCrypt)
 -- IMPORTANTE: Cambiar la contraseña en producción
 INSERT INTO Usuarios(idUsuario, codigo, nombre_completo, correo, password, estado_usuario, idfkRol, idfkPrograma, cedula) VALUES (26, 'ADMIN001', 'Administrador del Sistema', 'admin@unicauca.edu.co', '$2a$10$N9qo8uLOickgx2ZMRZoMyeIjFOjtXgjOU92LhL6YP1dPW1Z/uLlLG', 1, 1, 1, '0000000000');
+
+-- =========================================
+-- PERÍODOS ACADÉMICOS
+-- =========================================
+-- Fechas según Acuerdo Académico 030 de 2024:
+-- Período 1: 7 de enero - 23 de junio
+-- Período 2: 14 de julio - 24 de diciembre
+-- NOTA: La tabla PeriodosAcademicos se crea automáticamente por Hibernate (ddl-auto=create)
+
+-- Períodos 2020-2024 (históricos)
+INSERT INTO PeriodosAcademicos (año, numero_periodo, nombre_periodo, fecha_inicio, fecha_fin, activo, tipo_periodo) VALUES
+(2020, 1, 'Primer Período 2020', '2020-01-07', '2020-06-23', TRUE, 'REGULAR'),
+(2020, 2, 'Segundo Período 2020', '2020-07-14', '2020-12-24', TRUE, 'REGULAR'),
+(2021, 1, 'Primer Período 2021', '2021-01-07', '2021-06-23', TRUE, 'REGULAR'),
+(2021, 2, 'Segundo Período 2021', '2021-07-14', '2021-12-24', TRUE, 'REGULAR'),
+(2022, 1, 'Primer Período 2022', '2022-01-07', '2022-06-23', TRUE, 'REGULAR'),
+(2022, 2, 'Segundo Período 2022', '2022-07-14', '2022-12-24', TRUE, 'REGULAR'),
+(2023, 1, 'Primer Período 2023', '2023-01-07', '2023-06-23', TRUE, 'REGULAR'),
+(2023, 2, 'Segundo Período 2023', '2023-07-14', '2023-12-24', TRUE, 'REGULAR'),
+(2024, 1, 'Primer Período 2024', '2024-01-07', '2024-06-23', TRUE, 'REGULAR'),
+(2024, 2, 'Segundo Período 2024', '2024-07-14', '2024-12-24', TRUE, 'REGULAR');
+
+-- Períodos 2025-2030 (actuales y futuros)
+INSERT INTO PeriodosAcademicos (año, numero_periodo, nombre_periodo, fecha_inicio, fecha_fin, activo, tipo_periodo) VALUES
+(2025, 1, 'Primer Período 2025', '2025-01-07', '2025-06-23', TRUE, 'REGULAR'),
+(2025, 2, 'Segundo Período 2025', '2025-07-14', '2025-12-24', TRUE, 'REGULAR'),
+(2026, 1, 'Primer Período 2026', '2026-01-07', '2026-06-23', TRUE, 'REGULAR'),
+(2026, 2, 'Segundo Período 2026', '2026-07-14', '2026-12-24', TRUE, 'REGULAR'),
+(2027, 1, 'Primer Período 2027', '2027-01-07', '2027-06-23', TRUE, 'REGULAR'),
+(2027, 2, 'Segundo Período 2027', '2027-07-14', '2027-12-24', TRUE, 'REGULAR'),
+(2028, 1, 'Primer Período 2028', '2028-01-07', '2028-06-23', TRUE, 'REGULAR'),
+(2028, 2, 'Segundo Período 2028', '2028-07-14', '2028-12-24', TRUE, 'REGULAR'),
+(2029, 1, 'Primer Período 2029', '2029-01-07', '2029-06-23', TRUE, 'REGULAR'),
+(2029, 2, 'Segundo Período 2029', '2029-07-14', '2029-12-24', TRUE, 'REGULAR'),
+(2030, 1, 'Primer Período 2030', '2030-01-07', '2030-06-23', TRUE, 'REGULAR'),
+(2030, 2, 'Segundo Período 2030', '2030-07-14', '2030-12-24', TRUE, 'REGULAR');
 
 -- Solo insertar cursos adicionales (el curso 1 ya existe)
 INSERT INTO Cursos_ofertados(idCurso, idfkMateria, idfkDocente, grupo, cupo_estimado, salon) VALUES (1, 1, 1, 'A', 30, 'A-101');
@@ -142,30 +180,31 @@ INSERT INTO EstadosCursos(idEstado, estado_actual, fecha_registro_estado, idfkCu
 -- Datos de prueba para inscripciones en cursos de verano
 -- NOTA: Con herencia JOINED, primero se inserta en Solicitudes (tabla padre), luego en la tabla hija
 -- Inscripciones de cursos de verano (extendiendo de Solicitudes)
-INSERT INTO Solicitudes(idSolicitud, nombre_solicitud, fecha_registro_solicitud, idUsuario, idCurso) VALUES (100, 'Curso de Verano - Inscripcion - Matematicas Basicas - Ana', '2025-07-15 10:30:00', 1, 1);
+-- NOTA: Todas las solicitudes de julio-septiembre 2025 pertenecen al período académico 2025-2
+INSERT INTO Solicitudes(idSolicitud, nombre_solicitud, fecha_registro_solicitud, idUsuario, idCurso, periodo_academico) VALUES (100, 'Curso de Verano - Inscripcion - Matematicas Basicas - Ana', '2025-07-15 10:30:00', 1, 1, '2025-2');
 INSERT INTO Solicitudes_Cursos_Verano_Inscripcion(idSolicitud, nombre_estudiante, codicion_solicitud, observacion) VALUES (100, 'Ana Gonzalez', 'Primera_Vez', 'Inscripcion en curso de verano');
 
-INSERT INTO Solicitudes(idSolicitud, nombre_solicitud, fecha_registro_solicitud, idUsuario, idCurso) VALUES (101, 'Curso de Verano - Inscripcion - Programacion I - Carlos', '2025-07-16 14:20:00', 2, 2);
+INSERT INTO Solicitudes(idSolicitud, nombre_solicitud, fecha_registro_solicitud, idUsuario, idCurso, periodo_academico) VALUES (101, 'Curso de Verano - Inscripcion - Programacion I - Carlos', '2025-07-16 14:20:00', 2, 2, '2025-2');
 INSERT INTO Solicitudes_Cursos_Verano_Inscripcion(idSolicitud, nombre_estudiante, codicion_solicitud, observacion) VALUES (101, 'Carlos Lopez', 'Primera_Vez', 'Inscripcion en curso de verano');
 
-INSERT INTO Solicitudes(idSolicitud, nombre_solicitud, fecha_registro_solicitud, idUsuario, idCurso) VALUES (102, 'Curso de Verano - Inscripcion - Matematicas Basicas - Maria', '2025-07-17 09:15:00', 3, 1);
+INSERT INTO Solicitudes(idSolicitud, nombre_solicitud, fecha_registro_solicitud, idUsuario, idCurso, periodo_academico) VALUES (102, 'Curso de Verano - Inscripcion - Matematicas Basicas - Maria', '2025-07-17 09:15:00', 3, 1, '2025-2');
 INSERT INTO Solicitudes_Cursos_Verano_Inscripcion(idSolicitud, nombre_estudiante, codicion_solicitud, observacion) VALUES (102, 'Maria Rodriguez', 'Primera_Vez', 'Inscripcion validada');
 
-INSERT INTO Solicitudes(idSolicitud, nombre_solicitud, fecha_registro_solicitud, idUsuario, idCurso) VALUES (103, 'Curso de Verano - Inscripcion - Bases de Datos - Pedro', '2025-07-18 16:45:00', 4, 3);
+INSERT INTO Solicitudes(idSolicitud, nombre_solicitud, fecha_registro_solicitud, idUsuario, idCurso, periodo_academico) VALUES (103, 'Curso de Verano - Inscripcion - Bases de Datos - Pedro', '2025-07-18 16:45:00', 4, 3, '2025-2');
 INSERT INTO Solicitudes_Cursos_Verano_Inscripcion(idSolicitud, nombre_estudiante, codicion_solicitud, observacion) VALUES (103, 'Pedro Martinez', 'Primera_Vez', 'Inscripcion en curso de verano');
 
 -- ==========================================
 -- DATOS PARA SOLICITUDES DE REINGRESO (9 solicitudes)
 -- ==========================================
-INSERT INTO Solicitudes(idSolicitud, nombre_solicitud, fecha_registro_solicitud, idUsuario, idCurso) VALUES (1, 'Solicitud de Reingreso - Juan Perez', '2025-07-20 09:00:00', 1, 1);
-INSERT INTO Solicitudes(idSolicitud, nombre_solicitud, fecha_registro_solicitud, idUsuario, idCurso) VALUES (2, 'Solicitud de Reingreso - Maria Garcia', '2025-07-21 10:30:00', 2, 2);
-INSERT INTO Solicitudes(idSolicitud, nombre_solicitud, fecha_registro_solicitud, idUsuario, idCurso) VALUES (3, 'Solicitud de Reingreso - Ana Lopez', '2025-07-22 14:15:00', 3, 3);
-INSERT INTO Solicitudes(idSolicitud, nombre_solicitud, fecha_registro_solicitud, idUsuario, idCurso) VALUES (4, 'Solicitud de Reingreso - Carlos Ruiz', '2025-07-23 11:45:00', 4, 1);
-INSERT INTO Solicitudes(idSolicitud, nombre_solicitud, fecha_registro_solicitud, idUsuario, idCurso) VALUES (5, 'Solicitud de Reingreso - Laura Torres', '2025-07-24 16:20:00', 5, 2);
-INSERT INTO Solicitudes(idSolicitud, nombre_solicitud, fecha_registro_solicitud, idUsuario, idCurso) VALUES (6, 'Solicitud de Reingreso - Diego Moreno', '2025-07-25 08:30:00', 6, 3);
-INSERT INTO Solicitudes(idSolicitud, nombre_solicitud, fecha_registro_solicitud, idUsuario, idCurso) VALUES (7, 'Solicitud de Reingreso - Sofia Jimenez', '2025-07-26 13:10:00', 7, 1);
-INSERT INTO Solicitudes(idSolicitud, nombre_solicitud, fecha_registro_solicitud, idUsuario, idCurso) VALUES (8, 'Solicitud de Reingreso - Andres Vega', '2025-07-27 15:40:00', 8, 2);
-INSERT INTO Solicitudes(idSolicitud, nombre_solicitud, fecha_registro_solicitud, idUsuario, idCurso) VALUES (9, 'Solicitud de Reingreso - Camila Herrera', '2025-07-28 12:00:00', 9, 3);
+INSERT INTO Solicitudes(idSolicitud, nombre_solicitud, fecha_registro_solicitud, idUsuario, idCurso, periodo_academico) VALUES (1, 'Solicitud de Reingreso - Juan Perez', '2025-07-20 09:00:00', 1, 1, '2025-2');
+INSERT INTO Solicitudes(idSolicitud, nombre_solicitud, fecha_registro_solicitud, idUsuario, idCurso, periodo_academico) VALUES (2, 'Solicitud de Reingreso - Maria Garcia', '2025-07-21 10:30:00', 2, 2, '2025-2');
+INSERT INTO Solicitudes(idSolicitud, nombre_solicitud, fecha_registro_solicitud, idUsuario, idCurso, periodo_academico) VALUES (3, 'Solicitud de Reingreso - Ana Lopez', '2025-07-22 14:15:00', 3, 3, '2025-2');
+INSERT INTO Solicitudes(idSolicitud, nombre_solicitud, fecha_registro_solicitud, idUsuario, idCurso, periodo_academico) VALUES (4, 'Solicitud de Reingreso - Carlos Ruiz', '2025-07-23 11:45:00', 4, 1, '2025-2');
+INSERT INTO Solicitudes(idSolicitud, nombre_solicitud, fecha_registro_solicitud, idUsuario, idCurso, periodo_academico) VALUES (5, 'Solicitud de Reingreso - Laura Torres', '2025-07-24 16:20:00', 5, 2, '2025-2');
+INSERT INTO Solicitudes(idSolicitud, nombre_solicitud, fecha_registro_solicitud, idUsuario, idCurso, periodo_academico) VALUES (6, 'Solicitud de Reingreso - Diego Moreno', '2025-07-25 08:30:00', 6, 3, '2025-2');
+INSERT INTO Solicitudes(idSolicitud, nombre_solicitud, fecha_registro_solicitud, idUsuario, idCurso, periodo_academico) VALUES (7, 'Solicitud de Reingreso - Sofia Jimenez', '2025-07-26 13:10:00', 7, 1, '2025-2');
+INSERT INTO Solicitudes(idSolicitud, nombre_solicitud, fecha_registro_solicitud, idUsuario, idCurso, periodo_academico) VALUES (8, 'Solicitud de Reingreso - Andres Vega', '2025-07-27 15:40:00', 8, 2, '2025-2');
+INSERT INTO Solicitudes(idSolicitud, nombre_solicitud, fecha_registro_solicitud, idUsuario, idCurso, periodo_academico) VALUES (9, 'Solicitud de Reingreso - Camila Herrera', '2025-07-28 12:00:00', 9, 3, '2025-2');
 
 -- Tabla específica de reingreso
 INSERT INTO Solicitudes_Reingreso(idSolicitud) VALUES (1);
@@ -181,14 +220,14 @@ INSERT INTO Solicitudes_Reingreso(idSolicitud) VALUES (9);
 -- ==========================================
 -- DATOS PARA SOLICITUDES DE HOMOLOGACIÓN (8 solicitudes)
 -- ==========================================
-INSERT INTO Solicitudes(idSolicitud, nombre_solicitud, fecha_registro_solicitud, idUsuario, idCurso) VALUES (10, 'Solicitud de Homologacion - Roberto Silva', '2025-07-29 09:15:00', 10, 1);
-INSERT INTO Solicitudes(idSolicitud, nombre_solicitud, fecha_registro_solicitud, idUsuario, idCurso) VALUES (11, 'Solicitud de Homologacion - Patricia Ramirez', '2025-07-30 10:45:00', 11, 2);
-INSERT INTO Solicitudes(idSolicitud, nombre_solicitud, fecha_registro_solicitud, idUsuario, idCurso) VALUES (12, 'Solicitud de Homologacion - Miguel Castro', '2025-08-01 14:30:00', 12, 3);
-INSERT INTO Solicitudes(idSolicitud, nombre_solicitud, fecha_registro_solicitud, idUsuario, idCurso) VALUES (13, 'Solicitud de Homologacion - Isabel Mendoza', '2025-08-02 11:20:00', 13, 1);
-INSERT INTO Solicitudes(idSolicitud, nombre_solicitud, fecha_registro_solicitud, idUsuario, idCurso) VALUES (14, 'Solicitud de Homologacion - Fernando Diaz', '2025-08-03 16:10:00', 14, 2);
-INSERT INTO Solicitudes(idSolicitud, nombre_solicitud, fecha_registro_solicitud, idUsuario, idCurso) VALUES (15, 'Solicitud de Homologacion - Valeria Rojas', '2025-08-04 08:50:00', 15, 3);
-INSERT INTO Solicitudes(idSolicitud, nombre_solicitud, fecha_registro_solicitud, idUsuario, idCurso) VALUES (16, 'Solicitud de Homologacion - Gabriel Morales', '2025-08-05 13:25:00', 16, 1);
-INSERT INTO Solicitudes(idSolicitud, nombre_solicitud, fecha_registro_solicitud, idUsuario, idCurso) VALUES (17, 'Solicitud de Homologacion - Adriana Vega', '2025-08-06 15:35:00', 17, 2);
+INSERT INTO Solicitudes(idSolicitud, nombre_solicitud, fecha_registro_solicitud, idUsuario, idCurso, periodo_academico) VALUES (10, 'Solicitud de Homologacion - Roberto Silva', '2025-07-29 09:15:00', 10, 1, '2025-2');
+INSERT INTO Solicitudes(idSolicitud, nombre_solicitud, fecha_registro_solicitud, idUsuario, idCurso, periodo_academico) VALUES (11, 'Solicitud de Homologacion - Patricia Ramirez', '2025-07-30 10:45:00', 11, 2, '2025-2');
+INSERT INTO Solicitudes(idSolicitud, nombre_solicitud, fecha_registro_solicitud, idUsuario, idCurso, periodo_academico) VALUES (12, 'Solicitud de Homologacion - Miguel Castro', '2025-08-01 14:30:00', 12, 3, '2025-2');
+INSERT INTO Solicitudes(idSolicitud, nombre_solicitud, fecha_registro_solicitud, idUsuario, idCurso, periodo_academico) VALUES (13, 'Solicitud de Homologacion - Isabel Mendoza', '2025-08-02 11:20:00', 13, 1, '2025-2');
+INSERT INTO Solicitudes(idSolicitud, nombre_solicitud, fecha_registro_solicitud, idUsuario, idCurso, periodo_academico) VALUES (14, 'Solicitud de Homologacion - Fernando Diaz', '2025-08-03 16:10:00', 14, 2, '2025-2');
+INSERT INTO Solicitudes(idSolicitud, nombre_solicitud, fecha_registro_solicitud, idUsuario, idCurso, periodo_academico) VALUES (15, 'Solicitud de Homologacion - Valeria Rojas', '2025-08-04 08:50:00', 15, 3, '2025-2');
+INSERT INTO Solicitudes(idSolicitud, nombre_solicitud, fecha_registro_solicitud, idUsuario, idCurso, periodo_academico) VALUES (16, 'Solicitud de Homologacion - Gabriel Morales', '2025-08-05 13:25:00', 16, 1, '2025-2');
+INSERT INTO Solicitudes(idSolicitud, nombre_solicitud, fecha_registro_solicitud, idUsuario, idCurso, periodo_academico) VALUES (17, 'Solicitud de Homologacion - Adriana Vega', '2025-08-06 15:35:00', 17, 2, '2025-2');
 
 -- Tabla específica de homologación
 INSERT INTO Solicitudes_Homogolacion(idSolicitud, ruta_PM_FO_4_FOR_27, ruta_contenido_programatico) VALUES (10, '/docs/homologacion/roberto_silva_pm_fo4.pdf', '/docs/homologacion/roberto_silva_contenido.pdf');
@@ -203,15 +242,15 @@ INSERT INTO Solicitudes_Homogolacion(idSolicitud, ruta_PM_FO_4_FOR_27, ruta_cont
 -- ==========================================
 -- DATOS PARA SOLICITUDES DE CURSOS DE VERANO (9 solicitudes)
 -- ==========================================
-INSERT INTO Solicitudes(idSolicitud, nombre_solicitud, fecha_registro_solicitud, idUsuario, idCurso) VALUES (18, 'Solicitud Curso Verano - Nicolas Perez', '2025-08-07 09:30:00', 18, 1);
-INSERT INTO Solicitudes(idSolicitud, nombre_solicitud, fecha_registro_solicitud, idUsuario, idCurso) VALUES (19, 'Solicitud Curso Verano - Daniela Sanchez', '2025-08-08 11:15:00', 19, 2);
-INSERT INTO Solicitudes(idSolicitud, nombre_solicitud, fecha_registro_solicitud, idUsuario, idCurso) VALUES (20, 'Solicitud Curso Verano - Sebastian Lopez', '2025-08-09 14:45:00', 20, 3);
-INSERT INTO Solicitudes(idSolicitud, nombre_solicitud, fecha_registro_solicitud, idUsuario, idCurso) VALUES (21, 'Solicitud Curso Verano - Andrea Ramirez', '2025-08-10 10:20:00', 21, 1);
-INSERT INTO Solicitudes(idSolicitud, nombre_solicitud, fecha_registro_solicitud, idUsuario, idCurso) VALUES (22, 'Solicitud Curso Verano - Felipe Castro', '2025-08-11 15:30:00', 22, 2);
-INSERT INTO Solicitudes(idSolicitud, nombre_solicitud, fecha_registro_solicitud, idUsuario, idCurso) VALUES (23, 'Solicitud Curso Verano - Natalia Herrera', '2025-08-12 08:45:00', 23, 3);
-INSERT INTO Solicitudes(idSolicitud, nombre_solicitud, fecha_registro_solicitud, idUsuario, idCurso) VALUES (24, 'Solicitud Curso Verano - Alejandro Vargas', '2025-08-13 13:20:00', 24, 1);
-INSERT INTO Solicitudes(idSolicitud, nombre_solicitud, fecha_registro_solicitud, idUsuario, idCurso) VALUES (25, 'Solicitud Curso Verano - Juliana Torres', '2025-08-14 16:10:00', 25, 2);
-INSERT INTO Solicitudes(idSolicitud, nombre_solicitud, fecha_registro_solicitud, idUsuario, idCurso) VALUES (26, 'Solicitud Curso Verano - Mauricio Gomez', '2025-08-15 12:00:00', 1, 3);
+INSERT INTO Solicitudes(idSolicitud, nombre_solicitud, fecha_registro_solicitud, idUsuario, idCurso, periodo_academico) VALUES (18, 'Solicitud Curso Verano - Nicolas Perez', '2025-08-07 09:30:00', 18, 1, '2025-2');
+INSERT INTO Solicitudes(idSolicitud, nombre_solicitud, fecha_registro_solicitud, idUsuario, idCurso, periodo_academico) VALUES (19, 'Solicitud Curso Verano - Daniela Sanchez', '2025-08-08 11:15:00', 19, 2, '2025-2');
+INSERT INTO Solicitudes(idSolicitud, nombre_solicitud, fecha_registro_solicitud, idUsuario, idCurso, periodo_academico) VALUES (20, 'Solicitud Curso Verano - Sebastian Lopez', '2025-08-09 14:45:00', 20, 3, '2025-2');
+INSERT INTO Solicitudes(idSolicitud, nombre_solicitud, fecha_registro_solicitud, idUsuario, idCurso, periodo_academico) VALUES (21, 'Solicitud Curso Verano - Andrea Ramirez', '2025-08-10 10:20:00', 21, 1, '2025-2');
+INSERT INTO Solicitudes(idSolicitud, nombre_solicitud, fecha_registro_solicitud, idUsuario, idCurso, periodo_academico) VALUES (22, 'Solicitud Curso Verano - Felipe Castro', '2025-08-11 15:30:00', 22, 2, '2025-2');
+INSERT INTO Solicitudes(idSolicitud, nombre_solicitud, fecha_registro_solicitud, idUsuario, idCurso, periodo_academico) VALUES (23, 'Solicitud Curso Verano - Natalia Herrera', '2025-08-12 08:45:00', 23, 3, '2025-2');
+INSERT INTO Solicitudes(idSolicitud, nombre_solicitud, fecha_registro_solicitud, idUsuario, idCurso, periodo_academico) VALUES (24, 'Solicitud Curso Verano - Alejandro Vargas', '2025-08-13 13:20:00', 24, 1, '2025-2');
+INSERT INTO Solicitudes(idSolicitud, nombre_solicitud, fecha_registro_solicitud, idUsuario, idCurso, periodo_academico) VALUES (25, 'Solicitud Curso Verano - Juliana Torres', '2025-08-14 16:10:00', 25, 2, '2025-2');
+INSERT INTO Solicitudes(idSolicitud, nombre_solicitud, fecha_registro_solicitud, idUsuario, idCurso, periodo_academico) VALUES (26, 'Solicitud Curso Verano - Mauricio Gomez', '2025-08-15 12:00:00', 1, 3, '2025-2');
 
 -- Tabla específica de cursos de verano (usando la tabla existente)
 -- NOTA: Estas líneas están comentadas porque faltan campos obligatorios (nombre_estudiante, etc.)
@@ -240,16 +279,16 @@ INSERT INTO Solicitudes(idSolicitud, nombre_solicitud, fecha_registro_solicitud,
 -- ==========================================
 -- DATOS PARA SOLICITUDES ECAES (10 solicitudes)
 -- ==========================================
-INSERT INTO Solicitudes(idSolicitud, nombre_solicitud, fecha_registro_solicitud, idUsuario, idCurso) VALUES (27, 'Solicitud ECAES - Ricardo Morales', '2025-08-16 09:45:00', 2, 1);
-INSERT INTO Solicitudes(idSolicitud, nombre_solicitud, fecha_registro_solicitud, idUsuario, idCurso) VALUES (28, 'Solicitud ECAES - Carmen Ruiz', '2025-08-17 11:30:00', 3, 2);
-INSERT INTO Solicitudes(idSolicitud, nombre_solicitud, fecha_registro_solicitud, idUsuario, idCurso) VALUES (29, 'Solicitud ECAES - Oscar Jimenez', '2025-08-18 14:15:00', 4, 3);
-INSERT INTO Solicitudes(idSolicitud, nombre_solicitud, fecha_registro_solicitud, idUsuario, idCurso) VALUES (30, 'Solicitud ECAES - Lucia Moreno', '2025-08-19 10:40:00', 5, 1);
-INSERT INTO Solicitudes(idSolicitud, nombre_solicitud, fecha_registro_solicitud, idUsuario, idCurso) VALUES (31, 'Solicitud ECAES - Hector Diaz', '2025-08-20 15:25:00', 6, 2);
-INSERT INTO Solicitudes(idSolicitud, nombre_solicitud, fecha_registro_solicitud, idUsuario, idCurso) VALUES (32, 'Solicitud ECAES - Rosa Vega', '2025-08-21 08:55:00', 7, 3);
-INSERT INTO Solicitudes(idSolicitud, nombre_solicitud, fecha_registro_solicitud, idUsuario, idCurso) VALUES (33, 'Solicitud ECAES - Victor Sanchez', '2025-08-22 13:35:00', 8, 1);
-INSERT INTO Solicitudes(idSolicitud, nombre_solicitud, fecha_registro_solicitud, idUsuario, idCurso) VALUES (34, 'Solicitud ECAES - Elena Castro', '2025-08-23 16:20:00', 9, 2);
-INSERT INTO Solicitudes(idSolicitud, nombre_solicitud, fecha_registro_solicitud, idUsuario, idCurso) VALUES (35, 'Solicitud ECAES - Armando Torres', '2025-08-24 12:15:00', 10, 3);
-INSERT INTO Solicitudes(idSolicitud, nombre_solicitud, fecha_registro_solicitud, idUsuario, idCurso) VALUES (36, 'Solicitud ECAES - Gloria Herrera', '2025-08-25 14:50:00', 11, 1);
+INSERT INTO Solicitudes(idSolicitud, nombre_solicitud, fecha_registro_solicitud, idUsuario, idCurso, periodo_academico) VALUES (27, 'Solicitud ECAES - Ricardo Morales', '2025-08-16 09:45:00', 2, 1, '2025-2');
+INSERT INTO Solicitudes(idSolicitud, nombre_solicitud, fecha_registro_solicitud, idUsuario, idCurso, periodo_academico) VALUES (28, 'Solicitud ECAES - Carmen Ruiz', '2025-08-17 11:30:00', 3, 2, '2025-2');
+INSERT INTO Solicitudes(idSolicitud, nombre_solicitud, fecha_registro_solicitud, idUsuario, idCurso, periodo_academico) VALUES (29, 'Solicitud ECAES - Oscar Jimenez', '2025-08-18 14:15:00', 4, 3, '2025-2');
+INSERT INTO Solicitudes(idSolicitud, nombre_solicitud, fecha_registro_solicitud, idUsuario, idCurso, periodo_academico) VALUES (30, 'Solicitud ECAES - Lucia Moreno', '2025-08-19 10:40:00', 5, 1, '2025-2');
+INSERT INTO Solicitudes(idSolicitud, nombre_solicitud, fecha_registro_solicitud, idUsuario, idCurso, periodo_academico) VALUES (31, 'Solicitud ECAES - Hector Diaz', '2025-08-20 15:25:00', 6, 2, '2025-2');
+INSERT INTO Solicitudes(idSolicitud, nombre_solicitud, fecha_registro_solicitud, idUsuario, idCurso, periodo_academico) VALUES (32, 'Solicitud ECAES - Rosa Vega', '2025-08-21 08:55:00', 7, 3, '2025-2');
+INSERT INTO Solicitudes(idSolicitud, nombre_solicitud, fecha_registro_solicitud, idUsuario, idCurso, periodo_academico) VALUES (33, 'Solicitud ECAES - Victor Sanchez', '2025-08-22 13:35:00', 8, 1, '2025-2');
+INSERT INTO Solicitudes(idSolicitud, nombre_solicitud, fecha_registro_solicitud, idUsuario, idCurso, periodo_academico) VALUES (34, 'Solicitud ECAES - Elena Castro', '2025-08-23 16:20:00', 9, 2, '2025-2');
+INSERT INTO Solicitudes(idSolicitud, nombre_solicitud, fecha_registro_solicitud, idUsuario, idCurso, periodo_academico) VALUES (35, 'Solicitud ECAES - Armando Torres', '2025-08-24 12:15:00', 10, 3, '2025-2');
+INSERT INTO Solicitudes(idSolicitud, nombre_solicitud, fecha_registro_solicitud, idUsuario, idCurso, periodo_academico) VALUES (36, 'Solicitud ECAES - Gloria Herrera', '2025-08-25 14:50:00', 11, 1, '2025-2');
 
 -- Tabla específica de ECAES
 INSERT INTO Solicitudes_Ecaes(idSolicitud, tipoDocumento, numero_documento, fecha_expedicion, fecha_nacimiento) VALUES (27, 'CC', '12345678', '2010-05-15', '1995-03-20');
@@ -266,16 +305,16 @@ INSERT INTO Solicitudes_Ecaes(idSolicitud, tipoDocumento, numero_documento, fech
 -- ==========================================
 -- DATOS PARA SOLICITUDES DE PAZ Y SALVO (10 solicitudes)
 -- ==========================================
-INSERT INTO Solicitudes(idSolicitud, nombre_solicitud, fecha_registro_solicitud, idUsuario, idCurso) VALUES (37, 'Solicitud Paz y Salvo - Roberto Silva', '2025-08-26 09:20:00', 12, 1);
-INSERT INTO Solicitudes(idSolicitud, nombre_solicitud, fecha_registro_solicitud, idUsuario, idCurso) VALUES (38, 'Solicitud Paz y Salvo - Patricia Ramirez', '2025-08-27 11:10:00', 13, 2);
-INSERT INTO Solicitudes(idSolicitud, nombre_solicitud, fecha_registro_solicitud, idUsuario, idCurso) VALUES (39, 'Solicitud Paz y Salvo - Miguel Castro', '2025-08-28 14:40:00', 14, 3);
-INSERT INTO Solicitudes(idSolicitud, nombre_solicitud, fecha_registro_solicitud, idUsuario, idCurso) VALUES (40, 'Solicitud Paz y Salvo - Isabel Mendoza', '2025-08-29 10:25:00', 15, 1);
-INSERT INTO Solicitudes(idSolicitud, nombre_solicitud, fecha_registro_solicitud, idUsuario, idCurso) VALUES (41, 'Solicitud Paz y Salvo - Fernando Diaz', '2025-08-30 15:15:00', 16, 2);
-INSERT INTO Solicitudes(idSolicitud, nombre_solicitud, fecha_registro_solicitud, idUsuario, idCurso) VALUES (42, 'Solicitud Paz y Salvo - Valeria Rojas', '2025-09-01 08:35:00', 17, 3);
-INSERT INTO Solicitudes(idSolicitud, nombre_solicitud, fecha_registro_solicitud, idUsuario, idCurso) VALUES (43, 'Solicitud Paz y Salvo - Gabriel Morales', '2025-09-02 13:45:00', 18, 1);
-INSERT INTO Solicitudes(idSolicitud, nombre_solicitud, fecha_registro_solicitud, idUsuario, idCurso) VALUES (44, 'Solicitud Paz y Salvo - Adriana Vega', '2025-09-03 16:30:00', 19, 2);
-INSERT INTO Solicitudes(idSolicitud, nombre_solicitud, fecha_registro_solicitud, idUsuario, idCurso) VALUES (45, 'Solicitud Paz y Salvo - Nicolas Perez', '2025-09-04 12:05:00', 20, 3);
-INSERT INTO Solicitudes(idSolicitud, nombre_solicitud, fecha_registro_solicitud, idUsuario, idCurso) VALUES (46, 'Solicitud Paz y Salvo - Daniela Sanchez', '2025-09-05 14:20:00', 21, 1);
+INSERT INTO Solicitudes(idSolicitud, nombre_solicitud, fecha_registro_solicitud, idUsuario, idCurso, periodo_academico) VALUES (37, 'Solicitud Paz y Salvo - Roberto Silva', '2025-08-26 09:20:00', 12, 1, '2025-2');
+INSERT INTO Solicitudes(idSolicitud, nombre_solicitud, fecha_registro_solicitud, idUsuario, idCurso, periodo_academico) VALUES (38, 'Solicitud Paz y Salvo - Patricia Ramirez', '2025-08-27 11:10:00', 13, 2, '2025-2');
+INSERT INTO Solicitudes(idSolicitud, nombre_solicitud, fecha_registro_solicitud, idUsuario, idCurso, periodo_academico) VALUES (39, 'Solicitud Paz y Salvo - Miguel Castro', '2025-08-28 14:40:00', 14, 3, '2025-2');
+INSERT INTO Solicitudes(idSolicitud, nombre_solicitud, fecha_registro_solicitud, idUsuario, idCurso, periodo_academico) VALUES (40, 'Solicitud Paz y Salvo - Isabel Mendoza', '2025-08-29 10:25:00', 15, 1, '2025-2');
+INSERT INTO Solicitudes(idSolicitud, nombre_solicitud, fecha_registro_solicitud, idUsuario, idCurso, periodo_academico) VALUES (41, 'Solicitud Paz y Salvo - Fernando Diaz', '2025-08-30 15:15:00', 16, 2, '2025-2');
+INSERT INTO Solicitudes(idSolicitud, nombre_solicitud, fecha_registro_solicitud, idUsuario, idCurso, periodo_academico) VALUES (42, 'Solicitud Paz y Salvo - Valeria Rojas', '2025-09-01 08:35:00', 17, 3, '2025-2');
+INSERT INTO Solicitudes(idSolicitud, nombre_solicitud, fecha_registro_solicitud, idUsuario, idCurso, periodo_academico) VALUES (43, 'Solicitud Paz y Salvo - Gabriel Morales', '2025-09-02 13:45:00', 18, 1, '2025-2');
+INSERT INTO Solicitudes(idSolicitud, nombre_solicitud, fecha_registro_solicitud, idUsuario, idCurso, periodo_academico) VALUES (44, 'Solicitud Paz y Salvo - Adriana Vega', '2025-09-03 16:30:00', 19, 2, '2025-2');
+INSERT INTO Solicitudes(idSolicitud, nombre_solicitud, fecha_registro_solicitud, idUsuario, idCurso, periodo_academico) VALUES (45, 'Solicitud Paz y Salvo - Nicolas Perez', '2025-09-04 12:05:00', 20, 3, '2025-2');
+INSERT INTO Solicitudes(idSolicitud, nombre_solicitud, fecha_registro_solicitud, idUsuario, idCurso, periodo_academico) VALUES (46, 'Solicitud Paz y Salvo - Daniela Sanchez', '2025-09-05 14:20:00', 21, 1, '2025-2');
 
 -- Tabla específica de paz y salvo
 INSERT INTO Solicitudes_PazYSalvo(idSolicitud) VALUES (37);

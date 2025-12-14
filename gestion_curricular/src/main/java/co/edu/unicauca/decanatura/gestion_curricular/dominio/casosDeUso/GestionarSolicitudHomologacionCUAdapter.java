@@ -117,6 +117,31 @@ public class GestionarSolicitudHomologacionCUAdapter implements GestionarSolicit
     }
 
     @Override
+    public List<SolicitudHomologacion> listarSolicitudesToFuncionarioPorPeriodo(String periodoAcademico) {
+        return objGestionarSolicitudHomologacionGateway.listarSolicitudesToFuncionarioPorPeriodo(periodoAcademico);
+    }
+
+    @Override
+    public List<SolicitudHomologacion> listarSolicitudesToCoordinadorPorProgramaYPeriodo(Integer idPrograma, String periodoAcademico) {
+        return objGestionarSolicitudHomologacionGateway.listarSolicitudesToCoordinadorPorProgramaYPeriodo(idPrograma, periodoAcademico);
+    }
+
+    @Override
+    public List<SolicitudHomologacion> listarSolicitudesToSecretariaPorPeriodo(String periodoAcademico) {
+        return objGestionarSolicitudHomologacionGateway.listarSolicitudesToSecretariaPorPeriodo(periodoAcademico);
+    }
+
+    @Override
+    public List<SolicitudHomologacion> listarSolicitudesAprobadasToSecretariaPorPeriodo(String periodoAcademico) {
+        return objGestionarSolicitudHomologacionGateway.listarSolicitudesAprobadasToSecretariaPorPeriodo(periodoAcademico);
+    }
+
+    @Override
+    public List<SolicitudHomologacion> listarSolicitudesPorUsuarioYPeriodo(Integer idUsuario, String periodoAcademico) {
+        return objGestionarSolicitudHomologacionGateway.listarSolicitudesPorUsuarioYPeriodo(idUsuario, periodoAcademico);
+    }
+
+    @Override
     public List<SolicitudHomologacion> listarSolicitudesToSecretaria() {
         return objGestionarSolicitudHomologacionGateway.listarSolicitudesToSecretaria();
     }

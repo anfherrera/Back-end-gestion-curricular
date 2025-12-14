@@ -160,6 +160,41 @@ public class GestionarSolicitudPazYSalvoCUAdapter implements GestionarSolicitudP
     }
 
     @Override
+    public List<SolicitudPazYSalvo> listarSolicitudesToFuncionarioPorPeriodo(String periodoAcademico) {
+        return solicitudGateway.listarSolicitudesToFuncionarioPorPeriodo(periodoAcademico);
+    }
+
+    @Override
+    public List<SolicitudPazYSalvo> listarSolicitudesAprobadasToFuncionarioPorPeriodo(String periodoAcademico) {
+        return solicitudGateway.listarSolicitudesAprobadasToFuncionarioPorPeriodo(periodoAcademico);
+    }
+
+    @Override
+    public List<SolicitudPazYSalvo> listarSolicitudesToCoordinadorPorProgramaYPeriodo(Integer idPrograma, String periodoAcademico) {
+        return solicitudGateway.listarSolicitudesToCoordinadorPorProgramaYPeriodo(idPrograma, periodoAcademico);
+    }
+
+    @Override
+    public List<SolicitudPazYSalvo> listarSolicitudesAprobadasToCoordinadorPorProgramaYPeriodo(Integer idPrograma, String periodoAcademico) {
+        return solicitudGateway.listarSolicitudesAprobadasToCoordinadorPorProgramaYPeriodo(idPrograma, periodoAcademico);
+    }
+
+    @Override
+    public List<SolicitudPazYSalvo> listarSolicitudesToSecretariaPorPeriodo(String periodoAcademico) {
+        return solicitudGateway.listarSolicitudesToSecretariaPorPeriodo(periodoAcademico);
+    }
+
+    @Override
+    public List<SolicitudPazYSalvo> listarSolicitudesAprobadasToSecretariaPorPeriodo(String periodoAcademico) {
+        return solicitudGateway.listarSolicitudesAprobadasToSecretariaPorPeriodo(periodoAcademico);
+    }
+
+    @Override
+    public List<SolicitudPazYSalvo> listarSolicitudesPorUsuarioYPeriodo(Integer idUsuario, String periodoAcademico) {
+        return solicitudGateway.listarSolicitudesPorUsuarioYPeriodo(idUsuario, periodoAcademico);
+    }
+
+    @Override
     public List<SolicitudPazYSalvo> listarSolicitudesPorRol(String rol, Integer idUsuario) {
         List<SolicitudPazYSalvo> todas = solicitudGateway.listarSolicitudes();
 

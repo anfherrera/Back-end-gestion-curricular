@@ -62,6 +62,35 @@ public class GestionarPreRegistroEcaesGatewayImplAdapter implements GestionarPre
     }
 
     @Override
+    public List<SolicitudEcaes> listarSolicitudesToFuncionarioPorPeriodo(String periodoAcademico) {
+        return solicitudEcaesRepository.findByUltimoEstadoAndPeriodoAcademico("Enviada", periodoAcademico).stream()
+                .map(entity -> mapper.map(entity, SolicitudEcaes.class))
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<SolicitudEcaes> listarSolicitudesToCoordinadorPorProgramaYPeriodo(Integer idPrograma, String periodoAcademico) {
+        if (idPrograma == null) {
+            return listar();
+        }
+        return solicitudEcaesRepository.findByUltimoEstadoAndProgramaAndPeriodoAcademico("APROBADA_FUNCIONARIO", idPrograma, periodoAcademico).stream()
+                .map(entity -> mapper.map(entity, SolicitudEcaes.class))
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<SolicitudEcaes> listarSolicitudesPorUsuarioYPeriodo(Integer idUsuario, String periodoAcademico) {
+        // Para estudiantes, buscamos todas las solicitudes del usuario (sin filtro de estado)
+        // pero filtramos por período académico
+        return solicitudEcaesRepository.findAll().stream()
+                .filter(entity -> entity.getObjUsuario() != null && 
+                                 entity.getObjUsuario().getId_usuario().equals(idUsuario) &&
+                                 (periodoAcademico == null || periodoAcademico.equals(entity.getPeriodo_academico())))
+                .map(entity -> mapper.map(entity, SolicitudEcaes.class))
+                .collect(Collectors.toList());
+    }
+
+    @Override
     public Optional<SolicitudEcaes> buscarPorId(Integer id) {
         return solicitudEcaesRepository.findById(id)
             .map(entity -> mapper.map(entity, SolicitudEcaes.class));

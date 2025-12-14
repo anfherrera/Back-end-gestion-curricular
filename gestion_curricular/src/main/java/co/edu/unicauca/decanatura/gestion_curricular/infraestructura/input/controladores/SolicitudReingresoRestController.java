@@ -30,6 +30,7 @@ import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.mappe
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.mappers.SolicitudReingresoMapperDominio;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.GestionarUsuarioGatewayIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Usuario;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Enums.PeriodoAcademicoEnum;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import lombok.RequiredArgsConstructor;
@@ -60,8 +61,30 @@ public class SolicitudReingresoRestController {
     }
 
     @GetMapping("/listarSolicitudes-Reingreso")
-    public ResponseEntity<List<SolicitudReingresoDTORespuesta>> listarSolicitudesReingreso() {
+    public ResponseEntity<List<SolicitudReingresoDTORespuesta>> listarSolicitudesReingreso(
+            @RequestParam(required = false) String periodoAcademico) {
+        
+        // Si no se proporciona período, usar el período académico actual basado en la fecha
+        if (periodoAcademico == null || periodoAcademico.trim().isEmpty()) {
+            PeriodoAcademicoEnum periodoActual = PeriodoAcademicoEnum.getPeriodoActual();
+            if (periodoActual != null) {
+                periodoAcademico = periodoActual.getValor();
+                log.debug("Usando período académico actual automático: {}", periodoAcademico);
+            }
+        }
+        
         List<SolicitudReingreso> solicitudes = solicitudService.listarSolicitudesReingreso();
+        
+        // Filtrar por período académico si se proporcionó
+        if (periodoAcademico != null && !periodoAcademico.trim().isEmpty()) {
+            final String periodoFiltro = periodoAcademico.trim();
+            solicitudes = solicitudes.stream()
+                    .filter(s -> s.getPeriodo_academico() != null 
+                            && s.getPeriodo_academico().equals(periodoFiltro))
+                    .toList();
+            log.debug("Filtrando solicitudes por período académico: {}", periodoFiltro);
+        }
+        
         List<SolicitudReingresoDTORespuesta> solicitudesDTO = solicitudReingresoMapper.mappearDeListaSolicitudReingresoASolicitudReingresoDTORespuesta(solicitudes);
         return ResponseEntity.ok(solicitudesDTO);
     }
@@ -69,9 +92,24 @@ public class SolicitudReingresoRestController {
     @GetMapping("/listarSolicitud-Reingreso/porUser")
     public ResponseEntity<List<SolicitudReingresoDTORespuesta>> listarSolicitudPorUser(
             @RequestParam String rol,
-            @RequestParam(required = false) Integer idUsuario) {
+            @RequestParam(required = false) Integer idUsuario,
+            @RequestParam(required = false) String periodoAcademico) {
 
-        List<SolicitudReingreso> solicitudes = solicitudService.listarSolicitudesReingresoPorRol(rol, idUsuario);
+        // Si no se proporciona período, usar el período académico actual basado en la fecha
+        if (periodoAcademico == null || periodoAcademico.trim().isEmpty()) {
+            PeriodoAcademicoEnum periodoActual = PeriodoAcademicoEnum.getPeriodoActual();
+            if (periodoActual != null) {
+                periodoAcademico = periodoActual.getValor();
+                log.debug("Usando período académico actual automático: {}", periodoAcademico);
+            }
+        }
+
+        List<SolicitudReingreso> solicitudes;
+        if ("ESTUDIANTE".equals(rol) && idUsuario != null && periodoAcademico != null && !periodoAcademico.trim().isEmpty()) {
+            solicitudes = solicitudService.listarSolicitudesReingresoPorUsuarioYPeriodo(idUsuario, periodoAcademico.trim());
+        } else {
+            solicitudes = solicitudService.listarSolicitudesReingresoPorRol(rol, idUsuario);
+        }
 
         List<SolicitudReingresoDTORespuesta> respuesta =
                 solicitudReingresoMapper.mappearDeListaSolicitudReingresoASolicitudReingresoDTORespuesta(solicitudes);
@@ -80,21 +118,51 @@ public class SolicitudReingresoRestController {
     }
 
         @GetMapping("/listarSolicitud-Reingreso/Funcionario")
-    public ResponseEntity<List<SolicitudReingresoDTORespuesta>> listarSolicitudReingresoToFuncionario() {
-        List<SolicitudReingreso> solicitudes = solicitudService.listarSolicitudesReingresoToFuncionario();
+    public ResponseEntity<List<SolicitudReingresoDTORespuesta>> listarSolicitudReingresoToFuncionario(
+            @RequestParam(required = false) String periodoAcademico) {
+        // Si no se proporciona período, usar el período académico actual basado en la fecha
+        if (periodoAcademico == null || periodoAcademico.trim().isEmpty()) {
+            PeriodoAcademicoEnum periodoActual = PeriodoAcademicoEnum.getPeriodoActual();
+            if (periodoActual != null) {
+                periodoAcademico = periodoActual.getValor();
+                log.debug("Usando período académico actual automático: {}", periodoAcademico);
+            }
+        }
+        
+        List<SolicitudReingreso> solicitudes;
+        if (periodoAcademico != null && !periodoAcademico.trim().isEmpty()) {
+            solicitudes = solicitudService.listarSolicitudesReingresoToFuncionarioPorPeriodo(periodoAcademico.trim());
+        } else {
+            solicitudes = solicitudService.listarSolicitudesReingresoToFuncionario();
+        }
+        
         List<SolicitudReingresoDTORespuesta> respuesta = solicitudReingresoMapper.mappearDeListaSolicitudReingresoASolicitudReingresoDTORespuesta(solicitudes);
         return ResponseEntity.ok(respuesta);
     }
 
     @GetMapping("/listarSolicitud-Reingreso/Coordinador")
-    public ResponseEntity<List<SolicitudReingresoDTORespuesta>> listarSolicitudReingresoToCoordinador() {
+    public ResponseEntity<List<SolicitudReingresoDTORespuesta>> listarSolicitudReingresoToCoordinador(
+            @RequestParam(required = false) String periodoAcademico) {
         // Obtener el programa del coordinador autenticado
         Integer idPrograma = obtenerProgramaCoordinadorAutenticado();
         
+        // Si no se proporciona período, usar el período académico actual basado en la fecha
+        if (periodoAcademico == null || periodoAcademico.trim().isEmpty()) {
+            PeriodoAcademicoEnum periodoActual = PeriodoAcademicoEnum.getPeriodoActual();
+            if (periodoActual != null) {
+                periodoAcademico = periodoActual.getValor();
+                log.debug("Usando período académico actual automático: {}", periodoAcademico);
+            }
+        }
+        
         List<SolicitudReingreso> solicitudes;
         if (idPrograma != null) {
-            // Filtrar por programa del coordinador
-            solicitudes = solicitudService.listarSolicitudesReingresoToCoordinadorPorPrograma(idPrograma);
+            // Filtrar por programa y período del coordinador
+            if (periodoAcademico != null && !periodoAcademico.trim().isEmpty()) {
+                solicitudes = solicitudService.listarSolicitudesReingresoToCoordinadorPorProgramaYPeriodo(idPrograma, periodoAcademico.trim());
+            } else {
+                solicitudes = solicitudService.listarSolicitudesReingresoToCoordinadorPorPrograma(idPrograma);
+            }
         } else {
             // Si no se puede obtener el programa, retornar todas (fallback)
             log.warn("No se pudo obtener el programa del coordinador, retornando todas las solicitudes");
@@ -106,15 +174,47 @@ public class SolicitudReingresoRestController {
     }
 
     @GetMapping("/listarSolicitud-Reingreso/Secretaria")
-    public ResponseEntity<List<SolicitudReingresoDTORespuesta>> listarSolicitudReingresoToSecretaria() {
-        List<SolicitudReingreso> solicitudes = solicitudService.listarSolicitudesReingresoToSecretaria();
+    public ResponseEntity<List<SolicitudReingresoDTORespuesta>> listarSolicitudReingresoToSecretaria(
+            @RequestParam(required = false) String periodoAcademico) {
+        // Si no se proporciona período, usar el período académico actual basado en la fecha
+        if (periodoAcademico == null || periodoAcademico.trim().isEmpty()) {
+            PeriodoAcademicoEnum periodoActual = PeriodoAcademicoEnum.getPeriodoActual();
+            if (periodoActual != null) {
+                periodoAcademico = periodoActual.getValor();
+                log.debug("Usando período académico actual automático: {}", periodoAcademico);
+            }
+        }
+        
+        List<SolicitudReingreso> solicitudes;
+        if (periodoAcademico != null && !periodoAcademico.trim().isEmpty()) {
+            solicitudes = solicitudService.listarSolicitudesReingresoToSecretariaPorPeriodo(periodoAcademico.trim());
+        } else {
+            solicitudes = solicitudService.listarSolicitudesReingresoToSecretaria();
+        }
+        
         List<SolicitudReingresoDTORespuesta> respuesta = solicitudReingresoMapper.mappearDeListaSolicitudReingresoASolicitudReingresoDTORespuesta(solicitudes);
         return ResponseEntity.ok(respuesta);
     }
 
     @GetMapping("/listarSolicitud-Reingreso/Secretaria/Aprobadas")
-    public ResponseEntity<List<SolicitudReingresoDTORespuesta>> listarSolicitudReingresoAprobadasToSecretaria() {
-        List<SolicitudReingreso> solicitudes = solicitudService.listarSolicitudesAprobadasToSecretaria();
+    public ResponseEntity<List<SolicitudReingresoDTORespuesta>> listarSolicitudReingresoAprobadasToSecretaria(
+            @RequestParam(required = false) String periodoAcademico) {
+        // Si no se proporciona período, usar el período académico actual basado en la fecha
+        if (periodoAcademico == null || periodoAcademico.trim().isEmpty()) {
+            PeriodoAcademicoEnum periodoActual = PeriodoAcademicoEnum.getPeriodoActual();
+            if (periodoActual != null) {
+                periodoAcademico = periodoActual.getValor();
+                log.debug("Usando período académico actual automático: {}", periodoAcademico);
+            }
+        }
+        
+        List<SolicitudReingreso> solicitudes;
+        if (periodoAcademico != null && !periodoAcademico.trim().isEmpty()) {
+            solicitudes = solicitudService.listarSolicitudesAprobadasToSecretariaPorPeriodo(periodoAcademico.trim());
+        } else {
+            solicitudes = solicitudService.listarSolicitudesAprobadasToSecretaria();
+        }
+        
         List<SolicitudReingresoDTORespuesta> respuesta = solicitudReingresoMapper.mappearDeListaSolicitudReingresoASolicitudReingresoDTORespuesta(solicitudes);
         return ResponseEntity.ok(respuesta);
     }

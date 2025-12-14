@@ -122,6 +122,31 @@ public class GestionarSolicitudReingresoCUAdapter  implements GestionarSolicitud
     }
 
     @Override
+    public List<SolicitudReingreso> listarSolicitudesReingresoToFuncionarioPorPeriodo(String periodoAcademico) {
+        return objGestionarSolicitudReingresoGateway.listarSolicitudesReingresoToFuncionarioPorPeriodo(periodoAcademico);
+    }
+
+    @Override
+    public List<SolicitudReingreso> listarSolicitudesReingresoToCoordinadorPorProgramaYPeriodo(Integer idPrograma, String periodoAcademico) {
+        return objGestionarSolicitudReingresoGateway.listarSolicitudesReingresoToCoordinadorPorProgramaYPeriodo(idPrograma, periodoAcademico);
+    }
+
+    @Override
+    public List<SolicitudReingreso> listarSolicitudesReingresoToSecretariaPorPeriodo(String periodoAcademico) {
+        return objGestionarSolicitudReingresoGateway.listarSolicitudesReingresoToSecretariaPorPeriodo(periodoAcademico);
+    }
+
+    @Override
+    public List<SolicitudReingreso> listarSolicitudesAprobadasToSecretariaPorPeriodo(String periodoAcademico) {
+        return objGestionarSolicitudReingresoGateway.listarSolicitudesAprobadasToSecretariaPorPeriodo(periodoAcademico);
+    }
+
+    @Override
+    public List<SolicitudReingreso> listarSolicitudesReingresoPorUsuarioYPeriodo(Integer idUsuario, String periodoAcademico) {
+        return objGestionarSolicitudReingresoGateway.listarSolicitudesReingresoPorUsuarioYPeriodo(idUsuario, periodoAcademico);
+    }
+
+    @Override
     public List<SolicitudReingreso> listarSolicitudesAprobadasToSecretaria() {
         return objGestionarSolicitudReingresoGateway.listarSolicitudesAprobadasToSecretaria();
     }

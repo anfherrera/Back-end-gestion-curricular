@@ -169,6 +169,20 @@ public class GestionarSolicitudEcaesCUAdapter implements GestionarSolicitudEcaes
         return objGestionarSolicitudEcaesGateway.listarSolicitudesToFuncionario();
     }
 
+    @Override
+    public List<SolicitudEcaes> listarSolicitudesToFuncionarioPorPeriodo(String periodoAcademico) {
+        return objGestionarSolicitudEcaesGateway.listarSolicitudesToFuncionarioPorPeriodo(periodoAcademico);
+    }
+
+    @Override
+    public List<SolicitudEcaes> listarSolicitudesToCoordinadorPorProgramaYPeriodo(Integer idPrograma, String periodoAcademico) {
+        return objGestionarSolicitudEcaesGateway.listarSolicitudesToCoordinadorPorProgramaYPeriodo(idPrograma, periodoAcademico);
+    }
+
+    @Override
+    public List<SolicitudEcaes> listarSolicitudesPorUsuarioYPeriodo(Integer idUsuario, String periodoAcademico) {
+        return objGestionarSolicitudEcaesGateway.listarSolicitudesPorUsuarioYPeriodo(idUsuario, periodoAcademico);
+    }
 
     @Override
     public List<SolicitudEcaes> listarSolicitudesPorRol(String rol, Integer idUsuario) {

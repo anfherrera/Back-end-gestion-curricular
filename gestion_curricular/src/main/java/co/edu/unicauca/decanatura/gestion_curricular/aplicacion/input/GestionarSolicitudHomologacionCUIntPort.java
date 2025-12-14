@@ -20,6 +20,43 @@ public interface GestionarSolicitudHomologacionCUIntPort {
      */
     List<SolicitudHomologacion> listarSolicitudesToCoordinadorPorPrograma(Integer idPrograma);
 
+    /**
+     * Lista solicitudes de homologación para funcionario filtradas por período académico
+     * @param periodoAcademico Período académico (formato: "YYYY-P", ej: "2025-2")
+     * @return Lista de solicitudes del período específico
+     */
+    List<SolicitudHomologacion> listarSolicitudesToFuncionarioPorPeriodo(String periodoAcademico);
+
+    /**
+     * Lista solicitudes de homologación para coordinador filtradas por programa y período académico
+     * @param idPrograma ID del programa académico del coordinador
+     * @param periodoAcademico Período académico (formato: "YYYY-P", ej: "2025-2")
+     * @return Lista de solicitudes del programa y período específicos
+     */
+    List<SolicitudHomologacion> listarSolicitudesToCoordinadorPorProgramaYPeriodo(Integer idPrograma, String periodoAcademico);
+
+    /**
+     * Lista solicitudes de homologación para secretaría filtradas por período académico
+     * @param periodoAcademico Período académico (formato: "YYYY-P", ej: "2025-2")
+     * @return Lista de solicitudes del período específico
+     */
+    List<SolicitudHomologacion> listarSolicitudesToSecretariaPorPeriodo(String periodoAcademico);
+
+    /**
+     * Lista solicitudes aprobadas de homologación para secretaría filtradas por período académico
+     * @param periodoAcademico Período académico (formato: "YYYY-P", ej: "2025-2")
+     * @return Lista de solicitudes aprobadas del período específico
+     */
+    List<SolicitudHomologacion> listarSolicitudesAprobadasToSecretariaPorPeriodo(String periodoAcademico);
+
+    /**
+     * Lista solicitudes de homologación para estudiante filtradas por usuario y período académico
+     * @param idUsuario ID del usuario (estudiante)
+     * @param periodoAcademico Período académico (formato: "YYYY-P", ej: "2025-2")
+     * @return Lista de solicitudes del usuario y período específicos
+     */
+    List<SolicitudHomologacion> listarSolicitudesPorUsuarioYPeriodo(Integer idUsuario, String periodoAcademico);
+
     List<SolicitudHomologacion> listarSolicitudesToSecretaria();
 
     List<SolicitudHomologacion> listarSolicitudesPorRol(String rol, Integer idUsuario);
