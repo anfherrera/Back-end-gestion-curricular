@@ -136,38 +136,61 @@ public class DocumentGeneratorService {
             return; // No hay placeholders que reemplazar
         }
         
-        // Reemplazar placeholders en el texto
-        for (Map.Entry<String, String> entry : replacements.entrySet()) {
-            String placeholder = "[" + entry.getKey() + "]";
-            if (texto.contains(placeholder)) {
-                texto = texto.replace(placeholder, entry.getValue());
-            }
-        }
-        
-        // Preservar el formato original del párrafo
+        // Preservar alineación del párrafo
         ParagraphAlignment alignment = paragraph.getAlignment();
-    boolean isBold = false;
-    boolean isItalic = false;
-    String fontFamily = "Arial";
-    int fontSize = 12; // Tamaño de fuente estándar para documentos oficiales
         
-        // Obtener formato del primer run si existe
+        // Obtener formato base del primer run
+        boolean isBoldBase = false;
+        boolean isItalicBase = false;
+        String fontFamily = "Arial";
+        int fontSize = 12;
+        
         if (!paragraph.getRuns().isEmpty()) {
             XWPFRun firstRun = paragraph.getRuns().get(0);
-            isBold = firstRun.isBold();
-            isItalic = firstRun.isItalic();
+            isBoldBase = firstRun.isBold();
+            isItalicBase = firstRun.isItalic();
             if (firstRun.getFontFamily() != null) {
                 fontFamily = firstRun.getFontFamily();
             }
-            // Manejar tamaño de fuente de forma segura (puede ser null o -1)
             try {
                 Double fs = firstRun.getFontSizeAsDouble();
                 if (fs != null && fs.intValue() > 0) {
                     fontSize = fs.intValue();
                 }
-                // Nota: getFontSize() está deprecado, usar solo getFontSizeAsDouble()
             } catch (Exception ignore) {
-                // Mantener fontSize por defecto si hay cualquier problema
+            }
+        }
+        
+        // Recopilar información de formato de cada run y detectar qué runs tienen placeholders en negrilla
+        List<RunInfo> runInfos = new ArrayList<>();
+        Map<String, Boolean> placeholderEnNegrilla = new HashMap<>();
+        
+        for (XWPFRun run : paragraph.getRuns()) {
+            String runText = run.getText(0);
+            if (runText != null) {
+                boolean isBold = run.isBold();
+                boolean isItalic = run.isItalic();
+                String font = run.getFontFamily();
+                int size = 12;
+                try {
+                    Double fs = run.getFontSizeAsDouble();
+                    if (fs != null && fs.intValue() > 0) {
+                        size = fs.intValue();
+                    }
+                } catch (Exception ignore) {
+                }
+                if (font == null) {
+                    font = "Arial";
+                }
+                runInfos.add(new RunInfo(runText, isBold, isItalic, font, size));
+                
+                // Detectar si algún placeholder en este run está en negrilla
+                for (String key : replacements.keySet()) {
+                    String placeholder = "[" + key + "]";
+                    if (runText.contains(placeholder) && isBold) {
+                        placeholderEnNegrilla.put(key, true);
+                    }
+                }
             }
         }
         
@@ -176,20 +199,357 @@ public class DocumentGeneratorService {
             paragraph.removeRun(0);
         }
         
-        // Crear nuevo run con el texto reemplazado y formato preservado
-        XWPFRun newRun = paragraph.createRun();
+        // Procesar el texto completo del párrafo
+        String textoCompleto = texto;
+        boolean tieneTextoGrado = textoCompleto.contains("[TEXTO_TRABAJO_GRADO]");
         
-        // Usar el texto directamente sin conversión adicional
-        // Apache POI maneja UTF-8 internamente
-        newRun.setText(texto);
-        newRun.setBold(isBold);
-        newRun.setItalic(isItalic);
-        newRun.setFontFamily(fontFamily);
-        newRun.setFontSize(fontSize);
+        // Reemplazar TODOS los placeholders excepto TEXTO_TRABAJO_GRADO en el texto completo
+        // Usar replace para reemplazar todas las ocurrencias (replace reemplaza todas las ocurrencias por defecto)
+        for (Map.Entry<String, String> entry : replacements.entrySet()) {
+            if (!"TEXTO_TRABAJO_GRADO".equals(entry.getKey())) {
+                String placeholder = "[" + entry.getKey() + "]";
+                String valor = entry.getValue() != null ? entry.getValue() : "";
+                if (textoCompleto.contains(placeholder)) {
+                    textoCompleto = textoCompleto.replace(placeholder, valor);
+                }
+            }
+        }
+        
+        // Si tiene TEXTO_TRABAJO_GRADO, dividir y procesar
+        if (tieneTextoGrado && replacements.containsKey("TEXTO_TRABAJO_GRADO")) {
+            String textoTrabajoGrado = replacements.get("TEXTO_TRABAJO_GRADO");
+            String[] partes = textoCompleto.split("\\[TEXTO_TRABAJO_GRADO\\]", 2);
+            
+            // Texto antes del placeholder
+            if (partes.length > 0 && !partes[0].isEmpty()) {
+                insertarTextoConNegrillaSelectiva(paragraph, texto, partes[0], placeholderEnNegrilla, replacements, 
+                    isBoldBase, isItalicBase, fontFamily, fontSize);
+            }
+            
+            // Insertar TEXTO_TRABAJO_GRADO formateado con negrilla
+            // Crear RunInfo solo con el formato necesario (el campo text no se usa en este método)
+            RunInfo formatoBase = new RunInfo("dummy", isBoldBase, isItalicBase, fontFamily, fontSize);
+            insertarTextoTrabajoGradoFormateado(paragraph, textoTrabajoGrado, formatoBase);
+            
+            // Texto después del placeholder
+            if (partes.length > 1 && !partes[1].isEmpty()) {
+                insertarTextoConNegrillaSelectiva(paragraph, texto, partes[1], placeholderEnNegrilla, replacements, 
+                    isBoldBase, isItalicBase, fontFamily, fontSize);
+            }
+        } else {
+            // No tiene TEXTO_TRABAJO_GRADO, procesar texto preservando negrilla en placeholders
+            if (!textoCompleto.isEmpty()) {
+                // Crear múltiples runs: uno para cada placeholder que estaba en negrilla
+                insertarTextoConNegrillaSelectiva(paragraph, texto, textoCompleto, placeholderEnNegrilla, replacements, 
+                    isBoldBase, isItalicBase, fontFamily, fontSize);
+            }
+        }
         
         // Restaurar alineación del párrafo
         if (alignment != null) {
             paragraph.setAlignment(alignment);
+        }
+    }
+    
+    /**
+     * Inserta texto preservando negrilla solo en los valores que reemplazaron placeholders que estaban en negrilla
+     */
+    private void insertarTextoConNegrillaSelectiva(XWPFParagraph paragraph, String textoOriginal, String textoReemplazado,
+            Map<String, Boolean> placeholderEnNegrilla, Map<String, String> replacements,
+            boolean isBoldBase, boolean isItalicBase, String fontFamily, int fontSize) {
+        
+        // Si no hay placeholders en negrilla, crear un solo run
+        if (placeholderEnNegrilla.isEmpty() || !placeholderEnNegrilla.containsValue(true)) {
+            XWPFRun run = paragraph.createRun();
+            run.setText(textoReemplazado);
+            run.setBold(isBoldBase);
+            run.setItalic(isItalicBase);
+            run.setFontFamily(fontFamily);
+            run.setFontSize(fontSize);
+            return;
+        }
+        
+        // Encontrar posiciones de los valores reemplazados que deben ir en negrilla
+        // Buscar todas las ocurrencias, no solo la primera
+        List<int[]> rangosNegrilla = new ArrayList<>();
+        for (Map.Entry<String, Boolean> entry : placeholderEnNegrilla.entrySet()) {
+            if (entry.getValue()) {
+                String valor = replacements.get(entry.getKey());
+                if (valor != null && !valor.isEmpty()) {
+                    // Buscar todas las ocurrencias del valor
+                    // Primero intentar búsqueda exacta
+                    int inicio = 0;
+                    while ((inicio = textoReemplazado.indexOf(valor, inicio)) != -1) {
+                        int fin = inicio + valor.length();
+                        rangosNegrilla.add(new int[]{inicio, fin});
+                        inicio = fin; // Continuar buscando desde el final de esta ocurrencia
+                    }
+                    
+                    // Si no se encontró, intentar búsqueda sin espacios al inicio/final
+                    if (rangosNegrilla.isEmpty()) {
+                        String valorTrim = valor.trim();
+                        if (!valorTrim.equals(valor) && !valorTrim.isEmpty()) {
+                            inicio = 0;
+                            while ((inicio = textoReemplazado.indexOf(valorTrim, inicio)) != -1) {
+                                int fin = inicio + valorTrim.length();
+                                rangosNegrilla.add(new int[]{inicio, fin});
+                                inicio = fin;
+                            }
+                        }
+                    }
+                    
+                    // Si aún no se encontró, usar búsqueda case-insensitive para nombres
+                    if (rangosNegrilla.isEmpty() && (entry.getKey().contains("NOMBRE") || entry.getKey().contains("NOMBRE_ESTUDIANTE"))) {
+                        String textoLower = textoReemplazado.toLowerCase();
+                        String valorLower = valor.toLowerCase();
+                        inicio = 0;
+                        while ((inicio = textoLower.indexOf(valorLower, inicio)) != -1) {
+                            int fin = inicio + valor.length();
+                            rangosNegrilla.add(new int[]{inicio, fin});
+                            inicio = fin;
+                        }
+                    }
+                }
+            }
+        }
+        
+        // Ordenar rangos
+        rangosNegrilla.sort((a, b) -> Integer.compare(a[0], b[0]));
+        
+        // Construir runs
+        int posicionActual = 0;
+        for (int[] rango : rangosNegrilla) {
+            // Texto antes del rango (normal)
+            if (rango[0] > posicionActual) {
+                String textoNormal = textoReemplazado.substring(posicionActual, rango[0]);
+                if (!textoNormal.isEmpty()) {
+                    XWPFRun runNormal = paragraph.createRun();
+                    runNormal.setText(textoNormal);
+                    runNormal.setBold(false);
+                    runNormal.setItalic(isItalicBase);
+                    runNormal.setFontFamily(fontFamily);
+                    runNormal.setFontSize(fontSize);
+                }
+            }
+            
+            // Texto del rango (en negrilla)
+            String textoNegrilla = textoReemplazado.substring(rango[0], rango[1]);
+            if (!textoNegrilla.isEmpty()) {
+                XWPFRun runNegrilla = paragraph.createRun();
+                runNegrilla.setText(textoNegrilla);
+                runNegrilla.setBold(true);
+                runNegrilla.setItalic(isItalicBase);
+                runNegrilla.setFontFamily(fontFamily);
+                runNegrilla.setFontSize(fontSize);
+            }
+            
+            posicionActual = rango[1];
+        }
+        
+        // Texto final (normal)
+        if (posicionActual < textoReemplazado.length()) {
+            String textoFinal = textoReemplazado.substring(posicionActual);
+            if (!textoFinal.isEmpty()) {
+                XWPFRun runFinal = paragraph.createRun();
+                runFinal.setText(textoFinal);
+                runFinal.setBold(false);
+                runFinal.setItalic(isItalicBase);
+                runFinal.setFontFamily(fontFamily);
+                runFinal.setFontSize(fontSize);
+            }
+        }
+    }
+    
+    /**
+     * Inserta el texto de trabajo de grado formateado con negrilla en partes específicas
+     * Formatea en negrilla: fechas, títulos de trabajo de grado (entre comillas), y nombres de directores
+     */
+    private void insertarTextoTrabajoGradoFormateado(XWPFParagraph paragraph, String textoTrabajoGrado, RunInfo formatoBase) {
+        if (textoTrabajoGrado == null || textoTrabajoGrado.trim().isEmpty()) {
+            return;
+        }
+        
+        // Patrones para identificar partes que deben ir en negrilla:
+        // 1. Fechas (formato: "día DD de MES de YYYY" o variaciones)
+        // 2. Títulos entre comillas dobles
+        // 3. Nombres después de "dirigido por el/la"
+        
+        // Dividir el texto en partes: texto normal y texto en negrilla
+        // Usar regex para encontrar fechas, títulos entre comillas, y nombres de directores
+        
+        String texto = textoTrabajoGrado;
+        
+        // Buscar títulos entre comillas dobles (van en negrilla)
+        java.util.regex.Pattern patronComillas = java.util.regex.Pattern.compile("\"([^\"]+)\"");
+        java.util.regex.Matcher matcherComillas = patronComillas.matcher(texto);
+        
+        // Buscar fechas (formato: "día DD de MES de YYYY")
+        java.util.regex.Pattern patronFecha = java.util.regex.Pattern.compile("\\d{1,2}\\s+de\\s+\\w+\\s+de\\s+\\d{4}");
+        java.util.regex.Matcher matcherFecha = patronFecha.matcher(texto);
+        
+        // Buscar nombres después de "dirigido por el/la" o "Ingeniero(a)"
+        // Patrón más flexible para capturar nombres con títulos (Esp., Inge., PhD., etc.)
+        // Captura desde "Ingeniero(a)" o "dirigido por" hasta el final de la oración o punto
+        // Primero buscar el patrón completo "dirigido por el Ingeniero(a) [nombre]"
+        java.util.regex.Pattern patronDirectorCompleto = java.util.regex.Pattern.compile("dirigido por el Ingeniero\\(a\\)\\s+([A-ZÁÉÍÓÚÑ][^.]*?)(?:\\.|$)");
+        java.util.regex.Matcher matcherDirectorCompleto = patronDirectorCompleto.matcher(texto);
+        
+        // También buscar solo "Ingeniero(a) [nombre]" (sin "dirigido por")
+        java.util.regex.Pattern patronDirectorSimple = java.util.regex.Pattern.compile("Ingeniero\\(a\\)\\s+([A-ZÁÉÍÓÚÑ][^.]*?)(?:\\.|$)");
+        java.util.regex.Matcher matcherDirectorSimple = patronDirectorSimple.matcher(texto);
+        
+        // También buscar "dirigido por el/la [nombre]" (sin "Ingeniero(a)")
+        java.util.regex.Pattern patronDirectorSinIngeniero = java.util.regex.Pattern.compile("dirigido por (?:el|la)\\s+([A-ZÁÉÍÓÚÑ][^.]*?)(?:\\.|$)");
+        java.util.regex.Matcher matcherDirectorSinIngeniero = patronDirectorSinIngeniero.matcher(texto);
+        
+        // Crear lista de rangos que deben ir en negrilla
+        List<int[]> rangosNegrilla = new ArrayList<>();
+        
+        // Agregar rangos de títulos entre comillas
+        while (matcherComillas.find()) {
+            rangosNegrilla.add(new int[]{matcherComillas.start(), matcherComillas.end()});
+        }
+        
+        // Agregar rangos de fechas
+        while (matcherFecha.find()) {
+            rangosNegrilla.add(new int[]{matcherFecha.start(), matcherFecha.end()});
+        }
+        
+        // Agregar rangos de nombres de directores
+        // Primero buscar el patrón completo "dirigido por el Ingeniero(a) [nombre]"
+        while (matcherDirectorCompleto.find()) {
+            // El grupo 1 contiene el nombre del director
+            int inicioNombre = matcherDirectorCompleto.start(1);
+            int finNombre = matcherDirectorCompleto.end(1);
+            rangosNegrilla.add(new int[]{inicioNombre, finNombre});
+        }
+        
+        // Luego buscar solo "Ingeniero(a) [nombre]" (si no fue capturado por el patrón anterior)
+        while (matcherDirectorSimple.find()) {
+            int inicioNombre = matcherDirectorSimple.start(1);
+            int finNombre = matcherDirectorSimple.end(1);
+            // Verificar que este rango no esté ya incluido
+            boolean yaIncluido = false;
+            for (int[] rango : rangosNegrilla) {
+                if (rango[0] <= inicioNombre && rango[1] >= finNombre) {
+                    yaIncluido = true;
+                    break;
+                }
+            }
+            if (!yaIncluido) {
+                rangosNegrilla.add(new int[]{inicioNombre, finNombre});
+            }
+        }
+        
+        // Finalmente buscar "dirigido por el/la [nombre]" (si no fue capturado por los patrones anteriores)
+        while (matcherDirectorSinIngeniero.find()) {
+            int inicioNombre = matcherDirectorSinIngeniero.start(1);
+            int finNombre = matcherDirectorSinIngeniero.end(1);
+            // Verificar que este rango no esté ya incluido
+            boolean yaIncluido = false;
+            for (int[] rango : rangosNegrilla) {
+                if (rango[0] <= inicioNombre && rango[1] >= finNombre) {
+                    yaIncluido = true;
+                    break;
+                }
+            }
+            if (!yaIncluido) {
+                rangosNegrilla.add(new int[]{inicioNombre, finNombre});
+            }
+        }
+        
+        // Ordenar rangos por posición inicial
+        rangosNegrilla.sort((a, b) -> Integer.compare(a[0], b[0]));
+        
+        // Eliminar rangos solapados (mantener el más largo)
+        List<int[]> rangosFinales = new ArrayList<>();
+        for (int[] rango : rangosNegrilla) {
+            boolean solapado = false;
+            for (int i = 0; i < rangosFinales.size(); i++) {
+                int[] existente = rangosFinales.get(i);
+                // Si se solapan, mantener el más largo
+                if (rango[0] < existente[1] && rango[1] > existente[0]) {
+                    if ((rango[1] - rango[0]) > (existente[1] - existente[0])) {
+                        rangosFinales.set(i, rango);
+                    }
+                    solapado = true;
+                    break;
+                }
+            }
+            if (!solapado) {
+                rangosFinales.add(rango);
+            }
+        }
+        
+        // Si no hay rangos en negrilla, insertar todo el texto normal
+        if (rangosFinales.isEmpty()) {
+            XWPFRun runCompleto = paragraph.createRun();
+            runCompleto.setText(texto);
+            runCompleto.setBold(formatoBase.isBold);
+            runCompleto.setItalic(formatoBase.isItalic);
+            runCompleto.setFontFamily(formatoBase.fontFamily);
+            runCompleto.setFontSize(formatoBase.fontSize);
+            return;
+        }
+        
+        // Construir el texto con múltiples runs
+        int posicionActual = 0;
+        for (int[] rango : rangosFinales) {
+            // Texto antes del rango (normal)
+            if (rango[0] > posicionActual) {
+                String textoNormal = texto.substring(posicionActual, rango[0]);
+                if (!textoNormal.isEmpty()) {
+                    XWPFRun runNormal = paragraph.createRun();
+                    runNormal.setText(textoNormal);
+                    runNormal.setBold(false);
+                    runNormal.setItalic(formatoBase.isItalic);
+                    runNormal.setFontFamily(formatoBase.fontFamily);
+                    runNormal.setFontSize(formatoBase.fontSize);
+                }
+            }
+            
+            // Texto del rango (en negrilla)
+            String textoNegrilla = texto.substring(rango[0], rango[1]);
+            if (!textoNegrilla.isEmpty()) {
+                XWPFRun runNegrilla = paragraph.createRun();
+                runNegrilla.setText(textoNegrilla);
+                runNegrilla.setBold(true); // En negrilla
+                runNegrilla.setItalic(formatoBase.isItalic);
+                runNegrilla.setFontFamily(formatoBase.fontFamily);
+                runNegrilla.setFontSize(formatoBase.fontSize);
+            }
+            
+            posicionActual = rango[1];
+        }
+        
+        // Texto final después del último rango (normal)
+        if (posicionActual < texto.length()) {
+            String textoFinal = texto.substring(posicionActual);
+            if (!textoFinal.isEmpty()) {
+                XWPFRun runFinal = paragraph.createRun();
+                runFinal.setText(textoFinal);
+                runFinal.setBold(false);
+                runFinal.setItalic(formatoBase.isItalic);
+                runFinal.setFontFamily(formatoBase.fontFamily);
+                runFinal.setFontSize(formatoBase.fontSize);
+            }
+        }
+    }
+    
+    // Clase auxiliar para almacenar información de formato de runs
+    private static class RunInfo {
+        String text;
+        boolean isBold;
+        boolean isItalic;
+        String fontFamily;
+        int fontSize;
+        
+        RunInfo(String text, boolean isBold, boolean isItalic, String fontFamily, int fontSize) {
+            this.text = text;
+            this.isBold = isBold;
+            this.isItalic = isItalic;
+            this.fontFamily = fontFamily;
+            this.fontSize = fontSize;
         }
     }
 
@@ -358,22 +718,21 @@ public class DocumentGeneratorService {
             
             // Fecha del documento (extraída de FECHA_DOCUMENTO)
             Object fechaDocumento = datosDocumento.get("fechaDocumento");
+            LocalDate fechaDoc = null;
+            
             if (fechaDocumento != null) {
-                LocalDate fechaDoc = parsearFecha(fechaDocumento);
-                if (fechaDoc != null) {
-                    replacements.put("DIA_DOCUMENTO", String.valueOf(fechaDoc.getDayOfMonth()));
-                    replacements.put("MES_DOCUMENTO", formatearMes(fechaDoc.getMonthValue()));
-                    replacements.put("AÑO_DOCUMENTO", formatearAño(fechaDoc.getYear()));
-                } else {
-                    replacements.put("DIA_DOCUMENTO", "");
-                    replacements.put("MES_DOCUMENTO", "");
-                    replacements.put("AÑO_DOCUMENTO", "");
-                }
-            } else {
-                replacements.put("DIA_DOCUMENTO", "");
-                replacements.put("MES_DOCUMENTO", "");
-                replacements.put("AÑO_DOCUMENTO", "");
+                fechaDoc = parsearFecha(fechaDocumento);
             }
+            
+            // Si no se pudo parsear, intentar usar la fecha actual como fallback
+            if (fechaDoc == null) {
+                fechaDoc = LocalDate.now();
+            }
+            
+            // Siempre establecer DIA_DOCUMENTO y MES_DOCUMENTO (nunca vacíos)
+            replacements.put("DIA_DOCUMENTO", String.valueOf(fechaDoc.getDayOfMonth()));
+            replacements.put("MES_DOCUMENTO", formatearMes(fechaDoc.getMonthValue()));
+            replacements.put("AÑO_DOCUMENTO", formatearAño(fechaDoc.getYear()));
         } else if ("RESOLUCION_REINGRESO".equals(request.getTipoDocumento())) {
             replacements.put("TIPO_PROCESO", "reingreso al programa");
             replacements.put("TITULO_DOCUMENTO", "RESOLUCIÓN DE REINGRESO");
@@ -386,30 +745,108 @@ public class DocumentGeneratorService {
         if (fecha == null) return "";
         
         try {
+            LocalDate localDate = null;
+            
             if (fecha instanceof LocalDate) {
-                return ((LocalDate) fecha).format(DateTimeFormatter.ofPattern("dd 'de' MMMM 'de' yyyy"));
+                localDate = (LocalDate) fecha;
+            } else if (fecha instanceof java.util.Date) {
+                // Convertir Date a LocalDate
+                java.util.Date date = (java.util.Date) fecha;
+                localDate = date.toInstant().atZone(java.time.ZoneId.systemDefault()).toLocalDate();
+            } else if (fecha instanceof java.sql.Date) {
+                // Convertir java.sql.Date a LocalDate
+                localDate = ((java.sql.Date) fecha).toLocalDate();
+            } else if (fecha instanceof java.sql.Timestamp) {
+                // Convertir Timestamp a LocalDate
+                java.sql.Timestamp timestamp = (java.sql.Timestamp) fecha;
+                localDate = timestamp.toInstant().atZone(java.time.ZoneId.systemDefault()).toLocalDate();
             } else if (fecha instanceof String) {
-                String fechaStr = fecha.toString();
-                // Si viene como string ISO (ej: "2025-09-30T04:57:37.000+00:00")
-                if (fechaStr.contains("T")) {
-                    LocalDate localDate = LocalDate.parse(fechaStr.substring(0, 10));
-                    return localDate.format(DateTimeFormatter.ofPattern("dd 'de' MMMM 'de' yyyy"));
-                } else {
+                String fechaStr = fecha.toString().trim();
+                
+                // Verificar si es formato en inglés como "Sun Dec 14" o "Sun Dec 14 2025"
+                if (fechaStr.matches("^[A-Za-z]{3}\\s+[A-Za-z]{3}\\s+\\d{1,2}(\\s+\\d{4})?$")) {
+                    try {
+                        // Intentar parsear formato en inglés
+                        java.text.SimpleDateFormat formatoIngles;
+                        if (fechaStr.matches("^[A-Za-z]{3}\\s+[A-Za-z]{3}\\s+\\d{1,2}\\s+\\d{4}$")) {
+                            formatoIngles = new java.text.SimpleDateFormat("EEE MMM dd yyyy", java.util.Locale.ENGLISH);
+                        } else {
+                            formatoIngles = new java.text.SimpleDateFormat("EEE MMM dd", java.util.Locale.ENGLISH);
+                        }
+                        java.util.Date date = formatoIngles.parse(fechaStr);
+                        localDate = date.toInstant().atZone(java.time.ZoneId.systemDefault()).toLocalDate();
+                    } catch (Exception ex) {
+                        // Si falla, intentar parsear como ISO
+                        if (fechaStr.contains("T") || fechaStr.contains(" ")) {
+                            String fechaSolo = fechaStr.substring(0, Math.min(10, fechaStr.length()));
+                            if (fechaSolo.matches("\\d{4}-\\d{2}-\\d{2}")) {
+                                localDate = LocalDate.parse(fechaSolo);
+                            }
+                        }
+                    }
+                } else if (fechaStr.contains("T") || fechaStr.contains(" ")) {
+                    // Si viene como string ISO con hora (ej: "2025-12-14 11:06:13.0" o "2025-12-14T11:06:13.000+00:00")
+                    // Extraer solo la parte de la fecha (primeros 10 caracteres)
+                    String fechaSolo = fechaStr.substring(0, Math.min(10, fechaStr.length()));
+                    if (fechaSolo.matches("\\d{4}-\\d{2}-\\d{2}")) {
+                        localDate = LocalDate.parse(fechaSolo);
+                    }
+                } else if (fechaStr.matches("\\d{4}-\\d{2}-\\d{2}")) {
                     // Si viene como string simple (ej: "2025-09-30")
-                    LocalDate localDate = LocalDate.parse(fechaStr);
-                    return localDate.format(DateTimeFormatter.ofPattern("dd 'de' MMMM 'de' yyyy"));
+                    localDate = LocalDate.parse(fechaStr);
                 }
             }
+            
+            if (localDate != null) {
+                return localDate.format(DateTimeFormatter.ofPattern("dd 'de' MMMM 'de' yyyy", 
+                    new java.util.Locale("es", "CO")));
+            }
         } catch (Exception e) {
-            // Si hay error, retornar la fecha como string
-            return fecha.toString();
+            // Si hay error, intentar parsear el string de diferentes formas
+            String fechaStr = fecha.toString().trim();
+            
+            // Intentar parsear formato en inglés como "Sun Dec 14" o "Sun Dec 14 2025"
+            if (fechaStr.matches("^[A-Za-z]{3}\\s+[A-Za-z]{3}\\s+\\d{1,2}(\\s+\\d{4})?$")) {
+                try {
+                    java.text.SimpleDateFormat formatoIngles;
+                    if (fechaStr.matches("^[A-Za-z]{3}\\s+[A-Za-z]{3}\\s+\\d{1,2}\\s+\\d{4}$")) {
+                        formatoIngles = new java.text.SimpleDateFormat("EEE MMM dd yyyy", java.util.Locale.ENGLISH);
+                    } else {
+                        formatoIngles = new java.text.SimpleDateFormat("EEE MMM dd", java.util.Locale.ENGLISH);
+                    }
+                    java.util.Date date = formatoIngles.parse(fechaStr);
+                    LocalDate localDate = date.toInstant().atZone(java.time.ZoneId.systemDefault()).toLocalDate();
+                    return localDate.format(DateTimeFormatter.ofPattern("dd 'de' MMMM 'de' yyyy", 
+                        new java.util.Locale("es", "CO")));
+                } catch (Exception ex) {
+                    // Si falla, continuar con otros intentos
+                }
+            }
+            
+            // Intentar extraer solo la fecha del string ISO
+            if (fechaStr.length() >= 10) {
+                try {
+                    String fechaSolo = fechaStr.substring(0, 10);
+                    if (fechaSolo.matches("\\d{4}-\\d{2}-\\d{2}")) {
+                        LocalDate localDate = LocalDate.parse(fechaSolo);
+                        return localDate.format(DateTimeFormatter.ofPattern("dd 'de' MMMM 'de' yyyy", 
+                            new java.util.Locale("es", "CO")));
+                    }
+                } catch (Exception ex) {
+                    // Si falla, retornar solo la parte de la fecha sin hora
+                    if (fechaStr.length() >= 10) {
+                        return fechaStr.substring(0, 10);
+                    }
+                }
+            }
         }
         
         return fecha.toString();
     }
     
     private String formatearFechaCompleta(LocalDate fecha) {
-        return fecha.format(DateTimeFormatter.ofPattern("dd 'de' MMMM 'de' yyyy"));
+        return fecha.format(DateTimeFormatter.ofPattern("dd 'de' MMMM 'de' yyyy", 
+            new java.util.Locale("es", "CO")));
     }
     
     private String formatearMes(int mes) {
@@ -431,18 +868,76 @@ public class DocumentGeneratorService {
             if (fecha instanceof LocalDate) {
                 return (LocalDate) fecha;
             } else if (fecha instanceof String) {
-                String fechaStr = fecha.toString();
+                String fechaStr = fecha.toString().trim();
+                
                 // Si viene como string ISO (ej: "2025-09-30T04:57:37.000+00:00")
                 if (fechaStr.contains("T")) {
                     return LocalDate.parse(fechaStr.substring(0, 10));
-                } else {
-                    // Si viene como string simple (ej: "2025-09-30")
+                }
+                
+                // Si viene con hora (ej: "2025-09-30 04:57:37")
+                if (fechaStr.contains(" ")) {
+                    String[] partes = fechaStr.split(" ");
+                    // Verificar si es formato ISO con hora
+                    if (partes[0].matches("\\d{4}-\\d{2}-\\d{2}")) {
+                        return LocalDate.parse(partes[0]);
+                    }
+                    // Verificar si es formato en inglés como "Sun Dec 14" o "Sun Dec 14 2025"
+                    if (partes.length >= 3 && partes[0].matches("[A-Za-z]{3}") && partes[1].matches("[A-Za-z]{3}")) {
+                        try {
+                            // Intentar parsear formato en inglés: "Sun Dec 14 2025"
+                            if (partes.length >= 4 && partes[3].matches("\\d{4}")) {
+                                java.text.SimpleDateFormat formatoIngles = new java.text.SimpleDateFormat("EEE MMM dd yyyy", java.util.Locale.ENGLISH);
+                                java.util.Date date = formatoIngles.parse(fechaStr);
+                                return date.toInstant().atZone(java.time.ZoneId.systemDefault()).toLocalDate();
+                            } else {
+                                // Intentar sin año: "Sun Dec 14" (usar año actual)
+                                java.text.SimpleDateFormat formatoInglesSinAño = new java.text.SimpleDateFormat("EEE MMM dd", java.util.Locale.ENGLISH);
+                                java.util.Date date = formatoInglesSinAño.parse(fechaStr);
+                                return date.toInstant().atZone(java.time.ZoneId.systemDefault()).toLocalDate();
+                            }
+                        } catch (Exception ex) {
+                            // Si falla, intentar extraer solo la parte de la fecha ISO si existe
+                            if (fechaStr.length() >= 10 && fechaStr.substring(0, 10).matches("\\d{4}-\\d{2}-\\d{2}")) {
+                                return LocalDate.parse(fechaStr.substring(0, 10));
+                            }
+                        }
+                    }
+                }
+                
+                // Si viene como string simple (ej: "2025-09-30")
+                if (fechaStr.matches("\\d{4}-\\d{2}-\\d{2}")) {
                     return LocalDate.parse(fechaStr);
                 }
+                
+                // Intentar parsear formato en inglés sin espacios de hora (ej: "SunDec14")
+                // Esto es menos común, pero lo intentamos
+                try {
+                    java.text.SimpleDateFormat formatoIngles = new java.text.SimpleDateFormat("EEE MMM dd yyyy", java.util.Locale.ENGLISH);
+                    java.util.Date date = formatoIngles.parse(fechaStr);
+                    return date.toInstant().atZone(java.time.ZoneId.systemDefault()).toLocalDate();
+                } catch (Exception ex) {
+                    try {
+                        java.text.SimpleDateFormat formatoInglesSinAño = new java.text.SimpleDateFormat("EEE MMM dd", java.util.Locale.ENGLISH);
+                        java.util.Date date = formatoInglesSinAño.parse(fechaStr);
+                        return date.toInstant().atZone(java.time.ZoneId.systemDefault()).toLocalDate();
+                    } catch (Exception ex2) {
+                        // Si falla, retornar null
+                    }
+                }
+            } else if (fecha instanceof java.util.Date) {
+                return ((java.util.Date) fecha).toInstant()
+                    .atZone(java.time.ZoneId.systemDefault())
+                    .toLocalDate();
+            } else if (fecha instanceof java.sql.Date) {
+                return ((java.sql.Date) fecha).toLocalDate();
+            } else if (fecha instanceof java.sql.Timestamp) {
+                return ((java.sql.Timestamp) fecha).toInstant()
+                    .atZone(java.time.ZoneId.systemDefault())
+                    .toLocalDate();
             }
         } catch (Exception e) {
-            // Si hay error, retornar null
-            return null;
+            // Si falla, retornar null
         }
         
         return null;

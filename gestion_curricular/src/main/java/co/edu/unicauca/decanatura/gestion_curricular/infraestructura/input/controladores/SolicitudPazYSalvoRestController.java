@@ -125,6 +125,28 @@ public class SolicitudPazYSalvoRestController {
         SolicitudPazYSalvo solicitud = solicitudMapperDominio
                 .mappearDeSolicitudDTOPeticionASolicitud(dtoPeticion);
 
+        // Asegurar que el nombre de la solicitud incluya el nombre del estudiante
+        if (solicitud.getObjUsuario() != null && solicitud.getObjUsuario().getId_usuario() != null) {
+            // Cargar el usuario completo si no está completo
+            if (solicitud.getObjUsuario().getNombre_completo() == null || solicitud.getObjUsuario().getNombre_completo().trim().isEmpty()) {
+                co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Usuario usuarioCompleto = 
+                    usuarioGateway.buscarUsuarioPorId(solicitud.getObjUsuario().getId_usuario()).orElse(null);
+                if (usuarioCompleto != null) {
+                    solicitud.getObjUsuario().setNombre_completo(usuarioCompleto.getNombre_completo());
+                }
+            }
+            
+            // Establecer nombre de solicitud con el nombre del estudiante
+            if (solicitud.getObjUsuario().getNombre_completo() != null && !solicitud.getObjUsuario().getNombre_completo().trim().isEmpty()) {
+                String nombreSolicitud = "Paz y Salvo - " + solicitud.getObjUsuario().getNombre_completo();
+                solicitud.setNombre_solicitud(nombreSolicitud);
+            } else if (solicitud.getNombre_solicitud() == null || solicitud.getNombre_solicitud().trim().isEmpty()) {
+                solicitud.setNombre_solicitud("Paz y Salvo");
+            }
+        } else if (solicitud.getNombre_solicitud() == null || solicitud.getNombre_solicitud().trim().isEmpty()) {
+            solicitud.setNombre_solicitud("Paz y Salvo");
+        }
+
         return guardarSolicitudDominio(solicitud);
     }
 
@@ -184,12 +206,23 @@ public class SolicitudPazYSalvoRestController {
     private SolicitudPazYSalvo construirSolicitudBasica(Map<String, Object> mapPeticion) {
         Integer idUsuario = Integer.valueOf(mapPeticion.get("idUsuario").toString().trim());
 
-        SolicitudPazYSalvo solicitud = new SolicitudPazYSalvo();
-        solicitud.setNombre_solicitud("Paz y Salvo");
-
+        // Cargar el usuario completo para obtener su nombre
         co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Usuario usuario =
-                new co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Usuario();
-        usuario.setId_usuario(idUsuario);
+                usuarioGateway.buscarUsuarioPorId(idUsuario).orElse(null);
+        
+        if (usuario == null) {
+            throw new IllegalArgumentException("Usuario no encontrado con ID: " + idUsuario);
+        }
+
+        SolicitudPazYSalvo solicitud = new SolicitudPazYSalvo();
+        
+        // Establecer nombre de solicitud con el nombre del estudiante
+        String nombreSolicitud = "Paz y Salvo";
+        if (usuario.getNombre_completo() != null && !usuario.getNombre_completo().trim().isEmpty()) {
+            nombreSolicitud = "Paz y Salvo - " + usuario.getNombre_completo();
+        }
+        solicitud.setNombre_solicitud(nombreSolicitud);
+        
         solicitud.setObjUsuario(usuario);
 
         if (mapPeticion.containsKey("fecha_solicitud") && mapPeticion.get("fecha_solicitud") != null) {
