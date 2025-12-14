@@ -24,3 +24,4 @@ public interface GestionarConfiguracionSistemaCUIntPort {
     void establecerPeriodoActivo(String periodoAcademico);
 }
 
+

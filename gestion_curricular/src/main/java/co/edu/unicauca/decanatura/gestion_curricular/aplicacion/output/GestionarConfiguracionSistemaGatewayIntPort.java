@@ -22,3 +22,4 @@ public interface GestionarConfiguracionSistemaGatewayIntPort {
     void establecerPeriodoActivo(String periodoAcademico);
 }
 
+

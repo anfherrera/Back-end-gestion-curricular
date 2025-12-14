@@ -10,6 +10,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import lombok.extern.slf4j.Slf4j;
 
 import java.util.ArrayList;
 
@@ -23,6 +24,7 @@ import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.pers
 
 @Service
 @Transactional
+@Slf4j
 public class GestionarUsuarioGatewayImplAdapter implements GestionarUsuarioGatewayIntPort, UserDetailsService {
 
     private final UsuarioRepositoryInt usuarioRepository;
@@ -38,8 +40,18 @@ public class GestionarUsuarioGatewayImplAdapter implements GestionarUsuarioGatew
     @Override
     @Transactional
     public Usuario crearUsuario(Usuario usuario) {
+        log.debug("Creando usuario: correo={}, codigo={}, nombre={}", 
+            usuario.getCorreo(), usuario.getCodigo(), usuario.getNombre_completo());
+        
         UsuarioEntity entity = usuarioMapper.map(usuario, UsuarioEntity.class);
         UsuarioEntity saved = usuarioRepository.save(entity);
+        
+        // Forzar flush para asegurar que los cambios se persistan inmediatamente en la BD
+        usuarioRepository.flush();
+        
+        log.debug("Usuario guardado exitosamente: id={}, correo={}", 
+            saved.getId_usuario(), saved.getCorreo());
+        
         return usuarioMapper.map(saved, Usuario.class);
     }
 

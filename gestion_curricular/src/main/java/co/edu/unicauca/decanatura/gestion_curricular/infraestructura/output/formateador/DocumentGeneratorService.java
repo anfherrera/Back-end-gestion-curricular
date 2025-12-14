@@ -565,6 +565,7 @@ public class DocumentGeneratorService {
     
     // Clase auxiliar para almacenar información de formato de runs
     private static class RunInfo {
+        @SuppressWarnings("unused")
         String text;
         boolean isBold;
         boolean isItalic;
