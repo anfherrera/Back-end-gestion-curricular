@@ -28,6 +28,7 @@ import java.util.Map;
 import java.util.HashMap;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Optional;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpHeaders;
@@ -44,6 +45,7 @@ import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.mappe
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Solicitud;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Usuario;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Enums.PeriodoAcademicoEnum;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.PeriodoAcademico;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarPeriodoAcademicoCUIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.GestionarUsuarioGatewayIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.controladorExcepciones.excepcionesPropias.EntidadNoExisteException;
@@ -142,6 +144,33 @@ public class SolicitudPazYSalvoRestController {
                 if (periodoEnum != null) {
                     solicitud.setPeriodo_academico(periodoEnum.getValor());
                     log.debug("Período académico establecido automáticamente (fallback enum): {}", periodoEnum.getValor());
+                }
+            }
+        } else {
+            // Validar que el período académico proporcionado sea válido
+            String periodoProporcionado = solicitud.getPeriodo_academico().trim();
+            Optional<PeriodoAcademico> periodoValidado = periodoAcademicoCU.obtenerPeriodoPorValor(periodoProporcionado);
+            
+            if (periodoValidado.isEmpty()) {
+                // Verificar con el enum como fallback
+                if (!PeriodoAcademicoEnum.esValido(periodoProporcionado)) {
+                    log.warn("Período académico no válido proporcionado: {}", periodoProporcionado);
+                    Map<String, Object> error = new HashMap<>();
+                    error.put("error", "Período académico no válido: " + periodoProporcionado + ". Use formato YYYY-P (ej: 2025-1)");
+                    return ResponseEntity.badRequest().body(null); // Se manejará el error en el controlador
+                }
+            }
+            
+            // Validar que la fecha de solicitud esté dentro del período (si hay fecha)
+            if (solicitud.getFecha_registro_solicitud() != null) {
+                LocalDate fechaSolicitud = solicitud.getFecha_registro_solicitud().toInstant()
+                    .atZone(java.time.ZoneId.systemDefault()).toLocalDate();
+                
+                Optional<PeriodoAcademico> periodoFecha = periodoAcademicoCU.obtenerPeriodoPorFecha(fechaSolicitud);
+                if (periodoFecha.isPresent() && !periodoFecha.get().getValor().equals(periodoProporcionado)) {
+                    log.warn("La fecha de solicitud ({}) no corresponde al período académico proporcionado ({})", 
+                            fechaSolicitud, periodoProporcionado);
+                    // Advertir pero no rechazar (puede ser válido en algunos casos)
                 }
             }
         }

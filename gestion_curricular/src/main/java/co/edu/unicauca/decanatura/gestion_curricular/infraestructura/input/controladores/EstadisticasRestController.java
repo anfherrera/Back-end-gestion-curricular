@@ -1,7 +1,9 @@
 package co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.controladores;
 
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarEstadisticasCUIntPort;
+import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarPeriodoAcademicoCUIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Estadistica;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.PeriodoAcademico;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Enums.PeriodoAcademicoEnum;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.DTORespuesta.EstadisticaDTORespuesta;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.mappers.EstadisticaMapperDominio;
@@ -25,6 +27,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @RestController
@@ -36,6 +39,7 @@ public class EstadisticasRestController {
 
     private final GestionarEstadisticasCUIntPort estadisticaCU;
     private final EstadisticaMapperDominio mapper;
+    private final GestionarPeriodoAcademicoCUIntPort periodoAcademicoCU;
 
     @PostMapping("/crear")
     public ResponseEntity<EstadisticaDTORespuesta> crearEstadistica(@RequestBody @Valid Estadistica estadistica) {
@@ -321,11 +325,28 @@ public class EstadisticasRestController {
         try {
             Map<String, Object> estadisticas;
             
-            // Si se proporciona período académico, usarlo
+            // Si se proporciona período académico, usarlo con fechas reales desde BD
             if (periodoAcademico != null && !periodoAcademico.trim().isEmpty()) {
-                estadisticas = estadisticaCU.obtenerEstadisticasPorPeriodoAcademico(periodoAcademico.trim());
+                // Intentar obtener desde BD (con fallback automático)
+                Optional<PeriodoAcademico> periodoOpt = periodoAcademicoCU.obtenerPeriodoPorValor(periodoAcademico.trim());
+                
+                if (periodoOpt.isPresent()) {
+                    // Usar fechas reales del período desde BD
+                    PeriodoAcademico periodo = periodoOpt.get();
+                    Date fechaInicioReal = java.sql.Date.valueOf(periodo.getFecha_inicio());
+                    Date fechaFinReal = java.sql.Date.valueOf(periodo.getFecha_fin());
+                    estadisticas = estadisticaCU.obtenerEstadisticasPorPeriodo(fechaInicioReal, fechaFinReal);
+                    estadisticas.put("periodoAcademico", periodo.getValor());
+                    estadisticas.put("fechaInicio", periodo.getFecha_inicio().toString());
+                    estadisticas.put("fechaFin", periodo.getFecha_fin().toString());
+                    log.info("Estadísticas obtenidas usando fechas reales del período {} desde BD", periodoAcademico);
+                } else {
+                    // Fallback: usar método existente (compatibilidad)
+                    estadisticas = estadisticaCU.obtenerEstadisticasPorPeriodoAcademico(periodoAcademico.trim());
+                    log.info("Estadísticas obtenidas usando método legacy para período {}", periodoAcademico);
+                }
             } 
-            // Si se proporcionan fechas, usarlas
+            // Si se proporcionan fechas, usarlas directamente
             else if (fechaInicio != null && fechaFin != null) {
                 estadisticas = estadisticaCU.obtenerEstadisticasPorPeriodo(fechaInicio, fechaFin);
             } 
@@ -355,50 +376,70 @@ public class EstadisticasRestController {
         try {
             log.info("Obteniendo estadísticas del último período académico");
             
-            // Obtener el último período académico
-            PeriodoAcademicoEnum ultimoPeriodo = PeriodoAcademicoEnum.getPeriodoActual();
+            // Intentar obtener desde BD (con fallback automático al enum)
+            Optional<PeriodoAcademico> periodoOpt = periodoAcademicoCU.obtenerPeriodoActual();
             
-            if (ultimoPeriodo == null) {
-                log.warn("No se pudo determinar el último período académico");
-                Map<String, Object> errorResponse = new HashMap<>();
-                errorResponse.put("success", false);
-                errorResponse.put("message", "No se pudo determinar el último período académico");
-                return ResponseEntity.badRequest().body(errorResponse);
-            }
-            
-            // Convertir período a fechas
-            int año = ultimoPeriodo.getAño();
-            int numeroPeriodo = ultimoPeriodo.getNumeroPeriodo();
-            
+            PeriodoAcademico periodo;
             LocalDate fechaInicioLocal;
             LocalDate fechaFinLocal;
+            String valorPeriodo;
+            String descripcionPeriodo;
             
-            if (numeroPeriodo == 1) {
-                // Primer período: enero a junio
-                fechaInicioLocal = LocalDate.of(año, 1, 1);
-                fechaFinLocal = LocalDate.of(año, 6, 30);
+            if (periodoOpt.isPresent()) {
+                // Usar período desde BD con fechas reales
+                periodo = periodoOpt.get();
+                fechaInicioLocal = periodo.getFecha_inicio();
+                fechaFinLocal = periodo.getFecha_fin();
+                valorPeriodo = periodo.getValor();
+                descripcionPeriodo = periodo.getNombre_periodo() != null && !periodo.getNombre_periodo().trim().isEmpty() 
+                    ? periodo.getNombre_periodo() 
+                    : (periodo.getNumero_periodo() == 1 ? "Primer Período" : "Segundo Período") + " " + periodo.getAño();
+                log.info("Período obtenido desde BD: {} - Fechas reales: {} a {}", 
+                        valorPeriodo, fechaInicioLocal, fechaFinLocal);
             } else {
-                // Segundo período: julio a diciembre
-                fechaInicioLocal = LocalDate.of(año, 7, 1);
-                fechaFinLocal = LocalDate.of(año, 12, 31);
+                // Fallback al enum (compatibilidad)
+                PeriodoAcademicoEnum ultimoPeriodo = PeriodoAcademicoEnum.getPeriodoActual();
+                if (ultimoPeriodo == null) {
+                    log.warn("No se pudo determinar el último período académico");
+                    Map<String, Object> errorResponse = new HashMap<>();
+                    errorResponse.put("success", false);
+                    errorResponse.put("message", "No se pudo determinar el último período académico");
+                    return ResponseEntity.badRequest().body(errorResponse);
+                }
+                
+                // Usar fechas del enum (mejoradas con fechas específicas)
+                fechaInicioLocal = ultimoPeriodo.getFechaInicio();
+                fechaFinLocal = ultimoPeriodo.getFechaFin();
+                valorPeriodo = ultimoPeriodo.getValor();
+                descripcionPeriodo = ultimoPeriodo.getDescripcion();
+                log.info("Período obtenido desde enum (fallback): {} - Fechas: {} a {}", 
+                        valorPeriodo, fechaInicioLocal, fechaFinLocal);
             }
             
             // Convertir LocalDate a Date
             Date fechaInicio = java.sql.Date.valueOf(fechaInicioLocal);
             Date fechaFin = java.sql.Date.valueOf(fechaFinLocal);
             
-            log.info("Último período: {} - Fechas: {} a {}", ultimoPeriodo.getValor(), fechaInicioLocal, fechaFinLocal);
-            
-            // Obtener estadísticas del período
+            // Obtener estadísticas del período usando fechas reales
             Map<String, Object> estadisticas = estadisticaCU.obtenerEstadisticasPorPeriodo(fechaInicio, fechaFin);
             
             // Agregar información del período a la respuesta
-            estadisticas.put("periodoAcademico", ultimoPeriodo.getValor());
-            estadisticas.put("año", año);
-            estadisticas.put("numeroPeriodo", numeroPeriodo);
-            estadisticas.put("descripcionPeriodo", ultimoPeriodo.getDescripcion());
+            estadisticas.put("periodoAcademico", valorPeriodo);
+            estadisticas.put("descripcionPeriodo", descripcionPeriodo);
             estadisticas.put("fechaInicio", fechaInicioLocal.toString());
             estadisticas.put("fechaFin", fechaFinLocal.toString());
+            
+            if (periodoOpt.isPresent()) {
+                estadisticas.put("año", periodoOpt.get().getAño());
+                estadisticas.put("numeroPeriodo", periodoOpt.get().getNumero_periodo());
+            } else {
+                // Extraer del valor si viene del enum
+                String[] partes = valorPeriodo.split("-");
+                if (partes.length == 2) {
+                    estadisticas.put("año", Integer.parseInt(partes[0]));
+                    estadisticas.put("numeroPeriodo", Integer.parseInt(partes[1]));
+                }
+            }
             
             return ResponseEntity.ok(estadisticas);
         } catch (Exception e) {
@@ -1981,7 +2022,37 @@ public class EstadisticasRestController {
             @PathVariable String periodoAcademico) {
         try {
             log.info("Obteniendo estadísticas por período académico: {}", periodoAcademico);
-            Map<String, Object> estadisticas = estadisticaCU.obtenerEstadisticasPorPeriodoAcademico(periodoAcademico);
+            
+            // Intentar obtener período desde BD (con fallback automático)
+            Optional<PeriodoAcademico> periodoOpt = periodoAcademicoCU.obtenerPeriodoPorValor(periodoAcademico);
+            
+            Map<String, Object> estadisticas;
+            
+            if (periodoOpt.isPresent()) {
+                // Usar fechas reales del período desde BD
+                PeriodoAcademico periodo = periodoOpt.get();
+                Date fechaInicio = java.sql.Date.valueOf(periodo.getFecha_inicio());
+                Date fechaFin = java.sql.Date.valueOf(periodo.getFecha_fin());
+                estadisticas = estadisticaCU.obtenerEstadisticasPorPeriodo(fechaInicio, fechaFin);
+                
+                // Agregar información del período
+                estadisticas.put("periodoAcademico", periodo.getValor());
+                String descripcion = periodo.getNombre_periodo() != null && !periodo.getNombre_periodo().trim().isEmpty() 
+                    ? periodo.getNombre_periodo() 
+                    : (periodo.getNumero_periodo() == 1 ? "Primer Período" : "Segundo Período") + " " + periodo.getAño();
+                estadisticas.put("descripcionPeriodo", descripcion);
+                estadisticas.put("fechaInicio", periodo.getFecha_inicio().toString());
+                estadisticas.put("fechaFin", periodo.getFecha_fin().toString());
+                estadisticas.put("año", periodo.getAño());
+                estadisticas.put("numeroPeriodo", periodo.getNumero_periodo());
+                
+                log.info("Estadísticas obtenidas usando fechas reales del período {} desde BD", periodoAcademico);
+            } else {
+                // Fallback: usar método existente (compatibilidad)
+                estadisticas = estadisticaCU.obtenerEstadisticasPorPeriodoAcademico(periodoAcademico);
+                log.info("Estadísticas obtenidas usando método legacy para período {}", periodoAcademico);
+            }
+            
             return ResponseEntity.ok(estadisticas);
         } catch (Exception e) {
             log.error("Error al obtener estadísticas por período académico: {}", e.getMessage(), e);

@@ -139,32 +139,32 @@ INSERT INTO Usuarios(idUsuario, codigo, nombre_completo, correo, password, estad
 -- NOTA: La tabla PeriodosAcademicos se crea automáticamente por Hibernate (ddl-auto=create)
 
 -- Períodos 2020-2024 (históricos)
-INSERT INTO PeriodosAcademicos (año, numero_periodo, nombre_periodo, fecha_inicio, fecha_fin, activo, tipo_periodo) VALUES
-(2020, 1, 'Primer Período 2020', '2020-01-07', '2020-06-23', TRUE, 'REGULAR'),
-(2020, 2, 'Segundo Período 2020', '2020-07-14', '2020-12-24', TRUE, 'REGULAR'),
-(2021, 1, 'Primer Período 2021', '2021-01-07', '2021-06-23', TRUE, 'REGULAR'),
-(2021, 2, 'Segundo Período 2021', '2021-07-14', '2021-12-24', TRUE, 'REGULAR'),
-(2022, 1, 'Primer Período 2022', '2022-01-07', '2022-06-23', TRUE, 'REGULAR'),
-(2022, 2, 'Segundo Período 2022', '2022-07-14', '2022-12-24', TRUE, 'REGULAR'),
-(2023, 1, 'Primer Período 2023', '2023-01-07', '2023-06-23', TRUE, 'REGULAR'),
-(2023, 2, 'Segundo Período 2023', '2023-07-14', '2023-12-24', TRUE, 'REGULAR'),
-(2024, 1, 'Primer Período 2024', '2024-01-07', '2024-06-23', TRUE, 'REGULAR'),
-(2024, 2, 'Segundo Período 2024', '2024-07-14', '2024-12-24', TRUE, 'REGULAR');
+INSERT INTO PeriodosAcademicos (año, numero_periodo, nombre_periodo, fecha_inicio, fecha_fin, activo, es_periodo_especial, tipo_periodo) VALUES
+(2020, 1, 'Primer Período 2020', '2020-01-07', '2020-06-23', TRUE, FALSE, 'REGULAR'),
+(2020, 2, 'Segundo Período 2020', '2020-07-14', '2020-12-24', TRUE, FALSE, 'REGULAR'),
+(2021, 1, 'Primer Período 2021', '2021-01-07', '2021-06-23', TRUE, FALSE, 'REGULAR'),
+(2021, 2, 'Segundo Período 2021', '2021-07-14', '2021-12-24', TRUE, FALSE, 'REGULAR'),
+(2022, 1, 'Primer Período 2022', '2022-01-07', '2022-06-23', TRUE, FALSE, 'REGULAR'),
+(2022, 2, 'Segundo Período 2022', '2022-07-14', '2022-12-24', TRUE, FALSE, 'REGULAR'),
+(2023, 1, 'Primer Período 2023', '2023-01-07', '2023-06-23', TRUE, FALSE, 'REGULAR'),
+(2023, 2, 'Segundo Período 2023', '2023-07-14', '2023-12-24', TRUE, FALSE, 'REGULAR'),
+(2024, 1, 'Primer Período 2024', '2024-01-07', '2024-06-23', TRUE, FALSE, 'REGULAR'),
+(2024, 2, 'Segundo Período 2024', '2024-07-14', '2024-12-24', TRUE, FALSE, 'REGULAR');
 
 -- Períodos 2025-2030 (actuales y futuros)
-INSERT INTO PeriodosAcademicos (año, numero_periodo, nombre_periodo, fecha_inicio, fecha_fin, activo, tipo_periodo) VALUES
-(2025, 1, 'Primer Período 2025', '2025-01-07', '2025-06-23', TRUE, 'REGULAR'),
-(2025, 2, 'Segundo Período 2025', '2025-07-14', '2025-12-24', TRUE, 'REGULAR'),
-(2026, 1, 'Primer Período 2026', '2026-01-07', '2026-06-23', TRUE, 'REGULAR'),
-(2026, 2, 'Segundo Período 2026', '2026-07-14', '2026-12-24', TRUE, 'REGULAR'),
-(2027, 1, 'Primer Período 2027', '2027-01-07', '2027-06-23', TRUE, 'REGULAR'),
-(2027, 2, 'Segundo Período 2027', '2027-07-14', '2027-12-24', TRUE, 'REGULAR'),
-(2028, 1, 'Primer Período 2028', '2028-01-07', '2028-06-23', TRUE, 'REGULAR'),
-(2028, 2, 'Segundo Período 2028', '2028-07-14', '2028-12-24', TRUE, 'REGULAR'),
-(2029, 1, 'Primer Período 2029', '2029-01-07', '2029-06-23', TRUE, 'REGULAR'),
-(2029, 2, 'Segundo Período 2029', '2029-07-14', '2029-12-24', TRUE, 'REGULAR'),
-(2030, 1, 'Primer Período 2030', '2030-01-07', '2030-06-23', TRUE, 'REGULAR'),
-(2030, 2, 'Segundo Período 2030', '2030-07-14', '2030-12-24', TRUE, 'REGULAR');
+INSERT INTO PeriodosAcademicos (año, numero_periodo, nombre_periodo, fecha_inicio, fecha_fin, activo, es_periodo_especial, tipo_periodo) VALUES
+(2025, 1, 'Primer Período 2025', '2025-01-07', '2025-06-23', TRUE, FALSE, 'REGULAR'),
+(2025, 2, 'Segundo Período 2025', '2025-07-14', '2025-12-24', TRUE, FALSE, 'REGULAR'),
+(2026, 1, 'Primer Período 2026', '2026-01-07', '2026-06-23', TRUE, FALSE, 'REGULAR'),
+(2026, 2, 'Segundo Período 2026', '2026-07-14', '2026-12-24', TRUE, FALSE, 'REGULAR'),
+(2027, 1, 'Primer Período 2027', '2027-01-07', '2027-06-23', TRUE, FALSE, 'REGULAR'),
+(2027, 2, 'Segundo Período 2027', '2027-07-14', '2027-12-24', TRUE, FALSE, 'REGULAR'),
+(2028, 1, 'Primer Período 2028', '2028-01-07', '2028-06-23', TRUE, FALSE, 'REGULAR'),
+(2028, 2, 'Segundo Período 2028', '2028-07-14', '2028-12-24', TRUE, FALSE, 'REGULAR'),
+(2029, 1, 'Primer Período 2029', '2029-01-07', '2029-06-23', TRUE, FALSE, 'REGULAR'),
+(2029, 2, 'Segundo Período 2029', '2029-07-14', '2029-12-24', TRUE, FALSE, 'REGULAR'),
+(2030, 1, 'Primer Período 2030', '2030-01-07', '2030-06-23', TRUE, FALSE, 'REGULAR'),
+(2030, 2, 'Segundo Período 2030', '2030-07-14', '2030-12-24', TRUE, FALSE, 'REGULAR');
 
 -- Solo insertar cursos adicionales (el curso 1 ya existe)
 INSERT INTO Cursos_ofertados(idCurso, idfkMateria, idfkDocente, grupo, cupo_estimado, salon) VALUES (1, 1, 1, 'A', 30, 'A-101');
