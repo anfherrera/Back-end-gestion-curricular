@@ -43,16 +43,37 @@ public class GestionarUsuarioGatewayImplAdapter implements GestionarUsuarioGatew
         log.debug("Creando usuario: correo={}, codigo={}, nombre={}", 
             usuario.getCorreo(), usuario.getCodigo(), usuario.getNombre_completo());
         
-        UsuarioEntity entity = usuarioMapper.map(usuario, UsuarioEntity.class);
-        UsuarioEntity saved = usuarioRepository.save(entity);
-        
-        // Forzar flush para asegurar que los cambios se persistan inmediatamente en la BD
-        usuarioRepository.flush();
-        
-        log.debug("Usuario guardado exitosamente: id={}, correo={}", 
-            saved.getId_usuario(), saved.getCorreo());
-        
-        return usuarioMapper.map(saved, Usuario.class);
+        try {
+            // Mapear el usuario, pero manejar el Rol de forma explícita para evitar ciclos
+            UsuarioEntity entity = usuarioMapper.map(usuario, UsuarioEntity.class);
+            
+            // Si el Rol tiene una lista de usuarios, limpiarla para evitar ciclos en el mapeo
+            if (entity.getObjRol() != null && entity.getObjRol().getUsuarios() != null) {
+                entity.getObjRol().setUsuarios(new ArrayList<>());
+            }
+            
+            // También limpiar las listas que pueden causar problemas
+            if (entity.getSolicitudes() != null) {
+                entity.setSolicitudes(new ArrayList<>());
+            }
+            if (entity.getCursosOfertadosInscritos() != null) {
+                entity.setCursosOfertadosInscritos(new ArrayList<>());
+            }
+            
+            UsuarioEntity saved = usuarioRepository.save(entity);
+            
+            // Forzar flush para asegurar que los cambios se persistan inmediatamente en la BD
+            usuarioRepository.flush();
+            
+            log.debug("Usuario guardado exitosamente: id={}, correo={}", 
+                saved.getId_usuario(), saved.getCorreo());
+            
+            return usuarioMapper.map(saved, Usuario.class);
+        } catch (Exception e) {
+            log.error("Error al crear usuario: correo={}, codigo={}, error={}", 
+                usuario.getCorreo(), usuario.getCodigo(), e.getMessage(), e);
+            throw e;
+        }
     }
 
     @Override
