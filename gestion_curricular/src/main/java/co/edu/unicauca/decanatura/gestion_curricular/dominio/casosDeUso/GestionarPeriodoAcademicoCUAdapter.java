@@ -2,6 +2,7 @@ package co.edu.unicauca.decanatura.gestion_curricular.dominio.casosDeUso;
 
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarPeriodoAcademicoCUIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.GestionarPeriodoAcademicoGatewayIntPort;
+import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.GestionarConfiguracionSistemaGatewayIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.PeriodoAcademico;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Enums.PeriodoAcademicoEnum;
 import lombok.RequiredArgsConstructor;
@@ -15,6 +16,7 @@ import java.util.Optional;
 /**
  * Adaptador de caso de uso para gestión de períodos académicos
  * Implementa fallback al enum si no hay datos en BD
+ * Prioriza período activo configurado por admin sobre fecha automática
  * 
  * @author Sistema de Gestión Curricular
  */
@@ -24,13 +26,37 @@ import java.util.Optional;
 public class GestionarPeriodoAcademicoCUAdapter implements GestionarPeriodoAcademicoCUIntPort {
     
     private final GestionarPeriodoAcademicoGatewayIntPort periodoGateway;
+    private final GestionarConfiguracionSistemaGatewayIntPort configuracionGateway;
     
     @Override
     public Optional<PeriodoAcademico> obtenerPeriodoActual() {
-        // Intentar obtener desde BD
+        // PRIORIDAD 1: Verificar si hay un período activo configurado por el admin
+        Optional<String> periodoActivoConfig = configuracionGateway.obtenerPeriodoActivo();
+        if (periodoActivoConfig.isPresent()) {
+            String periodoValor = periodoActivoConfig.get();
+            log.info("Usando período activo configurado por admin: {}", periodoValor);
+            
+            // Obtener el período desde BD o enum
+            Optional<PeriodoAcademico> periodoConfig = periodoGateway.obtenerPeriodoPorValor(periodoValor);
+            if (periodoConfig.isPresent()) {
+                return periodoConfig;
+            }
+            
+            // Fallback al enum si no está en BD
+            try {
+                PeriodoAcademicoEnum periodoEnum = PeriodoAcademicoEnum.fromValor(periodoValor);
+                log.warn("Período activo configurado {} no encontrado en BD, usando enum", periodoValor);
+                return Optional.of(convertirEnumAPeriodo(periodoEnum));
+            } catch (IllegalArgumentException e) {
+                log.error("Período activo configurado {} no es válido, usando modo automático", periodoValor);
+            }
+        }
+        
+        // PRIORIDAD 2: Obtener período actual basado en fecha (modo automático)
+        log.debug("No hay período activo configurado, usando modo automático (basado en fecha)");
         Optional<PeriodoAcademico> periodoBD = periodoGateway.obtenerPeriodoActual();
         if (periodoBD.isPresent()) {
-            log.debug("Período académico obtenido desde BD: {}", periodoBD.get().getValor());
+            log.debug("Período académico obtenido desde BD por fecha: {}", periodoBD.get().getValor());
             return periodoBD;
         }
         

@@ -417,6 +417,17 @@ INSERT INTO EstadosSolicitudes(idEstado, estado_actual, fecha_registro_estado, i
 -- No se requieren datos iniciales para esta tabla
 
 -- ==========================================
+-- TABLA DE CONFIGURACIÓN DEL SISTEMA
+-- ==========================================
+-- La tabla ConfiguracionSistema se crea automáticamente mediante JPA/Hibernate
+-- Almacena configuraciones globales del sistema, como el período académico activo
+-- Si periodo_academico_activo es NULL, el sistema usa el período actual basado en fecha (modo automático)
+-- Si tiene un valor (ej: "2025-1"), el sistema usa ese período para todas las operaciones (modo manual)
+INSERT INTO ConfiguracionSistema (periodo_academico_activo) VALUES (NULL);
+-- NOTA: NULL = modo automático (basado en fecha actual)
+-- Para establecer un período manualmente, el admin debe usar el endpoint PUT /api/periodos-academicos/admin/periodo-activo
+
+-- ==========================================
 -- VALIDACIÓN DE DATOS CARGADOS
 -- ==========================================
 -- SELECT COUNT(*) FROM Solicitudes;
