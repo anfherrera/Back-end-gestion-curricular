@@ -125,4 +125,56 @@ public interface SolicitudPazYSalvoRepositoryInt extends JpaRepository<Solicitud
         @Param("idUsuario") Integer idUsuario,
         @Param("periodoAcademico") String periodoAcademico
     );
+
+    /**
+     * Busca las solicitudes de paz y salvo que han sido procesadas (tienen más de un estado o estado diferente a "Enviada")
+     * Una solicitud se considera procesada si ha pasado por al menos un cambio de estado desde "Enviada"
+     * @return Lista de solicitudes procesadas
+     */
+    @Query("SELECT DISTINCT s FROM SolicitudPazYSalvoEntity s " +
+           "WHERE s.id_solicitud IN (" +
+           "    SELECT DISTINCT e.objSolicitud.id_solicitud " +
+           "    FROM EstadoSolicitudEntity e " +
+           "    WHERE e.objSolicitud.id_solicitud = s.id_solicitud " +
+           "    AND (e.estado_actual != 'Enviada' " +
+           "         OR (SELECT COUNT(e2) FROM EstadoSolicitudEntity e2 WHERE e2.objSolicitud.id_solicitud = s.id_solicitud) > 1)" +
+           ")")
+    List<SolicitudPazYSalvoEntity> findSolicitudesProcesadas();
+
+    /**
+     * Busca las solicitudes de paz y salvo procesadas filtradas por período académico
+     * @param periodoAcademico Período académico (formato: "YYYY-P", ej: "2025-2")
+     * @return Lista de solicitudes procesadas filtradas por período académico
+     */
+    @Query("SELECT DISTINCT s FROM SolicitudPazYSalvoEntity s " +
+           "WHERE (:periodoAcademico IS NULL OR s.periodo_academico = :periodoAcademico) " +
+           "AND s.id_solicitud IN (" +
+           "    SELECT DISTINCT e.objSolicitud.id_solicitud " +
+           "    FROM EstadoSolicitudEntity e " +
+           "    WHERE e.objSolicitud.id_solicitud = s.id_solicitud " +
+           "    AND (e.estado_actual != 'Enviada' " +
+           "         OR (SELECT COUNT(e2) FROM EstadoSolicitudEntity e2 WHERE e2.objSolicitud.id_solicitud = s.id_solicitud) > 1)" +
+           ")")
+    List<SolicitudPazYSalvoEntity> findSolicitudesProcesadasPorPeriodo(@Param("periodoAcademico") String periodoAcademico);
+
+    /**
+     * Busca las solicitudes de paz y salvo procesadas filtradas por programa y período académico
+     * @param idPrograma ID del programa académico
+     * @param periodoAcademico Período académico (formato: "YYYY-P", ej: "2025-2")
+     * @return Lista de solicitudes procesadas filtradas por programa y período académico
+     */
+    @Query("SELECT DISTINCT s FROM SolicitudPazYSalvoEntity s " +
+           "WHERE s.objUsuario.objPrograma.id_programa = :idPrograma " +
+           "AND (:periodoAcademico IS NULL OR s.periodo_academico = :periodoAcademico) " +
+           "AND s.id_solicitud IN (" +
+           "    SELECT DISTINCT e.objSolicitud.id_solicitud " +
+           "    FROM EstadoSolicitudEntity e " +
+           "    WHERE e.objSolicitud.id_solicitud = s.id_solicitud " +
+           "    AND (e.estado_actual != 'Enviada' " +
+           "         OR (SELECT COUNT(e2) FROM EstadoSolicitudEntity e2 WHERE e2.objSolicitud.id_solicitud = s.id_solicitud) > 1)" +
+           ")")
+    List<SolicitudPazYSalvoEntity> findSolicitudesProcesadasPorProgramaYPeriodo(
+        @Param("idPrograma") Integer idPrograma,
+        @Param("periodoAcademico") String periodoAcademico
+    );
 }

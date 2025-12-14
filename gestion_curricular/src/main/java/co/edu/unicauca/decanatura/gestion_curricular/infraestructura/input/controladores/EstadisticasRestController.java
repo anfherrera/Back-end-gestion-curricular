@@ -15,6 +15,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -149,7 +150,11 @@ public class EstadisticasRestController {
      * - Por fechas: GET /api/estadisticas/globales?fechaInicio=2025-07-01&fechaFin=2025-09-30
      * - Combinados: GET /api/estadisticas/globales?proceso=Paz%20y%20Salvo&idPrograma=1&fechaInicio=2025-07-01&fechaFin=2025-09-30
      */
+    /**
+     * Acceso permitido para: Decano, Funcionario, Coordinador, Secretario, Administrador
+     */
     @GetMapping("/globales")
+    @PreAuthorize("hasRole('Decano') or hasRole('Funcionario') or hasRole('Coordinador') or hasRole('Secretario') or hasRole('Administrador')")
     public ResponseEntity<Map<String, Object>> obtenerEstadisticasGlobales(
             @RequestParam(required = false) String proceso,
             @RequestParam(required = false) Integer idPrograma,
@@ -1335,7 +1340,11 @@ public class EstadisticasRestController {
      * 
      * @return ResponseEntity con estadísticas detalladas por proceso
      */
+    /**
+     * Acceso permitido para: Decano, Funcionario, Coordinador, Secretario, Administrador
+     */
     @GetMapping("/estadisticas-por-proceso")
+    @PreAuthorize("hasRole('Decano') or hasRole('Funcionario') or hasRole('Coordinador') or hasRole('Secretario') or hasRole('Administrador')")
     public ResponseEntity<Map<String, Object>> obtenerEstadisticasDetalladasPorProceso() {
         try {
             log.info("Obteniendo estadísticas detalladas por proceso...");
@@ -1357,7 +1366,11 @@ public class EstadisticasRestController {
      * 
      * @return ResponseEntity con estadísticas resumidas por proceso
      */
+    /**
+     * Acceso permitido para: Decano, Funcionario, Coordinador, Secretario, Administrador
+     */
     @GetMapping("/resumen-por-proceso")
+    @PreAuthorize("hasRole('Decano') or hasRole('Funcionario') or hasRole('Coordinador') or hasRole('Secretario') or hasRole('Administrador')")
     public ResponseEntity<Map<String, Object>> obtenerResumenPorProceso() {
         try {
             log.info("Obteniendo resumen por proceso...");
@@ -1445,7 +1458,11 @@ public class EstadisticasRestController {
      * 
      * @return ResponseEntity con estadísticas por programa
      */
+    /**
+     * Acceso permitido para: Decano, Funcionario, Coordinador, Secretario, Administrador
+     */
     @GetMapping("/por-programa")
+    @PreAuthorize("hasRole('Decano') or hasRole('Funcionario') or hasRole('Coordinador') or hasRole('Secretario') or hasRole('Administrador')")
     public ResponseEntity<Map<String, Object>> obtenerEstadisticasPorPrograma() {
         try {
             log.info("Obteniendo estadísticas por programa académico...");
@@ -1600,7 +1617,11 @@ public class EstadisticasRestController {
     /**
      * Endpoint alternativo para estadísticas por proceso que funciona
      */
+    /**
+     * Acceso permitido para: Decano, Funcionario, Coordinador, Secretario, Administrador
+     */
     @GetMapping("/por-proceso-funcional")
+    @PreAuthorize("hasRole('Decano') or hasRole('Funcionario') or hasRole('Coordinador') or hasRole('Secretario') or hasRole('Administrador')")
     public ResponseEntity<Map<String, Object>> obtenerEstadisticasPorProcesoFuncional() {
         try {
             log.info("Obteniendo estadísticas por proceso (funcional)...");
@@ -1972,11 +1993,14 @@ public class EstadisticasRestController {
     /**
      * Obtiene estadísticas agrupadas por semestre.
      * 
+     * Acceso permitido para: Decano, Funcionario, Coordinador, Secretario, Administrador
+     * 
      * @param anio Año a consultar
      * @param semestre Número de semestre (1 o 2)
      * @return ResponseEntity con estadísticas del semestre
      */
     @GetMapping("/por-semestre")
+    @PreAuthorize("hasRole('Decano') or hasRole('Funcionario') or hasRole('Coordinador') or hasRole('Secretario') or hasRole('Administrador')")
     public ResponseEntity<Map<String, Object>> obtenerEstadisticasPorSemestre(
             @RequestParam(name = "anio", required = true) Integer anio,
             @RequestParam(name = "semestre", required = true) Integer semestre) {
@@ -1993,11 +2017,14 @@ public class EstadisticasRestController {
     /**
      * Obtiene historial de estadísticas por períodos académicos.
      * 
+     * Acceso permitido para: Decano, Funcionario, Coordinador, Secretario, Administrador
+     * 
      * @param anioInicio Año de inicio (opcional, por defecto últimos 5 años)
      * @param anioFin Año de fin (opcional, por defecto año actual)
      * @return ResponseEntity con lista de estadísticas por período
      */
     @GetMapping("/historial")
+    @PreAuthorize("hasRole('Decano') or hasRole('Funcionario') or hasRole('Coordinador') or hasRole('Secretario') or hasRole('Administrador')")
     public ResponseEntity<List<Map<String, Object>>> obtenerHistorialEstadisticas(
             @RequestParam(name = "anioInicio", required = false) Integer anioInicio,
             @RequestParam(name = "anioFin", required = false) Integer anioFin) {

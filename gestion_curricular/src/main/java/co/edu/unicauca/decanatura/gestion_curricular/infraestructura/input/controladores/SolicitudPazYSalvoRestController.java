@@ -49,6 +49,7 @@ import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.PeriodoAcad
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarPeriodoAcademicoCUIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.GestionarUsuarioGatewayIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.controladorExcepciones.excepcionesPropias.EntidadNoExisteException;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 
@@ -445,13 +446,16 @@ public class SolicitudPazYSalvoRestController {
     }
 
     /**
-     * Listar solicitudes de Paz y Salvo ya procesadas por la secretaría (estado APROBADA)
+     * Listar solicitudes de Paz y Salvo ya procesadas por la secretaría (HISTORIAL VERDADERO)
      * GET /api/solicitudes-pazysalvo/listarSolicitud-PazYSalvo/Secretaria/Aprobadas
      * 
-     * Este endpoint permite a la secretaría ver un historial de las solicitudes 
-     * que ya ha procesado y enviado al estudiante.
+     * Este endpoint permite a la secretaría ver un historial verdadero de todas las solicitudes 
+     * que ha procesado, independientemente de su estado final actual.
+     * 
+     * Acceso permitido para: Decano, Secretario, Administrador
      */
     @GetMapping("/listarSolicitud-PazYSalvo/Secretaria/Aprobadas")
+    @PreAuthorize("hasRole('Decano') or hasRole('Secretario') or hasRole('Administrador')")
     public ResponseEntity<List<SolicitudPazYSalvoDTORespuesta>> listarSolicitudPazYSalvoAprobadasToSecretaria(
             @RequestParam(required = false) String periodoAcademico) {
         // Si no se proporciona período, usar el período académico actual basado en la fecha
@@ -463,11 +467,12 @@ public class SolicitudPazYSalvoRestController {
             }
         }
         
+        // Usar historial verdadero (solicitudes procesadas)
         List<SolicitudPazYSalvo> solicitudes;
         if (periodoAcademico != null && !periodoAcademico.trim().isEmpty()) {
-            solicitudes = solicitudPazYSalvoCU.listarSolicitudesAprobadasToSecretariaPorPeriodo(periodoAcademico.trim());
+            solicitudes = solicitudPazYSalvoCU.listarSolicitudesProcesadasPorPeriodo(periodoAcademico.trim());
         } else {
-            solicitudes = solicitudPazYSalvoCU.listarSolicitudesAprobadasToSecretaria();
+            solicitudes = solicitudPazYSalvoCU.listarSolicitudesProcesadas();
         }
         
         List<SolicitudPazYSalvoDTORespuesta> respuesta = solicitudMapperDominio.mappearListaDeSolicitudesARespuesta(solicitudes);
@@ -475,27 +480,40 @@ public class SolicitudPazYSalvoRestController {
     }
 
     /**
-     * Listar solicitudes de Paz y Salvo ya procesadas por el funcionario (estado APROBADA_FUNCIONARIO)
+     * Listar solicitudes de Paz y Salvo ya procesadas por el funcionario (HISTORIAL VERDADERO)
      * GET /api/solicitudes-pazysalvo/listarSolicitud-PazYSalvo/Funcionario/Aprobadas
      * 
-     * Este endpoint permite al funcionario ver un historial de las solicitudes 
-     * que ya ha procesado y enviado al coordinador.
+     * Este endpoint permite al funcionario ver un historial verdadero de todas las solicitudes 
+     * que ha procesado, independientemente de su estado final actual.
+     * 
+     * Acceso permitido para: Decano, Funcionario, Administrador
      */
     @GetMapping("/listarSolicitud-PazYSalvo/Funcionario/Aprobadas")
-    public ResponseEntity<List<SolicitudPazYSalvoDTORespuesta>> listarSolicitudPazYSalvoAprobadasToFuncionario() {
-        List<SolicitudPazYSalvo> solicitudes = solicitudPazYSalvoCU.listarSolicitudesAprobadasToFuncionario();
+    @PreAuthorize("hasRole('Decano') or hasRole('Funcionario') or hasRole('Administrador')")
+    public ResponseEntity<List<SolicitudPazYSalvoDTORespuesta>> listarSolicitudPazYSalvoAprobadasToFuncionario(
+            @RequestParam(required = false) String periodoAcademico) {
+        // Usar historial verdadero (solicitudes procesadas)
+        List<SolicitudPazYSalvo> solicitudes;
+        if (periodoAcademico != null && !periodoAcademico.trim().isEmpty()) {
+            solicitudes = solicitudPazYSalvoCU.listarSolicitudesProcesadasPorPeriodo(periodoAcademico.trim());
+        } else {
+            solicitudes = solicitudPazYSalvoCU.listarSolicitudesProcesadas();
+        }
         List<SolicitudPazYSalvoDTORespuesta> respuesta = solicitudMapperDominio.mappearListaDeSolicitudesARespuesta(solicitudes);
         return ResponseEntity.ok(respuesta);
     }
 
     /**
-     * Listar solicitudes de Paz y Salvo ya procesadas por el coordinador (estado APROBADA_COORDINADOR)
+     * Listar solicitudes de Paz y Salvo ya procesadas por el coordinador (HISTORIAL VERDADERO)
      * GET /api/solicitudes-pazysalvo/listarSolicitud-PazYSalvo/Coordinador/Aprobadas
      * 
-     * Este endpoint permite al coordinador ver un historial de las solicitudes 
-     * que ya ha procesado y enviado a la secretaría.
+     * Este endpoint permite al coordinador ver un historial verdadero de todas las solicitudes 
+     * que ha procesado, independientemente de su estado final actual.
+     * 
+     * Acceso permitido para: Decano, Coordinador, Administrador
      */
     @GetMapping("/listarSolicitud-PazYSalvo/Coordinador/Aprobadas")
+    @PreAuthorize("hasRole('Decano') or hasRole('Coordinador') or hasRole('Administrador')")
     public ResponseEntity<List<SolicitudPazYSalvoDTORespuesta>> listarSolicitudPazYSalvoAprobadasToCoordinador(
             @RequestParam(required = false) String periodoAcademico) {
         // Obtener el programa del coordinador autenticado
@@ -510,18 +528,25 @@ public class SolicitudPazYSalvoRestController {
             }
         }
         
+        // Usar historial verdadero (solicitudes procesadas)
         List<SolicitudPazYSalvo> solicitudes;
         if (idPrograma != null) {
             // Filtrar por programa y período del coordinador
             if (periodoAcademico != null && !periodoAcademico.trim().isEmpty()) {
-                solicitudes = solicitudPazYSalvoCU.listarSolicitudesAprobadasToCoordinadorPorProgramaYPeriodo(idPrograma, periodoAcademico.trim());
+                solicitudes = solicitudPazYSalvoCU.listarSolicitudesProcesadasPorProgramaYPeriodo(idPrograma, periodoAcademico.trim());
             } else {
-                solicitudes = solicitudPazYSalvoCU.listarSolicitudesAprobadasToCoordinadorPorPrograma(idPrograma);
+                // Si no hay período, obtener todas las procesadas del programa
+                List<SolicitudPazYSalvo> todas = solicitudPazYSalvoCU.listarSolicitudesProcesadas();
+                solicitudes = todas.stream()
+                    .filter(s -> s.getObjUsuario() != null && 
+                               s.getObjUsuario().getObjPrograma() != null &&
+                               s.getObjUsuario().getObjPrograma().getId_programa().equals(idPrograma))
+                    .toList();
             }
         } else {
             // Si no se puede obtener el programa, retornar todas (fallback)
-            log.warn("No se pudo obtener el programa del coordinador, retornando todas las solicitudes");
-            solicitudes = solicitudPazYSalvoCU.listarSolicitudesAprobadasToCoordinador();
+            log.warn("No se pudo obtener el programa del coordinador, retornando todas las solicitudes procesadas");
+            solicitudes = solicitudPazYSalvoCU.listarSolicitudesProcesadas();
         }
         
         List<SolicitudPazYSalvoDTORespuesta> respuesta = solicitudMapperDominio.mappearListaDeSolicitudesARespuesta(solicitudes);

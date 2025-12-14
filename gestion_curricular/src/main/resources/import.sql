@@ -18,6 +18,7 @@ INSERT INTO Roles(idRol, nombre) VALUES (3,'Coordinador');
 INSERT INTO Roles(idRol, nombre) VALUES (4,'Secretario');
 INSERT INTO Roles(idRol, nombre) VALUES (5,'Funcionario');
 INSERT INTO Roles(idRol, nombre) VALUES (6,'Docente');
+INSERT INTO Roles(idRol, nombre) VALUES (7,'Decano');
 INSERT INTO Programas(idPrograma, codigo, nombre_programa) VALUES (1,'1046','Ingenieria de Sistemas');
 INSERT INTO Programas(idPrograma, codigo, nombre_programa) VALUES (2,'1047','Ingenieria Electronica y Telecomunicaciones');
 INSERT INTO Programas(idPrograma, codigo, nombre_programa) VALUES (3,'1048','Ingenieria Automatica Industrial');
@@ -123,6 +124,11 @@ INSERT INTO Usuarios(idUsuario, codigo, nombre_completo, correo, password, estad
 INSERT INTO Usuarios(idUsuario, codigo, nombre_completo, correo, password, estado_usuario, idfkRol, idfkPrograma, cedula) VALUES (23, 'FUN002', 'Pedro Sánchez López', 'psanchez@unicauca.edu.co', 'password123', 1, 5, 2, '1919191919');
 INSERT INTO Usuarios(idUsuario, codigo, nombre_completo, correo, password, estado_usuario, idfkRol, idfkPrograma, cedula) VALUES (24, 'COO001', 'María Elena Vargas', 'mvargas@unicauca.edu.co', 'password123', 1, 3, 3, '2020202020');
 INSERT INTO Usuarios(idUsuario, codigo, nombre_completo, correo, password, estado_usuario, idfkRol, idfkPrograma, cedula) VALUES (25, 'SEC001', 'Carlos Eduardo Torres', 'ctorres@unicauca.edu.co', 'password123', 1, 4, 4, '2121212121');
+
+-- Usuario Decano
+-- Correo: alejandro.toledo@unicauca.edu.co
+-- Password: ClaveSegura456 (se hashea automáticamente al crear desde la API)
+INSERT INTO Usuarios(idUsuario, codigo, nombre_completo, correo, password, estado_usuario, idfkRol, idfkPrograma, cedula) VALUES (27, 'DEC001', 'Alejandro Toledo Tovar', 'alejandro.toledo@unicauca.edu.co', '$2a$10$N9qo8uLOickgx2ZMRZoMyeIjFOjtXgjOU92LhL6YP1dPW1Z/uLlLG', 1, 7, 1, '1234567890');
 
 -- Usuario Administrador por defecto (para desarrollo y pruebas)
 -- Correo: admin@unicauca.edu.co
