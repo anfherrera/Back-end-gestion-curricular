@@ -149,7 +149,7 @@ public class DocumentGeneratorService {
     boolean isBold = false;
     boolean isItalic = false;
     String fontFamily = "Arial";
-    int fontSize = 11;
+    int fontSize = 12; // Tamaño de fuente estándar para documentos oficiales
         
         // Obtener formato del primer run si existe
         if (!paragraph.getRuns().isEmpty()) {
@@ -212,7 +212,13 @@ public class DocumentGeneratorService {
         }
         replacements.put("NOMBRE_ESTUDIANTE", datosSolicitud.getOrDefault("nombreEstudiante", "Estudiante").toString());
         replacements.put("CODIGO_ESTUDIANTE", datosSolicitud.getOrDefault("codigoEstudiante", "000000000").toString());
-        replacements.put("PROGRAMA", datosSolicitud.getOrDefault("programa", "Programa").toString());
+        
+        // Obtener el nombre del programa y mapearlo al título profesional
+        String nombrePrograma = datosSolicitud.getOrDefault("programa", "Programa").toString();
+        String tituloProfesional = obtenerTituloProfesional(nombrePrograma);
+        replacements.put("PROGRAMA", nombrePrograma);
+        replacements.put("TITULO_PROFESIONAL", tituloProfesional);
+        
         replacements.put("FECHA_SOLICITUD", formatearFecha(datosSolicitud.get("fechaSolicitud")));
         
         // Datos de la universidad (predefinidos)
@@ -287,6 +293,58 @@ public class DocumentGeneratorService {
             
             // Director de trabajo de grado
             replacements.put("DIRECTOR_TRABAJO_GRADO", datosSolicitud.getOrDefault("directorTrabajoGrado", "Director asignado").toString());
+            
+            // Actualizar el título profesional para Paz y Salvo (ya está calculado arriba, pero lo actualizamos si el programa cambió)
+            // El título profesional ya fue calculado en la línea 220 y agregado a replacements en la línea 221
+            // Solo actualizamos si el programa específico de Paz y Salvo es diferente
+            String programaPazSalvo = datosSolicitud.getOrDefault("programa", nombrePrograma).toString();
+            if (!programaPazSalvo.equals(nombrePrograma)) {
+                String tituloPazSalvo = obtenerTituloProfesional(programaPazSalvo);
+                replacements.put("PROGRAMA", programaPazSalvo);
+                replacements.put("TITULO_PROFESIONAL", tituloPazSalvo);
+            }
+            
+            // Texto del trabajo de grado (solo para programas que requieren trabajo de grado)
+            // Para Telemática, este texto estará vacío
+            String textoTrabajoGrado = "";
+            boolean esTelematica = programaPazSalvo.toLowerCase().contains("telematica") || 
+                                   programaPazSalvo.toLowerCase().contains("telemática");
+            
+            if (!esTelematica) {
+                // Solo incluir la línea del trabajo de grado si NO es Telemática
+                String tituloTG = datosSolicitud.getOrDefault("tituloTrabajoGrado", "").toString();
+                String directorTG = datosSolicitud.getOrDefault("directorTrabajoGrado", "").toString();
+                
+                if (!tituloTG.trim().isEmpty() && !directorTG.trim().isEmpty()) {
+                    textoTrabajoGrado = String.format(
+                        "El estudiante terminó el plan de estudios el día %s, sustentó el trabajo de grado denominado \"%s\", dirigido por el Ingeniero(a) %s.",
+                        formatearFecha(datosSolicitud.get("fechaSolicitud")),
+                        tituloTG,
+                        directorTG
+                    );
+                } else if (!tituloTG.trim().isEmpty()) {
+                    // Si solo tiene título pero no director
+                    textoTrabajoGrado = String.format(
+                        "El estudiante terminó el plan de estudios el día %s, sustentó el trabajo de grado denominado \"%s\".",
+                        formatearFecha(datosSolicitud.get("fechaSolicitud")),
+                        tituloTG
+                    );
+                } else {
+                    // Si no tiene información del trabajo de grado
+                    textoTrabajoGrado = String.format(
+                        "El estudiante terminó el plan de estudios el día %s.",
+                        formatearFecha(datosSolicitud.get("fechaSolicitud"))
+                    );
+                }
+            } else {
+                // Para Telemática, solo mencionar que terminó el plan de estudios
+                textoTrabajoGrado = String.format(
+                    "El estudiante terminó el plan de estudios el día %s.",
+                    formatearFecha(datosSolicitud.get("fechaSolicitud"))
+                );
+            }
+            
+            replacements.put("TEXTO_TRABAJO_GRADO", textoTrabajoGrado);
             
             // Fecha actual para paz y salvo
             LocalDate fechaActual = LocalDate.now();
@@ -388,6 +446,54 @@ public class DocumentGeneratorService {
         }
         
         return null;
+    }
+    
+    /**
+     * Obtiene el título profesional correspondiente al nombre del programa académico
+     * Mapea los nombres de programas a sus títulos profesionales oficiales
+     * 
+     * @param nombrePrograma Nombre del programa académico
+     * @return Título profesional correspondiente
+     */
+    private String obtenerTituloProfesional(String nombrePrograma) {
+        if (nombrePrograma == null || nombrePrograma.trim().isEmpty()) {
+            return "Ingeniero en Electrónica y Telecomunicaciones"; // Valor por defecto
+        }
+        
+        String programaNormalizado = nombrePrograma.trim();
+        
+        // Mapeo de programas a títulos profesionales
+        if (programaNormalizado.equalsIgnoreCase("Ingenieria de Sistemas") || 
+            programaNormalizado.equalsIgnoreCase("Ingeniería de Sistemas")) {
+            return "Ingeniero de Sistemas";
+        } else if (programaNormalizado.equalsIgnoreCase("Ingenieria Electronica y Telecomunicaciones") ||
+                   programaNormalizado.equalsIgnoreCase("Ingeniería Electrónica y Telecomunicaciones") ||
+                   programaNormalizado.equalsIgnoreCase("Ingenieria en Electronica y Telecomunicaciones") ||
+                   programaNormalizado.equalsIgnoreCase("Ingeniería en Electrónica y Telecomunicaciones")) {
+            return "Ingeniero en Electrónica y Telecomunicaciones";
+        } else if (programaNormalizado.equalsIgnoreCase("Ingenieria Automatica Industrial") ||
+                   programaNormalizado.equalsIgnoreCase("Ingeniería Automática Industrial") ||
+                   programaNormalizado.equalsIgnoreCase("Ingenieria en Automatica Industrial") ||
+                   programaNormalizado.equalsIgnoreCase("Ingeniería en Automática Industrial")) {
+            return "Ingeniero en Automática Industrial";
+        } else if (programaNormalizado.equalsIgnoreCase("Tecnologia en Telematica") ||
+                   programaNormalizado.equalsIgnoreCase("Tecnología en Telemática")) {
+            return "Tecnólogo en Telemática";
+        }
+        
+        // Si no coincide con ningún programa conocido, retornar el nombre del programa con "Ingeniero" por defecto
+        // o el nombre original si ya contiene "Tecnólogo"
+        if (programaNormalizado.toLowerCase().contains("tecnolog")) {
+            return programaNormalizado; // Mantener el nombre original si es tecnología
+        }
+        
+        // Por defecto, agregar "Ingeniero" al inicio si no está presente
+        if (!programaNormalizado.toLowerCase().startsWith("ingeniero") && 
+            !programaNormalizado.toLowerCase().startsWith("ingeniería")) {
+            return "Ingeniero " + programaNormalizado;
+        }
+        
+        return programaNormalizado;
     }
     
 }

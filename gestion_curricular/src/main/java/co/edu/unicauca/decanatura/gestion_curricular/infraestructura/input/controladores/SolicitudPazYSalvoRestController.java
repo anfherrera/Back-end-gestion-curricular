@@ -229,6 +229,22 @@ public class SolicitudPazYSalvoRestController {
                 log.debug("Período académico establecido automáticamente: {}", periodoActual.getValor());
             }
         }
+        
+        // Agregar título del trabajo de grado si se proporciona
+        if (mapPeticion.containsKey("titulo_trabajo_grado") && mapPeticion.get("titulo_trabajo_grado") != null) {
+            String titulo = mapPeticion.get("titulo_trabajo_grado").toString().trim();
+            if (!titulo.isEmpty()) {
+                solicitud.setTitulo_trabajo_grado(titulo);
+            }
+        }
+        
+        // Agregar director del trabajo de grado si se proporciona
+        if (mapPeticion.containsKey("director_trabajo_grado") && mapPeticion.get("director_trabajo_grado") != null) {
+            String director = mapPeticion.get("director_trabajo_grado").toString().trim();
+            if (!director.isEmpty()) {
+                solicitud.setDirector_trabajo_grado(director);
+            }
+        }
 
         return solicitud;
     }
@@ -876,9 +892,19 @@ public class SolicitudPazYSalvoRestController {
             datosSolicitud.put("programa", solicitud.getObjUsuario().getObjPrograma() != null ? 
                 solicitud.getObjUsuario().getObjPrograma().getNombre_programa() : "Ingeniería Electrónica y Telecomunicaciones");
             datosSolicitud.put("fechaSolicitud", solicitud.getFecha_registro_solicitud());
-            datosSolicitud.put("cedulaEstudiante", cedulaEstudiante != null ? cedulaEstudiante : "No especificada");
-            datosSolicitud.put("tituloTrabajoGrado", tituloTrabajoGrado != null ? tituloTrabajoGrado : "Trabajo de grado");
-            datosSolicitud.put("directorTrabajoGrado", directorTrabajoGrado != null ? directorTrabajoGrado : "Director asignado");
+            datosSolicitud.put("cedulaEstudiante", cedulaEstudiante != null ? cedulaEstudiante : 
+                (solicitud.getObjUsuario().getCedula() != null ? solicitud.getObjUsuario().getCedula() : "No especificada"));
+            
+            // Usar valores guardados en la solicitud si existen, sino usar parámetros, sino usar valores por defecto
+            String tituloFinal = solicitud.getTitulo_trabajo_grado() != null && !solicitud.getTitulo_trabajo_grado().trim().isEmpty()
+                ? solicitud.getTitulo_trabajo_grado()
+                : (tituloTrabajoGrado != null && !tituloTrabajoGrado.trim().isEmpty() ? tituloTrabajoGrado : "Trabajo de grado");
+            datosSolicitud.put("tituloTrabajoGrado", tituloFinal);
+            
+            String directorFinal = solicitud.getDirector_trabajo_grado() != null && !solicitud.getDirector_trabajo_grado().trim().isEmpty()
+                ? solicitud.getDirector_trabajo_grado()
+                : (directorTrabajoGrado != null && !directorTrabajoGrado.trim().isEmpty() ? directorTrabajoGrado : "Director asignado");
+            datosSolicitud.put("directorTrabajoGrado", directorFinal);
             
             // Crear el request (igual que homologación)
             co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.DTORespuesta.DocumentRequest request = 

@@ -9,6 +9,10 @@ import lombok.EqualsAndHashCode;
 @Data
 @EqualsAndHashCode(callSuper = true)
 public class SolicitudPazYSalvo extends Solicitud {
+    
+    private String titulo_trabajo_grado; // Título del trabajo de grado sustentado
+    private String director_trabajo_grado; // Director del trabajo de grado (ej: "PhD. Carlos Alberto Cobos Lozada")
+    
     public SolicitudPazYSalvo(){
         super();
     }
