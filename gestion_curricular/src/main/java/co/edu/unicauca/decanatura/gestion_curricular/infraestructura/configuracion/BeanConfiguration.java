@@ -192,11 +192,13 @@ public class BeanConfiguration {
     public GestionarNotificacionCUAdapter crearGestionarNotificacionCUInt(
             GestionarNotificacionGatewayIntPort objGestionarNotificacionGateway,
             GestionarUsuarioGatewayIntPort objGestionarUsuarioGateway,
-            GestionarRolGatewayIntPort objGestionarRolGateway) {
+            GestionarRolGatewayIntPort objGestionarRolGateway,
+            co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.formateador.EmailService emailService) {
         return new GestionarNotificacionCUAdapter(
                 objGestionarNotificacionGateway,
                 objGestionarUsuarioGateway,
-                objGestionarRolGateway);
+                objGestionarRolGateway,
+                emailService);
     }
 
     // GestionarEstadisticasGatewayImplAdapter ya está definido como @Service, no necesita definición adicional

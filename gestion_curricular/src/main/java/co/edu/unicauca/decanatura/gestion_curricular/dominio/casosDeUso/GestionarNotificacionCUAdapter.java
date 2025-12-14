@@ -11,6 +11,7 @@ import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Notificacio
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Solicitud;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Usuario;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Rol;
+import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.formateador.EmailService;
 import java.util.Date;
 
 @Slf4j
@@ -19,14 +20,17 @@ public class GestionarNotificacionCUAdapter implements GestionarNotificacionCUIn
     private final GestionarNotificacionGatewayIntPort objGestionarNotificacionGateway;
     private final GestionarUsuarioGatewayIntPort objGestionarUsuarioGateway;
     private final GestionarRolGatewayIntPort objGestionarRolGateway;
+    private final EmailService emailService;
 
     public GestionarNotificacionCUAdapter(
             GestionarNotificacionGatewayIntPort objGestionarNotificacionGateway,
             GestionarUsuarioGatewayIntPort objGestionarUsuarioGateway,
-            GestionarRolGatewayIntPort objGestionarRolGateway) {
+            GestionarRolGatewayIntPort objGestionarRolGateway,
+            EmailService emailService) {
         this.objGestionarNotificacionGateway = objGestionarNotificacionGateway;
         this.objGestionarUsuarioGateway = objGestionarUsuarioGateway;
         this.objGestionarRolGateway = objGestionarRolGateway;
+        this.emailService = emailService;
     }
 
     @Override
@@ -40,7 +44,24 @@ public class GestionarNotificacionCUAdapter implements GestionarNotificacionCUIn
         if (notificacion.getFechaCreacion() == null) {
             notificacion.setFechaCreacion(new Date());
         }
-        return objGestionarNotificacionGateway.crearNotificacion(notificacion);
+        
+        // Guardar la notificación en la base de datos
+        Notificacion notificacionCreada = objGestionarNotificacionGateway.crearNotificacion(notificacion);
+        
+        // Enviar correo electrónico de forma asíncrona (no bloquea si falla)
+        try {
+            Usuario usuario = notificacion.getObjUsuario();
+            if (usuario != null && usuario.getCorreo() != null && !usuario.getCorreo().isBlank()) {
+                String nombreUsuario = usuario.getNombre_completo() != null ? usuario.getNombre_completo() : "Usuario";
+                emailService.enviarNotificacionPorCorreo(notificacionCreada, usuario.getCorreo(), nombreUsuario);
+            }
+        } catch (Exception e) {
+            // No lanzar excepción si falla el envío de correo, solo registrar el error
+            log.warn("No se pudo enviar correo para notificación ID {}: {}", 
+                    notificacionCreada.getId_notificacion(), e.getMessage());
+        }
+        
+        return notificacionCreada;
     }
 
     @Override

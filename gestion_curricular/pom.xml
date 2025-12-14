@@ -204,6 +204,18 @@
 			<version>2.5.0</version>
 		</dependency>
 
+		<!-- Spring Boot Starter Mail para envío de correos electrónicos -->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-mail</artifactId>
+		</dependency>
+
+		<!-- Thymeleaf para plantillas de correo HTML -->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-thymeleaf</artifactId>
+		</dependency>
+
 	</dependencies>
 
 	<build>
