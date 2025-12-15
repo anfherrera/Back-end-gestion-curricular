@@ -139,16 +139,15 @@ public class EstadisticasRestController {
      * 
      * @param proceso Tipo de proceso (opcional) - ej: "Reingreso", "Paz y Salvo", "Homologación"
      * @param idPrograma ID del programa (opcional)
-     * @param fechaInicio Fecha de inicio (opcional) - formato: yyyy-MM-dd
-     * @param fechaFin Fecha de fin (opcional) - formato: yyyy-MM-dd
+     * @param periodoAcademico Período académico (opcional) - formato: "YYYY-P" o "Primer Período 2025"
      * @return ResponseEntity con estadísticas globales filtradas
      * 
      * Ejemplos de uso:
      * - Sin filtros: GET /api/estadisticas/globales
      * - Por proceso: GET /api/estadisticas/globales?proceso=Reingreso
      * - Por programa: GET /api/estadisticas/globales?idPrograma=1
-     * - Por fechas: GET /api/estadisticas/globales?fechaInicio=2025-07-01&fechaFin=2025-09-30
-     * - Combinados: GET /api/estadisticas/globales?proceso=Paz%20y%20Salvo&idPrograma=1&fechaInicio=2025-07-01&fechaFin=2025-09-30
+     * - Por período: GET /api/estadisticas/globales?periodoAcademico=2025-2
+     * - Combinados: GET /api/estadisticas/globales?proceso=Paz%20y%20Salvo&idPrograma=1&periodoAcademico=2025-2
      */
     /**
      * Acceso permitido para: Decano, Funcionario, Coordinador, Secretario, Administrador
@@ -158,14 +157,42 @@ public class EstadisticasRestController {
     public ResponseEntity<Map<String, Object>> obtenerEstadisticasGlobales(
             @RequestParam(required = false) String proceso,
             @RequestParam(required = false) Integer idPrograma,
-            @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") Date fechaInicio,
-            @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") Date fechaFin) {
+            @RequestParam(required = false) String periodoAcademico) {
         try {
-            log.info("Generando estadísticas globales con filtros múltiples - Proceso: {}, Programa: {}, Fechas: {} - {}", 
-                    proceso, idPrograma, fechaInicio, fechaFin);
+            log.info("Generando estadísticas globales con filtros múltiples - Proceso: {}, Programa: {}, Período: {}", 
+                    proceso, idPrograma, periodoAcademico);
             
-            // El método obtenerEstadisticasGlobales ya acepta TODOS los filtros simultáneamente
+            // Convertir período académico a fechas si se proporciona
+            Date fechaInicio = null;
+            Date fechaFin = null;
+            
+            if (periodoAcademico != null && !periodoAcademico.trim().isEmpty()) {
+                // Convertir formato del período académico si viene en formato "Primer Período 2025" o "Segundo Período 2025"
+                String periodoFormato = convertirFormatoPeriodoAcademico(periodoAcademico);
+                if (periodoFormato == null) {
+                    periodoFormato = periodoAcademico.trim();
+                }
+                
+                // Obtener período desde BD o enum
+                Optional<PeriodoAcademico> periodoOpt = periodoAcademicoCU.obtenerPeriodoPorValor(periodoFormato);
+                
+                if (periodoOpt.isPresent()) {
+                    PeriodoAcademico periodo = periodoOpt.get();
+                    fechaInicio = java.sql.Date.valueOf(periodo.getFecha_inicio());
+                    fechaFin = java.sql.Date.valueOf(periodo.getFecha_fin());
+                    log.debug("Período académico convertido a fechas: {} - {}", fechaInicio, fechaFin);
+                } else {
+                    log.warn("Período académico no encontrado: {}, usando estadísticas sin filtro de fecha", periodoAcademico);
+                }
+            }
+            
+            // El método obtenerEstadisticasGlobales acepta los filtros simultáneamente
             Map<String, Object> estadisticas = estadisticaCU.obtenerEstadisticasGlobales(proceso, idPrograma, fechaInicio, fechaFin);
+            
+            // Agregar información del período académico a la respuesta si se filtró por período
+            if (periodoAcademico != null && !periodoAcademico.trim().isEmpty()) {
+                estadisticas.put("periodoAcademicoFiltrado", periodoAcademico);
+            }
             
             log.info("Resultado final: {}", estadisticas);
             return ResponseEntity.ok(estadisticas);
@@ -861,26 +888,50 @@ public class EstadisticasRestController {
      * 
      * @param proceso Tipo de proceso (opcional)
      * @param idPrograma ID del programa (opcional)
-     * @param fechaInicio Fecha de inicio (opcional)
-     * @param fechaFin Fecha de fin (opcional)
+     * @param periodoAcademico Período académico (opcional) - formato: "YYYY-P" o "Primer Período 2025"
      * @return ResponseEntity con archivo PDF
      */
     @GetMapping("/export/pdf")
+    @PreAuthorize("hasAnyRole('Administrador', 'Funcionario', 'Coordinador', 'Secretario', 'Decano')")
     public ResponseEntity<byte[]> exportarEstadisticasPDF(
             @RequestParam(required = false) String proceso,
             @RequestParam(required = false) Integer idPrograma,
-            @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") Date fechaInicio,
-            @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") Date fechaFin) {
+            @RequestParam(required = false) String periodoAcademico) {
         try {
-            log.info("Generando PDF con filtros. Proceso: {}, Programa: {}, Fechas: {} - {}", 
-                    proceso, idPrograma, fechaInicio, fechaFin);
+            log.info("Generando PDF con filtros. Proceso: {}, Programa: {}, Período: {}", 
+                    proceso, idPrograma, periodoAcademico);
+            
+            // Convertir período académico a fechas si se proporciona
+            Date fechaInicio = null;
+            Date fechaFin = null;
+            
+            if (periodoAcademico != null && !periodoAcademico.trim().isEmpty()) {
+                // Convertir formato del período académico si viene en formato "Primer Período 2025" o "Segundo Período 2025"
+                String periodoFormato = convertirFormatoPeriodoAcademico(periodoAcademico);
+                if (periodoFormato == null) {
+                    periodoFormato = periodoAcademico.trim();
+                }
+                
+                // Obtener período desde BD o enum
+                Optional<PeriodoAcademico> periodoOpt = periodoAcademicoCU.obtenerPeriodoPorValor(periodoFormato);
+                
+                if (periodoOpt.isPresent()) {
+                    PeriodoAcademico periodo = periodoOpt.get();
+                    fechaInicio = java.sql.Date.valueOf(periodo.getFecha_inicio());
+                    fechaFin = java.sql.Date.valueOf(periodo.getFecha_fin());
+                    log.debug("Período académico convertido a fechas: {} - {}", fechaInicio, fechaFin);
+                } else {
+                    log.warn("Período académico no encontrado: {}, usando estadísticas sin filtro de fecha", periodoAcademico);
+                }
+            }
             
             // Obtener datos filtrados
             Map<String, Object> estadisticas = estadisticaCU.obtenerEstadisticasGlobales(proceso, idPrograma, fechaInicio, fechaFin);
             
-            // Obtener datos de cursos de verano si no hay filtros específicos o si se solicita
+            // Obtener datos de cursos de verano SOLO si se solicita explícitamente
             Map<String, Object> datosCursosVerano = null;
-            if (proceso == null || "CURSO_VERANO".equals(proceso)) {
+            if (proceso != null && ("CURSO_VERANO".equals(proceso) || 
+                                    proceso.toLowerCase().contains("curso") && proceso.toLowerCase().contains("verano"))) {
                 try {
                     datosCursosVerano = estadisticaCU.obtenerEstadisticasCursosVerano();
                     log.info("Datos de cursos de verano obtenidos para el PDF: {}", datosCursosVerano != null);
@@ -889,8 +940,8 @@ public class EstadisticasRestController {
                 }
             }
             
-            // Generar PDF con datos completos
-            byte[] pdfBytes = generarPDFCompleto(estadisticas, datosCursosVerano);
+            // Generar PDF con datos completos (pasar período académico para mostrarlo)
+            byte[] pdfBytes = generarPDFCompleto(estadisticas, datosCursosVerano, periodoAcademico);
             
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.APPLICATION_PDF);
@@ -912,7 +963,7 @@ public class EstadisticasRestController {
      */
     @GetMapping("/exportar/pdf")
     public ResponseEntity<byte[]> exportarEstadisticasPDFAlias() {
-        return exportarEstadisticasPDF(null, null, null, null);
+        return exportarEstadisticasPDF(null, null, null);
     }
 
     /**
@@ -978,26 +1029,50 @@ public class EstadisticasRestController {
      * 
      * @param proceso Tipo de proceso (opcional)
      * @param idPrograma ID del programa (opcional)
-     * @param fechaInicio Fecha de inicio (opcional)
-     * @param fechaFin Fecha de fin (opcional)
+     * @param periodoAcademico Período académico (opcional) - formato: "YYYY-P" o "Primer Período 2025"
      * @return ResponseEntity con archivo Excel
      */
     @GetMapping("/export/excel")
+    @PreAuthorize("hasAnyRole('Administrador', 'Funcionario', 'Coordinador', 'Secretario', 'Decano')")
     public ResponseEntity<byte[]> exportarEstadisticasExcel(
             @RequestParam(required = false) String proceso,
             @RequestParam(required = false) Integer idPrograma,
-            @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") Date fechaInicio,
-            @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") Date fechaFin) {
+            @RequestParam(required = false) String periodoAcademico) {
         try {
-            log.info("Generando Excel con filtros. Proceso: {}, Programa: {}, Fechas: {} - {}", 
-                    proceso, idPrograma, fechaInicio, fechaFin);
+            log.info("Generando Excel con filtros. Proceso: {}, Programa: {}, Período: {}", 
+                    proceso, idPrograma, periodoAcademico);
+            
+            // Convertir período académico a fechas si se proporciona
+            Date fechaInicio = null;
+            Date fechaFin = null;
+            
+            if (periodoAcademico != null && !periodoAcademico.trim().isEmpty()) {
+                // Convertir formato del período académico si viene en formato "Primer Período 2025" o "Segundo Período 2025"
+                String periodoFormato = convertirFormatoPeriodoAcademico(periodoAcademico);
+                if (periodoFormato == null) {
+                    periodoFormato = periodoAcademico.trim();
+                }
+                
+                // Obtener período desde BD o enum
+                Optional<PeriodoAcademico> periodoOpt = periodoAcademicoCU.obtenerPeriodoPorValor(periodoFormato);
+                
+                if (periodoOpt.isPresent()) {
+                    PeriodoAcademico periodo = periodoOpt.get();
+                    fechaInicio = java.sql.Date.valueOf(periodo.getFecha_inicio());
+                    fechaFin = java.sql.Date.valueOf(periodo.getFecha_fin());
+                    log.debug("Período académico convertido a fechas: {} - {}", fechaInicio, fechaFin);
+                } else {
+                    log.warn("Período académico no encontrado: {}, usando estadísticas sin filtro de fecha", periodoAcademico);
+                }
+            }
             
             // Obtener datos filtrados
             Map<String, Object> estadisticas = estadisticaCU.obtenerEstadisticasGlobales(proceso, idPrograma, fechaInicio, fechaFin);
             
-            // Obtener datos de cursos de verano si no hay filtros específicos o si se solicita
+            // Obtener datos de cursos de verano SOLO si se solicita explícitamente
             Map<String, Object> datosCursosVerano = null;
-            if (proceso == null || "CURSO_VERANO".equals(proceso)) {
+            if (proceso != null && ("CURSO_VERANO".equals(proceso) || 
+                                    proceso.toLowerCase().contains("curso") && proceso.toLowerCase().contains("verano"))) {
                 try {
                     datosCursosVerano = estadisticaCU.obtenerEstadisticasCursosVerano();
                     log.info("Datos de cursos de verano disponibles para el Excel: {}", datosCursosVerano != null);
@@ -1006,8 +1081,8 @@ public class EstadisticasRestController {
                 }
             }
             
-            // Generar Excel con datos completos
-            byte[] excelBytes = generarExcelCompleto(estadisticas, datosCursosVerano);
+            // Generar Excel con datos completos (pasar período académico para mostrarlo)
+            byte[] excelBytes = generarExcelCompleto(estadisticas, datosCursosVerano, periodoAcademico);
             
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.APPLICATION_OCTET_STREAM);
@@ -1029,35 +1104,7 @@ public class EstadisticasRestController {
      */
     @GetMapping("/exportar/excel")
     public ResponseEntity<byte[]> exportarEstadisticasExcelAlias() {
-        try {
-            log.info("Generando Excel sin filtros para exportación...");
-            
-            // Obtener datos filtrados
-            Map<String, Object> estadisticas = estadisticaCU.obtenerEstadisticasGlobales(null, null, null, null);
-            
-            // Obtener datos de cursos de verano
-            Map<String, Object> datosCursosVerano = null;
-            try {
-                datosCursosVerano = estadisticaCU.obtenerEstadisticasCursosVerano();
-                log.info("Datos de cursos de verano obtenidos para el Excel sin filtros: {}", datosCursosVerano != null);
-            } catch (Exception e) {
-                log.warn("No se pudieron obtener datos de cursos de verano para el Excel sin filtros: {}", e.getMessage());
-            }
-            
-            // Generar Excel con datos completos
-            byte[] excelBytes = generarExcelCompleto(estadisticas, datosCursosVerano);
-            
-            HttpHeaders headers = new HttpHeaders();
-            headers.setContentType(MediaType.parseMediaType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"));
-            headers.setContentDispositionFormData("attachment", "estadisticas_generales.xlsx");
-            
-            log.info("El Excel sin filtros se generó correctamente.");
-            return new ResponseEntity<>(excelBytes, headers, HttpStatus.OK);
-            
-        } catch (Exception e) {
-            log.error("Ocurrió un error al generar el Excel sin filtros: {}", e.getMessage(), e);
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-        }
+        return exportarEstadisticasExcel(null, null, null);
     }
 
     /**
@@ -1086,14 +1133,15 @@ public class EstadisticasRestController {
             title.setSpacingAfter(20);
             document.add(title);
             
-            // Fecha de generación
+            // Fecha de generación (formato español sin hora)
             com.itextpdf.text.Font dateFont = new com.itextpdf.text.Font(com.itextpdf.text.Font.FontFamily.HELVETICA, 10);
-            com.itextpdf.text.Paragraph fecha = new com.itextpdf.text.Paragraph("Fecha de generación: " + new java.util.Date().toString(), dateFont);
+            String fechaFormateada = formatearFechaEspanol(new java.util.Date());
+            com.itextpdf.text.Paragraph fecha = new com.itextpdf.text.Paragraph("Fecha de generación: " + fechaFormateada, dateFont);
             fecha.setSpacingAfter(15);
             document.add(fecha);
             
             // Sección: Estadísticas Generales
-            agregarSeccionEstadisticasGenerales(document, estadisticas);
+            agregarSeccionEstadisticasGenerales(document, estadisticas, null);
             
             document.close();
             return baos.toByteArray();
@@ -1158,9 +1206,10 @@ public class EstadisticasRestController {
             title.setSpacingAfter(20);
             document.add(title);
             
-            // Fecha de generación
+            // Fecha de generación (formato español sin hora)
             com.itextpdf.text.Font dateFont = new com.itextpdf.text.Font(com.itextpdf.text.Font.FontFamily.HELVETICA, 10);
-            com.itextpdf.text.Paragraph fecha = new com.itextpdf.text.Paragraph("Fecha de generación: " + new java.util.Date().toString(), dateFont);
+            String fechaFormateada = formatearFechaEspanol(new java.util.Date());
+            com.itextpdf.text.Paragraph fecha = new com.itextpdf.text.Paragraph("Fecha de generación: " + fechaFormateada, dateFont);
             fecha.setSpacingAfter(15);
             document.add(fecha);
             
@@ -1208,10 +1257,11 @@ public class EstadisticasRestController {
      * Genera un PDF completo con estadísticas generales y de cursos de verano.
      * 
      * @param estadisticas Datos de estadísticas generales
-     * @param datosCursosVerano Datos de cursos de verano
+     * @param datosCursosVerano Datos de cursos de verano (opcional, solo si se solicita)
+     * @param periodoAcademico Período académico filtrado (opcional)
      * @return Array de bytes del PDF
      */
-    private byte[] generarPDFCompleto(Map<String, Object> estadisticas, Map<String, Object> datosCursosVerano) {
+    private byte[] generarPDFCompleto(Map<String, Object> estadisticas, Map<String, Object> datosCursosVerano, String periodoAcademico) {
         log.debug("Iniciando la generación del PDF completo con estadísticas generales y de cursos de verano...");
         log.debug("¿Se recibieron estadísticas generales? {} - ¿Se recibieron datos de cursos de verano? {}", 
             estadisticas != null, datosCursosVerano != null);
@@ -1233,15 +1283,40 @@ public class EstadisticasRestController {
             title.setSpacingAfter(20);
             document.add(title);
             
-            // Fecha de generación
+            // Fecha de generación (formato español sin hora)
             com.itextpdf.text.Font dateFont = new com.itextpdf.text.Font(com.itextpdf.text.Font.FontFamily.HELVETICA, 10);
-            com.itextpdf.text.Paragraph fecha = new com.itextpdf.text.Paragraph("Fecha de generación: " + new java.util.Date().toString(), dateFont);
+            String fechaFormateada = formatearFechaEspanol(new java.util.Date());
+            com.itextpdf.text.Paragraph fecha = new com.itextpdf.text.Paragraph("Fecha de generación: " + fechaFormateada, dateFont);
             fecha.setSpacingAfter(15);
             document.add(fecha);
             
+            // Mostrar período académico si se filtró por uno
+            if (periodoAcademico != null && !periodoAcademico.trim().isEmpty()) {
+                log.debug("Mostrando período académico en PDF: {}", periodoAcademico);
+                // Intentar convertir a formato descriptivo si viene en formato YYYY-P
+                String periodoMostrar = periodoAcademico;
+                String periodoFormato = convertirFormatoPeriodoAcademico(periodoAcademico);
+                if (periodoFormato != null && periodoFormato.matches("\\d{4}-[12]")) {
+                    // Si está en formato YYYY-P, intentar obtener descripción
+                    Optional<PeriodoAcademico> periodoOpt = periodoAcademicoCU.obtenerPeriodoPorValor(periodoFormato);
+                    if (periodoOpt.isPresent()) {
+                        PeriodoAcademico periodo = periodoOpt.get();
+                        String descripcion = periodo.getNombre_periodo() != null && !periodo.getNombre_periodo().trim().isEmpty() 
+                            ? periodo.getNombre_periodo() 
+                            : (periodo.getNumero_periodo() == 1 ? "Primer Período" : "Segundo Período") + " " + periodo.getAño();
+                        periodoMostrar = descripcion;
+                    }
+                }
+                com.itextpdf.text.Paragraph periodo = new com.itextpdf.text.Paragraph("Período Académico: " + periodoMostrar, dateFont);
+                periodo.setSpacingAfter(15);
+                document.add(periodo);
+            } else {
+                log.debug("No se mostrará período académico - periodoAcademico es null o vacío");
+            }
+            
             // Sección 1: Estadísticas Generales
             if (estadisticas != null) {
-                agregarSeccionEstadisticasGenerales(document, estadisticas);
+                agregarSeccionEstadisticasGenerales(document, estadisticas, periodoAcademico);
             }
             
             // Sección 2: Estadísticas de Cursos de Verano
@@ -1659,15 +1734,21 @@ public class EstadisticasRestController {
     /**
      * Agrega la sección de estadísticas generales al PDF.
      */
-    private void agregarSeccionEstadisticasGenerales(com.itextpdf.text.Document document, Map<String, Object> estadisticas) throws Exception {
+    private void agregarSeccionEstadisticasGenerales(com.itextpdf.text.Document document, Map<String, Object> estadisticas, String periodoAcademico) throws Exception {
         // Título de sección
         com.itextpdf.text.Font sectionFont = new com.itextpdf.text.Font(com.itextpdf.text.Font.FontFamily.HELVETICA, 14, com.itextpdf.text.Font.BOLD);
         com.itextpdf.text.Paragraph sectionTitle = new com.itextpdf.text.Paragraph("1. ESTADÍSTICAS GENERALES", sectionFont);
-        sectionTitle.setSpacingAfter(10);
+        sectionTitle.setSpacingAfter(15);
         document.add(sectionTitle);
         
-        // Estadísticas principales
+        // Fuentes
         com.itextpdf.text.Font normalFont = new com.itextpdf.text.Font(com.itextpdf.text.Font.FontFamily.HELVETICA, 10);
+        com.itextpdf.text.Font subSectionFont = new com.itextpdf.text.Font(com.itextpdf.text.Font.FontFamily.HELVETICA, 12, com.itextpdf.text.Font.BOLD);
+        
+        // ===== INDICADORES CLAVE (KPIs) =====
+        com.itextpdf.text.Paragraph kpiTitle = new com.itextpdf.text.Paragraph("Indicadores Clave (KPIs)", subSectionFont);
+        kpiTitle.setSpacingAfter(10);
+        document.add(kpiTitle);
         
         // Total de solicitudes
         Object totalSolicitudes = estadisticas.get("totalSolicitudes");
@@ -1675,24 +1756,100 @@ public class EstadisticasRestController {
             document.add(new com.itextpdf.text.Paragraph("Total de Solicitudes: " + totalSolicitudes, normalFont));
         }
         
-        // Por tipo de proceso
+        // Total aprobadas
+        Object totalAprobadas = estadisticas.get("totalAprobadas");
+        if (totalAprobadas != null) {
+            document.add(new com.itextpdf.text.Paragraph("Total Aprobadas: " + totalAprobadas, normalFont));
+        }
+        
+        // Total rechazadas
+        Object totalRechazadas = estadisticas.get("totalRechazadas");
+        if (totalRechazadas != null) {
+            document.add(new com.itextpdf.text.Paragraph("Total Rechazadas: " + totalRechazadas, normalFont));
+        }
+        
+        // Total enviadas
+        Object totalEnviadas = estadisticas.get("totalEnviadas");
+        if (totalEnviadas != null) {
+            document.add(new com.itextpdf.text.Paragraph("Total Enviadas: " + totalEnviadas, normalFont));
+        }
+        
+        // Total en proceso
+        Object totalEnProceso = estadisticas.get("totalEnProceso");
+        if (totalEnProceso != null) {
+            document.add(new com.itextpdf.text.Paragraph("Total en Proceso: " + totalEnProceso, normalFont));
+        }
+        
+        // Porcentaje de aprobación
+        Object porcentajeAprobacion = estadisticas.get("porcentajeAprobacion");
+        if (porcentajeAprobacion != null) {
+            document.add(new com.itextpdf.text.Paragraph("Porcentaje de Aprobación: " + porcentajeAprobacion + "%", normalFont));
+        }
+        
+        // Total estudiantes
+        Object totalEstudiantes = estadisticas.get("totalEstudiantes");
+        if (totalEstudiantes != null) {
+            document.add(new com.itextpdf.text.Paragraph("Total de Estudiantes: " + totalEstudiantes, normalFont));
+        }
+        
+        // Total programas
+        Object totalProgramas = estadisticas.get("totalProgramas");
+        if (totalProgramas != null) {
+            document.add(new com.itextpdf.text.Paragraph("Total de Programas: " + totalProgramas, normalFont));
+        }
+        
+        // ===== ESTADÍSTICAS POR TIPO DE PROCESO =====
         @SuppressWarnings("unchecked")
         Map<String, Object> porTipoProceso = (Map<String, Object>) estadisticas.get("porTipoProceso");
         if (porTipoProceso != null && !porTipoProceso.isEmpty()) {
-            document.add(new com.itextpdf.text.Paragraph("\nEstadísticas por Tipo de Proceso:", normalFont));
+            com.itextpdf.text.Paragraph procesoTitle = new com.itextpdf.text.Paragraph("\nEstadísticas por Tipo de Proceso", subSectionFont);
+            procesoTitle.setSpacingAfter(10);
+            procesoTitle.setSpacingBefore(10);
+            document.add(procesoTitle);
+            
             for (Map.Entry<String, Object> entry : porTipoProceso.entrySet()) {
-                document.add(new com.itextpdf.text.Paragraph("  • " + entry.getKey() + ": " + entry.getValue(), normalFont));
+                document.add(new com.itextpdf.text.Paragraph("  • " + entry.getKey() + ": " + entry.getValue() + " solicitudes", normalFont));
             }
         }
         
-        // Por estado
+        // ===== ESTADÍSTICAS POR PROGRAMA =====
+        @SuppressWarnings("unchecked")
+        Map<String, Object> porPrograma = (Map<String, Object>) estadisticas.get("porPrograma");
+        if (porPrograma != null && !porPrograma.isEmpty()) {
+            com.itextpdf.text.Paragraph programaTitle = new com.itextpdf.text.Paragraph("\nEstadísticas por Programa Académico", subSectionFont);
+            programaTitle.setSpacingAfter(10);
+            programaTitle.setSpacingBefore(10);
+            document.add(programaTitle);
+            
+            for (Map.Entry<String, Object> entry : porPrograma.entrySet()) {
+                document.add(new com.itextpdf.text.Paragraph("  • " + entry.getKey() + ": " + entry.getValue() + " solicitudes", normalFont));
+            }
+        }
+        
+        // ===== ESTADÍSTICAS POR ESTADO =====
         @SuppressWarnings("unchecked")
         Map<String, Object> porEstado = (Map<String, Object>) estadisticas.get("porEstado");
         if (porEstado != null && !porEstado.isEmpty()) {
-            document.add(new com.itextpdf.text.Paragraph("\nEstadísticas por Estado:", normalFont));
+            com.itextpdf.text.Paragraph estadoTitle = new com.itextpdf.text.Paragraph("\nEstadísticas por Estado", subSectionFont);
+            estadoTitle.setSpacingAfter(10);
+            estadoTitle.setSpacingBefore(10);
+            document.add(estadoTitle);
+            
             for (Map.Entry<String, Object> entry : porEstado.entrySet()) {
-                document.add(new com.itextpdf.text.Paragraph("  • " + entry.getKey() + ": " + entry.getValue(), normalFont));
+                document.add(new com.itextpdf.text.Paragraph("  • " + entry.getKey() + ": " + entry.getValue() + " solicitudes", normalFont));
             }
+        }
+        
+        // ===== INFORMACIÓN ADICIONAL =====
+        Object fechaConsulta = estadisticas.get("fechaConsulta");
+        if (fechaConsulta != null) {
+            com.itextpdf.text.Paragraph fechaTitle = new com.itextpdf.text.Paragraph("\nFecha de Consulta", subSectionFont);
+            fechaTitle.setSpacingAfter(10);
+            fechaTitle.setSpacingBefore(10);
+            document.add(fechaTitle);
+            // Formatear fecha de consulta en español
+            String fechaConsultaFormateada = formatearFechaEspanol(fechaConsulta);
+            document.add(new com.itextpdf.text.Paragraph("  " + fechaConsultaFormateada, normalFont));
         }
     }
 
@@ -1764,15 +1921,19 @@ public class EstadisticasRestController {
 
     /**
      * Genera un Excel completo con estadísticas generales y de cursos de verano.
+     * 
+     * @param estadisticas Datos de estadísticas generales
+     * @param datosCursosVerano Datos de cursos de verano (opcional, solo si se solicita)
+     * @param periodoAcademico Período académico filtrado (opcional)
      */
-    private byte[] generarExcelCompleto(Map<String, Object> estadisticas, Map<String, Object> datosCursosVerano) {
+    private byte[] generarExcelCompleto(Map<String, Object> estadisticas, Map<String, Object> datosCursosVerano, String periodoAcademico) {
         try {
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
             org.apache.poi.xssf.usermodel.XSSFWorkbook workbook = new org.apache.poi.xssf.usermodel.XSSFWorkbook();
             
             // Hoja 1: Estadísticas Generales
             if (estadisticas != null) {
-                crearHojaEstadisticasGenerales(workbook, estadisticas);
+                crearHojaEstadisticasGenerales(workbook, estadisticas, periodoAcademico);
             }
             
             // Hoja 2: Cursos de Verano
@@ -1811,7 +1972,7 @@ public class EstadisticasRestController {
     /**
      * Crea la hoja de estadísticas generales en el Excel.
      */
-    private void crearHojaEstadisticasGenerales(org.apache.poi.xssf.usermodel.XSSFWorkbook workbook, Map<String, Object> estadisticas) {
+    private void crearHojaEstadisticasGenerales(org.apache.poi.xssf.usermodel.XSSFWorkbook workbook, Map<String, Object> estadisticas, String periodoAcademico) {
             org.apache.poi.ss.usermodel.Sheet sheet = workbook.createSheet("Estadísticas Generales");
             
             // Estilos
@@ -1832,56 +1993,171 @@ public class EstadisticasRestController {
             // Título
             org.apache.poi.ss.usermodel.Row titleRow = sheet.createRow(rowNum++);
             org.apache.poi.ss.usermodel.Cell titleCell = titleRow.createCell(0);
-        titleCell.setCellValue("ESTADÍSTICAS GENERALES DEL SISTEMA");
+            titleCell.setCellValue("ESTADÍSTICAS GENERALES DEL SISTEMA");
             titleCell.setCellStyle(titleStyle);
             
-        rowNum++; // Espacio
-        
-        // Total de solicitudes
-        Object totalSolicitudes = estadisticas.get("totalSolicitudes");
-        if (totalSolicitudes != null) {
-            org.apache.poi.ss.usermodel.Row row = sheet.createRow(rowNum++);
-            row.createCell(0).setCellValue("Total de Solicitudes");
-            row.createCell(1).setCellValue(totalSolicitudes.toString());
-        }
-        
-        // Por tipo de proceso
-        @SuppressWarnings("unchecked")
-        Map<String, Object> porTipoProceso = (Map<String, Object>) estadisticas.get("porTipoProceso");
-        if (porTipoProceso != null && !porTipoProceso.isEmpty()) {
             rowNum++; // Espacio
-            org.apache.poi.ss.usermodel.Row headerRow = sheet.createRow(rowNum++);
-            org.apache.poi.ss.usermodel.Cell headerCell = headerRow.createCell(0);
-            headerCell.setCellValue("ESTADÍSTICAS POR TIPO DE PROCESO");
-            headerCell.setCellStyle(headerStyle);
             
-            for (Map.Entry<String, Object> entry : porTipoProceso.entrySet()) {
+            // Mostrar período académico si se filtró por uno
+            if (periodoAcademico != null && !periodoAcademico.trim().isEmpty()) {
+                log.debug("Mostrando período académico en Excel: {}", periodoAcademico);
+                // Intentar convertir a formato descriptivo si viene en formato YYYY-P
+                String periodoMostrar = periodoAcademico;
+                String periodoFormato = convertirFormatoPeriodoAcademico(periodoAcademico);
+                if (periodoFormato != null && periodoFormato.matches("\\d{4}-[12]")) {
+                    // Si está en formato YYYY-P, intentar obtener descripción
+                    Optional<PeriodoAcademico> periodoOpt = periodoAcademicoCU.obtenerPeriodoPorValor(periodoFormato);
+                    if (periodoOpt.isPresent()) {
+                        PeriodoAcademico periodo = periodoOpt.get();
+                        String descripcion = periodo.getNombre_periodo() != null && !periodo.getNombre_periodo().trim().isEmpty() 
+                            ? periodo.getNombre_periodo() 
+                            : (periodo.getNumero_periodo() == 1 ? "Primer Período" : "Segundo Período") + " " + periodo.getAño();
+                        periodoMostrar = descripcion;
+                    }
+                }
+                org.apache.poi.ss.usermodel.Row periodoRow = sheet.createRow(rowNum++);
+                periodoRow.createCell(0).setCellValue("Período Académico:");
+                periodoRow.createCell(1).setCellValue(periodoMostrar);
+                rowNum++; // Espacio
+            } else {
+                log.debug("No se mostrará período académico en Excel - periodoAcademico es null o vacío");
+            }
+            
+            // ===== INDICADORES CLAVE (KPIs) =====
+            org.apache.poi.ss.usermodel.Row kpiHeaderRow = sheet.createRow(rowNum++);
+            org.apache.poi.ss.usermodel.Cell kpiHeaderCell = kpiHeaderRow.createCell(0);
+            kpiHeaderCell.setCellValue("INDICADORES CLAVE (KPIs)");
+            kpiHeaderCell.setCellStyle(headerStyle);
+            
+            // Total de solicitudes
+            Object totalSolicitudes = estadisticas.get("totalSolicitudes");
+            if (totalSolicitudes != null) {
                 org.apache.poi.ss.usermodel.Row row = sheet.createRow(rowNum++);
-                row.createCell(0).setCellValue(entry.getKey());
-                row.createCell(1).setCellValue(entry.getValue().toString());
-            }
+                row.createCell(0).setCellValue("Total de Solicitudes");
+                row.createCell(1).setCellValue(totalSolicitudes.toString());
             }
             
-        // Por estado
+            // Total aprobadas
+            Object totalAprobadas = estadisticas.get("totalAprobadas");
+            if (totalAprobadas != null) {
+                org.apache.poi.ss.usermodel.Row row = sheet.createRow(rowNum++);
+                row.createCell(0).setCellValue("Total Aprobadas");
+                row.createCell(1).setCellValue(totalAprobadas.toString());
+            }
+            
+            // Total rechazadas
+            Object totalRechazadas = estadisticas.get("totalRechazadas");
+            if (totalRechazadas != null) {
+                org.apache.poi.ss.usermodel.Row row = sheet.createRow(rowNum++);
+                row.createCell(0).setCellValue("Total Rechazadas");
+                row.createCell(1).setCellValue(totalRechazadas.toString());
+            }
+            
+            // Total enviadas
+            Object totalEnviadas = estadisticas.get("totalEnviadas");
+            if (totalEnviadas != null) {
+                org.apache.poi.ss.usermodel.Row row = sheet.createRow(rowNum++);
+                row.createCell(0).setCellValue("Total Enviadas");
+                row.createCell(1).setCellValue(totalEnviadas.toString());
+            }
+            
+            // Total en proceso
+            Object totalEnProceso = estadisticas.get("totalEnProceso");
+            if (totalEnProceso != null) {
+                org.apache.poi.ss.usermodel.Row row = sheet.createRow(rowNum++);
+                row.createCell(0).setCellValue("Total en Proceso");
+                row.createCell(1).setCellValue(totalEnProceso.toString());
+            }
+            
+            // Porcentaje de aprobación
+            Object porcentajeAprobacion = estadisticas.get("porcentajeAprobacion");
+            if (porcentajeAprobacion != null) {
+                org.apache.poi.ss.usermodel.Row row = sheet.createRow(rowNum++);
+                row.createCell(0).setCellValue("Porcentaje de Aprobación");
+                row.createCell(1).setCellValue(porcentajeAprobacion.toString() + "%");
+            }
+            
+            // Total estudiantes
+            Object totalEstudiantes = estadisticas.get("totalEstudiantes");
+            if (totalEstudiantes != null) {
+                org.apache.poi.ss.usermodel.Row row = sheet.createRow(rowNum++);
+                row.createCell(0).setCellValue("Total de Estudiantes");
+                row.createCell(1).setCellValue(totalEstudiantes.toString());
+            }
+            
+            // Total programas
+            Object totalProgramas = estadisticas.get("totalProgramas");
+            if (totalProgramas != null) {
+                org.apache.poi.ss.usermodel.Row row = sheet.createRow(rowNum++);
+                row.createCell(0).setCellValue("Total de Programas");
+                row.createCell(1).setCellValue(totalProgramas.toString());
+            }
+            
+            // Por tipo de proceso
             @SuppressWarnings("unchecked")
-        Map<String, Object> porEstado = (Map<String, Object>) estadisticas.get("porEstado");
-        if (porEstado != null && !porEstado.isEmpty()) {
-            rowNum++; // Espacio
-            org.apache.poi.ss.usermodel.Row headerRow = sheet.createRow(rowNum++);
-            org.apache.poi.ss.usermodel.Cell headerCell = headerRow.createCell(0);
-            headerCell.setCellValue("ESTADÍSTICAS POR ESTADO");
-            headerCell.setCellStyle(headerStyle);
-            
-            for (Map.Entry<String, Object> entry : porEstado.entrySet()) {
+            Map<String, Object> porTipoProceso = (Map<String, Object>) estadisticas.get("porTipoProceso");
+            if (porTipoProceso != null && !porTipoProceso.isEmpty()) {
+                rowNum++; // Espacio
+                org.apache.poi.ss.usermodel.Row headerRow = sheet.createRow(rowNum++);
+                org.apache.poi.ss.usermodel.Cell headerCell = headerRow.createCell(0);
+                headerCell.setCellValue("ESTADÍSTICAS POR TIPO DE PROCESO");
+                headerCell.setCellStyle(headerStyle);
+                
+                for (Map.Entry<String, Object> entry : porTipoProceso.entrySet()) {
                     org.apache.poi.ss.usermodel.Row row = sheet.createRow(rowNum++);
                     row.createCell(0).setCellValue(entry.getKey());
-                    row.createCell(1).setCellValue(entry.getValue().toString());
+                    row.createCell(1).setCellValue(entry.getValue().toString() + " solicitudes");
+                }
             }
-        }
-        
-        // Ajustar ancho de columnas
-        sheet.autoSizeColumn(0);
-        sheet.autoSizeColumn(1);
+            
+            // Por programa
+            @SuppressWarnings("unchecked")
+            Map<String, Object> porPrograma = (Map<String, Object>) estadisticas.get("porPrograma");
+            if (porPrograma != null && !porPrograma.isEmpty()) {
+                rowNum++; // Espacio
+                org.apache.poi.ss.usermodel.Row headerRow = sheet.createRow(rowNum++);
+                org.apache.poi.ss.usermodel.Cell headerCell = headerRow.createCell(0);
+                headerCell.setCellValue("ESTADÍSTICAS POR PROGRAMA ACADÉMICO");
+                headerCell.setCellStyle(headerStyle);
+                
+                for (Map.Entry<String, Object> entry : porPrograma.entrySet()) {
+                    org.apache.poi.ss.usermodel.Row row = sheet.createRow(rowNum++);
+                    row.createCell(0).setCellValue(entry.getKey());
+                    row.createCell(1).setCellValue(entry.getValue().toString() + " solicitudes");
+                }
+            }
+            
+            // Por estado
+            @SuppressWarnings("unchecked")
+            Map<String, Object> porEstado = (Map<String, Object>) estadisticas.get("porEstado");
+            if (porEstado != null && !porEstado.isEmpty()) {
+                rowNum++; // Espacio
+                org.apache.poi.ss.usermodel.Row headerRow = sheet.createRow(rowNum++);
+                org.apache.poi.ss.usermodel.Cell headerCell = headerRow.createCell(0);
+                headerCell.setCellValue("ESTADÍSTICAS POR ESTADO");
+                headerCell.setCellStyle(headerStyle);
+                
+                for (Map.Entry<String, Object> entry : porEstado.entrySet()) {
+                    org.apache.poi.ss.usermodel.Row row = sheet.createRow(rowNum++);
+                    row.createCell(0).setCellValue(entry.getKey());
+                    row.createCell(1).setCellValue(entry.getValue().toString() + " solicitudes");
+                }
+            }
+            
+            // Fecha de consulta
+            Object fechaConsulta = estadisticas.get("fechaConsulta");
+            if (fechaConsulta != null) {
+                rowNum++; // Espacio
+                org.apache.poi.ss.usermodel.Row row = sheet.createRow(rowNum++);
+                row.createCell(0).setCellValue("Fecha de Consulta");
+                // Formatear fecha de consulta en español
+                String fechaConsultaFormateada = formatearFechaEspanol(fechaConsulta);
+                row.createCell(1).setCellValue(fechaConsultaFormateada);
+            }
+            
+            // Ajustar ancho de columnas
+            sheet.autoSizeColumn(0);
+            sheet.autoSizeColumn(1);
     }
 
     /**
@@ -2099,7 +2375,7 @@ public class EstadisticasRestController {
             org.apache.poi.xssf.usermodel.XSSFWorkbook workbook = new org.apache.poi.xssf.usermodel.XSSFWorkbook();
             
             // Hoja: Estadísticas Generales
-            crearHojaEstadisticasGenerales(workbook, estadisticas);
+            crearHojaEstadisticasGenerales(workbook, estadisticas, null);
             
             workbook.write(baos);
             workbook.close();
@@ -2169,6 +2445,118 @@ public class EstadisticasRestController {
                 return new byte[0];
             }
         }
+    }
+
+    /**
+     * Convierte el formato del período académico de "Primer Período 2025" o "Segundo Período 2025"
+     * al formato "YYYY-P" (ej: "2025-1" o "2025-2").
+     * 
+     * @param periodoAcademico Período académico en formato descriptivo o "YYYY-P"
+     * @return Período académico en formato "YYYY-P" o null si no se puede convertir
+     */
+    private String convertirFormatoPeriodoAcademico(String periodoAcademico) {
+        if (periodoAcademico == null || periodoAcademico.trim().isEmpty()) {
+            return null;
+        }
+        
+        String periodo = periodoAcademico.trim();
+        
+        // Si ya está en formato YYYY-P, retornarlo tal cual
+        if (periodo.matches("\\d{4}-[12]")) {
+            return periodo;
+        }
+        
+        // Intentar convertir desde formato "Primer Período 2025" o "Segundo Período 2025"
+        // Patrón: "Primer Período 2025" o "Segundo Período 2025"
+        java.util.regex.Pattern pattern = java.util.regex.Pattern.compile(
+            "(Primer|Segundo)\\s+Per[ií]odo\\s+(\\d{4})", 
+            java.util.regex.Pattern.CASE_INSENSITIVE
+        );
+        java.util.regex.Matcher matcher = pattern.matcher(periodo);
+        
+        if (matcher.find()) {
+            String numeroPeriodo = matcher.group(1).equalsIgnoreCase("Primer") ? "1" : "2";
+            String año = matcher.group(2);
+            String resultado = año + "-" + numeroPeriodo;
+            
+            // Validar que el período existe en el enum
+            try {
+                PeriodoAcademicoEnum.fromValor(resultado);
+                return resultado;
+            } catch (IllegalArgumentException e) {
+                log.warn("Período académico '{}' no es válido", resultado);
+                return null;
+            }
+        }
+        
+        // Si no coincide con ningún patrón, intentar buscar en el enum por descripción
+        for (PeriodoAcademicoEnum periodoEnum : PeriodoAcademicoEnum.values()) {
+            if (periodoEnum.getDescripcion().equalsIgnoreCase(periodo)) {
+                return periodoEnum.getValor();
+            }
+        }
+        
+        // Si no se encuentra, retornar null
+        log.warn("No se pudo convertir el período académico: {}", periodoAcademico);
+        return null;
+    }
+    
+    /**
+     * Formatea una fecha en español sin hora (formato: "15 de diciembre de 2025").
+     * 
+     * @param fecha Fecha a formatear (Date, String, o LocalDate)
+     * @return Fecha formateada en español
+     */
+    private String formatearFechaEspanol(Object fecha) {
+        if (fecha == null) {
+            return "Fecha no disponible";
+        }
+        
+        try {
+            java.time.LocalDate localDate = null;
+            
+            if (fecha instanceof java.util.Date) {
+                localDate = ((java.util.Date) fecha).toInstant()
+                    .atZone(java.time.ZoneId.systemDefault())
+                    .toLocalDate();
+            } else if (fecha instanceof java.sql.Date) {
+                localDate = ((java.sql.Date) fecha).toLocalDate();
+            } else if (fecha instanceof java.time.LocalDate) {
+                localDate = (java.time.LocalDate) fecha;
+            } else if (fecha instanceof String) {
+                String fechaStr = fecha.toString();
+                // Intentar parsear diferentes formatos
+                try {
+                    // Formato ISO: "2025-12-15"
+                    if (fechaStr.length() >= 10 && fechaStr.substring(0, 10).matches("\\d{4}-\\d{2}-\\d{2}")) {
+                        localDate = java.time.LocalDate.parse(fechaStr.substring(0, 10));
+                    } else {
+                        // Intentar parsear como Date y convertir
+                        java.text.SimpleDateFormat sdf = new java.text.SimpleDateFormat("EEE MMM dd HH:mm:ss zzz yyyy", java.util.Locale.ENGLISH);
+                        java.util.Date date = sdf.parse(fechaStr);
+                        localDate = date.toInstant().atZone(java.time.ZoneId.systemDefault()).toLocalDate();
+                    }
+                } catch (Exception e) {
+                    // Si falla, usar la fecha actual
+                    localDate = java.time.LocalDate.now();
+                }
+            }
+            
+            if (localDate != null) {
+                java.time.format.DateTimeFormatter formatter = java.time.format.DateTimeFormatter.ofPattern(
+                    "d 'de' MMMM 'de' yyyy", 
+                    new java.util.Locale("es", "CO")
+                );
+                return localDate.format(formatter);
+            }
+        } catch (Exception e) {
+            log.warn("Error formateando fecha: {}", e.getMessage());
+        }
+        
+        // Fallback: retornar fecha actual formateada
+        return java.time.LocalDate.now().format(
+            java.time.format.DateTimeFormatter.ofPattern("d 'de' MMMM 'de' yyyy", new java.util.Locale("es", "CO"))
+        );
     }
 }
 
