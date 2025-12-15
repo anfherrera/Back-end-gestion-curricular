@@ -159,20 +159,32 @@ public class SolicitudRestController {
             log.debug("Obteniendo historial completo - periodoAcademico: {}, tipoSolicitud: {}, estadoActual: {}, idUsuario: {}", 
                     periodoAcademico, tipoSolicitud, estadoActual, idUsuario);
             
-            // Obtener todas las solicitudes con sus relaciones
+            // Obtener todas las solicitudes con sus relaciones usando findAllWithJoins
+            // Este método ya carga las relaciones con JOIN FETCH
             List<SolicitudEntity> todasLasSolicitudes = solicitudRepository.findAllWithJoins();
             
             log.debug("Total de solicitudes encontradas: {}", todasLasSolicitudes.size());
             
-            // Filtrar solicitudes procesadas (que tienen al menos un estado)
-            List<SolicitudEntity> solicitudesProcesadas = todasLasSolicitudes.stream()
-                    .filter(s -> s.getEstadosSolicitud() != null && !s.getEstadosSolicitud().isEmpty())
-                    .collect(Collectors.toList());
+            // Contar solicitudes con estados (para estadísticas)
+            long totalConEstados = todasLasSolicitudes.stream()
+                    .filter(s -> {
+                        try {
+                            return s.getEstadosSolicitud() != null && !s.getEstadosSolicitud().isEmpty();
+                        } catch (Exception e) {
+                            // Si hay error al acceder a estados (lazy loading), asumimos que no tiene
+                            return false;
+                        }
+                    })
+                    .count();
             
-            log.debug("Solicitudes procesadas encontradas: {}", solicitudesProcesadas.size());
+            log.debug("Solicitudes con estados: {}", totalConEstados);
+            
+            // Para el historial, mostramos TODAS las solicitudes (no filtramos por estados)
+            // El frontend puede decidir qué mostrar
+            List<SolicitudEntity> solicitudesParaFiltrar = todasLasSolicitudes;
             
             // Aplicar filtros adicionales
-            List<SolicitudEntity> solicitudesFiltradas = solicitudesProcesadas.stream()
+            List<SolicitudEntity> solicitudesFiltradas = solicitudesParaFiltrar.stream()
                     .filter(s -> {
                         // Filtro por período académico
                         if (periodoAcademico != null && !periodoAcademico.trim().isEmpty()) {
@@ -275,8 +287,8 @@ public class SolicitudRestController {
             respuesta.put("solicitudes", solicitudesDTO);
             respuesta.put("total", solicitudesDTO.size());
             respuesta.put("total_solicitudes_sistema", todasLasSolicitudes.size());
-            respuesta.put("total_solicitudes_procesadas", solicitudesProcesadas.size());
-            respuesta.put("total_solicitudes_no_procesadas", todasLasSolicitudes.size() - solicitudesProcesadas.size());
+            respuesta.put("total_solicitudes_procesadas", totalConEstados);
+            respuesta.put("total_solicitudes_no_procesadas", todasLasSolicitudes.size() - totalConEstados);
             
             return ResponseEntity.ok(respuesta);
             
