@@ -8,6 +8,12 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 /**
  * Configuración de CORS para permitir peticiones desde el frontend Angular y Postman
  * 
+ * NOTA: El encoding UTF-8 está configurado automáticamente por Spring Boot mediante
+ * las propiedades en application.properties:
+ * - server.servlet.encoding.charset=UTF-8
+ * - server.servlet.encoding.enabled=true
+ * - server.servlet.encoding.force=true
+ * 
  * @author Sistema de Gestión Curricular
  * @version 1.0
  */

@@ -2,6 +2,7 @@ package co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.cont
 
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarSolicitudCUIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Solicitud;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Enums.PeriodoAcademicoEnum;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.DTORespuesta.SolicitudDTORespuesta;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.mappers.*;
 
@@ -9,6 +10,7 @@ import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.mappe
 import jakarta.validation.constraints.Min;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -24,6 +26,7 @@ import java.util.stream.Collectors;
 @RequestMapping("/api/solicitudes")
 @RequiredArgsConstructor
 @Validated
+@Slf4j
 public class SolicitudRestController {
 
     private final GestionarSolicitudCUIntPort solicitudCU;
@@ -116,8 +119,22 @@ public class SolicitudRestController {
             @RequestParam(required = false) Integer idUsuario) {
         
         try {
+            log.info("Obteniendo historial completo - periodoAcademico: {}, tipoSolicitud: {}, estadoActual: {}, idUsuario: {}", 
+                    periodoAcademico, tipoSolicitud, estadoActual, idUsuario);
+            
+            // Convertir formato del período académico si viene en formato "Primer Período 2025" o "Segundo Período 2025"
+            final String periodoAcademicoFiltro = convertirFormatoPeriodoAcademico(periodoAcademico) != null 
+                    ? convertirFormatoPeriodoAcademico(periodoAcademico) 
+                    : periodoAcademico;
+            
+            if (periodoAcademicoFiltro != null && !periodoAcademicoFiltro.equals(periodoAcademico)) {
+                log.debug("Período académico convertido de '{}' a '{}'", periodoAcademico, periodoAcademicoFiltro);
+            }
+            
             // Obtener todas las solicitudes
             List<Solicitud> todasLasSolicitudes = solicitudCU.listarSolicitudes();
+            
+            log.debug("Total de solicitudes obtenidas: {}", todasLasSolicitudes != null ? todasLasSolicitudes.size() : 0);
             
             if (todasLasSolicitudes == null) {
                 todasLasSolicitudes = new java.util.ArrayList<>();
@@ -142,9 +159,9 @@ public class SolicitudRestController {
                         }
                         
                         // Filtrar por período académico
-                        if (periodoAcademico != null && !periodoAcademico.trim().isEmpty()) {
+                        if (periodoAcademicoFiltro != null && !periodoAcademicoFiltro.trim().isEmpty()) {
                             if (solicitud.getPeriodo_academico() == null || 
-                                !periodoAcademico.trim().equals(solicitud.getPeriodo_academico())) {
+                                !periodoAcademicoFiltro.trim().equals(solicitud.getPeriodo_academico())) {
                                 return false;
                             }
                         }
@@ -229,11 +246,14 @@ public class SolicitudRestController {
                     })
                     .collect(Collectors.toList());
             
+            log.info("Solicitudes procesadas encontradas: {}", solicitudesProcesadas.size());
+            log.info("Solicitudes después de aplicar filtros: {}", respuesta.size());
+            
             // Crear respuesta con metadatos
             java.util.Map<String, Object> respuestaCompleta = new java.util.HashMap<>();
             respuestaCompleta.put("total", respuesta.size());
             respuestaCompleta.put("filtros_aplicados", java.util.Map.of(
-                "periodo_academico", periodoAcademico != null ? periodoAcademico : "Todos",
+                "periodo_academico", periodoAcademicoFiltro != null ? periodoAcademicoFiltro : "Todos",
                 "tipo_solicitud", tipoSolicitud != null ? tipoSolicitud : "Todos",
                 "estado_actual", estadoActual != null ? estadoActual : "Todos",
                 "id_usuario", idUsuario != null ? idUsuario : "Todos"
@@ -243,8 +263,119 @@ public class SolicitudRestController {
             return ResponseEntity.ok(respuestaCompleta);
             
         } catch (Exception e) {
+            log.error("Error al obtener historial completo: {}", e.getMessage(), e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body(java.util.Map.of("error", "Error al obtener historial: " + e.getMessage()));
+        }
+    }
+    
+    /**
+     * Obtener historial completo de una solicitud específica
+     * GET /api/solicitudes/{id}/historial
+     * 
+     * Este endpoint devuelve toda la información de una solicitud, incluyendo su historial completo de estados,
+     * documentos, y toda la información relacionada.
+     * 
+     * Acceso permitido para: Decano, Funcionario, Coordinador, Secretario, Administrador
+     * 
+     * @param id ID de la solicitud
+     * @return Información completa de la solicitud con historial de estados
+     */
+    @GetMapping("/{id}/historial")
+    @PreAuthorize("hasRole('Decano') or hasRole('Funcionario') or hasRole('Coordinador') or hasRole('Secretario') or hasRole('Administrador')")
+    public ResponseEntity<?> obtenerHistorialSolicitud(@PathVariable Integer id) {
+        try {
+            log.info("Obteniendo historial completo de solicitud con ID: {}", id);
+            
+            Solicitud solicitud = solicitudCU.obtenerSolicitudPorId(id);
+            
+            if (solicitud == null) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                        .body(java.util.Map.of("error", "Solicitud no encontrada con ID: " + id));
+            }
+            
+            SolicitudDTORespuesta dto = mapper.mappearDeSolicitudARespuesta(solicitud);
+            java.util.Map<String, Object> respuesta = new java.util.HashMap<>();
+            
+            // Información básica de la solicitud
+            respuesta.put("id_solicitud", dto.getId_solicitud());
+            respuesta.put("nombre_solicitud", dto.getNombre_solicitud());
+            respuesta.put("periodo_academico", dto.getPeriodo_academico());
+            respuesta.put("fecha_registro_solicitud", dto.getFecha_registro_solicitud());
+            respuesta.put("fecha_ceremonia", solicitud.getFecha_ceremonia());
+            
+            // Tipo de solicitud
+            respuesta.put("tipo_solicitud", detectarTipoSolicitud(solicitud));
+            respuesta.put("tipo_solicitud_display", obtenerNombreTipoSolicitud(detectarTipoSolicitud(solicitud)));
+            
+            // Estado actual
+            String estadoActualSolicitud = "Sin estado";
+            java.util.Date fechaUltimoEstado = null;
+            if (solicitud.getEstadosSolicitud() != null && !solicitud.getEstadosSolicitud().isEmpty()) {
+                co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.EstadoSolicitud ultimoEstado = 
+                    solicitud.getEstadosSolicitud().get(solicitud.getEstadosSolicitud().size() - 1);
+                estadoActualSolicitud = ultimoEstado.getEstado_actual();
+                fechaUltimoEstado = ultimoEstado.getFecha_registro_estado();
+            }
+            respuesta.put("estado_actual", estadoActualSolicitud);
+            respuesta.put("fecha_ultimo_estado", fechaUltimoEstado);
+            
+            // Información del usuario
+            if (dto.getObjUsuario() != null) {
+                java.util.Map<String, Object> usuarioInfo = new java.util.HashMap<>();
+                usuarioInfo.put("id_usuario", dto.getObjUsuario().getId_usuario());
+                usuarioInfo.put("nombre_completo", dto.getObjUsuario().getNombre_completo());
+                usuarioInfo.put("codigo", dto.getObjUsuario().getCodigo());
+                usuarioInfo.put("correo", dto.getObjUsuario().getCorreo());
+                usuarioInfo.put("cedula", dto.getObjUsuario().getCedula());
+                respuesta.put("usuario", usuarioInfo);
+            }
+            
+            // Historial completo de estados (ordenados por fecha)
+            List<java.util.Map<String, Object>> historialEstados = new java.util.ArrayList<>();
+            if (solicitud.getEstadosSolicitud() != null && !solicitud.getEstadosSolicitud().isEmpty()) {
+                // Ordenar estados por fecha de registro
+                List<co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.EstadoSolicitud> estadosOrdenados = 
+                    new java.util.ArrayList<>(solicitud.getEstadosSolicitud());
+                estadosOrdenados.sort((e1, e2) -> {
+                    if (e1.getFecha_registro_estado() == null && e2.getFecha_registro_estado() == null) return 0;
+                    if (e1.getFecha_registro_estado() == null) return -1;
+                    if (e2.getFecha_registro_estado() == null) return 1;
+                    return e1.getFecha_registro_estado().compareTo(e2.getFecha_registro_estado());
+                });
+                
+                for (co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.EstadoSolicitud estado : estadosOrdenados) {
+                    java.util.Map<String, Object> estadoInfo = new java.util.HashMap<>();
+                    estadoInfo.put("id_estado", estado.getId_estado());
+                    estadoInfo.put("estado_actual", estado.getEstado_actual());
+                    estadoInfo.put("fecha_registro_estado", estado.getFecha_registro_estado());
+                    estadoInfo.put("comentario", estado.getComentario());
+                    historialEstados.add(estadoInfo);
+                }
+            }
+            respuesta.put("historial_estados", historialEstados);
+            respuesta.put("total_estados", historialEstados.size());
+            
+            // Información de documentos
+            respuesta.put("documentos", dto.getDocumentos());
+            respuesta.put("total_documentos", dto.getDocumentos() != null ? dto.getDocumentos().size() : 0);
+            
+            // Información adicional según el tipo de solicitud
+            java.util.Map<String, Object> informacionAdicional = new java.util.HashMap<>();
+            if (solicitud instanceof co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.SolicitudPazYSalvo) {
+                co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.SolicitudPazYSalvo pazSalvo = 
+                    (co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.SolicitudPazYSalvo) solicitud;
+                informacionAdicional.put("titulo_trabajo_grado", pazSalvo.getTitulo_trabajo_grado());
+                informacionAdicional.put("director_trabajo_grado", pazSalvo.getDirector_trabajo_grado());
+            }
+            respuesta.put("informacion_adicional", informacionAdicional);
+            
+            return ResponseEntity.ok(respuesta);
+            
+        } catch (Exception e) {
+            log.error("Error al obtener historial de solicitud {}: {}", id, e.getMessage(), e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(java.util.Map.of("error", "Error al obtener historial de solicitud: " + e.getMessage()));
         }
     }
     
@@ -307,6 +438,59 @@ public class SolicitudRestController {
             default:
                 return "Desconocido";
         }
+    }
+    
+    /**
+     * Convierte el formato del período académico de "Primer Período 2025" o "Segundo Período 2025" 
+     * al formato "2025-1" o "2025-2"
+     * 
+     * @param periodoAcademico Período académico en formato legible o formato YYYY-P
+     * @return Período académico en formato YYYY-P, o null si no se puede convertir
+     */
+    private String convertirFormatoPeriodoAcademico(String periodoAcademico) {
+        if (periodoAcademico == null || periodoAcademico.trim().isEmpty()) {
+            return null;
+        }
+        
+        String periodo = periodoAcademico.trim();
+        
+        // Si ya está en formato YYYY-P, retornarlo tal cual
+        if (periodo.matches("\\d{4}-[12]")) {
+            return periodo;
+        }
+        
+        // Intentar convertir desde formato "Primer Período 2025" o "Segundo Período 2025"
+        // Patrón: "Primer Período 2025" o "Segundo Período 2025"
+        java.util.regex.Pattern pattern = java.util.regex.Pattern.compile(
+            "(Primer|Segundo)\\s+Per[ií]odo\\s+(\\d{4})", 
+            java.util.regex.Pattern.CASE_INSENSITIVE
+        );
+        java.util.regex.Matcher matcher = pattern.matcher(periodo);
+        
+        if (matcher.find()) {
+            String numeroPeriodo = matcher.group(1).equalsIgnoreCase("Primer") ? "1" : "2";
+            String año = matcher.group(2);
+            String resultado = año + "-" + numeroPeriodo;
+            
+            // Validar que el período existe en el enum
+            try {
+                PeriodoAcademicoEnum.fromValor(resultado);
+                return resultado;
+            } catch (IllegalArgumentException e) {
+                log.warn("Período académico '{}' no es válido", resultado);
+                return null;
+            }
+        }
+        
+        // Si no coincide con ningún patrón, intentar buscar en el enum por descripción
+        for (PeriodoAcademicoEnum periodoEnum : PeriodoAcademicoEnum.values()) {
+            if (periodoEnum.getDescripcion().equalsIgnoreCase(periodo)) {
+                return periodoEnum.getValor();
+            }
+        }
+        
+        log.warn("No se pudo convertir el período académico '{}' al formato YYYY-P", periodo);
+        return null;
     }
 
 //    @PostMapping("/crearPazYSalvo")
