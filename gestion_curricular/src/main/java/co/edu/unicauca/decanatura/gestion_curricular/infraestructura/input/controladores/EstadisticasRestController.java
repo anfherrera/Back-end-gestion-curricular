@@ -857,18 +857,21 @@ public class EstadisticasRestController {
     /**
      * Exporta estadísticas de cursos de verano a PDF (para Dashboard Cursos de Verano).
      * 
+     * @param periodoAcademico Período académico (opcional) - formato: "YYYY-P" o "Primer Período 2025"
      * @return ResponseEntity con archivo PDF
      */
     @GetMapping("/export/pdf/cursos-verano")
-    public ResponseEntity<byte[]> exportarEstadisticasCursosVeranoPDF() {
+    @PreAuthorize("hasAnyRole('Administrador', 'Funcionario', 'Coordinador', 'Secretario', 'Decano')")
+    public ResponseEntity<byte[]> exportarEstadisticasCursosVeranoPDF(
+            @RequestParam(required = false) String periodoAcademico) {
         try {
-            log.info("Generando el PDF con información de cursos de verano...");
+            log.info("Generando el PDF con información de cursos de verano. Período: {}", periodoAcademico);
             
-            // Obtener solo datos de cursos de verano
-            Map<String, Object> datosCursosVerano = estadisticaCU.obtenerEstadisticasCursosVerano();
+            // Obtener solo datos de cursos de verano (con filtros si se proporcionan)
+            Map<String, Object> datosCursosVerano = estadisticaCU.obtenerEstadisticasCursosVerano(periodoAcademico, null);
             
-            // Generar PDF solo con datos de cursos de verano
-            byte[] pdfBytes = generarPDFCursosVerano(datosCursosVerano);
+            // Generar PDF solo con datos de cursos de verano (pasar período académico para mostrarlo)
+            byte[] pdfBytes = generarPDFCursosVerano(datosCursosVerano, periodoAcademico);
             
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.APPLICATION_PDF);
@@ -933,7 +936,7 @@ public class EstadisticasRestController {
             if (proceso != null && ("CURSO_VERANO".equals(proceso) || 
                                     proceso.toLowerCase().contains("curso") && proceso.toLowerCase().contains("verano"))) {
                 try {
-                    datosCursosVerano = estadisticaCU.obtenerEstadisticasCursosVerano();
+                    datosCursosVerano = estadisticaCU.obtenerEstadisticasCursosVerano(periodoAcademico, null);
                     log.info("Datos de cursos de verano obtenidos para el PDF: {}", datosCursosVerano != null);
                 } catch (Exception e) {
                     log.warn("No se pudieron obtener datos de cursos de verano para el PDF: {}", e.getMessage());
@@ -1001,15 +1004,17 @@ public class EstadisticasRestController {
      * @return ResponseEntity con archivo Excel
      */
     @GetMapping("/export/excel/cursos-verano")
-    public ResponseEntity<byte[]> exportarEstadisticasCursosVeranoExcel() {
+    @PreAuthorize("hasAnyRole('Administrador', 'Funcionario', 'Coordinador', 'Secretario', 'Decano')")
+    public ResponseEntity<byte[]> exportarEstadisticasCursosVeranoExcel(
+            @RequestParam(required = false) String periodoAcademico) {
         try {
-            log.info("Generando archivo Excel con información de cursos de verano...");
+            log.info("Generando archivo Excel con información de cursos de verano. Período: {}", periodoAcademico);
             
-            // Obtener solo datos de cursos de verano
-            Map<String, Object> datosCursosVerano = estadisticaCU.obtenerEstadisticasCursosVerano();
+            // Obtener solo datos de cursos de verano (con filtros si se proporcionan)
+            Map<String, Object> datosCursosVerano = estadisticaCU.obtenerEstadisticasCursosVerano(periodoAcademico, null);
             
-            // Generar Excel solo con datos de cursos de verano
-            byte[] excelBytes = generarExcelCursosVerano(datosCursosVerano);
+            // Generar Excel solo con datos de cursos de verano (pasar período académico para mostrarlo)
+            byte[] excelBytes = generarExcelCursosVerano(datosCursosVerano, periodoAcademico);
             
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.APPLICATION_OCTET_STREAM);
@@ -1074,7 +1079,7 @@ public class EstadisticasRestController {
             if (proceso != null && ("CURSO_VERANO".equals(proceso) || 
                                     proceso.toLowerCase().contains("curso") && proceso.toLowerCase().contains("verano"))) {
                 try {
-                    datosCursosVerano = estadisticaCU.obtenerEstadisticasCursosVerano();
+                    datosCursosVerano = estadisticaCU.obtenerEstadisticasCursosVerano(periodoAcademico, null);
                     log.info("Datos de cursos de verano disponibles para el Excel: {}", datosCursosVerano != null);
                 } catch (Exception e) {
                     log.warn("No se pudieron obtener datos de cursos de verano para el Excel: {}", e.getMessage());
@@ -1184,9 +1189,10 @@ public class EstadisticasRestController {
      * Genera un PDF solo con estadísticas de cursos de verano (para Dashboard Cursos de Verano).
      * 
      * @param datosCursosVerano Datos de cursos de verano
+     * @param periodoAcademico Período académico filtrado (opcional)
      * @return Array de bytes del PDF
      */
-    private byte[] generarPDFCursosVerano(Map<String, Object> datosCursosVerano) {
+    private byte[] generarPDFCursosVerano(Map<String, Object> datosCursosVerano, String periodoAcademico) {
         log.debug("Iniciando la generación del PDF con información de cursos de verano...");
         
         ByteArrayOutputStream baos = null;
@@ -1212,6 +1218,28 @@ public class EstadisticasRestController {
             com.itextpdf.text.Paragraph fecha = new com.itextpdf.text.Paragraph("Fecha de generación: " + fechaFormateada, dateFont);
             fecha.setSpacingAfter(15);
             document.add(fecha);
+            
+            // Mostrar período académico si se filtró por uno
+            if (periodoAcademico != null && !periodoAcademico.trim().isEmpty()) {
+                log.debug("Mostrando período académico en PDF de cursos de verano: {}", periodoAcademico);
+                // Intentar convertir a formato descriptivo si viene en formato YYYY-P
+                String periodoMostrar = periodoAcademico;
+                String periodoFormato = convertirFormatoPeriodoAcademico(periodoAcademico);
+                if (periodoFormato != null && periodoFormato.matches("\\d{4}-[12]")) {
+                    // Si está en formato YYYY-P, intentar obtener descripción
+                    Optional<PeriodoAcademico> periodoOpt = periodoAcademicoCU.obtenerPeriodoPorValor(periodoFormato);
+                    if (periodoOpt.isPresent()) {
+                        PeriodoAcademico periodo = periodoOpt.get();
+                        String descripcion = periodo.getNombre_periodo() != null && !periodo.getNombre_periodo().trim().isEmpty() 
+                            ? periodo.getNombre_periodo() 
+                            : (periodo.getNumero_periodo() == 1 ? "Primer Período" : "Segundo Período") + " " + periodo.getAño();
+                        periodoMostrar = descripcion;
+                    }
+                }
+                com.itextpdf.text.Paragraph periodo = new com.itextpdf.text.Paragraph("Período Académico: " + periodoMostrar, dateFont);
+                periodo.setSpacingAfter(15);
+                document.add(periodo);
+            }
             
             // Sección: Estadísticas de Cursos de Verano
             agregarSeccionCursosVerano(document, datosCursosVerano);
@@ -1649,14 +1677,20 @@ public class EstadisticasRestController {
      * Obtiene estadísticas específicas para cursos de verano.
      * Incluye análisis de demanda por materia, tendencias temporales y recomendaciones.
      * 
+     * @param periodoAcademico Período académico (opcional) - formato: "YYYY-P" o "Primer Período 2025"
+     * @param idPrograma ID del programa académico (opcional)
      * @return ResponseEntity con estadísticas detalladas de cursos de verano
      */
     @GetMapping("/cursos-verano")
-    public ResponseEntity<Map<String, Object>> obtenerEstadisticasCursosVerano() {
+    @PreAuthorize("hasAnyRole('Administrador', 'Funcionario', 'Coordinador', 'Secretario', 'Decano')")
+    public ResponseEntity<Map<String, Object>> obtenerEstadisticasCursosVerano(
+            @RequestParam(required = false) String periodoAcademico,
+            @RequestParam(required = false) Integer idPrograma) {
         try {
-            log.info("Cursos de verano - Obteniendo estadísticas de cursos de verano...");
+            log.info("Cursos de verano - Obteniendo estadísticas de cursos de verano. Período: {}, Programa: {}", periodoAcademico, idPrograma);
             
-            Map<String, Object> resultado = estadisticaCU.obtenerEstadisticasCursosVerano();
+            // Obtener estadísticas de cursos de verano con filtros
+            Map<String, Object> resultado = estadisticaCU.obtenerEstadisticasCursosVerano(periodoAcademico, idPrograma);
             
             log.info("Cursos de verano - Estadísticas de cursos de verano generadas exitosamente");
             return ResponseEntity.ok(resultado);
@@ -1859,63 +1893,140 @@ public class EstadisticasRestController {
     private void agregarSeccionCursosVerano(com.itextpdf.text.Document document, Map<String, Object> datosCursosVerano) throws Exception {
         // Título de sección
         com.itextpdf.text.Font sectionFont = new com.itextpdf.text.Font(com.itextpdf.text.Font.FontFamily.HELVETICA, 14, com.itextpdf.text.Font.BOLD);
-        com.itextpdf.text.Paragraph sectionTitle = new com.itextpdf.text.Paragraph("2. ESTADÍSTICAS DE CURSOS DE VERANO", sectionFont);
-        sectionTitle.setSpacingAfter(10);
+        com.itextpdf.text.Paragraph sectionTitle = new com.itextpdf.text.Paragraph("1. ESTADÍSTICAS DE CURSOS DE VERANO", sectionFont);
+        sectionTitle.setSpacingAfter(15);
         document.add(sectionTitle);
         
         com.itextpdf.text.Font normalFont = new com.itextpdf.text.Font(com.itextpdf.text.Font.FontFamily.HELVETICA, 10);
+        com.itextpdf.text.Font subSectionFont = new com.itextpdf.text.Font(com.itextpdf.text.Font.FontFamily.HELVETICA, 12, com.itextpdf.text.Font.BOLD);
         
-        // Resumen
+        // ===== RESUMEN GENERAL =====
         @SuppressWarnings("unchecked")
         Map<String, Object> resumen = (Map<String, Object>) datosCursosVerano.get("resumen");
         if (resumen != null) {
-            document.add(new com.itextpdf.text.Paragraph("Resumen General:", normalFont));
+            com.itextpdf.text.Paragraph resumenTitle = new com.itextpdf.text.Paragraph("Resumen General", subSectionFont);
+            resumenTitle.setSpacingAfter(10);
+            document.add(resumenTitle);
+            
             document.add(new com.itextpdf.text.Paragraph("  • Total Solicitudes: " + resumen.get("totalSolicitudes"), normalFont));
             document.add(new com.itextpdf.text.Paragraph("  • Materias Únicas: " + resumen.get("materiasUnicas"), normalFont));
             document.add(new com.itextpdf.text.Paragraph("  • Programas Participantes: " + resumen.get("programasParticipantes"), normalFont));
             document.add(new com.itextpdf.text.Paragraph("  • Tasa de Aprobación: " + resumen.get("tasaAprobacion") + "%", normalFont));
         }
         
-        // Top materias
+        // ===== ESTADÍSTICAS POR ESTADO =====
+        @SuppressWarnings("unchecked")
+        Map<String, Object> estadosSolicitudes = (Map<String, Object>) datosCursosVerano.get("estadosSolicitudes");
+        if (estadosSolicitudes != null && !estadosSolicitudes.isEmpty()) {
+            com.itextpdf.text.Paragraph estadoTitle = new com.itextpdf.text.Paragraph("\nEstadísticas por Estado", subSectionFont);
+            estadoTitle.setSpacingAfter(10);
+            estadoTitle.setSpacingBefore(10);
+            document.add(estadoTitle);
+            
+            for (Map.Entry<String, Object> entry : estadosSolicitudes.entrySet()) {
+                document.add(new com.itextpdf.text.Paragraph("  • " + entry.getKey() + ": " + entry.getValue() + " solicitudes", normalFont));
+            }
+        }
+        
+        // ===== TOP MATERIAS POR DEMANDA =====
         @SuppressWarnings("unchecked")
         List<Map<String, Object>> topMaterias = (List<Map<String, Object>>) datosCursosVerano.get("topMaterias");
         if (topMaterias != null && !topMaterias.isEmpty()) {
-            document.add(new com.itextpdf.text.Paragraph("\nTop Materias por Demanda:", normalFont));
+            com.itextpdf.text.Paragraph materiasTitle = new com.itextpdf.text.Paragraph("\nTop Materias por Demanda", subSectionFont);
+            materiasTitle.setSpacingAfter(10);
+            materiasTitle.setSpacingBefore(10);
+            document.add(materiasTitle);
+            
             for (Map<String, Object> materia : topMaterias) {
                 document.add(new com.itextpdf.text.Paragraph("  • " + materia.get("nombre") + ": " + 
                     materia.get("solicitudes") + " solicitudes (" + materia.get("porcentaje") + "%)", normalFont));
             }
         }
         
-        // Análisis por programa
+        // ===== ANÁLISIS POR PROGRAMA =====
         @SuppressWarnings("unchecked")
         List<Map<String, Object>> analisisPorPrograma = (List<Map<String, Object>>) datosCursosVerano.get("analisisPorPrograma");
         if (analisisPorPrograma != null && !analisisPorPrograma.isEmpty()) {
-            document.add(new com.itextpdf.text.Paragraph("\nAnálisis por Programa:", normalFont));
+            com.itextpdf.text.Paragraph programaTitle = new com.itextpdf.text.Paragraph("\nAnálisis por Programa Académico", subSectionFont);
+            programaTitle.setSpacingAfter(10);
+            programaTitle.setSpacingBefore(10);
+            document.add(programaTitle);
+            
             for (Map<String, Object> programa : analisisPorPrograma) {
                 document.add(new com.itextpdf.text.Paragraph("  • " + programa.get("nombre") + ": " + 
                     programa.get("solicitudes") + " solicitudes (" + programa.get("porcentaje") + "%)", normalFont));
             }
         }
         
-        // Predicciones
+        // ===== TENDENCIAS TEMPORALES =====
         @SuppressWarnings("unchecked")
-        Map<String, Object> predicciones = (Map<String, Object>) datosCursosVerano.get("predicciones");
-        if (predicciones != null) {
-            document.add(new com.itextpdf.text.Paragraph("\nPredicciones:", normalFont));
-            document.add(new com.itextpdf.text.Paragraph("  • Demanda Estimada Próximo Período: " + predicciones.get("demandaEstimadaProximoPeriodo"), normalFont));
-            document.add(new com.itextpdf.text.Paragraph("  • Confiabilidad: " + predicciones.get("confiabilidad"), normalFont));
-            document.add(new com.itextpdf.text.Paragraph("  • Metodología: " + predicciones.get("metodologia"), normalFont));
+        List<Map<String, Object>> tendenciasTemporales = (List<Map<String, Object>>) datosCursosVerano.get("tendenciasTemporales");
+        if (tendenciasTemporales != null && !tendenciasTemporales.isEmpty()) {
+            com.itextpdf.text.Paragraph tendenciasTitle = new com.itextpdf.text.Paragraph("\nTendencias Temporales", subSectionFont);
+            tendenciasTitle.setSpacingAfter(10);
+            tendenciasTitle.setSpacingBefore(10);
+            document.add(tendenciasTitle);
+            
+            // Mostrar solo los meses con solicitudes (o los últimos 6 meses)
+            int mesesAMostrar = Math.min(6, tendenciasTemporales.size());
+            for (int i = 0; i < mesesAMostrar; i++) {
+                Map<String, Object> tendencia = tendenciasTemporales.get(i);
+                document.add(new com.itextpdf.text.Paragraph("  • " + tendencia.get("mes") + ": " + 
+                    tendencia.get("solicitudes") + " solicitudes", normalFont));
+            }
         }
         
-        // Recomendaciones
+        // ===== PREDICCIONES =====
+        @SuppressWarnings("unchecked")
+        Map<String, Object> predicciones = (Map<String, Object>) datosCursosVerano.get("predicciones");
+        if (predicciones != null && !predicciones.isEmpty()) {
+            com.itextpdf.text.Paragraph prediccionesTitle = new com.itextpdf.text.Paragraph("\nPredicciones de Demanda", subSectionFont);
+            prediccionesTitle.setSpacingAfter(10);
+            prediccionesTitle.setSpacingBefore(10);
+            document.add(prediccionesTitle);
+            
+            Object demandaEstimada = predicciones.get("demandaEstimadaProximoPeriodo");
+            if (demandaEstimada != null) {
+                document.add(new com.itextpdf.text.Paragraph("  • Demanda Estimada Próximo Período: " + demandaEstimada + " solicitudes", normalFont));
+            }
+            
+            Object confiabilidad = predicciones.get("confiabilidad");
+            if (confiabilidad != null) {
+                document.add(new com.itextpdf.text.Paragraph("  • Confiabilidad: " + confiabilidad, normalFont));
+            }
+            
+            Object metodologia = predicciones.get("metodologia");
+            if (metodologia != null && !metodologia.toString().equals("null")) {
+                document.add(new com.itextpdf.text.Paragraph("  • Metodología: " + metodologia, normalFont));
+            }
+        }
+        
+        // ===== RECOMENDACIONES =====
         @SuppressWarnings("unchecked")
         List<Map<String, Object>> recomendaciones = (List<Map<String, Object>>) datosCursosVerano.get("recomendaciones");
         if (recomendaciones != null && !recomendaciones.isEmpty()) {
-            document.add(new com.itextpdf.text.Paragraph("\nRecomendaciones:", normalFont));
+            com.itextpdf.text.Paragraph recomendacionesTitle = new com.itextpdf.text.Paragraph("\nRecomendaciones Estratégicas", subSectionFont);
+            recomendacionesTitle.setSpacingAfter(10);
+            recomendacionesTitle.setSpacingBefore(10);
+            document.add(recomendacionesTitle);
+            
             for (Map<String, Object> rec : recomendaciones) {
-                document.add(new com.itextpdf.text.Paragraph("  • " + rec.get("titulo") + ": " + rec.get("descripcion"), normalFont));
+                String titulo = rec.get("titulo") != null ? rec.get("titulo").toString() : "Recomendación";
+                String descripcion = rec.get("descripcion") != null ? rec.get("descripcion").toString() : "";
+                document.add(new com.itextpdf.text.Paragraph("  • " + titulo + ": " + descripcion, normalFont));
             }
+        }
+        
+        // ===== FECHA DE CONSULTA =====
+        Object fechaConsulta = datosCursosVerano.get("fechaConsulta");
+        if (fechaConsulta != null) {
+            com.itextpdf.text.Paragraph fechaTitle = new com.itextpdf.text.Paragraph("\nFecha de Consulta", subSectionFont);
+            fechaTitle.setSpacingAfter(10);
+            fechaTitle.setSpacingBefore(10);
+            document.add(fechaTitle);
+            // Formatear fecha de consulta en español
+            String fechaConsultaFormateada = formatearFechaEspanol(fechaConsulta);
+            document.add(new com.itextpdf.text.Paragraph("  " + fechaConsultaFormateada, normalFont));
         }
     }
 
@@ -1938,7 +2049,7 @@ public class EstadisticasRestController {
             
             // Hoja 2: Cursos de Verano
             if (datosCursosVerano != null) {
-                crearHojaCursosVerano(workbook, datosCursosVerano);
+                crearHojaCursosVerano(workbook, datosCursosVerano, periodoAcademico);
             }
             
             workbook.write(baos);
@@ -2162,8 +2273,12 @@ public class EstadisticasRestController {
 
     /**
      * Crea la hoja de cursos de verano en el Excel.
+     * 
+     * @param workbook Libro de trabajo de Excel
+     * @param datosCursosVerano Datos de cursos de verano
+     * @param periodoAcademico Período académico filtrado (opcional)
      */
-    private void crearHojaCursosVerano(org.apache.poi.xssf.usermodel.XSSFWorkbook workbook, Map<String, Object> datosCursosVerano) {
+    private void crearHojaCursosVerano(org.apache.poi.xssf.usermodel.XSSFWorkbook workbook, Map<String, Object> datosCursosVerano, String periodoAcademico) {
         org.apache.poi.ss.usermodel.Sheet sheet = workbook.createSheet("Cursos de Verano");
         
         // Estilos
@@ -2188,6 +2303,28 @@ public class EstadisticasRestController {
         titleCell.setCellStyle(titleStyle);
         
         rowNum++; // Espacio
+        
+        // Mostrar período académico si se filtró por uno
+        if (periodoAcademico != null && !periodoAcademico.trim().isEmpty()) {
+            log.debug("Mostrando período académico en Excel de cursos de verano: {}", periodoAcademico);
+            // Intentar convertir a formato descriptivo si viene en formato YYYY-P
+            String periodoMostrar = periodoAcademico;
+            String periodoFormato = convertirFormatoPeriodoAcademico(periodoAcademico);
+            if (periodoFormato != null && periodoFormato.matches("\\d{4}-[12]")) {
+                Optional<PeriodoAcademico> periodoOpt = periodoAcademicoCU.obtenerPeriodoPorValor(periodoFormato);
+                if (periodoOpt.isPresent()) {
+                    PeriodoAcademico periodo = periodoOpt.get();
+                    String descripcion = periodo.getNombre_periodo() != null && !periodo.getNombre_periodo().trim().isEmpty() 
+                        ? periodo.getNombre_periodo() 
+                        : (periodo.getNumero_periodo() == 1 ? "Primer Período" : "Segundo Período") + " " + periodo.getAño();
+                    periodoMostrar = descripcion;
+                }
+            }
+            org.apache.poi.ss.usermodel.Row periodoRow = sheet.createRow(rowNum++);
+            periodoRow.createCell(0).setCellValue("Período Académico:");
+            periodoRow.createCell(1).setCellValue(periodoMostrar);
+            rowNum++; // Espacio
+        }
         
         // Resumen
             @SuppressWarnings("unchecked")
@@ -2239,12 +2376,111 @@ public class EstadisticasRestController {
                 row.createCell(1).setCellValue(programa.get("solicitudes").toString());
                 row.createCell(2).setCellValue(programa.get("porcentaje").toString() + "%");
             }
+            rowNum++; // Espacio
+        }
+        
+        // Estadísticas por estado
+        @SuppressWarnings("unchecked")
+        Map<String, Object> estadosSolicitudes = (Map<String, Object>) datosCursosVerano.get("estadosSolicitudes");
+        if (estadosSolicitudes != null && !estadosSolicitudes.isEmpty()) {
+            org.apache.poi.ss.usermodel.Row headerRow = sheet.createRow(rowNum++);
+            org.apache.poi.ss.usermodel.Cell headerCell = headerRow.createCell(0);
+            headerCell.setCellValue("ESTADÍSTICAS POR ESTADO");
+            headerCell.setCellStyle(headerStyle);
+            
+            for (Map.Entry<String, Object> entry : estadosSolicitudes.entrySet()) {
+                org.apache.poi.ss.usermodel.Row row = sheet.createRow(rowNum++);
+                row.createCell(0).setCellValue(entry.getKey());
+                row.createCell(1).setCellValue(entry.getValue().toString() + " solicitudes");
             }
+            rowNum++; // Espacio
+        }
+        
+        // Tendencias temporales
+        @SuppressWarnings("unchecked")
+        List<Map<String, Object>> tendenciasTemporales = (List<Map<String, Object>>) datosCursosVerano.get("tendenciasTemporales");
+        if (tendenciasTemporales != null && !tendenciasTemporales.isEmpty()) {
+            org.apache.poi.ss.usermodel.Row headerRow = sheet.createRow(rowNum++);
+            org.apache.poi.ss.usermodel.Cell headerCell = headerRow.createCell(0);
+            headerCell.setCellValue("TENDENCIAS TEMPORALES");
+            headerCell.setCellStyle(headerStyle);
+            
+            // Mostrar solo los meses con solicitudes (o los últimos 6 meses)
+            int mesesAMostrar = Math.min(6, tendenciasTemporales.size());
+            for (int i = 0; i < mesesAMostrar; i++) {
+                Map<String, Object> tendencia = tendenciasTemporales.get(i);
+                org.apache.poi.ss.usermodel.Row row = sheet.createRow(rowNum++);
+                row.createCell(0).setCellValue(tendencia.get("mes").toString());
+                row.createCell(1).setCellValue(tendencia.get("solicitudes").toString() + " solicitudes");
+            }
+            rowNum++; // Espacio
+        }
+        
+        // Predicciones
+        @SuppressWarnings("unchecked")
+        Map<String, Object> predicciones = (Map<String, Object>) datosCursosVerano.get("predicciones");
+        if (predicciones != null && !predicciones.isEmpty()) {
+            org.apache.poi.ss.usermodel.Row headerRow = sheet.createRow(rowNum++);
+            org.apache.poi.ss.usermodel.Cell headerCell = headerRow.createCell(0);
+            headerCell.setCellValue("PREDICCIONES DE DEMANDA");
+            headerCell.setCellStyle(headerStyle);
+            
+            Object demandaEstimada = predicciones.get("demandaEstimadaProximoPeriodo");
+            if (demandaEstimada != null) {
+                org.apache.poi.ss.usermodel.Row row = sheet.createRow(rowNum++);
+                row.createCell(0).setCellValue("Demanda Estimada Próximo Período");
+                row.createCell(1).setCellValue(demandaEstimada.toString() + " solicitudes");
+            }
+            
+            Object confiabilidad = predicciones.get("confiabilidad");
+            if (confiabilidad != null) {
+                org.apache.poi.ss.usermodel.Row row = sheet.createRow(rowNum++);
+                row.createCell(0).setCellValue("Confiabilidad");
+                row.createCell(1).setCellValue(confiabilidad.toString());
+            }
+            
+            Object metodologia = predicciones.get("metodologia");
+            if (metodologia != null && !metodologia.toString().equals("null")) {
+                org.apache.poi.ss.usermodel.Row row = sheet.createRow(rowNum++);
+                row.createCell(0).setCellValue("Metodología");
+                row.createCell(1).setCellValue(metodologia.toString());
+            }
+            rowNum++; // Espacio
+        }
+        
+        // Recomendaciones
+        @SuppressWarnings("unchecked")
+        List<Map<String, Object>> recomendaciones = (List<Map<String, Object>>) datosCursosVerano.get("recomendaciones");
+        if (recomendaciones != null && !recomendaciones.isEmpty()) {
+            org.apache.poi.ss.usermodel.Row headerRow = sheet.createRow(rowNum++);
+            org.apache.poi.ss.usermodel.Cell headerCell = headerRow.createCell(0);
+            headerCell.setCellValue("RECOMENDACIONES ESTRATÉGICAS");
+            headerCell.setCellStyle(headerStyle);
+            
+            for (Map<String, Object> rec : recomendaciones) {
+                org.apache.poi.ss.usermodel.Row row = sheet.createRow(rowNum++);
+                String titulo = rec.get("titulo") != null ? rec.get("titulo").toString() : "Recomendación";
+                String descripcion = rec.get("descripcion") != null ? rec.get("descripcion").toString() : "";
+                row.createCell(0).setCellValue(titulo);
+                row.createCell(1).setCellValue(descripcion);
+            }
+            rowNum++; // Espacio
+        }
+        
+        // Fecha de consulta
+        Object fechaConsulta = datosCursosVerano.get("fechaConsulta");
+        if (fechaConsulta != null) {
+            org.apache.poi.ss.usermodel.Row row = sheet.createRow(rowNum++);
+            row.createCell(0).setCellValue("Fecha de Consulta");
+            // Formatear fecha de consulta en español
+            String fechaConsultaFormateada = formatearFechaEspanol(fechaConsulta);
+            row.createCell(1).setCellValue(fechaConsultaFormateada);
+        }
             
             // Ajustar ancho de columnas
             sheet.autoSizeColumn(0);
             sheet.autoSizeColumn(1);
-        sheet.autoSizeColumn(2);
+            sheet.autoSizeColumn(2);
     }
 
     /**
@@ -2409,15 +2645,16 @@ public class EstadisticasRestController {
      * Genera un Excel solo con estadísticas de cursos de verano (para Dashboard Cursos de Verano).
      * 
      * @param datosCursosVerano Datos de cursos de verano
+     * @param periodoAcademico Período académico filtrado (opcional)
      * @return Array de bytes del Excel
      */
-    private byte[] generarExcelCursosVerano(Map<String, Object> datosCursosVerano) {
+    private byte[] generarExcelCursosVerano(Map<String, Object> datosCursosVerano, String periodoAcademico) {
         try {
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
             org.apache.poi.xssf.usermodel.XSSFWorkbook workbook = new org.apache.poi.xssf.usermodel.XSSFWorkbook();
             
             // Hoja: Cursos de Verano
-            crearHojaCursosVerano(workbook, datosCursosVerano);
+            crearHojaCursosVerano(workbook, datosCursosVerano, periodoAcademico);
             
             workbook.write(baos);
             workbook.close();

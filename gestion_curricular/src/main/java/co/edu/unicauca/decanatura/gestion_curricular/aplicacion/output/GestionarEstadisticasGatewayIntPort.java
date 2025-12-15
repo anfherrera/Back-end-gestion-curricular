@@ -199,7 +199,7 @@ public interface GestionarEstadisticasGatewayIntPort {
      * 
      * @return Map con estadísticas detalladas de cursos de verano
      */
-    Map<String, Object> obtenerEstadisticasCursosVerano();
+    Map<String, Object> obtenerEstadisticasCursosVerano(String periodoAcademico, Integer idPrograma);
 
     /**
      * Obtiene solo las tendencias temporales de cursos de verano de manera optimizada.

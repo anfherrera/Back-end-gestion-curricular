@@ -3832,18 +3832,65 @@ public class GestionarEstadisticasGatewayImplAdapter implements GestionarEstadis
     }
 
     @Override
-    public Map<String, Object> obtenerEstadisticasCursosVerano() {
+    public Map<String, Object> obtenerEstadisticasCursosVerano(String periodoAcademico, Integer idPrograma) {
         Map<String, Object> resultado = new HashMap<>();
         
         try {
-            log.debug("Cursos de verano - Iniciando analisis de cursos de verano...");
+            log.debug("Cursos de verano - Iniciando analisis de cursos de verano. Período: {}, Programa: {}", periodoAcademico, idPrograma);
+            
+            // Convertir período académico a formato YYYY-P si viene en formato descriptivo
+            final String periodoFormato;
+            if (periodoAcademico != null && !periodoAcademico.trim().isEmpty()) {
+                // Intentar convertir formato descriptivo a YYYY-P
+                if (periodoAcademico.matches("\\d{4}-[12]")) {
+                    periodoFormato = periodoAcademico;
+                } else {
+                    // Intentar parsear formato descriptivo
+                    String periodoCalculado = null;
+                    if (periodoAcademico.toLowerCase().contains("primer")) {
+                        String año = periodoAcademico.replaceAll("[^0-9]", "");
+                        if (!año.isEmpty()) {
+                            periodoCalculado = año + "-1";
+                        }
+                    } else if (periodoAcademico.toLowerCase().contains("segundo")) {
+                        String año = periodoAcademico.replaceAll("[^0-9]", "");
+                        if (!año.isEmpty()) {
+                            periodoCalculado = año + "-2";
+                        }
+                    }
+                    periodoFormato = periodoCalculado;
+                }
+            } else {
+                periodoFormato = null;
+            }
             
             // Obtener todas las solicitudes de cursos de verano
             List<SolicitudEntity> todasLasSolicitudes = solicitudRepository.findAll();
             List<SolicitudEntity> solicitudesCursosVerano = todasLasSolicitudes.stream()
                 .filter(solicitud -> {
+                    // Filtrar por tipo de proceso
                     String nombreProceso = obtenerNombreProcesoPorSolicitud(solicitud);
-                    return "Cursos de Verano".equals(nombreProceso) || "CURSO_VERANO".equals(nombreProceso);
+                    if (!"Cursos de Verano".equals(nombreProceso) && !"CURSO_VERANO".equals(nombreProceso)) {
+                        return false;
+                    }
+                    
+                    // Filtrar por período académico si se proporciona
+                    if (periodoFormato != null && solicitud.getPeriodo_academico() != null) {
+                        if (!periodoFormato.equals(solicitud.getPeriodo_academico())) {
+                            return false;
+                        }
+                    }
+                    
+                    // Filtrar por programa si se proporciona
+                    if (idPrograma != null) {
+                        if (solicitud.getObjUsuario() == null || 
+                            solicitud.getObjUsuario().getObjPrograma() == null ||
+                            !idPrograma.equals(solicitud.getObjUsuario().getObjPrograma().getId_programa())) {
+                            return false;
+                        }
+                    }
+                    
+                    return true;
                 })
                 .collect(Collectors.toList());
             
