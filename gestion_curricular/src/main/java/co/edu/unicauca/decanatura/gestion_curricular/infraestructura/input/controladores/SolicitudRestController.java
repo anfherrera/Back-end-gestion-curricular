@@ -4,11 +4,6 @@ import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarS
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Solicitud;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.DTORespuesta.SolicitudDTORespuesta;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.mappers.*;
-import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.entidades.SolicitudEntity;
-import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.entidades.UsuarioEntity;
-import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.repositorios.SolicitudRepositoryInt;
-import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.DTORespuesta.EstadoSolicitudDTORespuesta;
-import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.DTORespuesta.UsuarioDTORespuesta;
 import lombok.extern.slf4j.Slf4j;
 
 import jakarta.validation.constraints.Min;
@@ -17,6 +12,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -32,7 +28,6 @@ public class SolicitudRestController {
 
     private final GestionarSolicitudCUIntPort solicitudCU;
     private final SolicitudMapperDominio mapper;
-    private final SolicitudRepositoryInt solicitudRepository;
 //    private final SolicitudPazYSalvoMapperDominio solicitudPazYSalvoMapper;
 //    private final SolicitudCursoDeVeranoPreinscripcionMapperDominio solicitudCursoVeranoPreinscripcionMapper;
 //    private final SolicitudCursoDeVeranoInscripcionMapperDominio solicitudCursoDeVeranoInscripcionMapper;
@@ -149,6 +144,7 @@ public class SolicitudRestController {
      * @return Lista de solicitudes con sus detalles
      */
     @GetMapping("/historial")
+    @Transactional(readOnly = true)
     public ResponseEntity<Map<String, Object>> obtenerHistorialCompleto(
             @RequestParam(required = false) String periodoAcademico,
             @RequestParam(required = false) String tipoSolicitud,
@@ -159,32 +155,40 @@ public class SolicitudRestController {
             log.debug("Obteniendo historial completo - periodoAcademico: {}, tipoSolicitud: {}, estadoActual: {}, idUsuario: {}", 
                     periodoAcademico, tipoSolicitud, estadoActual, idUsuario);
             
-            // Obtener todas las solicitudes con sus relaciones usando findAllWithJoins
-            // Este método ya carga las relaciones con JOIN FETCH
-            List<SolicitudEntity> todasLasSolicitudes = solicitudRepository.findAllWithJoins();
+            // Obtener todas las solicitudes usando el caso de uso (más confiable)
+            // Esto usa el mismo método que otros endpoints que funcionan
+            List<Solicitud> todasLasSolicitudesDominio = solicitudCU.listarSolicitudes();
+            log.info("Total de solicitudes encontradas (usando CU): {}", todasLasSolicitudesDominio.size());
             
-            log.debug("Total de solicitudes encontradas: {}", todasLasSolicitudes.size());
+            if (todasLasSolicitudesDominio == null || todasLasSolicitudesDominio.isEmpty()) {
+                log.warn("No se encontraron solicitudes en la base de datos usando el caso de uso");
+                Map<String, Object> respuestaVacia = new HashMap<>();
+                respuestaVacia.put("solicitudes", new ArrayList<>());
+                respuestaVacia.put("total", 0);
+                respuestaVacia.put("total_solicitudes_sistema", 0);
+                respuestaVacia.put("total_solicitudes_procesadas", 0);
+                respuestaVacia.put("total_solicitudes_no_procesadas", 0);
+                respuestaVacia.put("nota", "No se encontraron solicitudes en la base de datos. Verifica que los datos se hayan cargado correctamente.");
+                return ResponseEntity.ok(respuestaVacia);
+            }
+            
+            // Convertir a entidades para aplicar filtros (o trabajar directamente con los modelos de dominio)
+            // Por ahora, vamos a convertir los modelos de dominio a DTOs directamente
+            List<SolicitudDTORespuesta> todasLasSolicitudesDTO = todasLasSolicitudesDominio.stream()
+                    .map(mapper::mappearDeSolicitudARespuesta)
+                    .collect(Collectors.toList());
+            
+            log.info("Total de DTOs creados: {}", todasLasSolicitudesDTO.size());
             
             // Contar solicitudes con estados (para estadísticas)
-            long totalConEstados = todasLasSolicitudes.stream()
-                    .filter(s -> {
-                        try {
-                            return s.getEstadosSolicitud() != null && !s.getEstadosSolicitud().isEmpty();
-                        } catch (Exception e) {
-                            // Si hay error al acceder a estados (lazy loading), asumimos que no tiene
-                            return false;
-                        }
-                    })
+            long totalConEstados = todasLasSolicitudesDTO.stream()
+                    .filter(s -> s.getEstadosSolicitud() != null && !s.getEstadosSolicitud().isEmpty())
                     .count();
             
-            log.debug("Solicitudes con estados: {}", totalConEstados);
+            log.info("Solicitudes con estados: {} de {}", totalConEstados, todasLasSolicitudesDTO.size());
             
-            // Para el historial, mostramos TODAS las solicitudes (no filtramos por estados)
-            // El frontend puede decidir qué mostrar
-            List<SolicitudEntity> solicitudesParaFiltrar = todasLasSolicitudes;
-            
-            // Aplicar filtros adicionales
-            List<SolicitudEntity> solicitudesFiltradas = solicitudesParaFiltrar.stream()
+            // Aplicar filtros adicionales a los DTOs
+            List<SolicitudDTORespuesta> solicitudesFiltradas = todasLasSolicitudesDTO.stream()
                     .filter(s -> {
                         // Filtro por período académico
                         if (periodoAcademico != null && !periodoAcademico.trim().isEmpty()) {
@@ -193,11 +197,35 @@ public class SolicitudRestController {
                             }
                         }
                         
-                        // Filtro por tipo de solicitud
+                        // Filtro por tipo de solicitud (más flexible)
                         if (tipoSolicitud != null && !tipoSolicitud.trim().isEmpty()) {
                             String nombreSolicitud = s.getNombre_solicitud() != null ? s.getNombre_solicitud().toLowerCase() : "";
                             String tipoFiltro = tipoSolicitud.trim().toLowerCase();
-                            if (!nombreSolicitud.contains(tipoFiltro)) {
+                            
+                            // Normalizar nombres comunes
+                            String tipoNormalizado = tipoFiltro
+                                    .replace("académico", "")
+                                    .replace("academico", "")
+                                    .trim();
+                            
+                            // Mapear nombres del frontend a nombres en BD
+                            boolean coincide = false;
+                            if (tipoNormalizado.contains("paz") && tipoNormalizado.contains("salvo")) {
+                                coincide = nombreSolicitud.contains("paz") && nombreSolicitud.contains("salvo");
+                            } else if (tipoNormalizado.contains("reingreso")) {
+                                coincide = nombreSolicitud.contains("reingreso");
+                            } else if (tipoNormalizado.contains("homologacion") || tipoNormalizado.contains("homologación")) {
+                                coincide = nombreSolicitud.contains("homologacion") || nombreSolicitud.contains("homologación");
+                            } else if (tipoNormalizado.contains("ecaes")) {
+                                coincide = nombreSolicitud.contains("ecaes");
+                            } else if (tipoNormalizado.contains("curso") && (tipoNormalizado.contains("verano") || tipoNormalizado.contains("intersemestral"))) {
+                                coincide = nombreSolicitud.contains("curso") && (nombreSolicitud.contains("verano") || nombreSolicitud.contains("intersemestral"));
+                            } else {
+                                // Búsqueda genérica
+                                coincide = nombreSolicitud.contains(tipoNormalizado);
+                            }
+                            
+                            if (!coincide) {
                                 return false;
                             }
                         }
@@ -207,6 +235,7 @@ public class SolicitudRestController {
                             if (s.getEstadosSolicitud() == null || s.getEstadosSolicitud().isEmpty()) {
                                 return false;
                             }
+                            // El último estado es el último elemento del array (ya ordenado por fecha)
                             String ultimoEstado = s.getEstadosSolicitud().stream()
                                     .max(Comparator.comparing(e -> e.getFecha_registro_estado()))
                                     .map(e -> e.getEstado_actual())
@@ -227,68 +256,19 @@ public class SolicitudRestController {
                     })
                     .collect(Collectors.toList());
             
-            log.debug("Solicitudes después de aplicar filtros: {}", solicitudesFiltradas.size());
-            
-            // Convertir a DTOs directamente desde las entidades (ya tienen los datos cargados)
-            List<SolicitudDTORespuesta> solicitudesDTO = solicitudesFiltradas.stream()
-                    .map(s -> {
-                        try {
-                            SolicitudDTORespuesta dto = new SolicitudDTORespuesta();
-                            dto.setId_solicitud(s.getId_solicitud());
-                            dto.setNombre_solicitud(s.getNombre_solicitud());
-                            dto.setPeriodo_academico(s.getPeriodo_academico());
-                            dto.setFecha_registro_solicitud(s.getFecha_registro_solicitud());
-                            
-                            // Mapear estados directamente desde Entity
-                            if (s.getEstadosSolicitud() != null && !s.getEstadosSolicitud().isEmpty()) {
-                                List<EstadoSolicitudDTORespuesta> estadosDTO = s.getEstadosSolicitud().stream()
-                                        .map(estadoEntity -> {
-                                            EstadoSolicitudDTORespuesta estadoDTO = new EstadoSolicitudDTORespuesta();
-                                            estadoDTO.setId_estado(estadoEntity.getId_estado());
-                                            estadoDTO.setEstado_actual(estadoEntity.getEstado_actual());
-                                            estadoDTO.setFecha_registro_estado(estadoEntity.getFecha_registro_estado());
-                                            estadoDTO.setComentario(estadoEntity.getComentario());
-                                            return estadoDTO;
-                                        })
-                                        .collect(Collectors.toList());
-                                dto.setEstadosSolicitud(estadosDTO);
-                            } else {
-                                dto.setEstadosSolicitud(new ArrayList<>());
-                            }
-                            
-                            // Mapear usuario directamente desde Entity
-                            if (s.getObjUsuario() != null) {
-                                UsuarioEntity usuarioEntity = s.getObjUsuario();
-                                UsuarioDTORespuesta usuarioDTO = new UsuarioDTORespuesta();
-                                usuarioDTO.setId_usuario(usuarioEntity.getId_usuario());
-                                usuarioDTO.setNombre_completo(usuarioEntity.getNombre_completo());
-                                usuarioDTO.setCodigo(usuarioEntity.getCodigo());
-                                usuarioDTO.setCedula(usuarioEntity.getCedula());
-                                usuarioDTO.setCorreo(usuarioEntity.getCorreo());
-                                usuarioDTO.setEstado_usuario(usuarioEntity.isEstado_usuario());
-                                // Rol y Programa se pueden mapear si están cargados, pero por ahora los dejamos null
-                                dto.setObjUsuario(usuarioDTO);
-                            }
-                            
-                            // Documentos (opcional, puede ser null)
-                            dto.setDocumentos(new ArrayList<>());
-                            
-                            return dto;
-                        } catch (Exception e) {
-                            log.warn("Error al mapear solicitud {}: {}", s.getId_solicitud(), e.getMessage(), e);
-                            return null;
-                        }
-                    })
-                    .filter(Objects::nonNull)
-                    .collect(Collectors.toList());
+            log.info("Solicitudes después de aplicar filtros: {} (filtros: periodoAcademico={}, tipoSolicitud={}, estadoActual={}, idUsuario={})", 
+                    solicitudesFiltradas.size(), periodoAcademico, tipoSolicitud, estadoActual, idUsuario);
             
             // Construir respuesta
             Map<String, Object> respuesta = new HashMap<>();
-            respuesta.put("solicitudes", solicitudesDTO);
-            respuesta.put("total", solicitudesDTO.size());
-            respuesta.put("total_solicitudes_sistema", todasLasSolicitudes.size());
+            respuesta.put("solicitudes", solicitudesFiltradas);
+            respuesta.put("total", solicitudesFiltradas.size());
+            respuesta.put("total_solicitudes_sistema", todasLasSolicitudesDTO.size());
             respuesta.put("total_solicitudes_procesadas", totalConEstados);
-            respuesta.put("total_solicitudes_no_procesadas", todasLasSolicitudes.size() - totalConEstados);
+            respuesta.put("total_solicitudes_no_procesadas", todasLasSolicitudesDTO.size() - totalConEstados);
+            
+            log.info("Respuesta final - Total filtrado: {}, Total sistema: {}, Procesadas: {}", 
+                    solicitudesFiltradas.size(), todasLasSolicitudesDTO.size(), totalConEstados);
             
             return ResponseEntity.ok(respuesta);
             
