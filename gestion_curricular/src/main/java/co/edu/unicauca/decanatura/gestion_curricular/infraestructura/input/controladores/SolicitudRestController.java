@@ -10,12 +10,16 @@ import jakarta.validation.constraints.Min;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.ByteArrayOutputStream;
+import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -275,6 +279,254 @@ public class SolicitudRestController {
         } catch (Exception e) {
             log.error("Error al obtener historial completo: {}", e.getMessage(), e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
+    /**
+     * Exporta el historial completo de solicitudes a PDF con filtros opcionales
+     * GET /api/solicitudes/historial/export/pdf
+     * 
+     * @param periodoAcademico Período académico (opcional, formato: "YYYY-P")
+     * @param tipoSolicitud Tipo de solicitud (opcional)
+     * @param estadoActual Estado actual de la solicitud (opcional)
+     * @param idUsuario ID del usuario (opcional)
+     * @return Archivo PDF con el historial
+     */
+    @GetMapping("/historial/export/pdf")
+    @Transactional(readOnly = true)
+    public ResponseEntity<byte[]> exportarHistorialPDF(
+            @RequestParam(required = false) String periodoAcademico,
+            @RequestParam(required = false) String tipoSolicitud,
+            @RequestParam(required = false) String estadoActual,
+            @RequestParam(required = false) Integer idUsuario) {
+        
+        try {
+            log.info("Generando PDF del historial de solicitudes - periodoAcademico: {}, tipoSolicitud: {}, estadoActual: {}, idUsuario: {}", 
+                    periodoAcademico, tipoSolicitud, estadoActual, idUsuario);
+            
+            // Obtener el historial usando el mismo método que el endpoint GET
+            ResponseEntity<Map<String, Object>> historialResponse = obtenerHistorialCompleto(
+                    periodoAcademico, tipoSolicitud, estadoActual, idUsuario);
+            
+            if (historialResponse.getStatusCode() != HttpStatus.OK || historialResponse.getBody() == null) {
+                log.error("No se pudo obtener el historial para generar el PDF");
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+            }
+            
+            Map<String, Object> historialData = historialResponse.getBody();
+            @SuppressWarnings("unchecked")
+            List<SolicitudDTORespuesta> solicitudes = (List<SolicitudDTORespuesta>) historialData.get("solicitudes");
+            
+            if (solicitudes == null) {
+                solicitudes = new ArrayList<>();
+            }
+            
+            // Generar PDF
+            byte[] pdfBytes = generarPDFHistorial(solicitudes, historialData, periodoAcademico, tipoSolicitud, estadoActual);
+            
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.APPLICATION_PDF);
+            
+            // Nombre del archivo con fecha
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+            String fecha = sdf.format(new Date());
+            String filename = "historial_solicitudes_" + fecha + ".pdf";
+            headers.setContentDispositionFormData("attachment", filename);
+            
+            log.info("PDF del historial generado correctamente. Total de solicitudes: {}", solicitudes.size());
+            return new ResponseEntity<>(pdfBytes, headers, HttpStatus.OK);
+            
+        } catch (Exception e) {
+            log.error("Error al generar PDF del historial: {}", e.getMessage(), e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
+    /**
+     * Genera un PDF con el historial de solicitudes
+     * 
+     * @param solicitudes Lista de solicitudes a incluir en el PDF
+     * @param historialData Datos adicionales del historial (totales, etc.)
+     * @param periodoAcademico Filtro de período académico aplicado
+     * @param tipoSolicitud Filtro de tipo de solicitud aplicado
+     * @param estadoActual Filtro de estado aplicado
+     * @return Array de bytes del PDF
+     */
+    private byte[] generarPDFHistorial(List<SolicitudDTORespuesta> solicitudes, 
+                                       Map<String, Object> historialData,
+                                       String periodoAcademico, 
+                                       String tipoSolicitud, 
+                                       String estadoActual) {
+        log.debug("Iniciando la generación del PDF del historial...");
+        
+        ByteArrayOutputStream baos = null;
+        com.itextpdf.text.Document document = null;
+        
+        try {
+            baos = new ByteArrayOutputStream();
+            document = new com.itextpdf.text.Document(com.itextpdf.text.PageSize.A4.rotate()); // Horizontal para más columnas
+            com.itextpdf.text.pdf.PdfWriter.getInstance(document, baos);
+            
+            document.open();
+            
+            // Título principal
+            com.itextpdf.text.Font titleFont = new com.itextpdf.text.Font(
+                    com.itextpdf.text.Font.FontFamily.HELVETICA, 18, com.itextpdf.text.Font.BOLD);
+            com.itextpdf.text.Paragraph title = new com.itextpdf.text.Paragraph(
+                    "HISTORIAL COMPLETO DE SOLICITUDES", titleFont);
+            title.setAlignment(com.itextpdf.text.Element.ALIGN_CENTER);
+            title.setSpacingAfter(20);
+            document.add(title);
+            
+            // Información de filtros aplicados
+            com.itextpdf.text.Font infoFont = new com.itextpdf.text.Font(
+                    com.itextpdf.text.Font.FontFamily.HELVETICA, 10);
+            StringBuilder filtrosInfo = new StringBuilder();
+            filtrosInfo.append("Fecha de generación: ").append(new Date().toString()).append("\n");
+            if (periodoAcademico != null && !periodoAcademico.trim().isEmpty()) {
+                filtrosInfo.append("Período Académico: ").append(periodoAcademico).append("\n");
+            }
+            if (tipoSolicitud != null && !tipoSolicitud.trim().isEmpty()) {
+                filtrosInfo.append("Tipo de Solicitud: ").append(tipoSolicitud).append("\n");
+            }
+            if (estadoActual != null && !estadoActual.trim().isEmpty()) {
+                filtrosInfo.append("Estado: ").append(estadoActual).append("\n");
+            }
+            
+            // Totales
+            if (historialData != null) {
+                filtrosInfo.append("\n");
+                filtrosInfo.append("Total Filtrado: ").append(historialData.get("total")).append(" solicitudes\n");
+                filtrosInfo.append("Total Sistema: ").append(historialData.get("total_solicitudes_sistema")).append(" solicitudes\n");
+                filtrosInfo.append("Procesadas: ").append(historialData.get("total_solicitudes_procesadas")).append(" solicitudes\n");
+                filtrosInfo.append("No Procesadas: ").append(historialData.get("total_solicitudes_no_procesadas")).append(" solicitudes\n");
+            }
+            
+            com.itextpdf.text.Paragraph info = new com.itextpdf.text.Paragraph(filtrosInfo.toString(), infoFont);
+            info.setSpacingAfter(15);
+            document.add(info);
+            
+            // Tabla de solicitudes
+            if (solicitudes != null && !solicitudes.isEmpty()) {
+                com.itextpdf.text.pdf.PdfPTable table = new com.itextpdf.text.pdf.PdfPTable(7);
+                table.setWidthPercentage(100);
+                table.setWidths(new float[]{0.5f, 2.5f, 1.5f, 2f, 1f, 1.5f, 1f});
+                
+                // Encabezados
+                com.itextpdf.text.Font headerFont = new com.itextpdf.text.Font(
+                        com.itextpdf.text.Font.FontFamily.HELVETICA, 10, com.itextpdf.text.Font.BOLD);
+                table.addCell(new com.itextpdf.text.pdf.PdfPCell(new com.itextpdf.text.Phrase("ID", headerFont)));
+                table.addCell(new com.itextpdf.text.pdf.PdfPCell(new com.itextpdf.text.Phrase("Solicitud", headerFont)));
+                table.addCell(new com.itextpdf.text.pdf.PdfPCell(new com.itextpdf.text.Phrase("Estudiante", headerFont)));
+                table.addCell(new com.itextpdf.text.pdf.PdfPCell(new com.itextpdf.text.Phrase("Programa", headerFont)));
+                table.addCell(new com.itextpdf.text.pdf.PdfPCell(new com.itextpdf.text.Phrase("Período", headerFont)));
+                table.addCell(new com.itextpdf.text.pdf.PdfPCell(new com.itextpdf.text.Phrase("Estado", headerFont)));
+                table.addCell(new com.itextpdf.text.pdf.PdfPCell(new com.itextpdf.text.Phrase("Fecha", headerFont)));
+                
+                // Datos
+                com.itextpdf.text.Font cellFont = new com.itextpdf.text.Font(
+                        com.itextpdf.text.Font.FontFamily.HELVETICA, 8);
+                SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
+                
+                for (SolicitudDTORespuesta solicitud : solicitudes) {
+                    table.addCell(new com.itextpdf.text.pdf.PdfPCell(
+                            new com.itextpdf.text.Phrase(String.valueOf(solicitud.getId_solicitud()), cellFont)));
+                    
+                    String nombreSolicitud = solicitud.getNombre_solicitud() != null 
+                            ? solicitud.getNombre_solicitud() : "N/A";
+                    if (nombreSolicitud.length() > 40) {
+                        nombreSolicitud = nombreSolicitud.substring(0, 37) + "...";
+                    }
+                    table.addCell(new com.itextpdf.text.pdf.PdfPCell(
+                            new com.itextpdf.text.Phrase(nombreSolicitud, cellFont)));
+                    
+                    String estudiante = solicitud.getObjUsuario() != null 
+                            ? (solicitud.getObjUsuario().getNombre_completo() != null 
+                                    ? solicitud.getObjUsuario().getNombre_completo() : "N/A")
+                            : "N/A";
+                    if (estudiante.length() > 25) {
+                        estudiante = estudiante.substring(0, 22) + "...";
+                    }
+                    table.addCell(new com.itextpdf.text.pdf.PdfPCell(
+                            new com.itextpdf.text.Phrase(estudiante, cellFont)));
+                    
+                    String programa = solicitud.getObjUsuario() != null 
+                            && solicitud.getObjUsuario().getObjPrograma() != null
+                            ? (solicitud.getObjUsuario().getObjPrograma().getNombre_programa() != null 
+                                    ? solicitud.getObjUsuario().getObjPrograma().getNombre_programa() : "N/A")
+                            : "N/A";
+                    if (programa.length() > 30) {
+                        programa = programa.substring(0, 27) + "...";
+                    }
+                    table.addCell(new com.itextpdf.text.pdf.PdfPCell(
+                            new com.itextpdf.text.Phrase(programa, cellFont)));
+                    
+                    String periodo = solicitud.getPeriodo_academico() != null 
+                            ? solicitud.getPeriodo_academico() : "N/A";
+                    table.addCell(new com.itextpdf.text.pdf.PdfPCell(
+                            new com.itextpdf.text.Phrase(periodo, cellFont)));
+                    
+                    String estado = "Sin estado";
+                    if (solicitud.getEstadosSolicitud() != null && !solicitud.getEstadosSolicitud().isEmpty()) {
+                        estado = solicitud.getEstadosSolicitud().stream()
+                                .max(Comparator.comparing(e -> e.getFecha_registro_estado() != null 
+                                        ? e.getFecha_registro_estado() : new Date(0)))
+                                .map(e -> e.getEstado_actual())
+                                .orElse("Sin estado");
+                    }
+                    table.addCell(new com.itextpdf.text.pdf.PdfPCell(
+                            new com.itextpdf.text.Phrase(estado, cellFont)));
+                    
+                    String fecha = solicitud.getFecha_registro_solicitud() != null 
+                            ? dateFormat.format(solicitud.getFecha_registro_solicitud()) : "N/A";
+                    table.addCell(new com.itextpdf.text.pdf.PdfPCell(
+                            new com.itextpdf.text.Phrase(fecha, cellFont)));
+                }
+                
+                document.add(table);
+            } else {
+                com.itextpdf.text.Paragraph noData = new com.itextpdf.text.Paragraph(
+                        "No se encontraron solicitudes con los filtros aplicados.", infoFont);
+                noData.setSpacingAfter(15);
+                document.add(noData);
+            }
+            
+            document.close();
+            return baos.toByteArray();
+            
+        } catch (Exception e) {
+            log.error("Error al generar el PDF del historial: {}", e.getMessage(), e);
+            
+            // Generar PDF de error
+            try {
+                ByteArrayOutputStream errorBaos = new ByteArrayOutputStream();
+                com.itextpdf.text.Document errorDoc = new com.itextpdf.text.Document();
+                com.itextpdf.text.pdf.PdfWriter.getInstance(errorDoc, errorBaos);
+                
+                errorDoc.open();
+                com.itextpdf.text.Font errorFont = new com.itextpdf.text.Font(
+                        com.itextpdf.text.Font.FontFamily.HELVETICA, 12);
+                com.itextpdf.text.Paragraph errorMsg = new com.itextpdf.text.Paragraph(
+                        "Error al generar el reporte: " + e.getMessage(), errorFont);
+                errorDoc.add(errorMsg);
+                errorDoc.close();
+                
+                return errorBaos.toByteArray();
+            } catch (Exception ex) {
+                log.error("No se pudo generar el PDF alterno con información de error: {}", ex.getMessage(), ex);
+                return new byte[0];
+            }
+        } finally {
+            try {
+                if (document != null && document.isOpen()) {
+                    document.close();
+                }
+                if (baos != null) {
+                    baos.close();
+                }
+            } catch (Exception e) {
+                log.error("Ocurrió un error al cerrar los recursos del PDF: {}", e.getMessage(), e);
+            }
         }
     }
 
