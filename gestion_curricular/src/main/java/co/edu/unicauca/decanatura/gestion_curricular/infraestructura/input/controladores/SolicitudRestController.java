@@ -2,6 +2,7 @@ package co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.cont
 
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarSolicitudCUIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Solicitud;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Enums.PeriodoAcademicoEnum;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.DTORespuesta.SolicitudDTORespuesta;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.mappers.*;
 import lombok.extern.slf4j.Slf4j;
@@ -20,6 +21,8 @@ import org.springframework.web.bind.annotation.*;
 
 import java.io.ByteArrayOutputStream;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -382,15 +385,39 @@ public class SolicitudRestController {
             com.itextpdf.text.Font infoFont = new com.itextpdf.text.Font(
                     com.itextpdf.text.Font.FontFamily.HELVETICA, 10);
             StringBuilder filtrosInfo = new StringBuilder();
-            filtrosInfo.append("Fecha de generación: ").append(new Date().toString()).append("\n");
+            filtrosInfo.append("Fecha de generación: ").append(formatearFechaEspanol(new Date())).append("\n");
+            
+            // Período Académico - siempre mostrar
             if (periodoAcademico != null && !periodoAcademico.trim().isEmpty()) {
                 filtrosInfo.append("Período Académico: ").append(periodoAcademico).append("\n");
+            } else {
+                // Si no hay filtro, mostrar "Todos los períodos" o el período actual
+                try {
+                    // Intentar obtener el período actual
+                    PeriodoAcademicoEnum periodoActual = PeriodoAcademicoEnum.getPeriodoActual();
+                    if (periodoActual != null) {
+                        filtrosInfo.append("Período Académico: Todos (Período actual: ").append(periodoActual.getValor()).append(")\n");
+                    } else {
+                        filtrosInfo.append("Período Académico: Todos los períodos\n");
+                    }
+                } catch (Exception e) {
+                    log.debug("No se pudo obtener el período actual: {}", e.getMessage());
+                    filtrosInfo.append("Período Académico: Todos los períodos\n");
+                }
             }
+            
+            // Tipo de Solicitud
             if (tipoSolicitud != null && !tipoSolicitud.trim().isEmpty()) {
                 filtrosInfo.append("Tipo de Solicitud: ").append(tipoSolicitud).append("\n");
+            } else {
+                filtrosInfo.append("Tipo de Solicitud: Todos los tipos\n");
             }
+            
+            // Estado
             if (estadoActual != null && !estadoActual.trim().isEmpty()) {
                 filtrosInfo.append("Estado: ").append(estadoActual).append("\n");
+            } else {
+                filtrosInfo.append("Estado: Todos los estados\n");
             }
             
             // Totales
@@ -527,6 +554,36 @@ public class SolicitudRestController {
             } catch (Exception e) {
                 log.error("Ocurrió un error al cerrar los recursos del PDF: {}", e.getMessage(), e);
             }
+        }
+    }
+
+    /**
+     * Formatea una fecha en español sin hora
+     * Ejemplo: "15 de diciembre de 2025"
+     * 
+     * @param fecha Fecha a formatear
+     * @return Fecha formateada en español
+     */
+    private String formatearFechaEspanol(Date fecha) {
+        if (fecha == null) {
+            return "";
+        }
+        
+        try {
+            // Convertir Date a LocalDate
+            LocalDate localDate = fecha.toInstant()
+                    .atZone(java.time.ZoneId.systemDefault())
+                    .toLocalDate();
+            
+            // Formatear en español
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("d 'de' MMMM 'de' yyyy", 
+                    new java.util.Locale("es", "ES"));
+            return localDate.format(formatter);
+        } catch (Exception e) {
+            log.warn("Error al formatear fecha en español: {}", e.getMessage());
+            // Fallback a formato simple
+            SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+            return sdf.format(fecha);
         }
     }
 
