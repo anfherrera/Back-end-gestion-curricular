@@ -225,13 +225,8 @@ public class GestionarSolicitudGatewayImplAdapter implements GestionarSolicitudG
     @Override
     @Transactional(readOnly = true)
     public Solicitud obtenerSolicitudPorId(Integer idSolicitud) {
-        // Usar findAllWithJoins() y filtrar por ID para cargar estados con JOIN FETCH
-        List<SolicitudEntity> todasLasSolicitudes = solicitudRepository.findAllWithJoins();
-        Optional<SolicitudEntity> solicitudEntityOptional = todasLasSolicitudes.stream()
-                .filter(s -> s.getId_solicitud().equals(idSolicitud))
-                .findFirst();
-        
-        if(solicitudEntityOptional.isPresent()){
+        Optional<SolicitudEntity> solicitudEntityOptional = solicitudRepository.findById(idSolicitud);
+        if(solicitudEntityOptional != null){
             SolicitudEntity solicitudEntity = solicitudEntityOptional.get();
             if (solicitudEntity instanceof SolicitudCursoVeranoPreinscripcionEntity) {
                 return solicitudMapper.map(solicitudEntity, SolicitudCursoVeranoPreinscripcion.class);
@@ -311,8 +306,7 @@ public class GestionarSolicitudGatewayImplAdapter implements GestionarSolicitudG
     @Override
     @Transactional(readOnly = true)
     public List<Solicitud> listarSolicitudes() {
-        // Usar findAllWithJoins() para cargar estadosSolicitud y evitar problemas de lazy loading
-        List<SolicitudEntity> solicitudEntities = solicitudRepository.findAllWithJoins();
+        List<SolicitudEntity> solicitudEntities = solicitudRepository.findAll();
         List<Solicitud> solicitudes = null;
         if(solicitudEntities!=null){
             solicitudes = solicitudEntities.stream().map(solicitudEntity -> {
@@ -331,7 +325,6 @@ public class GestionarSolicitudGatewayImplAdapter implements GestionarSolicitudG
                     }
                     return null;
                 })
-                .filter(solicitud -> solicitud != null) // Filtrar nulls
                 .toList();
         }
         return solicitudes;

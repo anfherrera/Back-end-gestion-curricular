@@ -54,8 +54,15 @@ public class CreateCursoDTO {
     private String periodoAcademico;
     
     /**
-     * Espacio asignado (salón) - Opcional
-     * Si no se proporciona, se asigna "Aula 101" por defecto
+     * ID del salón (obligatorio)
+     * El funcionario debe seleccionar un salón de la lista disponible
+     */
+    @NotNull(message = "El ID del salón es obligatorio")
+    private Integer id_salon;
+    
+    /**
+     * Espacio asignado (salón) - Opcional (deprecated, usar id_salon)
+     * Se mantiene para compatibilidad, pero se recomienda usar id_salon
      */
     private String espacio_asignado;
     

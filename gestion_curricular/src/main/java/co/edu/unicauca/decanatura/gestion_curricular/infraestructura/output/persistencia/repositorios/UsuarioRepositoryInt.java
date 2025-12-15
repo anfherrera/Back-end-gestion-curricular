@@ -50,6 +50,10 @@ public interface UsuarioRepositoryInt extends JpaRepository<UsuarioEntity, Integ
     @Query("SELECT s.objUsuario FROM SolicitudEntity s WHERE s.id_solicitud = :idSolicitud")
     UsuarioEntity buscarUsuariosPorSolicitud(@Param("idSolicitud") Integer idSolicitud);
 
+    // Buscar usuario por ID con relaciones cargadas (JOIN FETCH)
+    @Query("SELECT u FROM UsuarioEntity u LEFT JOIN FETCH u.objRol LEFT JOIN FETCH u.objPrograma WHERE u.id_usuario = :id")
+    Optional<UsuarioEntity> findByIdWithRelations(@Param("id") Integer id);
+
     @Modifying
     @Query("DELETE FROM UsuarioEntity u WHERE u.id = :id")
     void eliminarPorId(@Param("id") Integer id);

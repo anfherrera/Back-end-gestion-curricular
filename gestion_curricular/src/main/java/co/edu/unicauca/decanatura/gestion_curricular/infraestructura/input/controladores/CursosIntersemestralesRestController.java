@@ -18,6 +18,7 @@ import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarC
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarSolicitudCursoVeranoCUIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarMateriasCUIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarDocentesCUIntPort;
+import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarSalonesCUIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.GestionarSolicitudCursoVeranoGatewayIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.CursoOfertadoVerano;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.SolicitudCursoVeranoPreinscripcion;
@@ -27,8 +28,6 @@ import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Solicitud;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.EstadoCursoOfertado;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Enums.CondicionSolicitudVerano;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Enums.PeriodoAcademicoEnum;
-import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.PeriodoAcademico;
-import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarPeriodoAcademicoCUIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.DTORespuesta.CursosOfertadosDTORespuesta;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.DTORespuesta.SolicitudCursoVeranoPreinscripcionDTORespuesta;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.DTOPeticion.SolicitudCursoNuevoDTOPeticion;
@@ -52,7 +51,6 @@ import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.pers
 import java.util.List;
 import java.util.Map;
 import java.util.HashMap;
-import java.util.Optional;
 import java.util.ArrayList;
 import java.util.stream.Collectors;
 
@@ -76,19 +74,27 @@ public class CursosIntersemestralesRestController {
     private final GestionarDocumentosGatewayIntPort objGestionarDocumentosGateway;
     private final EstadoCursoOfertadoRepositoryInt estadoRepository;
     private final co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarUsuarioCUIntPort objGestionarUsuarioCU;
-    private final GestionarPeriodoAcademicoCUIntPort periodoAcademicoCU;
+    private final GestionarSalonesCUIntPort salonCU;
 
     /**
      * Obtener cursos de verano (endpoint principal que llama el frontend)
      * GET /api/cursos-intersemestrales/cursos-verano
      */
+    /**
+     * Obtener cursos de verano (endpoint principal que llama el frontend)
+     * GET /api/cursos-intersemestrales/cursos-verano
+     * 
+     * @param periodoAcademico Período académico opcional (formato: "YYYY-P", ej: "2025-2")
+     * @param idPrograma ID del programa académico opcional para filtrar cursos
+     */
     @GetMapping("/cursos-verano")
     public ResponseEntity<List<CursosOfertadosDTORespuesta>> obtenerCursosVerano(
-            @RequestParam(required = false) String periodoAcademico) {
+            @RequestParam(required = false) String periodoAcademico,
+            @RequestParam(required = false) Integer idPrograma) {
         try {
             List<CursoOfertadoVerano> cursos = cursoCU.listarTodos();
             
-            // Si se proporciona período académico, filtrar por él
+            // Filtrar por período académico si se proporciona
             if (periodoAcademico != null && !periodoAcademico.trim().isEmpty()) {
                 String periodoFiltro = periodoAcademico.trim();
                 cursos = cursos.stream()
@@ -98,15 +104,33 @@ public class CursosIntersemestralesRestController {
                 log.debug("Cursos filtrados por período {}: {}", periodoFiltro, cursos.size());
             } else {
                 // Si no se proporciona período, usar el período actual automáticamente
-                String periodoActual = periodoAcademicoCU.obtenerPeriodoActualComoString();
-                if (periodoActual != null && !periodoActual.trim().isEmpty()) {
-                    final String periodoFiltro = periodoActual;
+                PeriodoAcademicoEnum periodoActualEnum = PeriodoAcademicoEnum.getPeriodoActual();
+                if (periodoActualEnum != null) {
+                    final String periodoFiltro = periodoActualEnum.getValor();
                     cursos = cursos.stream()
                             .filter(curso -> curso.getPeriodo_academico() != null 
                                     && curso.getPeriodo_academico().equals(periodoFiltro))
                             .collect(Collectors.toList());
-                    log.debug("Cursos filtrados por período actual automático {}: {}", periodoActual, cursos.size());
+                    log.debug("Cursos filtrados por período actual automático {}: {}", periodoFiltro, cursos.size());
                 }
+            }
+            
+            // Si se proporciona idPrograma, filtrar cursos que tengan solicitudes de estudiantes de ese programa
+            if (idPrograma != null) {
+                cursos = cursos.stream()
+                        .filter(curso -> {
+                            // Verificar si el curso tiene solicitudes de estudiantes del programa especificado
+                            if (curso.getSolicitudes() != null && !curso.getSolicitudes().isEmpty()) {
+                                return curso.getSolicitudes().stream()
+                                        .anyMatch(solicitud -> solicitud.getObjUsuario() != null 
+                                                && solicitud.getObjUsuario().getObjPrograma() != null
+                                                && solicitud.getObjUsuario().getObjPrograma().getId_programa().equals(idPrograma));
+                            }
+                            // Si el curso no tiene solicitudes, no lo incluimos en el filtro por programa
+                            return false;
+                        })
+                        .collect(Collectors.toList());
+                log.debug("Cursos filtrados por programa {}: {}", idPrograma, cursos.size());
             }
             
             log.debug("Total de cursos encontrados: {}", cursos.size());
@@ -141,11 +165,15 @@ public class CursosIntersemestralesRestController {
 
     /**
      * Obtener cursos de verano disponibles para estudiantes (solo estados visibles)
-     * GET /api/cursos-intersemestrales/cursos-verano/disponibles?periodoAcademico=2025-2
+     * GET /api/cursos-intersemestrales/cursos-verano/disponibles
+     * 
+     * @param periodoAcademico Período académico opcional (formato: "YYYY-P", ej: "2025-2")
+     * @param idPrograma ID del programa académico opcional para filtrar cursos
      */
     @GetMapping("/cursos-verano/disponibles")
     public ResponseEntity<List<CursosOfertadosDTORespuesta>> obtenerCursosVeranoDisponibles(
-            @RequestParam(required = false) String periodoAcademico) {
+            @RequestParam(required = false) String periodoAcademico,
+            @RequestParam(required = false) Integer idPrograma) {
         try {
             List<CursoOfertadoVerano> cursos = cursoCU.listarTodos();
             
@@ -158,14 +186,32 @@ public class CursosIntersemestralesRestController {
                         .collect(Collectors.toList());
             } else {
                 // Si no se proporciona período, usar el período actual automáticamente
-                String periodoActual = periodoAcademicoCU.obtenerPeriodoActualComoString();
-                if (periodoActual != null && !periodoActual.trim().isEmpty()) {
-                    final String periodoFiltro = periodoActual;
+                PeriodoAcademicoEnum periodoActualEnum = PeriodoAcademicoEnum.getPeriodoActual();
+                if (periodoActualEnum != null) {
+                    final String periodoFiltro = periodoActualEnum.getValor();
                     cursos = cursos.stream()
                             .filter(curso -> curso.getPeriodo_academico() != null 
                                     && curso.getPeriodo_academico().equals(periodoFiltro))
                             .collect(Collectors.toList());
                 }
+            }
+            
+            // Si se proporciona idPrograma, filtrar cursos que tengan solicitudes de estudiantes de ese programa
+            if (idPrograma != null) {
+                cursos = cursos.stream()
+                        .filter(curso -> {
+                            // Verificar si el curso tiene solicitudes de estudiantes del programa especificado
+                            if (curso.getSolicitudes() != null && !curso.getSolicitudes().isEmpty()) {
+                                return curso.getSolicitudes().stream()
+                                        .anyMatch(solicitud -> solicitud.getObjUsuario() != null 
+                                                && solicitud.getObjUsuario().getObjPrograma() != null
+                                                && solicitud.getObjUsuario().getObjPrograma().getId_programa().equals(idPrograma));
+                            }
+                            // Si el curso no tiene solicitudes, no lo incluimos en el filtro por programa
+                            return false;
+                        })
+                        .collect(Collectors.toList());
+                log.debug("Cursos disponibles filtrados por programa {}: {}", idPrograma, cursos.size());
             }
             
             // Filtrar solo cursos visibles para estudiantes
@@ -193,11 +239,15 @@ public class CursosIntersemestralesRestController {
     
     /**
      * Obtener todos los cursos de verano para funcionarios y coordinadores (incluye estados no visibles)
-     * GET /api/cursos-intersemestrales/cursos-verano/todos?periodoAcademico=2025-2
+     * GET /api/cursos-intersemestrales/cursos-verano/todos
+     * 
+     * @param periodoAcademico Período académico opcional (formato: "YYYY-P", ej: "2025-2")
+     * @param idPrograma ID del programa académico opcional para filtrar cursos
      */
     @GetMapping("/cursos-verano/todos")
     public ResponseEntity<List<CursosOfertadosDTORespuesta>> obtenerTodosLosCursosVerano(
-            @RequestParam(required = false) String periodoAcademico) {
+            @RequestParam(required = false) String periodoAcademico,
+            @RequestParam(required = false) Integer idPrograma) {
         try {
             List<CursoOfertadoVerano> cursos = cursoCU.listarTodos();
             
@@ -210,14 +260,32 @@ public class CursosIntersemestralesRestController {
                         .collect(Collectors.toList());
             } else {
                 // Si no se proporciona período, usar el período actual automáticamente
-                String periodoActual = periodoAcademicoCU.obtenerPeriodoActualComoString();
-                if (periodoActual != null && !periodoActual.trim().isEmpty()) {
-                    final String periodoFiltro = periodoActual;
+                PeriodoAcademicoEnum periodoActualEnum = PeriodoAcademicoEnum.getPeriodoActual();
+                if (periodoActualEnum != null) {
+                    final String periodoFiltro = periodoActualEnum.getValor();
                     cursos = cursos.stream()
                             .filter(curso -> curso.getPeriodo_academico() != null 
                                     && curso.getPeriodo_academico().equals(periodoFiltro))
                             .collect(Collectors.toList());
                 }
+            }
+            
+            // Si se proporciona idPrograma, filtrar cursos que tengan solicitudes de estudiantes de ese programa
+            if (idPrograma != null) {
+                cursos = cursos.stream()
+                        .filter(curso -> {
+                            // Verificar si el curso tiene solicitudes de estudiantes del programa especificado
+                            if (curso.getSolicitudes() != null && !curso.getSolicitudes().isEmpty()) {
+                                return curso.getSolicitudes().stream()
+                                        .anyMatch(solicitud -> solicitud.getObjUsuario() != null 
+                                                && solicitud.getObjUsuario().getObjPrograma() != null
+                                                && solicitud.getObjUsuario().getObjPrograma().getId_programa().equals(idPrograma));
+                            }
+                            // Si el curso no tiene solicitudes, no lo incluimos en el filtro por programa
+                            return false;
+                        })
+                        .collect(Collectors.toList());
+                log.debug("Cursos (todos) filtrados por programa {}: {}", idPrograma, cursos.size());
             }
             
             // Para funcionarios y coordinadores, mostrar todos los cursos sin filtro de estado
@@ -2777,44 +2845,22 @@ public class CursosIntersemestralesRestController {
                 return ResponseEntity.badRequest().body(error);
             }
             
-            // Validar y asignar período académico
-            String periodoAcademicoTrimmed;
-            
+            // Validar período académico
             if (dto.getPeriodoAcademico() == null || dto.getPeriodoAcademico().trim().isEmpty()) {
-                // Si no se proporcionó período académico, establecer el período actual automáticamente
-                String periodoActual = periodoAcademicoCU.obtenerPeriodoActualComoString();
-                if (periodoActual != null && !periodoActual.trim().isEmpty()) {
-                    periodoAcademicoTrimmed = periodoActual;
-                    log.debug("Período académico establecido automáticamente para curso: {}", periodoActual);
-                } else {
-                    // Fallback al enum si el servicio no retorna nada
-                    PeriodoAcademicoEnum periodoEnum = PeriodoAcademicoEnum.getPeriodoActual();
-                    if (periodoEnum != null) {
-                        periodoAcademicoTrimmed = periodoEnum.getValor();
-                        log.debug("Período académico establecido automáticamente (fallback enum) para curso: {}", periodoEnum.getValor());
-                    } else {
-                        Map<String, Object> error = new HashMap<>();
-                        error.put("error", "No se pudo determinar el período académico actual");
-                        error.put("message", "Debe proporcionar un período académico o asegurarse de que exista un período activo");
-                        return ResponseEntity.badRequest().body(error);
-                    }
-                }
-            } else {
-                periodoAcademicoTrimmed = dto.getPeriodoAcademico().trim();
-                
-                // Validar que el período académico sea válido usando el servicio de BD (con fallback al enum)
-                java.util.Optional<PeriodoAcademico> periodoValidado = periodoAcademicoCU.obtenerPeriodoPorValor(periodoAcademicoTrimmed);
-                
-                if (periodoValidado.isEmpty()) {
-                    // Verificar con el enum como fallback
-                    if (!PeriodoAcademicoEnum.esValido(periodoAcademicoTrimmed)) {
-                        Map<String, Object> error = new HashMap<>();
-                        error.put("error", "Período académico inválido");
-                        error.put("message", "El período académico '" + periodoAcademicoTrimmed + "' no es válido. Use formato YYYY-P (ej: 2025-1)");
-                        error.put("periodosValidos", PeriodoAcademicoEnum.getPeriodosRecientes());
-                        return ResponseEntity.badRequest().body(error);
-                    }
-                }
+                Map<String, Object> error = new HashMap<>();
+                error.put("error", "Período académico requerido");
+                error.put("message", "Debe seleccionar un período académico");
+                return ResponseEntity.badRequest().body(error);
+            }
+            
+            // Validar que el período académico sea válido usando el enum (consistencia con ECAES)
+            String periodoAcademicoTrimmed = dto.getPeriodoAcademico().trim();
+            if (!PeriodoAcademicoEnum.esValido(periodoAcademicoTrimmed)) {
+                Map<String, Object> error = new HashMap<>();
+                error.put("error", "Período académico inválido");
+                error.put("message", "El período académico '" + periodoAcademicoTrimmed + "' no es válido. Debe ser un período válido como '2025-1' o '2025-2'");
+                error.put("periodosValidos", PeriodoAcademicoEnum.getPeriodosRecientes());
+                return ResponseEntity.badRequest().body(error);
             }
             
             // Validar que la fecha de fin sea posterior a la fecha de inicio
@@ -2860,10 +2906,29 @@ public class CursosIntersemestralesRestController {
                 // Crear objeto de dominio del curso
                 CursoOfertadoVerano cursoDominio = new CursoOfertadoVerano();
                 cursoDominio.setCupo_estimado(dto.getCupo_estimado());
-                // Espacio asignado: usar el proporcionado o "Aula 101" por defecto
-                cursoDominio.setSalon(dto.getEspacio_asignado() != null && !dto.getEspacio_asignado().trim().isEmpty() 
-                    ? dto.getEspacio_asignado().trim() 
-                    : "Aula 101");
+                
+                // Obtener salón de la base de datos
+                String numeroSalon = null;
+                if (dto.getId_salon() != null) {
+                    co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Salon salon = 
+                        salonCU.obtenerSalonPorId(dto.getId_salon());
+                    if (salon == null) {
+                        Map<String, Object> error = new HashMap<>();
+                        error.put("error", "Salón no encontrado");
+                        error.put("message", "El salón con ID " + dto.getId_salon() + " no existe");
+                        return ResponseEntity.badRequest().body(error);
+                    }
+                    numeroSalon = salon.getNumero_salon();
+                } else if (dto.getEspacio_asignado() != null && !dto.getEspacio_asignado().trim().isEmpty()) {
+                    // Compatibilidad: si no hay id_salon pero hay espacio_asignado, usarlo
+                    numeroSalon = dto.getEspacio_asignado().trim();
+                } else {
+                    Map<String, Object> error = new HashMap<>();
+                    error.put("error", "Salón requerido");
+                    error.put("message", "Debe seleccionar un salón de la lista disponible");
+                    return ResponseEntity.badRequest().body(error);
+                }
+                cursoDominio.setSalon(numeroSalon);
                 
                 // Grupo: usar el proporcionado o "A" por defecto
                 co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Enums.GrupoCursoVerano grupo;
@@ -3345,33 +3410,14 @@ public class CursosIntersemestralesRestController {
     @GetMapping("/cursos-verano/periodo/{periodo}")
     public ResponseEntity<List<CursosOfertadosDTORespuesta>> filtrarCursosPorPeriodo(@PathVariable String periodo) {
         try {
-            // Validar que el período sea válido
-            Optional<PeriodoAcademico> periodoValidado = periodoAcademicoCU.obtenerPeriodoPorValor(periodo);
-            
-            if (periodoValidado.isEmpty() && !PeriodoAcademicoEnum.esValido(periodo)) {
-                Map<String, Object> error = new HashMap<>();
-                error.put("error", "Período académico inválido");
-                error.put("message", "El período académico '" + periodo + "' no es válido. Use formato YYYY-P (ej: 2025-1)");
-                return ResponseEntity.badRequest().body(null);
-            }
-            
-            // Filtrar cursos por período académico
+            // Por ahora, retornar todos los cursos (implementacion futura)
             List<CursoOfertadoVerano> cursos = cursoCU.listarTodos();
-            String periodoFiltro = periodo.trim();
-            List<CursoOfertadoVerano> cursosFiltrados = cursos.stream()
-                    .filter(curso -> curso.getPeriodo_academico() != null 
-                            && curso.getPeriodo_academico().equals(periodoFiltro))
-                    .collect(Collectors.toList());
-            
-            log.debug("Cursos filtrados por período {}: {}", periodoFiltro, cursosFiltrados.size());
-            
-            List<CursosOfertadosDTORespuesta> respuesta = cursosFiltrados.stream()
+            List<CursosOfertadosDTORespuesta> respuesta = cursos.stream()
                     .map(cursoMapper::mappearDeCursoOfertadoARespuestaDisponible)
                     .map(cursoMapper::postMapCurso) // Asignar idCurso
                     .collect(Collectors.toList());
             return ResponseEntity.ok(respuesta);
         } catch (Exception e) {
-            log.error("Error filtrando cursos por período: {}", e.getMessage(), e);
             return ResponseEntity.internalServerError().build();
         }
     }
@@ -3474,6 +3520,35 @@ public class CursosIntersemestralesRestController {
             fallback.add(todasLasMaterias);
             
             return ResponseEntity.ok(fallback);
+        }
+    }
+
+    /**
+     * Obtener todos los salones disponibles
+     * GET /api/cursos-intersemestrales/salones
+     */
+    @GetMapping("/salones")
+    public ResponseEntity<List<Map<String, Object>>> obtenerSalones() {
+        try {
+            List<co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Salon> salonesReales = 
+                salonCU.listarSalonesActivos();
+            
+            List<Map<String, Object>> salones = new ArrayList<>();
+            
+            for (co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Salon salon : salonesReales) {
+                Map<String, Object> salonMap = new HashMap<>();
+                salonMap.put("id_salon", salon.getId_salon());
+                salonMap.put("numero_salon", salon.getNumero_salon());
+                salonMap.put("edificio", salon.getEdificio());
+                salonMap.put("activo", salon.getActivo());
+                salones.add(salonMap);
+            }
+            
+            log.debug("Salones obtenidos: {}", salones.size());
+            return ResponseEntity.ok(salones);
+        } catch (Exception e) {
+            log.error("Error obteniendo salones: {}", e.getMessage(), e);
+            return ResponseEntity.status(500).build();
         }
     }
 

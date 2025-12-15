@@ -249,20 +249,5 @@ public class GestionarSolicitudPazYSalvoCUAdapter implements GestionarSolicitudP
         }
     }
 
-    @Override
-    public List<SolicitudPazYSalvo> listarSolicitudesProcesadas() {
-        return solicitudGateway.listarSolicitudesProcesadas();
-    }
-
-    @Override
-    public List<SolicitudPazYSalvo> listarSolicitudesProcesadasPorPeriodo(String periodoAcademico) {
-        return solicitudGateway.listarSolicitudesProcesadasPorPeriodo(periodoAcademico);
-    }
-
-    @Override
-    public List<SolicitudPazYSalvo> listarSolicitudesProcesadasPorProgramaYPeriodo(Integer idPrograma, String periodoAcademico) {
-        return solicitudGateway.listarSolicitudesProcesadasPorProgramaYPeriodo(idPrograma, periodoAcademico);
-    }
-
     
 }

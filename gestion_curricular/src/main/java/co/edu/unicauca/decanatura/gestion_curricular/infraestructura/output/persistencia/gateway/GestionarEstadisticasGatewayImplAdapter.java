@@ -27,12 +27,6 @@ import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.pers
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.entidades.EstadoSolicitudEntity;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.entidades.ProgramaEntity;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.entidades.SolicitudEntity;
-import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.entidades.SolicitudCursoVeranoPreinscripcionEntity;
-import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.entidades.SolicitudCursoVeranoInscripcionEntity;
-import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.entidades.SolicitudEcaesEntity;
-import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.entidades.SolicitudHomologacionEntity;
-import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.entidades.SolicitudPazYSalvoEntity;
-import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.entidades.SolicitudReingresoEntity;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.entidades.UsuarioEntity;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.repositorios.EstadisticaRepositoryInt;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.repositorios.ProgramaRepositoryInt;
@@ -193,29 +187,6 @@ public class GestionarEstadisticasGatewayImplAdapter implements GestionarEstadis
         Map<String, Object> estadisticas = new HashMap<>();
         
         try {
-            // Normalizar el proceso para que coincida con los nombres en la base de datos
-            String procesoParaConsulta = proceso;
-            if (proceso != null && !proceso.trim().isEmpty()) {
-                // Normalizar nombres comunes del frontend a términos de búsqueda que funcionen en la BD
-                String procesoLower = proceso.trim().toLowerCase();
-                if (procesoLower.contains("curso") && procesoLower.contains("verano")) {
-                    // Buscar variantes: "Curso de Verano", "Curso Verano", "Cursos de Verano", etc.
-                    procesoParaConsulta = "Curso";
-                } else if (procesoLower.contains("paz") && procesoLower.contains("salvo")) {
-                    procesoParaConsulta = "Paz y Salvo";
-                } else if (procesoLower.contains("reingreso")) {
-                    procesoParaConsulta = "Reingreso";
-                } else if (procesoLower.contains("homologacion") || procesoLower.contains("homologación")) {
-                    procesoParaConsulta = "Homologacion";
-                } else if (procesoLower.contains("ecaes")) {
-                    procesoParaConsulta = "ECAES";
-                } else {
-                    // Si no coincide con ningún patrón conocido, usar el proceso original
-                    procesoParaConsulta = proceso.trim();
-                }
-                log.debug("Proceso normalizado: '{}' -> '{}'", proceso, procesoParaConsulta);
-            }
-            
             // Estadisticas generales del sistema
             // NOTA: Si hay filtros, algunos conteos pueden no funcionar correctamente
             // En ese caso, usar contarEstado() para estadisticas globales sin filtros
@@ -276,14 +247,14 @@ public class GestionarEstadisticasGatewayImplAdapter implements GestionarEstadis
             } else {
                 // Con filtros: usar contarSolicitudesPorEstadoConFiltros
                 try {
-                    totalAprobadas = Optional.ofNullable(solicitudRepository.contarSolicitudesPorEstadoConFiltros("APROBADA", procesoParaConsulta, idPrograma, fechaInicio, fechaFin)).orElse(0);
-                    totalRechazadas = Optional.ofNullable(solicitudRepository.contarSolicitudesPorEstadoConFiltros("RECHAZADA", procesoParaConsulta, idPrograma, fechaInicio, fechaFin)).orElse(0);
-                    enProcesoFuncionario = Optional.ofNullable(solicitudRepository.contarSolicitudesPorEstadoConFiltros("APROBADA_FUNCIONARIO", procesoParaConsulta, idPrograma, fechaInicio, fechaFin)).orElse(0);
-                    enProcesoCoordinador = Optional.ofNullable(solicitudRepository.contarSolicitudesPorEstadoConFiltros("APROBADA_COORDINADOR", procesoParaConsulta, idPrograma, fechaInicio, fechaFin)).orElse(0);
-                    totalEnviadas = Optional.ofNullable(solicitudRepository.contarSolicitudesPorEstadoConFiltros("ENVIADA", procesoParaConsulta, idPrograma, fechaInicio, fechaFin)).orElse(0);
+                    totalAprobadas = Optional.ofNullable(solicitudRepository.contarSolicitudesPorEstadoConFiltros("APROBADA", proceso, idPrograma, fechaInicio, fechaFin)).orElse(0);
+                    totalRechazadas = Optional.ofNullable(solicitudRepository.contarSolicitudesPorEstadoConFiltros("RECHAZADA", proceso, idPrograma, fechaInicio, fechaFin)).orElse(0);
+                    enProcesoFuncionario = Optional.ofNullable(solicitudRepository.contarSolicitudesPorEstadoConFiltros("APROBADA_FUNCIONARIO", proceso, idPrograma, fechaInicio, fechaFin)).orElse(0);
+                    enProcesoCoordinador = Optional.ofNullable(solicitudRepository.contarSolicitudesPorEstadoConFiltros("APROBADA_COORDINADOR", proceso, idPrograma, fechaInicio, fechaFin)).orElse(0);
+                    totalEnviadas = Optional.ofNullable(solicitudRepository.contarSolicitudesPorEstadoConFiltros("ENVIADA", proceso, idPrograma, fechaInicio, fechaFin)).orElse(0);
                     
                     // Con filtros: usar contarSolicitudesConFiltros o calcular como suma
-                    totalSolicitudes = Optional.ofNullable(solicitudRepository.contarSolicitudesConFiltros(procesoParaConsulta, idPrograma, fechaInicio, fechaFin)).orElse(0);
+                    totalSolicitudes = Optional.ofNullable(solicitudRepository.contarSolicitudesConFiltros(proceso, idPrograma, fechaInicio, fechaFin)).orElse(0);
                     
                     // Si contarSolicitudesConFiltros falla, calcular como suma de estados
                     if (totalSolicitudes == null || totalSolicitudes == 0) {
@@ -341,45 +312,26 @@ public class GestionarEstadisticasGatewayImplAdapter implements GestionarEstadis
                     solicitudes = new ArrayList<>();
                 }
                 
-                // Agrupar por tipo de proceso (usando el método que detecta por tipo de entidad)
+                // Agrupar por tipo de proceso (extrayendo el tipo del nombre)
                 for (SolicitudEntity solicitud : solicitudes) {
                     try {
                     // Aplicar filtros manualmente si es necesario
                     boolean cumpleFiltros = true;
                     
-                    // Filtrar por proceso usando el método que detecta por tipo de entidad (más confiable)
-                    if (procesoParaConsulta != null) {
-                        String nombreProcesoReal = obtenerNombreProcesoPorSolicitud(solicitud);
-                        if (nombreProcesoReal == null) {
-                            // Si no se puede detectar el proceso, intentar por nombre
-                            String nombreSolicitud = solicitud.getNombre_solicitud();
-                            if (nombreSolicitud == null || !nombreSolicitud.toLowerCase().contains(procesoParaConsulta.toLowerCase())) {
-                                cumpleFiltros = false;
-                            }
-                        } else {
-                            // Normalizar el nombre del proceso real para comparar
-                            String procesoRealNormalizado = nombreProcesoReal;
-                            if (nombreProcesoReal.equals("Cursos de Verano")) {
-                                procesoRealNormalizado = "Curso";
-                            }
-                            // Comparar con el proceso normalizado del filtro
-                            if (!procesoRealNormalizado.toLowerCase().contains(procesoParaConsulta.toLowerCase()) &&
-                                !procesoParaConsulta.toLowerCase().contains(procesoRealNormalizado.toLowerCase())) {
-                                cumpleFiltros = false;
-                            }
-                        }
+                    String nombreSolicitud = solicitud.getNombre_solicitud();
+                    if (proceso != null && nombreSolicitud != null && 
+                        !nombreSolicitud.toLowerCase().contains(proceso.toLowerCase())) {
+                        cumpleFiltros = false;
                     }
-                    
-                    // Filtrar por programa
-                    if (idPrograma != null) {
-                        if (solicitud.getObjUsuario() == null || 
-                            solicitud.getObjUsuario().getObjPrograma() == null ||
-                            !solicitud.getObjUsuario().getObjPrograma().getId_programa().equals(idPrograma)) {
-                            cumpleFiltros = false;
-                        }
+                    // Si hay filtro de proceso pero la solicitud no tiene nombre, excluirla
+                    if (proceso != null && nombreSolicitud == null) {
+                        cumpleFiltros = false;
                     }
-                    
-                    // Filtrar por fechas
+                    if (idPrograma != null && solicitud.getObjUsuario() != null && 
+                        solicitud.getObjUsuario().getObjPrograma() != null &&
+                        !solicitud.getObjUsuario().getObjPrograma().getId_programa().equals(idPrograma)) {
+                        cumpleFiltros = false;
+                    }
                     Date fechaSolicitud = solicitud.getFecha_registro_solicitud();
                     if (fechaInicio != null && fechaSolicitud != null && fechaSolicitud.before(fechaInicio)) {
                         cumpleFiltros = false;
@@ -392,20 +344,9 @@ public class GestionarEstadisticasGatewayImplAdapter implements GestionarEstadis
                         cumpleFiltros = false;
                     }
                     
-                    // Si cumple los filtros, agregar al conteo por tipo de proceso
-                    if (cumpleFiltros) {
+                    if (cumpleFiltros && nombreSolicitud != null) {
                         try {
-                            // Usar el método que detecta por tipo de entidad (más confiable)
-                            String tipoProceso = obtenerNombreProcesoPorSolicitud(solicitud);
-                            if (tipoProceso == null) {
-                                // Fallback: usar el nombre de la solicitud
-                                String nombreSolicitud = solicitud.getNombre_solicitud();
-                                if (nombreSolicitud != null) {
-                                    tipoProceso = extraerTipoProceso(nombreSolicitud);
-                                } else {
-                                    tipoProceso = "Desconocido";
-                                }
-                            }
+                            String tipoProceso = extraerTipoProceso(nombreSolicitud);
                             porTipoProceso.put(tipoProceso, porTipoProceso.getOrDefault(tipoProceso, 0) + 1);
                         } catch (Exception e) {
                             log.debug("Estadisticas globales - Error extrayendo tipo de proceso para solicitud ID {}: {}", 
@@ -459,7 +400,7 @@ public class GestionarEstadisticasGatewayImplAdapter implements GestionarEstadis
                 for (ProgramaEntity programa : programas) {
                     try {
                         if (programa != null && programa.getId_programa() != null && programa.getNombre_programa() != null) {
-                            Integer cantidad = Optional.ofNullable(solicitudRepository.contarSolicitudesPorProgramaConFiltros(programa.getId_programa(), procesoParaConsulta, fechaInicio, fechaFin)).orElse(0);
+                            Integer cantidad = Optional.ofNullable(solicitudRepository.contarSolicitudesPorProgramaConFiltros(programa.getId_programa(), proceso, fechaInicio, fechaFin)).orElse(0);
                             porPrograma.put(programa.getNombre_programa(), cantidad);
                             log.debug("Estadisticas globales - Programa: {} = {}", programa.getNombre_programa(), cantidad);
                         }
@@ -2812,39 +2753,21 @@ public class GestionarEstadisticasGatewayImplAdapter implements GestionarEstadis
     }
 
     private String obtenerNombreProcesoPorSolicitud(SolicitudEntity solicitud) {
-        if (solicitud == null) return null;
+        if (solicitud == null || solicitud.getNombre_solicitud() == null) return null;
         
-        // Primero intentar detectar por tipo de entidad (más confiable)
-        if (solicitud instanceof SolicitudHomologacionEntity) {
+        String nombreSolicitud = solicitud.getNombre_solicitud().toLowerCase();
+        
+        if (nombreSolicitud.contains("homologacion") || nombreSolicitud.contains("homologacion")) {
             return "Homologacion";
-        } else if (solicitud instanceof SolicitudPazYSalvoEntity) {
+        } else if (nombreSolicitud.contains("paz") && nombreSolicitud.contains("salvo")) {
             return "Paz y Salvo";
-        } else if (solicitud instanceof SolicitudReingresoEntity) {
+        } else if (nombreSolicitud.contains("reingreso")) {
             return "Reingreso";
-        } else if (solicitud instanceof SolicitudCursoVeranoPreinscripcionEntity || 
-                   solicitud instanceof SolicitudCursoVeranoInscripcionEntity) {
+        } else if (nombreSolicitud.contains("curso") && nombreSolicitud.contains("verano")) {
             return "Cursos de Verano";
-        } else if (solicitud instanceof SolicitudEcaesEntity) {
+        } else if (nombreSolicitud.contains("ecaes")) {
             return "ECAES";
         }
-        
-        // Fallback: intentar detectar por nombre de la solicitud
-        if (solicitud.getNombre_solicitud() != null) {
-            String nombreSolicitud = solicitud.getNombre_solicitud().toLowerCase();
-            
-            if (nombreSolicitud.contains("homologacion") || nombreSolicitud.contains("homologacion")) {
-                return "Homologacion";
-            } else if (nombreSolicitud.contains("paz") && nombreSolicitud.contains("salvo")) {
-                return "Paz y Salvo";
-            } else if (nombreSolicitud.contains("reingreso")) {
-                return "Reingreso";
-            } else if (nombreSolicitud.contains("curso") && nombreSolicitud.contains("verano")) {
-                return "Cursos de Verano";
-            } else if (nombreSolicitud.contains("ecaes") || nombreSolicitud.contains("solicitudecaes")) {
-                return "ECAES";
-            }
-        }
-        
         return null;
     }
 
@@ -3832,65 +3755,18 @@ public class GestionarEstadisticasGatewayImplAdapter implements GestionarEstadis
     }
 
     @Override
-    public Map<String, Object> obtenerEstadisticasCursosVerano(String periodoAcademico, Integer idPrograma) {
+    public Map<String, Object> obtenerEstadisticasCursosVerano() {
         Map<String, Object> resultado = new HashMap<>();
         
         try {
-            log.debug("Cursos de verano - Iniciando analisis de cursos de verano. Período: {}, Programa: {}", periodoAcademico, idPrograma);
-            
-            // Convertir período académico a formato YYYY-P si viene en formato descriptivo
-            final String periodoFormato;
-            if (periodoAcademico != null && !periodoAcademico.trim().isEmpty()) {
-                // Intentar convertir formato descriptivo a YYYY-P
-                if (periodoAcademico.matches("\\d{4}-[12]")) {
-                    periodoFormato = periodoAcademico;
-                } else {
-                    // Intentar parsear formato descriptivo
-                    String periodoCalculado = null;
-                    if (periodoAcademico.toLowerCase().contains("primer")) {
-                        String año = periodoAcademico.replaceAll("[^0-9]", "");
-                        if (!año.isEmpty()) {
-                            periodoCalculado = año + "-1";
-                        }
-                    } else if (periodoAcademico.toLowerCase().contains("segundo")) {
-                        String año = periodoAcademico.replaceAll("[^0-9]", "");
-                        if (!año.isEmpty()) {
-                            periodoCalculado = año + "-2";
-                        }
-                    }
-                    periodoFormato = periodoCalculado;
-                }
-            } else {
-                periodoFormato = null;
-            }
+            log.debug("Cursos de verano - Iniciando analisis de cursos de verano...");
             
             // Obtener todas las solicitudes de cursos de verano
             List<SolicitudEntity> todasLasSolicitudes = solicitudRepository.findAll();
             List<SolicitudEntity> solicitudesCursosVerano = todasLasSolicitudes.stream()
                 .filter(solicitud -> {
-                    // Filtrar por tipo de proceso
                     String nombreProceso = obtenerNombreProcesoPorSolicitud(solicitud);
-                    if (!"Cursos de Verano".equals(nombreProceso) && !"CURSO_VERANO".equals(nombreProceso)) {
-                        return false;
-                    }
-                    
-                    // Filtrar por período académico si se proporciona
-                    if (periodoFormato != null && solicitud.getPeriodo_academico() != null) {
-                        if (!periodoFormato.equals(solicitud.getPeriodo_academico())) {
-                            return false;
-                        }
-                    }
-                    
-                    // Filtrar por programa si se proporciona
-                    if (idPrograma != null) {
-                        if (solicitud.getObjUsuario() == null || 
-                            solicitud.getObjUsuario().getObjPrograma() == null ||
-                            !idPrograma.equals(solicitud.getObjUsuario().getObjPrograma().getId_programa())) {
-                            return false;
-                        }
-                    }
-                    
-                    return true;
+                    return "Cursos de Verano".equals(nombreProceso) || "CURSO_VERANO".equals(nombreProceso);
                 })
                 .collect(Collectors.toList());
             

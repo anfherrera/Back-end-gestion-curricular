@@ -65,30 +65,72 @@ public class UsuarioRestController {
     @PostMapping("/crearUsuario")
     @PreAuthorize("hasRole('Administrador') or hasRole('Coordinador')")
     public ResponseEntity<UsuarioDTORespuesta> crearUsuario(@RequestBody @Valid UsuarioDTOPeticion peticion) {
-        Usuario usuario = new Usuario();
-        usuario.setNombre_completo(peticion.getNombre_completo());
-        usuario.setCodigo(peticion.getCodigo());
-        usuario.setCedula(peticion.getCedula());
-        usuario.setCorreo(peticion.getCorreo());
-        usuario.setPassword(peticion.getPassword());
-        usuario.setEstado_usuario(peticion.isEstado_usuario());
-        
-        // Crear objetos Rol y Programa con solo el ID
-        co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Rol rol = 
-            new co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Rol();
-        rol.setId_rol(peticion.getId_rol());
-        usuario.setObjRol(rol);
-        
-        co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Programa programa = 
-            new co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Programa();
-        programa.setId_programa(peticion.getId_programa());
-        usuario.setObjPrograma(programa);
-        
-        Usuario usuarioCreado = objUsuarioCUIntPort.crearUsuario(usuario);
-        return new ResponseEntity<>(
-            objUsuarioMapperDominio.mappearDeUsuarioAUsuarioDTORespuesta(usuarioCreado), 
-            HttpStatus.CREATED
-        );
+        try {
+            if (peticion == null) {
+                throw new IllegalArgumentException("La petición no puede ser nula");
+            }
+            
+            Usuario usuario = new Usuario();
+            usuario.setNombre_completo(peticion.getNombre_completo());
+            usuario.setCodigo(peticion.getCodigo());
+            usuario.setCedula(peticion.getCedula());
+            usuario.setCorreo(peticion.getCorreo());
+            usuario.setPassword(peticion.getPassword());
+            usuario.setEstado_usuario(peticion.isEstado_usuario());
+            
+            // Crear objetos Rol y Programa con solo el ID
+            if (peticion.getId_rol() == null) {
+                throw new IllegalArgumentException("El ID del rol es obligatorio");
+            }
+            co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Rol rol = 
+                new co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Rol();
+            rol.setId_rol(peticion.getId_rol());
+            usuario.setObjRol(rol);
+            
+            if (peticion.getId_programa() == null) {
+                throw new IllegalArgumentException("El ID del programa es obligatorio");
+            }
+            co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Programa programa = 
+                new co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Programa();
+            programa.setId_programa(peticion.getId_programa());
+            usuario.setObjPrograma(programa);
+            
+            Usuario usuarioCreado = objUsuarioCUIntPort.crearUsuario(usuario);
+            
+            if (usuarioCreado == null) {
+                throw new RuntimeException("Error al crear el usuario: el usuario creado es nulo");
+            }
+            
+            // Validar que las relaciones estén presentes antes de mapear
+            if (usuarioCreado.getObjRol() == null) {
+                throw new RuntimeException("Error: el usuario creado no tiene rol asignado");
+            }
+            if (usuarioCreado.getObjPrograma() == null) {
+                throw new RuntimeException("Error: el usuario creado no tiene programa asignado");
+            }
+            
+            UsuarioDTORespuesta respuesta;
+            try {
+                respuesta = objUsuarioMapperDominio.mappearDeUsuarioAUsuarioDTORespuesta(usuarioCreado);
+            } catch (Exception e) {
+                if (e.getMessage() != null && e.getMessage().contains("source cannot be null")) {
+                    throw new RuntimeException("Error al mapear usuario a DTO: " + 
+                        "Rol: " + (usuarioCreado.getObjRol() != null ? "presente" : "null") + 
+                        ", Programa: " + (usuarioCreado.getObjPrograma() != null ? "presente" : "null"), e);
+                }
+                throw new RuntimeException("Error al mapear el usuario creado a DTO de respuesta: " + e.getMessage(), e);
+            }
+            
+            if (respuesta == null) {
+                throw new RuntimeException("Error al mapear el usuario creado a DTO de respuesta: resultado nulo");
+            }
+            
+            return new ResponseEntity<>(respuesta, HttpStatus.CREATED);
+        } catch (IllegalArgumentException e) {
+            throw e;
+        } catch (Exception e) {
+            throw new RuntimeException("Error al crear el usuario: " + e.getMessage(), e);
+        }
     }
     
     @PutMapping("/actualizarUsuario")

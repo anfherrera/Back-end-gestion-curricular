@@ -209,29 +209,5 @@ public class GestionarSolicitudPazYSalvoGatewayImplAdapter implements GestionarS
         solicitudRepository.save(solicitudEntity);
     }
 
-    @Override
-    public List<SolicitudPazYSalvo> listarSolicitudesProcesadas() {
-        return solicitudRepository.findSolicitudesProcesadas().stream()
-                .map(entity -> mapper.map(entity, SolicitudPazYSalvo.class))
-                .toList();
-    }
-
-    @Override
-    public List<SolicitudPazYSalvo> listarSolicitudesProcesadasPorPeriodo(String periodoAcademico) {
-        return solicitudRepository.findSolicitudesProcesadasPorPeriodo(periodoAcademico).stream()
-                .map(entity -> mapper.map(entity, SolicitudPazYSalvo.class))
-                .toList();
-    }
-
-    @Override
-    public List<SolicitudPazYSalvo> listarSolicitudesProcesadasPorProgramaYPeriodo(Integer idPrograma, String periodoAcademico) {
-        if (idPrograma == null) {
-            return listarSolicitudesProcesadasPorPeriodo(periodoAcademico);
-        }
-        return solicitudRepository.findSolicitudesProcesadasPorProgramaYPeriodo(idPrograma, periodoAcademico).stream()
-                .map(entity -> mapper.map(entity, SolicitudPazYSalvo.class))
-                .toList();
-    }
-
     
 }

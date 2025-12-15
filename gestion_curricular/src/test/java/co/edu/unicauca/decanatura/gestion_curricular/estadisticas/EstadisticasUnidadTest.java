@@ -306,15 +306,15 @@ class EstadisticasUnidadTest {
         // Arrange
         Map<String, Object> estadisticasCursos = new HashMap<>();
         estadisticasCursos.put("totalCursos", 15);
-        when(estadisticasGateway.obtenerEstadisticasCursosVerano(null, null))
+        when(estadisticasGateway.obtenerEstadisticasCursosVerano())
                 .thenReturn(estadisticasCursos);
 
         // Act
-        Map<String, Object> resultado = estadisticasCU.obtenerEstadisticasCursosVerano(null, null);
+        Map<String, Object> resultado = estadisticasCU.obtenerEstadisticasCursosVerano();
 
         // Assert
         assertThat(resultado).isNotNull();
-        verify(estadisticasGateway, times(1)).obtenerEstadisticasCursosVerano(null, null);
+        verify(estadisticasGateway, times(1)).obtenerEstadisticasCursosVerano();
     }
 }
 

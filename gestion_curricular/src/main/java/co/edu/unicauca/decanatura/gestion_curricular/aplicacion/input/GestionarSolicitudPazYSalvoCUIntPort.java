@@ -92,25 +92,4 @@ public interface GestionarSolicitudPazYSalvoCUIntPort {
     SolicitudPazYSalvo buscarPorId(Integer idSolicitud);
 
     void cambiarEstadoSolicitud(Integer idSolicitud, String nuevoEstado);
-
-    /**
-     * Lista todas las solicitudes procesadas (historial verdadero - que han cambiado de estado desde "Enviada")
-     * @return Lista de solicitudes procesadas
-     */
-    List<SolicitudPazYSalvo> listarSolicitudesProcesadas();
-
-    /**
-     * Lista solicitudes procesadas filtradas por período académico
-     * @param periodoAcademico Período académico (formato: "YYYY-P", ej: "2025-2")
-     * @return Lista de solicitudes procesadas del período específico
-     */
-    List<SolicitudPazYSalvo> listarSolicitudesProcesadasPorPeriodo(String periodoAcademico);
-
-    /**
-     * Lista solicitudes procesadas filtradas por programa y período académico
-     * @param idPrograma ID del programa académico
-     * @param periodoAcademico Período académico (formato: "YYYY-P", ej: "2025-2")
-     * @return Lista de solicitudes procesadas del programa y período específicos
-     */
-    List<SolicitudPazYSalvo> listarSolicitudesProcesadasPorProgramaYPeriodo(Integer idPrograma, String periodoAcademico);
 }

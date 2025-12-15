@@ -85,9 +85,17 @@ public class GestionarSolicitudCursoVeranoGatewayImplAdapter implements Gestiona
                 // Para cursos nuevos, no necesitamos crear la entidad del curso
                 // Solo guardamos la solicitud con la información del curso solicitado
                 cursoOfertadoVeranoEntity = null;
+                // Para cursos nuevos, usar el período académico del dominio si está disponible
+                if (solicitudCursoVerano.getPeriodo_academico() != null && !solicitudCursoVerano.getPeriodo_academico().trim().isEmpty()) {
+                    solicitudCursoVeranoEntity.setPeriodo_academico(solicitudCursoVerano.getPeriodo_academico());
+                }
             } else if(cursoOfertadoVeranoRepository.existsById(idCurso)){
                 cursoOfertadoVeranoEntity = cursoOfertadoVeranoRepository.findById(idCurso)
                         .orElseThrow(() -> new IllegalArgumentException("Curso ofertado no encontrado con ID: " + idCurso));
+                // Asignar el período académico del curso a la solicitud
+                if (cursoOfertadoVeranoEntity.getPeriodo_academico() != null && !cursoOfertadoVeranoEntity.getPeriodo_academico().trim().isEmpty()) {
+                    solicitudCursoVeranoEntity.setPeriodo_academico(cursoOfertadoVeranoEntity.getPeriodo_academico());
+                }
             } else {
                 cursoOfertadoVeranoEntity = new CursoOfertadoVeranoEntity();
                 GrupoCursoVeranoEntity  grupoEntity = solicitudMapper.map(cursoOfertado.getGrupo(), GrupoCursoVeranoEntity.class);
@@ -98,6 +106,11 @@ public class GestionarSolicitudCursoVeranoGatewayImplAdapter implements Gestiona
                 DocenteEntity docenteEntity = solicitudMapper.map(cursoOfertado.getObjDocente(), DocenteEntity.class);
                 cursoOfertadoVeranoEntity.setObjMateria(materiaEntity);
                 cursoOfertadoVeranoEntity.setObjDocente(docenteEntity);
+                // Si el curso tiene período académico en el dominio, asignarlo también a la solicitud
+                if (cursoOfertado.getPeriodo_academico() != null && !cursoOfertado.getPeriodo_academico().trim().isEmpty()) {
+                    cursoOfertadoVeranoEntity.setPeriodo_academico(cursoOfertado.getPeriodo_academico());
+                    solicitudCursoVeranoEntity.setPeriodo_academico(cursoOfertado.getPeriodo_academico());
+                }
             }
             solicitudCursoVeranoEntity.setObjCursoOfertadoVerano(cursoOfertadoVeranoEntity);
         }else{
@@ -134,6 +147,10 @@ public class GestionarSolicitudCursoVeranoGatewayImplAdapter implements Gestiona
             if(cursoOfertadoVeranoRepository.existsById(idCurso)){
                 cursoOfertadoVeranoEntity = cursoOfertadoVeranoRepository.findById(idCurso)
                         .orElseThrow(() -> new IllegalArgumentException("Curso ofertado no encontrado con ID: " + idCurso));
+                // Asignar el período académico del curso a la solicitud
+                if (cursoOfertadoVeranoEntity.getPeriodo_academico() != null && !cursoOfertadoVeranoEntity.getPeriodo_academico().trim().isEmpty()) {
+                    solicitudCursoVeranoEntity.setPeriodo_academico(cursoOfertadoVeranoEntity.getPeriodo_academico());
+                }
             } else {
                 cursoOfertadoVeranoEntity = new CursoOfertadoVeranoEntity();
                 GrupoCursoVeranoEntity  grupoEntity = solicitudMapper.map(cursoOfertado.getGrupo(), GrupoCursoVeranoEntity.class);
@@ -144,7 +161,11 @@ public class GestionarSolicitudCursoVeranoGatewayImplAdapter implements Gestiona
                 DocenteEntity docenteEntity = solicitudMapper.map(cursoOfertado.getObjDocente(), DocenteEntity.class);
                 cursoOfertadoVeranoEntity.setObjMateria(materiaEntity);
                 cursoOfertadoVeranoEntity.setObjDocente(docenteEntity);
-                
+                // Si el curso tiene período académico en el dominio, asignarlo también a la solicitud
+                if (cursoOfertado.getPeriodo_academico() != null && !cursoOfertado.getPeriodo_academico().trim().isEmpty()) {
+                    cursoOfertadoVeranoEntity.setPeriodo_academico(cursoOfertado.getPeriodo_academico());
+                    solicitudCursoVeranoEntity.setPeriodo_academico(cursoOfertado.getPeriodo_academico());
+                }
             }
             solicitudCursoVeranoEntity.setObjCursoOfertadoVerano(cursoOfertadoVeranoEntity);
         } else {

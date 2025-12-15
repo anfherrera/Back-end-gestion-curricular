@@ -46,29 +46,48 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             // Extraer el email del token
             userEmail = jwtUtil.extraerCorreoDesdeToken(jwt);
             
+            if (userEmail == null) {
+                log.warn("No se pudo extraer el correo del token JWT");
+                filterChain.doFilter(request, response);
+                return;
+            }
+            
             // Si el email no es null y no hay autenticación en el contexto
-            if (userEmail != null && SecurityContextHolder.getContext().getAuthentication() == null) {
+            if (SecurityContextHolder.getContext().getAuthentication() == null) {
+                
+                // Validar el token primero
+                if (!jwtUtil.validarToken(jwt)) {
+                    log.warn("Token inválido o expirado para usuario: {}", userEmail);
+                    filterChain.doFilter(request, response);
+                    return;
+                }
                 
                 // Cargar los detalles del usuario
                 UserDetails userDetails = this.userDetailsService.loadUserByUsername(userEmail);
                 
-                // Validar el token
-                if (jwtUtil.validarToken(jwt)) {
-                    // Crear el token de autenticación
-                    UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
-                        userDetails,
-                        null,
-                        userDetails.getAuthorities()
-                    );
-                    
-                    // Establecer los detalles de la autenticación
-                    authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-                    
-                    // Establecer la autenticación en el contexto de seguridad
-                    SecurityContextHolder.getContext().setAuthentication(authToken);
-                    
-                    log.debug("Usuario autenticado: {}", userEmail);
+                if (userDetails == null) {
+                    log.warn("Usuario no encontrado: {}", userEmail);
+                    filterChain.doFilter(request, response);
+                    return;
                 }
+                
+                // Crear el token de autenticación
+                UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
+                    userDetails,
+                    null,
+                    userDetails.getAuthorities()
+                );
+                
+                // Establecer los detalles de la autenticación
+                authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+                
+                // Establecer la autenticación en el contexto de seguridad
+                SecurityContextHolder.getContext().setAuthentication(authToken);
+                
+                log.debug("Usuario autenticado: {} con roles: {}", userEmail, 
+                    userDetails.getAuthorities().stream()
+                        .map(a -> a.getAuthority())
+                        .collect(java.util.stream.Collectors.joining(", ")));
             }
         } catch (Exception e) {
             log.error("Error al procesar el token JWT: {}", e.getMessage());

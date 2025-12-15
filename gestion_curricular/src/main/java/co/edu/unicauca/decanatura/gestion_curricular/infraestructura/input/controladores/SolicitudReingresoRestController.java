@@ -5,7 +5,6 @@ import java.util.Map;
 import java.util.HashMap;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.Optional;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpHeaders;
@@ -32,8 +31,6 @@ import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.mappe
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.GestionarUsuarioGatewayIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Usuario;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Enums.PeriodoAcademicoEnum;
-import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.PeriodoAcademico;
-import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarPeriodoAcademicoCUIntPort;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import lombok.RequiredArgsConstructor;
@@ -53,93 +50,19 @@ public class SolicitudReingresoRestController {
     private final SolicitudMapperDominio solicitudMapper;
     private final GestionarArchivosCUIntPort objGestionarArchivos;
     private final GestionarUsuarioGatewayIntPort usuarioGateway;
-    private final GestionarPeriodoAcademicoCUIntPort periodoAcademicoCU;
 
     @PostMapping("/crearSolicitud-Reingreso")
     public ResponseEntity<SolicitudReingresoDTORespuesta> crearSolicitudReingreso(@RequestBody SolicitudReingresoDTOPeticion solicitudDTO) {
         SolicitudReingreso solicitud = solicitudReingresoMapper.mappearDeSolicitudReingresoDTOPeticionASolicitudReingreso(solicitudDTO);
-        
-        // Validar y asignar período académico
-        validarYAsignarPeriodoAcademico(solicitud);
-        
         SolicitudReingreso solicitudCreada = solicitudService.crearSolicitudReingreso(solicitud);
         ResponseEntity<SolicitudReingresoDTORespuesta> respuesta = new ResponseEntity<>
         (solicitudReingresoMapper.mappearDeSolicitudReingresoASolicitudReingresoDTORespuesta(solicitudCreada), HttpStatus.CREATED);
         return respuesta;
     }
-    
-    /**
-     * Valida y asigna período académico a la solicitud
-     */
-    private void validarYAsignarPeriodoAcademico(SolicitudReingreso solicitud) {
-        // Si no se proporcionó período académico, establecer el período actual automáticamente
-        if (solicitud.getPeriodo_academico() == null || solicitud.getPeriodo_academico().trim().isEmpty()) {
-            // Intentar obtener desde BD (con fallback automático al enum)
-            String periodoActual = periodoAcademicoCU.obtenerPeriodoActualComoString();
-            if (periodoActual != null && !periodoActual.trim().isEmpty()) {
-                solicitud.setPeriodo_academico(periodoActual);
-                log.debug("Período académico establecido automáticamente: {}", periodoActual);
-            } else {
-                // Fallback al enum si el servicio no retorna nada
-                PeriodoAcademicoEnum periodoEnum = PeriodoAcademicoEnum.getPeriodoActual();
-                if (periodoEnum != null) {
-                    solicitud.setPeriodo_academico(periodoEnum.getValor());
-                    log.debug("Período académico establecido automáticamente (fallback enum): {}", periodoEnum.getValor());
-                }
-            }
-        } else {
-            // Validar que el período académico proporcionado sea válido
-            String periodoProporcionado = solicitud.getPeriodo_academico().trim();
-            Optional<PeriodoAcademico> periodoValidado = periodoAcademicoCU.obtenerPeriodoPorValor(periodoProporcionado);
-            
-            if (periodoValidado.isEmpty()) {
-                // Verificar con el enum como fallback
-                if (!PeriodoAcademicoEnum.esValido(periodoProporcionado)) {
-                    log.warn("Período académico no válido proporcionado: {}", periodoProporcionado);
-                    throw new IllegalArgumentException("Período académico no válido: " + periodoProporcionado + ". Use formato YYYY-P (ej: 2025-1)");
-                }
-            }
-            
-            // Validar que la fecha de solicitud esté dentro del período (si hay fecha)
-            if (solicitud.getFecha_registro_solicitud() != null) {
-                java.time.LocalDate fechaSolicitud = solicitud.getFecha_registro_solicitud().toInstant()
-                    .atZone(java.time.ZoneId.systemDefault()).toLocalDate();
-                
-                Optional<PeriodoAcademico> periodoFecha = periodoAcademicoCU.obtenerPeriodoPorFecha(fechaSolicitud);
-                if (periodoFecha.isPresent() && !periodoFecha.get().getValor().equals(periodoProporcionado)) {
-                    log.warn("La fecha de solicitud ({}) no corresponde al período académico proporcionado ({})", 
-                            fechaSolicitud, periodoProporcionado);
-                    // Advertir pero no rechazar (puede ser válido en algunos casos)
-                }
-            }
-        }
-    }
 
     @GetMapping("/listarSolicitudes-Reingreso")
-    public ResponseEntity<List<SolicitudReingresoDTORespuesta>> listarSolicitudesReingreso(
-            @RequestParam(required = false) String periodoAcademico) {
-        
-        // Si no se proporciona período, usar el período académico actual basado en la fecha
-        if (periodoAcademico == null || periodoAcademico.trim().isEmpty()) {
-            PeriodoAcademicoEnum periodoActual = PeriodoAcademicoEnum.getPeriodoActual();
-            if (periodoActual != null) {
-                periodoAcademico = periodoActual.getValor();
-                log.debug("Usando período académico actual automático: {}", periodoAcademico);
-            }
-        }
-        
+    public ResponseEntity<List<SolicitudReingresoDTORespuesta>> listarSolicitudesReingreso() {
         List<SolicitudReingreso> solicitudes = solicitudService.listarSolicitudesReingreso();
-        
-        // Filtrar por período académico si se proporcionó
-        if (periodoAcademico != null && !periodoAcademico.trim().isEmpty()) {
-            final String periodoFiltro = periodoAcademico.trim();
-            solicitudes = solicitudes.stream()
-                    .filter(s -> s.getPeriodo_academico() != null 
-                            && s.getPeriodo_academico().equals(periodoFiltro))
-                    .toList();
-            log.debug("Filtrando solicitudes por período académico: {}", periodoFiltro);
-        }
-        
         List<SolicitudReingresoDTORespuesta> solicitudesDTO = solicitudReingresoMapper.mappearDeListaSolicitudReingresoASolicitudReingresoDTORespuesta(solicitudes);
         return ResponseEntity.ok(solicitudesDTO);
     }

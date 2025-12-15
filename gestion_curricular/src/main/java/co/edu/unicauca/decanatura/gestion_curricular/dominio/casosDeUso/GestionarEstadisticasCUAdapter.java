@@ -259,8 +259,8 @@ public class GestionarEstadisticasCUAdapter implements GestionarEstadisticasCUIn
     }
 
     @Override
-    public Map<String, Object> obtenerEstadisticasCursosVerano(String periodoAcademico, Integer idPrograma) {
-        return estadisticasGateway.obtenerEstadisticasCursosVerano(periodoAcademico, idPrograma);
+    public Map<String, Object> obtenerEstadisticasCursosVerano() {
+        return estadisticasGateway.obtenerEstadisticasCursosVerano();
     }
 
     @Override

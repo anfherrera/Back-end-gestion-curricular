@@ -17,6 +17,7 @@ import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.Gestionar
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.GestionarEstadoCursoOfertadoGatewayIntPort;
 
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.GestionarMateriasIntPort;
+import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.GestionarSalonesIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.GestionarPreRegistroEcaesGatewayIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.GestionarProgramaGatewayIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.GestionarRolGatewayIntPort;
@@ -34,6 +35,7 @@ import co.edu.unicauca.decanatura.gestion_curricular.dominio.casosDeUso.Gestiona
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.casosDeUso.GestionarDocumentosCUAdapter;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.casosDeUso.GestionarEstadisticasCUAdapter;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.casosDeUso.GestionarMateriasCUAdapter;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.casosDeUso.GestionarSalonesCUAdapter;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.casosDeUso.GestionarProgramasCUAdapter;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.casosDeUso.GestionarRolesCUAdapter;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.casosDeUso.GestionarSolicitudCUAdapter;
@@ -74,6 +76,12 @@ public class BeanConfiguration {
     public GestionarMateriasCUAdapter crearGestionarMateriasCUInt(GestionarMateriasIntPort materiasGateway,
                                       FormateadorResultadosIntPort formateadorResultados){
                  return new GestionarMateriasCUAdapter(materiasGateway, formateadorResultados);
+    }
+    
+    @Bean 
+    public GestionarSalonesCUAdapter crearGestionarSalonesCUInt(GestionarSalonesIntPort salonesGateway,
+                                      FormateadorResultadosIntPort formateadorResultados){
+                 return new GestionarSalonesCUAdapter(salonesGateway, formateadorResultados);
     }
     
     
@@ -192,13 +200,11 @@ public class BeanConfiguration {
     public GestionarNotificacionCUAdapter crearGestionarNotificacionCUInt(
             GestionarNotificacionGatewayIntPort objGestionarNotificacionGateway,
             GestionarUsuarioGatewayIntPort objGestionarUsuarioGateway,
-            GestionarRolGatewayIntPort objGestionarRolGateway,
-            co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.formateador.EmailService emailService) {
+            GestionarRolGatewayIntPort objGestionarRolGateway) {
         return new GestionarNotificacionCUAdapter(
                 objGestionarNotificacionGateway,
                 objGestionarUsuarioGateway,
-                objGestionarRolGateway,
-                emailService);
+                objGestionarRolGateway);
     }
 
     // GestionarEstadisticasGatewayImplAdapter ya está definido como @Service, no necesita definición adicional

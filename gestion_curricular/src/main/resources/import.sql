@@ -4,13 +4,6 @@
 -- Nota: Las columnas cedula, periodo_academico y fecha_ceremonia se crean
 -- automáticamente por Hibernate cuando ddl-auto=create, ya que están
 -- definidas en las entidades JPA (UsuarioEntity y SolicitudEntity)
---
--- IMPORTANTE: La tabla PeriodosAcademicos se crea automáticamente por Hibernate
--- cuando ddl-auto=create. Los datos iniciales se insertan a continuación.
--- 
--- IMPORTANTE: Todas las solicitudes incluyen el campo periodo_academico.
--- Las solicitudes de julio-septiembre 2025 pertenecen al período 2025-2
--- (según el calendario académico: Período 2 = 14 julio - 24 diciembre)
 
 INSERT INTO Roles(idRol, nombre) VALUES (1,'Administrador');
 INSERT INTO Roles(idRol, nombre) VALUES (2,'Estudiante');
@@ -125,52 +118,11 @@ INSERT INTO Usuarios(idUsuario, codigo, nombre_completo, correo, password, estad
 INSERT INTO Usuarios(idUsuario, codigo, nombre_completo, correo, password, estado_usuario, idfkRol, idfkPrograma, cedula) VALUES (24, 'COO001', 'María Elena Vargas', 'mvargas@unicauca.edu.co', 'password123', 1, 3, 3, '2020202020');
 INSERT INTO Usuarios(idUsuario, codigo, nombre_completo, correo, password, estado_usuario, idfkRol, idfkPrograma, cedula) VALUES (25, 'SEC001', 'Carlos Eduardo Torres', 'ctorres@unicauca.edu.co', 'password123', 1, 4, 4, '2121212121');
 
--- Usuario Decano
--- Correo: alejandro.toledo@unicauca.edu.co
--- Password: ClaveSegura456 (se hashea automáticamente al crear desde la API)
-INSERT INTO Usuarios(idUsuario, codigo, nombre_completo, correo, password, estado_usuario, idfkRol, idfkPrograma, cedula) VALUES (27, 'DEC001', 'Alejandro Toledo Tovar', 'alejandro.toledo@unicauca.edu.co', '$2a$10$N9qo8uLOickgx2ZMRZoMyeIjFOjtXgjOU92LhL6YP1dPW1Z/uLlLG', 1, 7, 1, '1234567890');
-
 -- Usuario Administrador por defecto (para desarrollo y pruebas)
 -- Correo: admin@unicauca.edu.co
 -- Password: password123 (hash BCrypt)
 -- IMPORTANTE: Cambiar la contraseña en producción
 INSERT INTO Usuarios(idUsuario, codigo, nombre_completo, correo, password, estado_usuario, idfkRol, idfkPrograma, cedula) VALUES (26, 'ADMIN001', 'Administrador del Sistema', 'admin@unicauca.edu.co', '$2a$10$N9qo8uLOickgx2ZMRZoMyeIjFOjtXgjOU92LhL6YP1dPW1Z/uLlLG', 1, 1, 1, '0000000000');
-
--- =========================================
--- PERÍODOS ACADÉMICOS
--- =========================================
--- Fechas según Acuerdo Académico 030 de 2024:
--- Período 1: 7 de enero - 23 de junio
--- Período 2: 14 de julio - 24 de diciembre
--- NOTA: La tabla PeriodosAcademicos se crea automáticamente por Hibernate (ddl-auto=create)
-
--- Períodos 2020-2024 (históricos)
-INSERT INTO PeriodosAcademicos (año, numero_periodo, nombre_periodo, fecha_inicio, fecha_fin, activo, es_periodo_especial, tipo_periodo) VALUES
-(2020, 1, 'Primer Período 2020', '2020-01-07', '2020-06-23', TRUE, FALSE, 'REGULAR'),
-(2020, 2, 'Segundo Período 2020', '2020-07-14', '2020-12-24', TRUE, FALSE, 'REGULAR'),
-(2021, 1, 'Primer Período 2021', '2021-01-07', '2021-06-23', TRUE, FALSE, 'REGULAR'),
-(2021, 2, 'Segundo Período 2021', '2021-07-14', '2021-12-24', TRUE, FALSE, 'REGULAR'),
-(2022, 1, 'Primer Período 2022', '2022-01-07', '2022-06-23', TRUE, FALSE, 'REGULAR'),
-(2022, 2, 'Segundo Período 2022', '2022-07-14', '2022-12-24', TRUE, FALSE, 'REGULAR'),
-(2023, 1, 'Primer Período 2023', '2023-01-07', '2023-06-23', TRUE, FALSE, 'REGULAR'),
-(2023, 2, 'Segundo Período 2023', '2023-07-14', '2023-12-24', TRUE, FALSE, 'REGULAR'),
-(2024, 1, 'Primer Período 2024', '2024-01-07', '2024-06-23', TRUE, FALSE, 'REGULAR'),
-(2024, 2, 'Segundo Período 2024', '2024-07-14', '2024-12-24', TRUE, FALSE, 'REGULAR');
-
--- Períodos 2025-2030 (actuales y futuros)
-INSERT INTO PeriodosAcademicos (año, numero_periodo, nombre_periodo, fecha_inicio, fecha_fin, activo, es_periodo_especial, tipo_periodo) VALUES
-(2025, 1, 'Primer Período 2025', '2025-01-07', '2025-06-23', TRUE, FALSE, 'REGULAR'),
-(2025, 2, 'Segundo Período 2025', '2025-07-14', '2025-12-24', TRUE, FALSE, 'REGULAR'),
-(2026, 1, 'Primer Período 2026', '2026-01-07', '2026-06-23', TRUE, FALSE, 'REGULAR'),
-(2026, 2, 'Segundo Período 2026', '2026-07-14', '2026-12-24', TRUE, FALSE, 'REGULAR'),
-(2027, 1, 'Primer Período 2027', '2027-01-07', '2027-06-23', TRUE, FALSE, 'REGULAR'),
-(2027, 2, 'Segundo Período 2027', '2027-07-14', '2027-12-24', TRUE, FALSE, 'REGULAR'),
-(2028, 1, 'Primer Período 2028', '2028-01-07', '2028-06-23', TRUE, FALSE, 'REGULAR'),
-(2028, 2, 'Segundo Período 2028', '2028-07-14', '2028-12-24', TRUE, FALSE, 'REGULAR'),
-(2029, 1, 'Primer Período 2029', '2029-01-07', '2029-06-23', TRUE, FALSE, 'REGULAR'),
-(2029, 2, 'Segundo Período 2029', '2029-07-14', '2029-12-24', TRUE, FALSE, 'REGULAR'),
-(2030, 1, 'Primer Período 2030', '2030-01-07', '2030-06-23', TRUE, FALSE, 'REGULAR'),
-(2030, 2, 'Segundo Período 2030', '2030-07-14', '2030-12-24', TRUE, FALSE, 'REGULAR');
 
 -- Solo insertar cursos adicionales (el curso 1 ya existe)
 INSERT INTO Cursos_ofertados(idCurso, idfkMateria, idfkDocente, grupo, cupo_estimado, salon) VALUES (1, 1, 1, 'A', 30, 'A-101');
@@ -186,7 +138,6 @@ INSERT INTO EstadosCursos(idEstado, estado_actual, fecha_registro_estado, idfkCu
 -- Datos de prueba para inscripciones en cursos de verano
 -- NOTA: Con herencia JOINED, primero se inserta en Solicitudes (tabla padre), luego en la tabla hija
 -- Inscripciones de cursos de verano (extendiendo de Solicitudes)
--- NOTA: Todas las solicitudes de julio-septiembre 2025 pertenecen al período académico 2025-2
 INSERT INTO Solicitudes(idSolicitud, nombre_solicitud, fecha_registro_solicitud, idUsuario, idCurso, periodo_academico) VALUES (100, 'Curso de Verano - Inscripcion - Matematicas Basicas - Ana', '2025-07-15 10:30:00', 1, 1, '2025-2');
 INSERT INTO Solicitudes_Cursos_Verano_Inscripcion(idSolicitud, nombre_estudiante, codicion_solicitud, observacion) VALUES (100, 'Ana Gonzalez', 'Primera_Vez', 'Inscripcion en curso de verano');
 
@@ -246,7 +197,7 @@ INSERT INTO Solicitudes_Homogolacion(idSolicitud, ruta_PM_FO_4_FOR_27, ruta_cont
 INSERT INTO Solicitudes_Homogolacion(idSolicitud, ruta_PM_FO_4_FOR_27, ruta_contenido_programatico) VALUES (17, '/docs/homologacion/adriana_vega_pm_fo4.pdf', '/docs/homologacion/adriana_vega_contenido.pdf');
 
 -- ==========================================
--- DATOS PARA SOLICITUDES DE CURSOS DE VERANO (9 solicitudes)
+-- DATOS PARA SOLICITUDES DE CURSOS DE VERANO - PREINSCRIPCIONES (9 solicitudes)
 -- ==========================================
 INSERT INTO Solicitudes(idSolicitud, nombre_solicitud, fecha_registro_solicitud, idUsuario, idCurso, periodo_academico) VALUES (18, 'Solicitud Curso Verano - Nicolas Perez', '2025-08-07 09:30:00', 18, 1, '2025-2');
 INSERT INTO Solicitudes(idSolicitud, nombre_solicitud, fecha_registro_solicitud, idUsuario, idCurso, periodo_academico) VALUES (19, 'Solicitud Curso Verano - Daniela Sanchez', '2025-08-08 11:15:00', 19, 2, '2025-2');
@@ -258,29 +209,16 @@ INSERT INTO Solicitudes(idSolicitud, nombre_solicitud, fecha_registro_solicitud,
 INSERT INTO Solicitudes(idSolicitud, nombre_solicitud, fecha_registro_solicitud, idUsuario, idCurso, periodo_academico) VALUES (25, 'Solicitud Curso Verano - Juliana Torres', '2025-08-14 16:10:00', 25, 2, '2025-2');
 INSERT INTO Solicitudes(idSolicitud, nombre_solicitud, fecha_registro_solicitud, idUsuario, idCurso, periodo_academico) VALUES (26, 'Solicitud Curso Verano - Mauricio Gomez', '2025-08-15 12:00:00', 1, 3, '2025-2');
 
--- Tabla específica de cursos de verano (usando la tabla existente)
--- NOTA: Estas líneas están comentadas porque faltan campos obligatorios (nombre_estudiante, etc.)
--- Los registros de las líneas 115-118 ya contienen datos completos de inscripciones
--- INSERT INTO Solicitudes_Cursos_Verano_Inscripcion(idSolicitud) VALUES (18);
--- INSERT INTO Solicitudes_Cursos_Verano_Inscripcion(idSolicitud) VALUES (19);
--- INSERT INTO Solicitudes_Cursos_Verano_Inscripcion(idSolicitud) VALUES (20);
--- INSERT INTO Solicitudes_Cursos_Verano_Inscripcion(idSolicitud) VALUES (21);
--- INSERT INTO Solicitudes_Cursos_Verano_Inscripcion(idSolicitud) VALUES (22);
--- INSERT INTO Solicitudes_Cursos_Verano_Inscripcion(idSolicitud) VALUES (23);
--- INSERT INTO Solicitudes_Cursos_Verano_Inscripcion(idSolicitud) VALUES (24);
--- INSERT INTO Solicitudes_Cursos_Verano_Inscripcion(idSolicitud) VALUES (25);
--- INSERT INTO Solicitudes_Cursos_Verano_Inscripcion(idSolicitud) VALUES (26);
--- NOTA: Estas líneas están comentadas porque faltan campos obligatorios (nombre_estudiante, etc.)
--- Los registros de las líneas 115-118 ya contienen datos completos de inscripciones
--- INSERT INTO Solicitudes_Cursos_Verano_Inscripcion(idSolicitud) VALUES (18);
--- INSERT INTO Solicitudes_Cursos_Verano_Inscripcion(idSolicitud) VALUES (19);
--- INSERT INTO Solicitudes_Cursos_Verano_Inscripcion(idSolicitud) VALUES (20);
--- INSERT INTO Solicitudes_Cursos_Verano_Inscripcion(idSolicitud) VALUES (21);
--- INSERT INTO Solicitudes_Cursos_Verano_Inscripcion(idSolicitud) VALUES (22);
--- INSERT INTO Solicitudes_Cursos_Verano_Inscripcion(idSolicitud) VALUES (23);
--- INSERT INTO Solicitudes_Cursos_Verano_Inscripcion(idSolicitud) VALUES (24);
--- INSERT INTO Solicitudes_Cursos_Verano_Inscripcion(idSolicitud) VALUES (25);
--- INSERT INTO Solicitudes_Cursos_Verano_Inscripcion(idSolicitud) VALUES (26);
+-- Tabla específica de preinscripciones de cursos de verano
+INSERT INTO Solicitudes_Cursos_Verano_Preinscripcion(idSolicitud, nombre_estudiante, codicion_solicitud, observacion) VALUES (18, 'Nicolas Perez', 'Primera_Vez', 'Preinscripcion en curso de verano');
+INSERT INTO Solicitudes_Cursos_Verano_Preinscripcion(idSolicitud, nombre_estudiante, codicion_solicitud, observacion) VALUES (19, 'Daniela Sanchez', 'Primera_Vez', 'Preinscripcion en curso de verano');
+INSERT INTO Solicitudes_Cursos_Verano_Preinscripcion(idSolicitud, nombre_estudiante, codicion_solicitud, observacion) VALUES (20, 'Sebastian Lopez', 'Primera_Vez', 'Preinscripcion en curso de verano');
+INSERT INTO Solicitudes_Cursos_Verano_Preinscripcion(idSolicitud, nombre_estudiante, codicion_solicitud, observacion) VALUES (21, 'Andrea Ramirez', 'Primera_Vez', 'Preinscripcion en curso de verano');
+INSERT INTO Solicitudes_Cursos_Verano_Preinscripcion(idSolicitud, nombre_estudiante, codicion_solicitud, observacion) VALUES (22, 'Felipe Castro', 'Primera_Vez', 'Preinscripcion en curso de verano');
+INSERT INTO Solicitudes_Cursos_Verano_Preinscripcion(idSolicitud, nombre_estudiante, codicion_solicitud, observacion) VALUES (23, 'Natalia Herrera', 'Primera_Vez', 'Preinscripcion en curso de verano');
+INSERT INTO Solicitudes_Cursos_Verano_Preinscripcion(idSolicitud, nombre_estudiante, codicion_solicitud, observacion) VALUES (24, 'Alejandro Vargas', 'Primera_Vez', 'Preinscripcion en curso de verano');
+INSERT INTO Solicitudes_Cursos_Verano_Preinscripcion(idSolicitud, nombre_estudiante, codicion_solicitud, observacion) VALUES (25, 'Juliana Torres', 'Primera_Vez', 'Preinscripcion en curso de verano');
+INSERT INTO Solicitudes_Cursos_Verano_Preinscripcion(idSolicitud, nombre_estudiante, codicion_solicitud, observacion) VALUES (26, 'Mauricio Gomez', 'Primera_Vez', 'Preinscripcion en curso de verano');
 
 -- ==========================================
 -- DATOS PARA SOLICITUDES ECAES (10 solicitudes)
@@ -423,17 +361,6 @@ INSERT INTO EstadosSolicitudes(idEstado, estado_actual, fecha_registro_estado, i
 -- No se requieren datos iniciales para esta tabla
 
 -- ==========================================
--- TABLA DE CONFIGURACIÓN DEL SISTEMA
--- ==========================================
--- La tabla ConfiguracionSistema se crea automáticamente mediante JPA/Hibernate
--- Almacena configuraciones globales del sistema, como el período académico activo
--- Si periodo_academico_activo es NULL, el sistema usa el período actual basado en fecha (modo automático)
--- Si tiene un valor (ej: "2025-1"), el sistema usa ese período para todas las operaciones (modo manual)
-INSERT INTO ConfiguracionSistema (periodo_academico_activo) VALUES (NULL);
--- NOTA: NULL = modo automático (basado en fecha actual)
--- Para establecer un período manualmente, el admin debe usar el endpoint PUT /api/periodos-academicos/admin/periodo-activo
-
--- ==========================================
 -- VALIDACIÓN DE DATOS CARGADOS
 -- ==========================================
 -- SELECT COUNT(*) FROM Solicitudes;
@@ -444,3 +371,19 @@ INSERT INTO ConfiguracionSistema (periodo_academico_activo) VALUES (NULL);
 -- SELECT COUNT(*) FROM Solicitudes_Ecaes;
 -- SELECT COUNT(*) FROM Solicitudes_PazYSalvo;
 -- SELECT COUNT(*) FROM Notificaciones;
+
+-- =========================================
+-- SALONES DEL EDIFICIO FIET
+-- =========================================
+INSERT INTO Salones(idSalon, numero_salon, edificio, activo) VALUES (1, '221', 'FIET', true);
+INSERT INTO Salones(idSalon, numero_salon, edificio, activo) VALUES (2, '222', 'FIET', true);
+INSERT INTO Salones(idSalon, numero_salon, edificio, activo) VALUES (3, '224', 'FIET', true);
+INSERT INTO Salones(idSalon, numero_salon, edificio, activo) VALUES (4, '225', 'FIET', true);
+INSERT INTO Salones(idSalon, numero_salon, edificio, activo) VALUES (5, '226', 'FIET', true);
+INSERT INTO Salones(idSalon, numero_salon, edificio, activo) VALUES (6, '227', 'FIET', true);
+INSERT INTO Salones(idSalon, numero_salon, edificio, activo) VALUES (7, '228', 'FIET', true);
+INSERT INTO Salones(idSalon, numero_salon, edificio, activo) VALUES (8, '229', 'FIET', true);
+INSERT INTO Salones(idSalon, numero_salon, edificio, activo) VALUES (9, '230', 'FIET', true);
+INSERT INTO Salones(idSalon, numero_salon, edificio, activo) VALUES (10, '231', 'FIET', true);
+INSERT INTO Salones(idSalon, numero_salon, edificio, activo) VALUES (11, '236', 'FIET', true);
+INSERT INTO Salones(idSalon, numero_salon, edificio, activo) VALUES (12, '234', 'FIET', true);

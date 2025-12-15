@@ -28,7 +28,6 @@ import java.util.Map;
 import java.util.HashMap;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Optional;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpHeaders;
@@ -45,11 +44,8 @@ import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.mappe
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Solicitud;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Usuario;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Enums.PeriodoAcademicoEnum;
-import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.PeriodoAcademico;
-import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarPeriodoAcademicoCUIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.GestionarUsuarioGatewayIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.controladorExcepciones.excepcionesPropias.EntidadNoExisteException;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 
@@ -65,7 +61,6 @@ public class SolicitudPazYSalvoRestController {
     private final GestionarArchivosCUIntPort objGestionarArchivos;
     private final GestionarDocumentosGatewayIntPort objGestionarDocumentosGateway;
     private final DocumentosMapperDominio documentosMapperDominio;
-    private final GestionarPeriodoAcademicoCUIntPort periodoAcademicoCU;
     private final co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.formateador.DocumentGeneratorService documentGeneratorService;
     private final ObjectMapper objectMapper;
     private final GestionarUsuarioGatewayIntPort usuarioGateway;
@@ -126,28 +121,6 @@ public class SolicitudPazYSalvoRestController {
         SolicitudPazYSalvo solicitud = solicitudMapperDominio
                 .mappearDeSolicitudDTOPeticionASolicitud(dtoPeticion);
 
-        // Asegurar que el nombre de la solicitud incluya el nombre del estudiante
-        if (solicitud.getObjUsuario() != null && solicitud.getObjUsuario().getId_usuario() != null) {
-            // Cargar el usuario completo si no está completo
-            if (solicitud.getObjUsuario().getNombre_completo() == null || solicitud.getObjUsuario().getNombre_completo().trim().isEmpty()) {
-                co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Usuario usuarioCompleto = 
-                    usuarioGateway.buscarUsuarioPorId(solicitud.getObjUsuario().getId_usuario()).orElse(null);
-                if (usuarioCompleto != null) {
-                    solicitud.getObjUsuario().setNombre_completo(usuarioCompleto.getNombre_completo());
-                }
-            }
-            
-            // Establecer nombre de solicitud con el nombre del estudiante
-            if (solicitud.getObjUsuario().getNombre_completo() != null && !solicitud.getObjUsuario().getNombre_completo().trim().isEmpty()) {
-                String nombreSolicitud = "Paz y Salvo - " + solicitud.getObjUsuario().getNombre_completo();
-                solicitud.setNombre_solicitud(nombreSolicitud);
-            } else if (solicitud.getNombre_solicitud() == null || solicitud.getNombre_solicitud().trim().isEmpty()) {
-                solicitud.setNombre_solicitud("Paz y Salvo");
-            }
-        } else if (solicitud.getNombre_solicitud() == null || solicitud.getNombre_solicitud().trim().isEmpty()) {
-            solicitud.setNombre_solicitud("Paz y Salvo");
-        }
-
         return guardarSolicitudDominio(solicitud);
     }
 
@@ -156,45 +129,10 @@ public class SolicitudPazYSalvoRestController {
 
         // Si no se proporcionó período académico, establecer el período actual automáticamente
         if (solicitud.getPeriodo_academico() == null || solicitud.getPeriodo_academico().trim().isEmpty()) {
-            // Intentar obtener desde BD (con fallback automático al enum)
-            String periodoActual = periodoAcademicoCU.obtenerPeriodoActualComoString();
-            if (periodoActual != null && !periodoActual.trim().isEmpty()) {
-                solicitud.setPeriodo_academico(periodoActual);
-                log.debug("Período académico establecido automáticamente: {}", periodoActual);
-            } else {
-                // Fallback al enum si el servicio no retorna nada
-                PeriodoAcademicoEnum periodoEnum = PeriodoAcademicoEnum.getPeriodoActual();
-                if (periodoEnum != null) {
-                    solicitud.setPeriodo_academico(periodoEnum.getValor());
-                    log.debug("Período académico establecido automáticamente (fallback enum): {}", periodoEnum.getValor());
-                }
-            }
-        } else {
-            // Validar que el período académico proporcionado sea válido
-            String periodoProporcionado = solicitud.getPeriodo_academico().trim();
-            Optional<PeriodoAcademico> periodoValidado = periodoAcademicoCU.obtenerPeriodoPorValor(periodoProporcionado);
-            
-            if (periodoValidado.isEmpty()) {
-                // Verificar con el enum como fallback
-                if (!PeriodoAcademicoEnum.esValido(periodoProporcionado)) {
-                    log.warn("Período académico no válido proporcionado: {}", periodoProporcionado);
-                    Map<String, Object> error = new HashMap<>();
-                    error.put("error", "Período académico no válido: " + periodoProporcionado + ". Use formato YYYY-P (ej: 2025-1)");
-                    return ResponseEntity.badRequest().body(null); // Se manejará el error en el controlador
-                }
-            }
-            
-            // Validar que la fecha de solicitud esté dentro del período (si hay fecha)
-            if (solicitud.getFecha_registro_solicitud() != null) {
-                LocalDate fechaSolicitud = solicitud.getFecha_registro_solicitud().toInstant()
-                    .atZone(java.time.ZoneId.systemDefault()).toLocalDate();
-                
-                Optional<PeriodoAcademico> periodoFecha = periodoAcademicoCU.obtenerPeriodoPorFecha(fechaSolicitud);
-                if (periodoFecha.isPresent() && !periodoFecha.get().getValor().equals(periodoProporcionado)) {
-                    log.warn("La fecha de solicitud ({}) no corresponde al período académico proporcionado ({})", 
-                            fechaSolicitud, periodoProporcionado);
-                    // Advertir pero no rechazar (puede ser válido en algunos casos)
-                }
+            PeriodoAcademicoEnum periodoActual = PeriodoAcademicoEnum.getPeriodoActual();
+            if (periodoActual != null) {
+                solicitud.setPeriodo_academico(periodoActual.getValor());
+                log.debug("Período académico establecido automáticamente: {}", periodoActual.getValor());
             }
         }
 
@@ -207,23 +145,12 @@ public class SolicitudPazYSalvoRestController {
     private SolicitudPazYSalvo construirSolicitudBasica(Map<String, Object> mapPeticion) {
         Integer idUsuario = Integer.valueOf(mapPeticion.get("idUsuario").toString().trim());
 
-        // Cargar el usuario completo para obtener su nombre
-        co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Usuario usuario =
-                usuarioGateway.buscarUsuarioPorId(idUsuario).orElse(null);
-        
-        if (usuario == null) {
-            throw new IllegalArgumentException("Usuario no encontrado con ID: " + idUsuario);
-        }
-
         SolicitudPazYSalvo solicitud = new SolicitudPazYSalvo();
-        
-        // Establecer nombre de solicitud con el nombre del estudiante
-        String nombreSolicitud = "Paz y Salvo";
-        if (usuario.getNombre_completo() != null && !usuario.getNombre_completo().trim().isEmpty()) {
-            nombreSolicitud = "Paz y Salvo - " + usuario.getNombre_completo();
-        }
-        solicitud.setNombre_solicitud(nombreSolicitud);
-        
+        solicitud.setNombre_solicitud("Paz y Salvo");
+
+        co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Usuario usuario =
+                new co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Usuario();
+        usuario.setId_usuario(idUsuario);
         solicitud.setObjUsuario(usuario);
 
         if (mapPeticion.containsKey("fecha_solicitud") && mapPeticion.get("fecha_solicitud") != null) {
@@ -261,22 +188,6 @@ public class SolicitudPazYSalvoRestController {
             if (periodoActual != null) {
                 solicitud.setPeriodo_academico(periodoActual.getValor());
                 log.debug("Período académico establecido automáticamente: {}", periodoActual.getValor());
-            }
-        }
-        
-        // Agregar título del trabajo de grado si se proporciona
-        if (mapPeticion.containsKey("titulo_trabajo_grado") && mapPeticion.get("titulo_trabajo_grado") != null) {
-            String titulo = mapPeticion.get("titulo_trabajo_grado").toString().trim();
-            if (!titulo.isEmpty()) {
-                solicitud.setTitulo_trabajo_grado(titulo);
-            }
-        }
-        
-        // Agregar director del trabajo de grado si se proporciona
-        if (mapPeticion.containsKey("director_trabajo_grado") && mapPeticion.get("director_trabajo_grado") != null) {
-            String director = mapPeticion.get("director_trabajo_grado").toString().trim();
-            if (!director.isEmpty()) {
-                solicitud.setDirector_trabajo_grado(director);
             }
         }
 
@@ -346,38 +257,8 @@ public class SolicitudPazYSalvoRestController {
     }
 
     @GetMapping("/listarSolicitud-PazYSalvo")
-    public ResponseEntity<List<SolicitudPazYSalvoDTORespuesta>> listarSolicitudPazYSalvo(
-            @RequestParam(required = false) String periodoAcademico) {
-        
-        // Si no se proporciona período, usar el período académico actual basado en la fecha
-        if (periodoAcademico == null || periodoAcademico.trim().isEmpty()) {
-            // Intentar obtener desde BD (con fallback automático al enum)
-            String periodoActual = periodoAcademicoCU.obtenerPeriodoActualComoString();
-            if (periodoActual != null && !periodoActual.trim().isEmpty()) {
-                periodoAcademico = periodoActual;
-                log.debug("Usando período académico actual automático (desde BD): {}", periodoAcademico);
-            } else {
-                // Fallback al enum
-                PeriodoAcademicoEnum periodoEnum = PeriodoAcademicoEnum.getPeriodoActual();
-                if (periodoEnum != null) {
-                    periodoAcademico = periodoEnum.getValor();
-                    log.debug("Usando período académico actual automático (fallback enum): {}", periodoAcademico);
-                }
-            }
-        }
-        
+    public ResponseEntity<List<SolicitudPazYSalvoDTORespuesta>> listarSolicitudPazYSalvo() {
         List<SolicitudPazYSalvo> solicitudes = solicitudPazYSalvoCU.listarSolicitudes();
-        
-        // Filtrar por período académico si se proporcionó
-        if (periodoAcademico != null && !periodoAcademico.trim().isEmpty()) {
-            final String periodoFiltro = periodoAcademico.trim();
-            solicitudes = solicitudes.stream()
-                    .filter(s -> s.getPeriodo_academico() != null 
-                            && s.getPeriodo_academico().equals(periodoFiltro))
-                    .toList();
-            log.debug("Filtrando solicitudes por período académico: {}", periodoFiltro);
-        }
-        
         List<SolicitudPazYSalvoDTORespuesta> respuesta = solicitudMapperDominio.mappearListaDeSolicitudesARespuesta(solicitudes);
         return ResponseEntity.ok(respuesta);
     }
@@ -446,16 +327,13 @@ public class SolicitudPazYSalvoRestController {
     }
 
     /**
-     * Listar solicitudes de Paz y Salvo ya procesadas por la secretaría (HISTORIAL VERDADERO)
+     * Listar solicitudes de Paz y Salvo ya procesadas por la secretaría (estado APROBADA)
      * GET /api/solicitudes-pazysalvo/listarSolicitud-PazYSalvo/Secretaria/Aprobadas
      * 
-     * Este endpoint permite a la secretaría ver un historial verdadero de todas las solicitudes 
-     * que ha procesado, independientemente de su estado final actual.
-     * 
-     * Acceso permitido para: Decano, Secretario, Administrador
+     * Este endpoint permite a la secretaría ver un historial de las solicitudes 
+     * que ya ha procesado y enviado al estudiante.
      */
     @GetMapping("/listarSolicitud-PazYSalvo/Secretaria/Aprobadas")
-    @PreAuthorize("hasRole('Decano') or hasRole('Secretario') or hasRole('Administrador')")
     public ResponseEntity<List<SolicitudPazYSalvoDTORespuesta>> listarSolicitudPazYSalvoAprobadasToSecretaria(
             @RequestParam(required = false) String periodoAcademico) {
         // Si no se proporciona período, usar el período académico actual basado en la fecha
@@ -467,12 +345,11 @@ public class SolicitudPazYSalvoRestController {
             }
         }
         
-        // Usar historial verdadero (solicitudes procesadas)
         List<SolicitudPazYSalvo> solicitudes;
         if (periodoAcademico != null && !periodoAcademico.trim().isEmpty()) {
-            solicitudes = solicitudPazYSalvoCU.listarSolicitudesProcesadasPorPeriodo(periodoAcademico.trim());
+            solicitudes = solicitudPazYSalvoCU.listarSolicitudesAprobadasToSecretariaPorPeriodo(periodoAcademico.trim());
         } else {
-            solicitudes = solicitudPazYSalvoCU.listarSolicitudesProcesadas();
+            solicitudes = solicitudPazYSalvoCU.listarSolicitudesAprobadasToSecretaria();
         }
         
         List<SolicitudPazYSalvoDTORespuesta> respuesta = solicitudMapperDominio.mappearListaDeSolicitudesARespuesta(solicitudes);
@@ -480,40 +357,27 @@ public class SolicitudPazYSalvoRestController {
     }
 
     /**
-     * Listar solicitudes de Paz y Salvo ya procesadas por el funcionario (HISTORIAL VERDADERO)
+     * Listar solicitudes de Paz y Salvo ya procesadas por el funcionario (estado APROBADA_FUNCIONARIO)
      * GET /api/solicitudes-pazysalvo/listarSolicitud-PazYSalvo/Funcionario/Aprobadas
      * 
-     * Este endpoint permite al funcionario ver un historial verdadero de todas las solicitudes 
-     * que ha procesado, independientemente de su estado final actual.
-     * 
-     * Acceso permitido para: Decano, Funcionario, Administrador
+     * Este endpoint permite al funcionario ver un historial de las solicitudes 
+     * que ya ha procesado y enviado al coordinador.
      */
     @GetMapping("/listarSolicitud-PazYSalvo/Funcionario/Aprobadas")
-    @PreAuthorize("hasRole('Decano') or hasRole('Funcionario') or hasRole('Administrador')")
-    public ResponseEntity<List<SolicitudPazYSalvoDTORespuesta>> listarSolicitudPazYSalvoAprobadasToFuncionario(
-            @RequestParam(required = false) String periodoAcademico) {
-        // Usar historial verdadero (solicitudes procesadas)
-        List<SolicitudPazYSalvo> solicitudes;
-        if (periodoAcademico != null && !periodoAcademico.trim().isEmpty()) {
-            solicitudes = solicitudPazYSalvoCU.listarSolicitudesProcesadasPorPeriodo(periodoAcademico.trim());
-        } else {
-            solicitudes = solicitudPazYSalvoCU.listarSolicitudesProcesadas();
-        }
+    public ResponseEntity<List<SolicitudPazYSalvoDTORespuesta>> listarSolicitudPazYSalvoAprobadasToFuncionario() {
+        List<SolicitudPazYSalvo> solicitudes = solicitudPazYSalvoCU.listarSolicitudesAprobadasToFuncionario();
         List<SolicitudPazYSalvoDTORespuesta> respuesta = solicitudMapperDominio.mappearListaDeSolicitudesARespuesta(solicitudes);
         return ResponseEntity.ok(respuesta);
     }
 
     /**
-     * Listar solicitudes de Paz y Salvo ya procesadas por el coordinador (HISTORIAL VERDADERO)
+     * Listar solicitudes de Paz y Salvo ya procesadas por el coordinador (estado APROBADA_COORDINADOR)
      * GET /api/solicitudes-pazysalvo/listarSolicitud-PazYSalvo/Coordinador/Aprobadas
      * 
-     * Este endpoint permite al coordinador ver un historial verdadero de todas las solicitudes 
-     * que ha procesado, independientemente de su estado final actual.
-     * 
-     * Acceso permitido para: Decano, Coordinador, Administrador
+     * Este endpoint permite al coordinador ver un historial de las solicitudes 
+     * que ya ha procesado y enviado a la secretaría.
      */
     @GetMapping("/listarSolicitud-PazYSalvo/Coordinador/Aprobadas")
-    @PreAuthorize("hasRole('Decano') or hasRole('Coordinador') or hasRole('Administrador')")
     public ResponseEntity<List<SolicitudPazYSalvoDTORespuesta>> listarSolicitudPazYSalvoAprobadasToCoordinador(
             @RequestParam(required = false) String periodoAcademico) {
         // Obtener el programa del coordinador autenticado
@@ -528,25 +392,18 @@ public class SolicitudPazYSalvoRestController {
             }
         }
         
-        // Usar historial verdadero (solicitudes procesadas)
         List<SolicitudPazYSalvo> solicitudes;
         if (idPrograma != null) {
             // Filtrar por programa y período del coordinador
             if (periodoAcademico != null && !periodoAcademico.trim().isEmpty()) {
-                solicitudes = solicitudPazYSalvoCU.listarSolicitudesProcesadasPorProgramaYPeriodo(idPrograma, periodoAcademico.trim());
+                solicitudes = solicitudPazYSalvoCU.listarSolicitudesAprobadasToCoordinadorPorProgramaYPeriodo(idPrograma, periodoAcademico.trim());
             } else {
-                // Si no hay período, obtener todas las procesadas del programa
-                List<SolicitudPazYSalvo> todas = solicitudPazYSalvoCU.listarSolicitudesProcesadas();
-                solicitudes = todas.stream()
-                    .filter(s -> s.getObjUsuario() != null && 
-                               s.getObjUsuario().getObjPrograma() != null &&
-                               s.getObjUsuario().getObjPrograma().getId_programa().equals(idPrograma))
-                    .toList();
+                solicitudes = solicitudPazYSalvoCU.listarSolicitudesAprobadasToCoordinadorPorPrograma(idPrograma);
             }
         } else {
             // Si no se puede obtener el programa, retornar todas (fallback)
-            log.warn("No se pudo obtener el programa del coordinador, retornando todas las solicitudes procesadas");
-            solicitudes = solicitudPazYSalvoCU.listarSolicitudesProcesadas();
+            log.warn("No se pudo obtener el programa del coordinador, retornando todas las solicitudes");
+            solicitudes = solicitudPazYSalvoCU.listarSolicitudesAprobadasToCoordinador();
         }
         
         List<SolicitudPazYSalvoDTORespuesta> respuesta = solicitudMapperDominio.mappearListaDeSolicitudesARespuesta(solicitudes);
@@ -950,19 +807,9 @@ public class SolicitudPazYSalvoRestController {
             datosSolicitud.put("programa", solicitud.getObjUsuario().getObjPrograma() != null ? 
                 solicitud.getObjUsuario().getObjPrograma().getNombre_programa() : "Ingeniería Electrónica y Telecomunicaciones");
             datosSolicitud.put("fechaSolicitud", solicitud.getFecha_registro_solicitud());
-            datosSolicitud.put("cedulaEstudiante", cedulaEstudiante != null ? cedulaEstudiante : 
-                (solicitud.getObjUsuario().getCedula() != null ? solicitud.getObjUsuario().getCedula() : "No especificada"));
-            
-            // Usar valores guardados en la solicitud si existen, sino usar parámetros, sino usar valores por defecto
-            String tituloFinal = solicitud.getTitulo_trabajo_grado() != null && !solicitud.getTitulo_trabajo_grado().trim().isEmpty()
-                ? solicitud.getTitulo_trabajo_grado()
-                : (tituloTrabajoGrado != null && !tituloTrabajoGrado.trim().isEmpty() ? tituloTrabajoGrado : "Trabajo de grado");
-            datosSolicitud.put("tituloTrabajoGrado", tituloFinal);
-            
-            String directorFinal = solicitud.getDirector_trabajo_grado() != null && !solicitud.getDirector_trabajo_grado().trim().isEmpty()
-                ? solicitud.getDirector_trabajo_grado()
-                : (directorTrabajoGrado != null && !directorTrabajoGrado.trim().isEmpty() ? directorTrabajoGrado : "Director asignado");
-            datosSolicitud.put("directorTrabajoGrado", directorFinal);
+            datosSolicitud.put("cedulaEstudiante", cedulaEstudiante != null ? cedulaEstudiante : "No especificada");
+            datosSolicitud.put("tituloTrabajoGrado", tituloTrabajoGrado != null ? tituloTrabajoGrado : "Trabajo de grado");
+            datosSolicitud.put("directorTrabajoGrado", directorTrabajoGrado != null ? directorTrabajoGrado : "Director asignado");
             
             // Crear el request (igual que homologación)
             co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.DTORespuesta.DocumentRequest request = 

@@ -351,4 +351,5 @@ public interface SolicitudRepositoryInt extends JpaRepository<SolicitudEntity, I
     """)
     List<SolicitudEntity> findAllWithJoins();
 
+
 }

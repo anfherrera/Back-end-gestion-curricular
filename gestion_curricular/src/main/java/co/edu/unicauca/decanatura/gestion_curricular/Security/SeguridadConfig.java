@@ -72,8 +72,8 @@ public class SeguridadConfig {
                 ).permitAll()
                 // Permitir acceso a login sin autenticación
                 .requestMatchers("/api/usuarios/login").permitAll()
-                // Los endpoints de estadísticas ahora requieren autenticación y roles específicos
-                // (Decano, Funcionario, Coordinador, Secretario, Administrador)
+                // Permitir acceso a estadísticas sin autenticación (compatible con despliegue actual)
+                .requestMatchers("/api/estadisticas/**").permitAll()
                 // Todos los demás endpoints requieren autenticación
                 .anyRequest().authenticated()
             )

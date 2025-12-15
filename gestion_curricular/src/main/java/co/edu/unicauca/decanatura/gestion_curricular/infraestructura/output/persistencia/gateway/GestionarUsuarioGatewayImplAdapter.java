@@ -10,7 +10,6 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import lombok.extern.slf4j.Slf4j;
 
 import java.util.ArrayList;
 
@@ -24,7 +23,6 @@ import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.pers
 
 @Service
 @Transactional
-@Slf4j
 public class GestionarUsuarioGatewayImplAdapter implements GestionarUsuarioGatewayIntPort, UserDetailsService {
 
     private final UsuarioRepositoryInt usuarioRepository;
@@ -40,40 +38,74 @@ public class GestionarUsuarioGatewayImplAdapter implements GestionarUsuarioGatew
     @Override
     @Transactional
     public Usuario crearUsuario(Usuario usuario) {
-        log.debug("Creando usuario: correo={}, codigo={}, nombre={}", 
-            usuario.getCorreo(), usuario.getCodigo(), usuario.getNombre_completo());
+        if (usuario == null) {
+            throw new IllegalArgumentException("El usuario no puede ser nulo");
+        }
         
+        // Validar que las relaciones no sean null antes de mapear
+        if (usuario.getObjRol() == null) {
+            throw new IllegalArgumentException("El rol del usuario no puede ser nulo");
+        }
+        if (usuario.getObjRol().getId_rol() == null) {
+            throw new IllegalArgumentException("El ID del rol no puede ser nulo");
+        }
+        if (usuario.getObjPrograma() == null) {
+            throw new IllegalArgumentException("El programa del usuario no puede ser nulo");
+        }
+        if (usuario.getObjPrograma().getId_programa() == null) {
+            throw new IllegalArgumentException("El ID del programa no puede ser nulo");
+        }
+        
+        // Validar que el mapper no sea null
+        if (usuarioMapper == null) {
+            throw new IllegalStateException("El mapper de usuarios no está inicializado");
+        }
+        
+        UsuarioEntity entity;
         try {
-            // Mapear el usuario, pero manejar el Rol de forma explícita para evitar ciclos
-            UsuarioEntity entity = usuarioMapper.map(usuario, UsuarioEntity.class);
-            
-            // Si el Rol tiene una lista de usuarios, limpiarla para evitar ciclos en el mapeo
-            if (entity.getObjRol() != null && entity.getObjRol().getUsuarios() != null) {
-                entity.getObjRol().setUsuarios(new ArrayList<>());
+            entity = usuarioMapper.map(usuario, UsuarioEntity.class);
+        } catch (IllegalArgumentException e) {
+            if (e.getMessage() != null && e.getMessage().contains("source cannot be null")) {
+                throw new IllegalArgumentException("Error al mapear usuario: el objeto usuario o alguna de sus propiedades es nula. " +
+                    "Rol ID: " + (usuario.getObjRol() != null ? usuario.getObjRol().getId_rol() : "null") + 
+                    ", Programa ID: " + (usuario.getObjPrograma() != null ? usuario.getObjPrograma().getId_programa() : "null"), e);
             }
-            
-            // También limpiar las listas que pueden causar problemas
-            if (entity.getSolicitudes() != null) {
-                entity.setSolicitudes(new ArrayList<>());
-            }
-            if (entity.getCursosOfertadosInscritos() != null) {
-                entity.setCursosOfertadosInscritos(new ArrayList<>());
-            }
-            
-            UsuarioEntity saved = usuarioRepository.save(entity);
-            
-            // Forzar flush para asegurar que los cambios se persistan inmediatamente en la BD
-            usuarioRepository.flush();
-            
-            log.debug("Usuario guardado exitosamente: id={}, correo={}", 
-                saved.getId_usuario(), saved.getCorreo());
-            
-            return usuarioMapper.map(saved, Usuario.class);
-        } catch (Exception e) {
-            log.error("Error al crear usuario: correo={}, codigo={}, error={}", 
-                usuario.getCorreo(), usuario.getCodigo(), e.getMessage(), e);
             throw e;
         }
+        if (entity == null) {
+            throw new IllegalArgumentException("Error al mapear el usuario a entidad");
+        }
+        
+        // Validar que las relaciones se mapearon correctamente
+        if (entity.getObjRol() == null) {
+            throw new IllegalArgumentException("Error: el rol no se mapeó correctamente a la entidad");
+        }
+        if (entity.getObjPrograma() == null) {
+            throw new IllegalArgumentException("Error: el programa no se mapeó correctamente a la entidad");
+        }
+        
+        UsuarioEntity saved = usuarioRepository.save(entity);
+        if (saved == null) {
+            throw new IllegalArgumentException("Error al guardar el usuario");
+        }
+        
+        // Recargar la entidad con las relaciones cargadas usando JOIN FETCH
+        UsuarioEntity reloaded = usuarioRepository.findByIdWithRelations(saved.getId_usuario())
+                .orElseThrow(() -> new RuntimeException("Error al recargar el usuario guardado"));
+        
+        // Validar que las relaciones estén cargadas
+        if (reloaded.getObjRol() == null) {
+            throw new RuntimeException("Error: el rol no se cargó correctamente después de guardar");
+        }
+        if (reloaded.getObjPrograma() == null) {
+            throw new RuntimeException("Error: el programa no se cargó correctamente después de guardar");
+        }
+        
+        Usuario resultado = usuarioMapper.map(reloaded, Usuario.class);
+        if (resultado == null) {
+            throw new IllegalArgumentException("Error al mapear la entidad guardada a usuario");
+        }
+        return resultado;
     }
 
     @Override
@@ -209,18 +241,24 @@ public class GestionarUsuarioGatewayImplAdapter implements GestionarUsuarioGatew
     public UserDetails loadUserByUsername(String correo) throws UsernameNotFoundException {
         Usuario usuario = usuarioRepository.buscarPorCorreo(correo)
                 .map(entity -> usuarioMapper.map(entity, Usuario.class))
-                .orElseThrow(() -> new UsernameNotFoundException("Usuario no encontrado"));
+                .orElseThrow(() -> new UsernameNotFoundException("Usuario no encontrado con correo: " + correo));
+
+        if (usuario == null) {
+            throw new UsernameNotFoundException("Usuario no encontrado con correo: " + correo);
+        }
 
         List<SimpleGrantedAuthority> authorities = new ArrayList<>();
-        authorities.add(new SimpleGrantedAuthority("ROLE_" + usuario.getObjRol().getNombre()));
-
-        // SEGURIDAD: No loguear información sensible en producción
-        // System.out.println("Usuario autenticado: " + usuario.getCorreo());
-        // System.out.println("Contraseña encontrada en BD: " + usuario.getPassword());
+        
+        if (usuario.getObjRol() == null || usuario.getObjRol().getNombre() == null) {
+            throw new UsernameNotFoundException("El usuario no tiene un rol asignado: " + correo);
+        }
+        
+        String rolNombre = usuario.getObjRol().getNombre().trim();
+        authorities.add(new SimpleGrantedAuthority("ROLE_" + rolNombre));
 
         return new org.springframework.security.core.userdetails.User(
                 usuario.getCorreo(),
-                usuario.getPassword(),
+                usuario.getPassword() != null ? usuario.getPassword() : "",
                 authorities
         );
     }

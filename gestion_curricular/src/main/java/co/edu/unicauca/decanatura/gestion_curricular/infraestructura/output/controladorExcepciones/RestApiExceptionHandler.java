@@ -97,9 +97,6 @@ public class RestApiExceptionHandler {
         @Order(Ordered.LOWEST_PRECEDENCE)
         public ResponseEntity<Error> handleGenericException(final HttpServletRequest req,
                         final Exception ex, final Locale locale) {
-                // Log detallado para debugging
-                log.error("Excepción no manejada en {} {}: {}", req.getMethod(), req.getRequestURI(), ex.getMessage(), ex);
-                
                 // Por seguridad no se imprime información sensible de la excepción en producción
                 final Error error = ErrorUtils
                                 .crearError(CodigoError.ERROR_GENERICO.getCodigo(),

@@ -33,11 +33,8 @@ public class GestionarRolGatewayImplAdapter implements GestionarRolGatewayIntPor
     @Override
     @Transactional(readOnly = true)
     public Rol bucarRolPorId(Integer idRol) {
-        var rolEntity = this.objrolRepository.findById(idRol).orElse(null);
-        if (rolEntity == null) {
-            return null;
-        }
-        return this.rolMapper.map(rolEntity, Rol.class);
+        return this.rolMapper.map(
+            this.objrolRepository.findById(idRol).orElse(null), Rol.class);
     }
 
     @Override

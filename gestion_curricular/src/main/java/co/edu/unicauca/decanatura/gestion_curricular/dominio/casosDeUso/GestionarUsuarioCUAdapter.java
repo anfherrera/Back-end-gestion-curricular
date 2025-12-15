@@ -72,14 +72,8 @@ public Usuario crearUsuario(Usuario usuario) {
     }
     String passwordCodificada = passwordEncoder.encode(usuario.getPassword());
     usuario.setPassword(passwordCodificada);
-    
-    // Crear un nuevo Rol sin la lista de usuarios para evitar ciclos en ModelMapper
-    Rol rolSinUsuarios = new Rol();
-    rolSinUsuarios.setId_rol(objRol.getId_rol());
-    rolSinUsuarios.setNombre(objRol.getNombre());
-    rolSinUsuarios.setUsuarios(null); // No incluir la lista de usuarios
-    
-    usuario.setObjRol(rolSinUsuarios);
+    objRol.getUsuarios().add(usuario);
+    usuario.setObjRol(objRol);
     usuario.setObjPrograma(programa);
     usuario.setId_usuario(null);
 
