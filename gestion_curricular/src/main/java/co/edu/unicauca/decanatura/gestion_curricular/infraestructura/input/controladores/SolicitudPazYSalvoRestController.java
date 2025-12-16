@@ -9,6 +9,7 @@ import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarA
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.CambioEstadoSolicitud;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.SolicitudPazYSalvo;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Documento;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.EstadoSolicitud;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.DTOPeticion.CambioEstadoSolicitudDTOPeticion;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.DTOPeticion.SolicitudPazYSalvoDTOPeticion;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.DTORespuesta.SolicitudPazYSalvoDTORespuesta;
@@ -535,7 +536,12 @@ public class SolicitudPazYSalvoRestController {
         CambioEstadoSolicitud solicitud = solicitudMapper
                 .mappearDeCambioEstadoSolicitudDTOPeticionACambioEstadoSolicitud(peticion);
 
-        solicitudPazYSalvoCU.cambiarEstadoSolicitud(solicitud.getIdSolicitud(), solicitud.getNuevoEstado());
+        // Usar el método sobrecargado que acepta comentario
+        solicitudPazYSalvoCU.cambiarEstadoSolicitud(
+            solicitud.getIdSolicitud(), 
+            solicitud.getNuevoEstado(),
+            solicitud.getComentario()
+        );
 
         return ResponseEntity.noContent().build();
     }
@@ -553,11 +559,18 @@ public class SolicitudPazYSalvoRestController {
             return ResponseEntity.badRequest().body(Map.of("error", "nuevoEstado es requerido"));
         }
         
-        solicitudPazYSalvoCU.cambiarEstadoSolicitud(id, nuevoEstado);
+        // Obtener el comentario si está presente
+        String comentario = requestBody.get("comentario");
+        
+        // Usar el método sobrecargado que acepta comentario
+        solicitudPazYSalvoCU.cambiarEstadoSolicitud(id, nuevoEstado, comentario);
         
         Map<String, Object> respuesta = new HashMap<>();
         respuesta.put("idSolicitud", id);
         respuesta.put("nuevoEstado", nuevoEstado);
+        if (comentario != null && !comentario.trim().isEmpty()) {
+            respuesta.put("comentario", comentario);
+        }
         respuesta.put("mensaje", "Estado actualizado exitosamente");
         
         return ResponseEntity.ok(respuesta);
@@ -1285,6 +1298,84 @@ public class SolicitudPazYSalvoRestController {
             
         } catch (Exception e) {
             log.error("Error al obtener documentos de paz y salvo para solicitud: {}", idSolicitud, e);
+            return ResponseEntity.internalServerError().build();
+        }
+    }
+
+    /**
+     * Obtener solo los comentarios existentes de una solicitud de paz y salvo
+     * Devuelve:
+     * - Comentario de rechazo (si existe)
+     * - Documentos que tienen comentarios (solo los que tienen comentario)
+     * GET /api/solicitudes-pazysalvo/obtenerComentarios/{idSolicitud}
+     */
+    @GetMapping("/obtenerComentarios/{idSolicitud}")
+    public ResponseEntity<Map<String, Object>> obtenerComentariosSolicitud(@PathVariable Integer idSolicitud) {
+        try {
+            log.debug("Obteniendo comentarios de paz y salvo para solicitud: {}", idSolicitud);
+            
+            SolicitudPazYSalvo solicitud = solicitudPazYSalvoCU.buscarPorId(idSolicitud);
+            if (solicitud == null) {
+                log.warn("Solicitud de paz y salvo no encontrada: {}", idSolicitud);
+                return ResponseEntity.notFound().build();
+            }
+            
+            Map<String, Object> respuesta = new HashMap<>();
+            
+            // 1. Buscar comentario de rechazo en los estados
+            String comentarioRechazo = null;
+            if (solicitud.getEstadosSolicitud() != null && !solicitud.getEstadosSolicitud().isEmpty()) {
+                // Buscar el último estado de rechazo
+                List<EstadoSolicitud> estadosRechazados = solicitud.getEstadosSolicitud().stream()
+                    .filter(estado -> "RECHAZADA".equalsIgnoreCase(estado.getEstado_actual()) || 
+                                    "RECHAZADO".equalsIgnoreCase(estado.getEstado_actual()))
+                    .sorted((a, b) -> b.getFecha_registro_estado().compareTo(a.getFecha_registro_estado()))
+                    .collect(java.util.stream.Collectors.toList());
+                
+                if (!estadosRechazados.isEmpty()) {
+                    EstadoSolicitud ultimoRechazo = estadosRechazados.get(0);
+                    if (ultimoRechazo.getComentario() != null && !ultimoRechazo.getComentario().trim().isEmpty()) {
+                        comentarioRechazo = ultimoRechazo.getComentario().trim();
+                    }
+                }
+            }
+            
+            // Solo agregar comentario de rechazo si existe
+            if (comentarioRechazo != null && !comentarioRechazo.isEmpty()) {
+                respuesta.put("comentarioRechazo", comentarioRechazo);
+            }
+            
+            // 2. Buscar documentos que tienen comentarios
+            List<Map<String, Object>> documentosConComentarios = new ArrayList<>();
+            if (solicitud.getDocumentos() != null && !solicitud.getDocumentos().isEmpty()) {
+                for (Documento documento : solicitud.getDocumentos()) {
+                    if (documento.getComentario() != null && !documento.getComentario().trim().isEmpty()) {
+                        Map<String, Object> doc = new HashMap<>();
+                        doc.put("id", documento.getId_documento());
+                        doc.put("nombre", documento.getNombre());
+                        doc.put("comentario", documento.getComentario().trim());
+                        documentosConComentarios.add(doc);
+                    }
+                }
+            }
+            
+            // Solo agregar documentos con comentarios si hay alguno
+            if (!documentosConComentarios.isEmpty()) {
+                respuesta.put("documentosConComentarios", documentosConComentarios);
+            }
+            
+            // Si no hay ningún comentario, devolver objeto vacío
+            if (respuesta.isEmpty()) {
+                respuesta.put("mensaje", "No hay comentarios para esta solicitud");
+            }
+            
+            log.debug("Comentarios encontrados - Rechazo: {}, Documentos: {}", 
+                comentarioRechazo != null ? "Sí" : "No", 
+                documentosConComentarios.size());
+            
+            return ResponseEntity.ok(respuesta);
+        } catch (Exception e) {
+            log.error("Error al obtener comentarios de paz y salvo para solicitud: {}", idSolicitud, e);
             return ResponseEntity.internalServerError().build();
         }
     }

@@ -227,6 +227,11 @@ public class GestionarSolicitudPazYSalvoCUAdapter implements GestionarSolicitudP
 
     @Override
     public void cambiarEstadoSolicitud(Integer idSolicitud, String nuevoEstado) {
+        cambiarEstadoSolicitud(idSolicitud, nuevoEstado, null);
+    }
+
+    @Override
+    public void cambiarEstadoSolicitud(Integer idSolicitud, String nuevoEstado, String comentario) {
         // Obtener el estado anterior
         SolicitudPazYSalvo solicitud = buscarPorId(idSolicitud);
         String estadoAnterior = solicitud.getEstadosSolicitud() != null && !solicitud.getEstadosSolicitud().isEmpty()
@@ -236,6 +241,10 @@ public class GestionarSolicitudPazYSalvoCUAdapter implements GestionarSolicitudP
         EstadoSolicitud estado = new EstadoSolicitud();
         estado.setEstado_actual(nuevoEstado);
         estado.setFecha_registro_estado(new Date());
+        // Establecer el comentario si se proporciona
+        if (comentario != null && !comentario.trim().isEmpty()) {
+            estado.setComentario(comentario.trim());
+        }
         solicitudGateway.cambiarEstadoSolicitud(idSolicitud, estado);
         
         // Crear notificación automática del cambio de estado

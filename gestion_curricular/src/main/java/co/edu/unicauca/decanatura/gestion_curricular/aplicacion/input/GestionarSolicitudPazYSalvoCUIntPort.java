@@ -92,4 +92,12 @@ public interface GestionarSolicitudPazYSalvoCUIntPort {
     SolicitudPazYSalvo buscarPorId(Integer idSolicitud);
 
     void cambiarEstadoSolicitud(Integer idSolicitud, String nuevoEstado);
+
+    /**
+     * Cambia el estado de una solicitud con un comentario opcional
+     * @param idSolicitud ID de la solicitud
+     * @param nuevoEstado Nuevo estado de la solicitud
+     * @param comentario Comentario o razón del cambio de estado (especialmente para rechazos)
+     */
+    void cambiarEstadoSolicitud(Integer idSolicitud, String nuevoEstado, String comentario);
 }

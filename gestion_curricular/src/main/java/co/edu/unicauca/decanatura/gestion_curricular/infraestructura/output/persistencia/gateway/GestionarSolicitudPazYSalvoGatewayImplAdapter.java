@@ -133,6 +133,16 @@ public class GestionarSolicitudPazYSalvoGatewayImplAdapter implements GestionarS
                     if (entity.getDocumentos() != null) {
                         entity.getDocumentos().size(); // Esto fuerza la carga lazy
                     }
+                    // Forzar la carga de estados con sus comentarios
+                    if (entity.getEstadosSolicitud() != null) {
+                        entity.getEstadosSolicitud().size(); // Esto fuerza la carga lazy
+                        // Asegurar que los comentarios se carguen
+                        entity.getEstadosSolicitud().forEach(estado -> {
+                            if (estado.getComentario() != null) {
+                                estado.getComentario(); // Forzar carga del comentario
+                            }
+                        });
+                    }
                     return mapper.map(entity, SolicitudPazYSalvo.class);
                 });
     }

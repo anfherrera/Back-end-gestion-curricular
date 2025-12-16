@@ -8,6 +8,9 @@ import lombok.Data;
 public class CambioEstadoSolicitud {
     private Integer idSolicitud;
     private String nuevoEstado;
-    // private String observacion; // opcional
-    //private EstadoSolicitudEcaes nuevoEstado;
+    private String comentario; // Comentario o razón del cambio de estado (especialmente para rechazos)
+    
+    public CambioEstadoSolicitud() {
+        // Constructor por defecto
+    }
 }

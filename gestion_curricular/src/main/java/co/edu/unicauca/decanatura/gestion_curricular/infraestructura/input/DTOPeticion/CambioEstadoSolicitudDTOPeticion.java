@@ -14,6 +14,6 @@ public class CambioEstadoSolicitudDTOPeticion {
     @NotBlank(message = "{Solicitud.estado.empty}")
     @Size(min = 1, max = 9, message = "{Solicitud.estado.length}")
     private String nuevoEstado;
-    //private String observacion; // opcional
+    private String comentario; // Comentario o razón del cambio de estado (especialmente para rechazos)
     
 }
