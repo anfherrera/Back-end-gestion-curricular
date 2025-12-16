@@ -126,9 +126,10 @@ INSERT INTO Usuarios(idUsuario, codigo, nombre_completo, correo, password, estad
 
 -- Solo insertar cursos adicionales (el curso 1 ya existe)
 -- Agregar periodo_academico a los cursos
-INSERT INTO Cursos_ofertados(idCurso, idfkMateria, idfkDocente, grupo, cupo_estimado, salon, periodo_academico) VALUES (1, 1, 1, 'A', 30, 'A-101', '2025-2');
-INSERT INTO Cursos_ofertados(idCurso, idfkMateria, idfkDocente, grupo, cupo_estimado, salon, periodo_academico) VALUES (2, 2, 2, 'B', 25, 'A-102', '2025-2');
-INSERT INTO Cursos_ofertados(idCurso, idfkMateria, idfkDocente, grupo, cupo_estimado, salon, periodo_academico) VALUES (3, 3, 3, 'C', 20, 'A-103', '2025-2');
+-- Salones asignados del edificio FIET
+INSERT INTO Cursos_ofertados(idCurso, idfkMateria, idfkDocente, grupo, cupo_estimado, salon, periodo_academico) VALUES (1, 1, 1, 'A', 30, '221', '2025-2');
+INSERT INTO Cursos_ofertados(idCurso, idfkMateria, idfkDocente, grupo, cupo_estimado, salon, periodo_academico) VALUES (2, 2, 2, 'B', 25, '222', '2025-2');
+INSERT INTO Cursos_ofertados(idCurso, idfkMateria, idfkDocente, grupo, cupo_estimado, salon, periodo_academico) VALUES (3, 3, 3, 'C', 20, '224', '2025-2');
 
 -- Estados de cursos de verano (actualizados según el backend)
 -- Estados válidos: Borrador, Abierto, Publicado, Preinscripcion, Inscripcion, Cerrado

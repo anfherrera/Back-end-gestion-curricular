@@ -21,7 +21,8 @@ public class UpdateCursoDTO {
     @Max(value = 100, message = "El cupo estimado no puede ser mayor a 100")
     private Integer cupo_estimado;
     
-    private String espacio_asignado;
+    private String espacio_asignado; // Deprecated: usar id_salon
+    private Integer id_salon; // ID del salón seleccionado
     private String estado; // 'Abierto', 'Publicado', 'Preinscripcion', 'Inscripcion', 'Cerrado'
     private Long id_materia;
     private Long id_docente;

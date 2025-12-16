@@ -54,6 +54,8 @@ public interface CursosOfertadosMapperDominio {
     @Mapping(source = ".", target = "fecha_fin", qualifiedByName = "calcularFechaFin")
     @Mapping(source = "estadosCursoOfertados", target = "estado", qualifiedByName = "obtenerEstadoActual")
     @Mapping(source = ".", target = "periodo", qualifiedByName = "calcularPeriodoDesdeCurso")
+    @Mapping(target = "id_salon", ignore = true) // Se asignará manualmente después del mapeo
+    @Mapping(target = "salonInfo", ignore = true) // Se asignará manualmente después del mapeo
     CursosOfertadosDTORespuesta mappearDeCursoOfertadoARespuesta(CursoOfertadoVerano curso);
     
     // Método post-mapping para asignar idCurso desde id_curso
@@ -84,6 +86,8 @@ public interface CursosOfertadosMapperDominio {
     @Mapping(source = ".", target = "fecha_fin", qualifiedByName = "calcularFechaFin")
     @Mapping(source = "estadosCursoOfertados", target = "estado", qualifiedByName = "obtenerEstadoActual")
     @Mapping(source = ".", target = "periodo", qualifiedByName = "calcularPeriodoDesdeCurso")
+    @Mapping(target = "id_salon", ignore = true) // Se asignará manualmente después del mapeo
+    @Mapping(target = "salonInfo", ignore = true) // Se asignará manualmente después del mapeo
     @Named("mappearDeCursoOfertadoARespuestaDisponible")
     CursosOfertadosDTORespuesta mappearDeCursoOfertadoARespuestaDisponible(CursoOfertadoVerano curso);
 
