@@ -53,6 +53,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.HashMap;
 import java.util.ArrayList;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @RestController
@@ -305,19 +306,52 @@ public class CursosIntersemestralesRestController {
             @RequestParam(required = false) Integer idPrograma) {
         try {
             List<CursoOfertadoVerano> cursos = cursoCU.listarTodos();
-            log.info("Total de cursos en sistema: {}", cursos.size());
+            log.info("[GESTION_CURSOS] Total de cursos en sistema: {}", cursos.size());
+            
+            // Log de todos los períodos disponibles para debugging
+            Set<String> periodosDisponibles = cursos.stream()
+                    .filter(curso -> curso.getPeriodo_academico() != null)
+                    .map(CursoOfertadoVerano::getPeriodo_academico)
+                    .collect(Collectors.toSet());
+            log.info("[GESTION_CURSOS] Períodos académicos disponibles en cursos: {}", periodosDisponibles);
+            
+            // Log del parámetro recibido para debugging
+            log.info("[GESTION_CURSOS] Parámetro periodoAcademico recibido: '{}' (null: {}, empty: {})", 
+                    periodoAcademico, periodoAcademico == null, periodoAcademico != null && periodoAcademico.trim().isEmpty());
             
             // Filtrar por período académico SOLO si se proporciona explícitamente
             if (periodoAcademico != null && !periodoAcademico.trim().isEmpty() && !periodoAcademico.trim().equalsIgnoreCase("todos")) {
                 String periodoFiltro = periodoAcademico.trim();
+                log.info("[GESTION_CURSOS] Filtrando por período recibido: '{}'", periodoFiltro);
+                
+                // Intentar convertir formatos alternativos a formato estándar YYYY-P
+                String periodoNormalizado = normalizarPeriodoAcademico(periodoFiltro);
+                if (!periodoNormalizado.equals(periodoFiltro)) {
+                    log.info("[GESTION_CURSOS] Período normalizado de '{}' a '{}'", periodoFiltro, periodoNormalizado);
+                    periodoFiltro = periodoNormalizado;
+                }
+                
                 int antes = cursos.size();
-                cursos = cursos.stream()
-                        .filter(curso -> curso.getPeriodo_academico() != null 
-                                && curso.getPeriodo_academico().equals(periodoFiltro))
+                final String periodoFinal = periodoFiltro; // Para usar en lambda
+                List<CursoOfertadoVerano> cursosFiltrados = cursos.stream()
+                        .filter(curso -> {
+                            boolean coincide = curso.getPeriodo_academico() != null 
+                                    && curso.getPeriodo_academico().equals(periodoFinal);
+                            if (!coincide && curso.getPeriodo_academico() != null) {
+                                log.debug("[GESTION_CURSOS] Curso {} (período: '{}') no coincide con filtro '{}'", 
+                                    curso.getId_curso(), curso.getPeriodo_academico(), periodoFinal);
+                            }
+                            return coincide;
+                        })
                         .collect(Collectors.toList());
-                log.info("Cursos filtrados por período {}: {} de {}", periodoFiltro, cursos.size(), antes);
+                
+                log.info("[GESTION_CURSOS] Cursos filtrados por período '{}': {} de {} totales. IDs encontrados: {}", 
+                    periodoFiltro, cursosFiltrados.size(), antes,
+                    cursosFiltrados.stream().map(CursoOfertadoVerano::getId_curso).collect(Collectors.toList()));
+                
+                cursos = cursosFiltrados;
             } else {
-                log.info("Mostrando TODOS los cursos sin filtrar por período académico. Total: {}", cursos.size());
+                log.info("[GESTION_CURSOS] Mostrando TODOS los cursos sin filtrar por período académico. Total: {}", cursos.size());
             }
             
             // Si se proporciona idPrograma, filtrar cursos que tengan solicitudes de estudiantes de ese programa
@@ -4199,6 +4233,102 @@ public class CursosIntersemestralesRestController {
     }
 
     /**
+     * Exportar cursos filtrados a PDF
+     * GET /api/cursos-intersemestrales/cursos-verano/todos/export/pdf
+     * 
+     * @param periodoAcademico Período académico opcional para filtrar
+     * @param idPrograma ID del programa opcional para filtrar
+     * @return Archivo PDF con los cursos filtrados
+     */
+    @GetMapping("/cursos-verano/todos/export/pdf")
+    @PreAuthorize("hasAnyRole('Funcionario', 'Coordinador', 'Administrador')")
+    public ResponseEntity<byte[]> exportarCursosPDF(
+            @RequestParam(required = false) String periodoAcademico,
+            @RequestParam(required = false) Integer idPrograma) {
+        try {
+            log.info("Generando PDF de cursos - periodoAcademico: {}, idPrograma: {}", periodoAcademico, idPrograma);
+            
+            // Obtener cursos usando el mismo método que el endpoint GET
+            ResponseEntity<List<CursosOfertadosDTORespuesta>> cursosResponse = obtenerTodosLosCursosVerano(periodoAcademico, idPrograma);
+            
+            if (cursosResponse.getStatusCode() != HttpStatus.OK || cursosResponse.getBody() == null) {
+                log.error("No se pudieron obtener los cursos para generar el PDF");
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+            }
+            
+            List<CursosOfertadosDTORespuesta> cursos = cursosResponse.getBody();
+            
+            // Generar PDF
+            byte[] pdfBytes = generarPDFCursos(cursos, periodoAcademico, idPrograma);
+            
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.APPLICATION_PDF);
+            
+            // Nombre del archivo con fecha
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+            String fecha = sdf.format(new Date());
+            String filename = "cursos_verano_" + fecha + ".pdf";
+            headers.setContentDispositionFormData("attachment", filename);
+            
+            log.info("PDF de cursos generado correctamente. Total de cursos: {}", cursos.size());
+            return new ResponseEntity<>(pdfBytes, headers, HttpStatus.OK);
+            
+        } catch (Exception e) {
+            log.error("Error al generar PDF de cursos: {}", e.getMessage(), e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
+    /**
+     * Exportar estudiantes del curso a PDF
+     * GET /api/cursos-intersemestrales/cursos-verano/{idCurso}/estudiantes/export/pdf
+     * 
+     * @param idCurso ID del curso
+     * @return Archivo PDF con la lista de estudiantes
+     */
+    @GetMapping("/cursos-verano/{idCurso}/estudiantes/export/pdf")
+    @PreAuthorize("hasAnyRole('Funcionario', 'Coordinador', 'Administrador')")
+    public ResponseEntity<byte[]> exportarEstudiantesCursoPDF(
+            @PathVariable Integer idCurso) {
+        try {
+            log.info("Generando PDF de estudiantes del curso ID: {}", idCurso);
+            
+            // Obtener estudiantes usando el mismo método que el endpoint GET
+            ResponseEntity<Map<String, Object>> estudiantesResponse = obtenerEstudiantesDelCurso(idCurso);
+            
+            if (estudiantesResponse.getStatusCode() != HttpStatus.OK || estudiantesResponse.getBody() == null) {
+                log.error("No se pudieron obtener los estudiantes para generar el PDF");
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+            }
+            
+            Map<String, Object> datos = estudiantesResponse.getBody();
+            
+            // Generar PDF
+            byte[] pdfBytes = generarPDFEstudiantesCurso(datos);
+            
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.APPLICATION_PDF);
+            
+            // Nombre del archivo
+            String nombreCurso = (String) datos.get("codigo_curso");
+            if (nombreCurso == null || nombreCurso.isEmpty()) {
+                nombreCurso = "curso_" + idCurso;
+            }
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+            String fecha = sdf.format(new Date());
+            String filename = "estudiantes_" + nombreCurso + "_" + fecha + ".pdf";
+            headers.setContentDispositionFormData("attachment", filename);
+            
+            log.info("PDF de estudiantes generado correctamente. Total de estudiantes: {}", datos.get("total_estudiantes"));
+            return new ResponseEntity<>(pdfBytes, headers, HttpStatus.OK);
+            
+        } catch (Exception e) {
+            log.error("Error al generar PDF de estudiantes: {}", e.getMessage(), e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
+    /**
      * Aceptar inscripcion de estudiante (funcionario/coordinador acepta inscripcion final)
      * PUT /api/cursos-intersemestrales/inscripciones/{idInscripcion}/aceptar
      */
@@ -5164,6 +5294,302 @@ public class CursosIntersemestralesRestController {
                 }
             }
         }
+    }
+
+    /**
+     * Genera un PDF con los cursos filtrados
+     */
+    private byte[] generarPDFCursos(List<CursosOfertadosDTORespuesta> cursos, String periodoAcademico, Integer idPrograma) {
+        log.debug("Iniciando la generación del PDF de cursos...");
+        
+        ByteArrayOutputStream baos = null;
+        com.itextpdf.text.Document document = null;
+        
+        try {
+            baos = new ByteArrayOutputStream();
+            document = new com.itextpdf.text.Document(com.itextpdf.text.PageSize.A4.rotate()); // Horizontal para más columnas
+            com.itextpdf.text.pdf.PdfWriter.getInstance(document, baos);
+            
+            document.open();
+            
+            // Título principal
+            com.itextpdf.text.Font titleFont = new com.itextpdf.text.Font(
+                    com.itextpdf.text.Font.FontFamily.HELVETICA, 18, com.itextpdf.text.Font.BOLD);
+            com.itextpdf.text.Paragraph title = new com.itextpdf.text.Paragraph(
+                    "GESTIÓN DE CURSOS INTERSEMESTRALES", titleFont);
+            title.setAlignment(com.itextpdf.text.Element.ALIGN_CENTER);
+            title.setSpacingAfter(20);
+            document.add(title);
+            
+            // Información de filtros y fecha
+            com.itextpdf.text.Font infoFont = new com.itextpdf.text.Font(
+                    com.itextpdf.text.Font.FontFamily.HELVETICA, 10);
+            StringBuilder info = new StringBuilder();
+            info.append("Fecha de generación: ").append(formatearFechaEspanol(new Date())).append("\n");
+            
+            if (periodoAcademico != null && !periodoAcademico.trim().isEmpty() && !periodoAcademico.trim().equalsIgnoreCase("todos")) {
+                info.append("Período Académico: ").append(periodoAcademico).append("\n");
+            } else {
+                try {
+                    PeriodoAcademicoEnum periodoActual = PeriodoAcademicoEnum.getPeriodoActual();
+                    if (periodoActual != null) {
+                        info.append("Período Académico: Todos (Período actual: ").append(periodoActual.getValor()).append(")\n");
+                    } else {
+                        info.append("Período Académico: Todos los períodos\n");
+                    }
+                } catch (Exception e) {
+                    info.append("Período Académico: Todos los períodos\n");
+                }
+            }
+            
+            if (idPrograma != null) {
+                info.append("Programa: ID ").append(idPrograma).append("\n");
+            }
+            
+            info.append("Total de cursos: ").append(cursos.size()).append("\n");
+            
+            com.itextpdf.text.Paragraph infoParagraph = new com.itextpdf.text.Paragraph(info.toString(), infoFont);
+            infoParagraph.setSpacingAfter(15);
+            document.add(infoParagraph);
+            
+            // Tabla de cursos
+            if (cursos != null && !cursos.isEmpty()) {
+                com.itextpdf.text.pdf.PdfPTable table = new com.itextpdf.text.pdf.PdfPTable(10);
+                table.setWidthPercentage(100);
+                table.setWidths(new float[]{1f, 2f, 1f, 1.5f, 1f, 1.5f, 2f, 1f, 1f, 1.5f});
+                
+                // Encabezados
+                com.itextpdf.text.Font headerFont = new com.itextpdf.text.Font(
+                        com.itextpdf.text.Font.FontFamily.HELVETICA, 9, com.itextpdf.text.Font.BOLD);
+                table.addCell(new com.itextpdf.text.pdf.PdfPCell(new com.itextpdf.text.Phrase("Código", headerFont)));
+                table.addCell(new com.itextpdf.text.pdf.PdfPCell(new com.itextpdf.text.Phrase("Nombre", headerFont)));
+                table.addCell(new com.itextpdf.text.pdf.PdfPCell(new com.itextpdf.text.Phrase("Período", headerFont)));
+                table.addCell(new com.itextpdf.text.pdf.PdfPCell(new com.itextpdf.text.Phrase("Grupo", headerFont)));
+                table.addCell(new com.itextpdf.text.pdf.PdfPCell(new com.itextpdf.text.Phrase("Docente", headerFont)));
+                table.addCell(new com.itextpdf.text.pdf.PdfPCell(new com.itextpdf.text.Phrase("Fecha Inicio", headerFont)));
+                table.addCell(new com.itextpdf.text.pdf.PdfPCell(new com.itextpdf.text.Phrase("Fecha Fin", headerFont)));
+                table.addCell(new com.itextpdf.text.pdf.PdfPCell(new com.itextpdf.text.Phrase("Cupo", headerFont)));
+                table.addCell(new com.itextpdf.text.pdf.PdfPCell(new com.itextpdf.text.Phrase("Salón", headerFont)));
+                table.addCell(new com.itextpdf.text.pdf.PdfPCell(new com.itextpdf.text.Phrase("Estado", headerFont)));
+                
+                // Datos
+                com.itextpdf.text.Font dataFont = new com.itextpdf.text.Font(
+                        com.itextpdf.text.Font.FontFamily.HELVETICA, 8);
+                
+                for (CursosOfertadosDTORespuesta curso : cursos) {
+                    table.addCell(new com.itextpdf.text.pdf.PdfPCell(new com.itextpdf.text.Phrase(
+                            curso.getCodigo_curso() != null ? curso.getCodigo_curso() : "-", dataFont)));
+                    table.addCell(new com.itextpdf.text.pdf.PdfPCell(new com.itextpdf.text.Phrase(
+                            curso.getNombre_curso() != null ? curso.getNombre_curso() : "-", dataFont)));
+                    table.addCell(new com.itextpdf.text.pdf.PdfPCell(new com.itextpdf.text.Phrase(
+                            curso.getPeriodo() != null ? curso.getPeriodo() : "-", dataFont)));
+                    table.addCell(new com.itextpdf.text.pdf.PdfPCell(new com.itextpdf.text.Phrase(
+                            curso.getGrupo() != null ? curso.getGrupo() : "-", dataFont)));
+                    table.addCell(new com.itextpdf.text.pdf.PdfPCell(new com.itextpdf.text.Phrase(
+                            curso.getObjDocente() != null && curso.getObjDocente().getNombre_docente() != null 
+                                    ? curso.getObjDocente().getNombre_docente() : "-", dataFont)));
+                    table.addCell(new com.itextpdf.text.pdf.PdfPCell(new com.itextpdf.text.Phrase(
+                            curso.getFecha_inicio() != null ? curso.getFecha_inicio() : "-", dataFont)));
+                    table.addCell(new com.itextpdf.text.pdf.PdfPCell(new com.itextpdf.text.Phrase(
+                            curso.getFecha_fin() != null ? curso.getFecha_fin() : "-", dataFont)));
+                    table.addCell(new com.itextpdf.text.pdf.PdfPCell(new com.itextpdf.text.Phrase(
+                            curso.getCupo_estimado() != null ? curso.getCupo_estimado().toString() : "-", dataFont)));
+                    table.addCell(new com.itextpdf.text.pdf.PdfPCell(new com.itextpdf.text.Phrase(
+                            curso.getSalon() != null ? curso.getSalon() : "-", dataFont)));
+                    table.addCell(new com.itextpdf.text.pdf.PdfPCell(new com.itextpdf.text.Phrase(
+                            curso.getEstado() != null ? curso.getEstado() : "-", dataFont)));
+                }
+                
+                document.add(table);
+            } else {
+                com.itextpdf.text.Paragraph noData = new com.itextpdf.text.Paragraph(
+                        "No hay cursos disponibles con los filtros aplicados.", infoFont);
+                noData.setSpacingAfter(15);
+                document.add(noData);
+            }
+            
+            document.close();
+            return baos.toByteArray();
+            
+        } catch (Exception e) {
+            log.error("Error al generar PDF de cursos: {}", e.getMessage(), e);
+            if (document != null && document.isOpen()) {
+                document.close();
+            }
+            throw new RuntimeException("Error al generar PDF de cursos", e);
+        }
+    }
+
+    /**
+     * Genera un PDF con la lista de estudiantes del curso
+     */
+    @SuppressWarnings("unchecked")
+    private byte[] generarPDFEstudiantesCurso(Map<String, Object> datos) {
+        log.debug("Iniciando la generación del PDF de estudiantes del curso...");
+        
+        ByteArrayOutputStream baos = null;
+        com.itextpdf.text.Document document = null;
+        
+        try {
+            baos = new ByteArrayOutputStream();
+            document = new com.itextpdf.text.Document(com.itextpdf.text.PageSize.A4.rotate()); // Horizontal para más columnas
+            com.itextpdf.text.pdf.PdfWriter.getInstance(document, baos);
+            
+            document.open();
+            
+            // Título principal
+            com.itextpdf.text.Font titleFont = new com.itextpdf.text.Font(
+                    com.itextpdf.text.Font.FontFamily.HELVETICA, 18, com.itextpdf.text.Font.BOLD);
+            String nombreCurso = (String) datos.get("nombre_curso");
+            String codigoCurso = (String) datos.get("codigo_curso");
+            String titulo = "ESTUDIANTES DEL CURSO: " + (nombreCurso != null ? nombreCurso : "N/A");
+            if (codigoCurso != null) {
+                titulo += " (" + codigoCurso + ")";
+            }
+            com.itextpdf.text.Paragraph title = new com.itextpdf.text.Paragraph(titulo, titleFont);
+            title.setAlignment(com.itextpdf.text.Element.ALIGN_CENTER);
+            title.setSpacingAfter(20);
+            document.add(title);
+            
+            // Información del curso
+            com.itextpdf.text.Font infoFont = new com.itextpdf.text.Font(
+                    com.itextpdf.text.Font.FontFamily.HELVETICA, 10);
+            StringBuilder info = new StringBuilder();
+            info.append("Fecha de generación: ").append(formatearFechaEspanol(new Date())).append("\n");
+            info.append("Cupo Estimado: ").append(datos.get("cupo_estimado")).append("\n");
+            info.append("Total Estudiantes: ").append(datos.get("total_estudiantes")).append("\n");
+            info.append("Preinscritos: ").append(datos.get("total_preinscritos")).append("\n");
+            info.append("Inscritos: ").append(datos.get("total_inscritos")).append("\n");
+            
+            com.itextpdf.text.Paragraph infoParagraph = new com.itextpdf.text.Paragraph(info.toString(), infoFont);
+            infoParagraph.setSpacingAfter(15);
+            document.add(infoParagraph);
+            
+            // Tabla de estudiantes
+            List<Map<String, Object>> estudiantes = (List<Map<String, Object>>) datos.get("estudiantes");
+            if (estudiantes != null && !estudiantes.isEmpty()) {
+                com.itextpdf.text.pdf.PdfPTable table = new com.itextpdf.text.pdf.PdfPTable(8);
+                table.setWidthPercentage(100);
+                table.setWidths(new float[]{0.5f, 2.5f, 1f, 2f, 1f, 1.5f, 1.5f, 1.5f});
+                
+                // Encabezados
+                com.itextpdf.text.Font headerFont = new com.itextpdf.text.Font(
+                        com.itextpdf.text.Font.FontFamily.HELVETICA, 9, com.itextpdf.text.Font.BOLD);
+                table.addCell(new com.itextpdf.text.pdf.PdfPCell(new com.itextpdf.text.Phrase("#", headerFont)));
+                table.addCell(new com.itextpdf.text.pdf.PdfPCell(new com.itextpdf.text.Phrase("Nombre Completo", headerFont)));
+                table.addCell(new com.itextpdf.text.pdf.PdfPCell(new com.itextpdf.text.Phrase("Código", headerFont)));
+                table.addCell(new com.itextpdf.text.pdf.PdfPCell(new com.itextpdf.text.Phrase("Programa", headerFont)));
+                table.addCell(new com.itextpdf.text.pdf.PdfPCell(new com.itextpdf.text.Phrase("Tipo", headerFont)));
+                table.addCell(new com.itextpdf.text.pdf.PdfPCell(new com.itextpdf.text.Phrase("Estado Preinscripción", headerFont)));
+                table.addCell(new com.itextpdf.text.pdf.PdfPCell(new com.itextpdf.text.Phrase("Estado Inscripción", headerFont)));
+                table.addCell(new com.itextpdf.text.pdf.PdfPCell(new com.itextpdf.text.Phrase("Correo", headerFont)));
+                
+                // Datos
+                com.itextpdf.text.Font dataFont = new com.itextpdf.text.Font(
+                        com.itextpdf.text.Font.FontFamily.HELVETICA, 8);
+                
+                int contador = 1;
+                for (Map<String, Object> estudiante : estudiantes) {
+                    table.addCell(new com.itextpdf.text.pdf.PdfPCell(new com.itextpdf.text.Phrase(
+                            String.valueOf(contador++), dataFont)));
+                    table.addCell(new com.itextpdf.text.pdf.PdfPCell(new com.itextpdf.text.Phrase(
+                            estudiante.get("nombre_completo") != null ? estudiante.get("nombre_completo").toString() : "-", dataFont)));
+                    table.addCell(new com.itextpdf.text.pdf.PdfPCell(new com.itextpdf.text.Phrase(
+                            estudiante.get("codigo") != null ? estudiante.get("codigo").toString() : "-", dataFont)));
+                    table.addCell(new com.itextpdf.text.pdf.PdfPCell(new com.itextpdf.text.Phrase(
+                            estudiante.get("programa") != null ? estudiante.get("programa").toString() : "-", dataFont)));
+                    table.addCell(new com.itextpdf.text.pdf.PdfPCell(new com.itextpdf.text.Phrase(
+                            estudiante.get("tipo") != null ? estudiante.get("tipo").toString() : "-", dataFont)));
+                    table.addCell(new com.itextpdf.text.pdf.PdfPCell(new com.itextpdf.text.Phrase(
+                            estudiante.get("estado_preinscripcion") != null ? estudiante.get("estado_preinscripcion").toString() : "-", dataFont)));
+                    table.addCell(new com.itextpdf.text.pdf.PdfPCell(new com.itextpdf.text.Phrase(
+                            estudiante.get("estado_inscripcion") != null ? estudiante.get("estado_inscripcion").toString() : "-", dataFont)));
+                    table.addCell(new com.itextpdf.text.pdf.PdfPCell(new com.itextpdf.text.Phrase(
+                            estudiante.get("correo") != null ? estudiante.get("correo").toString() : "-", dataFont)));
+                }
+                
+                document.add(table);
+            } else {
+                com.itextpdf.text.Paragraph noData = new com.itextpdf.text.Paragraph(
+                        "No hay estudiantes registrados en este curso.", infoFont);
+                noData.setSpacingAfter(15);
+                document.add(noData);
+            }
+            
+            document.close();
+            return baos.toByteArray();
+            
+        } catch (Exception e) {
+            log.error("Error al generar PDF de estudiantes: {}", e.getMessage(), e);
+            if (document != null && document.isOpen()) {
+                document.close();
+            }
+            throw new RuntimeException("Error al generar PDF de estudiantes", e);
+        }
+    }
+
+    /**
+     * Formatea una fecha en español sin hora
+     */
+    private String formatearFechaEspanol(Date fecha) {
+        if (fecha == null) {
+            return "";
+        }
+        try {
+            java.util.Locale spanishLocale = new java.util.Locale("es", "ES");
+            SimpleDateFormat sdf = new SimpleDateFormat("dd 'de' MMMM 'de' yyyy", spanishLocale);
+            return sdf.format(fecha);
+        } catch (Exception e) {
+            log.warn("Error al formatear fecha: {}", e.getMessage());
+            return fecha.toString();
+        }
+    }
+    
+    /**
+     * Normaliza el formato del período académico a YYYY-P
+     * Acepta formatos como "2025 segundo semestre", "2025-2", "Segundo Período 2025", etc.
+     */
+    private String normalizarPeriodoAcademico(String periodo) {
+        if (periodo == null || periodo.trim().isEmpty()) {
+            return periodo;
+        }
+        
+        String periodoLimpio = periodo.trim();
+        
+        // Si ya está en formato YYYY-P, retornarlo
+        if (periodoLimpio.matches("\\d{4}-[12]")) {
+            return periodoLimpio;
+        }
+        
+        // Intentar extraer año y período de formatos como "2025 segundo semestre" o "Segundo Período 2025"
+        try {
+            // Buscar año (4 dígitos)
+            java.util.regex.Pattern añoPattern = java.util.regex.Pattern.compile("(\\d{4})");
+            java.util.regex.Matcher añoMatcher = añoPattern.matcher(periodoLimpio);
+            
+            if (añoMatcher.find()) {
+                String año = añoMatcher.group(1);
+                
+                // Buscar indicador de período
+                String periodoLower = periodoLimpio.toLowerCase();
+                int numeroPeriodo = 1; // Por defecto primer período
+                
+                if (periodoLower.contains("segundo") || periodoLower.contains("2") || periodoLower.contains("ii")) {
+                    numeroPeriodo = 2;
+                } else if (periodoLower.contains("primer") || periodoLower.contains("primero") || periodoLower.contains("1") || periodoLower.contains("i")) {
+                    numeroPeriodo = 1;
+                }
+                
+                String periodoNormalizado = año + "-" + numeroPeriodo;
+                log.debug("Período '{}' normalizado a '{}'", periodo, periodoNormalizado);
+                return periodoNormalizado;
+            }
+        } catch (Exception e) {
+            log.warn("Error al normalizar período '{}': {}", periodo, e.getMessage());
+        }
+        
+        // Si no se pudo normalizar, retornar el original
+        return periodoLimpio;
     }
 
 }
