@@ -107,11 +107,22 @@ public class CursosIntersemestralesRestController {
                 PeriodoAcademicoEnum periodoActualEnum = PeriodoAcademicoEnum.getPeriodoActual();
                 if (periodoActualEnum != null) {
                     final String periodoFiltro = periodoActualEnum.getValor();
+                    log.info("No se proporcionó período académico. Usando período actual automáticamente: {}", periodoFiltro);
                     cursos = cursos.stream()
-                            .filter(curso -> curso.getPeriodo_academico() != null 
-                                    && curso.getPeriodo_academico().equals(periodoFiltro))
+                            .filter(curso -> {
+                                boolean coincide = curso.getPeriodo_academico() != null 
+                                        && curso.getPeriodo_academico().equals(periodoFiltro);
+                                if (!coincide && curso.getPeriodo_academico() != null) {
+                                    log.debug("Curso {} no coincide con período {} (tiene: {})", 
+                                        curso.getId_curso(), periodoFiltro, curso.getPeriodo_academico());
+                                }
+                                return coincide;
+                            })
                             .collect(Collectors.toList());
-                    log.debug("Cursos filtrados por período actual automático {}: {}", periodoFiltro, cursos.size());
+                    log.info("Cursos filtrados por período actual automático {}: {} de {} totales", 
+                        periodoFiltro, cursos.size(), cursoCU.listarTodos().size());
+                } else {
+                    log.warn("No se pudo determinar el período académico actual. Mostrando todos los cursos sin filtrar.");
                 }
             }
             
@@ -167,32 +178,59 @@ public class CursosIntersemestralesRestController {
      * Obtener cursos de verano disponibles para estudiantes (solo estados visibles)
      * GET /api/cursos-intersemestrales/cursos-verano/disponibles
      * 
-     * @param periodoAcademico Período académico opcional (formato: "YYYY-P", ej: "2025-2")
+     * @param periodoAcademico Período académico opcional (formato: "YYYY-P", ej: "2025-2"). 
+     *                         Si se envía "todos" o no se proporciona y todosLosPeriodos=true, se muestran todos los cursos sin filtrar.
      * @param idPrograma ID del programa académico opcional para filtrar cursos
+     * @param todosLosPeriodos Si es true, muestra todos los cursos sin filtrar por período (ignora periodoAcademico)
      */
     @GetMapping("/cursos-verano/disponibles")
     public ResponseEntity<List<CursosOfertadosDTORespuesta>> obtenerCursosVeranoDisponibles(
             @RequestParam(required = false) String periodoAcademico,
-            @RequestParam(required = false) Integer idPrograma) {
+            @RequestParam(required = false) Integer idPrograma,
+            @RequestParam(required = false, defaultValue = "false") Boolean todosLosPeriodos) {
         try {
             List<CursoOfertadoVerano> cursos = cursoCU.listarTodos();
+            String periodoUsado = null;
             
+            // Si se solicita ver todos los períodos, no filtrar por período
+            if (Boolean.TRUE.equals(todosLosPeriodos) || 
+                (periodoAcademico != null && periodoAcademico.trim().equalsIgnoreCase("todos"))) {
+                log.info("Solicitados todos los cursos sin filtrar por período académico");
+                periodoUsado = "todos";
+            } 
             // Filtrar por período académico si se proporciona
-            if (periodoAcademico != null && !periodoAcademico.trim().isEmpty()) {
+            else if (periodoAcademico != null && !periodoAcademico.trim().isEmpty()) {
                 String periodoFiltro = periodoAcademico.trim();
+                periodoUsado = periodoFiltro;
+                log.debug("Filtrando cursos disponibles por período proporcionado: {}", periodoFiltro);
                 cursos = cursos.stream()
                         .filter(curso -> curso.getPeriodo_academico() != null 
                                 && curso.getPeriodo_academico().equals(periodoFiltro))
                         .collect(Collectors.toList());
+                log.info("Cursos filtrados por período {}: {} de {} totales", periodoFiltro, cursos.size(), cursoCU.listarTodos().size());
             } else {
                 // Si no se proporciona período, usar el período actual automáticamente
                 PeriodoAcademicoEnum periodoActualEnum = PeriodoAcademicoEnum.getPeriodoActual();
                 if (periodoActualEnum != null) {
                     final String periodoFiltro = periodoActualEnum.getValor();
+                    periodoUsado = periodoFiltro;
+                    log.info("No se proporcionó período académico. Usando período actual automáticamente: {}", periodoFiltro);
                     cursos = cursos.stream()
-                            .filter(curso -> curso.getPeriodo_academico() != null 
-                                    && curso.getPeriodo_academico().equals(periodoFiltro))
+                            .filter(curso -> {
+                                boolean coincide = curso.getPeriodo_academico() != null 
+                                        && curso.getPeriodo_academico().equals(periodoFiltro);
+                                if (!coincide && curso.getPeriodo_academico() != null) {
+                                    log.debug("Curso {} no coincide con período {} (tiene: {})", 
+                                        curso.getId_curso(), periodoFiltro, curso.getPeriodo_academico());
+                                }
+                                return coincide;
+                            })
                             .collect(Collectors.toList());
+                    log.info("Cursos disponibles filtrados por período actual automático {}: {} de {} totales", 
+                        periodoFiltro, cursos.size(), cursoCU.listarTodos().size());
+                } else {
+                    log.warn("No se pudo determinar el período académico actual. Mostrando todos los cursos disponibles sin filtrar.");
+                    periodoUsado = "indeterminado";
                 }
             }
             
@@ -231,8 +269,23 @@ public class CursosIntersemestralesRestController {
             List<CursosOfertadosDTORespuesta> respuesta = cursosDisponibles.stream()
                     .map(cursoMapper::mappearDeCursoOfertadoARespuestaDisponible)
                     .collect(Collectors.toList());
+            
+            // Log informativo cuando no hay cursos
+            if (respuesta.isEmpty()) {
+                if (periodoUsado != null && !periodoUsado.equals("todos")) {
+                    log.info("No se encontraron cursos disponibles para el período: {}. Total de cursos en sistema: {}", 
+                        periodoUsado, cursoCU.listarTodos().size());
+                } else {
+                    log.info("No se encontraron cursos disponibles. Total de cursos en sistema: {}", 
+                        cursoCU.listarTodos().size());
+                }
+            } else {
+                log.info("Se encontraron {} cursos disponibles para el período: {}", respuesta.size(), periodoUsado);
+            }
+            
             return ResponseEntity.ok(respuesta);
         } catch (Exception e) {
+            log.error("Error al obtener cursos disponibles: {}", e.getMessage(), e);
             return ResponseEntity.internalServerError().build();
         }
     }
