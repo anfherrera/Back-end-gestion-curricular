@@ -4077,9 +4077,16 @@ public class CursosIntersemestralesRestController {
                 }
                 
                 estudiante.put("tiene_inscripcion", tieneInscripcion);
-                estudiante.put("estado_inscripcion", estadoInscripcion);
+                estudiante.put("estado_inscripcion", estadoInscripcion != null ? estadoInscripcion : "Sin inscripción");
                 estudiante.put("id_solicitud_inscripcion", idInscripcion);
-                estudiante.put("tipo", "Preinscrito");
+                
+                // Determinar el tipo basado en si tiene inscripción válida
+                // Si tiene inscripción y está validada (Pago_Validado), es "Inscrito", sino "Preinscrito"
+                if (tieneInscripcion && estadoInscripcion != null && "Pago_Validado".equals(estadoInscripcion)) {
+                    estudiante.put("tipo", "Inscrito");
+                } else {
+                    estudiante.put("tipo", "Preinscrito");
+                }
                 
                 estudiantesPreinscritos.add(estudiante);
             }
@@ -4124,7 +4131,15 @@ public class CursosIntersemestralesRestController {
                     }
                     
                     estudiante.put("tiene_preinscripcion", false);
-                    estudiante.put("tipo", "Inscrito");
+                    estudiante.put("estado_preinscripcion", null);
+                    
+                    // Determinar el tipo: solo es "Inscrito" si está validado, sino es "Preinscrito" o "En proceso"
+                    if ("Pago_Validado".equals(estadoInscripcion)) {
+                        estudiante.put("tipo", "Inscrito");
+                    } else {
+                        // Si tiene inscripción pero no está validada, aún es "Preinscrito" o "En proceso de inscripción"
+                        estudiante.put("tipo", "Preinscrito");
+                    }
                     
                     estudiantesInscritos.add(estudiante);
                 }
@@ -4156,9 +4171,18 @@ public class CursosIntersemestralesRestController {
                 .count();
             int totalInscritos = estudiantesInscritos.size() + (int) estudiantesConInscripcion;
             
+            // Contar solo estudiantes realmente inscritos (con Pago_Validado)
+            long estudiantesRealmenteInscritos = todosLosEstudiantes.stream()
+                .filter(e -> {
+                    String tipo = (String) e.get("tipo");
+                    String estadoInscripcion = (String) e.get("estado_inscripcion");
+                    return "Inscrito".equals(tipo) && estadoInscripcion != null && "Pago_Validado".equals(estadoInscripcion);
+                })
+                .count();
+            
             respuesta.put("total_estudiantes", todosLosEstudiantes.size());
             respuesta.put("total_preinscritos", estudiantesPreinscritos.size());
-            respuesta.put("total_inscritos", totalInscritos);
+            respuesta.put("total_inscritos", (int) estudiantesRealmenteInscritos);
             respuesta.put("estudiantes", todosLosEstudiantes);
             
             log.info("Total estudiantes encontrados para curso {}: {} ({} preinscritos, {} con inscripción)", 

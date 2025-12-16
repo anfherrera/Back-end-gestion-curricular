@@ -125,16 +125,34 @@ INSERT INTO Usuarios(idUsuario, codigo, nombre_completo, correo, password, estad
 INSERT INTO Usuarios(idUsuario, codigo, nombre_completo, correo, password, estado_usuario, idfkRol, idfkPrograma, cedula) VALUES (26, 'ADMIN001', 'Administrador del Sistema', 'admin@unicauca.edu.co', '$2a$10$N9qo8uLOickgx2ZMRZoMyeIjFOjtXgjOU92LhL6YP1dPW1Z/uLlLG', 1, 1, 1, '0000000000');
 
 -- Solo insertar cursos adicionales (el curso 1 ya existe)
-INSERT INTO Cursos_ofertados(idCurso, idfkMateria, idfkDocente, grupo, cupo_estimado, salon) VALUES (1, 1, 1, 'A', 30, 'A-101');
-INSERT INTO Cursos_ofertados(idCurso, idfkMateria, idfkDocente, grupo, cupo_estimado, salon) VALUES (2, 2, 2, 'B', 25, 'A-102');
-INSERT INTO Cursos_ofertados(idCurso, idfkMateria, idfkDocente, grupo, cupo_estimado, salon) VALUES (3, 3, 3, 'C', 20, 'A-103');
+-- Agregar periodo_academico a los cursos
+INSERT INTO Cursos_ofertados(idCurso, idfkMateria, idfkDocente, grupo, cupo_estimado, salon, periodo_academico) VALUES (1, 1, 1, 'A', 30, 'A-101', '2025-2');
+INSERT INTO Cursos_ofertados(idCurso, idfkMateria, idfkDocente, grupo, cupo_estimado, salon, periodo_academico) VALUES (2, 2, 2, 'B', 25, 'A-102', '2025-2');
+INSERT INTO Cursos_ofertados(idCurso, idfkMateria, idfkDocente, grupo, cupo_estimado, salon, periodo_academico) VALUES (3, 3, 3, 'C', 20, 'A-103', '2025-2');
 
--- Solo insertar estados adicionales
+-- Estados de cursos de verano (actualizados según el backend)
+-- Estados válidos: Borrador, Abierto, Publicado, Preinscripcion, Inscripcion, Cerrado
 -- NOTA: La columna fecha_fin se crea automáticamente en desarrollo por Hibernate (ddl-auto=create-drop)
 -- En producción, ejecutar el script MIGRACION_FECHA_FIN.sql manualmente ANTES de iniciar la app
-INSERT INTO EstadosCursos(idEstado, estado_actual, fecha_registro_estado, idfkCurso) VALUES (1, 'Publicado', '2025-07-01 08:00:00', 1);
-INSERT INTO EstadosCursos(idEstado, estado_actual, fecha_registro_estado, idfkCurso) VALUES (2, 'Preinscripcion', '2025-07-02 08:00:00', 2);
-INSERT INTO EstadosCursos(idEstado, estado_actual, fecha_registro_estado, idfkCurso) VALUES (3, 'Inscripcion', '2025-07-03 08:00:00', 3);
+
+-- Curso 1: Bases de Datos - Estado: Preinscripcion (para que aparezca en preinscripciones)
+INSERT INTO EstadosCursos(idEstado, estado_actual, fecha_registro_estado, idfkCurso) VALUES (1, 'Borrador', '2025-06-25 08:00:00', 1);
+INSERT INTO EstadosCursos(idEstado, estado_actual, fecha_registro_estado, idfkCurso) VALUES (2, 'Abierto', '2025-06-28 08:00:00', 1);
+INSERT INTO EstadosCursos(idEstado, estado_actual, fecha_registro_estado, idfkCurso) VALUES (3, 'Publicado', '2025-07-01 08:00:00', 1);
+INSERT INTO EstadosCursos(idEstado, estado_actual, fecha_registro_estado, idfkCurso) VALUES (4, 'Preinscripcion', '2025-07-02 08:00:00', 1);
+
+-- Curso 2: Calidad de Software - Estado: Preinscripcion (para que aparezca en preinscripciones)
+INSERT INTO EstadosCursos(idEstado, estado_actual, fecha_registro_estado, idfkCurso) VALUES (5, 'Borrador', '2025-06-26 08:00:00', 2);
+INSERT INTO EstadosCursos(idEstado, estado_actual, fecha_registro_estado, idfkCurso) VALUES (6, 'Abierto', '2025-06-29 08:00:00', 2);
+INSERT INTO EstadosCursos(idEstado, estado_actual, fecha_registro_estado, idfkCurso) VALUES (7, 'Publicado', '2025-07-01 10:00:00', 2);
+INSERT INTO EstadosCursos(idEstado, estado_actual, fecha_registro_estado, idfkCurso) VALUES (8, 'Preinscripcion', '2025-07-02 10:00:00', 2);
+
+-- Curso 3: Metodología de la Investigación - Estado: Inscripcion (para que aparezca en inscripciones)
+INSERT INTO EstadosCursos(idEstado, estado_actual, fecha_registro_estado, idfkCurso) VALUES (9, 'Borrador', '2025-06-27 08:00:00', 3);
+INSERT INTO EstadosCursos(idEstado, estado_actual, fecha_registro_estado, idfkCurso) VALUES (10, 'Abierto', '2025-06-30 08:00:00', 3);
+INSERT INTO EstadosCursos(idEstado, estado_actual, fecha_registro_estado, idfkCurso) VALUES (11, 'Publicado', '2025-07-01 12:00:00', 3);
+INSERT INTO EstadosCursos(idEstado, estado_actual, fecha_registro_estado, idfkCurso) VALUES (12, 'Preinscripcion', '2025-07-02 12:00:00', 3);
+INSERT INTO EstadosCursos(idEstado, estado_actual, fecha_registro_estado, idfkCurso) VALUES (13, 'Inscripcion', '2025-07-03 08:00:00', 3);
 -- Datos de prueba para inscripciones en cursos de verano
 -- NOTA: Con herencia JOINED, primero se inserta en Solicitudes (tabla padre), luego en la tabla hija
 -- Inscripciones de cursos de verano (extendiendo de Solicitudes)
