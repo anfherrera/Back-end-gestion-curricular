@@ -1834,15 +1834,34 @@ public class CursosIntersemestralesRestController {
     /**
      * Obtener todas las solicitudes de cursos intersemestrales para funcionarios y coordinadores
      * GET /api/cursos-intersemestrales/solicitudes
+     * 
+     * @param idMateria Filtro por ID de materia (opcional)
+     * @param periodoAcademico Filtro por período académico (opcional, formato: "YYYY-P", ej: "2025-2")
+     * @param idCurso Filtro por ID de curso (opcional)
+     * @param estado Filtro por estado de solicitud (opcional)
+     * @param fechaInicio Filtro por fecha de inicio (opcional)
+     * @param fechaFin Filtro por fecha de fin (opcional)
      */
     @GetMapping("/solicitudes")
-    public ResponseEntity<List<Map<String, Object>>> obtenerTodasLasSolicitudes() {
+    @PreAuthorize("hasAnyRole('Funcionario', 'Coordinador', 'Administrador')")
+    public ResponseEntity<List<Map<String, Object>>> obtenerTodasLasSolicitudes(
+            @RequestParam(value = "idMateria", required = false) Integer idMateria,
+            @RequestParam(value = "periodoAcademico", required = false) String periodoAcademico,
+            @RequestParam(value = "idCurso", required = false) Integer idCurso,
+            @RequestParam(value = "estado", required = false) String estado,
+            @RequestParam(value = "fechaInicio", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") Date fechaInicio,
+            @RequestParam(value = "fechaFin", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") Date fechaFin) {
         try {
-            log.info("Obteniendo todas las solicitudes de cursos intersemestrales para funcionarios y coordinadores");
+            log.info("Obteniendo todas las solicitudes de cursos intersemestrales para funcionarios y coordinadores - idMateria: {}, periodoAcademico: {}, idCurso: {}, estado: {}", 
+                    idMateria, periodoAcademico, idCurso, estado);
             
             // Buscar todas las solicitudes usando el repositorio directamente
             List<SolicitudEntity> todasLasSolicitudes = solicitudRepository.findAllWithJoins();
-
+            
+            // Aplicar filtros si se proporcionan
+            todasLasSolicitudes = filtrarSolicitudes(todasLasSolicitudes, idCurso, estado, periodoAcademico, fechaInicio, fechaFin);
+            
+            log.info("Solicitudes después de aplicar filtros: {}", todasLasSolicitudes.size());
             
             List<Map<String, Object>> solicitudesFormateadas = new ArrayList<>();
             
@@ -1892,13 +1911,24 @@ public class CursosIntersemestralesRestController {
                     // Informacion del curso
                     String nombreCurso = "Curso no disponible";
                     String condicion = "N/A";
+                    Integer idMateriaSolicitud = null;
+                    Integer idCursoSolicitud = null;
+                    String codigoMateria = null;
+                    String grupoCurso = null;
                     
                     if (solicitud instanceof SolicitudCursoVeranoPreinscripcionEntity) {
                         SolicitudCursoVeranoPreinscripcionEntity preinscripcion = (SolicitudCursoVeranoPreinscripcionEntity) solicitud;
                         
-                        if (preinscripcion.getObjCursoOfertadoVerano() != null && 
-                            preinscripcion.getObjCursoOfertadoVerano().getObjMateria() != null) {
-                            nombreCurso = preinscripcion.getObjCursoOfertadoVerano().getObjMateria().getNombre();
+                        if (preinscripcion.getObjCursoOfertadoVerano() != null) {
+                            idCursoSolicitud = preinscripcion.getObjCursoOfertadoVerano().getId_curso();
+                            grupoCurso = preinscripcion.getObjCursoOfertadoVerano().getGrupo() != null ? 
+                                preinscripcion.getObjCursoOfertadoVerano().getGrupo().toString() : null;
+                            
+                            if (preinscripcion.getObjCursoOfertadoVerano().getObjMateria() != null) {
+                                nombreCurso = preinscripcion.getObjCursoOfertadoVerano().getObjMateria().getNombre();
+                                idMateriaSolicitud = preinscripcion.getObjCursoOfertadoVerano().getObjMateria().getId_materia();
+                                codigoMateria = preinscripcion.getObjCursoOfertadoVerano().getObjMateria().getCodigo();
+                            }
                         } else if (preinscripcion.getObservacion() != null && !preinscripcion.getObservacion().isEmpty()) {
                             // Para solicitudes de curso nuevo
                             String observacion = preinscripcion.getObservacion();
@@ -1926,9 +1956,16 @@ public class CursosIntersemestralesRestController {
                     } else if (solicitud instanceof SolicitudCursoVeranoInscripcionEntity) {
                         SolicitudCursoVeranoInscripcionEntity inscripcion = (SolicitudCursoVeranoInscripcionEntity) solicitud;
                         
-                        if (inscripcion.getObjCursoOfertadoVerano() != null && 
-                            inscripcion.getObjCursoOfertadoVerano().getObjMateria() != null) {
-                            nombreCurso = inscripcion.getObjCursoOfertadoVerano().getObjMateria().getNombre();
+                        if (inscripcion.getObjCursoOfertadoVerano() != null) {
+                            idCursoSolicitud = inscripcion.getObjCursoOfertadoVerano().getId_curso();
+                            grupoCurso = inscripcion.getObjCursoOfertadoVerano().getGrupo() != null ? 
+                                inscripcion.getObjCursoOfertadoVerano().getGrupo().toString() : null;
+                            
+                            if (inscripcion.getObjCursoOfertadoVerano().getObjMateria() != null) {
+                                nombreCurso = inscripcion.getObjCursoOfertadoVerano().getObjMateria().getNombre();
+                                idMateriaSolicitud = inscripcion.getObjCursoOfertadoVerano().getObjMateria().getId_materia();
+                                codigoMateria = inscripcion.getObjCursoOfertadoVerano().getObjMateria().getCodigo();
+                            }
                         }
                         
                         // Condicion de la inscripcion
@@ -1946,6 +1983,17 @@ public class CursosIntersemestralesRestController {
                     }
                     
                     solicitudInfo.put("curso", nombreCurso);
+                    solicitudInfo.put("idMateria", idMateriaSolicitud);
+                    solicitudInfo.put("idCurso", idCursoSolicitud);
+                    solicitudInfo.put("codigoMateria", codigoMateria);
+                    solicitudInfo.put("grupoCurso", grupoCurso);
+                    
+                    // Filtrar por materia si se proporciona
+                    if (idMateria != null && idMateria != 0) {
+                        if (idMateriaSolicitud == null || !idMateriaSolicitud.equals(idMateria)) {
+                            continue; // Saltar esta solicitud si no coincide con el filtro de materia
+                        }
+                    }
                     
                     solicitudesFormateadas.add(solicitudInfo);
                 }
@@ -1968,25 +2016,28 @@ public class CursosIntersemestralesRestController {
      * 
      * @param idCurso Filtro por ID de curso (opcional)
      * @param estado Filtro por estado de solicitud (opcional)
+     * @param periodoAcademico Filtro por período académico (opcional, formato: "YYYY-P", ej: "2025-2")
      * @param fechaInicio Filtro por fecha de inicio (opcional)
      * @param fechaFin Filtro por fecha de fin (opcional)
      * @return Archivo Excel con las solicitudes filtradas
      */
     @GetMapping("/solicitudes/export/excel")
+    @PreAuthorize("hasAnyRole('Funcionario', 'Coordinador', 'Administrador')")
     public ResponseEntity<byte[]> exportarSolicitudesExcel(
             @RequestParam(value = "idCurso", required = false) Integer idCurso,
             @RequestParam(value = "estado", required = false) String estado,
+            @RequestParam(value = "periodoAcademico", required = false) String periodoAcademico,
             @RequestParam(value = "fechaInicio", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") Date fechaInicio,
             @RequestParam(value = "fechaFin", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") Date fechaFin) {
         try {
-            log.info("Exportando solicitudes de cursos intersemestrales a Excel con filtros - idCurso: {}, estado: {}, fechaInicio: {}, fechaFin: {}", 
-                    idCurso, estado, fechaInicio, fechaFin);
+            log.info("Exportando solicitudes de cursos intersemestrales a Excel con filtros - idCurso: {}, estado: {}, periodoAcademico: {}, fechaInicio: {}, fechaFin: {}", 
+                    idCurso, estado, periodoAcademico, fechaInicio, fechaFin);
             
             // Obtener todas las solicitudes usando la misma logica del endpoint anterior
             List<SolicitudEntity> todasLasSolicitudes = solicitudRepository.findAllWithJoins();
             
             // Aplicar filtros si se proporcionan
-            todasLasSolicitudes = filtrarSolicitudes(todasLasSolicitudes, idCurso, estado, fechaInicio, fechaFin);
+            todasLasSolicitudes = filtrarSolicitudes(todasLasSolicitudes, idCurso, estado, periodoAcademico, fechaInicio, fechaFin);
             
             log.info("Solicitudes después de aplicar filtros: {}", todasLasSolicitudes.size());
             
@@ -2119,8 +2170,8 @@ public class CursosIntersemestralesRestController {
                 }
             }
             
-            // Generar Excel
-            byte[] excelBytes = generarExcelSolicitudes(solicitudesFormateadas);
+            // Generar Excel con información de filtros
+            byte[] excelBytes = generarExcelSolicitudes(solicitudesFormateadas, idCurso, estado, periodoAcademico, fechaInicio, fechaFin);
             
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.APPLICATION_OCTET_STREAM);
@@ -2143,6 +2194,7 @@ public class CursosIntersemestralesRestController {
      * @param solicitudes Lista de solicitudes a filtrar
      * @param idCurso Filtro por ID de curso (opcional)
      * @param estado Filtro por estado (opcional)
+     * @param periodoAcademico Filtro por período académico (opcional)
      * @param fechaInicio Filtro por fecha de inicio (opcional)
      * @param fechaFin Filtro por fecha de fin (opcional)
      * @return Lista de solicitudes filtradas
@@ -2150,7 +2202,8 @@ public class CursosIntersemestralesRestController {
     private List<SolicitudEntity> filtrarSolicitudes(
             List<SolicitudEntity> solicitudes, 
             Integer idCurso, 
-            String estado, 
+            String estado,
+            String periodoAcademico,
             Date fechaInicio, 
             Date fechaFin) {
         
@@ -2194,6 +2247,37 @@ public class CursosIntersemestralesRestController {
                     }
                 }
                 
+                // Filtrar por período académico
+                if (periodoAcademico != null && !periodoAcademico.trim().isEmpty() && !periodoAcademico.trim().equalsIgnoreCase("todos")) {
+                    String periodoFiltro = normalizarPeriodoAcademico(periodoAcademico.trim());
+                    
+                    // Verificar período en la solicitud
+                    String periodoSolicitud = solicitud.getPeriodo_academico();
+                    if (periodoSolicitud == null || !periodoSolicitud.equals(periodoFiltro)) {
+                        // Si no coincide con el período de la solicitud, verificar en el curso asociado
+                        boolean coincide = false;
+                        if (solicitud instanceof SolicitudCursoVeranoPreinscripcionEntity) {
+                            SolicitudCursoVeranoPreinscripcionEntity preinscripcion = 
+                                (SolicitudCursoVeranoPreinscripcionEntity) solicitud;
+                            if (preinscripcion.getObjCursoOfertadoVerano() != null) {
+                                String periodoCurso = preinscripcion.getObjCursoOfertadoVerano().getPeriodo_academico();
+                                coincide = periodoCurso != null && periodoCurso.equals(periodoFiltro);
+                            }
+                        } else if (solicitud instanceof SolicitudCursoVeranoInscripcionEntity) {
+                            SolicitudCursoVeranoInscripcionEntity inscripcion = 
+                                (SolicitudCursoVeranoInscripcionEntity) solicitud;
+                            if (inscripcion.getObjCursoOfertadoVerano() != null) {
+                                String periodoCurso = inscripcion.getObjCursoOfertadoVerano().getPeriodo_academico();
+                                coincide = periodoCurso != null && periodoCurso.equals(periodoFiltro);
+                            }
+                        }
+                        
+                        if (!coincide) {
+                            return false;
+                        }
+                    }
+                }
+                
                 // Filtrar por rango de fechas
                 if (fechaInicio != null || fechaFin != null) {
                     Date fechaSolicitud = solicitud.getFecha_registro_solicitud();
@@ -2221,8 +2305,21 @@ public class CursosIntersemestralesRestController {
 
     /**
      * Genera un archivo Excel con las solicitudes de cursos intersemestrales
+     * 
+     * @param solicitudes Lista de solicitudes a incluir en el Excel
+     * @param idCurso Filtro de curso aplicado (opcional)
+     * @param estado Filtro de estado aplicado (opcional)
+     * @param periodoAcademico Filtro de período académico aplicado (opcional)
+     * @param fechaInicio Filtro de fecha inicio aplicado (opcional)
+     * @param fechaFin Filtro de fecha fin aplicado (opcional)
+     * @return Array de bytes del archivo Excel
      */
-    private byte[] generarExcelSolicitudes(List<Map<String, Object>> solicitudes) {
+    private byte[] generarExcelSolicitudes(List<Map<String, Object>> solicitudes, 
+                                          Integer idCurso, 
+                                          String estado, 
+                                          String periodoAcademico,
+                                          Date fechaInicio, 
+                                          Date fechaFin) {
         try {
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
             org.apache.poi.xssf.usermodel.XSSFWorkbook workbook = new org.apache.poi.xssf.usermodel.XSSFWorkbook();
@@ -2258,6 +2355,61 @@ public class CursosIntersemestralesRestController {
             // Fecha de generacion
             org.apache.poi.ss.usermodel.Row fechaRow = sheet.createRow(rowNum++);
             fechaRow.createCell(0).setCellValue("Fecha de generacion: " + new SimpleDateFormat("dd/MM/yyyy HH:mm:ss").format(new Date()));
+            
+            // Información de filtros aplicados
+            StringBuilder filtrosInfo = new StringBuilder();
+            boolean hayFiltros = false;
+            
+            if (periodoAcademico != null && !periodoAcademico.trim().isEmpty() && !periodoAcademico.trim().equalsIgnoreCase("todos")) {
+                filtrosInfo.append("Período Académico: ").append(periodoAcademico);
+                hayFiltros = true;
+            } else {
+                try {
+                    PeriodoAcademicoEnum periodoActual = PeriodoAcademicoEnum.getPeriodoActual();
+                    if (periodoActual != null) {
+                        filtrosInfo.append("Período Académico: Todos (Período actual: ").append(periodoActual.getValor()).append(")");
+                    } else {
+                        filtrosInfo.append("Período Académico: Todos los períodos");
+                    }
+                } catch (Exception e) {
+                    filtrosInfo.append("Período Académico: Todos los períodos");
+                }
+                hayFiltros = true;
+            }
+            
+            if (idCurso != null) {
+                if (hayFiltros) filtrosInfo.append(" | ");
+                filtrosInfo.append("Curso ID: ").append(idCurso);
+                hayFiltros = true;
+            }
+            
+            if (estado != null && !estado.trim().isEmpty()) {
+                if (hayFiltros) filtrosInfo.append(" | ");
+                filtrosInfo.append("Estado: ").append(estado);
+                hayFiltros = true;
+            }
+            
+            if (fechaInicio != null || fechaFin != null) {
+                if (hayFiltros) filtrosInfo.append(" | ");
+                SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
+                if (fechaInicio != null && fechaFin != null) {
+                    filtrosInfo.append("Fechas: ").append(dateFormat.format(fechaInicio)).append(" - ").append(dateFormat.format(fechaFin));
+                } else if (fechaInicio != null) {
+                    filtrosInfo.append("Fecha desde: ").append(dateFormat.format(fechaInicio));
+                } else if (fechaFin != null) {
+                    filtrosInfo.append("Fecha hasta: ").append(dateFormat.format(fechaFin));
+                }
+                hayFiltros = true;
+            }
+            
+            if (hayFiltros) {
+                org.apache.poi.ss.usermodel.Row filtrosRow = sheet.createRow(rowNum++);
+                filtrosRow.createCell(0).setCellValue("Filtros aplicados: " + filtrosInfo.toString());
+            }
+            
+            // Total de solicitudes
+            org.apache.poi.ss.usermodel.Row totalRow = sheet.createRow(rowNum++);
+            totalRow.createCell(0).setCellValue("Total de solicitudes: " + solicitudes.size());
             
             rowNum++; // Espacio
             
