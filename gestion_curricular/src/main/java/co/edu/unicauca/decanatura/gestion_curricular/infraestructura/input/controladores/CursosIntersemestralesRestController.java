@@ -5389,9 +5389,9 @@ public class CursosIntersemestralesRestController {
                             curso.getObjDocente() != null && curso.getObjDocente().getNombre_docente() != null 
                                     ? curso.getObjDocente().getNombre_docente() : "-", dataFont)));
                     table.addCell(new com.itextpdf.text.pdf.PdfPCell(new com.itextpdf.text.Phrase(
-                            curso.getFecha_inicio() != null ? curso.getFecha_inicio() : "-", dataFont)));
+                            formatearFechaISO(curso.getFecha_inicio()), dataFont)));
                     table.addCell(new com.itextpdf.text.pdf.PdfPCell(new com.itextpdf.text.Phrase(
-                            curso.getFecha_fin() != null ? curso.getFecha_fin() : "-", dataFont)));
+                            formatearFechaISO(curso.getFecha_fin()), dataFont)));
                     table.addCell(new com.itextpdf.text.pdf.PdfPCell(new com.itextpdf.text.Phrase(
                             curso.getCupo_estimado() != null ? curso.getCupo_estimado().toString() : "-", dataFont)));
                     table.addCell(new com.itextpdf.text.pdf.PdfPCell(new com.itextpdf.text.Phrase(
@@ -5500,8 +5500,12 @@ public class CursosIntersemestralesRestController {
                             estudiante.get("programa") != null ? estudiante.get("programa").toString() : "-", dataFont)));
                     table.addCell(new com.itextpdf.text.pdf.PdfPCell(new com.itextpdf.text.Phrase(
                             estudiante.get("tipo") != null ? estudiante.get("tipo").toString() : "-", dataFont)));
-                    table.addCell(new com.itextpdf.text.pdf.PdfPCell(new com.itextpdf.text.Phrase(
-                            estudiante.get("estado_preinscripcion") != null ? estudiante.get("estado_preinscripcion").toString() : "-", dataFont)));
+                    String estadoPreinscripcion = estudiante.get("estado_preinscripcion") != null 
+                            ? estudiante.get("estado_preinscripcion").toString() : "N/A";
+                    if ("-".equals(estadoPreinscripcion) || estadoPreinscripcion.isEmpty() || estadoPreinscripcion.trim().isEmpty()) {
+                        estadoPreinscripcion = "N/A";
+                    }
+                    table.addCell(new com.itextpdf.text.pdf.PdfPCell(new com.itextpdf.text.Phrase(estadoPreinscripcion, dataFont)));
                     table.addCell(new com.itextpdf.text.pdf.PdfPCell(new com.itextpdf.text.Phrase(
                             estudiante.get("estado_inscripcion") != null ? estudiante.get("estado_inscripcion").toString() : "-", dataFont)));
                     table.addCell(new com.itextpdf.text.pdf.PdfPCell(new com.itextpdf.text.Phrase(
@@ -5542,6 +5546,37 @@ public class CursosIntersemestralesRestController {
         } catch (Exception e) {
             log.warn("Error al formatear fecha: {}", e.getMessage());
             return fecha.toString();
+        }
+    }
+    
+    /**
+     * Formatea una fecha ISO (String) a formato legible (dd/MM/yyyy)
+     * Acepta formatos como "2026-06-16T16:55:43Z" o "2026-06-16"
+     */
+    private String formatearFechaISO(String fechaISO) {
+        if (fechaISO == null || fechaISO.trim().isEmpty()) {
+            return "-";
+        }
+        
+        try {
+            // Intentar parsear formato ISO completo (con hora)
+            if (fechaISO.contains("T")) {
+                String fechaPart = fechaISO.split("T")[0]; // Extraer solo la parte de la fecha
+                String[] partes = fechaPart.split("-");
+                if (partes.length == 3) {
+                    return partes[2] + "/" + partes[1] + "/" + partes[0]; // dd/MM/yyyy
+                }
+            } else if (fechaISO.matches("\\d{4}-\\d{2}-\\d{2}")) {
+                // Formato simple yyyy-MM-dd
+                String[] partes = fechaISO.split("-");
+                return partes[2] + "/" + partes[1] + "/" + partes[0]; // dd/MM/yyyy
+            }
+            
+            // Si no se puede parsear, retornar el original
+            return fechaISO;
+        } catch (Exception e) {
+            log.warn("Error al formatear fecha ISO '{}': {}", fechaISO, e.getMessage());
+            return fechaISO;
         }
     }
     
