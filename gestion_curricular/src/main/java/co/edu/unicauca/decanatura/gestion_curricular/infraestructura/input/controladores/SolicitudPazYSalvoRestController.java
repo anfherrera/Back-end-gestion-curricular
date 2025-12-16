@@ -368,20 +368,18 @@ public class SolicitudPazYSalvoRestController {
     @GetMapping("/listarSolicitud-PazYSalvo/Secretaria/Aprobadas")
     public ResponseEntity<List<SolicitudPazYSalvoDTORespuesta>> listarSolicitudPazYSalvoAprobadasToSecretaria(
             @RequestParam(required = false) String periodoAcademico) {
-        // Si no se proporciona período, usar el período académico actual basado en la fecha
-        if (periodoAcademico == null || periodoAcademico.trim().isEmpty()) {
-            PeriodoAcademicoEnum periodoActual = PeriodoAcademicoEnum.getPeriodoActual();
-            if (periodoActual != null) {
-                periodoAcademico = periodoActual.getValor();
-                log.debug("Usando período académico actual automático: {}", periodoAcademico);
-            }
-        }
-        
         List<SolicitudPazYSalvo> solicitudes;
-        if (periodoAcademico != null && !periodoAcademico.trim().isEmpty()) {
-            solicitudes = solicitudPazYSalvoCU.listarSolicitudesAprobadasToSecretariaPorPeriodo(periodoAcademico.trim());
-        } else {
+        
+        // Si se solicita "todos" o está vacío/null, mostrar todas las solicitudes sin filtrar
+        if (periodoAcademico == null || periodoAcademico.trim().isEmpty() || 
+            periodoAcademico.trim().equalsIgnoreCase("todos") ||
+            periodoAcademico.trim().equalsIgnoreCase("todos los periodos") ||
+            periodoAcademico.trim().equalsIgnoreCase("todos los períodos")) {
+            log.debug("Mostrando todas las solicitudes procesadas sin filtrar por período");
             solicitudes = solicitudPazYSalvoCU.listarSolicitudesAprobadasToSecretaria();
+        } else {
+            // Filtrar por período académico específico
+            solicitudes = solicitudPazYSalvoCU.listarSolicitudesAprobadasToSecretariaPorPeriodo(periodoAcademico.trim());
         }
         
         List<SolicitudPazYSalvoDTORespuesta> respuesta = solicitudMapperDominio.mappearListaDeSolicitudesARespuesta(solicitudes);
@@ -400,20 +398,18 @@ public class SolicitudPazYSalvoRestController {
     @GetMapping("/listarSolicitud-PazYSalvo/Funcionario/Aprobadas")
     public ResponseEntity<List<SolicitudPazYSalvoDTORespuesta>> listarSolicitudPazYSalvoAprobadasToFuncionario(
             @RequestParam(required = false) String periodoAcademico) {
-        // Si no se proporciona período, usar el período académico actual basado en la fecha
-        if (periodoAcademico == null || periodoAcademico.trim().isEmpty()) {
-            PeriodoAcademicoEnum periodoActual = PeriodoAcademicoEnum.getPeriodoActual();
-            if (periodoActual != null) {
-                periodoAcademico = periodoActual.getValor();
-                log.debug("Usando período académico actual automático: {}", periodoAcademico);
-            }
-        }
-        
         List<SolicitudPazYSalvo> solicitudes;
-        if (periodoAcademico != null && !periodoAcademico.trim().isEmpty()) {
-            solicitudes = solicitudPazYSalvoCU.listarSolicitudesAprobadasToFuncionarioPorPeriodo(periodoAcademico.trim());
-        } else {
+        
+        // Si se solicita "todos" o está vacío/null, mostrar todas las solicitudes sin filtrar
+        if (periodoAcademico == null || periodoAcademico.trim().isEmpty() || 
+            periodoAcademico.trim().equalsIgnoreCase("todos") ||
+            periodoAcademico.trim().equalsIgnoreCase("todos los periodos") ||
+            periodoAcademico.trim().equalsIgnoreCase("todos los períodos")) {
+            log.debug("Mostrando todas las solicitudes procesadas sin filtrar por período");
             solicitudes = solicitudPazYSalvoCU.listarSolicitudesAprobadasToFuncionario();
+        } else {
+            // Filtrar por período académico específico
+            solicitudes = solicitudPazYSalvoCU.listarSolicitudesAprobadasToFuncionarioPorPeriodo(periodoAcademico.trim());
         }
         
         List<SolicitudPazYSalvoDTORespuesta> respuesta = solicitudMapperDominio.mappearListaDeSolicitudesARespuesta(solicitudes);
@@ -433,27 +429,32 @@ public class SolicitudPazYSalvoRestController {
         // Obtener el programa del coordinador autenticado
         Integer idPrograma = obtenerProgramaCoordinadorAutenticado();
         
-        // Si no se proporciona período, usar el período académico actual basado en la fecha
-        if (periodoAcademico == null || periodoAcademico.trim().isEmpty()) {
-            PeriodoAcademicoEnum periodoActual = PeriodoAcademicoEnum.getPeriodoActual();
-            if (periodoActual != null) {
-                periodoAcademico = periodoActual.getValor();
-                log.debug("Usando período académico actual automático: {}", periodoAcademico);
-            }
-        }
-        
         List<SolicitudPazYSalvo> solicitudes;
+        
+        // Si se solicita "todos" o está vacío/null, mostrar todas las solicitudes sin filtrar por período
+        boolean mostrarTodos = periodoAcademico == null || periodoAcademico.trim().isEmpty() || 
+            periodoAcademico.trim().equalsIgnoreCase("todos") ||
+            periodoAcademico.trim().equalsIgnoreCase("todos los periodos") ||
+            periodoAcademico.trim().equalsIgnoreCase("todos los períodos");
+        
         if (idPrograma != null) {
-            // Filtrar por programa y período del coordinador
-            if (periodoAcademico != null && !periodoAcademico.trim().isEmpty()) {
-                solicitudes = solicitudPazYSalvoCU.listarSolicitudesAprobadasToCoordinadorPorProgramaYPeriodo(idPrograma, periodoAcademico.trim());
-            } else {
+            if (mostrarTodos) {
+                // Filtrar solo por programa, sin período
+                log.debug("Mostrando todas las solicitudes procesadas del programa {} sin filtrar por período", idPrograma);
                 solicitudes = solicitudPazYSalvoCU.listarSolicitudesAprobadasToCoordinadorPorPrograma(idPrograma);
+            } else {
+                // Filtrar por programa y período del coordinador
+                solicitudes = solicitudPazYSalvoCU.listarSolicitudesAprobadasToCoordinadorPorProgramaYPeriodo(idPrograma, periodoAcademico.trim());
             }
         } else {
             // Si no se puede obtener el programa, retornar todas (fallback)
             log.warn("No se pudo obtener el programa del coordinador, retornando todas las solicitudes");
-            solicitudes = solicitudPazYSalvoCU.listarSolicitudesAprobadasToCoordinador();
+            if (mostrarTodos) {
+                solicitudes = solicitudPazYSalvoCU.listarSolicitudesAprobadasToCoordinador();
+            } else {
+                // Filtrar solo por período si no hay programa
+                solicitudes = solicitudPazYSalvoCU.listarSolicitudesAprobadasToCoordinador();
+            }
         }
         
         List<SolicitudPazYSalvoDTORespuesta> respuesta = solicitudMapperDominio.mappearListaDeSolicitudesARespuesta(solicitudes);
