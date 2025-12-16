@@ -14,3 +14,4 @@ public class Salon {
     private Boolean activo; // Indica si el salón está disponible para uso
 }
 
+

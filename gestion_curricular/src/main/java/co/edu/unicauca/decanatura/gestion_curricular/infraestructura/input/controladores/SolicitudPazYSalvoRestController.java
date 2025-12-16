@@ -127,6 +127,29 @@ public class SolicitudPazYSalvoRestController {
     private ResponseEntity<SolicitudPazYSalvoDTORespuesta> guardarSolicitudDominio(
             SolicitudPazYSalvo solicitud) {
 
+        // Asegurar que el usuario esté completo (cargar desde la base de datos si solo tiene el ID)
+        if (solicitud.getObjUsuario() != null && solicitud.getObjUsuario().getId_usuario() != null) {
+            if (solicitud.getObjUsuario().getNombre_completo() == null || solicitud.getObjUsuario().getNombre_completo().trim().isEmpty()) {
+                Usuario usuarioCompleto = usuarioGateway.obtenerUsuarioPorId(solicitud.getObjUsuario().getId_usuario());
+                if (usuarioCompleto != null) {
+                    solicitud.setObjUsuario(usuarioCompleto);
+                }
+            }
+            
+            // Generar nombre descriptivo con el nombre del estudiante si aún no está establecido correctamente
+            if (solicitud.getNombre_solicitud() == null || 
+                solicitud.getNombre_solicitud().trim().isEmpty() || 
+                solicitud.getNombre_solicitud().equals("Paz y Salvo") ||
+                solicitud.getNombre_solicitud().equals("Solicitud Paz y Salvo")) {
+                String nombreSolicitud = "Solicitud Paz y Salvo";
+                if (solicitud.getObjUsuario().getNombre_completo() != null && 
+                    !solicitud.getObjUsuario().getNombre_completo().trim().isEmpty()) {
+                    nombreSolicitud = "Solicitud Paz y Salvo - " + solicitud.getObjUsuario().getNombre_completo();
+                }
+                solicitud.setNombre_solicitud(nombreSolicitud);
+            }
+        }
+
         // Si no se proporcionó período académico, establecer el período actual automáticamente
         if (solicitud.getPeriodo_academico() == null || solicitud.getPeriodo_academico().trim().isEmpty()) {
             PeriodoAcademicoEnum periodoActual = PeriodoAcademicoEnum.getPeriodoActual();
@@ -145,13 +168,22 @@ public class SolicitudPazYSalvoRestController {
     private SolicitudPazYSalvo construirSolicitudBasica(Map<String, Object> mapPeticion) {
         Integer idUsuario = Integer.valueOf(mapPeticion.get("idUsuario").toString().trim());
 
-        SolicitudPazYSalvo solicitud = new SolicitudPazYSalvo();
-        solicitud.setNombre_solicitud("Paz y Salvo");
+        // Cargar el usuario completo para obtener el nombre
+        Usuario usuarioCompleto = usuarioGateway.obtenerUsuarioPorId(idUsuario);
+        if (usuarioCompleto == null) {
+            throw new EntidadNoExisteException("Usuario no encontrado con ID: " + idUsuario);
+        }
 
-        co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Usuario usuario =
-                new co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Usuario();
-        usuario.setId_usuario(idUsuario);
-        solicitud.setObjUsuario(usuario);
+        SolicitudPazYSalvo solicitud = new SolicitudPazYSalvo();
+        
+        // Generar nombre descriptivo con el nombre del estudiante
+        String nombreSolicitud = "Solicitud Paz y Salvo";
+        if (usuarioCompleto.getNombre_completo() != null && !usuarioCompleto.getNombre_completo().trim().isEmpty()) {
+            nombreSolicitud = "Solicitud Paz y Salvo - " + usuarioCompleto.getNombre_completo();
+        }
+        solicitud.setNombre_solicitud(nombreSolicitud);
+
+        solicitud.setObjUsuario(usuarioCompleto);
 
         if (mapPeticion.containsKey("fecha_solicitud") && mapPeticion.get("fecha_solicitud") != null) {
             String fechaSolicitud = mapPeticion.get("fecha_solicitud").toString();

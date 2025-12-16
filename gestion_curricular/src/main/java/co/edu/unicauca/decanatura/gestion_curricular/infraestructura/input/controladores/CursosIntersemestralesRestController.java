@@ -659,7 +659,12 @@ public class CursosIntersemestralesRestController {
             solicitudDominio.setObservacion("Solicitud de apertura de curso: " + peticion.getCurso());
             
             // Inicializar campos obligatorios de la clase padre
-            solicitudDominio.setNombre_solicitud("Solicitud de apertura de curso: " + peticion.getCurso());
+            // Generar nombre descriptivo con el nombre del estudiante
+            String nombreSolicitud = "Solicitud Curso Verano";
+            if (peticion.getNombreCompleto() != null && !peticion.getNombreCompleto().trim().isEmpty()) {
+                nombreSolicitud = "Solicitud Curso Verano - " + peticion.getNombreCompleto();
+            }
+            solicitudDominio.setNombre_solicitud(nombreSolicitud);
             solicitudDominio.setFecha_registro_solicitud(new java.util.Date());
             
             // Crear un curso temporal con ID = 0 para indicar que es un curso nuevo

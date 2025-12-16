@@ -146,7 +146,16 @@ public class GestionarSolicitudGatewayImplAdapter implements GestionarSolicitudG
     @Transactional
     public SolicitudEcaes crearSolicitudEcaes(SolicitudEcaes solicitudEcaes) {
         SolicitudEcaesEntity solicitudEcaesEntity = solicitudMapper.map(solicitudEcaes, SolicitudEcaesEntity.class);
-        solicitudEcaesEntity.setNombre_solicitud(SolicitudEcaes.class.getSimpleName());
+        
+        // Generar nombre descriptivo con el nombre del estudiante
+        String nombreSolicitud = "Solicitud ECAES";
+        if (solicitudEcaes.getObjUsuario() != null && solicitudEcaes.getObjUsuario().getId_usuario() != null) {
+            UsuarioEntity usuarioEntity = usuarioRepository.findById(solicitudEcaes.getObjUsuario().getId_usuario()).orElse(null);
+            if (usuarioEntity != null && usuarioEntity.getNombre_completo() != null && !usuarioEntity.getNombre_completo().trim().isEmpty()) {
+                nombreSolicitud = "Solicitud ECAES - " + usuarioEntity.getNombre_completo();
+            }
+        }
+        solicitudEcaesEntity.setNombre_solicitud(nombreSolicitud);
         solicitudEcaes.setFecha_registro_solicitud(new Date());
         EstadoSolicitudEntity estadoSolicitudEntity = null;
         estadoSolicitudEntity = new EstadoSolicitudEntity();
@@ -166,7 +175,16 @@ public class GestionarSolicitudGatewayImplAdapter implements GestionarSolicitudG
     @Transactional
     public SolicitudReingreso crearSolicitudReingreso(SolicitudReingreso solicitudReingreso) {
         SolicitudReingresoEntity solicitudReingresoEntity = solicitudMapper.map(solicitudReingreso, SolicitudReingresoEntity.class);
-        solicitudReingresoEntity.setNombre_solicitud(SolicitudReingreso.class.getSimpleName());
+        
+        // Generar nombre descriptivo con el nombre del estudiante
+        String nombreSolicitud = "Solicitud de Reingreso";
+        if (solicitudReingreso.getObjUsuario() != null && solicitudReingreso.getObjUsuario().getId_usuario() != null) {
+            UsuarioEntity usuarioEntity = usuarioRepository.findById(solicitudReingreso.getObjUsuario().getId_usuario()).orElse(null);
+            if (usuarioEntity != null && usuarioEntity.getNombre_completo() != null && !usuarioEntity.getNombre_completo().trim().isEmpty()) {
+                nombreSolicitud = "Solicitud de Reingreso - " + usuarioEntity.getNombre_completo();
+            }
+        }
+        solicitudReingresoEntity.setNombre_solicitud(nombreSolicitud);
         solicitudReingresoEntity.setFecha_registro_solicitud(new Date());
         EstadoSolicitudEntity estadoSolicitudEntity = null;
         estadoSolicitudEntity = new EstadoSolicitudEntity();
@@ -186,7 +204,16 @@ public class GestionarSolicitudGatewayImplAdapter implements GestionarSolicitudG
     @Transactional
     public SolicitudHomologacion crearSolicitudHomologacion(SolicitudHomologacion solicitudHomologacion) {
         SolicitudHomologacionEntity solicitudHomologacionEntity = solicitudMapper.map(solicitudHomologacion, SolicitudHomologacionEntity.class);
-        solicitudHomologacionEntity.setNombre_solicitud(SolicitudHomologacion.class.getSimpleName());
+        
+        // Generar nombre descriptivo con el nombre del estudiante
+        String nombreSolicitud = "Solicitud de Homologación";
+        if (solicitudHomologacion.getObjUsuario() != null && solicitudHomologacion.getObjUsuario().getId_usuario() != null) {
+            UsuarioEntity usuarioEntity = usuarioRepository.findById(solicitudHomologacion.getObjUsuario().getId_usuario()).orElse(null);
+            if (usuarioEntity != null && usuarioEntity.getNombre_completo() != null && !usuarioEntity.getNombre_completo().trim().isEmpty()) {
+                nombreSolicitud = "Solicitud de Homologación - " + usuarioEntity.getNombre_completo();
+            }
+        }
+        solicitudHomologacionEntity.setNombre_solicitud(nombreSolicitud);
         solicitudHomologacionEntity.setFecha_registro_solicitud(new Date());
         EstadoSolicitudEntity estadoSolicitudEntity = null;
         estadoSolicitudEntity = new EstadoSolicitudEntity();
