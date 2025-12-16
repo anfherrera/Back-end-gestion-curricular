@@ -34,6 +34,7 @@ import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.pers
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.repositorios.CursoOfertadoVeranoRepositoryInt;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.repositorios.EstadoSolicitudRepositoryInt;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.repositorios.SolicitudRepositoryInt;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Enums.PeriodoAcademicoEnum;
 
 
 @Service
@@ -101,6 +102,13 @@ public class GestionarSolicitudCursoVeranoGatewayImplAdapter implements Gestiona
                 // Para cursos nuevos, usar el período académico del dominio si está disponible
                 if (solicitudCursoVerano.getPeriodo_academico() != null && !solicitudCursoVerano.getPeriodo_academico().trim().isEmpty()) {
                     solicitudCursoVeranoEntity.setPeriodo_academico(solicitudCursoVerano.getPeriodo_academico());
+                } else {
+                    // Si no se proporcionó período académico, establecer el período actual automáticamente
+                    PeriodoAcademicoEnum periodoActual = PeriodoAcademicoEnum.getPeriodoActual();
+                    if (periodoActual != null) {
+                        solicitudCursoVeranoEntity.setPeriodo_academico(periodoActual.getValor());
+                        log.debug("Período académico establecido automáticamente para solicitud de curso nuevo: {}", periodoActual.getValor());
+                    }
                 }
             } else if(cursoOfertadoVeranoRepository.existsById(idCurso)){
                 cursoOfertadoVeranoEntity = cursoOfertadoVeranoRepository.findById(idCurso)
@@ -123,6 +131,15 @@ public class GestionarSolicitudCursoVeranoGatewayImplAdapter implements Gestiona
                 if (cursoOfertado.getPeriodo_academico() != null && !cursoOfertado.getPeriodo_academico().trim().isEmpty()) {
                     cursoOfertadoVeranoEntity.setPeriodo_academico(cursoOfertado.getPeriodo_academico());
                     solicitudCursoVeranoEntity.setPeriodo_academico(cursoOfertado.getPeriodo_academico());
+                } else {
+                    // Si el curso no tiene período académico, usar el período actual automáticamente
+                    PeriodoAcademicoEnum periodoActual = PeriodoAcademicoEnum.getPeriodoActual();
+                    if (periodoActual != null) {
+                        String periodoValor = periodoActual.getValor();
+                        cursoOfertadoVeranoEntity.setPeriodo_academico(periodoValor);
+                        solicitudCursoVeranoEntity.setPeriodo_academico(periodoValor);
+                        log.debug("Período académico establecido automáticamente para curso y solicitud: {}", periodoValor);
+                    }
                 }
             }
             solicitudCursoVeranoEntity.setObjCursoOfertadoVerano(cursoOfertadoVeranoEntity);
