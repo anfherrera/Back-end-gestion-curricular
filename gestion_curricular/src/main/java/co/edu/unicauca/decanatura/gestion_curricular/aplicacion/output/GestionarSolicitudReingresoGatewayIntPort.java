@@ -64,6 +64,40 @@ public interface GestionarSolicitudReingresoGatewayIntPort {
 
     List<SolicitudReingreso> listarSolicitudesAprobadasToSecretaria();
 
+    /**
+     * Lista solicitudes aprobadas de reingreso para funcionario (estado APROBADA_FUNCIONARIO)
+     * @return Lista de solicitudes aprobadas por el funcionario
+     */
+    List<SolicitudReingreso> listarSolicitudesAprobadasToFuncionario();
+
+    /**
+     * Lista solicitudes aprobadas de reingreso para funcionario filtradas por período académico
+     * @param periodoAcademico Período académico (formato: "YYYY-P", ej: "2025-2")
+     * @return Lista de solicitudes aprobadas del período específico
+     */
+    List<SolicitudReingreso> listarSolicitudesAprobadasToFuncionarioPorPeriodo(String periodoAcademico);
+
+    /**
+     * Lista solicitudes aprobadas de reingreso para coordinador (estado APROBADA_COORDINADOR)
+     * @return Lista de solicitudes aprobadas por el coordinador
+     */
+    List<SolicitudReingreso> listarSolicitudesAprobadasToCoordinador();
+
+    /**
+     * Lista solicitudes aprobadas de reingreso para coordinador filtradas por programa académico
+     * @param idPrograma ID del programa académico del coordinador
+     * @return Lista de solicitudes aprobadas del programa específico
+     */
+    List<SolicitudReingreso> listarSolicitudesAprobadasToCoordinadorPorPrograma(Integer idPrograma);
+
+    /**
+     * Lista solicitudes aprobadas de reingreso para coordinador filtradas por programa y período académico
+     * @param idPrograma ID del programa académico del coordinador
+     * @param periodoAcademico Período académico (formato: "YYYY-P", ej: "2025-2")
+     * @return Lista de solicitudes aprobadas del programa y período específicos
+     */
+    List<SolicitudReingreso> listarSolicitudesAprobadasToCoordinadorPorProgramaYPeriodo(Integer idPrograma, String periodoAcademico);
+
     Optional<SolicitudReingreso> buscarPorId(Integer id);
 
     void cambiarEstadoSolicitudReingreso(Integer idSolicitud, EstadoSolicitud nuevoEstado);

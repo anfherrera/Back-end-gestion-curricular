@@ -197,6 +197,80 @@ public class SolicitudReingresoRestController {
         return ResponseEntity.ok(respuesta);
     }
 
+    /**
+     * Listar solicitudes de Reingreso ya procesadas por el funcionario (estado APROBADA_FUNCIONARIO)
+     * GET /api/solicitudes-reingreso/listarSolicitud-Reingreso/Funcionario/Aprobadas
+     * 
+     * Este endpoint permite al funcionario ver un historial de las solicitudes 
+     * que ya ha procesado y enviado al coordinador.
+     * 
+     * @param periodoAcademico Período académico opcional (formato: "YYYY-P", ej: "2025-2")
+     */
+    @GetMapping("/listarSolicitud-Reingreso/Funcionario/Aprobadas")
+    public ResponseEntity<List<SolicitudReingresoDTORespuesta>> listarSolicitudReingresoAprobadasToFuncionario(
+            @RequestParam(required = false) String periodoAcademico) {
+        // Si no se proporciona período, usar el período académico actual basado en la fecha
+        if (periodoAcademico == null || periodoAcademico.trim().isEmpty()) {
+            PeriodoAcademicoEnum periodoActual = PeriodoAcademicoEnum.getPeriodoActual();
+            if (periodoActual != null) {
+                periodoAcademico = periodoActual.getValor();
+                log.debug("Usando período académico actual automático: {}", periodoAcademico);
+            }
+        }
+        
+        List<SolicitudReingreso> solicitudes;
+        if (periodoAcademico != null && !periodoAcademico.trim().isEmpty()) {
+            solicitudes = solicitudService.listarSolicitudesAprobadasToFuncionarioPorPeriodo(periodoAcademico.trim());
+        } else {
+            solicitudes = solicitudService.listarSolicitudesAprobadasToFuncionario();
+        }
+        
+        List<SolicitudReingresoDTORespuesta> respuesta = solicitudReingresoMapper.mappearDeListaSolicitudReingresoASolicitudReingresoDTORespuesta(solicitudes);
+        return ResponseEntity.ok(respuesta);
+    }
+
+    /**
+     * Listar solicitudes de Reingreso ya procesadas por el coordinador (estado APROBADA_COORDINADOR)
+     * GET /api/solicitudes-reingreso/listarSolicitud-Reingreso/Coordinador/Aprobadas
+     * 
+     * Este endpoint permite al coordinador ver un historial de las solicitudes 
+     * que ya ha procesado y enviado a la secretaría.
+     * 
+     * @param periodoAcademico Período académico opcional (formato: "YYYY-P", ej: "2025-2")
+     */
+    @GetMapping("/listarSolicitud-Reingreso/Coordinador/Aprobadas")
+    public ResponseEntity<List<SolicitudReingresoDTORespuesta>> listarSolicitudReingresoAprobadasToCoordinador(
+            @RequestParam(required = false) String periodoAcademico) {
+        // Obtener el programa del coordinador autenticado
+        Integer idPrograma = obtenerProgramaCoordinadorAutenticado();
+        
+        // Si no se proporciona período, usar el período académico actual basado en la fecha
+        if (periodoAcademico == null || periodoAcademico.trim().isEmpty()) {
+            PeriodoAcademicoEnum periodoActual = PeriodoAcademicoEnum.getPeriodoActual();
+            if (periodoActual != null) {
+                periodoAcademico = periodoActual.getValor();
+                log.debug("Usando período académico actual automático: {}", periodoAcademico);
+            }
+        }
+        
+        List<SolicitudReingreso> solicitudes;
+        if (idPrograma != null) {
+            // Filtrar por programa y período del coordinador
+            if (periodoAcademico != null && !periodoAcademico.trim().isEmpty()) {
+                solicitudes = solicitudService.listarSolicitudesAprobadasToCoordinadorPorProgramaYPeriodo(idPrograma, periodoAcademico.trim());
+            } else {
+                solicitudes = solicitudService.listarSolicitudesAprobadasToCoordinadorPorPrograma(idPrograma);
+            }
+        } else {
+            // Si no se puede obtener el programa, retornar todas (fallback)
+            log.warn("No se pudo obtener el programa del coordinador, retornando todas las solicitudes");
+            solicitudes = solicitudService.listarSolicitudesAprobadasToCoordinador();
+        }
+        
+        List<SolicitudReingresoDTORespuesta> respuesta = solicitudReingresoMapper.mappearDeListaSolicitudReingresoASolicitudReingresoDTORespuesta(solicitudes);
+        return ResponseEntity.ok(respuesta);
+    }
+
     @GetMapping("/listarSolicitud-Reingreo/{id}")
     public ResponseEntity<SolicitudReingresoDTORespuesta> listarReingresoById(@PathVariable Integer id) {
         SolicitudReingreso solicitud = solicitudService.obtenerSolicitudReingresoPorId(id);

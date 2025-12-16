@@ -132,6 +132,49 @@ public class GestionarSolicitudHomologacionGatewayImplAdapter implements Gestion
     }
 
     @Override
+    public List<SolicitudHomologacion> listarSolicitudesAprobadasToFuncionario() {
+        // Solicitudes que el funcionario ya procesó (aprobó) y pasaron a coordinador
+        return solicitudHomologacionRepository.findByUltimoEstado("APROBADA_FUNCIONARIO").stream()
+                .map(entity -> mapper.map(entity, SolicitudHomologacion.class))
+                .toList();
+    }
+
+    @Override
+    public List<SolicitudHomologacion> listarSolicitudesAprobadasToFuncionarioPorPeriodo(String periodoAcademico) {
+        return solicitudHomologacionRepository.findByUltimoEstadoAndPeriodoAcademico("APROBADA_FUNCIONARIO", periodoAcademico).stream()
+                .map(entity -> mapper.map(entity, SolicitudHomologacion.class))
+                .toList();
+    }
+
+    @Override
+    public List<SolicitudHomologacion> listarSolicitudesAprobadasToCoordinador() {
+        // Solicitudes que el coordinador ya procesó (aprobó) y pasaron a secretaría
+        return solicitudHomologacionRepository.findByUltimoEstado("APROBADA_COORDINADOR").stream()
+                .map(entity -> mapper.map(entity, SolicitudHomologacion.class))
+                .toList();
+    }
+
+    @Override
+    public List<SolicitudHomologacion> listarSolicitudesAprobadasToCoordinadorPorPrograma(Integer idPrograma) {
+        if (idPrograma == null) {
+            return listarSolicitudesAprobadasToCoordinador();
+        }
+        return solicitudHomologacionRepository.findByUltimoEstadoAndPrograma("APROBADA_COORDINADOR", idPrograma).stream()
+                .map(entity -> mapper.map(entity, SolicitudHomologacion.class))
+                .toList();
+    }
+
+    @Override
+    public List<SolicitudHomologacion> listarSolicitudesAprobadasToCoordinadorPorProgramaYPeriodo(Integer idPrograma, String periodoAcademico) {
+        if (idPrograma == null) {
+            return listarSolicitudesAprobadasToCoordinador();
+        }
+        return solicitudHomologacionRepository.findByUltimoEstadoAndProgramaAndPeriodoAcademico("APROBADA_COORDINADOR", idPrograma, periodoAcademico).stream()
+                .map(entity -> mapper.map(entity, SolicitudHomologacion.class))
+                .toList();
+    }
+
+    @Override
     public void cambiarEstadoSolicitud(Integer idSolicitud, EstadoSolicitud nuevoEstado) {
        SolicitudHomologacionEntity solicitudEntity = solicitudHomologacionRepository.findById(idSolicitud)
             .orElseThrow(() -> new EntidadNoExisteException("Solicitud de Homologacion no encontrada con ID: " + idSolicitud));

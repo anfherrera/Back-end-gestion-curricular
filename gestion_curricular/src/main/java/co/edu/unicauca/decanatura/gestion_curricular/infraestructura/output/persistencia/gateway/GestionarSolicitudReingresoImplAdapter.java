@@ -135,6 +135,49 @@ public class GestionarSolicitudReingresoImplAdapter implements GestionarSolicitu
     }
 
     @Override
+    public List<SolicitudReingreso> listarSolicitudesAprobadasToFuncionario() {
+        // Solicitudes que el funcionario ya procesó (aprobó) y pasaron a coordinador
+        return solicitudReingresoRepository.findByUltimoEstado("APROBADA_FUNCIONARIO").stream()
+                .map(entity -> mapper.map(entity, SolicitudReingreso.class))
+                .toList();
+    }
+
+    @Override
+    public List<SolicitudReingreso> listarSolicitudesAprobadasToFuncionarioPorPeriodo(String periodoAcademico) {
+        return solicitudReingresoRepository.findByUltimoEstadoAndPeriodoAcademico("APROBADA_FUNCIONARIO", periodoAcademico).stream()
+                .map(entity -> mapper.map(entity, SolicitudReingreso.class))
+                .toList();
+    }
+
+    @Override
+    public List<SolicitudReingreso> listarSolicitudesAprobadasToCoordinador() {
+        // Solicitudes que el coordinador ya procesó (aprobó) y pasaron a secretaría
+        return solicitudReingresoRepository.findByUltimoEstado("APROBADA_COORDINADOR").stream()
+                .map(entity -> mapper.map(entity, SolicitudReingreso.class))
+                .toList();
+    }
+
+    @Override
+    public List<SolicitudReingreso> listarSolicitudesAprobadasToCoordinadorPorPrograma(Integer idPrograma) {
+        if (idPrograma == null) {
+            return listarSolicitudesAprobadasToCoordinador();
+        }
+        return solicitudReingresoRepository.findByUltimoEstadoAndPrograma("APROBADA_COORDINADOR", idPrograma).stream()
+                .map(entity -> mapper.map(entity, SolicitudReingreso.class))
+                .toList();
+    }
+
+    @Override
+    public List<SolicitudReingreso> listarSolicitudesAprobadasToCoordinadorPorProgramaYPeriodo(Integer idPrograma, String periodoAcademico) {
+        if (idPrograma == null) {
+            return listarSolicitudesAprobadasToCoordinador();
+        }
+        return solicitudReingresoRepository.findByUltimoEstadoAndProgramaAndPeriodoAcademico("APROBADA_COORDINADOR", idPrograma, periodoAcademico).stream()
+                .map(entity -> mapper.map(entity, SolicitudReingreso.class))
+                .toList();
+    }
+
+    @Override
     public void cambiarEstadoSolicitudReingreso(Integer idSolicitud, EstadoSolicitud nuevoEstado) {
       SolicitudReingresoEntity solicitudEntity = (SolicitudReingresoEntity) solicitudReingresoRepository.findById(idSolicitud)
               .orElseThrow(() -> new EntidadNoExisteException("Solicitud de Reingreso no encontrada con ID: " + idSolicitud));

@@ -152,6 +152,31 @@ public class GestionarSolicitudReingresoCUAdapter  implements GestionarSolicitud
     }
 
     @Override
+    public List<SolicitudReingreso> listarSolicitudesAprobadasToFuncionario() {
+        return objGestionarSolicitudReingresoGateway.listarSolicitudesAprobadasToFuncionario();
+    }
+
+    @Override
+    public List<SolicitudReingreso> listarSolicitudesAprobadasToFuncionarioPorPeriodo(String periodoAcademico) {
+        return objGestionarSolicitudReingresoGateway.listarSolicitudesAprobadasToFuncionarioPorPeriodo(periodoAcademico);
+    }
+
+    @Override
+    public List<SolicitudReingreso> listarSolicitudesAprobadasToCoordinador() {
+        return objGestionarSolicitudReingresoGateway.listarSolicitudesAprobadasToCoordinador();
+    }
+
+    @Override
+    public List<SolicitudReingreso> listarSolicitudesAprobadasToCoordinadorPorPrograma(Integer idPrograma) {
+        return objGestionarSolicitudReingresoGateway.listarSolicitudesAprobadasToCoordinadorPorPrograma(idPrograma);
+    }
+
+    @Override
+    public List<SolicitudReingreso> listarSolicitudesAprobadasToCoordinadorPorProgramaYPeriodo(Integer idPrograma, String periodoAcademico) {
+        return objGestionarSolicitudReingresoGateway.listarSolicitudesAprobadasToCoordinadorPorProgramaYPeriodo(idPrograma, periodoAcademico);
+    }
+
+    @Override
     public List<SolicitudReingreso> listarSolicitudesReingresoPorRol(String rol, Integer idUsuario) {
        List<SolicitudReingreso> todas = objGestionarSolicitudReingresoGateway.listarSolicitudesReingreso();
 

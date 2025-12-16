@@ -202,6 +202,80 @@ public class SolicitudHomologacionRestController {
         return ResponseEntity.ok(respuesta);
     }
 
+    /**
+     * Listar solicitudes de Homologación ya procesadas por el funcionario (estado APROBADA_FUNCIONARIO)
+     * GET /api/solicitudes-homologacion/listarSolicitud-Homologacion/Funcionario/Aprobadas
+     * 
+     * Este endpoint permite al funcionario ver un historial de las solicitudes 
+     * que ya ha procesado y enviado al coordinador.
+     * 
+     * @param periodoAcademico Período académico opcional (formato: "YYYY-P", ej: "2025-2")
+     */
+    @GetMapping("/listarSolicitud-Homologacion/Funcionario/Aprobadas")
+    public ResponseEntity<List<SolicitudHomologacionDTORespuesta>> listarSolicitudHomologacionAprobadasToFuncionario(
+            @RequestParam(required = false) String periodoAcademico) {
+        // Si no se proporciona período, usar el período académico actual basado en la fecha
+        if (periodoAcademico == null || periodoAcademico.trim().isEmpty()) {
+            PeriodoAcademicoEnum periodoActual = PeriodoAcademicoEnum.getPeriodoActual();
+            if (periodoActual != null) {
+                periodoAcademico = periodoActual.getValor();
+                log.debug("Usando período académico actual automático: {}", periodoAcademico);
+            }
+        }
+        
+        List<SolicitudHomologacion> solicitudes;
+        if (periodoAcademico != null && !periodoAcademico.trim().isEmpty()) {
+            solicitudes = solicitudHomologacionCU.listarSolicitudesAprobadasToFuncionarioPorPeriodo(periodoAcademico.trim());
+        } else {
+            solicitudes = solicitudHomologacionCU.listarSolicitudesAprobadasToFuncionario();
+        }
+        
+        List<SolicitudHomologacionDTORespuesta> respuesta = solicitudMapperDominio.mappearListaDeSolicitudHomologacionARespuesta(solicitudes);
+        return ResponseEntity.ok(respuesta);
+    }
+
+    /**
+     * Listar solicitudes de Homologación ya procesadas por el coordinador (estado APROBADA_COORDINADOR)
+     * GET /api/solicitudes-homologacion/listarSolicitud-Homologacion/Coordinador/Aprobadas
+     * 
+     * Este endpoint permite al coordinador ver un historial de las solicitudes 
+     * que ya ha procesado y enviado a la secretaría.
+     * 
+     * @param periodoAcademico Período académico opcional (formato: "YYYY-P", ej: "2025-2")
+     */
+    @GetMapping("/listarSolicitud-Homologacion/Coordinador/Aprobadas")
+    public ResponseEntity<List<SolicitudHomologacionDTORespuesta>> listarSolicitudHomologacionAprobadasToCoordinador(
+            @RequestParam(required = false) String periodoAcademico) {
+        // Obtener el programa del coordinador autenticado
+        Integer idPrograma = obtenerProgramaCoordinadorAutenticado();
+        
+        // Si no se proporciona período, usar el período académico actual basado en la fecha
+        if (periodoAcademico == null || periodoAcademico.trim().isEmpty()) {
+            PeriodoAcademicoEnum periodoActual = PeriodoAcademicoEnum.getPeriodoActual();
+            if (periodoActual != null) {
+                periodoAcademico = periodoActual.getValor();
+                log.debug("Usando período académico actual automático: {}", periodoAcademico);
+            }
+        }
+        
+        List<SolicitudHomologacion> solicitudes;
+        if (idPrograma != null) {
+            // Filtrar por programa y período del coordinador
+            if (periodoAcademico != null && !periodoAcademico.trim().isEmpty()) {
+                solicitudes = solicitudHomologacionCU.listarSolicitudesAprobadasToCoordinadorPorProgramaYPeriodo(idPrograma, periodoAcademico.trim());
+            } else {
+                solicitudes = solicitudHomologacionCU.listarSolicitudesAprobadasToCoordinadorPorPrograma(idPrograma);
+            }
+        } else {
+            // Si no se puede obtener el programa, retornar todas (fallback)
+            log.warn("No se pudo obtener el programa del coordinador, retornando todas las solicitudes");
+            solicitudes = solicitudHomologacionCU.listarSolicitudesAprobadasToCoordinador();
+        }
+        
+        List<SolicitudHomologacionDTORespuesta> respuesta = solicitudMapperDominio.mappearListaDeSolicitudHomologacionARespuesta(solicitudes);
+        return ResponseEntity.ok(respuesta);
+    }
+
 
     @GetMapping("/listarSolicitud-Homologacion/{id}")
     public ResponseEntity<SolicitudHomologacionDTORespuesta> listarHomologacionById(@PathVariable Integer id) {

@@ -394,10 +394,28 @@ public class SolicitudPazYSalvoRestController {
      * 
      * Este endpoint permite al funcionario ver un historial de las solicitudes 
      * que ya ha procesado y enviado al coordinador.
+     * 
+     * @param periodoAcademico Período académico opcional (formato: "YYYY-P", ej: "2025-2")
      */
     @GetMapping("/listarSolicitud-PazYSalvo/Funcionario/Aprobadas")
-    public ResponseEntity<List<SolicitudPazYSalvoDTORespuesta>> listarSolicitudPazYSalvoAprobadasToFuncionario() {
-        List<SolicitudPazYSalvo> solicitudes = solicitudPazYSalvoCU.listarSolicitudesAprobadasToFuncionario();
+    public ResponseEntity<List<SolicitudPazYSalvoDTORespuesta>> listarSolicitudPazYSalvoAprobadasToFuncionario(
+            @RequestParam(required = false) String periodoAcademico) {
+        // Si no se proporciona período, usar el período académico actual basado en la fecha
+        if (periodoAcademico == null || periodoAcademico.trim().isEmpty()) {
+            PeriodoAcademicoEnum periodoActual = PeriodoAcademicoEnum.getPeriodoActual();
+            if (periodoActual != null) {
+                periodoAcademico = periodoActual.getValor();
+                log.debug("Usando período académico actual automático: {}", periodoAcademico);
+            }
+        }
+        
+        List<SolicitudPazYSalvo> solicitudes;
+        if (periodoAcademico != null && !periodoAcademico.trim().isEmpty()) {
+            solicitudes = solicitudPazYSalvoCU.listarSolicitudesAprobadasToFuncionarioPorPeriodo(periodoAcademico.trim());
+        } else {
+            solicitudes = solicitudPazYSalvoCU.listarSolicitudesAprobadasToFuncionario();
+        }
+        
         List<SolicitudPazYSalvoDTORespuesta> respuesta = solicitudMapperDominio.mappearListaDeSolicitudesARespuesta(solicitudes);
         return ResponseEntity.ok(respuesta);
     }
