@@ -2,6 +2,13 @@ package co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.cont
 
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarSolicitudCUIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Solicitud;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.SolicitudCursoVeranoPreinscripcion;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.SolicitudCursoVeranoIncripcion;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.SolicitudCursoVerano;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.SolicitudPazYSalvo;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.SolicitudReingreso;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.SolicitudHomologacion;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.SolicitudEcaes;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Enums.PeriodoAcademicoEnum;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.DTORespuesta.SolicitudDTORespuesta;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.mappers.*;
@@ -182,7 +189,64 @@ public class SolicitudRestController {
             // Convertir a entidades para aplicar filtros (o trabajar directamente con los modelos de dominio)
             // Por ahora, vamos a convertir los modelos de dominio a DTOs directamente
             List<SolicitudDTORespuesta> todasLasSolicitudesDTO = todasLasSolicitudesDominio.stream()
-                    .map(mapper::mappearDeSolicitudARespuesta)
+                    .map(solicitud -> {
+                        SolicitudDTORespuesta dto = mapper.mappearDeSolicitudARespuesta(solicitud);
+                        
+                        // Determinar categoría y tipo de solicitud basándose en el tipo de objeto
+                        if (solicitud instanceof SolicitudCursoVeranoPreinscripcion) {
+                            dto.setCategoria("Cursos de Verano");
+                            dto.setTipo_solicitud("Preinscripcion");
+                        } else if (solicitud instanceof SolicitudCursoVeranoIncripcion) {
+                            dto.setCategoria("Cursos de Verano");
+                            dto.setTipo_solicitud("Inscripcion");
+                        } else if (solicitud instanceof SolicitudCursoVerano) {
+                            // Solicitud de curso nuevo
+                            dto.setCategoria("Cursos de Verano");
+                            dto.setTipo_solicitud("Curso Nuevo");
+                        } else if (solicitud instanceof SolicitudPazYSalvo) {
+                            dto.setCategoria("Paz y Salvo");
+                            dto.setTipo_solicitud("Paz y Salvo");
+                        } else if (solicitud instanceof SolicitudReingreso) {
+                            dto.setCategoria("Reingreso");
+                            dto.setTipo_solicitud("Reingreso");
+                        } else if (solicitud instanceof SolicitudHomologacion) {
+                            dto.setCategoria("Homologación");
+                            dto.setTipo_solicitud("Homologacion");
+                        } else if (solicitud instanceof SolicitudEcaes) {
+                            dto.setCategoria("ECAES");
+                            dto.setTipo_solicitud("ECAES");
+                        } else {
+                            // Si tiene objCursoOfertadoVerano, es un curso de verano
+                            if (solicitud.getObjCursoOfertadoVerano() != null) {
+                                dto.setCategoria("Cursos de Verano");
+                                dto.setTipo_solicitud("Curso Verano");
+                            } else {
+                                // Por defecto, determinar por el nombre
+                                String nombre = dto.getNombre_solicitud() != null ? dto.getNombre_solicitud().toLowerCase() : "";
+                                if (nombre.contains("curso") && (nombre.contains("verano") || nombre.contains("intersemestral"))) {
+                                    dto.setCategoria("Cursos de Verano");
+                                    dto.setTipo_solicitud("Curso Verano");
+                                } else if (nombre.contains("paz") && nombre.contains("salvo")) {
+                                    dto.setCategoria("Paz y Salvo");
+                                    dto.setTipo_solicitud("Paz y Salvo");
+                                } else if (nombre.contains("reingreso")) {
+                                    dto.setCategoria("Reingreso");
+                                    dto.setTipo_solicitud("Reingreso");
+                                } else if (nombre.contains("homologacion") || nombre.contains("homologación")) {
+                                    dto.setCategoria("Homologación");
+                                    dto.setTipo_solicitud("Homologacion");
+                                } else if (nombre.contains("ecaes")) {
+                                    dto.setCategoria("ECAES");
+                                    dto.setTipo_solicitud("ECAES");
+                                } else {
+                                    dto.setCategoria("Otro");
+                                    dto.setTipo_solicitud("Otro");
+                                }
+                            }
+                        }
+                        
+                        return dto;
+                    })
                     .collect(Collectors.toList());
             
             log.info("Total de DTOs creados: {}", todasLasSolicitudesDTO.size());
