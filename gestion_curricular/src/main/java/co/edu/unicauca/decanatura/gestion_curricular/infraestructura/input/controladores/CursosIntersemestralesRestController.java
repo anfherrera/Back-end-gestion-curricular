@@ -6,6 +6,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.security.access.prepost.PreAuthorize;
 import jakarta.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -294,7 +295,8 @@ public class CursosIntersemestralesRestController {
      * Obtener todos los cursos de verano para funcionarios y coordinadores (incluye estados no visibles)
      * GET /api/cursos-intersemestrales/cursos-verano/todos
      * 
-     * @param periodoAcademico Período académico opcional (formato: "YYYY-P", ej: "2025-2")
+     * @param periodoAcademico Período académico opcional (formato: "YYYY-P", ej: "2025-2"). 
+     *                         Si no se proporciona, muestra TODOS los cursos sin filtrar por período.
      * @param idPrograma ID del programa académico opcional para filtrar cursos
      */
     @GetMapping("/cursos-verano/todos")
@@ -303,24 +305,19 @@ public class CursosIntersemestralesRestController {
             @RequestParam(required = false) Integer idPrograma) {
         try {
             List<CursoOfertadoVerano> cursos = cursoCU.listarTodos();
+            log.info("Total de cursos en sistema: {}", cursos.size());
             
-            // Filtrar por período académico si se proporciona
-            if (periodoAcademico != null && !periodoAcademico.trim().isEmpty()) {
+            // Filtrar por período académico SOLO si se proporciona explícitamente
+            if (periodoAcademico != null && !periodoAcademico.trim().isEmpty() && !periodoAcademico.trim().equalsIgnoreCase("todos")) {
                 String periodoFiltro = periodoAcademico.trim();
+                int antes = cursos.size();
                 cursos = cursos.stream()
                         .filter(curso -> curso.getPeriodo_academico() != null 
                                 && curso.getPeriodo_academico().equals(periodoFiltro))
                         .collect(Collectors.toList());
+                log.info("Cursos filtrados por período {}: {} de {}", periodoFiltro, cursos.size(), antes);
             } else {
-                // Si no se proporciona período, usar el período actual automáticamente
-                PeriodoAcademicoEnum periodoActualEnum = PeriodoAcademicoEnum.getPeriodoActual();
-                if (periodoActualEnum != null) {
-                    final String periodoFiltro = periodoActualEnum.getValor();
-                    cursos = cursos.stream()
-                            .filter(curso -> curso.getPeriodo_academico() != null 
-                                    && curso.getPeriodo_academico().equals(periodoFiltro))
-                            .collect(Collectors.toList());
-                }
+                log.info("Mostrando TODOS los cursos sin filtrar por período académico. Total: {}", cursos.size());
             }
             
             // Si se proporciona idPrograma, filtrar cursos que tengan solicitudes de estudiantes de ese programa
@@ -354,11 +351,16 @@ public class CursosIntersemestralesRestController {
     /**
      * Obtener cursos disponibles para preinscripcion (solo cursos en estado Preinscripcion)
      * GET /api/cursos-intersemestrales/cursos/preinscripcion
+     * 
+     * @param periodoAcademico Período académico opcional. Si no se proporciona, muestra cursos de todos los períodos.
      */
     @GetMapping("/cursos/preinscripcion")
-    public ResponseEntity<List<CursosOfertadosDTORespuesta>> obtenerCursosPreinscripcion() {
+    public ResponseEntity<List<CursosOfertadosDTORespuesta>> obtenerCursosPreinscripcion(
+            @RequestParam(required = false) String periodoAcademico) {
         try {
             List<CursoOfertadoVerano> cursos = cursoCU.listarTodos();
+            log.info("Total de cursos en sistema para preinscripción: {}", cursos.size());
+            
             // Filtrar solo cursos en estado de preinscripcion
             List<CursoOfertadoVerano> cursosPreinscripcion = cursos.stream()
                     .filter(curso -> {
@@ -370,11 +372,29 @@ public class CursosIntersemestralesRestController {
                     })
                     .collect(Collectors.toList());
             
+            log.info("Cursos en estado Preinscripción encontrados: {}", cursosPreinscripcion.size());
+            
+            // Filtrar por período académico si se proporciona
+            if (periodoAcademico != null && !periodoAcademico.trim().isEmpty() && !periodoAcademico.trim().equalsIgnoreCase("todos")) {
+                String periodoFiltro = periodoAcademico.trim();
+                int antes = cursosPreinscripcion.size();
+                cursosPreinscripcion = cursosPreinscripcion.stream()
+                        .filter(curso -> curso.getPeriodo_academico() != null 
+                                && curso.getPeriodo_academico().equals(periodoFiltro))
+                        .collect(Collectors.toList());
+                log.info("Cursos de preinscripción filtrados por período {}: {} de {}", periodoFiltro, cursosPreinscripcion.size(), antes);
+            } else {
+                log.info("Mostrando cursos de preinscripción de todos los períodos. Total: {}", cursosPreinscripcion.size());
+            }
+            
             List<CursosOfertadosDTORespuesta> respuesta = cursosPreinscripcion.stream()
                     .map(cursoMapper::mappearDeCursoOfertadoARespuesta)
                     .collect(Collectors.toList());
+            
+            log.info("Respuesta preparada con {} cursos de preinscripción", respuesta.size());
             return ResponseEntity.ok(respuesta);
         } catch (Exception e) {
+            log.error("Error al obtener cursos de preinscripción: {}", e.getMessage(), e);
             return ResponseEntity.internalServerError().build();
         }
     }
@@ -382,11 +402,16 @@ public class CursosIntersemestralesRestController {
     /**
      * Obtener cursos disponibles para inscripcion (solo cursos en estado Inscripcion)
      * GET /api/cursos-intersemestrales/cursos/inscripcion
+     * 
+     * @param periodoAcademico Período académico opcional. Si no se proporciona, muestra cursos de todos los períodos.
      */
     @GetMapping("/cursos/inscripcion")
-    public ResponseEntity<List<CursosOfertadosDTORespuesta>> obtenerCursosInscripcion() {
+    public ResponseEntity<List<CursosOfertadosDTORespuesta>> obtenerCursosInscripcion(
+            @RequestParam(required = false) String periodoAcademico) {
         try {
             List<CursoOfertadoVerano> cursos = cursoCU.listarTodos();
+            log.info("Total de cursos en sistema para inscripción: {}", cursos.size());
+            
             // Filtrar solo cursos en estado de inscripcion
             List<CursoOfertadoVerano> cursosInscripcion = cursos.stream()
                     .filter(curso -> {
@@ -398,11 +423,29 @@ public class CursosIntersemestralesRestController {
                     })
                     .collect(Collectors.toList());
             
+            log.info("Cursos en estado Inscripción encontrados: {}", cursosInscripcion.size());
+            
+            // Filtrar por período académico si se proporciona
+            if (periodoAcademico != null && !periodoAcademico.trim().isEmpty() && !periodoAcademico.trim().equalsIgnoreCase("todos")) {
+                String periodoFiltro = periodoAcademico.trim();
+                int antes = cursosInscripcion.size();
+                cursosInscripcion = cursosInscripcion.stream()
+                        .filter(curso -> curso.getPeriodo_academico() != null 
+                                && curso.getPeriodo_academico().equals(periodoFiltro))
+                        .collect(Collectors.toList());
+                log.info("Cursos de inscripción filtrados por período {}: {} de {}", periodoFiltro, cursosInscripcion.size(), antes);
+            } else {
+                log.info("Mostrando cursos de inscripción de todos los períodos. Total: {}", cursosInscripcion.size());
+            }
+            
             List<CursosOfertadosDTORespuesta> respuesta = cursosInscripcion.stream()
                     .map(cursoMapper::mappearDeCursoOfertadoARespuesta)
                     .collect(Collectors.toList());
+            
+            log.info("Respuesta preparada con {} cursos de inscripción", respuesta.size());
             return ResponseEntity.ok(respuesta);
         } catch (Exception e) {
+            log.error("Error al obtener cursos de inscripción: {}", e.getMessage(), e);
             return ResponseEntity.internalServerError().build();
         }
     }
@@ -3948,6 +3991,186 @@ public class CursosIntersemestralesRestController {
         } catch (Exception e) {
             log.error("Error en debug: {}", e.getMessage(), e);
             return ResponseEntity.status(500).build();
+        }
+    }
+
+    /**
+     * Obtener lista de estudiantes preinscritos e inscritos en un curso (para funcionarios)
+     * GET /api/cursos-intersemestrales/cursos-verano/{idCurso}/estudiantes
+     * 
+     * Este endpoint permite a los funcionarios ver todos los estudiantes que están
+     * preinscritos o inscritos en un curso específico, incluyendo información sobre
+     * su estado y tipo de solicitud.
+     */
+    @GetMapping("/cursos-verano/{idCurso}/estudiantes")
+    @PreAuthorize("hasAnyRole('Funcionario', 'Coordinador', 'Administrador')")
+    public ResponseEntity<Map<String, Object>> obtenerEstudiantesDelCurso(
+            @PathVariable Integer idCurso) {
+        try {
+            log.info("Obteniendo lista de estudiantes para curso ID: {}", idCurso);
+            
+            // Verificar que el curso existe
+            CursoOfertadoVerano curso = cursoCU.obtenerCursoPorId(idCurso);
+            if (curso == null) {
+                Map<String, Object> error = new HashMap<>();
+                error.put("error", "Curso no encontrado con ID: " + idCurso);
+                return ResponseEntity.notFound().build();
+            }
+            
+            // Obtener preinscripciones
+            List<SolicitudCursoVeranoPreinscripcion> preinscripciones = solicitudCU.buscarPreinscripcionesPorCurso(idCurso);
+            log.debug("Preinscripciones encontradas: {}", preinscripciones.size());
+            
+            // Obtener inscripciones
+            List<SolicitudCursoVeranoIncripcion> inscripciones = solicitudCU.buscarInscripcionesPorCurso(idCurso);
+            log.debug("Inscripciones encontradas: {}", inscripciones.size());
+            
+            // Procesar preinscripciones
+            List<Map<String, Object>> estudiantesPreinscritos = new ArrayList<>();
+            for (SolicitudCursoVeranoPreinscripcion preinscripcion : preinscripciones) {
+                if (preinscripcion.getObjUsuario() == null) {
+                    continue;
+                }
+                
+                Map<String, Object> estudiante = new HashMap<>();
+                estudiante.put("id_usuario", preinscripcion.getObjUsuario().getId_usuario());
+                estudiante.put("nombre_completo", preinscripcion.getObjUsuario().getNombre_completo());
+                estudiante.put("codigo", preinscripcion.getObjUsuario().getCodigo());
+                estudiante.put("correo", preinscripcion.getObjUsuario().getCorreo());
+                
+                // Información del programa
+                if (preinscripcion.getObjUsuario().getObjPrograma() != null) {
+                    estudiante.put("programa", preinscripcion.getObjUsuario().getObjPrograma().getNombre_programa());
+                    estudiante.put("id_programa", preinscripcion.getObjUsuario().getObjPrograma().getId_programa());
+                }
+                
+                // Estado de la preinscripción
+                String estadoPreinscripcion = "Enviada";
+                if (preinscripcion.getEstadosSolicitud() != null && !preinscripcion.getEstadosSolicitud().isEmpty()) {
+                    estadoPreinscripcion = preinscripcion.getEstadosSolicitud()
+                        .get(preinscripcion.getEstadosSolicitud().size() - 1).getEstado_actual();
+                }
+                estudiante.put("estado_preinscripcion", estadoPreinscripcion);
+                estudiante.put("fecha_preinscripcion", preinscripcion.getFecha_registro_solicitud());
+                estudiante.put("id_solicitud_preinscripcion", preinscripcion.getId_solicitud());
+                
+                // Condición de la solicitud
+                if (preinscripcion.getCodicion_solicitud() != null) {
+                    estudiante.put("condicion", preinscripcion.getCodicion_solicitud().toString());
+                }
+                
+                // Verificar si tiene inscripción
+                boolean tieneInscripcion = false;
+                String estadoInscripcion = null;
+                Integer idInscripcion = null;
+                for (SolicitudCursoVeranoIncripcion inscripcion : inscripciones) {
+                    if (inscripcion.getObjUsuario() != null && 
+                        inscripcion.getObjUsuario().getId_usuario().equals(preinscripcion.getObjUsuario().getId_usuario())) {
+                        tieneInscripcion = true;
+                        idInscripcion = inscripcion.getId_solicitud();
+                        if (inscripcion.getEstadosSolicitud() != null && !inscripcion.getEstadosSolicitud().isEmpty()) {
+                            estadoInscripcion = inscripcion.getEstadosSolicitud()
+                                .get(inscripcion.getEstadosSolicitud().size() - 1).getEstado_actual();
+                        }
+                        break;
+                    }
+                }
+                
+                estudiante.put("tiene_inscripcion", tieneInscripcion);
+                estudiante.put("estado_inscripcion", estadoInscripcion);
+                estudiante.put("id_solicitud_inscripcion", idInscripcion);
+                estudiante.put("tipo", "Preinscrito");
+                
+                estudiantesPreinscritos.add(estudiante);
+            }
+            
+            // Procesar inscripciones que no tienen preinscripción (casos especiales)
+            List<Map<String, Object>> estudiantesInscritos = new ArrayList<>();
+            for (SolicitudCursoVeranoIncripcion inscripcion : inscripciones) {
+                if (inscripcion.getObjUsuario() == null) {
+                    continue;
+                }
+                
+                // Verificar si ya fue procesado en preinscripciones
+                boolean yaProcesado = estudiantesPreinscritos.stream()
+                    .anyMatch(e -> e.get("id_usuario").equals(inscripcion.getObjUsuario().getId_usuario()));
+                
+                if (!yaProcesado) {
+                    Map<String, Object> estudiante = new HashMap<>();
+                    estudiante.put("id_usuario", inscripcion.getObjUsuario().getId_usuario());
+                    estudiante.put("nombre_completo", inscripcion.getObjUsuario().getNombre_completo());
+                    estudiante.put("codigo", inscripcion.getObjUsuario().getCodigo());
+                    estudiante.put("correo", inscripcion.getObjUsuario().getCorreo());
+                    
+                    // Información del programa
+                    if (inscripcion.getObjUsuario().getObjPrograma() != null) {
+                        estudiante.put("programa", inscripcion.getObjUsuario().getObjPrograma().getNombre_programa());
+                        estudiante.put("id_programa", inscripcion.getObjUsuario().getObjPrograma().getId_programa());
+                    }
+                    
+                    // Estado de la inscripción
+                    String estadoInscripcion = "Enviada";
+                    if (inscripcion.getEstadosSolicitud() != null && !inscripcion.getEstadosSolicitud().isEmpty()) {
+                        estadoInscripcion = inscripcion.getEstadosSolicitud()
+                            .get(inscripcion.getEstadosSolicitud().size() - 1).getEstado_actual();
+                    }
+                    estudiante.put("estado_inscripcion", estadoInscripcion);
+                    estudiante.put("fecha_inscripcion", inscripcion.getFecha_registro_solicitud());
+                    estudiante.put("id_solicitud_inscripcion", inscripcion.getId_solicitud());
+                    
+                    // Condición de la solicitud
+                    if (inscripcion.getCodicion_solicitud() != null) {
+                        estudiante.put("condicion", inscripcion.getCodicion_solicitud().toString());
+                    }
+                    
+                    estudiante.put("tiene_preinscripcion", false);
+                    estudiante.put("tipo", "Inscrito");
+                    
+                    estudiantesInscritos.add(estudiante);
+                }
+            }
+            
+            // Combinar ambas listas
+            List<Map<String, Object>> todosLosEstudiantes = new ArrayList<>();
+            todosLosEstudiantes.addAll(estudiantesPreinscritos);
+            todosLosEstudiantes.addAll(estudiantesInscritos);
+            
+            // Ordenar por nombre
+            todosLosEstudiantes.sort((a, b) -> {
+                String nombreA = (String) a.get("nombre_completo");
+                String nombreB = (String) b.get("nombre_completo");
+                if (nombreA == null) nombreA = "";
+                if (nombreB == null) nombreB = "";
+                return nombreA.compareToIgnoreCase(nombreB);
+            });
+            
+            // Preparar respuesta
+            Map<String, Object> respuesta = new HashMap<>();
+            respuesta.put("id_curso", idCurso);
+            respuesta.put("nombre_curso", curso.getObjMateria() != null ? curso.getObjMateria().getNombre() : "N/A");
+            respuesta.put("codigo_curso", curso.getObjMateria() != null ? curso.getObjMateria().getCodigo() : "N/A");
+            respuesta.put("cupo_estimado", curso.getCupo_estimado());
+            // Contar estudiantes con inscripción
+            long estudiantesConInscripcion = estudiantesPreinscritos.stream()
+                .filter(e -> Boolean.TRUE.equals(e.get("tiene_inscripcion")))
+                .count();
+            int totalInscritos = estudiantesInscritos.size() + (int) estudiantesConInscripcion;
+            
+            respuesta.put("total_estudiantes", todosLosEstudiantes.size());
+            respuesta.put("total_preinscritos", estudiantesPreinscritos.size());
+            respuesta.put("total_inscritos", totalInscritos);
+            respuesta.put("estudiantes", todosLosEstudiantes);
+            
+            log.info("Total estudiantes encontrados para curso {}: {} ({} preinscritos, {} con inscripción)", 
+                idCurso, todosLosEstudiantes.size(), estudiantesPreinscritos.size(), totalInscritos);
+            
+            return ResponseEntity.ok(respuesta);
+            
+        } catch (Exception e) {
+            log.error("Error al obtener estudiantes del curso {}: {}", idCurso, e.getMessage(), e);
+            Map<String, Object> error = new HashMap<>();
+            error.put("error", "Error al obtener estudiantes: " + e.getMessage());
+            return ResponseEntity.internalServerError().body(error);
         }
     }
 
