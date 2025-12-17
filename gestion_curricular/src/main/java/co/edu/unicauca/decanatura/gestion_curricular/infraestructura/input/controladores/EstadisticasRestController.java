@@ -712,7 +712,6 @@ public class EstadisticasRestController {
             consolidado.put("totalProgramas", 3); // Número fijo de programas por ahora
             consolidado.put("fechaGeneracion", new Date());
             
-            log.info("Resultado final: {}", consolidado);
             return ResponseEntity.ok(consolidado);
             
         } catch (Exception e) {
@@ -1130,7 +1129,6 @@ public class EstadisticasRestController {
                 
                 return errorBaos.toByteArray();
             } catch (Exception ex) {
-                log.error("No se pudo generar el PDF de error para cursos de verano: {}", ex.getMessage(), ex);
                 return new byte[0];
             }
         } finally {
@@ -1142,7 +1140,6 @@ public class EstadisticasRestController {
                     baos.close();
                 }
             } catch (Exception e) {
-                log.error("Ocurrió un error al cerrar los recursos del PDF de cursos de verano: {}", e.getMessage(), e);
             }
         }
     }
@@ -1155,9 +1152,6 @@ public class EstadisticasRestController {
      * @return Array de bytes del PDF
      */
     private byte[] generarPDFCompleto(Map<String, Object> estadisticas, Map<String, Object> datosCursosVerano) {
-        log.debug("Iniciando la generación del PDF completo con estadísticas generales y de cursos de verano...");
-        log.debug("¿Se recibieron estadísticas generales? {} - ¿Se recibieron datos de cursos de verano? {}", 
-            estadisticas != null, datosCursosVerano != null);
         
         ByteArrayOutputStream baos = null;
         com.itextpdf.text.Document document = null;
@@ -1199,7 +1193,6 @@ public class EstadisticasRestController {
             return baos.toByteArray();
             
         } catch (Exception e) {
-            log.error("Error al generar el PDF completo: {}", e.getMessage(), e);
             
             // Generar un PDF de error en lugar de texto
             try {
@@ -1215,7 +1208,6 @@ public class EstadisticasRestController {
                 
                 return errorBaos.toByteArray();
             } catch (Exception ex) {
-                log.error("No se pudo generar el PDF de error para el reporte completo: {}", ex.getMessage(), ex);
                 return new byte[0]; // Devolver array vacío en caso de error crítico
             }
         } finally {
@@ -1227,7 +1219,6 @@ public class EstadisticasRestController {
                     baos.close();
                 }
             } catch (Exception e) {
-                log.error("Ocurrió un error al cerrar los recursos del PDF completo: {}", e.getMessage(), e);
             }
         }
     }
@@ -1243,15 +1234,12 @@ public class EstadisticasRestController {
     @GetMapping("/total-estudiantes")
     public ResponseEntity<Map<String, Object>> obtenerNumeroTotalEstudiantes() {
         try {
-            log.info("Obteniendo número total de estudiantes...");
             
             Map<String, Object> resultado = estadisticaCU.obtenerNumeroTotalEstudiantes();
             
-            log.info("Resultado: {} estudiantes", resultado.get("totalEstudiantes"));
             return ResponseEntity.ok(resultado);
             
         } catch (Exception e) {
-            log.error("Error obteniendo número total de estudiantes: {}", e.getMessage(), e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
@@ -1265,16 +1253,12 @@ public class EstadisticasRestController {
     @GetMapping("/estudiantes-por-programa")
     public ResponseEntity<Map<String, Object>> obtenerEstudiantesPorPrograma() {
         try {
-            log.info("Obteniendo distribución de estudiantes por programa...");
             
             Map<String, Object> resultado = estadisticaCU.obtenerEstudiantesPorPrograma();
             
-            log.info("Resultado: {} programas con estudiantes", 
-                    ((Map<?, ?>) resultado.get("estudiantesPorPrograma")).size());
             return ResponseEntity.ok(resultado);
             
         } catch (Exception e) {
-            log.error("Error obteniendo estudiantes por programa: {}", e.getMessage(), e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
@@ -1288,15 +1272,12 @@ public class EstadisticasRestController {
     @GetMapping("/estadisticas-por-proceso")
     public ResponseEntity<Map<String, Object>> obtenerEstadisticasDetalladasPorProceso() {
         try {
-            log.info("Obteniendo estadísticas detalladas por proceso...");
             
             Map<String, Object> resultado = estadisticaCU.obtenerEstadisticasDetalladasPorProceso();
             
-            log.info("Resultado: {} procesos analizados", resultado.get("totalProcesos"));
             return ResponseEntity.ok(resultado);
             
         } catch (Exception e) {
-            log.error("Error obteniendo estadísticas por proceso: {}", e.getMessage(), e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
@@ -1310,15 +1291,12 @@ public class EstadisticasRestController {
     @GetMapping("/resumen-por-proceso")
     public ResponseEntity<Map<String, Object>> obtenerResumenPorProceso() {
         try {
-            log.info("Obteniendo resumen por proceso...");
             
             Map<String, Object> resultado = estadisticaCU.obtenerResumenPorProceso();
             
-            log.info("Resumen generado exitosamente");
             return ResponseEntity.ok(resultado);
             
         } catch (Exception e) {
-            log.error("Error obteniendo resumen por proceso: {}", e.getMessage(), e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
@@ -1332,15 +1310,12 @@ public class EstadisticasRestController {
     @GetMapping("/configuracion-estilos")
     public ResponseEntity<Map<String, Object>> obtenerConfiguracionEstilos() {
         try {
-            log.info("Obteniendo configuración de estilos...");
             
             Map<String, Object> resultado = estadisticaCU.obtenerConfiguracionEstilos();
             
-            log.info("Configuración de estilos generada exitosamente");
             return ResponseEntity.ok(resultado);
             
         } catch (Exception e) {
-            log.error("Error obteniendo configuración de estilos: {}", e.getMessage(), e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
@@ -1354,15 +1329,12 @@ public class EstadisticasRestController {
     @GetMapping("/estado-solicitudes")
     public ResponseEntity<Map<String, Object>> obtenerEstadisticasPorEstado() {
         try {
-            log.info("Obteniendo estadísticas por estado de solicitudes...");
             
             Map<String, Object> resultado = estadisticaCU.obtenerEstadisticasPorEstado();
             
-            log.info("Estadísticas por estado generadas exitosamente");
             return ResponseEntity.ok(resultado);
             
         } catch (Exception e) {
-            log.error("Error obteniendo estadísticas por estado: {}", e.getMessage(), e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
@@ -1376,15 +1348,12 @@ public class EstadisticasRestController {
     @GetMapping("/por-periodo")
     public ResponseEntity<Map<String, Object>> obtenerEstadisticasPorPeriodo() {
         try {
-            log.info("Obteniendo estadísticas por período...");
             
             Map<String, Object> resultado = estadisticaCU.obtenerEstadisticasPorPeriodo();
             
-            log.info("Estadísticas por período generadas exitosamente");
             return ResponseEntity.ok(resultado);
             
         } catch (Exception e) {
-            log.error("Error obteniendo estadísticas por período: {}", e.getMessage(), e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
@@ -1398,15 +1367,12 @@ public class EstadisticasRestController {
     @GetMapping("/por-programa")
     public ResponseEntity<Map<String, Object>> obtenerEstadisticasPorPrograma() {
         try {
-            log.info("Obteniendo estadísticas por programa académico...");
             
             Map<String, Object> resultado = estadisticaCU.obtenerEstadisticasPorPrograma();
             
-            log.info("Estadísticas por programa generadas exitosamente");
             return ResponseEntity.ok(resultado);
             
         } catch (Exception e) {
-            log.error("Error obteniendo estadísticas por programa: {}", e.getMessage(), e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
@@ -1420,15 +1386,12 @@ public class EstadisticasRestController {
     @GetMapping("/tiempo-procesamiento")
     public ResponseEntity<Map<String, Object>> obtenerTiempoPromedioProcesamiento() {
         try {
-            log.info("Obteniendo estadísticas de tiempo de procesamiento...");
             
             Map<String, Object> resultado = estadisticaCU.obtenerTiempoPromedioProcesamiento();
             
-            log.info("Estadísticas de tiempo de procesamiento generadas exitosamente");
             return ResponseEntity.ok(resultado);
             
         } catch (Exception e) {
-            log.error("Error obteniendo estadísticas de tiempo de procesamiento: {}", e.getMessage(), e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
@@ -1442,15 +1405,12 @@ public class EstadisticasRestController {
     @GetMapping("/tendencias-comparativas")
     public ResponseEntity<Map<String, Object>> obtenerTendenciasYComparativas() {
         try {
-            log.info("Obteniendo tendencias y comparativas...");
             
             Map<String, Object> resultado = estadisticaCU.obtenerTendenciasYComparativas();
             
-            log.info("Tendencias y comparativas generadas exitosamente");
             return ResponseEntity.ok(resultado);
             
         } catch (Exception e) {
-            log.error("Error obteniendo tendencias y comparativas: {}", e.getMessage(), e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
@@ -1461,7 +1421,6 @@ public class EstadisticasRestController {
     @GetMapping("/test-ecaes")
     public ResponseEntity<Map<String, Object>> testEcaes() {
         try {
-            log.info("Prueba - Probando ECAES...");
             
             Map<String, Object> resultado = new HashMap<>();
             
@@ -1473,7 +1432,6 @@ public class EstadisticasRestController {
             return ResponseEntity.ok(resultado);
             
         } catch (Exception e) {
-            log.error("Prueba - Error en test ECAES: {}", e.getMessage(), e);
             Map<String, Object> error = new HashMap<>();
             error.put("error", e.getMessage());
             error.put("fecha", new Date());
@@ -1487,15 +1445,12 @@ public class EstadisticasRestController {
     @GetMapping("/test-procesos-simples")
     public ResponseEntity<Map<String, Object>> testProcesosSimples() {
         try {
-            log.info("Prueba - Probando estadísticas simples por proceso...");
             
             Map<String, Object> resultado = estadisticaCU.obtenerEstadisticasPorProceso("ECAES");
             
-            log.info("Prueba - Resultado: {}", resultado);
             return ResponseEntity.ok(resultado);
             
         } catch (Exception e) {
-            log.error("Prueba - Error en test procesos simples: {}", e.getMessage(), e);
             Map<String, Object> error = new HashMap<>();
             error.put("error", e.getMessage());
             error.put("fecha", new Date());
@@ -1516,16 +1471,12 @@ public class EstadisticasRestController {
             @RequestParam(required = false) String periodoAcademico,
             @RequestParam(required = false) Integer idPrograma) {
         try {
-            log.info("Cursos de verano - Obteniendo estadísticas de cursos de verano - Período: {}, Programa: {}", 
-                    periodoAcademico, idPrograma);
             
             Map<String, Object> resultado = estadisticaCU.obtenerEstadisticasCursosVerano(periodoAcademico, idPrograma);
             
-            log.info("Cursos de verano - Estadísticas de cursos de verano generadas exitosamente");
             return ResponseEntity.ok(resultado);
             
         } catch (Exception e) {
-            log.error("Cursos de verano - Error obteniendo estadísticas de cursos de verano: {}", e.getMessage(), e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
@@ -1542,17 +1493,13 @@ public class EstadisticasRestController {
             @RequestParam(required = false) String periodoAcademico,
             @RequestParam(required = false) Integer idPrograma) {
         try {
-            log.info("Tendencias temporales - Obteniendo tendencias temporales de cursos de verano - Período: {}, Programa: {}", 
-                    periodoAcademico, idPrograma);
             
             // Obtener solo las tendencias temporales de manera optimizada
             Map<String, Object> tendencias = estadisticaCU.obtenerTendenciasTemporalesCursosVerano(periodoAcademico, idPrograma);
             
-            log.info("Tendencias temporales - Tendencias obtenidas exitosamente");
             return ResponseEntity.ok(tendencias);
             
         } catch (Exception e) {
-            log.error("Tendencias temporales - Error obteniendo tendencias: {}", e.getMessage(), e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
@@ -1563,7 +1510,6 @@ public class EstadisticasRestController {
     @GetMapping("/por-proceso-funcional")
     public ResponseEntity<Map<String, Object>> obtenerEstadisticasPorProcesoFuncional() {
         try {
-            log.info("Obteniendo estadísticas por proceso (funcional)...");
             
             Map<String, Object> resultado = new HashMap<>();
             
@@ -1576,7 +1522,6 @@ public class EstadisticasRestController {
                     Map<String, Object> datosProceso = estadisticaCU.obtenerEstadisticasPorProceso(proceso);
                     procesosDetallados.put(proceso, datosProceso);
                 } catch (Exception e) {
-                    log.warn("Error obteniendo datos para {}: {}", proceso, e.getMessage());
                     // Continuar con los otros procesos
                 }
             }
@@ -1586,11 +1531,9 @@ public class EstadisticasRestController {
             resultado.put("fechaConsulta", new Date());
             resultado.put("descripcion", "Estadísticas por proceso - Versión funcional");
             
-            log.info("Resultado: {} procesos analizados", procesosDetallados.size());
             return ResponseEntity.ok(resultado);
             
         } catch (Exception e) {
-            log.error("Error obteniendo estadísticas por proceso: {}", e.getMessage(), e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
@@ -1766,7 +1709,6 @@ public class EstadisticasRestController {
             return baos.toByteArray();
             
         } catch (Exception e) {
-            log.error("Excel completo - Error generando Excel completo: {}", e.getMessage(), e);
             
             // Generar un Excel de error en lugar de texto
             try {
@@ -1782,7 +1724,6 @@ public class EstadisticasRestController {
                 
                 return errorBaos.toByteArray();
             } catch (Exception ex) {
-                log.error("Excel completo - Error generando Excel de error: {}", ex.getMessage(), ex);
                 return new byte[0]; // Devolver array vacío en caso de error crítico
             }
         }
@@ -1992,11 +1933,9 @@ public class EstadisticasRestController {
     public ResponseEntity<Map<String, Object>> obtenerEstadisticasPorAnio(
             @PathVariable Integer anio) {
         try {
-            log.info("Obteniendo estadísticas por año: {}", anio);
             Map<String, Object> estadisticas = estadisticaCU.obtenerEstadisticasPorAnio(anio);
             return ResponseEntity.ok(estadisticas);
         } catch (Exception e) {
-            log.error("Error al obtener estadísticas por año: {}", e.getMessage(), e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
@@ -2013,11 +1952,9 @@ public class EstadisticasRestController {
             @RequestParam(name = "anio", required = true) Integer anio,
             @RequestParam(name = "semestre", required = true) Integer semestre) {
         try {
-            log.info("Obteniendo estadísticas por semestre - Año: {}, Semestre: {}", anio, semestre);
             Map<String, Object> estadisticas = estadisticaCU.obtenerEstadisticasPorSemestre(anio, semestre);
             return ResponseEntity.ok(estadisticas);
         } catch (Exception e) {
-            log.error("Error al obtener estadísticas por semestre: {}", e.getMessage(), e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
@@ -2034,11 +1971,9 @@ public class EstadisticasRestController {
             @RequestParam(name = "anioInicio", required = false) Integer anioInicio,
             @RequestParam(name = "anioFin", required = false) Integer anioFin) {
         try {
-            log.info("Obteniendo historial de estadísticas - Desde año: {} hasta año: {}", anioInicio, anioFin);
             List<Map<String, Object>> historial = estadisticaCU.obtenerHistorialEstadisticas(anioInicio, anioFin);
             return ResponseEntity.ok(historial);
         } catch (Exception e) {
-            log.error("Error al obtener historial de estadísticas: {}", e.getMessage(), e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
@@ -2053,11 +1988,9 @@ public class EstadisticasRestController {
     public ResponseEntity<Map<String, Object>> obtenerEstadisticasPorPeriodoAcademico(
             @PathVariable String periodoAcademico) {
         try {
-            log.info("Obteniendo estadísticas por período académico: {}", periodoAcademico);
             Map<String, Object> estadisticas = estadisticaCU.obtenerEstadisticasPorPeriodoAcademico(periodoAcademico);
             return ResponseEntity.ok(estadisticas);
         } catch (Exception e) {
-            log.error("Error al obtener estadísticas por período académico: {}", e.getMessage(), e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
@@ -2082,7 +2015,6 @@ public class EstadisticasRestController {
             return baos.toByteArray();
             
         } catch (Exception e) {
-            log.error("Excel general - Error generando Excel: {}", e.getMessage(), e);
             
             // Generar Excel de error
             try {
@@ -2098,7 +2030,6 @@ public class EstadisticasRestController {
                 
                 return errorBaos.toByteArray();
             } catch (Exception ex) {
-                log.error("Excel general - Error generando Excel de error: {}", ex.getMessage(), ex);
                 return new byte[0];
             }
         }
@@ -2126,7 +2057,6 @@ public class EstadisticasRestController {
             return baos.toByteArray();
             
         } catch (Exception e) {
-            log.error("Excel cursos verano - Error generando Excel: {}", e.getMessage(), e);
             
             // Generar Excel de error
             try {
@@ -2142,7 +2072,6 @@ public class EstadisticasRestController {
                 
                 return errorBaos.toByteArray();
             } catch (Exception ex) {
-                log.error("Excel cursos verano - Error generando Excel de error: {}", ex.getMessage(), ex);
                 return new byte[0];
             }
         }

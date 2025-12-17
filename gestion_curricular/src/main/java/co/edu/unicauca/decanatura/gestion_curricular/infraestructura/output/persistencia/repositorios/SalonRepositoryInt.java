@@ -39,3 +39,7 @@ public interface SalonRepositoryInt extends JpaRepository<SalonEntity, Integer> 
 
 
 
+
+
+
+
