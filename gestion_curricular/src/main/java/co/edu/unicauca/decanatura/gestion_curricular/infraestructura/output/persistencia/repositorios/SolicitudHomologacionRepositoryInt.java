@@ -111,4 +111,37 @@ public interface SolicitudHomologacionRepositoryInt extends JpaRepository<Solici
         @Param("idUsuario") Integer idUsuario,
         @Param("periodoAcademico") String periodoAcademico
     );
+
+    /**
+     * Busca solicitudes que hayan tenido un estado específico en su historial (no solo como último estado)
+     * Útil para historiales de funcionarios/coordinadores/secretaria
+     */
+    @Query("SELECT DISTINCT s FROM SolicitudHomologacionEntity s " +
+           "WHERE (:periodoAcademico IS NULL OR s.periodo_academico = :periodoAcademico) " +
+           "AND s.id_solicitud IN (" +
+           "    SELECT e.objSolicitud.id_solicitud " +
+           "    FROM EstadoSolicitudEntity e " +
+           "    WHERE e.estado_actual = :estado" +
+           ")")
+    List<SolicitudHomologacionEntity> findByEstadoEnHistorialAndPeriodoAcademico(
+        @Param("estado") String estado,
+        @Param("periodoAcademico") String periodoAcademico
+    );
+
+    /**
+     * Busca solicitudes que hayan tenido un estado específico en su historial, filtradas por programa
+     */
+    @Query("SELECT DISTINCT s FROM SolicitudHomologacionEntity s " +
+           "WHERE s.objUsuario.objPrograma.id_programa = :idPrograma " +
+           "AND (:periodoAcademico IS NULL OR s.periodo_academico = :periodoAcademico) " +
+           "AND s.id_solicitud IN (" +
+           "    SELECT e.objSolicitud.id_solicitud " +
+           "    FROM EstadoSolicitudEntity e " +
+           "    WHERE e.estado_actual = :estado" +
+           ")")
+    List<SolicitudHomologacionEntity> findByEstadoEnHistorialAndProgramaAndPeriodoAcademico(
+        @Param("estado") String estado,
+        @Param("idPrograma") Integer idPrograma,
+        @Param("periodoAcademico") String periodoAcademico
+    );
 }
