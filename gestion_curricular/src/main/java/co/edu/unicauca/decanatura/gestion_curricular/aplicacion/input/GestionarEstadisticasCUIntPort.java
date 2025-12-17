@@ -97,9 +97,11 @@ public interface GestionarEstadisticasCUIntPort {
      * Obtiene un resumen completo de todas las estadísticas del sistema.
      * Utiliza múltiples repositorios para generar un dashboard completo.
      * 
+     * @param periodoAcademico Período académico opcional (formato: "YYYY-P", ej: "2025-2")
+     * @param idPrograma ID del programa académico opcional para filtrar
      * @return Map con resumen completo de estadísticas
      */
-    Map<String, Object> obtenerResumenCompleto();
+    Map<String, Object> obtenerResumenCompleto(String periodoAcademico, Integer idPrograma);
 
     /**
      * Obtiene estadísticas de tendencias por período (comparación entre períodos).
@@ -197,16 +199,20 @@ public interface GestionarEstadisticasCUIntPort {
      * Obtiene estadísticas específicas para cursos de verano.
      * Incluye análisis de demanda por materia, tendencias temporales y recomendaciones.
      * 
+     * @param periodoAcademico Período académico opcional (formato: "YYYY-P", ej: "2025-2")
+     * @param idPrograma ID del programa académico opcional para filtrar
      * @return Map con estadísticas detalladas de cursos de verano
      */
-    Map<String, Object> obtenerEstadisticasCursosVerano();
+    Map<String, Object> obtenerEstadisticasCursosVerano(String periodoAcademico, Integer idPrograma);
 
     /**
      * Obtiene solo las tendencias temporales de cursos de verano de manera optimizada.
      * 
+     * @param periodoAcademico Período académico opcional (formato: "YYYY-P", ej: "2025-2")
+     * @param idPrograma ID del programa académico opcional para filtrar
      * @return Map con tendencias temporales
      */
-    Map<String, Object> obtenerTendenciasTemporalesCursosVerano();
+    Map<String, Object> obtenerTendenciasTemporalesCursosVerano(String periodoAcademico, Integer idPrograma);
 
     /**
      * Obtiene estadísticas agrupadas por año.

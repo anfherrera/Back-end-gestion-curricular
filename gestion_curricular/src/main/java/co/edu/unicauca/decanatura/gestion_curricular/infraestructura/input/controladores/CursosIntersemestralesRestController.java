@@ -128,22 +128,41 @@ public class CursosIntersemestralesRestController {
                 }
             }
             
-            // Si se proporciona idPrograma, filtrar cursos que tengan solicitudes de estudiantes de ese programa
+            // Si se proporciona idPrograma, filtrar cursos que tengan estudiantes inscritos o solicitudes de ese programa
+            // También incluir cursos sin solicitudes/inscripciones (disponibles para todos)
             if (idPrograma != null) {
+                int antes = cursos.size();
                 cursos = cursos.stream()
                         .filter(curso -> {
+                            // Verificar si el curso tiene estudiantes inscritos del programa especificado
+                            boolean tieneEstudiantesDelPrograma = false;
+                            if (curso.getEstudiantesInscritos() != null && !curso.getEstudiantesInscritos().isEmpty()) {
+                                tieneEstudiantesDelPrograma = curso.getEstudiantesInscritos().stream()
+                                        .anyMatch(usuario -> usuario.getObjPrograma() != null
+                                                && usuario.getObjPrograma().getId_programa().equals(idPrograma));
+                            }
+                            
                             // Verificar si el curso tiene solicitudes de estudiantes del programa especificado
+                            boolean tieneSolicitudesDelPrograma = false;
                             if (curso.getSolicitudes() != null && !curso.getSolicitudes().isEmpty()) {
-                                return curso.getSolicitudes().stream()
+                                tieneSolicitudesDelPrograma = curso.getSolicitudes().stream()
                                         .anyMatch(solicitud -> solicitud.getObjUsuario() != null 
                                                 && solicitud.getObjUsuario().getObjPrograma() != null
                                                 && solicitud.getObjUsuario().getObjPrograma().getId_programa().equals(idPrograma));
                             }
-                            // Si el curso no tiene solicitudes, no lo incluimos en el filtro por programa
-                            return false;
+                            
+                            // Incluir el curso si:
+                            // 1. Tiene estudiantes inscritos del programa, O
+                            // 2. Tiene solicitudes del programa, O
+                            // 3. No tiene ni estudiantes ni solicitudes (disponible para todos)
+                            boolean sinInscripcionesNiSolicitudes = 
+                                    (curso.getEstudiantesInscritos() == null || curso.getEstudiantesInscritos().isEmpty())
+                                    && (curso.getSolicitudes() == null || curso.getSolicitudes().isEmpty());
+                            
+                            return tieneEstudiantesDelPrograma || tieneSolicitudesDelPrograma || sinInscripcionesNiSolicitudes;
                         })
                         .collect(Collectors.toList());
-                log.debug("Cursos filtrados por programa {}: {}", idPrograma, cursos.size());
+                log.info("Cursos filtrados por programa {}: {} de {} totales", idPrograma, cursos.size(), antes);
             }
             
             log.debug("Total de cursos encontrados: {}", cursos.size());
@@ -236,22 +255,41 @@ public class CursosIntersemestralesRestController {
                 }
             }
             
-            // Si se proporciona idPrograma, filtrar cursos que tengan solicitudes de estudiantes de ese programa
+            // Si se proporciona idPrograma, filtrar cursos que tengan estudiantes inscritos o solicitudes de ese programa
+            // También incluir cursos sin solicitudes/inscripciones (disponibles para todos)
             if (idPrograma != null) {
+                int antes = cursos.size();
                 cursos = cursos.stream()
                         .filter(curso -> {
+                            // Verificar si el curso tiene estudiantes inscritos del programa especificado
+                            boolean tieneEstudiantesDelPrograma = false;
+                            if (curso.getEstudiantesInscritos() != null && !curso.getEstudiantesInscritos().isEmpty()) {
+                                tieneEstudiantesDelPrograma = curso.getEstudiantesInscritos().stream()
+                                        .anyMatch(usuario -> usuario.getObjPrograma() != null
+                                                && usuario.getObjPrograma().getId_programa().equals(idPrograma));
+                            }
+                            
                             // Verificar si el curso tiene solicitudes de estudiantes del programa especificado
+                            boolean tieneSolicitudesDelPrograma = false;
                             if (curso.getSolicitudes() != null && !curso.getSolicitudes().isEmpty()) {
-                                return curso.getSolicitudes().stream()
+                                tieneSolicitudesDelPrograma = curso.getSolicitudes().stream()
                                         .anyMatch(solicitud -> solicitud.getObjUsuario() != null 
                                                 && solicitud.getObjUsuario().getObjPrograma() != null
                                                 && solicitud.getObjUsuario().getObjPrograma().getId_programa().equals(idPrograma));
                             }
-                            // Si el curso no tiene solicitudes, no lo incluimos en el filtro por programa
-                            return false;
+                            
+                            // Incluir el curso si:
+                            // 1. Tiene estudiantes inscritos del programa, O
+                            // 2. Tiene solicitudes del programa, O
+                            // 3. No tiene ni estudiantes ni solicitudes (disponible para todos)
+                            boolean sinInscripcionesNiSolicitudes = 
+                                    (curso.getEstudiantesInscritos() == null || curso.getEstudiantesInscritos().isEmpty())
+                                    && (curso.getSolicitudes() == null || curso.getSolicitudes().isEmpty());
+                            
+                            return tieneEstudiantesDelPrograma || tieneSolicitudesDelPrograma || sinInscripcionesNiSolicitudes;
                         })
                         .collect(Collectors.toList());
-                log.debug("Cursos disponibles filtrados por programa {}: {}", idPrograma, cursos.size());
+                log.info("Cursos disponibles filtrados por programa {}: {} de {} totales", idPrograma, cursos.size(), antes);
             }
             
             // Filtrar solo cursos visibles para estudiantes
@@ -354,22 +392,41 @@ public class CursosIntersemestralesRestController {
                 log.info("[GESTION_CURSOS] Mostrando TODOS los cursos sin filtrar por período académico. Total: {}", cursos.size());
             }
             
-            // Si se proporciona idPrograma, filtrar cursos que tengan solicitudes de estudiantes de ese programa
+            // Si se proporciona idPrograma, filtrar cursos que tengan estudiantes inscritos o solicitudes de ese programa
+            // También incluir cursos sin solicitudes/inscripciones (disponibles para todos)
             if (idPrograma != null) {
+                int antes = cursos.size();
                 cursos = cursos.stream()
                         .filter(curso -> {
+                            // Verificar si el curso tiene estudiantes inscritos del programa especificado
+                            boolean tieneEstudiantesDelPrograma = false;
+                            if (curso.getEstudiantesInscritos() != null && !curso.getEstudiantesInscritos().isEmpty()) {
+                                tieneEstudiantesDelPrograma = curso.getEstudiantesInscritos().stream()
+                                        .anyMatch(usuario -> usuario.getObjPrograma() != null
+                                                && usuario.getObjPrograma().getId_programa().equals(idPrograma));
+                            }
+                            
                             // Verificar si el curso tiene solicitudes de estudiantes del programa especificado
+                            boolean tieneSolicitudesDelPrograma = false;
                             if (curso.getSolicitudes() != null && !curso.getSolicitudes().isEmpty()) {
-                                return curso.getSolicitudes().stream()
+                                tieneSolicitudesDelPrograma = curso.getSolicitudes().stream()
                                         .anyMatch(solicitud -> solicitud.getObjUsuario() != null 
                                                 && solicitud.getObjUsuario().getObjPrograma() != null
                                                 && solicitud.getObjUsuario().getObjPrograma().getId_programa().equals(idPrograma));
                             }
-                            // Si el curso no tiene solicitudes, no lo incluimos en el filtro por programa
-                            return false;
+                            
+                            // Incluir el curso si:
+                            // 1. Tiene estudiantes inscritos del programa, O
+                            // 2. Tiene solicitudes del programa, O
+                            // 3. No tiene ni estudiantes ni solicitudes (disponible para todos)
+                            boolean sinInscripcionesNiSolicitudes = 
+                                    (curso.getEstudiantesInscritos() == null || curso.getEstudiantesInscritos().isEmpty())
+                                    && (curso.getSolicitudes() == null || curso.getSolicitudes().isEmpty());
+                            
+                            return tieneEstudiantesDelPrograma || tieneSolicitudesDelPrograma || sinInscripcionesNiSolicitudes;
                         })
                         .collect(Collectors.toList());
-                log.debug("Cursos (todos) filtrados por programa {}: {}", idPrograma, cursos.size());
+                log.info("Cursos (todos) filtrados por programa {}: {} de {} totales", idPrograma, cursos.size(), antes);
             }
             
             // Para funcionarios y coordinadores, mostrar todos los cursos sin filtro de estado
