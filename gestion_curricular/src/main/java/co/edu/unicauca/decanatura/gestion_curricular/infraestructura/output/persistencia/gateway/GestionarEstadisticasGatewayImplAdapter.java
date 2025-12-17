@@ -180,15 +180,15 @@ public class GestionarEstadisticasGatewayImplAdapter implements GestionarEstadis
 
     @Override
     @Transactional(propagation = Propagation.NOT_SUPPORTED, readOnly = true)
-    // Cache temporalmente deshabilitado para debug - puede causar problemas si la cache está corrupta
+    // Cache deshabilitado - puede causar problemas si la cache está corrupta
     // @Cacheable(value = "estadisticasGlobales", key = "#proceso + '_' + #idPrograma + '_' + #fechaInicio + '_' + #fechaFin")
-    // NOTA: Propagation.NOT_SUPPORTED suspende cualquier transacción existente, evitando rollback-only cuando fallan consultas
+    // Propagation.NOT_SUPPORTED suspende cualquier transacción existente, evitando rollback-only cuando fallan consultas
     public Map<String, Object> obtenerEstadisticasGlobales(String proceso, Integer idPrograma, Date fechaInicio, Date fechaFin) {
         Map<String, Object> estadisticas = new HashMap<>();
         
         try {
             // Estadisticas generales del sistema
-            // NOTA: Si hay filtros, algunos conteos pueden no funcionar correctamente
+            // Si hay filtros, algunos conteos pueden no funcionar correctamente
             // En ese caso, usar contarEstado() para estadisticas globales sin filtros
             
             // Inicializar variables con valores por defecto para evitar null
@@ -396,7 +396,7 @@ public class GestionarEstadisticasGatewayImplAdapter implements GestionarEstadis
             estadisticas.put("porPrograma", porPrograma);
             
             // Estadisticas por estado (valores INDIVIDUALES del estado mas reciente)
-            // IMPORTANTE: Cada estado se cuenta por separado usando contarEstado (con comparacion exacta)
+            // Cada estado se cuenta por separado usando contarEstado (con comparacion exacta)
             Map<String, Integer> porEstado = new HashMap<>();
             
             porEstado.put("APROBADA", totalAprobadas);  // 21 (ahora contarEstado usa = en vez de LIKE)
@@ -878,7 +878,7 @@ public class GestionarEstadisticasGatewayImplAdapter implements GestionarEstadis
         Map<String, Integer> porPrograma = new HashMap<>();
         
         for (String programa : nombresProgramas) {
-            // Nota: Este metodo necesitaria ser implementado en el repositorio
+            // Este metodo necesitaria ser implementado en el repositorio
             // Por ahora usamos una aproximacion con los metodos existentes
             porPrograma.put(programa, 0); // Placeholder
         }
@@ -1826,7 +1826,7 @@ public class GestionarEstadisticasGatewayImplAdapter implements GestionarEstadis
             int minSolicitudes = Integer.MAX_VALUE;
             int totalSolicitudes = todasLasSolicitudes.size();
             
-            // IMPORTANTE: Incluir TODOS los estados principales, incluso si tienen 0 solicitudes
+            // Incluir todos los estados principales, incluso si tienen 0 solicitudes
             // Esto permite que el frontend muestre siempre los 4 estados principales: Aprobada, Enviada, En Proceso, Rechazada
             String[] estadosPrincipales = {"APROBADA", "ENVIADA", "RECHAZADA"};
             
@@ -3866,7 +3866,7 @@ public class GestionarEstadisticasGatewayImplAdapter implements GestionarEstadis
                 .collect(Collectors.toList());
             
             // Generar tendencias temporales: incluir TODOS los 12 meses, incluso con 0 solicitudes
-            // IMPORTANTE: Incluir TODOS los meses para que el frontend muestre la tendencia completa
+            // Incluir todos los meses para que el frontend muestre la tendencia completa
             List<Map<String, Object>> tendenciasTemporales = new ArrayList<>();
             
             // Incluir TODOS los meses (Enero a Diciembre), incluso si tienen 0 solicitudes
@@ -3920,7 +3920,7 @@ public class GestionarEstadisticasGatewayImplAdapter implements GestionarEstadis
             List<Map<String, Object>> recomendacionesMejoradas = 
                 (List<Map<String, Object>>) predicciones.getOrDefault("recomendaciones", new ArrayList<>());
             
-            // IMPORTANTE: Estructurar estados de la misma forma que /estado-solicitudes
+            // Estructurar estados de la misma forma que /estado-solicitudes
             // Incluir TODOS los estados principales, incluso si tienen 0 solicitudes
             Map<String, Object> estadosSolicitudesEstructurados = new HashMap<>();
             

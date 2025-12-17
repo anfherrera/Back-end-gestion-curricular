@@ -185,7 +185,7 @@ public class DocumentGeneratorService {
         }
         
         // Reconstruir el párrafo preservando el formato original
-        // Estrategia: reemplazar solo los placeholders manteniendo el formato del texto alrededor
+        // Reemplazar solo los placeholders manteniendo el formato del texto alrededor
         if (textoCompleto.equals(texto)) {
             // Si no hubo cambios, mantener formato original
             for (RunFormat format : runFormats) {
@@ -198,7 +198,7 @@ public class DocumentGeneratorService {
             }
         } else {
             // Si hubo cambios, reconstruir preservando formato original
-            // Estrategia: identificar qué placeholders estaban en negrilla y solo aplicar negrilla a esos valores
+            // Identificar qué placeholders estaban en negrilla y solo aplicar negrilla a esos valores
             Map<String, Boolean> placeholderEnNegrilla = new HashMap<>();
             for (RunFormat format : runFormats) {
                 if (format.isBold && format.text != null) {
@@ -219,7 +219,7 @@ public class DocumentGeneratorService {
             placeholderEnNegrilla.put("TITULO_PROFESIONAL", true);
             placeholderEnNegrilla.put("TITULO_TRABAJO_GRADO", true);
             placeholderEnNegrilla.put("DIRECTOR_TRABAJO_GRADO", true);
-            // NOTA: TEXTO_TRABAJO_GRADO NO debe estar en negrilla, solo las partes individuales (título y director)
+            // TEXTO_TRABAJO_GRADO NO debe estar en negrilla, solo las partes individuales (título y director)
             
             // Obtener formato base (del primer run sin negrilla o del primero disponible)
             RunFormat formatoBase = null;
@@ -240,7 +240,7 @@ public class DocumentGeneratorService {
                 formatoBase.fontSize = 11;
             }
             
-            // Estrategia simplificada: usar expresión regular para encontrar todos los placeholders
+            // Usar expresión regular para encontrar todos los placeholders
             // y reconstruir el texto segmento por segmento
             java.util.regex.Pattern pattern = java.util.regex.Pattern.compile("\\[([A-Z_]+)\\]");
             java.util.regex.Matcher matcher = pattern.matcher(texto);

@@ -182,7 +182,7 @@ public class EstadisticasRestController {
             return ResponseEntity.ok(estadisticas);
         } catch (Exception e) {
             // Devolver 200 OK con bandera de error para que el frontend pueda parsear el JSON fácilmente
-            // IMPORTANTE: Devolver 200 OK en lugar de 500 para que el frontend pueda leer el JSON sin problemas
+            // Devolver 200 OK en lugar de 500 para que el frontend pueda leer el JSON sin problemas
             Map<String, Object> errorResponse = new HashMap<>();
             errorResponse.put("totalSolicitudes", 0);
             errorResponse.put("totalAprobadas", 0);
