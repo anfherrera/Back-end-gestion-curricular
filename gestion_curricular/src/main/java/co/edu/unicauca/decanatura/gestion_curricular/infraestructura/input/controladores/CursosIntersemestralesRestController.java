@@ -1127,11 +1127,6 @@ public class CursosIntersemestralesRestController {
                 List<SolicitudCursoVeranoPreinscripcion> preinscripciones = solicitudCU.buscarSolicitudesPorUsuario(peticion.getIdUsuario());
                 
                 for (SolicitudCursoVeranoPreinscripcion preinscripcion : preinscripciones) {
-                    log.debug("Preinscripcion: ID={}, Usuario={}, Curso={}", 
-                        preinscripcion.getId_solicitud(),
-                        preinscripcion.getObjUsuario() != null ? preinscripcion.getObjUsuario().getId_usuario() : "NULL",
-                        preinscripcion.getObjCursoOfertadoVerano() != null ? preinscripcion.getObjCursoOfertadoVerano().getId_curso() : "NULL");
-                    
                     // Verificar si coincide con el usuario y curso
                     boolean coincideUsuario = preinscripcion.getObjUsuario() != null && 
                         preinscripcion.getObjUsuario().getId_usuario().equals(peticion.getIdUsuario());
@@ -1153,7 +1148,6 @@ public class CursosIntersemestralesRestController {
                         
                         if (estaAprobada) {
                             preinscripcionAprobada = preinscripcion;
-                            log.debug("Preinscripcion aprobada encontrada en fallback!");
                             break;
                         }
                     }
@@ -1161,17 +1155,13 @@ public class CursosIntersemestralesRestController {
             }
             
             if (preinscripcionAprobada == null) {
-                log.debug("No se encontro preinscripcion aprobada");
                 Map<String, Object> error = new HashMap<>();
                 error.put("error", "No se encontro una preinscripcion aprobada para este usuario y curso");
                 error.put("codigo", "PREINSCRIPCION_NO_APROBADA");
                 return ResponseEntity.badRequest().body(error);
             }
             
-            log.debug("Preinscripcion aprobada encontrada ID: {}", preinscripcionAprobada.getId_solicitud());
-            
             // 1.5. VALIDACIONES DE SEGURIDAD
-            log.debug("Ejecutando validaciones de seguridad...");
             
             // Validacion 1: Verificar que no tenga una inscripcion activa para este curso
             List<SolicitudCursoVeranoIncripcion> inscripcionesExistentes = solicitudGateway.buscarInscripcionesPorUsuarioYCurso(
@@ -1190,7 +1180,6 @@ public class CursosIntersemestralesRestController {
                     });
                 
                 if (tieneInscripcionActiva) {
-                    log.debug("Usuario ya tiene una inscripcion activa para este curso");
                     Map<String, Object> error = new HashMap<>();
                     error.put("error", "Ya tienes una inscripcion activa para este curso");
                     error.put("codigo", "INSCRIPCION_DUPLICADA");
@@ -1200,20 +1189,14 @@ public class CursosIntersemestralesRestController {
             
             // Validacion 2: Verificar cupos disponibles (opcional - requiere obtener el curso)
             try {
-                Integer inscripcionesAceptadas = solicitudGateway.contarInscripcionesAceptadasPorCurso(peticion.getIdCurso());
-                log.debug("Inscripciones aceptadas en el curso: {}", inscripcionesAceptadas);
+                solicitudGateway.contarInscripcionesAceptadasPorCurso(peticion.getIdCurso());
                 
                 // Nota: Aqui podrias agregar validacion de cupos si tienes acceso al cupo del curso
-                // Por ahora solo logueamos la informacion
             } catch (Exception e) {
-                log.warn("No se pudo verificar cupos: {}", e.getMessage());
                 // No fallar la operacion por esto
             }
             
-            log.debug("Validaciones de seguridad pasadas");
-            
             // 2. Crear la inscripcion usando el modelo de dominio
-            log.debug("Creando inscripcion...");
             
             SolicitudCursoVeranoIncripcion nuevaInscripcion = new SolicitudCursoVeranoIncripcion();
             nuevaInscripcion.setNombre_solicitud(peticion.getNombreSolicitud());
@@ -1227,26 +1210,19 @@ public class CursosIntersemestralesRestController {
             nuevaInscripcion.setCodicion_solicitud(CondicionSolicitudVerano.Primera_Vez); // Valor por defecto
             
             // 3. Guardar la inscripcion en la base de datos
-            log.debug("Guardando en base de datos...");
             SolicitudCursoVeranoIncripcion inscripcionGuardada = solicitudGateway.crearSolicitudCursoVeranoInscripcion(nuevaInscripcion);
             
             if (inscripcionGuardada == null || inscripcionGuardada.getId_solicitud() == null) {
-                log.debug("Error al guardar inscripcion en BD");
                 Map<String, Object> error = new HashMap<>();
                 error.put("error", "Error al guardar la inscripcion en la base de datos");
                 return ResponseEntity.internalServerError().body(error);
             }
             
-            log.debug("Inscripcion guardada exitosamente ID: {}", inscripcionGuardada.getId_solicitud());
-            
             // 4. Asociar documentos sin solicitud a la inscripcion recien creada y moverlos a carpeta organizada
-            log.debug("Asociando documentos a la inscripcion...");
             try {
                 List<Documento> documentosSinSolicitud = objGestionarDocumentosGateway.buscarDocumentosSinSolicitud();
-                log.debug("Documentos sin solicitud encontrados: {}", documentosSinSolicitud.size());
                 
                 for (Documento doc : documentosSinSolicitud) {
-                    log.debug("Asociando documento: {}", doc.getNombre());
                     
                     // Mover archivo a carpeta organizada si está en la raíz
                     String rutaActual = doc.getRuta_documento() != null ? doc.getRuta_documento() : doc.getNombre();
@@ -1260,13 +1236,11 @@ public class CursosIntersemestralesRestController {
                         );
                         if (nuevaRuta != null) {
                             doc.setRuta_documento(nuevaRuta);
-                            log.debug("Archivo movido a: {}", nuevaRuta);
                         }
                     }
                     
                     doc.setObjSolicitud(inscripcionGuardada);
                     objGestionarDocumentosGateway.actualizarDocumento(doc);
-                    log.debug("Documento asociado exitosamente");
                 }
             } catch (Exception e) {
                 log.error("Error asociando documentos: {}", e.getMessage(), e);
@@ -1274,7 +1248,6 @@ public class CursosIntersemestralesRestController {
             }
             
             // 5. Asociar estudiante al curso en la tabla de relacion
-            log.debug("Asociando estudiante al curso...");
             try {
                 int resultado = cursoRepository.insertarCursoEstudiante(
                     peticion.getIdCurso(),
@@ -1282,9 +1255,7 @@ public class CursosIntersemestralesRestController {
                 );
                 
                 if (resultado == 1) {
-                    log.debug("Estudiante asociado exitosamente al curso");
-                } else {
-                    log.debug("El estudiante ya estaba asociado al curso");
+                    } else {
                 }
             } catch (Exception e) {
                 log.error("Error asociando estudiante al curso: {}", e.getMessage(), e);
@@ -1302,7 +1273,6 @@ public class CursosIntersemestralesRestController {
             respuesta.put("fecha_inscripcion", inscripcionGuardada.getFecha_registro_solicitud());
             respuesta.put("estado", "Inscrito");
             
-            log.debug("Inscripcion completada exitosamente");
             return ResponseEntity.ok(respuesta);
             
         } catch (Exception e) {
@@ -1332,11 +1302,9 @@ public class CursosIntersemestralesRestController {
         try {
             // Obtener inscripciones reales de la base de datos
             List<Map<String, Object>> inscripciones = new ArrayList<>();
-            log.debug("INFO Obteniendo inscripciones reales de la base de datos");
             
             // Obtener todas las inscripciones usando el servicio
             List<Map<String, Object>> inscripcionesReales = inscripcionService.findAll();
-            log.debug("Inscripciones encontradas en BD: {}", inscripcionesReales.size());
             
             // Procesar inscripciones reales de la base de datos
             for (Map<String, Object> inscripcionReal : inscripcionesReales) {
@@ -1369,7 +1337,6 @@ public class CursosIntersemestralesRestController {
                 inscripciones.add(inscripcionFormateada);
             }
             
-            log.debug("Inscripciones reales procesadas: {} inscripciones", inscripciones.size());
             
             return ResponseEntity.ok(inscripciones);
         } catch (Exception e) {
@@ -1386,7 +1353,6 @@ public class CursosIntersemestralesRestController {
     @GetMapping("/inscripciones-reales/{id_usuario}")
     public ResponseEntity<List<Map<String, Object>>> obtenerInscripcionesReales(@PathVariable Integer id_usuario) {
         try {
-            log.debug("Obteniendo inscripciones para el usuario con ID: {}", id_usuario);
             
             // Consultar las inscripciones guardadas en la base de datos
             List<SolicitudEntity> solicitudesEntity = solicitudRepository.buscarInscripcionesPorUsuario(id_usuario);
@@ -1443,7 +1409,6 @@ public class CursosIntersemestralesRestController {
                 return inscripcion;
             }).collect(Collectors.toList());
             
-            log.debug("Inscripciones filtradas para usuario {}: {} encontradas", id_usuario, inscripciones.size());
             
             return ResponseEntity.ok(inscripciones);
         } catch (Exception e) {
@@ -1743,7 +1708,6 @@ public class CursosIntersemestralesRestController {
     @GetMapping("/debug-solicitudes/{idUsuario}")
     public ResponseEntity<Map<String, Object>> debugSolicitudes(@PathVariable Integer idUsuario) {
         try {
-            log.debug("Buscando solicitudes para el usuario con ID {}", idUsuario);
             
             // Buscar todas las solicitudes del usuario
             List<SolicitudCursoVeranoPreinscripcion> preinscripciones = solicitudCU.buscarSolicitudesPorUsuario(idUsuario);
@@ -1753,7 +1717,6 @@ public class CursosIntersemestralesRestController {
             debug.put("preinscripcionesEncontradas", preinscripciones.size());
             debug.put("preinscripciones", preinscripciones);
             
-            log.debug("Se encontraron {} preinscripciones asociadas", preinscripciones.size());
             
             return ResponseEntity.ok(debug);
         } catch (Exception e) {
@@ -1770,7 +1733,6 @@ public class CursosIntersemestralesRestController {
     @GetMapping("/debug-seguimiento/{idUsuario}")
     public ResponseEntity<Map<String, Object>> debugSeguimiento(@PathVariable Integer idUsuario) {
         try {
-            log.debug("Iniciando seguimiento de solicitudes para el usuario {}", idUsuario);
             
             List<SolicitudCursoVeranoPreinscripcion> preinscripcionesReales = solicitudCU.buscarSolicitudesPorUsuario(idUsuario);
             
@@ -1837,9 +1799,6 @@ public class CursosIntersemestralesRestController {
             @RequestParam(value = "fechaInicio", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") Date fechaInicio,
             @RequestParam(value = "fechaFin", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") Date fechaFin) {
         try {
-            log.info("Obteniendo todas las solicitudes de cursos intersemestrales para funcionarios y coordinadores - idMateria: {}, periodoAcademico: {}, idCurso: {}, estado: {}", 
-                    idMateria, periodoAcademico, idCurso, estado);
-            
             // Buscar todas las solicitudes usando el repositorio directamente
             List<SolicitudEntity> todasLasSolicitudes = solicitudRepository.findAllWithJoins();
             
@@ -1984,7 +1943,6 @@ public class CursosIntersemestralesRestController {
                 }
             }
             
-            log.debug("Procesadas {} solicitudes de cursos intersemestrales", solicitudesFormateadas.size());
             
             return ResponseEntity.ok(solicitudesFormateadas);
             
@@ -2015,9 +1973,6 @@ public class CursosIntersemestralesRestController {
             @RequestParam(value = "fechaInicio", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") Date fechaInicio,
             @RequestParam(value = "fechaFin", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") Date fechaFin) {
         try {
-            log.info("Exportando solicitudes de cursos intersemestrales a Excel con filtros - idCurso: {}, estado: {}, periodoAcademico: {}, fechaInicio: {}, fechaFin: {}", 
-                    idCurso, estado, periodoAcademico, fechaInicio, fechaFin);
-            
             // Obtener todas las solicitudes usando la misma logica del endpoint anterior
             List<SolicitudEntity> todasLasSolicitudes = solicitudRepository.findAllWithJoins();
             
@@ -2163,7 +2118,6 @@ public class CursosIntersemestralesRestController {
             String nombreArchivo = "solicitudes_cursos_intersemestrales_" + new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date()) + ".xlsx";
             headers.setContentDispositionFormData("attachment", nombreArchivo);
             
-            log.debug("Excel generado exitosamente con {} solicitudes", solicitudesFormateadas.size());
             
             return new ResponseEntity<>(excelBytes, headers, HttpStatus.OK);
             
@@ -2510,7 +2464,6 @@ public class CursosIntersemestralesRestController {
     @GetMapping("/dashboard/estadisticas")
     public ResponseEntity<Map<String, Object>> obtenerEstadisticasDashboard() {
         try {
-            log.info("Obteniendo estadisticas del dashboard");
             
             Map<String, Object> estadisticas = new HashMap<>();
             

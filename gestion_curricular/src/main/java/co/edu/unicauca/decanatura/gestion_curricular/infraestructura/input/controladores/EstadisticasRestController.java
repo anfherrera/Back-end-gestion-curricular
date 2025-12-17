@@ -154,12 +154,9 @@ public class EstadisticasRestController {
             @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") Date fechaInicio,
             @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") Date fechaFin) {
         try {
-            log.debug("Estadísticas globales - Recibido período: '{}', proceso: {}, programa: {}", periodoAcademico, proceso, idPrograma);
-            
             // Si hay período académico, usar resumen completo que soporta filtros por período
             if (periodoAcademico != null && !periodoAcademico.trim().isEmpty()) {
                 String periodoNormalizado = normalizarPeriodoAcademico(periodoAcademico);
-                log.debug("Estadísticas globales - Período normalizado: '{}'", periodoNormalizado);
                 
                 Map<String, Object> resumen = estadisticaCU.obtenerResumenCompleto(periodoNormalizado, idPrograma);
                 @SuppressWarnings("unchecked")
@@ -477,18 +474,10 @@ public class EstadisticasRestController {
             @RequestParam(required = false) String periodoAcademico,
             @RequestParam(required = false) Integer idPrograma) {
         try {
-            log.debug("Resumen completo - Recibido período (original): '{}', programa: {}", periodoAcademico, idPrograma);
-            
             // Normalizar el período académico si viene en formato legible
             String periodoNormalizado = normalizarPeriodoAcademico(periodoAcademico);
-            log.debug("Resumen completo - Período normalizado: '{}'", periodoNormalizado);
             
             Map<String, Object> resumen = estadisticaCU.obtenerResumenCompleto(periodoNormalizado, idPrograma);
-            Object estadisticasGlobalesObj = resumen.get("estadisticasGlobales");
-            @SuppressWarnings("unchecked")
-            Map<String, Object> estadisticasGlobales = estadisticasGlobalesObj != null ? (Map<String, Object>) estadisticasGlobalesObj : null;
-            log.debug("Resumen completo - Total solicitudes en respuesta: {}", 
-                estadisticasGlobales != null ? estadisticasGlobales.get("totalSolicitudes") : "N/A");
             return ResponseEntity.ok(resumen);
         } catch (Exception e) {
             log.error("Error al obtener resumen completo", e);
@@ -537,15 +526,12 @@ public class EstadisticasRestController {
                 }
                 
                 String periodoNormalizado = año + "-" + numeroPeriodo;
-                log.debug("Período '{}' normalizado a '{}'", periodo, periodoNormalizado);
                 return periodoNormalizado;
             }
         } catch (Exception e) {
-            log.warn("Error al normalizar período '{}': {}", periodo, e.getMessage());
         }
         
         // Si no se pudo normalizar, retornar el original
-        log.warn("No se pudo normalizar el período '{}', se usará tal cual", periodo);
         return periodoLimpio;
     }
     
@@ -618,11 +604,8 @@ public class EstadisticasRestController {
             @RequestParam(required = false) String periodoAcademico,
             @RequestParam(required = false) Integer idPrograma) {
         try {
-            log.debug("Dashboard ejecutivo - Recibido período: '{}', programa: {}", periodoAcademico, idPrograma);
-            
             // Normalizar el período académico si viene en formato legible
             String periodoNormalizado = normalizarPeriodoAcademico(periodoAcademico);
-            log.debug("Dashboard ejecutivo - Período normalizado: '{}'", periodoNormalizado);
             
             Map<String, Object> dashboard = estadisticaCU.obtenerResumenCompleto(periodoNormalizado, idPrograma);
             
@@ -844,7 +827,6 @@ public class EstadisticasRestController {
             @RequestParam(required = false) String periodoAcademico,
             @RequestParam(required = false) Integer idPrograma) {
         try {
-            log.debug("Consolidado general - Recibido período: '{}', programa: {}", periodoAcademico, idPrograma);
             
             // Normalizar el período académico si viene en formato legible
             String periodoNormalizado = normalizarPeriodoAcademico(periodoAcademico);
@@ -1005,7 +987,6 @@ public class EstadisticasRestController {
                 try {
                     datosCursosVerano = estadisticaCU.obtenerEstadisticasCursosVerano(periodoNormalizado, idPrograma);
                 } catch (Exception e) {
-                    log.debug("Error al obtener datos de cursos de verano para exportación PDF: {}", e.getMessage());
                 }
             }
             
@@ -1137,7 +1118,6 @@ public class EstadisticasRestController {
                 try {
                     datosCursosVerano = estadisticaCU.obtenerEstadisticasCursosVerano(periodoNormalizado, idPrograma);
                 } catch (Exception e) {
-                    log.debug("Error al obtener datos de cursos de verano para exportación Excel: {}", e.getMessage());
                 }
             }
             
@@ -1408,7 +1388,6 @@ public class EstadisticasRestController {
                         }
                     }
                 } catch (Exception e) {
-                    log.debug("Error al obtener nombre del programa desde estadísticas: {}", e.getMessage());
                 }
                 
                 if (nombrePrograma != null) {
@@ -1530,11 +1509,8 @@ public class EstadisticasRestController {
             @RequestParam(required = false) String periodoAcademico,
             @RequestParam(required = false) Integer idPrograma) {
         try {
-            log.debug("Estadísticas por proceso - Recibido período: '{}', programa: {}", periodoAcademico, idPrograma);
             String periodoNormalizado = normalizarPeriodoAcademico(periodoAcademico);
-            log.debug("Estadísticas por proceso - Período normalizado: '{}'", periodoNormalizado);
             Map<String, Object> resultado = estadisticaCU.obtenerEstadisticasDetalladasPorProceso(periodoNormalizado, idPrograma);
-            log.debug("Estadísticas por proceso - Resultado obtenido exitosamente");
             return ResponseEntity.ok(resultado);
         } catch (Exception e) {
             log.error("Error al obtener estadísticas detalladas por proceso - Período: '{}', Programa: {}", periodoAcademico, idPrograma, e);
@@ -1621,11 +1597,8 @@ public class EstadisticasRestController {
             @RequestParam(required = false) String periodoAcademico,
             @RequestParam(required = false) Integer idPrograma) {
         try {
-            log.debug("Estadísticas por período - Recibido período: '{}', programa: {}", periodoAcademico, idPrograma);
             String periodoNormalizado = normalizarPeriodoAcademico(periodoAcademico);
-            log.debug("Estadísticas por período - Período normalizado: '{}'", periodoNormalizado);
             Map<String, Object> resultado = estadisticaCU.obtenerEstadisticasPorPeriodo(periodoNormalizado, idPrograma);
-            log.debug("Estadísticas por período - Resultado obtenido exitosamente");
             return ResponseEntity.ok(resultado);
         } catch (Exception e) {
             log.error("Error al obtener estadísticas por período - Período: '{}', Programa: {}", periodoAcademico, idPrograma, e);
@@ -1649,11 +1622,8 @@ public class EstadisticasRestController {
             @RequestParam(required = false) String periodoAcademico,
             @RequestParam(required = false) Integer idPrograma) {
         try {
-            log.debug("Estadísticas por programa - Recibido período: '{}', programa: {}", periodoAcademico, idPrograma);
             String periodoNormalizado = normalizarPeriodoAcademico(periodoAcademico);
-            log.debug("Estadísticas por programa - Período normalizado: '{}'", periodoNormalizado);
             Map<String, Object> resultado = estadisticaCU.obtenerEstadisticasPorPrograma(periodoNormalizado, idPrograma);
-            log.debug("Estadísticas por programa - Resultado obtenido exitosamente");
             return ResponseEntity.ok(resultado);
         } catch (Exception e) {
             log.error("Error al obtener estadísticas por programa - Período: '{}', Programa: {}", periodoAcademico, idPrograma, e);
@@ -2083,7 +2053,6 @@ public class EstadisticasRestController {
                     nombrePrograma = porPrograma.keySet().iterator().next();
                 }
             } catch (Exception e) {
-                log.debug("Error al obtener nombre del programa desde estadísticas: {}", e.getMessage());
             }
             
             org.apache.poi.ss.usermodel.Row programaRow = sheet.createRow(rowNum++);
