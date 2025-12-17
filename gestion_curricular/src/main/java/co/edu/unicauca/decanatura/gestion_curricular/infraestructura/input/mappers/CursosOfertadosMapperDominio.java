@@ -147,9 +147,6 @@ public interface CursosOfertadosMapperDominio {
         return sdf.format(fecha);
     }
     
-    // Métodos obsoletos eliminados: obtenerFechaFin y calcularPeriodoAcademico
-    // Ya no son necesarios porque fecha_fin y periodo_academico ahora están directamente en el curso
-    
     @Named("calcularCupoDisponible")
     default Integer calcularCupoDisponible(CursoOfertadoVerano curso) {
         if (curso == null) {

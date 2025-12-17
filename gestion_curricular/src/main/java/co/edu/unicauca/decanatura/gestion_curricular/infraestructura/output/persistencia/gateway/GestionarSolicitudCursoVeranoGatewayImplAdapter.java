@@ -211,7 +211,7 @@ public class GestionarSolicitudCursoVeranoGatewayImplAdapter implements Gestiona
         }
         SolicitudCursoVeranoInscripcionEntity solicitudCursoVeranoGuardado = solicitudRepository.save(solicitudCursoVeranoEntity);
 
-        return solicitudMapper.map(solicitudCursoVeranoGuardado, SolicitudCursoVeranoIncripcion.class); // Implementación pendiente
+        return solicitudMapper.map(solicitudCursoVeranoGuardado, SolicitudCursoVeranoIncripcion.class);
     }
 
     @Override

@@ -125,7 +125,7 @@ public class GestionarSolicitudGatewayImplAdapter implements GestionarSolicitudG
 
         SolicitudHomologacionEntity solicitudHomologacionGuardado = solicitudRepository.save(solicitudHomologacionEntity);
 
-        return solicitudMapper.map(solicitudHomologacionGuardado, SolicitudHomologacion.class); // Implementación pendiente
+        return solicitudMapper.map(solicitudHomologacionGuardado, SolicitudHomologacion.class);
     }
 
     @Override

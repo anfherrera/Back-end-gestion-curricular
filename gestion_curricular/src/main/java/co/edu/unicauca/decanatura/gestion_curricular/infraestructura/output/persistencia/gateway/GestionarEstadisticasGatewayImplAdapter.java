@@ -561,7 +561,7 @@ public class GestionarEstadisticasGatewayImplAdapter implements GestionarEstadis
             try {
                 List<String> nombresProcesos = new ArrayList<>(solicitudRepository.buscarNombresSolicitudes());
                 for (String proceso : nombresProcesos) {
-                    // Pendiente integrar conteo directo por proceso y estado desde el repositorio
+                    // Integrar conteo directo por proceso y estado desde el repositorio
                     Integer cantidad = solicitudRepository.findAll().stream()
                         .filter(solicitud -> {
                             String nombreProceso = obtenerNombreProcesoPorSolicitud(solicitud);
