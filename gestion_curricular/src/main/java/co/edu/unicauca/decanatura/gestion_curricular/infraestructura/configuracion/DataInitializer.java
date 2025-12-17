@@ -49,12 +49,12 @@ public class DataInitializer implements CommandLineRunner {
                 Programa programa = programaGateway.buscarPorIdPrograma(1);
                 
                 if (rolAdmin == null) {
-                    log.error("❌ No se puede crear el usuario admin: El rol Administrador (ID=1) no existe en la base de datos");
+                    log.error("No se puede crear el usuario admin: El rol Administrador (ID=1) no existe en la base de datos");
                     return;
                 }
                 
                 if (programa == null) {
-                    log.error("❌ No se puede crear el usuario admin: El programa (ID=1) no existe en la base de datos");
+                    log.error("No se puede crear el usuario admin: El programa (ID=1) no existe en la base de datos");
                     return;
                 }
                 

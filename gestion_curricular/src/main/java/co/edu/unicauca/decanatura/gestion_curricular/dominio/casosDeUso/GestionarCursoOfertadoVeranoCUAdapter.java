@@ -121,7 +121,6 @@ public class GestionarCursoOfertadoVeranoCUAdapter implements GestionarCursoOfer
                                 solicitud, estadoAnterior, "Aprobado", "CURSO_VERANO_PREINSCRIPCION"
                             );
                         } catch (Exception e) {
-                            System.err.println("Error al crear notificación de cambio de estado: " + e.getMessage());
                         }
                     }
                     
@@ -167,7 +166,6 @@ public class GestionarCursoOfertadoVeranoCUAdapter implements GestionarCursoOfer
                             solicitud, estadoAnterior, "Aprobado", "CURSO_VERANO_INSCRIPCION"
                         );
                     } catch (Exception e) {
-                        System.err.println("Error al crear notificación de cambio de estado: " + e.getMessage());
                     }
                 }
                 if(estudiantesInscritos != null){

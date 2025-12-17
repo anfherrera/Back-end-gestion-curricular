@@ -102,8 +102,6 @@ public class GestionarSolicitudEcaesCUAdapter implements GestionarSolicitudEcaes
             try {
                 this.objGestionarNotificacionCU.notificarCreacionSolicitud(solicitudGuardada, "ECAES");
             } catch (Exception e) {
-                // Log del error pero no interrumpir el flujo principal
-                System.err.println("Error al crear notificación: " + e.getMessage());
             }
 
             return solicitudGuardada;
@@ -149,8 +147,6 @@ public class GestionarSolicitudEcaesCUAdapter implements GestionarSolicitudEcaes
             solicitud = buscarPorId(idSolicitud); // Recargar con el nuevo estado
             this.objGestionarNotificacionCU.notificarCambioEstadoSolicitud(solicitud, estadoAnterior, nuevoEstado, "ECAES");
         } catch (Exception e) {
-            // Log del error pero no interrumpir el flujo principal
-            System.err.println("Error al crear notificación de cambio de estado: " + e.getMessage());
         }
     }
 

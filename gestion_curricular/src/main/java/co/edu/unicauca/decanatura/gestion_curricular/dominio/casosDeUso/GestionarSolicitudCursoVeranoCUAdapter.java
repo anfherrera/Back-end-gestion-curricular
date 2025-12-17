@@ -128,9 +128,6 @@ public class GestionarSolicitudCursoVeranoCUAdapter implements GestionarSolicitu
         try {
             this.objGestionarNotificacionCU.notificarCreacionSolicitud(solicitudGuardada, "CURSO_VERANO_PREINSCRIPCION");
         } catch (Exception e) {
-            // Log del error pero no interrumpir el flujo principal
-            System.err.println("Error al crear notificación: " + e.getMessage());
-            e.printStackTrace();
         }
         
         return solicitudGuardada;
@@ -229,9 +226,6 @@ public class GestionarSolicitudCursoVeranoCUAdapter implements GestionarSolicitu
         try {
             this.objGestionarNotificacionCU.notificarCreacionSolicitud(solicitudGuardada, "CURSO_VERANO_INSCRIPCION");
         } catch (Exception e) {
-            // Log del error pero no interrumpir el flujo principal
-            System.err.println("Error al crear notificación: " + e.getMessage());
-            e.printStackTrace();
         }
 
         return solicitudGuardada;

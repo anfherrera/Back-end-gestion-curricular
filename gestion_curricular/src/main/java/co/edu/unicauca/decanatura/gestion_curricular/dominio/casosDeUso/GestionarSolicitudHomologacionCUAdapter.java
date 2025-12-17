@@ -88,9 +88,6 @@ public class GestionarSolicitudHomologacionCUAdapter implements GestionarSolicit
         try {
             this.objGestionarNotificacionCU.notificarCreacionSolicitud(solicitudGuardada, "HOMOLOGACION");
         } catch (Exception e) {
-            // Log del error pero no interrumpir el flujo principal
-            System.err.println("Error al crear notificación: " + e.getMessage());
-            e.printStackTrace();
         }
 
         return solicitudGuardada;
@@ -224,9 +221,6 @@ public class GestionarSolicitudHomologacionCUAdapter implements GestionarSolicit
             solicitud = buscarPorId(idSolicitud); // Recargar con el nuevo estado
             this.objGestionarNotificacionCU.notificarCambioEstadoSolicitud(solicitud, estadoAnterior, nuevoEstado, "HOMOLOGACION");
         } catch (Exception e) {
-            // Log del error pero no interrumpir el flujo principal
-            System.err.println("Error al crear notificación de cambio de estado: " + e.getMessage());
-            e.printStackTrace();
         }
     }
     

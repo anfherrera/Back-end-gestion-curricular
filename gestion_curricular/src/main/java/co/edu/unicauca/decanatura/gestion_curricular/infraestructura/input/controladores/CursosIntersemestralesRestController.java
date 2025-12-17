@@ -1727,58 +1727,6 @@ public class CursosIntersemestralesRestController {
     }
 
     /**
-     * Endpoint de debug especifico para seguimiento
-     * GET /api/cursos-intersemestrales/debug-seguimiento/{idUsuario}
-     */
-    @GetMapping("/debug-seguimiento/{idUsuario}")
-    public ResponseEntity<Map<String, Object>> debugSeguimiento(@PathVariable Integer idUsuario) {
-        try {
-            
-            List<SolicitudCursoVeranoPreinscripcion> preinscripcionesReales = solicitudCU.buscarSolicitudesPorUsuario(idUsuario);
-            
-            Map<String, Object> debug = new HashMap<>();
-            debug.put("totalSolicitudes", preinscripcionesReales.size());
-            
-            List<Map<String, Object>> solicitudesDebug = new ArrayList<>();
-            for (SolicitudCursoVeranoPreinscripcion preinscripcion : preinscripcionesReales) {
-                Map<String, Object> info = new HashMap<>();
-                info.put("id", preinscripcion.getId_solicitud());
-                info.put("observacion", preinscripcion.getObservacion());
-                info.put("nombre_solicitud", preinscripcion.getNombre_solicitud());
-                info.put("clase", preinscripcion.getClass().getSimpleName());
-                
-                // Probar deteccion de tipo
-                boolean esSolicitudCursoNuevo = false;
-                if (preinscripcion.getObservacion() != null) {
-                    String obs = preinscripcion.getObservacion().toLowerCase();
-                    if (obs.contains("solicitud de apertura") || obs.contains("curso:")) {
-                        esSolicitudCursoNuevo = true;
-                    }
-                }
-                if (!esSolicitudCursoNuevo && preinscripcion.getNombre_solicitud() != null) {
-                    String nombre = preinscripcion.getNombre_solicitud().toLowerCase();
-                    if (nombre.contains("solicitud de apertura") || nombre.contains("curso:")) {
-                        esSolicitudCursoNuevo = true;
-                    }
-                }
-                
-                info.put("esSolicitudCursoNuevo", esSolicitudCursoNuevo);
-                info.put("tipoDetectado", esSolicitudCursoNuevo ? "Solicitud de Curso Nuevo" : "Preinscripcion");
-                
-                solicitudesDebug.add(info);
-            }
-            
-            debug.put("solicitudes", solicitudesDebug);
-            
-            return ResponseEntity.ok(debug);
-        } catch (Exception e) {
-            Map<String, Object> error = new HashMap<>();
-            error.put("error", "Error en debug: " + e.getMessage());
-            return ResponseEntity.internalServerError().body(error);
-        }
-    }
-
-    /**
      * Obtener todas las solicitudes de cursos intersemestrales para funcionarios y coordinadores
      * GET /api/cursos-intersemestrales/solicitudes
      * 
@@ -2538,41 +2486,6 @@ public class CursosIntersemestralesRestController {
             log.error("Error obteniendo estadisticas del dashboard: {}", e.getMessage(), e);
             Map<String, Object> error = new HashMap<>();
             error.put("error", "Error interno del servidor");
-            return ResponseEntity.internalServerError().body(error);
-        }
-    }
-
-    /**
-     * Endpoint temporal para debug - verificar TODAS las preinscripciones
-     * GET /api/cursos-intersemestrales/debug-todas-solicitudes
-     */
-    @GetMapping("/debug-todas-solicitudes")
-    public ResponseEntity<Map<String, Object>> debugTodasSolicitudes() {
-        try {
-            
-            // Buscar todas las solicitudes usando el repositorio directamente
-            List<SolicitudEntity> todasLasSolicitudes = solicitudRepository.findAll();
-            
-            Map<String, Object> debug = new HashMap<>();
-            debug.put("totalSolicitudes", todasLasSolicitudes.size());
-            
-            List<Map<String, Object>> solicitudesInfo = new ArrayList<>();
-            for (SolicitudEntity solicitud : todasLasSolicitudes) {
-                Map<String, Object> info = new HashMap<>();
-                info.put("id", solicitud.getId_solicitud());
-                info.put("tipo", solicitud.getClass().getSimpleName());
-                info.put("usuarioId", solicitud.getObjUsuario() != null ? solicitud.getObjUsuario().getId_usuario() : "null");
-                info.put("fecha", solicitud.getFecha_registro_solicitud());
-                solicitudesInfo.add(info);
-            }
-            
-            debug.put("solicitudes", solicitudesInfo);
-            
-            
-            return ResponseEntity.ok(debug);
-        } catch (Exception e) {
-            Map<String, Object> error = new HashMap<>();
-            error.put("error", "Error en debug: " + e.getMessage());
             return ResponseEntity.internalServerError().body(error);
         }
     }
