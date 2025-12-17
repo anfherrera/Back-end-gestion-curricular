@@ -82,9 +82,6 @@ public class SolicitudCursoVeranoRestController {
             @RequestParam(name = "file", required = true) MultipartFile file,
             @RequestParam(name = "idSolicitud", required = true) @Min(value = 1) Integer idSolicitud) {
         try {
-            log.debug("Iniciando subida de comprobante. ID Solicitud: {}, Archivo: {}", 
-                idSolicitud, file.getOriginalFilename());
-            
             String nombreOriginal = file.getOriginalFilename();
             
             if (nombreOriginal == null || nombreOriginal.trim().isEmpty()) {
@@ -97,22 +94,16 @@ public class SolicitudCursoVeranoRestController {
             }
             
             // 1. Verificar que la inscripción existe
-            log.debug("Verificando inscripción ID: {}", idSolicitud);
             SolicitudCursoVeranoIncripcion inscripcionExistente = solicitudCU.buscarPorIdInscripcion(idSolicitud);
             
             if (inscripcionExistente == null) {
-                log.warn("Inscripción no encontrada: {}", idSolicitud);
                 return ResponseEntity.badRequest().body(Map.of("error", "Inscripción no encontrada"));
             }
             
-            log.debug("Inscripción encontrada: {}", inscripcionExistente.getNombre_solicitud());
-            
             // 2. Guardar archivo organizado en subcarpetas
-            log.debug("Guardando archivo: {}", nombreOriginal);
             String rutaArchivo = this.objGestionarArchivos.saveFile(file, nombreOriginal, "pdf", "curso-verano", idSolicitud);
             
             // 3. Crear documento
-            log.debug("Creando documento...");
             Documento doc = new Documento();
             doc.setNombre(nombreOriginal);
             doc.setRuta_documento(rutaArchivo); // Guardar ruta completa con subcarpetas
@@ -121,14 +112,10 @@ public class SolicitudCursoVeranoRestController {
             doc.setComentario("Comprobante de pago - Curso de Verano");
             
             // 4. Asociar a la inscripción REAL (no crear una nueva)
-            log.debug("Asociando documento a inscripción real...");
             doc.setObjSolicitud(inscripcionExistente);
             
             // 5. Guardar documento
-            log.debug("Guardando documento en BD...");
             Documento documentoGuardado = this.objGestionarDocumentosGateway.crearDocumento(doc);
-            
-            log.debug("Documento guardado con ID: {}", documentoGuardado.getId_documento());
             
             Map<String, Object> respuesta = new HashMap<>();
             respuesta.put("success", true);
@@ -137,7 +124,6 @@ public class SolicitudCursoVeranoRestController {
             respuesta.put("idSolicitud", idSolicitud);
             respuesta.put("documentoId", documentoGuardado.getId_documento());
             
-            log.debug("Proceso completado exitosamente");
             return ResponseEntity.ok(respuesta);
             
         } catch (Exception e) {
@@ -230,14 +216,8 @@ public class SolicitudCursoVeranoRestController {
             SolicitudCursoVeranoPreinscripcion solicitudDominio = solicitudCursoVeranoPreinscripcionMapper
                     .mappearDePeticionASolicitudCursoVeranoPreinscripcion(solicitudDTO);
 
-            log.debug("Creando solicitud con datos: Nombre: {}, Código: {}, Curso: {}, Usuario ID: {}", 
-                nombreCompleto, codigo, curso, idUsuario);
-
             SolicitudCursoVeranoPreinscripcion solicitudGuardada = solicitudCU
                     .crearSolicitudCursoVeranoPreinscripcion(solicitudDominio);
-
-            log.debug("Solicitud guardada con ID: {}", 
-                solicitudGuardada != null ? solicitudGuardada.getId_solicitud() : "NULL");
 
             // Respuesta exitosa
             Map<String, Object> respuesta = new HashMap<>();

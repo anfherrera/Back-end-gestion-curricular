@@ -166,16 +166,11 @@ public class SolicitudRestController {
             @RequestParam(required = false) Integer idUsuario) {
         
         try {
-            log.debug("Obteniendo historial completo - periodoAcademico: {}, tipoSolicitud: {}, estadoActual: {}, idUsuario: {}", 
-                    periodoAcademico, tipoSolicitud, estadoActual, idUsuario);
-            
             // Obtener todas las solicitudes usando el caso de uso (más confiable)
             // Esto usa el mismo método que otros endpoints que funcionan
             List<Solicitud> todasLasSolicitudesDominio = solicitudCU.listarSolicitudes();
-            log.info("Total de solicitudes encontradas (usando CU): {}", todasLasSolicitudesDominio.size());
             
             if (todasLasSolicitudesDominio == null || todasLasSolicitudesDominio.isEmpty()) {
-                log.warn("No se encontraron solicitudes en la base de datos usando el caso de uso");
                 Map<String, Object> respuestaVacia = new HashMap<>();
                 respuestaVacia.put("solicitudes", new ArrayList<>());
                 respuestaVacia.put("total", 0);
@@ -249,14 +244,10 @@ public class SolicitudRestController {
                     })
                     .collect(Collectors.toList());
             
-            log.info("Total de DTOs creados: {}", todasLasSolicitudesDTO.size());
-            
             // Contar solicitudes con estados (para estadísticas)
             long totalConEstados = todasLasSolicitudesDTO.stream()
                     .filter(s -> s.getEstadosSolicitud() != null && !s.getEstadosSolicitud().isEmpty())
                     .count();
-            
-            log.info("Solicitudes con estados: {} de {}", totalConEstados, todasLasSolicitudesDTO.size());
             
             // Aplicar filtros adicionales a los DTOs
             List<SolicitudDTORespuesta> solicitudesFiltradas = todasLasSolicitudesDTO.stream()
@@ -327,9 +318,6 @@ public class SolicitudRestController {
                     })
                     .collect(Collectors.toList());
             
-            log.info("Solicitudes después de aplicar filtros: {} (filtros: periodoAcademico={}, tipoSolicitud={}, estadoActual={}, idUsuario={})", 
-                    solicitudesFiltradas.size(), periodoAcademico, tipoSolicitud, estadoActual, idUsuario);
-            
             // Construir respuesta
             Map<String, Object> respuesta = new HashMap<>();
             respuesta.put("solicitudes", solicitudesFiltradas);
@@ -337,9 +325,6 @@ public class SolicitudRestController {
             respuesta.put("total_solicitudes_sistema", todasLasSolicitudesDTO.size());
             respuesta.put("total_solicitudes_procesadas", totalConEstados);
             respuesta.put("total_solicitudes_no_procesadas", todasLasSolicitudesDTO.size() - totalConEstados);
-            
-            log.info("Respuesta final - Total filtrado: {}, Total sistema: {}, Procesadas: {}", 
-                    solicitudesFiltradas.size(), todasLasSolicitudesDTO.size(), totalConEstados);
             
             return ResponseEntity.ok(respuesta);
             
@@ -368,9 +353,6 @@ public class SolicitudRestController {
             @RequestParam(required = false) Integer idUsuario) {
         
         try {
-            log.info("Generando PDF del historial de solicitudes - periodoAcademico: {}, tipoSolicitud: {}, estadoActual: {}, idUsuario: {}", 
-                    periodoAcademico, tipoSolicitud, estadoActual, idUsuario);
-            
             // Obtener el historial usando el mismo método que el endpoint GET
             ResponseEntity<Map<String, Object>> historialResponse = obtenerHistorialCompleto(
                     periodoAcademico, tipoSolicitud, estadoActual, idUsuario);
@@ -400,7 +382,6 @@ public class SolicitudRestController {
             String filename = "historial_solicitudes_" + fecha + ".pdf";
             headers.setContentDispositionFormData("attachment", filename);
             
-            log.info("PDF del historial generado correctamente. Total de solicitudes: {}", solicitudes.size());
             return new ResponseEntity<>(pdfBytes, headers, HttpStatus.OK);
             
         } catch (Exception e) {
@@ -424,7 +405,6 @@ public class SolicitudRestController {
                                        String periodoAcademico, 
                                        String tipoSolicitud, 
                                        String estadoActual) {
-        log.debug("Iniciando la generación del PDF del historial...");
         
         ByteArrayOutputStream baos = null;
         com.itextpdf.text.Document document = null;
@@ -465,7 +445,6 @@ public class SolicitudRestController {
                         filtrosInfo.append("Período Académico: Todos los períodos\n");
                     }
                 } catch (Exception e) {
-                    log.debug("No se pudo obtener el período actual: {}", e.getMessage());
                     filtrosInfo.append("Período Académico: Todos los períodos\n");
                 }
             }
@@ -644,7 +623,6 @@ public class SolicitudRestController {
                     new java.util.Locale("es", "ES"));
             return localDate.format(formatter);
         } catch (Exception e) {
-            log.warn("Error al formatear fecha en español: {}", e.getMessage());
             // Fallback a formato simple
             SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
             return sdf.format(fecha);

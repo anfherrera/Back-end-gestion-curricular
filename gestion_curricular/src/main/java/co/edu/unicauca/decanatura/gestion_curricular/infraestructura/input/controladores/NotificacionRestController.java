@@ -115,7 +115,6 @@ public class NotificacionRestController {
         try {
             // Validar permisos: estudiantes solo pueden ver sus propias notificaciones
             if (!tienePermisoParaVerNotificaciones(idUsuario)) {
-                log.warn("Acceso denegado: usuario no tiene permisos para ver notificaciones del usuario {}", idUsuario);
                 return new ResponseEntity<>(HttpStatus.FORBIDDEN);
             }
             
@@ -140,7 +139,6 @@ public class NotificacionRestController {
         try {
             // Validar permisos: estudiantes solo pueden ver sus propias notificaciones
             if (!tienePermisoParaVerNotificaciones(idUsuario)) {
-                log.warn("Acceso denegado: usuario no tiene permisos para ver notificaciones del usuario {}", idUsuario);
                 return new ResponseEntity<>(HttpStatus.FORBIDDEN);
             }
             
@@ -188,7 +186,6 @@ public class NotificacionRestController {
         try {
             // Validar permisos: estudiantes solo pueden ver sus propias notificaciones
             if (!tienePermisoParaVerNotificaciones(idUsuario)) {
-                log.warn("Acceso denegado: usuario no tiene permisos para contar notificaciones del usuario {}", idUsuario);
                 return new ResponseEntity<>(HttpStatus.FORBIDDEN);
             }
             
@@ -330,7 +327,6 @@ public class NotificacionRestController {
             Usuario usuarioAutenticado = usuarioGateway.buscarUsuarioPorCorreo(email);
             
             if (usuarioAutenticado == null) {
-                log.warn("Usuario autenticado no encontrado: {}", email);
                 return false;
             }
 

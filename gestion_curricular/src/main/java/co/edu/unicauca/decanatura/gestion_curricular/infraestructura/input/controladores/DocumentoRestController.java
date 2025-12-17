@@ -37,7 +37,6 @@ public class DocumentoRestController {
 
     @PutMapping("/añadirComentario")
     public ResponseEntity<Void> añadirComentario(@RequestBody ComentarioDocumentoDTOPeticion peticion) {
-        log.debug("Añadiendo comentario: {} al documento con ID: {}", peticion.getComentario(), peticion.getIdDocumento());
         documentoCU.añadirComentario(peticion.getIdDocumento(), peticion.getComentario());
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
