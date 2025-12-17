@@ -107,7 +107,6 @@ public class GestionarSolicitudCursoVeranoGatewayImplAdapter implements Gestiona
                     PeriodoAcademicoEnum periodoActual = PeriodoAcademicoEnum.getPeriodoActual();
                     if (periodoActual != null) {
                         solicitudCursoVeranoEntity.setPeriodo_academico(periodoActual.getValor());
-                        log.debug("Período académico establecido automáticamente para solicitud de curso nuevo: {}", periodoActual.getValor());
                     }
                 }
             } else if(cursoOfertadoVeranoRepository.existsById(idCurso)){
@@ -138,7 +137,6 @@ public class GestionarSolicitudCursoVeranoGatewayImplAdapter implements Gestiona
                         String periodoValor = periodoActual.getValor();
                         cursoOfertadoVeranoEntity.setPeriodo_academico(periodoValor);
                         solicitudCursoVeranoEntity.setPeriodo_academico(periodoValor);
-                        log.debug("Período académico establecido automáticamente para curso y solicitud: {}", periodoValor);
                     }
                 }
             }
@@ -329,25 +327,21 @@ public class GestionarSolicitudCursoVeranoGatewayImplAdapter implements Gestiona
     @Override
     @Transactional
     public SolicitudCursoVeranoPreinscripcion aprobarPreinscripcion(Integer idSolicitud, String comentarios) {
-        log.debug("Intentando aprobar preinscripción con ID: {}", idSolicitud);
-        
         // Buscar la solicitud sin filtrar primero
         Optional<SolicitudEntity> solicitudOpt = solicitudRepository.findById(idSolicitud);
         if (!solicitudOpt.isPresent()) {
-            log.debug("No se encontró ninguna solicitud con ID: {}", idSolicitud);
+            // "No se encontró ninguna solicitud con ID: {}", idSolicitud);
             return null;
         }
         
         SolicitudEntity solicitudEntity = solicitudOpt.get();
-        log.debug("Solicitud encontrada - Tipo: {}", solicitudEntity.getClass().getSimpleName());
+        // "Solicitud encontrada - Tipo: {}", solicitudEntity.getClass().getSimpleName());
         
         // Verificar si es del tipo correcto
         if (!(solicitudEntity instanceof SolicitudCursoVeranoPreinscripcionEntity)) {
-            log.debug("La solicitud no es del tipo SolicitudCursoVeranoPreinscripcionEntity");
+            // "La solicitud no es del tipo SolicitudCursoVeranoPreinscripcionEntity");
             return null;
         }
-        
-        log.debug("Solicitud es del tipo correcto, procediendo con la aprobación...");
         
         // Crear nuevo estado "Aprobado"
         EstadoSolicitudEntity estadoEntity = new EstadoSolicitudEntity();
@@ -365,10 +359,10 @@ public class GestionarSolicitudCursoVeranoGatewayImplAdapter implements Gestiona
         solicitudEntity.getEstadosSolicitud().add(estadoEntity);
         SolicitudEntity solicitudActualizada = solicitudRepository.save(solicitudEntity);
         
-        log.debug("Solicitud actualizada guardada con ID: {}", solicitudActualizada.getId_solicitud());
+        // "Solicitud actualizada guardada con ID: {}", solicitudActualizada.getId_solicitud());
         
         SolicitudCursoVeranoPreinscripcion resultado = solicitudMapper.map(solicitudActualizada, SolicitudCursoVeranoPreinscripcion.class);
-        log.debug("Mapeo completado, resultado: {}", resultado != null ? "OK" : "NULL");
+        // "Mapeo completado, resultado: {}", resultado != null ? "OK" : "NULL");
         
         return resultado;
     }
@@ -376,25 +370,21 @@ public class GestionarSolicitudCursoVeranoGatewayImplAdapter implements Gestiona
     @Override
     @Transactional
     public SolicitudCursoVeranoPreinscripcion rechazarPreinscripcion(Integer idSolicitud, String motivo) {
-        log.debug("Intentando rechazar preinscripción con ID: {}", idSolicitud);
-        
         // Buscar la solicitud sin filtrar primero
         Optional<SolicitudEntity> solicitudOpt = solicitudRepository.findById(idSolicitud);
         if (!solicitudOpt.isPresent()) {
-            log.debug("No se encontró ninguna solicitud con ID: {}", idSolicitud);
+            // "No se encontró ninguna solicitud con ID: {}", idSolicitud);
             return null;
         }
         
         SolicitudEntity solicitudEntity = solicitudOpt.get();
-        log.debug("Solicitud encontrada - Tipo: {}", solicitudEntity.getClass().getSimpleName());
+        // "Solicitud encontrada - Tipo: {}", solicitudEntity.getClass().getSimpleName());
         
         // Verificar si es del tipo correcto
         if (!(solicitudEntity instanceof SolicitudCursoVeranoPreinscripcionEntity)) {
-            log.debug("La solicitud no es del tipo SolicitudCursoVeranoPreinscripcionEntity");
+            // "La solicitud no es del tipo SolicitudCursoVeranoPreinscripcionEntity");
             return null;
         }
-        
-        log.debug("Solicitud es del tipo correcto, procediendo con el rechazo...");
         
         // Crear nuevo estado "Rechazado"
         EstadoSolicitudEntity estadoEntity = new EstadoSolicitudEntity();
@@ -410,10 +400,10 @@ public class GestionarSolicitudCursoVeranoGatewayImplAdapter implements Gestiona
         solicitudEntity.getEstadosSolicitud().add(estadoEntity);
         SolicitudEntity solicitudActualizada = solicitudRepository.save(solicitudEntity);
         
-        log.debug("Solicitud actualizada guardada con ID: {}", solicitudActualizada.getId_solicitud());
+        // "Solicitud actualizada guardada con ID: {}", solicitudActualizada.getId_solicitud());
         
         SolicitudCursoVeranoPreinscripcion resultado = solicitudMapper.map(solicitudActualizada, SolicitudCursoVeranoPreinscripcion.class);
-        log.debug("Mapeo completado, resultado: {}", resultado != null ? "OK" : "NULL");
+        // "Mapeo completado, resultado: {}", resultado != null ? "OK" : "NULL");
         
         return resultado;
     }

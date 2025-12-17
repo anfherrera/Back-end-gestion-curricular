@@ -214,7 +214,6 @@ public class GestionarEstadisticasGatewayImplAdapter implements GestionarEstadis
                     try {
                         preRegistrado = Optional.ofNullable(solicitudRepository.contarEstado("PRE_REGISTRADO")).orElse(0);
                     } catch (Exception e) {
-                        log.debug("Estadisticas globales - PRE_REGISTRADO no encontrado o error: {}", e.getMessage());
                         preRegistrado = 0;
                     }
                     totalEnviadas = (enviadas != null ? enviadas : 0) + (preRegistrado != null ? preRegistrado : 0);
@@ -231,7 +230,6 @@ public class GestionarEstadisticasGatewayImplAdapter implements GestionarEstadis
                         try {
                             totalSolicitudes = Optional.ofNullable(solicitudRepository.totalSolicitudes()).orElse(0);
                         } catch (Exception e) {
-                            log.debug("Estadisticas globales - Error obteniendo totalSolicitudes: {}", e.getMessage());
                             totalSolicitudes = 0;
                         }
                     }
@@ -349,14 +347,10 @@ public class GestionarEstadisticasGatewayImplAdapter implements GestionarEstadis
                             String tipoProceso = extraerTipoProceso(nombreSolicitud);
                             porTipoProceso.put(tipoProceso, porTipoProceso.getOrDefault(tipoProceso, 0) + 1);
                         } catch (Exception e) {
-                            log.debug("Estadisticas globales - Error extrayendo tipo de proceso para solicitud ID {}: {}", 
-                                    solicitud != null ? solicitud.getId_solicitud() : "null", e.getMessage());
                             // Continuar con la siguiente solicitud
                         }
                     }
                     } catch (Exception e) {
-                        log.debug("Estadisticas globales - Error procesando solicitud ID {}: {}", 
-                                solicitud != null ? solicitud.getId_solicitud() : "null", e.getMessage());
                         // Continuar con la siguiente solicitud
                     }
                 }
@@ -380,7 +374,6 @@ public class GestionarEstadisticasGatewayImplAdapter implements GestionarEstadis
                     log.error("Estadisticas globales - Error obteniendo nombres de programas: {}", e.getMessage(), e);
                     nombresProgramas = new ArrayList<>();
                 }
-                log.debug("Estadisticas globales - Programas encontrados: {}", nombresProgramas);
                 
                 // Obtener todos los programas con sus IDs
                 List<ProgramaEntity> programas;
@@ -402,10 +395,8 @@ public class GestionarEstadisticasGatewayImplAdapter implements GestionarEstadis
                         if (programa != null && programa.getId_programa() != null && programa.getNombre_programa() != null) {
                             Integer cantidad = Optional.ofNullable(solicitudRepository.contarSolicitudesPorProgramaConFiltros(programa.getId_programa(), proceso, fechaInicio, fechaFin)).orElse(0);
                             porPrograma.put(programa.getNombre_programa(), cantidad);
-                            log.debug("Estadisticas globales - Programa: {} = {}", programa.getNombre_programa(), cantidad);
                         }
                     } catch (Exception e) {
-                        log.debug("Estadisticas globales - Error contando solicitudes para programa {}: {}", programa != null ? programa.getNombre_programa() : "null", e.getMessage());
                         // Continuar con el siguiente programa
                     }
                 }
@@ -451,8 +442,6 @@ public class GestionarEstadisticasGatewayImplAdapter implements GestionarEstadis
             // porque son mas relevantes y accionables para ese contexto especifico.
             // El dashboard general se enfoca en datos consolidados sin predicciones.
             
-            log.debug("Estadisticas globales - Consulta completada exitosamente (sin predicciones)");
-            log.debug("Estadisticas globales - Resultado final: {}", estadisticas);
             
         } catch (Exception e) {
             log.error("Estadisticas globales - Error en consulta: {}", e.getMessage(), e);
@@ -483,7 +472,6 @@ public class GestionarEstadisticasGatewayImplAdapter implements GestionarEstadis
     @Override
     @Transactional(readOnly = true)
     public Map<String, Object> obtenerEstadisticasPorProceso(String tipoProceso) {
-        log.debug("Estadisticas por proceso - Consultando estadisticas para proceso: {}", tipoProceso);
         
         Map<String, Object> estadisticas = new HashMap<>();
         
@@ -496,10 +484,8 @@ public class GestionarEstadisticasGatewayImplAdapter implements GestionarEstadis
             
             // Normalizar el nombre del proceso para busqueda
             String procesoNormalizado = normalizarNombreProceso(tipoProceso);
-            log.debug("Estadisticas por proceso - Proceso normalizado:  {}", procesoNormalizado);
             
             Integer totalPorProceso = Optional.ofNullable(solicitudRepository.contarPorNombre(procesoNormalizado)).orElse(0);
-            log.debug("Estadisticas por proceso - Total encontrado:  {}", totalPorProceso);
             
             // Obtener estadisticas por estado para este proceso especifico
             Map<String, Integer> porEstado = new HashMap<>();
@@ -521,12 +507,10 @@ public class GestionarEstadisticasGatewayImplAdapter implements GestionarEstadis
                         .mapToInt(solicitud -> 1)
                         .sum();
                 } catch (Exception e) {
-                    log.debug("Estadisticas por proceso - Error contando estado {}: {}", estado, e.getMessage());
                     cantidad = 0;
                 }
                 
                 porEstado.put(estado, cantidad);
-                log.debug("Estadisticas por proceso - Estado {}: {}", estado, cantidad);
             }
             
             // Calcular totales para este proceso
@@ -556,8 +540,6 @@ public class GestionarEstadisticasGatewayImplAdapter implements GestionarEstadis
             // Normalizar la respuesta para evitar valores null
             estadisticas = normalizarEstadistica(estadisticas);
             
-            log.debug("Estadisticas por proceso - Consulta completada para:  {}", tipoProceso);
-            log.debug("Estadisticas por proceso - Resultado final:  {}", estadisticas);
             
         } catch (Exception e) {
             log.error("Estadisticas por proceso - Error en consulta:  {}", e.getMessage());
@@ -572,7 +554,6 @@ public class GestionarEstadisticasGatewayImplAdapter implements GestionarEstadis
     @Override
     @Transactional(readOnly = true)
     public Map<String, Object> obtenerEstadisticasPorEstado(String estado) {
-        log.debug("Estadisticas por estado - Consultando estadisticas para estado:  {}", estado);
         
         Map<String, Object> estadisticas = new HashMap<>();
         
@@ -584,7 +565,6 @@ public class GestionarEstadisticasGatewayImplAdapter implements GestionarEstadis
             }
             
             Integer totalPorEstado = Optional.ofNullable(solicitudRepository.contarSolicitudesPorUltimoEstado(estado)).orElse(0);
-            log.debug("Estadisticas por estado - Total encontrado:  {}", totalPorEstado);
             
             // Obtener estadisticas por tipo de proceso para este estado
             final String estadoNormalizado = estado;
@@ -655,8 +635,6 @@ public class GestionarEstadisticasGatewayImplAdapter implements GestionarEstadis
             // Normalizar la respuesta para evitar valores null
             estadisticas = normalizarEstadistica(estadisticas);
             
-            log.debug("Estadisticas por estado - Consulta completada para:  {}", estado);
-            log.debug("Estadisticas por estado - Resultado final:  {}", estadisticas);
             
         } catch (Exception e) {
             log.error("Estadisticas por estado - Error en consulta:  {}", e.getMessage());
@@ -671,7 +649,6 @@ public class GestionarEstadisticasGatewayImplAdapter implements GestionarEstadis
     @Override
     @Transactional(readOnly = true)
     public Map<String, Object> obtenerEstadisticasPorPrograma(Integer idPrograma) {
-        log.debug("Estadisticas por programa - Consultando estadisticas para programa ID:  {}", idPrograma);
         
         Map<String, Object> estadisticas = new HashMap<>();
         
@@ -689,12 +666,10 @@ public class GestionarEstadisticasGatewayImplAdapter implements GestionarEstadis
             Map<String, Integer> porTipoProceso = new HashMap<>();
             try {
                 List<String> nombresProcesos = new ArrayList<>(solicitudRepository.buscarNombresSolicitudes());
-                log.debug("Estadisticas por programa - Procesos encontrados:  {}", nombresProcesos);
                 
                 for (String proceso : nombresProcesos) {
                     Integer cantidad = Optional.ofNullable(solicitudRepository.contarNombreFechaYPrograma(proceso, fechaInicio, fechaFin, idPrograma)).orElse(0);
                     porTipoProceso.put(proceso, cantidad);
-                    log.debug("Estadisticas por programa - Proceso {}: {}", proceso, cantidad);
                 }
             } catch (Exception e) {
                 log.error("Estadisticas por programa - Error obteniendo procesos:  {}", e.getMessage());
@@ -737,8 +712,6 @@ public class GestionarEstadisticasGatewayImplAdapter implements GestionarEstadis
             // Normalizar la respuesta para evitar valores null
             estadisticas = normalizarEstadistica(estadisticas);
             
-            log.debug("Estadisticas por programa - Consulta completada para programa:  {}", idPrograma);
-            log.debug("Estadisticas por programa - Resultado final:  {}", estadisticas);
             
         } catch (Exception e) {
             log.error("Estadisticas por programa - Error en consulta:  {}", e.getMessage());
@@ -753,7 +726,6 @@ public class GestionarEstadisticasGatewayImplAdapter implements GestionarEstadis
     @Override
     @Transactional(readOnly = true)
     public Map<String, Object> obtenerEstadisticasPorPeriodo(Date fechaInicio, Date fechaFin) {
-        log.debug("Estadisticas por periodo - Consultando datos entre {} y {}", fechaInicio, fechaFin);
         
         Map<String, Object> estadisticas = new HashMap<>();
         
@@ -765,13 +737,11 @@ public class GestionarEstadisticasGatewayImplAdapter implements GestionarEstadis
             }
             
             Integer totalPorPeriodo = Optional.ofNullable(solicitudRepository.contarPorRangoFechas(fechaInicio, fechaFin)).orElse(0);
-            log.debug("Estadisticas por periodo - Total en periodo:  {}", totalPorPeriodo);
             
             // Obtener estadisticas por tipo de proceso en el periodo
             Map<String, Integer> porTipoProceso = new HashMap<>();
             try {
                 List<String> nombresProcesos = new ArrayList<>(solicitudRepository.buscarNombresSolicitudes());
-                log.debug("Estadisticas por periodo - Procesos encontrados:  {}", nombresProcesos);
                 
                 for (String proceso : nombresProcesos) {
                     // Contar solicitudes por proceso dentro del periodo seleccionado
@@ -790,7 +760,6 @@ public class GestionarEstadisticasGatewayImplAdapter implements GestionarEstadis
                         .mapToInt(solicitud -> 1)
                         .sum();
                     porTipoProceso.put(proceso, cantidad);
-                    log.debug("Estadisticas por periodo - Proceso {}: {}", proceso, cantidad);
                 }
             } catch (Exception e) {
                 log.error("Estadisticas por periodo - Error obteniendo procesos:  {}", e.getMessage());
@@ -877,8 +846,6 @@ public class GestionarEstadisticasGatewayImplAdapter implements GestionarEstadis
             // Normalizar la respuesta para evitar valores null
             estadisticas = normalizarEstadistica(estadisticas);
             
-            log.debug("Estadisticas por periodo - Consulta completada para periodo");
-            log.debug("Estadisticas por periodo - Resultado final:  {}", estadisticas);
             
         } catch (Exception e) {
             log.error("Estadisticas por periodo - Error en consulta:  {}", e.getMessage());
@@ -940,11 +907,9 @@ public class GestionarEstadisticasGatewayImplAdapter implements GestionarEstadis
     public Map<String, Object> obtenerResumenCompleto(String periodoAcademico, Integer idPrograma) {
         Map<String, Object> resumen = new HashMap<>();
         
-        log.debug("Obteniendo resumen completo con filtros - Período: {}, Programa: {}", periodoAcademico, idPrograma);
         
         // Obtener todas las solicitudes y filtrarlas si hay filtros
         List<SolicitudEntity> todasLasSolicitudes = solicitudRepository.findAll();
-        log.debug("Total de solicitudes encontradas antes de filtrar: {}", todasLasSolicitudes.size());
         
         List<SolicitudEntity> solicitudesFiltradas;
         
@@ -952,7 +917,6 @@ public class GestionarEstadisticasGatewayImplAdapter implements GestionarEstadis
         if (periodoAcademico != null && !periodoAcademico.trim().isEmpty() || idPrograma != null) {
             String periodoFiltro = (periodoAcademico != null && !periodoAcademico.trim().isEmpty()) ? periodoAcademico.trim() : null;
             
-            log.debug("Aplicando filtros - Período: {}, Programa: {}", periodoFiltro, idPrograma);
             
             solicitudesFiltradas = todasLasSolicitudes.stream()
                 .filter(solicitud -> {
@@ -975,7 +939,6 @@ public class GestionarEstadisticasGatewayImplAdapter implements GestionarEstadis
                                     coincidePeriodo = true;
                                 }
                             } catch (Exception e) {
-                                log.debug("Error al obtener período del curso: {}", e.getMessage());
                             }
                         }
                         
@@ -995,7 +958,6 @@ public class GestionarEstadisticasGatewayImplAdapter implements GestionarEstadis
                                 return false;
                             }
                         } catch (Exception e) {
-                            log.debug("Error al obtener programa de la solicitud: {}", e.getMessage());
                             return false;
                         }
                     }
@@ -1004,10 +966,8 @@ public class GestionarEstadisticasGatewayImplAdapter implements GestionarEstadis
                 })
                 .collect(Collectors.toList());
             
-            log.debug("Total de solicitudes después de filtrar: {}", solicitudesFiltradas.size());
         } else {
             solicitudesFiltradas = todasLasSolicitudes;
-            log.debug("No se aplicaron filtros, usando todas las solicitudes");
         }
         
         // Calcular estadísticas globales desde las solicitudes filtradas
@@ -1113,16 +1073,12 @@ public class GestionarEstadisticasGatewayImplAdapter implements GestionarEstadis
      */
     private List<SolicitudEntity> filtrarSolicitudes(String periodoAcademico, Integer idPrograma) {
         List<SolicitudEntity> todasLasSolicitudes = solicitudRepository.findAll();
-        log.debug("Filtrar solicitudes - Total antes de filtrar: {}, Período: '{}', Programa: {}", 
-            todasLasSolicitudes.size(), periodoAcademico, idPrograma);
         
         if ((periodoAcademico == null || periodoAcademico.trim().isEmpty()) && idPrograma == null) {
-            log.debug("Filtrar solicitudes - Sin filtros, retornando todas las solicitudes");
             return todasLasSolicitudes;
         }
         
         String periodoFiltro = (periodoAcademico != null && !periodoAcademico.trim().isEmpty()) ? periodoAcademico.trim() : null;
-        log.debug("Filtrar solicitudes - Aplicando filtros - Período: '{}', Programa: {}", periodoFiltro, idPrograma);
         
         List<SolicitudEntity> solicitudesFiltradas = todasLasSolicitudes.stream()
             .filter(solicitud -> {
@@ -1143,7 +1099,6 @@ public class GestionarEstadisticasGatewayImplAdapter implements GestionarEstadis
                                 coincidePeriodo = true;
                             }
                         } catch (Exception e) {
-                            log.debug("Error al obtener período del curso: {}", e.getMessage());
                         }
                     }
                     
@@ -1163,7 +1118,6 @@ public class GestionarEstadisticasGatewayImplAdapter implements GestionarEstadis
                             return false;
                         }
                     } catch (Exception e) {
-                        log.debug("Error al obtener programa de la solicitud: {}", e.getMessage());
                         return false;
                     }
                 }
@@ -1172,7 +1126,6 @@ public class GestionarEstadisticasGatewayImplAdapter implements GestionarEstadis
             })
             .collect(Collectors.toList());
         
-        log.debug("Filtrar solicitudes - Total después de filtrar: {}", solicitudesFiltradas.size());
         return solicitudesFiltradas;
     }
     
@@ -1380,7 +1333,6 @@ public class GestionarEstadisticasGatewayImplAdapter implements GestionarEstadis
                 return "PAZ_SALVO";
             default:
                 // Si no coincide con ningun mapeo, devolver el nombre original
-                log.debug("Normalizar proceso - Nombre de proceso no reconocido:  {}", nombreProceso);
                 return procesoNormalizado;
         }
     }
@@ -2137,7 +2089,6 @@ public class GestionarEstadisticasGatewayImplAdapter implements GestionarEstadis
                             }
                         }
                     } else {
-                        log.warn("Mes numero fuera de rango: {} para solicitud ID: {}", mesNumero, solicitud.getId_solicitud());
                     }
                 }
             }
@@ -2759,7 +2710,6 @@ public class GestionarEstadisticasGatewayImplAdapter implements GestionarEstadis
                         String nombreMes = meses[mesNumero];
                         solicitudesPorMes.put(nombreMes, solicitudesPorMes.get(nombreMes) + 1);
                     } else {
-                        log.warn("Mes numero fuera de rango: {} para solicitud ID: {}", mesNumero, solicitud.getId_solicitud());
                     }
                 }
             }
@@ -3181,12 +3131,8 @@ public class GestionarEstadisticasGatewayImplAdapter implements GestionarEstadis
                     materiasEstables.add(prediccionMateria);
                 }
             }
-            log.debug("Predicciones por materia - Materias crecientes:  {}", materiasConTendenciaCreciente.size() + 
-                             ", Decrecientes: " + materiasConTendenciaDecreciente.size() + 
-                             ", Estables: " + materiasEstables.size());
             
             // 3. PREDICCIONES POR PROGRAMA CON REGRESION LINEAL
-            log.debug("Predicciones por programa - Aplicando regresion lineal por programa...");
             List<Map<String, Object>> programasConTendenciaCreciente = new ArrayList<>();
             List<Map<String, Object>> programasConTendenciaDecreciente = new ArrayList<>();
             List<Map<String, Object>> programasEstables = new ArrayList<>();
@@ -3225,10 +3171,6 @@ public class GestionarEstadisticasGatewayImplAdapter implements GestionarEstadis
                 // Guardamos cada prediccion para que el frontend pueda mostrar el detalle completo
                 todasLasPrediccionesPorPrograma.add(prediccionPrograma);
             }
-            log.debug("Predicciones por programa - Programas crecientes:  {}", programasConTendenciaCreciente.size() + 
-                             ", Decrecientes: " + programasConTendenciaDecreciente.size() +
-                             ", Estables: " + programasEstables.size() +
-                             ", Total: " + todasLasPrediccionesPorPrograma.size());
             
             // 4. PREDICCIONES TEMPORALES
             Map<String, Object> prediccionesTemporales = new HashMap<>();
@@ -3589,7 +3531,6 @@ public class GestionarEstadisticasGatewayImplAdapter implements GestionarEstadis
      */
     private int calcularDemandaEstimada(int demandaActual, Map<String, Integer> demandaPorMes) {
         try {
-            log.debug(" [REGRESION_LINEAL] Calculando demanda estimada...");
             
             // Crear modelo de regresion lineal
             SimpleRegression regression = new SimpleRegression();
@@ -3601,7 +3542,6 @@ public class GestionarEstadisticasGatewayImplAdapter implements GestionarEstadis
                 double solicitudes = entry.getValue();
                 if (solicitudes > 0) { // Solo agregar meses con datos
                     regression.addData(mesNumero, solicitudes);
-                    log.debug("    Mes {} ({}): {} solicitudes", mesNumero, entry.getKey(), solicitudes);
                 }
                 mesNumero++;
             }
@@ -3615,26 +3555,19 @@ public class GestionarEstadisticasGatewayImplAdapter implements GestionarEstadis
                 double pendiente = regression.getSlope();
                 double rSquared = regression.getRSquare();
                 
-                log.debug(" [REGRESION_LINEAL] Resultados:");
-                log.debug("   • Pendiente (slope):  {}", String.format("%.2f", pendiente));
-                log.debug("   • R² (bondad de ajuste):  {}", String.format("%.2f", rSquared));
-                log.debug("   • Prediccion raw:  {}", String.format("%.2f", prediccion));
                 
                 // Calcular demanda estimada
                 // Asegurar que la prediccion sea realista (entre 80% y 200% de la demanda actual)
                 int demandaEstimada = (int) Math.round(Math.max(prediccion, demandaActual * 0.8));
                 demandaEstimada = Math.min(demandaEstimada, demandaActual * 2);
                 
-                log.debug("    Demanda estimada final:  {}", demandaEstimada);
                 
                 return demandaEstimada;
             } else {
                 // No hay suficientes datos historicos, usar estimacion conservadora
-                log.debug(" [REGRESION_LINEAL] Datos insuficientes. Usando estimacion conservadora (15%)");
                 return (int) Math.round(demandaActual * 1.15);
             }
         } catch (Exception e) {
-            log.debug(" [REGRESION_LINEAL] Error en calculo:  {}", e.getMessage());
             // En caso de error, usar estimacion conservadora
             return (int) Math.round(demandaActual * 1.15);
         }
@@ -3650,7 +3583,6 @@ public class GestionarEstadisticasGatewayImplAdapter implements GestionarEstadis
         Map<String, Object> resultado = new HashMap<>();
         
         try {
-            log.debug(" [REGRESION_MATERIA] Analizando {}...", nombreMateria);
             
             // Filtrar solicitudes de esta materia especifica y agrupar por mes
             Map<Integer, Integer> solicitudesPorMes = new HashMap<>();
@@ -3693,9 +3625,6 @@ public class GestionarEstadisticasGatewayImplAdapter implements GestionarEstadis
                 resultado.put("rSquared", Math.round(rSquared * 100.0) / 100.0);
                 resultado.put("modeloUtilizado", "Regresion Lineal Simple");
                 
-                log.debug("     {}", nombreMateria + ": Prediccion=" + demandaEstimada + 
-                                 ", Pendiente=" + String.format("%.2f", pendiente) + 
-                                 ", R²=" + String.format("%.2f", rSquared));
             } else {
                 // Datos insuficientes, usar estimacion conservadora
                 // Usar ceil para asegurar crecimiento de al menos 1
@@ -3710,7 +3639,6 @@ public class GestionarEstadisticasGatewayImplAdapter implements GestionarEstadis
                 resultado.put("rSquared", 0.0);
                 resultado.put("modeloUtilizado", "Estimacion conservadora (+5%)");
                 
-                log.debug("      {}: Datos insuficientes, usando estimacion conservadora (Tendencia: {}, Demanda: {} → {})", nombreMateria, tendencia, demandaActual, demandaEstimada);
             }
             
         } catch (Exception e) {
@@ -3735,7 +3663,6 @@ public class GestionarEstadisticasGatewayImplAdapter implements GestionarEstadis
         Map<String, Object> resultado = new HashMap<>();
         
         try {
-            log.debug(" [REGRESION_PROGRAMA] Analizando {}...", nombrePrograma);
             
             // Filtrar solicitudes de este programa especifico y agrupar por mes
             Map<Integer, Integer> solicitudesPorMes = new HashMap<>();
@@ -3781,9 +3708,6 @@ public class GestionarEstadisticasGatewayImplAdapter implements GestionarEstadis
                 resultado.put("rSquared", Math.round(rSquared * 100.0) / 100.0);
                 resultado.put("modeloUtilizado", "Regresion Lineal Simple");
                 
-                log.debug("     {}", nombrePrograma + ": Prediccion=" + demandaEstimada + 
-                                 ", Pendiente=" + String.format("%.2f", pendiente) + 
-                                 ", R²=" + String.format("%.2f", rSquared));
             } else {
                 // Datos insuficientes, usar estimacion conservadora
                 // Usar ceil para asegurar crecimiento de al menos 1
@@ -3798,7 +3722,6 @@ public class GestionarEstadisticasGatewayImplAdapter implements GestionarEstadis
                 resultado.put("rSquared", 0.0);
                 resultado.put("modeloUtilizado", "Estimacion conservadora (+8%)");
                 
-                log.debug("      {}: Datos insuficientes, usando estimacion conservadora (Tendencia: {}, Demanda: {} → {})", nombrePrograma, tendencia, demandaActual, demandaEstimada);
             }
             
         } catch (Exception e) {
@@ -3852,7 +3775,6 @@ public class GestionarEstadisticasGatewayImplAdapter implements GestionarEstadis
         Map<String, Object> predicciones = new HashMap<>();
         
         try {
-            log.debug("Predicciones globales - Iniciando analisis predictivo...");
             
             // Obtener todas las solicitudes para analisis temporal
             List<SolicitudEntity> todasLasSolicitudes = solicitudRepository.findAll();
@@ -3868,7 +3790,6 @@ public class GestionarEstadisticasGatewayImplAdapter implements GestionarEstadis
             predicciones.put("porcentajeVariacionTotal", demandaActualTotal > 0 ? 
                 Math.round(((double)(demandaEstimadaTotal - demandaActualTotal) / demandaActualTotal) * 100.0) : 0);
             
-            log.debug("Predicciones globales - Demanda total: {} → {}", demandaActualTotal, demandaEstimadaTotal);
             
             // 2. PREDICCIONES POR TIPO DE PROCESO
             List<Map<String, Object>> procesosConTendenciaCreciente = new ArrayList<>();
@@ -3904,9 +3825,6 @@ public class GestionarEstadisticasGatewayImplAdapter implements GestionarEstadis
             predicciones.put("procesosConTendenciaDecreciente", procesosConTendenciaDecreciente);
             predicciones.put("procesosEstables", procesosEstables);
             
-            log.debug("Predicciones globales - Procesos - Crecientes:  {}", procesosConTendenciaCreciente.size() + 
-                             ", Decrecientes: " + procesosConTendenciaDecreciente.size() + 
-                             ", Estables: " + procesosEstables.size());
             
             // 3. PREDICCIONES POR PROGRAMA
             List<Map<String, Object>> programasConTendenciaCreciente = new ArrayList<>();
@@ -3944,9 +3862,6 @@ public class GestionarEstadisticasGatewayImplAdapter implements GestionarEstadis
             predicciones.put("programasConTendenciaDecreciente", programasConTendenciaDecreciente);
             predicciones.put("programasEstables", programasEstables);
             
-            log.debug("Predicciones globales - Programas - Crecientes:  {}", programasConTendenciaCreciente.size() + 
-                             ", Decrecientes: " + programasConTendenciaDecreciente.size() + 
-                             ", Estables: " + programasEstables.size());
             
             // 4. METADATA
             predicciones.put("metodologia", "Regresion Lineal Simple aplicada a datos historicos");
@@ -3954,7 +3869,6 @@ public class GestionarEstadisticasGatewayImplAdapter implements GestionarEstadis
             predicciones.put("fechaPrediccion", new Date());
             predicciones.put("umbralTendencia", 0.05); // 5% (estandar academico)
             
-            log.debug("Predicciones globales - Analisis predictivo completado exitosamente");
             
         } catch (Exception e) {
             log.error("Predicciones globales - Error:  {}", e.getMessage());
@@ -4061,7 +3975,6 @@ public class GestionarEstadisticasGatewayImplAdapter implements GestionarEstadis
                     String nombreMes = meses[mesNumero];
                     solicitudesPorMes.put(nombreMes, solicitudesPorMes.get(nombreMes) + 1);
                 } else {
-                    log.warn("Mes numero fuera de rango: {} en agruparSolicitudesPorMes", mesNumero);
                 }
             }
         }
@@ -4074,8 +3987,6 @@ public class GestionarEstadisticasGatewayImplAdapter implements GestionarEstadis
         Map<String, Object> resultado = new HashMap<>();
         
         try {
-            log.debug("Cursos de verano - Iniciando analisis de cursos de verano - Período: {}, Programa: {}", 
-                    periodoAcademico, idPrograma);
             
             // Obtener todas las solicitudes de cursos de verano
             List<SolicitudEntity> todasLasSolicitudes = solicitudRepository.findAll();
@@ -4115,8 +4026,6 @@ public class GestionarEstadisticasGatewayImplAdapter implements GestionarEstadis
                 })
                 .collect(Collectors.toList());
             
-            log.info("Cursos de verano - Solicitudes de cursos de verano encontradas después de filtros: {} (Período: {}, Programa: {})", 
-                    solicitudesCursosVerano.size(), periodoAcademico, idPrograma);
             
             // Analisis de demanda por materia
             Map<String, Integer> demandaPorMateria = new HashMap<>();
@@ -4157,7 +4066,6 @@ public class GestionarEstadisticasGatewayImplAdapter implements GestionarEstadis
                         String nombreMes = meses[mesNumero];
                         demandaPorMes.put(nombreMes, demandaPorMes.get(nombreMes) + 1);
                     } else {
-                        log.warn("Mes numero fuera de rango: {} para solicitud de curso de verano ID: {}", mesNumero, solicitud.getId_solicitud());
                     }
                 }
                 
@@ -4299,9 +4207,6 @@ public class GestionarEstadisticasGatewayImplAdapter implements GestionarEstadis
             resultado.put("recomendaciones", recomendacionesMejoradas);
             resultado.put("predicciones", predicciones);
             
-            log.debug("Cursos de verano: el analisis se completo correctamente.");
-            log.debug("Resumen de estados calculados:  {}", estadosPorSolicitud);
-            log.debug("Claves presentes en las predicciones generadas:  {}", predicciones.keySet());
             return resultado;
             
         } catch (Exception e) {
@@ -4328,9 +4233,6 @@ public class GestionarEstadisticasGatewayImplAdapter implements GestionarEstadis
         Map<String, Object> resultado = new HashMap<>();
         
         try {
-            log.debug("Tendencias temporales - Iniciando analisis optimizado de tendencias temporales - Período: {}, Programa: {}", 
-                    periodoAcademico, idPrograma);
-            
             // Obtener solo las solicitudes de cursos de verano
             List<SolicitudEntity> todasLasSolicitudes = solicitudRepository.findAll();
             List<SolicitudEntity> solicitudesCursosVerano = todasLasSolicitudes.stream()
@@ -4390,7 +4292,6 @@ public class GestionarEstadisticasGatewayImplAdapter implements GestionarEstadis
                         String nombreMes = meses[mesNumero];
                         demandaPorMes.put(nombreMes, demandaPorMes.get(nombreMes) + 1);
                     } else {
-                        log.warn("Mes numero fuera de rango: {} para solicitud ID: {}", mesNumero, solicitud.getId_solicitud());
                     }
                 }
             }
@@ -4420,7 +4321,6 @@ public class GestionarEstadisticasGatewayImplAdapter implements GestionarEstadis
             resultado.put("fechaConsulta", new Date());
             resultado.put("descripcion", "Tendencias temporales optimizadas para cursos de verano");
             
-            log.debug("Tendencias temporales - Tendencias generadas exitosamente:  {}", tendenciasTemporales.size() + " puntos de datos");
             
         } catch (Exception e) {
             log.error("Tendencias temporales - Error generando tendencias:  {}", e.getMessage());
@@ -4474,7 +4374,6 @@ public class GestionarEstadisticasGatewayImplAdapter implements GestionarEstadis
     @Override
     @Transactional(readOnly = true)
     public Map<String, Object> obtenerEstadisticasPorAnio(Integer anio) {
-        log.debug("Estadisticas por año - Consultando datos del año: {}", anio);
         
         // Calcular fechas del año completo
         java.time.LocalDate fechaInicio = java.time.LocalDate.of(anio, 1, 1);
@@ -4505,7 +4404,6 @@ public class GestionarEstadisticasGatewayImplAdapter implements GestionarEstadis
     @Override
     @Transactional(readOnly = true)
     public Map<String, Object> obtenerEstadisticasPorSemestre(Integer anio, Integer semestre) {
-        log.debug("Estadisticas por semestre - Consultando datos del año: {}, semestre: {}", anio, semestre);
         
         // Calcular fechas del semestre
         java.time.LocalDate fechaInicio;
@@ -4538,7 +4436,6 @@ public class GestionarEstadisticasGatewayImplAdapter implements GestionarEstadis
     @Override
     @Transactional(readOnly = true)
     public List<Map<String, Object>> obtenerHistorialEstadisticas(Integer anioInicio, Integer anioFin) {
-        log.debug("Historial de estadísticas - Consultando desde año: {} hasta año: {}", anioInicio, anioFin);
         
         List<Map<String, Object>> historial = new ArrayList<>();
         
@@ -4589,7 +4486,6 @@ public class GestionarEstadisticasGatewayImplAdapter implements GestionarEstadis
     @Override
     @Transactional(readOnly = true)
     public Map<String, Object> obtenerEstadisticasPorPeriodoAcademico(String periodoAcademico) {
-        log.debug("Estadisticas por período académico - Consultando período: {}", periodoAcademico);
         
         // Validar formato del período
         if (periodoAcademico == null || !periodoAcademico.matches("^\\d{4}-[12]$")) {
