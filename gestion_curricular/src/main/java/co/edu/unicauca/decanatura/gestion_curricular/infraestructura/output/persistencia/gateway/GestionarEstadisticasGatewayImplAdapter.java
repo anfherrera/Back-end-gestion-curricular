@@ -1687,7 +1687,7 @@ public class GestionarEstadisticasGatewayImplAdapter implements GestionarEstadis
             int minSolicitudes = Integer.MAX_VALUE;
             int totalSolicitudes = todasLasSolicitudes.size();
             
-            // ⚠️ IMPORTANTE: Incluir TODOS los estados principales, incluso si tienen 0 solicitudes
+            // IMPORTANTE: Incluir TODOS los estados principales, incluso si tienen 0 solicitudes
             // Esto permite que el frontend muestre siempre los 4 estados principales: Aprobada, Enviada, En Proceso, Rechazada
             String[] estadosPrincipales = {"APROBADA", "ENVIADA", "RECHAZADA"};
             
@@ -3994,7 +3994,7 @@ public class GestionarEstadisticasGatewayImplAdapter implements GestionarEstadis
                 .collect(Collectors.toList());
             
             // Generar tendencias temporales: incluir TODOS los 12 meses, incluso con 0 solicitudes
-            // ⚠️ IMPORTANTE: Incluir TODOS los meses para que el frontend muestre la tendencia completa
+            // IMPORTANTE: Incluir TODOS los meses para que el frontend muestre la tendencia completa
             List<Map<String, Object>> tendenciasTemporales = new ArrayList<>();
             
             // Incluir TODOS los meses (Enero a Diciembre), incluso si tienen 0 solicitudes
@@ -4048,7 +4048,7 @@ public class GestionarEstadisticasGatewayImplAdapter implements GestionarEstadis
             List<Map<String, Object>> recomendacionesMejoradas = 
                 (List<Map<String, Object>>) predicciones.getOrDefault("recomendaciones", new ArrayList<>());
             
-            // ⚠️ IMPORTANTE: Estructurar estados de la misma forma que /estado-solicitudes
+            // IMPORTANTE: Estructurar estados de la misma forma que /estado-solicitudes
             // Incluir TODOS los estados principales, incluso si tienen 0 solicitudes
             Map<String, Object> estadosSolicitudesEstructurados = new HashMap<>();
             
@@ -4198,7 +4198,7 @@ public class GestionarEstadisticasGatewayImplAdapter implements GestionarEstadis
             }
             
             // Crear tendencias temporales optimizadas
-            // ⚠️ IMPORTANTE: Incluir TODOS los meses, incluso con 0 solicitudes, para que el frontend muestre la tendencia completa
+            // IMPORTANTE: Incluir TODOS los meses, incluso con 0 solicitudes, para que el frontend muestre la tendencia completa
             List<Map<String, Object>> tendenciasTemporales = new ArrayList<>();
             
             // Incluir TODOS los meses (Enero a Diciembre), incluso si tienen 0 solicitudes

@@ -53,7 +53,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.HashMap;
 import java.util.ArrayList;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 @RestController
@@ -124,7 +123,6 @@ public class CursosIntersemestralesRestController {
             // Si se proporciona idPrograma, filtrar cursos que tengan estudiantes inscritos o solicitudes de ese programa
             // También incluir cursos sin solicitudes/inscripciones (disponibles para todos)
             if (idPrograma != null) {
-                int antes = cursos.size();
                 cursos = cursos.stream()
                         .filter(curso -> {
                             // Verificar si el curso tiene estudiantes inscritos del programa especificado
@@ -235,7 +233,6 @@ public class CursosIntersemestralesRestController {
             // Si se proporciona idPrograma, filtrar cursos que tengan estudiantes inscritos o solicitudes de ese programa
             // También incluir cursos sin solicitudes/inscripciones (disponibles para todos)
             if (idPrograma != null) {
-                int antes = cursos.size();
                 cursos = cursos.stream()
                         .filter(curso -> {
                             // Verificar si el curso tiene estudiantes inscritos del programa especificado
@@ -315,12 +312,6 @@ public class CursosIntersemestralesRestController {
         try {
             List<CursoOfertadoVerano> cursos = cursoCU.listarTodos();
             
-            // Log de todos los períodos disponibles para debugging
-            Set<String> periodosDisponibles = cursos.stream()
-                    .filter(curso -> curso.getPeriodo_academico() != null)
-                    .map(CursoOfertadoVerano::getPeriodo_academico)
-                    .collect(Collectors.toSet());
-            
             // Log del parámetro recibido para debugging
             
             // Filtrar por período académico SOLO si se proporciona explícitamente
@@ -333,7 +324,6 @@ public class CursosIntersemestralesRestController {
                     periodoFiltro = periodoNormalizado;
                 }
                 
-                int antes = cursos.size();
                 final String periodoFinal = periodoFiltro; // Para usar en lambda
                 List<CursoOfertadoVerano> cursosFiltrados = cursos.stream()
                         .filter(curso -> {
@@ -353,7 +343,6 @@ public class CursosIntersemestralesRestController {
             // Si se proporciona idPrograma, filtrar cursos que tengan estudiantes inscritos o solicitudes de ese programa
             // También incluir cursos sin solicitudes/inscripciones (disponibles para todos)
             if (idPrograma != null) {
-                int antes = cursos.size();
                 cursos = cursos.stream()
                         .filter(curso -> {
                             // Verificar si el curso tiene estudiantes inscritos del programa especificado
@@ -472,7 +461,6 @@ public class CursosIntersemestralesRestController {
             // Filtrar por período académico si se proporciona
             if (periodoAcademico != null && !periodoAcademico.trim().isEmpty() && !periodoAcademico.trim().equalsIgnoreCase("todos")) {
                 String periodoFiltro = periodoAcademico.trim();
-                int antes = cursosPreinscripcion.size();
                 cursosPreinscripcion = cursosPreinscripcion.stream()
                         .filter(curso -> curso.getPeriodo_academico() != null 
                                 && curso.getPeriodo_academico().equals(periodoFiltro))
@@ -517,7 +505,6 @@ public class CursosIntersemestralesRestController {
             // Filtrar por período académico si se proporciona
             if (periodoAcademico != null && !periodoAcademico.trim().isEmpty() && !periodoAcademico.trim().equalsIgnoreCase("todos")) {
                 String periodoFiltro = periodoAcademico.trim();
-                int antes = cursosInscripcion.size();
                 cursosInscripcion = cursosInscripcion.stream()
                         .filter(curso -> curso.getPeriodo_academico() != null 
                                 && curso.getPeriodo_academico().equals(periodoFiltro))
@@ -3076,20 +3063,13 @@ public class CursosIntersemestralesRestController {
     @PostMapping("/cursos-verano")
     public ResponseEntity<Map<String, Object>> crearCurso(@RequestBody CreateCursoDTO dto) {
         try {
-            log.debug("DEBUG: ===== RECIBIENDO PETICIÓN PARA CREAR CURSO =====");
-            log.debug("DEBUG: DTO completo recibido: idMateria={} (tipo={}), idDocente={} (tipo={}), cupo={}, fechaInicio={}, fechaFin={}, periodo={}, espacio={}, estado={}", 
-                dto.getId_materia(), dto.getId_materia() != null ? dto.getId_materia().getClass().getSimpleName() : "null",
-                dto.getId_docente(), dto.getId_docente() != null ? dto.getId_docente().getClass().getSimpleName() : "null",
-                dto.getCupo_estimado(), dto.getFecha_inicio(), dto.getFecha_fin(), 
-                dto.getPeriodoAcademico(), dto.getEspacio_asignado(), 
-                dto.getEstado() != null ? dto.getEstado() : "Abierto (por defecto)");
             
             // Validar que el ID del docente sea válido
             if (dto.getId_docente() != null && dto.getId_docente() <= 0) {
                 Map<String, Object> error = new HashMap<>();
                 error.put("error", "ID de docente inválido");
                 error.put("message", "El ID del docente debe ser mayor a 0. ID recibido: " + dto.getId_docente());
-                log.warn("DEBUG: ERROR - ID de docente inválido: {}", dto.getId_docente());
+                log.warn("ID de docente inválido: {}", dto.getId_docente());
                 return ResponseEntity.badRequest().body(error);
             }
             
@@ -3098,7 +3078,7 @@ public class CursosIntersemestralesRestController {
                 Map<String, Object> error = new HashMap<>();
                 error.put("error", "ID de materia inválido");
                 error.put("message", "El ID de la materia debe ser mayor a 0. ID recibido: " + dto.getId_materia());
-                log.warn("DEBUG: ERROR - ID de materia inválido: {}", dto.getId_materia());
+                log.warn("ID de materia inválido: {}", dto.getId_materia());
                 return ResponseEntity.badRequest().body(error);
             }
             
@@ -3194,7 +3174,6 @@ public class CursosIntersemestralesRestController {
             
             // Crear el curso usando el caso de uso existente
             try {
-                log.debug("DEBUG: Creando curso usando caso de uso");
                 
                 // Crear objeto de dominio del curso
                 CursoOfertadoVerano cursoDominio = new CursoOfertadoVerano();
@@ -3243,7 +3222,6 @@ public class CursosIntersemestralesRestController {
                     fechaInicioDate = parsearFecha(dto.getFecha_inicio());
                 } catch (java.text.ParseException e) {
                     // Si falla el parsing, usar la fecha actual
-                    log.debug("DEBUG: WARNING - No se pudo parsear la fecha de inicio, usando fecha actual");
                     fechaInicioDate = new java.util.Date();
                 }
                 
@@ -3253,7 +3231,6 @@ public class CursosIntersemestralesRestController {
                     fechaFinDate = parsearFecha(dto.getFecha_fin());
                 } catch (java.text.ParseException e) {
                     // Si falla el parsing, calcular como fecha_inicio + 6 semanas
-                    log.debug("DEBUG: WARNING - No se pudo parsear la fecha de fin, calculando como fecha_inicio + 6 semanas");
                     java.util.Calendar cal = java.util.Calendar.getInstance(java.util.TimeZone.getTimeZone("UTC"));
                     cal.setTime(fechaInicioDate);
                     cal.add(java.util.Calendar.WEEK_OF_YEAR, 6);
@@ -3278,13 +3255,11 @@ public class CursosIntersemestralesRestController {
                 
                 // Obtener docente real de la base de datos
                 Integer idDocenteParaCurso = dto.getId_docente().intValue();
-                log.debug("DEBUG: Asignando docente al curso - ID recibido en DTO: {}, ID convertido a Integer: {}", 
-                    dto.getId_docente(), idDocenteParaCurso);
                 
                 co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Docente docenteDominio = 
                     docenteCU.obtenerDocentePorId(idDocenteParaCurso);
                 if (docenteDominio == null) {
-                    log.warn("DEBUG: ERROR - Docente no encontrado con ID: {}", idDocenteParaCurso);
+                    log.warn("Docente no encontrado con ID: {}", idDocenteParaCurso);
                     Map<String, Object> error = new HashMap<>();
                     error.put("error", "Docente no encontrado");
                     error.put("message", "El docente con ID " + dto.getId_docente() + " no existe");
@@ -3292,17 +3267,7 @@ public class CursosIntersemestralesRestController {
                     return ResponseEntity.badRequest().body(error);
                 }
                 
-                log.debug("DEBUG: Docente asignado al cursoDominio - ID: {}, Nombre: {}", 
-                    docenteDominio.getId_docente(), docenteDominio.getNombre_docente());
                 cursoDominio.setObjDocente(docenteDominio);
-                
-                // Verificar que el docente fue asignado correctamente
-                if (cursoDominio.getObjDocente() == null) {
-                    log.debug("DEBUG: ERROR - El docente no se asignó correctamente al cursoDominio");
-                } else {
-                    log.debug("DEBUG: Verificación - CursoDominio tiene docente ID: {}", 
-                        cursoDominio.getObjDocente().getId_docente());
-                }
                 
                 // Crear estado inicial del curso
                 // Validar estado: debe ser uno de los estados válidos
@@ -3321,7 +3286,6 @@ public class CursosIntersemestralesRestController {
                 }
                 if (!estadoValido) {
                     estadoInicial = "Abierto"; // Por defecto si el estado no es válido
-                    log.debug("DEBUG: WARNING - Estado inválido proporcionado, usando 'Abierto' por defecto");
                 }
                 
                 // Crear estado inicial (solo con fecha de registro del estado, las fechas del curso van en el curso)
@@ -3333,8 +3297,6 @@ public class CursosIntersemestralesRestController {
                 estados.add(estadoCurso);
                 cursoDominio.setEstadosCursoOfertados(estados);
                 
-                log.debug("DEBUG: Estado inicial del curso: {}, Fecha inicio: {}, Fecha fin: {}, Período: {}, Grupo: {}", 
-                    estadoInicial, fechaInicioDate, fechaFinDate, periodoAcademicoTrimmed, grupo);
                 
                 // Validar que no exista un curso duplicado (misma materia, docente, período académico Y grupo)
                 // Esto permite crear grupos A, B, C, D de la misma materia con el mismo docente en el mismo período
@@ -3353,7 +3315,7 @@ public class CursosIntersemestralesRestController {
                 );
                 
                 if (!cursosExistentes.isEmpty()) {
-                    log.warn("DEBUG: ERROR - Ya existe un curso con la misma materia, docente, período académico y grupo");
+                    log.warn("Ya existe un curso con la misma materia, docente, período académico y grupo");
                     Map<String, Object> error = new HashMap<>();
                     error.put("error", "Curso duplicado");
                     error.put("message", "Ya existe un curso con la misma materia, docente, período académico y grupo '" + grupo + "'. Puedes crear grupos diferentes (A, B, C, D) para la misma materia y docente.");
@@ -3363,15 +3325,6 @@ public class CursosIntersemestralesRestController {
                 
                 // Usar el caso de uso para crear el curso
                 CursoOfertadoVerano cursoCreado = cursoCU.crearCurso(cursoDominio);
-                log.debug("DEBUG: Curso creado exitosamente con ID: {}", cursoCreado.getId_curso());
-                
-                // Verificar que el curso creado tiene el docente correcto
-                if (cursoCreado.getObjDocente() != null) {
-                    log.debug("DEBUG: Docente del curso creado - ID: {}, Nombre: {}", 
-                        cursoCreado.getObjDocente().getId_docente(), cursoCreado.getObjDocente().getNombre_docente());
-                } else {
-                    log.debug("DEBUG: WARNING - El curso creado no tiene docente asignado");
-                }
                 
                 // Obtener información completa del curso creado desde la BD para la respuesta
                 // Usar el mapper para obtener la información estructurada
@@ -3397,14 +3350,10 @@ public class CursosIntersemestralesRestController {
                 
                 nuevoCurso.put("message", "Curso creado exitosamente en la base de datos");
                 
-                log.debug("DEBUG: Curso creado exitosamente en BD - ID: {}, Nombre: {}, Docente: {}, Período: {}, Fecha Inicio: {}, Fecha Fin: {}", 
-                    cursoCreado.getId_curso(), cursoDTO.getNombre_curso(), 
-                    cursoDTO.getObjDocente() != null ? cursoDTO.getObjDocente().getNombre_docente() : "null",
-                    periodoAcademicoTrimmed, dto.getFecha_inicio(), dto.getFecha_fin());
                 return ResponseEntity.ok(nuevoCurso);
                 
             } catch (Exception e) {
-                log.error("DEBUG: Error guardando en BD: {}", e.getMessage(), e);
+                log.error("Error guardando en BD: {}", e.getMessage(), e);
                 
                 // Si falla el guardado, devolver error
                 Map<String, Object> error = new HashMap<>();
@@ -3414,7 +3363,7 @@ public class CursosIntersemestralesRestController {
             }
             
         } catch (Exception e) {
-            log.error("ERROR: Error creando curso: {}", e.getMessage(), e);
+            log.error("Error creando curso: {}", e.getMessage(), e);
             Map<String, Object> error = new HashMap<>();
             error.put("error", "Error interno del servidor");
             error.put("message", "No se pudo crear el curso: " + e.getMessage());
@@ -3431,7 +3380,6 @@ public class CursosIntersemestralesRestController {
             @PathVariable Long id, 
             @RequestBody UpdateCursoDTO dto) {
         try {
-            log.debug("DEBUG: Actualizando curso ID: {}, Datos recibidos: {}", id, dto);
             
             // Validaciones basicas
             if (dto.getCupo_estimado() != null && (dto.getCupo_estimado() < 1 || dto.getCupo_estimado() > 100)) {
@@ -3475,7 +3423,6 @@ public class CursosIntersemestralesRestController {
                 return ResponseEntity.notFound().build();
             }
             
-            log.debug("DEBUG: Curso encontrado: {}", cursoEntity.getObjMateria() != null ? cursoEntity.getObjMateria().getNombre() : "Sin materia");
             
             // Aplicar cambios al objeto
             boolean cursoModificado = false;
@@ -3483,7 +3430,6 @@ public class CursosIntersemestralesRestController {
             if (dto.getCupo_estimado() != null) {
                 cursoEntity.setCupo_estimado(dto.getCupo_estimado());
                 cursoModificado = true;
-                log.debug("DEBUG: Cupo actualizado a: {}", dto.getCupo_estimado());
             }
             
             // Actualizar salón: priorizar id_salon sobre espacio_asignado
@@ -3498,12 +3444,10 @@ public class CursosIntersemestralesRestController {
                 }
                 cursoEntity.setSalon(salon.getNumero_salon());
                 cursoModificado = true;
-                log.debug("DEBUG: Salón actualizado a: {} (ID: {})", salon.getNumero_salon(), dto.getId_salon());
             } else if (dto.getEspacio_asignado() != null && !dto.getEspacio_asignado().trim().isEmpty()) {
                 // Compatibilidad: si no hay id_salon pero hay espacio_asignado, usarlo
                 cursoEntity.setSalon(dto.getEspacio_asignado().trim());
                 cursoModificado = true;
-                log.debug("DEBUG: Espacio actualizado a: {} (usando espacio_asignado - deprecated)", dto.getEspacio_asignado());
             }
             
             // Crear nuevo estado si se proporciona
@@ -3524,7 +3468,6 @@ public class CursosIntersemestralesRestController {
                 nuevoEstadoEntity.setFecha_registro_estado(new java.util.Date());
                 nuevoEstadoEntity.setObjCursoOfertadoVerano(cursoEntity);
                 cursoModificado = true;
-                log.debug("DEBUG: Estado actualizado a: {}", dto.getEstado());
             }
             
             if (!cursoModificado) {
@@ -3536,17 +3479,13 @@ public class CursosIntersemestralesRestController {
             
             // Guardar cambios en la base de datos
             try {
-                log.debug("DEBUG: Guardando cambios en la base de datos");
                 CursoOfertadoVeranoEntity cursoActualizado = cursoRepository.save(cursoEntity);
                 
                 // Si hay nuevo estado, guardarlo tambien
                 if (nuevoEstadoEntity != null) {
-                    log.debug("DEBUG: Guardando nuevo estado: {}", nuevoEstadoEntity.getEstado_actual());
                     estadoRepository.save(nuevoEstadoEntity);
-                    log.debug("DEBUG: Nuevo estado guardado exitosamente en BD");
                 }
                 
-                log.debug("DEBUG: Cambios guardados exitosamente en BD");
                 
                 // Crear respuesta con los datos actualizados
                 Map<String, Object> resultado = new HashMap<>();
@@ -3592,7 +3531,7 @@ public class CursosIntersemestralesRestController {
                 return ResponseEntity.ok(resultado);
                 
             } catch (Exception e) {
-                log.error("DEBUG: Error guardando en BD: {}", e.getMessage(), e);
+                log.error("Error guardando en BD: {}", e.getMessage(), e);
                 Map<String, Object> error = new HashMap<>();
                 error.put("error", "Error guardando en base de datos");
                 error.put("message", "No se pudo guardar los cambios: " + e.getMessage());
@@ -3600,8 +3539,7 @@ public class CursosIntersemestralesRestController {
             }
             
         } catch (Exception e) {
-            log.error("ERROR: Error actualizando curso: {}", e.getMessage(), e);
-            log.error("Error: {}", e.getMessage(), e);
+            log.error("Error actualizando curso: {}", e.getMessage(), e);
             Map<String, Object> error = new HashMap<>();
             error.put("error", "Error interno del servidor");
             error.put("message", "No se pudo actualizar el curso: " + e.getMessage());
@@ -3618,7 +3556,6 @@ public class CursosIntersemestralesRestController {
     @DeleteMapping("/cursos-verano/{id}")
     public ResponseEntity<Map<String, Object>> eliminarCurso(@PathVariable Long id) {
         try {
-            log.debug("DEBUG: Eliminando curso ID: {}", id);
             
             // Verificar que el curso existe
             CursoOfertadoVerano cursoExistente = cursoCU.obtenerCursoPorId(id.intValue());
@@ -3647,7 +3584,6 @@ public class CursosIntersemestralesRestController {
                 resultado.put("id_curso_eliminado", id);
                 resultado.put("nombre_curso", cursoExistente.getObjMateria() != null ? cursoExistente.getObjMateria().getNombre() : "Curso");
                 
-                log.debug("DEBUG: Curso eliminado exitosamente");
                 return ResponseEntity.ok(resultado);
             } else {
                 Map<String, Object> error = new HashMap<>();
@@ -3656,8 +3592,7 @@ public class CursosIntersemestralesRestController {
                 return ResponseEntity.status(500).body(error);
             }
         } catch (Exception e) {
-            log.error("ERROR: Error eliminando curso: {}", e.getMessage(), e);
-            log.error("Error: {}", e.getMessage(), e);
+            log.error("Error eliminando curso: {}", e.getMessage(), e);
             Map<String, Object> error = new HashMap<>();
             error.put("error", "Error interno del servidor");
             error.put("message", "No se pudo eliminar el curso: " + e.getMessage());
@@ -3671,19 +3606,13 @@ public class CursosIntersemestralesRestController {
      */
     @GetMapping("/cursos-verano/{id}")
     public ResponseEntity<Map<String, Object>> getCursoPorId(@PathVariable Long id) {
-        log.debug("DEBUG: Obteniendo informacion del curso ID: {}", id);
         
         // Obtener curso real de la base de datos - lanza EntidadNoExisteException si no existe
         CursoOfertadoVerano cursoReal = cursoCU.obtenerCursoPorId(id.intValue());
         
         // Verificar docente antes del mapeo
         if (cursoReal.getObjDocente() == null) {
-            log.warn("ERROR: El curso ID {} NO tiene docente asignado en el dominio", id);
-        } else {
-            log.debug("DEBUG: Curso ID {} tiene docente en dominio - ID: {}, Nombre: {}, Código: {}", 
-                id, cursoReal.getObjDocente().getId_docente(), 
-                cursoReal.getObjDocente().getNombre_docente(),
-                cursoReal.getObjDocente().getCodigo_docente());
+            log.warn("El curso ID {} NO tiene docente asignado en el dominio", id);
         }
         
         // Usar el mapper existente para obtener datos estructurados
@@ -3691,12 +3620,7 @@ public class CursosIntersemestralesRestController {
         
         // Verificar docente después del mapeo
         if (cursoDTO.getObjDocente() == null) {
-            log.warn("ERROR: El DTO del curso ID {} NO tiene docente después del mapeo", id);
-        } else {
-            log.debug("DEBUG: DTO del curso ID {} tiene docente - ID: {}, Nombre: {}, Código: {}", 
-                id, cursoDTO.getObjDocente().getId_docente(),
-                cursoDTO.getObjDocente().getNombre_docente(),
-                cursoDTO.getObjDocente().getCodigo_docente());
+            log.warn("El DTO del curso ID {} NO tiene docente después del mapeo", id);
         }
         
         // Mapear a estructura esperada por el frontend
@@ -3945,14 +3869,12 @@ public class CursosIntersemestralesRestController {
     @GetMapping("/docentes")
     public ResponseEntity<List<Map<String, Object>>> getTodosLosDocentes() {
         try {
-            log.debug("DEBUG: Obteniendo todos los docentes desde la base de datos");
             
             // Obtener docentes reales de la base de datos
             List<co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Docente> docentesDominio = 
                 docenteCU.listarDocentes();
             
             if (docentesDominio == null || docentesDominio.isEmpty()) {
-                log.debug("DEBUG: No se encontraron docentes en la base de datos");
                 return ResponseEntity.ok(new ArrayList<>());
             }
             
@@ -4090,31 +4012,16 @@ public class CursosIntersemestralesRestController {
     public ResponseEntity<List<Map<String, Object>>> getEstudiantesElegiblesParaInscripcion(
             @PathVariable Long idCurso) {
         try {
-            log.debug("[ESTUDIANTES_INSCRITOS] Obteniendo estudiantes inscritos en curso ID: {}", idCurso);
             
             List<Map<String, Object>> estudiantesInscritos = new ArrayList<>();
             
             // 1. Obtener todas las inscripciones del curso (no preinscripciones)
-            log.debug("[ESTUDIANTES_INSCRITOS] Buscando inscripciones para curso ID: {}", idCurso);
             List<SolicitudCursoVeranoIncripcion> inscripciones = solicitudCU.buscarInscripcionesPorCurso(idCurso.intValue());
-            log.debug("[ESTUDIANTES_INSCRITOS] Total inscripciones encontradas: {}", inscripciones.size());
-            
-            // Debug: Mostrar detalles de cada inscripcion encontrada
-            for (SolicitudCursoVeranoIncripcion inscripcion : inscripciones) {
-                log.debug("[ESTUDIANTES_INSCRITOS] Inscripcion encontrada - ID: {}, Usuario: {}, Curso: {}", 
-                    inscripcion.getId_solicitud(),
-                    inscripcion.getObjUsuario() != null ? inscripcion.getObjUsuario().getId_usuario() : "NULL",
-                    inscripcion.getObjCursoOfertadoVerano() != null ? inscripcion.getObjCursoOfertadoVerano().getId_curso() : "NULL");
-            }
             
             // 2. Procesar cada inscripcion encontrada
-            log.debug("[ESTUDIANTES_INSCRITOS] Procesando inscripciones encontradas...");
             
             for (SolicitudCursoVeranoIncripcion inscripcion : inscripciones) {
                 try {
-                    log.debug("[ESTUDIANTES_INSCRITOS] Procesando inscripcion ID: {} para usuario ID: {} en curso ID: {}", 
-                        inscripcion.getId_solicitud(), inscripcion.getObjUsuario().getId_usuario(), idCurso);
-                    
                     // 2.1. Verificar el estado de la inscripcion - SOLO mostrar las que NO estan aceptadas
                     String estadoActual = "Inscrito"; // Estado por defecto
                     if (inscripcion.getEstadosSolicitud() != null && !inscripcion.getEstadosSolicitud().isEmpty()) {
@@ -4123,13 +4030,8 @@ public class CursosIntersemestralesRestController {
                     
                     // Si la inscripcion ya fue aceptada (Pago_Validado), no la mostrar en la lista
                     if ("Pago_Validado".equals(estadoActual)) {
-                        log.debug("[ESTUDIANTES_INSCRITOS] Inscripcion ID {} ya fue aceptada (Pago_Validado), omitiendo de la lista", 
-                            inscripcion.getId_solicitud());
                         continue; // Saltar esta inscripcion
                     }
-                    
-                    log.debug("[ESTUDIANTES_INSCRITOS] Inscripcion ID {} en estado '{}', incluyendo en la lista", 
-                        inscripcion.getId_solicitud(), estadoActual);
                     
                     // Crear informacion del estudiante inscrito
                     Map<String, Object> estudianteInscrito = new HashMap<>();
@@ -4175,18 +4077,17 @@ public class CursosIntersemestralesRestController {
                         inscripcion.getObjUsuario().getNombre_completo(), 
                         inscripcion.getObjUsuario().getId_usuario());
                 } catch (Exception e) {
-                    log.warn("[ESTUDIANTES_INSCRITOS] Error procesando inscripcion ID {}: {}", 
+                    log.warn("Error procesando inscripcion ID {}: {}", 
                         inscripcion.getId_solicitud(), e.getMessage());
                     log.error("Error: {}", e.getMessage(), e);
                 }
             }
             
-            log.debug("[ESTUDIANTES_INSCRITOS] Total estudiantes inscritos encontrados: {}", estudiantesInscritos.size());
             
             return ResponseEntity.ok(estudiantesInscritos);
             
         } catch (Exception e) {
-            log.error("[ESTUDIANTES_INSCRITOS] Error obteniendo estudiantes inscritos: {}", e.getMessage(), e);
+            log.error("Error obteniendo estudiantes inscritos: {}", e.getMessage(), e);
             return ResponseEntity.status(500).build();
         }
     }
@@ -4253,7 +4154,7 @@ public class CursosIntersemestralesRestController {
                         debugMap.put("estado_inscripcion", "NO EXISTE");
                     }
                 } catch (Exception e) {
-                    debugMap.put("tiene_inscripcion", "ERROR: " + e.getMessage());
+                    debugMap.put("tiene_inscripcion", "Error: " + e.getMessage());
                 }
                 
                 debugInfo.add(debugMap);
@@ -5295,7 +5196,6 @@ public class CursosIntersemestralesRestController {
     @GetMapping("/inscripciones/curso/{idCurso}/estadisticas")
     public ResponseEntity<Map<String, Object>> obtenerEstadisticasInscripciones(@PathVariable Long idCurso) {
         try {
-            log.debug("[ESTADISTICAS] Obteniendo estadisticas para curso ID: " + " {}", idCurso);
             
             Map<String, Object> estadisticas = new HashMap<>();
             
@@ -5304,13 +5204,8 @@ public class CursosIntersemestralesRestController {
             Integer aceptadas = solicitudGateway.contarInscripcionesPorEstado(idCurso.intValue(), "Pago_Validado");
             Integer rechazadas = solicitudGateway.contarInscripcionesPorEstado(idCurso.intValue(), "Pago_Rechazado");
             
-            log.debug("[ESTADISTICAS] Conteos individuales:");
-            log.debug("[ESTADISTICAS] - Pendientes (Enviada): {}", pendientes);
-            log.debug("[ESTADISTICAS] - Aceptadas (Pago_Validado): {}", aceptadas);
-            log.debug("[ESTADISTICAS] - Rechazadas (Pago_Rechazado): {}", rechazadas);
             
             Integer totalInscripciones = pendientes + aceptadas + rechazadas;
-            log.debug("[ESTADISTICAS] - Total: {}", totalInscripciones);
             
             estadisticas.put("total_inscripciones", totalInscripciones);
             estadisticas.put("pendientes_revision", pendientes);
@@ -5319,11 +5214,10 @@ public class CursosIntersemestralesRestController {
             estadisticas.put("curso_id", idCurso);
             estadisticas.put("fecha_consulta", new java.util.Date());
             
-            log.debug("[ESTADISTICAS] Estadisticas generadas: " + " {}", estadisticas);
             return ResponseEntity.ok(estadisticas);
             
         } catch (Exception e) {
-            log.error("[ESTADISTICAS] Error obteniendo estadisticas: " + e.getMessage());
+            log.error("Error obteniendo estadisticas: {}", e.getMessage());
             log.error("Error: {}", e.getMessage(), e);
             
             Map<String, Object> error = new HashMap<>();
@@ -5339,70 +5233,53 @@ public class CursosIntersemestralesRestController {
     @GetMapping("/inscripciones/{idInscripcion}/comprobante")
     public ResponseEntity<?> descargarComprobantePago(@PathVariable Long idInscripcion) {
         try {
-            log.debug("[DESCARGAR_COMPROBANTE] Iniciando descarga para inscripcion ID: {}", idInscripcion);
             
             // Validar ID
             if (idInscripcion == null || idInscripcion <= 0) {
-                log.warn("[DESCARGAR_COMPROBANTE] ID de inscripcion invalido: {}", idInscripcion);
+                log.warn("ID de inscripcion invalido: {}", idInscripcion);
                 return ResponseEntity.badRequest().body("ID de inscripcion invalido");
             }
             
             // 1. Buscar la inscripcion
-            log.debug("[DESCARGAR_COMPROBANTE] Buscando inscripcion con ID: {}", idInscripcion.intValue());
             SolicitudCursoVeranoIncripcion inscripcion = solicitudCU.buscarPorIdInscripcion(idInscripcion.intValue());
             
             if (inscripcion == null) {
-                log.warn("[DESCARGAR_COMPROBANTE] Inscripcion no encontrada: {}", idInscripcion);
+                log.warn("Inscripcion no encontrada: {}", idInscripcion);
                 return ResponseEntity.status(404)
                     .header("Content-Type", "application/json")
                     .body("{\"error\":\"Inscripcion no encontrada\",\"idInscripcion\":" + idInscripcion + "}");
             }
             
-            log.debug("[DESCARGAR_COMPROBANTE] Inscripcion encontrada: {} (ID: {})", 
-                inscripcion.getNombre_solicitud(), inscripcion.getId_solicitud());
-            
             // 2. Buscar documentos asociados
             List<Documento> documentos = inscripcion.getDocumentos();
             if (documentos == null || documentos.isEmpty()) {
-                log.warn("[DESCARGAR_COMPROBANTE] No hay documentos asociados a la inscripcion: {}", idInscripcion);
+                log.warn("No hay documentos asociados a la inscripcion: {}", idInscripcion);
                 return ResponseEntity.status(404)
                     .header("Content-Type", "application/json")
                     .body("{\"error\":\"No hay documentos asociados a esta inscripcion\",\"idInscripcion\":" + idInscripcion + "}");
             }
             
-            log.debug("[DESCARGAR_COMPROBANTE] Documentos asociados: {}", documentos.size());
             
             // 3. Buscar el primer documento PDF (comprobante de pago)
             for (Documento documento : documentos) {
-                log.debug("[DESCARGAR_COMPROBANTE] Revisando documento: {}, ID: {}", 
-                    documento.getNombre() != null ? documento.getNombre() : "NOMBRE_NULL",
-                    documento.getId_documento());
-                
                 if (documento.getNombre() != null && documento.getNombre().toLowerCase().endsWith(".pdf")) {
                     try {
-                        log.debug("[DESCARGAR_COMPROBANTE] Documento PDF encontrado: {}, Ruta: {}", 
-                            documento.getNombre(), documento.getRuta_documento());
-                        
                         // Obtener el archivo usando la ruta completa si está disponible, sino usar nombre
                         String rutaArchivo = documento.getRuta_documento() != null ? documento.getRuta_documento() : documento.getNombre();
                         byte[] archivo = objGestionarArchivos.getFile(rutaArchivo);
                         
                         if (archivo == null || archivo.length == 0) {
-                            log.warn("[DESCARGAR_COMPROBANTE] Archivo no encontrado en disco: {}", rutaArchivo);
+                            log.warn("Archivo no encontrado en disco: {}", rutaArchivo);
                             // Intentar con el nombre si la ruta no funcionó
                             if (documento.getRuta_documento() != null && !documento.getRuta_documento().equals(documento.getNombre())) {
-                                log.debug("[DESCARGAR_COMPROBANTE] Intentando con nombre alternativo: {}", documento.getNombre());
                                 archivo = objGestionarArchivos.getFile(documento.getNombre());
                             }
                             
                             if (archivo == null || archivo.length == 0) {
-                                log.warn("[DESCARGAR_COMPROBANTE] Archivo no disponible, probando siguiente documento");
+                                log.warn("Archivo no disponible, probando siguiente documento");
                                 continue; // Probar el siguiente documento
                             }
                         }
-                        
-                        log.debug("[DESCARGAR_COMPROBANTE] Archivo obtenido exitosamente: {} ({} bytes)", 
-                            documento.getNombre(), archivo.length);
                         
                         // Configurar headers para descarga
                         String contentDisposition = "attachment; filename=\"" + documento.getNombre() + "\"";
@@ -5413,23 +5290,20 @@ public class CursosIntersemestralesRestController {
                             .body(archivo);
                             
                     } catch (Exception e) {
-                        log.error("[DESCARGAR_COMPROBANTE] Error procesando documento: {} - {}", 
+                        log.error("Error procesando documento: {} - {}", 
                             documento.getNombre(), e.getMessage(), e);
                         continue; // Probar el siguiente documento
                     }
-                } else {
-                    log.debug("[DESCARGAR_COMPROBANTE] Documento ignorado (no es PDF): {}", 
-                        documento.getNombre() != null ? documento.getNombre() : "NOMBRE_NULL");
                 }
             }
             
-            log.warn("[DESCARGAR_COMPROBANTE] No se encontro ningun documento PDF valido para la inscripcion: {}", idInscripcion);
+            log.warn("No se encontro ningun documento PDF valido para la inscripcion: {}", idInscripcion);
             return ResponseEntity.status(404)
                 .header("Content-Type", "application/json")
                 .body("{\"error\":\"No se encontro ningun comprobante PDF valido\",\"idInscripcion\":" + idInscripcion + "}");
                 
         } catch (Exception e) {
-            log.error("[DESCARGAR_COMPROBANTE] Error descargando comprobante: {}", e.getMessage(), e);
+            log.error("Error descargando comprobante: {}", e.getMessage(), e);
             return ResponseEntity.status(500)
                 .header("Content-Type", "application/json")
                 .body("{\"error\":\"Error interno del servidor al descargar comprobante\",\"message\":\"" + e.getMessage() + "\"}");
