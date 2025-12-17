@@ -33,7 +33,6 @@ public class RestApiExceptionHandler {
         @ExceptionHandler(EntidadYaExisteException.class)
         public ResponseEntity<Error> handleEntidadYaExisteException(final HttpServletRequest req,
                         final EntidadYaExisteException ex) {
-                log.warn("EntidadYaExisteException: {} - URI: {}", ex.getMessage(), req.getRequestURI());
                 final Error error = ErrorUtils
                                 .crearError(CodigoError.ENTIDAD_YA_EXISTE.getCodigo(),
                                                 String.format("%s, %s", CodigoError.ENTIDAD_YA_EXISTE.getLlaveMensaje(),
@@ -69,7 +68,6 @@ public class RestApiExceptionHandler {
         @ExceptionHandler(DataIntegrityViolationException.class)
         public ResponseEntity<Error> handleDataIntegrityViolation(final HttpServletRequest req,
                         final DataIntegrityViolationException ex) {
-                log.warn("DataIntegrityViolationException: {} - URI: {}", ex.getMessage(), req.getRequestURI());
                 
                 // Analizar el mensaje para dar una respuesta más amigable
                 String mensajeUsuario = "No se puede eliminar el registro porque tiene elementos asociados.";
@@ -108,7 +106,6 @@ public class RestApiExceptionHandler {
 
         @ExceptionHandler(MethodArgumentNotValidException.class)
         public ResponseEntity<Map<String, String>> handleValidationExceptions(MethodArgumentNotValidException ex) {
-                log.debug("Errores de validación identificados: {}", ex.getBindingResult().getAllErrors());
                 Map<String, String> errores = new HashMap<>();
                 ex.getBindingResult().getAllErrors().forEach((error) -> {
                         String campo = ((FieldError) error).getField();

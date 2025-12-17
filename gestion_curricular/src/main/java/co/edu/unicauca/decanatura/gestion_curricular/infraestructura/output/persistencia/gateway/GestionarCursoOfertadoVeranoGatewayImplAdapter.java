@@ -52,10 +52,6 @@ public class GestionarCursoOfertadoVeranoGatewayImplAdapter implements Gestionar
     @Override
     @Transactional
     public CursoOfertadoVerano crearCurso(CursoOfertadoVerano curso) {
-        log.debug("Creando curso con docente ID: {} y materia ID: {}", 
-            curso.getObjDocente() != null ? curso.getObjDocente().getId_docente() : "null",
-            curso.getObjMateria() != null ? curso.getObjMateria().getId_materia() : "null");
-        
         // Crear entidad del curso (nueva instancia para evitar reutilización)
         CursoOfertadoVeranoEntity cursoEntity = new CursoOfertadoVeranoEntity();
         cursoEntity.setCupo_estimado(curso.getCupo_estimado());
@@ -74,8 +70,6 @@ public class GestionarCursoOfertadoVeranoGatewayImplAdapter implements Gestionar
             MateriaEntity materiaEntity = materiaRepository.findById(curso.getObjMateria().getId_materia())
                 .orElseThrow(() -> new RuntimeException("Materia no encontrada con ID: " + curso.getObjMateria().getId_materia()));
             
-            log.debug("Materia obtenida - ID: {}, Nombre: {}", materiaEntity.getId_materia(), materiaEntity.getNombre());
-            
             // Asignar la materia al curso
             cursoEntity.setObjMateria(materiaEntity);
         } else {
@@ -87,8 +81,6 @@ public class GestionarCursoOfertadoVeranoGatewayImplAdapter implements Gestionar
             // Obtener el docente desde la base de datos (forzar nueva consulta)
             DocenteEntity docenteEntity = docenteRepository.findById(curso.getObjDocente().getId_docente())
                 .orElseThrow(() -> new RuntimeException("Docente no encontrado con ID: " + curso.getObjDocente().getId_docente()));
-            
-            log.debug("Docente obtenido - ID: {}, Nombre: {}", docenteEntity.getId_docente(), docenteEntity.getNombre_docente());
             
             // Asignar el docente al curso
             cursoEntity.setObjDocente(docenteEntity);
@@ -121,10 +113,6 @@ public class GestionarCursoOfertadoVeranoGatewayImplAdapter implements Gestionar
         cursoEntity.setEstadosCursoOfertados(estadosCursoEntity); 
 
         // Verificar que el docente y la materia están correctamente asignados antes de guardar
-        log.debug("Antes de guardar - Docente ID: {}, Nombre: {}", 
-            cursoEntity.getObjDocente() != null ? cursoEntity.getObjDocente().getId_docente() : "null",
-            cursoEntity.getObjDocente() != null ? cursoEntity.getObjDocente().getNombre_docente() : "null");
-        
         // Guardar el curso
         CursoOfertadoVeranoEntity saved = cursoRepository.save(cursoEntity);
         
@@ -132,20 +120,11 @@ public class GestionarCursoOfertadoVeranoGatewayImplAdapter implements Gestionar
         cursoRepository.flush();
         
         // Verificar que el curso guardado tiene el docente correcto
-        log.debug("Después de guardar - Curso ID: {}, Docente ID: {}, Nombre: {}", 
-            saved.getId_curso(),
-            saved.getObjDocente() != null ? saved.getObjDocente().getId_docente() : "null",
-            saved.getObjDocente() != null ? saved.getObjDocente().getNombre_docente() : "null");
-        
         // Obtener el curso guardado desde la base de datos para asegurar que tiene los datos correctos
         // Esto evita problemas de caché y asegura que obtenemos los datos reales desde la BD
         CursoOfertadoVeranoEntity cursoDesdeBD = cursoRepository.findById(saved.getId_curso())
             .orElseThrow(() -> new RuntimeException("Curso no encontrado después de guardar con ID: " + saved.getId_curso()));
         
-        log.debug("Curso desde BD - Curso ID: {}, Docente ID: {}, Nombre: {}", 
-            cursoDesdeBD.getId_curso(),
-            cursoDesdeBD.getObjDocente() != null ? cursoDesdeBD.getObjDocente().getId_docente() : "null",
-            cursoDesdeBD.getObjDocente() != null ? cursoDesdeBD.getObjDocente().getNombre_docente() : "null");
 
         return cursoMapper.map(cursoDesdeBD, CursoOfertadoVerano.class);
     }

@@ -47,7 +47,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             userEmail = jwtUtil.extraerCorreoDesdeToken(jwt);
             
             if (userEmail == null) {
-                log.warn("No se pudo extraer el correo del token JWT");
                 filterChain.doFilter(request, response);
                 return;
             }
@@ -57,7 +56,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 
                 // Validar el token primero
                 if (!jwtUtil.validarToken(jwt)) {
-                    log.warn("Token inválido o expirado para usuario: {}", userEmail);
                     filterChain.doFilter(request, response);
                     return;
                 }
@@ -66,7 +64,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 UserDetails userDetails = this.userDetailsService.loadUserByUsername(userEmail);
                 
                 if (userDetails == null) {
-                    log.warn("Usuario no encontrado: {}", userEmail);
                     filterChain.doFilter(request, response);
                     return;
                 }
@@ -84,10 +81,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 // Establecer la autenticación en el contexto de seguridad
                 SecurityContextHolder.getContext().setAuthentication(authToken);
                 
-                log.debug("Usuario autenticado: {} con roles: {}", userEmail, 
-                    userDetails.getAuthorities().stream()
-                        .map(a -> a.getAuthority())
-                        .collect(java.util.stream.Collectors.joining(", ")));
             }
         } catch (Exception e) {
             log.error("Error al procesar el token JWT: {}", e.getMessage());

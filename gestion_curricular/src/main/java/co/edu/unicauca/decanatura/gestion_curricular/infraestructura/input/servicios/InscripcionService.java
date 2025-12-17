@@ -49,8 +49,6 @@ public class InscripcionService {
     }
     
     public void updateEstado(Integer id, String nuevoEstado) {
-        log.debug("Actualizando estado de inscripción ID: {} a: {}", id, nuevoEstado);
-        
         Optional<SolicitudCursoVeranoInscripcionEntity> entityOpt = solicitudRepository.findById(id)
                 .filter(s -> s instanceof SolicitudCursoVeranoInscripcionEntity)
                 .map(s -> (SolicitudCursoVeranoInscripcionEntity) s);
@@ -62,12 +60,9 @@ public class InscripcionService {
             if (entity.getEstadosSolicitud() != null && !entity.getEstadosSolicitud().isEmpty()) {
                 entity.getEstadosSolicitud().get(0).setEstado_actual(nuevoEstado);
                 solicitudRepository.save(entity);
-                log.debug("Estado actualizado exitosamente para inscripción ID: {}", id);
             } else {
-                log.warn("No se encontraron estados para la inscripción ID: {}", id);
             }
         } else {
-            log.warn("No se encontró la inscripción con ID: {}", id);
         }
     }
     

@@ -157,8 +157,6 @@ public class GestionarNotificacionCUAdapter implements GestionarNotificacionCUIn
 
             // Notificar al estudiante
             crearNotificacion(notificacion);
-            log.debug("Notificación creada para estudiante ID: {}, Solicitud ID: {}", 
-                    solicitud.getObjUsuario().getId_usuario(), solicitud.getId_solicitud());
 
             // Notificar a funcionarios
             notificarAFuncionariosYCoordinadores(solicitud, tipoSolicitud, estadoActual);
@@ -176,7 +174,6 @@ public class GestionarNotificacionCUAdapter implements GestionarNotificacionCUIn
             Rol rolFuncionario = objGestionarRolGateway.obtenerRolPorNombre("Funcionario");
             
             if (rolFuncionario == null || rolFuncionario.getId_rol() == null) {
-                log.warn("No se encontró el rol 'Funcionario'");
                 return;
             }
 
@@ -184,8 +181,6 @@ public class GestionarNotificacionCUAdapter implements GestionarNotificacionCUIn
             for (Usuario funcionario : funcionarios) {
                 crearNotificacionParaFuncionario(solicitud, tipoSolicitud, estadoActual, funcionario, "Funcionario");
             }
-            log.debug("Notificaciones enviadas a {} funcionario(s) para solicitud ID: {}", 
-                    funcionarios.size(), solicitud.getId_solicitud());
         } catch (Exception e) {
             log.error("Error al notificar a funcionarios: {}", e.getMessage(), e);
         }
@@ -301,7 +296,6 @@ public class GestionarNotificacionCUAdapter implements GestionarNotificacionCUIn
             Rol rolCoordinador = objGestionarRolGateway.obtenerRolPorNombre("Coordinador");
             
             if (rolCoordinador == null || rolCoordinador.getId_rol() == null) {
-                log.warn("No se encontró el rol 'Coordinador'");
                 return;
             }
             
@@ -309,8 +303,6 @@ public class GestionarNotificacionCUAdapter implements GestionarNotificacionCUIn
             for (Usuario coordinador : coordinadores) {
                 crearNotificacionParaFuncionario(solicitud, tipoSolicitud, estadoActual, coordinador, "Coordinador");
             }
-            log.debug("Notificaciones enviadas a {} coordinador(es) para solicitud ID: {}", 
-                    coordinadores.size(), solicitud.getId_solicitud());
         } catch (Exception e) {
             log.error("Error al notificar a coordinadores: {}", e.getMessage(), e);
         }
@@ -325,7 +317,6 @@ public class GestionarNotificacionCUAdapter implements GestionarNotificacionCUIn
             Rol rolSecretaria = objGestionarRolGateway.obtenerRolPorNombre("Secretario");
             
             if (rolSecretaria == null || rolSecretaria.getId_rol() == null) {
-                log.warn("No se encontró el rol 'Secretario'");
                 return;
             }
             
@@ -333,8 +324,6 @@ public class GestionarNotificacionCUAdapter implements GestionarNotificacionCUIn
             for (Usuario secretaria : secretarias) {
                 crearNotificacionParaFuncionario(solicitud, tipoSolicitud, estadoActual, secretaria, "Secretario");
             }
-            log.debug("Notificaciones enviadas a {} secretario(s)/secretaria(s) para solicitud ID: {}", 
-                    secretarias.size(), solicitud.getId_solicitud());
         } catch (Exception e) {
             log.error("Error al notificar a secretarios/secretarias: {}", e.getMessage(), e);
         }

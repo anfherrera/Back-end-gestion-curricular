@@ -364,17 +364,6 @@ public class GestionarEstadisticasGatewayImplAdapter implements GestionarEstadis
             // Estadisticas por programa (con filtros si se aplican)
             Map<String, Integer> porPrograma = new HashMap<>();
             try {
-                List<String> nombresProgramas;
-                try {
-                    nombresProgramas = new ArrayList<>(programaRepository.buscarNombresProgramas());
-                } catch (DataAccessException e) {
-                    log.error("Estadisticas globales - Error de acceso a datos obteniendo nombres de programas: {}", e.getMessage(), e);
-                    nombresProgramas = new ArrayList<>();
-                } catch (Exception e) {
-                    log.error("Estadisticas globales - Error obteniendo nombres de programas: {}", e.getMessage(), e);
-                    nombresProgramas = new ArrayList<>();
-                }
-                
                 // Obtener todos los programas con sus IDs
                 List<ProgramaEntity> programas;
                 try {
@@ -3550,11 +3539,6 @@ public class GestionarEstadisticasGatewayImplAdapter implements GestionarEstadis
             if (regression.getN() >= 2) {
                 // Predecir para el siguiente mes (mes 13 o siguiente periodo)
                 double prediccion = regression.predict(mesNumero);
-                
-                // Obtener estadisticas del modelo
-                double pendiente = regression.getSlope();
-                double rSquared = regression.getRSquare();
-                
                 
                 // Calcular demanda estimada
                 // Asegurar que la prediccion sea realista (entre 80% y 200% de la demanda actual)

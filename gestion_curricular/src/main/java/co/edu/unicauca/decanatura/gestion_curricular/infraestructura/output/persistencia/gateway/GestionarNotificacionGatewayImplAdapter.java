@@ -80,10 +80,6 @@ public class GestionarNotificacionGatewayImplAdapter implements GestionarNotific
             }
             
             NotificacionEntity saved = notificacionRepository.save(entity);
-            log.debug("Notificación guardada en BD con ID: {}, Usuario ID: {}, Tipo: {} - {}", 
-                    saved.getId_notificacion(),
-                    saved.getObjUsuario() != null ? saved.getObjUsuario().getId_usuario() : null,
-                    saved.getTipoSolicitud(), saved.getTipoNotificacion());
             return mapper.map(saved, Notificacion.class);
         } catch (Exception e) {
             log.error("Error al guardar notificación en BD: {}", e.getMessage(), e);

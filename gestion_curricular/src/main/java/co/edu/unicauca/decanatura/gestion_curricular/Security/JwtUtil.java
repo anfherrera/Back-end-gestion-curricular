@@ -43,7 +43,6 @@ public class JwtUtil {
     }
 
     public String generarToken(String correo) {
-        log.debug("Generando token para usuario: {}", correo);
         Date now = new Date();
         Date expiryDate = new Date(now.getTime() + EXPIRATION_TIME);
         
@@ -104,13 +103,11 @@ public class JwtUtil {
             
             // Verificación explícita de expiración
             if (claims.getExpiration().before(new Date())) {
-                log.warn("Token expirado para usuario: {}", claims.getSubject());
                 return false;
             }
             
             return true;
         } catch (ExpiredJwtException e) {
-            log.warn("Token expirado: {}", e.getMessage());
             return false;
         } catch (JwtException e) {
             log.error("Token inválido: {}", e.getMessage());

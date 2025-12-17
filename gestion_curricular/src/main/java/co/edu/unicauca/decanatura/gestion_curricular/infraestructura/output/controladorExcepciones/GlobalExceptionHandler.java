@@ -36,7 +36,6 @@ public class GlobalExceptionHandler {
             LocalDateTime.now()
         );
         
-        log.warn("Errores de validación: {}", errors);
         return ResponseEntity.badRequest().body(errorResponse);
     }
 
@@ -49,7 +48,6 @@ public class GlobalExceptionHandler {
             LocalDateTime.now()
         );
         
-        log.warn("Intento de login fallido: {}", request.getDescription(false));
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(errorResponse);
     }
 
@@ -62,7 +60,6 @@ public class GlobalExceptionHandler {
             LocalDateTime.now()
         );
         
-        log.warn("Error de autenticación: {}", ex.getMessage());
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(errorResponse);
     }
 
@@ -75,7 +72,6 @@ public class GlobalExceptionHandler {
             LocalDateTime.now()
         );
         
-        log.warn("Acceso denegado: {}", ex.getMessage());
         return ResponseEntity.status(HttpStatus.FORBIDDEN).body(errorResponse);
     }
 
@@ -88,7 +84,6 @@ public class GlobalExceptionHandler {
             LocalDateTime.now()
         );
         
-        log.warn("Argumento inválido: {}", ex.getMessage());
         return ResponseEntity.badRequest().body(errorResponse);
     }
 

@@ -43,7 +43,6 @@ public class DataInitializer implements CommandLineRunner {
             Usuario adminExistente = usuarioGateway.buscarUsuarioPorCorreo("admin@unicauca.edu.co");
             
             if (adminExistente == null) {
-                log.info("🔧 Creando usuario administrador por defecto...");
                 
                 // Verificar que el rol y programa existan
                 Rol rolAdmin = rolGateway.bucarRolPorId(1);
@@ -74,22 +73,16 @@ public class DataInitializer implements CommandLineRunner {
                 admin.setObjPrograma(programa);
                 
                 // Crear el usuario usando el caso de uso (tiene validaciones y hashea la password)
-                Usuario adminCreado = usuarioCU.crearUsuario(admin);
+                usuarioCU.crearUsuario(admin);
                 
-                log.info("✅ Usuario administrador creado exitosamente - ID: {}, Correo: {}, Rol: Administrador", 
-                    adminCreado.getId_usuario(), adminCreado.getCorreo());
             } else {
-                log.debug("ℹ️  Usuario administrador ya existe (ID: {}, Correo: {})", 
-                    adminExistente.getId_usuario(), adminExistente.getCorreo());
                 
                 // Verificar si el usuario tiene el rol correcto
                 if (adminExistente.getObjRol() == null || adminExistente.getObjRol().getId_rol() != 1) {
-                    log.warn("⚠️  El usuario admin existe pero no tiene rol Administrador. Actualizando rol...");
                     Rol rolAdmin = rolGateway.bucarRolPorId(1);
                     if (rolAdmin != null) {
                         adminExistente.setObjRol(rolAdmin);
                         usuarioGateway.actualizarUsuario(adminExistente);
-                        log.info("✅ Rol Administrador asignado correctamente");
                     }
                 }
                 
@@ -99,29 +92,20 @@ public class DataInitializer implements CommandLineRunner {
                     (passwordActual.startsWith("$2a$") || passwordActual.startsWith("$2b$"));
                 
                 if (!passwordCorrectamenteHasheada) {
-                    log.debug("⚠️  La contraseña del usuario admin no está hasheada correctamente. Actualizando...");
                     // Actualizar la contraseña hasheada
                     adminExistente.setPassword(passwordEncoder.encode("password123"));
                     usuarioGateway.actualizarUsuario(adminExistente);
-                    log.debug("✅ Contraseña del usuario admin actualizada (hash BCrypt)");
                 } else {
                     // Verificar que la contraseña funcione
                     boolean passwordValida = passwordEncoder.matches("password123", passwordActual);
                     if (!passwordValida) {
-                        log.debug("⚠️  La contraseña del usuario admin no coincide. Actualizando...");
                         adminExistente.setPassword(passwordEncoder.encode("password123"));
                         usuarioGateway.actualizarUsuario(adminExistente);
-                        log.debug("✅ Contraseña del usuario admin actualizada");
                     } else {
-                        log.debug("Contraseña del usuario admin verificada correctamente");
                     }
                 }
             }
         } catch (Exception e) {
-            log.warn("⚠️  No se pudo crear/verificar el usuario administrador: {}", e.getMessage());
-            if (log.isDebugEnabled()) {
-                log.debug("Detalles del error:", e);
-            }
         }
     }
 }

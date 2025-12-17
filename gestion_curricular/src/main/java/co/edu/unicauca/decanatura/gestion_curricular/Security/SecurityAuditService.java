@@ -32,11 +32,6 @@ public class SecurityAuditService {
         }
         
         // Log estructurado para fácil análisis
-        log.info("[SECURITY_AUDIT] {} - {} - IP: {} - URI: {}", 
-            eventType, 
-            details,
-            auditData.get("ipAddress"),
-            auditData.get("uri"));
     }
 
     /**
@@ -59,19 +54,7 @@ public class SecurityAuditService {
         // Log de LOGIN_SUCCESS en nivel DEBUG para evitar verbosidad
         // Los demás eventos críticos se mantienen en INFO/WARN
         if (eventType == SecurityEventType.LOGIN_SUCCESS) {
-            log.debug("[SECURITY_AUDIT] {} - Usuario: {} - {} - IP: {} - URI: {}", 
-                eventType,
-                usuario,
-                details,
-                auditData.get("ipAddress"),
-                auditData.get("uri"));
         } else {
-            log.info("[SECURITY_AUDIT] {} - Usuario: {} - {} - IP: {} - URI: {}", 
-                eventType,
-                usuario,
-                details,
-                auditData.get("ipAddress"),
-                auditData.get("uri"));
         }
     }
 
