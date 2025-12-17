@@ -1115,7 +1115,6 @@ public class EstadisticasRestController {
             return baos.toByteArray();
             
         } catch (Exception e) {
-            log.error("Error al generar el PDF de cursos de verano: {}", e.getMessage(), e);
             
             // Generar PDF de error
             try {
