@@ -214,18 +214,18 @@ public class GestionarEstadisticasCUAdapter implements GestionarEstadisticasCUIn
     }
 
     @Override
-    public Map<String, Object> obtenerEstudiantesPorPrograma() {
-        return estadisticasGateway.obtenerEstudiantesPorPrograma();
+    public Map<String, Object> obtenerEstudiantesPorPrograma(String periodoAcademico, Integer idPrograma) {
+        return estadisticasGateway.obtenerEstudiantesPorPrograma(periodoAcademico, idPrograma);
     }
 
     @Override
-    public Map<String, Object> obtenerEstadisticasDetalladasPorProceso() {
-        return estadisticasGateway.obtenerEstadisticasDetalladasPorProceso();
+    public Map<String, Object> obtenerEstadisticasDetalladasPorProceso(String periodoAcademico, Integer idPrograma) {
+        return estadisticasGateway.obtenerEstadisticasDetalladasPorProceso(periodoAcademico, idPrograma);
     }
 
     @Override
-    public Map<String, Object> obtenerResumenPorProceso() {
-        return estadisticasGateway.obtenerResumenPorProceso();
+    public Map<String, Object> obtenerResumenPorProceso(String periodoAcademico, Integer idPrograma) {
+        return estadisticasGateway.obtenerResumenPorProceso(periodoAcademico, idPrograma);
     }
 
     @Override
@@ -234,18 +234,18 @@ public class GestionarEstadisticasCUAdapter implements GestionarEstadisticasCUIn
     }
 
     @Override
-    public Map<String, Object> obtenerEstadisticasPorEstado() {
-        return estadisticasGateway.obtenerEstadisticasPorEstado();
+    public Map<String, Object> obtenerEstadisticasPorEstado(String periodoAcademico, Integer idPrograma) {
+        return estadisticasGateway.obtenerEstadisticasPorEstado(periodoAcademico, idPrograma);
     }
 
     @Override
-    public Map<String, Object> obtenerEstadisticasPorPeriodo() {
-        return estadisticasGateway.obtenerEstadisticasPorPeriodo();
+    public Map<String, Object> obtenerEstadisticasPorPeriodo(String periodoAcademico, Integer idPrograma) {
+        return estadisticasGateway.obtenerEstadisticasPorPeriodo(periodoAcademico, idPrograma);
     }
 
     @Override
-    public Map<String, Object> obtenerEstadisticasPorPrograma() {
-        return estadisticasGateway.obtenerEstadisticasPorPrograma();
+    public Map<String, Object> obtenerEstadisticasPorPrograma(String periodoAcademico, Integer idPrograma) {
+        return estadisticasGateway.obtenerEstadisticasPorPrograma(periodoAcademico, idPrograma);
     }
 
     @Override
@@ -254,8 +254,8 @@ public class GestionarEstadisticasCUAdapter implements GestionarEstadisticasCUIn
     }
 
     @Override
-    public Map<String, Object> obtenerTendenciasYComparativas() {
-        return estadisticasGateway.obtenerTendenciasYComparativas();
+    public Map<String, Object> obtenerTendenciasYComparativas(String periodoAcademico, Integer idPrograma) {
+        return estadisticasGateway.obtenerTendenciasYComparativas(periodoAcademico, idPrograma);
     }
 
     @Override

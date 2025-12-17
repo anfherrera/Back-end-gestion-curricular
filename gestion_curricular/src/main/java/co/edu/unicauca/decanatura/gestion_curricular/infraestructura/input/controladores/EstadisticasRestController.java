@@ -150,9 +150,37 @@ public class EstadisticasRestController {
     public ResponseEntity<Map<String, Object>> obtenerEstadisticasGlobales(
             @RequestParam(required = false) String proceso,
             @RequestParam(required = false) Integer idPrograma,
+            @RequestParam(required = false) String periodoAcademico,
             @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") Date fechaInicio,
             @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") Date fechaFin) {
         try {
+            log.debug("Estadísticas globales - Recibido período: '{}', proceso: {}, programa: {}", periodoAcademico, proceso, idPrograma);
+            
+            // Si hay período académico, usar resumen completo que soporta filtros por período
+            if (periodoAcademico != null && !periodoAcademico.trim().isEmpty()) {
+                String periodoNormalizado = normalizarPeriodoAcademico(periodoAcademico);
+                log.debug("Estadísticas globales - Período normalizado: '{}'", periodoNormalizado);
+                
+                Map<String, Object> resumen = estadisticaCU.obtenerResumenCompleto(periodoNormalizado, idPrograma);
+                @SuppressWarnings("unchecked")
+                Map<String, Object> estadisticasGlobales = (Map<String, Object>) resumen.get("estadisticasGlobales");
+                
+                // Si hay filtro de proceso, aplicar filtro adicional
+                if (proceso != null && !proceso.trim().isEmpty() && estadisticasGlobales != null) {
+                    @SuppressWarnings("unchecked")
+                    Map<String, Object> porTipoProceso = (Map<String, Object>) estadisticasGlobales.get("porTipoProceso");
+                    if (porTipoProceso != null && porTipoProceso.containsKey(proceso)) {
+                        // Filtrar solo el proceso solicitado
+                        Map<String, Object> procesoFiltrado = new HashMap<>();
+                        procesoFiltrado.put(proceso, porTipoProceso.get(proceso));
+                        estadisticasGlobales.put("porTipoProceso", procesoFiltrado);
+                    }
+                }
+                
+                return ResponseEntity.ok(estadisticasGlobales != null ? estadisticasGlobales : new HashMap<>());
+            }
+            
+            // Si no hay período académico, usar el método original
             Map<String, Object> estadisticas = estadisticaCU.obtenerEstadisticasGlobales(proceso, idPrograma, fechaInicio, fechaFin);
             return ResponseEntity.ok(estadisticas);
         } catch (Exception e) {
@@ -449,11 +477,105 @@ public class EstadisticasRestController {
             @RequestParam(required = false) String periodoAcademico,
             @RequestParam(required = false) Integer idPrograma) {
         try {
-            Map<String, Object> resumen = estadisticaCU.obtenerResumenCompleto(periodoAcademico, idPrograma);
+            log.debug("Resumen completo - Recibido período (original): '{}', programa: {}", periodoAcademico, idPrograma);
+            
+            // Normalizar el período académico si viene en formato legible
+            String periodoNormalizado = normalizarPeriodoAcademico(periodoAcademico);
+            log.debug("Resumen completo - Período normalizado: '{}'", periodoNormalizado);
+            
+            Map<String, Object> resumen = estadisticaCU.obtenerResumenCompleto(periodoNormalizado, idPrograma);
+            Object estadisticasGlobalesObj = resumen.get("estadisticasGlobales");
+            @SuppressWarnings("unchecked")
+            Map<String, Object> estadisticasGlobales = estadisticasGlobalesObj != null ? (Map<String, Object>) estadisticasGlobalesObj : null;
+            log.debug("Resumen completo - Total solicitudes en respuesta: {}", 
+                estadisticasGlobales != null ? estadisticasGlobales.get("totalSolicitudes") : "N/A");
             return ResponseEntity.ok(resumen);
         } catch (Exception e) {
+            log.error("Error al obtener resumen completo", e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
+    }
+    
+    /**
+     * Normaliza el formato del período académico a YYYY-P
+     * Acepta formatos como "2025 - Primer Semestre", "2025 segundo semestre", "2025-2", "Segundo Período 2025", etc.
+     */
+    private String normalizarPeriodoAcademico(String periodo) {
+        if (periodo == null || periodo.trim().isEmpty()) {
+            return null;
+        }
+        
+        String periodoLimpio = periodo.trim();
+        
+        // Si ya está en formato YYYY-P, retornarlo
+        if (periodoLimpio.matches("\\d{4}-[12]")) {
+            return periodoLimpio;
+        }
+        
+        // Intentar extraer año y período de formatos como "2025 - Primer Semestre" o "2025 Segundo Semestre"
+        try {
+            // Buscar año (4 dígitos)
+            java.util.regex.Pattern añoPattern = java.util.regex.Pattern.compile("(\\d{4})");
+            java.util.regex.Matcher añoMatcher = añoPattern.matcher(periodoLimpio);
+            
+            if (añoMatcher.find()) {
+                String año = añoMatcher.group(1);
+                
+                // Buscar indicador de período (case insensitive)
+                String periodoLower = periodoLimpio.toLowerCase();
+                int numeroPeriodo = 1; // Por defecto primer período
+                
+                if (periodoLower.contains("segundo") || periodoLower.contains("2") || 
+                    periodoLower.contains("ii") || periodoLower.contains("2do") || 
+                    periodoLower.contains("2º") || periodoLower.contains("segundo semestre")) {
+                    numeroPeriodo = 2;
+                } else if (periodoLower.contains("primer") || periodoLower.contains("primero") || 
+                          periodoLower.contains("1") || periodoLower.contains("i") || 
+                          periodoLower.contains("1er") || periodoLower.contains("1º") ||
+                          periodoLower.contains("primer semestre")) {
+                    numeroPeriodo = 1;
+                }
+                
+                String periodoNormalizado = año + "-" + numeroPeriodo;
+                log.debug("Período '{}' normalizado a '{}'", periodo, periodoNormalizado);
+                return periodoNormalizado;
+            }
+        } catch (Exception e) {
+            log.warn("Error al normalizar período '{}': {}", periodo, e.getMessage());
+        }
+        
+        // Si no se pudo normalizar, retornar el original
+        log.warn("No se pudo normalizar el período '{}', se usará tal cual", periodo);
+        return periodoLimpio;
+    }
+    
+    /**
+     * Formatea un período académico en formato legible para mostrar en reportes.
+     * Convierte "2025-1" a "2025 - Primer Semestre" o "2025-2" a "2025 - Segundo Semestre"
+     */
+    private String formatearPeriodoAcademicoLegible(String periodo) {
+        if (periodo == null || periodo.trim().isEmpty()) {
+            return null;
+        }
+        
+        String periodoLimpio = periodo.trim();
+        
+        // Si ya está en formato legible, retornarlo
+        if (periodoLimpio.contains("Primer") || periodoLimpio.contains("Segundo") || 
+            periodoLimpio.contains("primer") || periodoLimpio.contains("segundo")) {
+            return periodoLimpio;
+        }
+        
+        // Si está en formato YYYY-P, convertirlo
+        if (periodoLimpio.matches("\\d{4}-[12]")) {
+            String[] partes = periodoLimpio.split("-");
+            String año = partes[0];
+            String semestre = partes[1].equals("1") ? "Primer Semestre" : "Segundo Semestre";
+            return año + " - " + semestre;
+        }
+        
+        // Si no se puede formatear, retornar el original
+        return periodoLimpio;
     }
 
     /**
@@ -492,20 +614,40 @@ public class EstadisticasRestController {
      * @return ResponseEntity con dashboard ejecutivo
      */
     @GetMapping("/dashboard")
-    public ResponseEntity<Map<String, Object>> obtenerDashboardEjecutivo() {
+    public ResponseEntity<Map<String, Object>> obtenerDashboardEjecutivo(
+            @RequestParam(required = false) String periodoAcademico,
+            @RequestParam(required = false) Integer idPrograma) {
         try {
-            Map<String, Object> dashboard = estadisticaCU.obtenerResumenCompleto(null, null);
+            log.debug("Dashboard ejecutivo - Recibido período: '{}', programa: {}", periodoAcademico, idPrograma);
+            
+            // Normalizar el período académico si viene en formato legible
+            String periodoNormalizado = normalizarPeriodoAcademico(periodoAcademico);
+            log.debug("Dashboard ejecutivo - Período normalizado: '{}'", periodoNormalizado);
+            
+            Map<String, Object> dashboard = estadisticaCU.obtenerResumenCompleto(periodoNormalizado, idPrograma);
             
             // Extraer solo las métricas más importantes para el dashboard
-            Map<String, Object> dashboardEjecutivo = Map.of(
-                "resumenGlobal", dashboard.get("estadisticasGlobales"),
-                "topProcesos", dashboard.get("porTipoProceso"),
-                "resumenEstados", dashboard.get("porEstado"),
-                "fechaGeneracion", dashboard.get("fechaGeneracion")
-            );
+            Map<String, Object> dashboardEjecutivo = new HashMap<>();
+            dashboardEjecutivo.put("resumenGlobal", dashboard.get("estadisticasGlobales"));
+            dashboardEjecutivo.put("topProcesos", dashboard.get("porTipoProceso"));
+            dashboardEjecutivo.put("resumenEstados", dashboard.get("porEstado"));
+            dashboardEjecutivo.put("fechaGeneracion", dashboard.get("fechaGeneracion"));
+            
+            // Agregar filtros aplicados si existen
+            if (periodoNormalizado != null || idPrograma != null) {
+                Map<String, Object> filtrosAplicados = new HashMap<>();
+                if (periodoNormalizado != null) {
+                    filtrosAplicados.put("periodoAcademico", periodoNormalizado);
+                }
+                if (idPrograma != null) {
+                    filtrosAplicados.put("idPrograma", idPrograma);
+                }
+                dashboardEjecutivo.put("filtrosAplicados", filtrosAplicados);
+            }
             
             return ResponseEntity.ok(dashboardEjecutivo);
         } catch (Exception e) {
+            log.error("Error al obtener dashboard ejecutivo", e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
@@ -698,23 +840,52 @@ public class EstadisticasRestController {
      * @return ResponseEntity con consolidado general
      */
     @GetMapping("/consolidado")
-    public ResponseEntity<Map<String, Object>> obtenerConsolidadoGeneral() {
+    public ResponseEntity<Map<String, Object>> obtenerConsolidadoGeneral(
+            @RequestParam(required = false) String periodoAcademico,
+            @RequestParam(required = false) Integer idPrograma) {
         try {
+            log.debug("Consolidado general - Recibido período: '{}', programa: {}", periodoAcademico, idPrograma);
             
-            // Obtener estadísticas globales
-            Map<String, Object> estadisticasGlobales = estadisticaCU.obtenerEstadisticasGlobales();
+            // Normalizar el período académico si viene en formato legible
+            String periodoNormalizado = normalizarPeriodoAcademico(periodoAcademico);
+            
+            Map<String, Object> estadisticasGlobales;
+            
+            // Si hay filtros, usar resumen completo
+            if (periodoNormalizado != null || idPrograma != null) {
+                Map<String, Object> resumen = estadisticaCU.obtenerResumenCompleto(periodoNormalizado, idPrograma);
+                @SuppressWarnings("unchecked")
+                Map<String, Object> estadisticasGlobalesTemp = (Map<String, Object>) resumen.get("estadisticasGlobales");
+                estadisticasGlobales = estadisticasGlobalesTemp;
+            } else {
+                // Si no hay filtros, usar método original
+                estadisticasGlobales = estadisticaCU.obtenerEstadisticasGlobales();
+            }
             
             // Crear consolidado con estructura específica
             Map<String, Object> consolidado = new HashMap<>();
             consolidado.put("estadisticasGlobales", estadisticasGlobales);
-            consolidado.put("porTipoProceso", estadisticasGlobales.get("porTipoProceso"));
-            consolidado.put("porEstado", estadisticasGlobales.get("porEstado"));
-            consolidado.put("totalProgramas", 3); // Número fijo de programas por ahora
+            consolidado.put("porTipoProceso", estadisticasGlobales != null ? estadisticasGlobales.get("porTipoProceso") : new HashMap<>());
+            consolidado.put("porEstado", estadisticasGlobales != null ? estadisticasGlobales.get("porEstado") : new HashMap<>());
+            consolidado.put("totalProgramas", 4); // Número de programas
             consolidado.put("fechaGeneracion", new Date());
+            
+            // Agregar filtros aplicados si existen
+            if (periodoNormalizado != null || idPrograma != null) {
+                Map<String, Object> filtrosAplicados = new HashMap<>();
+                if (periodoNormalizado != null) {
+                    filtrosAplicados.put("periodoAcademico", periodoNormalizado);
+                }
+                if (idPrograma != null) {
+                    filtrosAplicados.put("idPrograma", idPrograma);
+                }
+                consolidado.put("filtrosAplicados", filtrosAplicados);
+            }
             
             return ResponseEntity.ok(consolidado);
             
         } catch (Exception e) {
+            log.error("Error al obtener consolidado general", e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
@@ -725,8 +896,10 @@ public class EstadisticasRestController {
      * @return ResponseEntity con consolidado general
      */
     @GetMapping("/consolidadas")
-    public ResponseEntity<Map<String, Object>> obtenerConsolidadas() {
-        return obtenerConsolidadoGeneral();
+    public ResponseEntity<Map<String, Object>> obtenerConsolidadas(
+            @RequestParam(required = false) String periodoAcademico,
+            @RequestParam(required = false) Integer idPrograma) {
+        return obtenerConsolidadoGeneral(periodoAcademico, idPrograma);
     }
 
     /**
@@ -798,6 +971,7 @@ public class EstadisticasRestController {
      * 
      * @param proceso Tipo de proceso (opcional)
      * @param idPrograma ID del programa (opcional)
+     * @param periodoAcademico Período académico opcional (formato: "YYYY-P", ej: "2025-2")
      * @param fechaInicio Fecha de inicio (opcional)
      * @param fechaFin Fecha de fin (opcional)
      * @return ResponseEntity con archivo PDF
@@ -806,24 +980,37 @@ public class EstadisticasRestController {
     public ResponseEntity<byte[]> exportarEstadisticasPDF(
             @RequestParam(required = false) String proceso,
             @RequestParam(required = false) Integer idPrograma,
+            @RequestParam(required = false) String periodoAcademico,
             @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") Date fechaInicio,
             @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") Date fechaFin) {
         try {
+            // Normalizar período académico si viene en formato legible
+            String periodoNormalizado = normalizarPeriodoAcademico(periodoAcademico);
             
-            // Obtener datos filtrados
-            Map<String, Object> estadisticas = estadisticaCU.obtenerEstadisticasGlobales(proceso, idPrograma, fechaInicio, fechaFin);
+            // Si hay período académico, usar obtenerResumenCompleto que soporta este filtro
+            Map<String, Object> estadisticas;
+            if (periodoNormalizado != null) {
+                Map<String, Object> resumen = estadisticaCU.obtenerResumenCompleto(periodoNormalizado, idPrograma);
+                @SuppressWarnings("unchecked")
+                Map<String, Object> estadisticasGlobales = (Map<String, Object>) resumen.get("estadisticasGlobales");
+                estadisticas = estadisticasGlobales != null ? estadisticasGlobales : estadisticaCU.obtenerEstadisticasGlobales(proceso, idPrograma, fechaInicio, fechaFin);
+            } else {
+                // Si no hay período académico, usar el método original
+                estadisticas = estadisticaCU.obtenerEstadisticasGlobales(proceso, idPrograma, fechaInicio, fechaFin);
+            }
             
             // Obtener datos de cursos de verano si no hay filtros específicos o si se solicita
             Map<String, Object> datosCursosVerano = null;
             if (proceso == null || "CURSO_VERANO".equals(proceso)) {
                 try {
-                    datosCursosVerano = estadisticaCU.obtenerEstadisticasCursosVerano(null, null);
+                    datosCursosVerano = estadisticaCU.obtenerEstadisticasCursosVerano(periodoNormalizado, idPrograma);
                 } catch (Exception e) {
+                    log.debug("Error al obtener datos de cursos de verano para exportación PDF: {}", e.getMessage());
                 }
             }
             
-            // Generar PDF con datos completos
-            byte[] pdfBytes = generarPDFCompleto(estadisticas, datosCursosVerano);
+            // Generar PDF con datos completos (pasar período académico para mostrarlo en el reporte)
+            byte[] pdfBytes = generarPDFCompleto(estadisticas, datosCursosVerano, periodoAcademico, idPrograma);
             
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.APPLICATION_PDF);
@@ -832,6 +1019,7 @@ public class EstadisticasRestController {
             return new ResponseEntity<>(pdfBytes, headers, HttpStatus.OK);
             
         } catch (Exception e) {
+            log.error("Error al exportar estadísticas a PDF", e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
@@ -843,7 +1031,7 @@ public class EstadisticasRestController {
      */
     @GetMapping("/exportar/pdf")
     public ResponseEntity<byte[]> exportarEstadisticasPDFAlias() {
-        return exportarEstadisticasPDF(null, null, null, null);
+        return exportarEstadisticasPDF(null, null, null, null, null);
     }
 
     /**
@@ -915,6 +1103,7 @@ public class EstadisticasRestController {
      * 
      * @param proceso Tipo de proceso (opcional)
      * @param idPrograma ID del programa (opcional)
+     * @param periodoAcademico Período académico opcional (formato: "YYYY-P", ej: "2025-2")
      * @param fechaInicio Fecha de inicio (opcional)
      * @param fechaFin Fecha de fin (opcional)
      * @return ResponseEntity con archivo Excel
@@ -923,24 +1112,37 @@ public class EstadisticasRestController {
     public ResponseEntity<byte[]> exportarEstadisticasExcel(
             @RequestParam(required = false) String proceso,
             @RequestParam(required = false) Integer idPrograma,
+            @RequestParam(required = false) String periodoAcademico,
             @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") Date fechaInicio,
             @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") Date fechaFin) {
         try {
+            // Normalizar período académico si viene en formato legible
+            String periodoNormalizado = normalizarPeriodoAcademico(periodoAcademico);
             
-            // Obtener datos filtrados
-            Map<String, Object> estadisticas = estadisticaCU.obtenerEstadisticasGlobales(proceso, idPrograma, fechaInicio, fechaFin);
+            // Si hay período académico, usar obtenerResumenCompleto que soporta este filtro
+            Map<String, Object> estadisticas;
+            if (periodoNormalizado != null) {
+                Map<String, Object> resumen = estadisticaCU.obtenerResumenCompleto(periodoNormalizado, idPrograma);
+                @SuppressWarnings("unchecked")
+                Map<String, Object> estadisticasGlobales = (Map<String, Object>) resumen.get("estadisticasGlobales");
+                estadisticas = estadisticasGlobales != null ? estadisticasGlobales : estadisticaCU.obtenerEstadisticasGlobales(proceso, idPrograma, fechaInicio, fechaFin);
+            } else {
+                // Si no hay período académico, usar el método original
+                estadisticas = estadisticaCU.obtenerEstadisticasGlobales(proceso, idPrograma, fechaInicio, fechaFin);
+            }
             
             // Obtener datos de cursos de verano si no hay filtros específicos o si se solicita
             Map<String, Object> datosCursosVerano = null;
             if (proceso == null || "CURSO_VERANO".equals(proceso)) {
                 try {
-                    datosCursosVerano = estadisticaCU.obtenerEstadisticasCursosVerano(null, null);
+                    datosCursosVerano = estadisticaCU.obtenerEstadisticasCursosVerano(periodoNormalizado, idPrograma);
                 } catch (Exception e) {
+                    log.debug("Error al obtener datos de cursos de verano para exportación Excel: {}", e.getMessage());
                 }
             }
             
-            // Generar Excel con datos completos
-            byte[] excelBytes = generarExcelCompleto(estadisticas, datosCursosVerano);
+            // Generar Excel con datos completos (pasar período académico para mostrarlo en el reporte)
+            byte[] excelBytes = generarExcelCompleto(estadisticas, datosCursosVerano, periodoAcademico, idPrograma);
             
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.APPLICATION_OCTET_STREAM);
@@ -949,6 +1151,7 @@ public class EstadisticasRestController {
             return new ResponseEntity<>(excelBytes, headers, HttpStatus.OK);
             
         } catch (Exception e) {
+            log.error("Error al exportar estadísticas a Excel", e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
@@ -972,8 +1175,8 @@ public class EstadisticasRestController {
             } catch (Exception e) {
             }
             
-            // Generar Excel con datos completos
-            byte[] excelBytes = generarExcelCompleto(estadisticas, datosCursosVerano);
+            // Generar Excel con datos completos (sin filtros)
+            byte[] excelBytes = generarExcelCompleto(estadisticas, datosCursosVerano, null, null);
             
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.parseMediaType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"));
@@ -1149,9 +1352,11 @@ public class EstadisticasRestController {
      * 
      * @param estadisticas Datos de estadísticas generales
      * @param datosCursosVerano Datos de cursos de verano
+     * @param periodoAcademico Período académico filtrado (opcional)
+     * @param idPrograma ID del programa filtrado (opcional)
      * @return Array de bytes del PDF
      */
-    private byte[] generarPDFCompleto(Map<String, Object> estadisticas, Map<String, Object> datosCursosVerano) {
+    private byte[] generarPDFCompleto(Map<String, Object> estadisticas, Map<String, Object> datosCursosVerano, String periodoAcademico, Integer idPrograma) {
         
         ByteArrayOutputStream baos = null;
         com.itextpdf.text.Document document = null;
@@ -1170,13 +1375,59 @@ public class EstadisticasRestController {
             title.setSpacingAfter(20);
             document.add(title);
             
-            // Fecha de generación con formato mejorado
-            SimpleDateFormat dateFormat = new SimpleDateFormat("EEE MMM dd HH:mm:ss zzz yyyy");
+            // Fecha de generación con formato mejorado (en español)
+            java.text.SimpleDateFormat dateFormat = new java.text.SimpleDateFormat("dd 'de' MMMM 'de' yyyy 'a las' HH:mm:ss", new java.util.Locale("es", "CO"));
             com.itextpdf.text.Font dateFont = new com.itextpdf.text.Font(com.itextpdf.text.Font.FontFamily.HELVETICA, 10);
             String fechaTexto = "Fecha de generación: " + dateFormat.format(new Date());
             com.itextpdf.text.Paragraph fecha = new com.itextpdf.text.Paragraph(fechaTexto, dateFont);
-            fecha.setSpacingAfter(15);
+            fecha.setSpacingAfter(10);
             document.add(fecha);
+            
+            // Información de filtros aplicados
+            if (periodoAcademico != null && !periodoAcademico.trim().isEmpty()) {
+                String periodoFormateado = formatearPeriodoAcademicoLegible(periodoAcademico);
+                com.itextpdf.text.Paragraph periodo = new com.itextpdf.text.Paragraph("Período académico filtrado: " + periodoFormateado, dateFont);
+                periodo.setSpacingAfter(10);
+                document.add(periodo);
+            }
+            
+            if (idPrograma != null) {
+                // Intentar obtener el nombre del programa desde las estadísticas
+                String nombrePrograma = null;
+                try {
+                    @SuppressWarnings("unchecked")
+                    Map<String, Object> porPrograma = (Map<String, Object>) estadisticas.get("porPrograma");
+                    if (porPrograma != null) {
+                        // Buscar el programa en el mapa (las claves son los nombres)
+                        for (String nombre : porPrograma.keySet()) {
+                            // Si solo hay un programa en el mapa y hay filtro, es probable que sea el filtrado
+                            if (porPrograma.size() == 1) {
+                                nombrePrograma = nombre;
+                                break;
+                            }
+                        }
+                    }
+                } catch (Exception e) {
+                    log.debug("Error al obtener nombre del programa desde estadísticas: {}", e.getMessage());
+                }
+                
+                if (nombrePrograma != null) {
+                    com.itextpdf.text.Paragraph programaFiltro = new com.itextpdf.text.Paragraph("Programa filtrado: " + nombrePrograma, dateFont);
+                    programaFiltro.setSpacingAfter(15);
+                    document.add(programaFiltro);
+                } else {
+                    com.itextpdf.text.Paragraph programaFiltro = new com.itextpdf.text.Paragraph("Programa filtrado: ID " + idPrograma, dateFont);
+                    programaFiltro.setSpacingAfter(15);
+                    document.add(programaFiltro);
+                }
+            }
+            
+            if (periodoAcademico == null && idPrograma == null) {
+                // Espacio adicional si no hay filtros
+                com.itextpdf.text.Paragraph espacio = new com.itextpdf.text.Paragraph(" ");
+                espacio.setSpacingAfter(15);
+                document.add(espacio);
+            }
             
             // Sección 1: Estadísticas Generales
             if (estadisticas != null) {
@@ -1248,17 +1499,20 @@ public class EstadisticasRestController {
      * Obtiene la distribución de estudiantes por programa académico.
      * Utiliza UsuarioRepositoryInt para contar estudiantes por programa.
      * 
+     * @param periodoAcademico Período académico opcional (formato: "YYYY-P", ej: "2025-2")
+     * @param idPrograma ID del programa académico opcional para filtrar
      * @return ResponseEntity con la distribución de estudiantes por programa
      */
     @GetMapping("/estudiantes-por-programa")
-    public ResponseEntity<Map<String, Object>> obtenerEstudiantesPorPrograma() {
+    public ResponseEntity<Map<String, Object>> obtenerEstudiantesPorPrograma(
+            @RequestParam(required = false) String periodoAcademico,
+            @RequestParam(required = false) Integer idPrograma) {
         try {
-            
-            Map<String, Object> resultado = estadisticaCU.obtenerEstudiantesPorPrograma();
-            
+            String periodoNormalizado = normalizarPeriodoAcademico(periodoAcademico);
+            Map<String, Object> resultado = estadisticaCU.obtenerEstudiantesPorPrograma(periodoNormalizado, idPrograma);
             return ResponseEntity.ok(resultado);
-            
         } catch (Exception e) {
+            log.error("Error al obtener estudiantes por programa", e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
@@ -1267,18 +1521,27 @@ public class EstadisticasRestController {
      * Obtiene estadísticas detalladas por tipo de proceso.
      * Incluye conteos, porcentajes y análisis por proceso.
      * 
+     * @param periodoAcademico Período académico opcional (formato: "YYYY-P", ej: "2025-2")
+     * @param idPrograma ID del programa académico opcional para filtrar
      * @return ResponseEntity con estadísticas detalladas por proceso
      */
     @GetMapping("/estadisticas-por-proceso")
-    public ResponseEntity<Map<String, Object>> obtenerEstadisticasDetalladasPorProceso() {
+    public ResponseEntity<Map<String, Object>> obtenerEstadisticasDetalladasPorProceso(
+            @RequestParam(required = false) String periodoAcademico,
+            @RequestParam(required = false) Integer idPrograma) {
         try {
-            
-            Map<String, Object> resultado = estadisticaCU.obtenerEstadisticasDetalladasPorProceso();
-            
+            log.debug("Estadísticas por proceso - Recibido período: '{}', programa: {}", periodoAcademico, idPrograma);
+            String periodoNormalizado = normalizarPeriodoAcademico(periodoAcademico);
+            log.debug("Estadísticas por proceso - Período normalizado: '{}'", periodoNormalizado);
+            Map<String, Object> resultado = estadisticaCU.obtenerEstadisticasDetalladasPorProceso(periodoNormalizado, idPrograma);
+            log.debug("Estadísticas por proceso - Resultado obtenido exitosamente");
             return ResponseEntity.ok(resultado);
-            
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+            log.error("Error al obtener estadísticas detalladas por proceso - Período: '{}', Programa: {}", periodoAcademico, idPrograma, e);
+            Map<String, Object> error = new HashMap<>();
+            error.put("error", "Error al obtener estadísticas por proceso");
+            error.put("mensaje", e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(error);
         }
     }
 
@@ -1286,17 +1549,20 @@ public class EstadisticasRestController {
      * Obtiene estadísticas resumidas por tipo de proceso para el dashboard.
      * Formato optimizado para gráficos y KPIs.
      * 
+     * @param periodoAcademico Período académico opcional (formato: "YYYY-P", ej: "2025-2")
+     * @param idPrograma ID del programa académico opcional para filtrar
      * @return ResponseEntity con estadísticas resumidas por proceso
      */
     @GetMapping("/resumen-por-proceso")
-    public ResponseEntity<Map<String, Object>> obtenerResumenPorProceso() {
+    public ResponseEntity<Map<String, Object>> obtenerResumenPorProceso(
+            @RequestParam(required = false) String periodoAcademico,
+            @RequestParam(required = false) Integer idPrograma) {
         try {
-            
-            Map<String, Object> resultado = estadisticaCU.obtenerResumenPorProceso();
-            
+            String periodoNormalizado = normalizarPeriodoAcademico(periodoAcademico);
+            Map<String, Object> resultado = estadisticaCU.obtenerResumenPorProceso(periodoNormalizado, idPrograma);
             return ResponseEntity.ok(resultado);
-            
         } catch (Exception e) {
+            log.error("Error al obtener resumen por proceso", e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
@@ -1324,17 +1590,20 @@ public class EstadisticasRestController {
      * Obtiene estadísticas por estado de solicitudes.
      * Incluye conteos, porcentajes y análisis por estado.
      * 
+     * @param periodoAcademico Período académico opcional (formato: "YYYY-P", ej: "2025-2")
+     * @param idPrograma ID del programa académico opcional para filtrar
      * @return ResponseEntity con estadísticas por estado
      */
     @GetMapping("/estado-solicitudes")
-    public ResponseEntity<Map<String, Object>> obtenerEstadisticasPorEstado() {
+    public ResponseEntity<Map<String, Object>> obtenerEstadisticasPorEstado(
+            @RequestParam(required = false) String periodoAcademico,
+            @RequestParam(required = false) Integer idPrograma) {
         try {
-            
-            Map<String, Object> resultado = estadisticaCU.obtenerEstadisticasPorEstado();
-            
+            String periodoNormalizado = normalizarPeriodoAcademico(periodoAcademico);
+            Map<String, Object> resultado = estadisticaCU.obtenerEstadisticasPorEstado(periodoNormalizado, idPrograma);
             return ResponseEntity.ok(resultado);
-            
         } catch (Exception e) {
+            log.error("Error al obtener estadísticas por estado", e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
@@ -1343,18 +1612,27 @@ public class EstadisticasRestController {
      * Obtiene estadísticas por período/mes.
      * Incluye tendencias, picos de actividad y análisis temporal.
      * 
+     * @param periodoAcademico Período académico opcional (formato: "YYYY-P", ej: "2025-2")
+     * @param idPrograma ID del programa académico opcional para filtrar
      * @return ResponseEntity con estadísticas por período
      */
     @GetMapping("/por-periodo")
-    public ResponseEntity<Map<String, Object>> obtenerEstadisticasPorPeriodo() {
+    public ResponseEntity<Map<String, Object>> obtenerEstadisticasPorPeriodo(
+            @RequestParam(required = false) String periodoAcademico,
+            @RequestParam(required = false) Integer idPrograma) {
         try {
-            
-            Map<String, Object> resultado = estadisticaCU.obtenerEstadisticasPorPeriodo();
-            
+            log.debug("Estadísticas por período - Recibido período: '{}', programa: {}", periodoAcademico, idPrograma);
+            String periodoNormalizado = normalizarPeriodoAcademico(periodoAcademico);
+            log.debug("Estadísticas por período - Período normalizado: '{}'", periodoNormalizado);
+            Map<String, Object> resultado = estadisticaCU.obtenerEstadisticasPorPeriodo(periodoNormalizado, idPrograma);
+            log.debug("Estadísticas por período - Resultado obtenido exitosamente");
             return ResponseEntity.ok(resultado);
-            
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+            log.error("Error al obtener estadísticas por período - Período: '{}', Programa: {}", periodoAcademico, idPrograma, e);
+            Map<String, Object> error = new HashMap<>();
+            error.put("error", "Error al obtener estadísticas por período");
+            error.put("mensaje", e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(error);
         }
     }
 
@@ -1362,18 +1640,27 @@ public class EstadisticasRestController {
      * Obtiene estadísticas por programa académico.
      * Incluye distribución de solicitudes, estudiantes y análisis por programa.
      * 
+     * @param periodoAcademico Período académico opcional (formato: "YYYY-P", ej: "2025-2")
+     * @param idPrograma ID del programa académico opcional para filtrar
      * @return ResponseEntity con estadísticas por programa
      */
     @GetMapping("/por-programa")
-    public ResponseEntity<Map<String, Object>> obtenerEstadisticasPorPrograma() {
+    public ResponseEntity<Map<String, Object>> obtenerEstadisticasPorPrograma(
+            @RequestParam(required = false) String periodoAcademico,
+            @RequestParam(required = false) Integer idPrograma) {
         try {
-            
-            Map<String, Object> resultado = estadisticaCU.obtenerEstadisticasPorPrograma();
-            
+            log.debug("Estadísticas por programa - Recibido período: '{}', programa: {}", periodoAcademico, idPrograma);
+            String periodoNormalizado = normalizarPeriodoAcademico(periodoAcademico);
+            log.debug("Estadísticas por programa - Período normalizado: '{}'", periodoNormalizado);
+            Map<String, Object> resultado = estadisticaCU.obtenerEstadisticasPorPrograma(periodoNormalizado, idPrograma);
+            log.debug("Estadísticas por programa - Resultado obtenido exitosamente");
             return ResponseEntity.ok(resultado);
-            
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+            log.error("Error al obtener estadísticas por programa - Período: '{}', Programa: {}", periodoAcademico, idPrograma, e);
+            Map<String, Object> error = new HashMap<>();
+            error.put("error", "Error al obtener estadísticas por programa");
+            error.put("mensaje", e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(error);
         }
     }
 
@@ -1400,17 +1687,20 @@ public class EstadisticasRestController {
      * Obtiene tendencias y comparativas del sistema.
      * Incluye análisis de crecimiento, comparaciones entre períodos y tendencias estratégicas.
      * 
+     * @param periodoAcademico Período académico opcional (formato: "YYYY-P", ej: "2025-2")
+     * @param idPrograma ID del programa académico opcional para filtrar
      * @return ResponseEntity con tendencias y comparativas
      */
     @GetMapping("/tendencias-comparativas")
-    public ResponseEntity<Map<String, Object>> obtenerTendenciasYComparativas() {
+    public ResponseEntity<Map<String, Object>> obtenerTendenciasYComparativas(
+            @RequestParam(required = false) String periodoAcademico,
+            @RequestParam(required = false) Integer idPrograma) {
         try {
-            
-            Map<String, Object> resultado = estadisticaCU.obtenerTendenciasYComparativas();
-            
+            String periodoNormalizado = normalizarPeriodoAcademico(periodoAcademico);
+            Map<String, Object> resultado = estadisticaCU.obtenerTendenciasYComparativas(periodoNormalizado, idPrograma);
             return ResponseEntity.ok(resultado);
-            
         } catch (Exception e) {
+            log.error("Error al obtener tendencias y comparativas", e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
@@ -1687,20 +1977,25 @@ public class EstadisticasRestController {
 
     /**
      * Genera un Excel completo con estadísticas generales y de cursos de verano.
+     * 
+     * @param estadisticas Datos de estadísticas generales
+     * @param datosCursosVerano Datos de cursos de verano
+     * @param periodoAcademico Período académico filtrado (opcional)
+     * @param idPrograma ID del programa filtrado (opcional)
      */
-    private byte[] generarExcelCompleto(Map<String, Object> estadisticas, Map<String, Object> datosCursosVerano) {
+    private byte[] generarExcelCompleto(Map<String, Object> estadisticas, Map<String, Object> datosCursosVerano, String periodoAcademico, Integer idPrograma) {
         try {
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
             org.apache.poi.xssf.usermodel.XSSFWorkbook workbook = new org.apache.poi.xssf.usermodel.XSSFWorkbook();
             
             // Hoja 1: Estadísticas Generales
             if (estadisticas != null) {
-                crearHojaEstadisticasGenerales(workbook, estadisticas);
+                crearHojaEstadisticasGenerales(workbook, estadisticas, periodoAcademico, idPrograma);
             }
             
             // Hoja 2: Cursos de Verano
             if (datosCursosVerano != null) {
-                crearHojaCursosVerano(workbook, datosCursosVerano, null, null);
+                crearHojaCursosVerano(workbook, datosCursosVerano, periodoAcademico, idPrograma);
             }
             
             workbook.write(baos);
@@ -1732,7 +2027,7 @@ public class EstadisticasRestController {
     /**
      * Crea la hoja de estadísticas generales en el Excel.
      */
-    private void crearHojaEstadisticasGenerales(org.apache.poi.xssf.usermodel.XSSFWorkbook workbook, Map<String, Object> estadisticas) {
+    private void crearHojaEstadisticasGenerales(org.apache.poi.xssf.usermodel.XSSFWorkbook workbook, Map<String, Object> estadisticas, String periodoAcademico, Integer idPrograma) {
             org.apache.poi.ss.usermodel.Sheet sheet = workbook.createSheet("Estadísticas Generales");
             
             // Estilos
@@ -1748,6 +2043,12 @@ public class EstadisticasRestController {
             headerFont.setFontHeightInPoints((short) 12);
             headerStyle.setFont(headerFont);
             
+            org.apache.poi.ss.usermodel.CellStyle infoStyle = workbook.createCellStyle();
+            org.apache.poi.ss.usermodel.Font infoFont = workbook.createFont();
+            infoFont.setItalic(true);
+            infoFont.setFontHeightInPoints((short) 10);
+            infoStyle.setFont(infoFont);
+            
             int rowNum = 0;
             
             // Título
@@ -1758,12 +2059,90 @@ public class EstadisticasRestController {
             
         rowNum++; // Espacio
         
+        // Fecha de generación
+        java.text.SimpleDateFormat dateFormat = new java.text.SimpleDateFormat("dd 'de' MMMM 'de' yyyy 'a las' HH:mm:ss", new java.util.Locale("es", "CO"));
+        org.apache.poi.ss.usermodel.Row fechaRow = sheet.createRow(rowNum++);
+        fechaRow.createCell(0).setCellValue("Fecha de generación: " + dateFormat.format(new Date()));
+        fechaRow.getCell(0).setCellStyle(infoStyle);
+        
+        // Información de filtros aplicados
+        if (periodoAcademico != null && !periodoAcademico.trim().isEmpty()) {
+            String periodoFormateado = formatearPeriodoAcademicoLegible(periodoAcademico);
+            org.apache.poi.ss.usermodel.Row periodoRow = sheet.createRow(rowNum++);
+            periodoRow.createCell(0).setCellValue("Período académico filtrado: " + periodoFormateado);
+            periodoRow.getCell(0).setCellStyle(infoStyle);
+        }
+        
+        if (idPrograma != null) {
+            // Intentar obtener el nombre del programa desde las estadísticas
+            String nombrePrograma = null;
+            try {
+                @SuppressWarnings("unchecked")
+                Map<String, Object> porPrograma = (Map<String, Object>) estadisticas.get("porPrograma");
+                if (porPrograma != null && porPrograma.size() == 1) {
+                    nombrePrograma = porPrograma.keySet().iterator().next();
+                }
+            } catch (Exception e) {
+                log.debug("Error al obtener nombre del programa desde estadísticas: {}", e.getMessage());
+            }
+            
+            org.apache.poi.ss.usermodel.Row programaRow = sheet.createRow(rowNum++);
+            String textoPrograma = nombrePrograma != null ? 
+                "Programa filtrado: " + nombrePrograma : 
+                "Programa filtrado: ID " + idPrograma;
+            programaRow.createCell(0).setCellValue(textoPrograma);
+            programaRow.getCell(0).setCellStyle(infoStyle);
+        }
+        
+        rowNum++; // Espacio
+        
         // Total de solicitudes
         Object totalSolicitudes = estadisticas.get("totalSolicitudes");
         if (totalSolicitudes != null) {
             org.apache.poi.ss.usermodel.Row row = sheet.createRow(rowNum++);
             row.createCell(0).setCellValue("Total de Solicitudes");
             row.createCell(1).setCellValue(totalSolicitudes.toString());
+        }
+        
+        // Resumen de estados
+        Object totalAprobadas = estadisticas.get("totalAprobadas");
+        Object totalRechazadas = estadisticas.get("totalRechazadas");
+        Object totalEnProceso = estadisticas.get("totalEnProceso");
+        Object totalEnviadas = estadisticas.get("totalEnviadas");
+        Object porcentajeAprobacion = estadisticas.get("porcentajeAprobacion");
+        
+        if (totalAprobadas != null || totalRechazadas != null || totalEnProceso != null || totalEnviadas != null) {
+            rowNum++; // Espacio
+            org.apache.poi.ss.usermodel.Row headerRow = sheet.createRow(rowNum++);
+            org.apache.poi.ss.usermodel.Cell headerCell = headerRow.createCell(0);
+            headerCell.setCellValue("RESUMEN DE ESTADOS");
+            headerCell.setCellStyle(headerStyle);
+            
+            if (totalAprobadas != null) {
+                org.apache.poi.ss.usermodel.Row row = sheet.createRow(rowNum++);
+                row.createCell(0).setCellValue("Total Aprobadas");
+                row.createCell(1).setCellValue(totalAprobadas.toString());
+            }
+            if (totalRechazadas != null) {
+                org.apache.poi.ss.usermodel.Row row = sheet.createRow(rowNum++);
+                row.createCell(0).setCellValue("Total Rechazadas");
+                row.createCell(1).setCellValue(totalRechazadas.toString());
+            }
+            if (totalEnProceso != null) {
+                org.apache.poi.ss.usermodel.Row row = sheet.createRow(rowNum++);
+                row.createCell(0).setCellValue("Total en Proceso");
+                row.createCell(1).setCellValue(totalEnProceso.toString());
+            }
+            if (totalEnviadas != null) {
+                org.apache.poi.ss.usermodel.Row row = sheet.createRow(rowNum++);
+                row.createCell(0).setCellValue("Total Enviadas");
+                row.createCell(1).setCellValue(totalEnviadas.toString());
+            }
+            if (porcentajeAprobacion != null) {
+                org.apache.poi.ss.usermodel.Row row = sheet.createRow(rowNum++);
+                row.createCell(0).setCellValue("Porcentaje de Aprobación");
+                row.createCell(1).setCellValue(porcentajeAprobacion.toString() + "%");
+            }
         }
         
         // Por tipo de proceso
@@ -1797,6 +2176,23 @@ public class EstadisticasRestController {
                     org.apache.poi.ss.usermodel.Row row = sheet.createRow(rowNum++);
                     row.createCell(0).setCellValue(entry.getKey());
                     row.createCell(1).setCellValue(entry.getValue().toString());
+            }
+        }
+        
+        // Por programa
+        @SuppressWarnings("unchecked")
+        Map<String, Object> porPrograma = (Map<String, Object>) estadisticas.get("porPrograma");
+        if (porPrograma != null && !porPrograma.isEmpty()) {
+            rowNum++; // Espacio
+            org.apache.poi.ss.usermodel.Row headerRow = sheet.createRow(rowNum++);
+            org.apache.poi.ss.usermodel.Cell headerCell = headerRow.createCell(0);
+            headerCell.setCellValue("ESTADÍSTICAS POR PROGRAMA");
+            headerCell.setCellStyle(headerStyle);
+            
+            for (Map.Entry<String, Object> entry : porPrograma.entrySet()) {
+                org.apache.poi.ss.usermodel.Row row = sheet.createRow(rowNum++);
+                row.createCell(0).setCellValue(entry.getKey());
+                row.createCell(1).setCellValue(entry.getValue().toString());
             }
         }
         
@@ -2006,8 +2402,8 @@ public class EstadisticasRestController {
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
             org.apache.poi.xssf.usermodel.XSSFWorkbook workbook = new org.apache.poi.xssf.usermodel.XSSFWorkbook();
             
-            // Hoja: Estadísticas Generales
-            crearHojaEstadisticasGenerales(workbook, estadisticas);
+            // Hoja: Estadísticas Generales (sin filtros para este método)
+            crearHojaEstadisticasGenerales(workbook, estadisticas, null, null);
             
             workbook.write(baos);
             workbook.close();

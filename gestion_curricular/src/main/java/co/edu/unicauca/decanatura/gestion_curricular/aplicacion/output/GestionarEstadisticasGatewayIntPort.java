@@ -127,25 +127,31 @@ public interface GestionarEstadisticasGatewayIntPort {
      * Obtiene la distribución de estudiantes por programa académico.
      * Utiliza UsuarioRepositoryInt para contar estudiantes por programa.
      * 
+     * @param periodoAcademico Período académico opcional (formato: "YYYY-P", ej: "2025-2")
+     * @param idPrograma ID del programa académico opcional para filtrar
      * @return Map con la distribución de estudiantes por programa
      */
-    Map<String, Object> obtenerEstudiantesPorPrograma();
+    Map<String, Object> obtenerEstudiantesPorPrograma(String periodoAcademico, Integer idPrograma);
 
     /**
      * Obtiene estadísticas detalladas por tipo de proceso.
      * Incluye conteos, porcentajes y análisis por proceso.
      * 
+     * @param periodoAcademico Período académico opcional (formato: "YYYY-P", ej: "2025-2")
+     * @param idPrograma ID del programa académico opcional para filtrar
      * @return Map con estadísticas detalladas por proceso
      */
-    Map<String, Object> obtenerEstadisticasDetalladasPorProceso();
+    Map<String, Object> obtenerEstadisticasDetalladasPorProceso(String periodoAcademico, Integer idPrograma);
 
     /**
      * Obtiene estadísticas resumidas por tipo de proceso para el dashboard.
      * Formato optimizado para gráficos y KPIs con colores y estilos.
      * 
+     * @param periodoAcademico Período académico opcional (formato: "YYYY-P", ej: "2025-2")
+     * @param idPrograma ID del programa académico opcional para filtrar
      * @return Map con resumen por proceso
      */
-    Map<String, Object> obtenerResumenPorProceso();
+    Map<String, Object> obtenerResumenPorProceso(String periodoAcademico, Integer idPrograma);
 
     /**
      * Obtiene configuración de estilos y colores para el dashboard.
@@ -159,25 +165,31 @@ public interface GestionarEstadisticasGatewayIntPort {
      * Obtiene estadísticas por estado de solicitudes.
      * Incluye conteos, porcentajes y análisis por estado.
      * 
+     * @param periodoAcademico Período académico opcional (formato: "YYYY-P", ej: "2025-2")
+     * @param idPrograma ID del programa académico opcional para filtrar
      * @return Map con estadísticas por estado
      */
-    Map<String, Object> obtenerEstadisticasPorEstado();
+    Map<String, Object> obtenerEstadisticasPorEstado(String periodoAcademico, Integer idPrograma);
 
     /**
      * Obtiene estadísticas por período/mes.
      * Incluye tendencias, picos de actividad y análisis temporal.
      * 
+     * @param periodoAcademico Período académico opcional (formato: "YYYY-P", ej: "2025-2")
+     * @param idPrograma ID del programa académico opcional para filtrar
      * @return Map con estadísticas por período
      */
-    Map<String, Object> obtenerEstadisticasPorPeriodo();
+    Map<String, Object> obtenerEstadisticasPorPeriodo(String periodoAcademico, Integer idPrograma);
 
     /**
      * Obtiene estadísticas por programa académico.
      * Incluye distribución de solicitudes, estudiantes y análisis por programa.
      * 
+     * @param periodoAcademico Período académico opcional (formato: "YYYY-P", ej: "2025-2")
+     * @param idPrograma ID del programa académico opcional para filtrar
      * @return Map con estadísticas por programa
      */
-    Map<String, Object> obtenerEstadisticasPorPrograma();
+    Map<String, Object> obtenerEstadisticasPorPrograma(String periodoAcademico, Integer idPrograma);
 
     /**
      * Obtiene estadísticas de tiempo promedio de procesamiento.
@@ -191,9 +203,11 @@ public interface GestionarEstadisticasGatewayIntPort {
      * Obtiene tendencias y comparativas del sistema.
      * Incluye análisis de crecimiento, comparaciones entre períodos y tendencias estratégicas.
      * 
+     * @param periodoAcademico Período académico opcional (formato: "YYYY-P", ej: "2025-2")
+     * @param idPrograma ID del programa académico opcional para filtrar
      * @return Map con tendencias y comparativas
      */
-    Map<String, Object> obtenerTendenciasYComparativas();
+    Map<String, Object> obtenerTendenciasYComparativas(String periodoAcademico, Integer idPrograma);
 
     /**
      * Obtiene estadísticas específicas para cursos de verano.

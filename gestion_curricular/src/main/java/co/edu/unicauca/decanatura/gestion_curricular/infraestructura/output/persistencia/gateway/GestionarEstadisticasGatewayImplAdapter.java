@@ -942,69 +942,92 @@ public class GestionarEstadisticasGatewayImplAdapter implements GestionarEstadis
         
         log.debug("Obteniendo resumen completo con filtros - Período: {}, Programa: {}", periodoAcademico, idPrograma);
         
-        // Estadisticas globales con filtros
-        // Convertir periodoAcademico a fechas si es necesario, o usar null para obtener todas
-        Map<String, Object> estadisticasGlobales;
-        if (periodoAcademico != null || idPrograma != null) {
-            // Si hay filtros, obtener estadísticas globales filtradas
-            // Para periodoAcademico, necesitamos convertirlo a fechas o filtrar directamente
-            estadisticasGlobales = obtenerEstadisticasGlobales(null, idPrograma, null, null);
+        // Obtener todas las solicitudes y filtrarlas si hay filtros
+        List<SolicitudEntity> todasLasSolicitudes = solicitudRepository.findAll();
+        log.debug("Total de solicitudes encontradas antes de filtrar: {}", todasLasSolicitudes.size());
+        
+        List<SolicitudEntity> solicitudesFiltradas;
+        
+        // Aplicar filtros si existen
+        if (periodoAcademico != null && !periodoAcademico.trim().isEmpty() || idPrograma != null) {
+            String periodoFiltro = (periodoAcademico != null && !periodoAcademico.trim().isEmpty()) ? periodoAcademico.trim() : null;
             
-            // Si hay filtro de período académico, necesitamos filtrar las solicitudes por período
-            if (periodoAcademico != null) {
-                // Filtrar las estadísticas globales por período académico
-                // Esto requiere obtener todas las solicitudes y filtrarlas
-                List<SolicitudEntity> todasLasSolicitudes = solicitudRepository.findAll();
-                List<SolicitudEntity> solicitudesFiltradas = todasLasSolicitudes.stream()
-                    .filter(solicitud -> {
-                        // Filtrar por período académico
-                        if (periodoAcademico != null && !periodoAcademico.trim().isEmpty()) {
-                            String periodoFiltro = periodoAcademico.trim();
-                            if (solicitud.getPeriodo_academico() == null || !solicitud.getPeriodo_academico().equals(periodoFiltro)) {
-                                return false;
+            log.debug("Aplicando filtros - Período: {}, Programa: {}", periodoFiltro, idPrograma);
+            
+            solicitudesFiltradas = todasLasSolicitudes.stream()
+                .filter(solicitud -> {
+                    // Filtrar por período académico
+                    if (periodoFiltro != null) {
+                        boolean coincidePeriodo = false;
+                        
+                        // Verificar período en la solicitud
+                        if (solicitud.getPeriodo_academico() != null) {
+                            if (solicitud.getPeriodo_academico().equals(periodoFiltro)) {
+                                coincidePeriodo = true;
                             }
                         }
-                        // Filtrar por programa
-                        if (idPrograma != null) {
-                            if (solicitud.getObjUsuario() == null || solicitud.getObjUsuario().getObjPrograma() == null
-                                    || !solicitud.getObjUsuario().getObjPrograma().getId_programa().equals(idPrograma)) {
-                                return false;
+                        
+                        // Si no coincide en la solicitud, verificar en el curso asociado
+                        if (!coincidePeriodo && solicitud.getObjCursoOfertadoVerano() != null) {
+                            try {
+                                String periodoCurso = solicitud.getObjCursoOfertadoVerano().getPeriodo_academico();
+                                if (periodoCurso != null && periodoCurso.equals(periodoFiltro)) {
+                                    coincidePeriodo = true;
+                                }
+                            } catch (Exception e) {
+                                log.debug("Error al obtener período del curso: {}", e.getMessage());
                             }
                         }
-                        return true;
-                    })
-                    .collect(Collectors.toList());
-                
-                // Recalcular estadísticas globales con las solicitudes filtradas
-                estadisticasGlobales = calcularEstadisticasGlobalesDesdeSolicitudes(solicitudesFiltradas);
-            }
+                        
+                        if (!coincidePeriodo) {
+                            return false;
+                        }
+                    }
+                    
+                    // Filtrar por programa
+                    if (idPrograma != null) {
+                        try {
+                            if (solicitud.getObjUsuario() == null || solicitud.getObjUsuario().getObjPrograma() == null) {
+                                return false;
+                            }
+                            Integer idProgramaSolicitud = solicitud.getObjUsuario().getObjPrograma().getId_programa();
+                            if (idProgramaSolicitud == null || !idProgramaSolicitud.equals(idPrograma)) {
+                                return false;
+                            }
+                        } catch (Exception e) {
+                            log.debug("Error al obtener programa de la solicitud: {}", e.getMessage());
+                            return false;
+                        }
+                    }
+                    
+                    return true;
+                })
+                .collect(Collectors.toList());
+            
+            log.debug("Total de solicitudes después de filtrar: {}", solicitudesFiltradas.size());
         } else {
-            estadisticasGlobales = obtenerEstadisticasGlobales();
+            solicitudesFiltradas = todasLasSolicitudes;
+            log.debug("No se aplicaron filtros, usando todas las solicitudes");
         }
+        
+        // Calcular estadísticas globales desde las solicitudes filtradas
+        Map<String, Object> estadisticasGlobales = calcularEstadisticasGlobalesDesdeSolicitudes(solicitudesFiltradas);
         resumen.put("estadisticasGlobales", estadisticasGlobales);
         
-        // Estadisticas por tipo de proceso (aplicar filtros si existen)
+        // Estadisticas por tipo de proceso desde solicitudes filtradas
         Map<String, Object> porProceso = new HashMap<>();
         List<String> nombresProcesos = new ArrayList<>(solicitudRepository.buscarNombresSolicitudes());
         for (String proceso : nombresProcesos) {
-            Map<String, Object> estadisticasProceso = obtenerEstadisticasPorProceso(proceso);
-            // Aplicar filtros a las estadísticas por proceso si es necesario
-            if (periodoAcademico != null || idPrograma != null) {
-                estadisticasProceso = aplicarFiltrosAEstadisticas(estadisticasProceso, periodoAcademico, idPrograma);
-            }
+            Map<String, Object> estadisticasProceso = calcularEstadisticasPorProcesoDesdeSolicitudes(solicitudesFiltradas, proceso);
             porProceso.put(proceso, estadisticasProceso);
         }
         resumen.put("porTipoProceso", porProceso);
         
-        // Estadisticas por estado (aplicar filtros si existen)
+        // Estadisticas por estado desde solicitudes filtradas
         Map<String, Object> porEstado = new HashMap<>();
         String[] estados = {"APROBADA", "RECHAZADA", "ENVIADA", "APROBADA_FUNCIONARIO", "APROBADA_COORDINADOR"};
         for (String estado : estados) {
-            Map<String, Object> estadisticasEstado = obtenerEstadisticasPorEstado(estado);
-            // Aplicar filtros a las estadísticas por estado si es necesario
-            if (periodoAcademico != null || idPrograma != null) {
-                estadisticasEstado = aplicarFiltrosAEstadisticas(estadisticasEstado, periodoAcademico, idPrograma);
-            }
+            Map<String, Object> estadisticasEstado = calcularEstadisticasPorEstadoDesdeSolicitudes(solicitudesFiltradas, estado);
             porEstado.put(estado, estadisticasEstado);
         }
         resumen.put("porEstado", porEstado);
@@ -1038,17 +1061,23 @@ public class GestionarEstadisticasGatewayImplAdapter implements GestionarEstadis
         int totalAprobadas = 0;
         int totalRechazadas = 0;
         int totalEnProceso = 0;
+        int totalEnviadas = 0;
         
         Map<String, Integer> porTipoProceso = new HashMap<>();
         Map<String, Integer> porPrograma = new HashMap<>();
         
         for (SolicitudEntity solicitud : solicitudes) {
             String estadoActual = obtenerEstadoMasReciente(solicitud);
-            if ("APROBADA".equals(estadoActual) || "APROBADA_FUNCIONARIO".equals(estadoActual) || "APROBADA_COORDINADOR".equals(estadoActual)) {
+            if ("APROBADA".equals(estadoActual)) {
                 totalAprobadas++;
             } else if ("RECHAZADA".equals(estadoActual)) {
                 totalRechazadas++;
+            } else if ("APROBADA_FUNCIONARIO".equals(estadoActual) || "APROBADA_COORDINADOR".equals(estadoActual)) {
+                totalEnProceso++;
+            } else if ("ENVIADA".equals(estadoActual)) {
+                totalEnviadas++;
             } else {
+                // Cualquier otro estado se considera "En Proceso"
                 totalEnProceso++;
             }
             
@@ -1069,6 +1098,7 @@ public class GestionarEstadisticasGatewayImplAdapter implements GestionarEstadis
         estadisticas.put("totalAprobadas", totalAprobadas);
         estadisticas.put("totalRechazadas", totalRechazadas);
         estadisticas.put("totalEnProceso", totalEnProceso);
+        estadisticas.put("totalEnviadas", totalEnviadas);
         estadisticas.put("porcentajeAprobacion", Math.round(porcentajeAprobacion * 100.0) / 100.0);
         estadisticas.put("porTipoProceso", porTipoProceso);
         estadisticas.put("porPrograma", porPrograma);
@@ -1078,13 +1108,172 @@ public class GestionarEstadisticasGatewayImplAdapter implements GestionarEstadis
     }
     
     /**
-     * Aplica filtros a estadísticas existentes (método auxiliar para compatibilidad).
+     * Filtra las solicitudes según período académico e idPrograma.
+     * Reutiliza la lógica de filtrado de obtenerResumenCompleto.
      */
-    private Map<String, Object> aplicarFiltrosAEstadisticas(Map<String, Object> estadisticas, String periodoAcademico, Integer idPrograma) {
-        // Este método puede ser usado para aplicar filtros adicionales si es necesario
-        // Por ahora, retornamos las estadísticas tal cual ya que los filtros se aplican en la obtención
-        return estadisticas;
+    private List<SolicitudEntity> filtrarSolicitudes(String periodoAcademico, Integer idPrograma) {
+        List<SolicitudEntity> todasLasSolicitudes = solicitudRepository.findAll();
+        log.debug("Filtrar solicitudes - Total antes de filtrar: {}, Período: '{}', Programa: {}", 
+            todasLasSolicitudes.size(), periodoAcademico, idPrograma);
+        
+        if ((periodoAcademico == null || periodoAcademico.trim().isEmpty()) && idPrograma == null) {
+            log.debug("Filtrar solicitudes - Sin filtros, retornando todas las solicitudes");
+            return todasLasSolicitudes;
+        }
+        
+        String periodoFiltro = (periodoAcademico != null && !periodoAcademico.trim().isEmpty()) ? periodoAcademico.trim() : null;
+        log.debug("Filtrar solicitudes - Aplicando filtros - Período: '{}', Programa: {}", periodoFiltro, idPrograma);
+        
+        List<SolicitudEntity> solicitudesFiltradas = todasLasSolicitudes.stream()
+            .filter(solicitud -> {
+                // Filtrar por período académico
+                if (periodoFiltro != null) {
+                    boolean coincidePeriodo = false;
+                    
+                    if (solicitud.getPeriodo_academico() != null) {
+                        if (solicitud.getPeriodo_academico().equals(periodoFiltro)) {
+                            coincidePeriodo = true;
+                        }
+                    }
+                    
+                    if (!coincidePeriodo && solicitud.getObjCursoOfertadoVerano() != null) {
+                        try {
+                            String periodoCurso = solicitud.getObjCursoOfertadoVerano().getPeriodo_academico();
+                            if (periodoCurso != null && periodoCurso.equals(periodoFiltro)) {
+                                coincidePeriodo = true;
+                            }
+                        } catch (Exception e) {
+                            log.debug("Error al obtener período del curso: {}", e.getMessage());
+                        }
+                    }
+                    
+                    if (!coincidePeriodo) {
+                        return false;
+                    }
+                }
+                
+                // Filtrar por programa
+                if (idPrograma != null) {
+                    try {
+                        if (solicitud.getObjUsuario() == null || solicitud.getObjUsuario().getObjPrograma() == null) {
+                            return false;
+                        }
+                        Integer idProgramaSolicitud = solicitud.getObjUsuario().getObjPrograma().getId_programa();
+                        if (idProgramaSolicitud == null || !idProgramaSolicitud.equals(idPrograma)) {
+                            return false;
+                        }
+                    } catch (Exception e) {
+                        log.debug("Error al obtener programa de la solicitud: {}", e.getMessage());
+                        return false;
+                    }
+                }
+                
+                return true;
+            })
+            .collect(Collectors.toList());
+        
+        log.debug("Filtrar solicitudes - Total después de filtrar: {}", solicitudesFiltradas.size());
+        return solicitudesFiltradas;
     }
+    
+    /**
+     * Calcula estadísticas por proceso desde una lista de solicitudes filtradas.
+     */
+    private Map<String, Object> calcularEstadisticasPorProcesoDesdeSolicitudes(List<SolicitudEntity> solicitudes, String tipoProceso) {
+        Map<String, Object> estadisticas = new HashMap<>();
+        
+        // Filtrar solicitudes por proceso
+        List<SolicitudEntity> solicitudesProceso = solicitudes.stream()
+            .filter(solicitud -> {
+                String nombreProceso = obtenerNombreProcesoPorSolicitud(solicitud);
+                return tipoProceso.equals(nombreProceso);
+            })
+            .collect(Collectors.toList());
+        
+        int totalPorProceso = solicitudesProceso.size();
+        
+        // Calcular por estado
+        Map<String, Integer> porEstado = new HashMap<>();
+        String[] estados = {"APROBADA", "RECHAZADA", "ENVIADA", "APROBADA_FUNCIONARIO", "APROBADA_COORDINADOR"};
+        
+        for (String estado : estados) {
+            int cantidad = (int) solicitudesProceso.stream()
+                .filter(solicitud -> {
+                    String estadoSolicitud = obtenerEstadoMasReciente(solicitud);
+                    return estadoSolicitud != null && estadoSolicitud.equals(estado);
+                })
+                .count();
+            porEstado.put(estado, cantidad);
+        }
+        
+        int totalAprobadas = porEstado.get("APROBADA");
+        int totalRechazadas = porEstado.get("RECHAZADA");
+        int totalEnProceso = porEstado.getOrDefault("APROBADA_FUNCIONARIO", 0) + porEstado.getOrDefault("APROBADA_COORDINADOR", 0);
+        
+        double porcentajeAprobacion = totalPorProceso > 0 ? (totalAprobadas * 100.0) / totalPorProceso : 0.0;
+        
+        estadisticas.put("tipoProceso", tipoProceso);
+        estadisticas.put("totalSolicitudes", totalPorProceso);
+        estadisticas.put("totalAprobadas", totalAprobadas);
+        estadisticas.put("totalRechazadas", totalRechazadas);
+        estadisticas.put("totalEnProceso", totalEnProceso);
+        estadisticas.put("porcentajeAprobacion", Math.round(porcentajeAprobacion * 10.0) / 10.0);
+        estadisticas.put("porEstado", porEstado);
+        estadisticas.put("porTipoProceso", new HashMap<>());
+        estadisticas.put("porPrograma", new HashMap<>());
+        estadisticas.put("descripcion", obtenerDescripcionProceso(tipoProceso));
+        estadisticas.put("fechaConsulta", new Date());
+        
+        return normalizarEstadistica(estadisticas);
+    }
+    
+    /**
+     * Calcula estadísticas por estado desde una lista de solicitudes filtradas.
+     */
+    private Map<String, Object> calcularEstadisticasPorEstadoDesdeSolicitudes(List<SolicitudEntity> solicitudes, String estado) {
+        Map<String, Object> estadisticas = new HashMap<>();
+        
+        // Filtrar solicitudes por estado
+        List<SolicitudEntity> solicitudesEstado = solicitudes.stream()
+            .filter(solicitud -> {
+                String estadoSolicitud = obtenerEstadoMasReciente(solicitud);
+                return estadoSolicitud != null && estadoSolicitud.equals(estado);
+            })
+            .collect(Collectors.toList());
+        
+        int totalPorEstado = solicitudesEstado.size();
+        
+        // Calcular por tipo de proceso
+        Map<String, Integer> porTipoProceso = new HashMap<>();
+        for (SolicitudEntity solicitud : solicitudesEstado) {
+            String nombreProceso = obtenerNombreProcesoPorSolicitud(solicitud);
+            porTipoProceso.put(nombreProceso, porTipoProceso.getOrDefault(nombreProceso, 0) + 1);
+        }
+        
+        // Calcular por programa
+        Map<String, Integer> porPrograma = new HashMap<>();
+        for (SolicitudEntity solicitud : solicitudesEstado) {
+            if (solicitud.getObjUsuario() != null && solicitud.getObjUsuario().getObjPrograma() != null) {
+                String nombrePrograma = solicitud.getObjUsuario().getObjPrograma().getNombre_programa();
+                porPrograma.put(nombrePrograma, porPrograma.getOrDefault(nombrePrograma, 0) + 1);
+            }
+        }
+        
+        estadisticas.put("estado", estado);
+        estadisticas.put("totalSolicitudes", totalPorEstado);
+        estadisticas.put("totalAprobadas", estado.equals("APROBADA") ? totalPorEstado : 0);
+        estadisticas.put("totalRechazadas", estado.equals("RECHAZADA") ? totalPorEstado : 0);
+        estadisticas.put("totalEnProceso", (estado.equals("APROBADA_FUNCIONARIO") || estado.equals("APROBADA_COORDINADOR")) ? totalPorEstado : 0);
+        estadisticas.put("porcentajeAprobacion", estado.equals("APROBADA") ? 100.0 : 0.0);
+        estadisticas.put("porTipoProceso", porTipoProceso);
+        estadisticas.put("porPrograma", porPrograma);
+        estadisticas.put("porEstado", new HashMap<>());
+        estadisticas.put("descripcionEstado", obtenerDescripcionEstado(estado));
+        estadisticas.put("fechaConsulta", new Date());
+        
+        return normalizarEstadistica(estadisticas);
+    }
+    
 
     @Override
     @Transactional(readOnly = true)
@@ -1251,19 +1440,28 @@ public class GestionarEstadisticasGatewayImplAdapter implements GestionarEstadis
     }
 
     @Override
-    public Map<String, Object> obtenerEstudiantesPorPrograma() {
+    public Map<String, Object> obtenerEstudiantesPorPrograma(String periodoAcademico, Integer idPrograma) {
         Map<String, Object> resultado = new HashMap<>();
         
         try {
             // Obtener todos los estudiantes
             List<UsuarioEntity> estudiantes = usuarioRepository.buscarPorRol(2);
             
+            // Filtrar estudiantes por programa si se especifica
+            if (idPrograma != null) {
+                estudiantes = estudiantes.stream()
+                    .filter(e -> e.getObjPrograma() != null && e.getObjPrograma().getId_programa().equals(idPrograma))
+                    .collect(Collectors.toList());
+            }
+            
             // Agrupar por programa
             Map<String, Integer> estudiantesPorPrograma = new HashMap<>();
             for (UsuarioEntity estudiante : estudiantes) {
-                String nombrePrograma = estudiante.getObjPrograma().getNombre_programa();
-                estudiantesPorPrograma.put(nombrePrograma, 
-                    estudiantesPorPrograma.getOrDefault(nombrePrograma, 0) + 1);
+                if (estudiante.getObjPrograma() != null) {
+                    String nombrePrograma = estudiante.getObjPrograma().getNombre_programa();
+                    estudiantesPorPrograma.put(nombrePrograma, 
+                        estudiantesPorPrograma.getOrDefault(nombrePrograma, 0) + 1);
+                }
             }
             
             resultado.put("estudiantesPorPrograma", estudiantesPorPrograma);
@@ -1283,12 +1481,12 @@ public class GestionarEstadisticasGatewayImplAdapter implements GestionarEstadis
     }
 
     @Override
-    public Map<String, Object> obtenerEstadisticasDetalladasPorProceso() {
+    public Map<String, Object> obtenerEstadisticasDetalladasPorProceso(String periodoAcademico, Integer idPrograma) {
         Map<String, Object> resultado = new HashMap<>();
         
         try {
-            // Obtener datos reales del backend
-            List<SolicitudEntity> todasLasSolicitudes = solicitudRepository.findAll();
+            // Obtener y filtrar solicitudes
+            List<SolicitudEntity> todasLasSolicitudes = filtrarSolicitudes(periodoAcademico, idPrograma);
             
             // Inicializar contadores por proceso
             Map<String, Integer> totalPorProceso = new HashMap<>();
@@ -1473,12 +1671,12 @@ public class GestionarEstadisticasGatewayImplAdapter implements GestionarEstadis
     }
 
     @Override
-    public Map<String, Object> obtenerResumenPorProceso() {
+    public Map<String, Object> obtenerResumenPorProceso(String periodoAcademico, Integer idPrograma) {
         Map<String, Object> resultado = new HashMap<>();
         
         try {
-            // Obtener estadisticas globales
-            Map<String, Object> estadisticasGlobales = obtenerEstadisticasGlobales();
+            // Obtener resumen completo con filtros para tener acceso a todas las estadísticas
+            Map<String, Object> resumenCompleto = obtenerResumenCompleto(periodoAcademico, idPrograma);
             
             // Procesar datos para crear resumen organizado
             Map<String, Object> resumenProcesos = new HashMap<>();
@@ -1488,9 +1686,9 @@ public class GestionarEstadisticasGatewayImplAdapter implements GestionarEstadis
             String[] colores = {"#007bff", "#28a745", "#ffc107", "#17a2b8", "#dc3545"};
             String[] iconos = {"fas fa-user-plus", "fas fa-exchange-alt", "fas fa-graduation-cap", "fas fa-calendar-alt", "fas fa-check-circle"};
             
-            // Contar solicitudes por tipo de proceso
+            // Obtener porTipoProceso del resumen completo (está en el nivel superior, no en estadisticasGlobales)
             @SuppressWarnings("unchecked")
-            Map<String, Object> porTipoProceso = (Map<String, Object>) estadisticasGlobales.get("porTipoProceso");
+            Map<String, Object> porTipoProceso = (Map<String, Object>) resumenCompleto.get("porTipoProceso");
             
             if (porTipoProceso != null) {
                 for (String tipoProceso : tiposProcesos) {
@@ -1627,12 +1825,12 @@ public class GestionarEstadisticasGatewayImplAdapter implements GestionarEstadis
     }
 
     @Override
-    public Map<String, Object> obtenerEstadisticasPorEstado() {
+    public Map<String, Object> obtenerEstadisticasPorEstado(String periodoAcademico, Integer idPrograma) {
         Map<String, Object> resultado = new HashMap<>();
         
         try {
-            // Obtener datos reales del backend
-            List<SolicitudEntity> todasLasSolicitudes = solicitudRepository.findAll();
+            // Obtener y filtrar solicitudes
+            List<SolicitudEntity> todasLasSolicitudes = filtrarSolicitudes(periodoAcademico, idPrograma);
             
             // Inicializar contadores por estado
             Map<String, Integer> totalPorEstado = new HashMap<>();
@@ -1869,12 +2067,12 @@ public class GestionarEstadisticasGatewayImplAdapter implements GestionarEstadis
     }
 
     @Override
-    public Map<String, Object> obtenerEstadisticasPorPeriodo() {
+    public Map<String, Object> obtenerEstadisticasPorPeriodo(String periodoAcademico, Integer idPrograma) {
         Map<String, Object> resultado = new HashMap<>();
         
         try {
-            // Obtener datos reales del backend
-            List<SolicitudEntity> todasLasSolicitudes = solicitudRepository.findAll();
+            // Obtener y filtrar solicitudes
+            List<SolicitudEntity> todasLasSolicitudes = filtrarSolicitudes(periodoAcademico, idPrograma);
             
             // Inicializar contadores por mes
             Map<String, Integer> totalPorMes = new HashMap<>();
@@ -2178,13 +2376,13 @@ public class GestionarEstadisticasGatewayImplAdapter implements GestionarEstadis
     }
 
     @Override
-    public Map<String, Object> obtenerEstadisticasPorPrograma() {
+    public Map<String, Object> obtenerEstadisticasPorPrograma(String periodoAcademico, Integer idPrograma) {
         Map<String, Object> resultado = new HashMap<>();
         
         try {
-            // Obtener datos reales del backend
+            // Obtener y filtrar solicitudes
             List<ProgramaEntity> todosLosProgramas = programaRepository.findAll();
-            List<SolicitudEntity> todasLasSolicitudes = solicitudRepository.findAll();
+            List<SolicitudEntity> todasLasSolicitudes = filtrarSolicitudes(periodoAcademico, idPrograma);
             List<UsuarioEntity> todosLosEstudiantes = usuarioRepository.buscarPorRol(2);
             
             // Inicializar contadores por programa
@@ -2527,12 +2725,12 @@ public class GestionarEstadisticasGatewayImplAdapter implements GestionarEstadis
     }
 
     @Override
-    public Map<String, Object> obtenerTendenciasYComparativas() {
+    public Map<String, Object> obtenerTendenciasYComparativas(String periodoAcademico, Integer idPrograma) {
         Map<String, Object> resultado = new HashMap<>();
         
         try {
-            // Obtener todas las solicitudes para analisis de tendencias
-            List<SolicitudEntity> todasLasSolicitudes = solicitudRepository.findAll();
+            // Obtener y filtrar solicitudes
+            List<SolicitudEntity> todasLasSolicitudes = filtrarSolicitudes(periodoAcademico, idPrograma);
             List<UsuarioEntity> todosLosEstudiantes = usuarioRepository.buscarPorRol(2);
             
             // Analisis de crecimiento temporal

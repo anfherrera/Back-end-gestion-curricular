@@ -271,15 +271,15 @@ class EstadisticasUnidadTest {
         // Arrange
         Map<String, Object> tendenciasEsperadas = new HashMap<>();
         tendenciasEsperadas.put("tendencia", "ascendente");
-        when(estadisticasGateway.obtenerTendenciasYComparativas())
+        when(estadisticasGateway.obtenerTendenciasYComparativas(null, null))
                 .thenReturn(tendenciasEsperadas);
 
         // Act
-        Map<String, Object> resultado = estadisticasCU.obtenerTendenciasYComparativas();
+        Map<String, Object> resultado = estadisticasCU.obtenerTendenciasYComparativas(null, null);
 
         // Assert
         assertThat(resultado).isNotNull();
-        verify(estadisticasGateway, times(1)).obtenerTendenciasYComparativas();
+        verify(estadisticasGateway, times(1)).obtenerTendenciasYComparativas(null, null);
     }
 
     @Test
