@@ -127,13 +127,23 @@ public class GestionarSolicitudPazYSalvoGatewayImplAdapter implements GestionarS
 
     @Override
     public Optional<SolicitudPazYSalvo> buscarPorId(Integer idSolicitud) {
-        return solicitudRepository.findById(idSolicitud)
+        // Usar el método con JOIN FETCH para cargar todas las relaciones, incluyendo el usuario completo con su cédula
+        return solicitudRepository.findByIdWithRelations(idSolicitud)
                 .map(entity -> {
-                    // Forzar la carga de documentos
+                    // Verificar que el usuario esté cargado con todas sus propiedades (incluyendo cédula)
+                    if (entity.getObjUsuario() != null) {
+                        // Forzar acceso a la cédula para asegurar que esté cargada desde la BD
+                        entity.getObjUsuario().getCedula();
+                        // Verificar que el programa esté cargado
+                        if (entity.getObjUsuario().getObjPrograma() != null) {
+                            entity.getObjUsuario().getObjPrograma().getNombre_programa();
+                        }
+                    }
+                    // Forzar la carga de documentos si no se cargaron con JOIN FETCH
                     if (entity.getDocumentos() != null) {
                         entity.getDocumentos().size(); // Esto fuerza la carga lazy
                     }
-                    // Forzar la carga de estados con sus comentarios
+                    // Forzar la carga de estados con sus comentarios si no se cargaron con JOIN FETCH
                     if (entity.getEstadosSolicitud() != null) {
                         entity.getEstadosSolicitud().size(); // Esto fuerza la carga lazy
                         // Asegurar que los comentarios se carguen
@@ -208,14 +218,36 @@ public class GestionarSolicitudPazYSalvoGatewayImplAdapter implements GestionarS
     }
 
     @Override
+    @Transactional
     public void cambiarEstadoSolicitud(Integer idSolicitud, EstadoSolicitud nuevoEstado) {
+        // Usar findById normal (más seguro y confiable)
         SolicitudPazYSalvoEntity solicitudEntity = solicitudRepository.findById(idSolicitud)
                 .orElseThrow(() -> new EntidadNoExisteException("Solicitud de Paz y Salvo no encontrada con ID: " + idSolicitud));
 
-        EstadoSolicitudEntity nuevo = mapper.map(nuevoEstado, EstadoSolicitudEntity.class);
-        nuevo.setObjSolicitud(solicitudEntity);
+        // Asegurar que la lista de estados esté inicializada
+        // Si es null, inicializarla; si no, forzar la carga lazy dentro de la transacción
+        if (solicitudEntity.getEstadosSolicitud() == null) {
+            solicitudEntity.setEstadosSolicitud(new java.util.ArrayList<>());
+        } else {
+            // Forzar la carga de la colección lazy dentro de la transacción
+            solicitudEntity.getEstadosSolicitud().size();
+        }
 
+        // Crear el nuevo estado
+        EstadoSolicitudEntity nuevo = new EstadoSolicitudEntity();
+        nuevo.setEstado_actual(nuevoEstado.getEstado_actual());
+        nuevo.setFecha_registro_estado(nuevoEstado.getFecha_registro_estado() != null ? nuevoEstado.getFecha_registro_estado() : new java.util.Date());
+        nuevo.setObjSolicitud(solicitudEntity);
+        
+        // Establecer el comentario si se proporciona
+        if (nuevoEstado.getComentario() != null && !nuevoEstado.getComentario().trim().isEmpty()) {
+            nuevo.setComentario(nuevoEstado.getComentario().trim());
+        }
+
+        // Agregar el nuevo estado a la lista
         solicitudEntity.getEstadosSolicitud().add(nuevo);
+        
+        // Guardar la solicitud (esto también guardará el nuevo estado por cascade)
         solicitudRepository.save(solicitudEntity);
     }
 

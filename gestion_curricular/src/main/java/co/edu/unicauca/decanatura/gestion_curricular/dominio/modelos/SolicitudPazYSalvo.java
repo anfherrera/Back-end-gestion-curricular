@@ -9,6 +9,9 @@ import lombok.EqualsAndHashCode;
 @Data
 @EqualsAndHashCode(callSuper = true)
 public class SolicitudPazYSalvo extends Solicitud {
+    private String titulo_trabajo_grado;
+    private String director_trabajo_grado;
+    
     public SolicitudPazYSalvo(){
         super();
     }

@@ -76,6 +76,11 @@ public class GestionarUsuarioGatewayImplAdapter implements GestionarUsuarioGatew
             throw new IllegalArgumentException("Error al mapear el usuario a entidad");
         }
         
+        // Asegurar que la cédula se mapee correctamente
+        if (usuario.getCedula() != null && !usuario.getCedula().trim().isEmpty()) {
+            entity.setCedula(usuario.getCedula().trim());
+        }
+        
         // Validar que las relaciones se mapearon correctamente
         if (entity.getObjRol() == null) {
             throw new IllegalArgumentException("Error: el rol no se mapeó correctamente a la entidad");
@@ -136,7 +141,8 @@ public class GestionarUsuarioGatewayImplAdapter implements GestionarUsuarioGatew
     @Override
     @Transactional(readOnly = true)
     public Usuario obtenerUsuarioPorId(Integer id_usuario) {
-        return usuarioRepository.findById(id_usuario)
+        // Usar findByIdWithRelations para cargar todas las relaciones, incluyendo la cédula
+        return usuarioRepository.findByIdWithRelations(id_usuario)
                 .map(entity -> usuarioMapper.map(entity, Usuario.class))
                 .orElse(null);
     }

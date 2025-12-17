@@ -125,4 +125,17 @@ public interface SolicitudPazYSalvoRepositoryInt extends JpaRepository<Solicitud
         @Param("idUsuario") Integer idUsuario,
         @Param("periodoAcademico") String periodoAcademico
     );
+
+    /**
+     * Busca una solicitud de paz y salvo por ID con el usuario y sus relaciones cargadas (JOIN FETCH)
+     * Nota: Solo se hace JOIN FETCH del usuario y sus relaciones para evitar problemas con múltiples colecciones
+     * @param idSolicitud ID de la solicitud
+     * @return Optional con la solicitud si existe, vacío si no
+     */
+    @Query("SELECT s FROM SolicitudPazYSalvoEntity s " +
+           "LEFT JOIN FETCH s.objUsuario u " +
+           "LEFT JOIN FETCH u.objPrograma p " +
+           "LEFT JOIN FETCH u.objRol r " +
+           "WHERE s.id_solicitud = :idSolicitud")
+    java.util.Optional<SolicitudPazYSalvoEntity> findByIdWithRelations(@Param("idSolicitud") Integer idSolicitud);
 }

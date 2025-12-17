@@ -223,6 +223,21 @@ public class SolicitudPazYSalvoRestController {
                 log.debug("Período académico establecido automáticamente: {}", periodoActual.getValor());
             }
         }
+        
+        // Guardar título y director del trabajo de grado si se proporcionan
+        if (mapPeticion.containsKey("titulo_trabajo_grado") && mapPeticion.get("titulo_trabajo_grado") != null) {
+            String titulo = mapPeticion.get("titulo_trabajo_grado").toString().trim();
+            if (!titulo.isEmpty()) {
+                solicitud.setTitulo_trabajo_grado(titulo);
+            }
+        }
+        
+        if (mapPeticion.containsKey("director_trabajo_grado") && mapPeticion.get("director_trabajo_grado") != null) {
+            String director = mapPeticion.get("director_trabajo_grado").toString().trim();
+            if (!director.isEmpty()) {
+                solicitud.setDirector_trabajo_grado(director);
+            }
+        }
 
         return solicitud;
     }
@@ -530,20 +545,42 @@ public class SolicitudPazYSalvoRestController {
     }
 
     @PutMapping("/actualizarEstadoSolicitud")
-    public ResponseEntity<Void> actualizarEstadoSolicitudPazYSalvo(
+    public ResponseEntity<?> actualizarEstadoSolicitudPazYSalvo(
             @RequestBody CambioEstadoSolicitudDTOPeticion peticion) {
+        try {
+            if (peticion == null) {
+                return ResponseEntity.badRequest().body(Map.of("error", "La petición no puede ser nula"));
+            }
+            
+            if (peticion.getIdSolicitud() == null) {
+                return ResponseEntity.badRequest().body(Map.of("error", "El ID de la solicitud es requerido"));
+            }
+            
+            if (peticion.getNuevoEstado() == null || peticion.getNuevoEstado().trim().isEmpty()) {
+                return ResponseEntity.badRequest().body(Map.of("error", "El nuevo estado es requerido"));
+            }
 
-        CambioEstadoSolicitud solicitud = solicitudMapper
-                .mappearDeCambioEstadoSolicitudDTOPeticionACambioEstadoSolicitud(peticion);
+            CambioEstadoSolicitud solicitud = solicitudMapper
+                    .mappearDeCambioEstadoSolicitudDTOPeticionACambioEstadoSolicitud(peticion);
 
-        // Usar el método sobrecargado que acepta comentario
-        solicitudPazYSalvoCU.cambiarEstadoSolicitud(
-            solicitud.getIdSolicitud(), 
-            solicitud.getNuevoEstado(),
-            solicitud.getComentario()
-        );
+            // Usar el método sobrecargado que acepta comentario
+            solicitudPazYSalvoCU.cambiarEstadoSolicitud(
+                solicitud.getIdSolicitud(), 
+                solicitud.getNuevoEstado(),
+                solicitud.getComentario()
+            );
 
-        return ResponseEntity.noContent().build();
+            return ResponseEntity.noContent().build();
+        } catch (EntidadNoExisteException e) {
+            log.error("Error al actualizar estado: solicitud no encontrada", e);
+            return ResponseEntity.notFound().build();
+        } catch (IllegalArgumentException e) {
+            log.error("Error de validación al actualizar estado", e);
+            return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
+        } catch (Exception e) {
+            log.error("Error inesperado al actualizar estado de solicitud", e);
+            return ResponseEntity.status(500).body(Map.of("error", "Error interno del servidor: " + e.getMessage()));
+        }
     }
 
     /**
@@ -581,12 +618,29 @@ public class SolicitudPazYSalvoRestController {
      * GET /api/solicitudes-pazysalvo/generarDocumentoPazYSalvo/{id}/pdf
      */
     @GetMapping("/generarDocumentoPazYSalvo/{id}/pdf")
-    public ResponseEntity<byte[]> generarDocumentoPazYSalvoPDF(@PathVariable Integer id) {
+    public ResponseEntity<byte[]> generarDocumentoPazYSalvoPDF(
+            @PathVariable Integer id,
+            @RequestParam(value = "tituloTrabajoGrado", required = false) String tituloTrabajoGrado,
+            @RequestParam(value = "directorTrabajoGrado", required = false) String directorTrabajoGrado) {
         try {
             // Buscar la solicitud
             SolicitudPazYSalvo solicitud = solicitudPazYSalvoCU.buscarPorId(id);
             if (solicitud == null) {
                 return ResponseEntity.notFound().build();
+            }
+            
+            // Verificar que el usuario esté cargado
+            if (solicitud.getObjUsuario() == null || solicitud.getObjUsuario().getId_usuario() == null) {
+                log.error("Usuario no encontrado para solicitud ID: {}", id);
+                return ResponseEntity.internalServerError().build();
+            }
+            
+            // Obtener el usuario completo desde el gateway (igual que en construirSolicitudBasica)
+            // Esto asegura que tengamos todos los datos del usuario, incluyendo la cédula
+            Usuario usuarioCompleto = usuarioGateway.obtenerUsuarioPorId(solicitud.getObjUsuario().getId_usuario());
+            if (usuarioCompleto == null) {
+                log.error("No se pudo obtener el usuario completo para solicitud ID: {}", id);
+                return ResponseEntity.internalServerError().build();
             }
             
             // Crear datos del documento
@@ -596,11 +650,43 @@ public class SolicitudPazYSalvoRestController {
             datosDocumento.put("observaciones", "Paz y Salvo generado");
             
             Map<String, Object> datosSolicitud = new HashMap<>();
-            datosSolicitud.put("nombreEstudiante", solicitud.getObjUsuario().getNombre_completo());
-            datosSolicitud.put("codigoEstudiante", solicitud.getObjUsuario().getCodigo());
-            datosSolicitud.put("programa", solicitud.getObjUsuario().getObjPrograma() != null ? 
-                solicitud.getObjUsuario().getObjPrograma().getNombre_programa() : "Ingeniería Electrónica y Telecomunicaciones");
-            datosSolicitud.put("fechaSolicitud", solicitud.getFecha_registro_solicitud());
+            datosSolicitud.put("nombreEstudiante", usuarioCompleto.getNombre_completo());
+            datosSolicitud.put("codigoEstudiante", usuarioCompleto.getCodigo());
+            datosSolicitud.put("programa", usuarioCompleto.getObjPrograma() != null ? 
+                usuarioCompleto.getObjPrograma().getNombre_programa() : "Ingeniería Electrónica y Telecomunicaciones");
+            // Formatear fecha correctamente
+            if (solicitud.getFecha_registro_solicitud() != null) {
+                java.time.LocalDate fechaLocal = solicitud.getFecha_registro_solicitud().toInstant()
+                    .atZone(java.time.ZoneId.systemDefault()).toLocalDate();
+                datosSolicitud.put("fechaSolicitud", fechaLocal);
+            } else {
+                datosSolicitud.put("fechaSolicitud", java.time.LocalDate.now());
+            }
+            // Agregar datos adicionales para Paz y Salvo - usar el usuario completo para obtener la cédula
+            String cedulaFinal = usuarioCompleto.getCedula() != null && !usuarioCompleto.getCedula().trim().isEmpty() 
+                ? usuarioCompleto.getCedula() : "No especificada";
+            datosSolicitud.put("cedulaEstudiante", cedulaFinal);
+            // Obtener título y director de la solicitud guardada, o de los parámetros, o usar valores por defecto
+            String tituloFinal = null;
+            if (tituloTrabajoGrado != null && !tituloTrabajoGrado.trim().isEmpty()) {
+                tituloFinal = tituloTrabajoGrado.trim();
+            } else if (solicitud.getTitulo_trabajo_grado() != null && !solicitud.getTitulo_trabajo_grado().trim().isEmpty()) {
+                tituloFinal = solicitud.getTitulo_trabajo_grado().trim();
+            } else {
+                tituloFinal = "Trabajo de grado";
+            }
+            
+            String directorFinal = null;
+            if (directorTrabajoGrado != null && !directorTrabajoGrado.trim().isEmpty()) {
+                directorFinal = directorTrabajoGrado.trim();
+            } else if (solicitud.getDirector_trabajo_grado() != null && !solicitud.getDirector_trabajo_grado().trim().isEmpty()) {
+                directorFinal = solicitud.getDirector_trabajo_grado().trim();
+            } else {
+                directorFinal = "Director asignado";
+            }
+            
+            datosSolicitud.put("tituloTrabajoGrado", tituloFinal);
+            datosSolicitud.put("directorTrabajoGrado", directorFinal);
             
             // Crear request para generador de documentos
             co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.DTORespuesta.DocumentRequest request = 
@@ -629,12 +715,28 @@ public class SolicitudPazYSalvoRestController {
      * GET /api/solicitudes-pazysalvo/generarDocumentoPazYSalvo/{id}/docx
      */
     @GetMapping("/generarDocumentoPazYSalvo/{id}/docx")
-    public ResponseEntity<byte[]> generarDocumentoPazYSalvoDOCX(@PathVariable Integer id) {
+    public ResponseEntity<byte[]> generarDocumentoPazYSalvoDOCX(
+            @PathVariable Integer id,
+            @RequestParam(value = "tituloTrabajoGrado", required = false) String tituloTrabajoGrado,
+            @RequestParam(value = "directorTrabajoGrado", required = false) String directorTrabajoGrado) {
         try {
             // Buscar la solicitud
             SolicitudPazYSalvo solicitud = solicitudPazYSalvoCU.buscarPorId(id);
             if (solicitud == null) {
                 return ResponseEntity.notFound().build();
+            }
+            
+            // Verificar que el usuario esté cargado
+            if (solicitud.getObjUsuario() == null || solicitud.getObjUsuario().getId_usuario() == null) {
+                log.error("Usuario no encontrado para solicitud ID: {}", id);
+                return ResponseEntity.internalServerError().build();
+            }
+            
+            // Obtener el usuario completo desde el gateway para asegurar que tengamos todos los datos, incluyendo la cédula
+            Usuario usuarioCompleto = usuarioGateway.obtenerUsuarioPorId(solicitud.getObjUsuario().getId_usuario());
+            if (usuarioCompleto == null) {
+                log.error("No se pudo obtener el usuario completo para solicitud ID: {}", id);
+                return ResponseEntity.internalServerError().build();
             }
             
             // Crear datos del documento
@@ -644,11 +746,43 @@ public class SolicitudPazYSalvoRestController {
             datosDocumento.put("observaciones", "Paz y Salvo generado");
             
             Map<String, Object> datosSolicitud = new HashMap<>();
-            datosSolicitud.put("nombreEstudiante", solicitud.getObjUsuario().getNombre_completo());
-            datosSolicitud.put("codigoEstudiante", solicitud.getObjUsuario().getCodigo());
-            datosSolicitud.put("programa", solicitud.getObjUsuario().getObjPrograma() != null ? 
-                solicitud.getObjUsuario().getObjPrograma().getNombre_programa() : "Ingeniería Electrónica y Telecomunicaciones");
-            datosSolicitud.put("fechaSolicitud", solicitud.getFecha_registro_solicitud());
+            datosSolicitud.put("nombreEstudiante", usuarioCompleto.getNombre_completo());
+            datosSolicitud.put("codigoEstudiante", usuarioCompleto.getCodigo());
+            datosSolicitud.put("programa", usuarioCompleto.getObjPrograma() != null ? 
+                usuarioCompleto.getObjPrograma().getNombre_programa() : "Ingeniería Electrónica y Telecomunicaciones");
+            // Formatear fecha correctamente
+            if (solicitud.getFecha_registro_solicitud() != null) {
+                java.time.LocalDate fechaLocal = solicitud.getFecha_registro_solicitud().toInstant()
+                    .atZone(java.time.ZoneId.systemDefault()).toLocalDate();
+                datosSolicitud.put("fechaSolicitud", fechaLocal);
+            } else {
+                datosSolicitud.put("fechaSolicitud", java.time.LocalDate.now());
+            }
+            // Agregar datos adicionales para Paz y Salvo - usar el usuario completo para obtener la cédula
+            String cedulaFinal = usuarioCompleto.getCedula() != null && !usuarioCompleto.getCedula().trim().isEmpty() 
+                ? usuarioCompleto.getCedula() : "No especificada";
+            datosSolicitud.put("cedulaEstudiante", cedulaFinal);
+            // Obtener título y director de la solicitud guardada, o de los parámetros, o usar valores por defecto
+            String tituloFinal = null;
+            if (tituloTrabajoGrado != null && !tituloTrabajoGrado.trim().isEmpty()) {
+                tituloFinal = tituloTrabajoGrado.trim();
+            } else if (solicitud.getTitulo_trabajo_grado() != null && !solicitud.getTitulo_trabajo_grado().trim().isEmpty()) {
+                tituloFinal = solicitud.getTitulo_trabajo_grado().trim();
+            } else {
+                tituloFinal = "Trabajo de grado";
+            }
+            
+            String directorFinal = null;
+            if (directorTrabajoGrado != null && !directorTrabajoGrado.trim().isEmpty()) {
+                directorFinal = directorTrabajoGrado.trim();
+            } else if (solicitud.getDirector_trabajo_grado() != null && !solicitud.getDirector_trabajo_grado().trim().isEmpty()) {
+                directorFinal = solicitud.getDirector_trabajo_grado().trim();
+            } else {
+                directorFinal = "Director asignado";
+            }
+            
+            datosSolicitud.put("tituloTrabajoGrado", tituloFinal);
+            datosSolicitud.put("directorTrabajoGrado", directorFinal);
             
             // Crear request para generador de documentos
             co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.DTORespuesta.DocumentRequest request = 
@@ -859,21 +993,86 @@ public class SolicitudPazYSalvoRestController {
                 return ResponseEntity.notFound().build();
             }
             
+            // Verificar que el usuario esté cargado
+            if (solicitud.getObjUsuario() == null || solicitud.getObjUsuario().getId_usuario() == null) {
+                log.error("Usuario no encontrado para solicitud ID: {}", idSolicitud);
+                return ResponseEntity.internalServerError().build();
+            }
+            
+            // Obtener el usuario completo desde el gateway para asegurar que tengamos todos los datos, incluyendo la cédula
+            Usuario usuarioCompleto = usuarioGateway.obtenerUsuarioPorId(solicitud.getObjUsuario().getId_usuario());
+            if (usuarioCompleto == null) {
+                log.error("No se pudo obtener el usuario completo para solicitud ID: {}", idSolicitud);
+                return ResponseEntity.internalServerError().build();
+            }
+            
+            // Log para debugging
+            log.debug("Generando documento Paz y Salvo - ID: {}, Fecha recibida (raw): '{}', Tipo: {}, Título: {}, Director: {}", 
+                idSolicitud, fechaDocumento, fechaDocumento != null ? fechaDocumento.getClass().getSimpleName() : "null", 
+                tituloTrabajoGrado, directorTrabajoGrado);
+            
             // Crear request para el generador de documentos (igual que homologación)
             Map<String, Object> datosDocumento = new HashMap<>();
             datosDocumento.put("numeroDocumento", numeroDocumento);
-            datosDocumento.put("fechaDocumento", fechaDocumento);
+            // Asegurar que la fecha se pase como string en formato YYYY-MM-DD
+            String fechaDocumentoStr = null;
+            if (fechaDocumento != null && !fechaDocumento.trim().isEmpty()) {
+                fechaDocumentoStr = fechaDocumento.trim();
+                if (fechaDocumentoStr.contains("T")) {
+                    // Si viene con hora, tomar solo la fecha (YYYY-MM-DD)
+                    fechaDocumentoStr = fechaDocumentoStr.substring(0, 10);
+                }
+                // Validar que tenga el formato correcto YYYY-MM-DD
+                if (!fechaDocumentoStr.matches("\\d{4}-\\d{2}-\\d{2}")) {
+                    log.warn("Formato de fecha inválido: '{}', usando fecha actual", fechaDocumentoStr);
+                    fechaDocumentoStr = null;
+                }
+            }
+            // Si no se proporcionó fecha o es inválida, usar la fecha actual del sistema (sin zona horaria)
+            if (fechaDocumentoStr == null) {
+                fechaDocumentoStr = java.time.LocalDate.now().toString();
+                log.debug("No se proporcionó fecha, usando fecha actual: '{}'", fechaDocumentoStr);
+            }
+            datosDocumento.put("fechaDocumento", fechaDocumentoStr);
+            log.debug("Fecha final para documento: '{}'", fechaDocumentoStr);
             datosDocumento.put("observaciones", observaciones != null ? observaciones : "");
             
             Map<String, Object> datosSolicitud = new HashMap<>();
-            datosSolicitud.put("nombreEstudiante", solicitud.getObjUsuario().getNombre_completo());
-            datosSolicitud.put("codigoEstudiante", solicitud.getObjUsuario().getCodigo());
-            datosSolicitud.put("programa", solicitud.getObjUsuario().getObjPrograma() != null ? 
-                solicitud.getObjUsuario().getObjPrograma().getNombre_programa() : "Ingeniería Electrónica y Telecomunicaciones");
+            datosSolicitud.put("nombreEstudiante", usuarioCompleto.getNombre_completo());
+            datosSolicitud.put("codigoEstudiante", usuarioCompleto.getCodigo());
+            datosSolicitud.put("programa", usuarioCompleto.getObjPrograma() != null ? 
+                usuarioCompleto.getObjPrograma().getNombre_programa() : "Ingeniería Electrónica y Telecomunicaciones");
             datosSolicitud.put("fechaSolicitud", solicitud.getFecha_registro_solicitud());
-            datosSolicitud.put("cedulaEstudiante", cedulaEstudiante != null ? cedulaEstudiante : "No especificada");
-            datosSolicitud.put("tituloTrabajoGrado", tituloTrabajoGrado != null ? tituloTrabajoGrado : "Trabajo de grado");
-            datosSolicitud.put("directorTrabajoGrado", directorTrabajoGrado != null ? directorTrabajoGrado : "Director asignado");
+            // Usar la cédula del usuario completo, o el parámetro si se proporciona, o "No especificada" como último recurso
+            String cedulaFinal = cedulaEstudiante != null && !cedulaEstudiante.trim().isEmpty() 
+                ? cedulaEstudiante 
+                : (usuarioCompleto.getCedula() != null && !usuarioCompleto.getCedula().trim().isEmpty() 
+                    ? usuarioCompleto.getCedula() 
+                    : "No especificada");
+            datosSolicitud.put("cedulaEstudiante", cedulaFinal);
+            // Obtener título y director de la solicitud guardada, o de los parámetros, o usar valores por defecto
+            String tituloFinal = null;
+            if (tituloTrabajoGrado != null && !tituloTrabajoGrado.trim().isEmpty()) {
+                tituloFinal = tituloTrabajoGrado.trim();
+            } else if (solicitud.getTitulo_trabajo_grado() != null && !solicitud.getTitulo_trabajo_grado().trim().isEmpty()) {
+                tituloFinal = solicitud.getTitulo_trabajo_grado().trim();
+            } else {
+                tituloFinal = "Trabajo de grado";
+            }
+            
+            String directorFinal = null;
+            if (directorTrabajoGrado != null && !directorTrabajoGrado.trim().isEmpty()) {
+                directorFinal = directorTrabajoGrado.trim();
+            } else if (solicitud.getDirector_trabajo_grado() != null && !solicitud.getDirector_trabajo_grado().trim().isEmpty()) {
+                directorFinal = solicitud.getDirector_trabajo_grado().trim();
+            } else {
+                directorFinal = "Director asignado";
+            }
+            
+            datosSolicitud.put("tituloTrabajoGrado", tituloFinal);
+            datosSolicitud.put("directorTrabajoGrado", directorFinal);
+            
+            log.debug("Datos finales - Título: {}, Director: {}", tituloFinal, directorFinal);
             
             // Crear el request (igual que homologación)
             co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.DTORespuesta.DocumentRequest request = 

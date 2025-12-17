@@ -136,39 +136,47 @@ public class DocumentGeneratorService {
             return; // No hay placeholders que reemplazar
         }
         
-        // Reemplazar placeholders en el texto
-        for (Map.Entry<String, String> entry : replacements.entrySet()) {
-            String placeholder = "[" + entry.getKey() + "]";
-            if (texto.contains(placeholder)) {
-                texto = texto.replace(placeholder, entry.getValue());
-            }
-        }
-        
         // Preservar el formato original del párrafo
         ParagraphAlignment alignment = paragraph.getAlignment();
-    boolean isBold = false;
-    boolean isItalic = false;
-    String fontFamily = "Arial";
-    int fontSize = 11;
         
-        // Obtener formato del primer run si existe
-        if (!paragraph.getRuns().isEmpty()) {
-            XWPFRun firstRun = paragraph.getRuns().get(0);
-            isBold = firstRun.isBold();
-            isItalic = firstRun.isItalic();
-            if (firstRun.getFontFamily() != null) {
-                fontFamily = firstRun.getFontFamily();
-            }
-            // Manejar tamaño de fuente de forma segura (puede ser null o -1)
+        // Preservar formato de cada run individualmente
+        List<RunFormat> runFormats = new ArrayList<>();
+        for (XWPFRun run : paragraph.getRuns()) {
+            RunFormat format = new RunFormat();
+            format.isBold = run.isBold();
+            format.isItalic = run.isItalic();
+            format.fontFamily = run.getFontFamily() != null ? run.getFontFamily() : "Arial";
             try {
-                Double fs = firstRun.getFontSizeAsDouble();
+                Double fs = run.getFontSizeAsDouble();
                 if (fs != null && fs.intValue() > 0) {
-                    fontSize = fs.intValue();
+                    format.fontSize = fs.intValue();
+                } else {
+                    format.fontSize = 11;
                 }
-                // Nota: getFontSize() está deprecado, usar solo getFontSizeAsDouble()
-            } catch (Exception ignore) {
-                // Mantener fontSize por defecto si hay cualquier problema
+            } catch (Exception e) {
+                format.fontSize = 11;
             }
+            format.text = run.getText(0);
+            runFormats.add(format);
+        }
+        
+        // Si no hay runs, crear uno por defecto sin negrilla
+        if (runFormats.isEmpty()) {
+            RunFormat defaultFormat = new RunFormat();
+            defaultFormat.isBold = false;
+            defaultFormat.isItalic = false;
+            defaultFormat.fontFamily = "Arial";
+            defaultFormat.fontSize = 11;
+            defaultFormat.text = texto;
+            runFormats.add(defaultFormat);
+        }
+        
+        // Reemplazar placeholders en el texto completo (usar replaceAll para todas las ocurrencias)
+        String textoCompleto = texto;
+        for (Map.Entry<String, String> entry : replacements.entrySet()) {
+            String placeholder = "[" + entry.getKey() + "]";
+            // Escapar caracteres especiales para regex si es necesario, pero como usamos replace simple, está bien
+            textoCompleto = textoCompleto.replace(placeholder, entry.getValue() != null ? entry.getValue() : "");
         }
         
         // Limpiar todos los runs existentes
@@ -176,23 +184,219 @@ public class DocumentGeneratorService {
             paragraph.removeRun(0);
         }
         
-        // Crear nuevo run con el texto reemplazado y formato preservado
-        XWPFRun newRun = paragraph.createRun();
-        
-        // Usar el texto directamente sin conversión adicional
-        // Apache POI maneja UTF-8 internamente
-        newRun.setText(texto);
-        newRun.setBold(isBold);
-        newRun.setItalic(isItalic);
-        newRun.setFontFamily(fontFamily);
-        newRun.setFontSize(fontSize);
+        // Reconstruir el párrafo preservando el formato original
+        // Estrategia: reemplazar solo los placeholders manteniendo el formato del texto alrededor
+        if (textoCompleto.equals(texto)) {
+            // Si no hubo cambios, mantener formato original
+            for (RunFormat format : runFormats) {
+                XWPFRun newRun = paragraph.createRun();
+                newRun.setText(format.text != null ? format.text : "");
+                newRun.setBold(format.isBold);
+                newRun.setItalic(format.isItalic);
+                newRun.setFontFamily(format.fontFamily);
+                newRun.setFontSize(format.fontSize);
+            }
+        } else {
+            // Si hubo cambios, reconstruir preservando formato original
+            // Estrategia: identificar qué placeholders estaban en negrilla y solo aplicar negrilla a esos valores
+            Map<String, Boolean> placeholderEnNegrilla = new HashMap<>();
+            for (RunFormat format : runFormats) {
+                if (format.isBold && format.text != null) {
+                    for (String key : replacements.keySet()) {
+                        String placeholder = "[" + key + "]";
+                        if (format.text.contains(placeholder)) {
+                            placeholderEnNegrilla.put(key, true);
+                        }
+                    }
+                }
+            }
+            
+            // Forzar negrilla en campos específicos que siempre deben estar en negrilla
+            // Estos son campos clave que deben destacarse en el documento
+            placeholderEnNegrilla.put("CODIGO_ESTUDIANTE", true);
+            placeholderEnNegrilla.put("CEDULA_ESTUDIANTE", true);
+            placeholderEnNegrilla.put("NOMBRE_ESTUDIANTE", true);
+            placeholderEnNegrilla.put("TITULO_PROFESIONAL", true);
+            placeholderEnNegrilla.put("TITULO_TRABAJO_GRADO", true);
+            placeholderEnNegrilla.put("DIRECTOR_TRABAJO_GRADO", true);
+            // NOTA: TEXTO_TRABAJO_GRADO NO debe estar en negrilla, solo las partes individuales (título y director)
+            
+            // Obtener formato base (del primer run sin negrilla o del primero disponible)
+            RunFormat formatoBase = null;
+            for (RunFormat format : runFormats) {
+                if (!format.isBold) {
+                    formatoBase = format;
+                    break;
+                }
+            }
+            if (formatoBase == null && !runFormats.isEmpty()) {
+                formatoBase = runFormats.get(0);
+            }
+            if (formatoBase == null) {
+                formatoBase = new RunFormat();
+                formatoBase.isBold = false;
+                formatoBase.isItalic = false;
+                formatoBase.fontFamily = "Arial";
+                formatoBase.fontSize = 11;
+            }
+            
+            // Estrategia simplificada: usar expresión regular para encontrar todos los placeholders
+            // y reconstruir el texto segmento por segmento
+            java.util.regex.Pattern pattern = java.util.regex.Pattern.compile("\\[([A-Z_]+)\\]");
+            java.util.regex.Matcher matcher = pattern.matcher(texto);
+            
+            int ultimaPosicionTextoCompleto = 0;
+            
+            while (matcher.find()) {
+                String placeholderCompleto = matcher.group(0); // Ej: [NOMBRE_ESTUDIANTE]
+                String key = matcher.group(1); // Ej: NOMBRE_ESTUDIANTE
+                int inicioPlaceholder = matcher.start();
+                
+                // Calcular offset acumulado hasta este placeholder
+                int offset = 0;
+                java.util.regex.Matcher matcherOffset = pattern.matcher(texto);
+                while (matcherOffset.find() && matcherOffset.start() < inicioPlaceholder) {
+                    String keyAnterior = matcherOffset.group(1);
+                    String valorAnterior = replacements.getOrDefault(keyAnterior, matcherOffset.group(0));
+                    offset += valorAnterior.length() - matcherOffset.group(0).length();
+                }
+                
+                // Posición en el texto completo
+                int posicionEnCompleto = inicioPlaceholder + offset;
+                
+                // Agregar texto antes del placeholder (sin negrilla)
+                if (posicionEnCompleto > ultimaPosicionTextoCompleto) {
+                    String antes = textoCompleto.substring(ultimaPosicionTextoCompleto, posicionEnCompleto);
+                    if (!antes.isEmpty()) {
+                        XWPFRun run = paragraph.createRun();
+                        run.setText(antes);
+                        run.setBold(false);
+                        run.setItalic(formatoBase.isItalic);
+                        run.setFontFamily(formatoBase.fontFamily);
+                        run.setFontSize(formatoBase.fontSize);
+                    }
+                }
+                
+                // Agregar el valor reemplazado (con negrilla solo si el placeholder original la tenía)
+                String valor = replacements.getOrDefault(key, placeholderCompleto);
+                
+                // Manejo especial para TEXTO_TRABAJO_GRADO: dividir en partes con y sin negrilla
+                if ("TEXTO_TRABAJO_GRADO".equals(key)) {
+                    // Extraer título y director del texto completo
+                    String tituloTrabajo = replacements.getOrDefault("TITULO_TRABAJO_GRADO", "").toString();
+                    String directorTrabajo = replacements.getOrDefault("DIRECTOR_TRABAJO_GRADO", "").toString();
+                    
+                    // Dividir el texto en partes
+                    String[] partes = valor.split(java.util.regex.Pattern.quote("\"" + tituloTrabajo + "\""), 2);
+                    if (partes.length == 2) {
+                        // Parte antes del título (sin negrilla)
+                        if (!partes[0].isEmpty()) {
+                            XWPFRun runAntes = paragraph.createRun();
+                            runAntes.setText(partes[0]);
+                            runAntes.setBold(false);
+                            runAntes.setItalic(formatoBase.isItalic);
+                            runAntes.setFontFamily(formatoBase.fontFamily);
+                            runAntes.setFontSize(formatoBase.fontSize);
+                        }
+                        
+                        // Título entre comillas (en negrilla)
+                        XWPFRun runTitulo = paragraph.createRun();
+                        runTitulo.setText("\"" + tituloTrabajo + "\"");
+                        runTitulo.setBold(true);
+                        runTitulo.setItalic(formatoBase.isItalic);
+                        runTitulo.setFontFamily(formatoBase.fontFamily);
+                        runTitulo.setFontSize(formatoBase.fontSize);
+                        
+                        // Parte después del título
+                        String parteDespues = partes[1];
+                        String[] partes2 = parteDespues.split(java.util.regex.Pattern.quote(directorTrabajo), 2);
+                        if (partes2.length == 2) {
+                            // Parte antes del director (sin negrilla)
+                            if (!partes2[0].isEmpty()) {
+                                XWPFRun runAntesDirector = paragraph.createRun();
+                                runAntesDirector.setText(partes2[0]);
+                                runAntesDirector.setBold(false);
+                                runAntesDirector.setItalic(formatoBase.isItalic);
+                                runAntesDirector.setFontFamily(formatoBase.fontFamily);
+                                runAntesDirector.setFontSize(formatoBase.fontSize);
+                            }
+                            
+                            // Director (en negrilla)
+                            XWPFRun runDirector = paragraph.createRun();
+                            runDirector.setText(directorTrabajo);
+                            runDirector.setBold(true);
+                            runDirector.setItalic(formatoBase.isItalic);
+                            runDirector.setFontFamily(formatoBase.fontFamily);
+                            runDirector.setFontSize(formatoBase.fontSize);
+                            
+                            // Parte después del director (sin negrilla)
+                            if (!partes2[1].isEmpty()) {
+                                XWPFRun runDespues = paragraph.createRun();
+                                runDespues.setText(partes2[1]);
+                                runDespues.setBold(false);
+                                runDespues.setItalic(formatoBase.isItalic);
+                                runDespues.setFontFamily(formatoBase.fontFamily);
+                                runDespues.setFontSize(formatoBase.fontSize);
+                            }
+                        } else {
+                            // Si no se encuentra el director, poner todo sin negrilla
+                            XWPFRun runResto = paragraph.createRun();
+                            runResto.setText(parteDespues);
+                            runResto.setBold(false);
+                            runResto.setItalic(formatoBase.isItalic);
+                            runResto.setFontFamily(formatoBase.fontFamily);
+                            runResto.setFontSize(formatoBase.fontSize);
+                        }
+                    } else {
+                        // Si no se encuentra el patrón, usar el valor completo sin negrilla
+                        XWPFRun runValor = paragraph.createRun();
+                        runValor.setText(valor);
+                        runValor.setBold(false);
+                        runValor.setItalic(formatoBase.isItalic);
+                        runValor.setFontFamily(formatoBase.fontFamily);
+                        runValor.setFontSize(formatoBase.fontSize);
+                    }
+                } else {
+                    // Para otros placeholders, usar la lógica normal
+                    XWPFRun runValor = paragraph.createRun();
+                    runValor.setText(valor);
+                    runValor.setBold(placeholderEnNegrilla.getOrDefault(key, false));
+                    runValor.setItalic(formatoBase.isItalic);
+                    runValor.setFontFamily(formatoBase.fontFamily);
+                    runValor.setFontSize(formatoBase.fontSize);
+                }
+                
+                ultimaPosicionTextoCompleto = posicionEnCompleto + valor.length();
+            }
+            
+            // Agregar texto restante (sin negrilla)
+            if (ultimaPosicionTextoCompleto < textoCompleto.length()) {
+                String restante = textoCompleto.substring(ultimaPosicionTextoCompleto);
+                if (!restante.isEmpty()) {
+                    XWPFRun run = paragraph.createRun();
+                    run.setText(restante);
+                    run.setBold(false);
+                    run.setItalic(formatoBase.isItalic);
+                    run.setFontFamily(formatoBase.fontFamily);
+                    run.setFontSize(formatoBase.fontSize);
+                }
+            }
+        }
         
         // Restaurar alineación del párrafo
         if (alignment != null) {
             paragraph.setAlignment(alignment);
         }
     }
-
+    
+    // Clase auxiliar para preservar formato de runs
+    private static class RunFormat {
+        boolean isBold;
+        boolean isItalic;
+        String fontFamily;
+        int fontSize;
+        String text;
+    }
     private Map<String, String> crearMapaReemplazos(DocumentRequest request) {
         Map<String, String> replacements = new HashMap<>();
         
@@ -202,7 +406,17 @@ public class DocumentGeneratorService {
             datosDocumento = new HashMap<>();
         }
         replacements.put("NUMERO_DOCUMENTO", datosDocumento.getOrDefault("numeroDocumento", "001-2025").toString());
-        replacements.put("FECHA_DOCUMENTO", formatearFecha(datosDocumento.get("fechaDocumento")));
+        // Formatear fecha del documento correctamente (solo fecha, sin hora)
+        Object fechaDoc = datosDocumento.get("fechaDocumento");
+        LocalDate fechaDocumentoLocal = null;
+        if (fechaDoc != null) {
+            fechaDocumentoLocal = parsearFecha(fechaDoc);
+        }
+        // Si no se pudo parsear, usar la fecha actual
+        if (fechaDocumentoLocal == null) {
+            fechaDocumentoLocal = LocalDate.now();
+        }
+        replacements.put("FECHA_DOCUMENTO", formatearFecha(fechaDocumentoLocal));
         replacements.put("OBSERVACIONES", datosDocumento.getOrDefault("observaciones", "").toString());
         
         // Datos de la solicitud
@@ -241,13 +455,13 @@ public class DocumentGeneratorService {
             replacements.put("AÑO_FIRMA", formatearAño(fechaFirma.getYear()));
             
             // Fecha del documento (extraída de FECHA_DOCUMENTO)
-            Object fechaDocumento = datosDocumento.get("fechaDocumento");
-            if (fechaDocumento != null) {
-                LocalDate fechaDoc = parsearFecha(fechaDocumento);
-                if (fechaDoc != null) {
-                    replacements.put("AÑO_DOCUMENTO", formatearAño(fechaDoc.getYear()));
-                    replacements.put("MES_DOCUMENTO", formatearMes(fechaDoc.getMonthValue()));
-                    replacements.put("DIA_DOCUMENTO", String.valueOf(fechaDoc.getDayOfMonth()));
+            Object fechaDocumentoHomologacion = datosDocumento.get("fechaDocumento");
+            if (fechaDocumentoHomologacion != null) {
+                LocalDate fechaDocHomologacion = parsearFecha(fechaDocumentoHomologacion);
+                if (fechaDocHomologacion != null) {
+                    replacements.put("AÑO_DOCUMENTO", formatearAño(fechaDocHomologacion.getYear()));
+                    replacements.put("MES_DOCUMENTO", formatearMes(fechaDocHomologacion.getMonthValue()));
+                    replacements.put("DIA_DOCUMENTO", String.valueOf(fechaDocHomologacion.getDayOfMonth()));
                 } else {
                     // Si no se puede parsear, usar valores por defecto
                     replacements.put("AÑO_DOCUMENTO", "----");
@@ -288,6 +502,33 @@ public class DocumentGeneratorService {
             // Director de trabajo de grado
             replacements.put("DIRECTOR_TRABAJO_GRADO", datosSolicitud.getOrDefault("directorTrabajoGrado", "Director asignado").toString());
             
+            // Título profesional (obtenido del programa del estudiante)
+            String programa = datosSolicitud.getOrDefault("programa", "Ingeniería Electrónica y Telecomunicaciones").toString();
+            // Corregir tildes en "Ingeniería" si falta
+            programa = programa.replace("Ingenieria", "Ingeniería");
+            programa = programa.replace("ingenieria", "Ingeniería");
+            // Convertir a mayúsculas para que coincida con el formato del documento original
+            // Ej: "Ingeniería de Sistemas" -> "INGENIERO DE SISTEMAS"
+            String tituloProfesional = programa.toUpperCase();
+            // Ajustar "INGENIERÍA" a "INGENIERO" si es necesario (para títulos profesionales)
+            if (tituloProfesional.contains("INGENIERÍA DE SISTEMAS")) {
+                tituloProfesional = "INGENIERO DE SISTEMAS";
+            } else if (tituloProfesional.contains("INGENIERÍA ELECTRÓNICA")) {
+                tituloProfesional = "INGENIERO ELECTRÓNICO Y TELECOMUNICACIONES";
+            } else if (tituloProfesional.contains("INGENIERÍA AUTOMÁTICA")) {
+                tituloProfesional = "INGENIERO AUTOMÁTICO INDUSTRIAL";
+            } else if (tituloProfesional.contains("INGENIERÍA")) {
+                // Para otros casos, reemplazar "INGENIERÍA" con "INGENIERO"
+                tituloProfesional = tituloProfesional.replace("INGENIERÍA", "INGENIERO");
+            }
+            replacements.put("TITULO_PROFESIONAL", tituloProfesional);
+            
+            // Texto del trabajo de grado (formato completo)
+            String tituloTrabajo = datosSolicitud.getOrDefault("tituloTrabajoGrado", "Trabajo de grado").toString();
+            String directorTrabajo = datosSolicitud.getOrDefault("directorTrabajoGrado", "Director asignado").toString();
+            String textoCompletoTrabajo = String.format("El trabajo de grado titulado \"%s\", dirigido por %s, ha sido aprobado.", tituloTrabajo, directorTrabajo);
+            replacements.put("TEXTO_TRABAJO_GRADO", textoCompletoTrabajo);
+            
             // Fecha actual para paz y salvo
             LocalDate fechaActual = LocalDate.now();
             replacements.put("FECHA_ACTUAL", formatearFechaCompleta(fechaActual));
@@ -299,23 +540,18 @@ public class DocumentGeneratorService {
             replacements.put("AÑO_FIRMA", formatearAño(fechaActual.getYear()));
             
             // Fecha del documento (extraída de FECHA_DOCUMENTO)
-            Object fechaDocumento = datosDocumento.get("fechaDocumento");
-            if (fechaDocumento != null) {
-                LocalDate fechaDoc = parsearFecha(fechaDocumento);
-                if (fechaDoc != null) {
-                    replacements.put("DIA_DOCUMENTO", String.valueOf(fechaDoc.getDayOfMonth()));
-                    replacements.put("MES_DOCUMENTO", formatearMes(fechaDoc.getMonthValue()));
-                    replacements.put("AÑO_DOCUMENTO", formatearAño(fechaDoc.getYear()));
-                } else {
-                    replacements.put("DIA_DOCUMENTO", "");
-                    replacements.put("MES_DOCUMENTO", "");
-                    replacements.put("AÑO_DOCUMENTO", "");
-                }
-            } else {
-                replacements.put("DIA_DOCUMENTO", "");
-                replacements.put("MES_DOCUMENTO", "");
-                replacements.put("AÑO_DOCUMENTO", "");
+            Object fechaDocumentoPazSalvo = datosDocumento.get("fechaDocumento");
+            LocalDate fechaDocPazSalvo = null;
+            if (fechaDocumentoPazSalvo != null) {
+                fechaDocPazSalvo = parsearFecha(fechaDocumentoPazSalvo);
             }
+            // Si no se pudo parsear, usar la fecha actual
+            if (fechaDocPazSalvo == null) {
+                fechaDocPazSalvo = LocalDate.now();
+            }
+            replacements.put("DIA_DOCUMENTO", String.valueOf(fechaDocPazSalvo.getDayOfMonth()));
+            replacements.put("MES_DOCUMENTO", formatearMes(fechaDocPazSalvo.getMonthValue()));
+            replacements.put("AÑO_DOCUMENTO", formatearAño(fechaDocPazSalvo.getYear()));
         } else if ("RESOLUCION_REINGRESO".equals(request.getTipoDocumento())) {
             replacements.put("TIPO_PROCESO", "reingreso al programa");
             replacements.put("TITULO_DOCUMENTO", "RESOLUCIÓN DE REINGRESO");
@@ -329,29 +565,69 @@ public class DocumentGeneratorService {
         
         try {
             if (fecha instanceof LocalDate) {
-                return ((LocalDate) fecha).format(DateTimeFormatter.ofPattern("dd 'de' MMMM 'de' yyyy"));
+                return ((LocalDate) fecha).format(DateTimeFormatter.ofPattern("dd 'de' MMMM 'de' yyyy", new Locale("es", "ES")));
+            } else if (fecha instanceof java.util.Date) {
+                // Convertir java.util.Date a LocalDate
+                java.util.Date date = (java.util.Date) fecha;
+                LocalDate localDate = date.toInstant()
+                    .atZone(java.time.ZoneId.systemDefault())
+                    .toLocalDate();
+                return localDate.format(DateTimeFormatter.ofPattern("dd 'de' MMMM 'de' yyyy", new Locale("es", "ES")));
             } else if (fecha instanceof String) {
                 String fechaStr = fecha.toString();
+                // Si viene como string con formato completo de fecha (ej: "Tue Dec 16 2025 00:00:00 GMT-0500")
+                if (fechaStr.contains("GMT") || fechaStr.contains("COT") || fechaStr.contains("UTC")) {
+                    // Intentar parsear como fecha completa y extraer solo la fecha
+                    try {
+                        // Formato común: "Tue Dec 16 2025 00:00:00 GMT-0500"
+                        java.text.SimpleDateFormat sdf = new java.text.SimpleDateFormat("EEE MMM dd yyyy HH:mm:ss", java.util.Locale.ENGLISH);
+                        java.util.Date date = sdf.parse(fechaStr.substring(0, fechaStr.indexOf("GMT") - 1));
+                        LocalDate localDate = date.toInstant()
+                            .atZone(java.time.ZoneId.systemDefault())
+                            .toLocalDate();
+                        return localDate.format(DateTimeFormatter.ofPattern("dd 'de' MMMM 'de' yyyy", new Locale("es", "ES")));
+                    } catch (Exception e2) {
+                        // Si falla, intentar otros formatos
+                    }
+                }
                 // Si viene como string ISO (ej: "2025-09-30T04:57:37.000+00:00")
                 if (fechaStr.contains("T")) {
                     LocalDate localDate = LocalDate.parse(fechaStr.substring(0, 10));
-                    return localDate.format(DateTimeFormatter.ofPattern("dd 'de' MMMM 'de' yyyy"));
+                    return localDate.format(DateTimeFormatter.ofPattern("dd 'de' MMMM 'de' yyyy", new Locale("es", "ES")));
                 } else {
                     // Si viene como string simple (ej: "2025-09-30")
                     LocalDate localDate = LocalDate.parse(fechaStr);
-                    return localDate.format(DateTimeFormatter.ofPattern("dd 'de' MMMM 'de' yyyy"));
+                    return localDate.format(DateTimeFormatter.ofPattern("dd 'de' MMMM 'de' yyyy", new Locale("es", "ES")));
                 }
             }
         } catch (Exception e) {
-            // Si hay error, retornar la fecha como string
-            return fecha.toString();
+            // Si hay error, intentar parsear como string y extraer solo la fecha
+            try {
+                String fechaStr = fecha.toString();
+                // Si contiene números de fecha, intentar extraerlos
+                if (fechaStr.matches(".*\\d{4}.*")) {
+                    // Buscar patrón de fecha
+                    java.util.regex.Pattern pattern = java.util.regex.Pattern.compile("(\\d{1,2})[/-](\\d{1,2})[/-](\\d{4})");
+                    java.util.regex.Matcher matcher = pattern.matcher(fechaStr);
+                    if (matcher.find()) {
+                        int dia = Integer.parseInt(matcher.group(1));
+                        int mes = Integer.parseInt(matcher.group(2));
+                        int año = Integer.parseInt(matcher.group(3));
+                        LocalDate localDate = LocalDate.of(año, mes, dia);
+                        return localDate.format(DateTimeFormatter.ofPattern("dd 'de' MMMM 'de' yyyy", new Locale("es", "ES")));
+                    }
+                }
+            } catch (Exception e2) {
+                // Si todo falla, retornar string vacío o mensaje de error
+                return "";
+            }
         }
         
-        return fecha.toString();
+        return "";
     }
     
     private String formatearFechaCompleta(LocalDate fecha) {
-        return fecha.format(DateTimeFormatter.ofPattern("dd 'de' MMMM 'de' yyyy"));
+        return fecha.format(DateTimeFormatter.ofPattern("dd 'de' MMMM 'de' yyyy", new Locale("es", "ES")));
     }
     
     private String formatearMes(int mes) {
@@ -373,14 +649,30 @@ public class DocumentGeneratorService {
             if (fecha instanceof LocalDate) {
                 return (LocalDate) fecha;
             } else if (fecha instanceof String) {
-                String fechaStr = fecha.toString();
+                String fechaStr = fecha.toString().trim();
                 // Si viene como string ISO (ej: "2025-09-30T04:57:37.000+00:00")
                 if (fechaStr.contains("T")) {
-                    return LocalDate.parse(fechaStr.substring(0, 10));
+                    // Extraer solo la parte de la fecha (YYYY-MM-DD) antes de la T
+                    // Esto evita problemas de zona horaria
+                    String fechaParte = fechaStr.substring(0, 10);
+                    return LocalDate.parse(fechaParte);
+                } else if (fechaStr.contains(" ")) {
+                    // Si tiene espacio, tomar solo la parte de la fecha (YYYY-MM-DD)
+                    String fechaParte = fechaStr.split(" ")[0];
+                    return LocalDate.parse(fechaParte);
                 } else {
-                    // Si viene como string simple (ej: "2025-09-30")
+                    // Si viene como string simple (ej: "2025-09-30" o "2025-12-16")
+                    // Parsear directamente sin considerar zona horaria
                     return LocalDate.parse(fechaStr);
                 }
+            } else if (fecha instanceof java.util.Date) {
+                // Convertir java.util.Date a LocalDate usando la zona horaria del sistema
+                // IMPORTANTE: Usar la zona horaria del sistema para evitar desfases
+                java.util.Date date = (java.util.Date) fecha;
+                return date.toInstant().atZone(java.time.ZoneId.systemDefault()).toLocalDate();
+            } else if (fecha instanceof java.sql.Date) {
+                // Convertir java.sql.Date a LocalDate directamente (sin zona horaria)
+                return ((java.sql.Date) fecha).toLocalDate();
             }
         } catch (Exception e) {
             // Si hay error, retornar null

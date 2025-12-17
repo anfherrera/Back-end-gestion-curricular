@@ -32,6 +32,8 @@ public interface SolicitudHomologacioneMapperDominio {
     SolicitudHomologacion mappearDeSolicitudHomologacionDTOPeticionASolicitudHomologacion(SolicitudHomologacionDTOPeticion peticion);
 
     // Dominio → DTO Respuesta
+    @Mapping(target = "categoria", ignore = true)
+    @Mapping(target = "tipo_solicitud", ignore = true)
     SolicitudHomologacionDTORespuesta mappearDeSolicitudHomologacionASolicitudHomologacionDTORespuesta(SolicitudHomologacion solicitudHomologacion);
 
     List<SolicitudHomologacionDTORespuesta> mappearListaDeSolicitudHomologacionARespuesta(List<SolicitudHomologacion> solicitudes);

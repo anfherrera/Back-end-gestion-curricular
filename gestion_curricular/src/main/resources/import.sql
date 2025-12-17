@@ -406,3 +406,21 @@ INSERT INTO Salones(idSalon, numero_salon, edificio, activo) VALUES (9, '230', '
 INSERT INTO Salones(idSalon, numero_salon, edificio, activo) VALUES (10, '231', 'FIET', true);
 INSERT INTO Salones(idSalon, numero_salon, edificio, activo) VALUES (11, '236', 'FIET', true);
 INSERT INTO Salones(idSalon, numero_salon, edificio, activo) VALUES (12, '234', 'FIET', true);
+
+-- =========================================
+-- NOTA IMPORTANTE SOBRE MIGRACIONES
+-- =========================================
+-- Las columnas de las entidades JPA (incluyendo titulo_trabajo_grado y director_trabajo_grado
+-- en SolicitudPazYSalvoEntity) se crean AUTOMÁTICAMENTE cuando:
+-- - spring.jpa.hibernate.ddl-auto=create (desarrollo)
+-- - spring.jpa.hibernate.ddl-auto=update (producción con datos existentes)
+--
+-- NO es necesario ejecutar scripts ALTER TABLE manualmente.
+-- Hibernate crea todas las columnas basándose en las anotaciones @Column de las entidades.
+--
+-- Si necesitas agregar columnas a una base de datos existente en producción:
+-- 1. Cambia temporalmente ddl-auto=update (NO create, para no perder datos)
+-- 2. Reinicia la aplicación
+-- 3. Hibernate agregará las columnas automáticamente
+-- 4. Vuelve a cambiar a ddl-auto=validate para producción
+-- =========================================

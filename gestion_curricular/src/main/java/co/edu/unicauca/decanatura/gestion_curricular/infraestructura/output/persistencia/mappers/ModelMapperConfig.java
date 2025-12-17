@@ -26,12 +26,18 @@ public class ModelMapperConfig {
         modelMapper.typeMap(UsuarioEntity.class, Usuario.class)
                 .addMappings(mapper -> mapper.skip(Usuario::setCursosOfertadosInscritos))
                 .addMappings(mapper -> mapper.skip(Usuario::setSolicitudes))
+                .addMappings(mapper -> mapper.map(UsuarioEntity::getCedula, Usuario::setCedula))
                 .setPostConverter(context -> {
                     UsuarioEntity source = context.getSource();
                     Usuario destination = context.getDestination();
                     
                     if (source == null || destination == null) {
                         return destination;
+                    }
+                    
+                    // Asegurar que la cédula se mapee correctamente
+                    if (source.getCedula() != null) {
+                        destination.setCedula(source.getCedula());
                     }
                     
                     // Mapear objRol manualmente si existe
@@ -89,6 +95,7 @@ public class ModelMapperConfig {
         modelMapper.typeMap(Usuario.class, UsuarioEntity.class)
                 .addMappings(mapper -> mapper.skip(UsuarioEntity::setCursosOfertadosInscritos))
                 .addMappings(mapper -> mapper.skip(UsuarioEntity::setSolicitudes))
+                .addMappings(mapper -> mapper.map(Usuario::getCedula, UsuarioEntity::setCedula))
                 .setPostConverter(context -> {
                     Usuario source = context.getSource();
                     UsuarioEntity destination = context.getDestination();

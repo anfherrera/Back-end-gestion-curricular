@@ -186,14 +186,10 @@ public class GestionarSolicitudGatewayImplAdapter implements GestionarSolicitudG
         }
         solicitudReingresoEntity.setNombre_solicitud(nombreSolicitud);
         solicitudReingresoEntity.setFecha_registro_solicitud(new Date());
-        EstadoSolicitudEntity estadoSolicitudEntity = null;
-        estadoSolicitudEntity = new EstadoSolicitudEntity();
-        estadoSolicitudEntity.setFecha_registro_estado(new Date());
-        estadoSolicitudEntity.setObjSolicitud(solicitudReingresoEntity);
         
-        List<EstadoSolicitudEntity> estadosSolcitud = solicitudReingresoEntity.getEstadosSolicitud();
-        estadosSolcitud.add(estadoSolicitudEntity);
-        solicitudReingresoEntity.setEstadosSolicitud(estadosSolcitud);
+        // NO tocar los estados aquí, el caso de uso (GestionarSolicitudReingresoCUAdapter) los maneja completamente
+        // ModelMapper ya maneja la lista de estados si viene del dominio
+        
         SolicitudReingresoEntity solicitudReingresoGuardado = solicitudRepository.save(solicitudReingresoEntity);
 
         return solicitudMapper.map(solicitudReingresoGuardado, SolicitudReingreso.class);        
@@ -215,14 +211,9 @@ public class GestionarSolicitudGatewayImplAdapter implements GestionarSolicitudG
         }
         solicitudHomologacionEntity.setNombre_solicitud(nombreSolicitud);
         solicitudHomologacionEntity.setFecha_registro_solicitud(new Date());
-        EstadoSolicitudEntity estadoSolicitudEntity = null;
-        estadoSolicitudEntity = new EstadoSolicitudEntity();
-        estadoSolicitudEntity.setFecha_registro_estado(new Date());
-        estadoSolicitudEntity.setObjSolicitud(solicitudHomologacionEntity);
         
-        List<EstadoSolicitudEntity> estadosSolcitud = solicitudHomologacionEntity.getEstadosSolicitud();
-        estadosSolcitud.add(estadoSolicitudEntity);
-        solicitudHomologacionEntity.setEstadosSolicitud(estadosSolcitud);
+        // NO tocar los estados aquí, el caso de uso (GestionarSolicitudHomologacionCUAdapter) los maneja completamente
+        // ModelMapper ya maneja la lista de estados si viene del dominio
 
         SolicitudHomologacionEntity solicitudHomologacionGuardado = solicitudRepository.save(solicitudHomologacionEntity);
 
