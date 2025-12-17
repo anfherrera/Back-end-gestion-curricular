@@ -164,7 +164,8 @@ public class GestionarUsuarioGatewayImplAdapter implements GestionarUsuarioGatew
     @Override
     @Transactional(readOnly = true)
     public Usuario buscarUsuarioPorCorreo(String correo) {
-        Optional<UsuarioEntity> usuarioEntity = usuarioRepository.buscarPorCorreo(correo);
+        // Usar buscarPorCorreoWithRelations para cargar programa y rol (necesario para filtros de coordinador)
+        Optional<UsuarioEntity> usuarioEntity = usuarioRepository.buscarPorCorreoWithRelations(correo);
         return usuarioEntity.map(entity -> usuarioMapper.map(entity, Usuario.class)).orElse(null);
     }
 

@@ -25,6 +25,10 @@ public interface UsuarioRepositoryInt extends JpaRepository<UsuarioEntity, Integ
     // Buscar por correo exacto
     @Query("SELECT u FROM UsuarioEntity u WHERE u.correo = :correo")
     Optional<UsuarioEntity> buscarPorCorreo(@Param("correo") String correo);
+    
+    // Buscar por correo con relaciones cargadas (JOIN FETCH) - para coordinadores
+    @Query("SELECT u FROM UsuarioEntity u LEFT JOIN FETCH u.objRol LEFT JOIN FETCH u.objPrograma WHERE u.correo = :correo")
+    Optional<UsuarioEntity> buscarPorCorreoWithRelations(@Param("correo") String correo);
 
     // Buscar por cédula exacta
     @Query("SELECT u FROM UsuarioEntity u WHERE u.cedula = :cedula")
