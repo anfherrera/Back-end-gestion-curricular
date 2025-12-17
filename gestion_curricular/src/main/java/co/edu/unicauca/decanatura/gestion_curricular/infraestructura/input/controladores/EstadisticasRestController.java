@@ -153,16 +153,9 @@ public class EstadisticasRestController {
             @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") Date fechaInicio,
             @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") Date fechaFin) {
         try {
-            log.info("Generando estadísticas globales con filtros múltiples - Proceso: {}, Programa: {}, Fechas: {} - {}", 
-                    proceso, idPrograma, fechaInicio, fechaFin);
-            
-            // El método obtenerEstadisticasGlobales ya acepta TODOS los filtros simultáneamente
             Map<String, Object> estadisticas = estadisticaCU.obtenerEstadisticasGlobales(proceso, idPrograma, fechaInicio, fechaFin);
-            
-            log.info("Resultado final: {}", estadisticas);
             return ResponseEntity.ok(estadisticas);
         } catch (Exception e) {
-            log.error("Error obteniendo estadísticas globales: {}", e.getMessage(), e);
             // Devolver 200 OK con bandera de error para que el frontend pueda parsear el JSON fácilmente
             // IMPORTANTE: Devolver 200 OK en lugar de 500 para que el frontend pueda leer el JSON sin problemas
             Map<String, Object> errorResponse = new HashMap<>();
@@ -205,9 +198,6 @@ public class EstadisticasRestController {
             @RequestParam(name = "fechaFin", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") Date fechaFin) {
         
         try {
-            log.info("Obteniendo estadísticas filtradas");
-            log.info("Parámetros recibidos - nombreProceso: {}, idPrograma: {}, estado: {}, fechaInicio: {}, fechaFin: {}", 
-                    nombreProceso, idPrograma, estado, fechaInicio, fechaFin);
             
             Map<String, Object> estadisticas;
             
@@ -241,11 +231,9 @@ public class EstadisticasRestController {
             respuesta.put("porPrograma", estadisticas.get("porPrograma"));
             respuesta.put("porEstado", estadisticas.get("porEstado"));
             
-            log.info("Resultado final: {}", respuesta);
             return ResponseEntity.ok(respuesta);
             
         } catch (Exception e) {
-            log.error("Error obteniendo estadísticas filtradas: {}", e.getMessage(), e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
@@ -339,7 +327,6 @@ public class EstadisticasRestController {
             
             return ResponseEntity.ok(estadisticas);
         } catch (Exception e) {
-            log.error("Error al obtener estadísticas por período: {}", e.getMessage(), e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
@@ -354,13 +341,11 @@ public class EstadisticasRestController {
     @GetMapping("/ultimo-periodo")
     public ResponseEntity<Map<String, Object>> obtenerEstadisticasUltimoPeriodo() {
         try {
-            log.info("Obteniendo estadísticas del último período académico");
             
             // Obtener el último período académico
             PeriodoAcademicoEnum ultimoPeriodo = PeriodoAcademicoEnum.getPeriodoActual();
             
             if (ultimoPeriodo == null) {
-                log.warn("No se pudo determinar el último período académico");
                 Map<String, Object> errorResponse = new HashMap<>();
                 errorResponse.put("success", false);
                 errorResponse.put("message", "No se pudo determinar el último período académico");
@@ -388,7 +373,6 @@ public class EstadisticasRestController {
             Date fechaInicio = java.sql.Date.valueOf(fechaInicioLocal);
             Date fechaFin = java.sql.Date.valueOf(fechaFinLocal);
             
-            log.info("Último período: {} - Fechas: {} a {}", ultimoPeriodo.getValor(), fechaInicioLocal, fechaFinLocal);
             
             // Obtener estadísticas del período
             Map<String, Object> estadisticas = estadisticaCU.obtenerEstadisticasPorPeriodo(fechaInicio, fechaFin);
@@ -403,7 +387,6 @@ public class EstadisticasRestController {
             
             return ResponseEntity.ok(estadisticas);
         } catch (Exception e) {
-            log.error("Error al obtener estadísticas del último período: {}", e.getMessage(), e);
             Map<String, Object> errorResponse = new HashMap<>();
             errorResponse.put("success", false);
             errorResponse.put("message", "Error al obtener estadísticas del último período: " + e.getMessage());
@@ -466,11 +449,9 @@ public class EstadisticasRestController {
             @RequestParam(required = false) String periodoAcademico,
             @RequestParam(required = false) Integer idPrograma) {
         try {
-            log.info("Obteniendo resumen completo - Período: {}, Programa: {}", periodoAcademico, idPrograma);
             Map<String, Object> resumen = estadisticaCU.obtenerResumenCompleto(periodoAcademico, idPrograma);
             return ResponseEntity.ok(resumen);
         } catch (Exception e) {
-            log.error("Error obteniendo resumen completo: {}", e.getMessage(), e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
@@ -638,8 +619,6 @@ public class EstadisticasRestController {
     private ResponseEntity<Map<String, Object>> procesarFiltrosDinamicos(Map<String, Object> filtros) {
         
         try {
-            log.info("Obteniendo estadísticas con filtros dinámicos");
-            log.info("Filtros recibidos: {}", filtros);
             
             if (filtros == null || filtros.isEmpty()) {
                 // Sin filtros, devolver estadísticas globales
@@ -654,8 +633,6 @@ public class EstadisticasRestController {
             String fechaInicioStr = (String) filtros.get("fechaInicio");
             String fechaFinStr = (String) filtros.get("fechaFin");
             
-            log.info("Parámetros extraídos - nombreProceso: {}, idPrograma: {}, estado: {}, fechaInicio: {}, fechaFin: {}", 
-                    nombreProceso, idPrograma, estado, fechaInicioStr, fechaFinStr);
             
             // Procesar fechas si están presentes
             Date fechaInicio = null;
@@ -665,7 +642,6 @@ public class EstadisticasRestController {
                 try {
                     fechaInicio = new java.text.SimpleDateFormat("yyyy-MM-dd").parse(fechaInicioStr);
                 } catch (Exception e) {
-                    log.warn("Error parseando fechaInicio: {}", e.getMessage());
                 }
             }
             
@@ -673,7 +649,6 @@ public class EstadisticasRestController {
                 try {
                     fechaFin = new java.text.SimpleDateFormat("yyyy-MM-dd").parse(fechaFinStr);
                 } catch (Exception e) {
-                    log.warn("Error parseando fechaFin: {}", e.getMessage());
                 }
             }
             
@@ -709,11 +684,9 @@ public class EstadisticasRestController {
             respuesta.put("porPrograma", estadisticas.get("porPrograma"));
             respuesta.put("porEstado", estadisticas.get("porEstado"));
             
-            log.info("Resultado final: {}", respuesta);
             return ResponseEntity.ok(respuesta);
             
         } catch (Exception e) {
-            log.error("Error obteniendo estadísticas con filtros dinámicos: {}", e.getMessage(), e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
@@ -727,7 +700,6 @@ public class EstadisticasRestController {
     @GetMapping("/consolidado")
     public ResponseEntity<Map<String, Object>> obtenerConsolidadoGeneral() {
         try {
-            log.info("Generando consolidado general...");
             
             // Obtener estadísticas globales
             Map<String, Object> estadisticasGlobales = estadisticaCU.obtenerEstadisticasGlobales();
@@ -744,7 +716,6 @@ public class EstadisticasRestController {
             return ResponseEntity.ok(consolidado);
             
         } catch (Exception e) {
-            log.error("Error obteniendo consolidado general: {}", e.getMessage(), e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
@@ -767,7 +738,6 @@ public class EstadisticasRestController {
     @GetMapping("/export/pdf/general")
     public ResponseEntity<byte[]> exportarEstadisticasGeneralesPDF() {
         try {
-            log.info("Generando el PDF con estadísticas generales...");
             
             // Obtener solo estadísticas generales
             Map<String, Object> estadisticas = estadisticaCU.obtenerEstadisticasGlobales();
@@ -779,11 +749,9 @@ public class EstadisticasRestController {
             headers.setContentType(MediaType.APPLICATION_PDF);
             headers.setContentDispositionFormData("attachment", "estadisticas_generales_dashboard.pdf");
             
-            log.info("El PDF con estadísticas generales se generó correctamente.");
             return new ResponseEntity<>(pdfBytes, headers, HttpStatus.OK);
             
         } catch (Exception e) {
-            log.error("No fue posible generar el PDF de estadísticas generales: {}", e.getMessage(), e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
@@ -800,8 +768,6 @@ public class EstadisticasRestController {
             @RequestParam(required = false) String periodoAcademico,
             @RequestParam(required = false) Integer idPrograma) {
         try {
-            log.info("Generando el PDF con información de cursos de verano - Período: {}, Programa: {}", 
-                    periodoAcademico, idPrograma);
             
             // Obtener datos de cursos de verano con filtros
             Map<String, Object> datosCursosVerano = estadisticaCU.obtenerEstadisticasCursosVerano(periodoAcademico, idPrograma);
@@ -821,11 +787,9 @@ public class EstadisticasRestController {
             nombreArchivo += ".pdf";
             headers.setContentDispositionFormData("attachment", nombreArchivo);
             
-            log.info("El PDF con datos de cursos de verano se generó correctamente.");
             return new ResponseEntity<>(pdfBytes, headers, HttpStatus.OK);
             
         } catch (Exception e) {
-            log.error("No fue posible generar el PDF de cursos de verano: {}", e.getMessage(), e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
@@ -846,8 +810,6 @@ public class EstadisticasRestController {
             @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") Date fechaInicio,
             @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") Date fechaFin) {
         try {
-            log.info("Generando PDF con filtros. Proceso: {}, Programa: {}, Fechas: {} - {}", 
-                    proceso, idPrograma, fechaInicio, fechaFin);
             
             // Obtener datos filtrados
             Map<String, Object> estadisticas = estadisticaCU.obtenerEstadisticasGlobales(proceso, idPrograma, fechaInicio, fechaFin);
@@ -857,9 +819,7 @@ public class EstadisticasRestController {
             if (proceso == null || "CURSO_VERANO".equals(proceso)) {
                 try {
                     datosCursosVerano = estadisticaCU.obtenerEstadisticasCursosVerano(null, null);
-                    log.info("Datos de cursos de verano obtenidos para el PDF: {}", datosCursosVerano != null);
                 } catch (Exception e) {
-                    log.warn("No se pudieron obtener datos de cursos de verano para el PDF: {}", e.getMessage());
                 }
             }
             
@@ -870,11 +830,9 @@ public class EstadisticasRestController {
             headers.setContentType(MediaType.APPLICATION_PDF);
             headers.setContentDispositionFormData("attachment", "estadisticas_generales.pdf");
             
-            log.info("El PDF con filtros se generó correctamente.");
             return new ResponseEntity<>(pdfBytes, headers, HttpStatus.OK);
             
         } catch (Exception e) {
-            log.error("Ocurrió un error al generar el PDF con filtros: {}", e.getMessage(), e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
@@ -897,7 +855,6 @@ public class EstadisticasRestController {
     @GetMapping("/export/excel/general")
     public ResponseEntity<byte[]> exportarEstadisticasGeneralesExcel() {
         try {
-            log.info("Generando archivo Excel con estadísticas generales...");
             
             // Obtener solo estadísticas generales
             Map<String, Object> estadisticas = estadisticaCU.obtenerEstadisticasGlobales();
@@ -909,11 +866,9 @@ public class EstadisticasRestController {
             headers.setContentType(MediaType.APPLICATION_OCTET_STREAM);
             headers.setContentDispositionFormData("attachment", "estadisticas_generales_dashboard.xlsx");
             
-            log.info("El Excel con estadísticas generales se generó correctamente.");
             return new ResponseEntity<>(excelBytes, headers, HttpStatus.OK);
             
         } catch (Exception e) {
-            log.error("No fue posible generar el Excel de estadísticas generales: {}", e.getMessage(), e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
@@ -930,8 +885,6 @@ public class EstadisticasRestController {
             @RequestParam(required = false) String periodoAcademico,
             @RequestParam(required = false) Integer idPrograma) {
         try {
-            log.info("Generando archivo Excel con información de cursos de verano - Período: {}, Programa: {}", 
-                    periodoAcademico, idPrograma);
             
             // Obtener datos de cursos de verano con filtros
             Map<String, Object> datosCursosVerano = estadisticaCU.obtenerEstadisticasCursosVerano(periodoAcademico, idPrograma);
@@ -951,11 +904,9 @@ public class EstadisticasRestController {
             nombreArchivo += ".xlsx";
             headers.setContentDispositionFormData("attachment", nombreArchivo);
             
-            log.info("El Excel con datos de cursos de verano se generó correctamente.");
             return new ResponseEntity<>(excelBytes, headers, HttpStatus.OK);
             
         } catch (Exception e) {
-            log.error("No fue posible generar el Excel de cursos de verano: {}", e.getMessage(), e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
@@ -976,8 +927,6 @@ public class EstadisticasRestController {
             @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") Date fechaInicio,
             @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") Date fechaFin) {
         try {
-            log.info("Generando Excel con filtros. Proceso: {}, Programa: {}, Fechas: {} - {}", 
-                    proceso, idPrograma, fechaInicio, fechaFin);
             
             // Obtener datos filtrados
             Map<String, Object> estadisticas = estadisticaCU.obtenerEstadisticasGlobales(proceso, idPrograma, fechaInicio, fechaFin);
@@ -987,9 +936,7 @@ public class EstadisticasRestController {
             if (proceso == null || "CURSO_VERANO".equals(proceso)) {
                 try {
                     datosCursosVerano = estadisticaCU.obtenerEstadisticasCursosVerano(null, null);
-                    log.info("Datos de cursos de verano disponibles para el Excel: {}", datosCursosVerano != null);
                 } catch (Exception e) {
-                    log.warn("No se pudieron obtener datos de cursos de verano para el Excel: {}", e.getMessage());
                 }
             }
             
@@ -1000,11 +947,9 @@ public class EstadisticasRestController {
             headers.setContentType(MediaType.APPLICATION_OCTET_STREAM);
             headers.setContentDispositionFormData("attachment", "estadisticas_generales.xlsx");
             
-            log.info("El Excel con filtros se generó correctamente.");
             return new ResponseEntity<>(excelBytes, headers, HttpStatus.OK);
             
         } catch (Exception e) {
-            log.error("Ocurrió un error al generar el Excel con filtros: {}", e.getMessage(), e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
@@ -1017,7 +962,6 @@ public class EstadisticasRestController {
     @GetMapping("/exportar/excel")
     public ResponseEntity<byte[]> exportarEstadisticasExcelAlias() {
         try {
-            log.info("Generando Excel sin filtros para exportación...");
             
             // Obtener datos filtrados
             Map<String, Object> estadisticas = estadisticaCU.obtenerEstadisticasGlobales(null, null, null, null);
@@ -1026,9 +970,7 @@ public class EstadisticasRestController {
             Map<String, Object> datosCursosVerano = null;
             try {
                 datosCursosVerano = estadisticaCU.obtenerEstadisticasCursosVerano(null, null);
-                log.info("Datos de cursos de verano obtenidos para el Excel sin filtros: {}", datosCursosVerano != null);
             } catch (Exception e) {
-                log.warn("No se pudieron obtener datos de cursos de verano para el Excel sin filtros: {}", e.getMessage());
             }
             
             // Generar Excel con datos completos
@@ -1038,11 +980,9 @@ public class EstadisticasRestController {
             headers.setContentType(MediaType.parseMediaType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"));
             headers.setContentDispositionFormData("attachment", "estadisticas_generales.xlsx");
             
-            log.info("El Excel sin filtros se generó correctamente.");
             return new ResponseEntity<>(excelBytes, headers, HttpStatus.OK);
             
         } catch (Exception e) {
-            log.error("Ocurrió un error al generar el Excel sin filtros: {}", e.getMessage(), e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
@@ -1054,7 +994,6 @@ public class EstadisticasRestController {
      * @return Array de bytes del PDF
      */
     private byte[] generarPDFEstadisticasGenerales(Map<String, Object> estadisticas) {
-        log.debug("Iniciando la generación del PDF con estadísticas generales...");
         
         ByteArrayOutputStream baos = null;
         com.itextpdf.text.Document document = null;
@@ -1086,7 +1025,6 @@ public class EstadisticasRestController {
             return baos.toByteArray();
             
         } catch (Exception e) {
-            log.error("Error al generar el PDF de estadísticas generales: {}", e.getMessage(), e);
             
             // Generar PDF de error
             try {
@@ -1102,7 +1040,6 @@ public class EstadisticasRestController {
                 
                 return errorBaos.toByteArray();
             } catch (Exception ex) {
-                log.error("No se pudo generar el PDF alterno con información de error: {}", ex.getMessage(), ex);
                 return new byte[0];
             }
         } finally {
@@ -1114,7 +1051,6 @@ public class EstadisticasRestController {
                     baos.close();
                 }
             } catch (Exception e) {
-                log.error("Ocurrió un error al cerrar los recursos del PDF general: {}", e.getMessage(), e);
             }
         }
     }
@@ -1128,7 +1064,6 @@ public class EstadisticasRestController {
      * @return Array de bytes del PDF
      */
     private byte[] generarPDFCursosVerano(Map<String, Object> datosCursosVerano, String periodoAcademico, Integer idPrograma) {
-        log.debug("Iniciando la generación del PDF con información de cursos de verano...");
         
         ByteArrayOutputStream baos = null;
         com.itextpdf.text.Document document = null;

@@ -156,7 +156,6 @@ public class SolicitudPazYSalvoRestController {
             PeriodoAcademicoEnum periodoActual = PeriodoAcademicoEnum.getPeriodoActual();
             if (periodoActual != null) {
                 solicitud.setPeriodo_academico(periodoActual.getValor());
-                log.debug("Período académico establecido automáticamente: {}", periodoActual.getValor());
             }
         }
 
@@ -220,7 +219,6 @@ public class SolicitudPazYSalvoRestController {
             PeriodoAcademicoEnum periodoActual = PeriodoAcademicoEnum.getPeriodoActual();
             if (periodoActual != null) {
                 solicitud.setPeriodo_academico(periodoActual.getValor());
-                log.debug("Período académico establecido automáticamente: {}", periodoActual.getValor());
             }
         }
         
@@ -329,7 +327,6 @@ public class SolicitudPazYSalvoRestController {
             PeriodoAcademicoEnum periodoActual = PeriodoAcademicoEnum.getPeriodoActual();
             if (periodoActual != null) {
                 periodoAcademico = periodoActual.getValor();
-                log.debug("Usando período académico actual automático: {}", periodoAcademico);
             }
         }
         
@@ -343,7 +340,6 @@ public class SolicitudPazYSalvoRestController {
             }
         } else {
             // Si no se puede obtener el programa, retornar todas (fallback)
-            log.warn("No se pudo obtener el programa del coordinador, retornando todas las solicitudes");
             solicitudes = solicitudPazYSalvoCU.listarSolicitudesToCoordinador();
         }
         
@@ -359,7 +355,6 @@ public class SolicitudPazYSalvoRestController {
             PeriodoAcademicoEnum periodoActual = PeriodoAcademicoEnum.getPeriodoActual();
             if (periodoActual != null) {
                 periodoAcademico = periodoActual.getValor();
-                log.debug("Usando período académico actual automático: {}", periodoAcademico);
             }
         }
         
@@ -391,7 +386,6 @@ public class SolicitudPazYSalvoRestController {
             periodoAcademico.trim().equalsIgnoreCase("todos") ||
             periodoAcademico.trim().equalsIgnoreCase("todos los periodos") ||
             periodoAcademico.trim().equalsIgnoreCase("todos los períodos")) {
-            log.debug("Mostrando todas las solicitudes procesadas sin filtrar por período");
             solicitudes = solicitudPazYSalvoCU.listarSolicitudesAprobadasToSecretaria();
         } else {
             // Filtrar por período académico específico
@@ -421,7 +415,6 @@ public class SolicitudPazYSalvoRestController {
             periodoAcademico.trim().equalsIgnoreCase("todos") ||
             periodoAcademico.trim().equalsIgnoreCase("todos los periodos") ||
             periodoAcademico.trim().equalsIgnoreCase("todos los períodos")) {
-            log.debug("Mostrando todas las solicitudes procesadas sin filtrar por período");
             solicitudes = solicitudPazYSalvoCU.listarSolicitudesAprobadasToFuncionario();
         } else {
             // Filtrar por período académico específico
@@ -456,7 +449,6 @@ public class SolicitudPazYSalvoRestController {
         if (idPrograma != null) {
             if (mostrarTodos) {
                 // Filtrar solo por programa, sin período
-                log.debug("Mostrando todas las solicitudes procesadas del programa {} sin filtrar por período", idPrograma);
                 solicitudes = solicitudPazYSalvoCU.listarSolicitudesAprobadasToCoordinadorPorPrograma(idPrograma);
             } else {
                 // Filtrar por programa y período del coordinador
@@ -464,7 +456,6 @@ public class SolicitudPazYSalvoRestController {
             }
         } else {
             // Si no se puede obtener el programa, retornar todas (fallback)
-            log.warn("No se pudo obtener el programa del coordinador, retornando todas las solicitudes");
             if (mostrarTodos) {
                 solicitudes = solicitudPazYSalvoCU.listarSolicitudesAprobadasToCoordinador();
             } else {
@@ -518,7 +509,6 @@ public class SolicitudPazYSalvoRestController {
                         PeriodoAcademicoEnum periodoActual = PeriodoAcademicoEnum.getPeriodoActual();
                         if (periodoActual != null) {
                             periodoAcademico = periodoActual.getValor();
-                            log.debug("Usando período académico actual automático: {}", periodoAcademico);
                         }
                     }
                     
@@ -572,13 +562,10 @@ public class SolicitudPazYSalvoRestController {
 
             return ResponseEntity.noContent().build();
         } catch (EntidadNoExisteException e) {
-            log.error("Error al actualizar estado: solicitud no encontrada", e);
             return ResponseEntity.notFound().build();
         } catch (IllegalArgumentException e) {
-            log.error("Error de validación al actualizar estado", e);
             return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
         } catch (Exception e) {
-            log.error("Error inesperado al actualizar estado de solicitud", e);
             return ResponseEntity.status(500).body(Map.of("error", "Error interno del servidor: " + e.getMessage()));
         }
     }
@@ -631,7 +618,6 @@ public class SolicitudPazYSalvoRestController {
             
             // Verificar que el usuario esté cargado
             if (solicitud.getObjUsuario() == null || solicitud.getObjUsuario().getId_usuario() == null) {
-                log.error("Usuario no encontrado para solicitud ID: {}", id);
                 return ResponseEntity.internalServerError().build();
             }
             
@@ -639,7 +625,6 @@ public class SolicitudPazYSalvoRestController {
             // Esto asegura que tengamos todos los datos del usuario, incluyendo la cédula
             Usuario usuarioCompleto = usuarioGateway.obtenerUsuarioPorId(solicitud.getObjUsuario().getId_usuario());
             if (usuarioCompleto == null) {
-                log.error("No se pudo obtener el usuario completo para solicitud ID: {}", id);
                 return ResponseEntity.internalServerError().build();
             }
             
@@ -728,14 +713,12 @@ public class SolicitudPazYSalvoRestController {
             
             // Verificar que el usuario esté cargado
             if (solicitud.getObjUsuario() == null || solicitud.getObjUsuario().getId_usuario() == null) {
-                log.error("Usuario no encontrado para solicitud ID: {}", id);
                 return ResponseEntity.internalServerError().build();
             }
             
             // Obtener el usuario completo desde el gateway para asegurar que tengamos todos los datos, incluyendo la cédula
             Usuario usuarioCompleto = usuarioGateway.obtenerUsuarioPorId(solicitud.getObjUsuario().getId_usuario());
             if (usuarioCompleto == null) {
-                log.error("No se pudo obtener el usuario completo para solicitud ID: {}", id);
                 return ResponseEntity.internalServerError().build();
             }
             
@@ -824,8 +807,6 @@ public class SolicitudPazYSalvoRestController {
         
         Map<String, Object> debug = new HashMap<>();
         
-        log.debug("Debug upload - Paz y Salvo. Content-Type: {}, Method: {}, Content-Length: {}", 
-            request.getContentType(), request.getMethod(), request.getContentLength());
         
         debug.put("content_type", request.getContentType());
         debug.put("method", request.getMethod());
@@ -847,11 +828,8 @@ public class SolicitudPazYSalvoRestController {
             fileInfo.put("content_type", file.getContentType());
             debug.put("archivo_recibido", fileInfo);
             
-            log.debug("Archivo recibido: nombre={}, tamaño={} bytes, tipo={}", 
-                file.getOriginalFilename(), file.getSize(), file.getContentType());
         } else {
             debug.put("archivo_recibido", "NO SE RECIBIÓ ARCHIVO");
-            log.warn("No se recibió archivo en la petición");
         }
         
         return ResponseEntity.ok(debug);
@@ -918,7 +896,6 @@ public class SolicitudPazYSalvoRestController {
     @GetMapping("/descargar-documento")
     public ResponseEntity<byte[]> descargarDocumento(@RequestParam("filename") String filename) {
         try {
-            log.debug("Descargando documento: {}", filename);
             
             // Buscar el documento en la BD por nombre para obtener su ruta completa
             String rutaArchivo = filename; // Por defecto usar el nombre recibido
@@ -934,7 +911,6 @@ public class SolicitudPazYSalvoRestController {
                             // Usar la ruta completa si está disponible
                             if (doc.getRuta_documento() != null && !doc.getRuta_documento().isEmpty()) {
                                 rutaArchivo = doc.getRuta_documento();
-                                log.debug("Documento encontrado en BD, usando ruta completa: {}", rutaArchivo);
                             }
                             break;
                         }
@@ -946,7 +922,6 @@ public class SolicitudPazYSalvoRestController {
             byte[] archivo = objGestionarArchivos.getFile(rutaArchivo);
             
             if (archivo == null || archivo.length == 0) {
-                log.warn("Archivo no encontrado: {}", rutaArchivo);
                 return ResponseEntity.notFound().build();
             }
             
@@ -961,14 +936,12 @@ public class SolicitudPazYSalvoRestController {
                 .replace("+", "%20");
             String contentDisposition = "attachment; filename=\"" + nombreArchivo + "\"; filename*=UTF-8''" + encoded;
 
-            log.debug("Archivo descargado exitosamente: {}", nombreArchivo);
             return ResponseEntity.ok()
                 .header(HttpHeaders.CONTENT_DISPOSITION, contentDisposition)
                 .contentType(MediaType.APPLICATION_PDF)
                 .body(archivo);
                 
         } catch (Exception e) {
-            log.error("Error al descargar documento: {}", filename, e);
             return ResponseEntity.internalServerError().build();
         }
     }
@@ -995,21 +968,15 @@ public class SolicitudPazYSalvoRestController {
             
             // Verificar que el usuario esté cargado
             if (solicitud.getObjUsuario() == null || solicitud.getObjUsuario().getId_usuario() == null) {
-                log.error("Usuario no encontrado para solicitud ID: {}", idSolicitud);
                 return ResponseEntity.internalServerError().build();
             }
             
             // Obtener el usuario completo desde el gateway para asegurar que tengamos todos los datos, incluyendo la cédula
             Usuario usuarioCompleto = usuarioGateway.obtenerUsuarioPorId(solicitud.getObjUsuario().getId_usuario());
             if (usuarioCompleto == null) {
-                log.error("No se pudo obtener el usuario completo para solicitud ID: {}", idSolicitud);
                 return ResponseEntity.internalServerError().build();
             }
             
-            // Log para debugging
-            log.debug("Generando documento Paz y Salvo - ID: {}, Fecha recibida (raw): '{}', Tipo: {}, Título: {}, Director: {}", 
-                idSolicitud, fechaDocumento, fechaDocumento != null ? fechaDocumento.getClass().getSimpleName() : "null", 
-                tituloTrabajoGrado, directorTrabajoGrado);
             
             // Crear request para el generador de documentos (igual que homologación)
             Map<String, Object> datosDocumento = new HashMap<>();
@@ -1024,17 +991,14 @@ public class SolicitudPazYSalvoRestController {
                 }
                 // Validar que tenga el formato correcto YYYY-MM-DD
                 if (!fechaDocumentoStr.matches("\\d{4}-\\d{2}-\\d{2}")) {
-                    log.warn("Formato de fecha inválido: '{}', usando fecha actual", fechaDocumentoStr);
                     fechaDocumentoStr = null;
                 }
             }
             // Si no se proporcionó fecha o es inválida, usar la fecha actual del sistema (sin zona horaria)
             if (fechaDocumentoStr == null) {
                 fechaDocumentoStr = java.time.LocalDate.now().toString();
-                log.debug("No se proporcionó fecha, usando fecha actual: '{}'", fechaDocumentoStr);
             }
             datosDocumento.put("fechaDocumento", fechaDocumentoStr);
-            log.debug("Fecha final para documento: '{}'", fechaDocumentoStr);
             datosDocumento.put("observaciones", observaciones != null ? observaciones : "");
             
             Map<String, Object> datosSolicitud = new HashMap<>();
@@ -1072,7 +1036,6 @@ public class SolicitudPazYSalvoRestController {
             datosSolicitud.put("tituloTrabajoGrado", tituloFinal);
             datosSolicitud.put("directorTrabajoGrado", directorFinal);
             
-            log.debug("Datos finales - Título: {}, Director: {}", tituloFinal, directorFinal);
             
             // Crear el request (igual que homologación)
             co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.DTORespuesta.DocumentRequest request = 
@@ -1305,7 +1268,6 @@ public class SolicitudPazYSalvoRestController {
     @GetMapping("/debug/documentos-sin-asociar")
     public ResponseEntity<Map<String, Object>> verificarDocumentosSinAsociar() {
         try {
-            log.debug("Verificando documentos sin asociar");
             
             Map<String, Object> resultado = new HashMap<>();
             
@@ -1327,12 +1289,10 @@ public class SolicitudPazYSalvoRestController {
                 resultado.put("documentos_detalle", docsInfo);
             }
             
-            log.debug("Documentos sin asociar encontrados: {}", documentosSinSolicitud.size());
             
             return ResponseEntity.ok(resultado);
             
         } catch (Exception e) {
-            log.error("Error al revisar documentos sin asociar", e);
             
             Map<String, Object> errorInfo = new HashMap<>();
             errorInfo.put("error", e.getMessage());
@@ -1346,13 +1306,11 @@ public class SolicitudPazYSalvoRestController {
     @PostMapping("/asociar-documentos/{idSolicitud}")
     public ResponseEntity<Map<String, Object>> asociarDocumentosHuérfanos(@PathVariable Integer idSolicitud) {
         try {
-            log.debug("Asociando documentos huérfanos a la solicitud: {}", idSolicitud);
             
             Map<String, Object> resultado = new HashMap<>();
             
             SolicitudPazYSalvo solicitud = solicitudPazYSalvoCU.buscarPorId(idSolicitud);
             if (solicitud == null) {
-                log.warn("Solicitud no encontrada: {}", idSolicitud);
                 resultado.put("error", "Solicitud no encontrada");
                 return ResponseEntity.ok(resultado);
             }
@@ -1364,19 +1322,16 @@ public class SolicitudPazYSalvoRestController {
                 doc.setObjSolicitud(solicitud);
                 objGestionarDocumentosGateway.actualizarDocumento(doc);
                 documentosAsociados++;
-                log.debug("Documento asociado: {}", doc.getNombre());
             }
             
             resultado.put("documentos_asociados", documentosAsociados);
             resultado.put("solicitud_id", idSolicitud);
             resultado.put("mensaje", "Documentos asociados exitosamente");
             
-            log.info("Documentos asociados a solicitud {}: {}", idSolicitud, documentosAsociados);
             
             return ResponseEntity.ok(resultado);
             
         } catch (Exception e) {
-            log.error("Error al asociar documentos a la solicitud: {}", idSolicitud, e);
             
             Map<String, Object> errorInfo = new HashMap<>();
             errorInfo.put("error", e.getMessage());
@@ -1391,11 +1346,9 @@ public class SolicitudPazYSalvoRestController {
     @PostMapping("/asociar-documentos-huerfanos/{idSolicitud}")
     public ResponseEntity<Map<String, Object>> asociarDocumentosHuerfanos(@PathVariable Integer idSolicitud) {
         try {
-            log.debug("Asociando documentos huérfanos a solicitud: {}", idSolicitud);
             
             SolicitudPazYSalvo solicitud = solicitudPazYSalvoCU.buscarPorId(idSolicitud);
             if (solicitud == null) {
-                log.warn("Solicitud no encontrada: {}", idSolicitud);
                 Map<String, Object> error = new HashMap<>();
                 error.put("error", "Solicitud ID " + idSolicitud + " no encontrada");
                 return ResponseEntity.ok(error);
@@ -1403,14 +1356,12 @@ public class SolicitudPazYSalvoRestController {
             
             List<Documento> documentosSinSolicitud = objGestionarDocumentosGateway.buscarDocumentosSinSolicitud();
             
-            log.debug("Documentos sin asociar encontrados: {}", documentosSinSolicitud.size());
             
             int documentosAsociados = 0;
             for (Documento doc : documentosSinSolicitud) {
                 doc.setObjSolicitud(solicitud);
                 objGestionarDocumentosGateway.actualizarDocumento(doc);
                 documentosAsociados++;
-                log.debug("Documento asociado: {}", doc.getNombre());
             }
             
             Map<String, Object> resultado = new HashMap<>();
@@ -1419,12 +1370,10 @@ public class SolicitudPazYSalvoRestController {
             resultado.put("solicitud_id", idSolicitud);
             resultado.put("mensaje", "Documentos asociados exitosamente");
             
-            log.info("Documentos asociados a solicitud {}: {}", idSolicitud, documentosAsociados);
             
             return ResponseEntity.ok(resultado);
             
         } catch (Exception e) {
-            log.error("Error al asociar documentos a solicitud: {}", idSolicitud, e);
             
             Map<String, Object> errorInfo = new HashMap<>();
             errorInfo.put("error", e.getMessage());
@@ -1439,17 +1388,14 @@ public class SolicitudPazYSalvoRestController {
     @GetMapping("/obtenerDocumentos/coordinador/{idSolicitud}")
     public ResponseEntity<List<Map<String, Object>>> obtenerDocumentosPazSalvoCoordinador(@PathVariable Integer idSolicitud) {
         try {
-            log.debug("Obteniendo documentos de paz y salvo para solicitud: {}", idSolicitud);
             
             SolicitudPazYSalvo solicitud = solicitudPazYSalvoCU.buscarPorId(idSolicitud);
             if (solicitud == null) {
-                log.warn("Solicitud de paz y salvo no encontrada: {}", idSolicitud);
                 return ResponseEntity.notFound().build();
             }
             
             List<Documento> documentos = solicitud.getDocumentos();
             if (documentos == null || documentos.isEmpty()) {
-                log.debug("No hay documentos asociados a la solicitud: {}", idSolicitud);
                 return ResponseEntity.ok(new ArrayList<>());
             }
             
@@ -1488,15 +1434,12 @@ public class SolicitudPazYSalvoRestController {
                     
                     doc.put("tipo", tipoDocumento);
                     todosDocumentos.add(doc);
-                    log.debug("Documento agregado: {} (Tipo: {})", documento.getNombre(), tipoDocumento);
                 }
             }
             
-            log.info("Documentos encontrados para solicitud {}: {}", idSolicitud, todosDocumentos.size());
             return ResponseEntity.ok(todosDocumentos);
             
         } catch (Exception e) {
-            log.error("Error al obtener documentos de paz y salvo para solicitud: {}", idSolicitud, e);
             return ResponseEntity.internalServerError().build();
         }
     }
@@ -1511,11 +1454,9 @@ public class SolicitudPazYSalvoRestController {
     @GetMapping("/obtenerComentarios/{idSolicitud}")
     public ResponseEntity<Map<String, Object>> obtenerComentariosSolicitud(@PathVariable Integer idSolicitud) {
         try {
-            log.debug("Obteniendo comentarios de paz y salvo para solicitud: {}", idSolicitud);
             
             SolicitudPazYSalvo solicitud = solicitudPazYSalvoCU.buscarPorId(idSolicitud);
             if (solicitud == null) {
-                log.warn("Solicitud de paz y salvo no encontrada: {}", idSolicitud);
                 return ResponseEntity.notFound().build();
             }
             
@@ -1568,13 +1509,9 @@ public class SolicitudPazYSalvoRestController {
                 respuesta.put("mensaje", "No hay comentarios para esta solicitud");
             }
             
-            log.debug("Comentarios encontrados - Rechazo: {}, Documentos: {}", 
-                comentarioRechazo != null ? "Sí" : "No", 
-                documentosConComentarios.size());
             
             return ResponseEntity.ok(respuesta);
         } catch (Exception e) {
-            log.error("Error al obtener comentarios de paz y salvo para solicitud: {}", idSolicitud, e);
             return ResponseEntity.internalServerError().build();
         }
     }
@@ -1585,17 +1522,14 @@ public class SolicitudPazYSalvoRestController {
     @GetMapping("/obtenerOficios/{idSolicitud}")
     public ResponseEntity<List<Map<String, Object>>> obtenerOficiosPazSalvo(@PathVariable Integer idSolicitud) {
         try {
-            log.debug("Obteniendo oficios de paz y salvo para solicitud: {}", idSolicitud);
             
             SolicitudPazYSalvo solicitud = solicitudPazYSalvoCU.buscarPorId(idSolicitud);
             if (solicitud == null) {
-                log.warn("Solicitud de paz y salvo no encontrada: {}", idSolicitud);
                 return ResponseEntity.notFound().build();
             }
             
             List<Documento> documentos = solicitud.getDocumentos();
             if (documentos == null || documentos.isEmpty()) {
-                log.debug("No hay documentos asociados a la solicitud: {}", idSolicitud);
                 return ResponseEntity.ok(new ArrayList<>());
             }
             
@@ -1617,16 +1551,13 @@ public class SolicitudPazYSalvoRestController {
                         oficio.put("nombreArchivo", documento.getNombre());
                         oficio.put("ruta", documento.getRuta_documento());
                         oficios.add(oficio);
-                        log.debug("Oficio agregado: {}", documento.getNombre());
                     }
                 }
             }
             
-            log.info("Oficios encontrados para solicitud {}: {}", idSolicitud, oficios.size());
             return ResponseEntity.ok(oficios);
             
         } catch (Exception e) {
-            log.error("Error al obtener oficios de paz y salvo para solicitud: {}", idSolicitud, e);
             return ResponseEntity.internalServerError().build();
         }
     }
@@ -1637,11 +1568,9 @@ public class SolicitudPazYSalvoRestController {
     @GetMapping("/validarDocumentosRequeridos/{idSolicitud}")
     public ResponseEntity<Map<String, Object>> validarDocumentosRequeridosPazSalvo(@PathVariable Integer idSolicitud) {
         try {
-            log.debug("Validando documentos requeridos para solicitud: {}", idSolicitud);
             
             SolicitudPazYSalvo solicitud = solicitudPazYSalvoCU.buscarPorId(idSolicitud);
             if (solicitud == null) {
-                log.warn("Solicitud no encontrada: {}", idSolicitud);
                 return ResponseEntity.notFound().build();
             }
             
@@ -1689,11 +1618,9 @@ public class SolicitudPazYSalvoRestController {
             resultado.put("todosCompletos", todosCompletos);
             resultado.put("totalDocumentos", documentos.size());
             
-            log.info("Validación de documentos completada para solicitud {}: completos={}", idSolicitud, todosCompletos);
             return ResponseEntity.ok(resultado);
             
         } catch (Exception e) {
-            log.error("Error al validar documentos para solicitud: {}", idSolicitud, e);
             return ResponseEntity.internalServerError().build();
         }
     }
@@ -1710,20 +1637,15 @@ public ResponseEntity<DocumentosDTORespuesta> guardarOficioPazSalvo(
         @RequestParam(value = "observaciones", required = false) String observaciones) {
     
     try {
-        log.debug("Guardando oficio de paz y salvo para solicitud: {}, tipo: {}, número: {}, fecha: {}", 
-            idSolicitud, tipoDocumento, numeroDocumento, fechaDocumento);
         
         String nombreOriginal = file.getOriginalFilename();
-        log.debug("Nombre archivo: {}", nombreOriginal);
         
         // Validaciones
         if (file.isEmpty()) {
-            log.warn("Archivo vacío recibido");
             return ResponseEntity.badRequest().body(null);
         }
         
         if (!nombreOriginal.toLowerCase().endsWith(".docx")) {
-            log.warn("Tipo de archivo no válido: {}", nombreOriginal);
             return ResponseEntity.status(HttpStatus.UNSUPPORTED_MEDIA_TYPE).body(null);
         }
         
@@ -1743,9 +1665,7 @@ public ResponseEntity<DocumentosDTORespuesta> guardarOficioPazSalvo(
             Solicitud objSolicitud = new Solicitud();
             objSolicitud.setId_solicitud(idSolicitud);
             doc.setObjSolicitud(objSolicitud);
-                        log.debug("Asociando oficio '{}' a solicitud de paz y salvo ID: {}", nombreOriginal, idSolicitud);
         } else {
-            log.warn("No se encontró la solicitud de paz y salvo con ID: {}", idSolicitud);
             return ResponseEntity.notFound().build();
         }
         
@@ -1757,11 +1677,9 @@ public ResponseEntity<DocumentosDTORespuesta> guardarOficioPazSalvo(
             HttpStatus.CREATED
         );
         
-        log.debug("Oficio de paz y salvo guardado exitosamente: {}", nombreOriginal);
         return respuesta;
         
     } catch (Exception e) {
-        log.error("Error al guardar oficio de paz y salvo: {}", e.getMessage(), e);
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
     }
 }
@@ -1774,7 +1692,6 @@ public ResponseEntity<DocumentosDTORespuesta> guardarOficioPazSalvo(
             @PathVariable Integer idSolicitud,
             @RequestParam("file") MultipartFile file) {
         try {
-            log.debug("Subiendo oficio PDF para solicitud: {}", idSolicitud);
 
             if (file == null || file.isEmpty()) {
                 return ResponseEntity.badRequest().build();
@@ -1823,7 +1740,6 @@ public ResponseEntity<DocumentosDTORespuesta> guardarOficioPazSalvo(
         try {
             Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
             if (authentication == null || !authentication.isAuthenticated()) {
-                log.warn("No hay usuario autenticado");
                 return null;
             }
 
@@ -1831,7 +1747,6 @@ public ResponseEntity<DocumentosDTORespuesta> guardarOficioPazSalvo(
             Usuario usuarioAutenticado = usuarioGateway.buscarUsuarioPorCorreo(email);
             
             if (usuarioAutenticado == null) {
-                log.warn("Usuario autenticado no encontrado: {}", email);
                 return null;
             }
 
@@ -1841,7 +1756,6 @@ public ResponseEntity<DocumentosDTORespuesta> guardarOficioPazSalvo(
                     : null;
             
             if (!"Coordinador".equals(rolNombre)) {
-                log.warn("El usuario autenticado no es coordinador: {}", rolNombre);
                 return null;
             }
 
@@ -1850,10 +1764,8 @@ public ResponseEntity<DocumentosDTORespuesta> guardarOficioPazSalvo(
                 return usuarioAutenticado.getObjPrograma().getId_programa();
             }
 
-            log.warn("El coordinador no tiene programa asignado");
             return null;
         } catch (Exception e) {
-            log.error("Error al obtener programa del coordinador autenticado", e);
             return null;
         }
     }
