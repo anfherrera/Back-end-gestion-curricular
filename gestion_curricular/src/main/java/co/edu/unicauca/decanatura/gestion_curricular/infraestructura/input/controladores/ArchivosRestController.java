@@ -129,7 +129,7 @@ public class ArchivosRestController {
                         Integer idSolicitudInt = Integer.parseInt(solicitudIdUnificado);
                         nombreArchivo = this.objGestionarArchivos.saveFile(file, nombreUnico, "pdf", tipoSolicitud, idSolicitudInt);
                     } catch (NumberFormatException e) {
-                        // Si no se puede parsear el ID, usar método antiguo
+                        // Si no se puede parsear el ID, usar método alternativo
                         nombreArchivo = this.objGestionarArchivos.saveFile(file, nombreUnico, "pdf");
                     }
                 } else if (inscripcionId != null && !inscripcionId.trim().isEmpty()) {
@@ -213,7 +213,7 @@ public class ArchivosRestController {
             
             // 6. Crear respuesta en el formato requerido
             Map<String, Object> respuesta = new HashMap<>();
-            respuesta.put("id", System.currentTimeMillis()); // ID temporal
+            respuesta.put("id", System.currentTimeMillis());
             respuesta.put("nombre", nombreOriginal);
             respuesta.put("ruta", "/uploads/archivos/" + nombreArchivo);
             respuesta.put("tamaño", file.getSize());

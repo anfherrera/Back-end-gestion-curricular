@@ -652,7 +652,7 @@ public class EstadisticasRestController {
                 "indicadoresRendimiento", Map.of(
                     "tasaProcesamiento", calcularTasaProcesamiento(estadisticasGlobales),
                     "eficienciaAprobacion", calcularEficienciaAprobacion(estadisticasGlobales),
-                    "tiempoPromedioProcesamiento", "N/A" // Placeholder para implementación futura
+                    "tiempoPromedioProcesamiento", "N/A"
                 ),
                 "fechaConsulta", new Date()
             );

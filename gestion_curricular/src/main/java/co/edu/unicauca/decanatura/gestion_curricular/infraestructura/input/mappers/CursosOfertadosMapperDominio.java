@@ -174,7 +174,7 @@ public interface CursosOfertadosMapperDominio {
     @Named("formatearFecha")
     default String formatearFecha(java.util.Date fecha) {
         if (fecha == null) {
-            // Para cursos antiguos que no tienen fecha, calcular una por defecto (6 meses desde ahora)
+            // Para cursos que no tienen fecha, calcular una por defecto (6 meses desde ahora)
             java.util.Calendar cal = java.util.Calendar.getInstance(java.util.TimeZone.getTimeZone("UTC"));
             cal.add(java.util.Calendar.MONTH, 6);
             fecha = cal.getTime();
@@ -193,7 +193,7 @@ public interface CursosOfertadosMapperDominio {
         if (curso.getFecha_fin() != null) {
             return sdf.format(curso.getFecha_fin());
         }
-        // Si no hay fecha_fin pero hay fecha_inicio, calcular fecha_inicio + 6 semanas (para cursos antiguos)
+        // Si no hay fecha_fin pero hay fecha_inicio, calcular fecha_inicio + 6 semanas
         if (curso.getFecha_inicio() != null) {
             java.util.Calendar cal = java.util.Calendar.getInstance(java.util.TimeZone.getTimeZone("UTC"));
             cal.setTime(curso.getFecha_inicio());
@@ -212,7 +212,7 @@ public interface CursosOfertadosMapperDominio {
         if (curso.getPeriodo_academico() != null && !curso.getPeriodo_academico().trim().isEmpty()) {
             return curso.getPeriodo_academico().trim();
         }
-        // Si no hay período pero hay fecha_inicio, calcular desde la fecha (para cursos antiguos)
+        // Si no hay período pero hay fecha_inicio, calcular desde la fecha
         if (curso.getFecha_inicio() != null) {
             java.time.LocalDate fecha = curso.getFecha_inicio().toInstant()
                 .atZone(java.time.ZoneId.systemDefault())

@@ -312,7 +312,6 @@ public class CursosIntersemestralesRestController {
         try {
             List<CursoOfertadoVerano> cursos = cursoCU.listarTodos();
             
-            // Log del parámetro recibido para debugging
             
             // Filtrar por período académico SOLO si se proporciona explícitamente
             if (periodoAcademico != null && !periodoAcademico.trim().isEmpty() && !periodoAcademico.trim().equalsIgnoreCase("todos")) {
@@ -698,7 +697,6 @@ public class CursosIntersemestralesRestController {
      */
     @GetMapping("/solicitudes/preinscripcion/estudiante/{id}")
     public ResponseEntity<List<Map<String, Object>>> obtenerPreinscripcionesPorEstudianteAlias(@PathVariable Integer id) {
-        // Delegar al metodo principal
         return obtenerPreinscripcionesPorUsuario(id);
     }
 
@@ -833,12 +831,11 @@ public class CursosIntersemestralesRestController {
                 }
             }
             
-            // Crear un curso temporal con ID = 0 para indicar que es un curso nuevo
+            // Crear un curso con ID = 0 para indicar que es un curso nuevo
             CursoOfertadoVerano cursoTemporal = new CursoOfertadoVerano();
             cursoTemporal.setId_curso(0); // ID = 0 indica curso nuevo
             solicitudDominio.setObjCursoOfertadoVerano(cursoTemporal);
             
-            // Crear usuario temporal
             co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Usuario usuarioTemporal = 
                 new co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Usuario();
             usuarioTemporal.setId_usuario(peticion.getIdUsuario());
@@ -980,7 +977,6 @@ public class CursosIntersemestralesRestController {
     public ResponseEntity<Map<String, Object>> testSolicitudCursoNuevo() {
         try {
             
-            // Crear datos de prueba
             SolicitudCursoNuevoDTOPeticion peticionPrueba = new SolicitudCursoNuevoDTOPeticion();
             peticionPrueba.setNombreCompleto("Juan Perez");
             peticionPrueba.setCodigo("104612345660");
@@ -989,7 +985,6 @@ public class CursosIntersemestralesRestController {
             peticionPrueba.setIdUsuario(1);
             
             
-            // Llamar al metodo principal
             ResponseEntity<Map<String, Object>> respuesta = crearSolicitudCursoNuevo(peticionPrueba);
             
             
@@ -1289,7 +1284,6 @@ public class CursosIntersemestralesRestController {
      */
     @PostMapping("/solicitudes/preinscripcion")
     public ResponseEntity<Map<String, Object>> crearPreinscripcionAlias(@RequestBody PreinscripcionCursoVeranoDTOPeticion peticion) {
-        // Delegar al metodo principal
         return crearPreinscripcion(peticion);
     }
 
@@ -1419,7 +1413,6 @@ public class CursosIntersemestralesRestController {
         }
     }
 
-    // ==================== METODOS AUXILIARES PARA VALIDACION DE ESTADOS ====================
     
     /**
      * Obtener el estado actual de un curso
@@ -3462,7 +3455,7 @@ public class CursosIntersemestralesRestController {
         // Mapear a estructura esperada por el frontend
         Map<String, Object> curso = new HashMap<>();
         curso.put("id_curso", cursoDTO.getId_curso());
-        curso.put("idCurso", cursoDTO.getId_curso()); // Compatibilidad con pruebas
+        curso.put("idCurso", cursoDTO.getId_curso());
         curso.put("nombre_curso", cursoDTO.getNombre_curso());
         curso.put("codigo_curso", cursoDTO.getCodigo_curso());
         curso.put("descripcion", cursoDTO.getDescripcion());
@@ -3531,7 +3524,6 @@ public class CursosIntersemestralesRestController {
     @GetMapping("/cursos-verano/periodo/{periodo}")
     public ResponseEntity<List<CursosOfertadosDTORespuesta>> filtrarCursosPorPeriodo(@PathVariable String periodo) {
         try {
-            // Por ahora, retornar todos los cursos (implementacion futura)
             List<CursoOfertadoVerano> cursos = cursoCU.listarTodos();
             List<CursosOfertadosDTORespuesta> respuesta = cursos.stream()
                     .map(cursoMapper::mappearDeCursoOfertadoARespuestaDisponible)
@@ -4188,7 +4180,6 @@ public class CursosIntersemestralesRestController {
             @RequestParam(required = false) Integer idPrograma) {
         try {
             
-            // Obtener cursos usando el mismo método que el endpoint GET
             ResponseEntity<List<CursosOfertadosDTORespuesta>> cursosResponse = obtenerTodosLosCursosVerano(periodoAcademico, idPrograma);
             
             if (cursosResponse.getStatusCode() != HttpStatus.OK || cursosResponse.getBody() == null) {
@@ -4231,7 +4222,6 @@ public class CursosIntersemestralesRestController {
             @PathVariable Integer idCurso) {
         try {
             
-            // Obtener estudiantes usando el mismo método que el endpoint GET
             ResponseEntity<Map<String, Object>> estudiantesResponse = obtenerEstudiantesDelCurso(idCurso);
             
             if (estudiantesResponse.getStatusCode() != HttpStatus.OK || estudiantesResponse.getBody() == null) {
@@ -4475,7 +4465,6 @@ public class CursosIntersemestralesRestController {
         }
     }
 
-    // ==================== ENDPOINT DE PRUEBA SIMPLE ====================
     
     /**
      * Endpoint de prueba simple

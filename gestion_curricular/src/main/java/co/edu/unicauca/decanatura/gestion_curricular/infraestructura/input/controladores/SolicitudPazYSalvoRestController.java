@@ -1165,7 +1165,7 @@ public class SolicitudPazYSalvoRestController {
                 return ResponseEntity.ok(new ArrayList<>()); // Retornar lista vacía
             }
             
-            // Crear lista con TODOS los documentos (incluyendo los del estudiante)
+            // Crear lista con todos los documentos (incluyendo los del estudiante)
             List<Map<String, Object>> todosDocumentos = new ArrayList<>();
             for (Documento documento : documentos) {
                 if (documento.getNombre() != null) {

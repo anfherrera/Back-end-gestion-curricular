@@ -117,7 +117,6 @@ public class GestionarSolicitudEcaesCUAdapter implements GestionarSolicitudEcaes
         return objGestionarSolicitudEcaesGateway.buscarPorId(idSolicitud)
             .orElseThrow(() -> new EntidadNoExisteException("Solicitud no encontrada con ID: " + idSolicitud));    
     }
-    //metodo poco eficiente, de ser posible se elimina
     @Override
     public void cambiarEstadoSolicitudEcaes(Integer idSolicitud, EstadosSolicitud nuevoEstado) {
         
@@ -127,7 +126,6 @@ public class GestionarSolicitudEcaesCUAdapter implements GestionarSolicitudEcaes
         
         objGestionarSolicitudEcaesGateway.cambiarEstadoSolicitudEcaes(idSolicitud, nuevo);
     }
-    //Metodo que solo pide Id y el nuevo estado como String
     @Override
     public void cambiarEstadoSolicitud(Integer idSolicitud, String nuevoEstado) {
         // Obtener el estado anterior

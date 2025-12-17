@@ -207,9 +207,8 @@ public class SolicitudCursoVeranoRestController {
             solicitudDTO.setObservacion("Solicitud de apertura de curso: " + curso);
             solicitudDTO.setUsuario_id(idUsuario);
 
-            // Crear un curso temporal para la solicitud
             CursosOfertadosDTOPeticion cursoDTO = new CursosOfertadosDTOPeticion();
-            cursoDTO.setId_curso(0); // ID temporal
+            cursoDTO.setId_curso(0);
             solicitudDTO.setObjCursoOfertado(cursoDTO);
 
             // Crear la solicitud

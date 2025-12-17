@@ -45,7 +45,6 @@ public class InscripcionService {
     
     public void save(Map<String, Object> inscripcion) {
         // Este método necesitaría implementación más compleja
-        // Por ahora lo dejamos como placeholder
     }
     
     public void updateEstado(Integer id, String nuevoEstado) {

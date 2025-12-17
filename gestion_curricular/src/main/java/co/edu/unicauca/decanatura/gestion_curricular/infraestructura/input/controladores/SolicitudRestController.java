@@ -167,7 +167,6 @@ public class SolicitudRestController {
         
         try {
             // Obtener todas las solicitudes usando el caso de uso (más confiable)
-            // Esto usa el mismo método que otros endpoints que funcionan
             List<Solicitud> todasLasSolicitudesDominio = solicitudCU.listarSolicitudes();
             
             if (todasLasSolicitudesDominio == null || todasLasSolicitudesDominio.isEmpty()) {
@@ -353,7 +352,6 @@ public class SolicitudRestController {
             @RequestParam(required = false) Integer idUsuario) {
         
         try {
-            // Obtener el historial usando el mismo método que el endpoint GET
             ResponseEntity<Map<String, Object>> historialResponse = obtenerHistorialCompleto(
                     periodoAcademico, tipoSolicitud, estadoActual, idUsuario);
             

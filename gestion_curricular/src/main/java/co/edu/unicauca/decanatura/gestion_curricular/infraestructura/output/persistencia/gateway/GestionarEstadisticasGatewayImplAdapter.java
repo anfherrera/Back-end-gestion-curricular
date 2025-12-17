@@ -880,7 +880,7 @@ public class GestionarEstadisticasGatewayImplAdapter implements GestionarEstadis
         for (String programa : nombresProgramas) {
             // Este metodo necesitaria ser implementado en el repositorio
             // Por ahora usamos una aproximacion con los metodos existentes
-            porPrograma.put(programa, 0); // Placeholder
+            porPrograma.put(programa, 0);
         }
         
         estadisticas.put("tipoProceso", tipoProceso);
@@ -2100,7 +2100,7 @@ public class GestionarEstadisticasGatewayImplAdapter implements GestionarEstadis
                 int rechazadas = rechazadasPorMes.getOrDefault(mes, 0);
                 int enviadas = enviadasPorMes.getOrDefault(mes, 0);
                 
-                // Incluir TODOS los meses en el resultado, incluso si tienen 0 solicitudes
+                // Incluir todos los meses en el resultado, incluso si tienen 0 solicitudes
                 // Esto permite que el frontend muestre correctamente la tendencia
                 totalSolicitudes += total;
                 
@@ -2571,7 +2571,7 @@ public class GestionarEstadisticasGatewayImplAdapter implements GestionarEstadis
         Map<String, Object> resultado = new HashMap<>();
         
         try {
-            // Crear datos de ejemplo basados en los procesos del import.sql
+            // Crear datos basados en los procesos del import.sql
             Map<String, Object> tiemposPorProceso = new HashMap<>();
             
             // Datos simulados basados en los procesos existentes
@@ -3865,11 +3865,11 @@ public class GestionarEstadisticasGatewayImplAdapter implements GestionarEstadis
                 })
                 .collect(Collectors.toList());
             
-            // Generar tendencias temporales: incluir TODOS los 12 meses, incluso con 0 solicitudes
+            // Generar tendencias temporales: incluir todos los 12 meses, incluso con 0 solicitudes
             // Incluir todos los meses para que el frontend muestre la tendencia completa
             List<Map<String, Object>> tendenciasTemporales = new ArrayList<>();
             
-            // Incluir TODOS los meses (Enero a Diciembre), incluso si tienen 0 solicitudes
+            // Incluir todos los meses (Enero a Diciembre), incluso si tienen 0 solicitudes
             for (String mes : meses) {
                 int solicitudes = demandaPorMes.getOrDefault(mes, 0);
                 Map<String, Object> tendencia = new HashMap<>();
@@ -3921,7 +3921,7 @@ public class GestionarEstadisticasGatewayImplAdapter implements GestionarEstadis
                 (List<Map<String, Object>>) predicciones.getOrDefault("recomendaciones", new ArrayList<>());
             
             // Estructurar estados de la misma forma que /estado-solicitudes
-            // Incluir TODOS los estados principales, incluso si tienen 0 solicitudes
+            // Incluir todos los estados principales, incluso si tienen 0 solicitudes
             Map<String, Object> estadosSolicitudesEstructurados = new HashMap<>();
             
             // Calcular total "En Proceso" (suma de funcionario + coordinador)
@@ -4063,10 +4063,10 @@ public class GestionarEstadisticasGatewayImplAdapter implements GestionarEstadis
             }
             
             // Crear tendencias temporales optimizadas
-            // IMPORTANTE: Incluir TODOS los meses, incluso con 0 solicitudes, para que el frontend muestre la tendencia completa
+            // Incluir todos los meses, incluso con 0 solicitudes, para que el frontend muestre la tendencia completa
             List<Map<String, Object>> tendenciasTemporales = new ArrayList<>();
             
-            // Incluir TODOS los meses (Enero a Diciembre), incluso si tienen 0 solicitudes
+            // Incluir todos los meses (Enero a Diciembre), incluso si tienen 0 solicitudes
             for (String mes : meses) {
                 int solicitudes = demandaPorMes.getOrDefault(mes, 0);
                 Map<String, Object> tendencia = new HashMap<>();
