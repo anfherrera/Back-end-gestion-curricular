@@ -345,7 +345,10 @@ public class GestionarEstadisticasGatewayImplAdapter implements GestionarEstadis
                     if (cumpleFiltros && nombreSolicitud != null) {
                         try {
                             String tipoProceso = extraerTipoProceso(nombreSolicitud);
-                            porTipoProceso.put(tipoProceso, porTipoProceso.getOrDefault(tipoProceso, 0) + 1);
+                            // ✅ FIX: Evitar null keys en Map (causa error al serializar JSON)
+                            if (tipoProceso != null && !tipoProceso.trim().isEmpty()) {
+                                porTipoProceso.put(tipoProceso, porTipoProceso.getOrDefault(tipoProceso, 0) + 1);
+                            }
                         } catch (Exception e) {
                             // Continuar con la siguiente solicitud
                         }
@@ -601,7 +604,10 @@ public class GestionarEstadisticasGatewayImplAdapter implements GestionarEstadis
                         })
                         .mapToInt(solicitud -> 1)
                         .sum();
-                    porPrograma.put(programa, cantidad);
+                    // ✅ FIX: Evitar null keys en Map (causa error al serializar JSON)
+                    if (programa != null && !programa.trim().isEmpty()) {
+                        porPrograma.put(programa, cantidad);
+                    }
                 }
             } catch (Exception e) {
                 log.error("Estadisticas por estado - Error obteniendo programas:  {}", e.getMessage());
@@ -801,7 +807,10 @@ public class GestionarEstadisticasGatewayImplAdapter implements GestionarEstadis
                         })
                         .mapToInt(solicitud -> 1)
                         .sum();
-                    porPrograma.put(programa, cantidad);
+                    // ✅ FIX: Evitar null keys en Map (causa error al serializar JSON)
+                    if (programa != null && !programa.trim().isEmpty()) {
+                        porPrograma.put(programa, cantidad);
+                    }
                 }
             } catch (Exception e) {
                 log.error("Estadisticas por periodo - Error obteniendo programas:  {}", e.getMessage());
@@ -880,7 +889,10 @@ public class GestionarEstadisticasGatewayImplAdapter implements GestionarEstadis
         for (String programa : nombresProgramas) {
             // Este metodo necesitaria ser implementado en el repositorio
             // Por ahora usamos una aproximacion con los metodos existentes
-            porPrograma.put(programa, 0);
+            // ✅ FIX: Evitar null keys en Map (causa error al serializar JSON)
+            if (programa != null && !programa.trim().isEmpty()) {
+                porPrograma.put(programa, 0);
+            }
         }
         
         estadisticas.put("tipoProceso", tipoProceso);
@@ -1032,12 +1044,18 @@ public class GestionarEstadisticasGatewayImplAdapter implements GestionarEstadis
             
             // Por tipo de proceso
             String nombreProceso = obtenerNombreProcesoPorSolicitud(solicitud);
-            porTipoProceso.put(nombreProceso, porTipoProceso.getOrDefault(nombreProceso, 0) + 1);
+            // ✅ FIX: Evitar null keys en Map (causa error al serializar JSON)
+            if (nombreProceso != null) {
+                porTipoProceso.put(nombreProceso, porTipoProceso.getOrDefault(nombreProceso, 0) + 1);
+            }
             
             // Por programa
             if (solicitud.getObjUsuario() != null && solicitud.getObjUsuario().getObjPrograma() != null) {
                 String nombrePrograma = solicitud.getObjUsuario().getObjPrograma().getNombre_programa();
-                porPrograma.put(nombrePrograma, porPrograma.getOrDefault(nombrePrograma, 0) + 1);
+                // ✅ FIX: Evitar null keys en Map (causa error al serializar JSON)
+                if (nombrePrograma != null) {
+                    porPrograma.put(nombrePrograma, porPrograma.getOrDefault(nombrePrograma, 0) + 1);
+                }
             }
         }
         
@@ -1189,7 +1207,10 @@ public class GestionarEstadisticasGatewayImplAdapter implements GestionarEstadis
         Map<String, Integer> porTipoProceso = new HashMap<>();
         for (SolicitudEntity solicitud : solicitudesEstado) {
             String nombreProceso = obtenerNombreProcesoPorSolicitud(solicitud);
-            porTipoProceso.put(nombreProceso, porTipoProceso.getOrDefault(nombreProceso, 0) + 1);
+            // ✅ FIX: Evitar null keys en Map (causa error al serializar JSON)
+            if (nombreProceso != null) {
+                porTipoProceso.put(nombreProceso, porTipoProceso.getOrDefault(nombreProceso, 0) + 1);
+            }
         }
         
         // Calcular por programa
@@ -1197,7 +1218,10 @@ public class GestionarEstadisticasGatewayImplAdapter implements GestionarEstadis
         for (SolicitudEntity solicitud : solicitudesEstado) {
             if (solicitud.getObjUsuario() != null && solicitud.getObjUsuario().getObjPrograma() != null) {
                 String nombrePrograma = solicitud.getObjUsuario().getObjPrograma().getNombre_programa();
-                porPrograma.put(nombrePrograma, porPrograma.getOrDefault(nombrePrograma, 0) + 1);
+                // ✅ FIX: Evitar null keys en Map (causa error al serializar JSON)
+                if (nombrePrograma != null) {
+                    porPrograma.put(nombrePrograma, porPrograma.getOrDefault(nombrePrograma, 0) + 1);
+                }
             }
         }
         

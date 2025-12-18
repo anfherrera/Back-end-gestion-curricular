@@ -24,7 +24,7 @@ public interface EstadoSolicitudRepositoryInt extends JpaRepository<EstadoSolici
     @Query("SELECT e FROM EstadoSolicitudEntity e WHERE e.objSolicitud.id_solicitud = :idSolicitud")
     Optional<EstadoSolicitudEntity> buscarPorSolicitud(@Param("idSolicitud") Integer idSolicitud);
 
-    // Consulta nativa: contar cuántos estados están en un estado específico
-    @Query(value = "SELECT COUNT(*) FROM estados WHERE estado_actual = ?1", nativeQuery = true)
-    Integer contarPorEstado(String estado);
+    // Consulta JPQL: contar cuántos estados están en un estado específico (más portable que consulta nativa)
+    @Query("SELECT COUNT(e) FROM EstadoSolicitudEntity e WHERE e.estado_actual = :estado")
+    Integer contarPorEstado(@Param("estado") String estado);
 }

@@ -12,6 +12,15 @@ import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.SolicitudEc
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Enums.PeriodoAcademicoEnum;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.DTORespuesta.SolicitudDTORespuesta;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.mappers.*;
+import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.repositorios.SolicitudRepositoryInt;
+import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.entidades.SolicitudEntity;
+import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.entidades.SolicitudCursoVeranoPreinscripcionEntity;
+import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.entidades.SolicitudCursoVeranoInscripcionEntity;
+import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.entidades.SolicitudPazYSalvoEntity;
+import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.entidades.SolicitudReingresoEntity;
+import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.entidades.SolicitudHomologacionEntity;
+import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.entidades.SolicitudEcaesEntity;
+import org.modelmapper.ModelMapper;
 import lombok.extern.slf4j.Slf4j;
 
 import jakarta.validation.constraints.Min;
@@ -42,6 +51,8 @@ public class SolicitudRestController {
 
     private final GestionarSolicitudCUIntPort solicitudCU;
     private final SolicitudMapperDominio mapper;
+    private final SolicitudRepositoryInt solicitudRepository;
+    private final ModelMapper modelMapper;
 //    private final SolicitudPazYSalvoMapperDominio solicitudPazYSalvoMapper;
 //    private final SolicitudCursoDeVeranoPreinscripcionMapperDominio solicitudCursoVeranoPreinscripcionMapper;
 //    private final SolicitudCursoDeVeranoInscripcionMapperDominio solicitudCursoDeVeranoInscripcionMapper;
@@ -151,6 +162,8 @@ public class SolicitudRestController {
      * Obtiene el historial completo de solicitudes con filtros opcionales
      * GET /api/solicitudes/historial
      * 
+     * ✅ OPTIMIZADO: Ahora filtra en SQL en lugar de cargar todo en memoria
+     * 
      * @param periodoAcademico Período académico (opcional, formato: "YYYY-P")
      * @param tipoSolicitud Tipo de solicitud (opcional)
      * @param estadoActual Estado actual de la solicitud (opcional)
@@ -166,110 +179,54 @@ public class SolicitudRestController {
             @RequestParam(required = false) Integer idUsuario) {
         
         try {
-            // Obtener todas las solicitudes usando el caso de uso (más confiable)
-            List<Solicitud> todasLasSolicitudesDominio = solicitudCU.listarSolicitudes();
+            // ✅ MEJORA: Usar query optimizada que filtra en SQL
+            List<SolicitudEntity> solicitudesEntityFiltradas = solicitudRepository.buscarHistorialConFiltros(
+                periodoAcademico != null && !periodoAcademico.trim().isEmpty() ? periodoAcademico.trim() : null,
+                idUsuario,
+                estadoActual != null && !estadoActual.trim().isEmpty() ? estadoActual.trim() : null
+            );
             
-            if (todasLasSolicitudesDominio == null || todasLasSolicitudesDominio.isEmpty()) {
+            if (solicitudesEntityFiltradas == null || solicitudesEntityFiltradas.isEmpty()) {
+                // Obtener totales del sistema para estadísticas
+                Long totalSistema = solicitudRepository.contarHistorialConFiltros(null, null, null);
+                Long totalProcesadas = solicitudRepository.contarSolicitudesProcesadas(null, null);
+                
                 Map<String, Object> respuestaVacia = new HashMap<>();
                 respuestaVacia.put("solicitudes", new ArrayList<>());
                 respuestaVacia.put("total", 0);
-                respuestaVacia.put("total_solicitudes_sistema", 0);
-                respuestaVacia.put("total_solicitudes_procesadas", 0);
-                respuestaVacia.put("total_solicitudes_no_procesadas", 0);
-                respuestaVacia.put("nota", "No se encontraron solicitudes en la base de datos. Verifica que los datos se hayan cargado correctamente.");
+                respuestaVacia.put("total_solicitudes_sistema", totalSistema != null ? totalSistema.intValue() : 0);
+                respuestaVacia.put("total_solicitudes_procesadas", totalProcesadas != null ? totalProcesadas.intValue() : 0);
+                respuestaVacia.put("total_solicitudes_no_procesadas", 
+                    (totalSistema != null && totalProcesadas != null) ? (totalSistema.intValue() - totalProcesadas.intValue()) : 0);
                 return ResponseEntity.ok(respuestaVacia);
             }
             
-            // Convertir a entidades para aplicar filtros (o trabajar directamente con los modelos de dominio)
-            // Por ahora, vamos a convertir los modelos de dominio a DTOs directamente
+            // Convertir entidades a modelos de dominio
+            List<Solicitud> todasLasSolicitudesDominio = solicitudesEntityFiltradas.stream()
+                .map(this::mapearEntityADominio)
+                .filter(s -> s != null)
+                .collect(Collectors.toList());
+            
+            // Convertir a DTOs y aplicar filtro de tipoSolicitud (que no se puede hacer fácilmente en SQL)
             List<SolicitudDTORespuesta> todasLasSolicitudesDTO = todasLasSolicitudesDominio.stream()
                     .map(solicitud -> {
                         SolicitudDTORespuesta dto = mapper.mappearDeSolicitudARespuesta(solicitud);
-                        
-                        // Determinar categoría y tipo de solicitud basándose en el tipo de objeto
-                        if (solicitud instanceof SolicitudCursoVeranoPreinscripcion) {
-                            dto.setCategoria("Cursos de Verano");
-                            dto.setTipo_solicitud("Preinscripcion");
-                        } else if (solicitud instanceof SolicitudCursoVeranoIncripcion) {
-                            dto.setCategoria("Cursos de Verano");
-                            dto.setTipo_solicitud("Inscripcion");
-                        } else if (solicitud instanceof SolicitudCursoVerano) {
-                            // Solicitud de curso nuevo
-                            dto.setCategoria("Cursos de Verano");
-                            dto.setTipo_solicitud("Curso Nuevo");
-                        } else if (solicitud instanceof SolicitudPazYSalvo) {
-                            dto.setCategoria("Paz y Salvo");
-                            dto.setTipo_solicitud("Paz y Salvo");
-                        } else if (solicitud instanceof SolicitudReingreso) {
-                            dto.setCategoria("Reingreso");
-                            dto.setTipo_solicitud("Reingreso");
-                        } else if (solicitud instanceof SolicitudHomologacion) {
-                            dto.setCategoria("Homologación");
-                            dto.setTipo_solicitud("Homologacion");
-                        } else if (solicitud instanceof SolicitudEcaes) {
-                            dto.setCategoria("ECAES");
-                            dto.setTipo_solicitud("ECAES");
-                        } else {
-                            // Si tiene objCursoOfertadoVerano, es un curso de verano
-                            if (solicitud.getObjCursoOfertadoVerano() != null) {
-                                dto.setCategoria("Cursos de Verano");
-                                dto.setTipo_solicitud("Curso Verano");
-                            } else {
-                                // Por defecto, determinar por el nombre
-                                String nombre = dto.getNombre_solicitud() != null ? dto.getNombre_solicitud().toLowerCase() : "";
-                                if (nombre.contains("curso") && (nombre.contains("verano") || nombre.contains("intersemestral"))) {
-                                    dto.setCategoria("Cursos de Verano");
-                                    dto.setTipo_solicitud("Curso Verano");
-                                } else if (nombre.contains("paz") && nombre.contains("salvo")) {
-                                    dto.setCategoria("Paz y Salvo");
-                                    dto.setTipo_solicitud("Paz y Salvo");
-                                } else if (nombre.contains("reingreso")) {
-                                    dto.setCategoria("Reingreso");
-                                    dto.setTipo_solicitud("Reingreso");
-                                } else if (nombre.contains("homologacion") || nombre.contains("homologación")) {
-                                    dto.setCategoria("Homologación");
-                                    dto.setTipo_solicitud("Homologacion");
-                                } else if (nombre.contains("ecaes")) {
-                                    dto.setCategoria("ECAES");
-                                    dto.setTipo_solicitud("ECAES");
-                                } else {
-                                    dto.setCategoria("Otro");
-                                    dto.setTipo_solicitud("Otro");
-                                }
-                            }
-                        }
-                        
+                        determinarCategoriaYTipo(solicitud, dto);
                         return dto;
                     })
                     .collect(Collectors.toList());
             
-            // Contar solicitudes con estados (para estadísticas)
-            long totalConEstados = todasLasSolicitudesDTO.stream()
-                    .filter(s -> s.getEstadosSolicitud() != null && !s.getEstadosSolicitud().isEmpty())
-                    .count();
-            
-            // Aplicar filtros adicionales a los DTOs
+            // Aplicar filtro por tipoSolicitud (este filtro se hace en memoria porque requiere análisis del nombre)
             List<SolicitudDTORespuesta> solicitudesFiltradas = todasLasSolicitudesDTO.stream()
                     .filter(s -> {
-                        // Filtro por período académico
-                        if (periodoAcademico != null && !periodoAcademico.trim().isEmpty()) {
-                            if (s.getPeriodo_academico() == null || !s.getPeriodo_academico().equals(periodoAcademico.trim())) {
-                                return false;
-                            }
-                        }
-                        
-                        // Filtro por tipo de solicitud (más flexible)
                         if (tipoSolicitud != null && !tipoSolicitud.trim().isEmpty()) {
                             String nombreSolicitud = s.getNombre_solicitud() != null ? s.getNombre_solicitud().toLowerCase() : "";
                             String tipoFiltro = tipoSolicitud.trim().toLowerCase();
-                            
-                            // Normalizar nombres comunes
                             String tipoNormalizado = tipoFiltro
                                     .replace("académico", "")
                                     .replace("academico", "")
                                     .trim();
                             
-                            // Mapear nombres del frontend a nombres en BD
                             boolean coincide = false;
                             if (tipoNormalizado.contains("paz") && tipoNormalizado.contains("salvo")) {
                                 coincide = nombreSolicitud.contains("paz") && nombreSolicitud.contains("salvo");
@@ -282,48 +239,26 @@ public class SolicitudRestController {
                             } else if (tipoNormalizado.contains("curso") && (tipoNormalizado.contains("verano") || tipoNormalizado.contains("intersemestral"))) {
                                 coincide = nombreSolicitud.contains("curso") && (nombreSolicitud.contains("verano") || nombreSolicitud.contains("intersemestral"));
                             } else {
-                                // Búsqueda genérica
                                 coincide = nombreSolicitud.contains(tipoNormalizado);
                             }
-                            
-                            if (!coincide) {
-                                return false;
-                            }
+                            return coincide;
                         }
-                        
-                        // Filtro por estado actual
-                        if (estadoActual != null && !estadoActual.trim().isEmpty()) {
-                            if (s.getEstadosSolicitud() == null || s.getEstadosSolicitud().isEmpty()) {
-                                return false;
-                            }
-                            // El último estado es el último elemento del array (ya ordenado por fecha)
-                            String ultimoEstado = s.getEstadosSolicitud().stream()
-                                    .max(Comparator.comparing(e -> e.getFecha_registro_estado()))
-                                    .map(e -> e.getEstado_actual())
-                                    .orElse("");
-                            if (!ultimoEstado.equalsIgnoreCase(estadoActual.trim())) {
-                                return false;
-                            }
-                        }
-                        
-                        // Filtro por usuario
-                        if (idUsuario != null) {
-                            if (s.getObjUsuario() == null || !s.getObjUsuario().getId_usuario().equals(idUsuario)) {
-                                return false;
-                            }
-                        }
-                        
                         return true;
                     })
                     .collect(Collectors.toList());
+            
+            // Obtener totales usando queries optimizadas
+            Long totalSistema = solicitudRepository.contarHistorialConFiltros(null, null, null);
+            Long totalProcesadas = solicitudRepository.contarSolicitudesProcesadas(null, null);
             
             // Construir respuesta
             Map<String, Object> respuesta = new HashMap<>();
             respuesta.put("solicitudes", solicitudesFiltradas);
             respuesta.put("total", solicitudesFiltradas.size());
-            respuesta.put("total_solicitudes_sistema", todasLasSolicitudesDTO.size());
-            respuesta.put("total_solicitudes_procesadas", totalConEstados);
-            respuesta.put("total_solicitudes_no_procesadas", todasLasSolicitudesDTO.size() - totalConEstados);
+            respuesta.put("total_solicitudes_sistema", totalSistema != null ? totalSistema.intValue() : 0);
+            respuesta.put("total_solicitudes_procesadas", totalProcesadas != null ? totalProcesadas.intValue() : 0);
+            respuesta.put("total_solicitudes_no_procesadas", 
+                (totalSistema != null && totalProcesadas != null) ? (totalSistema.intValue() - totalProcesadas.intValue()) : 0);
             
             return ResponseEntity.ok(respuesta);
             
@@ -624,6 +559,82 @@ public class SolicitudRestController {
             // Fallback a formato simple
             SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
             return sdf.format(fecha);
+        }
+    }
+
+    /**
+     * Helper method: Mapea una entidad a modelo de dominio
+     * Usa ModelMapper igual que en el gateway para mantener consistencia
+     */
+    private Solicitud mapearEntityADominio(SolicitudEntity entity) {
+        if (entity instanceof SolicitudCursoVeranoPreinscripcionEntity) {
+            return modelMapper.map(entity, SolicitudCursoVeranoPreinscripcion.class);
+        } else if (entity instanceof SolicitudEcaesEntity) {
+            return modelMapper.map(entity, SolicitudEcaes.class);
+        } else if (entity instanceof SolicitudReingresoEntity) {
+            return modelMapper.map(entity, SolicitudReingreso.class);
+        } else if (entity instanceof SolicitudHomologacionEntity) {
+            return modelMapper.map(entity, SolicitudHomologacion.class);
+        } else if (entity instanceof SolicitudPazYSalvoEntity) {
+            return modelMapper.map(entity, SolicitudPazYSalvo.class);
+        } else if (entity instanceof SolicitudCursoVeranoInscripcionEntity) {
+            return modelMapper.map(entity, SolicitudCursoVeranoIncripcion.class);
+        }
+        return null;
+    }
+
+    /**
+     * Helper method: Determina la categoría y tipo de solicitud basándose en la instancia
+     * Extraído del código original para reutilización
+     */
+    private void determinarCategoriaYTipo(Solicitud solicitud, SolicitudDTORespuesta dto) {
+        if (solicitud instanceof SolicitudCursoVeranoPreinscripcion) {
+            dto.setCategoria("Cursos de Verano");
+            dto.setTipo_solicitud("Preinscripcion");
+        } else if (solicitud instanceof SolicitudCursoVeranoIncripcion) {
+            dto.setCategoria("Cursos de Verano");
+            dto.setTipo_solicitud("Inscripcion");
+        } else if (solicitud instanceof SolicitudCursoVerano) {
+            dto.setCategoria("Cursos de Verano");
+            dto.setTipo_solicitud("Curso Nuevo");
+        } else if (solicitud instanceof SolicitudPazYSalvo) {
+            dto.setCategoria("Paz y Salvo");
+            dto.setTipo_solicitud("Paz y Salvo");
+        } else if (solicitud instanceof SolicitudReingreso) {
+            dto.setCategoria("Reingreso");
+            dto.setTipo_solicitud("Reingreso");
+        } else if (solicitud instanceof SolicitudHomologacion) {
+            dto.setCategoria("Homologación");
+            dto.setTipo_solicitud("Homologacion");
+        } else if (solicitud instanceof SolicitudEcaes) {
+            dto.setCategoria("ECAES");
+            dto.setTipo_solicitud("ECAES");
+        } else {
+            if (solicitud.getObjCursoOfertadoVerano() != null) {
+                dto.setCategoria("Cursos de Verano");
+                dto.setTipo_solicitud("Curso Verano");
+            } else {
+                String nombre = dto.getNombre_solicitud() != null ? dto.getNombre_solicitud().toLowerCase() : "";
+                if (nombre.contains("curso") && (nombre.contains("verano") || nombre.contains("intersemestral"))) {
+                    dto.setCategoria("Cursos de Verano");
+                    dto.setTipo_solicitud("Curso Verano");
+                } else if (nombre.contains("paz") && nombre.contains("salvo")) {
+                    dto.setCategoria("Paz y Salvo");
+                    dto.setTipo_solicitud("Paz y Salvo");
+                } else if (nombre.contains("reingreso")) {
+                    dto.setCategoria("Reingreso");
+                    dto.setTipo_solicitud("Reingreso");
+                } else if (nombre.contains("homologacion") || nombre.contains("homologación")) {
+                    dto.setCategoria("Homologación");
+                    dto.setTipo_solicitud("Homologacion");
+                } else if (nombre.contains("ecaes")) {
+                    dto.setCategoria("ECAES");
+                    dto.setTipo_solicitud("ECAES");
+                } else {
+                    dto.setCategoria("Otro");
+                    dto.setTipo_solicitud("Otro");
+                }
+            }
         }
     }
 

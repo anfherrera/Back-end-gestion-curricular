@@ -351,5 +351,80 @@ public interface SolicitudRepositoryInt extends JpaRepository<SolicitudEntity, I
     """)
     List<SolicitudEntity> findAllWithJoins();
 
+    /**
+     * Busca solicitudes con historial completo aplicando filtros opcionales en SQL
+     * Esta consulta optimizada filtra en la base de datos en lugar de cargar todo en memoria
+     * 
+     * @param periodoAcademico Período académico opcional (formato: "YYYY-P")
+     * @param idUsuario ID del usuario opcional
+     * @param estadoActual Estado actual de la solicitud opcional
+     * @return Lista de solicitudes que cumplen los filtros
+     */
+    @Query("""
+        SELECT DISTINCT s FROM SolicitudEntity s
+        LEFT JOIN FETCH s.objUsuario u
+        LEFT JOIN FETCH s.estadosSolicitud es
+        LEFT JOIN FETCH s.objCursoOfertadoVerano c
+        LEFT JOIN FETCH c.objMateria m
+        WHERE (:periodoAcademico IS NULL OR s.periodo_academico = :periodoAcademico)
+        AND (:idUsuario IS NULL OR u.id_usuario = :idUsuario)
+        AND (:estadoActual IS NULL OR EXISTS (
+            SELECT 1 FROM EstadoSolicitudEntity e
+            WHERE e.objSolicitud.id_solicitud = s.id_solicitud
+            AND e.estado_actual = :estadoActual
+            AND e.fecha_registro_estado = (
+                SELECT MAX(e2.fecha_registro_estado)
+                FROM EstadoSolicitudEntity e2
+                WHERE e2.objSolicitud.id_solicitud = s.id_solicitud
+            )
+        ))
+        ORDER BY s.fecha_registro_solicitud DESC
+    """)
+    List<SolicitudEntity> buscarHistorialConFiltros(
+        @Param("periodoAcademico") String periodoAcademico,
+        @Param("idUsuario") Integer idUsuario,
+        @Param("estadoActual") String estadoActual
+    );
+
+    /**
+     * Cuenta el total de solicitudes que cumplen los filtros (sin cargar todas en memoria)
+     */
+    @Query("""
+        SELECT COUNT(DISTINCT s) FROM SolicitudEntity s
+        LEFT JOIN s.objUsuario u
+        WHERE (:periodoAcademico IS NULL OR s.periodo_academico = :periodoAcademico)
+        AND (:idUsuario IS NULL OR u.id_usuario = :idUsuario)
+        AND (:estadoActual IS NULL OR EXISTS (
+            SELECT 1 FROM EstadoSolicitudEntity e
+            WHERE e.objSolicitud.id_solicitud = s.id_solicitud
+            AND e.estado_actual = :estadoActual
+            AND e.fecha_registro_estado = (
+                SELECT MAX(e2.fecha_registro_estado)
+                FROM EstadoSolicitudEntity e2
+                WHERE e2.objSolicitud.id_solicitud = s.id_solicitud
+            )
+        ))
+    """)
+    Long contarHistorialConFiltros(
+        @Param("periodoAcademico") String periodoAcademico,
+        @Param("idUsuario") Integer idUsuario,
+        @Param("estadoActual") String estadoActual
+    );
+
+    /**
+     * Cuenta solicitudes procesadas (que tienen al menos un estado)
+     */
+    @Query("""
+        SELECT COUNT(DISTINCT s) FROM SolicitudEntity s
+        LEFT JOIN s.estadosSolicitud es
+        WHERE es IS NOT NULL
+        AND (:periodoAcademico IS NULL OR s.periodo_academico = :periodoAcademico)
+        AND (:idUsuario IS NULL OR s.objUsuario.id_usuario = :idUsuario)
+    """)
+    Long contarSolicitudesProcesadas(
+        @Param("periodoAcademico") String periodoAcademico,
+        @Param("idUsuario") Integer idUsuario
+    );
+
 
 }

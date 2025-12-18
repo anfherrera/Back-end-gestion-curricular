@@ -212,7 +212,9 @@ public class GestionarSolicitudGatewayImplAdapter implements GestionarSolicitudG
     @Override
     @Transactional(readOnly = true)
     public List<Solicitud> listarSolicitudes() {
-        List<SolicitudEntity> solicitudEntities = solicitudRepository.findAll();
+        // ✅ MEJORA: Usar findAllWithJoins() para evitar N+1 queries
+        // Esto carga todas las relaciones necesarias en una sola query usando JOIN FETCH
+        List<SolicitudEntity> solicitudEntities = solicitudRepository.findAllWithJoins();
         List<Solicitud> solicitudes = null;
         if(solicitudEntities!=null){
             solicitudes = solicitudEntities.stream().map(solicitudEntity -> {
