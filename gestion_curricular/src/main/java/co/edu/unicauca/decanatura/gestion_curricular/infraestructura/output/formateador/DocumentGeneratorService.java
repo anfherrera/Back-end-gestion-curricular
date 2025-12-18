@@ -507,6 +507,8 @@ public class DocumentGeneratorService {
             // Corregir tildes en "Ingeniería" si falta
             programa = programa.replace("Ingenieria", "Ingeniería");
             programa = programa.replace("ingenieria", "Ingeniería");
+            // Verificar si es Telemática (sin importar mayúsculas/minúsculas)
+            boolean esTelematica = programa.toLowerCase().contains("telematica") || programa.toLowerCase().contains("telemática");
             // Convertir a mayúsculas para que coincida con el formato del documento original
             // Ej: "Ingeniería de Sistemas" -> "INGENIERO DE SISTEMAS"
             String tituloProfesional = programa.toUpperCase();
@@ -517,6 +519,9 @@ public class DocumentGeneratorService {
                 tituloProfesional = "INGENIERO ELECTRÓNICO Y TELECOMUNICACIONES";
             } else if (tituloProfesional.contains("INGENIERÍA AUTOMÁTICA")) {
                 tituloProfesional = "INGENIERO AUTOMÁTICO INDUSTRIAL";
+            } else if (esTelematica) {
+                // Para Telemática, usar el título específico
+                tituloProfesional = "TECNOLOGIA EN TELEMATICA";
             } else if (tituloProfesional.contains("INGENIERÍA")) {
                 // Para otros casos, reemplazar "INGENIERÍA" con "INGENIERO"
                 tituloProfesional = tituloProfesional.replace("INGENIERÍA", "INGENIERO");
@@ -524,9 +529,13 @@ public class DocumentGeneratorService {
             replacements.put("TITULO_PROFESIONAL", tituloProfesional);
             
             // Texto del trabajo de grado (formato completo)
-            String tituloTrabajo = datosSolicitud.getOrDefault("tituloTrabajoGrado", "Trabajo de grado").toString();
-            String directorTrabajo = datosSolicitud.getOrDefault("directorTrabajoGrado", "Director asignado").toString();
-            String textoCompletoTrabajo = String.format("El trabajo de grado titulado \"%s\", dirigido por %s, ha sido aprobado.", tituloTrabajo, directorTrabajo);
+            // Para Telemática, NO incluir el texto del trabajo de grado
+            String textoCompletoTrabajo = "";
+            if (!esTelematica) {
+                String tituloTrabajo = datosSolicitud.getOrDefault("tituloTrabajoGrado", "Trabajo de grado").toString();
+                String directorTrabajo = datosSolicitud.getOrDefault("directorTrabajoGrado", "Director asignado").toString();
+                textoCompletoTrabajo = String.format("El trabajo de grado titulado \"%s\", dirigido por %s, ha sido aprobado.", tituloTrabajo, directorTrabajo);
+            }
             replacements.put("TEXTO_TRABAJO_GRADO", textoCompletoTrabajo);
             
             // Fecha actual para paz y salvo
