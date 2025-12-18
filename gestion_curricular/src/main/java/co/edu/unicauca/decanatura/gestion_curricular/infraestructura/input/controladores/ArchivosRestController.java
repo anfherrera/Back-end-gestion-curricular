@@ -80,7 +80,6 @@ public class ArchivosRestController {
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
             }
             
-            // 4. Guardar archivo con manejo de errores mejorado
             String nombreArchivo;
             try {
                 // Generar nombre usando el nombre original del archivo + nombre del estudiante

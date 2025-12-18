@@ -47,7 +47,6 @@ public interface UsuarioRepositoryInt extends JpaRepository<UsuarioEntity, Integ
     List<UsuarioEntity> buscarPorPrograma(@Param("idPrograma") Integer idPrograma);
 
     
-    // Traer todos los usuarios con sus solicitudes (para evitar lazy loading)
     @Query("SELECT u FROM UsuarioEntity u")
     List<UsuarioEntity> listarConSolicitudes();
 

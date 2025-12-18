@@ -11,14 +11,12 @@ import java.util.List;
 
 public interface NotificacionRepositoryInt extends JpaRepository<NotificacionEntity, Integer> {
 
-    // Buscar notificaciones por usuario (optimizado: solo JOIN FETCH de Usuario, las demás relaciones se cargan bajo demanda)
     @Query("SELECT DISTINCT n FROM NotificacionEntity n " +
            "LEFT JOIN FETCH n.objUsuario " +
            "WHERE n.objUsuario.id_usuario = :idUsuario " +
            "ORDER BY n.fechaCreacion DESC")
     List<NotificacionEntity> buscarPorUsuario(@Param("idUsuario") Integer idUsuario);
 
-    // Buscar notificaciones no leídas por usuario (optimizado)
     @Query("SELECT DISTINCT n FROM NotificacionEntity n " +
            "LEFT JOIN FETCH n.objUsuario " +
            "WHERE n.objUsuario.id_usuario = :idUsuario AND n.leida = false " +

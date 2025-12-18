@@ -204,8 +204,7 @@ public class EstadisticasRestController {
     }
 
     /**
-     * Endpoint mejorado para obtener estadísticas con filtros dinámicos.
-     * Maneja parámetros opcionales y devuelve la estructura JSON solicitada.
+     * Obtiene estadísticas con filtros dinámicos.
      * 
      * @param nombreProceso Tipo de proceso (opcional)
      * @param idPrograma ID del programa (opcional)
@@ -1264,7 +1263,6 @@ public class EstadisticasRestController {
             title.setSpacingAfter(20);
             document.add(title);
             
-            // Fecha de generación con formato mejorado
             SimpleDateFormat dateFormat = new SimpleDateFormat("EEE MMM dd HH:mm:ss zzz yyyy");
             com.itextpdf.text.Font dateFont = new com.itextpdf.text.Font(com.itextpdf.text.Font.FontFamily.HELVETICA, 10);
             String fechaTexto = "Fecha de generación: " + dateFormat.format(new Date());
@@ -1355,7 +1353,6 @@ public class EstadisticasRestController {
             title.setSpacingAfter(20);
             document.add(title);
             
-            // Fecha de generación con formato mejorado (en español)
             java.text.SimpleDateFormat dateFormat = new java.text.SimpleDateFormat("dd 'de' MMMM 'de' yyyy 'a las' HH:mm:ss", new java.util.Locale("es", "CO"));
             com.itextpdf.text.Font dateFont = new com.itextpdf.text.Font(com.itextpdf.text.Font.FontFamily.HELVETICA, 10);
             String fechaTexto = "Fecha de generación: " + dateFormat.format(new Date());
@@ -1523,7 +1520,6 @@ public class EstadisticasRestController {
 
     /**
      * Obtiene estadísticas resumidas por tipo de proceso para el dashboard.
-     * Formato optimizado para gráficos y KPIs.
      * 
      * @param periodoAcademico Período académico opcional (formato: "YYYY-P", ej: "2025-2")
      * @param idPrograma ID del programa académico opcional para filtrar
@@ -1742,7 +1738,7 @@ public class EstadisticasRestController {
     }
 
     /**
-     * Endpoint optimizado para obtener solo las tendencias temporales de cursos de verano.
+     * Obtiene las tendencias temporales de cursos de verano.
      * 
      * @param periodoAcademico Período académico opcional (formato: "YYYY-P", ej: "2025-2")
      * @param idPrograma ID del programa académico opcional para filtrar

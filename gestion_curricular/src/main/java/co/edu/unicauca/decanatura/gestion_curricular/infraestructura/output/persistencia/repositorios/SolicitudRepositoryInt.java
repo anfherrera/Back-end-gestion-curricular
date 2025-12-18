@@ -352,8 +352,7 @@ public interface SolicitudRepositoryInt extends JpaRepository<SolicitudEntity, I
     List<SolicitudEntity> findAllWithJoins();
 
     /**
-     * Busca solicitudes con historial completo aplicando filtros opcionales en SQL
-     * Esta consulta optimizada filtra en la base de datos en lugar de cargar todo en memoria
+     * Busca solicitudes con historial completo aplicando filtros opcionales
      * 
      * @param periodoAcademico Período académico opcional (formato: "YYYY-P")
      * @param idUsuario ID del usuario opcional
@@ -387,7 +386,7 @@ public interface SolicitudRepositoryInt extends JpaRepository<SolicitudEntity, I
     );
 
     /**
-     * Cuenta el total de solicitudes que cumplen los filtros (sin cargar todas en memoria)
+     * Cuenta el total de solicitudes que cumplen los filtros
      */
     @Query("""
         SELECT COUNT(DISTINCT s) FROM SolicitudEntity s

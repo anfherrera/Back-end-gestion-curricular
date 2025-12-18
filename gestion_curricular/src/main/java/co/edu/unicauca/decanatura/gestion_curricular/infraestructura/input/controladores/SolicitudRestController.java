@@ -162,8 +162,6 @@ public class SolicitudRestController {
      * Obtiene el historial completo de solicitudes con filtros opcionales
      * GET /api/solicitudes/historial
      * 
-     * ✅ OPTIMIZADO: Ahora filtra en SQL en lugar de cargar todo en memoria
-     * 
      * @param periodoAcademico Período académico (opcional, formato: "YYYY-P")
      * @param tipoSolicitud Tipo de solicitud (opcional)
      * @param estadoActual Estado actual de la solicitud (opcional)
@@ -179,7 +177,6 @@ public class SolicitudRestController {
             @RequestParam(required = false) Integer idUsuario) {
         
         try {
-            // ✅ MEJORA: Usar query optimizada que filtra en SQL
             List<SolicitudEntity> solicitudesEntityFiltradas = solicitudRepository.buscarHistorialConFiltros(
                 periodoAcademico != null && !periodoAcademico.trim().isEmpty() ? periodoAcademico.trim() : null,
                 idUsuario,
@@ -562,10 +559,6 @@ public class SolicitudRestController {
         }
     }
 
-    /**
-     * Helper method: Mapea una entidad a modelo de dominio
-     * Usa ModelMapper igual que en el gateway para mantener consistencia
-     */
     private Solicitud mapearEntityADominio(SolicitudEntity entity) {
         if (entity instanceof SolicitudCursoVeranoPreinscripcionEntity) {
             return modelMapper.map(entity, SolicitudCursoVeranoPreinscripcion.class);
@@ -583,10 +576,6 @@ public class SolicitudRestController {
         return null;
     }
 
-    /**
-     * Helper method: Determina la categoría y tipo de solicitud basándose en la instancia
-     * Extraído del código original para reutilización
-     */
     private void determinarCategoriaYTipo(Solicitud solicitud, SolicitudDTORespuesta dto) {
         if (solicitud instanceof SolicitudCursoVeranoPreinscripcion) {
             dto.setCategoria("Cursos de Verano");

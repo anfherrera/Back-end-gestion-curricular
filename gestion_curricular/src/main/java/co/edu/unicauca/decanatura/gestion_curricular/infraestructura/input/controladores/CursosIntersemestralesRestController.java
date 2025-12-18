@@ -2454,7 +2454,6 @@ public class CursosIntersemestralesRestController {
             // 4. Calcular progreso de gestion
             int totalCursos = todosLosCursos.size();
             
-            // Validar valores para evitar datos inconsistentes
             int cursosGestionadosValido = Math.max(0, cursosGestionados); // No permitir negativos
             int totalCursosValido = Math.max(0, totalCursos); // No permitir negativos
             

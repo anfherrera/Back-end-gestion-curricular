@@ -100,7 +100,6 @@ public class GestionarNotificacionGatewayImplAdapter implements GestionarNotific
     public List<Notificacion> buscarPorUsuario(Integer idUsuario) {
         List<NotificacionEntity> entities = notificacionRepository.buscarPorUsuario(idUsuario);
         
-        // Mapeo optimizado: evitar accesos a relaciones lazy innecesarias
         List<Notificacion> result = entities.stream()
                 .map(entity -> {
                     Notificacion notificacion = new Notificacion();
@@ -120,12 +119,10 @@ public class GestionarNotificacionGatewayImplAdapter implements GestionarNotific
                         notificacion.setObjUsuario(mapper.map(entity.getObjUsuario(), co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Usuario.class));
                     }
                     
-                    // Mapear solicitud solo si está cargada (evitar lazy loading)
                     if (entity.getObjSolicitud() != null && Hibernate.isInitialized(entity.getObjSolicitud())) {
                         notificacion.setObjSolicitud(mapper.map(entity.getObjSolicitud(), co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Solicitud.class));
                     }
                     
-                    // Mapear curso solo si está cargado (evitar lazy loading)
                     if (entity.getObjCurso() != null && Hibernate.isInitialized(entity.getObjCurso())) {
                         notificacion.setObjCurso(mapper.map(entity.getObjCurso(), co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.CursoOfertadoVerano.class));
                     }
@@ -141,7 +138,6 @@ public class GestionarNotificacionGatewayImplAdapter implements GestionarNotific
     public List<Notificacion> buscarNoLeidasPorUsuario(Integer idUsuario) {
         List<NotificacionEntity> entities = notificacionRepository.buscarNoLeidasPorUsuario(idUsuario);
         
-        // Mapeo optimizado: evitar accesos a relaciones lazy innecesarias
         List<Notificacion> result = entities.stream()
                 .map(entity -> {
                     Notificacion notificacion = new Notificacion();
@@ -161,12 +157,10 @@ public class GestionarNotificacionGatewayImplAdapter implements GestionarNotific
                         notificacion.setObjUsuario(mapper.map(entity.getObjUsuario(), co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Usuario.class));
                     }
                     
-                    // Mapear solicitud solo si está cargada (evitar lazy loading)
                     if (entity.getObjSolicitud() != null && Hibernate.isInitialized(entity.getObjSolicitud())) {
                         notificacion.setObjSolicitud(mapper.map(entity.getObjSolicitud(), co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Solicitud.class));
                     }
                     
-                    // Mapear curso solo si está cargado (evitar lazy loading)
                     if (entity.getObjCurso() != null && Hibernate.isInitialized(entity.getObjCurso())) {
                         notificacion.setObjCurso(mapper.map(entity.getObjCurso(), co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.CursoOfertadoVerano.class));
                     }

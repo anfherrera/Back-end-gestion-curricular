@@ -191,7 +191,6 @@ public class GestionarEstadisticasGatewayImplAdapter implements GestionarEstadis
             // Si hay filtros, algunos conteos pueden no funcionar correctamente
             // En ese caso, usar contarEstado() para estadisticas globales sin filtros
             
-            // Inicializar variables con valores por defecto para evitar null
             Integer totalSolicitudes = 0;
             Integer totalAprobadas = 0;
             Integer totalRechazadas = 0;
@@ -218,7 +217,6 @@ public class GestionarEstadisticasGatewayImplAdapter implements GestionarEstadis
                     }
                     totalEnviadas = (enviadas != null ? enviadas : 0) + (preRegistrado != null ? preRegistrado : 0);
                     
-                    // Calcular total como suma de todos los estados (más confiable que contarSolicitudesConFiltros)
                     totalSolicitudes = (totalAprobadas != null ? totalAprobadas : 0) + 
                                      (totalRechazadas != null ? totalRechazadas : 0) + 
                                      (enProcesoFuncionario != null ? enProcesoFuncionario : 0) + 
@@ -345,7 +343,6 @@ public class GestionarEstadisticasGatewayImplAdapter implements GestionarEstadis
                     if (cumpleFiltros && nombreSolicitud != null) {
                         try {
                             String tipoProceso = extraerTipoProceso(nombreSolicitud);
-                            // ✅ FIX: Evitar null keys en Map (causa error al serializar JSON)
                             if (tipoProceso != null && !tipoProceso.trim().isEmpty()) {
                                 porTipoProceso.put(tipoProceso, porTipoProceso.getOrDefault(tipoProceso, 0) + 1);
                             }
@@ -412,7 +409,6 @@ public class GestionarEstadisticasGatewayImplAdapter implements GestionarEstadis
             
             estadisticas.put("fechaConsulta", new Date());
             
-            // Normalizar la respuesta para evitar valores null
             try {
                 estadisticas = normalizarEstadistica(estadisticas);
             } catch (Exception e) {
@@ -529,7 +525,6 @@ public class GestionarEstadisticasGatewayImplAdapter implements GestionarEstadis
             estadisticas.put("descripcion", obtenerDescripcionProceso(tipoProceso));
             estadisticas.put("fechaConsulta", new Date());
             
-            // Normalizar la respuesta para evitar valores null
             estadisticas = normalizarEstadistica(estadisticas);
             
             
@@ -604,7 +599,6 @@ public class GestionarEstadisticasGatewayImplAdapter implements GestionarEstadis
                         })
                         .mapToInt(solicitud -> 1)
                         .sum();
-                    // ✅ FIX: Evitar null keys en Map (causa error al serializar JSON)
                     if (programa != null && !programa.trim().isEmpty()) {
                         porPrograma.put(programa, cantidad);
                     }
@@ -627,7 +621,6 @@ public class GestionarEstadisticasGatewayImplAdapter implements GestionarEstadis
             estadisticas.put("descripcionEstado", obtenerDescripcionEstado(estado));
             estadisticas.put("fechaConsulta", new Date());
             
-            // Normalizar la respuesta para evitar valores null
             estadisticas = normalizarEstadistica(estadisticas);
             
             
@@ -704,7 +697,6 @@ public class GestionarEstadisticasGatewayImplAdapter implements GestionarEstadis
             estadisticas.put("porPrograma", new HashMap<>()); // Vacio para programa especifico
             estadisticas.put("fechaConsulta", new Date());
             
-            // Normalizar la respuesta para evitar valores null
             estadisticas = normalizarEstadistica(estadisticas);
             
             
@@ -807,7 +799,6 @@ public class GestionarEstadisticasGatewayImplAdapter implements GestionarEstadis
                         })
                         .mapToInt(solicitud -> 1)
                         .sum();
-                    // ✅ FIX: Evitar null keys en Map (causa error al serializar JSON)
                     if (programa != null && !programa.trim().isEmpty()) {
                         porPrograma.put(programa, cantidad);
                     }
@@ -841,7 +832,6 @@ public class GestionarEstadisticasGatewayImplAdapter implements GestionarEstadis
             estadisticas.put("porPrograma", porPrograma);
             estadisticas.put("fechaConsulta", new Date());
             
-            // Normalizar la respuesta para evitar valores null
             estadisticas = normalizarEstadistica(estadisticas);
             
             
@@ -887,9 +877,6 @@ public class GestionarEstadisticasGatewayImplAdapter implements GestionarEstadis
         Map<String, Integer> porPrograma = new HashMap<>();
         
         for (String programa : nombresProgramas) {
-            // Este metodo necesitaria ser implementado en el repositorio
-            // Por ahora usamos una aproximacion con los metodos existentes
-            // ✅ FIX: Evitar null keys en Map (causa error al serializar JSON)
             if (programa != null && !programa.trim().isEmpty()) {
                 porPrograma.put(programa, 0);
             }
@@ -1042,17 +1029,13 @@ public class GestionarEstadisticasGatewayImplAdapter implements GestionarEstadis
                 totalEnProceso++;
             }
             
-            // Por tipo de proceso
             String nombreProceso = obtenerNombreProcesoPorSolicitud(solicitud);
-            // ✅ FIX: Evitar null keys en Map (causa error al serializar JSON)
             if (nombreProceso != null) {
                 porTipoProceso.put(nombreProceso, porTipoProceso.getOrDefault(nombreProceso, 0) + 1);
             }
             
-            // Por programa
             if (solicitud.getObjUsuario() != null && solicitud.getObjUsuario().getObjPrograma() != null) {
                 String nombrePrograma = solicitud.getObjUsuario().getObjPrograma().getNombre_programa();
-                // ✅ FIX: Evitar null keys en Map (causa error al serializar JSON)
                 if (nombrePrograma != null) {
                     porPrograma.put(nombrePrograma, porPrograma.getOrDefault(nombrePrograma, 0) + 1);
                 }
@@ -1207,18 +1190,15 @@ public class GestionarEstadisticasGatewayImplAdapter implements GestionarEstadis
         Map<String, Integer> porTipoProceso = new HashMap<>();
         for (SolicitudEntity solicitud : solicitudesEstado) {
             String nombreProceso = obtenerNombreProcesoPorSolicitud(solicitud);
-            // ✅ FIX: Evitar null keys en Map (causa error al serializar JSON)
             if (nombreProceso != null) {
                 porTipoProceso.put(nombreProceso, porTipoProceso.getOrDefault(nombreProceso, 0) + 1);
             }
         }
         
-        // Calcular por programa
         Map<String, Integer> porPrograma = new HashMap<>();
         for (SolicitudEntity solicitud : solicitudesEstado) {
             if (solicitud.getObjUsuario() != null && solicitud.getObjUsuario().getObjPrograma() != null) {
                 String nombrePrograma = solicitud.getObjUsuario().getObjPrograma().getNombre_programa();
-                // ✅ FIX: Evitar null keys en Map (causa error al serializar JSON)
                 if (nombrePrograma != null) {
                     porPrograma.put(nombrePrograma, porPrograma.getOrDefault(nombrePrograma, 0) + 1);
                 }
