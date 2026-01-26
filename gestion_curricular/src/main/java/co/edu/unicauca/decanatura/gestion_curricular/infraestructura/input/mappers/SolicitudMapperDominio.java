@@ -27,6 +27,7 @@ public interface SolicitudMapperDominio {
     @Mapping(source = "id_solicitud", target = "id_solicitud")
     @Mapping(source = "nombre_solicitud", target = "nombre_solicitud")
     @Mapping(source = "periodo_academico", target = "periodo_academico")
+    @Mapping(source = "fecha_ceremonia", target = "fecha_ceremonia")
     @Mapping(source = "fecha_registro_solicitud", target = "fecha_registro_solicitud")
     @Mapping(source = "estadosSolicitud", target = "estadosSolicitud")
     @Mapping(source = "objUsuario", target = "objUsuario")
@@ -39,7 +40,6 @@ public interface SolicitudMapperDominio {
     @Mapping(target = "estadosSolicitud", ignore = true) // No viene en el DTO de petición
     @Mapping(target = "objCursoOfertadoVerano", ignore = true) 
     @Mapping(target = "documentos", ignore = true)
-    @Mapping(target = "fecha_ceremonia", ignore = true) // Se asigna desde el caso de uso si es necesario
     Solicitud mappearDeSolicitudDTOPeticionASolicitud(SolicitudDTOPeticion peticion);
 
     List<Solicitud> mappearListaDeSolicitudDTOPeticionAListaSolicitud(List<SolicitudDTOPeticion> peticiones);

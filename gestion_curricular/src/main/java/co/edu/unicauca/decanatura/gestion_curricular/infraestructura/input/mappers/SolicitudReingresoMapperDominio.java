@@ -22,7 +22,6 @@ public interface SolicitudReingresoMapperDominio {
     @Mapping(target = "estadosSolicitud", ignore = true) // Lo controlas desde el caso de uso
     @Mapping(target = "documentos", ignore = true)
     @Mapping(target = "objCursoOfertadoVerano", ignore = true) // Propiedad no mapeada
-    @Mapping(target = "fecha_ceremonia", ignore = true) // Propiedad no mapeada
     @Mapping(target = "objUsuario.objRol", ignore = true) // Propiedad no mapeada en Usuario
     @Mapping(target = "objUsuario.objPrograma", ignore = true) // Propiedad no mapeada en Usuario
     @Mapping(target = "objUsuario.solicitudes", ignore = true) // Propiedad no mapeada en Usuario

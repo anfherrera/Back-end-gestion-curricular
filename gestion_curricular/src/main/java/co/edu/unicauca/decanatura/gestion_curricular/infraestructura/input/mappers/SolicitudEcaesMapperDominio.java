@@ -27,7 +27,6 @@ public interface SolicitudEcaesMapperDominio {
     @Mapping(target = "estadosSolicitud", ignore = true) // Lo controlas desde el caso de uso
     @Mapping(target = "documentos", ignore = true)
     @Mapping(target = "objCursoOfertadoVerano", ignore = true) // Propiedad no mapeada
-    @Mapping(target = "fecha_ceremonia", ignore = true) // Se asigna desde el caso de uso si es necesario
     SolicitudEcaes mappearDeSolicitudEcaesDTOPeticionASolicitudEcaes(SolicitudEcaesDTOPeticion peticion);
 
     List<SolicitudEcaes> mappearListaDeSolicitudEcaesDTOPeticionAListaDeSolicitudEcaes(List<SolicitudEcaesDTOPeticion> solicitudes);
@@ -36,6 +35,7 @@ public interface SolicitudEcaesMapperDominio {
     @Mapping(source = "id_solicitud", target = "id_solicitud")
     @Mapping(source = "nombre_solicitud", target = "nombre_solicitud")
     @Mapping(source = "periodo_academico", target = "periodo_academico")
+    @Mapping(source = "fecha_ceremonia", target = "fecha_ceremonia")
     @Mapping(source = "fecha_registro_solicitud", target = "fecha_registro_solicitud")
     @Mapping(source = "estadosSolicitud", target = "estadosSolicitud")
     @Mapping(source = "objUsuario", target = "objUsuario")

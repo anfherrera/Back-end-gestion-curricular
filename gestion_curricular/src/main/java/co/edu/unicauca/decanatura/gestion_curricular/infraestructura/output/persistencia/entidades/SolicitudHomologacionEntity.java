@@ -22,4 +22,10 @@ public class SolicitudHomologacionEntity extends SolicitudEntity {
 
     @Column(nullable = true)
     private String ruta_contenido_programatico;
+
+    @Column(nullable = true, length = 200)
+    private String programa_origen;
+
+    @Column(nullable = true, length = 200)
+    private String programa_destino;
 }

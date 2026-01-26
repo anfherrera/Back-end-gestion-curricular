@@ -36,7 +36,7 @@ public class SolicitudEntity {
     @Column(nullable = false, length = 100)
     private String nombre_solicitud;
 
-    @Column(nullable = true, length = 10)
+    @Column(nullable = false, length = 50)
     private String periodo_academico; // Período académico de la solicitud (ej: "2024-2")
 
     @Column(nullable = true)

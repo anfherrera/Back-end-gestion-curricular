@@ -1,10 +1,13 @@
 package co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.formateador;
 
+import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarSolicitudHomologacionCUIntPort;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.SolicitudHomologacion;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.DTORespuesta.DocumentRequest;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.DTORespuesta.DocumentTemplate;
 import org.apache.poi.xwpf.usermodel.*;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Service;
+import lombok.RequiredArgsConstructor;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -14,7 +17,9 @@ import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 @Service
+@RequiredArgsConstructor
 public class DocumentGeneratorService {
+    private final GestionarSolicitudHomologacionCUIntPort solicitudHomologacionCU;
 
     /**
      * Generar documento Word usando plantilla
@@ -440,8 +445,30 @@ public class DocumentGeneratorService {
             replacements.put("TIPO_PROCESO", "homologación de asignaturas");
             replacements.put("TITULO_DOCUMENTO", "RESOLUCIÓN DE HOMOLOGACIÓN");
             
-            // Placeholders específicos para homologación
-            replacements.put("CEDULA_ESTUDIANTE", datosSolicitud.getOrDefault("cedulaEstudiante", "No especificada").toString());
+            // Obtener la solicitud completa desde la base de datos para acceder a los nuevos campos
+            SolicitudHomologacion solicitudHomologacion = null;
+            try {
+                if (request.getIdSolicitud() > 0) {
+                    solicitudHomologacion = solicitudHomologacionCU.buscarPorId(request.getIdSolicitud());
+                }
+            } catch (Exception e) {
+                // Si no se puede obtener la solicitud, continuar con valores del mapa
+            }
+            
+            // Cédula del estudiante: obtener desde el usuario asociado a la solicitud
+            String cedulaEstudiante = "No especificada";
+            if (solicitudHomologacion != null && solicitudHomologacion.getObjUsuario() != null 
+                && solicitudHomologacion.getObjUsuario().getCedula() != null) {
+                cedulaEstudiante = solicitudHomologacion.getObjUsuario().getCedula();
+            } else {
+                // Fallback: intentar obtener del mapa de datos
+                Object cedulaObj = datosSolicitud.get("cedulaEstudiante");
+                if (cedulaObj != null) {
+                    cedulaEstudiante = cedulaObj.toString();
+                }
+            }
+            replacements.put("CEDULA_ESTUDIANTE", cedulaEstudiante);
+            
             replacements.put("FECHA_CONCEPTO", formatearFecha(LocalDate.now().minusDays(7))); // 7 días antes de la fecha actual
             replacements.put("FECHA_SESION_CONSEJO", formatearFecha(LocalDate.now().minusDays(3))); // 3 días antes
             replacements.put("NUMERO_ACTA_CONSEJO", "001-2025"); // Número de acta fijo por ahora
@@ -475,9 +502,35 @@ public class DocumentGeneratorService {
                 replacements.put("DIA_DOCUMENTO", "----");
             }
             
-            // Programas (no disponibles en los datos, usar placeholders)
-            replacements.put("PROGRAMA_DESTINO", "------");
-            replacements.put("PROGRAMA_ORIGEN", "------");
+            // Programas de origen y destino: obtener desde la solicitud o del mapa de datos
+            String programaOrigen = "------";
+            String programaDestino = "------";
+            
+            if (solicitudHomologacion != null) {
+                if (solicitudHomologacion.getPrograma_origen() != null && !solicitudHomologacion.getPrograma_origen().trim().isEmpty()) {
+                    programaOrigen = solicitudHomologacion.getPrograma_origen();
+                }
+                if (solicitudHomologacion.getPrograma_destino() != null && !solicitudHomologacion.getPrograma_destino().trim().isEmpty()) {
+                    programaDestino = solicitudHomologacion.getPrograma_destino();
+                }
+            }
+            
+            // Fallback: intentar obtener del mapa de datos si no están en la solicitud
+            if ("------".equals(programaOrigen)) {
+                Object programaOrigenObj = datosSolicitud.get("programaOrigen");
+                if (programaOrigenObj != null && !programaOrigenObj.toString().trim().isEmpty()) {
+                    programaOrigen = programaOrigenObj.toString();
+                }
+            }
+            if ("------".equals(programaDestino)) {
+                Object programaDestinoObj = datosSolicitud.get("programaDestino");
+                if (programaDestinoObj != null && !programaDestinoObj.toString().trim().isEmpty()) {
+                    programaDestino = programaDestinoObj.toString();
+                }
+            }
+            
+            replacements.put("PROGRAMA_DESTINO", programaDestino);
+            replacements.put("PROGRAMA_ORIGEN", programaOrigen);
             
             // NOTA: Los siguientes campos se dejan como "---- (DESCRIPCIÓN A DEFINIR)" en la plantilla:
             // - ASIGNATURA 1, 2, 3 (tabla de asignaturas)

@@ -15,10 +15,13 @@ public class SolicitudHomologacionDTORespuesta extends SolicitudDTORespuesta  {
     }
 
     // Constructor con parámetros para todos los campos de la clase base y de esta clase
-    public SolicitudHomologacionDTORespuesta (Integer id_solicitud, String nombre_solicitud, String periodo_academico, Date fecha_registro_solicitud,
+    public SolicitudHomologacionDTORespuesta (Integer id_solicitud, String nombre_solicitud, String periodo_academico, Date fecha_ceremonia, Date fecha_registro_solicitud,
                                              List<EstadoSolicitudDTORespuesta> estado_actual, UsuarioDTORespuesta  objUsuario, List<DocumentosDTORespuesta> documentos,
                                              String categoria, String tipo_solicitud) {
-        // Llamamos al constructor de la clase base (orden: id, nombre, periodo, fecha, estados, usuario, documentos, categoria, tipo_solicitud)
-        super(id_solicitud, nombre_solicitud, periodo_academico, fecha_registro_solicitud, estado_actual, objUsuario, documentos, categoria, tipo_solicitud);
+        // Llamamos al constructor de la clase base (orden: id, nombre, periodo, fecha_ceremonia, fecha, estados, usuario, documentos, categoria, tipo_solicitud)
+        super(id_solicitud, nombre_solicitud, periodo_academico, fecha_ceremonia, fecha_registro_solicitud, estado_actual, objUsuario, documentos, categoria, tipo_solicitud);
     }
+
+    private String programa_origen;
+    private String programa_destino;
 }

@@ -24,7 +24,6 @@ public interface SolicitudHomologacioneMapperDominio {
     @Mapping(target = "objCursoOfertadoVerano", ignore = true) // Propiedad no mapeada
     @Mapping(target = "ruta_PM_FO_4_FOR_27", ignore = true) // Propiedad no mapeada
     @Mapping(target = "ruta_contenido_programatico", ignore = true) // Propiedad no mapeada
-    @Mapping(target = "fecha_ceremonia", ignore = true) // Propiedad no mapeada
     @Mapping(target = "objUsuario.objRol", ignore = true) // Propiedad no mapeada en Usuario
     @Mapping(target = "objUsuario.objPrograma", ignore = true) // Propiedad no mapeada en Usuario
     @Mapping(target = "objUsuario.solicitudes", ignore = true) // Propiedad no mapeada en Usuario

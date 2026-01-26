@@ -68,9 +68,9 @@ INSERT INTO estado_curso_ofertado (id_estado_curso, nombre_estado, curso_ofertad
 -- =========================================
 -- DATOS PARA SOLICITUDES DE HOMOLOGACIÓN
 -- =========================================
-INSERT INTO Solicitudes(idSolicitud, nombre_solicitud, fecha_registro_solicitud, esSeleccionado, idUsuario, idCurso) VALUES 
-(1, 'Solicitud de Homologacion - Juan Pérez', '2025-01-15 09:00:00', false, 1, 1),
-(2, 'Solicitud de Homologacion - Pedro Gómez', '2025-01-16 10:30:00', false, 5, 2);
+INSERT INTO Solicitudes(idSolicitud, nombre_solicitud, fecha_registro_solicitud, periodo_academico, idUsuario, idCurso) VALUES 
+(1, 'Solicitud de Homologacion - Juan Pérez', '2025-01-15 09:00:00', '2025-1', 1, 1),
+(2, 'Solicitud de Homologacion - Pedro Gómez', '2025-01-16 10:30:00', '2025-1', 5, 2);
 
 -- Tabla específica de homologación
 INSERT INTO Solicitudes_Homogolacion(idSolicitud, ruta_PM_FO_4_FOR_27, ruta_contenido_programatico) VALUES 
@@ -87,9 +87,9 @@ INSERT INTO EstadosSolicitudes (idEstado, estado_actual, fecha_registro_estado, 
 -- =========================================
 -- DATOS PARA SOLICITUDES DE REINGRESO
 -- =========================================
-INSERT INTO Solicitudes(idSolicitud, nombre_solicitud, fecha_registro_solicitud, esSeleccionado, idUsuario, idCurso) VALUES 
-(3, 'Solicitud de Reingreso - Juan Pérez', '2025-01-17 09:00:00', false, 1, 1),
-(4, 'Solicitud de Reingreso - Pedro Gómez', '2025-01-18 10:30:00', false, 5, 2);
+INSERT INTO Solicitudes(idSolicitud, nombre_solicitud, fecha_registro_solicitud, periodo_academico, idUsuario, idCurso) VALUES 
+(3, 'Solicitud de Reingreso - Juan Pérez', '2025-01-17 09:00:00', '2025-1', 1, 1),
+(4, 'Solicitud de Reingreso - Pedro Gómez', '2025-01-18 10:30:00', '2025-1', 5, 2);
 
 -- Tabla específica de reingreso
 INSERT INTO Solicitudes_Reingreso(idSolicitud) VALUES (3), (4);
@@ -103,9 +103,9 @@ INSERT INTO EstadosSolicitudes (idEstado, estado_actual, fecha_registro_estado, 
 -- =========================================
 -- DATOS PARA SOLICITUDES DE ECAES
 -- =========================================
-INSERT INTO Solicitudes(idSolicitud, nombre_solicitud, fecha_registro_solicitud, esSeleccionado, idUsuario, idCurso) VALUES 
-(5, 'Solicitud de ECAES - Juan Pérez', '2025-01-19 09:00:00', false, 1, 1),
-(6, 'Solicitud de ECAES - Pedro Gómez', '2025-01-20 10:30:00', false, 5, 2);
+INSERT INTO Solicitudes(idSolicitud, nombre_solicitud, fecha_registro_solicitud, periodo_academico, idUsuario, idCurso) VALUES 
+(5, 'Solicitud de ECAES - Juan Pérez', '2025-01-19 09:00:00', '2025-1', 1, 1),
+(6, 'Solicitud de ECAES - Pedro Gómez', '2025-01-20 10:30:00', '2025-1', 5, 2);
 
 -- Tabla específica de ECAES
 INSERT INTO Solicitudes_Ecaes(idSolicitud, tipoDocumento, numero_documento, fecha_expedicion, fecha_nacimiento) VALUES 
