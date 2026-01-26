@@ -1,13 +1,16 @@
 package co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.formateador;
 
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarSolicitudHomologacionCUIntPort;
+import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarSolicitudReingresoCUIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.SolicitudHomologacion;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.SolicitudReingreso;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.DTORespuesta.DocumentRequest;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.DTORespuesta.DocumentTemplate;
 import org.apache.poi.xwpf.usermodel.*;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Service;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -18,8 +21,10 @@ import java.util.*;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class DocumentGeneratorService {
     private final GestionarSolicitudHomologacionCUIntPort solicitudHomologacionCU;
+    private final GestionarSolicitudReingresoCUIntPort solicitudReingresoCU;
 
     /**
      * Generar documento Word usando plantilla
@@ -617,6 +622,73 @@ public class DocumentGeneratorService {
         } else if ("RESOLUCION_REINGRESO".equals(request.getTipoDocumento())) {
             replacements.put("TIPO_PROCESO", "reingreso al programa");
             replacements.put("TITULO_DOCUMENTO", "RESOLUCIÓN DE REINGRESO");
+            
+            // Obtener la solicitud completa desde la base de datos para acceder a los datos reales
+            SolicitudReingreso solicitudReingreso = null;
+            try {
+                if (request.getIdSolicitud() > 0) {
+                    solicitudReingreso = solicitudReingresoCU.obtenerSolicitudReingresoPorId(request.getIdSolicitud());
+                }
+            } catch (Exception e) {
+                // Si no se puede obtener la solicitud, continuar con valores del mapa como fallback
+                log.warn("No se pudo obtener la solicitud de reingreso con ID: " + request.getIdSolicitud(), e);
+            }
+            
+            // Cédula del estudiante: obtener desde el usuario asociado a la solicitud
+            String cedulaEstudiante = "No especificada";
+            if (solicitudReingreso != null && solicitudReingreso.getObjUsuario() != null 
+                && solicitudReingreso.getObjUsuario().getCedula() != null) {
+                cedulaEstudiante = solicitudReingreso.getObjUsuario().getCedula();
+            } else {
+                // Fallback: intentar obtener del mapa de datos
+                Object cedulaObj = datosSolicitud.get("cedulaEstudiante");
+                if (cedulaObj != null) {
+                    cedulaEstudiante = cedulaObj.toString();
+                }
+            }
+            replacements.put("CEDULA_ESTUDIANTE", cedulaEstudiante);
+            
+            // Fecha de solicitud: obtener desde fecha_registro_solicitud de la solicitud
+            String fechaSolicitud = "";
+            LocalDate fechaRegistroLocal = null;
+            
+            if (solicitudReingreso != null && solicitudReingreso.getFecha_registro_solicitud() != null) {
+                // Convertir java.util.Date a LocalDate
+                java.util.Date fechaRegistro = solicitudReingreso.getFecha_registro_solicitud();
+                fechaRegistroLocal = fechaRegistro.toInstant()
+                    .atZone(java.time.ZoneId.systemDefault())
+                    .toLocalDate();
+                fechaSolicitud = formatearFecha(fechaRegistroLocal);
+            } else {
+                // Fallback: intentar obtener del mapa de datos
+                Object fechaSolicitudObj = datosSolicitud.get("fechaSolicitud");
+                if (fechaSolicitudObj != null) {
+                    fechaSolicitud = formatearFecha(fechaSolicitudObj);
+                }
+            }
+            replacements.put("FECHA_SOLICITUD", fechaSolicitud);
+            
+            // Fechas de firma: extraer día, mes y año de fecha_registro_solicitud
+            if (fechaRegistroLocal != null) {
+                // Día de firma (formato completo: "23 de enero de 2025")
+                replacements.put("DIA_FIRMA", formatearFechaCompleta(fechaRegistroLocal));
+                
+                // Día numérico (solo el número del día)
+                replacements.put("DIA_NUMERO", String.valueOf(fechaRegistroLocal.getDayOfMonth()));
+                
+                // Mes de firma (nombre del mes en español)
+                replacements.put("MES_FIRMA", formatearMes(fechaRegistroLocal.getMonthValue()));
+                
+                // Año de firma (año en formato texto)
+                replacements.put("AÑO_FIRMA", formatearAño(fechaRegistroLocal.getYear()));
+            } else {
+                // Fallback: usar fecha actual si no se puede obtener de la solicitud
+                LocalDate fechaActual = LocalDate.now();
+                replacements.put("DIA_FIRMA", formatearFechaCompleta(fechaActual));
+                replacements.put("DIA_NUMERO", String.valueOf(fechaActual.getDayOfMonth()));
+                replacements.put("MES_FIRMA", formatearMes(fechaActual.getMonthValue()));
+                replacements.put("AÑO_FIRMA", formatearAño(fechaActual.getYear()));
+            }
         }
         
         return replacements;
