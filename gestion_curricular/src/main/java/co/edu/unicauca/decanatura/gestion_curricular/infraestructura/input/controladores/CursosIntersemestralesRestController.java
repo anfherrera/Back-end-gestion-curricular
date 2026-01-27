@@ -5012,19 +5012,29 @@ public class CursosIntersemestralesRestController {
             for (Documento documento : documentos) {
                 if (documento.getNombre() != null && documento.getNombre().toLowerCase().endsWith(".pdf")) {
                     try {
-                        // Obtener el archivo usando la ruta completa si está disponible, sino usar nombre
-                        String rutaArchivo = documento.getRuta_documento() != null ? documento.getRuta_documento() : documento.getNombre();
-                        byte[] archivo = objGestionarArchivos.getFile(rutaArchivo);
+                        // Lógica adaptativa: usar ruta completa si está organizada, sino usar nombre
+                        String rutaDocumento = documento.getRuta_documento() != null ? documento.getRuta_documento() : documento.getNombre();
+                        byte[] archivo;
                         
-                        if (archivo == null || archivo.length == 0) {
-                            // Intentar con el nombre si la ruta no funcionó
-                            if (documento.getRuta_documento() != null && !documento.getRuta_documento().equals(documento.getNombre())) {
+                        try {
+                            if (rutaDocumento != null && rutaDocumento.contains("/")) {
+                                // Ruta organizada (nueva estructura)
+                                archivo = objGestionarArchivos.getFileByPath(rutaDocumento);
+                            } else {
+                                // Ruta simple (compatibilidad hacia atrás)
                                 archivo = objGestionarArchivos.getFile(documento.getNombre());
                             }
-                            
-                            if (archivo == null || archivo.length == 0) {
-                                continue; // Probar el siguiente documento
+                        } catch (Exception e) {
+                            // Si falla con la ruta, intentar con el nombre como fallback
+                            if (documento.getRuta_documento() != null && !documento.getRuta_documento().equals(documento.getNombre())) {
+                                archivo = objGestionarArchivos.getFile(documento.getNombre());
+                            } else {
+                                throw e; // Re-lanzar si no hay alternativa
                             }
+                        }
+                        
+                        if (archivo == null || archivo.length == 0) {
+                            continue; // Probar el siguiente documento
                         }
                         
                         // Configurar headers para descarga

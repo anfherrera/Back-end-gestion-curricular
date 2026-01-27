@@ -140,9 +140,10 @@ public class BeanConfiguration {
             ,GestionarDocumentosGatewayIntPort objDocumentosGateway,
             GestionarEstadoSolicitudGatewayIntPort objGestionarEstadoSolicitudGateway,
             GestionarUsuarioGatewayIntPort objGestionarUsuarioGateway,
-            GestionarNotificacionCUIntPort objGestionarNotificacionCU
+            GestionarNotificacionCUIntPort objGestionarNotificacionCU,
+            GestionarArchivosCUIntPort gestionarArchivos
             ) {
-        return new GestionarSolicitudEcaesCUAdapter(objGestionarSolicitudEcaesGateway,objFormateadorResultados,objDocumentosGateway,objGestionarEstadoSolicitudGateway,objGestionarUsuarioGateway,objGestionarNotificacionCU);
+        return new GestionarSolicitudEcaesCUAdapter(objGestionarSolicitudEcaesGateway,objFormateadorResultados,objDocumentosGateway,objGestionarEstadoSolicitudGateway,objGestionarUsuarioGateway,objGestionarNotificacionCU,gestionarArchivos);
     }
 
     @Bean
@@ -150,9 +151,10 @@ public class BeanConfiguration {
             FormateadorResultadosIntPort formateadorResultados, GestionarSolicitudHomologacionGatewayIntPort gestionarSolicitudHomologacionGateway
     ,GestionarUsuarioGatewayIntPort gestionarUsuarioGateway, GestionarDocumentosGatewayIntPort gestionarDocumentosGateway,
     GestionarEstadoSolicitudGatewayIntPort gestionarEstadoSolicitudGateway,
-    GestionarNotificacionCUIntPort objGestionarNotificacionCU
+    GestionarNotificacionCUIntPort objGestionarNotificacionCU,
+    GestionarArchivosCUIntPort gestionarArchivos
     ) {
-        return new GestionarSolicitudHomologacionCUAdapter(formateadorResultados, gestionarSolicitudHomologacionGateway, gestionarUsuarioGateway, gestionarDocumentosGateway, gestionarEstadoSolicitudGateway, objGestionarNotificacionCU);
+        return new GestionarSolicitudHomologacionCUAdapter(formateadorResultados, gestionarSolicitudHomologacionGateway, gestionarUsuarioGateway, gestionarDocumentosGateway, gestionarEstadoSolicitudGateway, objGestionarNotificacionCU, gestionarArchivos);
     }
 
     @Bean
@@ -160,9 +162,10 @@ public class BeanConfiguration {
         GestionarUsuarioGatewayIntPort gestionarUsuarioGateway, GestionarDocumentosGatewayIntPort gestionarDocumentosGateway,
         GestionarEstadoSolicitudGatewayIntPort gestionarEstadoSolicitudGateway,
         FormateadorResultadosIntPort formateadorResultados,GestionarSolicitudReingresoGatewayIntPort gestionarSolicitudReingresoGateway,
-        GestionarNotificacionCUIntPort objGestionarNotificacionCU
+        GestionarNotificacionCUIntPort objGestionarNotificacionCU,
+        GestionarArchivosCUIntPort gestionarArchivos
     ) {
-        return new GestionarSolicitudReingresoCUAdapter(gestionarUsuarioGateway, gestionarDocumentosGateway, gestionarEstadoSolicitudGateway, formateadorResultados, gestionarSolicitudReingresoGateway, objGestionarNotificacionCU);
+        return new GestionarSolicitudReingresoCUAdapter(gestionarUsuarioGateway, gestionarDocumentosGateway, gestionarEstadoSolicitudGateway, formateadorResultados, gestionarSolicitudReingresoGateway, objGestionarNotificacionCU, gestionarArchivos);
     }
 
     @Bean

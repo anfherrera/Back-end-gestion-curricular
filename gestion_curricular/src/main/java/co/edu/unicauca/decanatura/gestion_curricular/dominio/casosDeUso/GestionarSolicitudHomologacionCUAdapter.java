@@ -7,6 +7,7 @@ import java.util.Optional;
 
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarSolicitudHomologacionCUIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarNotificacionCUIntPort;
+import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarArchivosCUIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.FormateadorResultadosIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.GestionarDocumentosGatewayIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.GestionarEstadoSolicitudGatewayIntPort;
@@ -25,16 +26,18 @@ public class GestionarSolicitudHomologacionCUAdapter implements GestionarSolicit
     private final GestionarDocumentosGatewayIntPort objGestionarDocumentosGateway;
     private final GestionarEstadoSolicitudGatewayIntPort objGestionarEstadoSolicitudGateway;
     private final GestionarNotificacionCUIntPort objGestionarNotificacionCU;
+    private final GestionarArchivosCUIntPort gestionarArchivos;
 
     public GestionarSolicitudHomologacionCUAdapter(FormateadorResultadosIntPort formateadorResultados, GestionarSolicitudHomologacionGatewayIntPort gestionarSolicitudHomologacionGateway
     ,GestionarUsuarioGatewayIntPort gestionarUsuarioGateway, GestionarDocumentosGatewayIntPort gestionarDocumentosGateway, GestionarEstadoSolicitudGatewayIntPort gestionarEstadoSolicitudGateway,
-    GestionarNotificacionCUIntPort objGestionarNotificacionCU) {
+    GestionarNotificacionCUIntPort objGestionarNotificacionCU, GestionarArchivosCUIntPort gestionarArchivos) {
         this.objFormateadorResultados = formateadorResultados;
         this.objGestionarSolicitudHomologacionGateway = gestionarSolicitudHomologacionGateway;
         this.objGestionarUsuarioGateway = gestionarUsuarioGateway;
         this.objGestionarDocumentosGateway = gestionarDocumentosGateway;
         this.objGestionarEstadoSolicitudGateway = gestionarEstadoSolicitudGateway;
         this.objGestionarNotificacionCU = objGestionarNotificacionCU;
+        this.gestionarArchivos = gestionarArchivos;
     }
     @Override
     public SolicitudHomologacion guardar(SolicitudHomologacion solicitud) {
@@ -61,13 +64,27 @@ public class GestionarSolicitudHomologacionCUAdapter implements GestionarSolicit
 
         SolicitudHomologacion solicitudGuardada = objGestionarSolicitudHomologacionGateway.guardar(solicitud);
 
-        //Asociar documentos con solicitud = null
+        //Asociar documentos con solicitud = null y moverlos a carpeta organizada
         List<Documento> documentosSinSolicitud = this.objGestionarDocumentosGateway.buscarDocumentosSinSolicitud();
         for (Documento doc : documentosSinSolicitud) {
-
+            // Mover archivo a carpeta organizada si está en la raíz
+            String rutaActual = doc.getRuta_documento() != null ? doc.getRuta_documento() : doc.getNombre();
+            if (rutaActual != null && !rutaActual.contains("/")) {
+                // El archivo está en la raíz, moverlo a carpeta organizada
+                String nuevaRuta = gestionarArchivos.moverArchivoAOrganizado(
+                    rutaActual, 
+                    doc.getNombre(), 
+                    "homologacion", 
+                    solicitudGuardada.getId_solicitud()
+                );
+                if (nuevaRuta != null) {
+                    doc.setRuta_documento(nuevaRuta);
+                }
+            }
+            
+            // Asociar documento a la solicitud
             doc.setObjSolicitud(solicitudGuardada);
             this.objGestionarDocumentosGateway.actualizarDocumento(doc);
-
         }
 
         EstadoSolicitud estadoInicial = new EstadoSolicitud();

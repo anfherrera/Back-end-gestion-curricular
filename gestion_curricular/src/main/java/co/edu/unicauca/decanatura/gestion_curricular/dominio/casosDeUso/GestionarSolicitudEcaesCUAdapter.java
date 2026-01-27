@@ -6,12 +6,13 @@ import java.util.List;
 import java.util.Optional;
 
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarSolicitudEcaesCUIntPort;
+import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarNotificacionCUIntPort;
+import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarArchivosCUIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.FormateadorResultadosIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.GestionarDocumentosGatewayIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.GestionarEstadoSolicitudGatewayIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.GestionarPreRegistroEcaesGatewayIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.GestionarUsuarioGatewayIntPort;
-import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarNotificacionCUIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Documento;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.EstadoSolicitud;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.FechaEcaes;
@@ -29,6 +30,7 @@ public class GestionarSolicitudEcaesCUAdapter implements GestionarSolicitudEcaes
     private final GestionarEstadoSolicitudGatewayIntPort objGestionarEstadoSolicitudGateway;
     private final GestionarUsuarioGatewayIntPort objGestionarUsuarioGateway;
     private final GestionarNotificacionCUIntPort objGestionarNotificacionCU;
+    private final GestionarArchivosCUIntPort gestionarArchivos;
 
 
     public GestionarSolicitudEcaesCUAdapter(GestionarPreRegistroEcaesGatewayIntPort objGestionarSolicitudEcaesGateway,
@@ -36,7 +38,8 @@ public class GestionarSolicitudEcaesCUAdapter implements GestionarSolicitudEcaes
             GestionarDocumentosGatewayIntPort objDocumentosGateway,
             GestionarEstadoSolicitudGatewayIntPort objGestionarEstadoSolicitudGateway,
             GestionarUsuarioGatewayIntPort objGestionarUsuarioGateway,
-            GestionarNotificacionCUIntPort objGestionarNotificacionCU
+            GestionarNotificacionCUIntPort objGestionarNotificacionCU,
+            GestionarArchivosCUIntPort gestionarArchivos
             ) {
         this.objGestionarSolicitudEcaesGateway = objGestionarSolicitudEcaesGateway;
         this.objFormateadorResultados = objFormateadorResultados;
@@ -44,6 +47,7 @@ public class GestionarSolicitudEcaesCUAdapter implements GestionarSolicitudEcaes
         this.objGestionarEstadoSolicitudGateway = objGestionarEstadoSolicitudGateway;
         this.objGestionarUsuarioGateway = objGestionarUsuarioGateway;
         this.objGestionarNotificacionCU = objGestionarNotificacionCU;
+        this.gestionarArchivos = gestionarArchivos;
     
     }
 
@@ -78,10 +82,24 @@ public class GestionarSolicitudEcaesCUAdapter implements GestionarSolicitudEcaes
             List<Documento> documentosSinSolicitud = this.objDocumentosGateway.buscarDocumentosSinSolicitud();
             
             for (Documento doc : documentosSinSolicitud) {
+                // Mover archivo a carpeta organizada si está en la raíz
+                String rutaActual = doc.getRuta_documento() != null ? doc.getRuta_documento() : doc.getNombre();
+                if (rutaActual != null && !rutaActual.contains("/")) {
+                    // El archivo está en la raíz, moverlo a carpeta organizada
+                    String nuevaRuta = gestionarArchivos.moverArchivoAOrganizado(
+                        rutaActual, 
+                        doc.getNombre(), 
+                        "ecaes", 
+                        solicitudGuardada.getId_solicitud()
+                    );
+                    if (nuevaRuta != null) {
+                        doc.setRuta_documento(nuevaRuta);
+                    }
+                }
                 
+                // Asociar documento a la solicitud
                 doc.setObjSolicitud(solicitudGuardada);
                 this.objDocumentosGateway.actualizarDocumento(doc);
-                
             }
 
             EstadoSolicitud estadoInicial = new EstadoSolicitud();

@@ -325,7 +325,17 @@ public class SolicitudHomologacionRestController {
                     
                     if (esOficio) {
                         try {
-                            byte[] archivo = objGestionarArchivos.getFile(documento.getNombre());
+                            // Lógica adaptativa: usar ruta completa si está organizada, sino usar nombre
+                            String rutaDocumento = documento.getRuta_documento() != null ? documento.getRuta_documento() : documento.getNombre();
+                            byte[] archivo;
+                            
+                            if (rutaDocumento != null && rutaDocumento.contains("/")) {
+                                // Ruta organizada (nueva estructura)
+                                archivo = objGestionarArchivos.getFileByPath(rutaDocumento);
+                            } else {
+                                // Ruta simple (compatibilidad hacia atrás)
+                                archivo = objGestionarArchivos.getFile(documento.getNombre());
+                            }
                             
                             // Configurar el header Content-Disposition correctamente
                             String contentDisposition = "attachment; filename=\"" + documento.getNombre() + "\"";

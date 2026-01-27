@@ -19,11 +19,17 @@ import org.springframework.http.HttpStatus;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarArchivosCUIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarSolicitudPazYSalvoCUIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarSolicitudCursoVeranoCUIntPort;
+import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarSolicitudHomologacionCUIntPort;
+import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarSolicitudReingresoCUIntPort;
+import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarSolicitudEcaesCUIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.GestionarDocumentosGatewayIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Documento;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Solicitud;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.SolicitudPazYSalvo;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.SolicitudCursoVeranoIncripcion;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.SolicitudHomologacion;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.SolicitudReingreso;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.SolicitudEcaes;
 
 import org.springframework.web.multipart.MultipartFile;
 
@@ -37,6 +43,9 @@ public class ArchivosRestController {
     private final GestionarDocumentosGatewayIntPort objGestionarDocumentosGateway;
     private final GestionarSolicitudPazYSalvoCUIntPort solicitudPazYSalvoCU;
     private final GestionarSolicitudCursoVeranoCUIntPort solicitudCursoVeranoCU;
+    private final GestionarSolicitudHomologacionCUIntPort solicitudHomologacionCU;
+    private final GestionarSolicitudReingresoCUIntPort solicitudReingresoCU;
+    private final GestionarSolicitudEcaesCUIntPort solicitudEcaesCU;
 
     @PostMapping("/subir/pdf")
     public ResponseEntity<Map<String, Object>> subirPDF(
@@ -273,18 +282,109 @@ public class ArchivosRestController {
     @GetMapping("/descargar/pdf")
     public ResponseEntity<byte[]> bajarPDF(@RequestParam(name = "filename", required = true) String filename) {
         try {
+            // Buscar el documento en la BD por nombre para obtener su ruta completa
+            String rutaArchivo = filename; // Por defecto usar el nombre recibido
             
-            byte[] archivos = this.objGestionarArchivos.getFile(filename);
+            // Buscar en todas las solicitudes de todos los tipos (igual que Paz y Salvo)
             
-            if (archivos == null || archivos.length == 0) {
+            // 1. Buscar en solicitudes de Paz y Salvo
+            List<SolicitudPazYSalvo> solicitudesPazSalvo = solicitudPazYSalvoCU.listarSolicitudes();
+            for (SolicitudPazYSalvo solicitud : solicitudesPazSalvo) {
+                if (solicitud.getDocumentos() != null) {
+                    for (Documento doc : solicitud.getDocumentos()) {
+                        // Comparar por nombre (sin ruta)
+                        String nombreDoc = doc.getNombre();
+                        if (nombreDoc != null && nombreDoc.equals(filename)) {
+                            // Usar la ruta completa si está disponible
+                            if (doc.getRuta_documento() != null && !doc.getRuta_documento().isEmpty()) {
+                                rutaArchivo = doc.getRuta_documento();
+                            }
+                            break;
+                        }
+                    }
+                }
+            }
+            
+            // 2. Buscar en solicitudes de Homologación (mismo patrón que Paz y Salvo)
+            List<SolicitudHomologacion> solicitudesHomologacion = solicitudHomologacionCU.listarSolicitudes();
+            for (SolicitudHomologacion solicitud : solicitudesHomologacion) {
+                if (solicitud.getDocumentos() != null) {
+                    for (Documento doc : solicitud.getDocumentos()) {
+                        // Comparar por nombre (sin ruta) - igual que Paz y Salvo
+                        String nombreDoc = doc.getNombre();
+                        if (nombreDoc != null && nombreDoc.equals(filename)) {
+                            // Usar la ruta completa si está disponible
+                            if (doc.getRuta_documento() != null && !doc.getRuta_documento().isEmpty()) {
+                                rutaArchivo = doc.getRuta_documento();
+                            }
+                            break;
+                        }
+                    }
+                }
+            }
+            
+            // 3. Buscar en solicitudes de Reingreso (mismo patrón que Paz y Salvo)
+            List<SolicitudReingreso> solicitudesReingreso = solicitudReingresoCU.listarSolicitudesReingreso();
+            for (SolicitudReingreso solicitud : solicitudesReingreso) {
+                if (solicitud.getDocumentos() != null) {
+                    for (Documento doc : solicitud.getDocumentos()) {
+                        // Comparar por nombre (sin ruta) - igual que Paz y Salvo
+                        String nombreDoc = doc.getNombre();
+                        if (nombreDoc != null && nombreDoc.equals(filename)) {
+                            // Usar la ruta completa si está disponible
+                            if (doc.getRuta_documento() != null && !doc.getRuta_documento().isEmpty()) {
+                                rutaArchivo = doc.getRuta_documento();
+                            }
+                            break;
+                        }
+                    }
+                }
+            }
+            
+            // 4. Buscar en solicitudes de ECAES (mismo patrón que Paz y Salvo)
+            List<SolicitudEcaes> solicitudesEcaes = solicitudEcaesCU.listarSolicitudes();
+            for (SolicitudEcaes solicitud : solicitudesEcaes) {
+                if (solicitud.getDocumentos() != null) {
+                    for (Documento doc : solicitud.getDocumentos()) {
+                        // Comparar por nombre (sin ruta) - igual que Paz y Salvo
+                        String nombreDoc = doc.getNombre();
+                        if (nombreDoc != null && nombreDoc.equals(filename)) {
+                            // Usar la ruta completa si está disponible
+                            if (doc.getRuta_documento() != null && !doc.getRuta_documento().isEmpty()) {
+                                rutaArchivo = doc.getRuta_documento();
+                            }
+                            break;
+                        }
+                    }
+                }
+            }
+            
+            // Nota: Cursos de Verano ya está disponible como solicitudCursoVeranoCU si se necesita en el futuro
+            
+            // Obtener el archivo usando la ruta (puede ser nombre simple o ruta completa)
+            // El método getFile() ya maneja ambos casos: busca primero en raíz, luego como ruta relativa
+            byte[] archivo = objGestionarArchivos.getFile(rutaArchivo);
+            
+            if (archivo == null || archivo.length == 0) {
                 return ResponseEntity.notFound().build();
             }
             
+            // Extraer solo el nombre del archivo para el header (sin la ruta)
+            String nombreArchivo = filename;
+            if (rutaArchivo.contains("/")) {
+                nombreArchivo = rutaArchivo.substring(rutaArchivo.lastIndexOf("/") + 1);
+            }
             
+            // Configurar Content-Disposition con filename y filename* (UTF-8) - igual que Paz y Salvo
+            String encoded = java.net.URLEncoder.encode(nombreArchivo, java.nio.charset.StandardCharsets.UTF_8)
+                .replace("+", "%20");
+            String contentDisposition = "attachment; filename=\"" + nombreArchivo + "\"; filename*=UTF-8''" + encoded;
+
             return ResponseEntity.ok()
-                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + filename + "\"")
+                .header(HttpHeaders.CONTENT_DISPOSITION, contentDisposition)
                 .contentType(MediaType.APPLICATION_PDF)
-                .body(archivos);
+                .body(archivo);
+                
         } catch (Exception e) {
             log.error("Error al descargar archivo: {}", filename, e);
             return ResponseEntity.notFound().build();
@@ -334,20 +434,29 @@ public class ArchivosRestController {
                 
                 if (documento.getNombre() != null && documento.getNombre().toLowerCase().endsWith(".pdf")) {
                     try {
+                        // Lógica adaptativa: usar ruta completa si está organizada, sino usar nombre
+                        String rutaDocumento = documento.getRuta_documento() != null ? documento.getRuta_documento() : documento.getNombre();
+                        byte[] archivo;
                         
-                        // Obtener el archivo usando la ruta completa si está disponible, sino usar nombre
-                        String rutaArchivo = documento.getRuta_documento() != null ? documento.getRuta_documento() : documento.getNombre();
-                        byte[] archivo = objGestionarArchivos.getFile(rutaArchivo);
-                        
-                        if (archivo == null || archivo.length == 0) {
-                            // Intentar con el nombre si la ruta no funcionó
-                            if (documento.getRuta_documento() != null && !documento.getRuta_documento().equals(documento.getNombre())) {
+                        try {
+                            if (rutaDocumento != null && rutaDocumento.contains("/")) {
+                                // Ruta organizada (nueva estructura)
+                                archivo = objGestionarArchivos.getFileByPath(rutaDocumento);
+                            } else {
+                                // Ruta simple (compatibilidad hacia atrás)
                                 archivo = objGestionarArchivos.getFile(documento.getNombre());
                             }
-                            
-                            if (archivo == null || archivo.length == 0) {
-                                continue; // Probar el siguiente documento
+                        } catch (Exception e) {
+                            // Si falla con la ruta, intentar con el nombre como fallback
+                            if (documento.getRuta_documento() != null && !documento.getRuta_documento().equals(documento.getNombre())) {
+                                archivo = objGestionarArchivos.getFile(documento.getNombre());
+                            } else {
+                                throw e; // Re-lanzar si no hay alternativa
                             }
+                        }
+                        
+                        if (archivo == null || archivo.length == 0) {
+                            continue; // Probar el siguiente documento
                         }
                         
                         
@@ -413,9 +522,17 @@ public class ArchivosRestController {
                     
                     if (esOficio) {
                         try {
-                            // Usar ruta completa si está disponible, sino usar nombre
-                            String rutaArchivo = documento.getRuta_documento() != null ? documento.getRuta_documento() : documento.getNombre();
-                            byte[] archivo = objGestionarArchivos.getFile(rutaArchivo);
+                            // Lógica adaptativa: usar ruta completa si está organizada, sino usar nombre
+                            String rutaDocumento = documento.getRuta_documento() != null ? documento.getRuta_documento() : documento.getNombre();
+                            byte[] archivo;
+                            
+                            if (rutaDocumento != null && rutaDocumento.contains("/")) {
+                                // Ruta organizada (nueva estructura)
+                                archivo = objGestionarArchivos.getFileByPath(rutaDocumento);
+                            } else {
+                                // Ruta simple (compatibilidad hacia atrás)
+                                archivo = objGestionarArchivos.getFile(documento.getNombre());
+                            }
                             
                             // Configurar el header Content-Disposition correctamente
                             String contentDisposition = "attachment; filename=\"" + documento.getNombre() + "\"";

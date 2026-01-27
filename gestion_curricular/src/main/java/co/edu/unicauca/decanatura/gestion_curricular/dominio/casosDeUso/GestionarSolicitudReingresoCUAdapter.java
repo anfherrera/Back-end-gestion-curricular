@@ -7,6 +7,7 @@ import java.util.Optional;
 
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarSolicitudReingresoCUIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarNotificacionCUIntPort;
+import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarArchivosCUIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.FormateadorResultadosIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.GestionarDocumentosGatewayIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.GestionarEstadoSolicitudGatewayIntPort;
@@ -25,19 +26,22 @@ public class GestionarSolicitudReingresoCUAdapter  implements GestionarSolicitud
     private final FormateadorResultadosIntPort objFormateadorResultados;
     private final GestionarSolicitudReingresoGatewayIntPort objGestionarSolicitudReingresoGateway;
     private final GestionarNotificacionCUIntPort objGestionarNotificacionCU;
+    private final GestionarArchivosCUIntPort gestionarArchivos;
 
     public GestionarSolicitudReingresoCUAdapter(GestionarUsuarioGatewayIntPort objGestionarUsuarioGateway,
             GestionarDocumentosGatewayIntPort objGestionarDocumentosGateway,
             GestionarEstadoSolicitudGatewayIntPort objGestionarEstadoSolicitudGateway,
             FormateadorResultadosIntPort objFormateadorResultados,
             GestionarSolicitudReingresoGatewayIntPort objGestionarSolicitudReingresoGateway,
-            GestionarNotificacionCUIntPort objGestionarNotificacionCU) {
+            GestionarNotificacionCUIntPort objGestionarNotificacionCU,
+            GestionarArchivosCUIntPort gestionarArchivos) {
         this.objGestionarUsuarioGateway = objGestionarUsuarioGateway;
         this.objGestionarDocumentosGateway = objGestionarDocumentosGateway;
         this.objGestionarEstadoSolicitudGateway = objGestionarEstadoSolicitudGateway;
         this.objFormateadorResultados = objFormateadorResultados;
         this.objGestionarSolicitudReingresoGateway = objGestionarSolicitudReingresoGateway;
         this.objGestionarNotificacionCU = objGestionarNotificacionCU;
+        this.gestionarArchivos = gestionarArchivos;
     }
 
     @Override
@@ -64,9 +68,25 @@ public class GestionarSolicitudReingresoCUAdapter  implements GestionarSolicitud
 
         SolicitudReingreso solicitudGuardada = objGestionarSolicitudReingresoGateway.crearSolicitudReingreso(solicitud);
 
-        //Asociar documentos con solicitud = null
+        //Asociar documentos con solicitud = null y moverlos a carpeta organizada
         List<Documento> documentosSinSolicitud = this.objGestionarDocumentosGateway.buscarDocumentosSinSolicitud();
         for (Documento doc : documentosSinSolicitud) {
+            // Mover archivo a carpeta organizada si está en la raíz
+            String rutaActual = doc.getRuta_documento() != null ? doc.getRuta_documento() : doc.getNombre();
+            if (rutaActual != null && !rutaActual.contains("/")) {
+                // El archivo está en la raíz, moverlo a carpeta organizada
+                String nuevaRuta = gestionarArchivos.moverArchivoAOrganizado(
+                    rutaActual, 
+                    doc.getNombre(), 
+                    "reingreso", 
+                    solicitudGuardada.getId_solicitud()
+                );
+                if (nuevaRuta != null) {
+                    doc.setRuta_documento(nuevaRuta);
+                }
+            }
+            
+            // Asociar documento a la solicitud
             doc.setObjSolicitud(solicitudGuardada);           
             this.objGestionarDocumentosGateway.actualizarDocumento(doc);            
         }

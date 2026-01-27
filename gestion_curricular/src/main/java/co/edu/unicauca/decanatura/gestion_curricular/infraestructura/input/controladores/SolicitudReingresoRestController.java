@@ -321,10 +321,18 @@ public class SolicitudReingresoRestController {
                     if (esOficio) {
                         try {
                             log.debug("Probando oficio/resolución de reingreso: {}", documento.getNombre());
-                            // Usar ruta completa si está disponible, sino usar nombre
-                            byte[] archivo = objGestionarArchivos.getFile(
-                                documento.getRuta_documento() != null ? documento.getRuta_documento() : documento.getNombre()
-                            );
+                            
+                            // Lógica adaptativa: usar ruta completa si está organizada, sino usar nombre
+                            String rutaDocumento = documento.getRuta_documento() != null ? documento.getRuta_documento() : documento.getNombre();
+                            byte[] archivo;
+                            
+                            if (rutaDocumento != null && rutaDocumento.contains("/")) {
+                                // Ruta organizada (nueva estructura)
+                                archivo = objGestionarArchivos.getFileByPath(rutaDocumento);
+                            } else {
+                                // Ruta simple (compatibilidad hacia atrás)
+                                archivo = objGestionarArchivos.getFile(documento.getNombre());
+                            }
                             
                             log.debug("Oficio/resolución de reingreso encontrado: {}, tamaño: {} bytes", 
                                 documento.getNombre(), archivo.length);
