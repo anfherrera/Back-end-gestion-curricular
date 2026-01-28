@@ -1,6 +1,7 @@
 package co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output;
 
 import java.io.IOException;
+import java.nio.file.Path;
 
 import org.springframework.web.multipart.MultipartFile;
 
@@ -36,6 +37,23 @@ public interface GestionarArchivosGatewayIntPort {
      * @throws IOException
      */
     byte[] getFileByPath(String relativePath) throws IOException;
+    
+    /**
+     * Obtiene un archivo por nombre como Path para streaming eficiente
+     * Busca primero en la raíz, luego intenta con rutas relativas
+     * @param filename Nombre del archivo o ruta relativa
+     * @return Path del archivo para streaming
+     * @throws IOException Si el archivo no existe
+     */
+    Path getFileAsPath(String filename) throws IOException;
+    
+    /**
+     * Obtiene un archivo por ruta relativa completa como Path para streaming eficiente
+     * @param relativePath Ruta relativa completa (ej: "pazysalvo/solicitud_123/archivo.pdf")
+     * @return Path del archivo para streaming
+     * @throws IOException Si el archivo no existe
+     */
+    Path getFileByPathAsPath(String relativePath) throws IOException;
     
     /**
      * Mueve un archivo desde su ubicación actual a una carpeta organizada

@@ -76,6 +76,13 @@ public class GestionarDocumentoGatewayImplAdapter implements GestionarDocumentos
         
     }
 
+    @Override
+    @Transactional(readOnly = true)
+    public Optional<Documento> buscarDocumentoPorNombre(String nombre) {
+        return documentoRepository.findByNombre(nombre)
+            .map(entity -> documentoMapper.map(entity, Documento.class));
+    }
+
     
     
 }

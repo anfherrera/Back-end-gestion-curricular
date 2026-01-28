@@ -1,6 +1,7 @@
 package co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output;
 
 import java.util.List;
+import java.util.Optional;
 
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Documento;
 
@@ -16,5 +17,7 @@ public interface GestionarDocumentosGatewayIntPort {
 
     List<Documento> buscarDocumentosSinSolicitud();
 
-    void añadirComentario(Documento documento, String comentario); 
+    void añadirComentario(Documento documento, String comentario);
+
+    Optional<Documento> buscarDocumentoPorNombre(String nombre);
 }

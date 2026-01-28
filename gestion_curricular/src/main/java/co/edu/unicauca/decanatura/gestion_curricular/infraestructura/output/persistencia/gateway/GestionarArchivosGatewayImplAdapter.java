@@ -174,4 +174,29 @@ public class GestionarArchivosGatewayImplAdapter implements GestionarArchivosGat
         return "jpg".equalsIgnoreCase(extension) || "jpeg".equalsIgnoreCase(extension);
     }
     
+    @Override
+    public Path getFileAsPath(String filename) throws IOException {
+        // Primero intentar buscar en la raíz (retrocompatibilidad)
+        Path filePath = this.rootLocation.resolve(filename);
+        if (Files.exists(filePath)) {
+            return filePath;
+        }
+        
+        // Si no existe en la raíz, intentar como ruta relativa completa
+        return getFileByPathAsPath(filename);
+    }
+    
+    @Override
+    public Path getFileByPathAsPath(String relativePath) throws IOException {
+        if (relativePath == null || relativePath.trim().isEmpty()) {
+            throw new IOException("Ruta del archivo no puede ser nula o vacía");
+        }
+        
+        Path filePath = this.rootLocation.resolve(relativePath);
+        if (!Files.exists(filePath)) {
+            throw new IOException("Archivo no encontrado en la ruta: " + relativePath);
+        }
+        return filePath;
+    }
+    
 }

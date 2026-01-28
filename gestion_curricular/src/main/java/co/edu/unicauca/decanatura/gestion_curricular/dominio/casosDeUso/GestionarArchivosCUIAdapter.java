@@ -125,4 +125,32 @@ public class GestionarArchivosCUIAdapter implements GestionarArchivosCUIntPort {
         }
     }
     
+    @Override
+    public java.nio.file.Path getFileAsPath(String filename) {
+        if (filename == null) {
+            this.objFormateadorResultados.retornarRespuestaErrorReglaDeNegocio("el nombre no puede ser nulo");
+            return null;
+        }
+        try {
+            return this.objGestionarArchivos.getFileAsPath(filename);
+        } catch (Exception e) {
+            this.objFormateadorResultados.retornarRespuestaErrorReglaDeNegocio(e.getMessage());
+            return null;
+        }
+    }
+    
+    @Override
+    public java.nio.file.Path getFileByPathAsPath(String relativePath) {
+        if (relativePath == null || relativePath.trim().isEmpty()) {
+            this.objFormateadorResultados.retornarRespuestaErrorReglaDeNegocio("la ruta del archivo no puede ser nula o vacía");
+            return null;
+        }
+        try {
+            return this.objGestionarArchivos.getFileByPathAsPath(relativePath);
+        } catch (Exception e) {
+            this.objFormateadorResultados.retornarRespuestaErrorReglaDeNegocio(e.getMessage());
+            return null;
+        }
+    }
+    
 }
