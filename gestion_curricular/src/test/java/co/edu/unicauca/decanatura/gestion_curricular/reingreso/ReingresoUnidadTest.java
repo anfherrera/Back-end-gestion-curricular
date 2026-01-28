@@ -2,6 +2,7 @@ package co.edu.unicauca.decanatura.gestion_curricular.reingreso;
 
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarSolicitudReingresoCUIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarNotificacionCUIntPort;
+import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarArchivosCUIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.*;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.casosDeUso.GestionarSolicitudReingresoCUAdapter;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.SolicitudReingreso;
@@ -57,6 +58,9 @@ class ReingresoUnidadTest {
     @Mock
     private GestionarNotificacionCUIntPort notificacionCU;
 
+    @Mock
+    private GestionarArchivosCUIntPort gestionarArchivos;
+
     private GestionarSolicitudReingresoCUIntPort solicitudReingresoCU;
 
     private SolicitudReingreso solicitudEjemplo;
@@ -70,7 +74,8 @@ class ReingresoUnidadTest {
                 estadoSolicitudGateway,
                 formateadorResultados,
                 solicitudGateway,
-                notificacionCU
+                notificacionCU,
+                gestionarArchivos
         );
 
         // Crear solicitud de ejemplo

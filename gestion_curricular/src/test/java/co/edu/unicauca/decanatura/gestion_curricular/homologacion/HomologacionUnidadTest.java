@@ -2,6 +2,7 @@ package co.edu.unicauca.decanatura.gestion_curricular.homologacion;
 
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarSolicitudHomologacionCUIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarNotificacionCUIntPort;
+import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarArchivosCUIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.*;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.casosDeUso.GestionarSolicitudHomologacionCUAdapter;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.SolicitudHomologacion;
@@ -57,6 +58,9 @@ class HomologacionUnidadTest {
     @Mock
     private GestionarNotificacionCUIntPort notificacionCU;
 
+    @Mock
+    private GestionarArchivosCUIntPort gestionarArchivos;
+
     private GestionarSolicitudHomologacionCUIntPort solicitudHomologacionCU;
 
     private SolicitudHomologacion solicitudEjemplo;
@@ -70,7 +74,8 @@ class HomologacionUnidadTest {
                 usuarioGateway,
                 documentosGateway,
                 estadoSolicitudGateway,
-                notificacionCU
+                notificacionCU,
+                gestionarArchivos
         );
 
         // Crear solicitud de ejemplo
