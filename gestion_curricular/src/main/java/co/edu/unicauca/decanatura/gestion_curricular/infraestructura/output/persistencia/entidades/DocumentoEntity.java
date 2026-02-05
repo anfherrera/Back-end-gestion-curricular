@@ -26,9 +26,11 @@ public class DocumentoEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "idDocumento")
     private Integer id_documento;
-    @Column(nullable = true, length = 100)
+    /** Longitud suficiente para nombres largos (ej. Autorización para publicar y permitir la consulta y uso de obras en el Repositorio Institucional.pdf) */
+    @Column(nullable = true, length = 255)
     private String nombre;
-    @Column(nullable = true, length = 100)
+    /** Ruta completa puede ser pazysalvo/solicitud_X/nombre_largo.pdf */
+    @Column(nullable = true, length = 500)
     private String ruta_documento;
     @Column(nullable = true)
     private Date fecha_documento;
