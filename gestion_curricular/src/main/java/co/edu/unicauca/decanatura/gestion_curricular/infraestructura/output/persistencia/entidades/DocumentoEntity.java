@@ -26,9 +26,9 @@ public class DocumentoEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "idDocumento")
     private Integer id_documento;
-    @Column(nullable = true, length = 100)
+    @Column(nullable = true, length = 255)
     private String nombre;
-    @Column(nullable = true, length = 100)
+    @Column(nullable = true, length = 500)
     private String ruta_documento;
     @Column(nullable = true)
     private Date fecha_documento;

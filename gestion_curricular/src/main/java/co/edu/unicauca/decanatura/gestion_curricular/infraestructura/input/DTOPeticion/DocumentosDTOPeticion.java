@@ -19,11 +19,11 @@ public class DocumentosDTOPeticion {
     private Integer id_documento;
 
     @NotBlank(message = "{Documento.nombre.empty}")
-    @Size(min = 3, max = 100, message = "{Documento.nombre.length}")
+    @Size(min = 3, max = 255, message = "{Documento.nombre.length}")
     private String nombre;
 
     @NotBlank(message = "{Documento.ruta.empty}")
-    @Size(min = 5, max = 255, message = "{Documento.ruta.length}")
+    @Size(min = 5, max = 500, message = "{Documento.ruta.length}")
     private String ruta_documento;
 
     @NotNull(message = "{Documento.fecha.empty}")
