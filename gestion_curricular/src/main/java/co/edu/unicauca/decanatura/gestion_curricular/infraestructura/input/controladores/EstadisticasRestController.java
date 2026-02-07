@@ -162,15 +162,33 @@ public class EstadisticasRestController {
                 @SuppressWarnings("unchecked")
                 Map<String, Object> estadisticasGlobales = (Map<String, Object>) resumen.get("estadisticasGlobales");
                 
-                // Si hay filtro de proceso, aplicar filtro adicional
+                // Si hay filtro de proceso, actualizar KPIs. Usar resumen.porTipoProceso (stats completas), no estadisticasGlobales.porTipoProceso (solo conteos)
                 if (proceso != null && !proceso.trim().isEmpty() && estadisticasGlobales != null) {
-                    @SuppressWarnings("unchecked")
-                    Map<String, Object> porTipoProceso = (Map<String, Object>) estadisticasGlobales.get("porTipoProceso");
-                    if (porTipoProceso != null && porTipoProceso.containsKey(proceso)) {
-                        // Filtrar solo el proceso solicitado
-                        Map<String, Object> procesoFiltrado = new HashMap<>();
-                        procesoFiltrado.put(proceso, porTipoProceso.get(proceso));
-                        estadisticasGlobales.put("porTipoProceso", procesoFiltrado);
+                    String procesoNorm = normalizarProceso(proceso);
+                    if (procesoNorm != null) {
+                        @SuppressWarnings("unchecked")
+                        Map<String, Object> porTipoProcesoResumen = (Map<String, Object>) resumen.get("porTipoProceso");
+                        if (porTipoProcesoResumen != null && porTipoProcesoResumen.containsKey(procesoNorm)) {
+                            Object datosProceso = porTipoProcesoResumen.get(procesoNorm);
+                            if (datosProceso instanceof Map) {
+                                @SuppressWarnings("unchecked")
+                                Map<String, Object> statsProceso = (Map<String, Object>) datosProceso;
+                                estadisticasGlobales.put("totalSolicitudes", statsProceso.getOrDefault("totalSolicitudes", 0));
+                                estadisticasGlobales.put("totalAprobadas", statsProceso.getOrDefault("totalAprobadas", 0));
+                                estadisticasGlobales.put("totalRechazadas", statsProceso.getOrDefault("totalRechazadas", 0));
+                                estadisticasGlobales.put("totalEnProceso", statsProceso.getOrDefault("totalEnProceso", 0));
+                                Object porEstadoObj = statsProceso.get("porEstado");
+                                int totalEnviadas = 0;
+                                if (porEstadoObj instanceof Map) {
+                                    Object env = ((Map<?, ?>) porEstadoObj).get("ENVIADA");
+                                    totalEnviadas = env instanceof Number ? ((Number) env).intValue() : 0;
+                                }
+                                estadisticasGlobales.put("totalEnviadas", totalEnviadas);
+                                estadisticasGlobales.put("porcentajeAprobacion", statsProceso.getOrDefault("porcentajeAprobacion", 0.0));
+                                estadisticasGlobales.put("porEstado", statsProceso.getOrDefault("porEstado", new HashMap<>()));
+                                estadisticasGlobales.put("porTipoProceso", Map.of(procesoNorm, datosProceso));
+                            }
+                        }
                     }
                 }
                 
@@ -471,12 +489,59 @@ public class EstadisticasRestController {
     @GetMapping("/resumen-completo")
     public ResponseEntity<Map<String, Object>> obtenerResumenCompleto(
             @RequestParam(required = false) String periodoAcademico,
-            @RequestParam(required = false) Integer idPrograma) {
+            @RequestParam(required = false) Integer idPrograma,
+            @RequestParam(required = false) String proceso) {
         try {
             // Normalizar el período académico si viene en formato legible
             String periodoNormalizado = normalizarPeriodoAcademico(periodoAcademico);
             
             Map<String, Object> resumen = estadisticaCU.obtenerResumenCompleto(periodoNormalizado, idPrograma);
+            
+            // Si hay filtro de proceso, actualizar KPIs con datos solo de ese proceso.
+            // IMPORTANTE: usar resumen.porTipoProceso (Map con stats completas), NO estadisticasGlobales.porTipoProceso (solo conteos Integer)
+            String procesoNormalizado = normalizarProceso(proceso);
+            if (procesoNormalizado != null) {
+                @SuppressWarnings("unchecked")
+                Map<String, Object> porTipoProcesoResumen = (Map<String, Object>) resumen.get("porTipoProceso");
+                if (porTipoProcesoResumen != null && porTipoProcesoResumen.containsKey(procesoNormalizado)) {
+                    Object datosProceso = porTipoProcesoResumen.get(procesoNormalizado);
+                    if (datosProceso instanceof Map) {
+                        @SuppressWarnings("unchecked")
+                        Map<String, Object> statsProceso = (Map<String, Object>) datosProceso;
+                        @SuppressWarnings("unchecked")
+                        Map<String, Object> estadisticasGlobales = (Map<String, Object>) resumen.get("estadisticasGlobales");
+                        if (estadisticasGlobales != null) {
+                            estadisticasGlobales.put("totalSolicitudes", statsProceso.getOrDefault("totalSolicitudes", 0));
+                            estadisticasGlobales.put("totalAprobadas", statsProceso.getOrDefault("totalAprobadas", 0));
+                            estadisticasGlobales.put("totalRechazadas", statsProceso.getOrDefault("totalRechazadas", 0));
+                            estadisticasGlobales.put("totalEnProceso", statsProceso.getOrDefault("totalEnProceso", 0));
+                            Object porEstadoObj = statsProceso.get("porEstado");
+                            int totalEnviadas = 0;
+                            if (porEstadoObj instanceof Map) {
+                                Object env = ((Map<?, ?>) porEstadoObj).get("ENVIADA");
+                                totalEnviadas = env instanceof Number ? ((Number) env).intValue() : 0;
+                            }
+                            estadisticasGlobales.put("totalEnviadas", totalEnviadas);
+                            estadisticasGlobales.put("porcentajeAprobacion", statsProceso.getOrDefault("porcentajeAprobacion", 0.0));
+                            estadisticasGlobales.put("porEstado", statsProceso.getOrDefault("porEstado", new HashMap<>()));
+                            estadisticasGlobales.put("porTipoProceso", Map.of(procesoNormalizado, datosProceso));
+                        }
+                    }
+                }
+                if (porTipoProcesoResumen != null && porTipoProcesoResumen.containsKey(procesoNormalizado)) {
+                    resumen.put("porTipoProceso", Map.of(procesoNormalizado, porTipoProcesoResumen.get(procesoNormalizado)));
+                }
+                if (resumen.get("filtrosAplicados") instanceof Map) {
+                    @SuppressWarnings("unchecked")
+                    Map<String, Object> filtrosAplicados = (Map<String, Object>) resumen.get("filtrosAplicados");
+                    filtrosAplicados.put("proceso", procesoNormalizado);
+                } else {
+                    Map<String, Object> filtros = new HashMap<>();
+                    filtros.put("proceso", procesoNormalizado);
+                    resumen.put("filtrosAplicados", filtros);
+                }
+            }
+            
             return ResponseEntity.ok(resumen);
         } catch (Exception e) {
             log.error("Error al obtener resumen completo", e);
@@ -484,6 +549,22 @@ public class EstadisticasRestController {
         }
     }
     
+    /**
+     * Normaliza el nombre del proceso para coincidir con las keys del backend.
+     * Acepta variantes: "Homologación", "Curso Verano", "Cursos Intersemestrales", etc.
+     */
+    private String normalizarProceso(String proceso) {
+        if (proceso == null || proceso.trim().isEmpty()) return null;
+        String p = proceso.trim();
+        String lower = p.toLowerCase();
+        if (lower.contains("reingreso")) return "Reingreso";
+        if (lower.contains("homologacion") || lower.contains("homologación")) return "Homologacion";
+        if ((lower.contains("paz") && lower.contains("salvo"))) return "Paz y Salvo";
+        if (lower.contains("ecaes")) return "ECAES";
+        if (lower.contains("curso") && (lower.contains("verano") || lower.contains("intersemestral"))) return "Cursos de Verano";
+        return p; // Devolver tal cual si no hay match
+    }
+
     /**
      * Normaliza el formato del período académico a YYYY-P
      * Acepta formatos como "2025 - Primer Semestre", "2025 segundo semestre", "2025-2", "Segundo Período 2025", etc.
@@ -601,30 +682,27 @@ public class EstadisticasRestController {
     @GetMapping("/dashboard")
     public ResponseEntity<Map<String, Object>> obtenerDashboardEjecutivo(
             @RequestParam(required = false) String periodoAcademico,
-            @RequestParam(required = false) Integer idPrograma) {
+            @RequestParam(required = false) Integer idPrograma,
+            @RequestParam(required = false) String proceso) {
         try {
-            // Normalizar el período académico si viene en formato legible
-            String periodoNormalizado = normalizarPeriodoAcademico(periodoAcademico);
+            // Usar consolidado que ya soporta proceso y actualiza KPIs correctamente
+            ResponseEntity<Map<String, Object>> consolidadoResp = obtenerConsolidadoGeneral(periodoAcademico, idPrograma, proceso);
+            Map<String, Object> consolidado = consolidadoResp.getBody();
+            if (consolidado == null) {
+                return ResponseEntity.ok(new HashMap<>());
+            }
             
-            Map<String, Object> dashboard = estadisticaCU.obtenerResumenCompleto(periodoNormalizado, idPrograma);
+            @SuppressWarnings("unchecked")
+            Map<String, Object> estadisticasGlobales = (Map<String, Object>) consolidado.get("estadisticasGlobales");
             
-            // Extraer solo las métricas más importantes para el dashboard
             Map<String, Object> dashboardEjecutivo = new HashMap<>();
-            dashboardEjecutivo.put("resumenGlobal", dashboard.get("estadisticasGlobales"));
-            dashboardEjecutivo.put("topProcesos", dashboard.get("porTipoProceso"));
-            dashboardEjecutivo.put("resumenEstados", dashboard.get("porEstado"));
-            dashboardEjecutivo.put("fechaGeneracion", dashboard.get("fechaGeneracion"));
+            dashboardEjecutivo.put("resumenGlobal", estadisticasGlobales);
+            dashboardEjecutivo.put("topProcesos", consolidado.get("porTipoProceso"));
+            dashboardEjecutivo.put("resumenEstados", consolidado.get("porEstado"));
+            dashboardEjecutivo.put("fechaGeneracion", consolidado.get("fechaGeneracion"));
             
-            // Agregar filtros aplicados si existen
-            if (periodoNormalizado != null || idPrograma != null) {
-                Map<String, Object> filtrosAplicados = new HashMap<>();
-                if (periodoNormalizado != null) {
-                    filtrosAplicados.put("periodoAcademico", periodoNormalizado);
-                }
-                if (idPrograma != null) {
-                    filtrosAplicados.put("idPrograma", idPrograma);
-                }
-                dashboardEjecutivo.put("filtrosAplicados", filtrosAplicados);
+            if (consolidado.containsKey("filtrosAplicados")) {
+                dashboardEjecutivo.put("filtrosAplicados", consolidado.get("filtrosAplicados"));
             }
             
             return ResponseEntity.ok(dashboardEjecutivo);
@@ -824,23 +902,54 @@ public class EstadisticasRestController {
     @GetMapping("/consolidado")
     public ResponseEntity<Map<String, Object>> obtenerConsolidadoGeneral(
             @RequestParam(required = false) String periodoAcademico,
-            @RequestParam(required = false) Integer idPrograma) {
+            @RequestParam(required = false) Integer idPrograma,
+            @RequestParam(required = false) String proceso) {
         try {
             
             // Normalizar el período académico si viene en formato legible
             String periodoNormalizado = normalizarPeriodoAcademico(periodoAcademico);
             
             Map<String, Object> estadisticasGlobales;
+            Map<String, Object> resumen = null;
             
             // Si hay filtros, usar resumen completo
             if (periodoNormalizado != null || idPrograma != null) {
-                Map<String, Object> resumen = estadisticaCU.obtenerResumenCompleto(periodoNormalizado, idPrograma);
+                resumen = estadisticaCU.obtenerResumenCompleto(periodoNormalizado, idPrograma);
                 @SuppressWarnings("unchecked")
                 Map<String, Object> estadisticasGlobalesTemp = (Map<String, Object>) resumen.get("estadisticasGlobales");
                 estadisticasGlobales = estadisticasGlobalesTemp;
             } else {
-                // Si no hay filtros, usar método original
-                estadisticasGlobales = estadisticaCU.obtenerEstadisticasGlobales();
+                estadisticasGlobales = estadisticaCU.obtenerEstadisticasGlobales(proceso, idPrograma, null, null);
+            }
+            
+            // Si hay filtro de proceso Y tenemos resumen (periodo/programa), usar resumen.porTipoProceso (stats completas)
+            if (proceso != null && !proceso.trim().isEmpty() && estadisticasGlobales != null && resumen != null) {
+                String procesoNorm = normalizarProceso(proceso);
+                if (procesoNorm != null) {
+                    @SuppressWarnings("unchecked")
+                    Map<String, Object> porTipoProcesoResumen = (Map<String, Object>) resumen.get("porTipoProceso");
+                    if (porTipoProcesoResumen != null && porTipoProcesoResumen.containsKey(procesoNorm)) {
+                        Object datosProceso = porTipoProcesoResumen.get(procesoNorm);
+                        if (datosProceso instanceof Map) {
+                            @SuppressWarnings("unchecked")
+                            Map<String, Object> statsProceso = (Map<String, Object>) datosProceso;
+                            estadisticasGlobales.put("totalSolicitudes", statsProceso.getOrDefault("totalSolicitudes", 0));
+                            estadisticasGlobales.put("totalAprobadas", statsProceso.getOrDefault("totalAprobadas", 0));
+                            estadisticasGlobales.put("totalRechazadas", statsProceso.getOrDefault("totalRechazadas", 0));
+                            estadisticasGlobales.put("totalEnProceso", statsProceso.getOrDefault("totalEnProceso", 0));
+                            Object porEstadoObj = statsProceso.get("porEstado");
+                            int totalEnviadas = 0;
+                            if (porEstadoObj instanceof Map) {
+                                Object env = ((Map<?, ?>) porEstadoObj).get("ENVIADA");
+                                totalEnviadas = env instanceof Number ? ((Number) env).intValue() : 0;
+                            }
+                            estadisticasGlobales.put("totalEnviadas", totalEnviadas);
+                            estadisticasGlobales.put("porcentajeAprobacion", statsProceso.getOrDefault("porcentajeAprobacion", 0.0));
+                            estadisticasGlobales.put("porEstado", statsProceso.getOrDefault("porEstado", new HashMap<>()));
+                            estadisticasGlobales.put("porTipoProceso", Map.of(procesoNorm, datosProceso));
+                        }
+                    }
+                }
             }
             
             // Crear consolidado con estructura específica
@@ -852,13 +961,16 @@ public class EstadisticasRestController {
             consolidado.put("fechaGeneracion", new Date());
             
             // Agregar filtros aplicados si existen
-            if (periodoNormalizado != null || idPrograma != null) {
+            if (periodoNormalizado != null || idPrograma != null || (proceso != null && !proceso.trim().isEmpty())) {
                 Map<String, Object> filtrosAplicados = new HashMap<>();
                 if (periodoNormalizado != null) {
                     filtrosAplicados.put("periodoAcademico", periodoNormalizado);
                 }
                 if (idPrograma != null) {
                     filtrosAplicados.put("idPrograma", idPrograma);
+                }
+                if (proceso != null && !proceso.trim().isEmpty()) {
+                    filtrosAplicados.put("proceso", proceso);
                 }
                 consolidado.put("filtrosAplicados", filtrosAplicados);
             }
@@ -879,8 +991,9 @@ public class EstadisticasRestController {
     @GetMapping("/consolidadas")
     public ResponseEntity<Map<String, Object>> obtenerConsolidadas(
             @RequestParam(required = false) String periodoAcademico,
-            @RequestParam(required = false) Integer idPrograma) {
-        return obtenerConsolidadoGeneral(periodoAcademico, idPrograma);
+            @RequestParam(required = false) Integer idPrograma,
+            @RequestParam(required = false) String proceso) {
+        return obtenerConsolidadoGeneral(periodoAcademico, idPrograma, proceso);
     }
 
     /**
