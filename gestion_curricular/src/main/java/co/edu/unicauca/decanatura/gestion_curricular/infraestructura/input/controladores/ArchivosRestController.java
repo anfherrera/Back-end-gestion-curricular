@@ -3,6 +3,8 @@ package co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.cont
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
+import org.springframework.core.io.InputStreamResource;
+import org.springframework.core.io.Resource;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -401,20 +403,8 @@ public class ArchivosRestController {
                             continue; // Probar el siguiente documento
                         }
                         
-                        // Crear variable final para usar en la lambda
-                        final Path filePath = filePathTemp;
-                        
-                        // Crear StreamingResponseBody para transferencia eficiente
-                        StreamingResponseBody stream = outputStream -> {
-                            try (InputStream inputStream = Files.newInputStream(filePath)) {
-                                byte[] buffer = new byte[8192]; // Buffer de 8KB
-                                int bytesRead;
-                                while ((bytesRead = inputStream.read(buffer)) != -1) {
-                                    outputStream.write(buffer, 0, bytesRead);
-                                }
-                                outputStream.flush();
-                            }
-                        };
+                        // Usar Resource para que Spring pueda serializar correctamente como application/pdf
+                        Resource resource = new InputStreamResource(Files.newInputStream(filePathTemp));
                         
                         // Configurar headers para descarga
                         String contentDisposition = "attachment; filename=\"" + documento.getNombre() + "\"";
@@ -422,9 +412,9 @@ public class ArchivosRestController {
                         return ResponseEntity.ok()
                             .header(HttpHeaders.CONTENT_DISPOSITION, contentDisposition)
                             .contentType(MediaType.APPLICATION_PDF)
-                            .contentLength(Files.size(filePath))
+                            .contentLength(Files.size(filePathTemp))
                             .header(HttpHeaders.CACHE_CONTROL, "private, max-age=3600")
-                            .body(stream);
+                            .body(resource);
                             
                     } catch (Exception e) {
                         log.error("ERROR: [ARCHIVOS] Error procesando documento: {} - {}", 

@@ -911,22 +911,31 @@ public class GestionarEstadisticasGatewayImplAdapter implements GestionarEstadis
                     // Filtrar por período académico
                     if (periodoFiltro != null) {
                         boolean coincidePeriodo = false;
+                        String periodoFiltroTrim = periodoFiltro.trim();
                         
-                        // Verificar período en la solicitud
+                        // Verificar período en la solicitud (comparación con trim)
                         if (solicitud.getPeriodo_academico() != null) {
-                            if (solicitud.getPeriodo_academico().equals(periodoFiltro)) {
+                            if (solicitud.getPeriodo_academico().trim().equals(periodoFiltroTrim)) {
                                 coincidePeriodo = true;
                             }
                         }
                         
-                        // Si no coincide en la solicitud, verificar en el curso asociado
+                        // Si no coincide, verificar en el curso asociado (cursos verano)
                         if (!coincidePeriodo && solicitud.getObjCursoOfertadoVerano() != null) {
                             try {
                                 String periodoCurso = solicitud.getObjCursoOfertadoVerano().getPeriodo_academico();
-                                if (periodoCurso != null && periodoCurso.equals(periodoFiltro)) {
+                                if (periodoCurso != null && periodoCurso.trim().equals(periodoFiltroTrim)) {
                                     coincidePeriodo = true;
                                 }
                             } catch (Exception e) {
+                            }
+                        }
+                        
+                        // Si periodo_academico es null, inferir desde fecha_registro_solicitud
+                        if (!coincidePeriodo && solicitud.getFecha_registro_solicitud() != null) {
+                            String periodoInferido = inferirPeriodoDesdeFecha(solicitud.getFecha_registro_solicitud());
+                            if (periodoInferido != null && periodoInferido.equals(periodoFiltroTrim)) {
+                                coincidePeriodo = true;
                             }
                         }
                         
@@ -963,9 +972,10 @@ public class GestionarEstadisticasGatewayImplAdapter implements GestionarEstadis
         resumen.put("estadisticasGlobales", estadisticasGlobales);
         
         // Estadisticas por tipo de proceso desde solicitudes filtradas
+        // Usar nombres NORMALIZADOS (Reingreso, Homologacion, etc.) para que coincidan con obtenerNombreProcesoPorSolicitud
         Map<String, Object> porProceso = new HashMap<>();
-        List<String> nombresProcesos = new ArrayList<>(solicitudRepository.buscarNombresSolicitudes());
-        for (String proceso : nombresProcesos) {
+        List<String> nombresProcesosNormalizados = Arrays.asList("Reingreso", "Homologacion", "Paz y Salvo", "Cursos de Verano", "ECAES");
+        for (String proceso : nombresProcesosNormalizados) {
             Map<String, Object> estadisticasProceso = calcularEstadisticasPorProcesoDesdeSolicitudes(solicitudesFiltradas, proceso);
             porProceso.put(proceso, estadisticasProceso);
         }
@@ -1072,12 +1082,13 @@ public class GestionarEstadisticasGatewayImplAdapter implements GestionarEstadis
         
         List<SolicitudEntity> solicitudesFiltradas = todasLasSolicitudes.stream()
             .filter(solicitud -> {
-                // Filtrar por período académico
+                // Filtrar por período académico (misma lógica que obtenerResumenCompleto)
                 if (periodoFiltro != null) {
                     boolean coincidePeriodo = false;
+                    String periodoFiltroTrim = periodoFiltro.trim();
                     
                     if (solicitud.getPeriodo_academico() != null) {
-                        if (solicitud.getPeriodo_academico().equals(periodoFiltro)) {
+                        if (solicitud.getPeriodo_academico().trim().equals(periodoFiltroTrim)) {
                             coincidePeriodo = true;
                         }
                     }
@@ -1085,10 +1096,17 @@ public class GestionarEstadisticasGatewayImplAdapter implements GestionarEstadis
                     if (!coincidePeriodo && solicitud.getObjCursoOfertadoVerano() != null) {
                         try {
                             String periodoCurso = solicitud.getObjCursoOfertadoVerano().getPeriodo_academico();
-                            if (periodoCurso != null && periodoCurso.equals(periodoFiltro)) {
+                            if (periodoCurso != null && periodoCurso.trim().equals(periodoFiltroTrim)) {
                                 coincidePeriodo = true;
                             }
                         } catch (Exception e) {
+                        }
+                    }
+                    
+                    if (!coincidePeriodo && solicitud.getFecha_registro_solicitud() != null) {
+                        String periodoInferido = inferirPeriodoDesdeFecha(solicitud.getFecha_registro_solicitud());
+                        if (periodoInferido != null && periodoInferido.equals(periodoFiltroTrim)) {
+                            coincidePeriodo = true;
                         }
                     }
                     
@@ -3010,18 +3028,32 @@ public class GestionarEstadisticasGatewayImplAdapter implements GestionarEstadis
         }
     }
 
+    /**
+     * Infiere el periodo academico (YYYY-1 o YYYY-2) desde una fecha.
+     * Ene-Jun -> 1, Jul-Dic -> 2.
+     */
+    private String inferirPeriodoDesdeFecha(Date fecha) {
+        if (fecha == null) return null;
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(fecha);
+        int anio = cal.get(Calendar.YEAR);
+        int mes = cal.get(Calendar.MONTH) + 1; // Calendar.MONTH es 0-based
+        int numeroPeriodo = (mes >= 1 && mes <= 6) ? 1 : 2;
+        return anio + "-" + numeroPeriodo;
+    }
+
     private String obtenerNombreProcesoPorSolicitud(SolicitudEntity solicitud) {
         if (solicitud == null || solicitud.getNombre_solicitud() == null) return null;
         
         String nombreSolicitud = solicitud.getNombre_solicitud().toLowerCase();
         
-        if (nombreSolicitud.contains("homologacion") || nombreSolicitud.contains("homologacion")) {
+        if (nombreSolicitud.contains("homologacion")) {
             return "Homologacion";
         } else if (nombreSolicitud.contains("paz") && nombreSolicitud.contains("salvo")) {
             return "Paz y Salvo";
         } else if (nombreSolicitud.contains("reingreso")) {
             return "Reingreso";
-        } else if (nombreSolicitud.contains("curso") && nombreSolicitud.contains("verano")) {
+        } else if ((nombreSolicitud.contains("curso") && nombreSolicitud.contains("verano")) || nombreSolicitud.contains("intersemestral")) {
             return "Cursos de Verano";
         } else if (nombreSolicitud.contains("ecaes")) {
             return "ECAES";
