@@ -647,6 +647,21 @@ public class DocumentGeneratorService {
                 }
             }
             replacements.put("CEDULA_ESTUDIANTE", cedulaEstudiante);
+
+            // FECHA_CONCEPTO: mismo valor que FECHA_DOCUMENTO (ya calculado al inicio del método)
+            replacements.put("FECHA_CONCEPTO", replacements.getOrDefault("FECHA_DOCUMENTO", ""));
+
+            // PERIODO_ACADEMICO: desde la tabla solicitudes (campo periodo_academico de la solicitud de reingreso)
+            String periodoAcademico = "";
+            if (solicitudReingreso != null && solicitudReingreso.getPeriodo_academico() != null && !solicitudReingreso.getPeriodo_academico().trim().isEmpty()) {
+                periodoAcademico = solicitudReingreso.getPeriodo_academico().trim();
+            } else {
+                Object periodoObj = datosSolicitud.get("periodoAcademico");
+                if (periodoObj != null && !periodoObj.toString().trim().isEmpty()) {
+                    periodoAcademico = periodoObj.toString().trim();
+                }
+            }
+            replacements.put("PERIODO_ACADEMICO", periodoAcademico);
             
             // Fecha de solicitud: obtener desde fecha_registro_solicitud de la solicitud
             String fechaSolicitud = "";
