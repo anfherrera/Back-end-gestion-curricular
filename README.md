@@ -2,7 +2,7 @@
 
 Backend del sistema de atención a estudiantes de pregrado en los procesos relacionados con la gestión curricular (Propuesta 2) para el soporte administrativo en la FIET - Universidad del Cauca.
 
-## 🚀 Tecnologías
+## Tecnologías
 
 - **Java 17**
 - **Spring Boot 3.2.5**
@@ -14,14 +14,14 @@ Backend del sistema de atención a estudiantes de pregrado en los procesos relac
 - **MapStruct**
 - **Swagger/OpenAPI**
 
-## 📋 Requisitos Previos
+## Requisitos Previos
 
 - Java 17 o superior
 - Maven 3.6+ (o Maven Wrapper incluido `./mvnw`)
 - MySQL 8.0+
 - Git
 
-## 🔧 Configuración Local
+## Configuración Local
 
 ### 1. Clonar el repositorio
 ```bash
@@ -63,13 +63,13 @@ mvn spring-boot:run
 
 La aplicación estará disponible en: `http://localhost:5000`
 
-## 📚 Documentación API
+## Documentación API
 
 Una vez iniciada la aplicación, accede a:
 - **Swagger UI**: `http://localhost:5000/swagger-ui.html`
 - **OpenAPI Docs**: `http://localhost:5000/api-docs`
 
-## 🏗️ Arquitectura
+## Arquitectura
 
 El proyecto sigue una **Arquitectura Hexagonal** (Ports & Adapters):
 
@@ -84,7 +84,7 @@ gestion_curricular/
     └── output/          # Persistencia, servicios externos
 ```
 
-## 🔒 Seguridad
+## Seguridad
 
 - Autenticación JWT
 - Rate limiting en login
@@ -93,7 +93,7 @@ gestion_curricular/
 - CORS configurado
 - Auditoría de seguridad
 
-## 📦 Despliegue
+## Despliegue
 
 ### Variables de Entorno Requeridas
 
@@ -142,13 +142,13 @@ El artefacto empaquetado queda en `gestion_curricular/target/gestion_curricular-
 - **Health**: `http://localhost:5000/actuator/health`
 - **Info**: `http://localhost:5000/actuator/info`
 
-## 📝 Perfiles
+## Perfiles
 
 - **dev**: Desarrollo local (crea/elimina tablas automáticamente)
 - **prod**: Producción (valida esquema, usa variables de entorno)
 - **test**: Pruebas (H2 en memoria)
 
-## 🗂️ Organización de Archivos
+## Organización de Archivos
 
 Los archivos subidos se organizan automáticamente en:
 ```
@@ -161,16 +161,16 @@ Archivos/
     └── solicitud_789/
 ```
 
-## 🧪 Testing
+## Testing
 
 ```bash
 mvn test
 ```
 
-## 👥 Autores
+## Autores
 
 Sistema de Gestión Curricular - FIET - Universidad del Cauca
 
-## 📄 Licencia
+## Licencia
 
 MIT License
