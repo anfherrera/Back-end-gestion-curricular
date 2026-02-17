@@ -116,7 +116,7 @@ INSERT INTO Usuarios(idUsuario, codigo, nombre_completo, correo, password, estad
 INSERT INTO Usuarios(idUsuario, codigo, nombre_completo, correo, password, estado_usuario, idfkRol, idfkPrograma, cedula) VALUES (22, 'FUN001', 'Ana María Rodríguez', 'arodriguez@unicauca.edu.co', 'password123', 1, 5, 1, '1818181818');
 INSERT INTO Usuarios(idUsuario, codigo, nombre_completo, correo, password, estado_usuario, idfkRol, idfkPrograma, cedula) VALUES (23, 'FUN002', 'Pedro Sánchez López', 'psanchez@unicauca.edu.co', 'password123', 1, 5, 2, '1919191919');
 INSERT INTO Usuarios(idUsuario, codigo, nombre_completo, correo, password, estado_usuario, idfkRol, idfkPrograma, cedula) VALUES (24, 'COO001', 'María Elena Vargas', 'mvargas@unicauca.edu.co', 'password123', 1, 3, 3, '2020202020');
-INSERT INTO Usuarios(idUsuario, codigo, nombre_completo, correo, password, estado_usuario, idfkRol, idfkPrograma, cedula) VALUES (25, 'SEC001', 'Carlos Eduardo Torres', 'ctorres@unicauca.edu.co', 'password123', 1, 4, 4, '2121212121');
+INSERT INTO Usuarios(idUsuario, codigo, nombre_completo, correo, password, estado_usuario, idfkRol, idfkPrograma, cedula) VALUES (25, 'SEC001', 'Carlos Eduardo Torres', 'ctorres@unicauca.edu.co', 'password123', 1, 3, 3, '2121212121');
 
 -- Usuario Administrador por defecto (para desarrollo y pruebas)
 -- Correo: admin@unicauca.edu.co
@@ -127,6 +127,7 @@ INSERT INTO Usuarios(idUsuario, codigo, nombre_completo, correo, password, estad
 INSERT INTO Usuarios(idUsuario, codigo, nombre_completo, correo, password, estado_usuario, idfkRol, idfkPrograma, cedula) VALUES (28, '55555555', 'Juan Pablo', 'juanp@unicauca.edu.co', '$2a$12$hnaM9zNGpcYBN6FEWuECjO7Eh.rJ9dXPInXbt8sz9dedJp8zxniYi', 1, 3, 3, '55555555');
 INSERT INTO Usuarios(idUsuario, codigo, nombre_completo, correo, password, estado_usuario, idfkRol, idfkPrograma, cedula) VALUES (29, '10293838', 'josefina rodriguez', 'josefina@unicauca.edu.co', '$2a$12$zHDPzonzaTYw/SDvqZaReehyTo9ri51vg5N1C9DaYHIdeZi9PVQUG', 1, 3, 3, '10293838');
 INSERT INTO Usuarios(idUsuario, codigo, nombre_completo, correo, password, estado_usuario, idfkRol, idfkPrograma, cedula) VALUES (30, '99009876', 'Maria flor', 'maria@unicauca.edu.co', '$2a$12$IterW17WKe75BkVsMSU9SuFb.DcAB6diCk8Ef8fxwzQ7nvdLJyBr.', 1, 4, 3, '0000000000');
+
 
 -- Solo insertar cursos adicionales (el curso 1 ya existe)
 -- Agregar periodo_academico a los cursos
