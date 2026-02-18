@@ -139,29 +139,29 @@ public class GestionarArchivosGatewayImplAdapter implements GestionarArchivosGat
             return rutaActual;
         }
         
-        // Buscar el archivo en la raíz
-        Path archivoOrigen = this.rootLocation.resolve(rutaActual);
-        if (!Files.exists(archivoOrigen)) {
-            throw new IOException("Archivo no encontrado en la ruta: " + rutaActual);
-        }
-        
-        // Construir ruta destino organizada
+        // Construir ruta destino organizada (para uso en movimiento o fallback)
         String tipoSolicitudNormalizado = tipoSolicitud.toLowerCase().replaceAll("[^a-z0-9-_]", "_");
         String subfolder = tipoSolicitudNormalizado + "/solicitud_" + idSolicitud;
         Path targetFolder = this.rootLocation.resolve(subfolder);
-        
-        // Crear carpeta destino si no existe
-        if (!Files.exists(targetFolder)) {
-            Files.createDirectories(targetFolder);
-        }
-        
-        // Mover archivo a la nueva ubicación
         Path archivoDestino = targetFolder.resolve(nombreArchivo);
-        Files.move(archivoOrigen, archivoDestino, StandardCopyOption.REPLACE_EXISTING);
-        
-        // Retornar nueva ruta relativa
-        String nuevaRuta = subfolder + "/" + nombreArchivo;
-        return nuevaRuta;
+
+        // Buscar el archivo en la raíz
+        Path archivoOrigen = this.rootLocation.resolve(rutaActual);
+        if (Files.exists(archivoOrigen)) {
+            // Crear carpeta destino si no existe y mover
+            if (!Files.exists(targetFolder)) {
+                Files.createDirectories(targetFolder);
+            }
+            Files.move(archivoOrigen, archivoDestino, StandardCopyOption.REPLACE_EXISTING);
+            return subfolder + "/" + nombreArchivo;
+        }
+
+        // Si no está en raíz: puede estar ya en carpeta organizada por un intento anterior (ej. creación ECAES falló tras mover y hubo rollback)
+        if (Files.exists(archivoDestino)) {
+            return subfolder + "/" + nombreArchivo;
+        }
+
+        throw new IOException("Archivo no encontrado en la ruta: " + rutaActual);
     }
 
     @Override

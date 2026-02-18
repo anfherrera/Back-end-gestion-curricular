@@ -20,8 +20,10 @@ import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.SolicitudEc
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Usuario;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Enums.EstadosSolicitud;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.controladorExcepciones.excepcionesPropias.EntidadNoExisteException;
+import lombok.extern.slf4j.Slf4j;
 
 
+@Slf4j
 public class GestionarSolicitudEcaesCUAdapter implements GestionarSolicitudEcaesCUIntPort {
 
     private final GestionarPreRegistroEcaesGatewayIntPort objGestionarSolicitudEcaesGateway;
@@ -78,29 +80,6 @@ public class GestionarSolicitudEcaesCUAdapter implements GestionarSolicitudEcaes
 
 
             SolicitudEcaes solicitudGuardada = this.objGestionarSolicitudEcaesGateway.guardar(solicitud);
-            
-            List<Documento> documentosSinSolicitud = this.objDocumentosGateway.buscarDocumentosSinSolicitud();
-            
-            for (Documento doc : documentosSinSolicitud) {
-                // Mover archivo a carpeta organizada si está en la raíz
-                String rutaActual = doc.getRuta_documento() != null ? doc.getRuta_documento() : doc.getNombre();
-                if (rutaActual != null && !rutaActual.contains("/")) {
-                    // El archivo está en la raíz, moverlo a carpeta organizada
-                    String nuevaRuta = gestionarArchivos.moverArchivoAOrganizado(
-                        rutaActual, 
-                        doc.getNombre(), 
-                        "ecaes", 
-                        solicitudGuardada.getId_solicitud()
-                    );
-                    if (nuevaRuta != null) {
-                        doc.setRuta_documento(nuevaRuta);
-                    }
-                }
-                
-                // Asociar documento a la solicitud
-                doc.setObjSolicitud(solicitudGuardada);
-                this.objDocumentosGateway.actualizarDocumento(doc);
-            }
 
             EstadoSolicitud estadoInicial = new EstadoSolicitud();
             estadoInicial.setEstado_actual("Enviada");//Se pone por defecto el estado de Enviada
@@ -120,6 +99,31 @@ public class GestionarSolicitudEcaesCUAdapter implements GestionarSolicitudEcaes
             try {
                 this.objGestionarNotificacionCU.notificarCreacionSolicitud(solicitudGuardada, "ECAES");
             } catch (Exception e) {
+            }
+
+            // Asociar y mover documentos DESPUÉS de estado/usuario/notificación: si algo falla antes,
+            // no se habrán movido archivos y el usuario puede reintentar sin "archivo no encontrado".
+            List<Documento> documentosSinSolicitud = this.objDocumentosGateway.buscarDocumentosSinSolicitud();
+            for (Documento doc : documentosSinSolicitud) {
+                String rutaActual = doc.getRuta_documento() != null ? doc.getRuta_documento() : doc.getNombre();
+                if (rutaActual != null && !rutaActual.contains("/")) {
+                    try {
+                        String nuevaRuta = gestionarArchivos.moverArchivoAOrganizado(
+                            rutaActual,
+                            doc.getNombre(),
+                            "ecaes",
+                            solicitudGuardada.getId_solicitud()
+                        );
+                        if (nuevaRuta != null) {
+                            doc.setRuta_documento(nuevaRuta);
+                        }
+                    } catch (Exception e) {
+                        log.warn("No se pudo mover el archivo del documento {} a carpeta organizada (archivo no encontrado o ya movido en intento anterior). Se asocia con la ruta actual. Error: {}", doc.getNombre(), e.getMessage());
+                    }
+                }
+
+                doc.setObjSolicitud(solicitudGuardada);
+                this.objDocumentosGateway.actualizarDocumento(doc);
             }
 
             return solicitudGuardada;

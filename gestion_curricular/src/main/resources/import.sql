@@ -122,12 +122,12 @@ INSERT INTO Usuarios(idUsuario, codigo, nombre_completo, correo, password, estad
 -- Correo: admin@unicauca.edu.co
 -- Password: password123 (hash BCrypt)
 -- IMPORTANTE: Cambiar la contraseña en producción
-INSERT INTO Usuarios(idUsuario, codigo, nombre_completo, correo, password, estado_usuario, idfkRol, idfkPrograma, cedula) VALUES (26, 'ADMIN001', 'Administrador del Sistema', 'admin@unicauca.edu.co', '$2a$10$N9qo8uLOickgx2ZMRZoMyeIjFOjtXgjOU92LhL6YP1dPW1Z/uLlLG', 1, 1, 1, '0000000000');
+INSERT INTO Usuarios(idUsuario, codigo, nombre_completo, correo, password, estado_usuario, idfkRol, idfkPrograma, cedula) VALUES (26, 'ADMIN001', 'Administrador del Sistema', 'admin@unicauca.edu.co', '$2a$10$N9qo8uLOickgx2ZMRZoMyeIjFOjtXgjOU92LhL6YP1dPW1Z/uLlLG', 1, 1, 1, '000009000');
 INSERT INTO Usuarios(idUsuario, codigo, nombre_completo, correo, password, estado_usuario, idfkRol, idfkPrograma, cedula) VALUES (27, '1046190112', 'Daniel Cisneros', 'dcisneros@unicauca.edu.co', '$2a$12$kPCRQb320eqFwn08XBFDkuJYICOG7H5ou08fmHQ3.zaKZjAtGyI9G', 1, 2, 3, '100791411');
 INSERT INTO Usuarios(idUsuario, codigo, nombre_completo, correo, password, estado_usuario, idfkRol, idfkPrograma, cedula) VALUES (28, '55555555', 'Juan Pablo', 'juanp@unicauca.edu.co', '$2a$12$hnaM9zNGpcYBN6FEWuECjO7Eh.rJ9dXPInXbt8sz9dedJp8zxniYi', 1, 5, 3, '55555555');
 INSERT INTO Usuarios(idUsuario, codigo, nombre_completo, correo, password, estado_usuario, idfkRol, idfkPrograma, cedula) VALUES (29, '10293838', 'josefina rodriguez', 'josefina@unicauca.edu.co', '$2a$12$zHDPzonzaTYw/SDvqZaReehyTo9ri51vg5N1C9DaYHIdeZi9PVQUG', 1, 3, 3, '10293838');
 INSERT INTO Usuarios(idUsuario, codigo, nombre_completo, correo, password, estado_usuario, idfkRol, idfkPrograma, cedula) VALUES (30, '99009876', 'Maria flor', 'maria@unicauca.edu.co', '$2a$12$IterW17WKe75BkVsMSU9SuFb.DcAB6diCk8Ef8fxwzQ7nvdLJyBr.', 1, 4, 3, '99009876');
-INSERT INTO Usuarios(idUsuario, codigo, nombre_completo, correo, password, estado_usuario, idfkRol, idfkPrograma, cedula) VALUES (31, '1046190112', 'Pepa gonzalez', 'pepa@unicauca.edu.co', '$2a$12$58i1AS.C6C/fte9LKTiC/OYz88jf7vUMA3bYYsDwS54XoCYThYwtG', 1, 2, 1, '1007914455');
+INSERT INTO Usuarios(idUsuario, codigo, nombre_completo, correo, password, estado_usuario, idfkRol, idfkPrograma, cedula) VALUES (31, '104619012', 'Pepa gonzalez', 'pepa@unicauca.edu.co', '$2a$12$58i1AS.C6C/fte9LKTiC/OYz88jf7vUMA3bYYsDwS54XoCYThYwtG', 1, 2, 1, '1007917455');
 
 
 -- Solo insertar cursos adicionales (el curso 1 ya existe)

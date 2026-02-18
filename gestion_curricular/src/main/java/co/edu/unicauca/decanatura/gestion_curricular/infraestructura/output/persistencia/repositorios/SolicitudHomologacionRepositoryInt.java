@@ -1,6 +1,7 @@
 package co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.repositorios;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -9,6 +10,14 @@ import org.springframework.data.repository.query.Param;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.entidades.SolicitudHomologacionEntity;
 
 public interface SolicitudHomologacionRepositoryInt extends JpaRepository<SolicitudHomologacionEntity, Integer> {
+
+    /**
+     * Busca una solicitud de homologación por ID cargando la colección de documentos (evita LazyInitializationException).
+     */
+    @Query("SELECT DISTINCT s FROM SolicitudHomologacionEntity s " +
+           "LEFT JOIN FETCH s.documentos " +
+           "WHERE s.id_solicitud = :id")
+    Optional<SolicitudHomologacionEntity> findByIdWithDocumentos(@Param("id") Integer id);
 
     /**
      * Busca las solicitudes de Homologacion cuyo último estado sea "--"

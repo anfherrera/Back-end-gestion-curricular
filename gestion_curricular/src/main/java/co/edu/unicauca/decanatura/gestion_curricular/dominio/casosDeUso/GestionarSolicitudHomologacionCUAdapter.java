@@ -5,6 +5,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
+import lombok.extern.slf4j.Slf4j;
+
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarSolicitudHomologacionCUIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarNotificacionCUIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarArchivosCUIntPort;
@@ -18,6 +20,7 @@ import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.EstadoSolic
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.SolicitudHomologacion;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Usuario;
 
+@Slf4j
 public class GestionarSolicitudHomologacionCUAdapter implements GestionarSolicitudHomologacionCUIntPort {
 
     private final FormateadorResultadosIntPort objFormateadorResultados;
@@ -67,22 +70,25 @@ public class GestionarSolicitudHomologacionCUAdapter implements GestionarSolicit
         //Asociar documentos con solicitud = null y moverlos a carpeta organizada
         List<Documento> documentosSinSolicitud = this.objGestionarDocumentosGateway.buscarDocumentosSinSolicitud();
         for (Documento doc : documentosSinSolicitud) {
-            // Mover archivo a carpeta organizada si está en la raíz
+            // Mover archivo a carpeta organizada si está en la raíz (si el archivo existe en disco)
             String rutaActual = doc.getRuta_documento() != null ? doc.getRuta_documento() : doc.getNombre();
             if (rutaActual != null && !rutaActual.contains("/")) {
-                // El archivo está en la raíz, moverlo a carpeta organizada
-                String nuevaRuta = gestionarArchivos.moverArchivoAOrganizado(
-                    rutaActual, 
-                    doc.getNombre(), 
-                    "homologacion", 
-                    solicitudGuardada.getId_solicitud()
-                );
-                if (nuevaRuta != null) {
-                    doc.setRuta_documento(nuevaRuta);
+                try {
+                    String nuevaRuta = gestionarArchivos.moverArchivoAOrganizado(
+                        rutaActual,
+                        doc.getNombre(),
+                        "homologacion",
+                        solicitudGuardada.getId_solicitud()
+                    );
+                    if (nuevaRuta != null) {
+                        doc.setRuta_documento(nuevaRuta);
+                    }
+                } catch (Exception e) {
+                    log.warn("No se pudo mover el archivo del documento {} a carpeta organizada (archivo no encontrado o error de E/S). Se asocia el documento a la solicitud con la ruta actual. Error: {}", doc.getNombre(), e.getMessage());
                 }
             }
-            
-            // Asociar documento a la solicitud
+
+            // Asociar documento a la solicitud (siempre, aunque no se haya podido mover el archivo)
             doc.setObjSolicitud(solicitudGuardada);
             this.objGestionarDocumentosGateway.actualizarDocumento(doc);
         }

@@ -84,7 +84,7 @@ public class GestionarSolicitudHomologacionGatewayImplAdapter implements Gestion
 
     @Override
     public Optional<SolicitudHomologacion> buscarPorId(Integer idSolicitud) {
-       return solicitudHomologacionRepository.findById(idSolicitud)
+       return solicitudHomologacionRepository.findByIdWithDocumentos(idSolicitud)
                .map(entity -> Optional.of(mapper.map(entity, SolicitudHomologacion.class)))
                .orElse(Optional.empty());
     }

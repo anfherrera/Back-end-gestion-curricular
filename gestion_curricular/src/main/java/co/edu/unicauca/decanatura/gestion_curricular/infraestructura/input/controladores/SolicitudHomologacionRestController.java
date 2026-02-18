@@ -346,6 +346,7 @@ public class SolicitudHomologacionRestController {
                                 .body(archivo);
                                 
                         } catch (Exception e) {
+                            log.debug("No se pudo cargar el documento {}: {}", documento.getNombre(), e.getMessage());
                             continue; // Probar el siguiente documento
                         }
                     }
@@ -355,6 +356,7 @@ public class SolicitudHomologacionRestController {
             return ResponseEntity.notFound().build();
                 
         } catch (Exception e) {
+            log.error("Error al descargar oficio para solicitud {}: {}", idSolicitud, e.getMessage(), e);
             return ResponseEntity.internalServerError().build();
         }
     }
@@ -403,6 +405,7 @@ public class SolicitudHomologacionRestController {
             return ResponseEntity.ok(oficios);
             
         } catch (Exception e) {
+            log.error("Error al obtener oficios para solicitud {}: {}", idSolicitud, e.getMessage(), e);
             return ResponseEntity.internalServerError().build();
         }
     }
@@ -456,6 +459,7 @@ public class SolicitudHomologacionRestController {
             return ResponseEntity.ok(resultado);
             
         } catch (Exception e) {
+            log.error("Error al validar documentos requeridos para solicitud {}: {}", idSolicitud, e.getMessage(), e);
             return ResponseEntity.internalServerError().build();
         }
     }
