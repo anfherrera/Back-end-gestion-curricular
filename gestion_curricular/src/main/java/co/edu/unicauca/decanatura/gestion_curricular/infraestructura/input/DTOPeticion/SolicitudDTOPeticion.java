@@ -10,6 +10,7 @@ import jakarta.validation.constraints.PastOrPresent;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 
+import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.validacion.PastOrPresentWithTolerance;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -26,7 +27,7 @@ public class SolicitudDTOPeticion {
     private String nombre_solicitud;
 
     @NotNull(message = "{Solicitud.fecha.empty}")
-    @PastOrPresent(message = "{Solicitud.fecha.pastorpresent}")
+    @PastOrPresentWithTolerance(message = "{Solicitud.fecha.pastorpresent}", toleranceSeconds = 120)
     private Date fecha_registro_solicitud;
 
     @Pattern(regexp = "^\\d{4}-[12]$", message = "{Solicitud.periodo_academico.format}")
