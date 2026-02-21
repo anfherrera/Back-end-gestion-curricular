@@ -10,6 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.GestionarDocumentosGatewayIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Documento;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.entidades.DocumentoEntity;
+import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.entidades.SolicitudEntity;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.repositorios.DocumentoRepositoryInt;
 
 @Service
@@ -36,11 +37,22 @@ public class GestionarDocumentoGatewayImplAdapter implements GestionarDocumentos
     @Override
     @Transactional
     public Documento actualizarDocumento(Documento documento) {
-        documentoRepository.findById(documento.getId_documento())
+        DocumentoEntity existente = documentoRepository.findById(documento.getId_documento())
             .orElseThrow(() -> new RuntimeException("Documento no encontrado con ID: " + documento.getId_documento()));
 
-        DocumentoEntity documentoEntity = documentoMapper.map(documento, DocumentoEntity.class);
-        DocumentoEntity actualizado = documentoRepository.save(documentoEntity);
+        // Actualizar solo campos editables; no sobrescribir objSolicitud cuando viene null en el dominio
+        // (p. ej. tras buscarDocumentoId sin cargar la relación), para no perder la asociación.
+        existente.setNombre(documento.getNombre());
+        existente.setRuta_documento(documento.getRuta_documento());
+        existente.setFecha_documento(documento.getFecha_documento());
+        existente.setEsValido(documento.isEsValido());
+        existente.setComentario(documento.getComentario());
+        if (documento.getObjSolicitud() != null) {
+            existente.setObjSolicitud(documentoMapper.map(documento.getObjSolicitud(), SolicitudEntity.class));
+        }
+        // si documento.getObjSolicitud() == null, se mantiene el valor actual de existente (no se desasocia)
+
+        DocumentoEntity actualizado = documentoRepository.save(existente);
         return documentoMapper.map(actualizado, Documento.class);
     }
     @Override
