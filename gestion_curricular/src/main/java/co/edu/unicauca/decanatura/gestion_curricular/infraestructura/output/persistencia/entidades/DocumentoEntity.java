@@ -36,7 +36,8 @@ public class DocumentoEntity {
     private Date fecha_documento;
     @Column(columnDefinition = "TINYINT", length = 1)
     private boolean esValido;
-    @Column(length = 100)
+    /** Historial de comentarios (concatenados, multilínea); longitud ampliada para varios comentarios con fecha y usuario */
+    @Column(length = 2000)
     private String comentario; // comentario de funcionario o coordinador
 
     @ManyToOne(fetch = FetchType.LAZY)

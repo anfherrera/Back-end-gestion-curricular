@@ -6,7 +6,9 @@ import java.nio.charset.StandardCharsets;
 
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarDocumentosCUIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.GestionarArchivosGatewayIntPort;
+import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.GestionarUsuarioGatewayIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Documento;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Usuario;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.DTOPeticion.ComentarioDocumentoDTOPeticion;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.DTORespuesta.DocumentosDTORespuesta;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.mappers.DocumentosMapperDominio;
@@ -14,6 +16,8 @@ import jakarta.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -30,6 +34,7 @@ public class DocumentoRestController {
     private final GestionarDocumentosCUIntPort documentoCU;
     private final DocumentosMapperDominio mapperDocumento;
     private final GestionarArchivosGatewayIntPort objGestionarArchivos;
+    private final GestionarUsuarioGatewayIntPort usuarioGateway;
 
     @GetMapping("/buscarPorId/{id}")
     public ResponseEntity<DocumentosDTORespuesta> buscarDocumentoPorId(@Min(1) @PathVariable Integer id) {
@@ -45,7 +50,26 @@ public class DocumentoRestController {
 
     @PutMapping("/añadirComentario")
     public ResponseEntity<Void> añadirComentario(@RequestBody ComentarioDocumentoDTOPeticion peticion) {
-        documentoCU.añadirComentario(peticion.getIdDocumento(), peticion.getComentario());
+        String nombreUsuario = null;
+        String rolUsuario = null;
+        try {
+            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+            if (authentication != null && authentication.isAuthenticated()) {
+                String correo = authentication.getName();
+                Usuario usuario = usuarioGateway.buscarUsuarioPorCorreo(correo);
+                if (usuario != null) {
+                    nombreUsuario = usuario.getNombre_completo();
+                    if (usuario.getObjRol() != null) {
+                        rolUsuario = usuario.getObjRol().getNombre();
+                    }
+                }
+            }
+        } catch (Exception e) {
+            log.debug("No se pudo obtener usuario autenticado para comentario: {}", e.getMessage());
+        }
+        Integer idDocumento = peticion.getIdDocumento();
+        String comentarioNuevo = peticion.getComentario();
+        documentoCU.añadirComentario(idDocumento, comentarioNuevo, nombreUsuario, rolUsuario);
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
 
