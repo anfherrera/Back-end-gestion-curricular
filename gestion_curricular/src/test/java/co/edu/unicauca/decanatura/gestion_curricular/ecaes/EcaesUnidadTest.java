@@ -263,9 +263,10 @@ class EcaesUnidadTest {
     @Test
     @DisplayName("Test 11: Cambiar estado solicitud - Delega correctamente")
     void testCambiarEstadoSolicitudDelegaCorrectamente() {
-        // Arrange
+        // Arrange - el CU llama a buscarPorId antes de cambiar estado
         int idSolicitud = 1;
         String nuevoEstado = "preRegistrado";
+        when(solicitudGateway.buscarPorId(idSolicitud)).thenReturn(Optional.of(solicitudEjemplo));
 
         // Act
         solicitudEcaesCU.cambiarEstadoSolicitud(idSolicitud, nuevoEstado);

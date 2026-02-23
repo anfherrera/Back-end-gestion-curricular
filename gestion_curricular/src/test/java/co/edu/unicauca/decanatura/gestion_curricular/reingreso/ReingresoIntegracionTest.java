@@ -7,6 +7,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 
@@ -28,8 +29,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  * @author Daniel
  */
 @SpringBootTest
-@AutoConfigureMockMvc
+@AutoConfigureMockMvc(addFilters = false)
 @ActiveProfiles("test")
+@WithMockUser(roles = { "SECRETARIA", "FUNCIONARIO", "COORDINADOR", "ESTUDIANTE" })
 @DisplayName("Pruebas de Integración - REST API Reingreso")
 class ReingresoIntegracionTest {
 
@@ -189,7 +191,8 @@ class ReingresoIntegracionTest {
         mockMvc.perform(get("/api/solicitudes-reingreso/validarDocumentosRequeridos/3"))
                 .andExpect(result -> {
                     int status = result.getResponse().getStatus();
-                    assert status == 200 || status == 500 || status == 404;
+                    if (status != 200 && status != 500 && status != 404)
+                        throw new AssertionError("Expected 200, 404 or 500, got " + status);
                 });
     }
 
@@ -201,7 +204,8 @@ class ReingresoIntegracionTest {
         mockMvc.perform(get("/api/solicitudes-reingreso/obtenerOficios/3"))
                 .andExpect(result -> {
                     int status = result.getResponse().getStatus();
-                    assert status == 200 || status == 500 || status == 404;
+                    if (status != 200 && status != 500 && status != 404)
+                        throw new AssertionError("Expected 200, 404 or 500, got " + status);
                 });
     }
 

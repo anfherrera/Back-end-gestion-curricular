@@ -303,9 +303,10 @@ class HomologacionUnidadTest {
     @Test
     @DisplayName("Test 14: Cambiar estado solicitud - Delega correctamente")
     void testCambiarEstadoSolicitudDelegaCorrectamente() {
-        // Arrange
+        // Arrange - el CU puede llamar a buscarPorId antes de cambiar estado
         int idSolicitud = 1;
         String nuevoEstado = "APROBADA_FUNCIONARIO";
+        when(solicitudGateway.buscarPorId(idSolicitud)).thenReturn(Optional.of(solicitudEjemplo));
 
         // Act
         solicitudHomologacionCU.cambiarEstadoSolicitud(idSolicitud, nuevoEstado);
