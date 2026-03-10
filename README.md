@@ -148,18 +148,7 @@ El artefacto empaquetado queda en `gestion_curricular/target/gestion_curricular-
 - **prod**: Producción (valida esquema, usa variables de entorno)
 - **test**: Pruebas (H2 en memoria)
 
-## Organización de Archivos
 
-Los archivos subidos se organizan automáticamente en:
-```
-Archivos/
-├── pazysalvo/
-│   └── solicitud_123/
-├── reingreso/
-│   └── solicitud_456/
-└── curso-verano/
-    └── solicitud_789/
-```
 
 ## Testing
 

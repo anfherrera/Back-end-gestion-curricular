@@ -6,9 +6,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 public interface GestionarArchivosCUIntPort {
     
-    /**
-     * Guarda un archivo en la carpeta raíz (método original para retrocompatibilidad)
-     */
+
     String saveFile(MultipartFile file, String name, String fileType);
     
     /**
