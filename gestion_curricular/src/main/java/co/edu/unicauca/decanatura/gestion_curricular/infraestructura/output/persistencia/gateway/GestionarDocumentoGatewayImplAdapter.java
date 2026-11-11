@@ -75,26 +75,13 @@ public class GestionarDocumentoGatewayImplAdapter implements GestionarDocumentos
     }
 
     @Override
-    public List<Documento> buscarDocumentosSinSolicitud() {
-       return documentoRepository.findByobjSolicitudIsNull()
+    public List<Documento> buscarDocumentosSinSolicitud(Integer idUsuario) {
+       if (idUsuario == null) {
+           return List.of();
+       }
+       return documentoRepository.findByObjSolicitudIsNullAndIdUsuarioSubio(idUsuario)
             .stream()
             .map(entity -> documentoMapper.map(entity, Documento.class))
             .toList();
     }
-
-    @Override
-    public void añadirComentario(Documento documento, String comentario) {
-        
-        
-    }
-
-    @Override
-    @Transactional(readOnly = true)
-    public Optional<Documento> buscarDocumentoPorNombre(String nombre) {
-        return documentoRepository.findByNombre(nombre)
-            .map(entity -> documentoMapper.map(entity, Documento.class));
-    }
-
-    
-    
 }

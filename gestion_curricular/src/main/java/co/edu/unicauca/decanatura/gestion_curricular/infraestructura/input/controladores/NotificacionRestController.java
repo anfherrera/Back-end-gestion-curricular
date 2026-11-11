@@ -7,8 +7,7 @@ import java.util.stream.Collectors;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
+import co.edu.unicauca.decanatura.gestion_curricular.Security.Autorizacion;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -20,7 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarNotificacionCUIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.GestionarUsuarioGatewayIntPort;
-import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.GestionarSolicitudGatewayIntPort;
+import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarSolicitudCUIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Notificacion;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Usuario;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Solicitud;
@@ -48,11 +47,13 @@ public class NotificacionRestController {
     private final GestionarNotificacionCUIntPort notificacionCU;
     private final NotificacionMapperDominio notificacionMapper;
     private final GestionarUsuarioGatewayIntPort usuarioGateway;
-    private final GestionarSolicitudGatewayIntPort solicitudGateway;
+    private final GestionarSolicitudCUIntPort solicitudCU;
+    private final Autorizacion autorizacion;
 
     @PostMapping("/crear")
     @Operation(summary = "Crear una notificación", description = "Crea una nueva notificación en el sistema")
-    @PreAuthorize("hasAnyRole('Administrador', 'Funcionario', 'Coordinador', 'Secretario', 'Estudiante')")
+    // Solo staff: un estudiante podría crear avisos falsos para otros usuarios
+    @PreAuthorize("hasAnyRole(" + Autorizacion.ROLES_STAFF + ")")
     public ResponseEntity<NotificacionDTORespuesta> crearNotificacion(
             @Valid @RequestBody NotificacionDTOPeticion peticion) {
         try {
@@ -67,7 +68,7 @@ public class NotificacionRestController {
             
             // Resolver solicitud si existe
             if (peticion.getIdSolicitud() != null) {
-                Solicitud solicitud = solicitudGateway.obtenerSolicitudPorId(peticion.getIdSolicitud());
+                Solicitud solicitud = solicitudCU.obtenerSolicitudPorId(peticion.getIdSolicitud());
                 notificacion.setObjSolicitud(solicitud);
             }
             
@@ -317,38 +318,7 @@ public class NotificacionRestController {
      * - Los funcionarios, coordinadores, secretarios y administradores pueden ver/modificar cualquier notificación
      */
     private boolean tienePermisoParaVerNotificaciones(Integer idUsuario) {
-        try {
-            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-            if (authentication == null || !authentication.isAuthenticated()) {
-                return false;
-            }
-
-            String email = authentication.getName();
-            Usuario usuarioAutenticado = usuarioGateway.buscarUsuarioPorCorreo(email);
-            
-            if (usuarioAutenticado == null) {
-                return false;
-            }
-
-            // Si es el mismo usuario, siempre puede ver sus notificaciones
-            if (usuarioAutenticado.getId_usuario().equals(idUsuario)) {
-                return true;
-            }
-
-            // Verificar si tiene rol administrativo
-            String rolNombre = usuarioAutenticado.getObjRol() != null 
-                    ? usuarioAutenticado.getObjRol().getNombre() 
-                    : null;
-
-            // Funcionarios, coordinadores, secretarios y administradores pueden ver notificaciones de otros
-            return "Funcionario".equals(rolNombre) || 
-                   "Coordinador".equals(rolNombre) || 
-                   "Secretario".equals(rolNombre) ||
-                   "Administrador".equals(rolNombre);
-        } catch (Exception e) {
-            log.error("Error al validar permisos para ver notificaciones", e);
-            return false;
-        }
+        return autorizacion.esUsuarioActual(idUsuario) || autorizacion.esStaff();
     }
 }
 

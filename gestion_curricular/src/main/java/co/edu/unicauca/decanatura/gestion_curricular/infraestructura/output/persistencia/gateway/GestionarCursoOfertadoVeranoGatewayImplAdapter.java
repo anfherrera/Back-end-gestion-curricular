@@ -267,4 +267,36 @@ public class GestionarCursoOfertadoVeranoGatewayImplAdapter implements Gestionar
 
         return usuarioYaEliminado;
     }
+
+    @Override
+    public CursoOfertadoVerano guardarCambiosCurso(Integer idCurso, Integer cupoEstimado, String salon, String nuevoEstado) {
+        CursoOfertadoVeranoEntity curso = cursoRepository.findByIdConEstados(idCurso);
+        if (curso == null) {
+            return null;
+        }
+        if (cupoEstimado != null) {
+            curso.setCupo_estimado(cupoEstimado);
+        }
+        if (salon != null) {
+            curso.setSalon(salon);
+        }
+        CursoOfertadoVeranoEntity guardado = cursoRepository.save(curso);
+        if (nuevoEstado != null) {
+            EstadoCursoOfertadoEntity estado = new EstadoCursoOfertadoEntity();
+            estado.setEstado_actual(nuevoEstado);
+            estado.setFecha_registro_estado(new Date());
+            estado.setObjCursoOfertadoVerano(guardado);
+            objEstadoCursoOfertadoRepository.save(estado);
+        }
+        return cursoMapper.map(guardado, CursoOfertadoVerano.class);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public boolean existeCurso(Integer idMateria, Integer idDocente, String periodoAcademico, GrupoCursoVerano grupo) {
+        GrupoCursoVeranoEntity grupoEntity = grupo != null
+                ? GrupoCursoVeranoEntity.valueOf(grupo.name())
+                : GrupoCursoVeranoEntity.A;
+        return !cursoRepository.buscarPorMateriaDocentePeriodoGrupo(idMateria, idDocente, periodoAcademico, grupoEntity).isEmpty();
+    }
 }

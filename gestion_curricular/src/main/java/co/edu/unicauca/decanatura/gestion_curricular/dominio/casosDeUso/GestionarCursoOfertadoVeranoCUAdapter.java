@@ -18,7 +18,9 @@ import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.EstadoCurso
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.EstadoSolicitud;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Materia;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Solicitud;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.TransicionEstadoCurso;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Usuario;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Enums.GrupoCursoVerano;
 
 public class GestionarCursoOfertadoVeranoCUAdapter implements GestionarCursoOfertadoVeranoCUIntPort {
 
@@ -262,6 +264,35 @@ public class GestionarCursoOfertadoVeranoCUAdapter implements GestionarCursoOfer
             this.objFormateadorResultados.retornarRespuestaErrorEntidadNoExiste("No se encuentra el curso");
         }
         return cursosABuscar;
+    }
+
+    @Override
+    public boolean asociarEstudiante(Integer idCurso, Integer idUsuario) {
+        return Boolean.TRUE.equals(objGestionarCursoOfertadoVeranoGateway.asociarUsuarioCurso(idUsuario, idCurso));
+    }
+
+    @Override
+    public CursoOfertadoVerano modificarCurso(Integer idCurso, Integer cupoEstimado, String salon, String nuevoEstado) {
+        CursoOfertadoVerano curso = objGestionarCursoOfertadoVeranoGateway.obtenerCursoPorId(idCurso);
+        if (curso == null) {
+            return null;
+        }
+        if (nuevoEstado != null) {
+            // La completitud se evalúa con los datos nuevos (cupo y salón ya aplicados)
+            if (cupoEstimado != null) {
+                curso.setCupo_estimado(cupoEstimado);
+            }
+            if (salon != null) {
+                curso.setSalon(salon);
+            }
+            TransicionEstadoCurso.validar(curso, nuevoEstado);
+        }
+        return objGestionarCursoOfertadoVeranoGateway.guardarCambiosCurso(idCurso, cupoEstimado, salon, nuevoEstado);
+    }
+
+    @Override
+    public boolean existeCurso(Integer idMateria, Integer idDocente, String periodoAcademico, GrupoCursoVerano grupo) {
+        return objGestionarCursoOfertadoVeranoGateway.existeCurso(idMateria, idDocente, periodoAcademico, grupo);
     }
 
     @Override

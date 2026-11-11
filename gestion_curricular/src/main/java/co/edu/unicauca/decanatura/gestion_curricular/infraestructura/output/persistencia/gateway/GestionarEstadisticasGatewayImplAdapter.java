@@ -189,280 +189,104 @@ public class GestionarEstadisticasGatewayImplAdapter implements GestionarEstadis
     // @Cacheable(value = "estadisticasGlobales", key = "#proceso + '_' + #idPrograma + '_' + #fechaInicio + '_' + #fechaFin")
     // Propagation.NOT_SUPPORTED suspende cualquier transacción existente, evitando rollback-only cuando fallan consultas
     public Map<String, Object> obtenerEstadisticasGlobales(String proceso, Integer idPrograma, Date fechaInicio, Date fechaFin) {
+        // Si una consulta falla, la excepción se propaga y el endpoint responde 500.
+        // Antes se devolvían ceros, que en el dashboard se veían como datos reales (y quedaban en caché).
         Map<String, Object> estadisticas = new HashMap<>();
-        
-        try {
-            // Estadisticas generales del sistema
-            // Si hay filtros, algunos conteos pueden no funcionar correctamente
-            // En ese caso, usar contarEstado() para estadisticas globales sin filtros
-            
-            Integer totalSolicitudes = 0;
-            Integer totalAprobadas = 0;
-            Integer totalRechazadas = 0;
-            Integer enProcesoFuncionario = 0;
-            Integer enProcesoCoordinador = 0;
-            Integer totalEnviadas = 0;
-            
-            if (proceso == null && idPrograma == null && fechaInicio == null && fechaFin == null) {
-                // Sin filtros: usar contarEstado que es mas confiable
-                try {
-                    totalAprobadas = Optional.ofNullable(solicitudRepository.contarEstado("APROBADA")).orElse(0);
-                    totalRechazadas = Optional.ofNullable(solicitudRepository.contarEstado("RECHAZADA")).orElse(0);
-                    enProcesoFuncionario = Optional.ofNullable(solicitudRepository.contarEstado("APROBADA_FUNCIONARIO")).orElse(0);
-                    enProcesoCoordinador = Optional.ofNullable(solicitudRepository.contarEstado("APROBADA_COORDINADOR")).orElse(0);
-                    
-                    // Contar ENVIADA (contarEstado usa UPPER() así que cuenta "ENVIADA" y "Enviada")
-                    Integer enviadas = Optional.ofNullable(solicitudRepository.contarEstado("ENVIADA")).orElse(0);
-                    // También contar PRE_REGISTRADO que se trata como ENVIADA para estadísticas
-                    Integer preRegistrado = 0;
-                    try {
-                        preRegistrado = Optional.ofNullable(solicitudRepository.contarEstado("PRE_REGISTRADO")).orElse(0);
-                    } catch (Exception e) {
-                        preRegistrado = 0;
-                    }
-                    totalEnviadas = (enviadas != null ? enviadas : 0) + (preRegistrado != null ? preRegistrado : 0);
-                    
-                    totalSolicitudes = (totalAprobadas != null ? totalAprobadas : 0) + 
-                                     (totalRechazadas != null ? totalRechazadas : 0) + 
-                                     (enProcesoFuncionario != null ? enProcesoFuncionario : 0) + 
-                                     (enProcesoCoordinador != null ? enProcesoCoordinador : 0) + 
-                                     totalEnviadas;
-                    
-                    // Si la suma es 0 pero hay solicitudes, usar el método directo del repositorio como fallback
-                    if (totalSolicitudes == null || totalSolicitudes == 0) {
-                        try {
-                            totalSolicitudes = Optional.ofNullable(solicitudRepository.totalSolicitudes()).orElse(0);
-                        } catch (Exception e) {
-                            totalSolicitudes = 0;
-                        }
-                    }
-                } catch (Exception e) {
-                    log.error("Estadisticas globales - Error obteniendo conteos sin filtros: {}", e.getMessage(), e);
-                    totalAprobadas = 0;
-                    totalRechazadas = 0;
-                    enProcesoFuncionario = 0;
-                    enProcesoCoordinador = 0;
-                    totalEnviadas = 0;
-                    totalSolicitudes = 0;
-                }
-            } else {
-                // Con filtros: usar contarSolicitudesPorEstadoConFiltros
-                try {
-                    totalAprobadas = Optional.ofNullable(solicitudRepository.contarSolicitudesPorEstadoConFiltros("APROBADA", proceso, idPrograma, fechaInicio, fechaFin)).orElse(0);
-                    totalRechazadas = Optional.ofNullable(solicitudRepository.contarSolicitudesPorEstadoConFiltros("RECHAZADA", proceso, idPrograma, fechaInicio, fechaFin)).orElse(0);
-                    enProcesoFuncionario = Optional.ofNullable(solicitudRepository.contarSolicitudesPorEstadoConFiltros("APROBADA_FUNCIONARIO", proceso, idPrograma, fechaInicio, fechaFin)).orElse(0);
-                    enProcesoCoordinador = Optional.ofNullable(solicitudRepository.contarSolicitudesPorEstadoConFiltros("APROBADA_COORDINADOR", proceso, idPrograma, fechaInicio, fechaFin)).orElse(0);
-                    totalEnviadas = Optional.ofNullable(solicitudRepository.contarSolicitudesPorEstadoConFiltros("ENVIADA", proceso, idPrograma, fechaInicio, fechaFin)).orElse(0);
-                    
-                    // Con filtros: usar contarSolicitudesConFiltros o calcular como suma
-                    totalSolicitudes = Optional.ofNullable(solicitudRepository.contarSolicitudesConFiltros(proceso, idPrograma, fechaInicio, fechaFin)).orElse(0);
-                    
-                    // Si contarSolicitudesConFiltros falla, calcular como suma de estados
-                    if (totalSolicitudes == null || totalSolicitudes == 0) {
-                        totalSolicitudes = (totalAprobadas != null ? totalAprobadas : 0) + 
-                                         (totalRechazadas != null ? totalRechazadas : 0) + 
-                                         (enProcesoFuncionario != null ? enProcesoFuncionario : 0) + 
-                                         (enProcesoCoordinador != null ? enProcesoCoordinador : 0) + 
-                                         (totalEnviadas != null ? totalEnviadas : 0);
-                    }
-                } catch (Exception e) {
-                    log.error("Estadisticas globales - Error obteniendo conteos con filtros: {}", e.getMessage(), e);
-                    totalAprobadas = 0;
-                    totalRechazadas = 0;
-                    enProcesoFuncionario = 0;
-                    enProcesoCoordinador = 0;
-                    totalEnviadas = 0;
-                    totalSolicitudes = 0;
-                }
+
+        int totalSolicitudes;
+        int totalAprobadas;
+        int totalRechazadas;
+        int enProcesoFuncionario;
+        int enProcesoCoordinador;
+        int totalEnviadas;
+
+        if (proceso == null && idPrograma == null && fechaInicio == null && fechaFin == null) {
+            // Sin filtros: contarEstado usa UPPER(), así que cuenta "ENVIADA" y "Enviada"
+            totalAprobadas = Optional.ofNullable(solicitudRepository.contarEstado("APROBADA")).orElse(0);
+            totalRechazadas = Optional.ofNullable(solicitudRepository.contarEstado("RECHAZADA")).orElse(0);
+            enProcesoFuncionario = Optional.ofNullable(solicitudRepository.contarEstado("APROBADA_FUNCIONARIO")).orElse(0);
+            enProcesoCoordinador = Optional.ofNullable(solicitudRepository.contarEstado("APROBADA_COORDINADOR")).orElse(0);
+            // PRE_REGISTRADO se trata como ENVIADA para estadísticas
+            totalEnviadas = Optional.ofNullable(solicitudRepository.contarEstado("ENVIADA")).orElse(0)
+                    + Optional.ofNullable(solicitudRepository.contarEstado("PRE_REGISTRADO")).orElse(0);
+
+            totalSolicitudes = totalAprobadas + totalRechazadas + enProcesoFuncionario + enProcesoCoordinador + totalEnviadas;
+            if (totalSolicitudes == 0) {
+                totalSolicitudes = Optional.ofNullable(solicitudRepository.totalSolicitudes()).orElse(0);
             }
-            
-            // En Proceso = solo las aprobadas por funcionario y coordinador (NO incluye enviadas)
-            Integer totalEnProceso = (enProcesoFuncionario != null ? enProcesoFuncionario : 0) + 
-                                    (enProcesoCoordinador != null ? enProcesoCoordinador : 0);
-            
-            // Asegurar que todos los valores sean no-null antes de agregarlos al map
-            estadisticas.put("totalSolicitudes", totalSolicitudes != null ? totalSolicitudes : 0);
-            estadisticas.put("totalAprobadas", totalAprobadas != null ? totalAprobadas : 0);
-            estadisticas.put("totalRechazadas", totalRechazadas != null ? totalRechazadas : 0);
-            estadisticas.put("totalEnviadas", totalEnviadas != null ? totalEnviadas : 0);
-            estadisticas.put("totalEnProceso", totalEnProceso != null ? totalEnProceso : 0);
-            
-            // Calcular porcentaje de aprobacion
-            double porcentajeAprobacion = 0.0;
-            if (totalSolicitudes != null && totalSolicitudes > 0 && totalAprobadas != null) {
-                porcentajeAprobacion = (double) totalAprobadas / totalSolicitudes * 100;
-                // Validar que no sea NaN o Infinity
-                if (Double.isNaN(porcentajeAprobacion) || Double.isInfinite(porcentajeAprobacion)) {
-                    porcentajeAprobacion = 0.0;
-                }
-            }
-            estadisticas.put("porcentajeAprobacion", Math.round(porcentajeAprobacion * 10.0) / 10.0);
-            
-            // Estadisticas por tipo de proceso (agrupadas por tipo, no por persona)
-            Map<String, Integer> porTipoProceso = new HashMap<>();
-            try {
-                // Obtener todas las solicitudes con manejo de errores robusto
-                List<SolicitudEntity> solicitudes;
-                try {
-                    solicitudes = cargarSolicitudes();
-                    if (solicitudes == null) {
-                        solicitudes = new ArrayList<>();
-                    }
-                } catch (Exception e) {
-                    log.error("Estadisticas globales - Error obteniendo todas las solicitudes: {}", e.getMessage(), e);
-                    solicitudes = new ArrayList<>();
-                }
-                
-                // Agrupar por tipo de proceso (extrayendo el tipo del nombre)
-                for (SolicitudEntity solicitud : solicitudes) {
-                    try {
-                    // Aplicar filtros manualmente si es necesario
-                    boolean cumpleFiltros = true;
-                    
-                    String nombreSolicitud = solicitud.getNombre_solicitud();
-                    if (proceso != null) {
-                        String procesoBuscado = TipoProcesoSolicitud.porNombre(proceso);
-                        String procesoSolicitud = obtenerNombreProcesoPorSolicitud(solicitud);
-                        if (procesoBuscado == null || !procesoBuscado.equals(procesoSolicitud)) {
-                            cumpleFiltros = false;
-                        }
-                    }
-                    // Si hay filtro de proceso pero la solicitud no tiene nombre, excluirla
-                    if (proceso != null && nombreSolicitud == null) {
-                        cumpleFiltros = false;
-                    }
-                    if (idPrograma != null && solicitud.getObjUsuario() != null && 
-                        solicitud.getObjUsuario().getObjPrograma() != null &&
-                        !solicitud.getObjUsuario().getObjPrograma().getId_programa().equals(idPrograma)) {
-                        cumpleFiltros = false;
-                    }
-                    Date fechaSolicitud = solicitud.getFecha_registro_solicitud();
-                    if (fechaInicio != null && fechaSolicitud != null && fechaSolicitud.before(fechaInicio)) {
-                        cumpleFiltros = false;
-                    }
-                    if (fechaFin != null && fechaSolicitud != null && fechaSolicitud.after(fechaFin)) {
-                        cumpleFiltros = false;
-                    }
-                    // Si la solicitud no tiene fecha y hay filtros de fecha, excluirla
-                    if ((fechaInicio != null || fechaFin != null) && fechaSolicitud == null) {
-                        cumpleFiltros = false;
-                    }
-                    
-                    if (cumpleFiltros && nombreSolicitud != null) {
-                        try {
-                            String tipoProceso = obtenerNombreProcesoPorSolicitud(solicitud);
-                            if (tipoProceso != null && !tipoProceso.trim().isEmpty()) {
-                                porTipoProceso.put(tipoProceso, porTipoProceso.getOrDefault(tipoProceso, 0) + 1);
-                            }
-                        } catch (Exception e) {
-                            // Continuar con la siguiente solicitud
-                        }
-                    }
-                    } catch (Exception e) {
-                        // Continuar con la siguiente solicitud
-                    }
-                }
-                
-            } catch (Exception e) {
-                log.error("Estadisticas globales - Error obteniendo procesos: {}", e.getMessage(), e);
-                porTipoProceso = new HashMap<>();
-            }
-            estadisticas.put("porTipoProceso", porTipoProceso);
-            
-            // Estadisticas por programa (con filtros si se aplican)
-            Map<String, Integer> porPrograma = new HashMap<>();
-            try {
-                // Obtener todos los programas con sus IDs
-                List<ProgramaEntity> programas;
-                try {
-                    programas = programaRepository.findAll();
-                    if (programas == null) {
-                        programas = new ArrayList<>();
-                    }
-                } catch (DataAccessException e) {
-                    log.error("Estadisticas globales - Error de acceso a datos obteniendo todos los programas: {}", e.getMessage(), e);
-                    programas = new ArrayList<>();
-                } catch (Exception e) {
-                    log.error("Estadisticas globales - Error obteniendo todos los programas: {}", e.getMessage(), e);
-                    programas = new ArrayList<>();
-                }
-                
-                for (ProgramaEntity programa : programas) {
-                    try {
-                        if (programa != null && programa.getId_programa() != null && programa.getNombre_programa() != null) {
-                            Integer cantidad = Optional.ofNullable(solicitudRepository.contarSolicitudesPorProgramaConFiltros(programa.getId_programa(), proceso, fechaInicio, fechaFin)).orElse(0);
-                            porPrograma.put(programa.getNombre_programa(), cantidad);
-                        }
-                    } catch (Exception e) {
-                        // Continuar con el siguiente programa
-                    }
-                }
-            } catch (Exception e) {
-                log.error("Estadisticas globales - Error obteniendo programas: {}", e.getMessage());
-                porPrograma = new HashMap<>();
-            }
-            estadisticas.put("porPrograma", porPrograma);
-            
-            // Estadisticas por estado (valores INDIVIDUALES del estado mas reciente)
-            // Cada estado se cuenta por separado usando contarEstado (con comparacion exacta)
-            Map<String, Integer> porEstado = new HashMap<>();
-            
-            porEstado.put("APROBADA", totalAprobadas);  // 21 (ahora contarEstado usa = en vez de LIKE)
-            porEstado.put("RECHAZADA", totalRechazadas);  // 5
-            porEstado.put("APROBADA_FUNCIONARIO", enProcesoFuncionario);  // 11
-            porEstado.put("APROBADA_COORDINADOR", enProcesoCoordinador);  // 4
-            porEstado.put("ENVIADA", totalEnviadas);  // 9
-            
-            estadisticas.put("porEstado", porEstado);
-            
-            estadisticas.put("fechaConsulta", new Date());
-            
-            try {
-                estadisticas = normalizarEstadistica(estadisticas);
-            } catch (Exception e) {
-                log.error("Estadisticas globales - Error normalizando estadisticas: {}", e.getMessage(), e);
-                // Si la normalizacion falla, asegurar al menos los campos básicos
-                if (estadisticas.get("totalSolicitudes") == null) estadisticas.put("totalSolicitudes", 0);
-                if (estadisticas.get("totalAprobadas") == null) estadisticas.put("totalAprobadas", 0);
-                if (estadisticas.get("totalRechazadas") == null) estadisticas.put("totalRechazadas", 0);
-                if (estadisticas.get("totalEnviadas") == null) estadisticas.put("totalEnviadas", 0);
-                if (estadisticas.get("totalEnProceso") == null) estadisticas.put("totalEnProceso", 0);
-                if (estadisticas.get("porcentajeAprobacion") == null) estadisticas.put("porcentajeAprobacion", 0.0);
-                if (estadisticas.get("porTipoProceso") == null) estadisticas.put("porTipoProceso", new HashMap<>());
-                if (estadisticas.get("porPrograma") == null) estadisticas.put("porPrograma", new HashMap<>());
-                if (estadisticas.get("porEstado") == null) estadisticas.put("porEstado", new HashMap<>());
-            }
-            
-            // ===== PREDICCIONES GLOBALES ELIMINADAS =====
-            // Decision: Las predicciones solo se muestran en el dashboard de Cursos de Verano
-            // porque son mas relevantes y accionables para ese contexto especifico.
-            // El dashboard general se enfoca en datos consolidados sin predicciones.
-            
-            
-        } catch (Exception e) {
-            log.error("Estadisticas globales - Error en consulta: {}", e.getMessage(), e);
-            log.error("Estadisticas globales - Stack trace completo:", e);
-            // Devolver estadisticas vacias pero normalizadas en caso de error
-            try {
-                estadisticas = normalizarEstadistica(new HashMap<>());
-            } catch (Exception e2) {
-                log.error("Estadisticas globales - Error incluso al normalizar mapa vacio: {}", e2.getMessage(), e2);
-                // Como último recurso, crear un mapa básico manualmente
-                estadisticas = new HashMap<>();
-                estadisticas.put("totalSolicitudes", 0);
-                estadisticas.put("totalAprobadas", 0);
-                estadisticas.put("totalRechazadas", 0);
-                estadisticas.put("totalEnviadas", 0);
-                estadisticas.put("totalEnProceso", 0);
-                estadisticas.put("porcentajeAprobacion", 0.0);
-                estadisticas.put("porTipoProceso", new HashMap<>());
-                estadisticas.put("porPrograma", new HashMap<>());
-                estadisticas.put("porEstado", new HashMap<>());
-                estadisticas.put("fechaConsulta", new Date());
+        } else {
+            totalAprobadas = Optional.ofNullable(solicitudRepository.contarSolicitudesPorEstadoConFiltros("APROBADA", proceso, idPrograma, fechaInicio, fechaFin)).orElse(0);
+            totalRechazadas = Optional.ofNullable(solicitudRepository.contarSolicitudesPorEstadoConFiltros("RECHAZADA", proceso, idPrograma, fechaInicio, fechaFin)).orElse(0);
+            enProcesoFuncionario = Optional.ofNullable(solicitudRepository.contarSolicitudesPorEstadoConFiltros("APROBADA_FUNCIONARIO", proceso, idPrograma, fechaInicio, fechaFin)).orElse(0);
+            enProcesoCoordinador = Optional.ofNullable(solicitudRepository.contarSolicitudesPorEstadoConFiltros("APROBADA_COORDINADOR", proceso, idPrograma, fechaInicio, fechaFin)).orElse(0);
+            totalEnviadas = Optional.ofNullable(solicitudRepository.contarSolicitudesPorEstadoConFiltros("ENVIADA", proceso, idPrograma, fechaInicio, fechaFin)).orElse(0);
+
+            totalSolicitudes = Optional.ofNullable(solicitudRepository.contarSolicitudesConFiltros(proceso, idPrograma, fechaInicio, fechaFin)).orElse(0);
+            if (totalSolicitudes == 0) {
+                totalSolicitudes = totalAprobadas + totalRechazadas + enProcesoFuncionario + enProcesoCoordinador + totalEnviadas;
             }
         }
-        
-        return estadisticas;
+
+        // En Proceso = solo las aprobadas por funcionario y coordinador (NO incluye enviadas)
+        int totalEnProceso = enProcesoFuncionario + enProcesoCoordinador;
+
+        estadisticas.put("totalSolicitudes", totalSolicitudes);
+        estadisticas.put("totalAprobadas", totalAprobadas);
+        estadisticas.put("totalRechazadas", totalRechazadas);
+        estadisticas.put("totalEnviadas", totalEnviadas);
+        estadisticas.put("totalEnProceso", totalEnProceso);
+
+        double porcentajeAprobacion = totalSolicitudes > 0 ? (double) totalAprobadas / totalSolicitudes * 100 : 0.0;
+        estadisticas.put("porcentajeAprobacion", Math.round(porcentajeAprobacion * 10.0) / 10.0);
+
+        // Estadisticas por tipo de proceso (agrupadas por tipo, no por persona)
+        String procesoBuscado = proceso != null ? TipoProcesoSolicitud.porNombre(proceso) : null;
+        Map<String, Integer> porTipoProceso = new HashMap<>();
+        for (SolicitudEntity solicitud : cargarSolicitudes()) {
+            if (solicitud.getNombre_solicitud() == null) {
+                continue;
+            }
+            String tipoProceso = obtenerNombreProcesoPorSolicitud(solicitud);
+            if (proceso != null && (procesoBuscado == null || !procesoBuscado.equals(tipoProceso))) {
+                continue;
+            }
+            Integer programaSolicitud = idPrograma(solicitud);
+            if (idPrograma != null && programaSolicitud != null && !programaSolicitud.equals(idPrograma)) {
+                continue;
+            }
+            if ((fechaInicio != null || fechaFin != null) && !enRango(solicitud, fechaInicio, fechaFin)) {
+                continue;
+            }
+            if (tipoProceso != null && !tipoProceso.trim().isEmpty()) {
+                porTipoProceso.merge(tipoProceso, 1, Integer::sum);
+            }
+        }
+        estadisticas.put("porTipoProceso", porTipoProceso);
+
+        // Estadisticas por programa (con filtros si se aplican)
+        Map<String, Integer> porPrograma = new HashMap<>();
+        for (ProgramaEntity programa : programaRepository.findAll()) {
+            if (programa != null && programa.getId_programa() != null && programa.getNombre_programa() != null) {
+                Integer cantidad = Optional.ofNullable(solicitudRepository.contarSolicitudesPorProgramaConFiltros(
+                        programa.getId_programa(), proceso, fechaInicio, fechaFin)).orElse(0);
+                porPrograma.put(programa.getNombre_programa(), cantidad);
+            }
+        }
+        estadisticas.put("porPrograma", porPrograma);
+
+        // Estadisticas por estado (valores individuales del estado mas reciente)
+        Map<String, Integer> porEstado = new HashMap<>();
+        porEstado.put("APROBADA", totalAprobadas);
+        porEstado.put("RECHAZADA", totalRechazadas);
+        porEstado.put("APROBADA_FUNCIONARIO", enProcesoFuncionario);
+        porEstado.put("APROBADA_COORDINADOR", enProcesoCoordinador);
+        porEstado.put("ENVIADA", totalEnviadas);
+        estadisticas.put("porEstado", porEstado);
+
+        estadisticas.put("fechaConsulta", new Date());
+
+        // Las predicciones solo se muestran en el dashboard de Cursos de Verano.
+        return normalizarEstadistica(estadisticas);
     }
 
     // ------------------------------------------------------------------------------------------
@@ -515,12 +339,8 @@ public class GestionarEstadisticasGatewayImplAdapter implements GestionarEstadis
         Map<String, Integer> porTipoProceso = new LinkedHashMap<>();
         for (String p : PROCESOS) porTipoProceso.put(p, 0);
         Map<String, Integer> porPrograma = new LinkedHashMap<>();
-        try {
-            for (String programa : programaRepository.buscarNombresProgramas()) {
-                if (programa != null && !programa.isBlank()) porPrograma.put(programa, 0);
-            }
-        } catch (Exception e) {
-            log.warn("Estadisticas - no se pudieron cargar los programas: {}", e.getMessage());
+        for (String programa : programaRepository.buscarNombresProgramas()) {
+            if (programa != null && !programa.isBlank()) porPrograma.put(programa, 0);
         }
 
         for (SolicitudEntity s : solicitudes) {
@@ -558,22 +378,17 @@ public class GestionarEstadisticasGatewayImplAdapter implements GestionarEstadis
             log.error("Estadisticas por proceso - Tipo de proceso no puede ser null o vacio");
             return normalizarEstadistica(new HashMap<>());
         }
-        try {
-            String proceso = TipoProcesoSolicitud.porNombre(tipoProceso);
-            List<SolicitudEntity> delProceso = cargarSolicitudes().stream()
-                    .filter(s -> proceso != null && proceso.equals(obtenerNombreProcesoPorSolicitud(s)))
-                    .collect(Collectors.toList());
+        String proceso = TipoProcesoSolicitud.porNombre(tipoProceso);
+        List<SolicitudEntity> delProceso = cargarSolicitudes().stream()
+                .filter(s -> proceso != null && proceso.equals(obtenerNombreProcesoPorSolicitud(s)))
+                .collect(Collectors.toList());
 
-            Map<String, Object> estadisticas = agregarSolicitudes(delProceso);
-            estadisticas.put("tipoProceso", tipoProceso);
-            estadisticas.put("porTipoProceso", new HashMap<>()); // Vacio para proceso especifico
-            estadisticas.put("porPrograma", new HashMap<>());    // Vacio para proceso especifico
-            estadisticas.put("descripcion", obtenerDescripcionProceso(tipoProceso));
-            return normalizarEstadistica(estadisticas);
-        } catch (Exception e) {
-            log.error("Estadisticas por proceso - Error en consulta", e);
-            return normalizarEstadistica(new HashMap<>());
-        }
+        Map<String, Object> estadisticas = agregarSolicitudes(delProceso);
+        estadisticas.put("tipoProceso", tipoProceso);
+        estadisticas.put("porTipoProceso", new HashMap<>()); // Vacio para proceso especifico
+        estadisticas.put("porPrograma", new HashMap<>());    // Vacio para proceso especifico
+        estadisticas.put("descripcion", obtenerDescripcionProceso(tipoProceso));
+        return normalizarEstadistica(estadisticas);
     }
 
     @Override
@@ -583,22 +398,17 @@ public class GestionarEstadisticasGatewayImplAdapter implements GestionarEstadis
             log.error("Estadisticas por estado - Estado no puede ser null o vacio");
             return normalizarEstadistica(new HashMap<>());
         }
-        try {
-            String estadoNormalizado = normalizarEstado(estado);
-            List<SolicitudEntity> conEstado = cargarSolicitudes().stream()
-                    .filter(s -> estadoNormalizado.equals(obtenerEstadoMasReciente(s)))
-                    .collect(Collectors.toList());
+        String estadoNormalizado = normalizarEstado(estado);
+        List<SolicitudEntity> conEstado = cargarSolicitudes().stream()
+                .filter(s -> estadoNormalizado.equals(obtenerEstadoMasReciente(s)))
+                .collect(Collectors.toList());
 
-            Map<String, Object> estadisticas = agregarSolicitudes(conEstado);
-            estadisticas.put("estado", estado);
-            estadisticas.put("porEstado", new HashMap<>()); // Vacio para estado especifico
-            estadisticas.put("porcentajeAprobacion", "APROBADA".equals(estadoNormalizado) && !conEstado.isEmpty() ? 100.0 : 0.0);
-            estadisticas.put("descripcionEstado", obtenerDescripcionEstado(estado));
-            return normalizarEstadistica(estadisticas);
-        } catch (Exception e) {
-            log.error("Estadisticas por estado - Error en consulta", e);
-            return normalizarEstadistica(new HashMap<>());
-        }
+        Map<String, Object> estadisticas = agregarSolicitudes(conEstado);
+        estadisticas.put("estado", estado);
+        estadisticas.put("porEstado", new HashMap<>()); // Vacio para estado especifico
+        estadisticas.put("porcentajeAprobacion", "APROBADA".equals(estadoNormalizado) && !conEstado.isEmpty() ? 100.0 : 0.0);
+        estadisticas.put("descripcionEstado", obtenerDescripcionEstado(estado));
+        return normalizarEstadistica(estadisticas);
     }
 
     @Override
@@ -608,20 +418,15 @@ public class GestionarEstadisticasGatewayImplAdapter implements GestionarEstadis
             log.error("Estadisticas por programa - ID de programa no puede ser null o menor a 1");
             return normalizarEstadistica(new HashMap<>());
         }
-        try {
-            // Antes porEstado contaba las solicitudes de TODOS los programas; ahora solo las de este programa
-            List<SolicitudEntity> delPrograma = cargarSolicitudes().stream()
-                    .filter(s -> idPrograma.equals(idPrograma(s)))
-                    .collect(Collectors.toList());
+        // Antes porEstado contaba las solicitudes de TODOS los programas; ahora solo las de este programa
+        List<SolicitudEntity> delPrograma = cargarSolicitudes().stream()
+                .filter(s -> idPrograma.equals(idPrograma(s)))
+                .collect(Collectors.toList());
 
-            Map<String, Object> estadisticas = agregarSolicitudes(delPrograma);
-            estadisticas.put("idPrograma", idPrograma);
-            estadisticas.put("porPrograma", new HashMap<>()); // Vacio para programa especifico
-            return normalizarEstadistica(estadisticas);
-        } catch (Exception e) {
-            log.error("Estadisticas por programa - Error en consulta", e);
-            return normalizarEstadistica(new HashMap<>());
-        }
+        Map<String, Object> estadisticas = agregarSolicitudes(delPrograma);
+        estadisticas.put("idPrograma", idPrograma);
+        estadisticas.put("porPrograma", new HashMap<>()); // Vacio para programa especifico
+        return normalizarEstadistica(estadisticas);
     }
 
     @Override
@@ -631,19 +436,14 @@ public class GestionarEstadisticasGatewayImplAdapter implements GestionarEstadis
             log.error("Estadisticas por periodo - Las fechas no pueden ser null");
             return normalizarEstadistica(new HashMap<>());
         }
-        try {
-            List<SolicitudEntity> enPeriodo = cargarSolicitudes().stream()
-                    .filter(s -> enRango(s, fechaInicio, fechaFin))
-                    .collect(Collectors.toList());
+        List<SolicitudEntity> enPeriodo = cargarSolicitudes().stream()
+                .filter(s -> enRango(s, fechaInicio, fechaFin))
+                .collect(Collectors.toList());
 
-            Map<String, Object> estadisticas = agregarSolicitudes(enPeriodo);
-            estadisticas.put("fechaInicio", fechaInicio);
-            estadisticas.put("fechaFin", fechaFin);
-            return normalizarEstadistica(estadisticas);
-        } catch (Exception e) {
-            log.error("Estadisticas por periodo - Error en consulta", e);
-            return normalizarEstadistica(new HashMap<>());
-        }
+        Map<String, Object> estadisticas = agregarSolicitudes(enPeriodo);
+        estadisticas.put("fechaInicio", fechaInicio);
+        estadisticas.put("fechaFin", fechaFin);
+        return normalizarEstadistica(estadisticas);
     }
 
     @Override
@@ -1185,12 +985,8 @@ public class GestionarEstadisticasGatewayImplAdapter implements GestionarEstadis
             
             return resultado;
         } catch (Exception e) {
-            // En caso de error, devolver 0
-            resultado.put("totalEstudiantes", 0);
-            resultado.put("fechaConsulta", new Date());
-            resultado.put("descripcion", "Error al obtener el conteo de estudiantes");
-            resultado.put("error", e.getMessage());
-            return resultado;
+            // Propagar: devolver ceros haria que un fallo se viera como un dashboard vacio
+            throw new IllegalStateException("Error al obtener el conteo de estudiantes", e);
         }
     }
 
@@ -1226,12 +1022,8 @@ public class GestionarEstadisticasGatewayImplAdapter implements GestionarEstadis
             
             return resultado;
         } catch (Exception e) {
-            resultado.put("estudiantesPorPrograma", new HashMap<>());
-            resultado.put("totalEstudiantes", 0);
-            resultado.put("fechaConsulta", new Date());
-            resultado.put("descripcion", "Error al obtener distribucion de estudiantes");
-            resultado.put("error", e.getMessage());
-            return resultado;
+            // Propagar: devolver ceros haria que un fallo se viera como un dashboard vacio
+            throw new IllegalStateException("Error al obtener distribucion de estudiantes", e);
         }
     }
 
@@ -1397,12 +1189,8 @@ public class GestionarEstadisticasGatewayImplAdapter implements GestionarEstadis
             
             return resultado;
         } catch (Exception e) {
-            resultado.put("estadisticasPorProceso", new HashMap<>());
-            resultado.put("resumenComparativo", new HashMap<>());
-            resultado.put("fechaConsulta", new Date());
-            resultado.put("descripcion", "Error al obtener estadisticas por proceso");
-            resultado.put("error", e.getMessage());
-            return resultado;
+            // Propagar: devolver ceros haria que un fallo se viera como un dashboard vacio
+            throw new IllegalStateException("Error al obtener estadisticas por proceso", e);
         }
     }
 
@@ -1480,12 +1268,8 @@ public class GestionarEstadisticasGatewayImplAdapter implements GestionarEstadis
             
             return resultado;
         } catch (Exception e) {
-            resultado.put("procesos", new HashMap<>());
-            resultado.put("totalProcesos", 0);
-            resultado.put("fechaConsulta", new Date());
-            resultado.put("descripcion", "Error al obtener resumen de procesos");
-            resultado.put("error", e.getMessage());
-            return resultado;
+            // Propagar: devolver ceros haria que un fallo se viera como un dashboard vacio
+            throw new IllegalStateException("Error al obtener resumen de procesos", e);
         }
     }
 
@@ -1566,15 +1350,8 @@ public class GestionarEstadisticasGatewayImplAdapter implements GestionarEstadis
             
             return resultado;
         } catch (Exception e) {
-            resultado.put("tema", new HashMap<>());
-            resultado.put("coloresTarjetas", new HashMap<>());
-            resultado.put("gradientes", new HashMap<>());
-            resultado.put("iconos", new HashMap<>());
-            resultado.put("estilos", new HashMap<>());
-            resultado.put("fechaConsulta", new Date());
-            resultado.put("descripcion", "Error al obtener configuracion de estilos");
-            resultado.put("error", e.getMessage());
-            return resultado;
+            // Propagar: devolver ceros haria que un fallo se viera como un dashboard vacio
+            throw new IllegalStateException("Error al obtener configuracion de estilos", e);
         }
     }
 
@@ -1756,12 +1533,8 @@ public class GestionarEstadisticasGatewayImplAdapter implements GestionarEstadis
             
             return resultado;
         } catch (Exception e) {
-            resultado.put("estados", new HashMap<>());
-            resultado.put("analisis", new HashMap<>());
-            resultado.put("fechaConsulta", new Date());
-            resultado.put("descripcion", "Error al obtener estadisticas por estado");
-            resultado.put("error", e.getMessage());
-            return resultado;
+            // Propagar: devolver ceros haria que un fallo se viera como un dashboard vacio
+            throw new IllegalStateException("Error al obtener estadisticas por estado", e);
         }
     }
 
@@ -2026,12 +1799,8 @@ public class GestionarEstadisticasGatewayImplAdapter implements GestionarEstadis
             
             return resultado;
         } catch (Exception e) {
-            resultado.put("porMes", new HashMap<>());
-            resultado.put("tendencias", new HashMap<>());
-            resultado.put("fechaConsulta", new Date());
-            resultado.put("descripcion", "Error al obtener estadisticas por periodo");
-            resultado.put("error", e.getMessage());
-            return resultado;
+            // Propagar: devolver ceros haria que un fallo se viera como un dashboard vacio
+            throw new IllegalStateException("Error al obtener estadisticas por periodo", e);
         }
     }
 
@@ -2325,12 +2094,8 @@ public class GestionarEstadisticasGatewayImplAdapter implements GestionarEstadis
             
             return resultado;
         } catch (Exception e) {
-            resultado.put("porPrograma", new HashMap<>());
-            resultado.put("analisis", new HashMap<>());
-            resultado.put("fechaConsulta", new Date());
-            resultado.put("descripcion", "Error al obtener estadisticas por programa");
-            resultado.put("error", e.getMessage());
-            return resultado;
+            // Propagar: devolver ceros haria que un fallo se viera como un dashboard vacio
+            throw new IllegalStateException("Error al obtener estadisticas por programa", e);
         }
     }
 
@@ -2495,13 +2260,8 @@ public class GestionarEstadisticasGatewayImplAdapter implements GestionarEstadis
 
             return resultado;
         } catch (Exception e) {
-            resultado.put("porProceso", new HashMap<>());
-            resultado.put("analisisEficiencia", new HashMap<>());
-            resultado.put("metasTiempo", new HashMap<>());
-            resultado.put("fechaConsulta", new Date());
-            resultado.put("descripcion", "Error al obtener estadisticas de tiempo de procesamiento");
-            resultado.put("error", e.getMessage());
-            return resultado;
+            // Propagar: devolver ceros haria que un fallo se viera como un dashboard vacio
+            throw new IllegalStateException("Error al obtener estadisticas de tiempo de procesamiento", e);
         }
     }
 
@@ -2784,14 +2544,8 @@ public class GestionarEstadisticasGatewayImplAdapter implements GestionarEstadis
             
             return resultado;
         } catch (Exception e) {
-            resultado.put("crecimientoTemporal", new HashMap<>());
-            resultado.put("comparativaProcesos", new HashMap<>());
-            resultado.put("comparativaProgramas", new HashMap<>());
-            resultado.put("resumenEstrategico", new HashMap<>());
-            resultado.put("fechaConsulta", new Date());
-            resultado.put("descripcion", "Error al obtener tendencias y comparativas");
-            resultado.put("error", e.getMessage());
-            return resultado;
+            // Propagar: devolver ceros haria que un fallo se viera como un dashboard vacio
+            throw new IllegalStateException("Error al obtener tendencias y comparativas", e);
         }
     }
     
@@ -3873,20 +3627,8 @@ public class GestionarEstadisticasGatewayImplAdapter implements GestionarEstadis
             return resultado;
             
         } catch (Exception e) {
-            log.error("Cursos de verano - Error en analisis de cursos de verano:  {}", e.getMessage());
-            log.error("Error en estadísticas", e);
-            
-            resultado.put("fechaConsulta", new Date());
-            resultado.put("descripcion", "Error al obtener estadisticas de cursos de verano");
-            resultado.put("error", e.getMessage());
-            resultado.put("resumen", new HashMap<>());
-            resultado.put("topMaterias", new ArrayList<>());
-            resultado.put("analisisPorPrograma", new ArrayList<>());
-            resultado.put("tendenciasTemporales", new ArrayList<>());
-            resultado.put("estadosSolicitudes", new HashMap<>());
-            resultado.put("recomendaciones", new ArrayList<>());
-            
-            return resultado;
+            // Propagar: devolver ceros haria que un fallo se viera como un dashboard vacio
+            throw new IllegalStateException("Error al obtener estadisticas de cursos de verano", e);
         }
     }
 
@@ -3986,14 +3728,8 @@ public class GestionarEstadisticasGatewayImplAdapter implements GestionarEstadis
             
             
         } catch (Exception e) {
-            log.error("Tendencias temporales - Error generando tendencias:  {}", e.getMessage());
-            log.error("Error en estadísticas", e);
-            
-            resultado.put("tendenciasTemporales", new ArrayList<>());
-            resultado.put("totalSolicitudes", 0);
-            resultado.put("fechaConsulta", new Date());
-            resultado.put("descripcion", "Error al obtener tendencias temporales");
-            resultado.put("error", e.getMessage());
+            // Propagar: devolver ceros haria que un fallo se viera como un dashboard vacio
+            throw new IllegalStateException("Error al obtener tendencias temporales", e);
         }
         
         return resultado;

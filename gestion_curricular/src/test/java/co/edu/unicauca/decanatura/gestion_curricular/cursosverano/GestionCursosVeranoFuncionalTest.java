@@ -132,6 +132,17 @@ class GestionCursosVeranoFuncionalTest {
         });
     }
 
+    /** Estudiante propio de una prueba: un estudiante solo puede preinscribirse a sí mismo y una vez por curso. */
+    private record EstudiantePrueba(int id, String token) {}
+
+    private EstudiantePrueba estudiantePropio(String sufijo) throws Exception {
+        String correo = "estudiante." + sufijo + "@unicauca.edu.co";
+        ProgramaEntity programa = programaRepository.buscarPorCodigo(TEST_PROGRAMA_CODIGO).orElseThrow();
+        RolEntity rol = rolRepository.buscarPorNombre("Estudiante").orElseThrow();
+        crearUsuarioSiNoExiste(correo, "EP" + Math.abs(sufijo.hashCode() % 1_000_000), "Estudiante " + sufijo, rol, programa);
+        int id = usuarioRepository.buscarPorCorreo(correo).orElseThrow().getId_usuario();
+        return new EstudiantePrueba(id, "Bearer " + obtenerToken(correo));
+    }
     private String obtenerToken(String correo) throws Exception {
         String loginRequest = """
             {
@@ -216,16 +227,17 @@ class GestionCursosVeranoFuncionalTest {
                 .andExpect(status().isOk());
 
         // Paso 2: Realizar preinscripción (usando usuario 6 para evitar duplicados)
+        EstudiantePrueba estudiante = estudiantePropio("flujo-preinscripcion");
         String jsonPreinscripcion = """
             {
-                "idUsuario": 6,
+                "idUsuario": %d,
                 "idCurso": 1,
                 "fecha_solicitud": "2025-01-15"
             }
-            """;
+            """.formatted(estudiante.id());
 
         mockMvc.perform(post("/api/cursos-intersemestrales/solicitudes/preinscripcion")
-                        .header("Authorization", tokenEstudiante)
+                        .header("Authorization", estudiante.token())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(jsonPreinscripcion))
                 .andExpect(status().isCreated());
@@ -369,16 +381,17 @@ class GestionCursosVeranoFuncionalTest {
                 .andExpect(jsonPath("$.idCurso").value(1));
 
         // Paso 3: Realizar preinscripción
+        EstudiantePrueba estudiante = estudiantePropio("oferta-a-preinscripcion");
         String jsonPreinscripcion = """
             {
-                "idUsuario": 7,
+                "idUsuario": %d,
                 "idCurso": 1,
                 "fecha_solicitud": "2025-01-15"
             }
-            """;
+            """.formatted(estudiante.id());
 
         mockMvc.perform(post("/api/cursos-intersemestrales/solicitudes/preinscripcion")
-                        .header("Authorization", tokenEstudiante)
+                        .header("Authorization", estudiante.token())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(jsonPreinscripcion))
                 .andExpect(status().isCreated());

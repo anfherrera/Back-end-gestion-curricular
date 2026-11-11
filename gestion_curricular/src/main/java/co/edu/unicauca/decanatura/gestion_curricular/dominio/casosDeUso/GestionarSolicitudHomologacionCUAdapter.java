@@ -10,12 +10,12 @@ import lombok.extern.slf4j.Slf4j;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarSolicitudHomologacionCUIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarNotificacionCUIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarArchivosCUIntPort;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.servicios.AsociadorDocumentosPendientes;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.FormateadorResultadosIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.GestionarDocumentosGatewayIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.GestionarEstadoSolicitudGatewayIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.GestionarSolicitudHomologacionGatewayIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.GestionarUsuarioGatewayIntPort;
-import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Documento;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.EstadoSolicitud;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.SolicitudHomologacion;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Usuario;
@@ -29,7 +29,7 @@ public class GestionarSolicitudHomologacionCUAdapter implements GestionarSolicit
     private final GestionarDocumentosGatewayIntPort objGestionarDocumentosGateway;
     private final GestionarEstadoSolicitudGatewayIntPort objGestionarEstadoSolicitudGateway;
     private final GestionarNotificacionCUIntPort objGestionarNotificacionCU;
-    private final GestionarArchivosCUIntPort gestionarArchivos;
+    private final AsociadorDocumentosPendientes asociadorDocumentos;
 
     public GestionarSolicitudHomologacionCUAdapter(FormateadorResultadosIntPort formateadorResultados, GestionarSolicitudHomologacionGatewayIntPort gestionarSolicitudHomologacionGateway
     ,GestionarUsuarioGatewayIntPort gestionarUsuarioGateway, GestionarDocumentosGatewayIntPort gestionarDocumentosGateway, GestionarEstadoSolicitudGatewayIntPort gestionarEstadoSolicitudGateway,
@@ -40,7 +40,7 @@ public class GestionarSolicitudHomologacionCUAdapter implements GestionarSolicit
         this.objGestionarDocumentosGateway = gestionarDocumentosGateway;
         this.objGestionarEstadoSolicitudGateway = gestionarEstadoSolicitudGateway;
         this.objGestionarNotificacionCU = objGestionarNotificacionCU;
-        this.gestionarArchivos = gestionarArchivos;
+        this.asociadorDocumentos = new AsociadorDocumentosPendientes(gestionarDocumentosGateway, gestionarArchivos);
     }
     @Override
     public SolicitudHomologacion guardar(SolicitudHomologacion solicitud) {
@@ -67,31 +67,8 @@ public class GestionarSolicitudHomologacionCUAdapter implements GestionarSolicit
 
         SolicitudHomologacion solicitudGuardada = objGestionarSolicitudHomologacionGateway.guardar(solicitud);
 
-        //Asociar documentos con solicitud = null y moverlos a carpeta organizada
-        List<Documento> documentosSinSolicitud = this.objGestionarDocumentosGateway.buscarDocumentosSinSolicitud();
-        for (Documento doc : documentosSinSolicitud) {
-            // Mover archivo a carpeta organizada si está en la raíz (si el archivo existe en disco)
-            String rutaActual = doc.getRuta_documento() != null ? doc.getRuta_documento() : doc.getNombre();
-            if (rutaActual != null && !rutaActual.contains("/")) {
-                try {
-                    String nuevaRuta = gestionarArchivos.moverArchivoAOrganizado(
-                        rutaActual,
-                        doc.getNombre(),
-                        "homologacion",
-                        solicitudGuardada.getId_solicitud()
-                    );
-                    if (nuevaRuta != null) {
-                        doc.setRuta_documento(nuevaRuta);
-                    }
-                } catch (Exception e) {
-                    log.warn("No se pudo mover el archivo del documento {} a carpeta organizada (archivo no encontrado o error de E/S). Se asocia el documento a la solicitud con la ruta actual. Error: {}", doc.getNombre(), e.getMessage());
-                }
-            }
-
-            // Asociar documento a la solicitud (siempre, aunque no se haya podido mover el archivo)
-            doc.setObjSolicitud(solicitudGuardada);
-            this.objGestionarDocumentosGateway.actualizarDocumento(doc);
-        }
+        // Mover a la carpeta de la solicitud y asociar los documentos que este estudiante subió antes de enviarla
+        asociadorDocumentos.asociar(solicitudGuardada, idUsuario, "homologacion");
 
         EstadoSolicitud estadoInicial = new EstadoSolicitud();
         estadoInicial.setEstado_actual("Enviada");//Se pone por defecto el estado de Enviada

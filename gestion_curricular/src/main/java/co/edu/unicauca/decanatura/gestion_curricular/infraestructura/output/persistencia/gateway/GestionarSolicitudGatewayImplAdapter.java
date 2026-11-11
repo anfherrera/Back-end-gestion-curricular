@@ -132,7 +132,7 @@ public class GestionarSolicitudGatewayImplAdapter implements GestionarSolicitudG
     @Transactional(readOnly = true)
     public Solicitud obtenerSolicitudPorId(Integer idSolicitud) {
         Optional<SolicitudEntity> solicitudEntityOptional = solicitudRepository.findById(idSolicitud);
-        if(solicitudEntityOptional != null){
+        if (solicitudEntityOptional.isPresent()) {
             SolicitudEntity solicitudEntity = solicitudEntityOptional.get();
             if (solicitudEntity instanceof SolicitudCursoVeranoPreinscripcionEntity) {
                 return solicitudMapper.map(solicitudEntity, SolicitudCursoVeranoPreinscripcion.class);
@@ -213,27 +213,52 @@ public class GestionarSolicitudGatewayImplAdapter implements GestionarSolicitudG
     @Transactional(readOnly = true)
     public List<Solicitud> listarSolicitudes() {
         List<SolicitudEntity> solicitudEntities = solicitudRepository.findAllWithJoins();
-        List<Solicitud> solicitudes = null;
-        if(solicitudEntities!=null){
-            solicitudes = solicitudEntities.stream().map(solicitudEntity -> {
-                    if (solicitudEntity instanceof SolicitudCursoVeranoPreinscripcionEntity) {
-                        return solicitudMapper.map(solicitudEntity, SolicitudCursoVeranoPreinscripcion.class);
-                    } else if (solicitudEntity instanceof SolicitudEcaesEntity) {
-                        return solicitudMapper.map(solicitudEntity, SolicitudEcaes.class);
-                    } else if (solicitudEntity instanceof SolicitudReingresoEntity) {
-                        return solicitudMapper.map(solicitudEntity, SolicitudReingreso.class);
-                    } else if (solicitudEntity instanceof SolicitudHomologacionEntity) {
-                        return solicitudMapper.map(solicitudEntity, SolicitudHomologacion.class);
-                    } else if (solicitudEntity instanceof SolicitudPazYSalvoEntity) {
-                        return solicitudMapper.map(solicitudEntity, SolicitudPazYSalvo.class);
-                    } else if (solicitudEntity instanceof SolicitudCursoVeranoInscripcionEntity) {
-                        return solicitudMapper.map(solicitudEntity, SolicitudCursoVeranoIncripcion.class);
-                    }
-                    return null;
-                })
-                .toList();
+        if (solicitudEntities == null) {
+            return null;
         }
-        return solicitudes;
+        return solicitudEntities.stream().map(this::aDominio).toList();
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<Solicitud> buscarHistorial(String periodoAcademico, Integer idUsuario, String estadoActual) {
+        List<SolicitudEntity> entidades = solicitudRepository.buscarHistorialConFiltros(periodoAcademico, idUsuario, estadoActual);
+        if (entidades == null) {
+            return List.of();
+        }
+        return entidades.stream().map(this::aDominio).filter(java.util.Objects::nonNull).toList();
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public long contarHistorial() {
+        Long total = solicitudRepository.contarHistorialConFiltros(null, null, null);
+        return total != null ? total : 0L;
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public long contarSolicitudesProcesadas() {
+        Long total = solicitudRepository.contarSolicitudesProcesadas(null, null);
+        return total != null ? total : 0L;
+    }
+
+    /** Convierte la entidad al modelo de dominio de su tipo concreto; null si el tipo no se reconoce. */
+    private Solicitud aDominio(SolicitudEntity entidad) {
+        if (entidad instanceof SolicitudCursoVeranoPreinscripcionEntity) {
+            return solicitudMapper.map(entidad, SolicitudCursoVeranoPreinscripcion.class);
+        } else if (entidad instanceof SolicitudEcaesEntity) {
+            return solicitudMapper.map(entidad, SolicitudEcaes.class);
+        } else if (entidad instanceof SolicitudReingresoEntity) {
+            return solicitudMapper.map(entidad, SolicitudReingreso.class);
+        } else if (entidad instanceof SolicitudHomologacionEntity) {
+            return solicitudMapper.map(entidad, SolicitudHomologacion.class);
+        } else if (entidad instanceof SolicitudPazYSalvoEntity) {
+            return solicitudMapper.map(entidad, SolicitudPazYSalvo.class);
+        } else if (entidad instanceof SolicitudCursoVeranoInscripcionEntity) {
+            return solicitudMapper.map(entidad, SolicitudCursoVeranoIncripcion.class);
+        }
+        return null;
     }
 
     @Override

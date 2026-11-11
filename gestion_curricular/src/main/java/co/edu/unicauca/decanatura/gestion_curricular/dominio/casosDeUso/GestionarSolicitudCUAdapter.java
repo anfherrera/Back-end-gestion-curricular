@@ -199,6 +199,25 @@ public class GestionarSolicitudCUAdapter implements GestionarSolicitudCUIntPort 
     }
 
     @Override
+    public List<Solicitud> buscarHistorial(String periodoAcademico, Integer idUsuario, String estadoActual) {
+        return this.objGestionarSolicitudGateway.buscarHistorial(vacioANull(periodoAcademico), idUsuario, vacioANull(estadoActual));
+    }
+
+    @Override
+    public long contarHistorial() {
+        return this.objGestionarSolicitudGateway.contarHistorial();
+    }
+
+    @Override
+    public long contarSolicitudesProcesadas() {
+        return this.objGestionarSolicitudGateway.contarSolicitudesProcesadas();
+    }
+
+    private static String vacioANull(String texto) {
+        return texto != null && !texto.trim().isEmpty() ? texto.trim() : null;
+    }
+
+    @Override
     public List<Solicitud> obtenerSolicitudesPorUsuario(Integer idUsuario) {
         if(idUsuario == null) {
             this.objFormateadorResultados.retornarRespuestaErrorReglaDeNegocio("El ID del usuario no puede ser nulo");

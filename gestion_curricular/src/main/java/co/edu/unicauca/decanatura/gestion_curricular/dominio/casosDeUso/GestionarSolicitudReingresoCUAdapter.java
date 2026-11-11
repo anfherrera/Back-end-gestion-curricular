@@ -8,12 +8,12 @@ import java.util.Optional;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarSolicitudReingresoCUIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarNotificacionCUIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarArchivosCUIntPort;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.servicios.AsociadorDocumentosPendientes;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.FormateadorResultadosIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.GestionarDocumentosGatewayIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.GestionarEstadoSolicitudGatewayIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.GestionarSolicitudReingresoGatewayIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.GestionarUsuarioGatewayIntPort;
-import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Documento;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.EstadoSolicitud;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.SolicitudReingreso;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Usuario;
@@ -26,7 +26,7 @@ public class GestionarSolicitudReingresoCUAdapter  implements GestionarSolicitud
     private final FormateadorResultadosIntPort objFormateadorResultados;
     private final GestionarSolicitudReingresoGatewayIntPort objGestionarSolicitudReingresoGateway;
     private final GestionarNotificacionCUIntPort objGestionarNotificacionCU;
-    private final GestionarArchivosCUIntPort gestionarArchivos;
+    private final AsociadorDocumentosPendientes asociadorDocumentos;
 
     public GestionarSolicitudReingresoCUAdapter(GestionarUsuarioGatewayIntPort objGestionarUsuarioGateway,
             GestionarDocumentosGatewayIntPort objGestionarDocumentosGateway,
@@ -41,7 +41,7 @@ public class GestionarSolicitudReingresoCUAdapter  implements GestionarSolicitud
         this.objFormateadorResultados = objFormateadorResultados;
         this.objGestionarSolicitudReingresoGateway = objGestionarSolicitudReingresoGateway;
         this.objGestionarNotificacionCU = objGestionarNotificacionCU;
-        this.gestionarArchivos = gestionarArchivos;
+        this.asociadorDocumentos = new AsociadorDocumentosPendientes(objGestionarDocumentosGateway, gestionarArchivos);
     }
 
     @Override
@@ -68,28 +68,8 @@ public class GestionarSolicitudReingresoCUAdapter  implements GestionarSolicitud
 
         SolicitudReingreso solicitudGuardada = objGestionarSolicitudReingresoGateway.crearSolicitudReingreso(solicitud);
 
-        //Asociar documentos con solicitud = null y moverlos a carpeta organizada
-        List<Documento> documentosSinSolicitud = this.objGestionarDocumentosGateway.buscarDocumentosSinSolicitud();
-        for (Documento doc : documentosSinSolicitud) {
-            // Mover archivo a carpeta organizada si está en la raíz
-            String rutaActual = doc.getRuta_documento() != null ? doc.getRuta_documento() : doc.getNombre();
-            if (rutaActual != null && !rutaActual.contains("/")) {
-                // El archivo está en la raíz, moverlo a carpeta organizada
-                String nuevaRuta = gestionarArchivos.moverArchivoAOrganizado(
-                    rutaActual, 
-                    doc.getNombre(), 
-                    "reingreso", 
-                    solicitudGuardada.getId_solicitud()
-                );
-                if (nuevaRuta != null) {
-                    doc.setRuta_documento(nuevaRuta);
-                }
-            }
-            
-            // Asociar documento a la solicitud
-            doc.setObjSolicitud(solicitudGuardada);           
-            this.objGestionarDocumentosGateway.actualizarDocumento(doc);            
-        }
+        // Mover a la carpeta de la solicitud y asociar los documentos que este estudiante subió antes de enviarla
+        asociadorDocumentos.asociar(solicitudGuardada, idUsuario, "reingreso");
 
         EstadoSolicitud estadoInicial = new EstadoSolicitud();
         estadoInicial.setEstado_actual("Enviada");//Se pone por defecto el estado de Enviada

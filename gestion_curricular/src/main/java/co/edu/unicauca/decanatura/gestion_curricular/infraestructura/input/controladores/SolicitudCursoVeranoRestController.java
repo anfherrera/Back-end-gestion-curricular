@@ -4,6 +4,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.security.access.prepost.PreAuthorize;
+import co.edu.unicauca.decanatura.gestion_curricular.Security.Autorizacion;
+import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.validacion.ValidadorArchivoPdf;
 import jakarta.validation.constraints.Min;
 import java.util.List;
 import java.util.Date;
@@ -22,7 +25,7 @@ import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.DTORe
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.mappers.SolicitudCursoDeVeranoInscripcionMapperDominio;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.mappers.SolicitudCursoDeVeranoPreinscripcionMapperDominio;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarArchivosCUIntPort;
-import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.GestionarDocumentosGatewayIntPort;
+import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarDocumentosCUIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Documento;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -31,6 +34,9 @@ import lombok.extern.slf4j.Slf4j;
 @RequestMapping("/api/solicitudes-curso-verano")
 @RequiredArgsConstructor
 @Slf4j
+// El frontend usa /api/cursos-intersemestrales para estos flujos; este controlador duplicado
+// queda solo para el staff hasta que se unifique con CursosIntersemestralesRestController.
+@PreAuthorize("hasAnyRole(" + Autorizacion.ROLES_STAFF + ")")
 public class SolicitudCursoVeranoRestController {
 
    
@@ -38,7 +44,7 @@ public class SolicitudCursoVeranoRestController {
     private final SolicitudCursoDeVeranoInscripcionMapperDominio solicitudCursoDeVeranoInscripcionMapper;
     private final GestionarSolicitudCursoVeranoCUIntPort solicitudCU;
     private final GestionarArchivosCUIntPort objGestionarArchivos;
-    private final GestionarDocumentosGatewayIntPort objGestionarDocumentosGateway;
+    private final GestionarDocumentosCUIntPort documentosCU;
 
 
     
@@ -82,16 +88,11 @@ public class SolicitudCursoVeranoRestController {
             @RequestParam(name = "file", required = true) MultipartFile file,
             @RequestParam(name = "idSolicitud", required = true) @Min(value = 1) Integer idSolicitud) {
         try {
+            ValidadorArchivoPdf.Rechazo rechazo = ValidadorArchivoPdf.validar(file, ValidadorArchivoPdf.MAXIMO_15MB);
+            if (rechazo != null) {
+                return ResponseEntity.status(rechazo.estado()).body(Map.of("error", rechazo.mensaje()));
+            }
             String nombreOriginal = file.getOriginalFilename();
-            
-            if (nombreOriginal == null || nombreOriginal.trim().isEmpty()) {
-                return ResponseEntity.badRequest().body(Map.of("error", "Nombre de archivo no válido"));
-            }
-            
-            if (!nombreOriginal.toLowerCase().endsWith(".pdf")) {
-                return ResponseEntity.status(HttpStatus.UNSUPPORTED_MEDIA_TYPE)
-                    .body(Map.of("error", "Solo se permiten archivos PDF"));
-            }
             
             // 1. Verificar que la inscripción existe
             SolicitudCursoVeranoIncripcion inscripcionExistente = solicitudCU.buscarPorIdInscripcion(idSolicitud);
@@ -115,7 +116,7 @@ public class SolicitudCursoVeranoRestController {
             doc.setObjSolicitud(inscripcionExistente);
             
             // 5. Guardar documento
-            Documento documentoGuardado = this.objGestionarDocumentosGateway.crearDocumento(doc);
+            Documento documentoGuardado = documentosCU.registrarDocumento(doc);
             
             Map<String, Object> respuesta = new HashMap<>();
             respuesta.put("success", true);

@@ -3,6 +3,7 @@ package co.edu.unicauca.decanatura.gestion_curricular.dominio.casosDeUso;
 import java.util.List;
 import lombok.extern.slf4j.Slf4j;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarArchivosCUIntPort;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.servicios.AsociadorDocumentosPendientes;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarSolicitudCursoVeranoCUIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarNotificacionCUIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.FormateadorResultadosIntPort;
@@ -11,7 +12,6 @@ import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.Gestionar
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.GestionarSolicitudCursoVeranoGatewayIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.GestionarUsuarioGatewayIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.CursoOfertadoVerano;
-import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Documento;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.EstadoSolicitud;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Solicitud;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.SolicitudCursoVeranoIncripcion;
@@ -26,7 +26,7 @@ public class GestionarSolicitudCursoVeranoCUAdapter implements GestionarSolicitu
     private final GestionarUsuarioGatewayIntPort objUsuario;
     private final GestionarDocumentosGatewayIntPort objDocumentosGateway;
     private final FormateadorResultadosIntPort objFormateadorResultados;
-    private final GestionarArchivosCUIntPort gestionarArchivos;
+    private final AsociadorDocumentosPendientes asociadorDocumentos;
     private final GestionarNotificacionCUIntPort objGestionarNotificacionCU;
 
     public GestionarSolicitudCursoVeranoCUAdapter(
@@ -43,7 +43,7 @@ public class GestionarSolicitudCursoVeranoCUAdapter implements GestionarSolicitu
         this.objCursoOfertado = objCursoOfertado;
         this.objGestionarSolicitudGateway = objGestionarSolicitudGateway;
         this.objDocumentosGateway = objDocumentosGateway;
-        this.gestionarArchivos = gestionarArchivos;
+        this.asociadorDocumentos = new AsociadorDocumentosPendientes(objDocumentosGateway, gestionarArchivos);
         this.objGestionarNotificacionCU = objGestionarNotificacionCU;
     }
 
@@ -199,28 +199,8 @@ public class GestionarSolicitudCursoVeranoCUAdapter implements GestionarSolicitu
 
         solicitudGuardada = this.objGestionarSolicitudGateway.crearSolicitudCursoVeranoInscripcion(solicitudCursoVerano);
 
-        // Asociar documentos sin solicitud y moverlos a carpeta organizada
-        List<Documento> documentosSinSolicitud = this.objDocumentosGateway.buscarDocumentosSinSolicitud();
-        for (Documento doc : documentosSinSolicitud) {
-            // Mover archivo a carpeta organizada si está en la raíz
-            String rutaActual = doc.getRuta_documento() != null ? doc.getRuta_documento() : doc.getNombre();
-            if (rutaActual != null && !rutaActual.contains("/")) {
-                // El archivo está en la raíz, moverlo a carpeta organizada
-                String nuevaRuta = gestionarArchivos.moverArchivoAOrganizado(
-                    rutaActual, 
-                    doc.getNombre(), 
-                    "curso-verano", 
-                    solicitudGuardada.getId_solicitud()
-                );
-                if (nuevaRuta != null) {
-                    doc.setRuta_documento(nuevaRuta);
-                }
-            }
-            
-            // Asociar documento a la solicitud
-            doc.setObjSolicitud(solicitudGuardada);
-            this.objDocumentosGateway.actualizarDocumento(doc);
-        }
+        // Mover a la carpeta de la solicitud y asociar los documentos que este estudiante subió antes de enviarla
+        asociadorDocumentos.asociar(solicitudGuardada, usuarioBuscar.getId_usuario(), "curso-verano");
 
         // Crear notificación automática para el estudiante
         try {

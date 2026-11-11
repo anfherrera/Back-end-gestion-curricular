@@ -1,12 +1,11 @@
 package co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.controladores;
 
-import java.io.IOException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 
+import co.edu.unicauca.decanatura.gestion_curricular.Security.Autorizacion;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarDocumentosCUIntPort;
-import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.GestionarArchivosGatewayIntPort;
-import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.GestionarUsuarioGatewayIntPort;
+import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarArchivosCUIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Documento;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Usuario;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.DTOPeticion.ComentarioDocumentoDTOPeticion;
@@ -16,8 +15,7 @@ import jakarta.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -33,10 +31,11 @@ public class DocumentoRestController {
 
     private final GestionarDocumentosCUIntPort documentoCU;
     private final DocumentosMapperDominio mapperDocumento;
-    private final GestionarArchivosGatewayIntPort objGestionarArchivos;
-    private final GestionarUsuarioGatewayIntPort usuarioGateway;
+    private final GestionarArchivosCUIntPort objGestionarArchivos;
+    private final Autorizacion autorizacion;
 
     @GetMapping("/buscarPorId/{id}")
+    @PreAuthorize("@autorizacion.puedeVerDocumento(#id)")
     public ResponseEntity<DocumentosDTORespuesta> buscarDocumentoPorId(@Min(1) @PathVariable Integer id) {
         Documento documento = documentoCU.buscarDocumentoId(id);
         if (documento == null) {
@@ -48,25 +47,13 @@ public class DocumentoRestController {
         );
     }
 
+    /** Solo funcionarios, coordinadores y demás staff comentan documentos de una solicitud. */
     @PutMapping("/añadirComentario")
+    @PreAuthorize("hasAnyRole(" + Autorizacion.ROLES_STAFF + ")")
     public ResponseEntity<Void> añadirComentario(@RequestBody ComentarioDocumentoDTOPeticion peticion) {
-        String nombreUsuario = null;
-        String rolUsuario = null;
-        try {
-            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-            if (authentication != null && authentication.isAuthenticated()) {
-                String correo = authentication.getName();
-                Usuario usuario = usuarioGateway.buscarUsuarioPorCorreo(correo);
-                if (usuario != null) {
-                    nombreUsuario = usuario.getNombre_completo();
-                    if (usuario.getObjRol() != null) {
-                        rolUsuario = usuario.getObjRol().getNombre();
-                    }
-                }
-            }
-        } catch (Exception e) {
-            log.debug("No se pudo obtener usuario autenticado para comentario: {}", e.getMessage());
-        }
+        Usuario usuario = autorizacion.usuarioActual();
+        String nombreUsuario = usuario != null ? usuario.getNombre_completo() : null;
+        String rolUsuario = usuario != null && usuario.getObjRol() != null ? usuario.getObjRol().getNombre() : null;
         Integer idDocumento = peticion.getIdDocumento();
         String comentarioNuevo = peticion.getComentario();
         documentoCU.añadirComentario(idDocumento, comentarioNuevo, nombreUsuario, rolUsuario);
@@ -79,6 +66,7 @@ public class DocumentoRestController {
      * Usa ruta_documento si existe; si no, nombre. Devuelve 404 si no existe documento o archivo.
      */
     @GetMapping("/{id}/descargar")
+    @PreAuthorize("@autorizacion.puedeVerDocumento(#id)")
     public ResponseEntity<byte[]> descargarDocumentoPorId(@Min(1) @PathVariable Integer id) {
         Documento documento = documentoCU.buscarDocumentoId(id);
         if (documento == null) {
@@ -108,7 +96,8 @@ public class DocumentoRestController {
                     .headers(headers)
                     .contentType(mediaType)
                     .body(contenido);
-        } catch (IOException e) {
+        } catch (RuntimeException e) {
+            // El caso de uso informa el error de lectura como excepción de regla de negocio
             log.error("Descarga documento: error al leer archivo, id={}, ruta={}", id, ruta, e);
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }

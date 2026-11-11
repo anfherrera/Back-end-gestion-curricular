@@ -14,11 +14,10 @@ import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.DTOPe
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.DTORespuesta.SolicitudHomologacionDTORespuesta;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.mappers.SolicitudHomologacioneMapperDominio;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.mappers.SolicitudMapperDominio;
-import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.GestionarUsuarioGatewayIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Usuario;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Enums.PeriodoAcademicoEnum;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.access.prepost.PreAuthorize;
+import co.edu.unicauca.decanatura.gestion_curricular.Security.Autorizacion;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -39,8 +38,9 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.multipart.MultipartFile;
+import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.validacion.ValidadorArchivoPdf;
 
-import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.GestionarDocumentosGatewayIntPort;
+import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarDocumentosCUIntPort;
 
 import java.util.Date;
 
@@ -51,17 +51,21 @@ import java.util.Date;
 @RequestMapping("/api/solicitudes-homologacion")
 @RequiredArgsConstructor
 @Slf4j
+@PreAuthorize("hasAnyRole(" + Autorizacion.ROLES_STAFF + ")")
 public class SolicitudHomologacionRestController {
     private final GestionarSolicitudHomologacionCUIntPort solicitudHomologacionCU;
     private final SolicitudHomologacioneMapperDominio solicitudMapperDominio;
     private final SolicitudMapperDominio solicitudMapper;
     private final GestionarArchivosCUIntPort objGestionarArchivos;
-    private final GestionarDocumentosGatewayIntPort objGestionarDocumentosGateway;
-    private final GestionarUsuarioGatewayIntPort usuarioGateway;
+    private final GestionarDocumentosCUIntPort documentosCU;
+    private final Autorizacion autorizacion;
     private static final String MARCADOR_OFICIO_HOMOLOGACION = "[OFICIO_HOMOLOGACION]";
 
+    @PreAuthorize("hasAnyRole('Estudiante', 'Administrador')")
     @PostMapping("/crearSolicitud-Homologacion")
     public ResponseEntity<SolicitudHomologacionDTORespuesta> crearSolicitudHomologacion(@Valid @RequestBody SolicitudHomologacionDTOPeticion peticion) {
+        // El solicitante sale del token, no de lo que envía el cliente
+        peticion.getObjUsuario().setId_usuario(autorizacion.idSolicitante(peticion.getObjUsuario().getId_usuario()));
         SolicitudHomologacion solicitud = solicitudMapperDominio.mappearDeSolicitudHomologacionDTOPeticionASolicitudHomologacion(peticion);
         SolicitudHomologacion solicitudCreada = solicitudHomologacionCU.guardar(solicitud);
         ResponseEntity<SolicitudHomologacionDTORespuesta> respuesta = new ResponseEntity<>
@@ -104,7 +108,7 @@ public class SolicitudHomologacionRestController {
     public ResponseEntity<List<SolicitudHomologacionDTORespuesta>> listarSolicitudHomologacionToCoordinador(
             @RequestParam(required = false) String periodoAcademico) {
         // Obtener el programa del coordinador autenticado
-        Integer idPrograma = obtenerProgramaCoordinadorAutenticado();
+        Integer idPrograma = autorizacion.idProgramaCoordinadorActual();
         
         // Si no se proporciona período, usar el período académico actual basado en la fecha
         if (periodoAcademico == null || periodoAcademico.trim().isEmpty()) {
@@ -158,11 +162,21 @@ public class SolicitudHomologacionRestController {
 
 
 
+    @PreAuthorize("isAuthenticated()")
     @GetMapping("/listarSolicitud-Homologacion/porRol")
     public ResponseEntity<List<SolicitudHomologacionDTORespuesta>> listarSolicitudPorRol(
             @RequestParam String rol,
             @RequestParam(required = false) Integer idUsuario,
             @RequestParam(required = false) String periodoAcademico) {
+
+        // Quien no es staff solo puede ver sus propias solicitudes
+        if (!autorizacion.esStaff()) {
+            rol = "ESTUDIANTE";
+            idUsuario = autorizacion.idUsuarioActual();
+            if (idUsuario == null) {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+            }
+        }
 
         // Si no se proporciona período, usar el período académico actual basado en la fecha
         if (periodoAcademico == null || periodoAcademico.trim().isEmpty()) {
@@ -250,7 +264,7 @@ public class SolicitudHomologacionRestController {
     public ResponseEntity<List<SolicitudHomologacionDTORespuesta>> listarSolicitudHomologacionAprobadasToCoordinador(
             @RequestParam(required = false) String periodoAcademico) {
         // Obtener el programa del coordinador autenticado
-        Integer idPrograma = obtenerProgramaCoordinadorAutenticado();
+        Integer idPrograma = autorizacion.idProgramaCoordinadorActual();
         
         List<SolicitudHomologacion> solicitudes;
         
@@ -280,6 +294,7 @@ public class SolicitudHomologacionRestController {
     }
 
 
+    @PreAuthorize("@autorizacion.esStaff() or @autorizacion.esDuenoSolicitud(#id)")
     @GetMapping("/listarSolicitud-Homologacion/{id}")
     public ResponseEntity<SolicitudHomologacionDTORespuesta> listarHomologacionById(@PathVariable Integer id) {
         SolicitudHomologacion solicitud = solicitudHomologacionCU.buscarPorId(id);
@@ -304,6 +319,7 @@ public class SolicitudHomologacionRestController {
     /**
      * Descargar oficio por ID de solicitud
      */
+    @PreAuthorize("@autorizacion.esStaff() or @autorizacion.esDuenoSolicitud(#idSolicitud)")
     @GetMapping("/descargarOficio/{idSolicitud}")
     public ResponseEntity<byte[]> descargarOficio(@PathVariable Integer idSolicitud) {
         try {
@@ -383,6 +399,7 @@ public class SolicitudHomologacionRestController {
     /**
      * Obtener oficios disponibles para una solicitud
      */
+    @PreAuthorize("@autorizacion.esStaff() or @autorizacion.esDuenoSolicitud(#idSolicitud)")
     @GetMapping("/obtenerOficios/{idSolicitud}")
     public ResponseEntity<List<Map<String, Object>>> obtenerOficios(@PathVariable Integer idSolicitud) {
         try {
@@ -426,6 +443,7 @@ public class SolicitudHomologacionRestController {
     /**
      * Validar documentos requeridos para homologación
      */
+    @PreAuthorize("@autorizacion.esStaff() or @autorizacion.esDuenoSolicitud(#idSolicitud)")
     @GetMapping("/validarDocumentosRequeridos/{idSolicitud}")
     public ResponseEntity<Map<String, Object>> validarDocumentosRequeridos(@PathVariable Integer idSolicitud) {
         try {
@@ -478,49 +496,6 @@ public class SolicitudHomologacionRestController {
     }
 
     /**
-     * Obtiene el ID del programa académico del coordinador autenticado.
-     * @return ID del programa o null si no se puede obtener
-     */
-    private Integer obtenerProgramaCoordinadorAutenticado() {
-        try {
-            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-            if (authentication == null || !authentication.isAuthenticated()) {
-                log.warn("No hay usuario autenticado");
-                return null;
-            }
-
-            String email = authentication.getName();
-            Usuario usuarioAutenticado = usuarioGateway.buscarUsuarioPorCorreo(email);
-            
-            if (usuarioAutenticado == null) {
-                log.warn("Usuario autenticado no encontrado: {}", email);
-                return null;
-            }
-
-            // Verificar que sea coordinador
-            String rolNombre = usuarioAutenticado.getObjRol() != null 
-                    ? usuarioAutenticado.getObjRol().getNombre() 
-                    : null;
-            
-            if (!"Coordinador".equals(rolNombre)) {
-                log.warn("El usuario autenticado no es coordinador: {}", rolNombre);
-                return null;
-            }
-
-            // Obtener el programa del coordinador
-            if (usuarioAutenticado.getObjPrograma() != null && usuarioAutenticado.getObjPrograma().getId_programa() != null) {
-                return usuarioAutenticado.getObjPrograma().getId_programa();
-            }
-
-            log.warn("El coordinador no tiene programa asignado");
-            return null;
-        } catch (Exception e) {
-            log.error("Error al obtener programa del coordinador autenticado", e);
-            return null;
-        }
-    }
-
-    /**
      * Indica si el documento es un oficio/resolución (subido por secretaría).
      * Prioridad: si el comentario indica "secretaría", se considera oficio (cualquier nombre).
      * Fallback: por nombre (resolucion/oficio) excluyendo formulario del estudiante (solicitud+homologacion).
@@ -551,19 +526,11 @@ public class SolicitudHomologacionRestController {
             if (solicitud == null) {
                 return ResponseEntity.notFound().build();
             }
+            ValidadorArchivoPdf.Rechazo rechazo = ValidadorArchivoPdf.validar(file, ValidadorArchivoPdf.MAXIMO_10MB);
+            if (rechazo != null) {
+                return ResponseEntity.status(rechazo.estado()).body(Map.of("error", rechazo.mensaje()));
+            }
             String nombreOriginal = file.getOriginalFilename();
-            if (nombreOriginal == null || nombreOriginal.isBlank()) {
-                return ResponseEntity.badRequest().body(Map.of("error", "Nombre de archivo no válido"));
-            }
-            if (!nombreOriginal.toLowerCase(Locale.ROOT).endsWith(".pdf")) {
-                return ResponseEntity.status(HttpStatus.UNSUPPORTED_MEDIA_TYPE)
-                    .body(Map.of("error", "Solo se permiten archivos PDF"));
-            }
-            long maxSize = 10 * 1024 * 1024; // 10MB
-            if (file.getSize() > maxSize) {
-                return ResponseEntity.status(HttpStatus.PAYLOAD_TOO_LARGE)
-                    .body(Map.of("error", "Archivo demasiado grande. Máximo 10MB"));
-            }
             String rutaArchivo = objGestionarArchivos.saveFile(file, nombreOriginal, "pdf", "homologacion", idSolicitud);
             String nombreArchivo = rutaArchivo.contains("/") ? rutaArchivo.substring(rutaArchivo.lastIndexOf("/") + 1) : rutaArchivo;
 
@@ -575,7 +542,7 @@ public class SolicitudHomologacionRestController {
             documento.setComentario(MARCADOR_OFICIO_HOMOLOGACION + " Archivo subido por secretaría");
             documento.setObjSolicitud(solicitud);
 
-            Documento guardado = objGestionarDocumentosGateway.crearDocumento(documento);
+            Documento guardado = documentosCU.registrarDocumento(documento);
 
             Map<String, Object> respuesta = new HashMap<>();
             respuesta.put("success", true);

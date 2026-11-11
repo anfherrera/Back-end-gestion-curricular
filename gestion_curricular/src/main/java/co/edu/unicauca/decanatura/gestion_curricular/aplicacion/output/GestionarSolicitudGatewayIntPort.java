@@ -64,5 +64,14 @@ public interface GestionarSolicitudGatewayIntPort {
     List<Solicitud> obtenerSolicitudesPorNombre(String nombreSolicitud);
     
     List<Solicitud> obtenerSolicitudesPorUsuario(Integer idUsuario);
+
+    /** Historial de solicitudes con filtros opcionales (null = sin filtro). */
+    List<Solicitud> buscarHistorial(String periodoAcademico, Integer idUsuario, String estadoActual);
+
+    /** Total de solicitudes del sistema que cuenta el historial. */
+    long contarHistorial();
+
+    /** Solicitudes ya procesadas (aprobadas o rechazadas). */
+    long contarSolicitudesProcesadas();
     
 }

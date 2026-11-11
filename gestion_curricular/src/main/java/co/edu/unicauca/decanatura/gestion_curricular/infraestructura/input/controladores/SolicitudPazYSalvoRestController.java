@@ -6,6 +6,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarSolicitudPazYSalvoCUIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarArchivosCUIntPort;
+import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarDocumentosCUIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.CambioEstadoSolicitud;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.SolicitudPazYSalvo;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.TransicionEstadoPazYSalvo;
@@ -17,6 +18,7 @@ import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.DTOPe
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.DTORespuesta.SolicitudPazYSalvoDTORespuesta;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.mappers.SolicitudPazYSalvoMapperDominio;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.mappers.SolicitudMapperDominio;
+import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.validacion.ValidadorArchivoPdf;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.bind.annotation.RequestParam;
 import java.util.Date;
@@ -41,7 +43,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
-import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.GestionarDocumentosGatewayIntPort;
+
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.DTORespuesta.DocumentosDTORespuesta;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.mappers.DocumentosMapperDominio;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Solicitud;
@@ -65,7 +67,7 @@ public class SolicitudPazYSalvoRestController {
     private final SolicitudPazYSalvoMapperDominio solicitudMapperDominio;
     private final SolicitudMapperDominio solicitudMapper;
     private final GestionarArchivosCUIntPort objGestionarArchivos;
-    private final GestionarDocumentosGatewayIntPort objGestionarDocumentosGateway;
+    private final GestionarDocumentosCUIntPort documentosCU;
     private final DocumentosMapperDominio documentosMapperDominio;
     private final co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.formateador.DocumentGeneratorService documentGeneratorService;
     private final ObjectMapper objectMapper;
@@ -343,7 +345,7 @@ public class SolicitudPazYSalvoRestController {
     public ResponseEntity<List<SolicitudPazYSalvoDTORespuesta>> listarSolicitudPazYSalvoToCoordinador(
             @RequestParam(required = false) String periodoAcademico) {
         // Obtener el programa del coordinador autenticado
-        Integer idPrograma = obtenerProgramaCoordinadorAutenticado();
+        Integer idPrograma = autorizacion.idProgramaCoordinadorActual();
         
         // Si no se proporciona período, usar el período académico actual basado en la fecha
         if (periodoAcademico == null || periodoAcademico.trim().isEmpty()) {
@@ -459,7 +461,7 @@ public class SolicitudPazYSalvoRestController {
     public ResponseEntity<List<SolicitudPazYSalvoDTORespuesta>> listarSolicitudPazYSalvoAprobadasToCoordinador(
             @RequestParam(required = false) String periodoAcademico) {
         // Obtener el programa del coordinador autenticado
-        Integer idPrograma = obtenerProgramaCoordinadorAutenticado();
+        Integer idPrograma = autorizacion.idProgramaCoordinadorActual();
         
         List<SolicitudPazYSalvo> solicitudes;
         
@@ -861,22 +863,13 @@ public class SolicitudPazYSalvoRestController {
     @PostMapping("/subir-documento")
     public ResponseEntity<Map<String, Object>> subirDocumentoPazSalvo(
             @RequestParam("file") MultipartFile file) {
+        ValidadorArchivoPdf.Rechazo rechazo = ValidadorArchivoPdf.validar(file, ValidadorArchivoPdf.MAXIMO_10MB);
+        if (rechazo != null) {
+            return ResponseEntity.status(rechazo.estado()).body(Map.of("error", rechazo.mensaje()));
+        }
         try {
             String nombreOriginal = file.getOriginalFilename();
-            
-            // Validaciones básicas
-            if (!nombreOriginal.toLowerCase().endsWith(".pdf")) {
-                return ResponseEntity.status(HttpStatus.UNSUPPORTED_MEDIA_TYPE)
-                    .body(Map.of("error", "Solo se permiten archivos PDF"));
-            }
-            
-            // Validar peso máximo (10MB)
-            long maxFileSize = 10 * 1024 * 1024; // 10MB
-            if (file.getSize() > maxFileSize) {
-                return ResponseEntity.status(HttpStatus.PAYLOAD_TOO_LARGE)
-                    .body(Map.of("error", "Archivo demasiado grande. Máximo 10MB"));
-            }
-            
+
             // Guardar archivo (sin ID de solicitud, se guarda en raíz para documentos huérfanos)
             // Nota: Este endpoint es para documentos sin asociar, se mantiene en raíz
             String rutaArchivo = this.objGestionarArchivos.saveFile(file, nombreOriginal, "pdf");
@@ -887,10 +880,10 @@ public class SolicitudPazYSalvoRestController {
             doc.setRuta_documento(rutaArchivo);
             doc.setFecha_documento(new Date());
             doc.setEsValido(true);
-            // NO agregar comentario automático - solo funcionarios/coordinadores pueden comentar
-            // NO asociar a solicitud - esto se hace después como en homologación
+            // Sin solicitud todavía: se asociará a la próxima solicitud que cree este mismo usuario
+            doc.setIdUsuarioSubio(autorizacion.idUsuarioActual());
             
-            Documento documentoGuardado = this.objGestionarDocumentosGateway.crearDocumento(doc);
+            Documento documentoGuardado = documentosCU.registrarDocumento(doc);
             
             Map<String, Object> respuesta = new HashMap<>();
             respuesta.put("success", true);
@@ -898,13 +891,13 @@ public class SolicitudPazYSalvoRestController {
             respuesta.put("documento_id", documentoGuardado.getId_documento());
             respuesta.put("nombre", nombreOriginal);
             respuesta.put("fecha", documentoGuardado.getFecha_documento());
-            
+
             return ResponseEntity.ok(respuesta);
-            
+
         } catch (Exception e) {
-            Map<String, Object> errorInfo = new HashMap<>();
-            errorInfo.put("error", e.getMessage());
-            return ResponseEntity.ok(errorInfo);
+            log.error("Error al subir documento de paz y salvo", e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(Map.of("error", "No se pudo guardar el documento. Intente de nuevo."));
         }
     }
 
@@ -1265,19 +1258,12 @@ public class SolicitudPazYSalvoRestController {
             if (solicitud == null) {
                 Map<String, Object> error = new HashMap<>();
                 error.put("error", "Solicitud ID " + idSolicitud + " no encontrada");
-                return ResponseEntity.ok(error);
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(error);
             }
             
-            List<Documento> documentosSinSolicitud = objGestionarDocumentosGateway.buscarDocumentosSinSolicitud();
-            
-            
-            int documentosAsociados = 0;
-            for (Documento doc : documentosSinSolicitud) {
-                doc.setObjSolicitud(solicitud);
-                objGestionarDocumentosGateway.actualizarDocumento(doc);
-                documentosAsociados++;
-            }
-            
+            Integer idDueno = solicitud.getObjUsuario() != null ? solicitud.getObjUsuario().getId_usuario() : null;
+            int documentosAsociados = documentosCU.asociarDocumentosPendientes(solicitud, idDueno, "pazysalvo");
+
             Map<String, Object> resultado = new HashMap<>();
             resultado.put("success", true);
             resultado.put("documentos_asociados", documentosAsociados);
@@ -1288,10 +1274,10 @@ public class SolicitudPazYSalvoRestController {
             return ResponseEntity.ok(resultado);
             
         } catch (Exception e) {
-            
+            log.error("Error al asociar documentos a la solicitud {}", idSolicitud, e);
             Map<String, Object> errorInfo = new HashMap<>();
-            errorInfo.put("error", e.getMessage());
-            return ResponseEntity.ok(errorInfo);
+            errorInfo.put("error", "No se pudieron asociar los documentos");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorInfo);
         }
     }
 
@@ -1587,7 +1573,7 @@ public ResponseEntity<DocumentosDTORespuesta> guardarOficioPazSalvo(
         }
         
         // Guardar documento en BD
-        Documento documentoGuardado = this.objGestionarDocumentosGateway.crearDocumento(doc);
+        Documento documentoGuardado = documentosCU.registrarDocumento(doc);
         
         ResponseEntity<DocumentosDTORespuesta> respuesta = new ResponseEntity<>(
             documentosMapperDominio.mappearDeDocumentoADTORespuesta(documentoGuardado), 
@@ -1610,14 +1596,12 @@ public ResponseEntity<DocumentosDTORespuesta> guardarOficioPazSalvo(
             @RequestParam("file") MultipartFile file) {
         try {
 
-            if (file == null || file.isEmpty()) {
-                return ResponseEntity.badRequest().build();
+            ValidadorArchivoPdf.Rechazo rechazo = ValidadorArchivoPdf.validar(file, ValidadorArchivoPdf.MAXIMO_15MB);
+            if (rechazo != null) {
+                return ResponseEntity.status(rechazo.estado()).build();
             }
 
             String nombreOriginal = file.getOriginalFilename();
-            if (nombreOriginal == null || !nombreOriginal.toLowerCase().endsWith(".pdf")) {
-                return ResponseEntity.status(HttpStatus.UNSUPPORTED_MEDIA_TYPE).build();
-            }
 
             // Validar que la solicitud exista
             SolicitudPazYSalvo solicitud = solicitudPazYSalvoCU.buscarPorId(idSolicitud);
@@ -1639,7 +1623,7 @@ public ResponseEntity<DocumentosDTORespuesta> guardarOficioPazSalvo(
             objSolicitud.setId_solicitud(idSolicitud);
             documento.setObjSolicitud(objSolicitud);
 
-            Documento documentoGuardado = objGestionarDocumentosGateway.crearDocumento(documento);
+            Documento documentoGuardado = documentosCU.registrarDocumento(documento);
 
             return new ResponseEntity<>(
                     documentosMapperDominio.mappearDeDocumentoADTORespuesta(documentoGuardado),
@@ -1679,43 +1663,5 @@ public ResponseEntity<DocumentosDTORespuesta> guardarOficioPazSalvo(
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body(error);
         }
         return null;
-    }
-
-    /**
-     * Obtiene el ID del programa académico del coordinador autenticado.
-     * @return ID del programa o null si no se puede obtener
-     */
-    private Integer obtenerProgramaCoordinadorAutenticado() {
-        try {
-            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-            if (authentication == null || !authentication.isAuthenticated()) {
-                return null;
-            }
-
-            String email = authentication.getName();
-            Usuario usuarioAutenticado = usuarioGateway.buscarUsuarioPorCorreo(email);
-            
-            if (usuarioAutenticado == null) {
-                return null;
-            }
-
-            // Verificar que sea coordinador
-            String rolNombre = usuarioAutenticado.getObjRol() != null 
-                    ? usuarioAutenticado.getObjRol().getNombre() 
-                    : null;
-            
-            if (!"Coordinador".equals(rolNombre)) {
-                return null;
-            }
-
-            // Obtener el programa del coordinador
-            if (usuarioAutenticado.getObjPrograma() != null && usuarioAutenticado.getObjPrograma().getId_programa() != null) {
-                return usuarioAutenticado.getObjPrograma().getId_programa();
-            }
-
-            return null;
-        } catch (Exception e) {
-            return null;
-        }
     }
 }

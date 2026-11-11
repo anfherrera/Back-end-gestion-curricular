@@ -26,6 +26,7 @@ import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.CursoOferta
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.SolicitudCursoVeranoPreinscripcion;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.SolicitudCursoVeranoIncripcion;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Documento;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Usuario;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Solicitud;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.EstadoCursoOfertado;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Enums.CondicionSolicitudVerano;
@@ -38,17 +39,11 @@ import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.DTOPe
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.DTOPeticion.UpdateCursoDTO;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.mappers.CursosOfertadosMapperDominio;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.mappers.SolicitudCursoDeVeranoPreinscripcionMapperDominio;
-import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.servicios.InscripcionService;
-import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.entidades.SolicitudEntity;
-import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.entidades.SolicitudCursoVeranoPreinscripcionEntity;
-import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.entidades.SolicitudCursoVeranoInscripcionEntity;
-import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.repositorios.SolicitudRepositoryInt;
-import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.repositorios.CursoOfertadoVeranoRepositoryInt;
+import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarSolicitudCUIntPort;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.EstadoSolicitud;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.TransicionEstadoCurso;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarArchivosCUIntPort;
-import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.GestionarDocumentosGatewayIntPort;
-import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.repositorios.EstadoCursoOfertadoRepositoryInt;
-import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.entidades.CursoOfertadoVeranoEntity;
-import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.entidades.EstadoCursoOfertadoEntity;
+import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarDocumentosCUIntPort;
 
 import java.util.List;
 import java.util.Map;
@@ -69,12 +64,9 @@ public class CursosIntersemestralesRestController {
     private final GestionarDocentesCUIntPort docenteCU;
     private final CursosOfertadosMapperDominio cursoMapper;
     private final SolicitudCursoDeVeranoPreinscripcionMapperDominio solicitudMapper;
-    private final InscripcionService inscripcionService;
-    private final SolicitudRepositoryInt solicitudRepository;
-    private final CursoOfertadoVeranoRepositoryInt cursoRepository;
     private final GestionarArchivosCUIntPort objGestionarArchivos;
-    private final GestionarDocumentosGatewayIntPort objGestionarDocumentosGateway;
-    private final EstadoCursoOfertadoRepositoryInt estadoRepository;
+    private final GestionarDocumentosCUIntPort documentosCU;
+    private final GestionarSolicitudCUIntPort solicitudGeneralCU;
     private final co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarUsuarioCUIntPort objGestionarUsuarioCU;
     private final GestionarSalonesCUIntPort salonCU;
 
@@ -306,6 +298,7 @@ public class CursosIntersemestralesRestController {
      *                         Si no se proporciona, muestra TODOS los cursos sin filtrar por período.
      * @param idPrograma ID del programa académico opcional para filtrar cursos
      */
+    @PreAuthorize("hasAnyRole(" + Autorizacion.ROLES_STAFF + ")")
     @GetMapping("/cursos-verano/todos")
     public ResponseEntity<List<CursosOfertadosDTORespuesta>> obtenerTodosLosCursosVerano(
             @RequestParam(required = false) String periodoAcademico,
@@ -713,6 +706,7 @@ public class CursosIntersemestralesRestController {
      * Crear solicitud de curso nuevo
      * POST /api/cursos-intersemestrales/solicitudes-curso-nuevo
      */
+    @PreAuthorize("@autorizacion.esStaff() or #peticion.idUsuario == null or @autorizacion.esUsuarioActual(#peticion.idUsuario)")
     @PostMapping("/solicitudes-curso-nuevo")
     public ResponseEntity<Map<String, Object>> crearSolicitudCursoNuevo(@RequestBody SolicitudCursoNuevoDTOPeticion peticion) {
         try {
@@ -799,6 +793,7 @@ public class CursosIntersemestralesRestController {
      * Crear preinscripcion a curso de verano
      * POST /api/cursos-intersemestrales/cursos-verano/preinscripciones
      */
+    @PreAuthorize("@autorizacion.esStaff() or #peticion.idUsuario == null or @autorizacion.esUsuarioActual(#peticion.idUsuario)")
     @PostMapping("/cursos-verano/preinscripciones")
     public ResponseEntity<Map<String, Object>> crearPreinscripcion(@RequestBody PreinscripcionCursoVeranoDTOPeticion peticion) {
         try {
@@ -879,6 +874,7 @@ public class CursosIntersemestralesRestController {
      * Crear inscripcion a curso de verano
      * POST /api/cursos-intersemestrales/cursos-verano/inscripciones
      */
+    @PreAuthorize("@autorizacion.esStaff() or #peticion.idUsuario == null or @autorizacion.esUsuarioActual(#peticion.idUsuario)")
     @PostMapping("/cursos-verano/inscripciones")
     public ResponseEntity<Map<String, Object>> crearInscripcion(@RequestBody PreinscripcionCursoVeranoDTOPeticion peticion) {
         try {
@@ -1006,28 +1002,9 @@ public class CursosIntersemestralesRestController {
             
             // 4. Asociar documentos sin solicitud a la inscripcion recien creada y moverlos a carpeta organizada
             try {
-                List<Documento> documentosSinSolicitud = objGestionarDocumentosGateway.buscarDocumentosSinSolicitud();
-                
-                for (Documento doc : documentosSinSolicitud) {
-                    
-                    // Mover archivo a carpeta organizada si está en la raíz
-                    String rutaActual = doc.getRuta_documento() != null ? doc.getRuta_documento() : doc.getNombre();
-                    if (rutaActual != null && !rutaActual.contains("/")) {
-                        // El archivo está en la raíz, moverlo a carpeta organizada
-                        String nuevaRuta = objGestionarArchivos.moverArchivoAOrganizado(
-                            rutaActual, 
-                            doc.getNombre(), 
-                            "curso-verano", 
-                            inscripcionGuardada.getId_solicitud()
-                        );
-                        if (nuevaRuta != null) {
-                            doc.setRuta_documento(nuevaRuta);
-                        }
-                    }
-                    
-                    doc.setObjSolicitud(inscripcionGuardada);
-                    objGestionarDocumentosGateway.actualizarDocumento(doc);
-                }
+                Integer idDueno = inscripcionGuardada.getObjUsuario() != null
+                    ? inscripcionGuardada.getObjUsuario().getId_usuario() : null;
+                documentosCU.asociarDocumentosPendientes(inscripcionGuardada, idDueno, "curso-verano");
             } catch (Exception e) {
                 log.error("Error asociando documentos: {}", e.getMessage(), e);
                 // No fallar la operacion por esto
@@ -1035,13 +1012,8 @@ public class CursosIntersemestralesRestController {
             
             // 5. Asociar estudiante al curso en la tabla de relacion
             try {
-                int resultado = cursoRepository.insertarCursoEstudiante(
-                    peticion.getIdCurso(),
-                    peticion.getIdUsuario()
-                );
-                
-                if (resultado == 1) {
-                    } else {
+                if (!cursoCU.asociarEstudiante(peticion.getIdCurso(), peticion.getIdUsuario())) {
+                    log.warn("No se pudo asociar el estudiante {} al curso {}", peticion.getIdUsuario(), peticion.getIdCurso());
                 }
             } catch (Exception e) {
                 log.error("Error asociando estudiante al curso: {}", e.getMessage(), e);
@@ -1073,6 +1045,7 @@ public class CursosIntersemestralesRestController {
      * Crear preinscripcion a curso de verano (alias para compatibilidad con pruebas)
      * POST /api/cursos-intersemestrales/solicitudes/preinscripcion
      */
+    @PreAuthorize("@autorizacion.esStaff() or #peticion.idUsuario == null or @autorizacion.esUsuarioActual(#peticion.idUsuario)")
     @PostMapping("/solicitudes/preinscripcion")
     public ResponseEntity<Map<String, Object>> crearPreinscripcionAlias(@RequestBody PreinscripcionCursoVeranoDTOPeticion peticion) {
         return crearPreinscripcion(peticion);
@@ -1086,44 +1059,42 @@ public class CursosIntersemestralesRestController {
     @GetMapping("/inscripciones")
     public ResponseEntity<List<Map<String, Object>>> obtenerInscripciones() {
         try {
-            // Obtener inscripciones reales de la base de datos
+            // Antes se leían claves que nunca existían y se rellenaba el estudiante con datos inventados
             List<Map<String, Object>> inscripciones = new ArrayList<>();
-            
-            // Obtener todas las inscripciones usando el servicio
-            List<Map<String, Object>> inscripcionesReales = inscripcionService.findAll();
-            
-            // Procesar inscripciones reales de la base de datos
-            for (Map<String, Object> inscripcionReal : inscripcionesReales) {
-                Map<String, Object> inscripcionFormateada = new HashMap<>();
-                
-                // Mapear datos de la inscripcion real
-                inscripcionFormateada.put("id", inscripcionReal.get("id"));
-                inscripcionFormateada.put("fecha", inscripcionReal.get("fecha_creacion"));
-                inscripcionFormateada.put("estado", inscripcionReal.get("codicion_solicitud"));
-                inscripcionFormateada.put("estudianteId", inscripcionReal.get("idfkUsuario"));
-                inscripcionFormateada.put("cursoId", inscripcionReal.get("idfkCurso"));
-                
-                // Crear informacion del estudiante (simulada por ahora)
+            for (Solicitud solicitud : solicitudGeneralCU.listarSolicitudes()) {
+                if (!(solicitud instanceof SolicitudCursoVeranoIncripcion inscripcion)) {
+                    continue;
+                }
+                Map<String, Object> fila = new HashMap<>();
+                fila.put("id", inscripcion.getId_solicitud());
+                fila.put("fecha", inscripcion.getFecha_registro_solicitud());
+                List<EstadoSolicitud> estados = inscripcion.getEstadosSolicitud();
+                fila.put("estado", estados != null && !estados.isEmpty()
+                        ? estados.get(estados.size() - 1).getEstado_actual() : null);
+                fila.put("cursoId", inscripcion.getObjCursoOfertadoVerano() != null
+                        ? inscripcion.getObjCursoOfertadoVerano().getId_curso() : null);
+
+                Usuario usuario = inscripcion.getObjUsuario();
+                fila.put("estudianteId", usuario != null ? usuario.getId_usuario() : null);
                 Map<String, Object> estudiante = new HashMap<>();
-                estudiante.put("id_usuario", inscripcionReal.get("idfkUsuario"));
-                estudiante.put("nombre", inscripcionReal.get("nombre_estudiante"));
-                estudiante.put("apellido", "Apellido"); // Por ahora hardcodeado
-                estudiante.put("email", "estudiante@unicauca.edu.co"); // Por ahora hardcodeado
-                estudiante.put("codigo_estudiante", "EST001"); // Por ahora hardcodeado
-                inscripcionFormateada.put("estudiante", estudiante);
-                
-                // Informacion del archivo de pago (por ahora vacia)
+                estudiante.put("id_usuario", usuario != null ? usuario.getId_usuario() : null);
+                estudiante.put("nombre", usuario != null ? usuario.getNombre_completo() : inscripcion.getNombre_estudiante());
+                estudiante.put("email", usuario != null ? usuario.getCorreo() : null);
+                estudiante.put("codigo_estudiante", usuario != null ? usuario.getCodigo() : null);
+                fila.put("estudiante", estudiante);
+
+                // Comprobante de pago: el primer documento adjunto a la inscripcion, si hay
                 Map<String, Object> archivoPago = new HashMap<>();
-                archivoPago.put("id_documento", null);
-                archivoPago.put("nombre", "Sin comprobante");
+                Documento comprobante = inscripcion.getDocumentos() != null && !inscripcion.getDocumentos().isEmpty()
+                        ? inscripcion.getDocumentos().get(0) : null;
+                archivoPago.put("id_documento", comprobante != null ? comprobante.getId_documento() : null);
+                archivoPago.put("nombre", comprobante != null ? comprobante.getNombre() : "Sin comprobante");
                 archivoPago.put("url", null);
-                archivoPago.put("fecha", null);
-                inscripcionFormateada.put("archivoPago", archivoPago);
-                
-                inscripciones.add(inscripcionFormateada);
+                archivoPago.put("fecha", comprobante != null ? comprobante.getFecha_documento() : null);
+                fila.put("archivoPago", archivoPago);
+
+                inscripciones.add(fila);
             }
-            
-            
             return ResponseEntity.ok(inscripciones);
         } catch (Exception e) {
             Map<String, Object> error = new HashMap<>();
@@ -1142,17 +1113,15 @@ public class CursosIntersemestralesRestController {
         try {
             
             // Consultar las inscripciones guardadas en la base de datos
-            List<SolicitudEntity> solicitudesEntity = solicitudRepository.buscarInscripcionesPorUsuario(id_usuario);
-            
-            List<Map<String, Object>> inscripciones = solicitudesEntity.stream().map(solicitud -> {
+            List<SolicitudCursoVeranoIncripcion> inscripcionesUsuario = solicitudGateway.buscarInscripcionesPorUsuario(id_usuario);
+
+            List<Map<String, Object>> inscripciones = inscripcionesUsuario.stream().map(solicitud -> {
                 Map<String, Object> inscripcion = new HashMap<>();
                 inscripcion.put("id", solicitud.getId_solicitud());
                 inscripcion.put("nombre_solicitud", solicitud.getNombre_solicitud());
-                
-                // Obtener fecha de registro
                 inscripcion.put("fecha_solicitud", solicitud.getFecha_registro_solicitud());
-                
-                // Obtener estado mas reciente
+
+                // Estado mas reciente
                 String estadoActual = "Sin Estado";
                 if (solicitud.getEstadosSolicitud() != null && !solicitud.getEstadosSolicitud().isEmpty()) {
                     estadoActual = solicitud.getEstadosSolicitud()
@@ -1160,18 +1129,11 @@ public class CursosIntersemestralesRestController {
                         .getEstado_actual();
                 }
                 inscripcion.put("estado", estadoActual);
-                
-                // Obtener observaciones si es solicitud de curso de verano
-                if (solicitud instanceof SolicitudCursoVeranoInscripcionEntity) {
-                    SolicitudCursoVeranoInscripcionEntity cursoInscripcion = (SolicitudCursoVeranoInscripcionEntity) solicitud;
-                    inscripcion.put("observaciones", cursoInscripcion.getObservacion());
-                } else {
-                    inscripcion.put("observaciones", "");
-                }
-                
-                // Obtener informacion del curso si existe
+                inscripcion.put("observaciones", solicitud.getObservacion());
+
+                // Informacion del curso si existe
                 if (solicitud.getObjCursoOfertadoVerano() != null) {
-                    CursoOfertadoVeranoEntity curso = solicitud.getObjCursoOfertadoVerano();
+                    CursoOfertadoVerano curso = solicitud.getObjCursoOfertadoVerano();
                     inscripcion.put("curso_id", curso.getId_curso());
                     inscripcion.put("salon", curso.getSalon());
                     inscripcion.put("grupo", curso.getGrupo() != null ? curso.getGrupo().toString() : "");
@@ -1207,173 +1169,6 @@ public class CursosIntersemestralesRestController {
     }
 
     
-    /**
-     * Obtener el estado actual de un curso
-     */
-    private String obtenerEstadoActual(CursoOfertadoVeranoEntity curso) {
-        if (curso.getEstadosCursoOfertados() == null || curso.getEstadosCursoOfertados().isEmpty()) {
-            return "Sin_Estado";
-        }
-        return curso.getEstadosCursoOfertados().get(curso.getEstadosCursoOfertados().size() - 1).getEstado_actual();
-    }
-    
-    /**
-     * Validar si una transicion de estado es valida
-     */
-    private Map<String, Object> validarTransicionEstado(String estadoActual, String nuevoEstado, CursoOfertadoVeranoEntity curso) {
-        Map<String, Object> resultado = new HashMap<>();
-        resultado.put("valido", false);
-        
-        // Si es el mismo estado, es valido (no hay cambio)
-        if (estadoActual.equals(nuevoEstado)) {
-            resultado.put("valido", true);
-            return resultado;
-        }
-        
-        // Validar transiciones permitidas
-        switch (estadoActual) {
-            case "Sin_Estado":
-                // Desde sin estado, solo puede ir a Borrador
-                if ("Borrador".equals(nuevoEstado)) {
-                    resultado.put("valido", true);
-                } else {
-                    resultado.put("error", "Transicion invalida");
-                    resultado.put("message", "Desde 'Sin Estado' solo se puede cambiar a 'Borrador'");
-                }
-                break;
-                
-            case "Borrador":
-                // Desde Borrador puede ir a Abierto o mantenerse en Borrador
-                if ("Abierto".equals(nuevoEstado)) {
-                    // Validar que el curso este completo
-                    if (validarCompletitudCurso(curso)) {
-                        resultado.put("valido", true);
-                    } else {
-                        resultado.put("error", "Curso incompleto");
-                        resultado.put("message", "El curso debe tener materia, docente y cupo estimado para pasar a 'Abierto'");
-                    }
-                } else {
-                    resultado.put("error", "Transicion invalida");
-                    resultado.put("message", "Desde 'Borrador' solo se puede cambiar a 'Abierto'");
-                }
-                break;
-                
-            case "Abierto":
-                // Desde Abierto puede ir a Publicado
-                if ("Publicado".equals(nuevoEstado)) {
-                    resultado.put("valido", true);
-                } else if ("Borrador".equals(nuevoEstado)) {
-                    // Permitir retroceder a Borrador para edicion
-                    resultado.put("valido", true);
-                } else {
-                    resultado.put("error", "Transicion invalida");
-                    resultado.put("message", "Desde 'Abierto' solo se puede cambiar a 'Publicado' o retroceder a 'Borrador'");
-                }
-                break;
-                
-            case "Publicado":
-                // Desde Publicado puede ir a Preinscripcion
-                if ("Preinscripcion".equals(nuevoEstado)) {
-                    // Validar que haya solicitudes minimas para el curso
-                    if (validarSolicitudesMinimas(curso.getId_curso())) {
-                        resultado.put("valido", true);
-                    } else {
-                        resultado.put("error", "Solicitudes insuficientes");
-                        resultado.put("message", "Debe haber al menos " + curso.getCupo_estimado() + " solicitudes para abrir preinscripciones");
-                    }
-                } else if ("Abierto".equals(nuevoEstado)) {
-                    // Permitir retroceder a Abierto
-                    resultado.put("valido", true);
-                } else {
-                    resultado.put("error", "Transicion invalida");
-                    resultado.put("message", "Desde 'Publicado' solo se puede cambiar a 'Preinscripcion' o retroceder a 'Abierto'");
-                }
-                break;
-                
-            case "Preinscripcion":
-                // Desde Preinscripcion puede ir a Inscripcion o Cerrado
-                if ("Inscripcion".equals(nuevoEstado)) {
-                    // Validar que haya preinscripciones aprobadas suficientes
-                    if (validarPreinscripcionesAprobadas(curso.getId_curso())) {
-                        resultado.put("valido", true);
-                    } else {
-                        resultado.put("error", "Preinscripciones insuficientes");
-                        resultado.put("message", "Debe haber preinscripciones aprobadas suficientes para abrir inscripciones");
-                    }
-                } else if ("Cerrado".equals(nuevoEstado)) {
-                    resultado.put("valido", true);
-                } else if ("Publicado".equals(nuevoEstado)) {
-                    // Permitir retroceder a Publicado
-                    resultado.put("valido", true);
-                } else {
-                    resultado.put("error", "Transicion invalida");
-                    resultado.put("message", "Desde 'Preinscripcion' solo se puede cambiar a 'Inscripcion', 'Cerrado' o retroceder a 'Publicado'");
-                }
-                break;
-                
-            case "Inscripcion":
-                // Desde Inscripcion puede ir a Cerrado
-                if ("Cerrado".equals(nuevoEstado)) {
-                    resultado.put("valido", true);
-                } else if ("Preinscripcion".equals(nuevoEstado)) {
-                    // Permitir retroceder a Preinscripcion
-                    resultado.put("valido", true);
-                } else {
-                    resultado.put("error", "Transicion invalida");
-                    resultado.put("message", "Desde 'Inscripcion' solo se puede cambiar a 'Cerrado' o retroceder a 'Preinscripcion'");
-                }
-                break;
-                
-            case "Cerrado":
-                // Desde Cerrado no se puede cambiar a ningun otro estado (solo consulta)
-                resultado.put("error", "Estado final");
-                resultado.put("message", "El curso esta cerrado y no se puede cambiar su estado");
-                break;
-                
-            default:
-                resultado.put("error", "Estado desconocido");
-                resultado.put("message", "Estado actual '" + estadoActual + "' no reconocido");
-                break;
-        }
-        
-        return resultado;
-    }
-    
-    /**
-     * Validar que un curso este completo (tiene todos los campos obligatorios)
-     */
-    private boolean validarCompletitudCurso(CursoOfertadoVeranoEntity curso) {
-        return curso.getObjMateria() != null && 
-               curso.getObjDocente() != null && 
-               curso.getCupo_estimado() != null && 
-               curso.getCupo_estimado() > 0 &&
-               curso.getSalon() != null && 
-               !curso.getSalon().trim().isEmpty();
-    }
-    
-    /**
-     * Validar que haya solicitudes minimas para abrir preinscripciones
-     */
-    private boolean validarSolicitudesMinimas(Integer idCurso) {
-        try {
-            // Por ahora, permitir siempre (se puede implementar logica especifica)
-            return true;
-        } catch (Exception e) {
-            return false;
-        }
-    }
-    
-    /**
-     * Validar que haya preinscripciones aprobadas suficientes para abrir inscripciones
-     */
-    private boolean validarPreinscripcionesAprobadas(Integer idCurso) {
-        try {
-            // Por ahora, permitir siempre (se puede implementar logica especifica)
-            return true;
-        } catch (Exception e) {
-            return false;
-        }
-    }
     
     /**
      * Validar permisos de operacion segun el estado del curso y el rol del usuario
@@ -1508,147 +1303,7 @@ public class CursosIntersemestralesRestController {
             @RequestParam(value = "fechaInicio", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") Date fechaInicio,
             @RequestParam(value = "fechaFin", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") Date fechaFin) {
         try {
-            // Buscar todas las solicitudes usando el repositorio directamente
-            List<SolicitudEntity> todasLasSolicitudes = solicitudRepository.findAllWithJoins();
-            
-            // Aplicar filtros si se proporcionan
-            todasLasSolicitudes = filtrarSolicitudes(todasLasSolicitudes, idCurso, estado, periodoAcademico, fechaInicio, fechaFin);
-            
-            List<Map<String, Object>> solicitudesFormateadas = new ArrayList<>();
-            
-            for (SolicitudEntity solicitud : todasLasSolicitudes) {
-                // Solo procesar solicitudes de cursos intersemestrales
-                if (solicitud instanceof SolicitudCursoVeranoPreinscripcionEntity || 
-                    solicitud instanceof SolicitudCursoVeranoInscripcionEntity) {
-                    
-                    Map<String, Object> solicitudInfo = new HashMap<>();
-                    
-                    // Informacion basica
-                    solicitudInfo.put("id", solicitud.getId_solicitud());
-                    solicitudInfo.put("fecha", solicitud.getFecha_registro_solicitud());
-                    solicitudInfo.put("tipo", solicitud instanceof SolicitudCursoVeranoPreinscripcionEntity ? 
-                        "Preinscripcion" : "Inscripcion");
-                    
-                    // Motivo de la solicitud
-                    String motivoSolicitud = "No especificado";
-                    
-                    if (solicitud instanceof SolicitudCursoVeranoPreinscripcionEntity) {
-                        SolicitudCursoVeranoPreinscripcionEntity preinscripcion = (SolicitudCursoVeranoPreinscripcionEntity) solicitud;
-                        if (preinscripcion.getObservacion() != null && !preinscripcion.getObservacion().trim().isEmpty()) {
-                            motivoSolicitud = preinscripcion.getObservacion();
-                        } else if (preinscripcion.getNombre_solicitud() != null && !preinscripcion.getNombre_solicitud().trim().isEmpty()) {
-                            motivoSolicitud = preinscripcion.getNombre_solicitud();
-                        }
-                    } else if (solicitud instanceof SolicitudCursoVeranoInscripcionEntity) {
-                        SolicitudCursoVeranoInscripcionEntity inscripcion = (SolicitudCursoVeranoInscripcionEntity) solicitud;
-                        if (inscripcion.getObservacion() != null && !inscripcion.getObservacion().trim().isEmpty()) {
-                            motivoSolicitud = inscripcion.getObservacion();
-                        } else if (inscripcion.getNombre_solicitud() != null && !inscripcion.getNombre_solicitud().trim().isEmpty()) {
-                            motivoSolicitud = inscripcion.getNombre_solicitud();
-                        }
-                    }
-                    
-                    solicitudInfo.put("motivoSolicitud", motivoSolicitud);
-                    
-                    // Informacion del usuario
-                    if (solicitud.getObjUsuario() != null) {
-                        solicitudInfo.put("nombreCompleto", solicitud.getObjUsuario().getNombre_completo());
-                        solicitudInfo.put("codigo", solicitud.getObjUsuario().getCodigo());
-                    } else {
-                        solicitudInfo.put("nombreCompleto", "Usuario no disponible");
-                        solicitudInfo.put("codigo", "N/A");
-                    }
-                    
-                    // Informacion del curso
-                    String nombreCurso = "Curso no disponible";
-                    String condicion = "N/A";
-                    Integer idMateriaSolicitud = null;
-                    Integer idCursoSolicitud = null;
-                    String codigoMateria = null;
-                    String grupoCurso = null;
-                    
-                    if (solicitud instanceof SolicitudCursoVeranoPreinscripcionEntity) {
-                        SolicitudCursoVeranoPreinscripcionEntity preinscripcion = (SolicitudCursoVeranoPreinscripcionEntity) solicitud;
-                        
-                        if (preinscripcion.getObjCursoOfertadoVerano() != null) {
-                            idCursoSolicitud = preinscripcion.getObjCursoOfertadoVerano().getId_curso();
-                            grupoCurso = preinscripcion.getObjCursoOfertadoVerano().getGrupo() != null ? 
-                                preinscripcion.getObjCursoOfertadoVerano().getGrupo().toString() : null;
-                            
-                            if (preinscripcion.getObjCursoOfertadoVerano().getObjMateria() != null) {
-                                nombreCurso = preinscripcion.getObjCursoOfertadoVerano().getObjMateria().getNombre();
-                                idMateriaSolicitud = preinscripcion.getObjCursoOfertadoVerano().getObjMateria().getId_materia();
-                                codigoMateria = preinscripcion.getObjCursoOfertadoVerano().getObjMateria().getCodigo();
-                            }
-                        } else if (preinscripcion.getObservacion() != null && !preinscripcion.getObservacion().isEmpty()) {
-                            // Para solicitudes de curso nuevo
-                            String observacion = preinscripcion.getObservacion();
-                            if (observacion.contains(": ")) {
-                                nombreCurso = observacion.split(": ")[1].trim();
-                            } else {
-                                nombreCurso = observacion;
-                            }
-                        }
-                        
-                        // Estado de la preinscripcion
-                        String estadoPreinscripcion = "Enviada";
-                        if (preinscripcion.getEstadosSolicitud() != null && !preinscripcion.getEstadosSolicitud().isEmpty()) {
-                            estadoPreinscripcion = preinscripcion.getEstadosSolicitud().get(preinscripcion.getEstadosSolicitud().size() - 1).getEstado_actual();
-                        }
-                        solicitudInfo.put("estado", estadoPreinscripcion);
-                        
-                        // Condicion academica del estudiante (Primera Vez, Repitencia, Habilitacion, etc.)
-                        String condicionAcademica = "PRIMERA_VEZ";
-                        if (preinscripcion.getCodicion_solicitud() != null) {
-                            condicionAcademica = preinscripcion.getCodicion_solicitud().toString();
-                        }
-                        solicitudInfo.put("condicion", condicionAcademica);
-                        
-                    } else if (solicitud instanceof SolicitudCursoVeranoInscripcionEntity) {
-                        SolicitudCursoVeranoInscripcionEntity inscripcion = (SolicitudCursoVeranoInscripcionEntity) solicitud;
-                        
-                        if (inscripcion.getObjCursoOfertadoVerano() != null) {
-                            idCursoSolicitud = inscripcion.getObjCursoOfertadoVerano().getId_curso();
-                            grupoCurso = inscripcion.getObjCursoOfertadoVerano().getGrupo() != null ? 
-                                inscripcion.getObjCursoOfertadoVerano().getGrupo().toString() : null;
-                            
-                            if (inscripcion.getObjCursoOfertadoVerano().getObjMateria() != null) {
-                                nombreCurso = inscripcion.getObjCursoOfertadoVerano().getObjMateria().getNombre();
-                                idMateriaSolicitud = inscripcion.getObjCursoOfertadoVerano().getObjMateria().getId_materia();
-                                codigoMateria = inscripcion.getObjCursoOfertadoVerano().getObjMateria().getCodigo();
-                            }
-                        }
-                        
-                        // Condicion de la inscripcion
-                        if (inscripcion.getCodicion_solicitud() != null) {
-                            condicion = inscripcion.getCodicion_solicitud().toString();
-                        }
-                        
-                        // Estado de la inscripcion
-                        String estadoInscripcion = "Enviada";
-                        if (inscripcion.getEstadosSolicitud() != null && !inscripcion.getEstadosSolicitud().isEmpty()) {
-                            estadoInscripcion = inscripcion.getEstadosSolicitud().get(inscripcion.getEstadosSolicitud().size() - 1).getEstado_actual();
-                        }
-                        solicitudInfo.put("estado", estadoInscripcion);
-                        solicitudInfo.put("condicion", condicion);
-                    }
-                    
-                    solicitudInfo.put("curso", nombreCurso);
-                    solicitudInfo.put("idMateria", idMateriaSolicitud);
-                    solicitudInfo.put("idCurso", idCursoSolicitud);
-                    solicitudInfo.put("codigoMateria", codigoMateria);
-                    solicitudInfo.put("grupoCurso", grupoCurso);
-                    
-                    // Filtrar por materia si se proporciona
-                    if (idMateria != null && idMateria != 0) {
-                        if (idMateriaSolicitud == null || !idMateriaSolicitud.equals(idMateria)) {
-                            continue; // Saltar esta solicitud si no coincide con el filtro de materia
-                        }
-                    }
-                    
-                    solicitudesFormateadas.add(solicitudInfo);
-                }
-            }
+            List<Map<String, Object>> solicitudesFormateadas = formatearSolicitudesCursos(idMateria, idCurso, estado, periodoAcademico, fechaInicio, fechaFin);
             
             
             return ResponseEntity.ok(solicitudesFormateadas);
@@ -1680,140 +1335,7 @@ public class CursosIntersemestralesRestController {
             @RequestParam(value = "fechaInicio", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") Date fechaInicio,
             @RequestParam(value = "fechaFin", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") Date fechaFin) {
         try {
-            // Obtener todas las solicitudes usando la misma logica del endpoint anterior
-            List<SolicitudEntity> todasLasSolicitudes = solicitudRepository.findAllWithJoins();
-            
-            // Aplicar filtros si se proporcionan
-            todasLasSolicitudes = filtrarSolicitudes(todasLasSolicitudes, idCurso, estado, periodoAcademico, fechaInicio, fechaFin);
-            
-            List<Map<String, Object>> solicitudesFormateadas = new ArrayList<>();
-            
-            for (SolicitudEntity solicitud : todasLasSolicitudes) {
-                // Solo procesar solicitudes de cursos intersemestrales
-                if (solicitud instanceof SolicitudCursoVeranoPreinscripcionEntity || 
-                    solicitud instanceof SolicitudCursoVeranoInscripcionEntity) {
-                    
-                    Map<String, Object> solicitudInfo = new HashMap<>();
-                    
-                    // Informacion basica
-                    solicitudInfo.put("id", solicitud.getId_solicitud());
-                    solicitudInfo.put("fecha", solicitud.getFecha_registro_solicitud());
-                    solicitudInfo.put("tipo", solicitud instanceof SolicitudCursoVeranoPreinscripcionEntity ? 
-                        "Preinscripcion" : "Inscripcion");
-                    
-                    // Motivo de la solicitud
-                    String motivoSolicitud = "No especificado";
-                    
-                    if (solicitud instanceof SolicitudCursoVeranoPreinscripcionEntity) {
-                        SolicitudCursoVeranoPreinscripcionEntity preinscripcion = (SolicitudCursoVeranoPreinscripcionEntity) solicitud;
-                        if (preinscripcion.getObservacion() != null && !preinscripcion.getObservacion().trim().isEmpty()) {
-                            motivoSolicitud = preinscripcion.getObservacion();
-                        } else if (preinscripcion.getNombre_solicitud() != null && !preinscripcion.getNombre_solicitud().trim().isEmpty()) {
-                            motivoSolicitud = preinscripcion.getNombre_solicitud();
-                        }
-                    } else if (solicitud instanceof SolicitudCursoVeranoInscripcionEntity) {
-                        SolicitudCursoVeranoInscripcionEntity inscripcion = (SolicitudCursoVeranoInscripcionEntity) solicitud;
-                        if (inscripcion.getObservacion() != null && !inscripcion.getObservacion().trim().isEmpty()) {
-                            motivoSolicitud = inscripcion.getObservacion();
-                        } else if (inscripcion.getNombre_solicitud() != null && !inscripcion.getNombre_solicitud().trim().isEmpty()) {
-                            motivoSolicitud = inscripcion.getNombre_solicitud();
-                        }
-                    }
-                    
-                    solicitudInfo.put("motivoSolicitud", motivoSolicitud);
-                    
-                    // Informacion del usuario
-                    if (solicitud.getObjUsuario() != null) {
-                        solicitudInfo.put("nombreCompleto", solicitud.getObjUsuario().getNombre_completo());
-                        solicitudInfo.put("codigo", solicitud.getObjUsuario().getCodigo());
-                    } else {
-                        solicitudInfo.put("nombreCompleto", "Usuario no disponible");
-                        solicitudInfo.put("codigo", "N/A");
-                    }
-                    
-                    // Informacion del curso
-                    String nombreCurso = "Curso no disponible";
-                    String condicion = "N/A";
-                    Integer idMateria = null;
-                    Integer idCursoSolicitud = null;
-                    String codigoMateria = null;
-                    String grupoCurso = null;
-                    
-                    if (solicitud instanceof SolicitudCursoVeranoPreinscripcionEntity) {
-                        SolicitudCursoVeranoPreinscripcionEntity preinscripcion = (SolicitudCursoVeranoPreinscripcionEntity) solicitud;
-                        
-                        if (preinscripcion.getObjCursoOfertadoVerano() != null) {
-                            idCursoSolicitud = preinscripcion.getObjCursoOfertadoVerano().getId_curso();
-                            grupoCurso = preinscripcion.getObjCursoOfertadoVerano().getGrupo() != null ? 
-                                preinscripcion.getObjCursoOfertadoVerano().getGrupo().toString() : null;
-                            
-                            if (preinscripcion.getObjCursoOfertadoVerano().getObjMateria() != null) {
-                                nombreCurso = preinscripcion.getObjCursoOfertadoVerano().getObjMateria().getNombre();
-                                idMateria = preinscripcion.getObjCursoOfertadoVerano().getObjMateria().getId_materia();
-                                codigoMateria = preinscripcion.getObjCursoOfertadoVerano().getObjMateria().getCodigo();
-                            }
-                        } else if (preinscripcion.getObservacion() != null && !preinscripcion.getObservacion().isEmpty()) {
-                            // Para solicitudes de curso nuevo
-                            String observacion = preinscripcion.getObservacion();
-                            if (observacion.contains(": ")) {
-                                nombreCurso = observacion.split(": ")[1].trim();
-                            } else {
-                                nombreCurso = observacion;
-                            }
-                        }
-                        
-                        // Estado de la preinscripcion
-                        String estadoPreinscripcion = "Enviada";
-                        if (preinscripcion.getEstadosSolicitud() != null && !preinscripcion.getEstadosSolicitud().isEmpty()) {
-                            estadoPreinscripcion = preinscripcion.getEstadosSolicitud().get(preinscripcion.getEstadosSolicitud().size() - 1).getEstado_actual();
-                        }
-                        solicitudInfo.put("estado", estadoPreinscripcion);
-                        
-                        // Condicion academica del estudiante (Primera Vez, Repitencia, Habilitacion, etc.)
-                        String condicionAcademica = "PRIMERA_VEZ";
-                        if (preinscripcion.getCodicion_solicitud() != null) {
-                            condicionAcademica = preinscripcion.getCodicion_solicitud().toString();
-                        }
-                        solicitudInfo.put("condicion", condicionAcademica);
-                        
-                    } else if (solicitud instanceof SolicitudCursoVeranoInscripcionEntity) {
-                        SolicitudCursoVeranoInscripcionEntity inscripcion = (SolicitudCursoVeranoInscripcionEntity) solicitud;
-                        
-                        if (inscripcion.getObjCursoOfertadoVerano() != null) {
-                            idCursoSolicitud = inscripcion.getObjCursoOfertadoVerano().getId_curso();
-                            grupoCurso = inscripcion.getObjCursoOfertadoVerano().getGrupo() != null ? 
-                                inscripcion.getObjCursoOfertadoVerano().getGrupo().toString() : null;
-                            
-                            if (inscripcion.getObjCursoOfertadoVerano().getObjMateria() != null) {
-                                nombreCurso = inscripcion.getObjCursoOfertadoVerano().getObjMateria().getNombre();
-                                idMateria = inscripcion.getObjCursoOfertadoVerano().getObjMateria().getId_materia();
-                                codigoMateria = inscripcion.getObjCursoOfertadoVerano().getObjMateria().getCodigo();
-                            }
-                        }
-                        
-                        // Condicion de la inscripcion
-                        if (inscripcion.getCodicion_solicitud() != null) {
-                            condicion = inscripcion.getCodicion_solicitud().toString();
-                        }
-                        
-                        // Estado de la inscripcion
-                        String estadoInscripcion = "Enviada";
-                        if (inscripcion.getEstadosSolicitud() != null && !inscripcion.getEstadosSolicitud().isEmpty()) {
-                            estadoInscripcion = inscripcion.getEstadosSolicitud().get(inscripcion.getEstadosSolicitud().size() - 1).getEstado_actual();
-                        }
-                        solicitudInfo.put("estado", estadoInscripcion);
-                        solicitudInfo.put("condicion", condicion);
-                    }
-                    
-                    solicitudInfo.put("curso", nombreCurso);
-                    solicitudInfo.put("idMateria", idMateria);
-                    solicitudInfo.put("idCurso", idCursoSolicitud);
-                    solicitudInfo.put("codigoMateria", codigoMateria);
-                    solicitudInfo.put("grupoCurso", grupoCurso);
-                    
-                    solicitudesFormateadas.add(solicitudInfo);
-                }
-            }
+            List<Map<String, Object>> solicitudesFormateadas = formatearSolicitudesCursos(null, idCurso, estado, periodoAcademico, fechaInicio, fechaFin);
             
             // Generar Excel con información de filtros
             byte[] excelBytes = generarExcelSolicitudes(solicitudesFormateadas, idCurso, estado, periodoAcademico, fechaInicio, fechaFin);
@@ -1833,6 +1355,157 @@ public class CursosIntersemestralesRestController {
     }
 
     /**
+     * Preinscripciones e inscripciones de cursos de verano con los filtros dados, en el formato
+     * que usan el listado y la exportación a Excel.
+     *
+     * @param idMateria filtro por materia (null o 0 = sin filtro)
+     */
+    private List<Map<String, Object>> formatearSolicitudesCursos(Integer idMateria, Integer idCurso, String estado,
+            String periodoAcademico, Date fechaInicio, Date fechaFin) {
+        List<Solicitud> todasLasSolicitudes = solicitudGeneralCU.listarSolicitudes();
+        
+        // Aplicar filtros si se proporcionan
+        todasLasSolicitudes = filtrarSolicitudes(todasLasSolicitudes, idCurso, estado, periodoAcademico, fechaInicio, fechaFin);
+        
+        List<Map<String, Object>> solicitudesFormateadas = new ArrayList<>();
+        
+        for (Solicitud solicitud : todasLasSolicitudes) {
+            // Solo procesar solicitudes de cursos intersemestrales
+            if (solicitud instanceof SolicitudCursoVeranoPreinscripcion || 
+                solicitud instanceof SolicitudCursoVeranoIncripcion) {
+                
+                Map<String, Object> solicitudInfo = new HashMap<>();
+                
+                // Informacion basica
+                solicitudInfo.put("id", solicitud.getId_solicitud());
+                solicitudInfo.put("fecha", solicitud.getFecha_registro_solicitud());
+                solicitudInfo.put("tipo", solicitud instanceof SolicitudCursoVeranoPreinscripcion ? 
+                    "Preinscripcion" : "Inscripcion");
+                
+                // Motivo de la solicitud
+                String motivoSolicitud = "No especificado";
+                
+                if (solicitud instanceof SolicitudCursoVeranoPreinscripcion) {
+                    SolicitudCursoVeranoPreinscripcion preinscripcion = (SolicitudCursoVeranoPreinscripcion) solicitud;
+                    if (preinscripcion.getObservacion() != null && !preinscripcion.getObservacion().trim().isEmpty()) {
+                        motivoSolicitud = preinscripcion.getObservacion();
+                    } else if (preinscripcion.getNombre_solicitud() != null && !preinscripcion.getNombre_solicitud().trim().isEmpty()) {
+                        motivoSolicitud = preinscripcion.getNombre_solicitud();
+                    }
+                } else if (solicitud instanceof SolicitudCursoVeranoIncripcion) {
+                    SolicitudCursoVeranoIncripcion inscripcion = (SolicitudCursoVeranoIncripcion) solicitud;
+                    if (inscripcion.getObservacion() != null && !inscripcion.getObservacion().trim().isEmpty()) {
+                        motivoSolicitud = inscripcion.getObservacion();
+                    } else if (inscripcion.getNombre_solicitud() != null && !inscripcion.getNombre_solicitud().trim().isEmpty()) {
+                        motivoSolicitud = inscripcion.getNombre_solicitud();
+                    }
+                }
+                
+                solicitudInfo.put("motivoSolicitud", motivoSolicitud);
+                
+                // Informacion del usuario
+                if (solicitud.getObjUsuario() != null) {
+                    solicitudInfo.put("nombreCompleto", solicitud.getObjUsuario().getNombre_completo());
+                    solicitudInfo.put("codigo", solicitud.getObjUsuario().getCodigo());
+                } else {
+                    solicitudInfo.put("nombreCompleto", "Usuario no disponible");
+                    solicitudInfo.put("codigo", "N/A");
+                }
+                
+                // Informacion del curso
+                String nombreCurso = "Curso no disponible";
+                String condicion = "N/A";
+                Integer idMateriaSolicitud = null;
+                Integer idCursoSolicitud = null;
+                String codigoMateria = null;
+                String grupoCurso = null;
+                
+                if (solicitud instanceof SolicitudCursoVeranoPreinscripcion) {
+                    SolicitudCursoVeranoPreinscripcion preinscripcion = (SolicitudCursoVeranoPreinscripcion) solicitud;
+                    
+                    if (preinscripcion.getObjCursoOfertadoVerano() != null) {
+                        idCursoSolicitud = preinscripcion.getObjCursoOfertadoVerano().getId_curso();
+                        grupoCurso = preinscripcion.getObjCursoOfertadoVerano().getGrupo() != null ? 
+                            preinscripcion.getObjCursoOfertadoVerano().getGrupo().toString() : null;
+                        
+                        if (preinscripcion.getObjCursoOfertadoVerano().getObjMateria() != null) {
+                            nombreCurso = preinscripcion.getObjCursoOfertadoVerano().getObjMateria().getNombre();
+                            idMateriaSolicitud = preinscripcion.getObjCursoOfertadoVerano().getObjMateria().getId_materia();
+                            codigoMateria = preinscripcion.getObjCursoOfertadoVerano().getObjMateria().getCodigo();
+                        }
+                    } else if (preinscripcion.getObservacion() != null && !preinscripcion.getObservacion().isEmpty()) {
+                        // Para solicitudes de curso nuevo
+                        String observacion = preinscripcion.getObservacion();
+                        if (observacion.contains(": ")) {
+                            nombreCurso = observacion.split(": ")[1].trim();
+                        } else {
+                            nombreCurso = observacion;
+                        }
+                    }
+                    
+                    // Estado de la preinscripcion
+                    String estadoPreinscripcion = "Enviada";
+                    if (preinscripcion.getEstadosSolicitud() != null && !preinscripcion.getEstadosSolicitud().isEmpty()) {
+                        estadoPreinscripcion = preinscripcion.getEstadosSolicitud().get(preinscripcion.getEstadosSolicitud().size() - 1).getEstado_actual();
+                    }
+                    solicitudInfo.put("estado", estadoPreinscripcion);
+                    
+                    // Condicion academica del estudiante (Primera Vez, Repitencia, Habilitacion, etc.)
+                    String condicionAcademica = "PRIMERA_VEZ";
+                    if (preinscripcion.getCodicion_solicitud() != null) {
+                        condicionAcademica = preinscripcion.getCodicion_solicitud().toString();
+                    }
+                    solicitudInfo.put("condicion", condicionAcademica);
+                    
+                } else if (solicitud instanceof SolicitudCursoVeranoIncripcion) {
+                    SolicitudCursoVeranoIncripcion inscripcion = (SolicitudCursoVeranoIncripcion) solicitud;
+                    
+                    if (inscripcion.getObjCursoOfertadoVerano() != null) {
+                        idCursoSolicitud = inscripcion.getObjCursoOfertadoVerano().getId_curso();
+                        grupoCurso = inscripcion.getObjCursoOfertadoVerano().getGrupo() != null ? 
+                            inscripcion.getObjCursoOfertadoVerano().getGrupo().toString() : null;
+                        
+                        if (inscripcion.getObjCursoOfertadoVerano().getObjMateria() != null) {
+                            nombreCurso = inscripcion.getObjCursoOfertadoVerano().getObjMateria().getNombre();
+                            idMateriaSolicitud = inscripcion.getObjCursoOfertadoVerano().getObjMateria().getId_materia();
+                            codigoMateria = inscripcion.getObjCursoOfertadoVerano().getObjMateria().getCodigo();
+                        }
+                    }
+                    
+                    // Condicion de la inscripcion
+                    if (inscripcion.getCodicion_solicitud() != null) {
+                        condicion = inscripcion.getCodicion_solicitud().toString();
+                    }
+                    
+                    // Estado de la inscripcion
+                    String estadoInscripcion = "Enviada";
+                    if (inscripcion.getEstadosSolicitud() != null && !inscripcion.getEstadosSolicitud().isEmpty()) {
+                        estadoInscripcion = inscripcion.getEstadosSolicitud().get(inscripcion.getEstadosSolicitud().size() - 1).getEstado_actual();
+                    }
+                    solicitudInfo.put("estado", estadoInscripcion);
+                    solicitudInfo.put("condicion", condicion);
+                }
+                
+                solicitudInfo.put("curso", nombreCurso);
+                solicitudInfo.put("idMateria", idMateriaSolicitud);
+                solicitudInfo.put("idCurso", idCursoSolicitud);
+                solicitudInfo.put("codigoMateria", codigoMateria);
+                solicitudInfo.put("grupoCurso", grupoCurso);
+                
+                // Filtrar por materia si se proporciona
+                if (idMateria != null && idMateria != 0) {
+                    if (idMateriaSolicitud == null || !idMateriaSolicitud.equals(idMateria)) {
+                        continue; // Saltar esta solicitud si no coincide con el filtro de materia
+                    }
+                }
+                
+                solicitudesFormateadas.add(solicitudInfo);
+            }
+        }
+        return solicitudesFormateadas;
+    }
+
+    /**
      * Método auxiliar para filtrar solicitudes según los parámetros proporcionados
      * 
      * @param solicitudes Lista de solicitudes a filtrar
@@ -1843,8 +1516,8 @@ public class CursosIntersemestralesRestController {
      * @param fechaFin Filtro por fecha de fin (opcional)
      * @return Lista de solicitudes filtradas
      */
-    private List<SolicitudEntity> filtrarSolicitudes(
-            List<SolicitudEntity> solicitudes, 
+    private List<Solicitud> filtrarSolicitudes(
+            List<Solicitud> solicitudes, 
             Integer idCurso, 
             String estado,
             String periodoAcademico,
@@ -1854,23 +1527,23 @@ public class CursosIntersemestralesRestController {
         return solicitudes.stream()
             .filter(solicitud -> {
                 // Filtrar por tipo (solo cursos intersemestrales)
-                if (!(solicitud instanceof SolicitudCursoVeranoPreinscripcionEntity || 
-                      solicitud instanceof SolicitudCursoVeranoInscripcionEntity)) {
+                if (!(solicitud instanceof SolicitudCursoVeranoPreinscripcion || 
+                      solicitud instanceof SolicitudCursoVeranoIncripcion)) {
                     return false;
                 }
                 
                 // Filtrar por ID de curso
                 if (idCurso != null) {
-                    if (solicitud instanceof SolicitudCursoVeranoPreinscripcionEntity) {
-                        SolicitudCursoVeranoPreinscripcionEntity preinscripcion = 
-                            (SolicitudCursoVeranoPreinscripcionEntity) solicitud;
+                    if (solicitud instanceof SolicitudCursoVeranoPreinscripcion) {
+                        SolicitudCursoVeranoPreinscripcion preinscripcion = 
+                            (SolicitudCursoVeranoPreinscripcion) solicitud;
                         if (preinscripcion.getObjCursoOfertadoVerano() == null || 
                             !preinscripcion.getObjCursoOfertadoVerano().getId_curso().equals(idCurso)) {
                             return false;
                         }
-                    } else if (solicitud instanceof SolicitudCursoVeranoInscripcionEntity) {
-                        SolicitudCursoVeranoInscripcionEntity inscripcion = 
-                            (SolicitudCursoVeranoInscripcionEntity) solicitud;
+                    } else if (solicitud instanceof SolicitudCursoVeranoIncripcion) {
+                        SolicitudCursoVeranoIncripcion inscripcion = 
+                            (SolicitudCursoVeranoIncripcion) solicitud;
                         if (inscripcion.getObjCursoOfertadoVerano() == null || 
                             !inscripcion.getObjCursoOfertadoVerano().getId_curso().equals(idCurso)) {
                             return false;
@@ -1900,16 +1573,16 @@ public class CursosIntersemestralesRestController {
                     if (periodoSolicitud == null || !periodoSolicitud.equals(periodoFiltro)) {
                         // Si no coincide con el período de la solicitud, verificar en el curso asociado
                         boolean coincide = false;
-                        if (solicitud instanceof SolicitudCursoVeranoPreinscripcionEntity) {
-                            SolicitudCursoVeranoPreinscripcionEntity preinscripcion = 
-                                (SolicitudCursoVeranoPreinscripcionEntity) solicitud;
+                        if (solicitud instanceof SolicitudCursoVeranoPreinscripcion) {
+                            SolicitudCursoVeranoPreinscripcion preinscripcion = 
+                                (SolicitudCursoVeranoPreinscripcion) solicitud;
                             if (preinscripcion.getObjCursoOfertadoVerano() != null) {
                                 String periodoCurso = preinscripcion.getObjCursoOfertadoVerano().getPeriodo_academico();
                                 coincide = periodoCurso != null && periodoCurso.equals(periodoFiltro);
                             }
-                        } else if (solicitud instanceof SolicitudCursoVeranoInscripcionEntity) {
-                            SolicitudCursoVeranoInscripcionEntity inscripcion = 
-                                (SolicitudCursoVeranoInscripcionEntity) solicitud;
+                        } else if (solicitud instanceof SolicitudCursoVeranoIncripcion) {
+                            SolicitudCursoVeranoIncripcion inscripcion = 
+                                (SolicitudCursoVeranoIncripcion) solicitud;
                             if (inscripcion.getObjCursoOfertadoVerano() != null) {
                                 String periodoCurso = inscripcion.getObjCursoOfertadoVerano().getPeriodo_academico();
                                 coincide = periodoCurso != null && periodoCurso.equals(periodoFiltro);
@@ -2196,28 +1869,15 @@ public class CursosIntersemestralesRestController {
                 }
             }
             
-            // 2. Contar total de preinscripciones
+            // 2 y 3. Contar preinscripciones e inscripciones con una sola consulta
             int totalPreinscripciones = 0;
-            try {
-                List<SolicitudEntity> todasLasSolicitudes = solicitudRepository.findAll();
-                for (SolicitudEntity solicitud : todasLasSolicitudes) {
-                    if (solicitud instanceof SolicitudCursoVeranoPreinscripcionEntity) {
-                        totalPreinscripciones++;
-                    }
-                }
-            } catch (Exception e) {
-            }
-            
-            // 3. Contar total de inscripciones
             int totalInscripciones = 0;
-            try {
-                List<SolicitudEntity> todasLasSolicitudes = solicitudRepository.findAll();
-                for (SolicitudEntity solicitud : todasLasSolicitudes) {
-                    if (solicitud instanceof SolicitudCursoVeranoInscripcionEntity) {
-                        totalInscripciones++;
-                    }
+            for (Solicitud solicitud : solicitudGeneralCU.listarSolicitudes()) {
+                if (solicitud instanceof SolicitudCursoVeranoPreinscripcion) {
+                    totalPreinscripciones++;
+                } else if (solicitud instanceof SolicitudCursoVeranoIncripcion) {
+                    totalInscripciones++;
                 }
-            } catch (Exception e) {
             }
             
             // 4. Calcular progreso de gestion
@@ -2519,9 +2179,8 @@ public class CursosIntersemestralesRestController {
     public ResponseEntity<Map<String, Object>> cancelarInscripcion(@PathVariable Integer id) {
         try {
             
-            // Se valida y elimina la inscripcion registrada en la base de datos
-            // Validar que la inscripcion existe
-            if (!solicitudRepository.existsById(id)) {
+            Solicitud solicitud = solicitudGeneralCU.obtenerSolicitudPorId(id);
+            if (solicitud == null) {
                 Map<String, Object> error = new HashMap<>();
                 error.put("error", "Inscripcion no encontrada");
                 error.put("message", "No existe una inscripcion con el ID: " + id);
@@ -2529,29 +2188,21 @@ public class CursosIntersemestralesRestController {
                 error.put("timestamp", java.time.LocalDateTime.now().toString());
                 return ResponseEntity.status(404).body(error);
             }
-            
-            // Obtener la solicitud para verificar su estado
-            SolicitudEntity solicitud = solicitudRepository.findById(id).orElse(null);
-            if (solicitud != null) {
-                // Verificar que no este en estado "Aprobado" (no se puede cancelar una inscripcion aprobada)
-                if (solicitud.getEstadosSolicitud() != null && !solicitud.getEstadosSolicitud().isEmpty()) {
-                    String estadoActual = solicitud.getEstadosSolicitud()
-                        .get(solicitud.getEstadosSolicitud().size() - 1)
-                        .getEstado_actual();
-                    
-                    if ("Aprobado".equalsIgnoreCase(estadoActual)) {
-            Map<String, Object> error = new HashMap<>();
-                        error.put("error", "No se puede cancelar");
-                        error.put("message", "No se puede cancelar una inscripcion que ya ha sido aprobada");
-                        error.put("status", 400);
-            error.put("timestamp", java.time.LocalDateTime.now().toString());
-                        return ResponseEntity.status(400).body(error);
-                    }
-                }
+
+            // No se puede cancelar una inscripcion ya aprobada
+            List<EstadoSolicitud> estados = solicitud.getEstadosSolicitud();
+            String estadoActual = estados != null && !estados.isEmpty()
+                ? estados.get(estados.size() - 1).getEstado_actual() : null;
+            if ("Aprobado".equalsIgnoreCase(estadoActual)) {
+                Map<String, Object> error = new HashMap<>();
+                error.put("error", "No se puede cancelar");
+                error.put("message", "No se puede cancelar una inscripcion que ya ha sido aprobada");
+                error.put("status", 400);
+                error.put("timestamp", java.time.LocalDateTime.now().toString());
+                return ResponseEntity.status(400).body(error);
             }
-            
-            // Eliminar la inscripcion
-            solicitudRepository.deleteById(id);
+
+            solicitudGeneralCU.eliminarSolicitud(id);
             
             Map<String, Object> respuesta = new HashMap<>();
             respuesta.put("mensaje", "Inscripcion cancelada exitosamente");
@@ -2815,21 +2466,8 @@ public class CursosIntersemestralesRestController {
                 
                 // Validar que no exista un curso duplicado (misma materia, docente, período académico Y grupo)
                 // Esto permite crear grupos A, B, C, D de la misma materia con el mismo docente en el mismo período
-                co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.entidades.Enums.GrupoCursoVeranoEntity grupoEntity;
-                try {
-                    grupoEntity = co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.entidades.Enums.GrupoCursoVeranoEntity.valueOf(grupo.toString());
-                } catch (Exception e) {
-                    grupoEntity = co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.entidades.Enums.GrupoCursoVeranoEntity.A;
-                }
-                
-                List<CursoOfertadoVeranoEntity> cursosExistentes = cursoRepository.buscarPorMateriaDocentePeriodoGrupo(
-                    dto.getId_materia().intValue(), 
-                    dto.getId_docente().intValue(), 
-                    periodoAcademicoTrimmed,
-                    grupoEntity
-                );
-                
-                if (!cursosExistentes.isEmpty()) {
+                if (cursoCU.existeCurso(dto.getId_materia().intValue(), dto.getId_docente().intValue(),
+                        periodoAcademicoTrimmed, grupo)) {
                     Map<String, Object> error = new HashMap<>();
                     error.put("error", "Curso duplicado");
                     error.put("message", "Ya existe un curso con la misma materia, docente, período académico y grupo '" + grupo + "'. Puedes crear grupos diferentes (A, B, C, D) para la misma materia y docente.");
@@ -2929,27 +2567,10 @@ public class CursosIntersemestralesRestController {
                 }
             }
             
-            // Obtener el curso existente directamente del repositorio
-            CursoOfertadoVeranoEntity cursoEntity = cursoRepository.findByIdConEstados(id.intValue());
-            if (cursoEntity == null) {
-                Map<String, Object> error = new HashMap<>();
-                error.put("error", "Curso no encontrado");
-                error.put("message", "No se encontro el curso con ID: " + id);
-                return ResponseEntity.notFound().build();
-            }
-            
-            
-            // Aplicar cambios al objeto
-            boolean cursoModificado = false;
-            
-            if (dto.getCupo_estimado() != null) {
-                cursoEntity.setCupo_estimado(dto.getCupo_estimado());
-                cursoModificado = true;
-            }
-            
-            // Actualizar salón: priorizar id_salon sobre espacio_asignado
+            // Salón: priorizar id_salon sobre espacio_asignado (compatibilidad)
+            String nuevoSalon = null;
             if (dto.getId_salon() != null) {
-                co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Salon salon = 
+                co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Salon salon =
                     salonCU.obtenerSalonPorId(dto.getId_salon());
                 if (salon == null) {
                     Map<String, Object> error = new HashMap<>();
@@ -2957,51 +2578,34 @@ public class CursosIntersemestralesRestController {
                     error.put("message", "El salón con ID " + dto.getId_salon() + " no existe");
                     return ResponseEntity.badRequest().body(error);
                 }
-                cursoEntity.setSalon(salon.getNumero_salon());
-                cursoModificado = true;
+                nuevoSalon = salon.getNumero_salon();
             } else if (dto.getEspacio_asignado() != null && !dto.getEspacio_asignado().trim().isEmpty()) {
-                // Compatibilidad: si no hay id_salon pero hay espacio_asignado, usarlo
-                cursoEntity.setSalon(dto.getEspacio_asignado().trim());
-                cursoModificado = true;
+                nuevoSalon = dto.getEspacio_asignado().trim();
             }
-            
-            // Crear nuevo estado si se proporciona
-            EstadoCursoOfertadoEntity nuevoEstadoEntity = null;
-            if (dto.getEstado() != null) {
-                // Validar transicion de estado
-                String estadoActual = obtenerEstadoActual(cursoEntity);
-                String nuevoEstado = dto.getEstado();
-                
-                // Validar si la transicion es valida
-                Map<String, Object> validacionTransicion = validarTransicionEstado(estadoActual, nuevoEstado, cursoEntity);
-                if (!(Boolean) validacionTransicion.get("valido")) {
-                    return ResponseEntity.badRequest().body(validacionTransicion);
-                }
-                
-                nuevoEstadoEntity = new EstadoCursoOfertadoEntity();
-                nuevoEstadoEntity.setEstado_actual(dto.getEstado());
-                nuevoEstadoEntity.setFecha_registro_estado(new java.util.Date());
-                nuevoEstadoEntity.setObjCursoOfertadoVerano(cursoEntity);
-                cursoModificado = true;
-            }
-            
-            if (!cursoModificado) {
+
+            if (dto.getCupo_estimado() == null && nuevoSalon == null && dto.getEstado() == null) {
                 Map<String, Object> error = new HashMap<>();
                 error.put("error", "Sin cambios");
                 error.put("message", "No se proporcionaron datos para actualizar");
                 return ResponseEntity.badRequest().body(error);
             }
-            
-            // Guardar cambios en la base de datos
+
             try {
-                CursoOfertadoVeranoEntity cursoActualizado = cursoRepository.save(cursoEntity);
-                
-                // Si hay nuevo estado, guardarlo tambien
-                if (nuevoEstadoEntity != null) {
-                    estadoRepository.save(nuevoEstadoEntity);
+                CursoOfertadoVerano cursoActualizado;
+                try {
+                    cursoActualizado = cursoCU.modificarCurso(id.intValue(), dto.getCupo_estimado(), nuevoSalon, dto.getEstado());
+                } catch (TransicionEstadoCurso.TransicionInvalidaException e) {
+                    Map<String, Object> error = new HashMap<>();
+                    error.put("valido", false);
+                    error.put("error", e.getError());
+                    error.put("message", e.getMessage());
+                    return ResponseEntity.badRequest().body(error);
                 }
-                
-                
+                if (cursoActualizado == null) {
+                    return ResponseEntity.notFound().build();
+                }
+
+
                 // Crear respuesta con los datos actualizados
                 Map<String, Object> resultado = new HashMap<>();
                 resultado.put("id_curso", cursoActualizado.getId_curso());
@@ -3914,15 +3518,10 @@ public class CursosIntersemestralesRestController {
             
             // 3. Insertar en tabla cursosestudiantes (relacion Many-to-Many)
             try {
-                // Usar el repositorio directamente para asociar usuario-curso
-                int resultado = cursoRepository.insertarCursoEstudiante(
-                    inscripcion.getObjCursoOfertadoVerano().getId_curso(),
-                    inscripcion.getObjUsuario().getId_usuario()
-                );
-                Boolean asociacionExitosa = (resultado == 1);
-                
-                if (asociacionExitosa) {
-                    } else {
+                Integer idCurso = inscripcion.getObjCursoOfertadoVerano().getId_curso();
+                Integer idEstudiante = inscripcion.getObjUsuario().getId_usuario();
+                if (!cursoCU.asociarEstudiante(idCurso, idEstudiante)) {
+                    log.warn("No se pudo asociar el estudiante {} al curso {}", idEstudiante, idCurso);
                 }
             } catch (Exception e) {
                 log.error("Error asociando estudiante al curso: {}", e.getMessage(), e);

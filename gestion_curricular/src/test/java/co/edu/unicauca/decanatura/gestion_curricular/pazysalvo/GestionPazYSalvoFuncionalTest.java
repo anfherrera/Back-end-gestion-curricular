@@ -8,6 +8,7 @@ import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.pers
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.repositorios.ProgramaRepositoryInt;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.repositorios.RolRepositoryInt;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.repositorios.UsuarioRepositoryInt;
+import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.repositorios.SolicitudRepositoryInt;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -58,6 +59,9 @@ class GestionPazYSalvoFuncionalTest {
 
     @Autowired
     private UsuarioRepositoryInt usuarioRepository;
+
+    @Autowired
+    private SolicitudRepositoryInt solicitudRepository;
 
     @Autowired
     private RolRepositoryInt rolRepository;
@@ -357,7 +361,8 @@ class GestionPazYSalvoFuncionalTest {
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON));
 
         // Y no puede consultar las de otro usuario
-        int idCoordinador = SoportePazYSalvo.idUsuario(usuarioRepository, COORDINADOR_EMAIL);
+        int idCoordinador = SoportePazYSalvo.idAjeno(solicitudRepository, idEstudiante,
+                SoportePazYSalvo.idUsuario(usuarioRepository, COORDINADOR_EMAIL));
         mockMvc.perform(get("/api/solicitudes-pazysalvo/listarSolicitud-PazYSalvo/" + idCoordinador)
                         .header("Authorization", tokenEstudiante))
                 .andExpect(status().isForbidden());

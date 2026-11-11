@@ -3,7 +3,10 @@ package co.edu.unicauca.decanatura.gestion_curricular.dominio.casosDeUso;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
+import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarArchivosCUIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarDocumentosCUIntPort;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Solicitud;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.servicios.AsociadorDocumentosPendientes;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.FormateadorResultadosIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.GestionarDocumentosGatewayIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Documento;
@@ -14,11 +17,27 @@ public class GestionarDocumentosCUAdapter implements GestionarDocumentosCUIntPor
 
     private final GestionarDocumentosGatewayIntPort gestionarDocumentosGateway;
     private final FormateadorResultadosIntPort formateadorResultados;
+    private final AsociadorDocumentosPendientes asociadorDocumentos;
 
     public GestionarDocumentosCUAdapter(GestionarDocumentosGatewayIntPort gestionarDocumentosGateway,
-                                        FormateadorResultadosIntPort formateadorResultados) {
+                                        FormateadorResultadosIntPort formateadorResultados,
+                                        GestionarArchivosCUIntPort gestionarArchivos) {
         this.gestionarDocumentosGateway = gestionarDocumentosGateway;
         this.formateadorResultados = formateadorResultados;
+        this.asociadorDocumentos = new AsociadorDocumentosPendientes(gestionarDocumentosGateway, gestionarArchivos);
+    }
+
+    @Override
+    public Documento registrarDocumento(Documento documento) {
+        if (documento == null) {
+            this.formateadorResultados.retornarRespuestaErrorReglaDeNegocio("El documento no puede ser nulo.");
+        }
+        return gestionarDocumentosGateway.crearDocumento(documento);
+    }
+
+    @Override
+    public int asociarDocumentosPendientes(Solicitud solicitud, Integer idUsuario, String carpeta) {
+        return asociadorDocumentos.asociar(solicitud, idUsuario, carpeta);
     }
 
     @Override

@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
+import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.validacion.ValidadorArchivoPdf;
 
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarSolicitudReingresoCUIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarArchivosCUIntPort;
@@ -28,11 +29,11 @@ import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.DTOPe
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.DTORespuesta.SolicitudReingresoDTORespuesta;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.mappers.SolicitudMapperDominio;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.mappers.SolicitudReingresoMapperDominio;
-import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.GestionarUsuarioGatewayIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Usuario;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Enums.PeriodoAcademicoEnum;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.access.prepost.PreAuthorize;
+import co.edu.unicauca.decanatura.gestion_curricular.Security.Autorizacion;
+import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.DTOPeticion.UsuarioDTOPeticion;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -43,16 +44,23 @@ import org.springframework.web.bind.annotation.PathVariable;
 @RequestMapping("/api/solicitudes-reingreso")   
 @RequiredArgsConstructor
 @Slf4j
+@PreAuthorize("hasAnyRole(" + Autorizacion.ROLES_STAFF + ")")
 public class SolicitudReingresoRestController {
 
     private final SolicitudReingresoMapperDominio solicitudReingresoMapper;
     private final GestionarSolicitudReingresoCUIntPort solicitudService;
     private final SolicitudMapperDominio solicitudMapper;
     private final GestionarArchivosCUIntPort objGestionarArchivos;
-    private final GestionarUsuarioGatewayIntPort usuarioGateway;
+    private final Autorizacion autorizacion;
 
+    @PreAuthorize("hasAnyRole('Estudiante', 'Administrador')")
     @PostMapping("/crearSolicitud-Reingreso")
     public ResponseEntity<SolicitudReingresoDTORespuesta> crearSolicitudReingreso(@RequestBody SolicitudReingresoDTOPeticion solicitudDTO) {
+        // El solicitante sale del token, no de lo que envía el cliente
+        if (solicitudDTO.getObjUsuario() == null) {
+            solicitudDTO.setObjUsuario(new UsuarioDTOPeticion());
+        }
+        solicitudDTO.getObjUsuario().setId_usuario(autorizacion.idSolicitante(solicitudDTO.getObjUsuario().getId_usuario()));
         SolicitudReingreso solicitud = solicitudReingresoMapper.mappearDeSolicitudReingresoDTOPeticionASolicitudReingreso(solicitudDTO);
         SolicitudReingreso solicitudCreada = solicitudService.crearSolicitudReingreso(solicitud);
         ResponseEntity<SolicitudReingresoDTORespuesta> respuesta = new ResponseEntity<>
@@ -67,11 +75,21 @@ public class SolicitudReingresoRestController {
         return ResponseEntity.ok(solicitudesDTO);
     }
     
+    @PreAuthorize("isAuthenticated()")
     @GetMapping("/listarSolicitud-Reingreso/porUser")
     public ResponseEntity<List<SolicitudReingresoDTORespuesta>> listarSolicitudPorUser(
             @RequestParam String rol,
             @RequestParam(required = false) Integer idUsuario,
             @RequestParam(required = false) String periodoAcademico) {
+
+        // Quien no es staff solo puede ver sus propias solicitudes
+        if (!autorizacion.esStaff()) {
+            rol = "ESTUDIANTE";
+            idUsuario = autorizacion.idUsuarioActual();
+            if (idUsuario == null) {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+            }
+        }
 
         // Si no se proporciona período, usar el período académico actual basado en la fecha
         if (periodoAcademico == null || periodoAcademico.trim().isEmpty()) {
@@ -122,7 +140,7 @@ public class SolicitudReingresoRestController {
     public ResponseEntity<List<SolicitudReingresoDTORespuesta>> listarSolicitudReingresoToCoordinador(
             @RequestParam(required = false) String periodoAcademico) {
         // Obtener el programa del coordinador autenticado
-        Integer idPrograma = obtenerProgramaCoordinadorAutenticado();
+        Integer idPrograma = autorizacion.idProgramaCoordinadorActual();
         
         // Si no se proporciona período, usar el período académico actual basado en la fecha
         if (periodoAcademico == null || periodoAcademico.trim().isEmpty()) {
@@ -238,7 +256,7 @@ public class SolicitudReingresoRestController {
     public ResponseEntity<List<SolicitudReingresoDTORespuesta>> listarSolicitudReingresoAprobadasToCoordinador(
             @RequestParam(required = false) String periodoAcademico) {
         // Obtener el programa del coordinador autenticado
-        Integer idPrograma = obtenerProgramaCoordinadorAutenticado();
+        Integer idPrograma = autorizacion.idProgramaCoordinadorActual();
         
         List<SolicitudReingreso> solicitudes;
         
@@ -267,6 +285,7 @@ public class SolicitudReingresoRestController {
         return ResponseEntity.ok(respuesta);
     }
 
+    @PreAuthorize("@autorizacion.esStaff() or @autorizacion.esDuenoSolicitud(#id)")
     @GetMapping("/listarSolicitud-Reingreo/{id}")
     public ResponseEntity<SolicitudReingresoDTORespuesta> listarReingresoById(@PathVariable Integer id) {
         SolicitudReingreso solicitud = solicitudService.obtenerSolicitudReingresoPorId(id);
@@ -288,6 +307,7 @@ public class SolicitudReingresoRestController {
     /**
      * Descargar oficio por ID de solicitud de reingreso
      */
+    @PreAuthorize("@autorizacion.esStaff() or @autorizacion.esDuenoSolicitud(#idSolicitud)")
     @GetMapping("/descargarOficio/{idSolicitud}")
     public ResponseEntity<byte[]> descargarOficio(@PathVariable Integer idSolicitud) {
         try {
@@ -368,6 +388,7 @@ public class SolicitudReingresoRestController {
     /**
      * Obtener oficios disponibles para una solicitud de reingreso
      */
+    @PreAuthorize("@autorizacion.esStaff() or @autorizacion.esDuenoSolicitud(#idSolicitud)")
     @GetMapping("/obtenerOficios/{idSolicitud}")
     public ResponseEntity<List<Map<String, Object>>> obtenerOficios(@PathVariable Integer idSolicitud) {
         try {
@@ -425,6 +446,7 @@ public class SolicitudReingresoRestController {
     /**
      * Subir archivo PDF asociado a una solicitud de reingreso
      */
+    @PreAuthorize("@autorizacion.esStaff() or @autorizacion.esDuenoSolicitud(#idSolicitud)")
     @PostMapping("/{idSolicitud}/subir-archivo")
     public ResponseEntity<Map<String, Object>> subirArchivo(@PathVariable Integer idSolicitud, 
                                                            @RequestParam("file") MultipartFile archivo) {
@@ -439,17 +461,11 @@ public class SolicitudReingresoRestController {
                 return ResponseEntity.notFound().build();
             }
 
-            // Validar que el archivo no esté vacío
-            if (archivo.isEmpty()) {
-                log.warn("El archivo está vacío");
-                return ResponseEntity.badRequest().body(Map.of("error", "El archivo está vacío"));
-            }
-
-            // Validar que sea un PDF
-            String contentType = archivo.getContentType();
-            if (contentType == null || !contentType.equals("application/pdf")) {
-                log.warn("El archivo no es un PDF. Tipo: {}", contentType);
-                return ResponseEntity.badRequest().body(Map.of("error", "Solo se permiten archivos PDF"));
+            // Validar que sea un PDF real (contenido, no solo nombre o Content-Type) y el tamaño máximo
+            ValidadorArchivoPdf.Rechazo rechazo = ValidadorArchivoPdf.validar(archivo, ValidadorArchivoPdf.MAXIMO_15MB);
+            if (rechazo != null) {
+                log.warn("Archivo rechazado para reingreso {}: {}", idSolicitud, rechazo.mensaje());
+                return ResponseEntity.status(rechazo.estado()).body(Map.of("error", rechazo.mensaje()));
             }
 
             // Guardar el archivo usando el servicio de archivos
@@ -499,6 +515,7 @@ public class SolicitudReingresoRestController {
     /**
      * Validar documentos requeridos para reingreso
      */
+    @PreAuthorize("@autorizacion.esStaff() or @autorizacion.esDuenoSolicitud(#idSolicitud)")
     @GetMapping("/validarDocumentosRequeridos/{idSolicitud}")
     public ResponseEntity<Map<String, Object>> validarDocumentosRequeridos(@PathVariable Integer idSolicitud) {
         try {
@@ -559,49 +576,6 @@ public class SolicitudReingresoRestController {
         } catch (Exception e) {
             log.error("Error al validar documentos de reingreso: {}", e.getMessage(), e);
             return ResponseEntity.internalServerError().build();
-        }
-    }
-
-    /**
-     * Obtiene el ID del programa académico del coordinador autenticado.
-     * @return ID del programa o null si no se puede obtener
-     */
-    private Integer obtenerProgramaCoordinadorAutenticado() {
-        try {
-            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-            if (authentication == null || !authentication.isAuthenticated()) {
-                log.warn("No hay usuario autenticado");
-                return null;
-            }
-
-            String email = authentication.getName();
-            Usuario usuarioAutenticado = usuarioGateway.buscarUsuarioPorCorreo(email);
-            
-            if (usuarioAutenticado == null) {
-                log.warn("Usuario autenticado no encontrado: {}", email);
-                return null;
-            }
-
-            // Verificar que sea coordinador
-            String rolNombre = usuarioAutenticado.getObjRol() != null 
-                    ? usuarioAutenticado.getObjRol().getNombre() 
-                    : null;
-            
-            if (!"Coordinador".equals(rolNombre)) {
-                log.warn("El usuario autenticado no es coordinador: {}", rolNombre);
-                return null;
-            }
-
-            // Obtener el programa del coordinador
-            if (usuarioAutenticado.getObjPrograma() != null && usuarioAutenticado.getObjPrograma().getId_programa() != null) {
-                return usuarioAutenticado.getObjPrograma().getId_programa();
-            }
-
-            log.warn("El coordinador no tiene programa asignado");
-            return null;
-        } catch (Exception e) {
-            log.error("Error al obtener programa del coordinador autenticado", e);
-            return null;
         }
     }
 

@@ -170,8 +170,9 @@ public class BeanConfiguration {
 
     @Bean
     public GestionarDocumentosCUAdapter crearGestionarDocumentosCUInt(GestionarDocumentosGatewayIntPort objGestionarDocumentosGateway,
-            FormateadorResultadosIntPort objFormateadorResultados) {
-        return new GestionarDocumentosCUAdapter(objGestionarDocumentosGateway, objFormateadorResultados);
+            FormateadorResultadosIntPort objFormateadorResultados,
+            GestionarArchivosCUIntPort objGestionarArchivos) {
+        return new GestionarDocumentosCUAdapter(objGestionarDocumentosGateway, objFormateadorResultados, objGestionarArchivos);
     }
 
     @Bean    public GestionarArchivosCUIAdapter crearGestionarArchivosCUInt(GestionarArchivosGatewayIntPort objGestionarArchivos, FormateadorResultadosIntPort objFormateadorResultados){

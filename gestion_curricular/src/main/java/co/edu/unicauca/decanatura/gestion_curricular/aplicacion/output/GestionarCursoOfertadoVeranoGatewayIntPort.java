@@ -29,4 +29,13 @@ public interface GestionarCursoOfertadoVeranoGatewayIntPort {
     Boolean asociarUsuarioCurso(Integer idUsuario, Integer idCurso);
 
     Boolean desasociarUsuarioCurso(Integer idUsuario, Integer idCurso);
+
+    /**
+     * Guarda cupo y salón del curso y, si {@code nuevoEstado} no es null, le agrega ese estado.
+     * Los parámetros null no se modifican.
+     */
+    CursoOfertadoVerano guardarCambiosCurso(Integer idCurso, Integer cupoEstimado, String salon, String nuevoEstado);
+
+    /** true si ya existe un curso con la misma materia, docente, período y grupo. */
+    boolean existeCurso(Integer idMateria, Integer idDocente, String periodoAcademico, GrupoCursoVerano grupo);
 }

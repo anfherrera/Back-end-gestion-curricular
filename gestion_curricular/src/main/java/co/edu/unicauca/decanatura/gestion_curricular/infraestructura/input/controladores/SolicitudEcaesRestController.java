@@ -15,11 +15,10 @@ import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.DTORe
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.DTORespuesta.SolicitudEcaesDTORespuesta;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.mappers.SolicitudEcaesMapperDominio;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.mappers.SolicitudMapperDominio;
-import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.GestionarUsuarioGatewayIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Usuario;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Enums.PeriodoAcademicoEnum;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.access.prepost.PreAuthorize;
+import co.edu.unicauca.decanatura.gestion_curricular.Security.Autorizacion;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -41,15 +40,19 @@ import org.springframework.web.bind.annotation.PathVariable;
 @RequestMapping("/api/solicitudes-ecaes")
 @RequiredArgsConstructor
 @Slf4j
+@PreAuthorize("hasAnyRole(" + Autorizacion.ROLES_STAFF + ")")
 public class SolicitudEcaesRestController {
 
     private final GestionarSolicitudEcaesCUIntPort solicitudEcaesCU;
     private final SolicitudEcaesMapperDominio solicitudMapperDominio;
     private final SolicitudMapperDominio solicitudMapper;
-    private final GestionarUsuarioGatewayIntPort usuarioGateway;
-    
+    private final Autorizacion autorizacion;
+
+    @PreAuthorize("hasAnyRole('Estudiante', 'Administrador')")
     @PostMapping("/crearSolicitud-Ecaes")
     public ResponseEntity<SolicitudEcaesDTORespuesta> crearSolicitud(@Valid @RequestBody SolicitudEcaesDTOPeticion peticion) {
+        // El solicitante sale del token, no de lo que envía el cliente
+        peticion.getObjUsuario().setId_usuario(autorizacion.idSolicitante(peticion.getObjUsuario().getId_usuario()));
         SolicitudEcaes solicitud = solicitudMapperDominio.mappearDeSolicitudEcaesDTOPeticionASolicitudEcaes(peticion);
         SolicitudEcaes solicitudCreada = solicitudEcaesCU.guardar(solicitud);
         ResponseEntity<SolicitudEcaesDTORespuesta> respuesta = new ResponseEntity<SolicitudEcaesDTORespuesta>
@@ -86,6 +89,7 @@ public class SolicitudEcaesRestController {
         List<SolicitudEcaesDTORespuesta> respuesta = solicitudMapperDominio.mappearListaDeSolicitudEcaesARespuesta(solicitudes);
         return ResponseEntity.ok(respuesta);
     }
+    @PreAuthorize("@autorizacion.esStaff() or @autorizacion.esDuenoSolicitud(#id)")
     @GetMapping("/buscarSolicitud-Ecaes/{id}")
     public ResponseEntity<SolicitudEcaesDTORespuesta> obtenerPorId(@PathVariable Integer id) {
         SolicitudEcaes solicitud = solicitudEcaesCU.buscarPorId(id);
@@ -93,11 +97,21 @@ public class SolicitudEcaesRestController {
         return ResponseEntity.ok(respuesta);
     }
 
+    @PreAuthorize("isAuthenticated()")
     @GetMapping("/listarSolicitud-ecaes/porRol")
     public ResponseEntity<List<SolicitudEcaesDTORespuesta>> listarSolicitudPorRol(
             @RequestParam String rol,
             @RequestParam(required = false) Integer idUsuario,
             @RequestParam(required = false) String periodoAcademico) {
+
+        // Quien no es staff solo puede ver sus propias solicitudes
+        if (!autorizacion.esStaff()) {
+            rol = "ESTUDIANTE";
+            idUsuario = autorizacion.idUsuarioActual();
+            if (idUsuario == null) {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+            }
+        }
 
         // Si no se proporciona período, usar el período académico actual basado en la fecha
         if (periodoAcademico == null || periodoAcademico.trim().isEmpty()) {
@@ -112,7 +126,7 @@ public class SolicitudEcaesRestController {
         
         // Si es coordinador, filtrar por programa y período
         if ("COORDINADOR".equalsIgnoreCase(rol)) {
-            Integer idPrograma = obtenerProgramaCoordinadorAutenticado();
+            Integer idPrograma = autorizacion.idProgramaCoordinadorActual();
             if (idPrograma != null && periodoAcademico != null && !periodoAcademico.trim().isEmpty()) {
                 solicitudes = solicitudEcaesCU.listarSolicitudesToCoordinadorPorProgramaYPeriodo(idPrograma, periodoAcademico.trim());
             } else if (idPrograma != null) {
@@ -148,6 +162,7 @@ public class SolicitudEcaesRestController {
         return new ResponseEntity<>(respuesta, HttpStatus.CREATED);
     }
 
+    @PreAuthorize("isAuthenticated()")
     @GetMapping("/listarFechasEcaes")
     public ResponseEntity<List<FechaEcaesDTORespuesta>> listarFechasEcaes() {
         List<FechaEcaes> fechas = solicitudEcaesCU.listarFechasEcaes();
@@ -163,6 +178,7 @@ public class SolicitudEcaesRestController {
         return ResponseEntity.noContent().build();
     }
 
+    @PreAuthorize("isAuthenticated()")
     @GetMapping("/buscarFechasPorPeriodo/{periodoAcademico}")
     public ResponseEntity<FechaEcaesDTORespuesta> buscarFechasPorPeriodo(@PathVariable String periodoAcademico) {
         Optional<FechaEcaes> fechas = solicitudEcaesCU.buscarFechasPorPeriodo(periodoAcademico);
@@ -180,49 +196,6 @@ public class SolicitudEcaesRestController {
         FechaEcaes fechaActualizada = solicitudEcaesCU.actualizarFechasEcaes(fechaEcaes);
         FechaEcaesDTORespuesta respuesta = solicitudMapperDominio.mappearDeFechaEcaesAFechaEcaesDTORespuesta(fechaActualizada);
         return ResponseEntity.ok(respuesta);
-    }
-
-    /**
-     * Obtiene el ID del programa académico del coordinador autenticado.
-     * @return ID del programa o null si no se puede obtener
-     */
-    private Integer obtenerProgramaCoordinadorAutenticado() {
-        try {
-            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-            if (authentication == null || !authentication.isAuthenticated()) {
-                log.warn("No hay usuario autenticado");
-                return null;
-            }
-
-            String email = authentication.getName();
-            Usuario usuarioAutenticado = usuarioGateway.buscarUsuarioPorCorreo(email);
-            
-            if (usuarioAutenticado == null) {
-                log.warn("Usuario autenticado no encontrado: {}", email);
-                return null;
-            }
-
-            // Verificar que sea coordinador
-            String rolNombre = usuarioAutenticado.getObjRol() != null 
-                    ? usuarioAutenticado.getObjRol().getNombre() 
-                    : null;
-            
-            if (!"Coordinador".equals(rolNombre)) {
-                log.warn("El usuario autenticado no es coordinador: {}", rolNombre);
-                return null;
-            }
-
-            // Obtener el programa del coordinador
-            if (usuarioAutenticado.getObjPrograma() != null && usuarioAutenticado.getObjPrograma().getId_programa() != null) {
-                return usuarioAutenticado.getObjPrograma().getId_programa();
-            }
-
-            log.warn("El coordinador no tiene programa asignado");
-            return null;
-        } catch (Exception e) {
-            log.error("Error al obtener programa del coordinador autenticado", e);
-            return null;
-        }
     }
     
 }

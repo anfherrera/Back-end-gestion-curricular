@@ -199,25 +199,13 @@ public class EstadisticasRestController {
             Map<String, Object> estadisticas = estadisticaCU.obtenerEstadisticasGlobales(proceso, idPrograma, fechaInicio, fechaFin);
             return ResponseEntity.ok(estadisticas);
         } catch (Exception e) {
-            // Devolver 200 OK con bandera de error para que el frontend pueda parsear el JSON fácilmente
-            // Devolver 200 OK en lugar de 500 para que el frontend pueda leer el JSON sin problemas
+            // Antes se respondía 200 con todo en cero, y el dashboard mostraba "0 solicitudes" como si fuera real.
+            log.error("Error al obtener estadísticas globales", e);
             Map<String, Object> errorResponse = new HashMap<>();
-            errorResponse.put("totalSolicitudes", 0);
-            errorResponse.put("totalAprobadas", 0);
-            errorResponse.put("totalRechazadas", 0);
-            errorResponse.put("totalEnviadas", 0);
-            errorResponse.put("totalEnProceso", 0);
-            errorResponse.put("porcentajeAprobacion", 0.0);
-            errorResponse.put("porTipoProceso", new HashMap<>());
-            errorResponse.put("porPrograma", new HashMap<>());
-            errorResponse.put("porEstado", new HashMap<>());
-            errorResponse.put("fechaConsulta", new Date());
-            // Bandera para indicar al frontend que debe usar endpoints alternativos
-            errorResponse.put("usarEndpointsAlternativos", true);
             errorResponse.put("error", true);
-            errorResponse.put("mensaje", "Error al obtener estadísticas globales. Usar endpoints alternativos: /api/estadisticas/estado-solicitudes, /api/estadisticas/estadisticas-por-proceso, /api/estadisticas/estudiantes-por-programa");
-            // Devolver 200 OK para que el frontend pueda parsear el JSON sin problemas
-            return ResponseEntity.ok(errorResponse);
+            errorResponse.put("mensaje", "No se pudieron obtener las estadísticas globales. Intente de nuevo más tarde.");
+            errorResponse.put("usarEndpointsAlternativos", true);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
         }
     }
 
@@ -276,6 +264,7 @@ public class EstadisticasRestController {
             return ResponseEntity.ok(respuesta);
             
         } catch (Exception e) {
+            log.error("Error en endpoint de estadísticas", e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
@@ -294,6 +283,7 @@ public class EstadisticasRestController {
             Map<String, Object> estadisticas = estadisticaCU.obtenerEstadisticasPorProceso(tipoProceso);
             return ResponseEntity.ok(estadisticas);
         } catch (Exception e) {
+            log.error("Error en endpoint de estadísticas", e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
@@ -312,6 +302,7 @@ public class EstadisticasRestController {
             Map<String, Object> estadisticas = estadisticaCU.obtenerEstadisticasPorEstado(estado);
             return ResponseEntity.ok(estadisticas);
         } catch (Exception e) {
+            log.error("Error en endpoint de estadísticas", e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
@@ -330,6 +321,7 @@ public class EstadisticasRestController {
             Map<String, Object> estadisticas = estadisticaCU.obtenerEstadisticasPorPrograma(idPrograma);
             return ResponseEntity.ok(estadisticas);
         } catch (Exception e) {
+            log.error("Error en endpoint de estadísticas", e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
@@ -369,6 +361,7 @@ public class EstadisticasRestController {
             
             return ResponseEntity.ok(estadisticas);
         } catch (Exception e) {
+            log.error("Error en endpoint de estadísticas", e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
@@ -454,6 +447,7 @@ public class EstadisticasRestController {
             Map<String, Object> estadisticas = estadisticaCU.obtenerEstadisticasPorProgramaYPeriodo(idPrograma, fechaInicio, fechaFin);
             return ResponseEntity.ok(estadisticas);
         } catch (Exception e) {
+            log.error("Error en endpoint de estadísticas", e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
@@ -474,6 +468,7 @@ public class EstadisticasRestController {
             Map<String, Object> estadisticas = estadisticaCU.obtenerEstadisticasPorProcesoYEstado(tipoProceso, estado);
             return ResponseEntity.ok(estadisticas);
         } catch (Exception e) {
+            log.error("Error en endpoint de estadísticas", e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
@@ -669,6 +664,7 @@ public class EstadisticasRestController {
             Map<String, Object> tendencias = estadisticaCU.obtenerTendenciasPorPeriodo(fechaInicio1, fechaFin1, fechaInicio2, fechaFin2);
             return ResponseEntity.ok(tendencias);
         } catch (Exception e) {
+            log.error("Error en endpoint de estadísticas", e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
@@ -736,6 +732,7 @@ public class EstadisticasRestController {
             
             return ResponseEntity.ok(rendimiento);
         } catch (Exception e) {
+            log.error("Error en endpoint de estadísticas", e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
@@ -840,17 +837,20 @@ public class EstadisticasRestController {
             Date fechaInicio = null;
             Date fechaFin = null;
             
+            // Una fecha mal escrita se rechaza con 400; antes se ignoraba y la consulta salía sin ese filtro.
             if (fechaInicioStr != null && !fechaInicioStr.trim().isEmpty()) {
                 try {
                     fechaInicio = new java.text.SimpleDateFormat("yyyy-MM-dd").parse(fechaInicioStr);
-                } catch (Exception e) {
+                } catch (java.text.ParseException e) {
+                    return ResponseEntity.badRequest().body(Map.of("error", "fechaInicio inválida, use el formato yyyy-MM-dd"));
                 }
             }
-            
+
             if (fechaFinStr != null && !fechaFinStr.trim().isEmpty()) {
                 try {
                     fechaFin = new java.text.SimpleDateFormat("yyyy-MM-dd").parse(fechaFinStr);
-                } catch (Exception e) {
+                } catch (java.text.ParseException e) {
+                    return ResponseEntity.badRequest().body(Map.of("error", "fechaFin inválida, use el formato yyyy-MM-dd"));
                 }
             }
             
@@ -889,6 +889,7 @@ public class EstadisticasRestController {
             return ResponseEntity.ok(respuesta);
             
         } catch (Exception e) {
+            log.error("Error en endpoint de estadísticas", e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
@@ -1005,6 +1006,7 @@ public class EstadisticasRestController {
             return new ResponseEntity<>(pdfBytes, headers, HttpStatus.OK);
             
         } catch (Exception e) {
+            log.error("Error en endpoint de estadísticas", e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
@@ -1043,6 +1045,7 @@ public class EstadisticasRestController {
             return new ResponseEntity<>(pdfBytes, headers, HttpStatus.OK);
             
         } catch (Exception e) {
+            log.error("Error en endpoint de estadísticas", e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
@@ -1083,10 +1086,8 @@ public class EstadisticasRestController {
             // Obtener datos de cursos de verano si no hay filtros específicos o si se solicita
             Map<String, Object> datosCursosVerano = null;
             if (proceso == null || "CURSO_VERANO".equals(proceso)) {
-                try {
-                    datosCursosVerano = estadisticaCU.obtenerEstadisticasCursosVerano(periodoNormalizado, idPrograma);
-                } catch (Exception e) {
-                }
+                // Si falla, el reporte entero falla (500) en vez de salir sin la sección de cursos de verano
+                datosCursosVerano = estadisticaCU.obtenerEstadisticasCursosVerano(periodoNormalizado, idPrograma);
             }
             
             // Generar PDF con datos completos (pasar período académico para mostrarlo en el reporte)
@@ -1126,6 +1127,7 @@ public class EstadisticasRestController {
             return new ResponseEntity<>(excelBytes, headers, HttpStatus.OK);
             
         } catch (Exception e) {
+            log.error("Error en endpoint de estadísticas", e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
@@ -1164,6 +1166,7 @@ public class EstadisticasRestController {
             return new ResponseEntity<>(excelBytes, headers, HttpStatus.OK);
             
         } catch (Exception e) {
+            log.error("Error en endpoint de estadísticas", e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
@@ -1204,10 +1207,8 @@ public class EstadisticasRestController {
             // Obtener datos de cursos de verano si no hay filtros específicos o si se solicita
             Map<String, Object> datosCursosVerano = null;
             if (proceso == null || "CURSO_VERANO".equals(proceso)) {
-                try {
-                    datosCursosVerano = estadisticaCU.obtenerEstadisticasCursosVerano(periodoNormalizado, idPrograma);
-                } catch (Exception e) {
-                }
+                // Si falla, el reporte entero falla (500) en vez de salir sin la sección de cursos de verano
+                datosCursosVerano = estadisticaCU.obtenerEstadisticasCursosVerano(periodoNormalizado, idPrograma);
             }
             
             // Generar Excel con datos completos (pasar período académico para mostrarlo en el reporte)
@@ -1263,23 +1264,8 @@ public class EstadisticasRestController {
             return baos.toByteArray();
             
         } catch (Exception e) {
-            
-            // Generar PDF de error
-            try {
-                ByteArrayOutputStream errorBaos = new ByteArrayOutputStream();
-                com.itextpdf.text.Document errorDoc = new com.itextpdf.text.Document();
-                com.itextpdf.text.pdf.PdfWriter.getInstance(errorDoc, errorBaos);
-                
-                errorDoc.open();
-                com.itextpdf.text.Font errorFont = new com.itextpdf.text.Font(com.itextpdf.text.Font.FontFamily.HELVETICA, 12);
-                com.itextpdf.text.Paragraph errorMsg = new com.itextpdf.text.Paragraph("Error al generar el reporte: " + e.getMessage(), errorFont);
-                errorDoc.add(errorMsg);
-                errorDoc.close();
-                
-                return errorBaos.toByteArray();
-            } catch (Exception ex) {
-                return new byte[0];
-            }
+            // Propagar: antes se devolvía un PDF con el texto del error y código 200
+            throw new IllegalStateException("Error al generar el reporte PDF", e);
         } finally {
             try {
                 if (document != null && document.isOpen()) {
@@ -1352,23 +1338,8 @@ public class EstadisticasRestController {
             return baos.toByteArray();
             
         } catch (Exception e) {
-            
-            // Generar PDF de error
-            try {
-                ByteArrayOutputStream errorBaos = new ByteArrayOutputStream();
-                com.itextpdf.text.Document errorDoc = new com.itextpdf.text.Document();
-                com.itextpdf.text.pdf.PdfWriter.getInstance(errorDoc, errorBaos);
-                
-                errorDoc.open();
-                com.itextpdf.text.Font errorFont = new com.itextpdf.text.Font(com.itextpdf.text.Font.FontFamily.HELVETICA, 12);
-                com.itextpdf.text.Paragraph errorMsg = new com.itextpdf.text.Paragraph("Error al generar el reporte: " + e.getMessage(), errorFont);
-                errorDoc.add(errorMsg);
-                errorDoc.close();
-                
-                return errorBaos.toByteArray();
-            } catch (Exception ex) {
-                return new byte[0];
-            }
+            // Propagar: antes se devolvía un PDF con el texto del error y código 200
+            throw new IllegalStateException("Error al generar el reporte PDF", e);
         } finally {
             try {
                 if (document != null && document.isOpen()) {
@@ -1477,23 +1448,8 @@ public class EstadisticasRestController {
             return baos.toByteArray();
             
         } catch (Exception e) {
-            
-            // Generar un PDF de error en lugar de texto
-            try {
-                ByteArrayOutputStream errorBaos = new ByteArrayOutputStream();
-                com.itextpdf.text.Document errorDoc = new com.itextpdf.text.Document();
-                com.itextpdf.text.pdf.PdfWriter.getInstance(errorDoc, errorBaos);
-                
-                errorDoc.open();
-                com.itextpdf.text.Font errorFont = new com.itextpdf.text.Font(com.itextpdf.text.Font.FontFamily.HELVETICA, 12);
-                com.itextpdf.text.Paragraph errorMsg = new com.itextpdf.text.Paragraph("Error al generar el reporte: " + e.getMessage(), errorFont);
-                errorDoc.add(errorMsg);
-                errorDoc.close();
-                
-                return errorBaos.toByteArray();
-            } catch (Exception ex) {
-                return new byte[0]; // Devolver array vacío en caso de error crítico
-            }
+            // Propagar: antes se devolvía un PDF con el texto del error y código 200
+            throw new IllegalStateException("Error al generar el reporte PDF", e);
         } finally {
             try {
                 if (document != null && document.isOpen()) {
@@ -1524,6 +1480,7 @@ public class EstadisticasRestController {
             return ResponseEntity.ok(resultado);
             
         } catch (Exception e) {
+            log.error("Error en endpoint de estadísticas", e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
@@ -1611,6 +1568,7 @@ public class EstadisticasRestController {
             return ResponseEntity.ok(resultado);
             
         } catch (Exception e) {
+            log.error("Error en endpoint de estadísticas", e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
@@ -1702,6 +1660,7 @@ public class EstadisticasRestController {
             return ResponseEntity.ok(resultado);
             
         } catch (Exception e) {
+            log.error("Error en endpoint de estadísticas", e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
@@ -1747,6 +1706,7 @@ public class EstadisticasRestController {
             return ResponseEntity.ok(resultado);
             
         } catch (Exception e) {
+            log.error("Error en endpoint de estadísticas", e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
@@ -1770,6 +1730,7 @@ public class EstadisticasRestController {
             return ResponseEntity.ok(tendencias);
             
         } catch (Exception e) {
+            log.error("Error en endpoint de estadísticas", e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
@@ -1804,6 +1765,7 @@ public class EstadisticasRestController {
             return ResponseEntity.ok(resultado);
             
         } catch (Exception e) {
+            log.error("Error en endpoint de estadísticas", e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
@@ -1984,23 +1946,8 @@ public class EstadisticasRestController {
             return baos.toByteArray();
             
         } catch (Exception e) {
-            
-            // Generar un Excel de error en lugar de texto
-            try {
-                ByteArrayOutputStream errorBaos = new ByteArrayOutputStream();
-                org.apache.poi.xssf.usermodel.XSSFWorkbook errorWorkbook = new org.apache.poi.xssf.usermodel.XSSFWorkbook();
-                org.apache.poi.ss.usermodel.Sheet errorSheet = errorWorkbook.createSheet("Error");
-                
-                org.apache.poi.ss.usermodel.Row errorRow = errorSheet.createRow(0);
-                errorRow.createCell(0).setCellValue("Error al generar el reporte: " + e.getMessage());
-                
-                errorWorkbook.write(errorBaos);
-                errorWorkbook.close();
-                
-                return errorBaos.toByteArray();
-            } catch (Exception ex) {
-                return new byte[0]; // Devolver array vacío en caso de error crítico
-            }
+            // Propagar: antes se devolvía un Excel con el texto del error y código 200
+            throw new IllegalStateException("Error al generar el reporte Excel", e);
         }
     }
 
@@ -2311,6 +2258,7 @@ public class EstadisticasRestController {
             Map<String, Object> estadisticas = estadisticaCU.obtenerEstadisticasPorAnio(anio);
             return ResponseEntity.ok(estadisticas);
         } catch (Exception e) {
+            log.error("Error en endpoint de estadísticas", e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
@@ -2330,6 +2278,7 @@ public class EstadisticasRestController {
             Map<String, Object> estadisticas = estadisticaCU.obtenerEstadisticasPorSemestre(anio, semestre);
             return ResponseEntity.ok(estadisticas);
         } catch (Exception e) {
+            log.error("Error en endpoint de estadísticas", e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
@@ -2349,6 +2298,7 @@ public class EstadisticasRestController {
             List<Map<String, Object>> historial = estadisticaCU.obtenerHistorialEstadisticas(anioInicio, anioFin);
             return ResponseEntity.ok(historial);
         } catch (Exception e) {
+            log.error("Error en endpoint de estadísticas", e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
@@ -2366,6 +2316,7 @@ public class EstadisticasRestController {
             Map<String, Object> estadisticas = estadisticaCU.obtenerEstadisticasPorPeriodoAcademico(periodoAcademico);
             return ResponseEntity.ok(estadisticas);
         } catch (Exception e) {
+            log.error("Error en endpoint de estadísticas", e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
@@ -2390,23 +2341,8 @@ public class EstadisticasRestController {
             return baos.toByteArray();
             
         } catch (Exception e) {
-            
-            // Generar Excel de error
-            try {
-                ByteArrayOutputStream errorBaos = new ByteArrayOutputStream();
-                org.apache.poi.xssf.usermodel.XSSFWorkbook errorWorkbook = new org.apache.poi.xssf.usermodel.XSSFWorkbook();
-                org.apache.poi.ss.usermodel.Sheet errorSheet = errorWorkbook.createSheet("Error");
-                
-                org.apache.poi.ss.usermodel.Row errorRow = errorSheet.createRow(0);
-                errorRow.createCell(0).setCellValue("Error al generar el reporte: " + e.getMessage());
-                
-                errorWorkbook.write(errorBaos);
-                errorWorkbook.close();
-                
-                return errorBaos.toByteArray();
-            } catch (Exception ex) {
-                return new byte[0];
-            }
+            // Propagar: antes se devolvía un Excel con el texto del error y código 200
+            throw new IllegalStateException("Error al generar el reporte Excel", e);
         }
     }
 
@@ -2432,23 +2368,8 @@ public class EstadisticasRestController {
             return baos.toByteArray();
             
         } catch (Exception e) {
-            
-            // Generar Excel de error
-            try {
-                ByteArrayOutputStream errorBaos = new ByteArrayOutputStream();
-                org.apache.poi.xssf.usermodel.XSSFWorkbook errorWorkbook = new org.apache.poi.xssf.usermodel.XSSFWorkbook();
-                org.apache.poi.ss.usermodel.Sheet errorSheet = errorWorkbook.createSheet("Error");
-                
-                org.apache.poi.ss.usermodel.Row errorRow = errorSheet.createRow(0);
-                errorRow.createCell(0).setCellValue("Error al generar el reporte: " + e.getMessage());
-                
-                errorWorkbook.write(errorBaos);
-                errorWorkbook.close();
-                
-                return errorBaos.toByteArray();
-            } catch (Exception ex) {
-                return new byte[0];
-            }
+            // Propagar: antes se devolvía un Excel con el texto del error y código 200
+            throw new IllegalStateException("Error al generar el reporte Excel", e);
         }
     }
 }

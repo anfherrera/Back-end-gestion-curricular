@@ -5,6 +5,7 @@ import java.util.Date;
 import java.util.List;
 
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarArchivosCUIntPort;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.servicios.AsociadorDocumentosPendientes;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarSolicitudPazYSalvoCUIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarNotificacionCUIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.FormateadorResultadosIntPort;
@@ -12,7 +13,6 @@ import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.Gestionar
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.GestionarEstadoSolicitudGatewayIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.GestionarSolicitudPazYSalvoGatewayIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.GestionarUsuarioGatewayIntPort;
-import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Documento;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.EstadoSolicitud;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.SolicitudPazYSalvo;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.TransicionEstadoPazYSalvo;
@@ -26,7 +26,7 @@ public class GestionarSolicitudPazYSalvoCUAdapter implements GestionarSolicitudP
     private final GestionarDocumentosGatewayIntPort documentosGateway;
     private final GestionarEstadoSolicitudGatewayIntPort estadoSolicitudGateway;
     private final FormateadorResultadosIntPort formateadorResultados;
-    private final GestionarArchivosCUIntPort gestionarArchivos;
+    private final AsociadorDocumentosPendientes asociadorDocumentos;
     private final GestionarNotificacionCUIntPort objGestionarNotificacionCU;
 
     public GestionarSolicitudPazYSalvoCUAdapter(
@@ -42,7 +42,7 @@ public class GestionarSolicitudPazYSalvoCUAdapter implements GestionarSolicitudP
         this.documentosGateway = documentosGateway;
         this.estadoSolicitudGateway = estadoSolicitudGateway;
         this.formateadorResultados = formateadorResultados;
-        this.gestionarArchivos = gestionarArchivos;
+        this.asociadorDocumentos = new AsociadorDocumentosPendientes(documentosGateway, gestionarArchivos);
         this.objGestionarNotificacionCU = objGestionarNotificacionCU;
     }
 
@@ -72,28 +72,8 @@ public class GestionarSolicitudPazYSalvoCUAdapter implements GestionarSolicitudP
         // Guardar solicitud
         SolicitudPazYSalvo solicitudGuardada = solicitudGateway.guardar(solicitud);
 
-        // Asociar documentos sin solicitud y moverlos a carpeta organizada
-        List<Documento> documentosSinSolicitud = documentosGateway.buscarDocumentosSinSolicitud();
-        for (Documento doc : documentosSinSolicitud) {
-            // Mover archivo a carpeta organizada si está en la raíz
-            String rutaActual = doc.getRuta_documento() != null ? doc.getRuta_documento() : doc.getNombre();
-            if (rutaActual != null && !rutaActual.contains("/")) {
-                // El archivo está en la raíz, moverlo a carpeta organizada
-                String nuevaRuta = gestionarArchivos.moverArchivoAOrganizado(
-                    rutaActual, 
-                    doc.getNombre(), 
-                    "pazysalvo", 
-                    solicitudGuardada.getId_solicitud()
-                );
-                if (nuevaRuta != null) {
-                    doc.setRuta_documento(nuevaRuta);
-                }
-            }
-            
-            // Asociar documento a la solicitud
-            doc.setObjSolicitud(solicitudGuardada);
-            documentosGateway.actualizarDocumento(doc);
-        }
+        // Mover a la carpeta de la solicitud y asociar los documentos que este estudiante subió antes de enviarla
+        asociadorDocumentos.asociar(solicitudGuardada, usuario.getId_usuario(), "pazysalvo");
 
         // Estado inicial "Enviada": el gateway ya lo crea al guardar; solo se agrega si falta,
         // para no dejar dos estados iniciales.
