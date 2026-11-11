@@ -33,11 +33,10 @@ public class GestionarSolicitudPazYSalvoGatewayImplAdapter implements GestionarS
         SolicitudPazYSalvoEntity entity = mapper.map(solicitudPazYSalvo, SolicitudPazYSalvoEntity.class);
         
         // Generar nombre descriptivo con el nombre del estudiante
-        String nombreSolicitud = "Solicitud Paz y Salvo";
-        if (solicitudPazYSalvo.getObjUsuario() != null && solicitudPazYSalvo.getObjUsuario().getNombre_completo() != null) {
-            nombreSolicitud = "Solicitud Paz y Salvo - " + solicitudPazYSalvo.getObjUsuario().getNombre_completo();
-        }
-        entity.setNombre_solicitud(nombreSolicitud);
+        entity.setNombre_solicitud(co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.NombreSolicitud.de(
+                co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.NombreSolicitud.PAZ_Y_SALVO,
+                co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.NombreSolicitud.nombreDe(
+                        solicitudPazYSalvo.getObjUsuario())));
         entity.setFecha_registro_solicitud(new Date());
 
         // Crear estado inicial

@@ -1,4 +1,4 @@
-package co.edu.unicauca.decanatura.gestion_curricular.controladores;
+package co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.controladores;
 
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Enums.TipoDocumentoEnum;
 import org.springframework.http.ResponseEntity;

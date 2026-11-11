@@ -13,7 +13,9 @@ import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.EstadoSolic
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Solicitud;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.SolicitudCursoVeranoIncripcion;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.SolicitudCursoVeranoPreinscripcion;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.NombreSolicitud;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.SolicitudEcaes;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Usuario;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.SolicitudHomologacion;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.SolicitudPazYSalvo;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.SolicitudReingreso;
@@ -50,20 +52,24 @@ public class GestionarSolicitudGatewayImplAdapter implements GestionarSolicitudG
         this.solicitudMapper = solicitudMapper;
     }
 
+    /** Nombre completo del usuario guardado (el que llega en la petición puede venir sin nombre). */
+    private String nombreDelUsuario(Usuario usuario) {
+        if (usuario == null || usuario.getId_usuario() == null) {
+            return null;
+        }
+        return usuarioRepository.findById(usuario.getId_usuario())
+                .map(UsuarioEntity::getNombre_completo)
+                .orElse(null);
+    }
+
     @Override
     @Transactional
     public SolicitudEcaes crearSolicitudEcaes(SolicitudEcaes solicitudEcaes) {
         SolicitudEcaesEntity solicitudEcaesEntity = solicitudMapper.map(solicitudEcaes, SolicitudEcaesEntity.class);
         
         // Generar nombre descriptivo con el nombre del estudiante
-        String nombreSolicitud = "Solicitud ECAES";
-        if (solicitudEcaes.getObjUsuario() != null && solicitudEcaes.getObjUsuario().getId_usuario() != null) {
-            UsuarioEntity usuarioEntity = usuarioRepository.findById(solicitudEcaes.getObjUsuario().getId_usuario()).orElse(null);
-            if (usuarioEntity != null && usuarioEntity.getNombre_completo() != null && !usuarioEntity.getNombre_completo().trim().isEmpty()) {
-                nombreSolicitud = "Solicitud ECAES - " + usuarioEntity.getNombre_completo();
-            }
-        }
-        solicitudEcaesEntity.setNombre_solicitud(nombreSolicitud);
+        solicitudEcaesEntity.setNombre_solicitud(
+                NombreSolicitud.de(NombreSolicitud.ECAES, nombreDelUsuario(solicitudEcaes.getObjUsuario())));
         solicitudEcaes.setFecha_registro_solicitud(new Date());
         EstadoSolicitudEntity estadoSolicitudEntity = null;
         estadoSolicitudEntity = new EstadoSolicitudEntity();
@@ -85,14 +91,8 @@ public class GestionarSolicitudGatewayImplAdapter implements GestionarSolicitudG
         SolicitudReingresoEntity solicitudReingresoEntity = solicitudMapper.map(solicitudReingreso, SolicitudReingresoEntity.class);
         
         // Generar nombre descriptivo con el nombre del estudiante
-        String nombreSolicitud = "Solicitud de Reingreso";
-        if (solicitudReingreso.getObjUsuario() != null && solicitudReingreso.getObjUsuario().getId_usuario() != null) {
-            UsuarioEntity usuarioEntity = usuarioRepository.findById(solicitudReingreso.getObjUsuario().getId_usuario()).orElse(null);
-            if (usuarioEntity != null && usuarioEntity.getNombre_completo() != null && !usuarioEntity.getNombre_completo().trim().isEmpty()) {
-                nombreSolicitud = "Solicitud de Reingreso - " + usuarioEntity.getNombre_completo();
-            }
-        }
-        solicitudReingresoEntity.setNombre_solicitud(nombreSolicitud);
+        solicitudReingresoEntity.setNombre_solicitud(
+                NombreSolicitud.de(NombreSolicitud.REINGRESO, nombreDelUsuario(solicitudReingreso.getObjUsuario())));
         solicitudReingresoEntity.setFecha_registro_solicitud(new Date());
         
         // NO tocar los estados aquí, el caso de uso (GestionarSolicitudReingresoCUAdapter) los maneja completamente
@@ -110,14 +110,8 @@ public class GestionarSolicitudGatewayImplAdapter implements GestionarSolicitudG
         SolicitudHomologacionEntity solicitudHomologacionEntity = solicitudMapper.map(solicitudHomologacion, SolicitudHomologacionEntity.class);
         
         // Generar nombre descriptivo con el nombre del estudiante
-        String nombreSolicitud = "Solicitud de Homologación";
-        if (solicitudHomologacion.getObjUsuario() != null && solicitudHomologacion.getObjUsuario().getId_usuario() != null) {
-            UsuarioEntity usuarioEntity = usuarioRepository.findById(solicitudHomologacion.getObjUsuario().getId_usuario()).orElse(null);
-            if (usuarioEntity != null && usuarioEntity.getNombre_completo() != null && !usuarioEntity.getNombre_completo().trim().isEmpty()) {
-                nombreSolicitud = "Solicitud de Homologación - " + usuarioEntity.getNombre_completo();
-            }
-        }
-        solicitudHomologacionEntity.setNombre_solicitud(nombreSolicitud);
+        solicitudHomologacionEntity.setNombre_solicitud(
+                NombreSolicitud.de(NombreSolicitud.HOMOLOGACION, nombreDelUsuario(solicitudHomologacion.getObjUsuario())));
         solicitudHomologacionEntity.setFecha_registro_solicitud(new Date());
         
         // NO tocar los estados aquí, el caso de uso (GestionarSolicitudHomologacionCUAdapter) los maneja completamente

@@ -154,13 +154,9 @@ public class PreinscripcionesVeranoRestController {
             
             solicitudDominio.setObservacion("Solicitud de apertura de curso: " + peticion.getCurso());
             
-            // Inicializar campos obligatorios de la clase padre
-            // Generar nombre descriptivo con el nombre del estudiante
-            String nombreSolicitud = "Solicitud Curso Verano";
-            if (peticion.getNombreCompleto() != null && !peticion.getNombreCompleto().trim().isEmpty()) {
-                nombreSolicitud = "Solicitud Curso Verano - " + peticion.getNombreCompleto();
-            }
-            solicitudDominio.setNombre_solicitud(nombreSolicitud);
+            solicitudDominio.setNombre_solicitud(co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos
+                    .NombreSolicitud.de(co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos
+                            .NombreSolicitud.CURSO_VERANO, peticion.getNombreCompleto()));
             solicitudDominio.setFecha_registro_solicitud(new java.util.Date());
             
             // Si no se proporcionó período académico, establecer el período actual automáticamente

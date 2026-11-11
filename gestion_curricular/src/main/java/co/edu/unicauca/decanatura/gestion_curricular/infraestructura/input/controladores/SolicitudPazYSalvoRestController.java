@@ -163,19 +163,7 @@ public class SolicitudPazYSalvoRestController {
                     solicitud.setObjUsuario(usuarioCompleto);
                 }
             }
-            
-            // Generar nombre descriptivo con el nombre del estudiante si aún no está establecido correctamente
-            if (solicitud.getNombre_solicitud() == null || 
-                solicitud.getNombre_solicitud().trim().isEmpty() || 
-                solicitud.getNombre_solicitud().equals("Paz y Salvo") ||
-                solicitud.getNombre_solicitud().equals("Solicitud Paz y Salvo")) {
-                String nombreSolicitud = "Solicitud Paz y Salvo";
-                if (solicitud.getObjUsuario().getNombre_completo() != null && 
-                    !solicitud.getObjUsuario().getNombre_completo().trim().isEmpty()) {
-                    nombreSolicitud = "Solicitud Paz y Salvo - " + solicitud.getObjUsuario().getNombre_completo();
-                }
-                solicitud.setNombre_solicitud(nombreSolicitud);
-            }
+            // El nombre de la solicitud lo pone el gateway al guardar (NombreSolicitud)
         }
 
         // Si no se proporcionó período académico, establecer el período actual automáticamente
@@ -201,15 +189,8 @@ public class SolicitudPazYSalvoRestController {
             throw new EntidadNoExisteException("Usuario no encontrado con ID: " + idUsuario);
         }
 
+        // El nombre de la solicitud lo pone el gateway al guardar (NombreSolicitud)
         SolicitudPazYSalvo solicitud = new SolicitudPazYSalvo();
-        
-        // Generar nombre descriptivo con el nombre del estudiante
-        String nombreSolicitud = "Solicitud Paz y Salvo";
-        if (usuarioCompleto.getNombre_completo() != null && !usuarioCompleto.getNombre_completo().trim().isEmpty()) {
-            nombreSolicitud = "Solicitud Paz y Salvo - " + usuarioCompleto.getNombre_completo();
-        }
-        solicitud.setNombre_solicitud(nombreSolicitud);
-
         solicitud.setObjUsuario(usuarioCompleto);
 
         if (mapPeticion.containsKey("fecha_solicitud") && mapPeticion.get("fecha_solicitud") != null) {

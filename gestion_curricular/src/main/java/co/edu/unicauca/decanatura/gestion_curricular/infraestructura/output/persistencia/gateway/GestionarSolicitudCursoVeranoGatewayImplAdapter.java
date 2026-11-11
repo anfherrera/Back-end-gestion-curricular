@@ -12,6 +12,7 @@ import lombok.extern.slf4j.Slf4j;
 
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.GestionarSolicitudCursoVeranoGatewayIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.CupoAgotadoException;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.NombreSolicitud;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.CursoOfertadoVerano;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Solicitud;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.SolicitudCursoVeranoIncripcion;
@@ -65,18 +66,9 @@ public class GestionarSolicitudCursoVeranoGatewayImplAdapter implements Gestiona
         SolicitudCursoVeranoPreinscripcionEntity solicitudCursoVeranoEntity = solicitudMapper.map(solicitudCursoVerano, SolicitudCursoVeranoPreinscripcionEntity.class);
         
         // Generar nombre descriptivo con el nombre del estudiante
-        String nombreSolicitud = "Solicitud Curso Verano";
-        if (solicitudCursoVerano.getObjUsuario() != null) {
-            // Intentar obtener el nombre del estudiante desde la solicitud del dominio
-            if (solicitudCursoVerano.getObjUsuario().getNombre_completo() != null && 
-                !solicitudCursoVerano.getObjUsuario().getNombre_completo().trim().isEmpty()) {
-                nombreSolicitud = "Solicitud Curso Verano - " + solicitudCursoVerano.getObjUsuario().getNombre_completo();
-            } else if (solicitudCursoVerano.getNombre_estudiante() != null && 
-                       !solicitudCursoVerano.getNombre_estudiante().trim().isEmpty()) {
-                nombreSolicitud = "Solicitud Curso Verano - " + solicitudCursoVerano.getNombre_estudiante();
-            }
-        }
-        solicitudCursoVeranoEntity.setNombre_solicitud(nombreSolicitud);
+        solicitudCursoVeranoEntity.setNombre_solicitud(NombreSolicitud.de(NombreSolicitud.CURSO_VERANO,
+                NombreSolicitud.nombreDe(solicitudCursoVerano.getObjUsuario()),
+                solicitudCursoVerano.getNombre_estudiante()));
         solicitudCursoVeranoEntity.setFecha_registro_solicitud(new Date());
         EstadoSolicitudEntity estadoSolicitudEntity = null;
 
@@ -159,15 +151,8 @@ public class GestionarSolicitudCursoVeranoGatewayImplAdapter implements Gestiona
         SolicitudCursoVeranoInscripcionEntity solicitudCursoVeranoEntity = solicitudMapper.map(solicitudCursoVerano, SolicitudCursoVeranoInscripcionEntity.class);
         
         // Generar nombre descriptivo con el nombre del estudiante
-        String nombreSolicitud = "Solicitud Curso Verano";
-        if (solicitudCursoVerano.getObjUsuario() != null) {
-            // Intentar obtener el nombre del estudiante desde la solicitud del dominio
-            if (solicitudCursoVerano.getObjUsuario().getNombre_completo() != null && 
-                !solicitudCursoVerano.getObjUsuario().getNombre_completo().trim().isEmpty()) {
-                nombreSolicitud = "Solicitud Curso Verano - " + solicitudCursoVerano.getObjUsuario().getNombre_completo();
-            }
-        }
-        solicitudCursoVeranoEntity.setNombre_solicitud(nombreSolicitud);
+        solicitudCursoVeranoEntity.setNombre_solicitud(NombreSolicitud.de(NombreSolicitud.CURSO_VERANO,
+                NombreSolicitud.nombreDe(solicitudCursoVerano.getObjUsuario())));
         solicitudCursoVeranoEntity.setFecha_registro_solicitud(new Date());
         EstadoSolicitudEntity estadoSolicitudEntity = null;
         
