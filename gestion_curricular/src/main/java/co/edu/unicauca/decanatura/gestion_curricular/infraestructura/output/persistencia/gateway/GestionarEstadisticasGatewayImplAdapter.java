@@ -45,10 +45,6 @@ public class GestionarEstadisticasGatewayImplAdapter implements GestionarEstadis
     private final UsuarioRepositoryInt usuarioRepository;
     private final ModelMapper estadisticaMapper;
 
-    /** Costo de referencia por docente para estimar la inversión de un curso de verano (COP). */
-    @org.springframework.beans.factory.annotation.Value("${app.estadisticas.costo-docente-curso-verano:3000000}")
-    private long costoReferenciaDocenteCursoVerano = 3_000_000L;
-
     public GestionarEstadisticasGatewayImplAdapter(EstadisticaRepositoryInt estadisticaRepository, ProgramaRepositoryInt programaRepository, SolicitudRepositoryInt solicitudRepository, UsuarioRepositoryInt usuarioRepository, ModelMapper estadisticaMapper) {
         this.estadisticaRepository = estadisticaRepository;
         this.programaRepository = programaRepository;
@@ -2901,24 +2897,11 @@ public class GestionarEstadisticasGatewayImplAdapter implements GestionarEstadis
                         variacion == 1 ? "estudiante" : "estudiantes",
                         porcentajeVariacion));
                     
-                    // Fechas recomendadas
-                    Map<String, String> cronograma = new HashMap<>();
-                    cronograma.put("inicioGestion", "2 meses antes del periodo");
-                    cronograma.put("publicacionOferta", "6 semanas antes");
-                    cronograma.put("contratacionDocentes", "4 semanas antes");
-                    cronograma.put("inicioInscripciones", "3 semanas antes");
-                    recomendacion.put("cronograma", cronograma);
-                    
                     // Impacto esperado
                     Map<String, Object> impacto = new HashMap<>();
                     impacto.put("estudiantesAtendidos", demandaEstimadaMateria);
                     impacto.put("estudiantesBeneficiados", variacion);
                     impacto.put("tasaCoberturaObjetivo", "100%");
-                    impacto.put("inversionEstimada", String.format("$%,d", (long) docentesNecesarios * costoReferenciaDocenteCursoVerano));
-                    impacto.put("esEstimacion", true);
-                    impacto.put("notaInversion", String.format(
-                            "Estimación: %d docente(s) × $%,d de costo de referencia por docente (valor configurable, no es un dato real)",
-                            docentesNecesarios, costoReferenciaDocenteCursoVerano));
                     recomendacion.put("impacto", impacto);
                     
                     recomendacionesFuturas.add(recomendacion);
@@ -3027,15 +3010,6 @@ public class GestionarEstadisticasGatewayImplAdapter implements GestionarEstadis
                     accionesTempo.add("URGENTE: Considerar contratacion temporal adicional");
                 }
                 recomendacionTemporal.put("acciones", accionesTempo);
-                
-                // Cronograma especifico
-                Map<String, String> cronogramaTemporal = new HashMap<>();
-                cronogramaTemporal.put("planificacionInicial", "8 semanas antes");
-                cronogramaTemporal.put("publicacionOferta", "6 semanas antes");
-                cronogramaTemporal.put("aperturaInscripciones", "4 semanas antes");
-                cronogramaTemporal.put("cierreInscripciones", "1 semana antes");
-                cronogramaTemporal.put("inicioCursos", mesPico);
-                recomendacionTemporal.put("cronograma", cronogramaTemporal);
                 
                 // Justificacion
                 recomendacionTemporal.put("justificacion", String.format(
