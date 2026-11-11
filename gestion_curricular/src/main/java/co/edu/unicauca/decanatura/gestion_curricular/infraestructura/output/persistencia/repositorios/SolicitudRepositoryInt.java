@@ -15,7 +15,16 @@ import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.pers
 @Repository
 public interface SolicitudRepositoryInt extends JpaRepository<SolicitudEntity, Integer>{
 
-    
+    /**
+     * Todas las solicitudes con sus estados, usuario y programa en una sola consulta
+     * (evita el problema N+1 en las estadísticas).
+     */
+    @Query("SELECT DISTINCT s FROM SolicitudEntity s " +
+           "LEFT JOIN FETCH s.estadosSolicitud " +
+           "LEFT JOIN FETCH s.objUsuario u " +
+           "LEFT JOIN FETCH u.objPrograma")
+    List<SolicitudEntity> buscarTodasConEstadosYUsuario();
+
     @Query("SELECT s.nombre_solicitud FROM SolicitudEntity s")
     Set<String> buscarNombresSolicitudes();
     

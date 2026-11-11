@@ -6,6 +6,7 @@ import java.util.Calendar;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -303,7 +304,7 @@ public class GestionarEstadisticasGatewayImplAdapter implements GestionarEstadis
                 // Obtener todas las solicitudes con manejo de errores robusto
                 List<SolicitudEntity> solicitudes;
                 try {
-                    solicitudes = solicitudRepository.findAll();
+                    solicitudes = cargarSolicitudes();
                     if (solicitudes == null) {
                         solicitudes = new ArrayList<>();
                     }
@@ -464,436 +465,220 @@ public class GestionarEstadisticasGatewayImplAdapter implements GestionarEstadis
         return estadisticas;
     }
 
+    // ------------------------------------------------------------------------------------------
+    // Agregación en memoria a partir de UNA sola consulta (buscarTodasConEstadosYUsuario).
+    // Antes cada método llamaba a findAll() dentro de bucles (una vez por estado/proceso/programa),
+    // con carga perezosa de estados y usuarios (N+1), y mezclaba conteos por texto del nombre.
+    // ------------------------------------------------------------------------------------------
+
+    private static final String[] PROCESOS = {
+            TipoProcesoSolicitud.REINGRESO, TipoProcesoSolicitud.HOMOLOGACION, TipoProcesoSolicitud.PAZ_Y_SALVO,
+            TipoProcesoSolicitud.CURSOS_VERANO, TipoProcesoSolicitud.ECAES };
+
+    private static final String[] ESTADOS = {
+            "APROBADA", "RECHAZADA", "ENVIADA", "APROBADA_FUNCIONARIO", "APROBADA_COORDINADOR" };
+
+    /** Todas las solicitudes con estados, usuario y programa cargados en una sola consulta. */
+    private List<SolicitudEntity> cargarSolicitudes() {
+        List<SolicitudEntity> solicitudes = solicitudRepository.buscarTodasConEstadosYUsuario();
+        return solicitudes != null ? solicitudes : new ArrayList<>();
+    }
+
+    private static String nombrePrograma(SolicitudEntity solicitud) {
+        if (solicitud.getObjUsuario() == null || solicitud.getObjUsuario().getObjPrograma() == null) {
+            return null;
+        }
+        return solicitud.getObjUsuario().getObjPrograma().getNombre_programa();
+    }
+
+    private static Integer idPrograma(SolicitudEntity solicitud) {
+        if (solicitud.getObjUsuario() == null || solicitud.getObjUsuario().getObjPrograma() == null) {
+            return null;
+        }
+        return solicitud.getObjUsuario().getObjPrograma().getId_programa();
+    }
+
+    private static boolean enRango(SolicitudEntity solicitud, Date inicio, Date fin) {
+        Date fecha = solicitud.getFecha_registro_solicitud();
+        return fecha != null
+                && (inicio == null || !fecha.before(inicio))
+                && (fin == null || !fecha.after(fin));
+    }
+
+    /**
+     * Calcula en una pasada: total, porEstado, porTipoProceso, porPrograma, aprobadas,
+     * rechazadas, en proceso y porcentaje de aprobación.
+     */
+    private Map<String, Object> agregarSolicitudes(List<SolicitudEntity> solicitudes) {
+        Map<String, Integer> porEstado = new LinkedHashMap<>();
+        for (String e : ESTADOS) porEstado.put(e, 0);
+        Map<String, Integer> porTipoProceso = new LinkedHashMap<>();
+        for (String p : PROCESOS) porTipoProceso.put(p, 0);
+        Map<String, Integer> porPrograma = new LinkedHashMap<>();
+        try {
+            for (String programa : programaRepository.buscarNombresProgramas()) {
+                if (programa != null && !programa.isBlank()) porPrograma.put(programa, 0);
+            }
+        } catch (Exception e) {
+            log.warn("Estadisticas - no se pudieron cargar los programas: {}", e.getMessage());
+        }
+
+        for (SolicitudEntity s : solicitudes) {
+            porEstado.merge(obtenerEstadoMasReciente(s), 1, Integer::sum);
+            String proceso = obtenerNombreProcesoPorSolicitud(s);
+            if (proceso != null) porTipoProceso.merge(proceso, 1, Integer::sum);
+            String programa = nombrePrograma(s);
+            if (programa != null && !programa.isBlank()) porPrograma.merge(programa, 1, Integer::sum);
+        }
+
+        int total = solicitudes.size();
+        int aprobadas = porEstado.getOrDefault("APROBADA", 0);
+        int rechazadas = porEstado.getOrDefault("RECHAZADA", 0);
+        int enProceso = porEstado.getOrDefault("APROBADA_FUNCIONARIO", 0)
+                + porEstado.getOrDefault("APROBADA_COORDINADOR", 0);
+
+        Map<String, Object> r = new HashMap<>();
+        r.put("totalSolicitudes", total);
+        r.put("totalAprobadas", aprobadas);
+        r.put("totalRechazadas", rechazadas);
+        r.put("totalEnProceso", enProceso);
+        r.put("totalEnviadas", porEstado.getOrDefault("ENVIADA", 0));
+        r.put("porcentajeAprobacion", total > 0 ? Math.round(aprobadas * 1000.0 / total) / 10.0 : 0.0);
+        r.put("porEstado", porEstado);
+        r.put("porTipoProceso", porTipoProceso);
+        r.put("porPrograma", porPrograma);
+        r.put("fechaConsulta", new Date());
+        return r;
+    }
+
     @Override
     @Transactional(readOnly = true)
     public Map<String, Object> obtenerEstadisticasPorProceso(String tipoProceso) {
-        
-        Map<String, Object> estadisticas = new HashMap<>();
-        
-        try {
-            // Validar que el tipoProceso no sea null o vacio
-            if (tipoProceso == null || tipoProceso.trim().isEmpty()) {
-                log.error("Estadisticas por proceso - Tipo de proceso no puede ser null o vacio");
-                return normalizarEstadistica(new HashMap<>());
-            }
-            
-            // Normalizar el nombre del proceso para busqueda
-            String procesoNormalizado = normalizarNombreProceso(tipoProceso);
-            
-            Integer totalPorProceso = Optional.ofNullable(solicitudRepository.contarPorNombre(procesoNormalizado)).orElse(0);
-            
-            // Obtener estadisticas por estado para este proceso especifico
-            Map<String, Integer> porEstado = new HashMap<>();
-            String[] estados = {"APROBADA", "RECHAZADA", "ENVIADA", "APROBADA_FUNCIONARIO", "APROBADA_COORDINADOR"};
-            
-            for (String estado : estados) {
-                Integer cantidad = 0;
-                try {
-                    // Contar manualmente las solicitudes por proceso y estado mientras se ajusta el repositorio
-                    cantidad = solicitudRepository.findAll().stream()
-                        .filter(solicitud -> {
-                            String nombreProceso = obtenerNombreProcesoPorSolicitud(solicitud);
-                            return tipoProceso.equals(nombreProceso);
-                        })
-                        .filter(solicitud -> {
-                            String estadoSolicitud = obtenerEstadoMasReciente(solicitud);
-                            return estadoSolicitud != null && estadoSolicitud.equals(estado);
-                        })
-                        .mapToInt(solicitud -> 1)
-                        .sum();
-                } catch (Exception e) {
-                    cantidad = 0;
-                }
-                
-                porEstado.put(estado, cantidad);
-            }
-            
-            // Calcular totales para este proceso
-            Integer totalAprobadas = porEstado.get("APROBADA");
-            Integer totalRechazadas = porEstado.get("RECHAZADA");
-            // En Proceso = solo las aprobadas por funcionario y coordinador (NO incluye enviadas)
-            Integer totalEnProceso = porEstado.getOrDefault("APROBADA_FUNCIONARIO", 0) + porEstado.getOrDefault("APROBADA_COORDINADOR", 0);
-            
-            // Calcular porcentaje de aprobacion para este proceso
-            double porcentajeAprobacion = 0.0;
-            if (totalPorProceso > 0) {
-                porcentajeAprobacion = (double) totalAprobadas / totalPorProceso * 100;
-            }
-            
-            estadisticas.put("tipoProceso", tipoProceso);
-            estadisticas.put("totalSolicitudes", totalPorProceso);
-            estadisticas.put("totalAprobadas", totalAprobadas);
-            estadisticas.put("totalRechazadas", totalRechazadas);
-            estadisticas.put("totalEnProceso", totalEnProceso);
-            estadisticas.put("porcentajeAprobacion", Math.round(porcentajeAprobacion * 10.0) / 10.0);
-            estadisticas.put("porEstado", porEstado);
-            estadisticas.put("porTipoProceso", new HashMap<>()); // Vacio para proceso especifico
-            estadisticas.put("porPrograma", new HashMap<>()); // Vacio para proceso especifico
-            estadisticas.put("descripcion", obtenerDescripcionProceso(tipoProceso));
-            estadisticas.put("fechaConsulta", new Date());
-            
-            estadisticas = normalizarEstadistica(estadisticas);
-            
-            
-        } catch (Exception e) {
-            log.error("Estadisticas por proceso - Error en consulta:  {}", e.getMessage());
-            log.error("Error en estadísticas", e);
-            // Devolver estadisticas vacias pero normalizadas en caso de error
-            estadisticas = normalizarEstadistica(new HashMap<>());
+        if (tipoProceso == null || tipoProceso.trim().isEmpty()) {
+            log.error("Estadisticas por proceso - Tipo de proceso no puede ser null o vacio");
+            return normalizarEstadistica(new HashMap<>());
         }
-        
-        return estadisticas;
+        try {
+            String proceso = TipoProcesoSolicitud.porNombre(tipoProceso);
+            List<SolicitudEntity> delProceso = cargarSolicitudes().stream()
+                    .filter(s -> proceso != null && proceso.equals(obtenerNombreProcesoPorSolicitud(s)))
+                    .collect(Collectors.toList());
+
+            Map<String, Object> estadisticas = agregarSolicitudes(delProceso);
+            estadisticas.put("tipoProceso", tipoProceso);
+            estadisticas.put("porTipoProceso", new HashMap<>()); // Vacio para proceso especifico
+            estadisticas.put("porPrograma", new HashMap<>());    // Vacio para proceso especifico
+            estadisticas.put("descripcion", obtenerDescripcionProceso(tipoProceso));
+            return normalizarEstadistica(estadisticas);
+        } catch (Exception e) {
+            log.error("Estadisticas por proceso - Error en consulta", e);
+            return normalizarEstadistica(new HashMap<>());
+        }
     }
 
     @Override
     @Transactional(readOnly = true)
     public Map<String, Object> obtenerEstadisticasPorEstado(String estado) {
-        
-        Map<String, Object> estadisticas = new HashMap<>();
-        
-        try {
-            // Validar que el estado no sea null o vacio
-            if (estado == null || estado.trim().isEmpty()) {
-                log.error("Estadisticas por estado - Estado no puede ser null o vacio");
-                return normalizarEstadistica(new HashMap<>());
-            }
-            
-            Integer totalPorEstado = Optional.ofNullable(solicitudRepository.contarSolicitudesPorUltimoEstado(estado)).orElse(0);
-            
-            // Obtener estadisticas por tipo de proceso para este estado
-            final String estadoNormalizado = estado;
-            Map<String, Integer> porTipoProceso = new HashMap<>();
-            try {
-                List<String> nombresProcesos = new ArrayList<>(solicitudRepository.buscarNombresSolicitudes());
-                for (String proceso : nombresProcesos) {
-                    // Integrar conteo directo por proceso y estado desde el repositorio
-                    Integer cantidad = solicitudRepository.findAll().stream()
-                        .filter(solicitud -> {
-                            String nombreProceso = obtenerNombreProcesoPorSolicitud(solicitud);
-                            return proceso.equals(nombreProceso);
-                        })
-                        .filter(solicitud -> {
-                            String estadoSolicitud = obtenerEstadoMasReciente(solicitud);
-                            return estadoSolicitud != null && estadoSolicitud.equals(estadoNormalizado);
-                        })
-                        .mapToInt(solicitud -> 1)
-                        .sum();
-                    porTipoProceso.put(proceso, cantidad);
-                }
-            } catch (Exception e) {
-                log.error("Estadisticas por estado - Error obteniendo procesos:  {}", e.getMessage());
-                porTipoProceso = new HashMap<>();
-            }
-            
-            // Obtener estadisticas por programa para este estado
-            Map<String, Integer> porPrograma = new HashMap<>();
-            try {
-                List<String> nombresProgramas = new ArrayList<>(programaRepository.buscarNombresProgramas());
-                for (String programa : nombresProgramas) {
-                    // Estimar cuantas solicitudes por programa llegan con este estado
-                    Integer cantidad = solicitudRepository.findAll().stream()
-                        .filter(solicitud -> {
-                            // Verificar que tenga usuario y programa
-                            if (solicitud.getObjUsuario() == null || solicitud.getObjUsuario().getObjPrograma() == null) {
-                                return false;
-                            }
-                            String nombrePrograma = solicitud.getObjUsuario().getObjPrograma().getNombre_programa();
-                            return programa.equals(nombrePrograma);
-                        })
-                        .filter(solicitud -> {
-                            String estadoSolicitud = obtenerEstadoMasReciente(solicitud);
-                            return estadoSolicitud != null && estadoSolicitud.equals(estadoNormalizado);
-                        })
-                        .mapToInt(solicitud -> 1)
-                        .sum();
-                    if (programa != null && !programa.trim().isEmpty()) {
-                        porPrograma.put(programa, cantidad);
-                    }
-                }
-            } catch (Exception e) {
-                log.error("Estadisticas por estado - Error obteniendo programas:  {}", e.getMessage());
-                porPrograma = new HashMap<>();
-            }
-            
-            estadisticas.put("estado", estado);
-            estadisticas.put("totalSolicitudes", totalPorEstado);
-            estadisticas.put("totalAprobadas", estado.equals("APROBADA") ? totalPorEstado : 0);
-            estadisticas.put("totalRechazadas", estado.equals("RECHAZADA") ? totalPorEstado : 0);
-            // En Proceso = solo las aprobadas por funcionario y coordinador (NO incluye enviadas)
-            estadisticas.put("totalEnProceso", (estado.equals("APROBADA_FUNCIONARIO") || estado.equals("APROBADA_COORDINADOR")) ? totalPorEstado : 0);
-            estadisticas.put("porcentajeAprobacion", estado.equals("APROBADA") ? 100.0 : 0.0);
-            estadisticas.put("porTipoProceso", porTipoProceso);
-            estadisticas.put("porPrograma", porPrograma);
-            estadisticas.put("porEstado", new HashMap<>()); // Vacio para estado especifico
-            estadisticas.put("descripcionEstado", obtenerDescripcionEstado(estado));
-            estadisticas.put("fechaConsulta", new Date());
-            
-            estadisticas = normalizarEstadistica(estadisticas);
-            
-            
-        } catch (Exception e) {
-            log.error("Estadisticas por estado - Error en consulta:  {}", e.getMessage());
-            log.error("Error en estadísticas", e);
-            // Devolver estadisticas vacias pero normalizadas en caso de error
-            estadisticas = normalizarEstadistica(new HashMap<>());
+        if (estado == null || estado.trim().isEmpty()) {
+            log.error("Estadisticas por estado - Estado no puede ser null o vacio");
+            return normalizarEstadistica(new HashMap<>());
         }
-        
-        return estadisticas;
+        try {
+            String estadoNormalizado = normalizarEstado(estado);
+            List<SolicitudEntity> conEstado = cargarSolicitudes().stream()
+                    .filter(s -> estadoNormalizado.equals(obtenerEstadoMasReciente(s)))
+                    .collect(Collectors.toList());
+
+            Map<String, Object> estadisticas = agregarSolicitudes(conEstado);
+            estadisticas.put("estado", estado);
+            estadisticas.put("porEstado", new HashMap<>()); // Vacio para estado especifico
+            estadisticas.put("porcentajeAprobacion", "APROBADA".equals(estadoNormalizado) && !conEstado.isEmpty() ? 100.0 : 0.0);
+            estadisticas.put("descripcionEstado", obtenerDescripcionEstado(estado));
+            return normalizarEstadistica(estadisticas);
+        } catch (Exception e) {
+            log.error("Estadisticas por estado - Error en consulta", e);
+            return normalizarEstadistica(new HashMap<>());
+        }
     }
 
     @Override
     @Transactional(readOnly = true)
     public Map<String, Object> obtenerEstadisticasPorPrograma(Integer idPrograma) {
-        
-        Map<String, Object> estadisticas = new HashMap<>();
-        
-        try {
-            // Validar que el idPrograma no sea null o menor a 1
-            if (idPrograma == null || idPrograma < 1) {
-                log.error("Estadisticas por programa - ID de programa no puede ser null o menor a 1");
-                return normalizarEstadistica(new HashMap<>());
-            }
-            
-            // Obtener estadisticas por programa (usando fechas amplias para capturar todo)
-            Date fechaInicio = new Date(System.currentTimeMillis() - 365L * 24 * 60 * 60 * 1000); // 1 ano atras
-            Date fechaFin = new Date();
-            
-            Map<String, Integer> porTipoProceso = new HashMap<>();
-            try {
-                List<String> nombresProcesos = new ArrayList<>(solicitudRepository.buscarNombresSolicitudes());
-                
-                for (String proceso : nombresProcesos) {
-                    Integer cantidad = Optional.ofNullable(solicitudRepository.contarNombreFechaYPrograma(proceso, fechaInicio, fechaFin, idPrograma)).orElse(0);
-                    porTipoProceso.put(proceso, cantidad);
-                }
-            } catch (Exception e) {
-                log.error("Estadisticas por programa - Error obteniendo procesos:  {}", e.getMessage());
-                porTipoProceso = new HashMap<>();
-            }
-            
-            // Obtener estadisticas por estado para este programa
-            Map<String, Integer> porEstado = new HashMap<>();
-            String[] estados = {"APROBADA", "RECHAZADA", "ENVIADA", "APROBADA_FUNCIONARIO", "APROBADA_COORDINADOR"};
-            
-            for (String estado : estados) {
-                Integer cantidad = Optional.ofNullable(solicitudRepository.contarSolicitudesPorUltimoEstado(estado)).orElse(0);
-                porEstado.put(estado, cantidad);
-            }
-            
-            // Calcular totales para este programa
-            Integer totalSolicitudes = porTipoProceso.values().stream().mapToInt(Integer::intValue).sum();
-            Integer totalAprobadas = porEstado.get("APROBADA");
-            Integer totalRechazadas = porEstado.get("RECHAZADA");
-            // En Proceso = solo las aprobadas por funcionario y coordinador (NO incluye enviadas)
-            Integer totalEnProceso = porEstado.getOrDefault("APROBADA_FUNCIONARIO", 0) + porEstado.getOrDefault("APROBADA_COORDINADOR", 0);
-            
-            // Calcular porcentaje de aprobacion para este programa
-            double porcentajeAprobacion = 0.0;
-            if (totalSolicitudes > 0) {
-                porcentajeAprobacion = (double) totalAprobadas / totalSolicitudes * 100;
-            }
-            
-            estadisticas.put("idPrograma", idPrograma);
-            estadisticas.put("totalSolicitudes", totalSolicitudes);
-            estadisticas.put("totalAprobadas", totalAprobadas);
-            estadisticas.put("totalRechazadas", totalRechazadas);
-            estadisticas.put("totalEnProceso", totalEnProceso);
-            estadisticas.put("porcentajeAprobacion", Math.round(porcentajeAprobacion * 10.0) / 10.0);
-            estadisticas.put("porTipoProceso", porTipoProceso);
-            estadisticas.put("porEstado", porEstado);
-            estadisticas.put("porPrograma", new HashMap<>()); // Vacio para programa especifico
-            estadisticas.put("fechaConsulta", new Date());
-            
-            estadisticas = normalizarEstadistica(estadisticas);
-            
-            
-        } catch (Exception e) {
-            log.error("Estadisticas por programa - Error en consulta:  {}", e.getMessage());
-            log.error("Error en estadísticas", e);
-            // Devolver estadisticas vacias pero normalizadas en caso de error
-            estadisticas = normalizarEstadistica(new HashMap<>());
+        if (idPrograma == null || idPrograma < 1) {
+            log.error("Estadisticas por programa - ID de programa no puede ser null o menor a 1");
+            return normalizarEstadistica(new HashMap<>());
         }
-        
-        return estadisticas;
+        try {
+            // Antes porEstado contaba las solicitudes de TODOS los programas; ahora solo las de este programa
+            List<SolicitudEntity> delPrograma = cargarSolicitudes().stream()
+                    .filter(s -> idPrograma.equals(idPrograma(s)))
+                    .collect(Collectors.toList());
+
+            Map<String, Object> estadisticas = agregarSolicitudes(delPrograma);
+            estadisticas.put("idPrograma", idPrograma);
+            estadisticas.put("porPrograma", new HashMap<>()); // Vacio para programa especifico
+            return normalizarEstadistica(estadisticas);
+        } catch (Exception e) {
+            log.error("Estadisticas por programa - Error en consulta", e);
+            return normalizarEstadistica(new HashMap<>());
+        }
     }
 
     @Override
     @Transactional(readOnly = true)
     public Map<String, Object> obtenerEstadisticasPorPeriodo(Date fechaInicio, Date fechaFin) {
-        
-        Map<String, Object> estadisticas = new HashMap<>();
-        
+        if (fechaInicio == null || fechaFin == null) {
+            log.error("Estadisticas por periodo - Las fechas no pueden ser null");
+            return normalizarEstadistica(new HashMap<>());
+        }
         try {
-            // Validar fechas
-            if (fechaInicio == null || fechaFin == null) {
-                log.error("Estadisticas por periodo - Las fechas no pueden ser null");
-                return normalizarEstadistica(new HashMap<>());
-            }
-            
-            Integer totalPorPeriodo = Optional.ofNullable(solicitudRepository.contarPorRangoFechas(fechaInicio, fechaFin)).orElse(0);
-            
-            // Obtener estadisticas por tipo de proceso en el periodo
-            Map<String, Integer> porTipoProceso = new HashMap<>();
-            try {
-                List<String> nombresProcesos = new ArrayList<>(solicitudRepository.buscarNombresSolicitudes());
-                
-                for (String proceso : nombresProcesos) {
-                    // Contar solicitudes por proceso dentro del periodo seleccionado
-                    Integer cantidad = solicitudRepository.findAll().stream()
-                        .filter(solicitud -> {
-                            String nombreProceso = obtenerNombreProcesoPorSolicitud(solicitud);
-                            return proceso.equals(nombreProceso);
-                        })
-                        .filter(solicitud -> {
-                            // Filtrar por rango de fechas
-                            Date fechaSolicitud = solicitud.getFecha_registro_solicitud();
-                            return fechaSolicitud != null && 
-                                   !fechaSolicitud.before(fechaInicio) && 
-                                   !fechaSolicitud.after(fechaFin);
-                        })
-                        .mapToInt(solicitud -> 1)
-                        .sum();
-                    porTipoProceso.put(proceso, cantidad);
-                }
-            } catch (Exception e) {
-                log.error("Estadisticas por periodo - Error obteniendo procesos:  {}", e.getMessage());
-                porTipoProceso = new HashMap<>();
-            }
-            
-            // Obtener estadisticas por estado en el periodo
-            Map<String, Integer> porEstado = new HashMap<>();
-            String[] estados = {"APROBADA", "RECHAZADA", "ENVIADA", "APROBADA_FUNCIONARIO", "APROBADA_COORDINADOR"};
-            
-            for (String estado : estados) {
-                // Filtrar por periodo
-                Integer cantidad = solicitudRepository.findAll().stream()
-                    .filter(solicitud -> {
-                        Date fechaSolicitud = solicitud.getFecha_registro_solicitud();
-                        return fechaSolicitud != null && 
-                               !fechaSolicitud.before(fechaInicio) && 
-                               !fechaSolicitud.after(fechaFin);
-                    })
-                    .filter(solicitud -> {
-                        String estadoSolicitud = obtenerEstadoMasReciente(solicitud);
-                        return estadoSolicitud != null && estadoSolicitud.equals(estado);
-                    })
-                    .mapToInt(solicitud -> 1)
-                    .sum();
-                porEstado.put(estado, cantidad);
-            }
-            
-            // Obtener estadisticas por programa en el periodo
-            Map<String, Integer> porPrograma = new HashMap<>();
-            try {
-                List<String> nombresProgramas = new ArrayList<>(programaRepository.buscarNombresProgramas());
-                for (String programa : nombresProgramas) {
-                    // Obtener el numero de solicitudes por programa en el rango de fechas indicado
-                    Integer cantidad = solicitudRepository.findAll().stream()
-                        .filter(solicitud -> {
-                            // Filtrar por rango de fechas
-                            Date fechaSolicitud = solicitud.getFecha_registro_solicitud();
-                            return fechaSolicitud != null && 
-                                   !fechaSolicitud.before(fechaInicio) && 
-                                   !fechaSolicitud.after(fechaFin);
-                        })
-                        .filter(solicitud -> {
-                            // Verificar que tenga usuario y programa
-                            if (solicitud.getObjUsuario() == null || solicitud.getObjUsuario().getObjPrograma() == null) {
-                                return false;
-                            }
-                            String nombrePrograma = solicitud.getObjUsuario().getObjPrograma().getNombre_programa();
-                            return programa.equals(nombrePrograma);
-                        })
-                        .mapToInt(solicitud -> 1)
-                        .sum();
-                    if (programa != null && !programa.trim().isEmpty()) {
-                        porPrograma.put(programa, cantidad);
-                    }
-                }
-            } catch (Exception e) {
-                log.error("Estadisticas por periodo - Error obteniendo programas:  {}", e.getMessage());
-                porPrograma = new HashMap<>();
-            }
-            
-            // Calcular totales para el periodo
-            Integer totalAprobadas = porEstado.get("APROBADA");
-            Integer totalRechazadas = porEstado.get("RECHAZADA");
-            // En Proceso = solo las aprobadas por funcionario y coordinador (NO incluye enviadas)
-            Integer totalEnProceso = porEstado.getOrDefault("APROBADA_FUNCIONARIO", 0) + porEstado.getOrDefault("APROBADA_COORDINADOR", 0);
-            
-            // Calcular porcentaje de aprobacion para el periodo
-            double porcentajeAprobacion = 0.0;
-            if (totalPorPeriodo > 0) {
-                porcentajeAprobacion = (double) totalAprobadas / totalPorPeriodo * 100;
-            }
-            
+            List<SolicitudEntity> enPeriodo = cargarSolicitudes().stream()
+                    .filter(s -> enRango(s, fechaInicio, fechaFin))
+                    .collect(Collectors.toList());
+
+            Map<String, Object> estadisticas = agregarSolicitudes(enPeriodo);
             estadisticas.put("fechaInicio", fechaInicio);
             estadisticas.put("fechaFin", fechaFin);
-            estadisticas.put("totalSolicitudes", totalPorPeriodo);
-            estadisticas.put("totalAprobadas", totalAprobadas);
-            estadisticas.put("totalRechazadas", totalRechazadas);
-            estadisticas.put("totalEnProceso", totalEnProceso);
-            estadisticas.put("porcentajeAprobacion", Math.round(porcentajeAprobacion * 10.0) / 10.0);
-            estadisticas.put("porTipoProceso", porTipoProceso);
-            estadisticas.put("porEstado", porEstado);
-            estadisticas.put("porPrograma", porPrograma);
-            estadisticas.put("fechaConsulta", new Date());
-            
-            estadisticas = normalizarEstadistica(estadisticas);
-            
-            
+            return normalizarEstadistica(estadisticas);
         } catch (Exception e) {
-            log.error("Estadisticas por periodo - Error en consulta:  {}", e.getMessage());
-            log.error("Error en estadísticas", e);
-            // Devolver estadisticas vacias pero normalizadas en caso de error
-            estadisticas = normalizarEstadistica(new HashMap<>());
+            log.error("Estadisticas por periodo - Error en consulta", e);
+            return normalizarEstadistica(new HashMap<>());
         }
-        
-        return estadisticas;
     }
 
     @Override
     @Transactional(readOnly = true)
     public Map<String, Object> obtenerEstadisticasPorProgramaYPeriodo(Integer idPrograma, Date fechaInicio, Date fechaFin) {
+        List<SolicitudEntity> filtradas = cargarSolicitudes().stream()
+                .filter(s -> idPrograma == null || idPrograma.equals(idPrograma(s)))
+                .filter(s -> enRango(s, fechaInicio, fechaFin))
+                .collect(Collectors.toList());
+
         Map<String, Object> estadisticas = new HashMap<>();
-        
-        Map<String, Integer> porTipoProceso = new HashMap<>();
-        List<String> nombresProcesos = new ArrayList<>(solicitudRepository.buscarNombresSolicitudes());
-        
-        for (String proceso : nombresProcesos) {
-            Integer cantidad = solicitudRepository.contarNombreFechaYPrograma(proceso, fechaInicio, fechaFin, idPrograma);
-            porTipoProceso.put(proceso, cantidad);
-        }
-        
         estadisticas.put("idPrograma", idPrograma);
         estadisticas.put("fechaInicio", fechaInicio);
         estadisticas.put("fechaFin", fechaFin);
-        estadisticas.put("porTipoProceso", porTipoProceso);
+        estadisticas.put("porTipoProceso", agregarSolicitudes(filtradas).get("porTipoProceso"));
         estadisticas.put("fechaConsulta", new Date());
-        
         return estadisticas;
     }
 
     @Override
     @Transactional(readOnly = true)
     public Map<String, Object> obtenerEstadisticasPorProcesoYEstado(String tipoProceso, String estado) {
+        // Antes devolvía 0 para todos los programas (dato fijo); ahora cuenta de verdad
+        String proceso = TipoProcesoSolicitud.porNombre(tipoProceso);
+        String estadoNormalizado = estado != null ? normalizarEstado(estado) : null;
+        List<SolicitudEntity> filtradas = cargarSolicitudes().stream()
+                .filter(s -> proceso == null || proceso.equals(obtenerNombreProcesoPorSolicitud(s)))
+                .filter(s -> estadoNormalizado == null || estadoNormalizado.equals(obtenerEstadoMasReciente(s)))
+                .collect(Collectors.toList());
+
         Map<String, Object> estadisticas = new HashMap<>();
-        
-        // Obtener estadisticas por proceso y estado para todos los programas
-        List<String> nombresProgramas = new ArrayList<>(programaRepository.buscarNombresProgramas());
-        Map<String, Integer> porPrograma = new HashMap<>();
-        
-        for (String programa : nombresProgramas) {
-            if (programa != null && !programa.trim().isEmpty()) {
-                porPrograma.put(programa, 0);
-            }
-        }
-        
         estadisticas.put("tipoProceso", tipoProceso);
         estadisticas.put("estado", estado);
-        estadisticas.put("porPrograma", porPrograma);
+        estadisticas.put("porPrograma", agregarSolicitudes(filtradas).get("porPrograma"));
         estadisticas.put("fechaConsulta", new Date());
-        
         return estadisticas;
     }
 
@@ -904,7 +689,7 @@ public class GestionarEstadisticasGatewayImplAdapter implements GestionarEstadis
         
         
         // Obtener todas las solicitudes y filtrarlas si hay filtros
-        List<SolicitudEntity> todasLasSolicitudes = solicitudRepository.findAll();
+        List<SolicitudEntity> todasLasSolicitudes = cargarSolicitudes();
         
         List<SolicitudEntity> solicitudesFiltradas;
         
@@ -1079,7 +864,7 @@ public class GestionarEstadisticasGatewayImplAdapter implements GestionarEstadis
      * Reutiliza la lógica de filtrado de obtenerResumenCompleto.
      */
     private List<SolicitudEntity> filtrarSolicitudes(String periodoAcademico, Integer idPrograma) {
-        List<SolicitudEntity> todasLasSolicitudes = solicitudRepository.findAll();
+        List<SolicitudEntity> todasLasSolicitudes = cargarSolicitudes();
         
         if ((periodoAcademico == null || periodoAcademico.trim().isEmpty()) && idPrograma == null) {
             return todasLasSolicitudes;
@@ -2621,7 +2406,7 @@ public class GestionarEstadisticasGatewayImplAdapter implements GestionarEstadis
                 totalPorProceso.put(p[0], 0);
             }
 
-            for (SolicitudEntity solicitud : solicitudRepository.findAll()) {
+            for (SolicitudEntity solicitud : cargarSolicitudes()) {
                 String proceso = obtenerNombreProcesoPorSolicitud(solicitud);
                 if (proceso == null || !totalPorProceso.containsKey(proceso)) {
                     continue;
@@ -3867,7 +3652,7 @@ public class GestionarEstadisticasGatewayImplAdapter implements GestionarEstadis
         try {
             
             // Obtener todas las solicitudes de cursos de verano
-            List<SolicitudEntity> todasLasSolicitudes = solicitudRepository.findAll();
+            List<SolicitudEntity> todasLasSolicitudes = cargarSolicitudes();
             List<SolicitudEntity> solicitudesCursosVerano = todasLasSolicitudes.stream()
                 .filter(solicitud -> {
                     // Filtrar por tipo de proceso
@@ -4112,7 +3897,7 @@ public class GestionarEstadisticasGatewayImplAdapter implements GestionarEstadis
         
         try {
             // Obtener solo las solicitudes de cursos de verano
-            List<SolicitudEntity> todasLasSolicitudes = solicitudRepository.findAll();
+            List<SolicitudEntity> todasLasSolicitudes = cargarSolicitudes();
             List<SolicitudEntity> solicitudesCursosVerano = todasLasSolicitudes.stream()
                 .filter(solicitud -> {
                     // Filtrar por tipo de proceso
