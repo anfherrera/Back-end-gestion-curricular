@@ -73,8 +73,8 @@ class EstadisticasCursosVeranoCaracterizacionTest {
     }
 
     /**
-     * Dos programas y tres materias, repartidos en varios meses. Algunas solicitudes llevan el nombre
-     * de la materia en nombre_solicitud para que la regresión por materia tenga datos.
+     * Dos programas y tres materias, repartidos en varios meses. La materia de cada solicitud sale del
+     * curso solicitado, no del nombre de la solicitud.
      */
     private static List<SolicitudEntity> datos() {
         ProgramaEntity sistemas = programa(1, "Ingeniería de Sistemas");
@@ -85,27 +85,25 @@ class EstadisticasCursosVeranoCaracterizacionTest {
 
         List<SolicitudEntity> res = new ArrayList<>();
         int id = 100;
-        // {programa, curso, mes (1-12), estado, nombre con materia?}
+        // {programa, curso, mes (1-12), estado}
         Object[][] filas = {
-            {sistemas, calculo, 1, "Enviada", true},
-            {sistemas, calculo, 2, "APROBADA", true},
-            {sistemas, calculo, 3, "APROBADA", true},
-            {sistemas, calculo, 5, "Pago_Validado", true},
-            {sistemas, programacion, 6, "Enviada", false},
-            {sistemas, programacion, 6, "Rechazada", false},
-            {sistemas, programacion, 7, "APROBADA_FUNCIONARIO", false},
-            {electronica, fisica, 7, "Enviada", true},
-            {electronica, fisica, 8, "APROBADA", true},
-            {electronica, calculo, 8, "Enviada", false},
-            {electronica, calculo, 8, "APROBADA_COORDINADOR", false},
-            {sistemas, fisica, 9, "Enviada", false},
+            {sistemas, calculo, 1, "Enviada"},
+            {sistemas, calculo, 2, "APROBADA"},
+            {sistemas, calculo, 3, "APROBADA"},
+            {sistemas, calculo, 5, "Pago_Validado"},
+            {sistemas, programacion, 6, "Enviada"},
+            {sistemas, programacion, 6, "Rechazada"},
+            {sistemas, programacion, 7, "APROBADA_FUNCIONARIO"},
+            {electronica, fisica, 7, "Enviada"},
+            {electronica, fisica, 8, "APROBADA"},
+            {electronica, calculo, 8, "Enviada"},
+            {electronica, calculo, 8, "APROBADA_COORDINADOR"},
+            {sistemas, fisica, 9, "Enviada"},
         };
         for (Object[] f : filas) {
-            CursoOfertadoVeranoEntity curso = (CursoOfertadoVeranoEntity) f[1];
-            String nombre = (Boolean) f[4]
-                    ? "Preinscripción " + curso.getObjMateria().getNombre()
-                    : "Solicitud Curso Verano - Estudiante " + id;
-            res.add(solicitud(id++, (ProgramaEntity) f[0], curso, (Integer) f[2], (String) f[3], nombre));
+            String nombre = "Curso de verano - Estudiante " + id;
+            res.add(solicitud(id++, (ProgramaEntity) f[0], (CursoOfertadoVeranoEntity) f[1],
+                    (Integer) f[2], (String) f[3], nombre));
         }
         return res;
     }

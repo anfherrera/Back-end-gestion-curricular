@@ -21,6 +21,9 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class PrediccionDemandaCursosVerano {
 
+    private static final List<String> MESES = List.of("Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio",
+            "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre");
+
     /**
      * Genera predicciones de demanda para cursos de verano basadas en datos historicos
      */
@@ -458,10 +461,11 @@ public class PrediccionDemandaCursosVerano {
             SimpleRegression regression = new SimpleRegression();
             
             // Agregar datos historicos al modelo
-            // x = numero de mes (1, 2, 3, ...), y = solicitudes en ese mes
+            // x = numero de mes (1 = Enero ... 12 = Diciembre), y = solicitudes en ese mes.
+            // Se recorre en orden de calendario: demandaPorMes no garantiza ningun orden.
             int mesNumero = 1;
-            for (Map.Entry<String, Integer> entry : demandaPorMes.entrySet()) {
-                double solicitudes = entry.getValue();
+            for (String mes : MESES) {
+                double solicitudes = demandaPorMes.getOrDefault(mes, 0);
                 if (solicitudes > 0) { // Solo agregar meses con datos
                     regression.addData(mesNumero, solicitudes);
                 }
@@ -505,9 +509,9 @@ public class PrediccionDemandaCursosVerano {
             Map<Integer, Integer> solicitudesPorMes = new HashMap<>();
             
             for (DatoDemandaCursoVerano solicitud : solicitudesCursosVerano) {
-                // Verificar si la solicitud corresponde a esta materia
-                String nombreSolicitud = solicitud.nombreSolicitud();
-                if (nombreSolicitud != null && nombreSolicitud.toLowerCase().contains(nombreMateria.toLowerCase())) {
+                // Verificar si la solicitud corresponde a esta materia (la del curso solicitado)
+                String materiaSolicitud = solicitud.materia();
+                if (materiaSolicitud != null && materiaSolicitud.equalsIgnoreCase(nombreMateria)) {
                     Date fecha = solicitud.fechaRegistro();
                     if (fecha != null) {
                         Calendar cal = Calendar.getInstance();

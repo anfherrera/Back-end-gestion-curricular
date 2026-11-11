@@ -2719,7 +2719,11 @@ public class GestionarEstadisticasGatewayImplAdapter implements GestionarEstadis
         String programa = solicitud.getObjUsuario() != null && solicitud.getObjUsuario().getObjPrograma() != null
                 ? solicitud.getObjUsuario().getObjPrograma().getNombre_programa()
                 : null;
-        return new DatoDemandaCursoVerano(solicitud.getNombre_solicitud(), programa,
+        String materia = solicitud.getObjCursoOfertadoVerano() != null
+                && solicitud.getObjCursoOfertadoVerano().getObjMateria() != null
+                ? solicitud.getObjCursoOfertadoVerano().getObjMateria().getNombre()
+                : null;
+        return new DatoDemandaCursoVerano(materia, programa,
                 solicitud.getFecha_registro_solicitud());
     }
 

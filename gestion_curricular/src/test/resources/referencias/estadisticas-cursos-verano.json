@@ -43,28 +43,28 @@
     "demandaEstimadaProximoPeriodo" : 10,
     "estadisticasRecomendaciones" : {
       "alertasCriticas" : 0,
-      "prioridadAlta" : 2,
-      "prioridadBaja" : 0,
+      "prioridadAlta" : 1,
+      "prioridadBaja" : 1,
       "prioridadMedia" : 1,
       "totalRecomendaciones" : 3
     },
     "materiasConTendenciaCreciente" : [ {
-      "demandaActual" : 3,
-      "demandaEstimada" : 4,
-      "nombre" : "Programación Orientada a Objetos",
-      "porcentajeVariacion" : 33,
-      "tendencia" : "CRECIENTE",
-      "variacion" : 1
-    } ],
-    "materiasConTendenciaDecreciente" : [ ],
-    "materiasEstables" : [ {
       "demandaActual" : 6,
       "demandaEstimada" : 5,
       "nombre" : "Cálculo I",
       "porcentajeVariacion" : -17,
-      "tendencia" : "ESTABLE",
+      "tendencia" : "CRECIENTE",
       "variacion" : -1
-    }, {
+    } ],
+    "materiasConTendenciaDecreciente" : [ {
+      "demandaActual" : 3,
+      "demandaEstimada" : 2,
+      "nombre" : "Programación Orientada a Objetos",
+      "porcentajeVariacion" : -33,
+      "tendencia" : "DECRECIENTE",
+      "variacion" : -1
+    } ],
+    "materiasEstables" : [ {
       "demandaActual" : 3,
       "demandaEstimada" : 2,
       "nombre" : "Física I",
@@ -96,22 +96,22 @@
       "variacion" : -2
     } ],
     "recomendaciones" : [ {
-      "acciones" : [ "Contratar 1 docente especializado", "Reservar 1 aula o laboratorio", "URGENTE: Iniciar gestion con 2 meses de anticipacion", "Publicar oferta academica con suficiente antelacion" ],
+      "acciones" : [ "Contratar 1 docente especializado", "Reservar 1 aula o laboratorio", "Publicar oferta academica con suficiente antelacion" ],
       "categoria" : "CURSOS_VERANO",
-      "crecimiento" : 1,
-      "demandaActual" : 3,
-      "demandaProyectada" : 4,
-      "descripcion" : "La materia Programación Orientada a Objetos presenta una tendencia de crecimiento del 33%, pasando de 3 a 4 estudiantes proyectados. Se recomienda ampliar la oferta para garantizar cobertura completa.",
-      "id" : "MAT_PROGRAMACIÓN_ORIENTADA_A_OBJETOS",
+      "crecimiento" : -1,
+      "demandaActual" : 6,
+      "demandaProyectada" : 5,
+      "descripcion" : "La materia Cálculo I presenta una tendencia de crecimiento del -17%, pasando de 6 a 5 estudiantes proyectados. Se recomienda ampliar la oferta para garantizar cobertura completa.",
+      "id" : "MAT_CÁLCULO_I",
       "impacto" : {
-        "estudiantesAtendidos" : 4,
-        "estudiantesBeneficiados" : 1,
+        "estudiantesAtendidos" : 5,
+        "estudiantesBeneficiados" : -1,
         "tasaCoberturaObjetivo" : "100%"
       },
-      "justificacion" : "Con base en las tendencias observadas en periodos anteriores, se estima un incremento de 1 estudiante (33% de crecimiento).",
-      "materia" : "Programación Orientada a Objetos",
-      "porcentajeCrecimiento" : 33,
-      "prioridad" : "ALTA",
+      "justificacion" : "Con base en las tendencias observadas en periodos anteriores, se estima un incremento de -1 estudiantes (-17% de crecimiento).",
+      "materia" : "Cálculo I",
+      "porcentajeCrecimiento" : -17,
+      "prioridad" : "BAJA",
       "recursos" : {
         "aulas" : 1,
         "capacidadPorGrupo" : 20,
@@ -121,7 +121,7 @@
         "laboratorios" : 0
       },
       "tipo" : "OFERTA_MATERIA",
-      "titulo" : "Ampliar oferta de Programación Orientada a Objetos"
+      "titulo" : "Ampliar oferta de Cálculo I"
     }, {
       "acciones" : [ "Ampliar oferta de cursos de verano en 4 cupos", "Identificar materias criticas del programa con mayor demanda", "Coordinar con director(a) de programa para validar necesidades", "Evaluar disponibilidad de docentes del programa", "CRITICO: Programa de alta demanda requiere atencion inmediata" ],
       "beneficios" : [ "Reduccion de desercion por perdida de materias", "Mejora en tiempos de graduacion", "Mayor satisfaccion estudiantil", "Optimizacion de trayectorias academicas" ],
@@ -169,22 +169,22 @@
     } ]
   },
   "recomendaciones" : [ {
-    "acciones" : [ "Contratar 1 docente especializado", "Reservar 1 aula o laboratorio", "URGENTE: Iniciar gestion con 2 meses de anticipacion", "Publicar oferta academica con suficiente antelacion" ],
+    "acciones" : [ "Contratar 1 docente especializado", "Reservar 1 aula o laboratorio", "Publicar oferta academica con suficiente antelacion" ],
     "categoria" : "CURSOS_VERANO",
-    "crecimiento" : 1,
-    "demandaActual" : 3,
-    "demandaProyectada" : 4,
-    "descripcion" : "La materia Programación Orientada a Objetos presenta una tendencia de crecimiento del 33%, pasando de 3 a 4 estudiantes proyectados. Se recomienda ampliar la oferta para garantizar cobertura completa.",
-    "id" : "MAT_PROGRAMACIÓN_ORIENTADA_A_OBJETOS",
+    "crecimiento" : -1,
+    "demandaActual" : 6,
+    "demandaProyectada" : 5,
+    "descripcion" : "La materia Cálculo I presenta una tendencia de crecimiento del -17%, pasando de 6 a 5 estudiantes proyectados. Se recomienda ampliar la oferta para garantizar cobertura completa.",
+    "id" : "MAT_CÁLCULO_I",
     "impacto" : {
-      "estudiantesAtendidos" : 4,
-      "estudiantesBeneficiados" : 1,
+      "estudiantesAtendidos" : 5,
+      "estudiantesBeneficiados" : -1,
       "tasaCoberturaObjetivo" : "100%"
     },
-    "justificacion" : "Con base en las tendencias observadas en periodos anteriores, se estima un incremento de 1 estudiante (33% de crecimiento).",
-    "materia" : "Programación Orientada a Objetos",
-    "porcentajeCrecimiento" : 33,
-    "prioridad" : "ALTA",
+    "justificacion" : "Con base en las tendencias observadas en periodos anteriores, se estima un incremento de -1 estudiantes (-17% de crecimiento).",
+    "materia" : "Cálculo I",
+    "porcentajeCrecimiento" : -17,
+    "prioridad" : "BAJA",
     "recursos" : {
       "aulas" : 1,
       "capacidadPorGrupo" : 20,
@@ -194,7 +194,7 @@
       "laboratorios" : 0
     },
     "tipo" : "OFERTA_MATERIA",
-    "titulo" : "Ampliar oferta de Programación Orientada a Objetos"
+    "titulo" : "Ampliar oferta de Cálculo I"
   }, {
     "acciones" : [ "Ampliar oferta de cursos de verano en 4 cupos", "Identificar materias criticas del programa con mayor demanda", "Coordinar con director(a) de programa para validar necesidades", "Evaluar disponibilidad de docentes del programa", "CRITICO: Programa de alta demanda requiere atencion inmediata" ],
     "beneficios" : [ "Reduccion de desercion por perdida de materias", "Mejora en tiempos de graduacion", "Mayor satisfaccion estudiantil", "Optimizacion de trayectorias academicas" ],
