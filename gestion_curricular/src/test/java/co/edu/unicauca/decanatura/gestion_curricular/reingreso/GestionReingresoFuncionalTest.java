@@ -10,6 +10,10 @@ import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 
+import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.repositorios.SolicitudRepositoryInt;
+import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.repositorios.UsuarioRepositoryInt;
+import co.edu.unicauca.decanatura.gestion_curricular.soporte.SolicitudesDePrueba;
+
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -44,6 +48,20 @@ class GestionReingresoFuncionalTest {
 
     @Autowired
     private MockMvc mockMvc;
+
+    @Autowired
+    private SolicitudRepositoryInt solicitudRepository;
+
+    @Autowired
+    private UsuarioRepositoryInt usuarioRepository;
+
+    private SolicitudesDePrueba solicitudes() {
+        return new SolicitudesDePrueba(solicitudRepository, usuarioRepository);
+    }
+
+    private static String cambioEstado(int idSolicitud, String nuevoEstado) {
+        return "{\"idSolicitud\": %d, \"nuevoEstado\": \"%s\"}".formatted(idSolicitud, nuevoEstado);
+    }
 
     // ==================== FLUJO 1: SOLICITUD COMPLETA DE REINGRESO ====================
 
@@ -121,22 +139,12 @@ class GestionReingresoFuncionalTest {
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON));
 
-        // Paso 4: Funcionario aprueba la solicitud (usando ID 4 que existe en BD de test)
-        String jsonAprobacion = """
-            {
-                "idSolicitud": 4,
-                "nuevoEstado": "APROBADA_FUNCIONARIO"
-            }
-            """;
-        
+        // Paso 4: Funcionario aprueba una solicitud recién enviada
+        int id = solicitudes().reingreso("Enviada");
         mockMvc.perform(put("/api/solicitudes-reingreso/actualizarEstadoSolicitud-Reingreso")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(jsonAprobacion))
-                .andExpect(result -> {
-                    int status = result.getResponse().getStatus();
-                    if (status != 204 && status != 404 && status != 500)
-                        throw new AssertionError("Expected 204, 404 or 500, got " + status);
-                });
+                        .content(cambioEstado(id, "APROBADA_FUNCIONARIO")))
+                .andExpect(status().isNoContent());
     }
 
     // ==================== FLUJO 3: EVALUACIÓN POR COORDINADOR ====================
@@ -165,22 +173,12 @@ class GestionReingresoFuncionalTest {
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON));
 
-        // Paso 3: Coordinador aprueba la solicitud (usando ID 3 que existe en BD de test)
-        String jsonAprobacion = """
-            {
-                "idSolicitud": 3,
-                "nuevoEstado": "APROBADA_COORDINADOR"
-            }
-            """;
-        
+        // Paso 3: Coordinador aprueba una solicitud ya aprobada por el funcionario
+        int id = solicitudes().reingreso("APROBADA_FUNCIONARIO");
         mockMvc.perform(put("/api/solicitudes-reingreso/actualizarEstadoSolicitud-Reingreso")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(jsonAprobacion))
-                .andExpect(result -> {
-                    int status = result.getResponse().getStatus();
-                    if (status != 204 && status != 404 && status != 500)
-                        throw new AssertionError("Expected 204, 404 or 500, got " + status);
-                });
+                        .content(cambioEstado(id, "APROBADA_COORDINADOR")))
+                .andExpect(status().isNoContent());
     }
 
     // ==================== FLUJO 4: EMISIÓN DE RESOLUCIÓN POR SECRETARIA ====================
@@ -313,42 +311,21 @@ class GestionReingresoFuncionalTest {
         mockMvc.perform(get("/api/solicitudes-reingreso/listarSolicitudes-Reingreso"))
                 .andExpect(status().isOk());
 
-        // Paso 3: Funcionario aprueba solicitud (usando ID 4 que existe en BD de test)
-        String jsonAprobacionFuncionario = """
-            {
-                "idSolicitud": 4,
-                "nuevoEstado": "APROBADA_FUNCIONARIO"
-            }
-            """;
-        
+        // Paso 3: Funcionario aprueba una solicitud recién enviada
+        int id = solicitudes().reingreso("Enviada");
         mockMvc.perform(put("/api/solicitudes-reingreso/actualizarEstadoSolicitud-Reingreso")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(jsonAprobacionFuncionario))
-                .andExpect(result -> {
-                    int status = result.getResponse().getStatus();
-                    if (status != 204 && status != 404 && status != 500)
-                        throw new AssertionError("Expected 204, 404 or 500, got " + status);
-                });
+                        .content(cambioEstado(id, "APROBADA_FUNCIONARIO")))
+                .andExpect(status().isNoContent());
 
-        // Paso 4: Coordinador aprueba solicitud (usando ID 3 que existe en BD de test)
-        String jsonAprobacionCoordinador = """
-            {
-                "idSolicitud": 3,
-                "nuevoEstado": "APROBADA_COORDINADOR"
-            }
-            """;
-        
+        // Paso 4: Coordinador aprueba la misma solicitud
         mockMvc.perform(put("/api/solicitudes-reingreso/actualizarEstadoSolicitud-Reingreso")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(jsonAprobacionCoordinador))
-                .andExpect(result -> {
-                    int status = result.getResponse().getStatus();
-                    if (status != 204 && status != 404 && status != 500)
-                        throw new AssertionError("Expected 204, 404 or 500, got " + status);
-                });
+                        .content(cambioEstado(id, "APROBADA_COORDINADOR")))
+                .andExpect(status().isNoContent());
 
-        // Paso 5: Secretaria consulta oficios disponibles (usando ID 3 que existe en BD de test)
-        mockMvc.perform(get("/api/solicitudes-reingreso/obtenerOficios/3"))
+        // Paso 5: Secretaria consulta oficios disponibles
+        mockMvc.perform(get("/api/solicitudes-reingreso/obtenerOficios/" + id))
                 .andExpect(status().isOk());
     }
 

@@ -24,7 +24,11 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.FlujoEstadosSolicitud;
+import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.validacion.ValidadorCambioEstado;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -47,6 +51,7 @@ public class SolicitudEcaesRestController {
     private final SolicitudEcaesMapperDominio solicitudMapperDominio;
     private final SolicitudMapperDominio solicitudMapper;
     private final Autorizacion autorizacion;
+    private final ValidadorCambioEstado validadorCambioEstado;
 
     @PreAuthorize("hasAnyRole('Estudiante', 'Administrador')")
     @PostMapping("/crearSolicitud-Ecaes")
@@ -172,8 +177,16 @@ public class SolicitudEcaesRestController {
 
     
     @PutMapping("/actualizarEstadoSolicitud")
-    public ResponseEntity<Void> actualizarEstadoSolicitud(@RequestBody CambioEstadoSolicitudDTOPeticion solicitudPeticion) {
+    public ResponseEntity<Map<String, Object>> actualizarEstadoSolicitud(@RequestBody CambioEstadoSolicitudDTOPeticion solicitudPeticion) {
         CambioEstadoSolicitud solicitud = solicitudMapper.mappearDeCambioEstadoSolicitudDTOPeticionACambioEstadoSolicitud(solicitudPeticion);
+        // Solo el Funcionario (o el Administrador) pre-registra o rechaza
+        String estadoActual = FlujoEstadosSolicitud.ultimoEstado(
+                solicitudEcaesCU.buscarPorId(solicitud.getIdSolicitud()).getEstadosSolicitud());
+        ResponseEntity<Map<String, Object>> rechazo = validadorCambioEstado.validar(
+                FlujoEstadosSolicitud.ECAES, estadoActual, solicitud.getNuevoEstado());
+        if (rechazo != null) {
+            return rechazo;
+        }
         solicitudEcaesCU.cambiarEstadoSolicitud(solicitud.getIdSolicitud(), solicitud.getNuevoEstado());
         return ResponseEntity.noContent().build();
     }

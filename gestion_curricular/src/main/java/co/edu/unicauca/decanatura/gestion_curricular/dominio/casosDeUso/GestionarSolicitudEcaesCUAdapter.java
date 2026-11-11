@@ -15,6 +15,7 @@ import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.Gestionar
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.GestionarPreRegistroEcaesGatewayIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.GestionarUsuarioGatewayIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.EstadoSolicitud;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.FlujoEstadosSolicitud;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.FechaEcaes;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.SolicitudEcaes;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Usuario;
@@ -131,12 +132,17 @@ public class GestionarSolicitudEcaesCUAdapter implements GestionarSolicitudEcaes
     public void cambiarEstadoSolicitud(Integer idSolicitud, String nuevoEstado) {
         // Obtener el estado anterior
         SolicitudEcaes solicitud = buscarPorId(idSolicitud);
-        String estadoAnterior = solicitud.getEstadosSolicitud() != null && !solicitud.getEstadosSolicitud().isEmpty()
-                ? solicitud.getEstadosSolicitud().get(solicitud.getEstadosSolicitud().size() - 1).getEstado_actual()
-                : "ENVIADA";
-        
+        String estadoAnterior = FlujoEstadosSolicitud.ultimoEstado(solicitud.getEstadosSolicitud());
+
+        // Solo se permiten los pasos del flujo (ver FlujoEstadosSolicitud.ECAES)
+        try {
+            FlujoEstadosSolicitud.ECAES.validarYObtenerRolResponsable(estadoAnterior, nuevoEstado);
+        } catch (IllegalArgumentException e) {
+            this.objFormateadorResultados.retornarRespuestaErrorReglaDeNegocio(e.getMessage());
+        }
+
         EstadoSolicitud nuevo = new EstadoSolicitud();
-        nuevo.setEstado_actual(nuevoEstado);
+        nuevo.setEstado_actual(FlujoEstadosSolicitud.ECAES.normalizar(nuevoEstado));
         nuevo.setFecha_registro_estado(new Date());
 
         objGestionarSolicitudEcaesGateway.cambiarEstadoSolicitudEcaes(idSolicitud, nuevo);

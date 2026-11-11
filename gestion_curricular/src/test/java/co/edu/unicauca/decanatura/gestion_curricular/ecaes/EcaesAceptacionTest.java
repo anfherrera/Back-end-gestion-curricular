@@ -10,6 +10,10 @@ import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 
+import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.repositorios.SolicitudRepositoryInt;
+import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.repositorios.UsuarioRepositoryInt;
+import co.edu.unicauca.decanatura.gestion_curricular.soporte.SolicitudesDePrueba;
+
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -45,6 +49,20 @@ class EcaesAceptacionTest {
 
     @Autowired
     private MockMvc mockMvc;
+
+    @Autowired
+    private SolicitudRepositoryInt solicitudRepository;
+
+    @Autowired
+    private UsuarioRepositoryInt usuarioRepository;
+
+    private SolicitudesDePrueba solicitudes() {
+        return new SolicitudesDePrueba(solicitudRepository, usuarioRepository);
+    }
+
+    private static String cambioEstado(int idSolicitud, String nuevoEstado) {
+        return "{\"idSolicitud\": %d, \"nuevoEstado\": \"%s\"}".formatted(idSolicitud, nuevoEstado);
+    }
 
     // ==================== HE-03-HU-01: SECRETARIO PUBLICA FECHAS ====================
 
@@ -204,12 +222,7 @@ class EcaesAceptacionTest {
          *       AND el estudiante debe poder verificar su estado de PreRegistro
          */
         
-        String jsonCambioEstado = """
-            {
-                "idSolicitud": 6,
-                "nuevoEstado": "preRegistrado"
-            }
-            """;
+        String jsonCambioEstado = cambioEstado(solicitudes().ecaes("Enviada"), "preRegistrado");
 
         // Puede ser 204 (éxito) o 404 (si la solicitud no existe) o 500 (si hay error)
         mockMvc.perform(put("/api/solicitudes-ecaes/actualizarEstadoSolicitud")

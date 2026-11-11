@@ -18,6 +18,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.validacion.ValidadorArchivoPdf;
+import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.validacion.ValidadorCambioEstado;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.FlujoEstadosSolicitud;
 
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarSolicitudReingresoCUIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarArchivosCUIntPort;
@@ -52,6 +54,7 @@ public class SolicitudReingresoRestController {
     private final SolicitudMapperDominio solicitudMapper;
     private final GestionarArchivosCUIntPort objGestionarArchivos;
     private final Autorizacion autorizacion;
+    private final ValidadorCambioEstado validadorCambioEstado;
 
     @PreAuthorize("hasAnyRole('Estudiante', 'Administrador')")
     @PostMapping("/crearSolicitud-Reingreso")
@@ -294,8 +297,16 @@ public class SolicitudReingresoRestController {
     }
 
     @PutMapping("/actualizarEstadoSolicitud-Reingreso")
-    public ResponseEntity<Void> actualizarEstadoSolicitudReingreso(@RequestBody CambioEstadoSolicitudDTOPeticion peticion) {
+    public ResponseEntity<Map<String, Object>> actualizarEstadoSolicitudReingreso(@RequestBody CambioEstadoSolicitudDTOPeticion peticion) {
         CambioEstadoSolicitud solicitud = solicitudMapper.mappearDeCambioEstadoSolicitudDTOPeticionACambioEstadoSolicitud(peticion);
+        // Solo el rol responsable del paso puede hacerlo (Funcionario → Coordinador → Secretario)
+        String estadoActual = FlujoEstadosSolicitud.ultimoEstado(
+                solicitudService.obtenerSolicitudReingresoPorId(solicitud.getIdSolicitud()).getEstadosSolicitud());
+        ResponseEntity<Map<String, Object>> rechazo = validadorCambioEstado.validar(
+                FlujoEstadosSolicitud.TRES_APROBACIONES, estadoActual, solicitud.getNuevoEstado());
+        if (rechazo != null) {
+            return rechazo;
+        }
         solicitudService.cambiarEstadoSolicitudReingreso(solicitud.getIdSolicitud(), solicitud.getNuevoEstado());
         return ResponseEntity.noContent().build();
     }

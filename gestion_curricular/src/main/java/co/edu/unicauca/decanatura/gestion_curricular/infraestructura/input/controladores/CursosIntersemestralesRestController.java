@@ -3539,7 +3539,10 @@ public class CursosIntersemestralesRestController {
             respuesta.put("observaciones", observaciones);
             
             return ResponseEntity.ok(respuesta);
-            
+
+        } catch (co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.CupoAgotadoException e) {
+            // Otro funcionario ocupó el último cupo mientras tanto
+            return respuestaCupoAgotado(e);
         } catch (Exception e) {
             log.error("Error aceptando inscripcion: {}", e.getMessage(), e);
             Map<String, Object> error = new HashMap<>();
@@ -4378,15 +4381,21 @@ public class CursosIntersemestralesRestController {
         Integer ocupados = solicitudGateway.contarInscripcionesAceptadasPorCurso(curso.getId_curso());
         int ocupadosSeguro = ocupados != null ? ocupados : 0;
         if (ocupadosSeguro >= curso.getCupo_estimado()) {
-            Map<String, Object> error = new HashMap<>();
-            error.put("error", "El curso no tiene cupos disponibles (" + ocupadosSeguro + " de "
-                    + curso.getCupo_estimado() + " ocupados)");
-            error.put("codigo", "CUPO_AGOTADO");
-            error.put("cupo", curso.getCupo_estimado());
-            error.put("ocupados", ocupadosSeguro);
-            return ResponseEntity.status(HttpStatus.CONFLICT).body(error);
+            return respuestaCupoAgotado(new co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos
+                    .CupoAgotadoException(curso.getCupo_estimado(), ocupadosSeguro));
         }
         return null;
+    }
+
+    /** 409 con código CUPO_AGOTADO. */
+    static ResponseEntity<Map<String, Object>> respuestaCupoAgotado(
+            co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.CupoAgotadoException e) {
+        Map<String, Object> error = new HashMap<>();
+        error.put("error", e.getMessage());
+        error.put("codigo", "CUPO_AGOTADO");
+        error.put("cupo", e.getCupo());
+        error.put("ocupados", e.getOcupados());
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(error);
     }
 
     /** true si el último estado de la inscripción ya ocupa un cupo del curso. */

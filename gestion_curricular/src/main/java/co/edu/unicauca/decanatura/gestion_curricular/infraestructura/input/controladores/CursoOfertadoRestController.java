@@ -318,6 +318,8 @@ public class CursoOfertadoRestController {
             respuesta.put("solicitud", solicitudActualizada);
             
             return ResponseEntity.ok(respuesta);
+        } catch (co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.CupoAgotadoException e) {
+            return CursosIntersemestralesRestController.respuestaCupoAgotado(e);
         } catch (Exception e) {
             Map<String, Object> error = new HashMap<>();
             error.put("error", "Error al validar pago: " + e.getMessage());

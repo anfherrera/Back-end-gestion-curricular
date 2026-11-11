@@ -17,11 +17,14 @@ import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.Gestionar
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.GestionarSolicitudHomologacionGatewayIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.GestionarUsuarioGatewayIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.EstadoSolicitud;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.FlujoEstadosSolicitud;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.SolicitudHomologacion;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Usuario;
 
 @Slf4j
 public class GestionarSolicitudHomologacionCUAdapter implements GestionarSolicitudHomologacionCUIntPort {
+
+    private static final FlujoEstadosSolicitud FLUJO = FlujoEstadosSolicitud.TRES_APROBACIONES;
 
     private final FormateadorResultadosIntPort objFormateadorResultados;
     private final GestionarSolicitudHomologacionGatewayIntPort objGestionarSolicitudHomologacionGateway;
@@ -207,12 +210,17 @@ public class GestionarSolicitudHomologacionCUAdapter implements GestionarSolicit
     public void cambiarEstadoSolicitud(Integer idSolicitud, String nuevoEstado) {
         // Obtener el estado anterior
         SolicitudHomologacion solicitud = buscarPorId(idSolicitud);
-        String estadoAnterior = solicitud.getEstadosSolicitud() != null && !solicitud.getEstadosSolicitud().isEmpty()
-                ? solicitud.getEstadosSolicitud().get(solicitud.getEstadosSolicitud().size() - 1).getEstado_actual()
-                : "ENVIADA";
-        
+        String estadoAnterior = FlujoEstadosSolicitud.ultimoEstado(solicitud.getEstadosSolicitud());
+
+        // Solo se permiten los pasos del flujo (ver FlujoEstadosSolicitud)
+        try {
+            FLUJO.validarYObtenerRolResponsable(estadoAnterior, nuevoEstado);
+        } catch (IllegalArgumentException e) {
+            this.objFormateadorResultados.retornarRespuestaErrorReglaDeNegocio(e.getMessage());
+        }
+
         EstadoSolicitud estado = new EstadoSolicitud();
-        estado.setEstado_actual(nuevoEstado);
+        estado.setEstado_actual(FLUJO.normalizar(nuevoEstado));
         estado.setFecha_registro_estado(new Date());
         objGestionarSolicitudHomologacionGateway.cambiarEstadoSolicitud(idSolicitud, estado);
         

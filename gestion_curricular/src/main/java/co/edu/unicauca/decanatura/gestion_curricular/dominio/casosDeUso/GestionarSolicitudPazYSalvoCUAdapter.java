@@ -254,17 +254,8 @@ public class GestionarSolicitudPazYSalvoCUAdapter implements GestionarSolicitudP
 
     /** Último estado con texto de la solicitud (ignora el registro inicial vacío). Null si no hay. */
     public static String ultimoEstado(SolicitudPazYSalvo solicitud) {
-        List<EstadoSolicitud> estados = solicitud.getEstadosSolicitud();
-        if (estados == null) {
-            return null;
-        }
-        for (int i = estados.size() - 1; i >= 0; i--) {
-            String estado = estados.get(i).getEstado_actual();
-            if (estado != null && !estado.isBlank()) {
-                return estado;
-            }
-        }
-        return null;
+        return co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.FlujoEstadosSolicitud
+                .ultimoEstado(solicitud.getEstadosSolicitud());
     }
 
     

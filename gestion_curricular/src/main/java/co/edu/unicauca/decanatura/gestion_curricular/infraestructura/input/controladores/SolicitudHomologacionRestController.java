@@ -39,6 +39,8 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.multipart.MultipartFile;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.validacion.ValidadorArchivoPdf;
+import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.validacion.ValidadorCambioEstado;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.FlujoEstadosSolicitud;
 
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarDocumentosCUIntPort;
 
@@ -59,6 +61,7 @@ public class SolicitudHomologacionRestController {
     private final GestionarArchivosCUIntPort objGestionarArchivos;
     private final GestionarDocumentosCUIntPort documentosCU;
     private final Autorizacion autorizacion;
+    private final ValidadorCambioEstado validadorCambioEstado;
     private static final String MARCADOR_OFICIO_HOMOLOGACION = "[OFICIO_HOMOLOGACION]";
 
     @PreAuthorize("hasAnyRole('Estudiante', 'Administrador')")
@@ -303,8 +306,16 @@ public class SolicitudHomologacionRestController {
     }
 
     @PutMapping("/actualizarEstadoSolicitud")
-    public ResponseEntity<Void> actualizarEstadoSolicitudHomologacion(@RequestBody CambioEstadoSolicitudDTOPeticion peticion) {
+    public ResponseEntity<Map<String, Object>> actualizarEstadoSolicitudHomologacion(@RequestBody CambioEstadoSolicitudDTOPeticion peticion) {
         CambioEstadoSolicitud solicitud = solicitudMapper.mappearDeCambioEstadoSolicitudDTOPeticionACambioEstadoSolicitud(peticion);
+        // Solo el rol responsable del paso puede hacerlo (Funcionario → Coordinador → Secretario)
+        String estadoActual = FlujoEstadosSolicitud.ultimoEstado(
+                solicitudHomologacionCU.buscarPorId(solicitud.getIdSolicitud()).getEstadosSolicitud());
+        ResponseEntity<Map<String, Object>> rechazo = validadorCambioEstado.validar(
+                FlujoEstadosSolicitud.TRES_APROBACIONES, estadoActual, solicitud.getNuevoEstado());
+        if (rechazo != null) {
+            return rechazo;
+        }
         solicitudHomologacionCU.cambiarEstadoSolicitud(solicitud.getIdSolicitud(), solicitud.getNuevoEstado());
         return ResponseEntity.noContent().build();
     }

@@ -9,7 +9,8 @@ import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarA
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarDocumentosCUIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.CambioEstadoSolicitud;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.SolicitudPazYSalvo;
-import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.TransicionEstadoPazYSalvo;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.FlujoEstadosSolicitud;
+import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.validacion.ValidadorCambioEstado;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.controladorExcepciones.excepcionesPropias.ReglaNegocioExcepcion;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Documento;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.EstadoSolicitud;
@@ -73,6 +74,7 @@ public class SolicitudPazYSalvoRestController {
     private final ObjectMapper objectMapper;
     private final GestionarUsuarioGatewayIntPort usuarioGateway;
     private final Autorizacion autorizacion;
+    private final ValidadorCambioEstado validadorCambioEstado;
 
     @PreAuthorize("hasAnyRole('Estudiante', 'Administrador')")
     @PostMapping("/crearSolicitud-PazYSalvo")
@@ -1641,27 +1643,7 @@ public ResponseEntity<DocumentosDTORespuesta> guardarOficioPazSalvo(
      */
     private ResponseEntity<Map<String, Object>> validarCambioDeEstado(Integer idSolicitud, String nuevoEstado) {
         SolicitudPazYSalvo solicitud = solicitudPazYSalvoCU.buscarPorId(idSolicitud);
-        String estadoActual = co.edu.unicauca.decanatura.gestion_curricular.dominio.casosDeUso
-                .GestionarSolicitudPazYSalvoCUAdapter.ultimoEstado(solicitud);
-
-        String rolResponsable;
-        try {
-            rolResponsable = TransicionEstadoPazYSalvo.validarYObtenerRolResponsable(estadoActual, nuevoEstado);
-        } catch (IllegalArgumentException e) {
-            Map<String, Object> error = new HashMap<>();
-            error.put("error", e.getMessage());
-            error.put("codigo", "TRANSICION_NO_PERMITIDA");
-            error.put("estadoActual", TransicionEstadoPazYSalvo.normalizar(estadoActual));
-            return ResponseEntity.badRequest().body(error);
-        }
-
-        if (!autorizacion.tieneRol(rolResponsable) && !autorizacion.tieneRol("Administrador")) {
-            Map<String, Object> error = new HashMap<>();
-            error.put("error", "Este paso le corresponde al rol " + rolResponsable);
-            error.put("codigo", "ROL_NO_AUTORIZADO");
-            error.put("estadoActual", TransicionEstadoPazYSalvo.normalizar(estadoActual));
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(error);
-        }
-        return null;
+        return validadorCambioEstado.validar(FlujoEstadosSolicitud.TRES_APROBACIONES,
+                FlujoEstadosSolicitud.ultimoEstado(solicitud.getEstadosSolicitud()), nuevoEstado);
     }
 }

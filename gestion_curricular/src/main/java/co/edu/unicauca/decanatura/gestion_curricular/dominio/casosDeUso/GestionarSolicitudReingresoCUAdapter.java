@@ -15,10 +15,13 @@ import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.Gestionar
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.GestionarSolicitudReingresoGatewayIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.GestionarUsuarioGatewayIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.EstadoSolicitud;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.FlujoEstadosSolicitud;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.SolicitudReingreso;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Usuario;
 
 public class GestionarSolicitudReingresoCUAdapter  implements GestionarSolicitudReingresoCUIntPort {
+
+    private static final FlujoEstadosSolicitud FLUJO = FlujoEstadosSolicitud.TRES_APROBACIONES;
 
     private final GestionarUsuarioGatewayIntPort objGestionarUsuarioGateway;
     private final GestionarDocumentosGatewayIntPort objGestionarDocumentosGateway;
@@ -204,12 +207,17 @@ public class GestionarSolicitudReingresoCUAdapter  implements GestionarSolicitud
     public void cambiarEstadoSolicitudReingreso(Integer idSolicitud, String nuevoEstado) {
         // Obtener el estado anterior
         SolicitudReingreso solicitud = obtenerSolicitudReingresoPorId(idSolicitud);
-        String estadoAnterior = solicitud.getEstadosSolicitud() != null && !solicitud.getEstadosSolicitud().isEmpty()
-                ? solicitud.getEstadosSolicitud().get(solicitud.getEstadosSolicitud().size() - 1).getEstado_actual()
-                : "ENVIADA";
-        
+        String estadoAnterior = FlujoEstadosSolicitud.ultimoEstado(solicitud.getEstadosSolicitud());
+
+        // Solo se permiten los pasos del flujo (ver FlujoEstadosSolicitud)
+        try {
+            FLUJO.validarYObtenerRolResponsable(estadoAnterior, nuevoEstado);
+        } catch (IllegalArgumentException e) {
+            this.objFormateadorResultados.retornarRespuestaErrorReglaDeNegocio(e.getMessage());
+        }
+
         EstadoSolicitud estado = new EstadoSolicitud();
-        estado.setEstado_actual(nuevoEstado);
+        estado.setEstado_actual(FLUJO.normalizar(nuevoEstado));
         estado.setFecha_registro_estado(new Date());
         objGestionarSolicitudReingresoGateway.cambiarEstadoSolicitudReingreso(idSolicitud, estado);
         

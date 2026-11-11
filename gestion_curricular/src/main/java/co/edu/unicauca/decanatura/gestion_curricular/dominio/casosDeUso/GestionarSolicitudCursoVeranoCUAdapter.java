@@ -351,13 +351,14 @@ public class GestionarSolicitudCursoVeranoCUAdapter implements GestionarSolicitu
                 Integer ocupados = this.objGestionarSolicitudGateway
                         .contarInscripcionesAceptadasPorCurso(solicitud.getObjCursoOfertadoVerano().getId_curso());
                 if (ocupados != null && ocupados >= cupo) {
-                    this.objFormateadorResultados.retornarRespuestaErrorReglaDeNegocio(
-                            "El curso no tiene cupos disponibles (" + ocupados + " de " + cupo + " ocupados)");
+                    throw new co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos
+                            .CupoAgotadoException(cupo, ocupados);
                 }
             }
         }
 
-        // Validar el pago
+        // Validar el pago (el gateway vuelve a contar con el curso bloqueado, por si otro
+        // funcionario aceptó una inscripción entre este conteo y el guardado)
         SolicitudCursoVeranoIncripcion solicitudActualizada = this.objGestionarSolicitudGateway.validarPago(idSolicitud, esValido, observaciones);
         
         return solicitudActualizada;

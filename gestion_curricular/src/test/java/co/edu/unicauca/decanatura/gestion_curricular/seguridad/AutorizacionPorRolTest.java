@@ -44,6 +44,7 @@ class AutorizacionPorRolTest {
     private static final String CORREO_A = "seg.estudiante.a@unicauca.edu.co";
     private static final String CORREO_B = "seg.estudiante.b@unicauca.edu.co";
     private static final String CORREO_COORDINADOR = "seg.coordinador@unicauca.edu.co";
+    private static final String CORREO_FUNCIONARIO = "seg.funcionario@unicauca.edu.co";
 
     @Autowired private MockMvc mockMvc;
     @Autowired private UsuarioRepositoryInt usuarioRepository;
@@ -166,6 +167,31 @@ class AutorizacionPorRolTest {
                 .andExpect(status().isForbidden());
     }
 
+    @Test
+    @DisplayName("Cada paso de homologación lo hace su rol: sin saltos y sin que otro rol apruebe por él")
+    void cadaPasoLoHaceSuRol() throws Exception {
+        String tokenFuncionario = "Bearer " + login(usuarioConRol(CORREO_FUNCIONARIO, "SEG-F", "Funcionario"));
+        String tokenCoordinador = "Bearer " + login(usuarioConRol(CORREO_COORDINADOR, "SEG-C", "Coordinador"));
+
+        String respuesta = mockMvc.perform(post("/api/solicitudes-homologacion/crearSolicitud-Homologacion")
+                        .header("Authorization", tokenA)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(peticionHomologacion(idA)))
+                .andExpect(status().isCreated())
+                .andReturn().getResponse().getContentAsString();
+        int id = objectMapper.readTree(respuesta).get("id_solicitud").asInt();
+
+        // El Funcionario no puede saltar directo a APROBADA
+        cambiarEstadoHomologacion(tokenFuncionario, id, "APROBADA").andExpect(status().isBadRequest());
+        // El Coordinador no puede hacer el paso del Funcionario
+        cambiarEstadoHomologacion(tokenCoordinador, id, "APROBADA_FUNCIONARIO").andExpect(status().isForbidden());
+        // El Funcionario sí
+        cambiarEstadoHomologacion(tokenFuncionario, id, "APROBADA_FUNCIONARIO").andExpect(status().isNoContent());
+        // Y el siguiente paso ya no es suyo
+        cambiarEstadoHomologacion(tokenFuncionario, id, "APROBADA_COORDINADOR").andExpect(status().isForbidden());
+        cambiarEstadoHomologacion(tokenCoordinador, id, "APROBADA_COORDINADOR").andExpect(status().isNoContent());
+    }
+
     // ==================== DUEÑO DE LA SOLICITUD ====================
 
     @Test
@@ -224,6 +250,19 @@ class AutorizacionPorRolTest {
     }
 
     // ==================== APOYO ====================
+
+    private org.springframework.test.web.servlet.ResultActions cambiarEstadoHomologacion(String token, int id,
+            String nuevoEstado) throws Exception {
+        return mockMvc.perform(put("/api/solicitudes-homologacion/actualizarEstadoSolicitud")
+                .header("Authorization", token)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("{\"idSolicitud\":%d,\"nuevoEstado\":\"%s\"}".formatted(id, nuevoEstado)));
+    }
+
+    private String usuarioConRol(String correo, String codigo, String nombreRol) {
+        crearUsuarioSiNoExiste(correo, codigo, rolRepository.buscarPorNombre(nombreRol).orElseThrow());
+        return correo;
+    }
 
     private String peticionHomologacion(int idUsuarioEnviado) {
         return """

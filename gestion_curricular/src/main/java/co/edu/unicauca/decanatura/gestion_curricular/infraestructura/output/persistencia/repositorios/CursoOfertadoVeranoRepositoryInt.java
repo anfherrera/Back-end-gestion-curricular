@@ -2,6 +2,9 @@ package co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.per
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.entidades.CursoOfertadoVeranoEntity;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Lock;
+import jakarta.persistence.LockModeType;
+import java.util.Optional;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -52,6 +55,14 @@ public interface CursoOfertadoVeranoRepositoryInt extends JpaRepository<CursoOfe
         WHERE c.id_curso = :id
     """)
     CursoOfertadoVeranoEntity findByIdConEstados(@Param("id") Integer id);
+
+    /**
+     * Bloquea la fila del curso (SELECT ... FOR UPDATE) hasta que termine la transacción.
+     * Se usa al aceptar inscripciones para que dos aceptaciones simultáneas no superen el cupo.
+     */
+    @Lock(LockModeType.PESSIMISTIC_WRITE)
+    @Query("SELECT c FROM CursoOfertadoVeranoEntity c WHERE c.id_curso = :id")
+    Optional<CursoOfertadoVeranoEntity> bloquearPorId(@Param("id") Integer id);
 
 }
 

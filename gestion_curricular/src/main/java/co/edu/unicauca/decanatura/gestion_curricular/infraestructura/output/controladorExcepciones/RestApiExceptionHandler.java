@@ -91,6 +91,14 @@ public class RestApiExceptionHandler {
                 return new ResponseEntity<>(error, HttpStatus.CONFLICT);
         }
 
+        @ExceptionHandler(co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.CupoAgotadoException.class)
+        public ResponseEntity<Error> handleCupoAgotado(final HttpServletRequest req, final RuntimeException ex) {
+                final Error error = ErrorUtils
+                                .crearError("CUPO_AGOTADO", ex.getMessage(), HttpStatus.CONFLICT.value())
+                                .setUrl(req.getRequestURL().toString()).setMetodo(req.getMethod());
+                return new ResponseEntity<>(error, HttpStatus.CONFLICT);
+        }
+
         @ExceptionHandler(org.springframework.security.access.AccessDeniedException.class)
         public ResponseEntity<Error> handleAccessDenied(final HttpServletRequest req, final Exception ex) {
                 final Error error = ErrorUtils

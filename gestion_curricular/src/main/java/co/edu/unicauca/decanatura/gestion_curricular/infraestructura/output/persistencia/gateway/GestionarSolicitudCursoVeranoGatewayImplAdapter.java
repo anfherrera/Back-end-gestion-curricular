@@ -11,6 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 import lombok.extern.slf4j.Slf4j;
 
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.GestionarSolicitudCursoVeranoGatewayIntPort;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.CupoAgotadoException;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.CursoOfertadoVerano;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Solicitud;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.SolicitudCursoVeranoIncripcion;
@@ -408,7 +409,10 @@ public class GestionarSolicitudCursoVeranoGatewayImplAdapter implements Gestiona
     }
 
     @Override
-    @Transactional
+    // READ_COMMITTED: en MySQL (REPEATABLE READ por defecto) el conteo de cupo, hecho después de
+    // bloquear el curso, leería la foto tomada al inicio de la transacción y no vería la
+    // inscripción que otro funcionario acaba de aceptar.
+    @Transactional(isolation = org.springframework.transaction.annotation.Isolation.READ_COMMITTED)
     public SolicitudCursoVeranoIncripcion validarPago(Integer idSolicitud, boolean esValido, String observaciones) {
         SolicitudEntity solicitudEntity = solicitudRepository.findById(idSolicitud)
             .filter(entity -> entity instanceof SolicitudCursoVeranoInscripcionEntity)
@@ -417,7 +421,11 @@ public class GestionarSolicitudCursoVeranoGatewayImplAdapter implements Gestiona
         if (solicitudEntity == null) {
             return null;
         }
-        
+
+        if (esValido) {
+            verificarCupoConBloqueo(solicitudEntity);
+        }
+
         // Crear nuevo estado según validación
         EstadoSolicitudEntity estadoEntity = new EstadoSolicitudEntity();
         estadoEntity.setFecha_registro_estado(new Date());
@@ -530,6 +538,38 @@ public class GestionarSolicitudCursoVeranoGatewayImplAdapter implements Gestiona
         }
 
         return inscripciones;
+    }
+
+    /**
+     * Si aceptar la inscripción ocuparía un cupo nuevo, bloquea la fila del curso y vuelve a contar
+     * dentro de esta transacción. Así, si dos funcionarios aceptan a la vez, el segundo espera al
+     * primero y ve el conteo ya actualizado.
+     *
+     * @throws CupoAgotadoException si el curso ya no tiene cupo
+     */
+    private void verificarCupoConBloqueo(SolicitudEntity inscripcion) {
+        CursoOfertadoVeranoEntity curso = inscripcion.getObjCursoOfertadoVerano();
+        if (curso == null || curso.getId_curso() == null || yaOcupaCupo(inscripcion)) {
+            return;
+        }
+        CursoOfertadoVeranoEntity bloqueado = cursoOfertadoVeranoRepository.bloquearPorId(curso.getId_curso())
+                .orElse(curso);
+        Integer cupo = bloqueado.getCupo_estimado();
+        if (cupo == null || cupo <= 0) {
+            return; // Curso sin cupo definido: no se limita
+        }
+        int ocupados = contarInscripcionesAceptadasPorCurso(bloqueado.getId_curso());
+        if (ocupados >= cupo) {
+            throw new CupoAgotadoException(cupo, ocupados);
+        }
+    }
+
+    private static boolean yaOcupaCupo(SolicitudEntity inscripcion) {
+        List<EstadoSolicitudEntity> estados = inscripcion.getEstadosSolicitud();
+        if (estados == null || estados.isEmpty()) {
+            return false;
+        }
+        return ESTADOS_INSCRIPCION_QUE_OCUPAN_CUPO.contains(estados.get(estados.size() - 1).getEstado_actual());
     }
 
     /** Estados (último estado de la inscripción) que cuentan como cupo ocupado. */
