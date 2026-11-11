@@ -281,7 +281,7 @@ public class CursoOfertadoRestController {
             
             return ResponseEntity.ok(respuesta);
         } catch (co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.CupoAgotadoException e) {
-            return CursosIntersemestralesRestController.respuestaCupoAgotado(e);
+            return SoporteCursosVerano.respuestaCupoAgotado(e);
         }
     }
 
