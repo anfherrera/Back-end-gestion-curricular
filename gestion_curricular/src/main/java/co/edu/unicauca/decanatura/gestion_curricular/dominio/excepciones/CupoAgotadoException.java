@@ -1,4 +1,4 @@
-package co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos;
+package co.edu.unicauca.decanatura.gestion_curricular.dominio.excepciones;
 
 /** El curso ya tiene todos sus cupos ocupados y no admite otra inscripción aceptada. */
 public class CupoAgotadoException extends RuntimeException {

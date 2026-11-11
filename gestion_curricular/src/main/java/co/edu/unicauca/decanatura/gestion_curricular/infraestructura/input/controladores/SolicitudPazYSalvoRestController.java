@@ -1,5 +1,7 @@
 package co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.controladores;
 
+import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.validacion.ArchivoMultipart;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -11,7 +13,7 @@ import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.CambioEstad
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.SolicitudPazYSalvo;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.FlujoEstadosSolicitud;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.validacion.ValidadorCambioEstado;
-import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.controladorExcepciones.excepcionesPropias.ReglaNegocioExcepcion;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.excepciones.ReglaNegocioExcepcion;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Documento;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.EstadoSolicitud;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.DTOPeticion.CambioEstadoSolicitudDTOPeticion;
@@ -50,8 +52,8 @@ import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.mappe
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Solicitud;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Usuario;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Enums.PeriodoAcademicoEnum;
-import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.GestionarUsuarioGatewayIntPort;
-import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.controladorExcepciones.excepcionesPropias.EntidadNoExisteException;
+import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarUsuarioCUIntPort;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.excepciones.EntidadNoExisteException;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.access.prepost.PreAuthorize;
 import co.edu.unicauca.decanatura.gestion_curricular.Security.Autorizacion;
@@ -72,7 +74,7 @@ public class SolicitudPazYSalvoRestController {
     private final DocumentosMapperDominio documentosMapperDominio;
     private final co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.formateador.DocumentGeneratorService documentGeneratorService;
     private final ObjectMapper objectMapper;
-    private final GestionarUsuarioGatewayIntPort usuarioGateway;
+    private final GestionarUsuarioCUIntPort usuarioCU;
     private final Autorizacion autorizacion;
     private final ValidadorCambioEstado validadorCambioEstado;
 
@@ -158,7 +160,7 @@ public class SolicitudPazYSalvoRestController {
         // Asegurar que el usuario esté completo (cargar desde la base de datos si solo tiene el ID)
         if (solicitud.getObjUsuario() != null && solicitud.getObjUsuario().getId_usuario() != null) {
             if (solicitud.getObjUsuario().getNombre_completo() == null || solicitud.getObjUsuario().getNombre_completo().trim().isEmpty()) {
-                Usuario usuarioCompleto = usuarioGateway.obtenerUsuarioPorId(solicitud.getObjUsuario().getId_usuario());
+                Usuario usuarioCompleto = usuarioCU.buscarUsuarioPorId(solicitud.getObjUsuario().getId_usuario()).orElse(null);
                 if (usuarioCompleto != null) {
                     solicitud.setObjUsuario(usuarioCompleto);
                 }
@@ -184,7 +186,7 @@ public class SolicitudPazYSalvoRestController {
         Integer idUsuario = Integer.valueOf(mapPeticion.get("idUsuario").toString().trim());
 
         // Cargar el usuario completo para obtener el nombre
-        Usuario usuarioCompleto = usuarioGateway.obtenerUsuarioPorId(idUsuario);
+        Usuario usuarioCompleto = usuarioCU.buscarUsuarioPorId(idUsuario).orElse(null);
         if (usuarioCompleto == null) {
             throw new EntidadNoExisteException("Usuario no encontrado con ID: " + idUsuario);
         }
@@ -661,7 +663,7 @@ public class SolicitudPazYSalvoRestController {
         
         // Obtener el usuario completo desde el gateway (igual que en construirSolicitudBasica)
         // Esto asegura que tengamos todos los datos del usuario, incluyendo la cédula
-        Usuario usuarioCompleto = usuarioGateway.obtenerUsuarioPorId(solicitud.getObjUsuario().getId_usuario());
+        Usuario usuarioCompleto = usuarioCU.buscarUsuarioPorId(solicitud.getObjUsuario().getId_usuario()).orElse(null);
         if (usuarioCompleto == null) {
             return ResponseEntity.internalServerError().build();
         }
@@ -752,7 +754,7 @@ public class SolicitudPazYSalvoRestController {
         }
         
         // Obtener el usuario completo desde el gateway para asegurar que tengamos todos los datos, incluyendo la cédula
-        Usuario usuarioCompleto = usuarioGateway.obtenerUsuarioPorId(solicitud.getObjUsuario().getId_usuario());
+        Usuario usuarioCompleto = usuarioCU.buscarUsuarioPorId(solicitud.getObjUsuario().getId_usuario()).orElse(null);
         if (usuarioCompleto == null) {
             return ResponseEntity.internalServerError().build();
         }
@@ -836,7 +838,7 @@ public class SolicitudPazYSalvoRestController {
 
         // Guardar archivo (sin ID de solicitud, se guarda en raíz para documentos huérfanos)
         // Nota: Este endpoint es para documentos sin asociar, se mantiene en raíz
-        String rutaArchivo = this.objGestionarArchivos.saveFile(file, nombreOriginal, "pdf");
+        String rutaArchivo = this.objGestionarArchivos.saveFile(ArchivoMultipart.de(file), nombreOriginal, "pdf");
         
         // Crear documento SIN asociar a solicitud (como en homologación)
         Documento doc = new Documento();
@@ -957,7 +959,7 @@ public class SolicitudPazYSalvoRestController {
         }
         
         // Obtener el usuario completo desde el gateway para asegurar que tengamos todos los datos, incluyendo la cédula
-        Usuario usuarioCompleto = usuarioGateway.obtenerUsuarioPorId(solicitud.getObjUsuario().getId_usuario());
+        Usuario usuarioCompleto = usuarioCU.buscarUsuarioPorId(solicitud.getObjUsuario().getId_usuario()).orElse(null);
         if (usuarioCompleto == null) {
             return ResponseEntity.internalServerError().build();
         }
@@ -1459,7 +1461,7 @@ public ResponseEntity<DocumentosDTORespuesta> guardarOficioPazSalvo(
     }
     
         // Guardar archivo organizado en subcarpetas
-        String rutaArchivo = this.objGestionarArchivos.saveFile(file, nombreOriginal, "docx", "pazysalvo", idSolicitud);
+        String rutaArchivo = this.objGestionarArchivos.saveFile(ArchivoMultipart.de(file), nombreOriginal, "docx", "pazysalvo", idSolicitud);
     
     // Crear documento
     Documento doc = new Documento();
@@ -1510,7 +1512,7 @@ public ResponseEntity<DocumentosDTORespuesta> guardarOficioPazSalvo(
         }
 
         // Guardar archivo organizado en subcarpetas
-        String rutaArchivo = objGestionarArchivos.saveFile(file, nombreOriginal, "pdf", "pazysalvo", idSolicitud);
+        String rutaArchivo = objGestionarArchivos.saveFile(ArchivoMultipart.de(file), nombreOriginal, "pdf", "pazysalvo", idSolicitud);
 
         // Registrar documento y asociar
         Documento documento = new Documento();

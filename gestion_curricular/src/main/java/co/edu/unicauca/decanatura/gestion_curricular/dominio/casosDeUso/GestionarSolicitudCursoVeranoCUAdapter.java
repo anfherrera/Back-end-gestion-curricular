@@ -351,7 +351,7 @@ public class GestionarSolicitudCursoVeranoCUAdapter implements GestionarSolicitu
                 Integer ocupados = this.objGestionarSolicitudGateway
                         .contarInscripcionesAceptadasPorCurso(solicitud.getObjCursoOfertadoVerano().getId_curso());
                 if (ocupados != null && ocupados >= cupo) {
-                    throw new co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos
+                    throw new co.edu.unicauca.decanatura.gestion_curricular.dominio.excepciones
                             .CupoAgotadoException(cupo, ocupados);
                 }
             }

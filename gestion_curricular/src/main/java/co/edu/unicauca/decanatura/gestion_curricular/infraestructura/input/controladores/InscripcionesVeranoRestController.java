@@ -503,7 +503,7 @@ public class InscripcionesVeranoRestController {
             
             return ResponseEntity.ok(respuesta);
 
-        } catch (co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.CupoAgotadoException e) {
+        } catch (co.edu.unicauca.decanatura.gestion_curricular.dominio.excepciones.CupoAgotadoException e) {
             // Otro funcionario ocupó el último cupo mientras tanto
             return SoporteCursosVerano.respuestaCupoAgotado(e);
         }
@@ -810,7 +810,7 @@ public class InscripcionesVeranoRestController {
         Integer ocupados = solicitudGateway.contarInscripcionesAceptadasPorCurso(curso.getId_curso());
         int ocupadosSeguro = ocupados != null ? ocupados : 0;
         if (ocupadosSeguro >= curso.getCupo_estimado()) {
-            return SoporteCursosVerano.respuestaCupoAgotado(new co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos
+            return SoporteCursosVerano.respuestaCupoAgotado(new co.edu.unicauca.decanatura.gestion_curricular.dominio.excepciones
                     .CupoAgotadoException(curso.getCupo_estimado(), ocupadosSeguro));
         }
         return null;

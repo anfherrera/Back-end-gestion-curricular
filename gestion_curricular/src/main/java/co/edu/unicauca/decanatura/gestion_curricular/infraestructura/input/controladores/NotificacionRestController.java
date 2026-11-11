@@ -18,7 +18,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarNotificacionCUIntPort;
-import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.GestionarUsuarioGatewayIntPort;
+import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarUsuarioCUIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarSolicitudCUIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Notificacion;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Usuario;
@@ -46,7 +46,7 @@ public class NotificacionRestController {
 
     private final GestionarNotificacionCUIntPort notificacionCU;
     private final NotificacionMapperDominio notificacionMapper;
-    private final GestionarUsuarioGatewayIntPort usuarioGateway;
+    private final GestionarUsuarioCUIntPort usuarioCU;
     private final GestionarSolicitudCUIntPort solicitudCU;
     private final Autorizacion autorizacion;
 
@@ -59,7 +59,7 @@ public class NotificacionRestController {
         Notificacion notificacion = notificacionMapper.mappearDeNotificacionDTOPeticionANotificacion(peticion);
         
         // Resolver usuario
-        Usuario usuario = usuarioGateway.obtenerUsuarioPorId(peticion.getIdUsuario());
+        Usuario usuario = usuarioCU.buscarUsuarioPorId(peticion.getIdUsuario()).orElse(null);
         if (usuario == null) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }

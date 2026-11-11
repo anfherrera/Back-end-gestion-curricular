@@ -2,12 +2,12 @@ package co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input;
 
 import java.nio.file.Path;
 
-import org.springframework.web.multipart.MultipartFile;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.ArchivoSubido;
 
 public interface GestionarArchivosCUIntPort {
     
 
-    String saveFile(MultipartFile file, String name, String fileType);
+    String saveFile(ArchivoSubido file, String name, String fileType);
     
     /**
      * Guarda un archivo organizado en subcarpetas por tipo de solicitud e ID
@@ -18,7 +18,7 @@ public interface GestionarArchivosCUIntPort {
      * @param idSolicitud ID de la solicitud
      * @return Ruta relativa completa del archivo (ej: "pazysalvo/solicitud_123/archivo.pdf")
      */
-    String saveFile(MultipartFile file, String name, String fileType, String tipoSolicitud, Integer idSolicitud);
+    String saveFile(ArchivoSubido file, String name, String fileType, String tipoSolicitud, Integer idSolicitud);
     
     /**
      * Obtiene un archivo por nombre o ruta (método original para retrocompatibilidad)

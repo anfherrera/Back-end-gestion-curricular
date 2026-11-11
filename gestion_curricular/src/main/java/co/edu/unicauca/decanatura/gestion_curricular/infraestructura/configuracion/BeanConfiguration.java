@@ -98,7 +98,7 @@ public class BeanConfiguration {
                                     GestionarRolGatewayIntPort objGestionarRolGateway,
                                      FormateadorResultadosIntPort objFormateadorResultados,
                                      PasswordEncoder passwordEncoder) {
-        return new GestionarUsuarioCUAdapter(objGestionarUsuarioGateway, objGestionarProgramaGateway, objGestionarRolGateway, objFormateadorResultados, passwordEncoder);
+        return new GestionarUsuarioCUAdapter(objGestionarUsuarioGateway, objGestionarProgramaGateway, objGestionarRolGateway, objFormateadorResultados, passwordEncoder::encode);
     }
 
     @Bean

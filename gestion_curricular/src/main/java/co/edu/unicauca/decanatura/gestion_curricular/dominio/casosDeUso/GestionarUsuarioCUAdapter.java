@@ -11,7 +11,7 @@ import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.Gestionar
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Programa;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Rol;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Usuario;
-import org.springframework.security.crypto.password.PasswordEncoder;
+import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.CodificadorContrasenaIntPort;
 
 public class GestionarUsuarioCUAdapter implements GestionarUsuarioCUIntPort {
 
@@ -19,18 +19,18 @@ public class GestionarUsuarioCUAdapter implements GestionarUsuarioCUIntPort {
     private final GestionarRolGatewayIntPort objGestionarRolGateway;
     private final GestionarProgramaGatewayIntPort objGestionarProgramaGateway;
     private final FormateadorResultadosIntPort objFormateadorResultados;
-    private final PasswordEncoder passwordEncoder;
+    private final CodificadorContrasenaIntPort codificadorContrasena;
 
     public GestionarUsuarioCUAdapter(GestionarUsuarioGatewayIntPort objGestionarUsuarioGateway,
                                     GestionarProgramaGatewayIntPort objGestionarProgramaGateway,
                                     GestionarRolGatewayIntPort objGestionarRolGateway,
                                      FormateadorResultadosIntPort objFormateadorResultados,
-                                     PasswordEncoder passwordEncoder) {
+                                     CodificadorContrasenaIntPort codificadorContrasena) {
         this.objGestionarUsuarioGateway = objGestionarUsuarioGateway;
         this.objGestionarProgramaGateway = objGestionarProgramaGateway;
         this.objGestionarRolGateway = objGestionarRolGateway;
         this.objFormateadorResultados = objFormateadorResultados;
-        this.passwordEncoder = passwordEncoder;
+        this.codificadorContrasena = codificadorContrasena;
     }
 
 @Override
@@ -70,7 +70,7 @@ public Usuario crearUsuario(Usuario usuario) {
     if (objRol == null) {
         this.objFormateadorResultados.retornarRespuestaErrorEntidadExiste("El rol con ID: '" + usuario.getObjRol().getId_rol() + "' no existe.");
     }
-    String passwordCodificada = passwordEncoder.encode(usuario.getPassword());
+    String passwordCodificada = codificadorContrasena.codificar(usuario.getPassword());
     usuario.setPassword(passwordCodificada);
     objRol.getUsuarios().add(usuario);
     usuario.setObjRol(objRol);
@@ -138,7 +138,7 @@ public Usuario crearUsuario(Usuario usuario) {
 
         // Manejar password: si se proporciona, codificarla; si no, mantener la existente
         if (usuario.getPassword() != null && !usuario.getPassword().trim().isEmpty()) {
-            String passwordCodificada = passwordEncoder.encode(usuario.getPassword());
+            String passwordCodificada = codificadorContrasena.codificar(usuario.getPassword());
             usuario.setPassword(passwordCodificada);
         } else {
             // Mantener la password existente
@@ -183,10 +183,19 @@ public Usuario crearUsuario(Usuario usuario) {
 
         Usuario usuario = this.objGestionarUsuarioGateway.obtenerUsuarioPorId(id_usuario);
         if (usuario == null) {
-            this.objFormateadorResultados.retornarRespuestaErrorEntidadExiste("Usuario no encontrado.");
+            this.objFormateadorResultados.retornarRespuestaErrorEntidadNoExiste(
+                    "Usuario no encontrado con ID: " + id_usuario);
         }
 
         return usuario;
+    }
+
+    @Override
+    public java.util.Optional<Usuario> buscarUsuarioPorId(Integer id_usuario) {
+        if (id_usuario == null) {
+            return java.util.Optional.empty();
+        }
+        return java.util.Optional.ofNullable(this.objGestionarUsuarioGateway.obtenerUsuarioPorId(id_usuario));
     }
 
     @Override

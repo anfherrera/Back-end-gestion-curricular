@@ -14,6 +14,7 @@ import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.Gestionar
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.GestionarEstadoSolicitudGatewayIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.GestionarSolicitudReingresoGatewayIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.GestionarUsuarioGatewayIntPort;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.excepciones.EntidadNoExisteException;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.EstadoSolicitud;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.FlujoEstadosSolicitud;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.SolicitudReingreso;
@@ -201,9 +202,8 @@ public class GestionarSolicitudReingresoCUAdapter  implements GestionarSolicitud
 
     @Override
     public SolicitudReingreso obtenerSolicitudReingresoPorId(Integer id) {
-        return objGestionarSolicitudReingresoGateway.buscarPorId(id).orElseThrow(() -> new co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output
-                .controladorExcepciones.excepcionesPropias.EntidadNoExisteException(
-                        "Solicitud de reingreso no encontrada con ID: " + id));
+        return objGestionarSolicitudReingresoGateway.buscarPorId(id).orElseThrow(() -> new EntidadNoExisteException(
+                "Solicitud de reingreso no encontrada con ID: " + id));
     }
     @Override
     public void cambiarEstadoSolicitudReingreso(Integer idSolicitud, String nuevoEstado) {

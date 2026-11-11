@@ -8,7 +8,7 @@ import java.nio.file.StandardCopyOption;
 
 import org.springframework.stereotype.Service;
 
-import org.springframework.web.multipart.MultipartFile;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.ArchivoSubido;
 
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.GestionarArchivosGatewayIntPort;
 
@@ -49,8 +49,8 @@ public class GestionarArchivosGatewayImplAdapter implements GestionarArchivosGat
 
     
     @Override
-    public String saveFile(MultipartFile file, String name, String fileType) throws IOException {
-        String extension = getFileExtension(file.getOriginalFilename());
+    public String saveFile(ArchivoSubido file, String name, String fileType) throws IOException {
+        String extension = getFileExtension(file.nombreOriginal());
         //String filename = UUID.randomUUID().toString()+ "." + extension;
         if(name == null){
             throw new IOException("nombre nulo");
@@ -66,13 +66,15 @@ public class GestionarArchivosGatewayImplAdapter implements GestionarArchivosGat
         }
 
         Path destination = resolverSeguro(filename);
-        Files.copy(file.getInputStream(), destination, StandardCopyOption.REPLACE_EXISTING);
+        try (java.io.InputStream contenido = file.contenido()) {
+            Files.copy(contenido, destination, StandardCopyOption.REPLACE_EXISTING);
+        }
         return filename;
     }
 
     @Override
-    public String saveFile(MultipartFile file, String name, String fileType, String tipoSolicitud, Integer idSolicitud) throws IOException {
-        String extension = getFileExtension(file.getOriginalFilename());
+    public String saveFile(ArchivoSubido file, String name, String fileType, String tipoSolicitud, Integer idSolicitud) throws IOException {
+        String extension = getFileExtension(file.nombreOriginal());
         
         if (name == null) {
             throw new IOException("nombre nulo");
@@ -106,7 +108,9 @@ public class GestionarArchivosGatewayImplAdapter implements GestionarArchivosGat
         
         // Guardar archivo en la subcarpeta
         Path destination = resolverSeguro(subfolder + "/" + name);
-        Files.copy(file.getInputStream(), destination, StandardCopyOption.REPLACE_EXISTING);
+        try (java.io.InputStream contenido = file.contenido()) {
+            Files.copy(contenido, destination, StandardCopyOption.REPLACE_EXISTING);
+        }
         
         // Retornar ruta relativa completa para guardar en BD
         String rutaRelativa = subfolder + "/" + name;

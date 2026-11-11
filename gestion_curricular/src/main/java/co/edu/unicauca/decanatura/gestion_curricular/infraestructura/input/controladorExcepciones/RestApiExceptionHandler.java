@@ -1,4 +1,4 @@
-package co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.controladorExcepciones;
+package co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.controladorExcepciones;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -23,13 +23,13 @@ import org.springframework.web.method.annotation.MethodArgumentTypeMismatchExcep
 import org.springframework.web.servlet.NoHandlerFoundException;
 import org.springframework.web.servlet.resource.NoResourceFoundException;
 
-import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.CupoAgotadoException;
-import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.controladorExcepciones.estructuraExcepciones.CodigoError;
-import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.controladorExcepciones.estructuraExcepciones.Error;
-import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.controladorExcepciones.estructuraExcepciones.ErrorUtils;
-import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.controladorExcepciones.excepcionesPropias.EntidadNoExisteException;
-import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.controladorExcepciones.excepcionesPropias.EntidadYaExisteException;
-import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.controladorExcepciones.excepcionesPropias.ReglaNegocioExcepcion;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.excepciones.CupoAgotadoException;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.excepciones.CodigoError;
+import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.controladorExcepciones.estructuraExcepciones.Error;
+import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.controladorExcepciones.estructuraExcepciones.ErrorUtils;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.excepciones.EntidadNoExisteException;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.excepciones.EntidadYaExisteException;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.excepciones.ReglaNegocioExcepcion;
 import lombok.extern.slf4j.Slf4j;
 
 /**

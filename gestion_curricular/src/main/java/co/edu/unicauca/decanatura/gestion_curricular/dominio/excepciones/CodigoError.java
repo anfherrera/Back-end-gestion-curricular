@@ -1,4 +1,4 @@
-package co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.controladorExcepciones.estructuraExcepciones;
+package co.edu.unicauca.decanatura.gestion_curricular.dominio.excepciones;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;

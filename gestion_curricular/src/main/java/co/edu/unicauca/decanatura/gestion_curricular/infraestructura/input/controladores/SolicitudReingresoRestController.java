@@ -1,5 +1,7 @@
 package co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.controladores;
 
+import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.validacion.ArchivoMultipart;
+
 import java.util.List;
 import java.util.Map;
 import java.util.HashMap;
@@ -474,7 +476,7 @@ public class SolicitudReingresoRestController {
 
         log.debug("Guardando archivo: {}", nombreArchivo);
         // Guardar archivo organizado en subcarpetas
-        String rutaArchivo = objGestionarArchivos.saveFile(archivo, nombreArchivo, "pdf", "reingreso", idSolicitud);
+        String rutaArchivo = objGestionarArchivos.saveFile(ArchivoMultipart.de(archivo), nombreArchivo, "pdf", "reingreso", idSolicitud);
 
         // Crear documento y asociarlo a la solicitud
         Documento documento = new Documento();

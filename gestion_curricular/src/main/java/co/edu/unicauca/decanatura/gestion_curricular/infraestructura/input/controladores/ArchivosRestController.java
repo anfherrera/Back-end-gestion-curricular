@@ -1,5 +1,7 @@
 package co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.controladores;
 
+import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.validacion.ArchivoMultipart;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -135,10 +137,10 @@ public class ArchivosRestController {
             solicitudIdUnificado != null && !solicitudIdUnificado.trim().isEmpty()) {
             try {
                 Integer idSolicitudInt = Integer.parseInt(solicitudIdUnificado);
-                nombreArchivo = this.objGestionarArchivos.saveFile(file, nombreUnico, "pdf", tipoSolicitud, idSolicitudInt);
+                nombreArchivo = this.objGestionarArchivos.saveFile(ArchivoMultipart.de(file), nombreUnico, "pdf", tipoSolicitud, idSolicitudInt);
             } catch (NumberFormatException e) {
                 // Si no se puede parsear el ID, usar método alternativo
-                nombreArchivo = this.objGestionarArchivos.saveFile(file, nombreUnico, "pdf");
+                nombreArchivo = this.objGestionarArchivos.saveFile(ArchivoMultipart.de(file), nombreUnico, "pdf");
             }
         } else if (inscripcionId != null && !inscripcionId.trim().isEmpty()) {
             // Si hay inscripcionId pero no tipoSolicitud, inferir que es curso-verano y usar organización
@@ -148,21 +150,21 @@ public class ArchivosRestController {
                 try {
                     SolicitudCursoVeranoIncripcion inscripcion = solicitudCursoVeranoCU.buscarPorIdInscripcion(idInscripcionInt);
                     if (inscripcion != null) {
-                        nombreArchivo = this.objGestionarArchivos.saveFile(file, nombreUnico, "pdf", "curso-verano", inscripcion.getId_solicitud());
+                        nombreArchivo = this.objGestionarArchivos.saveFile(ArchivoMultipart.de(file), nombreUnico, "pdf", "curso-verano", inscripcion.getId_solicitud());
                     } else {
                         // Inscripción no existe aún, guardar en raíz (se moverá después)
-                        nombreArchivo = this.objGestionarArchivos.saveFile(file, nombreUnico, "pdf");
+                        nombreArchivo = this.objGestionarArchivos.saveFile(ArchivoMultipart.de(file), nombreUnico, "pdf");
                     }
                 } catch (Exception e) {
                     // Inscripción no existe o error, guardar en raíz (se moverá después)
-                    nombreArchivo = this.objGestionarArchivos.saveFile(file, nombreUnico, "pdf");
+                    nombreArchivo = this.objGestionarArchivos.saveFile(ArchivoMultipart.de(file), nombreUnico, "pdf");
                 }
             } catch (NumberFormatException e) {
-                nombreArchivo = this.objGestionarArchivos.saveFile(file, nombreUnico, "pdf");
+                nombreArchivo = this.objGestionarArchivos.saveFile(ArchivoMultipart.de(file), nombreUnico, "pdf");
             }
         } else {
             // Si no hay tipoSolicitud ni inscripcionId, guardar en raíz (retrocompatibilidad)
-            nombreArchivo = this.objGestionarArchivos.saveFile(file, nombreUnico, "pdf");
+            nombreArchivo = this.objGestionarArchivos.saveFile(ArchivoMultipart.de(file), nombreUnico, "pdf");
         }
         
         boolean documentoGuardadoEnBD = false;

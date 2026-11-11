@@ -62,7 +62,7 @@ final class SoporteCursosVerano {
 
     /** 409 con código CUPO_AGOTADO. */
     static ResponseEntity<Map<String, Object>> respuestaCupoAgotado(
-            co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.CupoAgotadoException e) {
+            co.edu.unicauca.decanatura.gestion_curricular.dominio.excepciones.CupoAgotadoException e) {
         Map<String, Object> error = new HashMap<>();
         error.put("error", e.getMessage());
         error.put("codigo", "CUPO_AGOTADO");

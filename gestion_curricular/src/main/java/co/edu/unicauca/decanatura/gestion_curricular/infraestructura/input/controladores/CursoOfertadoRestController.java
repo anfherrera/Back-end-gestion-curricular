@@ -280,7 +280,7 @@ public class CursoOfertadoRestController {
             respuesta.put("solicitud", solicitudActualizada);
             
             return ResponseEntity.ok(respuesta);
-        } catch (co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.CupoAgotadoException e) {
+        } catch (co.edu.unicauca.decanatura.gestion_curricular.dominio.excepciones.CupoAgotadoException e) {
             return SoporteCursosVerano.respuestaCupoAgotado(e);
         }
     }

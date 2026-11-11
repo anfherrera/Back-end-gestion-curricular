@@ -1,5 +1,7 @@
 package co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.controladores;
 
+import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.validacion.ArchivoMultipart;
+
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -523,7 +525,7 @@ public class SolicitudHomologacionRestController {
             return ResponseEntity.status(rechazo.estado()).body(Map.of("error", rechazo.mensaje()));
         }
         String nombreOriginal = file.getOriginalFilename();
-        String rutaArchivo = objGestionarArchivos.saveFile(file, nombreOriginal, "pdf", "homologacion", idSolicitud);
+        String rutaArchivo = objGestionarArchivos.saveFile(ArchivoMultipart.de(file), nombreOriginal, "pdf", "homologacion", idSolicitud);
         String nombreArchivo = rutaArchivo.contains("/") ? rutaArchivo.substring(rutaArchivo.lastIndexOf("/") + 1) : rutaArchivo;
 
         Documento documento = new Documento();

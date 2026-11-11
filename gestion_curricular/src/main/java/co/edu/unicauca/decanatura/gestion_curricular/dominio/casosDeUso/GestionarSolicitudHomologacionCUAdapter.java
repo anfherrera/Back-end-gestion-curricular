@@ -16,6 +16,7 @@ import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.Gestionar
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.GestionarEstadoSolicitudGatewayIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.GestionarSolicitudHomologacionGatewayIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.GestionarUsuarioGatewayIntPort;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.excepciones.EntidadNoExisteException;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.EstadoSolicitud;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.FlujoEstadosSolicitud;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.SolicitudHomologacion;
@@ -203,9 +204,8 @@ public class GestionarSolicitudHomologacionCUAdapter implements GestionarSolicit
     @Override
     public SolicitudHomologacion buscarPorId(Integer idSolicitud) {
         return objGestionarSolicitudHomologacionGateway.buscarPorId(idSolicitud).
-        orElseThrow(() -> new co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output
-                .controladorExcepciones.excepcionesPropias.EntidadNoExisteException(
-                        "Solicitud de homologación no encontrada con ID: " + idSolicitud));
+        orElseThrow(() -> new EntidadNoExisteException(
+                "Solicitud de homologación no encontrada con ID: " + idSolicitud));
     }
 
     @Override
