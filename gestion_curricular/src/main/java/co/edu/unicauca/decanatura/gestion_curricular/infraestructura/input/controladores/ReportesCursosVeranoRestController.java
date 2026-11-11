@@ -15,7 +15,6 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarCursoOfertadoVeranoCUIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarSolicitudCursoVeranoCUIntPort;
-import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.GestionarSolicitudCursoVeranoGatewayIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.CursoOfertadoVerano;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.SolicitudCursoVeranoPreinscripcion;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.SolicitudCursoVeranoIncripcion;
@@ -41,7 +40,6 @@ public class ReportesCursosVeranoRestController {
 
     private final GestionarCursoOfertadoVeranoCUIntPort cursoCU;
     private final GestionarSolicitudCursoVeranoCUIntPort solicitudCU;
-    private final GestionarSolicitudCursoVeranoGatewayIntPort solicitudGateway;
     private final GestionarSolicitudCUIntPort solicitudGeneralCU;
     private final GeneradorExcelSolicitudesVerano generadorExcel;
 
@@ -566,7 +564,7 @@ public class ReportesCursosVeranoRestController {
         
         try {
             // Obtener inscripciones reales de la base de datos
-            List<SolicitudCursoVeranoIncripcion> inscripcionesReales = solicitudGateway.buscarInscripcionesPorUsuario(idUsuario);
+            List<SolicitudCursoVeranoIncripcion> inscripcionesReales = solicitudCU.buscarInscripcionesPorUsuario(idUsuario);
             
             for (SolicitudCursoVeranoIncripcion inscripcion : inscripcionesReales) {
                 Map<String, Object> inscripcionMap = new HashMap<>();

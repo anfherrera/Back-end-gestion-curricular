@@ -11,7 +11,6 @@ import lombok.extern.slf4j.Slf4j;
 import java.util.Date;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarCursoOfertadoVeranoCUIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarSolicitudCursoVeranoCUIntPort;
-import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.GestionarSolicitudCursoVeranoGatewayIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.CursoOfertadoVerano;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.SolicitudCursoVeranoPreinscripcion;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.SolicitudCursoVeranoIncripcion;
@@ -23,7 +22,6 @@ import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.DTOPe
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarSolicitudCUIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.EstadoSolicitud;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarArchivosCUIntPort;
-import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarDocumentosCUIntPort;
 import java.util.List;
 import java.util.Map;
 import java.util.HashMap;
@@ -42,9 +40,7 @@ public class InscripcionesVeranoRestController {
 
     private final GestionarCursoOfertadoVeranoCUIntPort cursoCU;
     private final GestionarSolicitudCursoVeranoCUIntPort solicitudCU;
-    private final GestionarSolicitudCursoVeranoGatewayIntPort solicitudGateway;
     private final GestionarArchivosCUIntPort objGestionarArchivos;
-    private final GestionarDocumentosCUIntPort documentosCU;
     private final GestionarSolicitudCUIntPort solicitudGeneralCU;
 
     /**
@@ -60,7 +56,7 @@ public class InscripcionesVeranoRestController {
         // Buscar preinscripcion aprobada usando consulta especifica
         
         // Primero intentar buscar directamente por usuario y curso
-        Solicitud preinscripcionExistente = solicitudGateway.buscarSolicitudesPorUsuarioYCursoPre(peticion.getIdUsuario(), peticion.getIdCurso());
+        Solicitud preinscripcionExistente = solicitudCU.buscarPreinscripcionPorUsuarioYCurso(peticion.getIdUsuario(), peticion.getIdCurso());
         
         SolicitudCursoVeranoPreinscripcion preinscripcionAprobada = null;
         
@@ -124,7 +120,7 @@ public class InscripcionesVeranoRestController {
         // 1.5. VALIDACIONES DE SEGURIDAD
         
         // Validacion 1: Verificar que no tenga una inscripcion activa para este curso
-        List<SolicitudCursoVeranoIncripcion> inscripcionesExistentes = solicitudGateway.buscarInscripcionesPorUsuarioYCurso(
+        List<SolicitudCursoVeranoIncripcion> inscripcionesExistentes = solicitudCU.buscarInscripcionesPorUsuarioYCurso(
             peticion.getIdUsuario(), peticion.getIdCurso()
         );
         
@@ -168,7 +164,7 @@ public class InscripcionesVeranoRestController {
         nuevaInscripcion.setCodicion_solicitud(CondicionSolicitudVerano.Primera_Vez); // Valor por defecto
         
         // 3. Guardar la inscripcion en la base de datos
-        SolicitudCursoVeranoIncripcion inscripcionGuardada = solicitudGateway.crearSolicitudCursoVeranoInscripcion(nuevaInscripcion);
+        SolicitudCursoVeranoIncripcion inscripcionGuardada = solicitudCU.crearSolicitudCursoVeranoInscripcion(nuevaInscripcion);
         
         if (inscripcionGuardada == null || inscripcionGuardada.getId_solicitud() == null) {
             Map<String, Object> error = new HashMap<>();
@@ -176,15 +172,7 @@ public class InscripcionesVeranoRestController {
             return ResponseEntity.internalServerError().body(error);
         }
         
-        // 4. Asociar documentos sin solicitud a la inscripcion recien creada y moverlos a carpeta organizada
-        try {
-            Integer idDueno = inscripcionGuardada.getObjUsuario() != null
-                ? inscripcionGuardada.getObjUsuario().getId_usuario() : null;
-            documentosCU.asociarDocumentosPendientes(inscripcionGuardada, idDueno, "curso-verano");
-        } catch (Exception e) {
-            log.error("Error asociando documentos: {}", e.getMessage(), e);
-            // No fallar la operacion por esto
-        }
+        // Los documentos pendientes (comprobante) los asocia el caso de uso al crear la inscripción
         
         // 5. Asociar estudiante al curso en la tabla de relacion
         try {
@@ -265,7 +253,7 @@ public class InscripcionesVeranoRestController {
     public ResponseEntity<List<Map<String, Object>>> obtenerInscripcionesReales(@PathVariable Integer id_usuario) {
         
         // Consultar las inscripciones guardadas en la base de datos
-        List<SolicitudCursoVeranoIncripcion> inscripcionesUsuario = solicitudGateway.buscarInscripcionesPorUsuario(id_usuario);
+        List<SolicitudCursoVeranoIncripcion> inscripcionesUsuario = solicitudCU.buscarInscripcionesPorUsuario(id_usuario);
 
         List<Map<String, Object>> inscripciones = inscripcionesUsuario.stream().map(solicitud -> {
             Map<String, Object> inscripcion = new HashMap<>();
@@ -467,7 +455,7 @@ public class InscripcionesVeranoRestController {
             }
 
             // 3. Validar pago de la inscripcion (marcar como aceptada)
-            SolicitudCursoVeranoIncripcion inscripcionAceptada = solicitudGateway.validarPago(
+            SolicitudCursoVeranoIncripcion inscripcionAceptada = solicitudCU.validarPago(
                 inscripcion.getId_solicitud(), 
                 true, 
                 observaciones
@@ -696,9 +684,9 @@ public class InscripcionesVeranoRestController {
         Map<String, Object> estadisticas = new HashMap<>();
         
         // Contar inscripciones por estado con logging detallado
-        Integer pendientes = solicitudGateway.contarInscripcionesPorEstado(idCurso.intValue(), "Enviada");
-        Integer aceptadas = solicitudGateway.contarInscripcionesPorEstado(idCurso.intValue(), "Pago_Validado");
-        Integer rechazadas = solicitudGateway.contarInscripcionesPorEstado(idCurso.intValue(), "Pago_Rechazado");
+        Integer pendientes = solicitudCU.contarInscripcionesPorEstado(idCurso.intValue(), "Enviada");
+        Integer aceptadas = solicitudCU.contarInscripcionesPorEstado(idCurso.intValue(), "Pago_Validado");
+        Integer rechazadas = solicitudCU.contarInscripcionesPorEstado(idCurso.intValue(), "Pago_Rechazado");
         
         
         Integer totalInscripciones = pendientes + aceptadas + rechazadas;
@@ -807,7 +795,7 @@ public class InscripcionesVeranoRestController {
                 || curso.getCupo_estimado() <= 0) {
             return null; // Curso sin cupo definido: no se limita
         }
-        Integer ocupados = solicitudGateway.contarInscripcionesAceptadasPorCurso(curso.getId_curso());
+        Integer ocupados = solicitudCU.contarInscripcionesAceptadasPorCurso(curso.getId_curso());
         int ocupadosSeguro = ocupados != null ? ocupados : 0;
         if (ocupadosSeguro >= curso.getCupo_estimado()) {
             return SoporteCursosVerano.respuestaCupoAgotado(new co.edu.unicauca.decanatura.gestion_curricular.dominio.excepciones

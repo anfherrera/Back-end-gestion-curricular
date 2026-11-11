@@ -9,7 +9,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import java.util.Date;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarSolicitudCursoVeranoCUIntPort;
-import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.GestionarSolicitudCursoVeranoGatewayIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.CursoOfertadoVerano;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.SolicitudCursoVeranoPreinscripcion;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Usuario;
@@ -40,7 +39,6 @@ import java.util.stream.Collectors;
 public class PreinscripcionesVeranoRestController {
 
     private final GestionarSolicitudCursoVeranoCUIntPort solicitudCU;
-    private final GestionarSolicitudCursoVeranoGatewayIntPort solicitudGateway;
     private final CursosOfertadosMapperDominio cursoMapper;
     private final SolicitudCursoDeVeranoPreinscripcionMapperDominio solicitudMapper;
 
@@ -255,7 +253,7 @@ public class PreinscripcionesVeranoRestController {
 
         
         // Verificar si ya existe una preinscripcion para este usuario y curso
-        Solicitud preinscripcionExistente = solicitudGateway.buscarSolicitudesPorUsuarioYCursoPre(peticion.getIdUsuario(), peticion.getIdCurso());
+        Solicitud preinscripcionExistente = solicitudCU.buscarPreinscripcionPorUsuarioYCurso(peticion.getIdUsuario(), peticion.getIdCurso());
         
         if (preinscripcionExistente != null) {
             Map<String, Object> error = new HashMap<>();
@@ -266,7 +264,7 @@ public class PreinscripcionesVeranoRestController {
         
 
         // Llamar al gateway directamente para guardar en la base de datos
-        SolicitudCursoVeranoPreinscripcion solicitudGuardada = solicitudGateway.crearSolicitudCursoVeranoPreinscripcion(solicitudDominio);
+        SolicitudCursoVeranoPreinscripcion solicitudGuardada = solicitudCU.crearSolicitudCursoVeranoPreinscripcion(solicitudDominio);
 
         // Crear respuesta JSON con la estructura esperada
         Map<String, Object> respuesta = new HashMap<>();
@@ -406,7 +404,7 @@ public class PreinscripcionesVeranoRestController {
         
         // Actualizar las observaciones directamente usando el gateway de solicitudes de curso verano
         solicitud.setObservacion(observaciones);
-        SolicitudCursoVeranoPreinscripcion solicitudActualizada = solicitudGateway.actualizarSolicitudCursoVerano(solicitud);
+        SolicitudCursoVeranoPreinscripcion solicitudActualizada = solicitudCU.actualizarObservacionesPreinscripcion(solicitud);
         
         Map<String, Object> respuesta = new HashMap<>();
         respuesta.put("message", "Observaciones actualizadas exitosamente");
