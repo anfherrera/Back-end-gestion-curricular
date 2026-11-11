@@ -5,6 +5,7 @@ import java.util.Arrays;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
@@ -72,8 +73,12 @@ public class SeguridadConfig {
                 ).permitAll()
                 // Permitir acceso a login sin autenticación
                 .requestMatchers("/api/usuarios/login").permitAll()
-                // Permitir acceso a estadísticas sin autenticación (compatible con despliegue actual)
-                .requestMatchers("/api/estadisticas/**").permitAll()
+                // Estadísticas: modificar solo Administrador; consultar/exportar solo roles administrativos
+                .requestMatchers(HttpMethod.POST, "/api/estadisticas/crear").hasRole("Administrador")
+                .requestMatchers(HttpMethod.PUT, "/api/estadisticas/**").hasRole("Administrador")
+                .requestMatchers(HttpMethod.DELETE, "/api/estadisticas/**").hasRole("Administrador")
+                .requestMatchers("/api/estadisticas/**")
+                    .hasAnyRole("Administrador", "Funcionario", "Coordinador", "Secretario", "Decano")
                 // Todos los demás endpoints requieren autenticación
                 .anyRequest().authenticated()
             )
@@ -88,8 +93,7 @@ public class SeguridadConfig {
         CorsConfiguration configuration = new CorsConfiguration();
         configuration.setAllowedOriginPatterns(Arrays.asList(
             "http://localhost:4200",
-            "https://front-end-gestion-curricular.vercel.app",
-            "https://*.vercel.app"
+            "https://front-end-gestion-curricular.vercel.app"
         ));
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         configuration.setAllowedHeaders(Arrays.asList("*"));

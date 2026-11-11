@@ -42,6 +42,7 @@ public class GestionarSolicitudPazYSalvoGatewayImplAdapter implements GestionarS
 
         // Crear estado inicial
         EstadoSolicitudEntity estadoSolicitudEntity = new EstadoSolicitudEntity();
+        estadoSolicitudEntity.setEstado_actual("Enviada"); // antes quedaba vacío y el caso de uso agregaba un segundo estado
         estadoSolicitudEntity.setFecha_registro_estado(new Date());
         estadoSolicitudEntity.setObjSolicitud(entity);
 

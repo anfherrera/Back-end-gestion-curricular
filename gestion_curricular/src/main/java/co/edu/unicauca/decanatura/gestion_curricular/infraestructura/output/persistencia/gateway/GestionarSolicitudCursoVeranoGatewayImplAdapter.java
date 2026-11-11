@@ -532,10 +532,20 @@ public class GestionarSolicitudCursoVeranoGatewayImplAdapter implements Gestiona
         return inscripciones;
     }
 
+    /** Estados (último estado de la inscripción) que cuentan como cupo ocupado. */
+    public static final java.util.List<String> ESTADOS_INSCRIPCION_QUE_OCUPAN_CUPO =
+            java.util.List.of("Pago_Validado", "Inscripcion_Completada", "APROBADA", "Aprobada", "Aprobado");
+
     @Override
     @Transactional(readOnly = true)
     public Integer contarInscripcionesAceptadasPorCurso(Integer idCurso) {
-        return solicitudRepository.contarInscripcionesPorEstado(idCurso, "Pago_Validado");
+        // Ocupan cupo las inscripciones aceptadas: pago validado, completadas o marcadas como aprobadas
+        int total = 0;
+        for (String estado : ESTADOS_INSCRIPCION_QUE_OCUPAN_CUPO) {
+            Integer n = solicitudRepository.contarInscripcionesPorEstado(idCurso, estado);
+            total += n != null ? n : 0;
+        }
+        return total;
     }
 
     @Override

@@ -7,6 +7,8 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.security.test.context.support.WithAnonymousUser;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -20,12 +22,38 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest
 @AutoConfigureMockMvc
 @ActiveProfiles("test")
+@WithMockUser(roles = "Coordinador")
 @Transactional
 @DisplayName("Pruebas de Integración - REST API Estadísticas")
 class EstadisticasIntegracionTest {
 
     @Autowired
     private MockMvc mockMvc;
+
+    @Test
+    @WithAnonymousUser
+    @DisplayName("Seguridad: sin iniciar sesión no se pueden consultar estadísticas")
+    void testEstadisticasSinAutenticacionRechazadas() throws Exception {
+        mockMvc.perform(get("/api/estadisticas/globales"))
+                .andExpect(status().is4xxClientError());
+        mockMvc.perform(get("/api/estadisticas/export/excel"))
+                .andExpect(status().is4xxClientError());
+    }
+
+    @Test
+    @WithMockUser(roles = "Estudiante")
+    @DisplayName("Seguridad: un estudiante no puede consultar estadísticas")
+    void testEstadisticasEstudianteRechazado() throws Exception {
+        mockMvc.perform(get("/api/estadisticas/globales"))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    @DisplayName("Seguridad: solo el Administrador puede eliminar estadísticas")
+    void testEliminarEstadisticaRequiereAdministrador() throws Exception {
+        mockMvc.perform(delete("/api/estadisticas/eliminar/1"))
+                .andExpect(status().isForbidden());
+    }
 
     @Test
     @DisplayName("Test 1: Obtener estadísticas globales retorna 200 OK")
@@ -111,7 +139,8 @@ class EstadisticasIntegracionTest {
         mockMvc.perform(get("/api/estadisticas/export/excel"))
                 .andExpect(status().isOk())
                 .andExpect(header().exists("Content-Disposition"))
-                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_OCTET_STREAM));
+                .andExpect(content().contentTypeCompatibleWith(
+                        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"));
     }
 
     @Test

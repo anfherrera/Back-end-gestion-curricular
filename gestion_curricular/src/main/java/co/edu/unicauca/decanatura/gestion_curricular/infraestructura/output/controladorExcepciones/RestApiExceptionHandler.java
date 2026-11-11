@@ -91,6 +91,25 @@ public class RestApiExceptionHandler {
                 return new ResponseEntity<>(error, HttpStatus.CONFLICT);
         }
 
+        @ExceptionHandler(org.springframework.security.access.AccessDeniedException.class)
+        public ResponseEntity<Error> handleAccessDenied(final HttpServletRequest req, final Exception ex) {
+                final Error error = ErrorUtils
+                                .crearError("GC-0403", "Acceso denegado: no tiene permisos para este recurso",
+                                                HttpStatus.FORBIDDEN.value())
+                                .setUrl(req.getRequestURL().toString()).setMetodo(req.getMethod());
+                return new ResponseEntity<>(error, HttpStatus.FORBIDDEN);
+        }
+
+        @ExceptionHandler({ org.springframework.web.servlet.resource.NoResourceFoundException.class,
+                        org.springframework.web.servlet.NoHandlerFoundException.class })
+        public ResponseEntity<Error> handleRutaNoExiste(final HttpServletRequest req, final Exception ex) {
+                final Error error = ErrorUtils
+                                .crearError("GC-0404", "El recurso solicitado no existe",
+                                                HttpStatus.NOT_FOUND.value())
+                                .setUrl(req.getRequestURL().toString()).setMetodo(req.getMethod());
+                return new ResponseEntity<>(error, HttpStatus.NOT_FOUND);
+        }
+
         @ExceptionHandler(Exception.class)
         @Order(Ordered.LOWEST_PRECEDENCE)
         public ResponseEntity<Error> handleGenericException(final HttpServletRequest req,

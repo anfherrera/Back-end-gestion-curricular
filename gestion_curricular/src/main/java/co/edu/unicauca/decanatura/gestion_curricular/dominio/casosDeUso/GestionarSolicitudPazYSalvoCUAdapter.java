@@ -15,6 +15,7 @@ import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.Gestionar
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Documento;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.EstadoSolicitud;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.SolicitudPazYSalvo;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.TransicionEstadoPazYSalvo;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Usuario;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.controladorExcepciones.excepcionesPropias.EntidadNoExisteException;
 
@@ -60,6 +61,14 @@ public class GestionarSolicitudPazYSalvoCUAdapter implements GestionarSolicitudP
             formateadorResultados.retornarRespuestaErrorEntidadExiste("Usuario no encontrado");
         }
 
+        // Un estudiante solo puede tener una solicitud de Paz y Salvo en trámite a la vez
+        boolean tieneSolicitudActiva = listarSolicitudesPorRol("ESTUDIANTE", usuario.getId_usuario()).stream()
+                .anyMatch(s -> !TransicionEstadoPazYSalvo.esFinal(ultimoEstado(s)));
+        if (tieneSolicitudActiva) {
+            formateadorResultados.retornarRespuestaErrorReglaDeNegocio(
+                    "Ya tiene una solicitud de Paz y Salvo en trámite. Debe esperar a que sea aprobada o rechazada.");
+        }
+
         // Guardar solicitud
         SolicitudPazYSalvo solicitudGuardada = solicitudGateway.guardar(solicitud);
 
@@ -86,17 +95,23 @@ public class GestionarSolicitudPazYSalvoCUAdapter implements GestionarSolicitudP
             documentosGateway.actualizarDocumento(doc);
         }
 
-        // Crear estado inicial
-        EstadoSolicitud estadoInicial = new EstadoSolicitud();
-        estadoInicial.setEstado_actual("Enviada");
-        estadoInicial.setFecha_registro_estado(new Date());
-        estadoInicial.setObjSolicitud(solicitudGuardada);
+        // Estado inicial "Enviada": el gateway ya lo crea al guardar; solo se agrega si falta,
+        // para no dejar dos estados iniciales.
+        boolean yaTieneEstadoInicial = solicitudGuardada.getEstadosSolicitud() != null
+                && solicitudGuardada.getEstadosSolicitud().stream()
+                        .anyMatch(e -> e.getEstado_actual() != null && !e.getEstado_actual().isBlank());
+        if (!yaTieneEstadoInicial) {
+            EstadoSolicitud estadoInicial = new EstadoSolicitud();
+            estadoInicial.setEstado_actual("Enviada");
+            estadoInicial.setFecha_registro_estado(new Date());
+            estadoInicial.setObjSolicitud(solicitudGuardada);
 
-        if (solicitudGuardada.getEstadosSolicitud() == null) {
-            solicitudGuardada.setEstadosSolicitud(new ArrayList<>());
+            if (solicitudGuardada.getEstadosSolicitud() == null) {
+                solicitudGuardada.setEstadosSolicitud(new ArrayList<>());
+            }
+            solicitudGuardada.getEstadosSolicitud().add(estadoInicial);
+            estadoSolicitudGateway.guarEstadoSolicitud(estadoInicial);
         }
-        solicitudGuardada.getEstadosSolicitud().add(estadoInicial);
-        estadoSolicitudGateway.guarEstadoSolicitud(estadoInicial);
 
         // Asociar solicitud al usuario
         usuario.getSolicitudes().add(solicitudGuardada);
@@ -231,12 +246,17 @@ public class GestionarSolicitudPazYSalvoCUAdapter implements GestionarSolicitudP
     public void cambiarEstadoSolicitud(Integer idSolicitud, String nuevoEstado, String comentario) {
         // Obtener el estado anterior
         SolicitudPazYSalvo solicitud = buscarPorId(idSolicitud);
-        String estadoAnterior = solicitud.getEstadosSolicitud() != null && !solicitud.getEstadosSolicitud().isEmpty()
-                ? solicitud.getEstadosSolicitud().get(solicitud.getEstadosSolicitud().size() - 1).getEstado_actual()
-                : "ENVIADA";
-        
+        String estadoAnterior = ultimoEstado(solicitud);
+
+        // Solo se permiten los pasos del flujo (ver TransicionEstadoPazYSalvo)
+        try {
+            TransicionEstadoPazYSalvo.validarYObtenerRolResponsable(estadoAnterior, nuevoEstado);
+        } catch (IllegalArgumentException e) {
+            formateadorResultados.retornarRespuestaErrorReglaDeNegocio(e.getMessage());
+        }
+
         EstadoSolicitud estado = new EstadoSolicitud();
-        estado.setEstado_actual(nuevoEstado);
+        estado.setEstado_actual(TransicionEstadoPazYSalvo.normalizar(nuevoEstado));
         estado.setFecha_registro_estado(new Date());
         // Establecer el comentario si se proporciona
         if (comentario != null && !comentario.trim().isEmpty()) {
@@ -250,6 +270,21 @@ public class GestionarSolicitudPazYSalvoCUAdapter implements GestionarSolicitudP
             this.objGestionarNotificacionCU.notificarCambioEstadoSolicitud(solicitud, estadoAnterior, nuevoEstado, "PAZ_Y_SALVO");
         } catch (Exception e) {
         }
+    }
+
+    /** Último estado con texto de la solicitud (ignora el registro inicial vacío). Null si no hay. */
+    public static String ultimoEstado(SolicitudPazYSalvo solicitud) {
+        List<EstadoSolicitud> estados = solicitud.getEstadosSolicitud();
+        if (estados == null) {
+            return null;
+        }
+        for (int i = estados.size() - 1; i >= 0; i--) {
+            String estado = estados.get(i).getEstado_actual();
+            if (estado != null && !estado.isBlank()) {
+                return estado;
+            }
+        }
+        return null;
     }
 
     

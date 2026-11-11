@@ -44,6 +44,10 @@ public class GestionarEstadisticasGatewayImplAdapter implements GestionarEstadis
     private final UsuarioRepositoryInt usuarioRepository;
     private final ModelMapper estadisticaMapper;
 
+    /** Costo de referencia por docente para estimar la inversión de un curso de verano (COP). */
+    @org.springframework.beans.factory.annotation.Value("${app.estadisticas.costo-docente-curso-verano:3000000}")
+    private long costoReferenciaDocenteCursoVerano = 3_000_000L;
+
     public GestionarEstadisticasGatewayImplAdapter(EstadisticaRepositoryInt estadisticaRepository, ProgramaRepositoryInt programaRepository, SolicitudRepositoryInt solicitudRepository, UsuarioRepositoryInt usuarioRepository, ModelMapper estadisticaMapper) {
         this.estadisticaRepository = estadisticaRepository;
         this.programaRepository = programaRepository;
@@ -315,9 +319,12 @@ public class GestionarEstadisticasGatewayImplAdapter implements GestionarEstadis
                     boolean cumpleFiltros = true;
                     
                     String nombreSolicitud = solicitud.getNombre_solicitud();
-                    if (proceso != null && nombreSolicitud != null && 
-                        !nombreSolicitud.toLowerCase().contains(proceso.toLowerCase())) {
-                        cumpleFiltros = false;
+                    if (proceso != null) {
+                        String procesoBuscado = TipoProcesoSolicitud.porNombre(proceso);
+                        String procesoSolicitud = obtenerNombreProcesoPorSolicitud(solicitud);
+                        if (procesoBuscado == null || !procesoBuscado.equals(procesoSolicitud)) {
+                            cumpleFiltros = false;
+                        }
                     }
                     // Si hay filtro de proceso pero la solicitud no tiene nombre, excluirla
                     if (proceso != null && nombreSolicitud == null) {
@@ -342,7 +349,7 @@ public class GestionarEstadisticasGatewayImplAdapter implements GestionarEstadis
                     
                     if (cumpleFiltros && nombreSolicitud != null) {
                         try {
-                            String tipoProceso = extraerTipoProceso(nombreSolicitud);
+                            String tipoProceso = obtenerNombreProcesoPorSolicitud(solicitud);
                             if (tipoProceso != null && !tipoProceso.trim().isEmpty()) {
                                 porTipoProceso.put(tipoProceso, porTipoProceso.getOrDefault(tipoProceso, 0) + 1);
                             }
@@ -1540,7 +1547,7 @@ public class GestionarEstadisticasGatewayImplAdapter implements GestionarEstadis
                 List<Date> fechas = fechasPorProceso.get(proceso);
                 String tendencia = "Estable";
                 if (fechas.size() >= 2) {
-                    // Simular analisis de tendencia basado en distribucion de fechas
+                    // Tendencia real: solicitudes de los ultimos 90 dias frente a las anteriores
                     long fechasRecientes = fechas.stream()
                         .filter(fecha -> fecha.after(new Date(System.currentTimeMillis() - 90L * 24 * 60 * 60 * 1000)))
                         .count();
@@ -1624,7 +1631,7 @@ public class GestionarEstadisticasGatewayImplAdapter implements GestionarEstadis
             return "Solicitudes de homologacion de materias";
         } else if (nombreProceso.contains("ECAES")) {
             return "Solicitudes de inscripcion a examenes ECAES";
-        } else if (nombreProceso.contains("Curso Verano")) {
+        } else if (nombreProceso.contains("Verano")) {
             return "Solicitudes de cursos intersemestrales/verano";
         } else if (nombreProceso.contains("Paz y Salvo")) {
             return "Solicitudes de paz y salvo";
@@ -1645,7 +1652,8 @@ public class GestionarEstadisticasGatewayImplAdapter implements GestionarEstadis
             Map<String, Object> resumenProcesos = new HashMap<>();
             
             // Mapear tipos de procesos con colores y estilos
-            String[] tiposProcesos = {"Reingreso", "Homologacion", "ECAES", "Curso Verano", "Paz y Salvo"};
+            String[] tiposProcesos = {TipoProcesoSolicitud.REINGRESO, TipoProcesoSolicitud.HOMOLOGACION,
+                    TipoProcesoSolicitud.ECAES, TipoProcesoSolicitud.CURSOS_VERANO, TipoProcesoSolicitud.PAZ_Y_SALVO};
             String[] colores = {"#007bff", "#28a745", "#ffc107", "#17a2b8", "#dc3545"};
             String[] iconos = {"fas fa-user-plus", "fas fa-exchange-alt", "fas fa-graduation-cap", "fas fa-calendar-alt", "fas fa-check-circle"};
             
@@ -1655,18 +1663,15 @@ public class GestionarEstadisticasGatewayImplAdapter implements GestionarEstadis
             
             if (porTipoProceso != null) {
                 for (String tipoProceso : tiposProcesos) {
+                    // Total de solicitudes del proceso (el valor puede ser un número o un mapa con "totalSolicitudes")
                     int contador = 0;
-                    String nombreLimpio = "";
-                    
-                    // Contar solicitudes de este tipo
-                    for (Map.Entry<String, Object> entry : porTipoProceso.entrySet()) {
-                        String nombreSolicitud = entry.getKey();
-                        if (nombreSolicitud.contains(tipoProceso)) {
-                            contador++;
-                            if (nombreLimpio.isEmpty()) {
-                                nombreLimpio = tipoProceso;
-                            }
-                        }
+                    String nombreLimpio = tipoProceso;
+                    Object datos = porTipoProceso.get(tipoProceso);
+                    if (datos instanceof Number) {
+                        contador = ((Number) datos).intValue();
+                    } else if (datos instanceof Map) {
+                        Object total = ((Map<?, ?>) datos).get("totalSolicitudes");
+                        contador = total instanceof Number ? ((Number) total).intValue() : 0;
                     }
                     
                     if (contador > 0) {
@@ -1707,7 +1712,8 @@ public class GestionarEstadisticasGatewayImplAdapter implements GestionarEstadis
             case "Reingreso": return 0;
             case "Homologacion": return 1;
             case "ECAES": return 2;
-            case "Curso Verano": return 3;
+            case "Curso Verano":
+            case TipoProcesoSolicitud.CURSOS_VERANO: return 3;
             case "Paz y Salvo": return 4;
             default: return 0;
         }
@@ -2588,79 +2594,105 @@ public class GestionarEstadisticasGatewayImplAdapter implements GestionarEstadis
         }
     }
 
+    /**
+     * Tiempo de procesamiento calculado con datos reales: días entre la fecha de registro de la
+     * solicitud y la fecha del estado final (APROBADA o RECHAZADA). Las solicitudes que aún no
+     * llegan a un estado final cuentan como pendientes y no entran en el promedio.
+     */
     @Override
+    @Transactional(readOnly = true)
     public Map<String, Object> obtenerTiempoPromedioProcesamiento() {
         Map<String, Object> resultado = new HashMap<>();
-        
+
         try {
-            // Crear datos basados en los procesos del import.sql
+            String[][] procesos = {
+                {TipoProcesoSolicitud.HOMOLOGACION, "#28a745", "fas fa-graduation-cap", "Proceso de homologacion de materias"},
+                {TipoProcesoSolicitud.PAZ_Y_SALVO, "#007bff", "fas fa-shield-alt", "Proceso de paz y salvo academico"},
+                {TipoProcesoSolicitud.REINGRESO, "#ffc107", "fas fa-user-plus", "Proceso de reingreso estudiantil"},
+                {TipoProcesoSolicitud.CURSOS_VERANO, "#17a2b8", "fas fa-sun", "Proceso de cursos de verano"},
+                {TipoProcesoSolicitud.ECAES, "#dc3545", "fas fa-file-alt", "Proceso de inscripcion a pruebas ECAES"}
+            };
+
+            // Días de procesamiento por proceso (solo solicitudes completadas) y total por proceso
+            Map<String, List<Double>> diasPorProceso = new HashMap<>();
+            Map<String, Integer> totalPorProceso = new HashMap<>();
+            for (String[] p : procesos) {
+                diasPorProceso.put(p[0], new ArrayList<>());
+                totalPorProceso.put(p[0], 0);
+            }
+
+            for (SolicitudEntity solicitud : solicitudRepository.findAll()) {
+                String proceso = obtenerNombreProcesoPorSolicitud(solicitud);
+                if (proceso == null || !totalPorProceso.containsKey(proceso)) {
+                    continue;
+                }
+                totalPorProceso.merge(proceso, 1, Integer::sum);
+                Double dias = calcularDiasHastaEstadoFinal(solicitud);
+                if (dias != null) {
+                    diasPorProceso.get(proceso).add(dias);
+                }
+            }
+
             Map<String, Object> tiemposPorProceso = new HashMap<>();
-            
-            // Datos simulados basados en los procesos existentes
-            Map<String, Object> homologacion = new HashMap<>();
-            homologacion.put("nombre", "Homologacion");
-            homologacion.put("tiempoPromedio", 3.5);
-            homologacion.put("tiempoMinimo", 1.0);
-            homologacion.put("tiempoMaximo", 7.0);
-            homologacion.put("totalSolicitudes", 15);
-            homologacion.put("solicitudesCompletadas", 12);
-            homologacion.put("eficiencia", 80.0);
-            homologacion.put("color", "#28a745");
-            homologacion.put("icono", "fas fa-graduation-cap");
-            homologacion.put("descripcion", "Proceso de homologacion de materias");
-            tiemposPorProceso.put("Homologacion", homologacion);
-            
-            Map<String, Object> pazSalvo = new HashMap<>();
-            pazSalvo.put("nombre", "Paz y Salvo");
-            pazSalvo.put("tiempoPromedio", 2.2);
-            pazSalvo.put("tiempoMinimo", 0.5);
-            pazSalvo.put("tiempoMaximo", 4.0);
-            pazSalvo.put("totalSolicitudes", 18);
-            pazSalvo.put("solicitudesCompletadas", 16);
-            pazSalvo.put("eficiencia", 88.9);
-            pazSalvo.put("color", "#007bff");
-            pazSalvo.put("icono", "fas fa-shield-alt");
-            pazSalvo.put("descripcion", "Proceso de paz y salvo academico");
-            tiemposPorProceso.put("Paz y Salvo", pazSalvo);
-            
-            Map<String, Object> reingreso = new HashMap<>();
-            reingreso.put("nombre", "Reingreso");
-            reingreso.put("tiempoPromedio", 4.8);
-            reingreso.put("tiempoMinimo", 2.0);
-            reingreso.put("tiempoMaximo", 10.0);
-            reingreso.put("totalSolicitudes", 8);
-            reingreso.put("solicitudesCompletadas", 6);
-            reingreso.put("eficiencia", 75.0);
-            reingreso.put("color", "#ffc107");
-            reingreso.put("icono", "fas fa-user-plus");
-            reingreso.put("descripcion", "Proceso de reingreso estudiantil");
-            tiemposPorProceso.put("Reingreso", reingreso);
-            
-            Map<String, Object> cursosVerano = new HashMap<>();
-            cursosVerano.put("nombre", "Cursos de Verano");
-            cursosVerano.put("tiempoPromedio", 1.8);
-            cursosVerano.put("tiempoMinimo", 0.5);
-            cursosVerano.put("tiempoMaximo", 3.5);
-            cursosVerano.put("totalSolicitudes", 5);
-            cursosVerano.put("solicitudesCompletadas", 5);
-            cursosVerano.put("eficiencia", 100.0);
-            cursosVerano.put("color", "#17a2b8");
-            cursosVerano.put("icono", "fas fa-sun");
-            cursosVerano.put("descripcion", "Proceso de cursos de verano");
-            tiemposPorProceso.put("Cursos de Verano", cursosVerano);
-            
+            int totalGeneral = 0;
+            int completadasGeneral = 0;
+            double sumaDiasGeneral = 0.0;
+            String procesoMasRapido = null;
+            String procesoMasLento = null;
+            String procesoMasEficiente = null;
+            double mejorTiempo = Double.MAX_VALUE;
+            double peorTiempo = -1;
+            double mejorEficiencia = -1;
+
+            for (String[] p : procesos) {
+                String nombre = p[0];
+                List<Double> dias = diasPorProceso.get(nombre);
+                int total = totalPorProceso.get(nombre);
+                int completadas = dias.size();
+                double promedio = dias.stream().mapToDouble(Double::doubleValue).average().orElse(0.0);
+                double eficiencia = total > 0 ? (completadas * 100.0) / total : 0.0;
+
+                Map<String, Object> datos = new HashMap<>();
+                datos.put("nombre", nombre);
+                datos.put("tiempoPromedio", redondear(promedio));
+                datos.put("tiempoMinimo", redondear(dias.stream().mapToDouble(Double::doubleValue).min().orElse(0.0)));
+                datos.put("tiempoMaximo", redondear(dias.stream().mapToDouble(Double::doubleValue).max().orElse(0.0)));
+                datos.put("totalSolicitudes", total);
+                datos.put("solicitudesCompletadas", completadas);
+                datos.put("eficiencia", redondear(eficiencia));
+                datos.put("color", p[1]);
+                datos.put("icono", p[2]);
+                datos.put("descripcion", p[3]);
+                tiemposPorProceso.put(nombre, datos);
+
+                totalGeneral += total;
+                completadasGeneral += completadas;
+                sumaDiasGeneral += dias.stream().mapToDouble(Double::doubleValue).sum();
+
+                if (completadas > 0) {
+                    if (promedio < mejorTiempo) { mejorTiempo = promedio; procesoMasRapido = nombre; }
+                    if (promedio > peorTiempo) { peorTiempo = promedio; procesoMasLento = nombre; }
+                }
+                if (total > 0 && eficiencia > mejorEficiencia) {
+                    mejorEficiencia = eficiencia;
+                    procesoMasEficiente = nombre;
+                }
+            }
+
             // Analisis de eficiencia
             Map<String, Object> analisisEficiencia = new HashMap<>();
-            analisisEficiencia.put("procesoMasRapido", "Cursos de Verano");
-            analisisEficiencia.put("procesoMasLento", "Reingreso");
-            analisisEficiencia.put("procesoMasEficiente", "Cursos de Verano");
-            analisisEficiencia.put("tiempoPromedioGeneral", 3.1);
-            analisisEficiencia.put("eficienciaGeneral", 85.9);
-            analisisEficiencia.put("totalSolicitudes", 46);
-            analisisEficiencia.put("solicitudesCompletadas", 39);
-            analisisEficiencia.put("solicitudesPendientes", 7);
-            
-            // Metas de tiempo
+            analisisEficiencia.put("procesoMasRapido", procesoMasRapido != null ? procesoMasRapido : "Sin datos");
+            analisisEficiencia.put("procesoMasLento", procesoMasLento != null ? procesoMasLento : "Sin datos");
+            analisisEficiencia.put("procesoMasEficiente", procesoMasEficiente != null ? procesoMasEficiente : "Sin datos");
+            analisisEficiencia.put("tiempoPromedioGeneral",
+                    redondear(completadasGeneral > 0 ? sumaDiasGeneral / completadasGeneral : 0.0));
+            analisisEficiencia.put("eficienciaGeneral",
+                    redondear(totalGeneral > 0 ? (completadasGeneral * 100.0) / totalGeneral : 0.0));
+            analisisEficiencia.put("totalSolicitudes", totalGeneral);
+            analisisEficiencia.put("solicitudesCompletadas", completadasGeneral);
+            analisisEficiencia.put("solicitudesPendientes", totalGeneral - completadasGeneral);
+
+            // Metas de tiempo (valores de referencia institucionales, no son mediciones)
             Map<String, Object> metasTiempo = new HashMap<>();
             metasTiempo.put("homologacion", 3.0);
             metasTiempo.put("pazSalvo", 2.0);
@@ -2673,7 +2705,9 @@ public class GestionarEstadisticasGatewayImplAdapter implements GestionarEstadis
             resultado.put("metasTiempo", metasTiempo);
             resultado.put("fechaConsulta", new Date());
             resultado.put("descripcion", "Estadisticas de tiempo promedio de procesamiento con analisis de eficiencia");
-            
+            resultado.put("unidad", "dias");
+            resultado.put("fuente", "Calculado desde el historial de estados de las solicitudes");
+
             return resultado;
         } catch (Exception e) {
             resultado.put("porProceso", new HashMap<>());
@@ -2684,6 +2718,35 @@ public class GestionarEstadisticasGatewayImplAdapter implements GestionarEstadis
             resultado.put("error", e.getMessage());
             return resultado;
         }
+    }
+
+    /**
+     * Días entre el registro de la solicitud y su primer estado final (APROBADA o RECHAZADA).
+     * Devuelve null si la solicitud aún no termina o faltan fechas.
+     */
+    private Double calcularDiasHastaEstadoFinal(SolicitudEntity solicitud) {
+        Date inicio = solicitud.getFecha_registro_solicitud();
+        if (inicio == null || solicitud.getEstadosSolicitud() == null) {
+            return null;
+        }
+        Date fin = solicitud.getEstadosSolicitud().stream()
+                .filter(e -> e.getEstado_actual() != null && e.getFecha_registro_estado() != null)
+                .filter(e -> {
+                    String estado = normalizarEstado(e.getEstado_actual());
+                    return "APROBADA".equals(estado) || "RECHAZADA".equals(estado);
+                })
+                .map(EstadoSolicitudEntity::getFecha_registro_estado)
+                .min(Comparator.naturalOrder())
+                .orElse(null);
+        if (fin == null) {
+            return null;
+        }
+        double dias = (fin.getTime() - inicio.getTime()) / (1000.0 * 60 * 60 * 24);
+        return Math.max(dias, 0.0);
+    }
+
+    private static double redondear(double valor) {
+        return Math.round(valor * 10.0) / 10.0;
     }
 
     @Override
@@ -2709,29 +2772,27 @@ public class GestionarEstadisticasGatewayImplAdapter implements GestionarEstadis
                 estudiantesPorMes.put(mes, 0);
             }
             
-            // Contar solicitudes por mes
+            // Contar solicitudes por mes y estudiantes distintos que radicaron solicitudes en cada mes.
+            // (Antes los estudiantes se repartían en meses con id_usuario % 4, un dato inventado.)
+            Map<String, java.util.Set<Integer>> estudiantesActivosPorMes = new HashMap<>();
             for (SolicitudEntity solicitud : todasLasSolicitudes) {
                 Date fechaCreacion = solicitud.getFecha_registro_solicitud();
                 if (fechaCreacion != null) {
                     Calendar cal = Calendar.getInstance();
                     cal.setTime(fechaCreacion);
                     int mesNumero = cal.get(Calendar.MONTH); // 0-11 (0=Enero, 11=Diciembre)
-                    // Asegurar que el índice está en el rango válido
                     if (mesNumero >= 0 && mesNumero < meses.length) {
                         String nombreMes = meses[mesNumero];
                         solicitudesPorMes.put(nombreMes, solicitudesPorMes.get(nombreMes) + 1);
-                    } else {
+                        if (solicitud.getObjUsuario() != null && solicitud.getObjUsuario().getId_usuario() != null) {
+                            estudiantesActivosPorMes
+                                    .computeIfAbsent(nombreMes, k -> new java.util.HashSet<>())
+                                    .add(solicitud.getObjUsuario().getId_usuario());
+                        }
                     }
                 }
             }
-            
-            // Contar estudiantes por mes de registro (simulado)
-            for (UsuarioEntity estudiante : todosLosEstudiantes) {
-                // Como no tenemos fecha de registro de estudiantes, simulamos distribucion
-                String[] mesesEstudiantes = {"Julio", "Agosto", "Septiembre", "Octubre"};
-                String mesAleatorio = mesesEstudiantes[Math.abs(estudiante.getId_usuario() % mesesEstudiantes.length)];
-                estudiantesPorMes.put(mesAleatorio, estudiantesPorMes.get(mesAleatorio) + 1);
-            }
+            estudiantesActivosPorMes.forEach((mes, ids) -> estudiantesPorMes.put(mes, ids.size()));
             
             // Calcular crecimiento
             List<String> mesesConDatos = new ArrayList<>();
@@ -3042,23 +3103,9 @@ public class GestionarEstadisticasGatewayImplAdapter implements GestionarEstadis
         return anio + "-" + numeroPeriodo;
     }
 
+    /** Tipo de proceso según la clase de la entidad (ver {@link TipoProcesoSolicitud}). */
     private String obtenerNombreProcesoPorSolicitud(SolicitudEntity solicitud) {
-        if (solicitud == null || solicitud.getNombre_solicitud() == null) return null;
-        
-        String nombreSolicitud = solicitud.getNombre_solicitud().toLowerCase();
-        
-        if (nombreSolicitud.contains("homologacion")) {
-            return "Homologacion";
-        } else if (nombreSolicitud.contains("paz") && nombreSolicitud.contains("salvo")) {
-            return "Paz y Salvo";
-        } else if (nombreSolicitud.contains("reingreso")) {
-            return "Reingreso";
-        } else if ((nombreSolicitud.contains("curso") && nombreSolicitud.contains("verano")) || nombreSolicitud.contains("intersemestral")) {
-            return "Cursos de Verano";
-        } else if (nombreSolicitud.contains("ecaes")) {
-            return "ECAES";
-        }
-        return null;
+        return TipoProcesoSolicitud.de(solicitud);
     }
 
     private String obtenerEstadoMasReciente(SolicitudEntity solicitud) {
@@ -3067,39 +3114,64 @@ public class GestionarEstadisticasGatewayImplAdapter implements GestionarEstadis
         }
         
         return solicitud.getEstadosSolicitud().stream()
-            .max(Comparator.comparing(EstadoSolicitudEntity::getFecha_registro_estado))
+            // Ignora estados sin texto (p. ej. el registro inicial vacío) y tolera fechas nulas
+            .filter(e -> e.getEstado_actual() != null && !e.getEstado_actual().isBlank())
+            .max(Comparator.comparing(EstadoSolicitudEntity::getFecha_registro_estado,
+                    Comparator.nullsFirst(Comparator.naturalOrder())))
             .map(EstadoSolicitudEntity::getEstado_actual)
             .map(this::normalizarEstado)
             .orElse("ENVIADA");
     }
     
+    /** Estados desconocidos ya reportados en el log (para no repetir la advertencia). */
+    private final java.util.Set<String> estadosDesconocidosReportados = java.util.concurrent.ConcurrentHashMap.newKeySet();
+
+    /**
+     * Unifica las distintas formas en que se guardan los estados ("Enviada", "ENVIADA", "Aprobado",
+     * estados de cursos de verano...) en los 5 valores de {@code EstadosSolicitud}.
+     */
     private String normalizarEstado(String estado) {
-        if (estado == null) return "ENVIADA";
-        
-        switch (estado.toUpperCase()) {
+        if (estado == null || estado.isBlank()) return "ENVIADA";
+
+        String clave = java.text.Normalizer.normalize(estado.trim(), java.text.Normalizer.Form.NFD)
+                .replaceAll("\\p{M}", "")
+                .toUpperCase()
+                .replace(' ', '_');
+
+        switch (clave) {
             case "ENVIADA":
             case "ENVIADO":
+            case "PRE_REGISTRADO":
+            case "PREREGISTRADO":
+            case "PREINSCRITO":
+            case "PREINSCRITA":
+            case "PENDIENTE":
                 return "ENVIADA";
-            case "EN PROCESO":
             case "EN_PROCESO":
             case "ENPROCESO":
             case "APROBADA_FUNCIONARIO":
+            case "APROBADO_FUNCIONARIO":
+            case "PAGO_VALIDADO":       // Cursos de verano: pago revisado, falta completar la inscripción
                 return "APROBADA_FUNCIONARIO";
             case "APROBADA_COORDINADOR":
+            case "APROBADO_COORDINADOR":
                 return "APROBADA_COORDINADOR";
             case "APROBADA":
             case "APROBADO":
+            case "INSCRIPCION_COMPLETADA": // Cursos de verano: proceso terminado con éxito
+            case "INSCRITO":
+            case "INSCRITA":
                 return "APROBADA";
             case "RECHAZADA":
             case "RECHAZADO":
+            case "PAGO_RECHAZADO":
                 return "RECHAZADA";
-            case "PRE_REGISTRADO":
-            case "PREREGISTRADO":
-            case "PRE REGISTRADO":
-                // PRE_REGISTRADO se trata como ENVIADA para estadísticas
-                return "ENVIADA";
             default:
-                // Cualquier estado desconocido se trata como ENVIADA por defecto
+                // Antes cualquier estado desconocido se contaba como ENVIADA en silencio.
+                // Se mantiene en ENVIADA para no descuadrar los totales, pero se avisa en el log.
+                if (estadosDesconocidosReportados.add(estado)) {
+                    log.warn("Estadísticas: estado de solicitud no reconocido '{}', se cuenta como ENVIADA", estado);
+                }
                 return "ENVIADA";
         }
     }
@@ -3303,7 +3375,11 @@ public class GestionarEstadisticasGatewayImplAdapter implements GestionarEstadis
                     impacto.put("estudiantesAtendidos", demandaEstimadaMateria);
                     impacto.put("estudiantesBeneficiados", variacion);
                     impacto.put("tasaCoberturaObjetivo", "100%");
-                    impacto.put("inversionEstimada", String.format("$%,d", docentesNecesarios * 3000000));
+                    impacto.put("inversionEstimada", String.format("$%,d", (long) docentesNecesarios * costoReferenciaDocenteCursoVerano));
+                    impacto.put("esEstimacion", true);
+                    impacto.put("notaInversion", String.format(
+                            "Estimación: %d docente(s) × $%,d de costo de referencia por docente (valor configurable, no es un dato real)",
+                            docentesNecesarios, costoReferenciaDocenteCursoVerano));
                     recomendacion.put("impacto", impacto);
                     
                     recomendacionesFuturas.add(recomendacion);
@@ -4138,41 +4214,6 @@ public class GestionarEstadisticasGatewayImplAdapter implements GestionarEstadis
         return resultado;
     }
     
-    /**
-     * Extrae el tipo de proceso del nombre completo de la solicitud
-     * Ejemplo: "Solicitud de Reingreso - Juan Perez" -> "Reingreso"
-     * Ejemplo: "Solicitud Curso Verano - Maria Lopez" -> "Cursos de Verano"
-     */
-    private String extraerTipoProceso(String nombreCompleto) {
-        if (nombreCompleto == null || nombreCompleto.isEmpty()) {
-            return "Desconocido";
-        }
-        
-        // Remover "Solicitud de " o "Solicitud " al inicio
-        String nombre = nombreCompleto.replace("Solicitud de ", "").replace("Solicitud ", "");
-        
-        // Extraer solo la parte antes del guion (si existe)
-        int indiceGuion = nombre.indexOf(" - ");
-        if (indiceGuion > 0) {
-            nombre = nombre.substring(0, indiceGuion).trim();
-        }
-        
-        // Normalizar nombres conocidos
-        if (nombre.toLowerCase().contains("curso") && nombre.toLowerCase().contains("verano")) {
-            return "Cursos de Verano";
-        } else if (nombre.toLowerCase().contains("reingreso")) {
-            return "Reingreso";
-        } else if (nombre.toLowerCase().contains("homolog")) {
-            return "Homologacion";
-        } else if (nombre.toLowerCase().contains("paz") && nombre.toLowerCase().contains("salvo")) {
-            return "Paz y Salvo";
-        } else if (nombre.toLowerCase().contains("ecaes")) {
-            return "ECAES";
-        }
-        
-        return nombre;
-    }
-
     @Override
     @Transactional(readOnly = true)
     public Map<String, Object> obtenerEstadisticasPorAnio(Integer anio) {

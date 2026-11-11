@@ -362,6 +362,21 @@ public class GestionarSolicitudCursoVeranoCUAdapter implements GestionarSolicitu
             this.objFormateadorResultados.retornarRespuestaErrorReglaDeNegocio("La solicitud no está en estado 'Enviada' o 'Pago_Validado' para validar el pago. Estado actual: " + estadoActual);
         }
         
+        // Regla de cupo: aceptar una inscripción nueva no puede superar el cupo del curso
+        if (esValido && "Enviada".equals(estadoActual)
+                && solicitud.getObjCursoOfertadoVerano() != null
+                && solicitud.getObjCursoOfertadoVerano().getId_curso() != null) {
+            Integer cupo = solicitud.getObjCursoOfertadoVerano().getCupo_estimado();
+            if (cupo != null && cupo > 0) {
+                Integer ocupados = this.objGestionarSolicitudGateway
+                        .contarInscripcionesAceptadasPorCurso(solicitud.getObjCursoOfertadoVerano().getId_curso());
+                if (ocupados != null && ocupados >= cupo) {
+                    this.objFormateadorResultados.retornarRespuestaErrorReglaDeNegocio(
+                            "El curso no tiene cupos disponibles (" + ocupados + " de " + cupo + " ocupados)");
+                }
+            }
+        }
+
         // Validar el pago
         SolicitudCursoVeranoIncripcion solicitudActualizada = this.objGestionarSolicitudGateway.validarPago(idSolicitud, esValido, observaciones);
         

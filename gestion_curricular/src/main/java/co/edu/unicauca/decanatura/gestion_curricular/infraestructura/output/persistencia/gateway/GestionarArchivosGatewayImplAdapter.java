@@ -21,10 +21,30 @@ public class GestionarArchivosGatewayImplAdapter implements GestionarArchivosGat
     private static String rutaRaiz = "Archivos";
 
     public GestionarArchivosGatewayImplAdapter() throws IOException{
-        this.rootLocation = Paths.get(rutaRaiz);
+        this.rootLocation = Paths.get(rutaRaiz).toAbsolutePath().normalize();
         if(!Files.exists(rootLocation)){
             Files.createDirectories(rootLocation);
         }
+    }
+
+    /**
+     * Resuelve una ruta relativa dentro de la carpeta raíz de archivos.
+     * Rechaza rutas absolutas o con "../" que intenten salir de la carpeta raíz.
+     */
+    private Path resolverSeguro(String rutaRelativa) throws IOException {
+        if (rutaRelativa == null || rutaRelativa.isBlank()) {
+            throw new IOException("Ruta del archivo no puede ser nula o vacía");
+        }
+        Path resultado;
+        try {
+            resultado = this.rootLocation.resolve(rutaRelativa).normalize();
+        } catch (java.nio.file.InvalidPathException e) {
+            throw new IOException("Ruta de archivo inválida");
+        }
+        if (!resultado.startsWith(this.rootLocation) || resultado.equals(this.rootLocation)) {
+            throw new IOException("Ruta de archivo no permitida");
+        }
+        return resultado;
     }
 
     
@@ -45,7 +65,7 @@ public class GestionarArchivosGatewayImplAdapter implements GestionarArchivosGat
             throw new IOException("Invalid PDF file type:");
         }
 
-        Path destination = this.rootLocation.resolve(filename);
+        Path destination = resolverSeguro(filename);
         Files.copy(file.getInputStream(), destination, StandardCopyOption.REPLACE_EXISTING);
         return filename;
     }
@@ -77,7 +97,7 @@ public class GestionarArchivosGatewayImplAdapter implements GestionarArchivosGat
         // Construir ruta organizada: tipoSolicitud/solicitud_id/nombre
         String tipoSolicitudNormalizado = tipoSolicitud.toLowerCase().replaceAll("[^a-z0-9-_]", "_");
         String subfolder = tipoSolicitudNormalizado + "/solicitud_" + idSolicitud;
-        Path targetFolder = this.rootLocation.resolve(subfolder);
+        Path targetFolder = resolverSeguro(subfolder);
         
         // Crear carpeta si no existe
         if (!Files.exists(targetFolder)) {
@@ -85,7 +105,7 @@ public class GestionarArchivosGatewayImplAdapter implements GestionarArchivosGat
         }
         
         // Guardar archivo en la subcarpeta
-        Path destination = targetFolder.resolve(name);
+        Path destination = resolverSeguro(subfolder + "/" + name);
         Files.copy(file.getInputStream(), destination, StandardCopyOption.REPLACE_EXISTING);
         
         // Retornar ruta relativa completa para guardar en BD
@@ -96,7 +116,7 @@ public class GestionarArchivosGatewayImplAdapter implements GestionarArchivosGat
     @Override
     public byte[] getFile(String filename) throws IOException {
         // Primero intentar buscar en la raíz (retrocompatibilidad)
-        Path filePath = this.rootLocation.resolve(filename);
+        Path filePath = resolverSeguro(filename);
         if (Files.exists(filePath)) {
             return Files.readAllBytes(filePath);
         }
@@ -111,7 +131,7 @@ public class GestionarArchivosGatewayImplAdapter implements GestionarArchivosGat
             throw new IOException("Ruta del archivo no puede ser nula o vacía");
         }
         
-        Path filePath = this.rootLocation.resolve(relativePath);
+        Path filePath = resolverSeguro(relativePath);
         if (!Files.exists(filePath)) {
             throw new IOException("Archivo no encontrado en la ruta: " + relativePath);
         }
@@ -142,11 +162,11 @@ public class GestionarArchivosGatewayImplAdapter implements GestionarArchivosGat
         // Construir ruta destino organizada (para uso en movimiento o fallback)
         String tipoSolicitudNormalizado = tipoSolicitud.toLowerCase().replaceAll("[^a-z0-9-_]", "_");
         String subfolder = tipoSolicitudNormalizado + "/solicitud_" + idSolicitud;
-        Path targetFolder = this.rootLocation.resolve(subfolder);
-        Path archivoDestino = targetFolder.resolve(nombreArchivo);
+        Path targetFolder = resolverSeguro(subfolder);
+        Path archivoDestino = resolverSeguro(subfolder + "/" + nombreArchivo);
 
         // Buscar el archivo en la raíz
-        Path archivoOrigen = this.rootLocation.resolve(rutaActual);
+        Path archivoOrigen = resolverSeguro(rutaActual);
         if (Files.exists(archivoOrigen)) {
             // Crear carpeta destino si no existe y mover
             if (!Files.exists(targetFolder)) {
@@ -177,7 +197,7 @@ public class GestionarArchivosGatewayImplAdapter implements GestionarArchivosGat
     @Override
     public Path getFileAsPath(String filename) throws IOException {
         // Primero intentar buscar en la raíz (retrocompatibilidad)
-        Path filePath = this.rootLocation.resolve(filename);
+        Path filePath = resolverSeguro(filename);
         if (Files.exists(filePath)) {
             return filePath;
         }
@@ -192,7 +212,7 @@ public class GestionarArchivosGatewayImplAdapter implements GestionarArchivosGat
             throw new IOException("Ruta del archivo no puede ser nula o vacía");
         }
         
-        Path filePath = this.rootLocation.resolve(relativePath);
+        Path filePath = resolverSeguro(relativePath);
         if (!Files.exists(filePath)) {
             throw new IOException("Archivo no encontrado en la ruta: " + relativePath);
         }

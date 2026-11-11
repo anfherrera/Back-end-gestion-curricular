@@ -7,6 +7,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -32,6 +33,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest
 @AutoConfigureMockMvc
 @ActiveProfiles("test")
+@WithMockUser(roles = "Coordinador")
 @DisplayName("Pruebas Funcionales - Generación de Estadísticas")
 class GestionEstadisticasFuncionalTest {
 
@@ -224,7 +226,7 @@ class GestionEstadisticasFuncionalTest {
          * RESULTADO ESPERADO: Documento PDF con estadísticas
          */
         
-        mockMvc.perform(get("/api/estadisticas/exportar/pdf"))
+        mockMvc.perform(get("/api/estadisticas/export/pdf"))
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_PDF));
     }
@@ -243,7 +245,7 @@ class GestionEstadisticasFuncionalTest {
          * RESULTADO ESPERADO: Archivo Excel con datos estructurados
          */
         
-        mockMvc.perform(get("/api/estadisticas/exportar/excel"))
+        mockMvc.perform(get("/api/estadisticas/export/excel"))
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(
                     MediaType.parseMediaType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")));
@@ -288,7 +290,7 @@ class GestionEstadisticasFuncionalTest {
          * RESULTADO ESPERADO: Reporte consolidado institucional
          */
         
-        mockMvc.perform(get("/api/estadisticas/consolidadas"))
+        mockMvc.perform(get("/api/estadisticas/consolidado"))
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON));
     }
@@ -327,7 +329,7 @@ class GestionEstadisticasFuncionalTest {
                 .andExpect(status().isOk());
 
         // Paso 5: Exportar reporte
-        mockMvc.perform(get("/api/estadisticas/exportar/pdf"))
+        mockMvc.perform(get("/api/estadisticas/export/pdf"))
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_PDF));
     }

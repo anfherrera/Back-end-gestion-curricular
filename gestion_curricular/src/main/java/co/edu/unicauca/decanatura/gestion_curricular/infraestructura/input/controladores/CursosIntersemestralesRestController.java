@@ -7,6 +7,7 @@ import org.springframework.http.MediaType;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.security.access.prepost.PreAuthorize;
+import co.edu.unicauca.decanatura.gestion_curricular.Security.Autorizacion;
 import jakarta.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -525,6 +526,7 @@ public class CursosIntersemestralesRestController {
      * Obtener solicitudes de un estudiante especifico
      * GET /api/cursos-intersemestrales/estudiante/{id}
      */
+    @PreAuthorize("@autorizacion.esStaff() or @autorizacion.esUsuarioActual(#id)")
     @GetMapping("/estudiante/{id}")
     public ResponseEntity<List<SolicitudCursoVeranoPreinscripcionDTORespuesta>> obtenerSolicitudesEstudiante(
             @Min(value = 1) @PathVariable Integer id) {
@@ -540,95 +542,10 @@ public class CursosIntersemestralesRestController {
     }
 
     /**
-     * Endpoint de debug simple para verificar la base de datos
-     * GET /api/cursos-intersemestrales/debug/database-check
-     */
-    @GetMapping("/debug/database-check")
-    public ResponseEntity<Map<String, Object>> debugDatabaseCheck() {
-        try {
-            Map<String, Object> resultado = new HashMap<>();
-            resultado.put("status", "OK");
-            resultado.put("message", "Debug endpoint funcionando");
-            
-            // Verificar solicitudes por usuario 2 de forma simple
-            try {
-                List<SolicitudEntity> solicitudesUsuario2 = solicitudRepository.buscarSolicitudesPorUsuario(2);
-                resultado.put("solicitudes_usuario_2", solicitudesUsuario2.size());
-            } catch (Exception e) {
-                resultado.put("error_usuario_2", e.getMessage());
-            }
-            
-            return ResponseEntity.ok(resultado);
-            
-        } catch (Exception e) {
-            Map<String, Object> error = new HashMap<>();
-            error.put("error", e.getMessage());
-            return ResponseEntity.internalServerError().body(error);
-        }
-    }
-
-    /**
-     * Endpoint de debug para verificar preinscripciones en la base de datos
-     * GET /api/cursos-intersemestrales/debug/preinscripciones/{usuarioId}/{cursoId}
-     */
-    @GetMapping("/debug/preinscripciones/{usuarioId}/{cursoId}")
-    public ResponseEntity<Map<String, Object>> debugPreinscripciones(
-            @PathVariable Integer usuarioId, @PathVariable Integer cursoId) {
-        try {
-            
-            Map<String, Object> resultado = new HashMap<>();
-            
-            // 1. Buscar por consulta directa
-            Solicitud preinscripcionDirecta = solicitudGateway.buscarSolicitudesPorUsuarioYCursoPre(usuarioId, cursoId);
-            resultado.put("preinscripcion_directa", preinscripcionDirecta != null ? "ENCONTRADA" : "NO_ENCONTRADA");
-            
-            if (preinscripcionDirecta != null) {
-                resultado.put("preinscripcion_directa_id", preinscripcionDirecta.getId_solicitud());
-                if (preinscripcionDirecta instanceof SolicitudCursoVeranoPreinscripcion) {
-                    SolicitudCursoVeranoPreinscripcion preinscripcion = (SolicitudCursoVeranoPreinscripcion) preinscripcionDirecta;
-                    String estadoActual = "Sin estado";
-                    if (preinscripcion.getEstadosSolicitud() != null && !preinscripcion.getEstadosSolicitud().isEmpty()) {
-                        estadoActual = preinscripcion.getEstadosSolicitud()
-                            .get(preinscripcion.getEstadosSolicitud().size() - 1).getEstado_actual();
-                    }
-                    resultado.put("preinscripcion_directa_estado", estadoActual);
-                }
-            }
-            
-            // 2. Buscar todas las preinscripciones del usuario
-            List<SolicitudCursoVeranoPreinscripcion> preinscripcionesUsuario = solicitudCU.buscarSolicitudesPorUsuario(usuarioId);
-            resultado.put("total_preinscripciones_usuario", preinscripcionesUsuario.size());
-            
-            List<Map<String, Object>> preinscripcionesDetalle = new ArrayList<>();
-            for (SolicitudCursoVeranoPreinscripcion preinscripcion : preinscripcionesUsuario) {
-                Map<String, Object> detalle = new HashMap<>();
-                detalle.put("id", preinscripcion.getId_solicitud());
-                detalle.put("usuario", preinscripcion.getObjUsuario() != null ? preinscripcion.getObjUsuario().getId_usuario() : null);
-                detalle.put("curso", preinscripcion.getObjCursoOfertadoVerano() != null ? preinscripcion.getObjCursoOfertadoVerano().getId_curso() : null);
-                
-                String estadoActual = "Sin estado";
-                if (preinscripcion.getEstadosSolicitud() != null && !preinscripcion.getEstadosSolicitud().isEmpty()) {
-                    estadoActual = preinscripcion.getEstadosSolicitud()
-                        .get(preinscripcion.getEstadosSolicitud().size() - 1).getEstado_actual();
-                }
-                detalle.put("estado", estadoActual);
-                preinscripcionesDetalle.add(detalle);
-            }
-            resultado.put("preinscripciones_detalle", preinscripcionesDetalle);
-            
-            return ResponseEntity.ok(resultado);
-            
-        } catch (Exception e) {
-            Map<String, Object> error = new HashMap<>();
-            error.put("error", e.getMessage());
-            return ResponseEntity.internalServerError().body(error);
-        }
-    }
-
-    /**
      * Obtener preinscripciones de un usuario especifico (endpoint que espera el frontend)
      * GET /api/cursos-intersemestrales/preinscripciones/usuario/{id}
      */
+    @PreAuthorize("@autorizacion.esStaff() or @autorizacion.esUsuarioActual(#id)")
     @GetMapping("/preinscripciones/usuario/{id}")
     public ResponseEntity<List<Map<String, Object>>> obtenerPreinscripcionesPorUsuario(
             @Min(value = 1) @PathVariable Integer id) {
@@ -695,6 +612,7 @@ public class CursosIntersemestralesRestController {
      * Obtener preinscripciones por estudiante (alias para compatibilidad con pruebas)
      * GET /api/cursos-intersemestrales/solicitudes/preinscripcion/estudiante/{id}
      */
+    @PreAuthorize("@autorizacion.esStaff() or @autorizacion.esUsuarioActual(#id)")
     @GetMapping("/solicitudes/preinscripcion/estudiante/{id}")
     public ResponseEntity<List<Map<String, Object>>> obtenerPreinscripcionesPorEstudianteAlias(@PathVariable Integer id) {
         return obtenerPreinscripcionesPorUsuario(id);
@@ -873,131 +791,6 @@ public class CursosIntersemestralesRestController {
             error.put("error", "Error interno del servidor: " + e.getMessage());
             error.put("tipo", "INTERNAL_SERVER_ERROR");
             error.put("clase", e.getClass().getSimpleName());
-            return ResponseEntity.internalServerError().body(error);
-        }
-    }
-
-    /**
-     * Endpoint de prueba simple para verificar conectividad
-     * GET /api/cursos-intersemestrales/test-simple
-     */
-    @GetMapping("/test-simple")
-    public ResponseEntity<Map<String, Object>> testSimple() {
-        Map<String, Object> respuesta = new HashMap<>();
-        respuesta.put("mensaje", "Endpoint funcionando correctamente");
-        respuesta.put("timestamp", new java.util.Date().toString());
-        respuesta.put("puerto", "5000");
-        return ResponseEntity.ok(respuesta);
-    }
-
-    /**
-     * Endpoint de prueba POST simple para simular la peticion del frontend
-     * POST /api/cursos-intersemestrales/test-post-simple
-     */
-    @PostMapping("/test-post-simple")
-    public ResponseEntity<Map<String, Object>> testPostSimple(@RequestBody Map<String, Object> datos) {
-        try {
-            
-            Map<String, Object> respuesta = new HashMap<>();
-            respuesta.put("mensaje", "POST funcionando correctamente");
-            respuesta.put("datos_recibidos", datos);
-            respuesta.put("timestamp", new java.util.Date().toString());
-            respuesta.put("puerto", "5000");
-            
-            return ResponseEntity.ok(respuesta);
-        } catch (Exception e) {
-            Map<String, Object> error = new HashMap<>();
-            error.put("error", "Error en POST de prueba: " + e.getMessage());
-            return ResponseEntity.internalServerError().body(error);
-        }
-    }
-
-    /**
-     * Endpoint para verificar usuarios disponibles en la base de datos
-     * GET /api/cursos-intersemestrales/usuarios-disponibles
-     */
-    @GetMapping("/usuarios-disponibles")
-    public ResponseEntity<Map<String, Object>> verificarUsuariosDisponibles() {
-        try {
-            
-            // Consultar la lista de usuarios directamente en la base de datos
-            List<co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Usuario> usuarios = 
-                objGestionarUsuarioCU.listarUsuarios();
-            
-            Map<String, Object> respuesta = new HashMap<>();
-            respuesta.put("mensaje", "Usuarios encontrados");
-            respuesta.put("total", usuarios.size());
-            respuesta.put("usuarios", usuarios);
-            
-            return ResponseEntity.ok(respuesta);
-        } catch (Exception e) {
-            
-            Map<String, Object> error = new HashMap<>();
-            error.put("error", "Error verificando usuarios: " + e.getMessage());
-            error.put("tipo", "USUARIOS_ERROR");
-            error.put("clase", e.getClass().getSimpleName());
-            
-            return ResponseEntity.ok(error); // Devolver como 200 para ver el error
-        }
-    }
-
-    /**
-     * Endpoint de prueba que simula exactamente el endpoint problematico
-     * POST /api/cursos-intersemestrales/test-solicitud-exacta
-     */
-    @PostMapping("/test-solicitud-exacta")
-    public ResponseEntity<Map<String, Object>> testSolicitudExacta(@RequestBody SolicitudCursoNuevoDTOPeticion peticion) {
-        try {
-            
-            // Simular el procesamiento sin llamar al caso de uso real
-            Map<String, Object> respuesta = new HashMap<>();
-            respuesta.put("id_solicitud", 999);
-            respuesta.put("nombreCompleto", peticion.getNombreCompleto());
-            respuesta.put("codigo", peticion.getCodigo());
-            respuesta.put("curso", peticion.getCurso());
-            respuesta.put("condicion", peticion.getCondicion());
-            respuesta.put("fecha", new java.util.Date().toString());
-            respuesta.put("estado", "Pendiente");
-            respuesta.put("mensaje", "Solicitud de prueba procesada correctamente");
-            
-            return ResponseEntity.ok(respuesta);
-        } catch (Exception e) {
-            Map<String, Object> error = new HashMap<>();
-            error.put("error", "Error en test exacto: " + e.getMessage());
-            error.put("tipo", "TEST_EXACTO_ERROR");
-            return ResponseEntity.internalServerError().body(error);
-        }
-    }
-
-    /**
-     * Endpoint de prueba para verificar el funcionamiento del endpoint de solicitudes
-     * GET /api/cursos-intersemestrales/test-solicitud-curso-nuevo
-     */
-    @GetMapping("/test-solicitud-curso-nuevo")
-    public ResponseEntity<Map<String, Object>> testSolicitudCursoNuevo() {
-        try {
-            
-            SolicitudCursoNuevoDTOPeticion peticionPrueba = new SolicitudCursoNuevoDTOPeticion();
-            peticionPrueba.setNombreCompleto("Juan Perez");
-            peticionPrueba.setCodigo("104612345660");
-            peticionPrueba.setCurso("Programacion Avanzada");
-            peticionPrueba.setCondicion("Primera_Vez");
-            peticionPrueba.setIdUsuario(1);
-            
-            
-            ResponseEntity<Map<String, Object>> respuesta = crearSolicitudCursoNuevo(peticionPrueba);
-            
-            
-            Map<String, Object> resultado = new HashMap<>();
-            resultado.put("mensaje", "Prueba completada");
-            resultado.put("status", respuesta.getStatusCode().value());
-            resultado.put("respuesta", respuesta.getBody());
-            
-            return ResponseEntity.ok(resultado);
-        } catch (Exception e) {
-            Map<String, Object> error = new HashMap<>();
-            error.put("error", "Error en prueba: " + e.getMessage());
-            error.put("tipo", "TEST_ERROR");
             return ResponseEntity.internalServerError().body(error);
         }
     }
@@ -1182,13 +975,11 @@ public class CursosIntersemestralesRestController {
                 }
             }
             
-            // Validacion 2: Verificar cupos disponibles (opcional - requiere obtener el curso)
-            try {
-                solicitudGateway.contarInscripcionesAceptadasPorCurso(peticion.getIdCurso());
-                
-                // Nota: Aqui podrias agregar validacion de cupos si tienes acceso al cupo del curso
-            } catch (Exception e) {
-                // No fallar la operacion por esto
+            // Validacion 2: el curso debe tener cupo disponible
+            ResponseEntity<Map<String, Object>> sinCupo =
+                    validarCupoDisponible(preinscripcionAprobada.getObjCursoOfertadoVerano());
+            if (sinCupo != null) {
+                return sinCupo;
             }
             
             // 2. Crear la inscripcion usando el modelo de dominio
@@ -1291,6 +1082,7 @@ public class CursosIntersemestralesRestController {
      * Obtener inscripciones con informacion completa
      * GET /api/cursos-intersemestrales/inscripciones
      */
+    @PreAuthorize("hasAnyRole(" + Autorizacion.ROLES_STAFF + ")")
     @GetMapping("/inscripciones")
     public ResponseEntity<List<Map<String, Object>>> obtenerInscripciones() {
         try {
@@ -1344,6 +1136,7 @@ public class CursosIntersemestralesRestController {
      * Obtener inscripciones reales de la base de datos filtradas por usuario
      * GET /api/cursos-intersemestrales/inscripciones-reales/{id_usuario}
      */
+    @PreAuthorize("@autorizacion.esStaff() or @autorizacion.esUsuarioActual(#id_usuario)")
     @GetMapping("/inscripciones-reales/{id_usuario}")
     public ResponseEntity<List<Map<String, Object>>> obtenerInscripcionesReales(@PathVariable Integer id_usuario) {
         try {
@@ -1690,31 +1483,6 @@ public class CursosIntersemestralesRestController {
             Map<String, Object> error = new HashMap<>();
             error.put("error", "Error interno");
             error.put("message", "Error obteniendo permisos: " + e.getMessage());
-            return ResponseEntity.internalServerError().body(error);
-        }
-    }
-
-    /**
-     * Endpoint temporal para debug - verificar datos en la base de datos
-     * GET /api/cursos-intersemestrales/debug-solicitudes/{idUsuario}
-     */
-    @GetMapping("/debug-solicitudes/{idUsuario}")
-    public ResponseEntity<Map<String, Object>> debugSolicitudes(@PathVariable Integer idUsuario) {
-        try {
-            
-            // Buscar todas las solicitudes del usuario
-            List<SolicitudCursoVeranoPreinscripcion> preinscripciones = solicitudCU.buscarSolicitudesPorUsuario(idUsuario);
-            
-            Map<String, Object> debug = new HashMap<>();
-            debug.put("usuarioId", idUsuario);
-            debug.put("preinscripcionesEncontradas", preinscripciones.size());
-            debug.put("preinscripciones", preinscripciones);
-            
-            
-            return ResponseEntity.ok(debug);
-        } catch (Exception e) {
-            Map<String, Object> error = new HashMap<>();
-            error.put("error", "Error en debug: " + e.getMessage());
             return ResponseEntity.internalServerError().body(error);
         }
     }
@@ -2398,6 +2166,7 @@ public class CursosIntersemestralesRestController {
      * Obtener estadisticas del dashboard de cursos intersemestrales
      * GET /api/cursos-intersemestrales/dashboard/estadisticas
      */
+    @PreAuthorize("hasAnyRole(" + Autorizacion.ROLES_STAFF + ")")
     @GetMapping("/dashboard/estadisticas")
     public ResponseEntity<Map<String, Object>> obtenerEstadisticasDashboard() {
         try {
@@ -2486,6 +2255,7 @@ public class CursosIntersemestralesRestController {
      * Obtener seguimiento completo de actividades del usuario (preinscripciones + inscripciones)
      * GET /api/cursos-intersemestrales/seguimiento/{idUsuario}
      */
+    @PreAuthorize("@autorizacion.esStaff() or @autorizacion.esUsuarioActual(#idUsuario)")
     @GetMapping("/seguimiento/{idUsuario}")
     public ResponseEntity<Map<String, Object>> obtenerSeguimientoActividades(@PathVariable Integer idUsuario) {
         try {
@@ -2698,6 +2468,7 @@ public class CursosIntersemestralesRestController {
      * Obtener solicitudes del usuario especifico
      * GET /api/cursos-intersemestrales/cursos-verano/solicitudes/{idUsuario}
      */
+    @PreAuthorize("@autorizacion.esStaff() or @autorizacion.esUsuarioActual(#idUsuario)")
     @GetMapping("/cursos-verano/solicitudes/{idUsuario}")
     public ResponseEntity<List<Map<String, Object>>> obtenerSolicitudesUsuario(
             @Min(value = 1) @PathVariable Integer idUsuario) {
@@ -2743,6 +2514,7 @@ public class CursosIntersemestralesRestController {
      * Cancelar inscripcion
      * DELETE /api/cursos-intersemestrales/inscripciones/{id}
      */
+    @PreAuthorize("@autorizacion.esStaff() or @autorizacion.esDuenoSolicitud(#id)")
     @DeleteMapping("/inscripciones/{id}")
     public ResponseEntity<Map<String, Object>> cancelarInscripcion(@PathVariable Integer id) {
         try {
@@ -2803,99 +2575,10 @@ public class CursosIntersemestralesRestController {
     // ==================== ENDPOINTS FALTANTES PARA EL FRONTEND ====================
 
     /**
-     * Obtener todos los cursos de verano
-     * GET /api/cursos-intersemestrales/cursos-verano
-     */
-    @GetMapping("/cursos-verano-alt")
-    public ResponseEntity<List<Map<String, Object>>> getTodosLosCursos() {
-        try {
-            List<Map<String, Object>> cursos = new ArrayList<>();
-            
-            // Curso 1: Matematicas Basicas
-            Map<String, Object> curso1 = new HashMap<>();
-            curso1.put("id_curso", 1);
-            curso1.put("nombre_curso", "Matematicas Basicas");
-            curso1.put("codigo_curso", "MAT-101");
-            curso1.put("descripcion", "Curso de matematicas basicas para verano");
-            curso1.put("fecha_inicio", "2024-06-01T08:00:00Z");
-            curso1.put("fecha_fin", "2024-07-15T17:00:00Z");
-            curso1.put("cupo_maximo", 30);
-            curso1.put("cupo_disponible", 25);
-            curso1.put("cupo_estimado", 30);
-            curso1.put("espacio_asignado", "Aula 201");
-            curso1.put("estado", "Abierto");
-            
-            // Objeto materia
-            Map<String, Object> materia1 = new HashMap<>();
-            materia1.put("id_materia", 1);
-            materia1.put("nombre_materia", "Matematicas");
-            materia1.put("codigo_materia", "MAT");
-            materia1.put("creditos", 3);
-            curso1.put("objMateria", materia1);
-            
-            // Objeto docente
-            Map<String, Object> docente1 = new HashMap<>();
-            docente1.put("id_usuario", 2);
-            docente1.put("nombre", "Juan");
-            docente1.put("apellido", "Perez");
-            docente1.put("email", "juan.perez@unicauca.edu.co");
-            docente1.put("telefono", "3001234567");
-            
-            // Objeto rol
-            Map<String, Object> rol1 = new HashMap<>();
-            rol1.put("id_rol", 2);
-            rol1.put("nombre", "Docente"); // SUCCESS CORREGIDO: nombre → nombre
-            docente1.put("objRol", rol1);
-            
-            curso1.put("objDocente", docente1);
-            cursos.add(curso1);
-            
-            // Curso 2: Programacion I
-            Map<String, Object> curso2 = new HashMap<>();
-            curso2.put("id_curso", 2);
-            curso2.put("nombre_curso", "Programacion I");
-            curso2.put("codigo_curso", "PROG-201");
-            curso2.put("descripcion", "Fundamentos de programacion");
-            curso2.put("fecha_inicio", "2024-06-15T08:00:00Z");
-            curso2.put("fecha_fin", "2024-07-30T17:00:00Z");
-            curso2.put("cupo_maximo", 25);
-            curso2.put("cupo_disponible", 20);
-            curso2.put("cupo_estimado", 25);
-            curso2.put("espacio_asignado", "Lab 301");
-            curso2.put("estado", "Preinscripcion");
-            
-            Map<String, Object> materia2 = new HashMap<>();
-            materia2.put("id_materia", 2);
-            materia2.put("nombre_materia", "Programacion");
-            materia2.put("codigo_materia", "PROG");
-            materia2.put("creditos", 4);
-            curso2.put("objMateria", materia2);
-            
-            Map<String, Object> docente2 = new HashMap<>();
-            docente2.put("id_usuario", 3);
-            docente2.put("nombre", "Maria");
-            docente2.put("apellido", "Garcia");
-            docente2.put("email", "maria.garcia@unicauca.edu.co");
-            docente2.put("telefono", "3007654321");
-            
-            Map<String, Object> rol2 = new HashMap<>();
-            rol2.put("id_rol", 2);
-            rol2.put("nombre", "Docente"); // SUCCESS CORREGIDO: nombre → nombre
-            docente2.put("objRol", rol2);
-            
-            curso2.put("objDocente", docente2);
-            cursos.add(curso2);
-            
-            return ResponseEntity.ok(cursos);
-        } catch (Exception e) {
-            return ResponseEntity.status(500).build();
-        }
-    }
-
-    /**
      * Crear nuevo curso de verano
      * POST /api/cursos-intersemestrales/cursos-verano
      */
+    @PreAuthorize("hasAnyRole('Funcionario', 'Coordinador', 'Administrador')")
     @PostMapping("/cursos-verano")
     public ResponseEntity<Map<String, Object>> crearCurso(@RequestBody CreateCursoDTO dto) {
         try {
@@ -3206,6 +2889,7 @@ public class CursosIntersemestralesRestController {
      * Actualizar curso de verano
      * PUT /api/cursos-intersemestrales/cursos-verano/{id}
      */
+    @PreAuthorize("hasAnyRole('Funcionario', 'Coordinador', 'Administrador')")
     @PutMapping("/cursos-verano/{id}")
     public ResponseEntity<Map<String, Object>> actualizarCurso(
             @PathVariable Long id, 
@@ -3383,6 +3067,7 @@ public class CursosIntersemestralesRestController {
      * Eliminar curso de verano
      * DELETE /api/cursos-intersemestrales/cursos-verano/{id}
      */
+    @PreAuthorize("hasAnyRole('Funcionario', 'Coordinador', 'Administrador')")
     @DeleteMapping("/cursos-verano/{id}")
     public ResponseEntity<Map<String, Object>> eliminarCurso(@PathVariable Long id) {
         try {
@@ -3726,6 +3411,7 @@ public class CursosIntersemestralesRestController {
      * Obtener preinscripciones por curso (datos reales de la base de datos)
      * GET /api/cursos-intersemestrales/preinscripciones/curso/{idCurso}
      */
+    @PreAuthorize("hasAnyRole(" + Autorizacion.ROLES_STAFF + ")")
     @GetMapping("/preinscripciones/curso/{idCurso}")
     public ResponseEntity<List<Map<String, Object>>> getPreinscripcionesPorCurso(
             @PathVariable Long idCurso) {
@@ -3817,6 +3503,7 @@ public class CursosIntersemestralesRestController {
      * Obtener estudiantes inscritos en un curso (estudiantes que ya completaron la inscripcion)
      * GET /api/cursos-intersemestrales/inscripciones/estudiantes-elegibles/{idCurso}
      */
+    @PreAuthorize("hasAnyRole(" + Autorizacion.ROLES_STAFF + ")")
     @GetMapping("/inscripciones/estudiantes-elegibles/{idCurso}")
     public ResponseEntity<List<Map<String, Object>>> getEstudiantesElegiblesParaInscripcion(
             @PathVariable Long idCurso) {
@@ -3891,81 +3578,6 @@ public class CursosIntersemestralesRestController {
             
         } catch (Exception e) {
             log.error("Error obteniendo estudiantes inscritos: {}", e.getMessage(), e);
-            return ResponseEntity.status(500).build();
-        }
-    }
-
-    /**
-     * Endpoint temporal para debug - mostrar TODAS las preinscripciones sin filtros
-     * GET /api/cursos-intersemestrales/debug/preinscripciones/curso/{idCurso}
-     */
-    @GetMapping("/debug/preinscripciones/curso/{idCurso}")
-    public ResponseEntity<List<Map<String, Object>>> debugPreinscripcionesPorCurso(
-            @PathVariable Long idCurso) {
-        try {
-            
-            List<Map<String, Object>> debugInfo = new ArrayList<>();
-            
-            // Obtener todas las preinscripciones del curso
-            List<SolicitudCursoVeranoPreinscripcion> preinscripciones = solicitudCU.buscarPreinscripcionesPorCurso(idCurso.intValue());
-            
-            for (SolicitudCursoVeranoPreinscripcion preinscripcion : preinscripciones) {
-                Map<String, Object> debugMap = new HashMap<>();
-                
-                debugMap.put("id_preinscripcion", preinscripcion.getId_solicitud());
-                debugMap.put("usuario_id", preinscripcion.getObjUsuario() != null ? preinscripcion.getObjUsuario().getId_usuario() : "NULL");
-                debugMap.put("usuario_nombre", preinscripcion.getObjUsuario() != null ? preinscripcion.getObjUsuario().getNombre_completo() : "NULL");
-                debugMap.put("curso_id", preinscripcion.getObjCursoOfertadoVerano() != null ? preinscripcion.getObjCursoOfertadoVerano().getId_curso() : "NULL");
-                
-                // Estados
-                if (preinscripcion.getEstadosSolicitud() != null && !preinscripcion.getEstadosSolicitud().isEmpty()) {
-                    List<String> estados = new ArrayList<>();
-                    for (int i = 0; i < preinscripcion.getEstadosSolicitud().size(); i++) {
-                        String estado = preinscripcion.getEstadosSolicitud().get(i).getEstado_actual();
-                        String fecha = preinscripcion.getEstadosSolicitud().get(i).getFecha_registro_estado().toString();
-                        estados.add(estado + " (" + fecha + ")");
-                    }
-                    debugMap.put("estados", estados);
-                    debugMap.put("estado_actual", preinscripcion.getEstadosSolicitud().get(preinscripcion.getEstadosSolicitud().size() - 1).getEstado_actual());
-                } else {
-                    debugMap.put("estados", "SIN ESTADOS");
-                    debugMap.put("estado_actual", "SIN ESTADOS");
-                }
-                
-                // Buscar inscripcion correspondiente
-                try {
-                    SolicitudCursoVeranoIncripcion inscripcion = solicitudGateway.buscarSolicitudInscripcionPorUsuarioYCurso(
-                        preinscripcion.getObjUsuario().getId_usuario(), 
-                        idCurso.intValue()
-                    );
-                    
-                    if (inscripcion != null) {
-                        debugMap.put("tiene_inscripcion", true);
-                        debugMap.put("inscripcion_id", inscripcion.getId_solicitud());
-                        
-                        if (inscripcion.getEstadosSolicitud() != null && !inscripcion.getEstadosSolicitud().isEmpty()) {
-                            String estadoInscripcion = inscripcion.getEstadosSolicitud()
-                                .get(inscripcion.getEstadosSolicitud().size() - 1).getEstado_actual();
-                            debugMap.put("estado_inscripcion", estadoInscripcion);
-                        } else {
-                            debugMap.put("estado_inscripcion", "SIN ESTADOS");
-                        }
-                    } else {
-                        debugMap.put("tiene_inscripcion", false);
-                        debugMap.put("estado_inscripcion", "NO EXISTE");
-                    }
-                } catch (Exception e) {
-                    debugMap.put("tiene_inscripcion", "Error: " + e.getMessage());
-                }
-                
-                debugInfo.add(debugMap);
-            }
-            
-            
-            return ResponseEntity.ok(debugInfo);
-            
-        } catch (Exception e) {
-            log.error("Error en debug: {}", e.getMessage(), e);
             return ResponseEntity.status(500).build();
         }
     }
@@ -4258,6 +3870,7 @@ public class CursosIntersemestralesRestController {
      * Aceptar inscripcion de estudiante (funcionario/coordinador acepta inscripcion final)
      * PUT /api/cursos-intersemestrales/inscripciones/{idInscripcion}/aceptar
      */
+    @PreAuthorize("hasAnyRole('Funcionario', 'Coordinador', 'Administrador')")
     @PutMapping("/inscripciones/{idInscripcion}/aceptar")
     public ResponseEntity<Map<String, Object>> aceptarInscripcionEstudiante(
             @PathVariable Long idInscripcion,
@@ -4278,7 +3891,15 @@ public class CursosIntersemestralesRestController {
                 return ResponseEntity.badRequest().body(error);
             }
             
-            // 2. Validar pago de la inscripcion (marcar como aceptada)
+            // 2. El curso debe tener cupo (si la inscripcion ya ocupaba cupo, aceptarla de nuevo no suma)
+            if (!ocupaCupo(inscripcion)) {
+                ResponseEntity<Map<String, Object>> sinCupo = validarCupoDisponible(inscripcion.getObjCursoOfertadoVerano());
+                if (sinCupo != null) {
+                    return sinCupo;
+                }
+            }
+
+            // 3. Validar pago de la inscripcion (marcar como aceptada)
             SolicitudCursoVeranoIncripcion inscripcionAceptada = solicitudGateway.validarPago(
                 inscripcion.getId_solicitud(), 
                 true, 
@@ -4332,6 +3953,7 @@ public class CursosIntersemestralesRestController {
      * Rechazar inscripcion de estudiante (funcionario/coordinador rechaza inscripcion)
      * PUT /api/cursos-intersemestrales/inscripciones/{idInscripcion}/rechazar
      */
+    @PreAuthorize("hasAnyRole('Funcionario', 'Coordinador', 'Administrador')")
     @PutMapping("/inscripciones/{idInscripcion}/rechazar")
     public ResponseEntity<Map<String, Object>> rechazarInscripcionEstudiante(
             @PathVariable Long idInscripcion,
@@ -4419,6 +4041,7 @@ public class CursosIntersemestralesRestController {
      * Actualizar observaciones de preinscripcion
      * PUT /api/cursos-intersemestrales/preinscripciones/{idPreinscripcion}/observaciones
      */
+    @PreAuthorize("hasAnyRole('Funcionario', 'Coordinador', 'Administrador')")
     @PutMapping("/preinscripciones/{idPreinscripcion}/observaciones")
     public ResponseEntity<Map<String, Object>> actualizarObservacionesPreinscripcion(
             @PathVariable Long idPreinscripcion,
@@ -4465,20 +4088,6 @@ public class CursosIntersemestralesRestController {
     }
 
     
-    /**
-     * Endpoint de prueba simple
-     * GET /api/cursos-intersemestrales/test
-     */
-    @GetMapping("/test")
-    public ResponseEntity<Map<String, Object>> testEndpoint() {
-        Map<String, Object> response = new HashMap<>();
-        response.put("success", true);
-        response.put("message", "Backend funcionando correctamente");
-        response.put("timestamp", new java.util.Date());
-        response.put("port", "5000");
-        return ResponseEntity.ok(response);
-    }
-
 
     // ==================== ENDPOINTS PARA APROBAR Y RECHAZAR PREINSCRIPCIONES ====================
 
@@ -4486,6 +4095,7 @@ public class CursosIntersemestralesRestController {
      * Aprobar preinscripcion (para funcionarios y coordinadores)
      * PUT /api/cursos-intersemestrales/preinscripciones/{idSolicitud}/aprobar
      */
+    @PreAuthorize("hasAnyRole('Funcionario', 'Coordinador', 'Administrador')")
     @PutMapping("/preinscripciones/{idSolicitud}/aprobar")
     public ResponseEntity<Map<String, Object>> aprobarPreinscripcion(
             @PathVariable Integer idSolicitud,
@@ -4511,6 +4121,7 @@ public class CursosIntersemestralesRestController {
      * Rechazar preinscripcion (para funcionarios y coordinadores)
      * PUT /api/cursos-intersemestrales/preinscripciones/{idSolicitud}/rechazar
      */
+    @PreAuthorize("hasAnyRole('Funcionario', 'Coordinador', 'Administrador')")
     @PutMapping("/preinscripciones/{idSolicitud}/rechazar")
     public ResponseEntity<Map<String, Object>> rechazarPreinscripcion(
             @PathVariable Integer idSolicitud,
@@ -4540,170 +4151,13 @@ public class CursosIntersemestralesRestController {
 
     // ==================== ENDPOINTS PARA APROBAR Y RECHAZAR SOLICITUDES ====================
 
-    /**
-     * Aprobar solicitud de curso nuevo
-     * PUT /api/cursos-intersemestrales/{id}/aprobar
-     */
-    @PutMapping("/{id}/aprobar")
-    public ResponseEntity<Map<String, Object>> aprobarSolicitud(@PathVariable Long id) {
-        try {
-            // Simular aprobacion de solicitud
-            Map<String, Object> solicitud = new HashMap<>();
-            solicitud.put("id_solicitud", id);
-            solicitud.put("nombre_solicitud", "Solicitud de Curso Nuevo");
-            solicitud.put("fecha_solicitud", "2024-01-10T10:30:00Z");
-            solicitud.put("estado", "Aprobado");
-            solicitud.put("observaciones", "Estudiante con buen rendimiento academico");
-            solicitud.put("condicion", "Primera_Vez");
-            solicitud.put("tipoSolicitud", "PREINSCRIPCION");
-            
-            // Usuario estudiante
-            Map<String, Object> usuario = new HashMap<>();
-            usuario.put("id_usuario", 4);
-            usuario.put("nombre", "Pepa");
-            usuario.put("apellido", "Gonzalez");
-            usuario.put("email", "pepa.gonzalez@unicauca.edu.co");
-            usuario.put("telefono", "3001111111");
-            usuario.put("codigo_estudiante", "104612345660");
-            
-            Map<String, Object> rolEstudiante = new HashMap<>();
-            rolEstudiante.put("id_rol", 1);
-            rolEstudiante.put("nombre", "Estudiante");
-            usuario.put("objRol", rolEstudiante);
-            
-            solicitud.put("objUsuario", usuario);
-            
-            // Curso ofertado
-            Map<String, Object> curso = new HashMap<>();
-            curso.put("id_curso", 1);
-            curso.put("nombre_curso", "Programacion I");
-            curso.put("codigo_curso", "PROG-201");
-            curso.put("descripcion", "Fundamentos de programacion");
-            curso.put("fecha_inicio", "2024-01-15T00:00:00Z");
-            curso.put("fecha_fin", "2024-03-15T00:00:00Z");
-            curso.put("cupo_maximo", 25);
-            curso.put("cupo_estimado", 20);
-            curso.put("cupo_disponible", 15);
-            curso.put("espacio_asignado", "Lab 301");
-            curso.put("estado", "Preinscripcion");
-            
-            // Materia del curso
-            Map<String, Object> materia = new HashMap<>();
-            materia.put("id_materia", 3);
-            materia.put("nombre_materia", "Programacion I");
-            materia.put("codigo_materia", "PROG");
-            materia.put("creditos", 4);
-            curso.put("objMateria", materia);
-            
-            // Docente del curso
-            Map<String, Object> docente = new HashMap<>();
-            docente.put("id_usuario", 3);
-            docente.put("nombre", "Ana");
-            docente.put("apellido", "Martinez");
-            docente.put("email", "ana@unicauca.edu.co");
-            docente.put("telefono", "3009876543");
-            
-            Map<String, Object> rolDocente = new HashMap<>();
-            rolDocente.put("id_rol", 2);
-            rolDocente.put("nombre", "Docente");
-            docente.put("objRol", rolDocente);
-            
-            curso.put("objDocente", docente);
-            solicitud.put("objCursoOfertadoVerano", curso);
-            
-            return ResponseEntity.ok(solicitud);
-        } catch (Exception e) {
-            return ResponseEntity.status(500).body(null);
-        }
-    }
-
-    /**
-     * Rechazar solicitud de curso nuevo
-     * PUT /api/cursos-intersemestrales/{id}/rechazar
-     */
-    @PutMapping("/{id}/rechazar")
-    public ResponseEntity<Map<String, Object>> rechazarSolicitud(
-            @PathVariable Long id,
-            @RequestBody(required = false) Map<String, String> request) {
-        try {
-            String motivo = request != null ? request.get("motivo") : "Solicitud rechazada por funcionario/coordinador";
-            
-            // Simular rechazo de solicitud
-            Map<String, Object> solicitud = new HashMap<>();
-            solicitud.put("id_solicitud", id);
-            solicitud.put("nombre_solicitud", "Solicitud de Curso Nuevo");
-            solicitud.put("fecha_solicitud", "2024-01-10T10:30:00Z");
-            solicitud.put("estado", "Rechazado");
-            solicitud.put("observaciones", motivo);
-            solicitud.put("condicion", "Primera_Vez");
-            solicitud.put("tipoSolicitud", "PREINSCRIPCION");
-            
-            // Usuario estudiante
-            Map<String, Object> usuario = new HashMap<>();
-            usuario.put("id_usuario", 4);
-            usuario.put("nombre", "Pepa");
-            usuario.put("apellido", "Gonzalez");
-            usuario.put("email", "pepa.gonzalez@unicauca.edu.co");
-            usuario.put("telefono", "3001111111");
-            usuario.put("codigo_estudiante", "104612345660");
-            
-            Map<String, Object> rolEstudiante = new HashMap<>();
-            rolEstudiante.put("id_rol", 1);
-            rolEstudiante.put("nombre", "Estudiante");
-            usuario.put("objRol", rolEstudiante);
-            
-            solicitud.put("objUsuario", usuario);
-            
-            // Curso ofertado
-            Map<String, Object> curso = new HashMap<>();
-            curso.put("id_curso", 1);
-            curso.put("nombre_curso", "Programacion I");
-            curso.put("codigo_curso", "PROG-201");
-            curso.put("descripcion", "Fundamentos de programacion");
-            curso.put("fecha_inicio", "2024-01-15T00:00:00Z");
-            curso.put("fecha_fin", "2024-03-15T00:00:00Z");
-            curso.put("cupo_maximo", 25);
-            curso.put("cupo_estimado", 20);
-            curso.put("cupo_disponible", 15);
-            curso.put("espacio_asignado", "Lab 301");
-            curso.put("estado", "Preinscripcion");
-            
-            // Materia del curso
-            Map<String, Object> materia = new HashMap<>();
-            materia.put("id_materia", 3);
-            materia.put("nombre_materia", "Programacion I");
-            materia.put("codigo_materia", "PROG");
-            materia.put("creditos", 4);
-            curso.put("objMateria", materia);
-            
-            // Docente del curso
-            Map<String, Object> docente = new HashMap<>();
-            docente.put("id_usuario", 3);
-            docente.put("nombre", "Ana");
-            docente.put("apellido", "Martinez");
-            docente.put("email", "ana@unicauca.edu.co");
-            docente.put("telefono", "3009876543");
-            
-            Map<String, Object> rolDocente = new HashMap<>();
-            rolDocente.put("id_rol", 2);
-            rolDocente.put("nombre", "Docente");
-            docente.put("objRol", rolDocente);
-            
-            curso.put("objDocente", docente);
-            solicitud.put("objCursoOfertadoVerano", curso);
-            
-            return ResponseEntity.ok(solicitud);
-        } catch (Exception e) {
-            return ResponseEntity.status(500).body(null);
-        }
-    }
-
     // ==================== ENDPOINT PARA CONFIRMAR INSCRIPCION ====================
 
     /**
      * Confirmar inscripcion de estudiante
      * PUT /api/cursos-intersemestrales/inscripciones/{id}/confirmar
      */
+    @PreAuthorize("@autorizacion.esStaff() or @autorizacion.esDuenoSolicitud(#id.intValue())")
     @PutMapping("/inscripciones/{id}/confirmar")
     public ResponseEntity<Map<String, Object>> confirmarInscripcion(@PathVariable Long id) {
         try {
@@ -4749,6 +4203,7 @@ public class CursosIntersemestralesRestController {
 
     
 
+    @PreAuthorize("@autorizacion.esStaff() or @autorizacion.esDuenoSolicitud(#idInscripcion.intValue())")
     @GetMapping("/inscripciones/{idInscripcion}/info")
     public ResponseEntity<Map<String, Object>> infoInscripcion(@PathVariable Long idInscripcion) {
         try {
@@ -4810,140 +4265,7 @@ public class CursosIntersemestralesRestController {
 
     // ==================== ENDPOINT PARA SOLICITUDES DE CURSO NUEVO ====================
 
-    /**
-     * Obtener solicitudes de curso nuevo
-     * GET /api/cursos-intersemestrales/solicitudes-curso-nuevo
-     */
-    @GetMapping("/solicitudes-curso-nuevo")
-    public ResponseEntity<List<Map<String, Object>>> getSolicitudesCursoNuevo() {
-        try {
-            List<Map<String, Object>> solicitudes = new ArrayList<>();
-            
-            // Solicitud 1: Pepa Gonzalez
-            Map<String, Object> solicitud1 = new HashMap<>();
-            solicitud1.put("id_solicitud", 1);
-            solicitud1.put("nombre_solicitud", "Solicitud de Curso Nuevo - Programacion Avanzada");
-            solicitud1.put("fecha_solicitud", "2024-01-15T10:30:00Z");
-            solicitud1.put("estado", "Pendiente");
-            solicitud1.put("condicion", "Primera_Vez");
-            solicitud1.put("observaciones", "Estudiante solicita curso de programacion avanzada para el verano");
-            solicitud1.put("tipoSolicitud", "PREINSCRIPCION");
-            
-            // Usuario estudiante con estructura corregida
-            Map<String, Object> usuario1 = new HashMap<>();
-            usuario1.put("id_usuario", 1);
-            usuario1.put("nombre_completo", "Pepa Gonzalez");
-            usuario1.put("codigo", "104612345660");
-            usuario1.put("correo", "pepa.gonzalez@unicauca.edu.co");
-            usuario1.put("password", "ContrasenaSegura123");
-            usuario1.put("estado_usuario", true);
-            
-            // Rol corregido
-            Map<String, Object> rol1 = new HashMap<>();
-            rol1.put("id_rol", 1);
-            rol1.put("nombre", "Estudiante"); // SUCCESS CORREGIDO: ya no es null
-            usuario1.put("rol", rol1);
-            
-            // Programa
-            Map<String, Object> programa1 = new HashMap<>();
-            programa1.put("id_programa", 1);
-            programa1.put("codigo", "INF01");
-            programa1.put("nombre_programa", "Ingenieria Informatica");
-            usuario1.put("objPrograma", programa1);
-            
-            solicitud1.put("objUsuario", usuario1);
-            
-            // Curso ofertado
-            Map<String, Object> curso1 = new HashMap<>();
-            curso1.put("id_curso", 1);
-            curso1.put("nombre_curso", "Programacion Avanzada");
-            curso1.put("codigo_curso", "PROG-301");
-            curso1.put("descripcion", "Curso de programacion avanzada");
-            curso1.put("fecha_inicio", "2024-01-15T00:00:00Z");
-            curso1.put("fecha_fin", "2024-03-15T00:00:00Z");
-            curso1.put("cupo_maximo", 25);
-            curso1.put("cupo_estimado", 25);
-            curso1.put("cupo_disponible", 20);
-            curso1.put("espacio_asignado", "Lab 301");
-            curso1.put("estado", "Abierto");
-            
-            // Materia del curso
-            Map<String, Object> materia1 = new HashMap<>();
-            materia1.put("id_materia", 1);
-            materia1.put("nombre_materia", "Programacion");
-            materia1.put("codigo_materia", "PROG");
-            materia1.put("creditos", 4);
-            curso1.put("objMateria", materia1);
-            
-            // Docente del curso con estructura corregida
-            Map<String, Object> docente1 = new HashMap<>();
-            docente1.put("id_usuario", 2);
-            docente1.put("nombre_completo", "Maria Garcia");
-            docente1.put("codigo", "DOC001");
-            docente1.put("correo", "maria.garcia@unicauca.edu.co");
-            docente1.put("estado_usuario", true);
-            
-            // Rol del docente corregido
-            Map<String, Object> rolDocente1 = new HashMap<>();
-            rolDocente1.put("id_rol", 2);
-            rolDocente1.put("nombre", "Docente"); // SUCCESS CORREGIDO: ya no es null
-            docente1.put("rol", rolDocente1);
-            
-            // Programa del docente
-            Map<String, Object> programaDocente1 = new HashMap<>();
-            programaDocente1.put("id_programa", 1);
-            programaDocente1.put("codigo", "INF01");
-            programaDocente1.put("nombre_programa", "Ingenieria Informatica");
-            docente1.put("objPrograma", programaDocente1);
-            
-            curso1.put("objDocente", docente1);
-            solicitud1.put("objCursoOfertadoVerano", curso1);
-            
-            solicitudes.add(solicitud1);
-            
-            // Solicitud 2: Carlos Lopez
-            Map<String, Object> solicitud2 = new HashMap<>();
-            solicitud2.put("id_solicitud", 2);
-            solicitud2.put("nombre_solicitud", "Solicitud de Curso Nuevo - Inteligencia Artificial");
-            solicitud2.put("fecha_solicitud", "2024-01-16T14:20:00Z");
-            solicitud2.put("estado", "Aprobado");
-            solicitud2.put("condicion", "Repitencia");
-            solicitud2.put("observaciones", "Estudiante con buen rendimiento academico");
-            solicitud2.put("tipoSolicitud", "PREINSCRIPCION");
-            
-            // Usuario estudiante 2
-            Map<String, Object> usuario2 = new HashMap<>();
-            usuario2.put("id_usuario", 3);
-            usuario2.put("nombre_completo", "Carlos Lopez");
-            usuario2.put("codigo", "104612345661");
-            usuario2.put("correo", "carlos.lopez@unicauca.edu.co");
-            usuario2.put("password", "ContrasenaSegura123");
-            usuario2.put("estado_usuario", true);
-            
-            // Rol corregido
-            Map<String, Object> rol2 = new HashMap<>();
-            rol2.put("id_rol", 1);
-            rol2.put("nombre", "Estudiante"); // SUCCESS CORREGIDO
-            usuario2.put("rol", rol2);
-            
-            // Programa
-            Map<String, Object> programa2 = new HashMap<>();
-            programa2.put("id_programa", 1);
-            programa2.put("codigo", "INF01");
-            programa2.put("nombre_programa", "Ingenieria Informatica");
-            usuario2.put("objPrograma", programa2);
-            
-            solicitud2.put("objUsuario", usuario2);
-            solicitud2.put("objCursoOfertadoVerano", curso1); // Mismo curso
-            
-            solicitudes.add(solicitud2);
-            
-            return ResponseEntity.ok(solicitudes);
-        } catch (Exception e) {
-            return ResponseEntity.status(500).build();
-        }
-    }
-
+    @PreAuthorize("hasAnyRole(" + Autorizacion.ROLES_STAFF + ")")
     @GetMapping("/inscripciones/curso/{idCurso}/estadisticas")
     public ResponseEntity<Map<String, Object>> obtenerEstadisticasInscripciones(@PathVariable Long idCurso) {
         try {
@@ -4981,6 +4303,7 @@ public class CursosIntersemestralesRestController {
      * Descargar comprobante de pago por ID de inscripcion (generico para cualquier estudiante)
      * GET /api/cursos-intersemestrales/inscripciones/{idInscripcion}/comprobante
      */
+    @PreAuthorize("@autorizacion.esStaff() or @autorizacion.esDuenoSolicitud(#idInscripcion.intValue())")
     @GetMapping("/inscripciones/{idInscripcion}/comprobante")
     public ResponseEntity<?> descargarComprobantePago(@PathVariable Long idInscripcion) {
         try {
@@ -5062,55 +4385,6 @@ public class CursosIntersemestralesRestController {
             return ResponseEntity.status(500)
                 .header("Content-Type", "application/json")
                 .body("{\"error\":\"Error interno del servidor al descargar comprobante\",\"message\":\"" + e.getMessage() + "\"}");
-        }
-    }
-
-    @GetMapping("/debug/inscripcion/{idInscripcion}")
-    public ResponseEntity<Map<String, Object>> debugInscripcion(@PathVariable Long idInscripcion) {
-        try {
-            
-            // Buscar la inscripcion
-            SolicitudCursoVeranoIncripcion inscripcion = solicitudGateway.buscarSolicitudInscripcionPorId(idInscripcion.intValue());
-            
-            Map<String, Object> resultado = new HashMap<>();
-            resultado.put("status", "OK");
-            resultado.put("inscripcion_encontrada", inscripcion != null);
-            
-            if (inscripcion != null) {
-                resultado.put("id_solicitud", inscripcion.getId_solicitud());
-                resultado.put("nombre_solicitud", inscripcion.getNombre_solicitud());
-                resultado.put("fecha_registro", inscripcion.getFecha_registro_solicitud());
-                
-                // Verificar documentos
-                List<Documento> documentos = inscripcion.getDocumentos();
-                resultado.put("documentos_count", documentos != null ? documentos.size() : "NULL");
-                resultado.put("documentos_null", documentos == null);
-                resultado.put("documentos_empty", documentos != null && documentos.isEmpty());
-                
-                if (documentos != null && !documentos.isEmpty()) {
-                    List<Map<String, Object>> documentosInfo = new ArrayList<>();
-                    for (Documento doc : documentos) {
-                        Map<String, Object> docInfo = new HashMap<>();
-                        docInfo.put("id", doc.getId_documento());
-                        docInfo.put("nombre", doc.getNombre());
-                        docInfo.put("ruta", doc.getRuta_documento());
-                        docInfo.put("es_valido", doc.isEsValido());
-                        documentosInfo.add(docInfo);
-                    }
-                    resultado.put("documentos", documentosInfo);
-                }
-            }
-            
-            return ResponseEntity.ok(resultado);
-            
-        } catch (Exception e) {
-            log.error("Se presento un error al verificar la inscripcion: " + e.getMessage());
-            log.error("Error: {}", e.getMessage(), e);
-            
-            Map<String, Object> error = new HashMap<>();
-            error.put("status", "ERROR");
-            error.put("message", "Error verificando inscripcion: " + e.getMessage());
-            return ResponseEntity.status(500).body(error);
         }
     }
 
@@ -5487,6 +4761,44 @@ public class CursosIntersemestralesRestController {
         
         // Si no se pudo normalizar, retornar el original
         return periodoLimpio;
+    }
+
+    /**
+     * Verifica que el curso tenga cupo. El cupo del curso es {@code cupo_estimado}
+     * (el frontend lo muestra como cupo máximo). Ocupan cupo las inscripciones con pago
+     * validado o completadas.
+     *
+     * @return null si hay cupo; si no, una respuesta 409 con código CUPO_AGOTADO
+     */
+    private ResponseEntity<Map<String, Object>> validarCupoDisponible(
+            co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.CursoOfertadoVerano curso) {
+        if (curso == null || curso.getId_curso() == null || curso.getCupo_estimado() == null
+                || curso.getCupo_estimado() <= 0) {
+            return null; // Curso sin cupo definido: no se limita
+        }
+        Integer ocupados = solicitudGateway.contarInscripcionesAceptadasPorCurso(curso.getId_curso());
+        int ocupadosSeguro = ocupados != null ? ocupados : 0;
+        if (ocupadosSeguro >= curso.getCupo_estimado()) {
+            Map<String, Object> error = new HashMap<>();
+            error.put("error", "El curso no tiene cupos disponibles (" + ocupadosSeguro + " de "
+                    + curso.getCupo_estimado() + " ocupados)");
+            error.put("codigo", "CUPO_AGOTADO");
+            error.put("cupo", curso.getCupo_estimado());
+            error.put("ocupados", ocupadosSeguro);
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(error);
+        }
+        return null;
+    }
+
+    /** true si el último estado de la inscripción ya ocupa un cupo del curso. */
+    private boolean ocupaCupo(SolicitudCursoVeranoIncripcion inscripcion) {
+        if (inscripcion.getEstadosSolicitud() == null || inscripcion.getEstadosSolicitud().isEmpty()) {
+            return false;
+        }
+        String ultimo = inscripcion.getEstadosSolicitud()
+                .get(inscripcion.getEstadosSolicitud().size() - 1).getEstado_actual();
+        return co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.gateway
+                .GestionarSolicitudCursoVeranoGatewayImplAdapter.ESTADOS_INSCRIPCION_QUE_OCUPAN_CUPO.contains(ultimo);
     }
 
 }

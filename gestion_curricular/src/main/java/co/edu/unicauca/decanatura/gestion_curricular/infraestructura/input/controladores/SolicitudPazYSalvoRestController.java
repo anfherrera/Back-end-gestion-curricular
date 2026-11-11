@@ -8,6 +8,8 @@ import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarS
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarArchivosCUIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.CambioEstadoSolicitud;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.SolicitudPazYSalvo;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.TransicionEstadoPazYSalvo;
+import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.controladorExcepciones.excepcionesPropias.ReglaNegocioExcepcion;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Documento;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.EstadoSolicitud;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.DTOPeticion.CambioEstadoSolicitudDTOPeticion;
@@ -48,8 +50,11 @@ import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Enums.Perio
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.GestionarUsuarioGatewayIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.controladorExcepciones.excepcionesPropias.EntidadNoExisteException;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.access.prepost.PreAuthorize;
+import co.edu.unicauca.decanatura.gestion_curricular.Security.Autorizacion;
 import org.springframework.security.core.context.SecurityContextHolder;
 
+@PreAuthorize("hasAnyRole(" + Autorizacion.ROLES_STAFF + ")")
 @Slf4j
 @RestController
 @RequestMapping("/api/solicitudes-pazysalvo")
@@ -65,7 +70,9 @@ public class SolicitudPazYSalvoRestController {
     private final co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.formateador.DocumentGeneratorService documentGeneratorService;
     private final ObjectMapper objectMapper;
     private final GestionarUsuarioGatewayIntPort usuarioGateway;
+    private final Autorizacion autorizacion;
 
+    @PreAuthorize("hasAnyRole('Estudiante', 'Administrador')")
     @PostMapping("/crearSolicitud-PazYSalvo")
     public ResponseEntity<?> crearSolicitudPazYSalvo(
             @RequestBody Object peticion) {
@@ -76,10 +83,22 @@ public class SolicitudPazYSalvoRestController {
 
             if (peticion instanceof Map<?, ?>) {
                 @SuppressWarnings("unchecked")
-                Map<String, Object> mapPeticion = (Map<String, Object>) peticion;
+                Map<String, Object> mapPeticion = new HashMap<>((Map<String, Object>) peticion);
 
                 if (mapPeticion.isEmpty()) {
                     return respuestaBadRequest("Los datos de la solicitud son requeridos");
+                }
+
+                // Un estudiante solo puede crear solicitudes a su nombre: el usuario sale del token JWT,
+                // no del cuerpo de la petición.
+                if (!autorizacion.esStaff()) {
+                    Integer idUsuarioActual = autorizacion.idUsuarioActual();
+                    if (idUsuarioActual == null) {
+                        return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                                .body(Map.of("error", "Usuario no autenticado"));
+                    }
+                    mapPeticion.remove("objUsuario");
+                    mapPeticion.put("idUsuario", idUsuarioActual);
                 }
 
                 if (mapPeticion.containsKey("idUsuario")) {
@@ -109,6 +128,10 @@ public class SolicitudPazYSalvoRestController {
             }
 
             return respuestaBadRequest("Formato de solicitud no soportado");
+        } catch (ReglaNegocioExcepcion e) {
+            // Ej.: el estudiante ya tiene una solicitud en trámite
+            return ResponseEntity.status(HttpStatus.CONFLICT)
+                    .body(Map.of("error", e.formatException(), "codigo", "REGLA_NEGOCIO"));
         } catch (IllegalArgumentException e) {
             return respuestaBadRequest("Formato de solicitud inválido: " + e.getMessage());
         } catch (Exception e) {
@@ -468,10 +491,20 @@ public class SolicitudPazYSalvoRestController {
         return ResponseEntity.ok(respuesta);
     }
 
+    @PreAuthorize("isAuthenticated()")
     @GetMapping("/listarSolicitud-PazYSalvo/porRol")
     public ResponseEntity<List<SolicitudPazYSalvoDTORespuesta>> listarSolicitudPorRol(
             @RequestParam String rol,
             @RequestParam(required = false) Integer idUsuario) {
+
+        // Quien no es staff solo puede ver sus propias solicitudes
+        if (!autorizacion.esStaff()) {
+            rol = "ESTUDIANTE";
+            idUsuario = autorizacion.idUsuarioActual();
+            if (idUsuario == null) {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+            }
+        }
 
         List<SolicitudPazYSalvo> solicitudes = solicitudPazYSalvoCU.listarSolicitudesPorRol(rol, idUsuario);
 
@@ -481,6 +514,7 @@ public class SolicitudPazYSalvoRestController {
         return ResponseEntity.ok(respuesta);
     }
 
+    @PreAuthorize("@autorizacion.esStaff() or @autorizacion.esDuenoSolicitud(#id)")
     @GetMapping("/listarSolicitud-PazYSalvo/id/{id}")
     public ResponseEntity<?> listarPazYSalvoById(@PathVariable Integer id) {
         try {
@@ -492,15 +526,30 @@ public class SolicitudPazYSalvoRestController {
         }
     }
 
+    @PreAuthorize("isAuthenticated()")
     @GetMapping("/listarSolicitud-PazYSalvo/{id}")
     public ResponseEntity<?> listarPazYSalvoByIdOrRole(
             @PathVariable String id,
             @RequestParam(required = false) String periodoAcademico) {
         try {
+            boolean esStaff = autorizacion.esStaff();
+            if (!esStaff && !esIdentificadorNumerico(id)) {
+                // Listar por rol (coordinador, funcionario, secretaria) es solo para staff
+                return ResponseEntity.status(HttpStatus.FORBIDDEN).body(Map.of("error", "Acceso denegado"));
+            }
             if (esIdentificadorNumerico(id)) {
                 Integer idNumero = Integer.valueOf(id);
+                if (!esStaff
+                        && !autorizacion.esDuenoSolicitud(idNumero)
+                        && !autorizacion.esUsuarioActual(idNumero)) {
+                    return ResponseEntity.status(HttpStatus.FORBIDDEN).body(Map.of("error", "Acceso denegado"));
+                }
                 try {
                     SolicitudPazYSalvo solicitud = solicitudPazYSalvoCU.buscarPorId(idNumero);
+                    if (!esStaff && !autorizacion.esDuenoSolicitud(idNumero)) {
+                        // El id corresponde a una solicitud ajena; para el estudiante se interpreta como su id de usuario
+                        throw new EntidadNoExisteException("Solicitud no encontrada");
+                    }
                     SolicitudPazYSalvoDTORespuesta respuesta = solicitudMapperDominio.mappearDeSolicitudARespuesta(solicitud);
                     return ResponseEntity.ok(respuesta);
                 } catch (EntidadNoExisteException ex) {
@@ -534,6 +583,7 @@ public class SolicitudPazYSalvoRestController {
         }
     }
 
+    @PreAuthorize("hasAnyRole('Funcionario', 'Coordinador', 'Secretario', 'Administrador')")
     @PutMapping("/actualizarEstadoSolicitud")
     public ResponseEntity<?> actualizarEstadoSolicitudPazYSalvo(
             @RequestBody CambioEstadoSolicitudDTOPeticion peticion) {
@@ -548,6 +598,12 @@ public class SolicitudPazYSalvoRestController {
             
             if (peticion.getNuevoEstado() == null || peticion.getNuevoEstado().trim().isEmpty()) {
                 return ResponseEntity.badRequest().body(Map.of("error", "El nuevo estado es requerido"));
+            }
+
+            ResponseEntity<Map<String, Object>> rechazo =
+                    validarCambioDeEstado(peticion.getIdSolicitud(), peticion.getNuevoEstado());
+            if (rechazo != null) {
+                return rechazo;
             }
 
             CambioEstadoSolicitud solicitud = solicitudMapper
@@ -574,6 +630,7 @@ public class SolicitudPazYSalvoRestController {
      * Cambiar estado de solicitud por ID (alias para compatibilidad con pruebas)
      * PUT /api/solicitudes-pazysalvo/cambiarEstadoSolicitud/{id}
      */
+    @PreAuthorize("hasAnyRole('Funcionario', 'Coordinador', 'Secretario', 'Administrador')")
     @PutMapping("/cambiarEstadoSolicitud/{id}")
     public ResponseEntity<Map<String, Object>> cambiarEstadoSolicitudPorId(
             @PathVariable Integer id,
@@ -583,9 +640,14 @@ public class SolicitudPazYSalvoRestController {
             return ResponseEntity.badRequest().body(Map.of("error", "nuevoEstado es requerido"));
         }
         
+        ResponseEntity<Map<String, Object>> rechazo = validarCambioDeEstado(id, nuevoEstado);
+        if (rechazo != null) {
+            return rechazo;
+        }
+
         // Obtener el comentario si está presente
         String comentario = requestBody.get("comentario");
-        
+
         // Usar el método sobrecargado que acepta comentario
         solicitudPazYSalvoCU.cambiarEstadoSolicitud(id, nuevoEstado, comentario);
         
@@ -604,6 +666,7 @@ public class SolicitudPazYSalvoRestController {
      * Generar documento PDF de Paz y Salvo
      * GET /api/solicitudes-pazysalvo/generarDocumentoPazYSalvo/{id}/pdf
      */
+    @PreAuthorize("@autorizacion.esStaff() or @autorizacion.esDuenoSolicitud(#id)")
     @GetMapping("/generarDocumentoPazYSalvo/{id}/pdf")
     public ResponseEntity<byte[]> generarDocumentoPazYSalvoPDF(
             @PathVariable Integer id,
@@ -699,6 +762,7 @@ public class SolicitudPazYSalvoRestController {
      * Generar documento DOCX de Paz y Salvo
      * GET /api/solicitudes-pazysalvo/generarDocumentoPazYSalvo/{id}/docx
      */
+    @PreAuthorize("@autorizacion.esStaff() or @autorizacion.esDuenoSolicitud(#id)")
     @GetMapping("/generarDocumentoPazYSalvo/{id}/docx")
     public ResponseEntity<byte[]> generarDocumentoPazYSalvoDOCX(
             @PathVariable Integer id,
@@ -790,55 +854,10 @@ public class SolicitudPazYSalvoRestController {
     }
 
     /**
-     * Endpoint de prueba para verificar que el controlador funciona
-     */
-    @GetMapping("/test")
-    public ResponseEntity<String> test() {
-        return ResponseEntity.ok("Controlador de Paz y Salvo funcionando correctamente");
-    }
-    
-    /**
-     * Endpoint de diagnóstico para ver qué headers está enviando el frontend
-     */
-    @PostMapping("/debug-upload")
-    public ResponseEntity<Map<String, Object>> debugUpload(
-            jakarta.servlet.http.HttpServletRequest request,
-            @RequestParam(value = "file", required = false) MultipartFile file) {
-        
-        Map<String, Object> debug = new HashMap<>();
-        
-        
-        debug.put("content_type", request.getContentType());
-        debug.put("method", request.getMethod());
-        debug.put("content_length", request.getContentLength());
-        
-        Map<String, String> headers = new HashMap<>();
-        java.util.Enumeration<String> headerNames = request.getHeaderNames();
-        while (headerNames.hasMoreElements()) {
-            String headerName = headerNames.nextElement();
-            String headerValue = request.getHeader(headerName);
-            headers.put(headerName, headerValue);
-        }
-        debug.put("headers", headers);
-        
-        if (file != null && !file.isEmpty()) {
-            Map<String, Object> fileInfo = new HashMap<>();
-            fileInfo.put("nombre", file.getOriginalFilename());
-            fileInfo.put("tamaño", file.getSize());
-            fileInfo.put("content_type", file.getContentType());
-            debug.put("archivo_recibido", fileInfo);
-            
-        } else {
-            debug.put("archivo_recibido", "NO SE RECIBIÓ ARCHIVO");
-        }
-        
-        return ResponseEntity.ok(debug);
-    }
-
-    /**
      * Subir archivo para paz y salvo (SIN asociar a solicitud - como en homologación)
      * Los documentos se asocian automáticamente cuando se crea la solicitud
      */
+    @PreAuthorize("isAuthenticated()")
     @PostMapping("/subir-documento")
     public ResponseEntity<Map<String, Object>> subirDocumentoPazSalvo(
             @RequestParam("file") MultipartFile file) {
@@ -893,6 +912,7 @@ public class SolicitudPazYSalvoRestController {
      * Descargar documento específico por nombre
      * Busca el documento en la BD para obtener su ruta completa (incluye subcarpetas)
      */
+    @PreAuthorize("isAuthenticated()")
     @GetMapping("/descargar-documento")
     public ResponseEntity<byte[]> descargarDocumento(@RequestParam("filename") String filename) {
         try {
@@ -900,9 +920,24 @@ public class SolicitudPazYSalvoRestController {
             // Buscar el documento en la BD por nombre para obtener su ruta completa
             String rutaArchivo = filename; // Por defecto usar el nombre recibido
             
-            // Buscar en todas las solicitudes de paz y salvo
-            List<SolicitudPazYSalvo> solicitudes = solicitudPazYSalvoCU.listarSolicitudes();
-            for (SolicitudPazYSalvo solicitud : solicitudes) {
+            // Staff: busca en todas las solicitudes de paz y salvo.
+            // Estudiante: solo en las suyas, y el archivo debe pertenecer a una de ellas.
+            boolean esStaff = autorizacion.esStaff();
+            List<SolicitudPazYSalvo> solicitudes;
+            if (esStaff) {
+                solicitudes = solicitudPazYSalvoCU.listarSolicitudes();
+            } else {
+                Integer idUsuarioActual = autorizacion.idUsuarioActual();
+                if (idUsuarioActual == null) {
+                    return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
+                }
+                solicitudes = solicitudPazYSalvoCU.listarSolicitudesPorRol("ESTUDIANTE", idUsuarioActual);
+            }
+            boolean encontrado = false;
+            for (SolicitudPazYSalvo solicitud : solicitudes != null ? solicitudes : List.<SolicitudPazYSalvo>of()) {
+                if (encontrado) {
+                    break;
+                }
                 if (solicitud.getDocumentos() != null) {
                     for (Documento doc : solicitud.getDocumentos()) {
                         // Comparar por nombre (sin ruta)
@@ -912,10 +947,14 @@ public class SolicitudPazYSalvoRestController {
                             if (doc.getRuta_documento() != null && !doc.getRuta_documento().isEmpty()) {
                                 rutaArchivo = doc.getRuta_documento();
                             }
+                            encontrado = true;
                             break;
                         }
                     }
                 }
+            }
+            if (!esStaff && !encontrado) {
+                return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
             }
             
             // Obtener el archivo usando la ruta (puede ser nombre simple o ruta completa)
@@ -1081,6 +1120,7 @@ public class SolicitudPazYSalvoRestController {
     /**
      * Descargar oficio por ID de solicitud de paz y salvo
      */
+    @PreAuthorize("@autorizacion.esStaff() or @autorizacion.esDuenoSolicitud(#idSolicitud)")
     @GetMapping("/descargarOficio/{idSolicitud}")
     public ResponseEntity<byte[]> descargarOficioPazSalvo(@PathVariable Integer idSolicitud) {
         try {
@@ -1144,6 +1184,7 @@ public class SolicitudPazYSalvoRestController {
      * Obtener TODOS los documentos de una solicitud de paz y salvo (incluyendo los del estudiante)
      * Para funcionarios
      */
+    @PreAuthorize("@autorizacion.esStaff() or @autorizacion.esDuenoSolicitud(#idSolicitud)")
     @GetMapping("/obtenerDocumentos/{idSolicitud}")
     public ResponseEntity<List<Map<String, Object>>> obtenerDocumentosPazSalvo(@PathVariable Integer idSolicitud) {
         try {
@@ -1209,133 +1250,6 @@ public class SolicitudPazYSalvoRestController {
             
         } catch (Exception e) {
             return ResponseEntity.internalServerError().build();
-        }
-    }
-
-    /**
-     * Endpoint de debugging para verificar datos en la base de datos
-     */
-    @GetMapping("/debug/documentos/{idSolicitud}")
-    public ResponseEntity<Map<String, Object>> debugDocumentos(@PathVariable Integer idSolicitud) {
-        try {
-            Map<String, Object> debugInfo = new HashMap<>();
-            
-            // Verificar si la solicitud existe
-            SolicitudPazYSalvo solicitud = solicitudPazYSalvoCU.buscarPorId(idSolicitud);
-            if (solicitud == null) {
-                debugInfo.put("error", "Solicitud no encontrada");
-                debugInfo.put("solicitud_existe", false);
-                return ResponseEntity.ok(debugInfo);
-            }
-            
-            debugInfo.put("solicitud_existe", true);
-            debugInfo.put("solicitud_id", solicitud.getId_solicitud());
-            debugInfo.put("solicitud_nombre", solicitud.getNombre_solicitud());
-            debugInfo.put("solicitud_fecha", solicitud.getFecha_registro_solicitud());
-            
-            // Verificar documentos
-            List<Documento> documentos = solicitud.getDocumentos();
-            debugInfo.put("documentos_es_null", documentos == null);
-            debugInfo.put("documentos_cantidad", documentos != null ? documentos.size() : 0);
-            
-            if (documentos != null && !documentos.isEmpty()) {
-                List<Map<String, Object>> docsInfo = new ArrayList<>();
-                for (Documento doc : documentos) {
-                    Map<String, Object> docInfo = new HashMap<>();
-                    docInfo.put("id", doc.getId_documento());
-                    docInfo.put("nombre", doc.getNombre());
-                    docInfo.put("ruta", doc.getRuta_documento());
-                    docInfo.put("fecha", doc.getFecha_documento());
-                    docInfo.put("esValido", doc.isEsValido());
-                    docsInfo.add(docInfo);
-                }
-                debugInfo.put("documentos_detalle", docsInfo);
-            }
-            
-            return ResponseEntity.ok(debugInfo);
-            
-        } catch (Exception e) {
-            Map<String, Object> errorInfo = new HashMap<>();
-            errorInfo.put("error", e.getMessage());
-            errorInfo.put("stack_trace", e.getStackTrace());
-            return ResponseEntity.ok(errorInfo);
-        }
-    }
-
-    /**
-     * Endpoint para verificar y corregir documentos sin asociar
-     */
-    @GetMapping("/debug/documentos-sin-asociar")
-    public ResponseEntity<Map<String, Object>> verificarDocumentosSinAsociar() {
-        try {
-            
-            Map<String, Object> resultado = new HashMap<>();
-            
-            // Buscar documentos sin solicitud asociada
-            List<Documento> documentosSinSolicitud = objGestionarDocumentosGateway.buscarDocumentosSinSolicitud();
-            
-            resultado.put("documentos_sin_asociar", documentosSinSolicitud.size());
-            
-            if (!documentosSinSolicitud.isEmpty()) {
-                List<Map<String, Object>> docsInfo = new ArrayList<>();
-                for (Documento doc : documentosSinSolicitud) {
-                    Map<String, Object> docInfo = new HashMap<>();
-                    docInfo.put("id", doc.getId_documento());
-                    docInfo.put("nombre", doc.getNombre());
-                    docInfo.put("ruta", doc.getRuta_documento());
-                    docInfo.put("fecha", doc.getFecha_documento());
-                    docsInfo.add(docInfo);
-                }
-                resultado.put("documentos_detalle", docsInfo);
-            }
-            
-            
-            return ResponseEntity.ok(resultado);
-            
-        } catch (Exception e) {
-            
-            Map<String, Object> errorInfo = new HashMap<>();
-            errorInfo.put("error", e.getMessage());
-            return ResponseEntity.ok(errorInfo);
-        }
-    }
-
-    /**
-     * Endpoint para asociar documentos huérfanos a una solicitud
-     */
-    @PostMapping("/asociar-documentos/{idSolicitud}")
-    public ResponseEntity<Map<String, Object>> asociarDocumentosHuérfanos(@PathVariable Integer idSolicitud) {
-        try {
-            
-            Map<String, Object> resultado = new HashMap<>();
-            
-            SolicitudPazYSalvo solicitud = solicitudPazYSalvoCU.buscarPorId(idSolicitud);
-            if (solicitud == null) {
-                resultado.put("error", "Solicitud no encontrada");
-                return ResponseEntity.ok(resultado);
-            }
-            
-            List<Documento> documentosSinSolicitud = objGestionarDocumentosGateway.buscarDocumentosSinSolicitud();
-            
-            int documentosAsociados = 0;
-            for (Documento doc : documentosSinSolicitud) {
-                doc.setObjSolicitud(solicitud);
-                objGestionarDocumentosGateway.actualizarDocumento(doc);
-                documentosAsociados++;
-            }
-            
-            resultado.put("documentos_asociados", documentosAsociados);
-            resultado.put("solicitud_id", idSolicitud);
-            resultado.put("mensaje", "Documentos asociados exitosamente");
-            
-            
-            return ResponseEntity.ok(resultado);
-            
-        } catch (Exception e) {
-            
-            Map<String, Object> errorInfo = new HashMap<>();
-            errorInfo.put("error", e.getMessage());
-            return ResponseEntity.ok(errorInfo);
         }
     }
 
@@ -1451,6 +1365,7 @@ public class SolicitudPazYSalvoRestController {
      * - Documentos que tienen comentarios (solo los que tienen comentario)
      * GET /api/solicitudes-pazysalvo/obtenerComentarios/{idSolicitud}
      */
+    @PreAuthorize("@autorizacion.esStaff() or @autorizacion.esDuenoSolicitud(#idSolicitud)")
     @GetMapping("/obtenerComentarios/{idSolicitud}")
     public ResponseEntity<Map<String, Object>> obtenerComentariosSolicitud(@PathVariable Integer idSolicitud) {
         try {
@@ -1519,6 +1434,7 @@ public class SolicitudPazYSalvoRestController {
     /**
      * Obtener oficios disponibles para una solicitud de paz y salvo (solo oficios/resoluciones)
      */
+    @PreAuthorize("@autorizacion.esStaff() or @autorizacion.esDuenoSolicitud(#idSolicitud)")
     @GetMapping("/obtenerOficios/{idSolicitud}")
     public ResponseEntity<List<Map<String, Object>>> obtenerOficiosPazSalvo(@PathVariable Integer idSolicitud) {
         try {
@@ -1565,6 +1481,7 @@ public class SolicitudPazYSalvoRestController {
     /**
      * Validar documentos requeridos para paz y salvo
      */
+    @PreAuthorize("@autorizacion.esStaff() or @autorizacion.esDuenoSolicitud(#idSolicitud)")
     @GetMapping("/validarDocumentosRequeridos/{idSolicitud}")
     public ResponseEntity<Map<String, Object>> validarDocumentosRequeridosPazSalvo(@PathVariable Integer idSolicitud) {
         try {
@@ -1730,6 +1647,38 @@ public ResponseEntity<DocumentosDTORespuesta> guardarOficioPazSalvo(
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
+    }
+
+    /**
+     * Verifica que el cambio de estado sea un paso válido del flujo y que lo haga el rol responsable
+     * (Funcionario → Coordinador → Secretario; el Administrador puede hacer cualquier paso válido).
+     *
+     * @return null si el cambio está permitido; si no, 400 (paso no permitido) o 403 (rol incorrecto)
+     */
+    private ResponseEntity<Map<String, Object>> validarCambioDeEstado(Integer idSolicitud, String nuevoEstado) {
+        SolicitudPazYSalvo solicitud = solicitudPazYSalvoCU.buscarPorId(idSolicitud);
+        String estadoActual = co.edu.unicauca.decanatura.gestion_curricular.dominio.casosDeUso
+                .GestionarSolicitudPazYSalvoCUAdapter.ultimoEstado(solicitud);
+
+        String rolResponsable;
+        try {
+            rolResponsable = TransicionEstadoPazYSalvo.validarYObtenerRolResponsable(estadoActual, nuevoEstado);
+        } catch (IllegalArgumentException e) {
+            Map<String, Object> error = new HashMap<>();
+            error.put("error", e.getMessage());
+            error.put("codigo", "TRANSICION_NO_PERMITIDA");
+            error.put("estadoActual", TransicionEstadoPazYSalvo.normalizar(estadoActual));
+            return ResponseEntity.badRequest().body(error);
+        }
+
+        if (!autorizacion.tieneRol(rolResponsable) && !autorizacion.tieneRol("Administrador")) {
+            Map<String, Object> error = new HashMap<>();
+            error.put("error", "Este paso le corresponde al rol " + rolResponsable);
+            error.put("codigo", "ROL_NO_AUTORIZADO");
+            error.put("estadoActual", TransicionEstadoPazYSalvo.normalizar(estadoActual));
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(error);
+        }
+        return null;
     }
 
     /**

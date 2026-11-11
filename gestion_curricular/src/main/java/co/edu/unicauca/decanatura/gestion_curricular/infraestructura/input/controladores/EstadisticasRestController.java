@@ -984,19 +984,6 @@ public class EstadisticasRestController {
     }
 
     /**
-     * Alias para obtener consolidado general (compatible con pruebas funcionales).
-     * 
-     * @return ResponseEntity con consolidado general
-     */
-    @GetMapping("/consolidadas")
-    public ResponseEntity<Map<String, Object>> obtenerConsolidadas(
-            @RequestParam(required = false) String periodoAcademico,
-            @RequestParam(required = false) Integer idPrograma,
-            @RequestParam(required = false) String proceso) {
-        return obtenerConsolidadoGeneral(periodoAcademico, idPrograma, proceso);
-    }
-
-    /**
      * Exporta estadísticas generales a PDF (para Dashboard General).
      * 
      * @return ResponseEntity con archivo PDF
@@ -1118,16 +1105,6 @@ public class EstadisticasRestController {
     }
 
     /**
-     * Alias para exportar estadísticas a PDF (compatible con pruebas de aceptación).
-     * 
-     * @return ResponseEntity con archivo PDF
-     */
-    @GetMapping("/exportar/pdf")
-    public ResponseEntity<byte[]> exportarEstadisticasPDFAlias() {
-        return exportarEstadisticasPDF(null, null, null, null, null);
-    }
-
-    /**
      * Exporta estadísticas generales a Excel (para Dashboard General).
      * 
      * @return ResponseEntity con archivo Excel
@@ -1143,7 +1120,7 @@ public class EstadisticasRestController {
             byte[] excelBytes = generarExcelEstadisticasGenerales(estadisticas);
             
             HttpHeaders headers = new HttpHeaders();
-            headers.setContentType(MediaType.APPLICATION_OCTET_STREAM);
+            headers.setContentType(MediaType.parseMediaType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"));
             headers.setContentDispositionFormData("attachment", "estadisticas_generales_dashboard.xlsx");
             
             return new ResponseEntity<>(excelBytes, headers, HttpStatus.OK);
@@ -1173,7 +1150,7 @@ public class EstadisticasRestController {
             byte[] excelBytes = generarExcelCursosVerano(datosCursosVerano, periodoAcademico, idPrograma);
             
             HttpHeaders headers = new HttpHeaders();
-            headers.setContentType(MediaType.APPLICATION_OCTET_STREAM);
+            headers.setContentType(MediaType.parseMediaType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"));
             String nombreArchivo = "estadisticas_cursos_verano";
             if (periodoAcademico != null) {
                 nombreArchivo += "_" + periodoAcademico.replace("-", "_");
@@ -1237,46 +1214,13 @@ public class EstadisticasRestController {
             byte[] excelBytes = generarExcelCompleto(estadisticas, datosCursosVerano, periodoAcademico, idPrograma);
             
             HttpHeaders headers = new HttpHeaders();
-            headers.setContentType(MediaType.APPLICATION_OCTET_STREAM);
-            headers.setContentDispositionFormData("attachment", "estadisticas_generales.xlsx");
-            
-            return new ResponseEntity<>(excelBytes, headers, HttpStatus.OK);
-            
-        } catch (Exception e) {
-            log.error("Error al exportar estadísticas a Excel", e);
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-        }
-    }
-
-    /**
-     * Alias para exportar estadísticas a Excel (compatible con pruebas de aceptación).
-     * 
-     * @return ResponseEntity con archivo Excel
-     */
-    @GetMapping("/exportar/excel")
-    public ResponseEntity<byte[]> exportarEstadisticasExcelAlias() {
-        try {
-            
-            // Obtener datos filtrados
-            Map<String, Object> estadisticas = estadisticaCU.obtenerEstadisticasGlobales(null, null, null, null);
-            
-            // Obtener datos de cursos de verano
-            Map<String, Object> datosCursosVerano = null;
-            try {
-                datosCursosVerano = estadisticaCU.obtenerEstadisticasCursosVerano(null, null);
-            } catch (Exception e) {
-            }
-            
-            // Generar Excel con datos completos (sin filtros)
-            byte[] excelBytes = generarExcelCompleto(estadisticas, datosCursosVerano, null, null);
-            
-            HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.parseMediaType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"));
             headers.setContentDispositionFormData("attachment", "estadisticas_generales.xlsx");
             
             return new ResponseEntity<>(excelBytes, headers, HttpStatus.OK);
             
         } catch (Exception e) {
+            log.error("Error al exportar estadísticas a Excel", e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
@@ -1781,49 +1725,6 @@ public class EstadisticasRestController {
         } catch (Exception e) {
             log.error("Error al obtener tendencias y comparativas", e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-        }
-    }
-
-    /**
-     * Endpoint de prueba simple para verificar ECAES
-     */
-    @GetMapping("/test-ecaes")
-    public ResponseEntity<Map<String, Object>> testEcaes() {
-        try {
-            
-            Map<String, Object> resultado = new HashMap<>();
-            
-            // Probar datos básicos de ECAES
-            resultado.put("mensaje", "Test ECAES exitoso");
-            resultado.put("fecha", new Date());
-            resultado.put("procesos", Arrays.asList("Homologación", "Paz y Salvo", "Reingreso", "Cursos de Verano", "ECAES"));
-            
-            return ResponseEntity.ok(resultado);
-            
-        } catch (Exception e) {
-            Map<String, Object> error = new HashMap<>();
-            error.put("error", e.getMessage());
-            error.put("fecha", new Date());
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(error);
-        }
-    }
-
-    /**
-     * Endpoint de prueba para estadísticas simples por proceso
-     */
-    @GetMapping("/test-procesos-simples")
-    public ResponseEntity<Map<String, Object>> testProcesosSimples() {
-        try {
-            
-            Map<String, Object> resultado = estadisticaCU.obtenerEstadisticasPorProceso("ECAES");
-            
-            return ResponseEntity.ok(resultado);
-            
-        } catch (Exception e) {
-            Map<String, Object> error = new HashMap<>();
-            error.put("error", e.getMessage());
-            error.put("fecha", new Date());
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(error);
         }
     }
 

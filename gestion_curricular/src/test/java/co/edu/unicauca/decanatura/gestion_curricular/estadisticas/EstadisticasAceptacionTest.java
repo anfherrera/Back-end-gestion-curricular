@@ -7,6 +7,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -32,6 +33,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest
 @AutoConfigureMockMvc
 @ActiveProfiles("test")
+@WithMockUser(roles = "Coordinador")
 @DisplayName("Pruebas de Aceptación - Estadísticas")
 class EstadisticasAceptacionTest {
 
@@ -127,7 +129,7 @@ class EstadisticasAceptacionTest {
          *       AND debe sugerir nombre de archivo descriptivo
          */
         
-        mockMvc.perform(get("/api/estadisticas/exportar/pdf"))
+        mockMvc.perform(get("/api/estadisticas/export/pdf"))
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_PDF));
     }
@@ -151,7 +153,7 @@ class EstadisticasAceptacionTest {
          *       AND debe permitir análisis posterior con fórmulas/pivotes
          */
         
-        mockMvc.perform(get("/api/estadisticas/exportar/excel"))
+        mockMvc.perform(get("/api/estadisticas/export/excel"))
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(
                     MediaType.parseMediaType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")));
@@ -322,7 +324,7 @@ class EstadisticasAceptacionTest {
                 .andExpect(status().isOk());
 
         // Paso 5: Exportar reporte
-        mockMvc.perform(get("/api/estadisticas/exportar/pdf"))
+        mockMvc.perform(get("/api/estadisticas/export/pdf"))
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_PDF));
     }

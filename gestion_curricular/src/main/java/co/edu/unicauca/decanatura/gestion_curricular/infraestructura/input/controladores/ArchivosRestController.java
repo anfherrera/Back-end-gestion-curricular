@@ -246,36 +246,6 @@ public class ArchivosRestController {
         }
     }
 
-    /**
-     * Endpoint de prueba para verificar que el manejo de archivos multipart funciona
-     * POST /api/archivos/test-upload
-     */
-    @PostMapping("/test-upload")
-    public ResponseEntity<Map<String, Object>> testUpload(
-            @RequestParam(name = "file", required = false) MultipartFile file,
-            @RequestParam(name = "inscripcionId", required = false) String inscripcionId) {
-        try {
-            Map<String, Object> respuesta = new HashMap<>();
-            respuesta.put("success", true);
-            respuesta.put("message", "Endpoint de prueba funcionando correctamente");
-            respuesta.put("archivo_recibido", file != null);
-            respuesta.put("inscripcion_id", inscripcionId);
-            
-            if (file != null) {
-                respuesta.put("nombre_archivo", file.getOriginalFilename());
-                respuesta.put("tamaño_archivo", file.getSize());
-                respuesta.put("tipo_archivo", file.getContentType());
-            }
-            
-            return ResponseEntity.ok(respuesta);
-            
-        } catch (Exception e) {
-            Map<String, Object> error = new HashMap<>();
-            error.put("error", "Error en endpoint de prueba: " + e.getMessage());
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(error);
-        }
-    }
-
     @GetMapping("/descargar/pdf")
     public ResponseEntity<StreamingResponseBody> bajarPDF(@RequestParam(name = "filename", required = true) String filename) {
         try {
