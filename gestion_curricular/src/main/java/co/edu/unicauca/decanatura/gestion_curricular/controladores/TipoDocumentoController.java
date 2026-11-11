@@ -24,20 +24,12 @@ public class TipoDocumentoController {
      */
     @GetMapping("/todos")
     public ResponseEntity<Map<String, Object>> obtenerTodosLosTipos() {
-        try {
-            Map<String, Object> response = new HashMap<>();
-            response.put("success", true);
-            response.put("data", TipoDocumentoEnum.getTodosLosTipos());
-            response.put("message", "Tipos de documento obtenidos exitosamente");
-            
-            return ResponseEntity.ok(response);
-        } catch (Exception e) {
-            Map<String, Object> errorResponse = new HashMap<>();
-            errorResponse.put("success", false);
-            errorResponse.put("message", "Error al obtener tipos de documento: " + e.getMessage());
-            
-            return ResponseEntity.internalServerError().body(errorResponse);
-        }
+        Map<String, Object> response = new HashMap<>();
+        response.put("success", true);
+        response.put("data", TipoDocumentoEnum.getTodosLosTipos());
+        response.put("message", "Tipos de documento obtenidos exitosamente");
+        
+        return ResponseEntity.ok(response);
     }
 
     /**
@@ -47,20 +39,12 @@ public class TipoDocumentoController {
      */
     @GetMapping("/codigos")
     public ResponseEntity<Map<String, Object>> obtenerCodigos() {
-        try {
-            Map<String, Object> response = new HashMap<>();
-            response.put("success", true);
-            response.put("data", TipoDocumentoEnum.getTodosLosCodigos());
-            response.put("message", "Códigos de tipos de documento obtenidos exitosamente");
-            
-            return ResponseEntity.ok(response);
-        } catch (Exception e) {
-            Map<String, Object> errorResponse = new HashMap<>();
-            errorResponse.put("success", false);
-            errorResponse.put("message", "Error al obtener códigos: " + e.getMessage());
-            
-            return ResponseEntity.internalServerError().body(errorResponse);
-        }
+        Map<String, Object> response = new HashMap<>();
+        response.put("success", true);
+        response.put("data", TipoDocumentoEnum.getTodosLosCodigos());
+        response.put("message", "Códigos de tipos de documento obtenidos exitosamente");
+        
+        return ResponseEntity.ok(response);
     }
 
     /**
@@ -71,24 +55,16 @@ public class TipoDocumentoController {
      */
     @GetMapping("/validar/{codigo}")
     public ResponseEntity<Map<String, Object>> validarTipoDocumento(@PathVariable String codigo) {
-        try {
-            boolean esValido = TipoDocumentoEnum.esValido(codigo);
-            
-            Map<String, Object> response = new HashMap<>();
-            response.put("success", true);
-            response.put("data", esValido);
-            response.put("message", esValido ? 
-                "Tipo de documento válido" : 
-                "Tipo de documento no válido");
-            
-            return ResponseEntity.ok(response);
-        } catch (Exception e) {
-            Map<String, Object> errorResponse = new HashMap<>();
-            errorResponse.put("success", false);
-            errorResponse.put("message", "Error al validar tipo de documento: " + e.getMessage());
-            
-            return ResponseEntity.internalServerError().body(errorResponse);
-        }
+        boolean esValido = TipoDocumentoEnum.esValido(codigo);
+        
+        Map<String, Object> response = new HashMap<>();
+        response.put("success", true);
+        response.put("data", esValido);
+        response.put("message", esValido ? 
+            "Tipo de documento válido" : 
+            "Tipo de documento no válido");
+        
+        return ResponseEntity.ok(response);
     }
 
     /**
@@ -99,34 +75,26 @@ public class TipoDocumentoController {
      */
     @GetMapping("/info/{codigo}")
     public ResponseEntity<Map<String, Object>> obtenerInformacionTipoDocumento(@PathVariable String codigo) {
-        try {
-            if (!TipoDocumentoEnum.esValido(codigo)) {
-                Map<String, Object> errorResponse = new HashMap<>();
-                errorResponse.put("success", false);
-                errorResponse.put("message", "Tipo de documento no válido: " + codigo);
-                
-                return ResponseEntity.badRequest().body(errorResponse);
-            }
-
-            TipoDocumentoEnum tipoEnum = TipoDocumentoEnum.fromCodigo(codigo);
-            
-            Map<String, Object> info = new HashMap<>();
-            info.put("codigo", tipoEnum.getCodigo());
-            info.put("descripcion", tipoEnum.getDescripcion());
-            
-            Map<String, Object> response = new HashMap<>();
-            response.put("success", true);
-            response.put("data", info);
-            response.put("message", "Información del tipo de documento obtenida exitosamente");
-            
-            return ResponseEntity.ok(response);
-        } catch (Exception e) {
+        if (!TipoDocumentoEnum.esValido(codigo)) {
             Map<String, Object> errorResponse = new HashMap<>();
             errorResponse.put("success", false);
-            errorResponse.put("message", "Error al obtener información del tipo de documento: " + e.getMessage());
+            errorResponse.put("message", "Tipo de documento no válido: " + codigo);
             
-            return ResponseEntity.internalServerError().body(errorResponse);
+            return ResponseEntity.badRequest().body(errorResponse);
         }
+
+        TipoDocumentoEnum tipoEnum = TipoDocumentoEnum.fromCodigo(codigo);
+        
+        Map<String, Object> info = new HashMap<>();
+        info.put("codigo", tipoEnum.getCodigo());
+        info.put("descripcion", tipoEnum.getDescripcion());
+        
+        Map<String, Object> response = new HashMap<>();
+        response.put("success", true);
+        response.put("data", info);
+        response.put("message", "Información del tipo de documento obtenida exitosamente");
+        
+        return ResponseEntity.ok(response);
     }
 }
 

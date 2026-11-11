@@ -126,66 +126,60 @@ public class SolicitudRestController {
             @RequestParam(required = false) String estadoActual,
             @RequestParam(required = false) Integer idUsuario) {
         
-        try {
-            List<Solicitud> todasLasSolicitudesDominio = solicitudCU.buscarHistorial(periodoAcademico, idUsuario, estadoActual);
+        List<Solicitud> todasLasSolicitudesDominio = solicitudCU.buscarHistorial(periodoAcademico, idUsuario, estadoActual);
 
-            // Convertir a DTOs y aplicar filtro de tipoSolicitud (que no se puede hacer fácilmente en SQL)
-            List<SolicitudDTORespuesta> todasLasSolicitudesDTO = todasLasSolicitudesDominio.stream()
-                    .map(solicitud -> {
-                        SolicitudDTORespuesta dto = mapper.mappearDeSolicitudARespuesta(solicitud);
-                        determinarCategoriaYTipo(solicitud, dto);
-                        return dto;
-                    })
-                    .collect(Collectors.toList());
-            
-            // Aplicar filtro por tipoSolicitud (este filtro se hace en memoria porque requiere análisis del nombre)
-            List<SolicitudDTORespuesta> solicitudesFiltradas = todasLasSolicitudesDTO.stream()
-                    .filter(s -> {
-                        if (tipoSolicitud != null && !tipoSolicitud.trim().isEmpty()) {
-                            String nombreSolicitud = s.getNombre_solicitud() != null ? s.getNombre_solicitud().toLowerCase() : "";
-                            String tipoFiltro = tipoSolicitud.trim().toLowerCase();
-                            String tipoNormalizado = tipoFiltro
-                                    .replace("académico", "")
-                                    .replace("academico", "")
-                                    .trim();
-                            
-                            boolean coincide = false;
-                            if (tipoNormalizado.contains("paz") && tipoNormalizado.contains("salvo")) {
-                                coincide = nombreSolicitud.contains("paz") && nombreSolicitud.contains("salvo");
-                            } else if (tipoNormalizado.contains("reingreso")) {
-                                coincide = nombreSolicitud.contains("reingreso");
-                            } else if (tipoNormalizado.contains("homologacion") || tipoNormalizado.contains("homologación")) {
-                                coincide = nombreSolicitud.contains("homologacion") || nombreSolicitud.contains("homologación");
-                            } else if (tipoNormalizado.contains("ecaes")) {
-                                coincide = nombreSolicitud.contains("ecaes");
-                            } else if (tipoNormalizado.contains("curso") && (tipoNormalizado.contains("verano") || tipoNormalizado.contains("intersemestral"))) {
-                                coincide = nombreSolicitud.contains("curso") && (nombreSolicitud.contains("verano") || nombreSolicitud.contains("intersemestral"));
-                            } else {
-                                coincide = nombreSolicitud.contains(tipoNormalizado);
-                            }
-                            return coincide;
+        // Convertir a DTOs y aplicar filtro de tipoSolicitud (que no se puede hacer fácilmente en SQL)
+        List<SolicitudDTORespuesta> todasLasSolicitudesDTO = todasLasSolicitudesDominio.stream()
+                .map(solicitud -> {
+                    SolicitudDTORespuesta dto = mapper.mappearDeSolicitudARespuesta(solicitud);
+                    determinarCategoriaYTipo(solicitud, dto);
+                    return dto;
+                })
+                .collect(Collectors.toList());
+        
+        // Aplicar filtro por tipoSolicitud (este filtro se hace en memoria porque requiere análisis del nombre)
+        List<SolicitudDTORespuesta> solicitudesFiltradas = todasLasSolicitudesDTO.stream()
+                .filter(s -> {
+                    if (tipoSolicitud != null && !tipoSolicitud.trim().isEmpty()) {
+                        String nombreSolicitud = s.getNombre_solicitud() != null ? s.getNombre_solicitud().toLowerCase() : "";
+                        String tipoFiltro = tipoSolicitud.trim().toLowerCase();
+                        String tipoNormalizado = tipoFiltro
+                                .replace("académico", "")
+                                .replace("academico", "")
+                                .trim();
+                        
+                        boolean coincide = false;
+                        if (tipoNormalizado.contains("paz") && tipoNormalizado.contains("salvo")) {
+                            coincide = nombreSolicitud.contains("paz") && nombreSolicitud.contains("salvo");
+                        } else if (tipoNormalizado.contains("reingreso")) {
+                            coincide = nombreSolicitud.contains("reingreso");
+                        } else if (tipoNormalizado.contains("homologacion") || tipoNormalizado.contains("homologación")) {
+                            coincide = nombreSolicitud.contains("homologacion") || nombreSolicitud.contains("homologación");
+                        } else if (tipoNormalizado.contains("ecaes")) {
+                            coincide = nombreSolicitud.contains("ecaes");
+                        } else if (tipoNormalizado.contains("curso") && (tipoNormalizado.contains("verano") || tipoNormalizado.contains("intersemestral"))) {
+                            coincide = nombreSolicitud.contains("curso") && (nombreSolicitud.contains("verano") || nombreSolicitud.contains("intersemestral"));
+                        } else {
+                            coincide = nombreSolicitud.contains(tipoNormalizado);
                         }
-                        return true;
-                    })
-                    .collect(Collectors.toList());
-            
-            // Totales del sistema (sin filtros) para las estadísticas del encabezado
-            long totalSistema = solicitudCU.contarHistorial();
-            long totalProcesadas = solicitudCU.contarSolicitudesProcesadas();
+                        return coincide;
+                    }
+                    return true;
+                })
+                .collect(Collectors.toList());
+        
+        // Totales del sistema (sin filtros) para las estadísticas del encabezado
+        long totalSistema = solicitudCU.contarHistorial();
+        long totalProcesadas = solicitudCU.contarSolicitudesProcesadas();
 
-            Map<String, Object> respuesta = new HashMap<>();
-            respuesta.put("solicitudes", solicitudesFiltradas);
-            respuesta.put("total", solicitudesFiltradas.size());
-            respuesta.put("total_solicitudes_sistema", (int) totalSistema);
-            respuesta.put("total_solicitudes_procesadas", (int) totalProcesadas);
-            respuesta.put("total_solicitudes_no_procesadas", (int) (totalSistema - totalProcesadas));
-            
-            return ResponseEntity.ok(respuesta);
-            
-        } catch (Exception e) {
-            log.error("Error al obtener historial completo: {}", e.getMessage(), e);
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-        }
+        Map<String, Object> respuesta = new HashMap<>();
+        respuesta.put("solicitudes", solicitudesFiltradas);
+        respuesta.put("total", solicitudesFiltradas.size());
+        respuesta.put("total_solicitudes_sistema", (int) totalSistema);
+        respuesta.put("total_solicitudes_procesadas", (int) totalProcesadas);
+        respuesta.put("total_solicitudes_no_procesadas", (int) (totalSistema - totalProcesadas));
+        
+        return ResponseEntity.ok(respuesta);
     }
 
     /**
@@ -206,41 +200,35 @@ public class SolicitudRestController {
             @RequestParam(required = false) String estadoActual,
             @RequestParam(required = false) Integer idUsuario) {
         
-        try {
-            ResponseEntity<Map<String, Object>> historialResponse = obtenerHistorialCompleto(
-                    periodoAcademico, tipoSolicitud, estadoActual, idUsuario);
-            
-            if (historialResponse.getStatusCode() != HttpStatus.OK || historialResponse.getBody() == null) {
-                log.error("No se pudo obtener el historial para generar el PDF");
-                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-            }
-            
-            Map<String, Object> historialData = historialResponse.getBody();
-            @SuppressWarnings("unchecked")
-            List<SolicitudDTORespuesta> solicitudes = (List<SolicitudDTORespuesta>) historialData.get("solicitudes");
-            
-            if (solicitudes == null) {
-                solicitudes = new ArrayList<>();
-            }
-            
-            // Generar PDF
-            byte[] pdfBytes = generarPDFHistorial(solicitudes, historialData, periodoAcademico, tipoSolicitud, estadoActual);
-            
-            HttpHeaders headers = new HttpHeaders();
-            headers.setContentType(MediaType.APPLICATION_PDF);
-            
-            // Nombre del archivo con fecha
-            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-            String fecha = sdf.format(new Date());
-            String filename = "historial_solicitudes_" + fecha + ".pdf";
-            headers.setContentDispositionFormData("attachment", filename);
-            
-            return new ResponseEntity<>(pdfBytes, headers, HttpStatus.OK);
-            
-        } catch (Exception e) {
-            log.error("Error al generar PDF del historial: {}", e.getMessage(), e);
+        ResponseEntity<Map<String, Object>> historialResponse = obtenerHistorialCompleto(
+                periodoAcademico, tipoSolicitud, estadoActual, idUsuario);
+        
+        if (historialResponse.getStatusCode() != HttpStatus.OK || historialResponse.getBody() == null) {
+            log.error("No se pudo obtener el historial para generar el PDF");
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
+        
+        Map<String, Object> historialData = historialResponse.getBody();
+        @SuppressWarnings("unchecked")
+        List<SolicitudDTORespuesta> solicitudes = (List<SolicitudDTORespuesta>) historialData.get("solicitudes");
+        
+        if (solicitudes == null) {
+            solicitudes = new ArrayList<>();
+        }
+        
+        // Generar PDF
+        byte[] pdfBytes = generarPDFHistorial(solicitudes, historialData, periodoAcademico, tipoSolicitud, estadoActual);
+        
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_PDF);
+        
+        // Nombre del archivo con fecha
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+        String fecha = sdf.format(new Date());
+        String filename = "historial_solicitudes_" + fecha + ".pdf";
+        headers.setContentDispositionFormData("attachment", filename);
+        
+        return new ResponseEntity<>(pdfBytes, headers, HttpStatus.OK);
     }
 
     /**

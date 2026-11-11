@@ -203,7 +203,9 @@ public class GestionarSolicitudHomologacionCUAdapter implements GestionarSolicit
     @Override
     public SolicitudHomologacion buscarPorId(Integer idSolicitud) {
         return objGestionarSolicitudHomologacionGateway.buscarPorId(idSolicitud).
-        orElseThrow(() -> new RuntimeException("Solicitud no encontrada"));
+        orElseThrow(() -> new co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output
+                .controladorExcepciones.excepcionesPropias.EntidadNoExisteException(
+                        "Solicitud de homologación no encontrada con ID: " + idSolicitud));
     }
 
     @Override

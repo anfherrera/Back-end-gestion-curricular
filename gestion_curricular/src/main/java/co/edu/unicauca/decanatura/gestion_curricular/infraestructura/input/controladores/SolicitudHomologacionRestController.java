@@ -333,77 +333,71 @@ public class SolicitudHomologacionRestController {
     @PreAuthorize("@autorizacion.esStaff() or @autorizacion.esDuenoSolicitud(#idSolicitud)")
     @GetMapping("/descargarOficio/{idSolicitud}")
     public ResponseEntity<byte[]> descargarOficio(@PathVariable Integer idSolicitud) {
-        try {
-            // Obtener la solicitud con sus documentos
-            SolicitudHomologacion solicitud = solicitudHomologacionCU.buscarPorId(idSolicitud);
-            if (solicitud == null) {
-                return ResponseEntity.notFound().build();
-            }
-            
-            // Buscar documentos asociados a esta solicitud
-            List<Documento> documentos = solicitud.getDocumentos();
-            if (documentos == null || documentos.isEmpty()) {
-                return ResponseEntity.notFound().build();
-            }
-            
-            // Prioridad 1: documentos marcados explícitamente como oficio/resolución de homologación (subidos por secretaría)
-            Documento documentoSeleccionado = null;
-            for (Documento d : documentos) {
-                if (d == null) continue;
-                String comentario = d.getComentario();
-                if (comentario != null && comentario.contains(MARCADOR_OFICIO_HOMOLOGACION)) {
-                    if (documentoSeleccionado == null) {
-                        documentoSeleccionado = d;
-                    } else {
-                        Date fSel = documentoSeleccionado.getFecha_documento();
-                        Date fNew = d.getFecha_documento();
-                        if (fSel == null && fNew != null) {
-                            documentoSeleccionado = d;
-                        } else if (fSel != null && fNew != null && fNew.after(fSel)) {
-                            documentoSeleccionado = d;
-                        }
-                    }
-                }
-            }
-
-            // Prioridad 2 (fallback): heurística por nombre (resolucion/oficio) excluyendo formulario del estudiante
-            if (documentoSeleccionado == null) {
-                for (Documento d : documentos) {
-                    if (d != null && d.getNombre() != null && esDocumentoOficioHomologacion(d)) {
-                        documentoSeleccionado = d;
-                        break;
-                    }
-                }
-            }
-
-            if (documentoSeleccionado == null) {
-                return ResponseEntity.notFound().build();
-            }
-
-            try {
-                String nombreDescarga = documentoSeleccionado.getNombre();
-                String rutaDocumento = documentoSeleccionado.getRuta_documento() != null
-                        ? documentoSeleccionado.getRuta_documento()
-                        : nombreDescarga;
-                byte[] archivo;
-                if (rutaDocumento != null && rutaDocumento.contains("/")) {
-                    archivo = objGestionarArchivos.getFileByPath(rutaDocumento);
+        // Obtener la solicitud con sus documentos
+        SolicitudHomologacion solicitud = solicitudHomologacionCU.buscarPorId(idSolicitud);
+        if (solicitud == null) {
+            return ResponseEntity.notFound().build();
+        }
+        
+        // Buscar documentos asociados a esta solicitud
+        List<Documento> documentos = solicitud.getDocumentos();
+        if (documentos == null || documentos.isEmpty()) {
+            return ResponseEntity.notFound().build();
+        }
+        
+        // Prioridad 1: documentos marcados explícitamente como oficio/resolución de homologación (subidos por secretaría)
+        Documento documentoSeleccionado = null;
+        for (Documento d : documentos) {
+            if (d == null) continue;
+            String comentario = d.getComentario();
+            if (comentario != null && comentario.contains(MARCADOR_OFICIO_HOMOLOGACION)) {
+                if (documentoSeleccionado == null) {
+                    documentoSeleccionado = d;
                 } else {
-                    archivo = objGestionarArchivos.getFile(nombreDescarga);
+                    Date fSel = documentoSeleccionado.getFecha_documento();
+                    Date fNew = d.getFecha_documento();
+                    if (fSel == null && fNew != null) {
+                        documentoSeleccionado = d;
+                    } else if (fSel != null && fNew != null && fNew.after(fSel)) {
+                        documentoSeleccionado = d;
+                    }
                 }
-                String contentDisposition = "attachment; filename=\"" + nombreDescarga + "\"";
-                return ResponseEntity.ok()
-                        .header(HttpHeaders.CONTENT_DISPOSITION, contentDisposition)
-                        .contentType(MediaType.APPLICATION_PDF)
-                        .body(archivo);
-            } catch (Exception e) {
-                log.debug("No se pudo cargar el oficio/resolución seleccionado: {}", e.getMessage());
-                return ResponseEntity.notFound().build();
             }
-                
+        }
+
+        // Prioridad 2 (fallback): heurística por nombre (resolucion/oficio) excluyendo formulario del estudiante
+        if (documentoSeleccionado == null) {
+            for (Documento d : documentos) {
+                if (d != null && d.getNombre() != null && esDocumentoOficioHomologacion(d)) {
+                    documentoSeleccionado = d;
+                    break;
+                }
+            }
+        }
+
+        if (documentoSeleccionado == null) {
+            return ResponseEntity.notFound().build();
+        }
+
+        try {
+            String nombreDescarga = documentoSeleccionado.getNombre();
+            String rutaDocumento = documentoSeleccionado.getRuta_documento() != null
+                    ? documentoSeleccionado.getRuta_documento()
+                    : nombreDescarga;
+            byte[] archivo;
+            if (rutaDocumento != null && rutaDocumento.contains("/")) {
+                archivo = objGestionarArchivos.getFileByPath(rutaDocumento);
+            } else {
+                archivo = objGestionarArchivos.getFile(nombreDescarga);
+            }
+            String contentDisposition = "attachment; filename=\"" + nombreDescarga + "\"";
+            return ResponseEntity.ok()
+                    .header(HttpHeaders.CONTENT_DISPOSITION, contentDisposition)
+                    .contentType(MediaType.APPLICATION_PDF)
+                    .body(archivo);
         } catch (Exception e) {
-            log.error("Error al descargar oficio para solicitud {}: {}", idSolicitud, e.getMessage(), e);
-            return ResponseEntity.internalServerError().build();
+            log.debug("No se pudo cargar el oficio/resolución seleccionado: {}", e.getMessage());
+            return ResponseEntity.notFound().build();
         }
     }
     
@@ -413,42 +407,36 @@ public class SolicitudHomologacionRestController {
     @PreAuthorize("@autorizacion.esStaff() or @autorizacion.esDuenoSolicitud(#idSolicitud)")
     @GetMapping("/obtenerOficios/{idSolicitud}")
     public ResponseEntity<List<Map<String, Object>>> obtenerOficios(@PathVariable Integer idSolicitud) {
-        try {
-            // Obtener la solicitud con sus documentos
-            SolicitudHomologacion solicitud = solicitudHomologacionCU.buscarPorId(idSolicitud);
-            if (solicitud == null) {
-                return ResponseEntity.notFound().build();
-            }
-            
-            // Buscar documentos asociados a esta solicitud
-            List<Documento> documentos = solicitud.getDocumentos();
-            if (documentos == null || documentos.isEmpty()) {
-                return ResponseEntity.ok(new ArrayList<>()); // Retornar lista vacía
-            }
-            
-            // Crear lista de oficios basada en los documentos reales.
-            // Prioridad: marcados explícitamente como oficio/resolución de homologación, fallback a heurística por nombre.
-            List<Map<String, Object>> oficios = new ArrayList<>();
-            for (Documento documento : documentos) {
-                if (documento == null || documento.getNombre() == null) continue;
-                boolean esMarcado = documento.getComentario() != null
-                        && documento.getComentario().contains(MARCADOR_OFICIO_HOMOLOGACION);
-                if (esMarcado || esDocumentoOficioHomologacion(documento)) {
-                    Map<String, Object> oficio = new HashMap<>();
-                    oficio.put("id", idSolicitud);
-                    oficio.put("nombre", documento.getNombre());
-                    oficio.put("nombreArchivo", documento.getNombre());
-                    oficio.put("ruta", documento.getRuta_documento());
-                    oficios.add(oficio);
-                }
-            }
-            
-            return ResponseEntity.ok(oficios);
-            
-        } catch (Exception e) {
-            log.error("Error al obtener oficios para solicitud {}: {}", idSolicitud, e.getMessage(), e);
-            return ResponseEntity.internalServerError().build();
+        // Obtener la solicitud con sus documentos
+        SolicitudHomologacion solicitud = solicitudHomologacionCU.buscarPorId(idSolicitud);
+        if (solicitud == null) {
+            return ResponseEntity.notFound().build();
         }
+        
+        // Buscar documentos asociados a esta solicitud
+        List<Documento> documentos = solicitud.getDocumentos();
+        if (documentos == null || documentos.isEmpty()) {
+            return ResponseEntity.ok(new ArrayList<>()); // Retornar lista vacía
+        }
+        
+        // Crear lista de oficios basada en los documentos reales.
+        // Prioridad: marcados explícitamente como oficio/resolución de homologación, fallback a heurística por nombre.
+        List<Map<String, Object>> oficios = new ArrayList<>();
+        for (Documento documento : documentos) {
+            if (documento == null || documento.getNombre() == null) continue;
+            boolean esMarcado = documento.getComentario() != null
+                    && documento.getComentario().contains(MARCADOR_OFICIO_HOMOLOGACION);
+            if (esMarcado || esDocumentoOficioHomologacion(documento)) {
+                Map<String, Object> oficio = new HashMap<>();
+                oficio.put("id", idSolicitud);
+                oficio.put("nombre", documento.getNombre());
+                oficio.put("nombreArchivo", documento.getNombre());
+                oficio.put("ruta", documento.getRuta_documento());
+                oficios.add(oficio);
+            }
+        }
+        
+        return ResponseEntity.ok(oficios);
     }
     
     /**
@@ -457,53 +445,47 @@ public class SolicitudHomologacionRestController {
     @PreAuthorize("@autorizacion.esStaff() or @autorizacion.esDuenoSolicitud(#idSolicitud)")
     @GetMapping("/validarDocumentosRequeridos/{idSolicitud}")
     public ResponseEntity<Map<String, Object>> validarDocumentosRequeridos(@PathVariable Integer idSolicitud) {
-        try {
-            // Obtener la solicitud con sus documentos
-            SolicitudHomologacion solicitud = solicitudHomologacionCU.buscarPorId(idSolicitud);
-            if (solicitud == null) {
-                return ResponseEntity.notFound().build();
-            }
-            
-            List<Documento> documentos = solicitud.getDocumentos();
-            if (documentos == null) {
-                documentos = new ArrayList<>();
-            }
-            
-            // Documentos requeridos para homologación
-            Map<String, Boolean> documentosRequeridos = new HashMap<>();
-            documentosRequeridos.put("formulario_homologacion", false);
-            documentosRequeridos.put("certificado_notas", false);
-            documentosRequeridos.put("programa_academico", false);
-            
-            // Verificar qué documentos están presentes
-            for (Documento documento : documentos) {
-                if (documento.getNombre() != null) {
-                    String nombre = documento.getNombre().toLowerCase();
-                    
-                    if (nombre.contains("formulario") && nombre.contains("homologacion")) {
-                        documentosRequeridos.put("formulario_homologacion", true);
-                    } else if (nombre.contains("certificado") && nombre.contains("notas")) {
-                        documentosRequeridos.put("certificado_notas", true);
-                    } else if (nombre.contains("programa") && nombre.contains("academico")) {
-                        documentosRequeridos.put("programa_academico", true);
-                    }
+        // Obtener la solicitud con sus documentos
+        SolicitudHomologacion solicitud = solicitudHomologacionCU.buscarPorId(idSolicitud);
+        if (solicitud == null) {
+            return ResponseEntity.notFound().build();
+        }
+        
+        List<Documento> documentos = solicitud.getDocumentos();
+        if (documentos == null) {
+            documentos = new ArrayList<>();
+        }
+        
+        // Documentos requeridos para homologación
+        Map<String, Boolean> documentosRequeridos = new HashMap<>();
+        documentosRequeridos.put("formulario_homologacion", false);
+        documentosRequeridos.put("certificado_notas", false);
+        documentosRequeridos.put("programa_academico", false);
+        
+        // Verificar qué documentos están presentes
+        for (Documento documento : documentos) {
+            if (documento.getNombre() != null) {
+                String nombre = documento.getNombre().toLowerCase();
+                
+                if (nombre.contains("formulario") && nombre.contains("homologacion")) {
+                    documentosRequeridos.put("formulario_homologacion", true);
+                } else if (nombre.contains("certificado") && nombre.contains("notas")) {
+                    documentosRequeridos.put("certificado_notas", true);
+                } else if (nombre.contains("programa") && nombre.contains("academico")) {
+                    documentosRequeridos.put("programa_academico", true);
                 }
             }
-            
-            // Calcular si todos los documentos están presentes
-            boolean todosCompletos = documentosRequeridos.values().stream().allMatch(Boolean::booleanValue);
-            
-            Map<String, Object> resultado = new HashMap<>();
-            resultado.put("documentosRequeridos", documentosRequeridos);
-            resultado.put("todosCompletos", todosCompletos);
-            resultado.put("totalDocumentos", documentos.size());
-            
-            return ResponseEntity.ok(resultado);
-            
-        } catch (Exception e) {
-            log.error("Error al validar documentos requeridos para solicitud {}: {}", idSolicitud, e.getMessage(), e);
-            return ResponseEntity.internalServerError().build();
         }
+        
+        // Calcular si todos los documentos están presentes
+        boolean todosCompletos = documentosRequeridos.values().stream().allMatch(Boolean::booleanValue);
+        
+        Map<String, Object> resultado = new HashMap<>();
+        resultado.put("documentosRequeridos", documentosRequeridos);
+        resultado.put("todosCompletos", todosCompletos);
+        resultado.put("totalDocumentos", documentos.size());
+        
+        return ResponseEntity.ok(resultado);
     }
 
     /**
@@ -532,41 +514,35 @@ public class SolicitudHomologacionRestController {
     public ResponseEntity<Map<String, Object>> subirResolucion(
             @PathVariable Integer idSolicitud,
             @RequestParam("file") MultipartFile file) {
-        try {
-            SolicitudHomologacion solicitud = solicitudHomologacionCU.buscarPorId(idSolicitud);
-            if (solicitud == null) {
-                return ResponseEntity.notFound().build();
-            }
-            ValidadorArchivoPdf.Rechazo rechazo = ValidadorArchivoPdf.validar(file, ValidadorArchivoPdf.MAXIMO_10MB);
-            if (rechazo != null) {
-                return ResponseEntity.status(rechazo.estado()).body(Map.of("error", rechazo.mensaje()));
-            }
-            String nombreOriginal = file.getOriginalFilename();
-            String rutaArchivo = objGestionarArchivos.saveFile(file, nombreOriginal, "pdf", "homologacion", idSolicitud);
-            String nombreArchivo = rutaArchivo.contains("/") ? rutaArchivo.substring(rutaArchivo.lastIndexOf("/") + 1) : rutaArchivo;
-
-            Documento documento = new Documento();
-            documento.setNombre(nombreArchivo);
-            documento.setRuta_documento(rutaArchivo);
-            documento.setFecha_documento(new Date());
-            documento.setEsValido(true);
-            documento.setComentario(MARCADOR_OFICIO_HOMOLOGACION + " Archivo subido por secretaría");
-            documento.setObjSolicitud(solicitud);
-
-            Documento guardado = documentosCU.registrarDocumento(documento);
-
-            Map<String, Object> respuesta = new HashMap<>();
-            respuesta.put("success", true);
-            respuesta.put("message", "Resolución subida correctamente");
-            respuesta.put("idDocumento", guardado.getId_documento());
-            respuesta.put("nombre", nombreArchivo);
-            respuesta.put("idSolicitud", idSolicitud);
-            return ResponseEntity.ok(respuesta);
-        } catch (Exception e) {
-            log.error("Error al subir resolución de homologación para solicitud {}: {}", idSolicitud, e.getMessage(), e);
-            return ResponseEntity.internalServerError()
-                .body(Map.of("error", "Error al subir el archivo: " + e.getMessage()));
+        SolicitudHomologacion solicitud = solicitudHomologacionCU.buscarPorId(idSolicitud);
+        if (solicitud == null) {
+            return ResponseEntity.notFound().build();
         }
+        ValidadorArchivoPdf.Rechazo rechazo = ValidadorArchivoPdf.validar(file, ValidadorArchivoPdf.MAXIMO_10MB);
+        if (rechazo != null) {
+            return ResponseEntity.status(rechazo.estado()).body(Map.of("error", rechazo.mensaje()));
+        }
+        String nombreOriginal = file.getOriginalFilename();
+        String rutaArchivo = objGestionarArchivos.saveFile(file, nombreOriginal, "pdf", "homologacion", idSolicitud);
+        String nombreArchivo = rutaArchivo.contains("/") ? rutaArchivo.substring(rutaArchivo.lastIndexOf("/") + 1) : rutaArchivo;
+
+        Documento documento = new Documento();
+        documento.setNombre(nombreArchivo);
+        documento.setRuta_documento(rutaArchivo);
+        documento.setFecha_documento(new Date());
+        documento.setEsValido(true);
+        documento.setComentario(MARCADOR_OFICIO_HOMOLOGACION + " Archivo subido por secretaría");
+        documento.setObjSolicitud(solicitud);
+
+        Documento guardado = documentosCU.registrarDocumento(documento);
+
+        Map<String, Object> respuesta = new HashMap<>();
+        respuesta.put("success", true);
+        respuesta.put("message", "Resolución subida correctamente");
+        respuesta.put("idDocumento", guardado.getId_documento());
+        respuesta.put("nombre", nombreArchivo);
+        respuesta.put("idSolicitud", idSolicitud);
+        return ResponseEntity.ok(respuesta);
     }
 
 }

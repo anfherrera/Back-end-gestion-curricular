@@ -521,13 +521,9 @@ public class SolicitudPazYSalvoRestController {
     @PreAuthorize("@autorizacion.esStaff() or @autorizacion.esDuenoSolicitud(#id)")
     @GetMapping("/listarSolicitud-PazYSalvo/id/{id}")
     public ResponseEntity<?> listarPazYSalvoById(@PathVariable Integer id) {
-        try {
-            SolicitudPazYSalvo solicitud = solicitudPazYSalvoCU.buscarPorId(id);
-            SolicitudPazYSalvoDTORespuesta respuesta = solicitudMapperDominio.mappearDeSolicitudARespuesta(solicitud);
-            return ResponseEntity.ok(respuesta);
-        } catch (Exception e) {
-            return ResponseEntity.internalServerError().body(Map.of("error", e.getMessage()));
-        }
+        SolicitudPazYSalvo solicitud = solicitudPazYSalvoCU.buscarPorId(id);
+        SolicitudPazYSalvoDTORespuesta respuesta = solicitudMapperDominio.mappearDeSolicitudARespuesta(solicitud);
+        return ResponseEntity.ok(respuesta);
     }
 
     @PreAuthorize("isAuthenticated()")
@@ -535,56 +531,52 @@ public class SolicitudPazYSalvoRestController {
     public ResponseEntity<?> listarPazYSalvoByIdOrRole(
             @PathVariable String id,
             @RequestParam(required = false) String periodoAcademico) {
-        try {
-            boolean esStaff = autorizacion.esStaff();
-            if (!esStaff && !esIdentificadorNumerico(id)) {
-                // Listar por rol (coordinador, funcionario, secretaria) es solo para staff
+        boolean esStaff = autorizacion.esStaff();
+        if (!esStaff && !esIdentificadorNumerico(id)) {
+            // Listar por rol (coordinador, funcionario, secretaria) es solo para staff
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(Map.of("error", "Acceso denegado"));
+        }
+        if (esIdentificadorNumerico(id)) {
+            Integer idNumero = Integer.valueOf(id);
+            if (!esStaff
+                    && !autorizacion.esDuenoSolicitud(idNumero)
+                    && !autorizacion.esUsuarioActual(idNumero)) {
                 return ResponseEntity.status(HttpStatus.FORBIDDEN).body(Map.of("error", "Acceso denegado"));
             }
-            if (esIdentificadorNumerico(id)) {
-                Integer idNumero = Integer.valueOf(id);
-                if (!esStaff
-                        && !autorizacion.esDuenoSolicitud(idNumero)
-                        && !autorizacion.esUsuarioActual(idNumero)) {
-                    return ResponseEntity.status(HttpStatus.FORBIDDEN).body(Map.of("error", "Acceso denegado"));
+            try {
+                SolicitudPazYSalvo solicitud = solicitudPazYSalvoCU.buscarPorId(idNumero);
+                if (!esStaff && !autorizacion.esDuenoSolicitud(idNumero)) {
+                    // El id corresponde a una solicitud ajena; para el estudiante se interpreta como su id de usuario
+                    throw new EntidadNoExisteException("Solicitud no encontrada");
                 }
-                try {
-                    SolicitudPazYSalvo solicitud = solicitudPazYSalvoCU.buscarPorId(idNumero);
-                    if (!esStaff && !autorizacion.esDuenoSolicitud(idNumero)) {
-                        // El id corresponde a una solicitud ajena; para el estudiante se interpreta como su id de usuario
-                        throw new EntidadNoExisteException("Solicitud no encontrada");
+                SolicitudPazYSalvoDTORespuesta respuesta = solicitudMapperDominio.mappearDeSolicitudARespuesta(solicitud);
+                return ResponseEntity.ok(respuesta);
+            } catch (EntidadNoExisteException ex) {
+                // Si no se proporciona período, usar el período académico actual
+                if (periodoAcademico == null || periodoAcademico.trim().isEmpty()) {
+                    PeriodoAcademicoEnum periodoActual = PeriodoAcademicoEnum.getPeriodoActual();
+                    if (periodoActual != null) {
+                        periodoAcademico = periodoActual.getValor();
                     }
-                    SolicitudPazYSalvoDTORespuesta respuesta = solicitudMapperDominio.mappearDeSolicitudARespuesta(solicitud);
-                    return ResponseEntity.ok(respuesta);
-                } catch (EntidadNoExisteException ex) {
-                    // Si no se proporciona período, usar el período académico actual
-                    if (periodoAcademico == null || periodoAcademico.trim().isEmpty()) {
-                        PeriodoAcademicoEnum periodoActual = PeriodoAcademicoEnum.getPeriodoActual();
-                        if (periodoActual != null) {
-                            periodoAcademico = periodoActual.getValor();
-                        }
-                    }
-                    
-                    List<SolicitudPazYSalvo> solicitudes;
-                    if (periodoAcademico != null && !periodoAcademico.trim().isEmpty()) {
-                        solicitudes = solicitudPazYSalvoCU.listarSolicitudesPorUsuarioYPeriodo(idNumero, periodoAcademico.trim());
-                    } else {
-                        solicitudes = solicitudPazYSalvoCU.listarSolicitudesPorRol("ESTUDIANTE", idNumero);
-                    }
-                    
-                    List<SolicitudPazYSalvoDTORespuesta> respuesta = solicitudMapperDominio
-                            .mappearListaDeSolicitudesARespuesta(solicitudes);
-                    return ResponseEntity.ok(respuesta);
                 }
+                
+                List<SolicitudPazYSalvo> solicitudes;
+                if (periodoAcademico != null && !periodoAcademico.trim().isEmpty()) {
+                    solicitudes = solicitudPazYSalvoCU.listarSolicitudesPorUsuarioYPeriodo(idNumero, periodoAcademico.trim());
+                } else {
+                    solicitudes = solicitudPazYSalvoCU.listarSolicitudesPorRol("ESTUDIANTE", idNumero);
+                }
+                
+                List<SolicitudPazYSalvoDTORespuesta> respuesta = solicitudMapperDominio
+                        .mappearListaDeSolicitudesARespuesta(solicitudes);
+                return ResponseEntity.ok(respuesta);
             }
-
-            List<SolicitudPazYSalvo> solicitudes = obtenerSolicitudesPorRol(id);
-            List<SolicitudPazYSalvoDTORespuesta> respuesta = solicitudMapperDominio
-                    .mappearListaDeSolicitudesARespuesta(solicitudes);
-            return ResponseEntity.ok(respuesta);
-        } catch (Exception e) {
-            return ResponseEntity.internalServerError().body(Map.of("error", e.getMessage()));
         }
+
+        List<SolicitudPazYSalvo> solicitudes = obtenerSolicitudesPorRol(id);
+        List<SolicitudPazYSalvoDTORespuesta> respuesta = solicitudMapperDominio
+                .mappearListaDeSolicitudesARespuesta(solicitudes);
+        return ResponseEntity.ok(respuesta);
     }
 
     @PreAuthorize("hasAnyRole('Funcionario', 'Coordinador', 'Secretario', 'Administrador')")
@@ -625,8 +617,6 @@ public class SolicitudPazYSalvoRestController {
             return ResponseEntity.notFound().build();
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
-        } catch (Exception e) {
-            return ResponseEntity.status(500).body(Map.of("error", "Error interno del servidor: " + e.getMessage()));
         }
     }
 
@@ -675,91 +665,87 @@ public class SolicitudPazYSalvoRestController {
     public ResponseEntity<byte[]> generarDocumentoPazYSalvoPDF(
             @PathVariable Integer id,
             @RequestParam(value = "tituloTrabajoGrado", required = false) String tituloTrabajoGrado,
-            @RequestParam(value = "directorTrabajoGrado", required = false) String directorTrabajoGrado) {
-        try {
-            // Buscar la solicitud
-            SolicitudPazYSalvo solicitud = solicitudPazYSalvoCU.buscarPorId(id);
-            if (solicitud == null) {
-                return ResponseEntity.notFound().build();
-            }
-            
-            // Verificar que el usuario esté cargado
-            if (solicitud.getObjUsuario() == null || solicitud.getObjUsuario().getId_usuario() == null) {
-                return ResponseEntity.internalServerError().build();
-            }
-            
-            // Obtener el usuario completo desde el gateway (igual que en construirSolicitudBasica)
-            // Esto asegura que tengamos todos los datos del usuario, incluyendo la cédula
-            Usuario usuarioCompleto = usuarioGateway.obtenerUsuarioPorId(solicitud.getObjUsuario().getId_usuario());
-            if (usuarioCompleto == null) {
-                return ResponseEntity.internalServerError().build();
-            }
-            
-            // Crear datos del documento
-            Map<String, Object> datosDocumento = new HashMap<>();
-            datosDocumento.put("numeroDocumento", "PYS-" + id);
-            datosDocumento.put("fechaDocumento", java.time.LocalDate.now().toString());
-            datosDocumento.put("observaciones", "Paz y Salvo generado");
-            
-            Map<String, Object> datosSolicitud = new HashMap<>();
-            datosSolicitud.put("nombreEstudiante", usuarioCompleto.getNombre_completo());
-            datosSolicitud.put("codigoEstudiante", usuarioCompleto.getCodigo());
-            datosSolicitud.put("programa", usuarioCompleto.getObjPrograma() != null ? 
-                usuarioCompleto.getObjPrograma().getNombre_programa() : "Ingeniería Electrónica y Telecomunicaciones");
-            // Formatear fecha correctamente
-            if (solicitud.getFecha_registro_solicitud() != null) {
-                java.time.LocalDate fechaLocal = solicitud.getFecha_registro_solicitud().toInstant()
-                    .atZone(java.time.ZoneId.systemDefault()).toLocalDate();
-                datosSolicitud.put("fechaSolicitud", fechaLocal);
-            } else {
-                datosSolicitud.put("fechaSolicitud", java.time.LocalDate.now());
-            }
-            // Agregar datos adicionales para Paz y Salvo - usar el usuario completo para obtener la cédula
-            String cedulaFinal = usuarioCompleto.getCedula() != null && !usuarioCompleto.getCedula().trim().isEmpty() 
-                ? usuarioCompleto.getCedula() : "No especificada";
-            datosSolicitud.put("cedulaEstudiante", cedulaFinal);
-            // Obtener título y director de la solicitud guardada, o de los parámetros, o usar valores por defecto
-            String tituloFinal = null;
-            if (tituloTrabajoGrado != null && !tituloTrabajoGrado.trim().isEmpty()) {
-                tituloFinal = tituloTrabajoGrado.trim();
-            } else if (solicitud.getTitulo_trabajo_grado() != null && !solicitud.getTitulo_trabajo_grado().trim().isEmpty()) {
-                tituloFinal = solicitud.getTitulo_trabajo_grado().trim();
-            } else {
-                tituloFinal = "Trabajo de grado";
-            }
-            
-            String directorFinal = null;
-            if (directorTrabajoGrado != null && !directorTrabajoGrado.trim().isEmpty()) {
-                directorFinal = directorTrabajoGrado.trim();
-            } else if (solicitud.getDirector_trabajo_grado() != null && !solicitud.getDirector_trabajo_grado().trim().isEmpty()) {
-                directorFinal = solicitud.getDirector_trabajo_grado().trim();
-            } else {
-                directorFinal = "Director asignado";
-            }
-            
-            datosSolicitud.put("tituloTrabajoGrado", tituloFinal);
-            datosSolicitud.put("directorTrabajoGrado", directorFinal);
-            
-            // Crear request para generador de documentos
-            co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.DTORespuesta.DocumentRequest request = 
-                new co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.DTORespuesta.DocumentRequest();
-            request.setTipoDocumento("PAZ_SALVO");
-            request.setDatosDocumento(datosDocumento);
-            request.setDatosSolicitud(datosSolicitud);
-            
-            // Generar documento
-            java.io.ByteArrayOutputStream documentBytes = documentGeneratorService.generarDocumento(request);
-            
-            String nombreArchivo = String.format("PazYSalvo_%s.pdf", id);
-            
-            return ResponseEntity.ok()
-                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + nombreArchivo + "\"")
-                .contentType(MediaType.APPLICATION_PDF)
-                .body(documentBytes.toByteArray());
-                
-        } catch (Exception e) {
+            @RequestParam(value = "directorTrabajoGrado", required = false) String directorTrabajoGrado)
+            throws java.io.IOException {
+        // Buscar la solicitud
+        SolicitudPazYSalvo solicitud = solicitudPazYSalvoCU.buscarPorId(id);
+        if (solicitud == null) {
+            return ResponseEntity.notFound().build();
+        }
+        
+        // Verificar que el usuario esté cargado
+        if (solicitud.getObjUsuario() == null || solicitud.getObjUsuario().getId_usuario() == null) {
             return ResponseEntity.internalServerError().build();
         }
+        
+        // Obtener el usuario completo desde el gateway (igual que en construirSolicitudBasica)
+        // Esto asegura que tengamos todos los datos del usuario, incluyendo la cédula
+        Usuario usuarioCompleto = usuarioGateway.obtenerUsuarioPorId(solicitud.getObjUsuario().getId_usuario());
+        if (usuarioCompleto == null) {
+            return ResponseEntity.internalServerError().build();
+        }
+        
+        // Crear datos del documento
+        Map<String, Object> datosDocumento = new HashMap<>();
+        datosDocumento.put("numeroDocumento", "PYS-" + id);
+        datosDocumento.put("fechaDocumento", java.time.LocalDate.now().toString());
+        datosDocumento.put("observaciones", "Paz y Salvo generado");
+        
+        Map<String, Object> datosSolicitud = new HashMap<>();
+        datosSolicitud.put("nombreEstudiante", usuarioCompleto.getNombre_completo());
+        datosSolicitud.put("codigoEstudiante", usuarioCompleto.getCodigo());
+        datosSolicitud.put("programa", usuarioCompleto.getObjPrograma() != null ? 
+            usuarioCompleto.getObjPrograma().getNombre_programa() : "Ingeniería Electrónica y Telecomunicaciones");
+        // Formatear fecha correctamente
+        if (solicitud.getFecha_registro_solicitud() != null) {
+            java.time.LocalDate fechaLocal = solicitud.getFecha_registro_solicitud().toInstant()
+                .atZone(java.time.ZoneId.systemDefault()).toLocalDate();
+            datosSolicitud.put("fechaSolicitud", fechaLocal);
+        } else {
+            datosSolicitud.put("fechaSolicitud", java.time.LocalDate.now());
+        }
+        // Agregar datos adicionales para Paz y Salvo - usar el usuario completo para obtener la cédula
+        String cedulaFinal = usuarioCompleto.getCedula() != null && !usuarioCompleto.getCedula().trim().isEmpty() 
+            ? usuarioCompleto.getCedula() : "No especificada";
+        datosSolicitud.put("cedulaEstudiante", cedulaFinal);
+        // Obtener título y director de la solicitud guardada, o de los parámetros, o usar valores por defecto
+        String tituloFinal = null;
+        if (tituloTrabajoGrado != null && !tituloTrabajoGrado.trim().isEmpty()) {
+            tituloFinal = tituloTrabajoGrado.trim();
+        } else if (solicitud.getTitulo_trabajo_grado() != null && !solicitud.getTitulo_trabajo_grado().trim().isEmpty()) {
+            tituloFinal = solicitud.getTitulo_trabajo_grado().trim();
+        } else {
+            tituloFinal = "Trabajo de grado";
+        }
+        
+        String directorFinal = null;
+        if (directorTrabajoGrado != null && !directorTrabajoGrado.trim().isEmpty()) {
+            directorFinal = directorTrabajoGrado.trim();
+        } else if (solicitud.getDirector_trabajo_grado() != null && !solicitud.getDirector_trabajo_grado().trim().isEmpty()) {
+            directorFinal = solicitud.getDirector_trabajo_grado().trim();
+        } else {
+            directorFinal = "Director asignado";
+        }
+        
+        datosSolicitud.put("tituloTrabajoGrado", tituloFinal);
+        datosSolicitud.put("directorTrabajoGrado", directorFinal);
+        
+        // Crear request para generador de documentos
+        co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.DTORespuesta.DocumentRequest request = 
+            new co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.DTORespuesta.DocumentRequest();
+        request.setTipoDocumento("PAZ_SALVO");
+        request.setDatosDocumento(datosDocumento);
+        request.setDatosSolicitud(datosSolicitud);
+        
+        // Generar documento
+        java.io.ByteArrayOutputStream documentBytes = documentGeneratorService.generarDocumento(request);
+        
+        String nombreArchivo = String.format("PazYSalvo_%s.pdf", id);
+        
+        return ResponseEntity.ok()
+            .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + nombreArchivo + "\"")
+            .contentType(MediaType.APPLICATION_PDF)
+            .body(documentBytes.toByteArray());
     }
 
     /**
@@ -771,90 +757,86 @@ public class SolicitudPazYSalvoRestController {
     public ResponseEntity<byte[]> generarDocumentoPazYSalvoDOCX(
             @PathVariable Integer id,
             @RequestParam(value = "tituloTrabajoGrado", required = false) String tituloTrabajoGrado,
-            @RequestParam(value = "directorTrabajoGrado", required = false) String directorTrabajoGrado) {
-        try {
-            // Buscar la solicitud
-            SolicitudPazYSalvo solicitud = solicitudPazYSalvoCU.buscarPorId(id);
-            if (solicitud == null) {
-                return ResponseEntity.notFound().build();
-            }
-            
-            // Verificar que el usuario esté cargado
-            if (solicitud.getObjUsuario() == null || solicitud.getObjUsuario().getId_usuario() == null) {
-                return ResponseEntity.internalServerError().build();
-            }
-            
-            // Obtener el usuario completo desde el gateway para asegurar que tengamos todos los datos, incluyendo la cédula
-            Usuario usuarioCompleto = usuarioGateway.obtenerUsuarioPorId(solicitud.getObjUsuario().getId_usuario());
-            if (usuarioCompleto == null) {
-                return ResponseEntity.internalServerError().build();
-            }
-            
-            // Crear datos del documento
-            Map<String, Object> datosDocumento = new HashMap<>();
-            datosDocumento.put("numeroDocumento", "PYS-" + id);
-            datosDocumento.put("fechaDocumento", java.time.LocalDate.now().toString());
-            datosDocumento.put("observaciones", "Paz y Salvo generado");
-            
-            Map<String, Object> datosSolicitud = new HashMap<>();
-            datosSolicitud.put("nombreEstudiante", usuarioCompleto.getNombre_completo());
-            datosSolicitud.put("codigoEstudiante", usuarioCompleto.getCodigo());
-            datosSolicitud.put("programa", usuarioCompleto.getObjPrograma() != null ? 
-                usuarioCompleto.getObjPrograma().getNombre_programa() : "Ingeniería Electrónica y Telecomunicaciones");
-            // Formatear fecha correctamente
-            if (solicitud.getFecha_registro_solicitud() != null) {
-                java.time.LocalDate fechaLocal = solicitud.getFecha_registro_solicitud().toInstant()
-                    .atZone(java.time.ZoneId.systemDefault()).toLocalDate();
-                datosSolicitud.put("fechaSolicitud", fechaLocal);
-            } else {
-                datosSolicitud.put("fechaSolicitud", java.time.LocalDate.now());
-            }
-            // Agregar datos adicionales para Paz y Salvo - usar el usuario completo para obtener la cédula
-            String cedulaFinal = usuarioCompleto.getCedula() != null && !usuarioCompleto.getCedula().trim().isEmpty() 
-                ? usuarioCompleto.getCedula() : "No especificada";
-            datosSolicitud.put("cedulaEstudiante", cedulaFinal);
-            // Obtener título y director de la solicitud guardada, o de los parámetros, o usar valores por defecto
-            String tituloFinal = null;
-            if (tituloTrabajoGrado != null && !tituloTrabajoGrado.trim().isEmpty()) {
-                tituloFinal = tituloTrabajoGrado.trim();
-            } else if (solicitud.getTitulo_trabajo_grado() != null && !solicitud.getTitulo_trabajo_grado().trim().isEmpty()) {
-                tituloFinal = solicitud.getTitulo_trabajo_grado().trim();
-            } else {
-                tituloFinal = "Trabajo de grado";
-            }
-            
-            String directorFinal = null;
-            if (directorTrabajoGrado != null && !directorTrabajoGrado.trim().isEmpty()) {
-                directorFinal = directorTrabajoGrado.trim();
-            } else if (solicitud.getDirector_trabajo_grado() != null && !solicitud.getDirector_trabajo_grado().trim().isEmpty()) {
-                directorFinal = solicitud.getDirector_trabajo_grado().trim();
-            } else {
-                directorFinal = "Director asignado";
-            }
-            
-            datosSolicitud.put("tituloTrabajoGrado", tituloFinal);
-            datosSolicitud.put("directorTrabajoGrado", directorFinal);
-            
-            // Crear request para generador de documentos
-            co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.DTORespuesta.DocumentRequest request = 
-                new co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.DTORespuesta.DocumentRequest();
-            request.setTipoDocumento("PAZ_SALVO");
-            request.setDatosDocumento(datosDocumento);
-            request.setDatosSolicitud(datosSolicitud);
-            
-            // Generar documento
-            java.io.ByteArrayOutputStream documentBytes = documentGeneratorService.generarDocumento(request);
-            
-            String nombreArchivo = String.format("PazYSalvo_%s.docx", id);
-            
-            return ResponseEntity.ok()
-                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + nombreArchivo + "\"")
-                .contentType(MediaType.APPLICATION_OCTET_STREAM)
-                .body(documentBytes.toByteArray());
-                
-        } catch (Exception e) {
+            @RequestParam(value = "directorTrabajoGrado", required = false) String directorTrabajoGrado)
+            throws java.io.IOException {
+        // Buscar la solicitud
+        SolicitudPazYSalvo solicitud = solicitudPazYSalvoCU.buscarPorId(id);
+        if (solicitud == null) {
+            return ResponseEntity.notFound().build();
+        }
+        
+        // Verificar que el usuario esté cargado
+        if (solicitud.getObjUsuario() == null || solicitud.getObjUsuario().getId_usuario() == null) {
             return ResponseEntity.internalServerError().build();
         }
+        
+        // Obtener el usuario completo desde el gateway para asegurar que tengamos todos los datos, incluyendo la cédula
+        Usuario usuarioCompleto = usuarioGateway.obtenerUsuarioPorId(solicitud.getObjUsuario().getId_usuario());
+        if (usuarioCompleto == null) {
+            return ResponseEntity.internalServerError().build();
+        }
+        
+        // Crear datos del documento
+        Map<String, Object> datosDocumento = new HashMap<>();
+        datosDocumento.put("numeroDocumento", "PYS-" + id);
+        datosDocumento.put("fechaDocumento", java.time.LocalDate.now().toString());
+        datosDocumento.put("observaciones", "Paz y Salvo generado");
+        
+        Map<String, Object> datosSolicitud = new HashMap<>();
+        datosSolicitud.put("nombreEstudiante", usuarioCompleto.getNombre_completo());
+        datosSolicitud.put("codigoEstudiante", usuarioCompleto.getCodigo());
+        datosSolicitud.put("programa", usuarioCompleto.getObjPrograma() != null ? 
+            usuarioCompleto.getObjPrograma().getNombre_programa() : "Ingeniería Electrónica y Telecomunicaciones");
+        // Formatear fecha correctamente
+        if (solicitud.getFecha_registro_solicitud() != null) {
+            java.time.LocalDate fechaLocal = solicitud.getFecha_registro_solicitud().toInstant()
+                .atZone(java.time.ZoneId.systemDefault()).toLocalDate();
+            datosSolicitud.put("fechaSolicitud", fechaLocal);
+        } else {
+            datosSolicitud.put("fechaSolicitud", java.time.LocalDate.now());
+        }
+        // Agregar datos adicionales para Paz y Salvo - usar el usuario completo para obtener la cédula
+        String cedulaFinal = usuarioCompleto.getCedula() != null && !usuarioCompleto.getCedula().trim().isEmpty() 
+            ? usuarioCompleto.getCedula() : "No especificada";
+        datosSolicitud.put("cedulaEstudiante", cedulaFinal);
+        // Obtener título y director de la solicitud guardada, o de los parámetros, o usar valores por defecto
+        String tituloFinal = null;
+        if (tituloTrabajoGrado != null && !tituloTrabajoGrado.trim().isEmpty()) {
+            tituloFinal = tituloTrabajoGrado.trim();
+        } else if (solicitud.getTitulo_trabajo_grado() != null && !solicitud.getTitulo_trabajo_grado().trim().isEmpty()) {
+            tituloFinal = solicitud.getTitulo_trabajo_grado().trim();
+        } else {
+            tituloFinal = "Trabajo de grado";
+        }
+        
+        String directorFinal = null;
+        if (directorTrabajoGrado != null && !directorTrabajoGrado.trim().isEmpty()) {
+            directorFinal = directorTrabajoGrado.trim();
+        } else if (solicitud.getDirector_trabajo_grado() != null && !solicitud.getDirector_trabajo_grado().trim().isEmpty()) {
+            directorFinal = solicitud.getDirector_trabajo_grado().trim();
+        } else {
+            directorFinal = "Director asignado";
+        }
+        
+        datosSolicitud.put("tituloTrabajoGrado", tituloFinal);
+        datosSolicitud.put("directorTrabajoGrado", directorFinal);
+        
+        // Crear request para generador de documentos
+        co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.DTORespuesta.DocumentRequest request = 
+            new co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.DTORespuesta.DocumentRequest();
+        request.setTipoDocumento("PAZ_SALVO");
+        request.setDatosDocumento(datosDocumento);
+        request.setDatosSolicitud(datosSolicitud);
+        
+        // Generar documento
+        java.io.ByteArrayOutputStream documentBytes = documentGeneratorService.generarDocumento(request);
+        
+        String nombreArchivo = String.format("PazYSalvo_%s.docx", id);
+        
+        return ResponseEntity.ok()
+            .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + nombreArchivo + "\"")
+            .contentType(MediaType.APPLICATION_OCTET_STREAM)
+            .body(documentBytes.toByteArray());
     }
 
     /**
@@ -869,38 +851,31 @@ public class SolicitudPazYSalvoRestController {
         if (rechazo != null) {
             return ResponseEntity.status(rechazo.estado()).body(Map.of("error", rechazo.mensaje()));
         }
-        try {
-            String nombreOriginal = file.getOriginalFilename();
+        String nombreOriginal = file.getOriginalFilename();
 
-            // Guardar archivo (sin ID de solicitud, se guarda en raíz para documentos huérfanos)
-            // Nota: Este endpoint es para documentos sin asociar, se mantiene en raíz
-            String rutaArchivo = this.objGestionarArchivos.saveFile(file, nombreOriginal, "pdf");
-            
-            // Crear documento SIN asociar a solicitud (como en homologación)
-            Documento doc = new Documento();
-            doc.setNombre(nombreOriginal);
-            doc.setRuta_documento(rutaArchivo);
-            doc.setFecha_documento(new Date());
-            doc.setEsValido(true);
-            // Sin solicitud todavía: se asociará a la próxima solicitud que cree este mismo usuario
-            doc.setIdUsuarioSubio(autorizacion.idUsuarioActual());
-            
-            Documento documentoGuardado = documentosCU.registrarDocumento(doc);
-            
-            Map<String, Object> respuesta = new HashMap<>();
-            respuesta.put("success", true);
-            respuesta.put("message", "Documento subido exitosamente (sin asociar)");
-            respuesta.put("documento_id", documentoGuardado.getId_documento());
-            respuesta.put("nombre", nombreOriginal);
-            respuesta.put("fecha", documentoGuardado.getFecha_documento());
+        // Guardar archivo (sin ID de solicitud, se guarda en raíz para documentos huérfanos)
+        // Nota: Este endpoint es para documentos sin asociar, se mantiene en raíz
+        String rutaArchivo = this.objGestionarArchivos.saveFile(file, nombreOriginal, "pdf");
+        
+        // Crear documento SIN asociar a solicitud (como en homologación)
+        Documento doc = new Documento();
+        doc.setNombre(nombreOriginal);
+        doc.setRuta_documento(rutaArchivo);
+        doc.setFecha_documento(new Date());
+        doc.setEsValido(true);
+        // Sin solicitud todavía: se asociará a la próxima solicitud que cree este mismo usuario
+        doc.setIdUsuarioSubio(autorizacion.idUsuarioActual());
+        
+        Documento documentoGuardado = documentosCU.registrarDocumento(doc);
+        
+        Map<String, Object> respuesta = new HashMap<>();
+        respuesta.put("success", true);
+        respuesta.put("message", "Documento subido exitosamente (sin asociar)");
+        respuesta.put("documento_id", documentoGuardado.getId_documento());
+        respuesta.put("nombre", nombreOriginal);
+        respuesta.put("fecha", documentoGuardado.getFecha_documento());
 
-            return ResponseEntity.ok(respuesta);
-
-        } catch (Exception e) {
-            log.error("Error al subir documento de paz y salvo", e);
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                .body(Map.of("error", "No se pudo guardar el documento. Intente de nuevo."));
-        }
+        return ResponseEntity.ok(respuesta);
     }
 
     /**
@@ -910,74 +885,69 @@ public class SolicitudPazYSalvoRestController {
     @PreAuthorize("isAuthenticated()")
     @GetMapping("/descargar-documento")
     public ResponseEntity<byte[]> descargarDocumento(@RequestParam("filename") String filename) {
-        try {
-            
-            // Buscar el documento en la BD por nombre para obtener su ruta completa
-            String rutaArchivo = filename; // Por defecto usar el nombre recibido
-            
-            // Staff: busca en todas las solicitudes de paz y salvo.
-            // Estudiante: solo en las suyas, y el archivo debe pertenecer a una de ellas.
-            boolean esStaff = autorizacion.esStaff();
-            List<SolicitudPazYSalvo> solicitudes;
-            if (esStaff) {
-                solicitudes = solicitudPazYSalvoCU.listarSolicitudes();
-            } else {
-                Integer idUsuarioActual = autorizacion.idUsuarioActual();
-                if (idUsuarioActual == null) {
-                    return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
-                }
-                solicitudes = solicitudPazYSalvoCU.listarSolicitudesPorRol("ESTUDIANTE", idUsuarioActual);
+        
+        // Buscar el documento en la BD por nombre para obtener su ruta completa
+        String rutaArchivo = filename; // Por defecto usar el nombre recibido
+        
+        // Staff: busca en todas las solicitudes de paz y salvo.
+        // Estudiante: solo en las suyas, y el archivo debe pertenecer a una de ellas.
+        boolean esStaff = autorizacion.esStaff();
+        List<SolicitudPazYSalvo> solicitudes;
+        if (esStaff) {
+            solicitudes = solicitudPazYSalvoCU.listarSolicitudes();
+        } else {
+            Integer idUsuarioActual = autorizacion.idUsuarioActual();
+            if (idUsuarioActual == null) {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
             }
-            boolean encontrado = false;
-            for (SolicitudPazYSalvo solicitud : solicitudes != null ? solicitudes : List.<SolicitudPazYSalvo>of()) {
-                if (encontrado) {
-                    break;
-                }
-                if (solicitud.getDocumentos() != null) {
-                    for (Documento doc : solicitud.getDocumentos()) {
-                        // Comparar por nombre (sin ruta)
-                        String nombreDoc = doc.getNombre();
-                        if (nombreDoc != null && nombreDoc.equals(filename)) {
-                            // Usar la ruta completa si está disponible
-                            if (doc.getRuta_documento() != null && !doc.getRuta_documento().isEmpty()) {
-                                rutaArchivo = doc.getRuta_documento();
-                            }
-                            encontrado = true;
-                            break;
+            solicitudes = solicitudPazYSalvoCU.listarSolicitudesPorRol("ESTUDIANTE", idUsuarioActual);
+        }
+        boolean encontrado = false;
+        for (SolicitudPazYSalvo solicitud : solicitudes != null ? solicitudes : List.<SolicitudPazYSalvo>of()) {
+            if (encontrado) {
+                break;
+            }
+            if (solicitud.getDocumentos() != null) {
+                for (Documento doc : solicitud.getDocumentos()) {
+                    // Comparar por nombre (sin ruta)
+                    String nombreDoc = doc.getNombre();
+                    if (nombreDoc != null && nombreDoc.equals(filename)) {
+                        // Usar la ruta completa si está disponible
+                        if (doc.getRuta_documento() != null && !doc.getRuta_documento().isEmpty()) {
+                            rutaArchivo = doc.getRuta_documento();
                         }
+                        encontrado = true;
+                        break;
                     }
                 }
             }
-            if (!esStaff && !encontrado) {
-                return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
-            }
-            
-            // Obtener el archivo usando la ruta (puede ser nombre simple o ruta completa)
-            byte[] archivo = objGestionarArchivos.getFile(rutaArchivo);
-            
-            if (archivo == null || archivo.length == 0) {
-                return ResponseEntity.notFound().build();
-            }
-            
-            // Extraer solo el nombre del archivo para el header (sin la ruta)
-            String nombreArchivo = filename;
-            if (rutaArchivo.contains("/")) {
-                nombreArchivo = rutaArchivo.substring(rutaArchivo.lastIndexOf("/") + 1);
-            }
-            
-            // Configurar Content-Disposition con filename y filename* (UTF-8)
-            String encoded = java.net.URLEncoder.encode(nombreArchivo, java.nio.charset.StandardCharsets.UTF_8)
-                .replace("+", "%20");
-            String contentDisposition = "attachment; filename=\"" + nombreArchivo + "\"; filename*=UTF-8''" + encoded;
-
-            return ResponseEntity.ok()
-                .header(HttpHeaders.CONTENT_DISPOSITION, contentDisposition)
-                .contentType(MediaType.APPLICATION_PDF)
-                .body(archivo);
-                
-        } catch (Exception e) {
-            return ResponseEntity.internalServerError().build();
         }
+        if (!esStaff && !encontrado) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
+        
+        // Obtener el archivo usando la ruta (puede ser nombre simple o ruta completa)
+        byte[] archivo = objGestionarArchivos.getFile(rutaArchivo);
+        
+        if (archivo == null || archivo.length == 0) {
+            return ResponseEntity.notFound().build();
+        }
+        
+        // Extraer solo el nombre del archivo para el header (sin la ruta)
+        String nombreArchivo = filename;
+        if (rutaArchivo.contains("/")) {
+            nombreArchivo = rutaArchivo.substring(rutaArchivo.lastIndexOf("/") + 1);
+        }
+        
+        // Configurar Content-Disposition con filename y filename* (UTF-8)
+        String encoded = java.net.URLEncoder.encode(nombreArchivo, java.nio.charset.StandardCharsets.UTF_8)
+            .replace("+", "%20");
+        String contentDisposition = "attachment; filename=\"" + nombreArchivo + "\"; filename*=UTF-8''" + encoded;
+
+        return ResponseEntity.ok()
+            .header(HttpHeaders.CONTENT_DISPOSITION, contentDisposition)
+            .contentType(MediaType.APPLICATION_PDF)
+            .body(archivo);
     }
 
 
@@ -992,108 +962,104 @@ public class SolicitudPazYSalvoRestController {
             @RequestParam(value = "observaciones", required = false) String observaciones,
             @RequestParam(value = "cedulaEstudiante", required = false) String cedulaEstudiante,
             @RequestParam(value = "tituloTrabajoGrado", required = false) String tituloTrabajoGrado,
-            @RequestParam(value = "directorTrabajoGrado", required = false) String directorTrabajoGrado) {
-        try {
-            // Obtener la solicitud
-            SolicitudPazYSalvo solicitud = solicitudPazYSalvoCU.buscarPorId(idSolicitud);
-            if (solicitud == null) {
-                return ResponseEntity.notFound().build();
-            }
-            
-            // Verificar que el usuario esté cargado
-            if (solicitud.getObjUsuario() == null || solicitud.getObjUsuario().getId_usuario() == null) {
-                return ResponseEntity.internalServerError().build();
-            }
-            
-            // Obtener el usuario completo desde el gateway para asegurar que tengamos todos los datos, incluyendo la cédula
-            Usuario usuarioCompleto = usuarioGateway.obtenerUsuarioPorId(solicitud.getObjUsuario().getId_usuario());
-            if (usuarioCompleto == null) {
-                return ResponseEntity.internalServerError().build();
-            }
-            
-            
-            // Crear request para el generador de documentos (igual que homologación)
-            Map<String, Object> datosDocumento = new HashMap<>();
-            datosDocumento.put("numeroDocumento", numeroDocumento);
-            // Asegurar que la fecha se pase como string en formato YYYY-MM-DD
-            String fechaDocumentoStr = null;
-            if (fechaDocumento != null && !fechaDocumento.trim().isEmpty()) {
-                fechaDocumentoStr = fechaDocumento.trim();
-                if (fechaDocumentoStr.contains("T")) {
-                    // Si viene con hora, tomar solo la fecha (YYYY-MM-DD)
-                    fechaDocumentoStr = fechaDocumentoStr.substring(0, 10);
-                }
-                // Validar que tenga el formato correcto YYYY-MM-DD
-                if (!fechaDocumentoStr.matches("\\d{4}-\\d{2}-\\d{2}")) {
-                    fechaDocumentoStr = null;
-                }
-            }
-            // Si no se proporcionó fecha o es inválida, usar la fecha actual del sistema (sin zona horaria)
-            if (fechaDocumentoStr == null) {
-                fechaDocumentoStr = java.time.LocalDate.now().toString();
-            }
-            datosDocumento.put("fechaDocumento", fechaDocumentoStr);
-            datosDocumento.put("observaciones", observaciones != null ? observaciones : "");
-            
-            Map<String, Object> datosSolicitud = new HashMap<>();
-            datosSolicitud.put("nombreEstudiante", usuarioCompleto.getNombre_completo());
-            datosSolicitud.put("codigoEstudiante", usuarioCompleto.getCodigo());
-            datosSolicitud.put("programa", usuarioCompleto.getObjPrograma() != null ? 
-                usuarioCompleto.getObjPrograma().getNombre_programa() : "Ingeniería Electrónica y Telecomunicaciones");
-            datosSolicitud.put("fechaSolicitud", solicitud.getFecha_registro_solicitud());
-            // Usar la cédula del usuario completo, o el parámetro si se proporciona, o "No especificada" como último recurso
-            String cedulaFinal = cedulaEstudiante != null && !cedulaEstudiante.trim().isEmpty() 
-                ? cedulaEstudiante 
-                : (usuarioCompleto.getCedula() != null && !usuarioCompleto.getCedula().trim().isEmpty() 
-                    ? usuarioCompleto.getCedula() 
-                    : "No especificada");
-            datosSolicitud.put("cedulaEstudiante", cedulaFinal);
-            // Obtener título y director de la solicitud guardada, o de los parámetros, o usar valores por defecto
-            String tituloFinal = null;
-            if (tituloTrabajoGrado != null && !tituloTrabajoGrado.trim().isEmpty()) {
-                tituloFinal = tituloTrabajoGrado.trim();
-            } else if (solicitud.getTitulo_trabajo_grado() != null && !solicitud.getTitulo_trabajo_grado().trim().isEmpty()) {
-                tituloFinal = solicitud.getTitulo_trabajo_grado().trim();
-            } else {
-                tituloFinal = "Trabajo de grado";
-            }
-            
-            String directorFinal = null;
-            if (directorTrabajoGrado != null && !directorTrabajoGrado.trim().isEmpty()) {
-                directorFinal = directorTrabajoGrado.trim();
-            } else if (solicitud.getDirector_trabajo_grado() != null && !solicitud.getDirector_trabajo_grado().trim().isEmpty()) {
-                directorFinal = solicitud.getDirector_trabajo_grado().trim();
-            } else {
-                directorFinal = "Director asignado";
-            }
-            
-            datosSolicitud.put("tituloTrabajoGrado", tituloFinal);
-            datosSolicitud.put("directorTrabajoGrado", directorFinal);
-            
-            
-            // Crear el request (igual que homologación)
-            co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.DTORespuesta.DocumentRequest request = 
-                new co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.DTORespuesta.DocumentRequest();
-            request.setTipoDocumento("PAZ_SALVO");
-            request.setDatosDocumento(datosDocumento);
-            request.setDatosSolicitud(datosSolicitud);
-            
-            // Generar documento usando el servicio (igual que homologación)
-            java.io.ByteArrayOutputStream documentBytes = documentGeneratorService.generarDocumento(request);
-            
-            // Generar nombre del archivo (igual que homologación)
-            String nombreEstudiante = solicitud.getObjUsuario().getNombre_completo();
-            String nombreLimpio = nombreEstudiante.replaceAll("[^a-zA-Z0-9]", "_");
-            String nombreArchivo = String.format("PAZ_SALVO_%s_%s.docx", nombreLimpio, numeroDocumento);
-            
-            return ResponseEntity.ok()
-                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + nombreArchivo + "\"")
-                .contentType(MediaType.APPLICATION_OCTET_STREAM)
-                .body(documentBytes.toByteArray());
-                
-        } catch (Exception e) {
+            @RequestParam(value = "directorTrabajoGrado", required = false) String directorTrabajoGrado)
+            throws java.io.IOException {
+        // Obtener la solicitud
+        SolicitudPazYSalvo solicitud = solicitudPazYSalvoCU.buscarPorId(idSolicitud);
+        if (solicitud == null) {
+            return ResponseEntity.notFound().build();
+        }
+        
+        // Verificar que el usuario esté cargado
+        if (solicitud.getObjUsuario() == null || solicitud.getObjUsuario().getId_usuario() == null) {
             return ResponseEntity.internalServerError().build();
         }
+        
+        // Obtener el usuario completo desde el gateway para asegurar que tengamos todos los datos, incluyendo la cédula
+        Usuario usuarioCompleto = usuarioGateway.obtenerUsuarioPorId(solicitud.getObjUsuario().getId_usuario());
+        if (usuarioCompleto == null) {
+            return ResponseEntity.internalServerError().build();
+        }
+        
+        
+        // Crear request para el generador de documentos (igual que homologación)
+        Map<String, Object> datosDocumento = new HashMap<>();
+        datosDocumento.put("numeroDocumento", numeroDocumento);
+        // Asegurar que la fecha se pase como string en formato YYYY-MM-DD
+        String fechaDocumentoStr = null;
+        if (fechaDocumento != null && !fechaDocumento.trim().isEmpty()) {
+            fechaDocumentoStr = fechaDocumento.trim();
+            if (fechaDocumentoStr.contains("T")) {
+                // Si viene con hora, tomar solo la fecha (YYYY-MM-DD)
+                fechaDocumentoStr = fechaDocumentoStr.substring(0, 10);
+            }
+            // Validar que tenga el formato correcto YYYY-MM-DD
+            if (!fechaDocumentoStr.matches("\\d{4}-\\d{2}-\\d{2}")) {
+                fechaDocumentoStr = null;
+            }
+        }
+        // Si no se proporcionó fecha o es inválida, usar la fecha actual del sistema (sin zona horaria)
+        if (fechaDocumentoStr == null) {
+            fechaDocumentoStr = java.time.LocalDate.now().toString();
+        }
+        datosDocumento.put("fechaDocumento", fechaDocumentoStr);
+        datosDocumento.put("observaciones", observaciones != null ? observaciones : "");
+        
+        Map<String, Object> datosSolicitud = new HashMap<>();
+        datosSolicitud.put("nombreEstudiante", usuarioCompleto.getNombre_completo());
+        datosSolicitud.put("codigoEstudiante", usuarioCompleto.getCodigo());
+        datosSolicitud.put("programa", usuarioCompleto.getObjPrograma() != null ? 
+            usuarioCompleto.getObjPrograma().getNombre_programa() : "Ingeniería Electrónica y Telecomunicaciones");
+        datosSolicitud.put("fechaSolicitud", solicitud.getFecha_registro_solicitud());
+        // Usar la cédula del usuario completo, o el parámetro si se proporciona, o "No especificada" como último recurso
+        String cedulaFinal = cedulaEstudiante != null && !cedulaEstudiante.trim().isEmpty() 
+            ? cedulaEstudiante 
+            : (usuarioCompleto.getCedula() != null && !usuarioCompleto.getCedula().trim().isEmpty() 
+                ? usuarioCompleto.getCedula() 
+                : "No especificada");
+        datosSolicitud.put("cedulaEstudiante", cedulaFinal);
+        // Obtener título y director de la solicitud guardada, o de los parámetros, o usar valores por defecto
+        String tituloFinal = null;
+        if (tituloTrabajoGrado != null && !tituloTrabajoGrado.trim().isEmpty()) {
+            tituloFinal = tituloTrabajoGrado.trim();
+        } else if (solicitud.getTitulo_trabajo_grado() != null && !solicitud.getTitulo_trabajo_grado().trim().isEmpty()) {
+            tituloFinal = solicitud.getTitulo_trabajo_grado().trim();
+        } else {
+            tituloFinal = "Trabajo de grado";
+        }
+        
+        String directorFinal = null;
+        if (directorTrabajoGrado != null && !directorTrabajoGrado.trim().isEmpty()) {
+            directorFinal = directorTrabajoGrado.trim();
+        } else if (solicitud.getDirector_trabajo_grado() != null && !solicitud.getDirector_trabajo_grado().trim().isEmpty()) {
+            directorFinal = solicitud.getDirector_trabajo_grado().trim();
+        } else {
+            directorFinal = "Director asignado";
+        }
+        
+        datosSolicitud.put("tituloTrabajoGrado", tituloFinal);
+        datosSolicitud.put("directorTrabajoGrado", directorFinal);
+        
+        
+        // Crear el request (igual que homologación)
+        co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.DTORespuesta.DocumentRequest request = 
+            new co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.DTORespuesta.DocumentRequest();
+        request.setTipoDocumento("PAZ_SALVO");
+        request.setDatosDocumento(datosDocumento);
+        request.setDatosSolicitud(datosSolicitud);
+        
+        // Generar documento usando el servicio (igual que homologación)
+        java.io.ByteArrayOutputStream documentBytes = documentGeneratorService.generarDocumento(request);
+        
+        // Generar nombre del archivo (igual que homologación)
+        String nombreEstudiante = solicitud.getObjUsuario().getNombre_completo();
+        String nombreLimpio = nombreEstudiante.replaceAll("[^a-zA-Z0-9]", "_");
+        String nombreArchivo = String.format("PAZ_SALVO_%s_%s.docx", nombreLimpio, numeroDocumento);
+        
+        return ResponseEntity.ok()
+            .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + nombreArchivo + "\"")
+            .contentType(MediaType.APPLICATION_OCTET_STREAM)
+            .body(documentBytes.toByteArray());
     }
 
     /**
@@ -1101,15 +1067,10 @@ public class SolicitudPazYSalvoRestController {
      */
     @GetMapping("/plantillas-disponibles")
     public ResponseEntity<?> obtenerPlantillasDisponibles() {
-        try {
-            // Usar el servicio real igual que homologación
-            List<?> plantillas = documentGeneratorService.getTemplates("paz-salvo");
-            
-            return ResponseEntity.ok(plantillas);
-            
-        } catch (Exception e) {
-            return ResponseEntity.internalServerError().build();
-        }
+        // Usar el servicio real igual que homologación
+        List<?> plantillas = documentGeneratorService.getTemplates("paz-salvo");
+        
+        return ResponseEntity.ok(plantillas);
     }
 
     /**
@@ -1118,61 +1079,56 @@ public class SolicitudPazYSalvoRestController {
     @PreAuthorize("@autorizacion.esStaff() or @autorizacion.esDuenoSolicitud(#idSolicitud)")
     @GetMapping("/descargarOficio/{idSolicitud}")
     public ResponseEntity<byte[]> descargarOficioPazSalvo(@PathVariable Integer idSolicitud) {
-        try {
-            // Obtener la solicitud con sus documentos
-            SolicitudPazYSalvo solicitud = solicitudPazYSalvoCU.buscarPorId(idSolicitud);
-            if (solicitud == null) {
-                return ResponseEntity.notFound().build();
-            }
-            
-            // Buscar documentos asociados a esta solicitud
-            List<Documento> documentos = solicitud.getDocumentos();
-            if (documentos == null || documentos.isEmpty()) {
-                return ResponseEntity.notFound().build();
-            }
-            
-            // Buscar documentos que sean oficios/resoluciones (subidos por secretaria)
-            for (Documento documento : documentos) {
-                if (documento.getNombre() != null && documento.getNombre().toLowerCase().endsWith(".pdf")) {
-                    String nombreArchivo = documento.getNombre().toLowerCase();
-                    
-                    // Filtrar solo archivos que parecen ser oficios/resoluciones
-                    boolean esOficio = nombreArchivo.contains("oficio") || 
-                                     nombreArchivo.contains("resolucion") || 
-                                     nombreArchivo.contains("paz") ||
-                                     nombreArchivo.contains("salvo") ||
-                                     nombreArchivo.contains("aprobacion");
-                    
-                    if (esOficio) {
-                        try {
-                            // Usar getFile que maneja tanto rutas simples como rutas con subcarpetas
-                            byte[] archivo = objGestionarArchivos.getFile(
-                                documento.getRuta_documento() != null ? documento.getRuta_documento() : documento.getNombre()
-                            );
-                            
-                            // Configurar el header Content-Disposition con filename y filename* (UTF-8)
-                            String original = documento.getNombre();
-                            String encoded = java.net.URLEncoder.encode(original, java.nio.charset.StandardCharsets.UTF_8)
-                                .replace("+", "%20");
-                            String contentDisposition = "attachment; filename=\"" + original + "\"; filename*=UTF-8''" + encoded;
+        // Obtener la solicitud con sus documentos
+        SolicitudPazYSalvo solicitud = solicitudPazYSalvoCU.buscarPorId(idSolicitud);
+        if (solicitud == null) {
+            return ResponseEntity.notFound().build();
+        }
+        
+        // Buscar documentos asociados a esta solicitud
+        List<Documento> documentos = solicitud.getDocumentos();
+        if (documentos == null || documentos.isEmpty()) {
+            return ResponseEntity.notFound().build();
+        }
+        
+        // Buscar documentos que sean oficios/resoluciones (subidos por secretaria)
+        for (Documento documento : documentos) {
+            if (documento.getNombre() != null && documento.getNombre().toLowerCase().endsWith(".pdf")) {
+                String nombreArchivo = documento.getNombre().toLowerCase();
+                
+                // Filtrar solo archivos que parecen ser oficios/resoluciones
+                boolean esOficio = nombreArchivo.contains("oficio") || 
+                                 nombreArchivo.contains("resolucion") || 
+                                 nombreArchivo.contains("paz") ||
+                                 nombreArchivo.contains("salvo") ||
+                                 nombreArchivo.contains("aprobacion");
+                
+                if (esOficio) {
+                    try {
+                        // Usar getFile que maneja tanto rutas simples como rutas con subcarpetas
+                        byte[] archivo = objGestionarArchivos.getFile(
+                            documento.getRuta_documento() != null ? documento.getRuta_documento() : documento.getNombre()
+                        );
+                        
+                        // Configurar el header Content-Disposition con filename y filename* (UTF-8)
+                        String original = documento.getNombre();
+                        String encoded = java.net.URLEncoder.encode(original, java.nio.charset.StandardCharsets.UTF_8)
+                            .replace("+", "%20");
+                        String contentDisposition = "attachment; filename=\"" + original + "\"; filename*=UTF-8''" + encoded;
 
-                            return ResponseEntity.ok()
-                                .header(HttpHeaders.CONTENT_DISPOSITION, contentDisposition)
-                                .contentType(MediaType.APPLICATION_PDF)
-                                .body(archivo);
-                                
-                        } catch (Exception e) {
-                            continue; // Probar el siguiente documento
-                        }
+                        return ResponseEntity.ok()
+                            .header(HttpHeaders.CONTENT_DISPOSITION, contentDisposition)
+                            .contentType(MediaType.APPLICATION_PDF)
+                            .body(archivo);
+                            
+                    } catch (Exception e) {
+                        continue; // Probar el siguiente documento
                     }
                 }
             }
-            
-            return ResponseEntity.notFound().build();
-                
-        } catch (Exception e) {
-            return ResponseEntity.internalServerError().build();
         }
+        
+        return ResponseEntity.notFound().build();
     }
     
     /**
@@ -1182,70 +1138,65 @@ public class SolicitudPazYSalvoRestController {
     @PreAuthorize("@autorizacion.esStaff() or @autorizacion.esDuenoSolicitud(#idSolicitud)")
     @GetMapping("/obtenerDocumentos/{idSolicitud}")
     public ResponseEntity<List<Map<String, Object>>> obtenerDocumentosPazSalvo(@PathVariable Integer idSolicitud) {
-        try {
-            // Obtener la solicitud con sus documentos
-            SolicitudPazYSalvo solicitud = solicitudPazYSalvoCU.buscarPorId(idSolicitud);
-            
-            if (solicitud == null) {
-                return ResponseEntity.notFound().build();
-            }
-            
-            // Buscar documentos asociados a esta solicitud
-            List<Documento> documentos = solicitud.getDocumentos();
-            
-            if (documentos == null) {
-                return ResponseEntity.ok(new ArrayList<>());
-            }
-            
-            if (documentos.isEmpty()) {
-                return ResponseEntity.ok(new ArrayList<>()); // Retornar lista vacía
-            }
-            
-            // Crear lista con todos los documentos (incluyendo los del estudiante)
-            List<Map<String, Object>> todosDocumentos = new ArrayList<>();
-            for (Documento documento : documentos) {
-                if (documento.getNombre() != null) {
-                    Map<String, Object> doc = new HashMap<>();
-                    doc.put("id", documento.getId_documento());
-                    doc.put("nombre", documento.getNombre());
-                    doc.put("nombreArchivo", documento.getNombre());
-                    doc.put("ruta", documento.getRuta_documento());
-                    doc.put("fecha", documento.getFecha_documento());
-                    doc.put("esValido", documento.isEsValido());
-                    doc.put("comentario", documento.getComentario());
-                    
-                    // Determinar el tipo de documento
-                    String nombreArchivo = documento.getNombre().toLowerCase();
-                    String tipoDocumento = "Documento del Estudiante";
-                    
-                    if (nombreArchivo.contains("oficio") || nombreArchivo.contains("resolucion") || 
-                        nombreArchivo.contains("paz") || nombreArchivo.contains("salvo") || 
-                        nombreArchivo.contains("aprobacion")) {
-                        tipoDocumento = "Oficio/Resolución";
-                    } else if (nombreArchivo.contains("formato") || nombreArchivo.contains("pm_fo_4_for_27")) {
-                        tipoDocumento = "Formato PM-FO-4-FOR-27";
-                    } else if (nombreArchivo.contains("autorizacion") || nombreArchivo.contains("publicar")) {
-                        tipoDocumento = "Autorización de Publicación";
-                    } else if (nombreArchivo.contains("hoja") && nombreArchivo.contains("vida")) {
-                        tipoDocumento = "Hoja de Vida Académica";
-                    } else if (nombreArchivo.contains("comprobante") || nombreArchivo.contains("pago")) {
-                        tipoDocumento = "Comprobante de Pago";
-                    } else if (nombreArchivo.contains("trabajo") && nombreArchivo.contains("grado")) {
-                        tipoDocumento = "Documento de Trabajo de Grado";
-                    } else if (nombreArchivo.contains("saber") && nombreArchivo.contains("pro")) {
-                        tipoDocumento = "Resultado Saber Pro";
-                    }
-                    
-                    doc.put("tipo", tipoDocumento);
-                    todosDocumentos.add(doc);
-                }
-            }
-            
-            return ResponseEntity.ok(todosDocumentos);
-            
-        } catch (Exception e) {
-            return ResponseEntity.internalServerError().build();
+        // Obtener la solicitud con sus documentos
+        SolicitudPazYSalvo solicitud = solicitudPazYSalvoCU.buscarPorId(idSolicitud);
+        
+        if (solicitud == null) {
+            return ResponseEntity.notFound().build();
         }
+        
+        // Buscar documentos asociados a esta solicitud
+        List<Documento> documentos = solicitud.getDocumentos();
+        
+        if (documentos == null) {
+            return ResponseEntity.ok(new ArrayList<>());
+        }
+        
+        if (documentos.isEmpty()) {
+            return ResponseEntity.ok(new ArrayList<>()); // Retornar lista vacía
+        }
+        
+        // Crear lista con todos los documentos (incluyendo los del estudiante)
+        List<Map<String, Object>> todosDocumentos = new ArrayList<>();
+        for (Documento documento : documentos) {
+            if (documento.getNombre() != null) {
+                Map<String, Object> doc = new HashMap<>();
+                doc.put("id", documento.getId_documento());
+                doc.put("nombre", documento.getNombre());
+                doc.put("nombreArchivo", documento.getNombre());
+                doc.put("ruta", documento.getRuta_documento());
+                doc.put("fecha", documento.getFecha_documento());
+                doc.put("esValido", documento.isEsValido());
+                doc.put("comentario", documento.getComentario());
+                
+                // Determinar el tipo de documento
+                String nombreArchivo = documento.getNombre().toLowerCase();
+                String tipoDocumento = "Documento del Estudiante";
+                
+                if (nombreArchivo.contains("oficio") || nombreArchivo.contains("resolucion") || 
+                    nombreArchivo.contains("paz") || nombreArchivo.contains("salvo") || 
+                    nombreArchivo.contains("aprobacion")) {
+                    tipoDocumento = "Oficio/Resolución";
+                } else if (nombreArchivo.contains("formato") || nombreArchivo.contains("pm_fo_4_for_27")) {
+                    tipoDocumento = "Formato PM-FO-4-FOR-27";
+                } else if (nombreArchivo.contains("autorizacion") || nombreArchivo.contains("publicar")) {
+                    tipoDocumento = "Autorización de Publicación";
+                } else if (nombreArchivo.contains("hoja") && nombreArchivo.contains("vida")) {
+                    tipoDocumento = "Hoja de Vida Académica";
+                } else if (nombreArchivo.contains("comprobante") || nombreArchivo.contains("pago")) {
+                    tipoDocumento = "Comprobante de Pago";
+                } else if (nombreArchivo.contains("trabajo") && nombreArchivo.contains("grado")) {
+                    tipoDocumento = "Documento de Trabajo de Grado";
+                } else if (nombreArchivo.contains("saber") && nombreArchivo.contains("pro")) {
+                    tipoDocumento = "Resultado Saber Pro";
+                }
+                
+                doc.put("tipo", tipoDocumento);
+                todosDocumentos.add(doc);
+            }
+        }
+        
+        return ResponseEntity.ok(todosDocumentos);
     }
 
 
@@ -1254,33 +1205,25 @@ public class SolicitudPazYSalvoRestController {
      */
     @PostMapping("/asociar-documentos-huerfanos/{idSolicitud}")
     public ResponseEntity<Map<String, Object>> asociarDocumentosHuerfanos(@PathVariable Integer idSolicitud) {
-        try {
-            
-            SolicitudPazYSalvo solicitud = solicitudPazYSalvoCU.buscarPorId(idSolicitud);
-            if (solicitud == null) {
-                Map<String, Object> error = new HashMap<>();
-                error.put("error", "Solicitud ID " + idSolicitud + " no encontrada");
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(error);
-            }
-            
-            Integer idDueno = solicitud.getObjUsuario() != null ? solicitud.getObjUsuario().getId_usuario() : null;
-            int documentosAsociados = documentosCU.asociarDocumentosPendientes(solicitud, idDueno, "pazysalvo");
-
-            Map<String, Object> resultado = new HashMap<>();
-            resultado.put("success", true);
-            resultado.put("documentos_asociados", documentosAsociados);
-            resultado.put("solicitud_id", idSolicitud);
-            resultado.put("mensaje", "Documentos asociados exitosamente");
-            
-            
-            return ResponseEntity.ok(resultado);
-            
-        } catch (Exception e) {
-            log.error("Error al asociar documentos a la solicitud {}", idSolicitud, e);
-            Map<String, Object> errorInfo = new HashMap<>();
-            errorInfo.put("error", "No se pudieron asociar los documentos");
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorInfo);
+        
+        SolicitudPazYSalvo solicitud = solicitudPazYSalvoCU.buscarPorId(idSolicitud);
+        if (solicitud == null) {
+            Map<String, Object> error = new HashMap<>();
+            error.put("error", "Solicitud ID " + idSolicitud + " no encontrada");
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(error);
         }
+        
+        Integer idDueno = solicitud.getObjUsuario() != null ? solicitud.getObjUsuario().getId_usuario() : null;
+        int documentosAsociados = documentosCU.asociarDocumentosPendientes(solicitud, idDueno, "pazysalvo");
+
+        Map<String, Object> resultado = new HashMap<>();
+        resultado.put("success", true);
+        resultado.put("documentos_asociados", documentosAsociados);
+        resultado.put("solicitud_id", idSolicitud);
+        resultado.put("mensaje", "Documentos asociados exitosamente");
+        
+        
+        return ResponseEntity.ok(resultado);
     }
 
     /**
@@ -1289,61 +1232,56 @@ public class SolicitudPazYSalvoRestController {
      */
     @GetMapping("/obtenerDocumentos/coordinador/{idSolicitud}")
     public ResponseEntity<List<Map<String, Object>>> obtenerDocumentosPazSalvoCoordinador(@PathVariable Integer idSolicitud) {
-        try {
-            
-            SolicitudPazYSalvo solicitud = solicitudPazYSalvoCU.buscarPorId(idSolicitud);
-            if (solicitud == null) {
-                return ResponseEntity.notFound().build();
-            }
-            
-            List<Documento> documentos = solicitud.getDocumentos();
-            if (documentos == null || documentos.isEmpty()) {
-                return ResponseEntity.ok(new ArrayList<>());
-            }
-            
-            List<Map<String, Object>> todosDocumentos = new ArrayList<>();
-            for (Documento documento : documentos) {
-                if (documento.getNombre() != null) {
-                    Map<String, Object> doc = new HashMap<>();
-                    doc.put("id", documento.getId_documento());
-                    doc.put("nombre", documento.getNombre());
-                    doc.put("nombreArchivo", documento.getNombre());
-                    doc.put("ruta", documento.getRuta_documento());
-                    doc.put("fecha", documento.getFecha_documento());
-                    doc.put("esValido", documento.isEsValido());
-                    doc.put("comentario", documento.getComentario());
-                    
-                    String nombreArchivo = documento.getNombre().toLowerCase();
-                    String tipoDocumento = "Documento del Estudiante";
-                    
-                    if (nombreArchivo.contains("oficio") || nombreArchivo.contains("resolucion") || 
-                        nombreArchivo.contains("paz") || nombreArchivo.contains("salvo") || 
-                        nombreArchivo.contains("aprobacion")) {
-                        tipoDocumento = "Oficio/Resolución";
-                    } else if (nombreArchivo.contains("formato") || nombreArchivo.contains("pm_fo_4_for_27")) {
-                        tipoDocumento = "Formato PM-FO-4-FOR-27";
-                    } else if (nombreArchivo.contains("autorizacion") || nombreArchivo.contains("publicar")) {
-                        tipoDocumento = "Autorización de Publicación";
-                    } else if (nombreArchivo.contains("hoja") && nombreArchivo.contains("vida")) {
-                        tipoDocumento = "Hoja de Vida Académica";
-                    } else if (nombreArchivo.contains("comprobante") || nombreArchivo.contains("pago")) {
-                        tipoDocumento = "Comprobante de Pago";
-                    } else if (nombreArchivo.contains("trabajo") && nombreArchivo.contains("grado")) {
-                        tipoDocumento = "Documento de Trabajo de Grado";
-                    } else if (nombreArchivo.contains("saber") && nombreArchivo.contains("pro")) {
-                        tipoDocumento = "Resultado Saber Pro";
-                    }
-                    
-                    doc.put("tipo", tipoDocumento);
-                    todosDocumentos.add(doc);
-                }
-            }
-            
-            return ResponseEntity.ok(todosDocumentos);
-            
-        } catch (Exception e) {
-            return ResponseEntity.internalServerError().build();
+        
+        SolicitudPazYSalvo solicitud = solicitudPazYSalvoCU.buscarPorId(idSolicitud);
+        if (solicitud == null) {
+            return ResponseEntity.notFound().build();
         }
+        
+        List<Documento> documentos = solicitud.getDocumentos();
+        if (documentos == null || documentos.isEmpty()) {
+            return ResponseEntity.ok(new ArrayList<>());
+        }
+        
+        List<Map<String, Object>> todosDocumentos = new ArrayList<>();
+        for (Documento documento : documentos) {
+            if (documento.getNombre() != null) {
+                Map<String, Object> doc = new HashMap<>();
+                doc.put("id", documento.getId_documento());
+                doc.put("nombre", documento.getNombre());
+                doc.put("nombreArchivo", documento.getNombre());
+                doc.put("ruta", documento.getRuta_documento());
+                doc.put("fecha", documento.getFecha_documento());
+                doc.put("esValido", documento.isEsValido());
+                doc.put("comentario", documento.getComentario());
+                
+                String nombreArchivo = documento.getNombre().toLowerCase();
+                String tipoDocumento = "Documento del Estudiante";
+                
+                if (nombreArchivo.contains("oficio") || nombreArchivo.contains("resolucion") || 
+                    nombreArchivo.contains("paz") || nombreArchivo.contains("salvo") || 
+                    nombreArchivo.contains("aprobacion")) {
+                    tipoDocumento = "Oficio/Resolución";
+                } else if (nombreArchivo.contains("formato") || nombreArchivo.contains("pm_fo_4_for_27")) {
+                    tipoDocumento = "Formato PM-FO-4-FOR-27";
+                } else if (nombreArchivo.contains("autorizacion") || nombreArchivo.contains("publicar")) {
+                    tipoDocumento = "Autorización de Publicación";
+                } else if (nombreArchivo.contains("hoja") && nombreArchivo.contains("vida")) {
+                    tipoDocumento = "Hoja de Vida Académica";
+                } else if (nombreArchivo.contains("comprobante") || nombreArchivo.contains("pago")) {
+                    tipoDocumento = "Comprobante de Pago";
+                } else if (nombreArchivo.contains("trabajo") && nombreArchivo.contains("grado")) {
+                    tipoDocumento = "Documento de Trabajo de Grado";
+                } else if (nombreArchivo.contains("saber") && nombreArchivo.contains("pro")) {
+                    tipoDocumento = "Resultado Saber Pro";
+                }
+                
+                doc.put("tipo", tipoDocumento);
+                todosDocumentos.add(doc);
+            }
+        }
+        
+        return ResponseEntity.ok(todosDocumentos);
     }
 
     /**
@@ -1356,67 +1294,63 @@ public class SolicitudPazYSalvoRestController {
     @PreAuthorize("@autorizacion.esStaff() or @autorizacion.esDuenoSolicitud(#idSolicitud)")
     @GetMapping("/obtenerComentarios/{idSolicitud}")
     public ResponseEntity<Map<String, Object>> obtenerComentariosSolicitud(@PathVariable Integer idSolicitud) {
-        try {
-            
-            SolicitudPazYSalvo solicitud = solicitudPazYSalvoCU.buscarPorId(idSolicitud);
-            if (solicitud == null) {
-                return ResponseEntity.notFound().build();
-            }
-            
-            Map<String, Object> respuesta = new HashMap<>();
-            
-            // 1. Buscar comentario de rechazo en los estados
-            String comentarioRechazo = null;
-            if (solicitud.getEstadosSolicitud() != null && !solicitud.getEstadosSolicitud().isEmpty()) {
-                // Buscar el último estado de rechazo
-                List<EstadoSolicitud> estadosRechazados = solicitud.getEstadosSolicitud().stream()
-                    .filter(estado -> "RECHAZADA".equalsIgnoreCase(estado.getEstado_actual()) || 
-                                    "RECHAZADO".equalsIgnoreCase(estado.getEstado_actual()))
-                    .sorted((a, b) -> b.getFecha_registro_estado().compareTo(a.getFecha_registro_estado()))
-                    .collect(java.util.stream.Collectors.toList());
-                
-                if (!estadosRechazados.isEmpty()) {
-                    EstadoSolicitud ultimoRechazo = estadosRechazados.get(0);
-                    if (ultimoRechazo.getComentario() != null && !ultimoRechazo.getComentario().trim().isEmpty()) {
-                        comentarioRechazo = ultimoRechazo.getComentario().trim();
-                    }
-                }
-            }
-            
-            // Solo agregar comentario de rechazo si existe
-            if (comentarioRechazo != null && !comentarioRechazo.isEmpty()) {
-                respuesta.put("comentarioRechazo", comentarioRechazo);
-            }
-            
-            // 2. Buscar documentos que tienen comentarios
-            List<Map<String, Object>> documentosConComentarios = new ArrayList<>();
-            if (solicitud.getDocumentos() != null && !solicitud.getDocumentos().isEmpty()) {
-                for (Documento documento : solicitud.getDocumentos()) {
-                    if (documento.getComentario() != null && !documento.getComentario().trim().isEmpty()) {
-                        Map<String, Object> doc = new HashMap<>();
-                        doc.put("id", documento.getId_documento());
-                        doc.put("nombre", documento.getNombre());
-                        doc.put("comentario", documento.getComentario().trim());
-                        documentosConComentarios.add(doc);
-                    }
-                }
-            }
-            
-            // Solo agregar documentos con comentarios si hay alguno
-            if (!documentosConComentarios.isEmpty()) {
-                respuesta.put("documentosConComentarios", documentosConComentarios);
-            }
-            
-            // Si no hay ningún comentario, devolver objeto vacío
-            if (respuesta.isEmpty()) {
-                respuesta.put("mensaje", "No hay comentarios para esta solicitud");
-            }
-            
-            
-            return ResponseEntity.ok(respuesta);
-        } catch (Exception e) {
-            return ResponseEntity.internalServerError().build();
+        
+        SolicitudPazYSalvo solicitud = solicitudPazYSalvoCU.buscarPorId(idSolicitud);
+        if (solicitud == null) {
+            return ResponseEntity.notFound().build();
         }
+        
+        Map<String, Object> respuesta = new HashMap<>();
+        
+        // 1. Buscar comentario de rechazo en los estados
+        String comentarioRechazo = null;
+        if (solicitud.getEstadosSolicitud() != null && !solicitud.getEstadosSolicitud().isEmpty()) {
+            // Buscar el último estado de rechazo
+            List<EstadoSolicitud> estadosRechazados = solicitud.getEstadosSolicitud().stream()
+                .filter(estado -> "RECHAZADA".equalsIgnoreCase(estado.getEstado_actual()) || 
+                                "RECHAZADO".equalsIgnoreCase(estado.getEstado_actual()))
+                .sorted((a, b) -> b.getFecha_registro_estado().compareTo(a.getFecha_registro_estado()))
+                .collect(java.util.stream.Collectors.toList());
+            
+            if (!estadosRechazados.isEmpty()) {
+                EstadoSolicitud ultimoRechazo = estadosRechazados.get(0);
+                if (ultimoRechazo.getComentario() != null && !ultimoRechazo.getComentario().trim().isEmpty()) {
+                    comentarioRechazo = ultimoRechazo.getComentario().trim();
+                }
+            }
+        }
+        
+        // Solo agregar comentario de rechazo si existe
+        if (comentarioRechazo != null && !comentarioRechazo.isEmpty()) {
+            respuesta.put("comentarioRechazo", comentarioRechazo);
+        }
+        
+        // 2. Buscar documentos que tienen comentarios
+        List<Map<String, Object>> documentosConComentarios = new ArrayList<>();
+        if (solicitud.getDocumentos() != null && !solicitud.getDocumentos().isEmpty()) {
+            for (Documento documento : solicitud.getDocumentos()) {
+                if (documento.getComentario() != null && !documento.getComentario().trim().isEmpty()) {
+                    Map<String, Object> doc = new HashMap<>();
+                    doc.put("id", documento.getId_documento());
+                    doc.put("nombre", documento.getNombre());
+                    doc.put("comentario", documento.getComentario().trim());
+                    documentosConComentarios.add(doc);
+                }
+            }
+        }
+        
+        // Solo agregar documentos con comentarios si hay alguno
+        if (!documentosConComentarios.isEmpty()) {
+            respuesta.put("documentosConComentarios", documentosConComentarios);
+        }
+        
+        // Si no hay ningún comentario, devolver objeto vacío
+        if (respuesta.isEmpty()) {
+            respuesta.put("mensaje", "No hay comentarios para esta solicitud");
+        }
+        
+        
+        return ResponseEntity.ok(respuesta);
     }
 
     /**
@@ -1425,45 +1359,40 @@ public class SolicitudPazYSalvoRestController {
     @PreAuthorize("@autorizacion.esStaff() or @autorizacion.esDuenoSolicitud(#idSolicitud)")
     @GetMapping("/obtenerOficios/{idSolicitud}")
     public ResponseEntity<List<Map<String, Object>>> obtenerOficiosPazSalvo(@PathVariable Integer idSolicitud) {
-        try {
-            
-            SolicitudPazYSalvo solicitud = solicitudPazYSalvoCU.buscarPorId(idSolicitud);
-            if (solicitud == null) {
-                return ResponseEntity.notFound().build();
-            }
-            
-            List<Documento> documentos = solicitud.getDocumentos();
-            if (documentos == null || documentos.isEmpty()) {
-                return ResponseEntity.ok(new ArrayList<>());
-            }
-            
-            List<Map<String, Object>> oficios = new ArrayList<>();
-            for (Documento documento : documentos) {
-                if (documento.getNombre() != null && documento.getNombre().toLowerCase().endsWith(".pdf")) {
-                    String nombreArchivo = documento.getNombre().toLowerCase();
-                    
-                    boolean esOficio = nombreArchivo.contains("oficio") || 
-                                     nombreArchivo.contains("resolucion") || 
-                                     nombreArchivo.contains("paz") ||
-                                     nombreArchivo.contains("salvo") ||
-                                     nombreArchivo.contains("aprobacion");
-                    
-                    if (esOficio) {
-                        Map<String, Object> oficio = new HashMap<>();
-                        oficio.put("id", idSolicitud);
-                        oficio.put("nombre", documento.getNombre());
-                        oficio.put("nombreArchivo", documento.getNombre());
-                        oficio.put("ruta", documento.getRuta_documento());
-                        oficios.add(oficio);
-                    }
+        
+        SolicitudPazYSalvo solicitud = solicitudPazYSalvoCU.buscarPorId(idSolicitud);
+        if (solicitud == null) {
+            return ResponseEntity.notFound().build();
+        }
+        
+        List<Documento> documentos = solicitud.getDocumentos();
+        if (documentos == null || documentos.isEmpty()) {
+            return ResponseEntity.ok(new ArrayList<>());
+        }
+        
+        List<Map<String, Object>> oficios = new ArrayList<>();
+        for (Documento documento : documentos) {
+            if (documento.getNombre() != null && documento.getNombre().toLowerCase().endsWith(".pdf")) {
+                String nombreArchivo = documento.getNombre().toLowerCase();
+                
+                boolean esOficio = nombreArchivo.contains("oficio") || 
+                                 nombreArchivo.contains("resolucion") || 
+                                 nombreArchivo.contains("paz") ||
+                                 nombreArchivo.contains("salvo") ||
+                                 nombreArchivo.contains("aprobacion");
+                
+                if (esOficio) {
+                    Map<String, Object> oficio = new HashMap<>();
+                    oficio.put("id", idSolicitud);
+                    oficio.put("nombre", documento.getNombre());
+                    oficio.put("nombreArchivo", documento.getNombre());
+                    oficio.put("ruta", documento.getRuta_documento());
+                    oficios.add(oficio);
                 }
             }
-            
-            return ResponseEntity.ok(oficios);
-            
-        } catch (Exception e) {
-            return ResponseEntity.internalServerError().build();
         }
+        
+        return ResponseEntity.ok(oficios);
     }
     
     /**
@@ -1472,62 +1401,57 @@ public class SolicitudPazYSalvoRestController {
     @PreAuthorize("@autorizacion.esStaff() or @autorizacion.esDuenoSolicitud(#idSolicitud)")
     @GetMapping("/validarDocumentosRequeridos/{idSolicitud}")
     public ResponseEntity<Map<String, Object>> validarDocumentosRequeridosPazSalvo(@PathVariable Integer idSolicitud) {
-        try {
-            
-            SolicitudPazYSalvo solicitud = solicitudPazYSalvoCU.buscarPorId(idSolicitud);
-            if (solicitud == null) {
-                return ResponseEntity.notFound().build();
-            }
-            
-            List<Documento> documentos = solicitud.getDocumentos();
-            if (documentos == null) {
-                documentos = new ArrayList<>();
-            }
-            
-            Map<String, Boolean> documentosRequeridos = new HashMap<>();
-            documentosRequeridos.put("formato_pm_fo_4_for_27", false);
-            documentosRequeridos.put("autorizacion_publicar", false);
-            documentosRequeridos.put("hoja_vida_academica", false);
-            documentosRequeridos.put("comprobante_pago", false);
-            documentosRequeridos.put("documento_trabajo_grado", false);
-            documentosRequeridos.put("resultado_saber_pro", false);
-            
-            for (Documento documento : documentos) {
-                if (documento.getNombre() != null) {
-                    String nombre = documento.getNombre().toLowerCase();
-                    
-                    if (nombre.contains("formato") && nombre.contains("pm-fo-4-for-27")) {
-                        documentosRequeridos.put("formato_pm_fo_4_for_27", true);
-                    } else if (nombre.contains("autorizacion") && nombre.contains("publicar")) {
-                        documentosRequeridos.put("autorizacion_publicar", true);
-                    } else if (nombre.contains("hoja") && nombre.contains("vida") && nombre.contains("academica")) {
-                        documentosRequeridos.put("hoja_vida_academica", true);
-                    } else if (nombre.contains("comprobante") && nombre.contains("pago")) {
-                        documentosRequeridos.put("comprobante_pago", true);
-                    } else if (nombre.contains("documento") && nombre.contains("trabajo") && nombre.contains("grado")) {
-                        documentosRequeridos.put("documento_trabajo_grado", true);
-                    } else if (nombre.contains("resultado") && nombre.contains("saber")) {
-                        documentosRequeridos.put("resultado_saber_pro", true);
-                    }
+        
+        SolicitudPazYSalvo solicitud = solicitudPazYSalvoCU.buscarPorId(idSolicitud);
+        if (solicitud == null) {
+            return ResponseEntity.notFound().build();
+        }
+        
+        List<Documento> documentos = solicitud.getDocumentos();
+        if (documentos == null) {
+            documentos = new ArrayList<>();
+        }
+        
+        Map<String, Boolean> documentosRequeridos = new HashMap<>();
+        documentosRequeridos.put("formato_pm_fo_4_for_27", false);
+        documentosRequeridos.put("autorizacion_publicar", false);
+        documentosRequeridos.put("hoja_vida_academica", false);
+        documentosRequeridos.put("comprobante_pago", false);
+        documentosRequeridos.put("documento_trabajo_grado", false);
+        documentosRequeridos.put("resultado_saber_pro", false);
+        
+        for (Documento documento : documentos) {
+            if (documento.getNombre() != null) {
+                String nombre = documento.getNombre().toLowerCase();
+                
+                if (nombre.contains("formato") && nombre.contains("pm-fo-4-for-27")) {
+                    documentosRequeridos.put("formato_pm_fo_4_for_27", true);
+                } else if (nombre.contains("autorizacion") && nombre.contains("publicar")) {
+                    documentosRequeridos.put("autorizacion_publicar", true);
+                } else if (nombre.contains("hoja") && nombre.contains("vida") && nombre.contains("academica")) {
+                    documentosRequeridos.put("hoja_vida_academica", true);
+                } else if (nombre.contains("comprobante") && nombre.contains("pago")) {
+                    documentosRequeridos.put("comprobante_pago", true);
+                } else if (nombre.contains("documento") && nombre.contains("trabajo") && nombre.contains("grado")) {
+                    documentosRequeridos.put("documento_trabajo_grado", true);
+                } else if (nombre.contains("resultado") && nombre.contains("saber")) {
+                    documentosRequeridos.put("resultado_saber_pro", true);
                 }
             }
-            
-            boolean todosCompletos = documentosRequeridos.get("formato_pm_fo_4_for_27") &&
-                                   documentosRequeridos.get("autorizacion_publicar") &&
-                                   documentosRequeridos.get("hoja_vida_academica") &&
-                                   documentosRequeridos.get("comprobante_pago") &&
-                                   documentosRequeridos.get("documento_trabajo_grado");
-            
-            Map<String, Object> resultado = new HashMap<>();
-            resultado.put("documentosRequeridos", documentosRequeridos);
-            resultado.put("todosCompletos", todosCompletos);
-            resultado.put("totalDocumentos", documentos.size());
-            
-            return ResponseEntity.ok(resultado);
-            
-        } catch (Exception e) {
-            return ResponseEntity.internalServerError().build();
         }
+        
+        boolean todosCompletos = documentosRequeridos.get("formato_pm_fo_4_for_27") &&
+                               documentosRequeridos.get("autorizacion_publicar") &&
+                               documentosRequeridos.get("hoja_vida_academica") &&
+                               documentosRequeridos.get("comprobante_pago") &&
+                               documentosRequeridos.get("documento_trabajo_grado");
+        
+        Map<String, Object> resultado = new HashMap<>();
+        resultado.put("documentosRequeridos", documentosRequeridos);
+        resultado.put("todosCompletos", todosCompletos);
+        resultado.put("totalDocumentos", documentos.size());
+        
+        return ResponseEntity.ok(resultado);
     }
     /**
  * Guardar oficio generado para una solicitud de paz y salvo
@@ -1541,52 +1465,47 @@ public ResponseEntity<DocumentosDTORespuesta> guardarOficioPazSalvo(
         @RequestParam("fechaDocumento") String fechaDocumento,
         @RequestParam(value = "observaciones", required = false) String observaciones) {
     
-    try {
-        
-        String nombreOriginal = file.getOriginalFilename();
-        
-        // Validaciones
-        if (file.isEmpty()) {
-            return ResponseEntity.badRequest().body(null);
-        }
-        
-        if (!nombreOriginal.toLowerCase().endsWith(".docx")) {
-            return ResponseEntity.status(HttpStatus.UNSUPPORTED_MEDIA_TYPE).body(null);
-        }
-        
-            // Guardar archivo organizado en subcarpetas
-            String rutaArchivo = this.objGestionarArchivos.saveFile(file, nombreOriginal, "docx", "pazysalvo", idSolicitud);
-        
-        // Crear documento
-        Documento doc = new Documento();
-        doc.setNombre(nombreOriginal);
-        doc.setRuta_documento(rutaArchivo); // Guardar ruta completa con subcarpetas
-        doc.setFecha_documento(new Date());
-        doc.setEsValido(true);
-        
-        // Asociar solicitud
-        SolicitudPazYSalvo solicitud = solicitudPazYSalvoCU.buscarPorId(idSolicitud);
-        if (solicitud != null) {
-            Solicitud objSolicitud = new Solicitud();
-            objSolicitud.setId_solicitud(idSolicitud);
-            doc.setObjSolicitud(objSolicitud);
-        } else {
-            return ResponseEntity.notFound().build();
-        }
-        
-        // Guardar documento en BD
-        Documento documentoGuardado = documentosCU.registrarDocumento(doc);
-        
-        ResponseEntity<DocumentosDTORespuesta> respuesta = new ResponseEntity<>(
-            documentosMapperDominio.mappearDeDocumentoADTORespuesta(documentoGuardado), 
-            HttpStatus.CREATED
-        );
-        
-        return respuesta;
-        
-    } catch (Exception e) {
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+    
+    String nombreOriginal = file.getOriginalFilename();
+    
+    // Validaciones
+    if (file.isEmpty()) {
+        return ResponseEntity.badRequest().body(null);
     }
+    
+    if (!nombreOriginal.toLowerCase().endsWith(".docx")) {
+        return ResponseEntity.status(HttpStatus.UNSUPPORTED_MEDIA_TYPE).body(null);
+    }
+    
+        // Guardar archivo organizado en subcarpetas
+        String rutaArchivo = this.objGestionarArchivos.saveFile(file, nombreOriginal, "docx", "pazysalvo", idSolicitud);
+    
+    // Crear documento
+    Documento doc = new Documento();
+    doc.setNombre(nombreOriginal);
+    doc.setRuta_documento(rutaArchivo); // Guardar ruta completa con subcarpetas
+    doc.setFecha_documento(new Date());
+    doc.setEsValido(true);
+    
+    // Asociar solicitud
+    SolicitudPazYSalvo solicitud = solicitudPazYSalvoCU.buscarPorId(idSolicitud);
+    if (solicitud != null) {
+        Solicitud objSolicitud = new Solicitud();
+        objSolicitud.setId_solicitud(idSolicitud);
+        doc.setObjSolicitud(objSolicitud);
+    } else {
+        return ResponseEntity.notFound().build();
+    }
+    
+    // Guardar documento en BD
+    Documento documentoGuardado = documentosCU.registrarDocumento(doc);
+    
+    ResponseEntity<DocumentosDTORespuesta> respuesta = new ResponseEntity<>(
+        documentosMapperDominio.mappearDeDocumentoADTORespuesta(documentoGuardado), 
+        HttpStatus.CREATED
+    );
+    
+    return respuesta;
 }
 
     /**
@@ -1596,43 +1515,38 @@ public ResponseEntity<DocumentosDTORespuesta> guardarOficioPazSalvo(
     public ResponseEntity<DocumentosDTORespuesta> subirOficioPdfPazYSalvo(
             @PathVariable Integer idSolicitud,
             @RequestParam("file") MultipartFile file) {
-        try {
-
-            ValidadorArchivoPdf.Rechazo rechazo = ValidadorArchivoPdf.validar(file, ValidadorArchivoPdf.MAXIMO_15MB);
-            if (rechazo != null) {
-                return ResponseEntity.status(rechazo.estado()).build();
-            }
-
-            String nombreOriginal = file.getOriginalFilename();
-
-            // Validar que la solicitud exista
-            SolicitudPazYSalvo solicitud = solicitudPazYSalvoCU.buscarPorId(idSolicitud);
-            if (solicitud == null) {
-                return ResponseEntity.notFound().build();
-            }
-
-            // Guardar archivo organizado en subcarpetas
-            String rutaArchivo = objGestionarArchivos.saveFile(file, nombreOriginal, "pdf", "pazysalvo", idSolicitud);
-
-            // Registrar documento y asociar
-            Documento documento = new Documento();
-            documento.setNombre(nombreOriginal);
-            documento.setRuta_documento(rutaArchivo); // Guardar ruta completa con subcarpetas
-            documento.setFecha_documento(new Date());
-            documento.setEsValido(true);
-
-            Solicitud objSolicitud = new Solicitud();
-            objSolicitud.setId_solicitud(idSolicitud);
-            documento.setObjSolicitud(objSolicitud);
-
-            Documento documentoGuardado = documentosCU.registrarDocumento(documento);
-
-            return new ResponseEntity<>(
-                    documentosMapperDominio.mappearDeDocumentoADTORespuesta(documentoGuardado),
-                    HttpStatus.CREATED);
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        ValidadorArchivoPdf.Rechazo rechazo = ValidadorArchivoPdf.validar(file, ValidadorArchivoPdf.MAXIMO_15MB);
+        if (rechazo != null) {
+            return ResponseEntity.status(rechazo.estado()).build();
         }
+
+        String nombreOriginal = file.getOriginalFilename();
+
+        // Validar que la solicitud exista
+        SolicitudPazYSalvo solicitud = solicitudPazYSalvoCU.buscarPorId(idSolicitud);
+        if (solicitud == null) {
+            return ResponseEntity.notFound().build();
+        }
+
+        // Guardar archivo organizado en subcarpetas
+        String rutaArchivo = objGestionarArchivos.saveFile(file, nombreOriginal, "pdf", "pazysalvo", idSolicitud);
+
+        // Registrar documento y asociar
+        Documento documento = new Documento();
+        documento.setNombre(nombreOriginal);
+        documento.setRuta_documento(rutaArchivo); // Guardar ruta completa con subcarpetas
+        documento.setFecha_documento(new Date());
+        documento.setEsValido(true);
+
+        Solicitud objSolicitud = new Solicitud();
+        objSolicitud.setId_solicitud(idSolicitud);
+        documento.setObjSolicitud(objSolicitud);
+
+        Documento documentoGuardado = documentosCU.registrarDocumento(documento);
+
+        return new ResponseEntity<>(
+                documentosMapperDominio.mappearDeDocumentoADTORespuesta(documentoGuardado),
+                HttpStatus.CREATED);
     }
 
     /**

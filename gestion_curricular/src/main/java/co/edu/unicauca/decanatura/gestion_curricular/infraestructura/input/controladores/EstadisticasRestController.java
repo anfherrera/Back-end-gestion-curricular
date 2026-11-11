@@ -153,60 +153,50 @@ public class EstadisticasRestController {
             @RequestParam(required = false) String periodoAcademico,
             @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") Date fechaInicio,
             @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") Date fechaFin) {
-        try {
-            // Si hay período académico, usar resumen completo que soporta filtros por período
-            if (periodoAcademico != null && !periodoAcademico.trim().isEmpty()) {
-                String periodoNormalizado = normalizarPeriodoAcademico(periodoAcademico);
-                
-                Map<String, Object> resumen = estadisticaCU.obtenerResumenCompleto(periodoNormalizado, idPrograma);
-                @SuppressWarnings("unchecked")
-                Map<String, Object> estadisticasGlobales = (Map<String, Object>) resumen.get("estadisticasGlobales");
-                
-                // Si hay filtro de proceso, actualizar KPIs. Usar resumen.porTipoProceso (stats completas), no estadisticasGlobales.porTipoProceso (solo conteos)
-                if (proceso != null && !proceso.trim().isEmpty() && estadisticasGlobales != null) {
-                    String procesoNorm = normalizarProceso(proceso);
-                    if (procesoNorm != null) {
-                        @SuppressWarnings("unchecked")
-                        Map<String, Object> porTipoProcesoResumen = (Map<String, Object>) resumen.get("porTipoProceso");
-                        if (porTipoProcesoResumen != null && porTipoProcesoResumen.containsKey(procesoNorm)) {
-                            Object datosProceso = porTipoProcesoResumen.get(procesoNorm);
-                            if (datosProceso instanceof Map) {
-                                @SuppressWarnings("unchecked")
-                                Map<String, Object> statsProceso = (Map<String, Object>) datosProceso;
-                                estadisticasGlobales.put("totalSolicitudes", statsProceso.getOrDefault("totalSolicitudes", 0));
-                                estadisticasGlobales.put("totalAprobadas", statsProceso.getOrDefault("totalAprobadas", 0));
-                                estadisticasGlobales.put("totalRechazadas", statsProceso.getOrDefault("totalRechazadas", 0));
-                                estadisticasGlobales.put("totalEnProceso", statsProceso.getOrDefault("totalEnProceso", 0));
-                                Object porEstadoObj = statsProceso.get("porEstado");
-                                int totalEnviadas = 0;
-                                if (porEstadoObj instanceof Map) {
-                                    Object env = ((Map<?, ?>) porEstadoObj).get("ENVIADA");
-                                    totalEnviadas = env instanceof Number ? ((Number) env).intValue() : 0;
-                                }
-                                estadisticasGlobales.put("totalEnviadas", totalEnviadas);
-                                estadisticasGlobales.put("porcentajeAprobacion", statsProceso.getOrDefault("porcentajeAprobacion", 0.0));
-                                estadisticasGlobales.put("porEstado", statsProceso.getOrDefault("porEstado", new HashMap<>()));
-                                estadisticasGlobales.put("porTipoProceso", Map.of(procesoNorm, datosProceso));
+        // Si hay período académico, usar resumen completo que soporta filtros por período
+        if (periodoAcademico != null && !periodoAcademico.trim().isEmpty()) {
+            String periodoNormalizado = normalizarPeriodoAcademico(periodoAcademico);
+            
+            Map<String, Object> resumen = estadisticaCU.obtenerResumenCompleto(periodoNormalizado, idPrograma);
+            @SuppressWarnings("unchecked")
+            Map<String, Object> estadisticasGlobales = (Map<String, Object>) resumen.get("estadisticasGlobales");
+            
+            // Si hay filtro de proceso, actualizar KPIs. Usar resumen.porTipoProceso (stats completas), no estadisticasGlobales.porTipoProceso (solo conteos)
+            if (proceso != null && !proceso.trim().isEmpty() && estadisticasGlobales != null) {
+                String procesoNorm = normalizarProceso(proceso);
+                if (procesoNorm != null) {
+                    @SuppressWarnings("unchecked")
+                    Map<String, Object> porTipoProcesoResumen = (Map<String, Object>) resumen.get("porTipoProceso");
+                    if (porTipoProcesoResumen != null && porTipoProcesoResumen.containsKey(procesoNorm)) {
+                        Object datosProceso = porTipoProcesoResumen.get(procesoNorm);
+                        if (datosProceso instanceof Map) {
+                            @SuppressWarnings("unchecked")
+                            Map<String, Object> statsProceso = (Map<String, Object>) datosProceso;
+                            estadisticasGlobales.put("totalSolicitudes", statsProceso.getOrDefault("totalSolicitudes", 0));
+                            estadisticasGlobales.put("totalAprobadas", statsProceso.getOrDefault("totalAprobadas", 0));
+                            estadisticasGlobales.put("totalRechazadas", statsProceso.getOrDefault("totalRechazadas", 0));
+                            estadisticasGlobales.put("totalEnProceso", statsProceso.getOrDefault("totalEnProceso", 0));
+                            Object porEstadoObj = statsProceso.get("porEstado");
+                            int totalEnviadas = 0;
+                            if (porEstadoObj instanceof Map) {
+                                Object env = ((Map<?, ?>) porEstadoObj).get("ENVIADA");
+                                totalEnviadas = env instanceof Number ? ((Number) env).intValue() : 0;
                             }
+                            estadisticasGlobales.put("totalEnviadas", totalEnviadas);
+                            estadisticasGlobales.put("porcentajeAprobacion", statsProceso.getOrDefault("porcentajeAprobacion", 0.0));
+                            estadisticasGlobales.put("porEstado", statsProceso.getOrDefault("porEstado", new HashMap<>()));
+                            estadisticasGlobales.put("porTipoProceso", Map.of(procesoNorm, datosProceso));
                         }
                     }
                 }
-                
-                return ResponseEntity.ok(estadisticasGlobales != null ? estadisticasGlobales : new HashMap<>());
             }
             
-            // Si no hay período académico, usar el método original
-            Map<String, Object> estadisticas = estadisticaCU.obtenerEstadisticasGlobales(proceso, idPrograma, fechaInicio, fechaFin);
-            return ResponseEntity.ok(estadisticas);
-        } catch (Exception e) {
-            // Antes se respondía 200 con todo en cero, y el dashboard mostraba "0 solicitudes" como si fuera real.
-            log.error("Error al obtener estadísticas globales", e);
-            Map<String, Object> errorResponse = new HashMap<>();
-            errorResponse.put("error", true);
-            errorResponse.put("mensaje", "No se pudieron obtener las estadísticas globales. Intente de nuevo más tarde.");
-            errorResponse.put("usarEndpointsAlternativos", true);
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
+            return ResponseEntity.ok(estadisticasGlobales != null ? estadisticasGlobales : new HashMap<>());
         }
+        
+        // Si no hay período académico, usar el método original
+        Map<String, Object> estadisticas = estadisticaCU.obtenerEstadisticasGlobales(proceso, idPrograma, fechaInicio, fechaFin);
+        return ResponseEntity.ok(estadisticas);
     }
 
     /**
@@ -227,46 +217,40 @@ public class EstadisticasRestController {
             @RequestParam(name = "fechaInicio", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") Date fechaInicio,
             @RequestParam(name = "fechaFin", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") Date fechaFin) {
         
-        try {
-            
-            Map<String, Object> estadisticas;
-            
-            // Determinar qué tipo de consulta realizar basado en los parámetros
-            if (nombreProceso != null && !nombreProceso.trim().isEmpty()) {
-                // Consulta por proceso específico
-                estadisticas = estadisticaCU.obtenerEstadisticasPorProceso(nombreProceso);
-            } else if (idPrograma != null && idPrograma > 0) {
-                // Consulta por programa específico
-                estadisticas = estadisticaCU.obtenerEstadisticasPorPrograma(idPrograma);
-            } else if (estado != null && !estado.trim().isEmpty()) {
-                // Consulta por estado específico
-                estadisticas = estadisticaCU.obtenerEstadisticasPorEstado(estado);
-            } else if (fechaInicio != null && fechaFin != null) {
-                // Consulta por período específico
-                estadisticas = estadisticaCU.obtenerEstadisticasPorPeriodo(fechaInicio, fechaFin);
-            } else {
-                // Consulta global (sin filtros)
-                estadisticas = estadisticaCU.obtenerEstadisticasGlobales();
-            }
-            
-            // Asegurar que la estructura JSON tenga el formato solicitado
-            Map<String, Object> respuesta = new HashMap<>();
-            respuesta.put("fechaConsulta", estadisticas.get("fechaConsulta"));
-            respuesta.put("totalSolicitudes", estadisticas.get("totalSolicitudes"));
-            respuesta.put("totalAprobadas", estadisticas.get("totalAprobadas"));
-            respuesta.put("totalRechazadas", estadisticas.get("totalRechazadas"));
-            respuesta.put("totalEnProceso", estadisticas.get("totalEnProceso"));
-            respuesta.put("porcentajeAprobacion", estadisticas.get("porcentajeAprobacion"));
-            respuesta.put("porTipoProceso", estadisticas.get("porTipoProceso"));
-            respuesta.put("porPrograma", estadisticas.get("porPrograma"));
-            respuesta.put("porEstado", estadisticas.get("porEstado"));
-            
-            return ResponseEntity.ok(respuesta);
-            
-        } catch (Exception e) {
-            log.error("Error en endpoint de estadísticas", e);
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        
+        Map<String, Object> estadisticas;
+        
+        // Determinar qué tipo de consulta realizar basado en los parámetros
+        if (nombreProceso != null && !nombreProceso.trim().isEmpty()) {
+            // Consulta por proceso específico
+            estadisticas = estadisticaCU.obtenerEstadisticasPorProceso(nombreProceso);
+        } else if (idPrograma != null && idPrograma > 0) {
+            // Consulta por programa específico
+            estadisticas = estadisticaCU.obtenerEstadisticasPorPrograma(idPrograma);
+        } else if (estado != null && !estado.trim().isEmpty()) {
+            // Consulta por estado específico
+            estadisticas = estadisticaCU.obtenerEstadisticasPorEstado(estado);
+        } else if (fechaInicio != null && fechaFin != null) {
+            // Consulta por período específico
+            estadisticas = estadisticaCU.obtenerEstadisticasPorPeriodo(fechaInicio, fechaFin);
+        } else {
+            // Consulta global (sin filtros)
+            estadisticas = estadisticaCU.obtenerEstadisticasGlobales();
         }
+        
+        // Asegurar que la estructura JSON tenga el formato solicitado
+        Map<String, Object> respuesta = new HashMap<>();
+        respuesta.put("fechaConsulta", estadisticas.get("fechaConsulta"));
+        respuesta.put("totalSolicitudes", estadisticas.get("totalSolicitudes"));
+        respuesta.put("totalAprobadas", estadisticas.get("totalAprobadas"));
+        respuesta.put("totalRechazadas", estadisticas.get("totalRechazadas"));
+        respuesta.put("totalEnProceso", estadisticas.get("totalEnProceso"));
+        respuesta.put("porcentajeAprobacion", estadisticas.get("porcentajeAprobacion"));
+        respuesta.put("porTipoProceso", estadisticas.get("porTipoProceso"));
+        respuesta.put("porPrograma", estadisticas.get("porPrograma"));
+        respuesta.put("porEstado", estadisticas.get("porEstado"));
+        
+        return ResponseEntity.ok(respuesta);
     }
 
     /**
@@ -279,13 +263,8 @@ public class EstadisticasRestController {
     @GetMapping("/proceso/{tipoProceso}")
     public ResponseEntity<Map<String, Object>> obtenerEstadisticasPorProceso(
             @PathVariable String tipoProceso) {
-        try {
-            Map<String, Object> estadisticas = estadisticaCU.obtenerEstadisticasPorProceso(tipoProceso);
-            return ResponseEntity.ok(estadisticas);
-        } catch (Exception e) {
-            log.error("Error en endpoint de estadísticas", e);
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-        }
+        Map<String, Object> estadisticas = estadisticaCU.obtenerEstadisticasPorProceso(tipoProceso);
+        return ResponseEntity.ok(estadisticas);
     }
 
     /**
@@ -298,13 +277,8 @@ public class EstadisticasRestController {
     @GetMapping("/estado/{estado}")
     public ResponseEntity<Map<String, Object>> obtenerEstadisticasPorEstado(
             @PathVariable String estado) {
-        try {
-            Map<String, Object> estadisticas = estadisticaCU.obtenerEstadisticasPorEstado(estado);
-            return ResponseEntity.ok(estadisticas);
-        } catch (Exception e) {
-            log.error("Error en endpoint de estadísticas", e);
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-        }
+        Map<String, Object> estadisticas = estadisticaCU.obtenerEstadisticasPorEstado(estado);
+        return ResponseEntity.ok(estadisticas);
     }
 
     /**
@@ -317,13 +291,8 @@ public class EstadisticasRestController {
     @GetMapping("/programa/{idPrograma}")
     public ResponseEntity<Map<String, Object>> obtenerEstadisticasPorPrograma(
             @Min(value = 1) @PathVariable Integer idPrograma) {
-        try {
-            Map<String, Object> estadisticas = estadisticaCU.obtenerEstadisticasPorPrograma(idPrograma);
-            return ResponseEntity.ok(estadisticas);
-        } catch (Exception e) {
-            log.error("Error en endpoint de estadísticas", e);
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-        }
+        Map<String, Object> estadisticas = estadisticaCU.obtenerEstadisticasPorPrograma(idPrograma);
+        return ResponseEntity.ok(estadisticas);
     }
 
     /**
@@ -341,29 +310,24 @@ public class EstadisticasRestController {
             @RequestParam(name = "periodoAcademico", required = false) String periodoAcademico,
             @RequestParam(name = "fechaInicio", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") Date fechaInicio,
             @RequestParam(name = "fechaFin", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") Date fechaFin) {
-        try {
-            Map<String, Object> estadisticas;
-            
-            // Si se proporciona período académico, usarlo
-            if (periodoAcademico != null && !periodoAcademico.trim().isEmpty()) {
-                estadisticas = estadisticaCU.obtenerEstadisticasPorPeriodoAcademico(periodoAcademico.trim());
-            } 
-            // Si se proporcionan fechas, usarlas
-            else if (fechaInicio != null && fechaFin != null) {
-                estadisticas = estadisticaCU.obtenerEstadisticasPorPeriodo(fechaInicio, fechaFin);
-            } 
-            // Si no se proporciona nada, retornar error
-            else {
-                Map<String, Object> error = new HashMap<>();
-                error.put("error", "Debe proporcionar 'periodoAcademico' (ej: '2024-2') o 'fechaInicio' y 'fechaFin'");
-                return ResponseEntity.badRequest().body(error);
-            }
-            
-            return ResponseEntity.ok(estadisticas);
-        } catch (Exception e) {
-            log.error("Error en endpoint de estadísticas", e);
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        Map<String, Object> estadisticas;
+        
+        // Si se proporciona período académico, usarlo
+        if (periodoAcademico != null && !periodoAcademico.trim().isEmpty()) {
+            estadisticas = estadisticaCU.obtenerEstadisticasPorPeriodoAcademico(periodoAcademico.trim());
+        } 
+        // Si se proporcionan fechas, usarlas
+        else if (fechaInicio != null && fechaFin != null) {
+            estadisticas = estadisticaCU.obtenerEstadisticasPorPeriodo(fechaInicio, fechaFin);
+        } 
+        // Si no se proporciona nada, retornar error
+        else {
+            Map<String, Object> error = new HashMap<>();
+            error.put("error", "Debe proporcionar 'periodoAcademico' (ej: '2024-2') o 'fechaInicio' y 'fechaFin'");
+            return ResponseEntity.badRequest().body(error);
         }
+        
+        return ResponseEntity.ok(estadisticas);
     }
 
     /**
@@ -375,58 +339,51 @@ public class EstadisticasRestController {
      */
     @GetMapping("/ultimo-periodo")
     public ResponseEntity<Map<String, Object>> obtenerEstadisticasUltimoPeriodo() {
-        try {
-            
-            // Obtener el último período académico
-            PeriodoAcademicoEnum ultimoPeriodo = PeriodoAcademicoEnum.getPeriodoActual();
-            
-            if (ultimoPeriodo == null) {
-                Map<String, Object> errorResponse = new HashMap<>();
-                errorResponse.put("success", false);
-                errorResponse.put("message", "No se pudo determinar el último período académico");
-                return ResponseEntity.badRequest().body(errorResponse);
-            }
-            
-            // Convertir período a fechas
-            int año = ultimoPeriodo.getAño();
-            int numeroPeriodo = ultimoPeriodo.getNumeroPeriodo();
-            
-            LocalDate fechaInicioLocal;
-            LocalDate fechaFinLocal;
-            
-            if (numeroPeriodo == 1) {
-                // Primer período: enero a junio
-                fechaInicioLocal = LocalDate.of(año, 1, 1);
-                fechaFinLocal = LocalDate.of(año, 6, 30);
-            } else {
-                // Segundo período: julio a diciembre
-                fechaInicioLocal = LocalDate.of(año, 7, 1);
-                fechaFinLocal = LocalDate.of(año, 12, 31);
-            }
-            
-            // Convertir LocalDate a Date
-            Date fechaInicio = java.sql.Date.valueOf(fechaInicioLocal);
-            Date fechaFin = java.sql.Date.valueOf(fechaFinLocal);
-            
-            
-            // Obtener estadísticas del período
-            Map<String, Object> estadisticas = estadisticaCU.obtenerEstadisticasPorPeriodo(fechaInicio, fechaFin);
-            
-            // Agregar información del período a la respuesta
-            estadisticas.put("periodoAcademico", ultimoPeriodo.getValor());
-            estadisticas.put("año", año);
-            estadisticas.put("numeroPeriodo", numeroPeriodo);
-            estadisticas.put("descripcionPeriodo", ultimoPeriodo.getDescripcion());
-            estadisticas.put("fechaInicio", fechaInicioLocal.toString());
-            estadisticas.put("fechaFin", fechaFinLocal.toString());
-            
-            return ResponseEntity.ok(estadisticas);
-        } catch (Exception e) {
+        
+        // Obtener el último período académico
+        PeriodoAcademicoEnum ultimoPeriodo = PeriodoAcademicoEnum.getPeriodoActual();
+        
+        if (ultimoPeriodo == null) {
             Map<String, Object> errorResponse = new HashMap<>();
             errorResponse.put("success", false);
-            errorResponse.put("message", "Error al obtener estadísticas del último período: " + e.getMessage());
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
+            errorResponse.put("message", "No se pudo determinar el último período académico");
+            return ResponseEntity.badRequest().body(errorResponse);
         }
+        
+        // Convertir período a fechas
+        int año = ultimoPeriodo.getAño();
+        int numeroPeriodo = ultimoPeriodo.getNumeroPeriodo();
+        
+        LocalDate fechaInicioLocal;
+        LocalDate fechaFinLocal;
+        
+        if (numeroPeriodo == 1) {
+            // Primer período: enero a junio
+            fechaInicioLocal = LocalDate.of(año, 1, 1);
+            fechaFinLocal = LocalDate.of(año, 6, 30);
+        } else {
+            // Segundo período: julio a diciembre
+            fechaInicioLocal = LocalDate.of(año, 7, 1);
+            fechaFinLocal = LocalDate.of(año, 12, 31);
+        }
+        
+        // Convertir LocalDate a Date
+        Date fechaInicio = java.sql.Date.valueOf(fechaInicioLocal);
+        Date fechaFin = java.sql.Date.valueOf(fechaFinLocal);
+        
+        
+        // Obtener estadísticas del período
+        Map<String, Object> estadisticas = estadisticaCU.obtenerEstadisticasPorPeriodo(fechaInicio, fechaFin);
+        
+        // Agregar información del período a la respuesta
+        estadisticas.put("periodoAcademico", ultimoPeriodo.getValor());
+        estadisticas.put("año", año);
+        estadisticas.put("numeroPeriodo", numeroPeriodo);
+        estadisticas.put("descripcionPeriodo", ultimoPeriodo.getDescripcion());
+        estadisticas.put("fechaInicio", fechaInicioLocal.toString());
+        estadisticas.put("fechaFin", fechaFinLocal.toString());
+        
+        return ResponseEntity.ok(estadisticas);
     }
 
     /**
@@ -443,13 +400,8 @@ public class EstadisticasRestController {
             @Min(value = 1) @PathVariable Integer idPrograma,
             @RequestParam(name = "fechaInicio", required = true) @DateTimeFormat(pattern = "yyyy-MM-dd") Date fechaInicio,
             @RequestParam(name = "fechaFin", required = true) @DateTimeFormat(pattern = "yyyy-MM-dd") Date fechaFin) {
-        try {
-            Map<String, Object> estadisticas = estadisticaCU.obtenerEstadisticasPorProgramaYPeriodo(idPrograma, fechaInicio, fechaFin);
-            return ResponseEntity.ok(estadisticas);
-        } catch (Exception e) {
-            log.error("Error en endpoint de estadísticas", e);
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-        }
+        Map<String, Object> estadisticas = estadisticaCU.obtenerEstadisticasPorProgramaYPeriodo(idPrograma, fechaInicio, fechaFin);
+        return ResponseEntity.ok(estadisticas);
     }
 
     /**
@@ -464,13 +416,8 @@ public class EstadisticasRestController {
     public ResponseEntity<Map<String, Object>> obtenerEstadisticasPorProcesoYEstado(
             @PathVariable String tipoProceso,
             @PathVariable String estado) {
-        try {
-            Map<String, Object> estadisticas = estadisticaCU.obtenerEstadisticasPorProcesoYEstado(tipoProceso, estado);
-            return ResponseEntity.ok(estadisticas);
-        } catch (Exception e) {
-            log.error("Error en endpoint de estadísticas", e);
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-        }
+        Map<String, Object> estadisticas = estadisticaCU.obtenerEstadisticasPorProcesoYEstado(tipoProceso, estado);
+        return ResponseEntity.ok(estadisticas);
     }
 
     /**
@@ -486,62 +433,57 @@ public class EstadisticasRestController {
             @RequestParam(required = false) String periodoAcademico,
             @RequestParam(required = false) Integer idPrograma,
             @RequestParam(required = false) String proceso) {
-        try {
-            // Normalizar el período académico si viene en formato legible
-            String periodoNormalizado = normalizarPeriodoAcademico(periodoAcademico);
-            
-            Map<String, Object> resumen = estadisticaCU.obtenerResumenCompleto(periodoNormalizado, idPrograma);
-            
-            // Si hay filtro de proceso, actualizar KPIs con datos solo de ese proceso.
-            // IMPORTANTE: usar resumen.porTipoProceso (Map con stats completas), NO estadisticasGlobales.porTipoProceso (solo conteos Integer)
-            String procesoNormalizado = normalizarProceso(proceso);
-            if (procesoNormalizado != null) {
-                @SuppressWarnings("unchecked")
-                Map<String, Object> porTipoProcesoResumen = (Map<String, Object>) resumen.get("porTipoProceso");
-                if (porTipoProcesoResumen != null && porTipoProcesoResumen.containsKey(procesoNormalizado)) {
-                    Object datosProceso = porTipoProcesoResumen.get(procesoNormalizado);
-                    if (datosProceso instanceof Map) {
-                        @SuppressWarnings("unchecked")
-                        Map<String, Object> statsProceso = (Map<String, Object>) datosProceso;
-                        @SuppressWarnings("unchecked")
-                        Map<String, Object> estadisticasGlobales = (Map<String, Object>) resumen.get("estadisticasGlobales");
-                        if (estadisticasGlobales != null) {
-                            estadisticasGlobales.put("totalSolicitudes", statsProceso.getOrDefault("totalSolicitudes", 0));
-                            estadisticasGlobales.put("totalAprobadas", statsProceso.getOrDefault("totalAprobadas", 0));
-                            estadisticasGlobales.put("totalRechazadas", statsProceso.getOrDefault("totalRechazadas", 0));
-                            estadisticasGlobales.put("totalEnProceso", statsProceso.getOrDefault("totalEnProceso", 0));
-                            Object porEstadoObj = statsProceso.get("porEstado");
-                            int totalEnviadas = 0;
-                            if (porEstadoObj instanceof Map) {
-                                Object env = ((Map<?, ?>) porEstadoObj).get("ENVIADA");
-                                totalEnviadas = env instanceof Number ? ((Number) env).intValue() : 0;
-                            }
-                            estadisticasGlobales.put("totalEnviadas", totalEnviadas);
-                            estadisticasGlobales.put("porcentajeAprobacion", statsProceso.getOrDefault("porcentajeAprobacion", 0.0));
-                            estadisticasGlobales.put("porEstado", statsProceso.getOrDefault("porEstado", new HashMap<>()));
-                            estadisticasGlobales.put("porTipoProceso", Map.of(procesoNormalizado, datosProceso));
+        // Normalizar el período académico si viene en formato legible
+        String periodoNormalizado = normalizarPeriodoAcademico(periodoAcademico);
+        
+        Map<String, Object> resumen = estadisticaCU.obtenerResumenCompleto(periodoNormalizado, idPrograma);
+        
+        // Si hay filtro de proceso, actualizar KPIs con datos solo de ese proceso.
+        // IMPORTANTE: usar resumen.porTipoProceso (Map con stats completas), NO estadisticasGlobales.porTipoProceso (solo conteos Integer)
+        String procesoNormalizado = normalizarProceso(proceso);
+        if (procesoNormalizado != null) {
+            @SuppressWarnings("unchecked")
+            Map<String, Object> porTipoProcesoResumen = (Map<String, Object>) resumen.get("porTipoProceso");
+            if (porTipoProcesoResumen != null && porTipoProcesoResumen.containsKey(procesoNormalizado)) {
+                Object datosProceso = porTipoProcesoResumen.get(procesoNormalizado);
+                if (datosProceso instanceof Map) {
+                    @SuppressWarnings("unchecked")
+                    Map<String, Object> statsProceso = (Map<String, Object>) datosProceso;
+                    @SuppressWarnings("unchecked")
+                    Map<String, Object> estadisticasGlobales = (Map<String, Object>) resumen.get("estadisticasGlobales");
+                    if (estadisticasGlobales != null) {
+                        estadisticasGlobales.put("totalSolicitudes", statsProceso.getOrDefault("totalSolicitudes", 0));
+                        estadisticasGlobales.put("totalAprobadas", statsProceso.getOrDefault("totalAprobadas", 0));
+                        estadisticasGlobales.put("totalRechazadas", statsProceso.getOrDefault("totalRechazadas", 0));
+                        estadisticasGlobales.put("totalEnProceso", statsProceso.getOrDefault("totalEnProceso", 0));
+                        Object porEstadoObj = statsProceso.get("porEstado");
+                        int totalEnviadas = 0;
+                        if (porEstadoObj instanceof Map) {
+                            Object env = ((Map<?, ?>) porEstadoObj).get("ENVIADA");
+                            totalEnviadas = env instanceof Number ? ((Number) env).intValue() : 0;
                         }
+                        estadisticasGlobales.put("totalEnviadas", totalEnviadas);
+                        estadisticasGlobales.put("porcentajeAprobacion", statsProceso.getOrDefault("porcentajeAprobacion", 0.0));
+                        estadisticasGlobales.put("porEstado", statsProceso.getOrDefault("porEstado", new HashMap<>()));
+                        estadisticasGlobales.put("porTipoProceso", Map.of(procesoNormalizado, datosProceso));
                     }
                 }
-                if (porTipoProcesoResumen != null && porTipoProcesoResumen.containsKey(procesoNormalizado)) {
-                    resumen.put("porTipoProceso", Map.of(procesoNormalizado, porTipoProcesoResumen.get(procesoNormalizado)));
-                }
-                if (resumen.get("filtrosAplicados") instanceof Map) {
-                    @SuppressWarnings("unchecked")
-                    Map<String, Object> filtrosAplicados = (Map<String, Object>) resumen.get("filtrosAplicados");
-                    filtrosAplicados.put("proceso", procesoNormalizado);
-                } else {
-                    Map<String, Object> filtros = new HashMap<>();
-                    filtros.put("proceso", procesoNormalizado);
-                    resumen.put("filtrosAplicados", filtros);
-                }
             }
-            
-            return ResponseEntity.ok(resumen);
-        } catch (Exception e) {
-            log.error("Error al obtener resumen completo", e);
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+            if (porTipoProcesoResumen != null && porTipoProcesoResumen.containsKey(procesoNormalizado)) {
+                resumen.put("porTipoProceso", Map.of(procesoNormalizado, porTipoProcesoResumen.get(procesoNormalizado)));
+            }
+            if (resumen.get("filtrosAplicados") instanceof Map) {
+                @SuppressWarnings("unchecked")
+                Map<String, Object> filtrosAplicados = (Map<String, Object>) resumen.get("filtrosAplicados");
+                filtrosAplicados.put("proceso", procesoNormalizado);
+            } else {
+                Map<String, Object> filtros = new HashMap<>();
+                filtros.put("proceso", procesoNormalizado);
+                resumen.put("filtrosAplicados", filtros);
+            }
         }
+        
+        return ResponseEntity.ok(resumen);
     }
     
     /**
@@ -655,18 +597,13 @@ public class EstadisticasRestController {
             @RequestParam(name = "fechaFin1", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") Date fechaFin1,
             @RequestParam(name = "fechaInicio2", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") Date fechaInicio2,
             @RequestParam(name = "fechaFin2", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") Date fechaFin2) {
-        try {
-            // Si no se proporcionan parámetros, devolver estadísticas globales como tendencias
-            if (fechaInicio1 == null || fechaFin1 == null || fechaInicio2 == null || fechaFin2 == null) {
-                Map<String, Object> estadisticas = estadisticaCU.obtenerEstadisticasGlobales();
-                return ResponseEntity.ok(estadisticas);
-            }
-            Map<String, Object> tendencias = estadisticaCU.obtenerTendenciasPorPeriodo(fechaInicio1, fechaFin1, fechaInicio2, fechaFin2);
-            return ResponseEntity.ok(tendencias);
-        } catch (Exception e) {
-            log.error("Error en endpoint de estadísticas", e);
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        // Si no se proporcionan parámetros, devolver estadísticas globales como tendencias
+        if (fechaInicio1 == null || fechaFin1 == null || fechaInicio2 == null || fechaFin2 == null) {
+            Map<String, Object> estadisticas = estadisticaCU.obtenerEstadisticasGlobales();
+            return ResponseEntity.ok(estadisticas);
         }
+        Map<String, Object> tendencias = estadisticaCU.obtenerTendenciasPorPeriodo(fechaInicio1, fechaFin1, fechaInicio2, fechaFin2);
+        return ResponseEntity.ok(tendencias);
     }
 
     /**
@@ -680,32 +617,27 @@ public class EstadisticasRestController {
             @RequestParam(required = false) String periodoAcademico,
             @RequestParam(required = false) Integer idPrograma,
             @RequestParam(required = false) String proceso) {
-        try {
-            // Usar consolidado que ya soporta proceso y actualiza KPIs correctamente
-            ResponseEntity<Map<String, Object>> consolidadoResp = obtenerConsolidadoGeneral(periodoAcademico, idPrograma, proceso);
-            Map<String, Object> consolidado = consolidadoResp.getBody();
-            if (consolidado == null) {
-                return ResponseEntity.ok(new HashMap<>());
-            }
-            
-            @SuppressWarnings("unchecked")
-            Map<String, Object> estadisticasGlobales = (Map<String, Object>) consolidado.get("estadisticasGlobales");
-            
-            Map<String, Object> dashboardEjecutivo = new HashMap<>();
-            dashboardEjecutivo.put("resumenGlobal", estadisticasGlobales);
-            dashboardEjecutivo.put("topProcesos", consolidado.get("porTipoProceso"));
-            dashboardEjecutivo.put("resumenEstados", consolidado.get("porEstado"));
-            dashboardEjecutivo.put("fechaGeneracion", consolidado.get("fechaGeneracion"));
-            
-            if (consolidado.containsKey("filtrosAplicados")) {
-                dashboardEjecutivo.put("filtrosAplicados", consolidado.get("filtrosAplicados"));
-            }
-            
-            return ResponseEntity.ok(dashboardEjecutivo);
-        } catch (Exception e) {
-            log.error("Error al obtener dashboard ejecutivo", e);
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        // Usar consolidado que ya soporta proceso y actualiza KPIs correctamente
+        ResponseEntity<Map<String, Object>> consolidadoResp = obtenerConsolidadoGeneral(periodoAcademico, idPrograma, proceso);
+        Map<String, Object> consolidado = consolidadoResp.getBody();
+        if (consolidado == null) {
+            return ResponseEntity.ok(new HashMap<>());
         }
+        
+        @SuppressWarnings("unchecked")
+        Map<String, Object> estadisticasGlobales = (Map<String, Object>) consolidado.get("estadisticasGlobales");
+        
+        Map<String, Object> dashboardEjecutivo = new HashMap<>();
+        dashboardEjecutivo.put("resumenGlobal", estadisticasGlobales);
+        dashboardEjecutivo.put("topProcesos", consolidado.get("porTipoProceso"));
+        dashboardEjecutivo.put("resumenEstados", consolidado.get("porEstado"));
+        dashboardEjecutivo.put("fechaGeneracion", consolidado.get("fechaGeneracion"));
+        
+        if (consolidado.containsKey("filtrosAplicados")) {
+            dashboardEjecutivo.put("filtrosAplicados", consolidado.get("filtrosAplicados"));
+        }
+        
+        return ResponseEntity.ok(dashboardEjecutivo);
     }
 
     /**
@@ -716,25 +648,20 @@ public class EstadisticasRestController {
      */
     @GetMapping("/rendimiento")
     public ResponseEntity<Map<String, Object>> obtenerEstadisticasRendimiento() {
-        try {
-            // Combinar estadísticas globales con métricas de rendimiento
-            Map<String, Object> estadisticasGlobales = estadisticaCU.obtenerEstadisticasGlobales();
-            
-            Map<String, Object> rendimiento = Map.of(
-                "estadisticasGlobales", estadisticasGlobales,
-                "indicadoresRendimiento", Map.of(
-                    "tasaProcesamiento", calcularTasaProcesamiento(estadisticasGlobales),
-                    "eficienciaAprobacion", calcularEficienciaAprobacion(estadisticasGlobales),
-                    "tiempoPromedioProcesamiento", "N/A"
-                ),
-                "fechaConsulta", new Date()
-            );
-            
-            return ResponseEntity.ok(rendimiento);
-        } catch (Exception e) {
-            log.error("Error en endpoint de estadísticas", e);
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-        }
+        // Combinar estadísticas globales con métricas de rendimiento
+        Map<String, Object> estadisticasGlobales = estadisticaCU.obtenerEstadisticasGlobales();
+        
+        Map<String, Object> rendimiento = Map.of(
+            "estadisticasGlobales", estadisticasGlobales,
+            "indicadoresRendimiento", Map.of(
+                "tasaProcesamiento", calcularTasaProcesamiento(estadisticasGlobales),
+                "eficienciaAprobacion", calcularEficienciaAprobacion(estadisticasGlobales),
+                "tiempoPromedioProcesamiento", "N/A"
+            ),
+            "fechaConsulta", new Date()
+        );
+        
+        return ResponseEntity.ok(rendimiento);
     }
 
     /**
@@ -817,81 +744,75 @@ public class EstadisticasRestController {
      */
     private ResponseEntity<Map<String, Object>> procesarFiltrosDinamicos(Map<String, Object> filtros) {
         
-        try {
-            
-            if (filtros == null || filtros.isEmpty()) {
-                // Sin filtros, devolver estadísticas globales
-                Map<String, Object> estadisticas = estadisticaCU.obtenerEstadisticasGlobales();
-                return ResponseEntity.ok(estadisticas);
-            }
-            
-            // Extraer parámetros de los filtros
-            String nombreProceso = (String) filtros.get("nombreProceso");
-            Integer idPrograma = (Integer) filtros.get("idPrograma");
-            String estado = (String) filtros.get("estado");
-            String fechaInicioStr = (String) filtros.get("fechaInicio");
-            String fechaFinStr = (String) filtros.get("fechaFin");
-            
-            
-            // Procesar fechas si están presentes
-            Date fechaInicio = null;
-            Date fechaFin = null;
-            
-            // Una fecha mal escrita se rechaza con 400; antes se ignoraba y la consulta salía sin ese filtro.
-            if (fechaInicioStr != null && !fechaInicioStr.trim().isEmpty()) {
-                try {
-                    fechaInicio = new java.text.SimpleDateFormat("yyyy-MM-dd").parse(fechaInicioStr);
-                } catch (java.text.ParseException e) {
-                    return ResponseEntity.badRequest().body(Map.of("error", "fechaInicio inválida, use el formato yyyy-MM-dd"));
-                }
-            }
-
-            if (fechaFinStr != null && !fechaFinStr.trim().isEmpty()) {
-                try {
-                    fechaFin = new java.text.SimpleDateFormat("yyyy-MM-dd").parse(fechaFinStr);
-                } catch (java.text.ParseException e) {
-                    return ResponseEntity.badRequest().body(Map.of("error", "fechaFin inválida, use el formato yyyy-MM-dd"));
-                }
-            }
-            
-            Map<String, Object> estadisticas;
-            
-            // Determinar qué tipo de consulta realizar basado en los parámetros
-            if (nombreProceso != null && !nombreProceso.trim().isEmpty()) {
-                // Consulta por proceso específico
-                estadisticas = estadisticaCU.obtenerEstadisticasPorProceso(nombreProceso);
-            } else if (idPrograma != null && idPrograma > 0) {
-                // Consulta por programa específico
-                estadisticas = estadisticaCU.obtenerEstadisticasPorPrograma(idPrograma);
-            } else if (estado != null && !estado.trim().isEmpty()) {
-                // Consulta por estado específico
-                estadisticas = estadisticaCU.obtenerEstadisticasPorEstado(estado);
-            } else if (fechaInicio != null && fechaFin != null) {
-                // Consulta por período específico
-                estadisticas = estadisticaCU.obtenerEstadisticasPorPeriodo(fechaInicio, fechaFin);
-            } else {
-                // Consulta global (sin filtros)
-                estadisticas = estadisticaCU.obtenerEstadisticasGlobales();
-            }
-            
-            // Asegurar que la estructura JSON tenga el formato solicitado
-            Map<String, Object> respuesta = new HashMap<>();
-            respuesta.put("fechaConsulta", estadisticas.get("fechaConsulta"));
-            respuesta.put("totalSolicitudes", estadisticas.get("totalSolicitudes"));
-            respuesta.put("totalAprobadas", estadisticas.get("totalAprobadas"));
-            respuesta.put("totalRechazadas", estadisticas.get("totalRechazadas"));
-            respuesta.put("totalEnProceso", estadisticas.get("totalEnProceso"));
-            respuesta.put("porcentajeAprobacion", estadisticas.get("porcentajeAprobacion"));
-            respuesta.put("porTipoProceso", estadisticas.get("porTipoProceso"));
-            respuesta.put("porPrograma", estadisticas.get("porPrograma"));
-            respuesta.put("porEstado", estadisticas.get("porEstado"));
-            
-            return ResponseEntity.ok(respuesta);
-            
-        } catch (Exception e) {
-            log.error("Error en endpoint de estadísticas", e);
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        
+        if (filtros == null || filtros.isEmpty()) {
+            // Sin filtros, devolver estadísticas globales
+            Map<String, Object> estadisticas = estadisticaCU.obtenerEstadisticasGlobales();
+            return ResponseEntity.ok(estadisticas);
         }
+        
+        // Extraer parámetros de los filtros
+        String nombreProceso = (String) filtros.get("nombreProceso");
+        Integer idPrograma = (Integer) filtros.get("idPrograma");
+        String estado = (String) filtros.get("estado");
+        String fechaInicioStr = (String) filtros.get("fechaInicio");
+        String fechaFinStr = (String) filtros.get("fechaFin");
+        
+        
+        // Procesar fechas si están presentes
+        Date fechaInicio = null;
+        Date fechaFin = null;
+        
+        // Una fecha mal escrita se rechaza con 400; antes se ignoraba y la consulta salía sin ese filtro.
+        if (fechaInicioStr != null && !fechaInicioStr.trim().isEmpty()) {
+            try {
+                fechaInicio = new java.text.SimpleDateFormat("yyyy-MM-dd").parse(fechaInicioStr);
+            } catch (java.text.ParseException e) {
+                return ResponseEntity.badRequest().body(Map.of("error", "fechaInicio inválida, use el formato yyyy-MM-dd"));
+            }
+        }
+
+        if (fechaFinStr != null && !fechaFinStr.trim().isEmpty()) {
+            try {
+                fechaFin = new java.text.SimpleDateFormat("yyyy-MM-dd").parse(fechaFinStr);
+            } catch (java.text.ParseException e) {
+                return ResponseEntity.badRequest().body(Map.of("error", "fechaFin inválida, use el formato yyyy-MM-dd"));
+            }
+        }
+        
+        Map<String, Object> estadisticas;
+        
+        // Determinar qué tipo de consulta realizar basado en los parámetros
+        if (nombreProceso != null && !nombreProceso.trim().isEmpty()) {
+            // Consulta por proceso específico
+            estadisticas = estadisticaCU.obtenerEstadisticasPorProceso(nombreProceso);
+        } else if (idPrograma != null && idPrograma > 0) {
+            // Consulta por programa específico
+            estadisticas = estadisticaCU.obtenerEstadisticasPorPrograma(idPrograma);
+        } else if (estado != null && !estado.trim().isEmpty()) {
+            // Consulta por estado específico
+            estadisticas = estadisticaCU.obtenerEstadisticasPorEstado(estado);
+        } else if (fechaInicio != null && fechaFin != null) {
+            // Consulta por período específico
+            estadisticas = estadisticaCU.obtenerEstadisticasPorPeriodo(fechaInicio, fechaFin);
+        } else {
+            // Consulta global (sin filtros)
+            estadisticas = estadisticaCU.obtenerEstadisticasGlobales();
+        }
+        
+        // Asegurar que la estructura JSON tenga el formato solicitado
+        Map<String, Object> respuesta = new HashMap<>();
+        respuesta.put("fechaConsulta", estadisticas.get("fechaConsulta"));
+        respuesta.put("totalSolicitudes", estadisticas.get("totalSolicitudes"));
+        respuesta.put("totalAprobadas", estadisticas.get("totalAprobadas"));
+        respuesta.put("totalRechazadas", estadisticas.get("totalRechazadas"));
+        respuesta.put("totalEnProceso", estadisticas.get("totalEnProceso"));
+        respuesta.put("porcentajeAprobacion", estadisticas.get("porcentajeAprobacion"));
+        respuesta.put("porTipoProceso", estadisticas.get("porTipoProceso"));
+        respuesta.put("porPrograma", estadisticas.get("porPrograma"));
+        respuesta.put("porEstado", estadisticas.get("porEstado"));
+        
+        return ResponseEntity.ok(respuesta);
     }
 
     /**
@@ -905,83 +826,77 @@ public class EstadisticasRestController {
             @RequestParam(required = false) String periodoAcademico,
             @RequestParam(required = false) Integer idPrograma,
             @RequestParam(required = false) String proceso) {
-        try {
-            
-            // Normalizar el período académico si viene en formato legible
-            String periodoNormalizado = normalizarPeriodoAcademico(periodoAcademico);
-            
-            Map<String, Object> estadisticasGlobales;
-            Map<String, Object> resumen = null;
-            
-            // Si hay filtros, usar resumen completo
-            if (periodoNormalizado != null || idPrograma != null) {
-                resumen = estadisticaCU.obtenerResumenCompleto(periodoNormalizado, idPrograma);
+        
+        // Normalizar el período académico si viene en formato legible
+        String periodoNormalizado = normalizarPeriodoAcademico(periodoAcademico);
+        
+        Map<String, Object> estadisticasGlobales;
+        Map<String, Object> resumen = null;
+        
+        // Si hay filtros, usar resumen completo
+        if (periodoNormalizado != null || idPrograma != null) {
+            resumen = estadisticaCU.obtenerResumenCompleto(periodoNormalizado, idPrograma);
+            @SuppressWarnings("unchecked")
+            Map<String, Object> estadisticasGlobalesTemp = (Map<String, Object>) resumen.get("estadisticasGlobales");
+            estadisticasGlobales = estadisticasGlobalesTemp;
+        } else {
+            estadisticasGlobales = estadisticaCU.obtenerEstadisticasGlobales(proceso, idPrograma, null, null);
+        }
+        
+        // Si hay filtro de proceso Y tenemos resumen (periodo/programa), usar resumen.porTipoProceso (stats completas)
+        if (proceso != null && !proceso.trim().isEmpty() && estadisticasGlobales != null && resumen != null) {
+            String procesoNorm = normalizarProceso(proceso);
+            if (procesoNorm != null) {
                 @SuppressWarnings("unchecked")
-                Map<String, Object> estadisticasGlobalesTemp = (Map<String, Object>) resumen.get("estadisticasGlobales");
-                estadisticasGlobales = estadisticasGlobalesTemp;
-            } else {
-                estadisticasGlobales = estadisticaCU.obtenerEstadisticasGlobales(proceso, idPrograma, null, null);
-            }
-            
-            // Si hay filtro de proceso Y tenemos resumen (periodo/programa), usar resumen.porTipoProceso (stats completas)
-            if (proceso != null && !proceso.trim().isEmpty() && estadisticasGlobales != null && resumen != null) {
-                String procesoNorm = normalizarProceso(proceso);
-                if (procesoNorm != null) {
-                    @SuppressWarnings("unchecked")
-                    Map<String, Object> porTipoProcesoResumen = (Map<String, Object>) resumen.get("porTipoProceso");
-                    if (porTipoProcesoResumen != null && porTipoProcesoResumen.containsKey(procesoNorm)) {
-                        Object datosProceso = porTipoProcesoResumen.get(procesoNorm);
-                        if (datosProceso instanceof Map) {
-                            @SuppressWarnings("unchecked")
-                            Map<String, Object> statsProceso = (Map<String, Object>) datosProceso;
-                            estadisticasGlobales.put("totalSolicitudes", statsProceso.getOrDefault("totalSolicitudes", 0));
-                            estadisticasGlobales.put("totalAprobadas", statsProceso.getOrDefault("totalAprobadas", 0));
-                            estadisticasGlobales.put("totalRechazadas", statsProceso.getOrDefault("totalRechazadas", 0));
-                            estadisticasGlobales.put("totalEnProceso", statsProceso.getOrDefault("totalEnProceso", 0));
-                            Object porEstadoObj = statsProceso.get("porEstado");
-                            int totalEnviadas = 0;
-                            if (porEstadoObj instanceof Map) {
-                                Object env = ((Map<?, ?>) porEstadoObj).get("ENVIADA");
-                                totalEnviadas = env instanceof Number ? ((Number) env).intValue() : 0;
-                            }
-                            estadisticasGlobales.put("totalEnviadas", totalEnviadas);
-                            estadisticasGlobales.put("porcentajeAprobacion", statsProceso.getOrDefault("porcentajeAprobacion", 0.0));
-                            estadisticasGlobales.put("porEstado", statsProceso.getOrDefault("porEstado", new HashMap<>()));
-                            estadisticasGlobales.put("porTipoProceso", Map.of(procesoNorm, datosProceso));
+                Map<String, Object> porTipoProcesoResumen = (Map<String, Object>) resumen.get("porTipoProceso");
+                if (porTipoProcesoResumen != null && porTipoProcesoResumen.containsKey(procesoNorm)) {
+                    Object datosProceso = porTipoProcesoResumen.get(procesoNorm);
+                    if (datosProceso instanceof Map) {
+                        @SuppressWarnings("unchecked")
+                        Map<String, Object> statsProceso = (Map<String, Object>) datosProceso;
+                        estadisticasGlobales.put("totalSolicitudes", statsProceso.getOrDefault("totalSolicitudes", 0));
+                        estadisticasGlobales.put("totalAprobadas", statsProceso.getOrDefault("totalAprobadas", 0));
+                        estadisticasGlobales.put("totalRechazadas", statsProceso.getOrDefault("totalRechazadas", 0));
+                        estadisticasGlobales.put("totalEnProceso", statsProceso.getOrDefault("totalEnProceso", 0));
+                        Object porEstadoObj = statsProceso.get("porEstado");
+                        int totalEnviadas = 0;
+                        if (porEstadoObj instanceof Map) {
+                            Object env = ((Map<?, ?>) porEstadoObj).get("ENVIADA");
+                            totalEnviadas = env instanceof Number ? ((Number) env).intValue() : 0;
                         }
+                        estadisticasGlobales.put("totalEnviadas", totalEnviadas);
+                        estadisticasGlobales.put("porcentajeAprobacion", statsProceso.getOrDefault("porcentajeAprobacion", 0.0));
+                        estadisticasGlobales.put("porEstado", statsProceso.getOrDefault("porEstado", new HashMap<>()));
+                        estadisticasGlobales.put("porTipoProceso", Map.of(procesoNorm, datosProceso));
                     }
                 }
             }
-            
-            // Crear consolidado con estructura específica
-            Map<String, Object> consolidado = new HashMap<>();
-            consolidado.put("estadisticasGlobales", estadisticasGlobales);
-            consolidado.put("porTipoProceso", estadisticasGlobales != null ? estadisticasGlobales.get("porTipoProceso") : new HashMap<>());
-            consolidado.put("porEstado", estadisticasGlobales != null ? estadisticasGlobales.get("porEstado") : new HashMap<>());
-            consolidado.put("totalProgramas", 4); // Número de programas
-            consolidado.put("fechaGeneracion", new Date());
-            
-            // Agregar filtros aplicados si existen
-            if (periodoNormalizado != null || idPrograma != null || (proceso != null && !proceso.trim().isEmpty())) {
-                Map<String, Object> filtrosAplicados = new HashMap<>();
-                if (periodoNormalizado != null) {
-                    filtrosAplicados.put("periodoAcademico", periodoNormalizado);
-                }
-                if (idPrograma != null) {
-                    filtrosAplicados.put("idPrograma", idPrograma);
-                }
-                if (proceso != null && !proceso.trim().isEmpty()) {
-                    filtrosAplicados.put("proceso", proceso);
-                }
-                consolidado.put("filtrosAplicados", filtrosAplicados);
-            }
-            
-            return ResponseEntity.ok(consolidado);
-            
-        } catch (Exception e) {
-            log.error("Error al obtener consolidado general", e);
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
+        
+        // Crear consolidado con estructura específica
+        Map<String, Object> consolidado = new HashMap<>();
+        consolidado.put("estadisticasGlobales", estadisticasGlobales);
+        consolidado.put("porTipoProceso", estadisticasGlobales != null ? estadisticasGlobales.get("porTipoProceso") : new HashMap<>());
+        consolidado.put("porEstado", estadisticasGlobales != null ? estadisticasGlobales.get("porEstado") : new HashMap<>());
+        consolidado.put("totalProgramas", 4); // Número de programas
+        consolidado.put("fechaGeneracion", new Date());
+        
+        // Agregar filtros aplicados si existen
+        if (periodoNormalizado != null || idPrograma != null || (proceso != null && !proceso.trim().isEmpty())) {
+            Map<String, Object> filtrosAplicados = new HashMap<>();
+            if (periodoNormalizado != null) {
+                filtrosAplicados.put("periodoAcademico", periodoNormalizado);
+            }
+            if (idPrograma != null) {
+                filtrosAplicados.put("idPrograma", idPrograma);
+            }
+            if (proceso != null && !proceso.trim().isEmpty()) {
+                filtrosAplicados.put("proceso", proceso);
+            }
+            consolidado.put("filtrosAplicados", filtrosAplicados);
+        }
+        
+        return ResponseEntity.ok(consolidado);
     }
 
     /**
@@ -991,24 +906,18 @@ public class EstadisticasRestController {
      */
     @GetMapping("/export/pdf/general")
     public ResponseEntity<byte[]> exportarEstadisticasGeneralesPDF() {
-        try {
-            
-            // Obtener solo estadísticas generales
-            Map<String, Object> estadisticas = estadisticaCU.obtenerEstadisticasGlobales();
-            
-            // Generar PDF solo con estadísticas generales
-            byte[] pdfBytes = generarPDFEstadisticasGenerales(estadisticas);
-            
-            HttpHeaders headers = new HttpHeaders();
-            headers.setContentType(MediaType.APPLICATION_PDF);
-            headers.setContentDispositionFormData("attachment", "estadisticas_generales_dashboard.pdf");
-            
-            return new ResponseEntity<>(pdfBytes, headers, HttpStatus.OK);
-            
-        } catch (Exception e) {
-            log.error("Error en endpoint de estadísticas", e);
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-        }
+        
+        // Obtener solo estadísticas generales
+        Map<String, Object> estadisticas = estadisticaCU.obtenerEstadisticasGlobales();
+        
+        // Generar PDF solo con estadísticas generales
+        byte[] pdfBytes = generarPDFEstadisticasGenerales(estadisticas);
+        
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_PDF);
+        headers.setContentDispositionFormData("attachment", "estadisticas_generales_dashboard.pdf");
+        
+        return new ResponseEntity<>(pdfBytes, headers, HttpStatus.OK);
     }
 
     /**
@@ -1022,32 +931,26 @@ public class EstadisticasRestController {
     public ResponseEntity<byte[]> exportarEstadisticasCursosVeranoPDF(
             @RequestParam(required = false) String periodoAcademico,
             @RequestParam(required = false) Integer idPrograma) {
-        try {
-            
-            // Obtener datos de cursos de verano con filtros
-            Map<String, Object> datosCursosVerano = estadisticaCU.obtenerEstadisticasCursosVerano(periodoAcademico, idPrograma);
-            
-            // Generar PDF solo con datos de cursos de verano
-            byte[] pdfBytes = generarPDFCursosVerano(datosCursosVerano, periodoAcademico, idPrograma);
-            
-            HttpHeaders headers = new HttpHeaders();
-            headers.setContentType(MediaType.APPLICATION_PDF);
-            String nombreArchivo = "estadisticas_cursos_verano";
-            if (periodoAcademico != null) {
-                nombreArchivo += "_" + periodoAcademico.replace("-", "_");
-            }
-            if (idPrograma != null) {
-                nombreArchivo += "_programa_" + idPrograma;
-            }
-            nombreArchivo += ".pdf";
-            headers.setContentDispositionFormData("attachment", nombreArchivo);
-            
-            return new ResponseEntity<>(pdfBytes, headers, HttpStatus.OK);
-            
-        } catch (Exception e) {
-            log.error("Error en endpoint de estadísticas", e);
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        
+        // Obtener datos de cursos de verano con filtros
+        Map<String, Object> datosCursosVerano = estadisticaCU.obtenerEstadisticasCursosVerano(periodoAcademico, idPrograma);
+        
+        // Generar PDF solo con datos de cursos de verano
+        byte[] pdfBytes = generarPDFCursosVerano(datosCursosVerano, periodoAcademico, idPrograma);
+        
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_PDF);
+        String nombreArchivo = "estadisticas_cursos_verano";
+        if (periodoAcademico != null) {
+            nombreArchivo += "_" + periodoAcademico.replace("-", "_");
         }
+        if (idPrograma != null) {
+            nombreArchivo += "_programa_" + idPrograma;
+        }
+        nombreArchivo += ".pdf";
+        headers.setContentDispositionFormData("attachment", nombreArchivo);
+        
+        return new ResponseEntity<>(pdfBytes, headers, HttpStatus.OK);
     }
 
     /**
@@ -1067,42 +970,36 @@ public class EstadisticasRestController {
             @RequestParam(required = false) String periodoAcademico,
             @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") Date fechaInicio,
             @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") Date fechaFin) {
-        try {
-            // Normalizar período académico si viene en formato legible
-            String periodoNormalizado = normalizarPeriodoAcademico(periodoAcademico);
-            
-            // Si hay período académico, usar obtenerResumenCompleto que soporta este filtro
-            Map<String, Object> estadisticas;
-            if (periodoNormalizado != null) {
-                Map<String, Object> resumen = estadisticaCU.obtenerResumenCompleto(periodoNormalizado, idPrograma);
-                @SuppressWarnings("unchecked")
-                Map<String, Object> estadisticasGlobales = (Map<String, Object>) resumen.get("estadisticasGlobales");
-                estadisticas = estadisticasGlobales != null ? estadisticasGlobales : estadisticaCU.obtenerEstadisticasGlobales(proceso, idPrograma, fechaInicio, fechaFin);
-            } else {
-                // Si no hay período académico, usar el método original
-                estadisticas = estadisticaCU.obtenerEstadisticasGlobales(proceso, idPrograma, fechaInicio, fechaFin);
-            }
-            
-            // Obtener datos de cursos de verano si no hay filtros específicos o si se solicita
-            Map<String, Object> datosCursosVerano = null;
-            if (proceso == null || "CURSO_VERANO".equals(proceso)) {
-                // Si falla, el reporte entero falla (500) en vez de salir sin la sección de cursos de verano
-                datosCursosVerano = estadisticaCU.obtenerEstadisticasCursosVerano(periodoNormalizado, idPrograma);
-            }
-            
-            // Generar PDF con datos completos (pasar período académico para mostrarlo en el reporte)
-            byte[] pdfBytes = generarPDFCompleto(estadisticas, datosCursosVerano, periodoAcademico, idPrograma);
-            
-            HttpHeaders headers = new HttpHeaders();
-            headers.setContentType(MediaType.APPLICATION_PDF);
-            headers.setContentDispositionFormData("attachment", "estadisticas_generales.pdf");
-            
-            return new ResponseEntity<>(pdfBytes, headers, HttpStatus.OK);
-            
-        } catch (Exception e) {
-            log.error("Error al exportar estadísticas a PDF", e);
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        // Normalizar período académico si viene en formato legible
+        String periodoNormalizado = normalizarPeriodoAcademico(periodoAcademico);
+        
+        // Si hay período académico, usar obtenerResumenCompleto que soporta este filtro
+        Map<String, Object> estadisticas;
+        if (periodoNormalizado != null) {
+            Map<String, Object> resumen = estadisticaCU.obtenerResumenCompleto(periodoNormalizado, idPrograma);
+            @SuppressWarnings("unchecked")
+            Map<String, Object> estadisticasGlobales = (Map<String, Object>) resumen.get("estadisticasGlobales");
+            estadisticas = estadisticasGlobales != null ? estadisticasGlobales : estadisticaCU.obtenerEstadisticasGlobales(proceso, idPrograma, fechaInicio, fechaFin);
+        } else {
+            // Si no hay período académico, usar el método original
+            estadisticas = estadisticaCU.obtenerEstadisticasGlobales(proceso, idPrograma, fechaInicio, fechaFin);
         }
+        
+        // Obtener datos de cursos de verano si no hay filtros específicos o si se solicita
+        Map<String, Object> datosCursosVerano = null;
+        if (proceso == null || "CURSO_VERANO".equals(proceso)) {
+            // Si falla, el reporte entero falla (500) en vez de salir sin la sección de cursos de verano
+            datosCursosVerano = estadisticaCU.obtenerEstadisticasCursosVerano(periodoNormalizado, idPrograma);
+        }
+        
+        // Generar PDF con datos completos (pasar período académico para mostrarlo en el reporte)
+        byte[] pdfBytes = generarPDFCompleto(estadisticas, datosCursosVerano, periodoAcademico, idPrograma);
+        
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_PDF);
+        headers.setContentDispositionFormData("attachment", "estadisticas_generales.pdf");
+        
+        return new ResponseEntity<>(pdfBytes, headers, HttpStatus.OK);
     }
 
     /**
@@ -1112,24 +1009,18 @@ public class EstadisticasRestController {
      */
     @GetMapping("/export/excel/general")
     public ResponseEntity<byte[]> exportarEstadisticasGeneralesExcel() {
-        try {
-            
-            // Obtener solo estadísticas generales
-            Map<String, Object> estadisticas = estadisticaCU.obtenerEstadisticasGlobales();
-            
-            // Generar Excel solo con estadísticas generales
-            byte[] excelBytes = generarExcelEstadisticasGenerales(estadisticas);
-            
-            HttpHeaders headers = new HttpHeaders();
-            headers.setContentType(MediaType.parseMediaType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"));
-            headers.setContentDispositionFormData("attachment", "estadisticas_generales_dashboard.xlsx");
-            
-            return new ResponseEntity<>(excelBytes, headers, HttpStatus.OK);
-            
-        } catch (Exception e) {
-            log.error("Error en endpoint de estadísticas", e);
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-        }
+        
+        // Obtener solo estadísticas generales
+        Map<String, Object> estadisticas = estadisticaCU.obtenerEstadisticasGlobales();
+        
+        // Generar Excel solo con estadísticas generales
+        byte[] excelBytes = generarExcelEstadisticasGenerales(estadisticas);
+        
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.parseMediaType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"));
+        headers.setContentDispositionFormData("attachment", "estadisticas_generales_dashboard.xlsx");
+        
+        return new ResponseEntity<>(excelBytes, headers, HttpStatus.OK);
     }
 
     /**
@@ -1143,32 +1034,26 @@ public class EstadisticasRestController {
     public ResponseEntity<byte[]> exportarEstadisticasCursosVeranoExcel(
             @RequestParam(required = false) String periodoAcademico,
             @RequestParam(required = false) Integer idPrograma) {
-        try {
-            
-            // Obtener datos de cursos de verano con filtros
-            Map<String, Object> datosCursosVerano = estadisticaCU.obtenerEstadisticasCursosVerano(periodoAcademico, idPrograma);
-            
-            // Generar Excel solo con datos de cursos de verano
-            byte[] excelBytes = generarExcelCursosVerano(datosCursosVerano, periodoAcademico, idPrograma);
-            
-            HttpHeaders headers = new HttpHeaders();
-            headers.setContentType(MediaType.parseMediaType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"));
-            String nombreArchivo = "estadisticas_cursos_verano";
-            if (periodoAcademico != null) {
-                nombreArchivo += "_" + periodoAcademico.replace("-", "_");
-            }
-            if (idPrograma != null) {
-                nombreArchivo += "_programa_" + idPrograma;
-            }
-            nombreArchivo += ".xlsx";
-            headers.setContentDispositionFormData("attachment", nombreArchivo);
-            
-            return new ResponseEntity<>(excelBytes, headers, HttpStatus.OK);
-            
-        } catch (Exception e) {
-            log.error("Error en endpoint de estadísticas", e);
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        
+        // Obtener datos de cursos de verano con filtros
+        Map<String, Object> datosCursosVerano = estadisticaCU.obtenerEstadisticasCursosVerano(periodoAcademico, idPrograma);
+        
+        // Generar Excel solo con datos de cursos de verano
+        byte[] excelBytes = generarExcelCursosVerano(datosCursosVerano, periodoAcademico, idPrograma);
+        
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.parseMediaType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"));
+        String nombreArchivo = "estadisticas_cursos_verano";
+        if (periodoAcademico != null) {
+            nombreArchivo += "_" + periodoAcademico.replace("-", "_");
         }
+        if (idPrograma != null) {
+            nombreArchivo += "_programa_" + idPrograma;
+        }
+        nombreArchivo += ".xlsx";
+        headers.setContentDispositionFormData("attachment", nombreArchivo);
+        
+        return new ResponseEntity<>(excelBytes, headers, HttpStatus.OK);
     }
 
     /**
@@ -1188,42 +1073,36 @@ public class EstadisticasRestController {
             @RequestParam(required = false) String periodoAcademico,
             @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") Date fechaInicio,
             @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") Date fechaFin) {
-        try {
-            // Normalizar período académico si viene en formato legible
-            String periodoNormalizado = normalizarPeriodoAcademico(periodoAcademico);
-            
-            // Si hay período académico, usar obtenerResumenCompleto que soporta este filtro
-            Map<String, Object> estadisticas;
-            if (periodoNormalizado != null) {
-                Map<String, Object> resumen = estadisticaCU.obtenerResumenCompleto(periodoNormalizado, idPrograma);
-                @SuppressWarnings("unchecked")
-                Map<String, Object> estadisticasGlobales = (Map<String, Object>) resumen.get("estadisticasGlobales");
-                estadisticas = estadisticasGlobales != null ? estadisticasGlobales : estadisticaCU.obtenerEstadisticasGlobales(proceso, idPrograma, fechaInicio, fechaFin);
-            } else {
-                // Si no hay período académico, usar el método original
-                estadisticas = estadisticaCU.obtenerEstadisticasGlobales(proceso, idPrograma, fechaInicio, fechaFin);
-            }
-            
-            // Obtener datos de cursos de verano si no hay filtros específicos o si se solicita
-            Map<String, Object> datosCursosVerano = null;
-            if (proceso == null || "CURSO_VERANO".equals(proceso)) {
-                // Si falla, el reporte entero falla (500) en vez de salir sin la sección de cursos de verano
-                datosCursosVerano = estadisticaCU.obtenerEstadisticasCursosVerano(periodoNormalizado, idPrograma);
-            }
-            
-            // Generar Excel con datos completos (pasar período académico para mostrarlo en el reporte)
-            byte[] excelBytes = generarExcelCompleto(estadisticas, datosCursosVerano, periodoAcademico, idPrograma);
-            
-            HttpHeaders headers = new HttpHeaders();
-            headers.setContentType(MediaType.parseMediaType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"));
-            headers.setContentDispositionFormData("attachment", "estadisticas_generales.xlsx");
-            
-            return new ResponseEntity<>(excelBytes, headers, HttpStatus.OK);
-            
-        } catch (Exception e) {
-            log.error("Error al exportar estadísticas a Excel", e);
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        // Normalizar período académico si viene en formato legible
+        String periodoNormalizado = normalizarPeriodoAcademico(periodoAcademico);
+        
+        // Si hay período académico, usar obtenerResumenCompleto que soporta este filtro
+        Map<String, Object> estadisticas;
+        if (periodoNormalizado != null) {
+            Map<String, Object> resumen = estadisticaCU.obtenerResumenCompleto(periodoNormalizado, idPrograma);
+            @SuppressWarnings("unchecked")
+            Map<String, Object> estadisticasGlobales = (Map<String, Object>) resumen.get("estadisticasGlobales");
+            estadisticas = estadisticasGlobales != null ? estadisticasGlobales : estadisticaCU.obtenerEstadisticasGlobales(proceso, idPrograma, fechaInicio, fechaFin);
+        } else {
+            // Si no hay período académico, usar el método original
+            estadisticas = estadisticaCU.obtenerEstadisticasGlobales(proceso, idPrograma, fechaInicio, fechaFin);
         }
+        
+        // Obtener datos de cursos de verano si no hay filtros específicos o si se solicita
+        Map<String, Object> datosCursosVerano = null;
+        if (proceso == null || "CURSO_VERANO".equals(proceso)) {
+            // Si falla, el reporte entero falla (500) en vez de salir sin la sección de cursos de verano
+            datosCursosVerano = estadisticaCU.obtenerEstadisticasCursosVerano(periodoNormalizado, idPrograma);
+        }
+        
+        // Generar Excel con datos completos (pasar período académico para mostrarlo en el reporte)
+        byte[] excelBytes = generarExcelCompleto(estadisticas, datosCursosVerano, periodoAcademico, idPrograma);
+        
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.parseMediaType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"));
+        headers.setContentDispositionFormData("attachment", "estadisticas_generales.xlsx");
+        
+        return new ResponseEntity<>(excelBytes, headers, HttpStatus.OK);
     }
 
     /**
@@ -1473,16 +1352,10 @@ public class EstadisticasRestController {
      */
     @GetMapping("/total-estudiantes")
     public ResponseEntity<Map<String, Object>> obtenerNumeroTotalEstudiantes() {
-        try {
-            
-            Map<String, Object> resultado = estadisticaCU.obtenerNumeroTotalEstudiantes();
-            
-            return ResponseEntity.ok(resultado);
-            
-        } catch (Exception e) {
-            log.error("Error en endpoint de estadísticas", e);
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-        }
+        
+        Map<String, Object> resultado = estadisticaCU.obtenerNumeroTotalEstudiantes();
+        
+        return ResponseEntity.ok(resultado);
     }
 
     /**
@@ -1497,14 +1370,9 @@ public class EstadisticasRestController {
     public ResponseEntity<Map<String, Object>> obtenerEstudiantesPorPrograma(
             @RequestParam(required = false) String periodoAcademico,
             @RequestParam(required = false) Integer idPrograma) {
-        try {
-            String periodoNormalizado = normalizarPeriodoAcademico(periodoAcademico);
-            Map<String, Object> resultado = estadisticaCU.obtenerEstudiantesPorPrograma(periodoNormalizado, idPrograma);
-            return ResponseEntity.ok(resultado);
-        } catch (Exception e) {
-            log.error("Error al obtener estudiantes por programa", e);
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-        }
+        String periodoNormalizado = normalizarPeriodoAcademico(periodoAcademico);
+        Map<String, Object> resultado = estadisticaCU.obtenerEstudiantesPorPrograma(periodoNormalizado, idPrograma);
+        return ResponseEntity.ok(resultado);
     }
 
     /**
@@ -1519,17 +1387,9 @@ public class EstadisticasRestController {
     public ResponseEntity<Map<String, Object>> obtenerEstadisticasDetalladasPorProceso(
             @RequestParam(required = false) String periodoAcademico,
             @RequestParam(required = false) Integer idPrograma) {
-        try {
-            String periodoNormalizado = normalizarPeriodoAcademico(periodoAcademico);
-            Map<String, Object> resultado = estadisticaCU.obtenerEstadisticasDetalladasPorProceso(periodoNormalizado, idPrograma);
-            return ResponseEntity.ok(resultado);
-        } catch (Exception e) {
-            log.error("Error al obtener estadísticas detalladas por proceso - Período: '{}', Programa: {}", periodoAcademico, idPrograma, e);
-            Map<String, Object> error = new HashMap<>();
-            error.put("error", "Error al obtener estadísticas por proceso");
-            error.put("mensaje", e.getMessage());
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(error);
-        }
+        String periodoNormalizado = normalizarPeriodoAcademico(periodoAcademico);
+        Map<String, Object> resultado = estadisticaCU.obtenerEstadisticasDetalladasPorProceso(periodoNormalizado, idPrograma);
+        return ResponseEntity.ok(resultado);
     }
 
     /**
@@ -1543,14 +1403,9 @@ public class EstadisticasRestController {
     public ResponseEntity<Map<String, Object>> obtenerResumenPorProceso(
             @RequestParam(required = false) String periodoAcademico,
             @RequestParam(required = false) Integer idPrograma) {
-        try {
-            String periodoNormalizado = normalizarPeriodoAcademico(periodoAcademico);
-            Map<String, Object> resultado = estadisticaCU.obtenerResumenPorProceso(periodoNormalizado, idPrograma);
-            return ResponseEntity.ok(resultado);
-        } catch (Exception e) {
-            log.error("Error al obtener resumen por proceso", e);
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-        }
+        String periodoNormalizado = normalizarPeriodoAcademico(periodoAcademico);
+        Map<String, Object> resultado = estadisticaCU.obtenerResumenPorProceso(periodoNormalizado, idPrograma);
+        return ResponseEntity.ok(resultado);
     }
 
     /**
@@ -1561,16 +1416,10 @@ public class EstadisticasRestController {
      */
     @GetMapping("/configuracion-estilos")
     public ResponseEntity<Map<String, Object>> obtenerConfiguracionEstilos() {
-        try {
-            
-            Map<String, Object> resultado = estadisticaCU.obtenerConfiguracionEstilos();
-            
-            return ResponseEntity.ok(resultado);
-            
-        } catch (Exception e) {
-            log.error("Error en endpoint de estadísticas", e);
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-        }
+        
+        Map<String, Object> resultado = estadisticaCU.obtenerConfiguracionEstilos();
+        
+        return ResponseEntity.ok(resultado);
     }
 
     /**
@@ -1585,14 +1434,9 @@ public class EstadisticasRestController {
     public ResponseEntity<Map<String, Object>> obtenerEstadisticasPorEstado(
             @RequestParam(required = false) String periodoAcademico,
             @RequestParam(required = false) Integer idPrograma) {
-        try {
-            String periodoNormalizado = normalizarPeriodoAcademico(periodoAcademico);
-            Map<String, Object> resultado = estadisticaCU.obtenerEstadisticasPorEstado(periodoNormalizado, idPrograma);
-            return ResponseEntity.ok(resultado);
-        } catch (Exception e) {
-            log.error("Error al obtener estadísticas por estado", e);
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-        }
+        String periodoNormalizado = normalizarPeriodoAcademico(periodoAcademico);
+        Map<String, Object> resultado = estadisticaCU.obtenerEstadisticasPorEstado(periodoNormalizado, idPrograma);
+        return ResponseEntity.ok(resultado);
     }
 
     /**
@@ -1607,17 +1451,9 @@ public class EstadisticasRestController {
     public ResponseEntity<Map<String, Object>> obtenerEstadisticasPorPeriodo(
             @RequestParam(required = false) String periodoAcademico,
             @RequestParam(required = false) Integer idPrograma) {
-        try {
-            String periodoNormalizado = normalizarPeriodoAcademico(periodoAcademico);
-            Map<String, Object> resultado = estadisticaCU.obtenerEstadisticasPorPeriodo(periodoNormalizado, idPrograma);
-            return ResponseEntity.ok(resultado);
-        } catch (Exception e) {
-            log.error("Error al obtener estadísticas por período - Período: '{}', Programa: {}", periodoAcademico, idPrograma, e);
-            Map<String, Object> error = new HashMap<>();
-            error.put("error", "Error al obtener estadísticas por período");
-            error.put("mensaje", e.getMessage());
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(error);
-        }
+        String periodoNormalizado = normalizarPeriodoAcademico(periodoAcademico);
+        Map<String, Object> resultado = estadisticaCU.obtenerEstadisticasPorPeriodo(periodoNormalizado, idPrograma);
+        return ResponseEntity.ok(resultado);
     }
 
     /**
@@ -1632,17 +1468,9 @@ public class EstadisticasRestController {
     public ResponseEntity<Map<String, Object>> obtenerEstadisticasPorPrograma(
             @RequestParam(required = false) String periodoAcademico,
             @RequestParam(required = false) Integer idPrograma) {
-        try {
-            String periodoNormalizado = normalizarPeriodoAcademico(periodoAcademico);
-            Map<String, Object> resultado = estadisticaCU.obtenerEstadisticasPorPrograma(periodoNormalizado, idPrograma);
-            return ResponseEntity.ok(resultado);
-        } catch (Exception e) {
-            log.error("Error al obtener estadísticas por programa - Período: '{}', Programa: {}", periodoAcademico, idPrograma, e);
-            Map<String, Object> error = new HashMap<>();
-            error.put("error", "Error al obtener estadísticas por programa");
-            error.put("mensaje", e.getMessage());
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(error);
-        }
+        String periodoNormalizado = normalizarPeriodoAcademico(periodoAcademico);
+        Map<String, Object> resultado = estadisticaCU.obtenerEstadisticasPorPrograma(periodoNormalizado, idPrograma);
+        return ResponseEntity.ok(resultado);
     }
 
     /**
@@ -1653,16 +1481,10 @@ public class EstadisticasRestController {
      */
     @GetMapping("/tiempo-procesamiento")
     public ResponseEntity<Map<String, Object>> obtenerTiempoPromedioProcesamiento() {
-        try {
-            
-            Map<String, Object> resultado = estadisticaCU.obtenerTiempoPromedioProcesamiento();
-            
-            return ResponseEntity.ok(resultado);
-            
-        } catch (Exception e) {
-            log.error("Error en endpoint de estadísticas", e);
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-        }
+        
+        Map<String, Object> resultado = estadisticaCU.obtenerTiempoPromedioProcesamiento();
+        
+        return ResponseEntity.ok(resultado);
     }
 
     /**
@@ -1677,14 +1499,9 @@ public class EstadisticasRestController {
     public ResponseEntity<Map<String, Object>> obtenerTendenciasYComparativas(
             @RequestParam(required = false) String periodoAcademico,
             @RequestParam(required = false) Integer idPrograma) {
-        try {
-            String periodoNormalizado = normalizarPeriodoAcademico(periodoAcademico);
-            Map<String, Object> resultado = estadisticaCU.obtenerTendenciasYComparativas(periodoNormalizado, idPrograma);
-            return ResponseEntity.ok(resultado);
-        } catch (Exception e) {
-            log.error("Error al obtener tendencias y comparativas", e);
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-        }
+        String periodoNormalizado = normalizarPeriodoAcademico(periodoAcademico);
+        Map<String, Object> resultado = estadisticaCU.obtenerTendenciasYComparativas(periodoNormalizado, idPrograma);
+        return ResponseEntity.ok(resultado);
     }
 
     /**
@@ -1699,16 +1516,10 @@ public class EstadisticasRestController {
     public ResponseEntity<Map<String, Object>> obtenerEstadisticasCursosVerano(
             @RequestParam(required = false) String periodoAcademico,
             @RequestParam(required = false) Integer idPrograma) {
-        try {
-            
-            Map<String, Object> resultado = estadisticaCU.obtenerEstadisticasCursosVerano(periodoAcademico, idPrograma);
-            
-            return ResponseEntity.ok(resultado);
-            
-        } catch (Exception e) {
-            log.error("Error en endpoint de estadísticas", e);
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-        }
+        
+        Map<String, Object> resultado = estadisticaCU.obtenerEstadisticasCursosVerano(periodoAcademico, idPrograma);
+        
+        return ResponseEntity.ok(resultado);
     }
 
     /**
@@ -1722,17 +1533,11 @@ public class EstadisticasRestController {
     public ResponseEntity<Map<String, Object>> obtenerTendenciasTemporalesCursosVerano(
             @RequestParam(required = false) String periodoAcademico,
             @RequestParam(required = false) Integer idPrograma) {
-        try {
-            
-            // Obtener solo las tendencias temporales de manera optimizada
-            Map<String, Object> tendencias = estadisticaCU.obtenerTendenciasTemporalesCursosVerano(periodoAcademico, idPrograma);
-            
-            return ResponseEntity.ok(tendencias);
-            
-        } catch (Exception e) {
-            log.error("Error en endpoint de estadísticas", e);
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-        }
+        
+        // Obtener solo las tendencias temporales de manera optimizada
+        Map<String, Object> tendencias = estadisticaCU.obtenerTendenciasTemporalesCursosVerano(periodoAcademico, idPrograma);
+        
+        return ResponseEntity.ok(tendencias);
     }
 
     /**
@@ -1740,34 +1545,28 @@ public class EstadisticasRestController {
      */
     @GetMapping("/por-proceso-funcional")
     public ResponseEntity<Map<String, Object>> obtenerEstadisticasPorProcesoFuncional() {
-        try {
-            
-            Map<String, Object> resultado = new HashMap<>();
-            
-            // Obtener datos de cada proceso individualmente
-            String[] procesos = {"Homologación", "Paz y Salvo", "Reingreso", "Cursos de Verano", "ECAES"};
-            Map<String, Object> procesosDetallados = new HashMap<>();
-            
-            for (String proceso : procesos) {
-                try {
-                    Map<String, Object> datosProceso = estadisticaCU.obtenerEstadisticasPorProceso(proceso);
-                    procesosDetallados.put(proceso, datosProceso);
-                } catch (Exception e) {
-                    // Continuar con los otros procesos
-                }
+        
+        Map<String, Object> resultado = new HashMap<>();
+        
+        // Obtener datos de cada proceso individualmente
+        String[] procesos = {"Homologación", "Paz y Salvo", "Reingreso", "Cursos de Verano", "ECAES"};
+        Map<String, Object> procesosDetallados = new HashMap<>();
+        
+        for (String proceso : procesos) {
+            try {
+                Map<String, Object> datosProceso = estadisticaCU.obtenerEstadisticasPorProceso(proceso);
+                procesosDetallados.put(proceso, datosProceso);
+            } catch (Exception e) {
+                // Continuar con los otros procesos
             }
-            
-            resultado.put("procesos", procesosDetallados);
-            resultado.put("totalProcesos", procesosDetallados.size());
-            resultado.put("fechaConsulta", new Date());
-            resultado.put("descripcion", "Estadísticas por proceso - Versión funcional");
-            
-            return ResponseEntity.ok(resultado);
-            
-        } catch (Exception e) {
-            log.error("Error en endpoint de estadísticas", e);
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
+        
+        resultado.put("procesos", procesosDetallados);
+        resultado.put("totalProcesos", procesosDetallados.size());
+        resultado.put("fechaConsulta", new Date());
+        resultado.put("descripcion", "Estadísticas por proceso - Versión funcional");
+        
+        return ResponseEntity.ok(resultado);
     }
 
     /**
@@ -2254,13 +2053,8 @@ public class EstadisticasRestController {
     @GetMapping("/por-anio/{anio}")
     public ResponseEntity<Map<String, Object>> obtenerEstadisticasPorAnio(
             @PathVariable Integer anio) {
-        try {
-            Map<String, Object> estadisticas = estadisticaCU.obtenerEstadisticasPorAnio(anio);
-            return ResponseEntity.ok(estadisticas);
-        } catch (Exception e) {
-            log.error("Error en endpoint de estadísticas", e);
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-        }
+        Map<String, Object> estadisticas = estadisticaCU.obtenerEstadisticasPorAnio(anio);
+        return ResponseEntity.ok(estadisticas);
     }
 
     /**
@@ -2274,13 +2068,8 @@ public class EstadisticasRestController {
     public ResponseEntity<Map<String, Object>> obtenerEstadisticasPorSemestre(
             @RequestParam(name = "anio", required = true) Integer anio,
             @RequestParam(name = "semestre", required = true) Integer semestre) {
-        try {
-            Map<String, Object> estadisticas = estadisticaCU.obtenerEstadisticasPorSemestre(anio, semestre);
-            return ResponseEntity.ok(estadisticas);
-        } catch (Exception e) {
-            log.error("Error en endpoint de estadísticas", e);
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-        }
+        Map<String, Object> estadisticas = estadisticaCU.obtenerEstadisticasPorSemestre(anio, semestre);
+        return ResponseEntity.ok(estadisticas);
     }
 
     /**
@@ -2294,13 +2083,8 @@ public class EstadisticasRestController {
     public ResponseEntity<List<Map<String, Object>>> obtenerHistorialEstadisticas(
             @RequestParam(name = "anioInicio", required = false) Integer anioInicio,
             @RequestParam(name = "anioFin", required = false) Integer anioFin) {
-        try {
-            List<Map<String, Object>> historial = estadisticaCU.obtenerHistorialEstadisticas(anioInicio, anioFin);
-            return ResponseEntity.ok(historial);
-        } catch (Exception e) {
-            log.error("Error en endpoint de estadísticas", e);
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-        }
+        List<Map<String, Object>> historial = estadisticaCU.obtenerHistorialEstadisticas(anioInicio, anioFin);
+        return ResponseEntity.ok(historial);
     }
 
     /**
@@ -2312,13 +2096,8 @@ public class EstadisticasRestController {
     @GetMapping("/periodo-academico/{periodoAcademico}")
     public ResponseEntity<Map<String, Object>> obtenerEstadisticasPorPeriodoAcademico(
             @PathVariable String periodoAcademico) {
-        try {
-            Map<String, Object> estadisticas = estadisticaCU.obtenerEstadisticasPorPeriodoAcademico(periodoAcademico);
-            return ResponseEntity.ok(estadisticas);
-        } catch (Exception e) {
-            log.error("Error en endpoint de estadísticas", e);
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-        }
+        Map<String, Object> estadisticas = estadisticaCU.obtenerEstadisticasPorPeriodoAcademico(periodoAcademico);
+        return ResponseEntity.ok(estadisticas);
     }
 
     /**

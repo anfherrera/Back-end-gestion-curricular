@@ -9,6 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 
 @RestController
 @RequestMapping("/api/documentos")
@@ -21,19 +22,14 @@ public class DocumentGeneratorController {
      * Generar documento usando plantilla
      */
     @PostMapping("/generar")
-    public ResponseEntity<byte[]> generarDocumento(@RequestBody DocumentRequest request) {
-        try {
-            ByteArrayOutputStream documentBytes = documentGeneratorService.generarDocumento(request);
-            String nombreArchivo = generarNombreArchivo(request);
-            
-            return ResponseEntity.ok()
-                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + nombreArchivo + "\"")
-                .contentType(MediaType.APPLICATION_OCTET_STREAM)
-                .body(documentBytes.toByteArray());
-                
-        } catch (Exception e) {
-            return ResponseEntity.internalServerError().build();
-        }
+    public ResponseEntity<byte[]> generarDocumento(@RequestBody DocumentRequest request) throws IOException {
+        ByteArrayOutputStream documentBytes = documentGeneratorService.generarDocumento(request);
+        String nombreArchivo = generarNombreArchivo(request);
+        
+        return ResponseEntity.ok()
+            .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + nombreArchivo + "\"")
+            .contentType(MediaType.APPLICATION_OCTET_STREAM)
+            .body(documentBytes.toByteArray());
     }
 
     /**
@@ -41,11 +37,7 @@ public class DocumentGeneratorController {
      */
     @GetMapping("/templates/{proceso}")
     public ResponseEntity<?> getTemplates(@PathVariable String proceso) {
-        try {
-            return ResponseEntity.ok(documentGeneratorService.getTemplates(proceso));
-        } catch (Exception e) {
-            return ResponseEntity.internalServerError().build();
-        }
+        return ResponseEntity.ok(documentGeneratorService.getTemplates(proceso));
     }
 
     private String generarNombreArchivo(DocumentRequest request) {

@@ -201,7 +201,9 @@ public class GestionarSolicitudReingresoCUAdapter  implements GestionarSolicitud
 
     @Override
     public SolicitudReingreso obtenerSolicitudReingresoPorId(Integer id) {
-        return objGestionarSolicitudReingresoGateway.buscarPorId(id).orElseThrow(() -> new RuntimeException("Solicitud de reingreso no encontrada con ID: " + id));
+        return objGestionarSolicitudReingresoGateway.buscarPorId(id).orElseThrow(() -> new co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output
+                .controladorExcepciones.excepcionesPropias.EntidadNoExisteException(
+                        "Solicitud de reingreso no encontrada con ID: " + id));
     }
     @Override
     public void cambiarEstadoSolicitudReingreso(Integer idSolicitud, String nuevoEstado) {
