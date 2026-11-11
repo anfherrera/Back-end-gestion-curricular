@@ -98,9 +98,9 @@ class GestionCursosVeranoFuncionalTest {
                     return programaRepository.save(nuevoPrograma);
                 });
 
-        RolEntity rolEstudiante = obtenerORCrearRol("ESTUDIANTE");
-        RolEntity rolCoordinador = obtenerORCrearRol("COORDINADOR");
-        RolEntity rolSecretaria = obtenerORCrearRol("SECRETARIA");
+        RolEntity rolEstudiante = obtenerORCrearRol("Estudiante");
+        RolEntity rolCoordinador = obtenerORCrearRol("Coordinador");
+        RolEntity rolSecretaria = obtenerORCrearRol("Secretario");
 
         crearUsuarioSiNoExiste(ESTUDIANTE_EMAIL, "EST-TEST-001", "Juan Pérez Estudiante", rolEstudiante, programa);
         crearUsuarioSiNoExiste(COORDINADOR_EMAIL, "COO-TEST-001", "Carlos Ramírez Coordinador", rolCoordinador, programa);
@@ -125,6 +125,7 @@ class GestionCursosVeranoFuncionalTest {
             usuario.setCorreo(correo);
             usuario.setPassword(passwordEncoder.encode(PASSWORD));
             usuario.setEstado_usuario(true);
+            usuario.setCedula("T" + Math.abs(correo.hashCode()));
             usuario.setObjRol(rol);
             usuario.setObjPrograma(programa);
             return usuarioRepository.save(usuario);
@@ -273,7 +274,7 @@ class GestionCursosVeranoFuncionalTest {
          * RESULTADO ESPERADO: Lista de preinscripciones del estudiante
          */
         
-        mockMvc.perform(get("/api/cursos-intersemestrales/solicitudes/preinscripcion/estudiante/1")
+        mockMvc.perform(get("/api/cursos-intersemestrales/solicitudes/preinscripcion/estudiante/" + usuarioRepository.buscarPorCorreo(ESTUDIANTE_EMAIL).orElseThrow().getId_usuario())
                         .header("Authorization", tokenEstudiante))
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON));
@@ -383,7 +384,7 @@ class GestionCursosVeranoFuncionalTest {
                 .andExpect(status().isCreated());
 
         // Paso 4: Consultar preinscripciones del estudiante
-        mockMvc.perform(get("/api/cursos-intersemestrales/solicitudes/preinscripcion/estudiante/7")
+        mockMvc.perform(get("/api/cursos-intersemestrales/solicitudes/preinscripcion/estudiante/" + usuarioRepository.buscarPorCorreo(ESTUDIANTE_EMAIL).orElseThrow().getId_usuario())
                         .header("Authorization", tokenEstudiante))
                 .andExpect(status().isOk());
     }

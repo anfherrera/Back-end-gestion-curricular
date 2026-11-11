@@ -96,6 +96,9 @@ class GestionPazYSalvoFuncionalTest {
         if (tokenSecretaria == null) {
             tokenSecretaria = "Bearer " + obtenerToken(SECRETARIA_EMAIL);
         }
+        // Cada prueba empieza sin solicitudes en tramite del estudiante (regla: una a la vez)
+        SoportePazYSalvo.cerrarSolicitudesEnTramite(mockMvc, objectMapper, tokenEstudiante,
+                tokenFuncionario, tokenCoordinador, tokenSecretaria);
     }
 
     private void ensureUsuariosDePrueba() {
@@ -107,10 +110,10 @@ class GestionPazYSalvoFuncionalTest {
                     return programaRepository.save(nuevoPrograma);
                 });
 
-        RolEntity rolEstudiante = obtenerORCrearRol("ESTUDIANTE");
-        RolEntity rolCoordinador = obtenerORCrearRol("COORDINADOR");
-        RolEntity rolFuncionario = obtenerORCrearRol("FUNCIONARIO");
-        RolEntity rolSecretaria = obtenerORCrearRol("SECRETARIA");
+        RolEntity rolEstudiante = obtenerORCrearRol("Estudiante");
+        RolEntity rolCoordinador = obtenerORCrearRol("Coordinador");
+        RolEntity rolFuncionario = obtenerORCrearRol("Funcionario");
+        RolEntity rolSecretaria = obtenerORCrearRol("Secretario");
 
         crearUsuarioSiNoExiste(ESTUDIANTE_EMAIL, "EST-TEST-001", "Juan Pérez Estudiante", rolEstudiante, programa);
         crearUsuarioSiNoExiste(COORDINADOR_EMAIL, "COO-TEST-001", "Carlos Ramírez Coordinador", rolCoordinador, programa);
@@ -136,6 +139,7 @@ class GestionPazYSalvoFuncionalTest {
             usuario.setCorreo(correo);
             usuario.setPassword(passwordEncoder.encode(PASSWORD));
             usuario.setEstado_usuario(true);
+            usuario.setCedula("T" + Math.abs(correo.hashCode()));
             usuario.setObjRol(rol);
             usuario.setObjPrograma(programa);
             return usuarioRepository.save(usuario);
@@ -220,18 +224,36 @@ class GestionPazYSalvoFuncionalTest {
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON));
 
-        // Paso 2: Coordinador aprueba una solicitud (usando ID 37 que existe en BD)
-        String jsonAprobacion = """
-            {
-                "nuevoEstado": "APROBADO"
-            }
-            """;
-        
-        mockMvc.perform(put("/api/solicitudes-pazysalvo/cambiarEstadoSolicitud/37")
-                        .header("Authorization", tokenCoordinador)
+        // Paso 2: El coordinador aprueba una solicitud que el funcionario ya aprobó
+        // (el flujo es Funcionario -> Coordinador -> Secretaria; no se pueden saltar pasos)
+        int id = SoportePazYSalvo.crearSolicitud(mockMvc, objectMapper, tokenEstudiante);
+        org.junit.jupiter.api.Assertions.assertEquals(200,
+                SoportePazYSalvo.cambiarEstado(mockMvc, tokenFuncionario, id, "APROBADA_FUNCIONARIO"));
+        org.junit.jupiter.api.Assertions.assertEquals(200,
+                SoportePazYSalvo.cambiarEstado(mockMvc, tokenCoordinador, id, "APROBADA_COORDINADOR"));
+    }
+
+    @Test
+    @DisplayName("Funcional 2b: El coordinador no puede aprobar antes que el funcionario")
+    void testCoordinadorNoPuedeSaltarseAlFuncionario() throws Exception {
+        int id = SoportePazYSalvo.crearSolicitud(mockMvc, objectMapper, tokenEstudiante);
+        // Desde ENVIADA el paso le corresponde al funcionario
+        org.junit.jupiter.api.Assertions.assertEquals(403,
+                SoportePazYSalvo.cambiarEstado(mockMvc, tokenCoordinador, id, "APROBADA_FUNCIONARIO"));
+        // Saltar directamente a APROBADA no es un paso válido
+        org.junit.jupiter.api.Assertions.assertEquals(400,
+                SoportePazYSalvo.cambiarEstado(mockMvc, tokenFuncionario, id, "APROBADA"));
+    }
+
+    @Test
+    @DisplayName("Funcional 2c: Un estudiante no puede tener dos solicitudes en trámite")
+    void testNoPermiteDosSolicitudesEnTramite() throws Exception {
+        SoportePazYSalvo.crearSolicitud(mockMvc, objectMapper, tokenEstudiante);
+        mockMvc.perform(post("/api/solicitudes-pazysalvo/crearSolicitud-PazYSalvo")
+                        .header("Authorization", tokenEstudiante)
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(jsonAprobacion))
-                .andExpect(status().isOk());
+                        .content("{\"fecha_solicitud\": \"2025-01-15\"}"))
+                .andExpect(status().isConflict());
     }
 
     @Test
@@ -327,11 +349,18 @@ class GestionPazYSalvoFuncionalTest {
          * RESULTADO ESPERADO: Lista filtrada de solicitudes del estudiante
          */
         
-        // Estudiante con ID 1 consulta sus solicitudes
-        mockMvc.perform(get("/api/solicitudes-pazysalvo/listarSolicitud-PazYSalvo/1")
+        // El estudiante autenticado consulta sus propias solicitudes
+        int idEstudiante = SoportePazYSalvo.idUsuario(usuarioRepository, ESTUDIANTE_EMAIL);
+        mockMvc.perform(get("/api/solicitudes-pazysalvo/listarSolicitud-PazYSalvo/" + idEstudiante)
                         .header("Authorization", tokenEstudiante))
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON));
+
+        // Y no puede consultar las de otro usuario
+        int idCoordinador = SoportePazYSalvo.idUsuario(usuarioRepository, COORDINADOR_EMAIL);
+        mockMvc.perform(get("/api/solicitudes-pazysalvo/listarSolicitud-PazYSalvo/" + idCoordinador)
+                        .header("Authorization", tokenEstudiante))
+                .andExpect(status().isForbidden());
     }
 
     @Test
@@ -378,11 +407,12 @@ class GestionPazYSalvoFuncionalTest {
          * RESULTADO ESPERADO: Rechazo con mensaje de error descriptivo
          */
         
+        // El usuario sale del token JWT, así que el dato inválido es el período académico
         String jsonInvalido = """
             {
-                "idUsuario": null,
                 "idTipoProceso": 1,
-                "fecha_solicitud": "2025-01-15"
+                "fecha_solicitud": "2025-01-15",
+                "periodo_academico": "2025-9"
             }
             """;
 
@@ -435,40 +465,23 @@ class GestionPazYSalvoFuncionalTest {
          */
         
         // Paso 1: Crear solicitud
-        String jsonSolicitud = """
-            {
-                "idUsuario": 1,
-                "idTipoProceso": 1,
-                "fecha_solicitud": "2025-01-15"
-            }
-            """;
-        
-        mockMvc.perform(post("/api/solicitudes-pazysalvo/crearSolicitud-PazYSalvo")
-                        .header("Authorization", tokenEstudiante)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(jsonSolicitud))
-                .andExpect(status().isCreated());
+        int id = SoportePazYSalvo.crearSolicitud(mockMvc, objectMapper, tokenEstudiante);
 
         // Paso 2: Consultar solicitudes (simulando diferentes roles)
         mockMvc.perform(get("/api/solicitudes-pazysalvo/listarSolicitud-PazYSalvo")
                         .header("Authorization", tokenCoordinador))
                 .andExpect(status().isOk());
 
-        // Paso 3: Aprobar solicitud (usando ID 37 que existe en BD)
-        String jsonAprobacion = """
-            {
-                "nuevoEstado": "APROBADO"
-            }
-            """;
-        
-        mockMvc.perform(put("/api/solicitudes-pazysalvo/cambiarEstadoSolicitud/37")
-                        .header("Authorization", tokenCoordinador)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(jsonAprobacion))
-                .andExpect(status().isOk());
+        // Paso 3: Aprobación completa: Funcionario -> Coordinador -> Secretaria
+        org.junit.jupiter.api.Assertions.assertEquals(200,
+                SoportePazYSalvo.cambiarEstado(mockMvc, tokenFuncionario, id, "APROBADA_FUNCIONARIO"));
+        org.junit.jupiter.api.Assertions.assertEquals(200,
+                SoportePazYSalvo.cambiarEstado(mockMvc, tokenCoordinador, id, "APROBADA_COORDINADOR"));
+        org.junit.jupiter.api.Assertions.assertEquals(200,
+                SoportePazYSalvo.cambiarEstado(mockMvc, tokenSecretaria, id, "APROBADA"));
 
-        // Paso 4: Generar documento final (usando ID 37 que existe en BD)
-        mockMvc.perform(get("/api/solicitudes-pazysalvo/generarDocumentoPazYSalvo/37/pdf")
+        // Paso 4: Generar documento final de esa solicitud
+        mockMvc.perform(get("/api/solicitudes-pazysalvo/generarDocumentoPazYSalvo/" + id + "/pdf")
                         .header("Authorization", tokenSecretaria))
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_PDF));

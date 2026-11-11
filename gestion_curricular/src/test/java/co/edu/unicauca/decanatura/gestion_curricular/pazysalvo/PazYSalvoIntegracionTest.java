@@ -100,10 +100,10 @@ class PazYSalvoIntegracionTest {
                     return programaRepository.save(nuevoPrograma);
                 });
 
-        RolEntity rolEstudiante = obtenerORCrearRol("ESTUDIANTE");
-        RolEntity rolCoordinador = obtenerORCrearRol("COORDINADOR");
-        RolEntity rolFuncionario = obtenerORCrearRol("FUNCIONARIO");
-        RolEntity rolSecretaria = obtenerORCrearRol("SECRETARIA");
+        RolEntity rolEstudiante = obtenerORCrearRol("Estudiante");
+        RolEntity rolCoordinador = obtenerORCrearRol("Coordinador");
+        RolEntity rolFuncionario = obtenerORCrearRol("Funcionario");
+        RolEntity rolSecretaria = obtenerORCrearRol("Secretario");
 
         crearUsuarioSiNoExiste(ESTUDIANTE_EMAIL, "EST-TEST-001", "Juan Pérez Estudiante", rolEstudiante, programa);
         crearUsuarioSiNoExiste(COORDINADOR_EMAIL, "COO-TEST-001", "Carlos Ramírez Coordinador", rolCoordinador, programa);
@@ -129,6 +129,7 @@ class PazYSalvoIntegracionTest {
             usuario.setCorreo(correo);
             usuario.setPassword(passwordEncoder.encode(PASSWORD));
             usuario.setEstado_usuario(true);
+            usuario.setCedula("T" + Math.abs(correo.hashCode()));
             usuario.setObjRol(rol);
             usuario.setObjPrograma(programa);
             return usuarioRepository.save(usuario);

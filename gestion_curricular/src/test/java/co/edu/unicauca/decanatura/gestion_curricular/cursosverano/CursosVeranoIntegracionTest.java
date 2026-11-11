@@ -90,17 +90,17 @@ class CursosVeranoIntegracionTest {
                     return programaRepository.save(nuevoPrograma);
                 });
 
-        RolEntity rolEstudiante = rolRepository.buscarPorNombre("ESTUDIANTE")
+        RolEntity rolEstudiante = rolRepository.buscarPorNombre("Estudiante")
                 .orElseGet(() -> {
                     RolEntity rol = new RolEntity();
-                    rol.setNombre("ESTUDIANTE");
+                    rol.setNombre("Estudiante");
                     return rolRepository.save(rol);
                 });
 
-        RolEntity rolCoordinador = rolRepository.buscarPorNombre("COORDINADOR")
+        RolEntity rolCoordinador = rolRepository.buscarPorNombre("Coordinador")
                 .orElseGet(() -> {
                     RolEntity rol = new RolEntity();
-                    rol.setNombre("COORDINADOR");
+                    rol.setNombre("Coordinador");
                     return rolRepository.save(rol);
                 });
 
@@ -117,6 +117,7 @@ class CursosVeranoIntegracionTest {
             nuevoUsuario.setCorreo(correo);
             nuevoUsuario.setPassword(passwordEncoder.encode(PASSWORD));
             nuevoUsuario.setEstado_usuario(true);
+            nuevoUsuario.setCedula("T" + Math.abs(correo.hashCode()));
             nuevoUsuario.setObjRol(rol);
             nuevoUsuario.setObjPrograma(programa);
             return usuarioRepository.save(nuevoUsuario);

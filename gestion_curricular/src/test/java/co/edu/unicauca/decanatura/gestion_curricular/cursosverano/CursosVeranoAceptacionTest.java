@@ -93,17 +93,17 @@ class CursosVeranoAceptacionTest {
                     return programaRepository.save(nuevoPrograma);
                 });
 
-        RolEntity rolEstudiante = rolRepository.buscarPorNombre("ESTUDIANTE")
+        RolEntity rolEstudiante = rolRepository.buscarPorNombre("Estudiante")
                 .orElseGet(() -> {
                     RolEntity rol = new RolEntity();
-                    rol.setNombre("ESTUDIANTE");
+                    rol.setNombre("Estudiante");
                     return rolRepository.save(rol);
                 });
 
-        RolEntity rolCoordinador = rolRepository.buscarPorNombre("COORDINADOR")
+        RolEntity rolCoordinador = rolRepository.buscarPorNombre("Coordinador")
                 .orElseGet(() -> {
                     RolEntity rol = new RolEntity();
-                    rol.setNombre("COORDINADOR");
+                    rol.setNombre("Coordinador");
                     return rolRepository.save(rol);
                 });
 
@@ -120,6 +120,7 @@ class CursosVeranoAceptacionTest {
             nuevoUsuario.setCorreo(correo);
             nuevoUsuario.setPassword(passwordEncoder.encode(PASSWORD));
             nuevoUsuario.setEstado_usuario(true);
+            nuevoUsuario.setCedula("T" + Math.abs(correo.hashCode()));
             nuevoUsuario.setObjRol(rol);
             nuevoUsuario.setObjPrograma(programa);
             return usuarioRepository.save(nuevoUsuario);
@@ -314,7 +315,7 @@ class CursosVeranoAceptacionTest {
          *       AND debe mostrar estado actual de cada preinscripción
          */
         
-        mockMvc.perform(get("/api/cursos-intersemestrales/solicitudes/preinscripcion/estudiante/1")
+        mockMvc.perform(get("/api/cursos-intersemestrales/solicitudes/preinscripcion/estudiante/" + usuarioRepository.buscarPorCorreo(ESTUDIANTE_EMAIL).orElseThrow().getId_usuario())
                         .header("Authorization", tokenEstudiante))
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON));
@@ -409,7 +410,7 @@ class CursosVeranoAceptacionTest {
                 .andExpect(status().isCreated());
 
         // Paso 4: Consultar confirmación
-        mockMvc.perform(get("/api/cursos-intersemestrales/solicitudes/preinscripcion/estudiante/1")
+        mockMvc.perform(get("/api/cursos-intersemestrales/solicitudes/preinscripcion/estudiante/" + usuarioRepository.buscarPorCorreo(ESTUDIANTE_EMAIL).orElseThrow().getId_usuario())
                         .header("Authorization", tokenEstudiante))
                 .andExpect(status().isOk());
     }

@@ -98,6 +98,9 @@ class PazYSalvoAceptacionTest {
         if (tokenSecretaria == null) {
             tokenSecretaria = "Bearer " + obtenerToken(SECRETARIA_EMAIL);
         }
+        // Cada prueba empieza sin solicitudes en tramite del estudiante (regla: una a la vez)
+        SoportePazYSalvo.cerrarSolicitudesEnTramite(mockMvc, objectMapper, tokenEstudiante,
+                tokenFuncionario, tokenCoordinador, tokenSecretaria);
     }
 
     private void ensureUsuariosDePrueba() {
@@ -109,10 +112,10 @@ class PazYSalvoAceptacionTest {
                     return programaRepository.save(nuevoPrograma);
                 });
 
-        RolEntity rolEstudiante = obtenerORCrearRol("ESTUDIANTE");
-        RolEntity rolCoordinador = obtenerORCrearRol("COORDINADOR");
-        RolEntity rolFuncionario = obtenerORCrearRol("FUNCIONARIO");
-        RolEntity rolSecretaria = obtenerORCrearRol("SECRETARIA");
+        RolEntity rolEstudiante = obtenerORCrearRol("Estudiante");
+        RolEntity rolCoordinador = obtenerORCrearRol("Coordinador");
+        RolEntity rolFuncionario = obtenerORCrearRol("Funcionario");
+        RolEntity rolSecretaria = obtenerORCrearRol("Secretario");
 
         crearUsuarioSiNoExiste(ESTUDIANTE_EMAIL, "EST-TEST-001", "Juan Pérez Estudiante", rolEstudiante, programa);
         crearUsuarioSiNoExiste(COORDINADOR_EMAIL, "COO-TEST-001", "Carlos Ramírez Coordinador", rolCoordinador, programa);
@@ -138,6 +141,7 @@ class PazYSalvoAceptacionTest {
             usuario.setCorreo(correo);
             usuario.setPassword(passwordEncoder.encode(PASSWORD));
             usuario.setEstado_usuario(true);
+            usuario.setCedula("T" + Math.abs(correo.hashCode()));
             usuario.setObjRol(rol);
             usuario.setObjPrograma(programa);
             return usuarioRepository.save(usuario);
@@ -214,17 +218,13 @@ class PazYSalvoAceptacionTest {
          *       AND debe registrar fecha y hora de la aprobación
          */
         
-        String jsonAprobacion = """
-            {
-                "nuevoEstado": "APROBADO"
-            }
-            """;
+        // La solicitud llega al coordinador después de que el funcionario la aprueba
+        int id = SoportePazYSalvo.crearSolicitud(mockMvc, objectMapper, tokenEstudiante);
+        org.junit.jupiter.api.Assertions.assertEquals(200,
+                SoportePazYSalvo.cambiarEstado(mockMvc, tokenFuncionario, id, "APROBADA_FUNCIONARIO"));
 
-        mockMvc.perform(put("/api/solicitudes-pazysalvo/cambiarEstadoSolicitud/37")
-                        .header("Authorization", tokenCoordinador)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(jsonAprobacion))
-                .andExpect(status().isOk());
+        org.junit.jupiter.api.Assertions.assertEquals(200,
+                SoportePazYSalvo.cambiarEstado(mockMvc, tokenCoordinador, id, "APROBADA_COORDINADOR"));
     }
 
     // ==================== CA-GEPA4-03: SISTEMA GENERA DOCUMENTO OFICIAL ====================
@@ -292,11 +292,18 @@ class PazYSalvoAceptacionTest {
          *       AND debe retornar una lista (puede estar vacía si no tiene solicitudes)
          */
         
-        // Usuario 12 tiene solicitud de Paz y Salvo (ID 37 en BD)
-        mockMvc.perform(get("/api/solicitudes-pazysalvo/listarSolicitud-PazYSalvo/12")
+        // El estudiante autenticado ve sus propias solicitudes
+        int idEstudiante = SoportePazYSalvo.idUsuario(usuarioRepository, ESTUDIANTE_EMAIL);
+        mockMvc.perform(get("/api/solicitudes-pazysalvo/listarSolicitud-PazYSalvo/" + idEstudiante)
                         .header("Authorization", tokenEstudiante))
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON));
+
+        // AND no puede ver las de otro usuario
+        int idCoordinador = SoportePazYSalvo.idUsuario(usuarioRepository, COORDINADOR_EMAIL);
+        mockMvc.perform(get("/api/solicitudes-pazysalvo/listarSolicitud-PazYSalvo/" + idCoordinador)
+                        .header("Authorization", tokenEstudiante))
+                .andExpect(status().isForbidden());
     }
 
     // ==================== CA-GEPA4-05: SISTEMA VALIDA DATOS OBLIGATORIOS ====================
@@ -316,11 +323,12 @@ class PazYSalvoAceptacionTest {
          *       AND NO debe crear ninguna solicitud en la base de datos
          */
         
+        // El usuario sale del token JWT, así que el dato inválido es el período académico
         String jsonInvalido = """
             {
-                "idUsuario": null,
                 "idTipoProceso": 1,
-                "fecha_solicitud": "2025-01-15"
+                "fecha_solicitud": "2025-01-15",
+                "periodo_academico": "2025-9"
             }
             """;
 
