@@ -33,24 +33,6 @@ public class GestionarMateriasCUAdapter implements GestionarMateriasCUIntPort {
     }
 
     @Override
-    public List<Materia> buscarPorNombreParcial(String nombreParcial) {
-        if (nombreParcial == null || nombreParcial.isBlank()) {
-            formateadorResultados.retornarRespuestaErrorEntidadExiste("Debe proporcionar un nombre parcial.");
-        }
-
-        return materiasGateway.buscarPorNombreParcial(nombreParcial);
-    }
-
-    @Override
-    public List<Materia> buscarPorCreditos(Integer creditos) {
-        if (creditos == null || creditos <= 0) {
-            formateadorResultados.retornarRespuestaErrorEntidadExiste("Los créditos deben ser mayores a cero.");
-        }
-
-        return materiasGateway.buscarPorCreditos(creditos);
-    }
-
-    @Override
     public List<Materia> listarMaterias() {
         return materiasGateway.listarMaterias();
     }

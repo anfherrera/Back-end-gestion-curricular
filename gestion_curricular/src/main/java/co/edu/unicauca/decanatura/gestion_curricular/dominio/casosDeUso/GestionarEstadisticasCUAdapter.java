@@ -241,17 +241,6 @@ public class GestionarEstadisticasCUAdapter implements GestionarEstadisticasCUIn
     }
 
     @Override
-    public Map<String, Object> obtenerEstadisticasPorSemestre(Integer anio, Integer semestre) {
-        if (anio == null || anio < 2020 || anio > 2030) {
-            formateadorResultados.retornarRespuestaErrorEntidadExiste("Año inválido. Debe estar entre 2020 y 2030.");
-        }
-        if (semestre == null || (semestre != 1 && semestre != 2)) {
-            formateadorResultados.retornarRespuestaErrorEntidadExiste("Semestre inválido. Debe ser 1 o 2.");
-        }
-        return estadisticasGateway.obtenerEstadisticasPorSemestre(anio, semestre);
-    }
-
-    @Override
     public List<Map<String, Object>> obtenerHistorialEstadisticas(Integer anioInicio, Integer anioFin) {
         // Validar años si se proporcionan
         if (anioInicio != null && (anioInicio < 2020 || anioInicio > 2030)) {

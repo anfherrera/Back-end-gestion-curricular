@@ -51,15 +51,6 @@ public class GestionarSalonesCUAdapter implements GestionarSalonesCUIntPort {
         return salonesGateway.listarSalonesActivos();
     }
 
-    @Override
-    public List<Salon> buscarPorEdificio(String edificio) {
-        if (edificio == null || edificio.isBlank()) {
-            formateadorResultados.retornarRespuestaErrorEntidadExiste("Debe proporcionar un nombre de edificio válido.");
-        }
-
-        return salonesGateway.buscarPorEdificio(edificio);
-    }
-
 }
 
 

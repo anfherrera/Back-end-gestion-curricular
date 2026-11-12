@@ -21,9 +21,6 @@ public interface GestionarUsuarioCUIntPort {
 
     Usuario buscarUsuarioPorCorreo(String correo);
 
-    List<Usuario> buscarUsuariosPorRol(Integer idRol);
-
     List<Usuario> listarUsuarios();
 
-    Usuario buscarUsuarioPorSolicitud(Integer idSolicitud);
 }

@@ -213,29 +213,8 @@ public Usuario crearUsuario(Usuario usuario) {
     }
 
     @Override
-    public List<Usuario> buscarUsuariosPorRol(Integer idRol) {
-        if (idRol == null) {
-            this.objFormateadorResultados.retornarRespuestaErrorEntidadExiste("Debe proporcionar un ID de rol válido.");
-        }
-
-        return this.objGestionarUsuarioGateway.buscarUsuariosPorRol(idRol);
-    }
-
-    @Override
     public List<Usuario> listarUsuarios() {
         return this.objGestionarUsuarioGateway.listarUsuarios();
     }
 
-    @Override
-    public Usuario buscarUsuarioPorSolicitud(Integer idSolicitud) {
-        if (idSolicitud == null) {
-            this.objFormateadorResultados.retornarRespuestaErrorEntidadExiste("Debe proporcionar un ID de solicitud válido.");
-        }
-        Usuario usuario = this.objGestionarUsuarioGateway.buscarUsuarioPorSolicitud(idSolicitud);
-        if (usuario == null) {
-            this.objFormateadorResultados.retornarRespuestaErrorEntidadExiste("No se encontró un usuario con esa solicitud.");
-        }
-
-        return usuario;
-    }
 }

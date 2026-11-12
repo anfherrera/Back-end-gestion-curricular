@@ -12,9 +12,6 @@ import java.util.Optional;
 
 public interface DocenteRepositoryInt extends JpaRepository<DocenteEntity, Integer> {
 
-    @Query(value = "SELECT COUNT(*) FROM docentes WHERE codigo_docente = ?1", nativeQuery = true)
-    Integer contarPorCodigo(String codigo);
-
     @Query("SELECT d FROM DocenteEntity d WHERE LOWER(d.nombre_docente) LIKE LOWER(CONCAT('%', :nombreParcial, '%')) ORDER BY d.nombre_docente ASC")
     List<DocenteEntity> buscarPorNombreParcial(@Param("nombreParcial") String nombreParcial);
 

@@ -93,42 +93,6 @@ public class GestionarSolicitudPazYSalvoGatewayImplAdapter implements GestionarS
     }
 
     @Override
-    public List<SolicitudPazYSalvo> listarSolicitudesAprobadasToSecretaria() {
-        // Buscar solicitudes que hayan tenido estado APROBADA en su historial (no solo como último estado)
-        // Esto permite ver el historial incluso después de que cambien de estado
-        return solicitudRepository.findByEstadoEnHistorialAndPeriodoAcademico("APROBADA", null).stream()
-                .map(entity -> mapper.map(entity, SolicitudPazYSalvo.class))
-                .toList();
-    }
-
-    @Override
-    public List<SolicitudPazYSalvo> listarSolicitudesAprobadasToFuncionario() {
-        // Solicitudes que el funcionario ya procesó (aprobó) - buscar en historial completo, no solo último estado
-        return solicitudRepository.findByEstadoEnHistorialAndPeriodoAcademico("APROBADA_FUNCIONARIO", null).stream()
-                .map(entity -> mapper.map(entity, SolicitudPazYSalvo.class))
-                .toList();
-    }
-
-    @Override
-    public List<SolicitudPazYSalvo> listarSolicitudesAprobadasToCoordinador() {
-        // Solicitudes que el coordinador ya procesó (aprobó) - buscar en historial completo, no solo último estado
-        return solicitudRepository.findByEstadoEnHistorialAndPeriodoAcademico("APROBADA_COORDINADOR", null).stream()
-                .map(entity -> mapper.map(entity, SolicitudPazYSalvo.class))
-                .toList();
-    }
-
-    @Override
-    public List<SolicitudPazYSalvo> listarSolicitudesAprobadasToCoordinadorPorPrograma(Integer idPrograma) {
-        if (idPrograma == null) {
-            return listarSolicitudesAprobadasToCoordinador();
-        }
-        // Buscar en historial completo, no solo último estado
-        return solicitudRepository.findByEstadoEnHistorialAndProgramaAndPeriodoAcademico("APROBADA_COORDINADOR", idPrograma, null).stream()
-                .map(entity -> mapper.map(entity, SolicitudPazYSalvo.class))
-                .toList();
-    }
-
-    @Override
     public Optional<SolicitudPazYSalvo> buscarPorId(Integer idSolicitud) {
         // Usar el método con JOIN FETCH para cargar todas las relaciones, incluyendo el usuario completo con su cédula
         return solicitudRepository.findByIdWithRelations(idSolicitud)
@@ -161,21 +125,6 @@ public class GestionarSolicitudPazYSalvoGatewayImplAdapter implements GestionarS
     }
 
     @Override
-    public List<SolicitudPazYSalvo> listarSolicitudesToFuncionarioPorPeriodo(String periodoAcademico) {
-        return solicitudRepository.findByUltimoEstadoAndPeriodoAcademico("Enviada", periodoAcademico).stream()
-                .map(entity -> mapper.map(entity, SolicitudPazYSalvo.class))
-                .toList();
-    }
-
-    @Override
-    public List<SolicitudPazYSalvo> listarSolicitudesAprobadasToFuncionarioPorPeriodo(String periodoAcademico) {
-        // Buscar en historial completo, no solo último estado
-        return solicitudRepository.findByEstadoEnHistorialAndPeriodoAcademico("APROBADA_FUNCIONARIO", periodoAcademico).stream()
-                .map(entity -> mapper.map(entity, SolicitudPazYSalvo.class))
-                .toList();
-    }
-
-    @Override
     public List<SolicitudPazYSalvo> listarSolicitudesToCoordinadorPorProgramaYPeriodo(Integer idPrograma, String periodoAcademico) {
         if (idPrograma == null) {
             return listarSolicitudesToCoordinador();
@@ -186,27 +135,8 @@ public class GestionarSolicitudPazYSalvoGatewayImplAdapter implements GestionarS
     }
 
     @Override
-    public List<SolicitudPazYSalvo> listarSolicitudesAprobadasToCoordinadorPorProgramaYPeriodo(Integer idPrograma, String periodoAcademico) {
-        if (idPrograma == null) {
-            return listarSolicitudesAprobadasToCoordinador();
-        }
-        // Buscar en historial completo, no solo último estado
-        return solicitudRepository.findByEstadoEnHistorialAndProgramaAndPeriodoAcademico("APROBADA_COORDINADOR", idPrograma, periodoAcademico).stream()
-                .map(entity -> mapper.map(entity, SolicitudPazYSalvo.class))
-                .toList();
-    }
-
-    @Override
     public List<SolicitudPazYSalvo> listarSolicitudesToSecretariaPorPeriodo(String periodoAcademico) {
         return solicitudRepository.findByUltimoEstadoAndPeriodoAcademico("APROBADA_COORDINADOR", periodoAcademico).stream()
-                .map(entity -> mapper.map(entity, SolicitudPazYSalvo.class))
-                .toList();
-    }
-
-    @Override
-    public List<SolicitudPazYSalvo> listarSolicitudesAprobadasToSecretariaPorPeriodo(String periodoAcademico) {
-        // Buscar en historial completo, no solo último estado
-        return solicitudRepository.findByEstadoEnHistorialAndPeriodoAcademico("APROBADA", periodoAcademico).stream()
                 .map(entity -> mapper.map(entity, SolicitudPazYSalvo.class))
                 .toList();
     }

@@ -116,14 +116,6 @@ public class GestionarNotificacionCUAdapter implements GestionarNotificacionCUIn
     }
 
     @Override
-    public void eliminarAntiguas(Date fechaLimite) {
-        if (fechaLimite == null) {
-            throw new IllegalArgumentException("La fecha límite no puede ser nula.");
-        }
-        objGestionarNotificacionGateway.eliminarAntiguas(fechaLimite);
-    }
-
-    @Override
     public void notificarCreacionSolicitud(Solicitud solicitud, String tipoSolicitud) {
         try {
             if (solicitud == null) {

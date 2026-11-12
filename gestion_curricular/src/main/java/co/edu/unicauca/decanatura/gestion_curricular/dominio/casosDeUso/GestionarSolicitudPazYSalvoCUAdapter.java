@@ -131,53 +131,13 @@ public class GestionarSolicitudPazYSalvoCUAdapter implements GestionarSolicitudP
     }
 
     @Override
-    public List<SolicitudPazYSalvo> listarSolicitudesAprobadasToSecretaria() {
-        return solicitudGateway.listarSolicitudesAprobadasToSecretaria();
-    }
-
-    @Override
-    public List<SolicitudPazYSalvo> listarSolicitudesAprobadasToFuncionario() {
-        return solicitudGateway.listarSolicitudesAprobadasToFuncionario();
-    }
-
-    @Override
-    public List<SolicitudPazYSalvo> listarSolicitudesAprobadasToCoordinador() {
-        return solicitudGateway.listarSolicitudesAprobadasToCoordinador();
-    }
-
-    @Override
-    public List<SolicitudPazYSalvo> listarSolicitudesAprobadasToCoordinadorPorPrograma(Integer idPrograma) {
-        return solicitudGateway.listarSolicitudesAprobadasToCoordinadorPorPrograma(idPrograma);
-    }
-
-    @Override
-    public List<SolicitudPazYSalvo> listarSolicitudesToFuncionarioPorPeriodo(String periodoAcademico) {
-        return solicitudGateway.listarSolicitudesToFuncionarioPorPeriodo(periodoAcademico);
-    }
-
-    @Override
-    public List<SolicitudPazYSalvo> listarSolicitudesAprobadasToFuncionarioPorPeriodo(String periodoAcademico) {
-        return solicitudGateway.listarSolicitudesAprobadasToFuncionarioPorPeriodo(periodoAcademico);
-    }
-
-    @Override
     public List<SolicitudPazYSalvo> listarSolicitudesToCoordinadorPorProgramaYPeriodo(Integer idPrograma, String periodoAcademico) {
         return solicitudGateway.listarSolicitudesToCoordinadorPorProgramaYPeriodo(idPrograma, periodoAcademico);
     }
 
     @Override
-    public List<SolicitudPazYSalvo> listarSolicitudesAprobadasToCoordinadorPorProgramaYPeriodo(Integer idPrograma, String periodoAcademico) {
-        return solicitudGateway.listarSolicitudesAprobadasToCoordinadorPorProgramaYPeriodo(idPrograma, periodoAcademico);
-    }
-
-    @Override
     public List<SolicitudPazYSalvo> listarSolicitudesToSecretariaPorPeriodo(String periodoAcademico) {
         return solicitudGateway.listarSolicitudesToSecretariaPorPeriodo(periodoAcademico);
-    }
-
-    @Override
-    public List<SolicitudPazYSalvo> listarSolicitudesAprobadasToSecretariaPorPeriodo(String periodoAcademico) {
-        return solicitudGateway.listarSolicitudesAprobadasToSecretariaPorPeriodo(periodoAcademico);
     }
 
     @Override

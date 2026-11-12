@@ -918,18 +918,5 @@ public class EstadisticasRestController {
         return ResponseEntity.ok(historial);
     }
 
-    /**
-     * Obtiene estadísticas por período académico usando formato YYYY-P.
-     * 
-     * @param periodoAcademico Período en formato "YYYY-P" (ej: "2024-2")
-     * @return ResponseEntity con estadísticas del período
-     */
-    @GetMapping("/periodo-academico/{periodoAcademico}")
-    public ResponseEntity<Map<String, Object>> obtenerEstadisticasPorPeriodoAcademico(
-            @PathVariable String periodoAcademico) {
-        Map<String, Object> estadisticas = estadisticaCU.obtenerEstadisticasPorPeriodoAcademico(periodoAcademico);
-        return ResponseEntity.ok(estadisticas);
-    }
-
 }
 

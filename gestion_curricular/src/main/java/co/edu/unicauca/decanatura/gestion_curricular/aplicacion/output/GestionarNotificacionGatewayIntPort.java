@@ -26,7 +26,6 @@ public interface GestionarNotificacionGatewayIntPort {
 
     void marcarComoLeida(Integer idNotificacion);
 
-    void eliminarAntiguas(java.util.Date fechaLimite);
 }
 
 

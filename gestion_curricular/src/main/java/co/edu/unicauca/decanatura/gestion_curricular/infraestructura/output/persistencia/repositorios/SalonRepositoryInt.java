@@ -25,14 +25,6 @@ public interface SalonRepositoryInt extends JpaRepository<SalonEntity, Integer> 
     @Query("SELECT s FROM SalonEntity s WHERE s.activo = true OR s.activo IS NULL ORDER BY s.numero_salon ASC")
     List<SalonEntity> listarSalonesActivos();
 
-    /**
-     * Listar salones por edificio
-     * @param edificio Nombre del edificio
-     * @return Lista de salones del edificio
-     */
-    @Query("SELECT s FROM SalonEntity s WHERE s.edificio = :edificio ORDER BY s.numero_salon ASC")
-    List<SalonEntity> buscarPorEdificio(@Param("edificio") String edificio);
-
 }
 
 

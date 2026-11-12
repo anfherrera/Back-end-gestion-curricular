@@ -12,9 +12,6 @@ import java.util.Optional;
 
 public interface ProgramaRepositoryInt extends JpaRepository<ProgramaEntity, Integer> {
 
-    @Query(value = "SELECT COUNT(*) FROM programas WHERE codigo = ?1", nativeQuery = true)
-    Integer contarPorCodigo(String codigo);
-
     @Query("SELECT p FROM ProgramaEntity p WHERE LOWER(p.nombre_programa) LIKE LOWER(CONCAT('%', :nombreParcial, '%')) ORDER BY p.nombre_programa ASC")
     List<ProgramaEntity> buscarPorNombreParcial(@Param("nombreParcial") String nombreParcial);
 

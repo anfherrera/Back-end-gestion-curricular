@@ -258,14 +258,6 @@ public class GestionarSolicitudCursoVeranoCUAdapter implements GestionarSolicitu
     }
 
     @Override
-    public Integer contarSolicitudesPorCurso(Integer idCurso) {
-        if (idCurso == null) {
-            this.objFormateadorResultados.retornarRespuestaErrorReglaDeNegocio("El ID del curso no puede ser nulo");
-        }
-        return this.objGestionarSolicitudGateway.contarSolicitudesPorCurso(idCurso);
-    }
-
-    @Override
     public SolicitudCursoVeranoPreinscripcion aprobarPreinscripcion(Integer idSolicitud, String comentarios) {
         if (idSolicitud == null) {
             this.objFormateadorResultados.retornarRespuestaErrorReglaDeNegocio("El ID de la solicitud no puede ser nulo");

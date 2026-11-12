@@ -11,8 +11,6 @@ public interface GestionarSalonesCUIntPort {
 
     List<Salon> listarSalonesActivos();
 
-    List<Salon> buscarPorEdificio(String edificio);
-
 }
 
 

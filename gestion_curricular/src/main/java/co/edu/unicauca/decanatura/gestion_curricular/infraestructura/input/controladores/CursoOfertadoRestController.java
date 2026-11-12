@@ -63,12 +63,6 @@ public class CursoOfertadoRestController {
         );
     }
 
-    @DeleteMapping("/eliminarCurso/{id}")
-    public ResponseEntity<Boolean> eliminarCurso(@Min(value = 1) @PathVariable Integer id) {
-        boolean eliminado = cursoCU.eliminarCurso(id);
-        return new ResponseEntity<>(eliminado ? HttpStatus.OK : HttpStatus.NOT_FOUND);
-    }
-
     /**
      * Obtener cursos disponibles para estudiantes (solo estados visibles)
      */

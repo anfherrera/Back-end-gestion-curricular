@@ -22,16 +22,6 @@ public class GestionarEstadoSolicitudGatewayImplAdapter implements GestionarEsta
         this.estadoSolicitudMapper = estadoSolicitudMapper;
     }
     @Override
-    @Transactional
-    public EstadoSolicitud actualizarEstadoSolicitud(EstadoSolicitud estadoSolicitud) {
-        estadoSolicitudRepository.findById(estadoSolicitud.getId_estado())
-            .orElseThrow(() -> new RuntimeException("Materia no encontrada con ID: " + estadoSolicitud.getId_estado()));
-        EstadoSolicitudEntity estadoSolicitudEntity = estadoSolicitudMapper.map(estadoSolicitud, EstadoSolicitudEntity.class);
-        EstadoSolicitudEntity savedEntity = estadoSolicitudRepository.save(estadoSolicitudEntity);
-        return estadoSolicitudMapper.map(savedEntity, EstadoSolicitud.class);
-    }
-
-    @Override
     public EstadoSolicitud guarEstadoSolicitud(EstadoSolicitud estadoSolicitud) {
         // Convertir dominio → entidad
         EstadoSolicitudEntity entity = estadoSolicitudMapper.map(estadoSolicitud, EstadoSolicitudEntity.class);

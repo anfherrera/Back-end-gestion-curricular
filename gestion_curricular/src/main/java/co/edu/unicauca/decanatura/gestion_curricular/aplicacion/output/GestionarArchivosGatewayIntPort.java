@@ -66,7 +66,4 @@ public interface GestionarArchivosGatewayIntPort {
      */
     String moverArchivoAOrganizado(String rutaActual, String nombreArchivo, String tipoSolicitud, Integer idSolicitud) throws IOException;
     
-    String getFileExtension(String filename);
-    Boolean isValidImageFile(String extension);
-    
 }

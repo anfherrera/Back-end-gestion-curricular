@@ -278,12 +278,6 @@ public class GestionarSolicitudCursoVeranoGatewayImplAdapter implements Gestiona
 
     @Override
     @Transactional(readOnly = true)
-    public Integer contarSolicitudesPorCurso(Integer idCurso) {
-        return solicitudRepository.contarSolicitudesPorCurso(idCurso);
-    }
-
-    @Override
-    @Transactional(readOnly = true)
     public SolicitudCursoVeranoIncripcion buscarSolicitudInscripcionPorId(Integer idSolicitud) {
         return solicitudRepository.findById(idSolicitud)
             .filter(entity -> entity instanceof SolicitudCursoVeranoInscripcionEntity)

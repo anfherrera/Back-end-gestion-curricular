@@ -19,7 +19,6 @@ import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.FlujoEstado
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.FechaEcaes;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.SolicitudEcaes;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Usuario;
-import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Enums.EstadosSolicitud;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.excepciones.EntidadNoExisteException;
 import lombok.extern.slf4j.Slf4j;
 
@@ -117,15 +116,6 @@ public class GestionarSolicitudEcaesCUAdapter implements GestionarSolicitudEcaes
     public SolicitudEcaes buscarPorId(Integer idSolicitud) {
         return objGestionarSolicitudEcaesGateway.buscarPorId(idSolicitud)
             .orElseThrow(() -> new EntidadNoExisteException("Solicitud no encontrada con ID: " + idSolicitud));    
-    }
-    @Override
-    public void cambiarEstadoSolicitudEcaes(Integer idSolicitud, EstadosSolicitud nuevoEstado) {
-        
-        EstadoSolicitud nuevo = new EstadoSolicitud();
-        nuevo.setEstado_actual(nuevoEstado.name());
-        nuevo.setFecha_registro_estado(new Date());
-        
-        objGestionarSolicitudEcaesGateway.cambiarEstadoSolicitudEcaes(idSolicitud, nuevo);
     }
     @Override
     public void cambiarEstadoSolicitud(Integer idSolicitud, String nuevoEstado) {

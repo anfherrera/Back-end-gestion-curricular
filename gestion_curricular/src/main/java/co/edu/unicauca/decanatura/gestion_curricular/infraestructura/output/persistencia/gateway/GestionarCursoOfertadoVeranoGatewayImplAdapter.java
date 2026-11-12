@@ -184,37 +184,6 @@ public class GestionarCursoOfertadoVeranoGatewayImplAdapter implements Gestionar
 
     @Override
     @Transactional(readOnly = true)
-    public List<CursoOfertadoVerano> buscarPorGrupo(GrupoCursoVerano grupo) {
-        GrupoCursoVeranoEntity grupoEntity = cursoMapper.map(grupo, GrupoCursoVeranoEntity.class);
-        return cursoRepository.buscarPorGrupo(grupoEntity).stream()
-            .map(entity -> cursoMapper.map(entity, CursoOfertadoVerano.class))
-            .toList();
-    }
-
-    @Override
-    @Transactional(readOnly = true)
-    public List<CursoOfertadoVerano> buscarPorMateria(Integer idMateria) {
-        return cursoRepository.buscarPorMateria(idMateria).stream()
-            .map(entity -> cursoMapper.map(entity, CursoOfertadoVerano.class))
-            .toList();
-    }
-
-    @Override
-    @Transactional(readOnly = true)
-    public List<CursoOfertadoVerano> buscarPorDocente(Integer idDocente) {
-        return cursoRepository.buscarPorDocente(idDocente).stream()
-            .map(entity -> cursoMapper.map(entity, CursoOfertadoVerano.class))
-            .toList();
-    }
-
-    @Override
-    @Transactional(readOnly = true)
-    public Integer contarPorSalon(String salon) {
-        return cursoRepository.contarPorSalon(salon);
-    }
-
-    @Override
-    @Transactional(readOnly = true)
     public List<CursoOfertadoVerano> listarTodos() {
         return cursoRepository.findAll().stream()
             .map(entity -> cursoMapper.map(entity, CursoOfertadoVerano.class))

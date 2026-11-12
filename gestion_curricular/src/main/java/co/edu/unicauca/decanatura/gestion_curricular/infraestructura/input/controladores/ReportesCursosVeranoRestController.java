@@ -8,7 +8,6 @@ import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.security.access.prepost.PreAuthorize;
 import co.edu.unicauca.decanatura.gestion_curricular.Security.Autorizacion;
-import jakarta.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import java.text.SimpleDateFormat;
@@ -641,43 +640,4 @@ public class ReportesCursosVeranoRestController {
         return ResponseEntity.ok(respuesta);
     }
 
-    /**
-     * Obtener solicitudes del usuario especifico
-     * GET /api/cursos-intersemestrales/cursos-verano/solicitudes/{idUsuario}
-     */
-    @PreAuthorize("@autorizacion.esStaff() or @autorizacion.esUsuarioActual(#idUsuario)")
-    @GetMapping("/cursos-verano/solicitudes/{idUsuario}")
-    public ResponseEntity<List<Map<String, Object>>> obtenerSolicitudesUsuario(
-            @Min(value = 1) @PathVariable Integer idUsuario) {
-        List<Map<String, Object>> solicitudes = new ArrayList<>();
-        
-        // Solicitud 1
-        Map<String, Object> solicitud1 = new HashMap<>();
-        solicitud1.put("id_solicitud", 1);
-        solicitud1.put("curso", "Programacion I");
-        solicitud1.put("fecha", "2024-01-15T10:30:00");
-        solicitud1.put("estado", "Pendiente");
-        solicitud1.put("tipo", "Preinscripcion");
-        solicitudes.add(solicitud1);
-        
-        // Solicitud 2
-        Map<String, Object> solicitud2 = new HashMap<>();
-        solicitud2.put("id_solicitud", 2);
-        solicitud2.put("curso", "Matematicas Basicas");
-        solicitud2.put("fecha", "2024-01-16T14:20:00");
-        solicitud2.put("estado", "Aprobado");
-        solicitud2.put("tipo", "Preinscripcion");
-        solicitudes.add(solicitud2);
-        
-        // Solicitud 3
-        Map<String, Object> solicitud3 = new HashMap<>();
-        solicitud3.put("id_solicitud", 3);
-        solicitud3.put("curso", "Bases de Datos");
-        solicitud3.put("fecha", "2024-01-17T09:15:00");
-        solicitud3.put("estado", "Rechazado");
-        solicitud3.put("tipo", "Inscripcion");
-        solicitudes.add(solicitud3);
-        
-        return ResponseEntity.ok(solicitudes);
-    }
 }

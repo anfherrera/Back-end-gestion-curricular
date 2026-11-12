@@ -202,15 +202,6 @@ public interface GestionarEstadisticasCUIntPort {
     Map<String, Object> obtenerTendenciasTemporalesCursosVerano(String periodoAcademico, Integer idPrograma);
 
     /**
-     * Obtiene estadísticas agrupadas por semestre (año y número de semestre).
-     * 
-     * @param anio Año a consultar
-     * @param semestre Número de semestre (1 o 2)
-     * @return Map con estadísticas del semestre
-     */
-    Map<String, Object> obtenerEstadisticasPorSemestre(Integer anio, Integer semestre);
-
-    /**
      * Obtiene historial de estadísticas por períodos académicos.
      * 
      * @param anioInicio Año de inicio (opcional)

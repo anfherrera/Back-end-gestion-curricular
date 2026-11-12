@@ -13,9 +13,7 @@ import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.EstadoSolic
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Solicitud;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.SolicitudCursoVeranoIncripcion;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.SolicitudCursoVeranoPreinscripcion;
-import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.NombreSolicitud;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.SolicitudEcaes;
-import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Usuario;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.SolicitudHomologacion;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.SolicitudPazYSalvo;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.SolicitudReingreso;
@@ -27,7 +25,6 @@ import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.pers
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.entidades.SolicitudHomologacionEntity;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.entidades.SolicitudPazYSalvoEntity;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.entidades.SolicitudReingresoEntity;
-import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.entidades.UsuarioEntity;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.repositorios.EstadoSolicitudRepositoryInt;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.repositorios.SolicitudRepositoryInt;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.repositorios.UsuarioRepositoryInt;
@@ -50,53 +47,6 @@ public class GestionarSolicitudGatewayImplAdapter implements GestionarSolicitudG
         this.usuarioRepository = usuarioRepository;
         this.estadoSolicitudRepository = estadoSolicitudRepository;
         this.solicitudMapper = solicitudMapper;
-    }
-
-    /** Nombre completo del usuario guardado (el que llega en la petición puede venir sin nombre). */
-    private String nombreDelUsuario(Usuario usuario) {
-        if (usuario == null || usuario.getId_usuario() == null) {
-            return null;
-        }
-        return usuarioRepository.findById(usuario.getId_usuario())
-                .map(UsuarioEntity::getNombre_completo)
-                .orElse(null);
-    }
-
-    @Override
-    @Transactional
-    public SolicitudReingreso crearSolicitudReingreso(SolicitudReingreso solicitudReingreso) {
-        SolicitudReingresoEntity solicitudReingresoEntity = solicitudMapper.map(solicitudReingreso, SolicitudReingresoEntity.class);
-        
-        // Generar nombre descriptivo con el nombre del estudiante
-        solicitudReingresoEntity.setNombre_solicitud(
-                NombreSolicitud.de(NombreSolicitud.REINGRESO, nombreDelUsuario(solicitudReingreso.getObjUsuario())));
-        solicitudReingresoEntity.setFecha_registro_solicitud(new Date());
-        
-        // NO tocar los estados aquí, el caso de uso (GestionarSolicitudReingresoCUAdapter) los maneja completamente
-        // ModelMapper ya maneja la lista de estados si viene del dominio
-        
-        SolicitudReingresoEntity solicitudReingresoGuardado = solicitudRepository.save(solicitudReingresoEntity);
-
-        return solicitudMapper.map(solicitudReingresoGuardado, SolicitudReingreso.class);        
-
-    }
-
-    @Override
-    @Transactional
-    public SolicitudHomologacion crearSolicitudHomologacion(SolicitudHomologacion solicitudHomologacion) {
-        SolicitudHomologacionEntity solicitudHomologacionEntity = solicitudMapper.map(solicitudHomologacion, SolicitudHomologacionEntity.class);
-        
-        // Generar nombre descriptivo con el nombre del estudiante
-        solicitudHomologacionEntity.setNombre_solicitud(
-                NombreSolicitud.de(NombreSolicitud.HOMOLOGACION, nombreDelUsuario(solicitudHomologacion.getObjUsuario())));
-        solicitudHomologacionEntity.setFecha_registro_solicitud(new Date());
-        
-        // NO tocar los estados aquí, el caso de uso (GestionarSolicitudHomologacionCUAdapter) los maneja completamente
-        // ModelMapper ya maneja la lista de estados si viene del dominio
-
-        SolicitudHomologacionEntity solicitudHomologacionGuardado = solicitudRepository.save(solicitudHomologacionEntity);
-
-        return solicitudMapper.map(solicitudHomologacionGuardado, SolicitudHomologacion.class);
     }
 
     @Override
@@ -318,25 +268,4 @@ public class GestionarSolicitudGatewayImplAdapter implements GestionarSolicitudG
     }
 
 
-    @Override
-    public Solicitud buscarSolicitudesPorUsuarioYCursoPre(Integer idUsuario, Integer idCurso) {
-SolicitudEntity solicitudEntity = solicitudRepository.buscarSolicitudesPorUsuarioyCursoPre(idUsuario, idCurso);
-        Solicitud solicitud = null;
-        if(solicitudEntity!= null){
-                if (solicitudEntity instanceof SolicitudCursoVeranoPreinscripcionEntity) {
-                    solicitud = solicitudMapper.map(solicitudEntity, SolicitudCursoVeranoPreinscripcion.class);
-                } else if (solicitudEntity instanceof SolicitudEcaesEntity) {
-                    solicitud = solicitudMapper.map(solicitudEntity, SolicitudEcaes.class);
-                } else if (solicitudEntity instanceof SolicitudReingresoEntity) {
-                    solicitud = solicitudMapper.map(solicitudEntity, SolicitudReingreso.class);
-                } else if (solicitudEntity instanceof SolicitudHomologacionEntity) {
-                    solicitud = solicitudMapper.map(solicitudEntity, SolicitudHomologacion.class);
-                } else if (solicitudEntity instanceof SolicitudPazYSalvoEntity) {
-                    solicitud = solicitudMapper.map(solicitudEntity, SolicitudPazYSalvo.class);
-                } else if (solicitudEntity instanceof SolicitudCursoVeranoInscripcionEntity) {
-                    solicitud = solicitudMapper.map(solicitudEntity, SolicitudCursoVeranoIncripcion.class);
-                }
-        }
-        return solicitud;
-    }
 }

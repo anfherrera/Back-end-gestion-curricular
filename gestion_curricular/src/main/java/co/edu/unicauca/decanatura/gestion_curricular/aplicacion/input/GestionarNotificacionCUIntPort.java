@@ -26,8 +26,6 @@ public interface GestionarNotificacionCUIntPort {
 
     void marcarComoLeida(Integer idNotificacion);
 
-    void eliminarAntiguas(java.util.Date fechaLimite);
-
     // Métodos de utilidad para crear notificaciones automáticamente
     void notificarCreacionSolicitud(co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Solicitud solicitud, String tipoSolicitud);
     

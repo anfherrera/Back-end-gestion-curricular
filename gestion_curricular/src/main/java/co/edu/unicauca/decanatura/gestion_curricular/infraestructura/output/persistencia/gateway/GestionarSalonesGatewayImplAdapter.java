@@ -54,14 +54,6 @@ public class GestionarSalonesGatewayImplAdapter implements GestionarSalonesIntPo
                 .collect(Collectors.toList());
     }
 
-    @Override
-    @Transactional(readOnly = true)
-    public List<Salon> buscarPorEdificio(String edificio) {
-        return salonRepository.buscarPorEdificio(edificio).stream()
-                .map(entity -> salonMapper.map(entity, Salon.class))
-                .collect(Collectors.toList());
-    }
-
 }
 
 

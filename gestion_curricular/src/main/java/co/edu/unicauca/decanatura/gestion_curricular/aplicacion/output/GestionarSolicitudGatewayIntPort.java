@@ -4,14 +4,10 @@ import java.util.List;
 
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.EstadoSolicitud;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Solicitud;
-import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.SolicitudHomologacion;
-import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.SolicitudReingreso;
 
 
 public interface GestionarSolicitudGatewayIntPort {
     
-    SolicitudReingreso crearSolicitudReingreso(SolicitudReingreso solicitudReingreso);
-    SolicitudHomologacion crearSolicitudHomologacion(SolicitudHomologacion solicitudHomologacion);
     // SolicitudPazYSalvo crearSolicitudPazYSalvo(SolicitudPazYSalvo solicitudPazYSalvo);
 
     Solicitud actualizarSolicitud(Solicitud solicitud, EstadoSolicitud estadoSolicitud);
@@ -25,8 +21,6 @@ public interface GestionarSolicitudGatewayIntPort {
     List<Solicitud> buscarSolicitudPorNombreCursoPre(Integer idCurso);
 
     List<Solicitud> buscarSolicitudPorNombreCursoIns(Integer idCurso);
-
-    Solicitud buscarSolicitudesPorUsuarioYCursoPre(Integer idUsuario, Integer idCurso);
 
     // Listar todas las solicitudes
     List<Solicitud> listarSolicitudes();

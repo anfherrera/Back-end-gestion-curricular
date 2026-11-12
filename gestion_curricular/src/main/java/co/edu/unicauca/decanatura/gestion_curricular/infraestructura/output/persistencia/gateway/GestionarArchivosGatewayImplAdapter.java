@@ -189,16 +189,6 @@ public class GestionarArchivosGatewayImplAdapter implements GestionarArchivosGat
     }
 
     @Override
-    public String getFileExtension(String filename) {
-        return filename.substring(filename.lastIndexOf(".")+1);
-    }
-
-    @Override
-    public Boolean isValidImageFile(String extension) {
-        return "jpg".equalsIgnoreCase(extension) || "jpeg".equalsIgnoreCase(extension);
-    }
-    
-    @Override
     public Path getFileAsPath(String filename) throws IOException {
         // Primero intentar buscar en la raíz (retrocompatibilidad)
         Path filePath = resolverSeguro(filename);
@@ -223,4 +213,12 @@ public class GestionarArchivosGatewayImplAdapter implements GestionarArchivosGat
         return filePath;
     }
     
+
+    private static String getFileExtension(String filename) {
+        return filename.substring(filename.lastIndexOf(".") + 1);
+    }
+
+    private static boolean isValidImageFile(String extension) {
+        return "jpg".equalsIgnoreCase(extension) || "jpeg".equalsIgnoreCase(extension);
+    }
 }

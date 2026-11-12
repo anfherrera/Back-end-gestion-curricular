@@ -1,6 +1,5 @@
 package co.edu.unicauca.decanatura.gestion_curricular.dominio.casosDeUso;
 
-import java.util.ArrayList;
 import java.util.List;
 
 
@@ -8,11 +7,7 @@ import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarS
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.FormateadorResultadosIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.GestionarSolicitudGatewayIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.GestionarUsuarioGatewayIntPort;
-import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.EstadoSolicitud;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Solicitud;
-import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.SolicitudHomologacion;
-import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.SolicitudReingreso;
-import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Usuario;
 
 public class GestionarSolicitudCUAdapter implements GestionarSolicitudCUIntPort {
 
@@ -28,60 +23,6 @@ public class GestionarSolicitudCUAdapter implements GestionarSolicitudCUIntPort 
         this.objGestionarSolicitudGateway = objGestionarSolicitudGateway;
     }
 
-    @Override
-    public SolicitudReingreso crearSolicitudReingreso(SolicitudReingreso solicitudReingreso) {
-        // Implementación pendiente
-        return null;
-    }
-
-    @Override
-    public SolicitudHomologacion crearSolicitudHomologacion(SolicitudHomologacion solicitudHomologacion) {
-        // Implementación pendiente
-        return null;
-    }
-
-
-    @Override
-    public Solicitud actualizarSolicitud(Solicitud solicitud, EstadoSolicitud estadoSolicitud) {
-    Solicitud solicitudGuardada = null;
-    Usuario usuarioBuscar = null;
-    Solicitud solicitudABuscar = null;
-
-    if (solicitud == null) {
-        this.objFormateadorResultados.retornarRespuestaErrorReglaDeNegocio("La solicitud no puede ser nula");
-    }
-
-    if(solicitud.getId_solicitud() == null) {
-        this.objFormateadorResultados.retornarRespuestaErrorReglaDeNegocio("El ID de la solicitud no puede ser nulo");
-    }
-
-    if (solicitud.getObjUsuario() == null) {
-        this.objFormateadorResultados.retornarRespuestaErrorReglaDeNegocio("La solicitud debe tener un usuario asociado");
-    }
-
-    if (solicitud.getObjUsuario().getId_usuario() == null) {
-        this.objFormateadorResultados.retornarRespuestaErrorReglaDeNegocio("El usuario de la solicitud no puede ser nulo");
-    }
-
-    if (estadoSolicitud == null) {
-        this.objFormateadorResultados.retornarRespuestaErrorReglaDeNegocio("El estado de la solicitud no puede ser nulo");
-    }
-
-    usuarioBuscar = this.objUsuario.obtenerUsuarioPorId(solicitud.getObjUsuario().getId_usuario());
-    if (usuarioBuscar == null) {
-        this.objFormateadorResultados.retornarRespuestaErrorEntidadExiste("Usuario no encontrado");
-    }
-
-    solicitudABuscar = this.objGestionarSolicitudGateway.obtenerSolicitudPorId(solicitud.getId_solicitud());
-    if (solicitudABuscar == null) {
-        this.objFormateadorResultados.retornarRespuestaErrorEntidadExiste("Solicitud no existe en el sistema");
-    }
-
-    solicitud.setObjUsuario(usuarioBuscar);
-    solicitudGuardada = this.objGestionarSolicitudGateway.actualizarSolicitud(solicitud, estadoSolicitud);
-
-    return solicitudGuardada;
-}
 
 
     @Override
@@ -102,18 +43,6 @@ public class GestionarSolicitudCUAdapter implements GestionarSolicitudCUIntPort 
             this.objFormateadorResultados.retornarRespuestaErrorEntidadExiste("Solicitud no existe en el sistema");
         }
         return this.objGestionarSolicitudGateway.eliminarSolicitud(idSolicitud);
-    }
-
-    @Override
-    public List<Solicitud> buscarSolicitudPorNombreCursoIns(String nombreSolicitud, Integer idCurso) {
-        // Implementación pendiente
-        return new ArrayList<>();
-    }
-
-    @Override
-    public List<Solicitud> buscarSolicitudPorNombreCursoPre(String nombreSolicitud, Integer idCurso) {
-        // Implementación pendiente
-        return new ArrayList<>();
     }
 
     @Override

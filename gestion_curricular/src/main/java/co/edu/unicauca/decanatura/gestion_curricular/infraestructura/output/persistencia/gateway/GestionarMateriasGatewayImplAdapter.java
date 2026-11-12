@@ -43,32 +43,6 @@ public class GestionarMateriasGatewayImplAdapter implements GestionarMateriasInt
 
     @Override
     @Transactional(readOnly = true)
-    public List<Materia> buscarPorNombreParcial(String nombreParcial) {
-        List<Materia> materiasRetornar = null;
-        List<MateriaEntity> materiasEntity = materiaRepository.buscarPorNombreParcial(nombreParcial);
-        if (materiasEntity != null) {
-            materiasRetornar = materiasEntity.stream().map(materiaEntity ->{
-                return this.materiasMapper.map(materiaEntity, Materia.class);
-            }).toList();
-        }
-        return materiasRetornar;
-    }
-
-    @Override
-    @Transactional(readOnly = true)
-    public List<Materia> buscarPorCreditos(Integer creditos) {
-        List<Materia> materiasRetornar = null;
-        List<MateriaEntity> materiasEntity = materiaRepository.buscarPorCreditos(creditos);
-        if (materiasEntity != null) {
-            materiasRetornar = materiasEntity.stream().map(materiaEntity ->{
-                return this.materiasMapper.map(materiaEntity, Materia.class);
-            }).toList();
-        }
-        return materiasRetornar;
-    }
-
-    @Override
-    @Transactional(readOnly = true)
     public List<Materia> listarMaterias() {
         List<Materia> materiasRetornar = null;
         List<MateriaEntity> materiasEntity = materiaRepository.findAll();

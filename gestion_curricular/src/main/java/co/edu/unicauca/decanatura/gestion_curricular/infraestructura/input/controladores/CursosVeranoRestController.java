@@ -474,19 +474,6 @@ public class CursosVeranoRestController {
         return ResponseEntity.ok(respuesta);
     }
 
-    /**
-     * Obtener cursos ofertados (metodo legacy para compatibilidad)
-     * GET /api/cursos-intersemestrales/cursos/ofertados
-     */
-    @GetMapping("/cursos/ofertados")
-    public ResponseEntity<List<CursosOfertadosDTORespuesta>> obtenerCursosOfertados() {
-        List<CursoOfertadoVerano> cursos = cursoCU.listarTodos();
-        List<CursosOfertadosDTORespuesta> respuesta = cursos.stream()
-                .map(cursoMapper::mappearDeCursoOfertadoARespuesta)
-                .collect(Collectors.toList());
-        return ResponseEntity.ok(respuesta);
-    }
-
     // ==================== ENDPOINTS FALTANTES PARA EL FRONTEND ====================
 
     /**

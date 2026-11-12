@@ -2745,38 +2745,6 @@ public class GestionarEstadisticasGatewayImplAdapter implements GestionarEstadis
     
     @Override
     @Transactional(readOnly = true)
-    public Map<String, Object> obtenerEstadisticasPorSemestre(Integer anio, Integer semestre) {
-        
-        // Calcular fechas del semestre
-        java.time.LocalDate fechaInicio;
-        java.time.LocalDate fechaFin;
-        
-        if (semestre == 1) {
-            fechaInicio = java.time.LocalDate.of(anio, 1, 1);
-            fechaFin = java.time.LocalDate.of(anio, 6, 30);
-        } else {
-            fechaInicio = java.time.LocalDate.of(anio, 7, 1);
-            fechaFin = java.time.LocalDate.of(anio, 12, 31);
-        }
-        
-        Date fechaInicioDate = java.sql.Date.valueOf(fechaInicio);
-        Date fechaFinDate = java.sql.Date.valueOf(fechaFin);
-        
-        // Obtener estadísticas del semestre
-        Map<String, Object> estadisticasSemestre = obtenerEstadisticasPorPeriodo(fechaInicioDate, fechaFinDate);
-        
-        // Agregar información específica del semestre
-        estadisticasSemestre.put("anio", anio);
-        estadisticasSemestre.put("semestre", semestre);
-        estadisticasSemestre.put("periodoAcademico", anio + "-" + semestre);
-        estadisticasSemestre.put("tipoConsulta", "porSemestre");
-        estadisticasSemestre.put("descripcion", (semestre == 1 ? "Primer" : "Segundo") + " Semestre " + anio);
-        
-        return estadisticasSemestre;
-    }
-
-    @Override
-    @Transactional(readOnly = true)
     public List<Map<String, Object>> obtenerHistorialEstadisticas(Integer anioInicio, Integer anioFin) {
         
         List<Map<String, Object>> historial = new ArrayList<>();
@@ -2848,4 +2816,36 @@ public class GestionarEstadisticasGatewayImplAdapter implements GestionarEstadis
         
         return estadisticas;
     }
+
+    /** Estadísticas de un semestre (1: enero-junio, 2: julio-diciembre); la usan el historial y la consulta por periodo. */
+    private Map<String, Object> obtenerEstadisticasPorSemestre(Integer anio, Integer semestre) {
+        
+        // Calcular fechas del semestre
+        java.time.LocalDate fechaInicio;
+        java.time.LocalDate fechaFin;
+        
+        if (semestre == 1) {
+            fechaInicio = java.time.LocalDate.of(anio, 1, 1);
+            fechaFin = java.time.LocalDate.of(anio, 6, 30);
+        } else {
+            fechaInicio = java.time.LocalDate.of(anio, 7, 1);
+            fechaFin = java.time.LocalDate.of(anio, 12, 31);
+        }
+        
+        Date fechaInicioDate = java.sql.Date.valueOf(fechaInicio);
+        Date fechaFinDate = java.sql.Date.valueOf(fechaFin);
+        
+        // Obtener estadísticas del semestre
+        Map<String, Object> estadisticasSemestre = obtenerEstadisticasPorPeriodo(fechaInicioDate, fechaFinDate);
+        
+        // Agregar información específica del semestre
+        estadisticasSemestre.put("anio", anio);
+        estadisticasSemestre.put("semestre", semestre);
+        estadisticasSemestre.put("periodoAcademico", anio + "-" + semestre);
+        estadisticasSemestre.put("tipoConsulta", "porSemestre");
+        estadisticasSemestre.put("descripcion", (semestre == 1 ? "Primer" : "Segundo") + " Semestre " + anio);
+        
+        return estadisticasSemestre;
+    }
+
 }

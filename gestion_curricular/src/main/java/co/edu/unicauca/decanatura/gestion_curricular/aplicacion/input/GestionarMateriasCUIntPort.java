@@ -6,9 +6,5 @@ public interface GestionarMateriasCUIntPort {
 
     Materia obtenerMateriaPorId(Integer idMateria);
 
-    List<Materia> buscarPorNombreParcial(String nombreParcial);
-
-    List<Materia> buscarPorCreditos(Integer creditos);
-
     List<Materia> listarMaterias();
 }

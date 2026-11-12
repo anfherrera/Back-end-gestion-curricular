@@ -5,6 +5,4 @@ import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.EstadoSolic
 
 public interface GestionarEstadoSolicitudGatewayIntPort {
     EstadoSolicitud guarEstadoSolicitud(EstadoSolicitud estadoSolicitud);
-    EstadoSolicitud actualizarEstadoSolicitud(EstadoSolicitud estadoSolicitud);
-
 }
