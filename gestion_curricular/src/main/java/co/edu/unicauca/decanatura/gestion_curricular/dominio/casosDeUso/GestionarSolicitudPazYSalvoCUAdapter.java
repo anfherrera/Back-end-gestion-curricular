@@ -93,9 +93,8 @@ public class GestionarSolicitudPazYSalvoCUAdapter implements GestionarSolicitudP
             estadoSolicitudGateway.guarEstadoSolicitud(estadoInicial);
         }
 
-        // Asociar solicitud al usuario
-        usuario.getSolicitudes().add(solicitudGuardada);
-        usuarioGateway.actualizarUsuario(usuario);
+        // No se guarda el usuario: la relación usuario-solicitudes es mappedBy (la solicitud ya
+        // lleva su usuario) y, por orphanRemoval, guardar una lista incompleta podría borrar solicitudes.
 
         // Crear notificación automática para el estudiante
         try {

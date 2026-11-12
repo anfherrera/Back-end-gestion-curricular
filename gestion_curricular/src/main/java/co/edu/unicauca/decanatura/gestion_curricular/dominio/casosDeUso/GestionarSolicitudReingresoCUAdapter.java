@@ -85,10 +85,9 @@ public class GestionarSolicitudReingresoCUAdapter  implements GestionarSolicitud
         }
         solicitudGuardada.getEstadosSolicitud().add(estadoInicial);
         this.objGestionarEstadoSolicitudGateway.guarEstadoSolicitud(estadoInicial);
+        // No se guarda el usuario: la relación usuario-solicitudes es mappedBy (la solicitud ya
+        // lleva su usuario) y, por orphanRemoval, guardar una lista incompleta podría borrar solicitudes.
 
-        usuarioOpt.get().getSolicitudes().add(solicitudGuardada);
-        this.objGestionarUsuarioGateway.actualizarUsuario(usuarioOpt.get());
-        
         // Crear notificación automática para el estudiante
         try {
             this.objGestionarNotificacionCU.notificarCreacionSolicitud(solicitudGuardada, "REINGRESO");
