@@ -1,0 +1,23 @@
+{
+  "descripcionEstado" : "Solicitudes rechazadas",
+  "estado" : "Rechazada",
+  "porEstado" : { },
+  "porPrograma" : {
+    "Ingeniería Civil" : 0,
+    "Ingeniería Electrónica" : 2,
+    "Ingeniería de Sistemas" : 1
+  },
+  "porTipoProceso" : {
+    "Cursos de Verano" : 2,
+    "ECAES" : 1,
+    "Homologacion" : 1,
+    "Paz y Salvo" : 0,
+    "Reingreso" : 0
+  },
+  "porcentajeAprobacion" : 0.0,
+  "totalAprobadas" : 0,
+  "totalEnProceso" : 0,
+  "totalEnviadas" : 0,
+  "totalRechazadas" : 4,
+  "totalSolicitudes" : 4
+}

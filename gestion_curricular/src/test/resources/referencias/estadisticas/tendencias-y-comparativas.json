@@ -1,0 +1,83 @@
+{
+  "comparativaProcesos" : {
+    "aprobadasPorProceso" : {
+      "Cursos de Verano" : 2,
+      "ECAES" : 1,
+      "Homologacion" : 1,
+      "Paz y Salvo" : 1,
+      "Reingreso" : 0
+    },
+    "demandaMasAlta" : 5,
+    "eficienciaMasAlta" : 50.0,
+    "procesoMasDemandado" : "Cursos de Verano",
+    "procesoMasEficiente" : "Paz y Salvo",
+    "solicitudesPorProceso" : {
+      "Cursos de Verano" : 5,
+      "ECAES" : 2,
+      "Homologacion" : 3,
+      "Paz y Salvo" : 2,
+      "Reingreso" : 2
+    }
+  },
+  "comparativaProgramas" : {
+    "estudiantesPorPrograma" : {
+      "Ingeniería Civil" : 1,
+      "Ingeniería Electrónica" : 2,
+      "Ingeniería de Sistemas" : 2
+    },
+    "maxEstudiantes" : 2,
+    "maxSolicitudes" : 7,
+    "programaConMasEstudiantes" : "Ingeniería de Sistemas",
+    "programaMasActivo" : "Ingeniería de Sistemas",
+    "solicitudesPorPrograma" : {
+      "Ingeniería Civil" : 1,
+      "Ingeniería Electrónica" : 5,
+      "Ingeniería de Sistemas" : 7
+    }
+  },
+  "crecimientoTemporal" : {
+    "crecimientoEstudiantes" : 0.0,
+    "crecimientoSolicitudes" : 0.0,
+    "estudiantesPorMes" : {
+      "Abril" : 1,
+      "Agosto" : 2,
+      "Diciembre" : 0,
+      "Enero" : 1,
+      "Febrero" : 1,
+      "Julio" : 3,
+      "Junio" : 2,
+      "Marzo" : 1,
+      "Mayo" : 1,
+      "Noviembre" : 1,
+      "Octubre" : 0,
+      "Septiembre" : 1
+    },
+    "mesesAnalizados" : 10,
+    "solicitudesPorMes" : {
+      "Abril" : 1,
+      "Agosto" : 2,
+      "Diciembre" : 0,
+      "Enero" : 1,
+      "Febrero" : 1,
+      "Julio" : 3,
+      "Junio" : 2,
+      "Marzo" : 1,
+      "Mayo" : 1,
+      "Noviembre" : 1,
+      "Octubre" : 0,
+      "Septiembre" : 1
+    },
+    "tendenciaEstudiantes" : "Estable",
+    "tendenciaSolicitudes" : "Estable",
+    "totalEstudiantes" : 6,
+    "totalSolicitudes" : 14
+  },
+  "descripcion" : "Analisis de tendencias y comparativas estrategicas - DATOS REALES",
+  "resumenEstrategico" : {
+    "periodoAnalizado" : "Ultimos 12 meses",
+    "recomendacionEstrategica" : " TENDENCIA ESTABLE: Mantener recursos actuales.  EFICIENCIA MODERADA: Optimizar procesos de aprobacion.  ENFOQUE: Ingeniería de Sistemas requiere atencion prioritaria.",
+    "totalEstudiantes" : 6,
+    "totalProgramas" : 3,
+    "totalSolicitudes" : 14
+  }
+}

@@ -1,0 +1,91 @@
+{
+  "analisis" : {
+    "eficienciaMaxima" : 57.14,
+    "maxEstudiantes" : 2,
+    "maxSolicitudes" : 7,
+    "programaConMasEstudiantes" : "Ingeniería de Sistemas",
+    "programaMasActivo" : "Ingeniería de Sistemas",
+    "programaMasEficiente" : "Ingeniería de Sistemas",
+    "programaMasRapido" : "Ingeniería Electrónica",
+    "tiempoMinimo" : 1.67,
+    "totalEstudiantes" : 6,
+    "totalProgramas" : 3,
+    "totalSolicitudes" : 14
+  },
+  "descripcion" : "Estadisticas por programa academico con analisis de rendimiento - DATOS REALES",
+  "estudiantesPorPrograma" : {
+    "Ingeniería Civil" : 1,
+    "Ingeniería Electrónica" : 2,
+    "Ingeniería de Sistemas" : 2
+  },
+  "porPrograma" : {
+    "Ingeniería Civil" : {
+      "aprobadas" : 0,
+      "codigo" : null,
+      "color" : "#6B7280",
+      "descripcion" : "Programa academico",
+      "eficiencia" : 0.0,
+      "enviadas" : 1,
+      "estudiantes" : 1,
+      "icono" : "",
+      "nombre" : "Ingeniería Civil",
+      "porcentaje" : 7.14,
+      "procesos" : {
+        "Reingreso" : 1
+      },
+      "rechazadas" : 0,
+      "tendencia" : "Estable",
+      "tiempoPromedio" : 0.0,
+      "totalSolicitudes" : 1
+    },
+    "Ingeniería Electrónica" : {
+      "aprobadas" : 1,
+      "codigo" : null,
+      "color" : "#6B7280",
+      "descripcion" : "Programa academico",
+      "eficiencia" : 20.0,
+      "enviadas" : 2,
+      "estudiantes" : 2,
+      "icono" : "",
+      "nombre" : "Ingeniería Electrónica",
+      "porcentaje" : 35.71,
+      "procesos" : {
+        "Cursos de Verano" : 2,
+        "ECAES" : 1,
+        "Homologacion" : 1,
+        "Paz y Salvo" : 1
+      },
+      "rechazadas" : 2,
+      "tendencia" : "Decreciente",
+      "tiempoPromedio" : 1.67,
+      "totalSolicitudes" : 5
+    },
+    "Ingeniería de Sistemas" : {
+      "aprobadas" : 4,
+      "codigo" : null,
+      "color" : "#6B7280",
+      "descripcion" : "Programa academico",
+      "eficiencia" : 57.14,
+      "enviadas" : 2,
+      "estudiantes" : 2,
+      "icono" : "",
+      "nombre" : "Ingeniería de Sistemas",
+      "porcentaje" : 50.0,
+      "procesos" : {
+        "Cursos de Verano" : 3,
+        "Homologacion" : 2,
+        "Paz y Salvo" : 1,
+        "Reingreso" : 1
+      },
+      "rechazadas" : 1,
+      "tendencia" : "Decreciente",
+      "tiempoPromedio" : 18.4,
+      "totalSolicitudes" : 7
+    }
+  },
+  "solicitudesPorPrograma" : {
+    "Ingeniería Civil" : 1,
+    "Ingeniería Electrónica" : 5,
+    "Ingeniería de Sistemas" : 7
+  }
+}

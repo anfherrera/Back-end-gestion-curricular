@@ -1,0 +1,85 @@
+{
+  "analisis" : {
+    "estadoMasComun" : "APROBADA",
+    "estadoMasEficiente" : "APROBADA",
+    "estadoMenosComun" : "ENVIADA",
+    "estadosActivos" : 4,
+    "maxSolicitudes" : 5,
+    "minSolicitudes" : 4,
+    "solicitudesCompletadas" : 9,
+    "solicitudesPendientes" : 5,
+    "tasaResolucion" : 64.29,
+    "totalSolicitudes" : 14
+  },
+  "descripcion" : "Estadisticas por estado de solicitudes con analisis de distribucion - DATOS REALES",
+  "estados" : {
+    "APROBADA" : {
+      "cantidad" : 5,
+      "color" : "#28a745",
+      "descripcion" : "Solicitudes aprobadas y procesadas",
+      "estado" : "APROBADA",
+      "icono" : "fas fa-check-circle",
+      "porcentaje" : 35.71,
+      "procesos" : {
+        "Cursos de Verano" : 2,
+        "ECAES" : 1,
+        "Homologacion" : 1,
+        "Paz y Salvo" : 1
+      },
+      "programas" : {
+        "Ingeniería Electrónica" : 1,
+        "Ingeniería de Sistemas" : 4
+      }
+    },
+    "ENVIADA" : {
+      "cantidad" : 4,
+      "color" : "#ffc107",
+      "descripcion" : "Solicitudes enviadas pendientes de revision",
+      "estado" : "ENVIADA",
+      "icono" : "fas fa-paper-plane",
+      "porcentaje" : 28.57,
+      "procesos" : {
+        "Cursos de Verano" : 1,
+        "Paz y Salvo" : 1,
+        "Reingreso" : 2
+      },
+      "programas" : {
+        "Ingeniería Civil" : 1,
+        "Ingeniería Electrónica" : 1,
+        "Ingeniería de Sistemas" : 2
+      }
+    },
+    "EN_PROCESO" : {
+      "cantidad" : 1,
+      "color" : "#17a2b8",
+      "descripcion" : "Solicitudes en proceso de revisión",
+      "estado" : "EN_PROCESO",
+      "icono" : "fas fa-clock",
+      "porcentaje" : 7.14,
+      "procesos" : {
+        "Homologacion" : 1
+      },
+      "programas" : {
+        "Ingeniería Electrónica" : 1
+      }
+    },
+    "RECHAZADA" : {
+      "cantidad" : 4,
+      "color" : "#dc3545",
+      "descripcion" : "Solicitudes rechazadas",
+      "estado" : "RECHAZADA",
+      "icono" : "fas fa-times-circle",
+      "porcentaje" : 28.57,
+      "procesos" : {
+        "Cursos de Verano" : 2,
+        "ECAES" : 1,
+        "Homologacion" : 1
+      },
+      "programas" : {
+        "Ingeniería Electrónica" : 2,
+        "Ingeniería de Sistemas" : 1
+      }
+    }
+  },
+  "totalSolicitudes" : 14
+}

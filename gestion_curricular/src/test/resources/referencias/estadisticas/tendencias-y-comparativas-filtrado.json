@@ -1,0 +1,83 @@
+{
+  "comparativaProcesos" : {
+    "aprobadasPorProceso" : {
+      "Cursos de Verano" : 0,
+      "ECAES" : 0,
+      "Homologacion" : 0,
+      "Paz y Salvo" : 0,
+      "Reingreso" : 0
+    },
+    "demandaMasAlta" : 2,
+    "eficienciaMasAlta" : 0.0,
+    "procesoMasDemandado" : "Cursos de Verano",
+    "procesoMasEficiente" : null,
+    "solicitudesPorProceso" : {
+      "Cursos de Verano" : 2,
+      "ECAES" : 0,
+      "Homologacion" : 0,
+      "Paz y Salvo" : 1,
+      "Reingreso" : 0
+    }
+  },
+  "comparativaProgramas" : {
+    "estudiantesPorPrograma" : {
+      "Ingeniería Civil" : 1,
+      "Ingeniería Electrónica" : 2,
+      "Ingeniería de Sistemas" : 2
+    },
+    "maxEstudiantes" : 2,
+    "maxSolicitudes" : 3,
+    "programaConMasEstudiantes" : "Ingeniería de Sistemas",
+    "programaMasActivo" : "Ingeniería Electrónica",
+    "solicitudesPorPrograma" : {
+      "Ingeniería Civil" : 0,
+      "Ingeniería Electrónica" : 3,
+      "Ingeniería de Sistemas" : 0
+    }
+  },
+  "crecimientoTemporal" : {
+    "crecimientoEstudiantes" : 50.0,
+    "crecimientoSolicitudes" : 50.0,
+    "estudiantesPorMes" : {
+      "Abril" : 0,
+      "Agosto" : 1,
+      "Diciembre" : 0,
+      "Enero" : 0,
+      "Febrero" : 0,
+      "Julio" : 2,
+      "Junio" : 0,
+      "Marzo" : 0,
+      "Mayo" : 0,
+      "Noviembre" : 0,
+      "Octubre" : 0,
+      "Septiembre" : 0
+    },
+    "mesesAnalizados" : 2,
+    "solicitudesPorMes" : {
+      "Abril" : 0,
+      "Agosto" : 1,
+      "Diciembre" : 0,
+      "Enero" : 0,
+      "Febrero" : 0,
+      "Julio" : 2,
+      "Junio" : 0,
+      "Marzo" : 0,
+      "Mayo" : 0,
+      "Noviembre" : 0,
+      "Octubre" : 0,
+      "Septiembre" : 0
+    },
+    "tendenciaEstudiantes" : "Decreciente",
+    "tendenciaSolicitudes" : "Decreciente",
+    "totalEstudiantes" : 6,
+    "totalSolicitudes" : 3
+  },
+  "descripcion" : "Analisis de tendencias y comparativas estrategicas - DATOS REALES",
+  "resumenEstrategico" : {
+    "periodoAnalizado" : "Ultimos 12 meses",
+    "recomendacionEstrategica" : " DECRECIMIENTO MODERADO: Revisar estrategias para Cursos de Verano.  BAJA EFICIENCIA: Revisar procesos de aprobacion.  ENFOQUE: Ingeniería Electrónica requiere atencion prioritaria.",
+    "totalEstudiantes" : 6,
+    "totalProgramas" : 3,
+    "totalSolicitudes" : 3
+  }
+}

@@ -1,0 +1,19 @@
+{
+  "descripcion" : "Solicitudes de homologacion de materias",
+  "porEstado" : {
+    "APROBADA" : 1,
+    "APROBADA_COORDINADOR" : 1,
+    "APROBADA_FUNCIONARIO" : 0,
+    "ENVIADA" : 0,
+    "RECHAZADA" : 1
+  },
+  "porPrograma" : { },
+  "porTipoProceso" : { },
+  "porcentajeAprobacion" : 33.3,
+  "tipoProceso" : "Homologacion",
+  "totalAprobadas" : 1,
+  "totalEnProceso" : 1,
+  "totalEnviadas" : 0,
+  "totalRechazadas" : 1,
+  "totalSolicitudes" : 3
+}

@@ -1,0 +1,83 @@
+{
+  "analisis" : {
+    "eficienciaMaxima" : 50.0,
+    "maxEstudiantes" : 2,
+    "maxSolicitudes" : 4,
+    "programaConMasEstudiantes" : "Ingeniería de Sistemas",
+    "programaMasActivo" : "Ingeniería de Sistemas",
+    "programaMasEficiente" : "Ingeniería de Sistemas",
+    "programaMasRapido" : "Ingeniería de Sistemas",
+    "tiempoMinimo" : 18.33,
+    "totalEstudiantes" : 6,
+    "totalProgramas" : 3,
+    "totalSolicitudes" : 4
+  },
+  "descripcion" : "Estadisticas por programa academico con analisis de rendimiento - DATOS REALES",
+  "estudiantesPorPrograma" : {
+    "Ingeniería Civil" : 1,
+    "Ingeniería Electrónica" : 2,
+    "Ingeniería de Sistemas" : 2
+  },
+  "porPrograma" : {
+    "Ingeniería Civil" : {
+      "aprobadas" : 0,
+      "codigo" : null,
+      "color" : "#6B7280",
+      "descripcion" : "Programa academico",
+      "eficiencia" : 0.0,
+      "enviadas" : 0,
+      "estudiantes" : 1,
+      "icono" : "",
+      "nombre" : "Ingeniería Civil",
+      "porcentaje" : 0.0,
+      "procesos" : { },
+      "rechazadas" : 0,
+      "tendencia" : "Estable",
+      "tiempoPromedio" : 0.0,
+      "totalSolicitudes" : 0
+    },
+    "Ingeniería Electrónica" : {
+      "aprobadas" : 0,
+      "codigo" : null,
+      "color" : "#6B7280",
+      "descripcion" : "Programa academico",
+      "eficiencia" : 0.0,
+      "enviadas" : 0,
+      "estudiantes" : 2,
+      "icono" : "",
+      "nombre" : "Ingeniería Electrónica",
+      "porcentaje" : 0.0,
+      "procesos" : { },
+      "rechazadas" : 0,
+      "tendencia" : "Estable",
+      "tiempoPromedio" : 0.0,
+      "totalSolicitudes" : 0
+    },
+    "Ingeniería de Sistemas" : {
+      "aprobadas" : 2,
+      "codigo" : null,
+      "color" : "#6B7280",
+      "descripcion" : "Programa academico",
+      "eficiencia" : 50.0,
+      "enviadas" : 1,
+      "estudiantes" : 2,
+      "icono" : "",
+      "nombre" : "Ingeniería de Sistemas",
+      "porcentaje" : 100.0,
+      "procesos" : {
+        "Cursos de Verano" : 2,
+        "Homologacion" : 1,
+        "Paz y Salvo" : 1
+      },
+      "rechazadas" : 1,
+      "tendencia" : "Decreciente",
+      "tiempoPromedio" : 18.33,
+      "totalSolicitudes" : 4
+    }
+  },
+  "solicitudesPorPrograma" : {
+    "Ingeniería Civil" : 0,
+    "Ingeniería Electrónica" : 0,
+    "Ingeniería de Sistemas" : 4
+  }
+}
