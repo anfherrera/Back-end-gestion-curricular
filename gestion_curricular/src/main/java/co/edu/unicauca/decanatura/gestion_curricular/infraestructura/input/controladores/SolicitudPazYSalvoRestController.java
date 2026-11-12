@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarSolicitudPazYSalvoCUIntPort;
+import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarSolicitudPazYSalvoCUIntPort.DatosDocumento;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarSolicitudPazYSalvoCUIntPort.RechazoCambioEstado.Motivo;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarArchivosCUIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarDocumentosCUIntPort;
@@ -489,8 +490,6 @@ public class SolicitudPazYSalvoRestController {
 
     // ===== Documento de Paz y Salvo (plantilla PAZ_SALVO de DocumentGeneratorService) =====
 
-    private static final String PROGRAMA_POR_DEFECTO = "Ingeniería Electrónica y Telecomunicaciones";
-
     /** GET /generarDocumentoPazYSalvo/{id}/pdf */
     @PreAuthorize("@autorizacion.esStaff() or @autorizacion.esDuenoSolicitud(#id)")
     @GetMapping("/generarDocumentoPazYSalvo/{id}/pdf")
@@ -518,24 +517,12 @@ public class SolicitudPazYSalvoRestController {
     /** Documento con número PYS-{id} y fecha de hoy. */
     private ResponseEntity<byte[]> documentoPazYSalvoPorDefecto(Integer id, String titulo, String director,
             String nombreArchivo, MediaType tipo) throws java.io.IOException {
-        SolicitudPazYSalvo solicitud = solicitudPazYSalvoCU.buscarPorId(id);
-        if (solicitud == null) {
-            return ResponseEntity.notFound().build();
-        }
-        Usuario usuario = usuarioDeLaSolicitud(solicitud);
-        if (usuario == null) {
+        var datos = solicitudPazYSalvoCU.prepararDocumento(id, null, titulo, director, true);
+        if (datos.isEmpty()) {
             return ResponseEntity.internalServerError().build();
         }
-        Map<String, Object> datosDocumento = new HashMap<>();
-        datosDocumento.put("numeroDocumento", "PYS-" + id);
-        datosDocumento.put("fechaDocumento", LocalDate.now().toString());
-        datosDocumento.put("observaciones", "Paz y Salvo generado");
-
-        LocalDate fechaSolicitud = solicitud.getFecha_registro_solicitud() != null
-                ? solicitud.getFecha_registro_solicitud().toInstant().atZone(java.time.ZoneId.systemDefault()).toLocalDate()
-                : LocalDate.now();
-        Map<String, Object> datosSolicitud = datosSolicitud(solicitud, usuario, fechaSolicitud, null, titulo, director);
-        return descarga(generarDocumentoPazYSalvo(datosDocumento, datosSolicitud), nombreArchivo, tipo);
+        return descarga(generarDocumentoPazYSalvo("PYS-" + id, LocalDate.now().toString(),
+                "Paz y Salvo generado", datos.get()), nombreArchivo, tipo);
     }
 
     /** POST /generar-documento/{idSolicitud}: documento con número, fecha y observaciones del funcionario. */
@@ -549,59 +536,17 @@ public class SolicitudPazYSalvoRestController {
             @RequestParam(value = "tituloTrabajoGrado", required = false) String tituloTrabajoGrado,
             @RequestParam(value = "directorTrabajoGrado", required = false) String directorTrabajoGrado)
             throws java.io.IOException {
-        SolicitudPazYSalvo solicitud = solicitudPazYSalvoCU.buscarPorId(idSolicitud);
-        if (solicitud == null) {
-            return ResponseEntity.notFound().build();
-        }
-        Usuario usuario = usuarioDeLaSolicitud(solicitud);
-        if (usuario == null) {
+        var datos = solicitudPazYSalvoCU.prepararDocumento(idSolicitud, cedulaEstudiante, tituloTrabajoGrado,
+                directorTrabajoGrado, false);
+        if (datos.isEmpty()) {
             return ResponseEntity.internalServerError().build();
         }
-        Map<String, Object> datosDocumento = new HashMap<>();
-        datosDocumento.put("numeroDocumento", numeroDocumento);
-        datosDocumento.put("fechaDocumento", fechaDocumentoNormalizada(fechaDocumento));
-        datosDocumento.put("observaciones", observaciones != null ? observaciones : "");
 
-        Map<String, Object> datosSolicitud = datosSolicitud(solicitud, usuario, solicitud.getFecha_registro_solicitud(),
-                cedulaEstudiante, tituloTrabajoGrado, directorTrabajoGrado);
-
-        String nombreLimpio = solicitud.getObjUsuario().getNombre_completo().replaceAll("[^a-zA-Z0-9]", "_");
+        String nombreLimpio = datos.get().nombreArchivo().replaceAll("[^a-zA-Z0-9]", "_");
         String nombreArchivo = String.format("PAZ_SALVO_%s_%s.docx", nombreLimpio, numeroDocumento);
-        return descarga(generarDocumentoPazYSalvo(datosDocumento, datosSolicitud), nombreArchivo, MediaType.APPLICATION_OCTET_STREAM);
-    }
-
-    /** El usuario completo (con cédula y programa); null si la solicitud no lo trae o no existe. */
-    private Usuario usuarioDeLaSolicitud(SolicitudPazYSalvo solicitud) {
-        if (solicitud.getObjUsuario() == null || solicitud.getObjUsuario().getId_usuario() == null) {
-            return null;
-        }
-        return usuarioCU.buscarUsuarioPorId(solicitud.getObjUsuario().getId_usuario()).orElse(null);
-    }
-
-    /**
-     * Datos del estudiante para la plantilla. Cédula, título y director: el valor enviado si viene;
-     * si no, el guardado (cédula del usuario, título y director de la solicitud); si no, un texto por defecto.
-     */
-    private Map<String, Object> datosSolicitud(SolicitudPazYSalvo solicitud, Usuario usuario, Object fechaSolicitud,
-            String cedula, String titulo, String director) {
-        Map<String, Object> datos = new HashMap<>();
-        datos.put("nombreEstudiante", usuario.getNombre_completo());
-        datos.put("codigoEstudiante", usuario.getCodigo());
-        datos.put("programa", usuario.getObjPrograma() != null ? usuario.getObjPrograma().getNombre_programa() : PROGRAMA_POR_DEFECTO);
-        datos.put("fechaSolicitud", fechaSolicitud);
-        datos.put("cedulaEstudiante", primeroConTexto(cedula, usuario.getCedula(), "No especificada", false));
-        datos.put("tituloTrabajoGrado", primeroConTexto(titulo, solicitud.getTitulo_trabajo_grado(), "Trabajo de grado", true));
-        datos.put("directorTrabajoGrado", primeroConTexto(director, solicitud.getDirector_trabajo_grado(), "Director asignado", true));
-        return datos;
-    }
-
-    private static String primeroConTexto(String enviado, String guardado, String porDefecto, boolean recortar) {
-        for (String valor : new String[] { enviado, guardado }) {
-            if (valor != null && !valor.trim().isEmpty()) {
-                return recortar ? valor.trim() : valor;
-            }
-        }
-        return porDefecto;
+        return descarga(generarDocumentoPazYSalvo(numeroDocumento, fechaDocumentoNormalizada(fechaDocumento),
+                observaciones == null ? "" : observaciones, datos.get()), nombreArchivo,
+                MediaType.APPLICATION_OCTET_STREAM);
     }
 
     /** "YYYY-MM-DD" (si viene con hora se toma solo la fecha); si falta o no tiene ese formato, la fecha de hoy. */
@@ -618,14 +563,9 @@ public class SolicitudPazYSalvoRestController {
         return LocalDate.now().toString();
     }
 
-    private byte[] generarDocumentoPazYSalvo(Map<String, Object> datosDocumento, Map<String, Object> datosSolicitud)
+    private byte[] generarDocumentoPazYSalvo(String numero, String fecha, String observaciones, DatosDocumento datos)
             throws java.io.IOException {
-        co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.DTORespuesta.DocumentRequest request =
-                new co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.DTORespuesta.DocumentRequest();
-        request.setTipoDocumento("PAZ_SALVO");
-        request.setDatosDocumento(datosDocumento);
-        request.setDatosSolicitud(datosSolicitud);
-        return documentGeneratorService.generarDocumento(request).toByteArray();
+        return documentGeneratorService.generarPazYSalvo(numero, fecha, observaciones, datos).toByteArray();
     }
 
     private static ResponseEntity<byte[]> descarga(byte[] contenido, String nombreArchivo, MediaType tipo) {
@@ -641,7 +581,7 @@ public class SolicitudPazYSalvoRestController {
      */
     @PreAuthorize("isAuthenticated()")
     @PostMapping("/subir-documento")
-    public ResponseEntity<Map<String, Object>> subirDocumentoPazSalvo(
+    public ResponseEntity<?> subirDocumentoPazSalvo(
             @RequestParam("file") MultipartFile file) {
         ValidadorArchivoPdf.Rechazo rechazo = ValidadorArchivoPdf.validar(file, ValidadorArchivoPdf.MAXIMO_10MB);
         if (rechazo != null) {
@@ -664,14 +604,11 @@ public class SolicitudPazYSalvoRestController {
         
         Documento documentoGuardado = documentosCU.registrarDocumento(doc);
         
-        Map<String, Object> respuesta = new HashMap<>();
-        respuesta.put("success", true);
-        respuesta.put("message", "Documento subido exitosamente (sin asociar)");
-        respuesta.put("documento_id", documentoGuardado.getId_documento());
-        respuesta.put("nombre", nombreOriginal);
-        respuesta.put("fecha", documentoGuardado.getFecha_documento());
+        return ResponseEntity.ok(new DocumentoSubido(true, "Documento subido exitosamente (sin asociar)",
+                documentoGuardado.getId_documento(), nombreOriginal, documentoGuardado.getFecha_documento()));
+    }
 
-        return ResponseEntity.ok(respuesta);
+    record DocumentoSubido(boolean success, String message, Integer documento_id, String nombre, Date fecha) {
     }
 
     /**
@@ -735,17 +672,18 @@ public class SolicitudPazYSalvoRestController {
             nombreArchivo = rutaArchivo.substring(rutaArchivo.lastIndexOf("/") + 1);
         }
         
-        // Configurar Content-Disposition con filename y filename* (UTF-8)
-        String encoded = java.net.URLEncoder.encode(nombreArchivo, java.nio.charset.StandardCharsets.UTF_8)
-            .replace("+", "%20");
-        String contentDisposition = "attachment; filename=\"" + nombreArchivo + "\"; filename*=UTF-8''" + encoded;
-
-        return ResponseEntity.ok()
-            .header(HttpHeaders.CONTENT_DISPOSITION, contentDisposition)
-            .contentType(MediaType.APPLICATION_PDF)
-            .body(archivo);
+        return descargaPdfConNombreUtf8(archivo, nombreArchivo);
     }
 
+    private static ResponseEntity<byte[]> descargaPdfConNombreUtf8(byte[] contenido, String nombre) {
+        String codificado = java.net.URLEncoder.encode(nombre, java.nio.charset.StandardCharsets.UTF_8)
+                .replace("+", "%20");
+        return ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_DISPOSITION,
+                        "attachment; filename=\"" + nombre + "\"; filename*=UTF-8''" + codificado)
+                .contentType(MediaType.APPLICATION_PDF)
+                .body(contenido);
+    }
 
     /**
      * Descargar oficio por ID de solicitud de paz y salvo
@@ -777,17 +715,7 @@ public class SolicitudPazYSalvoRestController {
                             documento.getRuta_documento() != null ? documento.getRuta_documento() : documento.getNombre()
                         );
                         
-                        // Configurar el header Content-Disposition con filename y filename* (UTF-8)
-                        String original = documento.getNombre();
-                        String encoded = java.net.URLEncoder.encode(original, java.nio.charset.StandardCharsets.UTF_8)
-                            .replace("+", "%20");
-                        String contentDisposition = "attachment; filename=\"" + original + "\"; filename*=UTF-8''" + encoded;
-
-                        return ResponseEntity.ok()
-                            .header(HttpHeaders.CONTENT_DISPOSITION, contentDisposition)
-                            .contentType(MediaType.APPLICATION_PDF)
-                            .body(archivo);
-                            
+                        return descargaPdfConNombreUtf8(archivo, documento.getNombre());
                     } catch (Exception e) {
                         continue; // Probar el siguiente documento
                     }

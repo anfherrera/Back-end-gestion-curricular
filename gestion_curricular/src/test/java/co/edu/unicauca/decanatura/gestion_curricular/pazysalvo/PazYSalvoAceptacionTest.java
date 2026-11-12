@@ -279,6 +279,18 @@ class PazYSalvoAceptacionTest {
                 .andExpect(header().string("Content-Disposition", "attachment; filename=\"PazYSalvo_37.docx\""));
     }
 
+    @Test
+    void generarDocumentoRespetaPropiedadYDevuelve404SiNoExiste() throws Exception {
+        for (String formato : java.util.List.of("pdf", "docx")) {
+            mockMvc.perform(get("/api/solicitudes-pazysalvo/generarDocumentoPazYSalvo/37/" + formato)
+                            .header("Authorization", tokenEstudiante))
+                    .andExpect(status().isForbidden());
+            mockMvc.perform(get("/api/solicitudes-pazysalvo/generarDocumentoPazYSalvo/999999/" + formato)
+                            .header("Authorization", tokenSecretaria))
+                    .andExpect(status().isNotFound());
+        }
+    }
+
     // ==================== CA-GEPA4-04: ESTUDIANTE SOLO VE SUS PROPIAS SOLICITUDES ====================
 
     @Test

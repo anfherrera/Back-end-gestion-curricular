@@ -1,6 +1,7 @@
 package co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.formateador;
 
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarSolicitudHomologacionCUIntPort;
+import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarSolicitudPazYSalvoCUIntPort.DatosDocumento;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarSolicitudReingresoCUIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.SolicitudHomologacion;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.SolicitudReingreso;
@@ -26,6 +27,24 @@ public class DocumentGeneratorService {
     private final GestionarSolicitudHomologacionCUIntPort solicitudHomologacionCU;
     private final GestionarSolicitudReingresoCUIntPort solicitudReingresoCU;
 
+    public ByteArrayOutputStream generarPazYSalvo(String numero, String fecha, String observaciones,
+                                                  DatosDocumento datos) throws IOException {
+        DocumentRequest request = new DocumentRequest();
+        request.setTipoDocumento("PAZ_SALVO");
+        request.setDatosDocumento(Map.of("numeroDocumento", numero, "fechaDocumento", fecha,
+                "observaciones", observaciones));
+        Map<String, Object> solicitud = new HashMap<>();
+        solicitud.put("nombreEstudiante", datos.nombreEstudiante());
+        solicitud.put("codigoEstudiante", datos.codigoEstudiante());
+        solicitud.put("programa", datos.programa());
+        solicitud.put("fechaSolicitud", datos.fechaSolicitud());
+        solicitud.put("cedulaEstudiante", datos.cedula());
+        solicitud.put("tituloTrabajoGrado", datos.titulo());
+        solicitud.put("directorTrabajoGrado", datos.director());
+        request.setDatosSolicitud(solicitud);
+        return generarDocumento(request);
+    }
+
     /**
      * Generar documento Word usando plantilla
      */
@@ -39,21 +58,13 @@ public class DocumentGeneratorService {
             throw new IOException("Plantilla no encontrada: " + templatePath);
         }
         
-        InputStream templateStream = resource.getInputStream();
-        
-        // Crear documento desde plantilla
-        XWPFDocument document = new XWPFDocument(templateStream);
-        
-        // Reemplazar placeholders
-        reemplazarPlaceholders(document, request);
-        
-        // Convertir a bytes con codificación UTF-8
-        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-        document.write(outputStream);
-        document.close();
-        templateStream.close();
-        
-        return outputStream;
+        try (InputStream templateStream = resource.getInputStream();
+             XWPFDocument document = new XWPFDocument(templateStream)) {
+            reemplazarPlaceholders(document, request);
+            ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+            document.write(outputStream);
+            return outputStream;
+        }
     }
 
     /**

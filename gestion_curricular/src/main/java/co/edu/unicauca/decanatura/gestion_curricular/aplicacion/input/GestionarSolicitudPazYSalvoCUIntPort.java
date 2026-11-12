@@ -70,4 +70,11 @@ public interface GestionarSolicitudPazYSalvoCUIntPort {
             TRANSICION_NO_PERMITIDA, ROL_NO_AUTORIZADO
         }
     }
+
+    record DatosDocumento(String nombreArchivo, String nombreEstudiante, String codigoEstudiante, String programa,
+                          Object fechaSolicitud, String cedula, String titulo, String director) {
+    }
+
+    Optional<DatosDocumento> prepararDocumento(Integer id, String cedula, String titulo, String director,
+                                               boolean fechaLocal);
 }

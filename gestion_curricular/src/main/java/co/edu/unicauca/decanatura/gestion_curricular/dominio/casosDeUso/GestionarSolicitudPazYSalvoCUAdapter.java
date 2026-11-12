@@ -1,5 +1,7 @@
 package co.edu.unicauca.decanatura.gestion_curricular.dominio.casosDeUso;
 
+import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -229,6 +231,39 @@ public class GestionarSolicitudPazYSalvoCUAdapter implements GestionarSolicitudP
             log.warn("No se pudo notificar el cambio de estado de Paz y Salvo para la solicitud {}", idSolicitud, e);
         }
         return Optional.empty();
+    }
+
+    @Override
+    public Optional<DatosDocumento> prepararDocumento(Integer id, String cedula, String titulo, String director,
+                                                      boolean fechaLocal) {
+        SolicitudPazYSalvo solicitud = buscarPorId(id);
+        if (solicitud.getObjUsuario() == null || solicitud.getObjUsuario().getId_usuario() == null) {
+            return Optional.empty();
+        }
+        Usuario usuario = usuarioGateway.obtenerUsuarioPorId(solicitud.getObjUsuario().getId_usuario());
+        if (usuario == null) {
+            return Optional.empty();
+        }
+        Date registro = solicitud.getFecha_registro_solicitud();
+        Object fecha = fechaLocal
+                ? (registro == null ? LocalDate.now() : registro.toInstant().atZone(ZoneId.systemDefault()).toLocalDate())
+                : registro;
+        return Optional.of(new DatosDocumento(solicitud.getObjUsuario().getNombre_completo(),
+                usuario.getNombre_completo(), usuario.getCodigo(),
+                usuario.getObjPrograma() == null ? "Ingeniería Electrónica y Telecomunicaciones"
+                        : usuario.getObjPrograma().getNombre_programa(),
+                fecha, primeroConTexto(cedula, usuario.getCedula(), "No especificada", false),
+                primeroConTexto(titulo, solicitud.getTitulo_trabajo_grado(), "Trabajo de grado", true),
+                primeroConTexto(director, solicitud.getDirector_trabajo_grado(), "Director asignado", true)));
+    }
+
+    private static String primeroConTexto(String enviado, String guardado, String porDefecto, boolean recortar) {
+        for (String valor : new String[] { enviado, guardado }) {
+            if (valor != null && !valor.trim().isEmpty()) {
+                return recortar ? valor.trim() : valor;
+            }
+        }
+        return porDefecto;
     }
 
     /** Último estado con texto de la solicitud (ignora el registro inicial vacío). Null si no hay. */
