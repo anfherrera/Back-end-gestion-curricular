@@ -18,10 +18,10 @@ import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarC
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarCursoOfertadoVeranoCUIntPort.DatosCreacion;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.excepciones.DatosCursoInvalidosException;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarSolicitudCursoVeranoCUIntPort;
+import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarSolicitudCursoVeranoCUIntPort.EstudianteCurso;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarSalonesCUIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.CursoOfertadoVerano;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.SolicitudCursoVeranoPreinscripcion;
-import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.SolicitudCursoVeranoIncripcion;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Enums.PeriodoAcademicoEnum;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.DTORespuesta.CursosOfertadosDTORespuesta;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.DTOPeticion.CreateCursoDTO;
@@ -31,7 +31,6 @@ import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.TransicionE
 import java.util.List;
 import java.util.Map;
 import java.util.HashMap;
-import java.util.ArrayList;
 import java.util.stream.Collectors;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.formateador.GeneradorPdfCursosVerano;
 
@@ -665,177 +664,56 @@ public class CursosVeranoRestController {
     public ResponseEntity<Map<String, Object>> obtenerEstudiantesDelCurso(
             @PathVariable Integer idCurso) {
         
-        // Verificar que el curso existe
         CursoOfertadoVerano curso = cursoCU.obtenerCursoPorId(idCurso);
         if (curso == null) {
-            Map<String, Object> error = new HashMap<>();
-            error.put("error", "Curso no encontrado con ID: " + idCurso);
             return ResponseEntity.notFound().build();
         }
-        
-        // Obtener preinscripciones
-        List<SolicitudCursoVeranoPreinscripcion> preinscripciones = solicitudCU.buscarPreinscripcionesPorCurso(idCurso);
-        
-        // Obtener inscripciones
-        List<SolicitudCursoVeranoIncripcion> inscripciones = solicitudCU.buscarInscripcionesPorCurso(idCurso);
-        
-        // Procesar preinscripciones
-        List<Map<String, Object>> estudiantesPreinscritos = new ArrayList<>();
-        for (SolicitudCursoVeranoPreinscripcion preinscripcion : preinscripciones) {
-            if (preinscripcion.getObjUsuario() == null) {
-                continue;
-            }
-            
-            Map<String, Object> estudiante = new HashMap<>();
-            estudiante.put("id_usuario", preinscripcion.getObjUsuario().getId_usuario());
-            estudiante.put("nombre_completo", preinscripcion.getObjUsuario().getNombre_completo());
-            estudiante.put("codigo", preinscripcion.getObjUsuario().getCodigo());
-            estudiante.put("correo", preinscripcion.getObjUsuario().getCorreo());
-            
-            // Información del programa
-            if (preinscripcion.getObjUsuario().getObjPrograma() != null) {
-                estudiante.put("programa", preinscripcion.getObjUsuario().getObjPrograma().getNombre_programa());
-                estudiante.put("id_programa", preinscripcion.getObjUsuario().getObjPrograma().getId_programa());
-            }
-            
-            // Estado de la preinscripción
-            String estadoPreinscripcion = "Enviada";
-            if (preinscripcion.getEstadosSolicitud() != null && !preinscripcion.getEstadosSolicitud().isEmpty()) {
-                estadoPreinscripcion = preinscripcion.getEstadosSolicitud()
-                    .get(preinscripcion.getEstadosSolicitud().size() - 1).getEstado_actual();
-            }
-            estudiante.put("estado_preinscripcion", estadoPreinscripcion);
-            estudiante.put("fecha_preinscripcion", preinscripcion.getFecha_registro_solicitud());
-            estudiante.put("id_solicitud_preinscripcion", preinscripcion.getId_solicitud());
-            
-            // Condición de la solicitud
-            if (preinscripcion.getCodicion_solicitud() != null) {
-                estudiante.put("condicion", preinscripcion.getCodicion_solicitud().toString());
-            }
-            
-            // Verificar si tiene inscripción
-            boolean tieneInscripcion = false;
-            String estadoInscripcion = null;
-            Integer idInscripcion = null;
-            for (SolicitudCursoVeranoIncripcion inscripcion : inscripciones) {
-                if (inscripcion.getObjUsuario() != null && 
-                    inscripcion.getObjUsuario().getId_usuario().equals(preinscripcion.getObjUsuario().getId_usuario())) {
-                    tieneInscripcion = true;
-                    idInscripcion = inscripcion.getId_solicitud();
-                    if (inscripcion.getEstadosSolicitud() != null && !inscripcion.getEstadosSolicitud().isEmpty()) {
-                        estadoInscripcion = inscripcion.getEstadosSolicitud()
-                            .get(inscripcion.getEstadosSolicitud().size() - 1).getEstado_actual();
-                    }
-                    break;
-                }
-            }
-            
-            estudiante.put("tiene_inscripcion", tieneInscripcion);
-            estudiante.put("estado_inscripcion", estadoInscripcion != null ? estadoInscripcion : "Sin inscripción");
-            estudiante.put("id_solicitud_inscripcion", idInscripcion);
-            
-            // Determinar el tipo basado en si tiene inscripción válida
-            // Si tiene inscripción y está validada (Pago_Validado), es "Inscrito", sino "Preinscrito"
-            if (tieneInscripcion && estadoInscripcion != null && "Pago_Validado".equals(estadoInscripcion)) {
-                estudiante.put("tipo", "Inscrito");
-            } else {
-                estudiante.put("tipo", "Preinscrito");
-            }
-            
-            estudiantesPreinscritos.add(estudiante);
-        }
-        
-        // Procesar inscripciones que no tienen preinscripción (casos especiales)
-        List<Map<String, Object>> estudiantesInscritos = new ArrayList<>();
-        for (SolicitudCursoVeranoIncripcion inscripcion : inscripciones) {
-            if (inscripcion.getObjUsuario() == null) {
-                continue;
-            }
-            
-            // Verificar si ya fue procesado en preinscripciones
-            boolean yaProcesado = estudiantesPreinscritos.stream()
-                .anyMatch(e -> e.get("id_usuario").equals(inscripcion.getObjUsuario().getId_usuario()));
-            
-            if (!yaProcesado) {
-                Map<String, Object> estudiante = new HashMap<>();
-                estudiante.put("id_usuario", inscripcion.getObjUsuario().getId_usuario());
-                estudiante.put("nombre_completo", inscripcion.getObjUsuario().getNombre_completo());
-                estudiante.put("codigo", inscripcion.getObjUsuario().getCodigo());
-                estudiante.put("correo", inscripcion.getObjUsuario().getCorreo());
-                
-                // Información del programa
-                if (inscripcion.getObjUsuario().getObjPrograma() != null) {
-                    estudiante.put("programa", inscripcion.getObjUsuario().getObjPrograma().getNombre_programa());
-                    estudiante.put("id_programa", inscripcion.getObjUsuario().getObjPrograma().getId_programa());
-                }
-                
-                // Estado de la inscripción
-                String estadoInscripcion = "Enviada";
-                if (inscripcion.getEstadosSolicitud() != null && !inscripcion.getEstadosSolicitud().isEmpty()) {
-                    estadoInscripcion = inscripcion.getEstadosSolicitud()
-                        .get(inscripcion.getEstadosSolicitud().size() - 1).getEstado_actual();
-                }
-                estudiante.put("estado_inscripcion", estadoInscripcion);
-                estudiante.put("fecha_inscripcion", inscripcion.getFecha_registro_solicitud());
-                estudiante.put("id_solicitud_inscripcion", inscripcion.getId_solicitud());
-                
-                // Condición de la solicitud
-                if (inscripcion.getCodicion_solicitud() != null) {
-                    estudiante.put("condicion", inscripcion.getCodicion_solicitud().toString());
-                }
-                
-                estudiante.put("tiene_preinscripcion", false);
-                estudiante.put("estado_preinscripcion", null);
-                
-                // Determinar el tipo: solo es "Inscrito" si está validado, sino es "Preinscrito" o "En proceso"
-                if ("Pago_Validado".equals(estadoInscripcion)) {
-                    estudiante.put("tipo", "Inscrito");
-                } else {
-                    // Si tiene inscripción pero no está validada, aún es "Preinscrito" o "En proceso de inscripción"
-                    estudiante.put("tipo", "Preinscrito");
-                }
-                
-                estudiantesInscritos.add(estudiante);
-            }
-        }
-        
-        // Combinar ambas listas
-        List<Map<String, Object>> todosLosEstudiantes = new ArrayList<>();
-        todosLosEstudiantes.addAll(estudiantesPreinscritos);
-        todosLosEstudiantes.addAll(estudiantesInscritos);
-        
-        // Ordenar por nombre
-        todosLosEstudiantes.sort((a, b) -> {
-            String nombreA = (String) a.get("nombre_completo");
-            String nombreB = (String) b.get("nombre_completo");
-            if (nombreA == null) nombreA = "";
-            if (nombreB == null) nombreB = "";
-            return nombreA.compareToIgnoreCase(nombreB);
-        });
-        
-        // Preparar respuesta
+
+        var listado = solicitudCU.listarEstudiantesPorCurso(idCurso);
         Map<String, Object> respuesta = new HashMap<>();
         respuesta.put("id_curso", idCurso);
         respuesta.put("nombre_curso", curso.getObjMateria() != null ? curso.getObjMateria().getNombre() : "N/A");
         respuesta.put("codigo_curso", curso.getObjMateria() != null ? curso.getObjMateria().getCodigo() : "N/A");
         respuesta.put("cupo_estimado", curso.getCupo_estimado());
-        // Contar estudiantes con inscripción
-        
-        // Contar solo estudiantes realmente inscritos (con Pago_Validado)
-        long estudiantesRealmenteInscritos = todosLosEstudiantes.stream()
-            .filter(e -> {
-                String tipo = (String) e.get("tipo");
-                String estadoInscripcion = (String) e.get("estado_inscripcion");
-                return "Inscrito".equals(tipo) && estadoInscripcion != null && "Pago_Validado".equals(estadoInscripcion);
-            })
-            .count();
-        
-        respuesta.put("total_estudiantes", todosLosEstudiantes.size());
-        respuesta.put("total_preinscritos", estudiantesPreinscritos.size());
-        respuesta.put("total_inscritos", (int) estudiantesRealmenteInscritos);
-        respuesta.put("estudiantes", todosLosEstudiantes);
-        
+        respuesta.put("total_estudiantes", listado.estudiantes().size());
+        respuesta.put("total_preinscritos", listado.totalPreinscritos());
+        respuesta.put("total_inscritos", listado.totalInscritos());
+        respuesta.put("estudiantes", listado.estudiantes().stream().map(this::mapearEstudiante).toList());
         return ResponseEntity.ok(respuesta);
+    }
+
+    private Map<String, Object> mapearEstudiante(EstudianteCurso estudiante) {
+        var usuario = estudiante.usuario();
+        var preinscripcion = estudiante.preinscripcion();
+        var inscripcion = estudiante.inscripcion();
+        Map<String, Object> datos = new HashMap<>();
+        datos.put("id_usuario", usuario.getId_usuario());
+        datos.put("nombre_completo", usuario.getNombre_completo());
+        datos.put("codigo", usuario.getCodigo());
+        datos.put("correo", usuario.getCorreo());
+        if (usuario.getObjPrograma() != null) {
+            datos.put("programa", usuario.getObjPrograma().getNombre_programa());
+            datos.put("id_programa", usuario.getObjPrograma().getId_programa());
+        }
+
+        datos.put("estado_preinscripcion", estudiante.estadoPreinscripcion());
+        datos.put("estado_inscripcion", estudiante.estadoInscripcion());
+        datos.put("id_solicitud_inscripcion", inscripcion == null ? null : inscripcion.getId_solicitud());
+        datos.put("tipo", estudiante.inscrito() ? "Inscrito" : "Preinscrito");
+        if (preinscripcion != null) {
+            datos.put("fecha_preinscripcion", preinscripcion.getFecha_registro_solicitud());
+            datos.put("id_solicitud_preinscripcion", preinscripcion.getId_solicitud());
+            datos.put("tiene_inscripcion", inscripcion != null);
+        } else {
+            datos.put("fecha_inscripcion", inscripcion.getFecha_registro_solicitud());
+            datos.put("tiene_preinscripcion", false);
+        }
+
+        var condicion = preinscripcion != null ? preinscripcion.getCodicion_solicitud() : inscripcion.getCodicion_solicitud();
+        if (condicion != null) {
+            datos.put("condicion", condicion.toString());
+        }
+        return datos;
     }
 
     /**

@@ -1,6 +1,13 @@
 package co.edu.unicauca.decanatura.gestion_curricular.dominio.casosDeUso;
 
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
 import lombok.extern.slf4j.Slf4j;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarArchivosCUIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.servicios.AsociadorDocumentosPendientes;
@@ -255,6 +262,51 @@ public class GestionarSolicitudCursoVeranoCUAdapter implements GestionarSolicitu
             this.objFormateadorResultados.retornarRespuestaErrorReglaDeNegocio("El ID del curso no puede ser nulo");
         }
         return this.objGestionarSolicitudGateway.buscarInscripcionesPorCurso(idCurso);
+    }
+
+    @Override
+    public ListadoEstudiantes listarEstudiantesPorCurso(Integer idCurso) {
+        var preinscripciones = buscarPreinscripcionesPorCurso(idCurso);
+        var inscripciones = buscarInscripcionesPorCurso(idCurso);
+        Map<Integer, SolicitudCursoVeranoIncripcion> primeraInscripcionPorUsuario = new HashMap<>();
+        for (var inscripcion : inscripciones) {
+            if (inscripcion.getObjUsuario() != null) {
+                primeraInscripcionPorUsuario.putIfAbsent(inscripcion.getObjUsuario().getId_usuario(), inscripcion);
+            }
+        }
+
+        List<EstudianteCurso> estudiantes = new ArrayList<>();
+        Set<Integer> usuariosPreinscritos = new HashSet<>();
+        for (var preinscripcion : preinscripciones) {
+            Usuario usuario = preinscripcion.getObjUsuario();
+            if (usuario == null) {
+                continue;
+            }
+
+            usuariosPreinscritos.add(usuario.getId_usuario());
+            var inscripcion = primeraInscripcionPorUsuario.get(usuario.getId_usuario());
+            String estadoInscripcion = inscripcion == null ? null : ultimoEstado(inscripcion.getEstadosSolicitud());
+            estudiantes.add(new EstudianteCurso(usuario, preinscripcion, inscripcion, estadoOEnviada(preinscripcion),
+                    Objects.toString(estadoInscripcion, "Sin inscripción")));
+        }
+        int totalPreinscritos = estudiantes.size();
+
+        for (var inscripcion : inscripciones) {
+            Usuario usuario = inscripcion.getObjUsuario();
+            if (usuario != null && !usuariosPreinscritos.contains(usuario.getId_usuario())) {
+                estudiantes.add(new EstudianteCurso(usuario, null, inscripcion, null, estadoOEnviada(inscripcion)));
+            }
+        }
+
+        estudiantes.sort(Comparator.comparing(estudiante -> Objects.toString(estudiante.usuario().getNombre_completo(), ""),
+                String.CASE_INSENSITIVE_ORDER));
+        int totalInscritos = (int) estudiantes.stream().filter(EstudianteCurso::inscrito).count();
+        return new ListadoEstudiantes(estudiantes, totalPreinscritos, totalInscritos);
+    }
+
+    private static String estadoOEnviada(Solicitud solicitud) {
+        List<EstadoSolicitud> estados = solicitud.getEstadosSolicitud();
+        return estados == null || estados.isEmpty() ? "Enviada" : ultimoEstado(estados);
     }
 
     @Override

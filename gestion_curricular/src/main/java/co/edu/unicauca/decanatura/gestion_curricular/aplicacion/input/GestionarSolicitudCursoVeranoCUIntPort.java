@@ -5,6 +5,8 @@ import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Solicitud;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.SolicitudCursoVeranoIncripcion;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.SolicitudCursoVeranoPreinscripcion;
 
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Usuario;
+
 public interface GestionarSolicitudCursoVeranoCUIntPort {
     SolicitudCursoVeranoPreinscripcion crearSolicitudCursoVeranoPreinscripcion(SolicitudCursoVeranoPreinscripcion solicitudCursoVerano);
     SolicitudCursoVeranoIncripcion crearSolicitudCursoVeranoInscripcion(SolicitudCursoVeranoIncripcion solicitudCursoVerano);
@@ -18,6 +20,19 @@ public interface GestionarSolicitudCursoVeranoCUIntPort {
     List<SolicitudCursoVeranoPreinscripcion> buscarPreinscripcionesPorCurso(Integer idCurso);
     List<SolicitudCursoVeranoIncripcion> buscarInscripcionesPorCurso(Integer idCurso);
     
+    ListadoEstudiantes listarEstudiantesPorCurso(Integer idCurso);
+
+    record ListadoEstudiantes(List<EstudianteCurso> estudiantes, int totalPreinscritos, int totalInscritos) {
+    }
+
+    record EstudianteCurso(Usuario usuario, SolicitudCursoVeranoPreinscripcion preinscripcion,
+                           SolicitudCursoVeranoIncripcion inscripcion, String estadoPreinscripcion,
+                           String estadoInscripcion) {
+        public boolean inscrito() {
+            return "Pago_Validado".equals(estadoInscripcion);
+        }
+    }
+
     // Métodos para gestión de funcionarios - Aprobar/Rechazar
     SolicitudCursoVeranoPreinscripcion aprobarPreinscripcion(Integer idSolicitud, String comentarios);
     SolicitudCursoVeranoPreinscripcion rechazarPreinscripcion(Integer idSolicitud, String motivo);

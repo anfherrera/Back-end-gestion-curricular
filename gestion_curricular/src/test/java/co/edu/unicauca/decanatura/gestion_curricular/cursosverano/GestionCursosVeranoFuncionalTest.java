@@ -451,8 +451,7 @@ class GestionCursosVeranoFuncionalTest {
     @Test
     @Transactional
     void crearCursoConservaRespuestaYResuelveElSalonPorId() throws Exception {
-        jdbc.update("INSERT INTO Materias(idMateria, codigo, nombre, creditos) VALUES (901, 'REF901', 'Materia de prueba', 3)");
-        jdbc.update("INSERT INTO Docentes(idDocente, codigo_docente, nombre_docente) VALUES (901, 'REF901', 'Docente de prueba')");
+        registrarMateriaYDocenteDePrueba();
         jdbc.update("INSERT INTO Salones(idSalon, numero_salon, activo) VALUES (901, 'REF-901', true)");
 
         ObjectNode peticion = (ObjectNode) objectMapper.readTree(peticionCrearCurso("2025-08-01"));
@@ -498,6 +497,67 @@ class GestionCursosVeranoFuncionalTest {
                   "grupo": " a "
                 }
                 """.formatted(fechaFin);
+    }
+
+    @Test
+    void listarEstudiantesDeCursoVacio() throws Exception {
+        mockMvc.perform(get("/api/cursos-intersemestrales/cursos-verano/2/estudiantes")
+                        .header("Authorization", tokenCoordinador))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.total_estudiantes").value(0))
+                .andExpect(jsonPath("$.total_preinscritos").value(0))
+                .andExpect(jsonPath("$.total_inscritos").value(0))
+                .andExpect(jsonPath("$.estudiantes").isEmpty());
+    }
+
+    @Test
+    @Transactional
+    void listarEstudiantesConPreinscripcionEInscripcion() throws Exception {
+        registrarMateriaYDocenteDePrueba();
+        jdbc.update("""
+                INSERT INTO Cursos_ofertados(idCurso, idfkMateria, idfkDocente, grupo, cupo_estimado, salon)
+                VALUES (901, 901, 901, 'A', 30, 'REF-901')
+                """);
+        registrarSolicitudVerano(901, 1, false);
+        registrarSolicitudVerano(902, 1, true);
+        registrarSolicitudVerano(903, 5, false);
+        registrarSolicitudVerano(904, 26, true);
+        jdbc.update("""
+                INSERT INTO EstadosSolicitudes(idfkSolicitud, fecha_registro_estado, estado_actual)
+                VALUES (902, '2025-07-03 08:00:00', 'Pago_Validado')
+                """);
+
+        mockMvc.perform(get("/api/cursos-intersemestrales/cursos-verano/901/estudiantes")
+                        .header("Authorization", tokenCoordinador))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.total_estudiantes").value(3))
+                .andExpect(jsonPath("$.total_preinscritos").value(2))
+                .andExpect(jsonPath("$.total_inscritos").value(1))
+                .andExpect(jsonPath("$.estudiantes[0].id_usuario").value(26))
+                .andExpect(jsonPath("$.estudiantes[0].tiene_preinscripcion").value(false))
+                .andExpect(jsonPath("$.estudiantes[0].estado_inscripcion").value("Enviada"))
+                .andExpect(jsonPath("$.estudiantes[1].id_usuario").value(1))
+                .andExpect(jsonPath("$.estudiantes[1].id_solicitud_inscripcion").value(902))
+                .andExpect(jsonPath("$.estudiantes[1].tipo").value("Inscrito"))
+                .andExpect(jsonPath("$.estudiantes[2].id_usuario").value(5))
+                .andExpect(jsonPath("$.estudiantes[2].estado_inscripcion").value("Sin inscripción"))
+                .andExpect(jsonPath("$.estudiantes[2].tipo").value("Preinscrito"));
+    }
+
+    private void registrarMateriaYDocenteDePrueba() {
+        jdbc.update("INSERT INTO Materias(idMateria, codigo, nombre, creditos) VALUES (901, 'REF901', 'Materia de prueba', 3)");
+        jdbc.update("INSERT INTO Docentes(idDocente, codigo_docente, nombre_docente) VALUES (901, 'REF901', 'Docente de prueba')");
+    }
+
+    private void registrarSolicitudVerano(int id, int idUsuario, boolean inscripcion) {
+        jdbc.update("""
+                INSERT INTO Solicitudes(idSolicitud, idUsuario, idCurso, fecha_registro_solicitud,
+                                        periodo_academico, nombre_solicitud)
+                VALUES (?, ?, 901, '2025-07-02 08:00:00', '2025-2', 'Curso de verano')
+                """, id, idUsuario);
+        String tabla = inscripcion ? "Solicitudes_Cursos_Verano_Inscripcion" : "Solicitudes_Cursos_Verano_Preinscripcion";
+        jdbc.update("INSERT INTO " + tabla
+                + "(idSolicitud, nombre_estudiante, observacion, codicion_solicitud) VALUES (?, 'Prueba', '', 'Primera_Vez')", id);
     }
 
 }
