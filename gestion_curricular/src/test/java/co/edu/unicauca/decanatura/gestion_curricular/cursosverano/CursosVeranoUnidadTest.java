@@ -8,6 +8,9 @@ import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.CursoOferta
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.EstadoCursoOfertado;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Materia;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Docente;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Programa;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Solicitud;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Usuario;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -315,5 +318,45 @@ class CursosVeranoUnidadTest {
         verify(solicitudGateway, never()).listarSolicitudes();
         verify(usuarioGateway, never()).listarUsuarios();
     }
+    @Test
+    void listarPorFiltrosConservaCursosSinSolicitudesYRespetaElUltimoEstado() {
+        Programa programa = new Programa();
+        programa.setId_programa(7);
+        Usuario estudiante = new Usuario();
+        estudiante.setObjPrograma(programa);
+        Solicitud solicitud = new Solicitud();
+        solicitud.setObjUsuario(estudiante);
+
+        CursoOfertadoVerano libre = cursoEnPeriodo("2025-2", "Publicado");
+        CursoOfertadoVerano conSolicitud = cursoEnPeriodo("2025-2", "Preinscripcion");
+        conSolicitud.setSolicitudes(List.of(solicitud));
+        CursoOfertadoVerano conInscrito = cursoEnPeriodo("2025-2", "Inscripcion");
+        conInscrito.setEstudiantesInscritos(List.of(estudiante));
+        CursoOfertadoVerano cerrado = cursoEnPeriodo("2025-2", "Publicado", "Cerrado");
+        CursoOfertadoVerano otroPeriodo = cursoEnPeriodo("2025-1", "Publicado");
+        CursoOfertadoVerano sinEstado = cursoEnPeriodo("2025-2");
+
+        when(cursoVeranoGateway.listarTodos())
+                .thenReturn(List.of(libre, conSolicitud, conInscrito, cerrado, otroPeriodo, sinEstado));
+
+        assertThat(cursosVeranoCU.listarPorFiltros("2025-2", 7, true))
+                .containsExactly(libre, conSolicitud, conInscrito);
+        assertThat(cursosVeranoCU.listarPorFiltros("2025-2", 8, false))
+                .containsExactly(libre, cerrado, sinEstado);
+        assertThat(cursosVeranoCU.listarPorFiltros(null, null, true))
+                .containsExactly(libre, conSolicitud, conInscrito, otroPeriodo);
+    }
+
+    private CursoOfertadoVerano cursoEnPeriodo(String periodo, String... estados) {
+        CursoOfertadoVerano curso = new CursoOfertadoVerano();
+        curso.setPeriodo_academico(periodo);
+        curso.setEstadosCursoOfertados(Arrays.stream(estados).map(nombre -> {
+            EstadoCursoOfertado estado = new EstadoCursoOfertado();
+            estado.setEstado_actual(nombre);
+            return estado;
+        }).toList());
+        return curso;
+    }
+
 }
 

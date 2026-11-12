@@ -300,5 +300,40 @@ public class GestionarCursoOfertadoVeranoCUAdapter implements GestionarCursoOfer
         return this.objGestionarCursoOfertadoVeranoGateway.listarTodos();
     }
 
+    @Override
+    public List<CursoOfertadoVerano> listarPorFiltros(String periodo, Integer idPrograma, boolean soloVisibles) {
+        return listarTodos().stream()
+                .filter(curso -> periodo == null || periodo.equals(curso.getPeriodo_academico()))
+                .filter(curso -> !soloVisibles || esVisibleParaEstudiantes(curso))
+                .filter(curso -> idPrograma == null || disponibleParaPrograma(curso, idPrograma))
+                .toList();
+    }
+
+    private boolean disponibleParaPrograma(CursoOfertadoVerano curso, Integer idPrograma) {
+        List<Usuario> inscritos = curso.getEstudiantesInscritos();
+        List<Solicitud> solicitudes = curso.getSolicitudes();
+        boolean sinInscritos = inscritos == null || inscritos.isEmpty();
+        boolean sinSolicitudes = solicitudes == null || solicitudes.isEmpty();
+
+        return (sinInscritos && sinSolicitudes)
+                || (!sinInscritos && inscritos.stream().anyMatch(usuario -> perteneceAlPrograma(usuario, idPrograma)))
+                || (!sinSolicitudes && solicitudes.stream().map(Solicitud::getObjUsuario)
+                        .anyMatch(usuario -> perteneceAlPrograma(usuario, idPrograma)));
+    }
+
+    private boolean perteneceAlPrograma(Usuario usuario, Integer idPrograma) {
+        return usuario != null && usuario.getObjPrograma() != null
+                && idPrograma.equals(usuario.getObjPrograma().getId_programa());
+    }
+
+    private boolean esVisibleParaEstudiantes(CursoOfertadoVerano curso) {
+        List<EstadoCursoOfertado> estados = curso.getEstadosCursoOfertados();
+        if (estados == null || estados.isEmpty()) {
+            return false;
+        }
+        String estado = estados.get(estados.size() - 1).getEstado_actual();
+        return "Publicado".equals(estado) || "Preinscripcion".equals(estado) || "Inscripcion".equals(estado);
+    }
+
     
 }

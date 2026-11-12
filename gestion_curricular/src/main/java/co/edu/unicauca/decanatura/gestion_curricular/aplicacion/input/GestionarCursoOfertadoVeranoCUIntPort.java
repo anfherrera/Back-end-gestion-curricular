@@ -18,6 +18,8 @@ public interface GestionarCursoOfertadoVeranoCUIntPort {
 
     List<CursoOfertadoVerano> listarTodos();
 
+    List<CursoOfertadoVerano> listarPorFiltros(String periodo, Integer idPrograma, boolean soloVisibles);
+
     /** Registra al estudiante en la lista del curso. @return true si quedó asociado */
     boolean asociarEstudiante(Integer idCurso, Integer idUsuario);
 

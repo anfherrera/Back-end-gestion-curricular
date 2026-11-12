@@ -62,86 +62,12 @@ public class CursosVeranoRestController {
     public ResponseEntity<List<CursosOfertadosDTORespuesta>> obtenerCursosVerano(
             @RequestParam(required = false) String periodoAcademico,
             @RequestParam(required = false) Integer idPrograma) {
-        List<CursoOfertadoVerano> cursos = cursoCU.listarTodos();
-        
-        // Filtrar por período académico si se proporciona
-        if (periodoAcademico != null && !periodoAcademico.trim().isEmpty()) {
-            String periodoFiltro = periodoAcademico.trim();
-            cursos = cursos.stream()
-                    .filter(curso -> curso.getPeriodo_academico() != null 
-                            && curso.getPeriodo_academico().equals(periodoFiltro))
-                    .collect(Collectors.toList());
-        } else {
-            // Si no se proporciona período, usar el período actual automáticamente
-            PeriodoAcademicoEnum periodoActualEnum = PeriodoAcademicoEnum.getPeriodoActual();
-            if (periodoActualEnum != null) {
-                final String periodoFiltro = periodoActualEnum.getValor();
-                cursos = cursos.stream()
-                        .filter(curso -> {
-                            boolean coincide = curso.getPeriodo_academico() != null 
-                                    && curso.getPeriodo_academico().equals(periodoFiltro);
-                            if (!coincide && curso.getPeriodo_academico() != null) {
-                            }
-                            return coincide;
-                        })
-                        .collect(Collectors.toList());
-            } else {
-            }
-        }
-        
-        // Si se proporciona idPrograma, filtrar cursos que tengan estudiantes inscritos o solicitudes de ese programa
-        // También incluir cursos sin solicitudes/inscripciones (disponibles para todos)
-        if (idPrograma != null) {
-            cursos = cursos.stream()
-                    .filter(curso -> {
-                        // Verificar si el curso tiene estudiantes inscritos del programa especificado
-                        boolean tieneEstudiantesDelPrograma = false;
-                        if (curso.getEstudiantesInscritos() != null && !curso.getEstudiantesInscritos().isEmpty()) {
-                            tieneEstudiantesDelPrograma = curso.getEstudiantesInscritos().stream()
-                                    .anyMatch(usuario -> usuario.getObjPrograma() != null
-                                            && usuario.getObjPrograma().getId_programa().equals(idPrograma));
-                        }
-                        
-                        // Verificar si el curso tiene solicitudes de estudiantes del programa especificado
-                        boolean tieneSolicitudesDelPrograma = false;
-                        if (curso.getSolicitudes() != null && !curso.getSolicitudes().isEmpty()) {
-                            tieneSolicitudesDelPrograma = curso.getSolicitudes().stream()
-                                    .anyMatch(solicitud -> solicitud.getObjUsuario() != null 
-                                            && solicitud.getObjUsuario().getObjPrograma() != null
-                                            && solicitud.getObjUsuario().getObjPrograma().getId_programa().equals(idPrograma));
-                        }
-                        
-                        // Incluir el curso si:
-                        // 1. Tiene estudiantes inscritos del programa, O
-                        // 2. Tiene solicitudes del programa, O
-                        // 3. No tiene ni estudiantes ni solicitudes (disponible para todos)
-                        boolean sinInscripcionesNiSolicitudes = 
-                                (curso.getEstudiantesInscritos() == null || curso.getEstudiantesInscritos().isEmpty())
-                                && (curso.getSolicitudes() == null || curso.getSolicitudes().isEmpty());
-                        
-                        return tieneEstudiantesDelPrograma || tieneSolicitudesDelPrograma || sinInscripcionesNiSolicitudes;
-                    })
-                    .collect(Collectors.toList());
-        }
-        
-        
-        List<CursosOfertadosDTORespuesta> respuesta = cursos.stream()
-                .map(curso -> {
-                    // Log para verificar docente antes del mapeo
-                    if (curso.getObjDocente() == null) {
-                    } else {
-                    }
-                    return cursoMapper.mappearDeCursoOfertadoARespuestaDisponible(curso);
-                })
-                .map(dto -> {
-                    // Log para verificar docente despues del mapeo
-                    if (dto.getObjDocente() == null) {
-                    } else {
-                    }
-                    return cursoMapper.postMapCurso(dto);
-                })
-                .collect(Collectors.toList());
-        
+        List<CursosOfertadosDTORespuesta> respuesta = cursoCU
+                .listarPorFiltros(periodoOActual(periodoAcademico), idPrograma, false).stream()
+                .map(cursoMapper::mappearDeCursoOfertadoARespuestaDisponible)
+                .map(cursoMapper::postMapCurso)
+                .toList();
+
         return ResponseEntity.ok(respuesta);
     }
 
@@ -159,103 +85,13 @@ public class CursosVeranoRestController {
             @RequestParam(required = false) String periodoAcademico,
             @RequestParam(required = false) Integer idPrograma,
             @RequestParam(required = false, defaultValue = "false") Boolean todosLosPeriodos) {
-        List<CursoOfertadoVerano> cursos = cursoCU.listarTodos();
-        String periodoUsado = null;
-        
-        // Si se solicita ver todos los períodos, no filtrar por período
-        if (Boolean.TRUE.equals(todosLosPeriodos) || 
-            (periodoAcademico != null && periodoAcademico.trim().equalsIgnoreCase("todos"))) {
-            periodoUsado = "todos";
-        } 
-        // Filtrar por período académico si se proporciona
-        else if (periodoAcademico != null && !periodoAcademico.trim().isEmpty()) {
-            String periodoFiltro = periodoAcademico.trim();
-            periodoUsado = periodoFiltro;
-            cursos = cursos.stream()
-                    .filter(curso -> curso.getPeriodo_academico() != null 
-                            && curso.getPeriodo_academico().equals(periodoFiltro))
-                    .collect(Collectors.toList());
-        } else {
-            // Si no se proporciona período, usar el período actual automáticamente
-            PeriodoAcademicoEnum periodoActualEnum = PeriodoAcademicoEnum.getPeriodoActual();
-            if (periodoActualEnum != null) {
-                final String periodoFiltro = periodoActualEnum.getValor();
-                periodoUsado = periodoFiltro;
-                cursos = cursos.stream()
-                        .filter(curso -> {
-                            boolean coincide = curso.getPeriodo_academico() != null 
-                                    && curso.getPeriodo_academico().equals(periodoFiltro);
-                            if (!coincide && curso.getPeriodo_academico() != null) {
-                            }
-                            return coincide;
-                        })
-                        .collect(Collectors.toList());
-            } else {
-                periodoUsado = "indeterminado";
-            }
-        }
-        
-        // Si se proporciona idPrograma, filtrar cursos que tengan estudiantes inscritos o solicitudes de ese programa
-        // También incluir cursos sin solicitudes/inscripciones (disponibles para todos)
-        if (idPrograma != null) {
-            cursos = cursos.stream()
-                    .filter(curso -> {
-                        // Verificar si el curso tiene estudiantes inscritos del programa especificado
-                        boolean tieneEstudiantesDelPrograma = false;
-                        if (curso.getEstudiantesInscritos() != null && !curso.getEstudiantesInscritos().isEmpty()) {
-                            tieneEstudiantesDelPrograma = curso.getEstudiantesInscritos().stream()
-                                    .anyMatch(usuario -> usuario.getObjPrograma() != null
-                                            && usuario.getObjPrograma().getId_programa().equals(idPrograma));
-                        }
-                        
-                        // Verificar si el curso tiene solicitudes de estudiantes del programa especificado
-                        boolean tieneSolicitudesDelPrograma = false;
-                        if (curso.getSolicitudes() != null && !curso.getSolicitudes().isEmpty()) {
-                            tieneSolicitudesDelPrograma = curso.getSolicitudes().stream()
-                                    .anyMatch(solicitud -> solicitud.getObjUsuario() != null 
-                                            && solicitud.getObjUsuario().getObjPrograma() != null
-                                            && solicitud.getObjUsuario().getObjPrograma().getId_programa().equals(idPrograma));
-                        }
-                        
-                        // Incluir el curso si:
-                        // 1. Tiene estudiantes inscritos del programa, O
-                        // 2. Tiene solicitudes del programa, O
-                        // 3. No tiene ni estudiantes ni solicitudes (disponible para todos)
-                        boolean sinInscripcionesNiSolicitudes = 
-                                (curso.getEstudiantesInscritos() == null || curso.getEstudiantesInscritos().isEmpty())
-                                && (curso.getSolicitudes() == null || curso.getSolicitudes().isEmpty());
-                        
-                        return tieneEstudiantesDelPrograma || tieneSolicitudesDelPrograma || sinInscripcionesNiSolicitudes;
-                    })
-                    .collect(Collectors.toList());
-        }
-        
-        // Filtrar solo cursos visibles para estudiantes
-        List<CursoOfertadoVerano> cursosDisponibles = cursos.stream()
-                .filter(curso -> {
-                    if (curso.getEstadosCursoOfertados() == null || curso.getEstadosCursoOfertados().isEmpty()) {
-                        return false;
-                    }
-                    String estadoActual = curso.getEstadosCursoOfertados().get(curso.getEstadosCursoOfertados().size() - 1).getEstado_actual();
-                    // Estados visibles para estudiantes: Publicado, Preinscripcion, Inscripcion
-                    return "Publicado".equals(estadoActual) || 
-                           "Preinscripcion".equals(estadoActual) ||
-                           "Inscripcion".equals(estadoActual);
-                })
-                .collect(Collectors.toList());
-        
-        List<CursosOfertadosDTORespuesta> respuesta = cursosDisponibles.stream()
+        boolean sinFiltroDePeriodo = Boolean.TRUE.equals(todosLosPeriodos)
+                || "todos".equalsIgnoreCase(periodoAcademico == null ? null : periodoAcademico.trim());
+        String periodo = sinFiltroDePeriodo ? null : periodoOActual(periodoAcademico);
+        List<CursosOfertadosDTORespuesta> respuesta = cursoCU.listarPorFiltros(periodo, idPrograma, true).stream()
                 .map(cursoMapper::mappearDeCursoOfertadoARespuestaDisponible)
-                .collect(Collectors.toList());
-        
-        // Log informativo cuando no hay cursos
-        if (respuesta.isEmpty()) {
-            if (periodoUsado != null && !periodoUsado.equals("todos")) {
-            } else {
-            }
-        } else {
-        }
-        
+                .toList();
+
         return ResponseEntity.ok(respuesta);
     }
 
@@ -273,71 +109,10 @@ public class CursosVeranoRestController {
     public ResponseEntity<List<CursosOfertadosDTORespuesta>> obtenerTodosLosCursosVerano(
             @RequestParam(required = false) String periodoAcademico,
             @RequestParam(required = false) Integer idPrograma) {
-        List<CursoOfertadoVerano> cursos = cursoCU.listarTodos();
-        
-        
-        // Filtrar por período académico SOLO si se proporciona explícitamente
-        if (periodoAcademico != null && !periodoAcademico.trim().isEmpty() && !periodoAcademico.trim().equalsIgnoreCase("todos")) {
-            String periodoFiltro = periodoAcademico.trim();
-            
-            // Intentar convertir formatos alternativos a formato estándar YYYY-P
-            String periodoNormalizado = SoporteCursosVerano.normalizarPeriodoAcademico(periodoFiltro);
-            if (!periodoNormalizado.equals(periodoFiltro)) {
-                periodoFiltro = periodoNormalizado;
-            }
-            
-            final String periodoFinal = periodoFiltro; // Para usar en lambda
-            List<CursoOfertadoVerano> cursosFiltrados = cursos.stream()
-                    .filter(curso -> {
-                        boolean coincide = curso.getPeriodo_academico() != null 
-                                && curso.getPeriodo_academico().equals(periodoFinal);
-                        if (!coincide && curso.getPeriodo_academico() != null) {
-                        }
-                        return coincide;
-                    })
-                    .collect(Collectors.toList());
-            
-            
-            cursos = cursosFiltrados;
-        } else {
-        }
-        
-        // Si se proporciona idPrograma, filtrar cursos que tengan estudiantes inscritos o solicitudes de ese programa
-        // También incluir cursos sin solicitudes/inscripciones (disponibles para todos)
-        if (idPrograma != null) {
-            cursos = cursos.stream()
-                    .filter(curso -> {
-                        // Verificar si el curso tiene estudiantes inscritos del programa especificado
-                        boolean tieneEstudiantesDelPrograma = false;
-                        if (curso.getEstudiantesInscritos() != null && !curso.getEstudiantesInscritos().isEmpty()) {
-                            tieneEstudiantesDelPrograma = curso.getEstudiantesInscritos().stream()
-                                    .anyMatch(usuario -> usuario.getObjPrograma() != null
-                                            && usuario.getObjPrograma().getId_programa().equals(idPrograma));
-                        }
-                        
-                        // Verificar si el curso tiene solicitudes de estudiantes del programa especificado
-                        boolean tieneSolicitudesDelPrograma = false;
-                        if (curso.getSolicitudes() != null && !curso.getSolicitudes().isEmpty()) {
-                            tieneSolicitudesDelPrograma = curso.getSolicitudes().stream()
-                                    .anyMatch(solicitud -> solicitud.getObjUsuario() != null 
-                                            && solicitud.getObjUsuario().getObjPrograma() != null
-                                            && solicitud.getObjUsuario().getObjPrograma().getId_programa().equals(idPrograma));
-                        }
-                        
-                        // Incluir el curso si:
-                        // 1. Tiene estudiantes inscritos del programa, O
-                        // 2. Tiene solicitudes del programa, O
-                        // 3. No tiene ni estudiantes ni solicitudes (disponible para todos)
-                        boolean sinInscripcionesNiSolicitudes = 
-                                (curso.getEstudiantesInscritos() == null || curso.getEstudiantesInscritos().isEmpty())
-                                && (curso.getSolicitudes() == null || curso.getSolicitudes().isEmpty());
-                        
-                        return tieneEstudiantesDelPrograma || tieneSolicitudesDelPrograma || sinInscripcionesNiSolicitudes;
-                    })
-                    .collect(Collectors.toList());
-        }
-        
-        // Para funcionarios y coordinadores, mostrar todos los cursos sin filtro de estado
+        String periodo = periodoAcademico == null ? "" : periodoAcademico.trim();
+        String periodoFiltro = periodo.isEmpty() || "todos".equalsIgnoreCase(periodo)
+                ? null : SoporteCursosVerano.normalizarPeriodoAcademico(periodo);
+        List<CursoOfertadoVerano> cursos = cursoCU.listarPorFiltros(periodoFiltro, idPrograma, false);
         List<CursosOfertadosDTORespuesta> respuesta = cursos.stream()
                 .map(cursoMapper::mappearDeCursoOfertadoARespuesta)
                 .map(dto -> {
@@ -391,6 +166,14 @@ public class CursosVeranoRestController {
                 })
                 .collect(Collectors.toList());
         return ResponseEntity.ok(respuesta);
+    }
+
+    private String periodoOActual(String periodoAcademico) {
+        if (periodoAcademico != null && !periodoAcademico.trim().isEmpty()) {
+            return periodoAcademico.trim();
+        }
+        PeriodoAcademicoEnum periodoActual = PeriodoAcademicoEnum.getPeriodoActual();
+        return periodoActual == null ? null : periodoActual.getValor();
     }
 
     /**
