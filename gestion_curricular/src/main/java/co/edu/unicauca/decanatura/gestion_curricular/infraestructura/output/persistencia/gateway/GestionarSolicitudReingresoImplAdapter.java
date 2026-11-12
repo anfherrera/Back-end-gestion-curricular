@@ -126,12 +126,8 @@ public class GestionarSolicitudReingresoImplAdapter implements GestionarSolicitu
 
     @Override
     public List<SolicitudReingreso> listarSolicitudesReingresoPorUsuarioYPeriodo(Integer idUsuario, String periodoAcademico) {
-        // Para estudiantes, buscamos todas las solicitudes del usuario (sin filtro de estado)
-        // pero filtramos por período académico
-        return solicitudReingresoRepository.findAll().stream()
-                .filter(entity -> entity.getObjUsuario() != null && 
-                                 entity.getObjUsuario().getId_usuario().equals(idUsuario) &&
-                                 (periodoAcademico == null || periodoAcademico.equals(entity.getPeriodo_academico())))
+        // Todas las solicitudes del estudiante, sin importar el estado; el filtro lo hace la base de datos
+        return solicitudReingresoRepository.findByUsuarioYPeriodo(idUsuario, periodoAcademico).stream()
                 .map(entity -> mapper.map(entity, SolicitudReingreso.class))
                 .toList();
     }

@@ -130,4 +130,12 @@ public interface SolicitudHomologacionRepositoryInt extends JpaRepository<Solici
         @Param("idPrograma") Integer idPrograma,
         @Param("periodoAcademico") String periodoAcademico
     );
+
+    /** Solicitudes del estudiante, del periodo académico indicado o de todos si es null. */
+    @Query("SELECT s FROM SolicitudHomologacionEntity s " +
+           "WHERE s.objUsuario.id_usuario = :idUsuario " +
+           "AND (:periodoAcademico IS NULL OR s.periodo_academico = :periodoAcademico) " +
+           "ORDER BY s.id_solicitud")
+    List<SolicitudHomologacionEntity> findByUsuarioYPeriodo(@Param("idUsuario") Integer idUsuario,
+            @Param("periodoAcademico") String periodoAcademico);
 }

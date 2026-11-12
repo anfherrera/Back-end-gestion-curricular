@@ -121,4 +121,12 @@ public interface SolicitudReingresoRepositoryInt extends JpaRepository<Solicitud
         @Param("idPrograma") Integer idPrograma,
         @Param("periodoAcademico") String periodoAcademico
     );
+
+    /** Solicitudes del estudiante, del periodo académico indicado o de todos si es null. */
+    @Query("SELECT s FROM SolicitudReingresoEntity s " +
+           "WHERE s.objUsuario.id_usuario = :idUsuario " +
+           "AND (:periodoAcademico IS NULL OR s.periodo_academico = :periodoAcademico) " +
+           "ORDER BY s.id_solicitud")
+    List<SolicitudReingresoEntity> findByUsuarioYPeriodo(@Param("idUsuario") Integer idUsuario,
+            @Param("periodoAcademico") String periodoAcademico);
 }

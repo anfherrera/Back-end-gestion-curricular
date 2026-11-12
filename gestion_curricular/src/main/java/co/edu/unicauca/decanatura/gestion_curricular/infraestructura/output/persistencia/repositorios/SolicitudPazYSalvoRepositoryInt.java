@@ -111,4 +111,12 @@ public interface SolicitudPazYSalvoRepositoryInt extends JpaRepository<Solicitud
            "LEFT JOIN FETCH u.objRol r " +
            "WHERE s.id_solicitud = :idSolicitud")
     java.util.Optional<SolicitudPazYSalvoEntity> findByIdWithRelations(@Param("idSolicitud") Integer idSolicitud);
+
+    /** Solicitudes del estudiante, del periodo académico indicado o de todos si es null. */
+    @Query("SELECT s FROM SolicitudPazYSalvoEntity s " +
+           "WHERE s.objUsuario.id_usuario = :idUsuario " +
+           "AND (:periodoAcademico IS NULL OR s.periodo_academico = :periodoAcademico) " +
+           "ORDER BY s.id_solicitud")
+    List<SolicitudPazYSalvoEntity> findByUsuarioYPeriodo(@Param("idUsuario") Integer idUsuario,
+            @Param("periodoAcademico") String periodoAcademico);
 }
