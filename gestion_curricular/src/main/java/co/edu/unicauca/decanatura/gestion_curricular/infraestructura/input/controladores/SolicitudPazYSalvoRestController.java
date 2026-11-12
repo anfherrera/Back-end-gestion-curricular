@@ -521,8 +521,13 @@ public class SolicitudPazYSalvoRestController {
         if (datos.isEmpty()) {
             return ResponseEntity.internalServerError().build();
         }
-        return descarga(generarDocumentoPazYSalvo("PYS-" + id, LocalDate.now().toString(),
-                "Paz y Salvo generado", datos.get()), nombreArchivo, tipo);
+        String numero = "PYS-" + id;
+        String fecha = LocalDate.now().toString();
+        String observaciones = "Paz y Salvo generado";
+        byte[] contenido = MediaType.APPLICATION_PDF.equals(tipo)
+                ? documentGeneratorService.generarPazYSalvoPdf(numero, fecha, observaciones, datos.get())
+                : generarDocumentoPazYSalvo(numero, fecha, observaciones, datos.get());
+        return descarga(contenido, nombreArchivo, tipo);
     }
 
     /** POST /generar-documento/{idSolicitud}: documento con número, fecha y observaciones del funcionario. */

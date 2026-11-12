@@ -45,6 +45,12 @@ public class DocumentGeneratorService {
         return generarDocumento(request);
     }
 
+    public byte[] generarPazYSalvoPdf(String numero, String fecha, String observaciones, DatosDocumento datos)
+            throws IOException {
+        byte[] docx = generarPazYSalvo(numero, fecha, observaciones, datos).toByteArray();
+        return GeneradorPdfPazYSalvo.desdePlantillaRellena(docx);
+    }
+
     /**
      * Generar documento Word usando plantilla
      */

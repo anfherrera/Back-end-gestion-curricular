@@ -1,5 +1,13 @@
 package co.edu.unicauca.decanatura.gestion_curricular.pazysalvo;
 
+import java.io.ByteArrayInputStream;
+
+import com.itextpdf.text.pdf.PdfReader;
+import com.itextpdf.text.pdf.parser.PdfTextExtractor;
+import org.apache.poi.xwpf.usermodel.XWPFDocument;
+
+import static org.assertj.core.api.Assertions.assertThat;
+
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.entidades.ProgramaEntity;
@@ -251,11 +259,21 @@ class PazYSalvoAceptacionTest {
          *       AND debe sugerir nombre de archivo descriptivo
          */
         
-        mockMvc.perform(get("/api/solicitudes-pazysalvo/generarDocumentoPazYSalvo/37/pdf")
+        byte[] pdf = mockMvc.perform(get("/api/solicitudes-pazysalvo/generarDocumentoPazYSalvo/37/pdf")
                         .header("Authorization", tokenSecretaria))
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_PDF))
-                .andExpect(header().string("Content-Disposition", "attachment; filename=\"PazYSalvo_37.pdf\""));
+                .andExpect(header().string("Content-Disposition", "attachment; filename=\"PazYSalvo_37.pdf\""))
+                .andReturn().getResponse().getContentAsByteArray();
+        PdfReader documento = new PdfReader(pdf);
+        try {
+            assertThat(documento.getNumberOfPages()).isEqualTo(1);
+            assertThat(PdfTextExtractor.getTextFromPage(documento, 1))
+                    .contains("Paz y Salvo Académico", "PYS-37", "Juan Pérez")
+                    .doesNotContain("[NOMBRE_ESTUDIANTE]");
+        } finally {
+            documento.close();
+        }
     }
 
     @Test
@@ -272,11 +290,16 @@ class PazYSalvoAceptacionTest {
          *       AND debe permitir edición posterior en Microsoft Word
          */
         
-        mockMvc.perform(get("/api/solicitudes-pazysalvo/generarDocumentoPazYSalvo/37/docx")
+        byte[] docx = mockMvc.perform(get("/api/solicitudes-pazysalvo/generarDocumentoPazYSalvo/37/docx")
                         .header("Authorization", tokenSecretaria))
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_OCTET_STREAM))
-                .andExpect(header().string("Content-Disposition", "attachment; filename=\"PazYSalvo_37.docx\""));
+                .andExpect(header().string("Content-Disposition", "attachment; filename=\"PazYSalvo_37.docx\""))
+                .andReturn().getResponse().getContentAsByteArray();
+        try (var documento = new XWPFDocument(new ByteArrayInputStream(docx))) {
+            assertThat(documento.getParagraphs()).anySatisfy(parrafo ->
+                    assertThat(parrafo.getText()).contains("Juan Pérez"));
+        }
     }
 
     @Test
