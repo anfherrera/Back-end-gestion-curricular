@@ -283,24 +283,6 @@ class EstadisticasUnidadTest {
     }
 
     @Test
-    @DisplayName("Test 14: Obtener tiempo promedio procesamiento - Delega correctamente")
-    void testObtenerTiempoPromedioProcesamientoDelegaCorrectamente() {
-        // Arrange
-        Map<String, Object> tiempoEsperado = new HashMap<>();
-        tiempoEsperado.put("promedioHoras", 48);
-        when(estadisticasGateway.obtenerTiempoPromedioProcesamiento())
-                .thenReturn(tiempoEsperado);
-
-        // Act
-        Map<String, Object> resultado = estadisticasCU.obtenerTiempoPromedioProcesamiento();
-
-        // Assert
-        assertThat(resultado).isNotNull();
-        assertThat(resultado.get("promedioHoras")).isEqualTo(48);
-        verify(estadisticasGateway, times(1)).obtenerTiempoPromedioProcesamiento();
-    }
-
-    @Test
     @DisplayName("Test 15: Obtener estadísticas cursos verano - Delega correctamente")
     void testObtenerEstadisticasCursosVeranoDelegaCorrectamente() {
         // Arrange

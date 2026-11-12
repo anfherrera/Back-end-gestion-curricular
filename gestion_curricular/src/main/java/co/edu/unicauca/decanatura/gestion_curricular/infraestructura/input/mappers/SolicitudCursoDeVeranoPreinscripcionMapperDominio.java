@@ -1,13 +1,11 @@
 package co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.mappers;
 
-import java.util.List;
 
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.ReportingPolicy;
 
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.SolicitudCursoVeranoPreinscripcion;
-import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.DTOPeticion.SolicitudCurosoVeranoPreinscripcionDTOPeticion;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.DTORespuesta.SolicitudCursoVeranoPreinscripcionDTORespuesta;
 
 @Mapper(
@@ -21,13 +19,6 @@ import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.DTORe
 )
 
 public interface SolicitudCursoDeVeranoPreinscripcionMapperDominio {
-    @Mapping(target = "estadosSolicitud", ignore = true) // No se incluye en la petición
-    @Mapping(target = "documentos", ignore = true) // Map documentos collection
-    @Mapping(target = "objCursoOfertadoVerano", source = "objCursoOfertado")
-    @Mapping(target = "fecha_ceremonia", ignore = true) // Se asigna desde el caso de uso si es necesario
-    SolicitudCursoVeranoPreinscripcion mappearDePeticionASolicitudCursoVeranoPreinscripcion(
-        SolicitudCurosoVeranoPreinscripcionDTOPeticion peticion);
-
     @Mapping(target = "estadosSolicitud", source = "estadosSolicitud")
     @Mapping(target = "objUsuario", source = "objUsuario")
     @Mapping(target = "objCursoOfertado", source = "objCursoOfertadoVerano")
@@ -37,7 +28,4 @@ public interface SolicitudCursoDeVeranoPreinscripcionMapperDominio {
     SolicitudCursoVeranoPreinscripcionDTORespuesta mappearDeSolicitudCursoVeranoPreinscripcionARespuesta(
         SolicitudCursoVeranoPreinscripcion solicitud);
 
-    List<SolicitudCursoVeranoPreinscripcionDTORespuesta> mappearDeListaSolicitudesCursoVeranoPreinscripcionARespuesta(
-        List<SolicitudCursoVeranoPreinscripcion> solicitudes);
-        
 }

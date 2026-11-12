@@ -39,10 +39,10 @@ final class SoportePazYSalvo {
 
     /** Cambia el estado con el token indicado y devuelve el código HTTP. */
     static int cambiarEstado(MockMvc mockMvc, String token, int idSolicitud, String nuevoEstado) throws Exception {
-        return mockMvc.perform(put(BASE + "/cambiarEstadoSolicitud/" + idSolicitud)
+        return mockMvc.perform(put(BASE + "/actualizarEstadoSolicitud")
                         .header("Authorization", token)
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content("{\"nuevoEstado\": \"" + nuevoEstado + "\"}"))
+                        .content("{\"idSolicitud\": " + idSolicitud + ", \"nuevoEstado\": \"" + nuevoEstado + "\"}"))
                 .andReturn().getResponse().getStatus();
     }
 

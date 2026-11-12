@@ -9,8 +9,6 @@ import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.pers
 public interface DocumentoRepositoryInt extends JpaRepository<DocumentoEntity, Integer> {
     List<DocumentoEntity> findByObjSolicitudIsNullAndIdUsuarioSubio(Integer idUsuarioSubio);
 
-    List<DocumentoEntity> findByObjSolicitudIsNullAndNombreContainingIgnoreCase(String nombre);
-
     /** Varios estudiantes pueden subir archivos con el mismo nombre; por eso se devuelven todos. */
     List<DocumentoEntity> findAllByNombre(String nombre);
 

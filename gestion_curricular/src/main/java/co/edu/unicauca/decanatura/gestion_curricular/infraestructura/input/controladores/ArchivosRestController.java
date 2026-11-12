@@ -16,7 +16,6 @@ import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBo
 import java.util.List;
 import java.util.Map;
 import java.util.HashMap;
-import java.util.ArrayList;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -33,7 +32,6 @@ import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarS
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarDocumentosCUIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Documento;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Solicitud;
-import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.SolicitudPazYSalvo;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.SolicitudCursoVeranoIncripcion;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.validacion.ValidadorArchivoPdf;
 
@@ -393,149 +391,4 @@ public class ArchivosRestController {
             .body("{\"error\":\"No se encontro ningun comprobante PDF valido\",\"idInscripcion\":" + idInscripcion + "}");
     }
     
-    /**
-     * Descargar oficio de paz y salvo por ID de solicitud
-     */
-    @PreAuthorize("@autorizacion.esStaff() or @autorizacion.esDuenoSolicitud(#idSolicitud)")
-    @GetMapping("/descargarOficioPazSalvo/{idSolicitud}")
-    public ResponseEntity<StreamingResponseBody> descargarOficioPazSalvo(@PathVariable Integer idSolicitud) {
-        // Obtener la solicitud con sus documentos
-        SolicitudPazYSalvo solicitud = solicitudPazYSalvoCU.buscarPorId(idSolicitud);
-        if (solicitud == null) {
-            return ResponseEntity.notFound().build();
-        }
-        
-        // Buscar documentos asociados a esta solicitud
-        List<Documento> documentos = solicitud.getDocumentos();
-        if (documentos == null || documentos.isEmpty()) {
-            return ResponseEntity.notFound().build();
-        }
-        
-        // Buscar documentos que sean oficios/resoluciones (subidos por secretaria)
-        for (Documento documento : documentos) {
-            if (documento.getNombre() != null && documento.getNombre().toLowerCase().endsWith(".pdf")) {
-                String nombreArchivo = documento.getNombre().toLowerCase();
-                
-                // Filtrar solo archivos que parecen ser oficios/resoluciones
-                boolean esOficio = nombreArchivo.contains("oficio") || 
-                                 nombreArchivo.contains("resolucion") || 
-                                 nombreArchivo.contains("paz") ||
-                                 nombreArchivo.contains("salvo") ||
-                                 nombreArchivo.contains("aprobacion");
-                
-                if (esOficio) {
-                    try {
-                        // Lógica adaptativa: usar ruta completa si está organizada, sino usar nombre
-                        String rutaDocumento = documento.getRuta_documento() != null ? documento.getRuta_documento() : documento.getNombre();
-                        Path filePathTemp;
-                        
-                        if (rutaDocumento != null && rutaDocumento.contains("/")) {
-                            // Ruta organizada (nueva estructura)
-                            filePathTemp = objGestionarArchivos.getFileByPathAsPath(rutaDocumento);
-                        } else {
-                            // Ruta simple (compatibilidad hacia atrás)
-                            filePathTemp = objGestionarArchivos.getFileAsPath(documento.getNombre());
-                        }
-                        
-                        if (!Files.exists(filePathTemp) || !Files.isRegularFile(filePathTemp)) {
-                            continue; // Probar el siguiente documento
-                        }
-                        
-                        // Crear variable final para usar en la lambda
-                        final Path filePath = filePathTemp;
-                        
-                        // Crear StreamingResponseBody para transferencia eficiente
-                        StreamingResponseBody stream = outputStream -> {
-                            try (InputStream inputStream = Files.newInputStream(filePath)) {
-                                byte[] buffer = new byte[8192]; // Buffer de 8KB
-                                int bytesRead;
-                                while ((bytesRead = inputStream.read(buffer)) != -1) {
-                                    outputStream.write(buffer, 0, bytesRead);
-                                }
-                                outputStream.flush();
-                            }
-                        };
-                        
-                        // Configurar el header Content-Disposition correctamente
-                        String contentDisposition = "attachment; filename=\"" + documento.getNombre() + "\"";
-                        
-                        return ResponseEntity.ok()
-                            .header(HttpHeaders.CONTENT_DISPOSITION, contentDisposition)
-                            .contentType(MediaType.APPLICATION_PDF)
-                            .contentLength(Files.size(filePath))
-                            .header(HttpHeaders.CACHE_CONTROL, "private, max-age=3600")
-                            .body(stream);
-                            
-                    } catch (Exception e) {
-                        continue; // Probar el siguiente documento
-                    }
-                }
-            }
-        }
-        
-        return ResponseEntity.notFound().build();
-    }
-    
-    /**
-     * Validar documentos requeridos para paz y salvo
-     */
-    @PreAuthorize("@autorizacion.esStaff() or @autorizacion.esDuenoSolicitud(#idSolicitud)")
-    @GetMapping("/validarDocumentosRequeridosPazSalvo/{idSolicitud}")
-    public ResponseEntity<Map<String, Object>> validarDocumentosRequeridosPazSalvo(@PathVariable Integer idSolicitud) {
-        // Obtener la solicitud con sus documentos
-        SolicitudPazYSalvo solicitud = solicitudPazYSalvoCU.buscarPorId(idSolicitud);
-        if (solicitud == null) {
-            return ResponseEntity.notFound().build();
-        }
-        
-        List<Documento> documentos = solicitud.getDocumentos();
-        if (documentos == null) {
-            documentos = new ArrayList<>();
-        }
-        
-        // Documentos requeridos para paz y salvo
-        Map<String, Boolean> documentosRequeridos = new HashMap<>();
-        documentosRequeridos.put("formato_pm_fo_4_for_27", false);
-        documentosRequeridos.put("autorizacion_publicar", false);
-        documentosRequeridos.put("hoja_vida_academica", false);
-        documentosRequeridos.put("comprobante_pago", false);
-        documentosRequeridos.put("documento_trabajo_grado", false);
-        documentosRequeridos.put("resultado_saber_pro", false); // Opcional
-        
-        // Verificar qué documentos están presentes
-        for (Documento documento : documentos) {
-            if (documento.getNombre() != null) {
-                String nombre = documento.getNombre().toLowerCase();
-                
-                if (nombre.contains("formato") && nombre.contains("pm-fo-4-for-27")) {
-                    documentosRequeridos.put("formato_pm_fo_4_for_27", true);
-                } else if (nombre.contains("autorizacion") && nombre.contains("publicar")) {
-                    documentosRequeridos.put("autorizacion_publicar", true);
-                } else if (nombre.contains("hoja") && nombre.contains("vida") && nombre.contains("academica")) {
-                    documentosRequeridos.put("hoja_vida_academica", true);
-                } else if (nombre.contains("comprobante") && nombre.contains("pago")) {
-                    documentosRequeridos.put("comprobante_pago", true);
-                } else if (nombre.contains("documento") && nombre.contains("trabajo") && nombre.contains("grado")) {
-                    documentosRequeridos.put("documento_trabajo_grado", true);
-                } else if (nombre.contains("resultado") && nombre.contains("saber")) {
-                    documentosRequeridos.put("resultado_saber_pro", true);
-                }
-            }
-        }
-        
-        // Calcular si todos los documentos obligatorios están presentes
-        boolean todosCompletos = documentosRequeridos.get("formato_pm_fo_4_for_27") &&
-                               documentosRequeridos.get("autorizacion_publicar") &&
-                               documentosRequeridos.get("hoja_vida_academica") &&
-                               documentosRequeridos.get("comprobante_pago") &&
-                               documentosRequeridos.get("documento_trabajo_grado");
-        
-        Map<String, Object> resultado = new HashMap<>();
-        resultado.put("documentosRequeridos", documentosRequeridos);
-        resultado.put("todosCompletos", todosCompletos);
-        resultado.put("totalDocumentos", documentos.size());
-        
-        return ResponseEntity.ok(resultado);
-    }
-
 }

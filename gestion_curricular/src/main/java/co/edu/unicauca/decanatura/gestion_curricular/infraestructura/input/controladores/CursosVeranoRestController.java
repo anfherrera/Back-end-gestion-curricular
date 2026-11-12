@@ -487,29 +487,6 @@ public class CursosVeranoRestController {
         return ResponseEntity.ok(respuesta);
     }
 
-    /**
-     * Obtener cursos disponibles para solicitud de curso nuevo
-     * GET /api/cursos-intersemestrales/cursos-disponibles
-     */
-    @GetMapping("/cursos-disponibles")
-    public ResponseEntity<List<Map<String, Object>>> obtenerCursosDisponibles() {
-        // Usar datos reales de la base de datos
-        List<CursoOfertadoVerano> cursos = cursoCU.listarTodos();
-        List<Map<String, Object>> cursosDisponibles = new ArrayList<>();
-        
-        for (CursoOfertadoVerano curso : cursos) {
-            Map<String, Object> cursoMap = new HashMap<>();
-            cursoMap.put("id_curso", curso.getId_curso());
-            cursoMap.put("nombre_curso", curso.getObjMateria() != null ? curso.getObjMateria().getNombre() : "Sin nombre");
-            cursoMap.put("codigo_curso", curso.getObjMateria() != null ? curso.getObjMateria().getCodigo() : "Sin codigo");
-            cursoMap.put("creditos", curso.getObjMateria() != null ? curso.getObjMateria().getCreditos() : 0);
-            cursoMap.put("descripcion", "Curso de " + (curso.getObjMateria() != null ? curso.getObjMateria().getNombre() : "curso"));
-            cursosDisponibles.add(cursoMap);
-        }
-        
-        return ResponseEntity.ok(cursosDisponibles);
-    }
-
     // ==================== ENDPOINTS FALTANTES PARA EL FRONTEND ====================
 
     /**

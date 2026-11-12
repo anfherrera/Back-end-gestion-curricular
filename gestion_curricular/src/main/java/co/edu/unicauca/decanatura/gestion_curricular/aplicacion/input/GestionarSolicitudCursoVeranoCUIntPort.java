@@ -20,8 +20,6 @@ public interface GestionarSolicitudCursoVeranoCUIntPort {
     
     // Métodos para estadísticas
     Integer contarSolicitudesPorCurso(Integer idCurso);
-    List<SolicitudCursoVeranoPreinscripcion> buscarCursosConAltaDemanda(Integer limiteMinimo);
-    
     // Métodos para gestión de funcionarios - Aprobar/Rechazar
     SolicitudCursoVeranoPreinscripcion aprobarPreinscripcion(Integer idSolicitud, String comentarios);
     SolicitudCursoVeranoPreinscripcion rechazarPreinscripcion(Integer idSolicitud, String motivo);

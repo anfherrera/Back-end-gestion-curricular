@@ -64,29 +64,6 @@ public class GestionarSolicitudGatewayImplAdapter implements GestionarSolicitudG
 
     @Override
     @Transactional
-    public SolicitudEcaes crearSolicitudEcaes(SolicitudEcaes solicitudEcaes) {
-        SolicitudEcaesEntity solicitudEcaesEntity = solicitudMapper.map(solicitudEcaes, SolicitudEcaesEntity.class);
-        
-        // Generar nombre descriptivo con el nombre del estudiante
-        solicitudEcaesEntity.setNombre_solicitud(
-                NombreSolicitud.de(NombreSolicitud.ECAES, nombreDelUsuario(solicitudEcaes.getObjUsuario())));
-        solicitudEcaes.setFecha_registro_solicitud(new Date());
-        EstadoSolicitudEntity estadoSolicitudEntity = null;
-        estadoSolicitudEntity = new EstadoSolicitudEntity();
-        estadoSolicitudEntity.setFecha_registro_estado(new Date());
-        estadoSolicitudEntity.setObjSolicitud(solicitudEcaesEntity);
-        
-        List<EstadoSolicitudEntity> estadosSolcitud = solicitudEcaesEntity.getEstadosSolicitud();
-        estadosSolcitud.add(estadoSolicitudEntity);
-        solicitudEcaesEntity.setEstadosSolicitud(estadosSolcitud);
-
-        SolicitudEcaesEntity solicitudEcaesGuardado = solicitudRepository.save(solicitudEcaesEntity);
-
-        return solicitudMapper.map(solicitudEcaesGuardado, SolicitudEcaes.class);
-    }
-
-    @Override
-    @Transactional
     public SolicitudReingreso crearSolicitudReingreso(SolicitudReingreso solicitudReingreso) {
         SolicitudReingresoEntity solicitudReingresoEntity = solicitudMapper.map(solicitudReingreso, SolicitudReingresoEntity.class);
         
@@ -161,46 +138,6 @@ public class GestionarSolicitudGatewayImplAdapter implements GestionarSolicitudG
             existe = true;
         }
         return existe;
-    }
-
-    @Override
-    @Transactional(readOnly = true)
-    public boolean existeSolicitudPorNombre(String nombreSolicitud) {
-        return solicitudRepository.contarPorNombre(nombreSolicitud) > 0;
-    }
-
-    @Override
-    @Transactional(readOnly = true)
-    public Integer contarSolicitudes() {
-        return solicitudRepository.totalSolicitudes();
-    }
-
-    @Override
-    @Transactional(readOnly = true)
-    public List<Solicitud> buscarSolicitudesPorFecha(Date fechaInicio, Date fechaFin) {
-        List<SolicitudEntity> solicitudEntities = solicitudRepository.buscarPorRangoFechas(fechaInicio, fechaFin);
-        List<Solicitud> solicitudes = null;
-        if(solicitudEntities!=null){
-            solicitudes = solicitudEntities.stream().map(solicitudEntity -> {
-                    if (solicitudEntity instanceof SolicitudCursoVeranoPreinscripcionEntity) {
-                        return solicitudMapper.map(solicitudEntity, SolicitudCursoVeranoPreinscripcion.class);
-                    } else if (solicitudEntity instanceof SolicitudEcaesEntity) {
-                        return solicitudMapper.map(solicitudEntity, SolicitudEcaes.class);
-                    } else if (solicitudEntity instanceof SolicitudReingresoEntity) {
-                        return solicitudMapper.map(solicitudEntity, SolicitudReingreso.class);
-                    } else if (solicitudEntity instanceof SolicitudHomologacionEntity) {
-                        return solicitudMapper.map(solicitudEntity, SolicitudHomologacion.class);
-                    } else if (solicitudEntity instanceof SolicitudPazYSalvoEntity) {
-                        return solicitudMapper.map(solicitudEntity, SolicitudPazYSalvo.class);
-                    } else if (solicitudEntity instanceof SolicitudCursoVeranoInscripcionEntity) {
-                        return solicitudMapper.map(solicitudEntity, SolicitudCursoVeranoIncripcion.class);
-                    }
-                    return null;
-                })
-                .toList();
-        }
-        return solicitudes;
-
     }
 
     @Override
@@ -284,45 +221,6 @@ public class GestionarSolicitudGatewayImplAdapter implements GestionarSolicitudG
     }
 
     @Override
-    @Transactional(readOnly = true)
-    public List<Solicitud> obtenerSolicitudesPorUsuario(Integer idUsuario) {
-        Optional<UsuarioEntity> usuarioEntityCollection = usuarioRepository.findById(idUsuario);
-        UsuarioEntity usuarioEntity = null;
-        List<SolicitudEntity> solicitudesEntity = null;
-        List<Solicitud> solicitudes = null;
-        if (usuarioEntityCollection!= null) {
-            usuarioEntity = usuarioEntityCollection.get();
-            solicitudesEntity = solicitudRepository.buscarSolicitudesPorUsuario(usuarioEntity.getId_usuario());
-            if(solicitudesEntity != null){           
-                solicitudes = solicitudesEntity.stream().map(solicitudEntity -> {
-                    if (solicitudEntity instanceof SolicitudCursoVeranoPreinscripcionEntity) {
-                        return solicitudMapper.map(solicitudEntity, SolicitudCursoVeranoPreinscripcion.class);
-                    } else if (solicitudEntity instanceof SolicitudEcaesEntity) {
-                        return solicitudMapper.map(solicitudEntity, SolicitudEcaes.class);
-                    } else if (solicitudEntity instanceof SolicitudReingresoEntity) {
-                        return solicitudMapper.map(solicitudEntity, SolicitudReingreso.class);
-                    } else if (solicitudEntity instanceof SolicitudHomologacionEntity) {
-                        return solicitudMapper.map(solicitudEntity, SolicitudHomologacion.class);
-                    } else if (solicitudEntity instanceof SolicitudPazYSalvoEntity) {
-                        return solicitudMapper.map(solicitudEntity, SolicitudPazYSalvo.class);
-                    } else if (solicitudEntity instanceof SolicitudCursoVeranoInscripcionEntity) {
-                        return solicitudMapper.map(solicitudEntity, SolicitudCursoVeranoIncripcion.class);
-                    }
-                    return null;
-                }).toList();
-
-            } else {
-                solicitudesEntity = List.of();
-            }
-            
-        }else{
-            throw new IllegalArgumentException("El usuario no existe");
-        }
-
-        return solicitudes;
-    }
-
-    @Override
     @Transactional
     public Solicitud actualizarSolicitud(Solicitud solicitud, EstadoSolicitud estadoSolicitud) {
         SolicitudEntity solicitudEntity = null;
@@ -369,45 +267,6 @@ public class GestionarSolicitudGatewayImplAdapter implements GestionarSolicitudG
 
     @Override
     @Transactional(readOnly = true)
-    public Integer contarSolicitudPorNombreYCursoIns(String nombreSolicitud, Integer idCurso) {
-        return solicitudRepository.contarPorNombreYCursoIns(nombreSolicitud, idCurso);
-    }
-
-    @Override
-    @Transactional(readOnly = true)
-    public Integer contarSolicitudPorNombreCursoEstadoIns(String nombreSolicitud, Integer idCurso, String estadoActual) {
-        return solicitudRepository.contarPorNombreCursoEstadoIns(nombreSolicitud, idCurso, estadoActual);
-    }
-
-    @Override
-    @Transactional(readOnly = true)
-    public List<Solicitud> buscarSolicitudPorNombreCursoEstadoIns(String nombreSolicitud, Integer idCurso,
-            String estadoActual) {
-        List<SolicitudEntity> solicitudEntities = solicitudRepository.buscarPorNombreCursoEstadoIns(nombreSolicitud, idCurso, estadoActual);
-        List<Solicitud> solicitudes = null;
-        if(solicitudEntities != null){
-            solicitudes = solicitudEntities.stream().map(solicitudEntity -> {
-                if (solicitudEntity instanceof SolicitudCursoVeranoPreinscripcionEntity) {
-                    return solicitudMapper.map(solicitudEntity, SolicitudCursoVeranoPreinscripcion.class);
-                } else if (solicitudEntity instanceof SolicitudEcaesEntity) {
-                    return solicitudMapper.map(solicitudEntity, SolicitudEcaes.class);
-                } else if (solicitudEntity instanceof SolicitudReingresoEntity) {
-                    return solicitudMapper.map(solicitudEntity, SolicitudReingreso.class);
-                } else if (solicitudEntity instanceof SolicitudHomologacionEntity) {
-                    return solicitudMapper.map(solicitudEntity, SolicitudHomologacion.class);
-                } else if (solicitudEntity instanceof SolicitudPazYSalvoEntity) {
-                    return solicitudMapper.map(solicitudEntity, SolicitudPazYSalvo.class);
-                } else if (solicitudEntity instanceof SolicitudCursoVeranoInscripcionEntity) {
-                    return solicitudMapper.map(solicitudEntity, SolicitudCursoVeranoIncripcion.class);
-                }
-                return null;
-            }).toList();
-        }
-        return solicitudes;
-    }
-
-    @Override
-    @Transactional(readOnly = true)
     public List<Solicitud> buscarSolicitudPorNombreCursoIns(Integer idCurso) {
         List<SolicitudEntity> solicitudEntities = solicitudRepository.buscarPorNombreYCursoIns(idCurso);
         List<Solicitud> solicitudes = null;
@@ -430,19 +289,6 @@ public class GestionarSolicitudGatewayImplAdapter implements GestionarSolicitudG
             }).toList();
         }
         return solicitudes;
-    }
-
-    @Override
-    @Transactional(readOnly = true)
-    public Integer contarSolicitudPorNombreYCursoPre(String nombreSolicitud, Integer idCurso) {
-        return solicitudRepository.contarPorNombreYCursoPre(nombreSolicitud, idCurso);
-    }
-
-    @Override
-    @Transactional(readOnly = true)
-    public Integer contarSolicitudPorNombreCursoEstadoPre(String nombreSolicitud, Integer idCurso,
-            String estadoActual) {
-        return solicitudRepository.contarPorNombreCursoEstadoPre(nombreSolicitud, idCurso, estadoActual);
     }
 
     @Override
@@ -471,77 +317,6 @@ public class GestionarSolicitudGatewayImplAdapter implements GestionarSolicitudG
         return solicitudes;
     }
 
-    @Override
-    @Transactional(readOnly = true)
-    public List<Solicitud> buscarSolicitudPorNombreCursoEstadoPre(String nombreSolicitud, Integer idCurso,
-            String estadoActual) {
-        List<SolicitudEntity> solicitudEntities = solicitudRepository.buscarPorNombreCursoEstadoPre(nombreSolicitud, idCurso, estadoActual);
-        List<Solicitud> solicitudes = null;
-        if(solicitudEntities != null){
-            solicitudes = solicitudEntities.stream().map(solicitudEntity -> {
-                if (solicitudEntity instanceof SolicitudCursoVeranoPreinscripcionEntity) {
-                    return solicitudMapper.map(solicitudEntity, SolicitudCursoVeranoPreinscripcion.class);
-                } else if (solicitudEntity instanceof SolicitudEcaesEntity) {
-                    return solicitudMapper.map(solicitudEntity, SolicitudEcaes.class);
-                } else if (solicitudEntity instanceof SolicitudReingresoEntity) {
-                    return solicitudMapper.map(solicitudEntity, SolicitudReingreso.class);
-                } else if (solicitudEntity instanceof SolicitudHomologacionEntity) {
-                    return solicitudMapper.map(solicitudEntity, SolicitudHomologacion.class);
-                } else if (solicitudEntity instanceof SolicitudPazYSalvoEntity) {
-                    return solicitudMapper.map(solicitudEntity, SolicitudPazYSalvo.class);
-                } else if (solicitudEntity instanceof SolicitudCursoVeranoInscripcionEntity) {
-                    return solicitudMapper.map(solicitudEntity, SolicitudCursoVeranoIncripcion.class);
-                }
-                return null;
-            }).toList();
-        }
-        return solicitudes;
-    }
-
-    @Override
-    public Solicitud buscarSolicitudesPorUsuarioEstadoCursoPre(Integer idUsuario,String estado_actual, Integer idCurso) {
-        SolicitudEntity solicitudEntity = solicitudRepository.buscarSolicitudesPorUsuarioCursoEstadoPre(idUsuario, idCurso, estado_actual);
-        Solicitud solicitud = null;
-        if(solicitudEntity!= null){
-                if (solicitudEntity instanceof SolicitudCursoVeranoPreinscripcionEntity) {
-                    solicitud = solicitudMapper.map(solicitudEntity, SolicitudCursoVeranoPreinscripcion.class);
-                } else if (solicitudEntity instanceof SolicitudEcaesEntity) {
-                    solicitud = solicitudMapper.map(solicitudEntity, SolicitudEcaes.class);
-                } else if (solicitudEntity instanceof SolicitudReingresoEntity) {
-                    solicitud = solicitudMapper.map(solicitudEntity, SolicitudReingreso.class);
-                } else if (solicitudEntity instanceof SolicitudHomologacionEntity) {
-                    solicitud = solicitudMapper.map(solicitudEntity, SolicitudHomologacion.class);
-                } else if (solicitudEntity instanceof SolicitudPazYSalvoEntity) {
-                    solicitud = solicitudMapper.map(solicitudEntity, SolicitudPazYSalvo.class);
-                } else if (solicitudEntity instanceof SolicitudCursoVeranoInscripcionEntity) {
-                    solicitud = solicitudMapper.map(solicitudEntity, SolicitudCursoVeranoIncripcion.class);
-                }
-        }
-        return solicitud;
-    }
-
-
-    @Override
-    public Solicitud buscarSolicitudesPorUsuarioYCursoIns(Integer idUsuario, Integer idCurso) {
-        SolicitudEntity solicitudEntity = solicitudRepository.buscarSolicitudesPorUsuarioyCursoIns(idUsuario, idCurso);
-        Solicitud solicitud = null;
-        if(solicitudEntity!= null){
-                if (solicitudEntity instanceof SolicitudCursoVeranoPreinscripcionEntity) {
-                    solicitud = solicitudMapper.map(solicitudEntity, SolicitudCursoVeranoPreinscripcion.class);
-                } else if (solicitudEntity instanceof SolicitudEcaesEntity) {
-                    solicitud = solicitudMapper.map(solicitudEntity, SolicitudEcaes.class);
-                } else if (solicitudEntity instanceof SolicitudReingresoEntity) {
-                    solicitud = solicitudMapper.map(solicitudEntity, SolicitudReingreso.class);
-                } else if (solicitudEntity instanceof SolicitudHomologacionEntity) {
-                    solicitud = solicitudMapper.map(solicitudEntity, SolicitudHomologacion.class);
-                } else if (solicitudEntity instanceof SolicitudPazYSalvoEntity) {
-                    solicitud = solicitudMapper.map(solicitudEntity, SolicitudPazYSalvo.class);
-                } else if (solicitudEntity instanceof SolicitudCursoVeranoInscripcionEntity) {
-                    solicitud = solicitudMapper.map(solicitudEntity, SolicitudCursoVeranoIncripcion.class);
-                }
-        }
-        return solicitud;
-    }
 
     @Override
     public Solicitud buscarSolicitudesPorUsuarioYCursoPre(Integer idUsuario, Integer idCurso) {

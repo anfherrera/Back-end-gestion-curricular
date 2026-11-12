@@ -15,7 +15,6 @@ import java.util.stream.Collectors;
 import org.modelmapper.ModelMapper;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.cache.annotation.CacheEvict;
-import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -113,23 +112,6 @@ public class GestionarEstadisticasGatewayImplAdapter implements GestionarEstadis
        EstadisticaEntity entity = estadisticaRepository.findById(idEstadistica)
         .orElseThrow(() -> new IllegalArgumentException("Estadistica no encontrada"));
         return estadisticaMapper.map(entity, Estadistica.class);
-    }
-
-    @Override
-    @Transactional(readOnly = true)
-    public Estadistica obtenerEstadisticasSolicitudPeriodoYPrograma(Integer idEstadistica, String proceso,
-            Date fechaInicio, Date fechaFin, Integer idPrograma) {
-        EstadisticaEntity estadisticaEntity = estadisticaRepository.findById(idEstadistica)
-        .orElseThrow(() -> new IllegalArgumentException("Estadistica no encontrada"));
-        
-        if(solicitudRepository.count() >= 0) {
-        
-        estadisticaEntity.setTotal_aprobadas(solicitudRepository.contarNombreFechaEstadoYPrograma(proceso, fechaInicio, fechaFin, "APROBADA", idPrograma)); // Asumiendo que 1 es el ID del estado "aprobada"
-        estadisticaEntity.setTotal_solicitudes(solicitudRepository.contarNombreFechaYPrograma(proceso, fechaInicio, fechaFin, idPrograma));
-        estadisticaEntity.setTotal_rechazadas(solicitudRepository.contarNombreFechaEstadoYPrograma(proceso, fechaInicio, fechaFin, "RECHAZADA", idPrograma)); // Asumiendo que 1 es el ID del estado "rechazada"
-        }
-
-        return estadisticaMapper.map(estadisticaEntity, Estadistica.class);
     }
 
     @Override
@@ -903,42 +885,6 @@ public class GestionarEstadisticasGatewayImplAdapter implements GestionarEstadis
     }
 
     /**
-     * Metodo auxiliar para normalizar nombres de procesos
-     * Convierte nombres del frontend a nombres que existen en la base de datos
-     */
-    private String normalizarNombreProceso(String nombreProceso) {
-        if (nombreProceso == null || nombreProceso.trim().isEmpty()) {
-            return nombreProceso;
-        }
-        
-        String procesoNormalizado = nombreProceso.trim();
-        
-        // Mapear nombres del frontend a nombres de la base de datos
-        switch (procesoNormalizado.toUpperCase()) {
-            case "REINGRESO":
-            case "REINGRESO A PROGRAMAS":
-                return "Reingreso";
-            case "HOMOLOGACION":
-            case "HOMOLOGACION DE MATERIAS":
-                return "Homologacion";
-            case "ECAES":
-            case "INSCRIPCION A EXAMENES":
-                return "ECAES";
-            case "CURSO_VERANO":
-            case "CURSOS DE VERANO":
-            case "CURSOS INTERSEMESTRALES":
-                return "CURSO_VERANO";
-            case "PAZ_SALVO":
-            case "PAZ Y SALVO":
-            case "TRAMITES ADMINISTRATIVOS":
-                return "PAZ_SALVO";
-            default:
-                // Si no coincide con ningun mapeo, devolver el nombre original
-                return procesoNormalizado;
-        }
-    }
-
-    /**
      * Metodo centralizado para normalizar estadisticas y evitar valores null
      * Asegura que todos los campos tengan valores por defecto apropiados
      */
@@ -1211,66 +1157,6 @@ public class GestionarEstadisticasGatewayImplAdapter implements GestionarEstadis
         }
     }
 
-    @Override
-    public Map<String, Object> obtenerResumenPorProceso(String periodoAcademico, Integer idPrograma) {
-        Map<String, Object> resultado = new HashMap<>();
-        
-        try {
-            // Obtener resumen completo con filtros para tener acceso a todas las estadísticas
-            Map<String, Object> resumenCompleto = obtenerResumenCompleto(periodoAcademico, idPrograma);
-            
-            // Procesar datos para crear resumen organizado
-            Map<String, Object> resumenProcesos = new HashMap<>();
-            
-            // Mapear tipos de procesos con colores y estilos
-            String[] tiposProcesos = {TipoProcesoSolicitud.REINGRESO, TipoProcesoSolicitud.HOMOLOGACION,
-                    TipoProcesoSolicitud.ECAES, TipoProcesoSolicitud.CURSOS_VERANO, TipoProcesoSolicitud.PAZ_Y_SALVO};
-            String[] colores = {"#007bff", "#28a745", "#ffc107", "#17a2b8", "#dc3545"};
-            String[] iconos = {"fas fa-user-plus", "fas fa-exchange-alt", "fas fa-graduation-cap", "fas fa-calendar-alt", "fas fa-check-circle"};
-            
-            // Obtener porTipoProceso del resumen completo (está en el nivel superior, no en estadisticasGlobales)
-            @SuppressWarnings("unchecked")
-            Map<String, Object> porTipoProceso = (Map<String, Object>) resumenCompleto.get("porTipoProceso");
-            
-            if (porTipoProceso != null) {
-                for (String tipoProceso : tiposProcesos) {
-                    // Total de solicitudes del proceso (el valor puede ser un número o un mapa con "totalSolicitudes")
-                    int contador = 0;
-                    String nombreLimpio = tipoProceso;
-                    Object datos = porTipoProceso.get(tipoProceso);
-                    if (datos instanceof Number) {
-                        contador = ((Number) datos).intValue();
-                    } else if (datos instanceof Map) {
-                        Object total = ((Map<?, ?>) datos).get("totalSolicitudes");
-                        contador = total instanceof Number ? ((Number) total).intValue() : 0;
-                    }
-                    
-                    if (contador > 0) {
-                        // Crear objeto de proceso con estilo
-                        Map<String, Object> procesoInfo = new HashMap<>();
-                        procesoInfo.put("nombre", nombreLimpio);
-                        procesoInfo.put("cantidad", contador);
-                        procesoInfo.put("descripcion", obtenerDescripcionProcesoDetallada(nombreLimpio));
-                        procesoInfo.put("color", colores[getIndiceTipoProceso(tipoProceso)]);
-                        procesoInfo.put("icono", iconos[getIndiceTipoProceso(tipoProceso)]);
-                        
-                        resumenProcesos.put(nombreLimpio, procesoInfo);
-                    }
-                }
-            }
-            
-            resultado.put("procesos", resumenProcesos);
-            resultado.put("totalProcesos", resumenProcesos.size());
-            resultado.put("fechaConsulta", new Date());
-            resultado.put("descripcion", "Resumen de procesos con estilos para dashboard");
-            
-            return resultado;
-        } catch (Exception e) {
-            // Propagar: devolver ceros haria que un fallo se viera como un dashboard vacio
-            throw new IllegalStateException("Error al obtener resumen de procesos", e);
-        }
-    }
-
     /**
      * Metodo auxiliar para obtener indice del tipo de proceso
      */
@@ -1283,73 +1169,6 @@ public class GestionarEstadisticasGatewayImplAdapter implements GestionarEstadis
             case TipoProcesoSolicitud.CURSOS_VERANO: return 3;
             case "Paz y Salvo": return 4;
             default: return 0;
-        }
-    }
-
-    @Override
-    public Map<String, Object> obtenerConfiguracionEstilos() {
-        Map<String, Object> resultado = new HashMap<>();
-        
-        try {
-            // Configuracion de tema claro con fondo blanco
-            Map<String, Object> tema = new HashMap<>();
-            tema.put("nombre", "Tema Claro");
-            tema.put("fondoPrincipal", "#ffffff");
-            tema.put("fondoSecundario", "#f8f9fa");
-            tema.put("textoPrincipal", "#212529");
-            tema.put("textoSecundario", "#6c757d");
-            tema.put("borde", "#dee2e6");
-            tema.put("sombra", "0 2px 10px rgba(0, 0, 0, 0.1)");
-            
-            // Colores para las tarjetas de estadisticas
-            Map<String, Object> coloresTarjetas = new HashMap<>();
-            coloresTarjetas.put("estudiantes", "#007bff");
-            coloresTarjetas.put("procesos", "#6f42c1");
-            coloresTarjetas.put("aprobadas", "#28a745");
-            coloresTarjetas.put("enProceso", "#ffc107");
-            coloresTarjetas.put("rechazadas", "#dc3545");
-            coloresTarjetas.put("pendientes", "#17a2b8");
-            
-            // Configuracion de gradientes para las tarjetas
-            Map<String, Object> gradientes = new HashMap<>();
-            gradientes.put("estudiantes", "linear-gradient(135deg, #007bff, #0056b3)");
-            gradientes.put("procesos", "linear-gradient(135deg, #6f42c1, #5a32a3)");
-            gradientes.put("aprobadas", "linear-gradient(135deg, #28a745, #1e7e34)");
-            gradientes.put("enProceso", "linear-gradient(135deg, #ffc107, #e0a800)");
-            gradientes.put("rechazadas", "linear-gradient(135deg, #dc3545, #c82333)");
-            gradientes.put("pendientes", "linear-gradient(135deg, #17a2b8, #138496)");
-            
-            // Configuracion de iconos
-            Map<String, Object> iconos = new HashMap<>();
-            iconos.put("estudiantes", "fas fa-users");
-            iconos.put("procesos", "fas fa-chart-bar");
-            iconos.put("aprobadas", "fas fa-check-circle");
-            iconos.put("enProceso", "fas fa-clock");
-            iconos.put("rechazadas", "fas fa-times-circle");
-            iconos.put("pendientes", "fas fa-hourglass-half");
-            
-            // Configuracion de estilos para componentes
-            Map<String, Object> estilos = new HashMap<>();
-            estilos.put("borderRadius", "12px");
-            estilos.put("padding", "20px");
-            estilos.put("margin", "10px");
-            estilos.put("fontFamily", "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif");
-            estilos.put("fontSizeTitulo", "1.5rem");
-            estilos.put("fontSizeSubtitulo", "1rem");
-            estilos.put("fontSizeNumero", "2.5rem");
-            
-            resultado.put("tema", tema);
-            resultado.put("coloresTarjetas", coloresTarjetas);
-            resultado.put("gradientes", gradientes);
-            resultado.put("iconos", iconos);
-            resultado.put("estilos", estilos);
-            resultado.put("fechaConsulta", new Date());
-            resultado.put("descripcion", "Configuracion de estilos para dashboard con tema claro");
-            
-            return resultado;
-        } catch (Exception e) {
-            // Propagar: devolver ceros haria que un fallo se viera como un dashboard vacio
-            throw new IllegalStateException("Error al obtener configuracion de estilos", e);
         }
     }
 
@@ -2142,156 +1961,6 @@ public class GestionarEstadisticasGatewayImplAdapter implements GestionarEstadis
         }
     }
 
-    /**
-     * Tiempo de procesamiento calculado con datos reales: días entre la fecha de registro de la
-     * solicitud y la fecha del estado final (APROBADA o RECHAZADA). Las solicitudes que aún no
-     * llegan a un estado final cuentan como pendientes y no entran en el promedio.
-     */
-    @Override
-    @Transactional(readOnly = true)
-    public Map<String, Object> obtenerTiempoPromedioProcesamiento() {
-        Map<String, Object> resultado = new HashMap<>();
-
-        try {
-            String[][] procesos = {
-                {TipoProcesoSolicitud.HOMOLOGACION, "#28a745", "fas fa-graduation-cap", "Proceso de homologacion de materias"},
-                {TipoProcesoSolicitud.PAZ_Y_SALVO, "#007bff", "fas fa-shield-alt", "Proceso de paz y salvo academico"},
-                {TipoProcesoSolicitud.REINGRESO, "#ffc107", "fas fa-user-plus", "Proceso de reingreso estudiantil"},
-                {TipoProcesoSolicitud.CURSOS_VERANO, "#17a2b8", "fas fa-sun", "Proceso de cursos de verano"},
-                {TipoProcesoSolicitud.ECAES, "#dc3545", "fas fa-file-alt", "Proceso de inscripcion a pruebas ECAES"}
-            };
-
-            // Días de procesamiento por proceso (solo solicitudes completadas) y total por proceso
-            Map<String, List<Double>> diasPorProceso = new HashMap<>();
-            Map<String, Integer> totalPorProceso = new HashMap<>();
-            for (String[] p : procesos) {
-                diasPorProceso.put(p[0], new ArrayList<>());
-                totalPorProceso.put(p[0], 0);
-            }
-
-            for (SolicitudEntity solicitud : cargarSolicitudes()) {
-                String proceso = obtenerNombreProcesoPorSolicitud(solicitud);
-                if (proceso == null || !totalPorProceso.containsKey(proceso)) {
-                    continue;
-                }
-                totalPorProceso.merge(proceso, 1, Integer::sum);
-                Double dias = calcularDiasHastaEstadoFinal(solicitud);
-                if (dias != null) {
-                    diasPorProceso.get(proceso).add(dias);
-                }
-            }
-
-            Map<String, Object> tiemposPorProceso = new HashMap<>();
-            int totalGeneral = 0;
-            int completadasGeneral = 0;
-            double sumaDiasGeneral = 0.0;
-            String procesoMasRapido = null;
-            String procesoMasLento = null;
-            String procesoMasEficiente = null;
-            double mejorTiempo = Double.MAX_VALUE;
-            double peorTiempo = -1;
-            double mejorEficiencia = -1;
-
-            for (String[] p : procesos) {
-                String nombre = p[0];
-                List<Double> dias = diasPorProceso.get(nombre);
-                int total = totalPorProceso.get(nombre);
-                int completadas = dias.size();
-                double promedio = dias.stream().mapToDouble(Double::doubleValue).average().orElse(0.0);
-                double eficiencia = total > 0 ? (completadas * 100.0) / total : 0.0;
-
-                Map<String, Object> datos = new HashMap<>();
-                datos.put("nombre", nombre);
-                datos.put("tiempoPromedio", redondear(promedio));
-                datos.put("tiempoMinimo", redondear(dias.stream().mapToDouble(Double::doubleValue).min().orElse(0.0)));
-                datos.put("tiempoMaximo", redondear(dias.stream().mapToDouble(Double::doubleValue).max().orElse(0.0)));
-                datos.put("totalSolicitudes", total);
-                datos.put("solicitudesCompletadas", completadas);
-                datos.put("eficiencia", redondear(eficiencia));
-                datos.put("color", p[1]);
-                datos.put("icono", p[2]);
-                datos.put("descripcion", p[3]);
-                tiemposPorProceso.put(nombre, datos);
-
-                totalGeneral += total;
-                completadasGeneral += completadas;
-                sumaDiasGeneral += dias.stream().mapToDouble(Double::doubleValue).sum();
-
-                if (completadas > 0) {
-                    if (promedio < mejorTiempo) { mejorTiempo = promedio; procesoMasRapido = nombre; }
-                    if (promedio > peorTiempo) { peorTiempo = promedio; procesoMasLento = nombre; }
-                }
-                if (total > 0 && eficiencia > mejorEficiencia) {
-                    mejorEficiencia = eficiencia;
-                    procesoMasEficiente = nombre;
-                }
-            }
-
-            // Analisis de eficiencia
-            Map<String, Object> analisisEficiencia = new HashMap<>();
-            analisisEficiencia.put("procesoMasRapido", procesoMasRapido != null ? procesoMasRapido : "Sin datos");
-            analisisEficiencia.put("procesoMasLento", procesoMasLento != null ? procesoMasLento : "Sin datos");
-            analisisEficiencia.put("procesoMasEficiente", procesoMasEficiente != null ? procesoMasEficiente : "Sin datos");
-            analisisEficiencia.put("tiempoPromedioGeneral",
-                    redondear(completadasGeneral > 0 ? sumaDiasGeneral / completadasGeneral : 0.0));
-            analisisEficiencia.put("eficienciaGeneral",
-                    redondear(totalGeneral > 0 ? (completadasGeneral * 100.0) / totalGeneral : 0.0));
-            analisisEficiencia.put("totalSolicitudes", totalGeneral);
-            analisisEficiencia.put("solicitudesCompletadas", completadasGeneral);
-            analisisEficiencia.put("solicitudesPendientes", totalGeneral - completadasGeneral);
-
-            // Metas de tiempo (valores de referencia institucionales, no son mediciones)
-            Map<String, Object> metasTiempo = new HashMap<>();
-            metasTiempo.put("homologacion", 3.0);
-            metasTiempo.put("pazSalvo", 2.0);
-            metasTiempo.put("reingreso", 5.0);
-            metasTiempo.put("cursosVerano", 2.0);
-            metasTiempo.put("metaGeneral", 3.0);
-            
-            resultado.put("porProceso", tiemposPorProceso);
-            resultado.put("analisisEficiencia", analisisEficiencia);
-            resultado.put("metasTiempo", metasTiempo);
-            resultado.put("fechaConsulta", new Date());
-            resultado.put("descripcion", "Estadisticas de tiempo promedio de procesamiento con analisis de eficiencia");
-            resultado.put("unidad", "dias");
-            resultado.put("fuente", "Calculado desde el historial de estados de las solicitudes");
-
-            return resultado;
-        } catch (Exception e) {
-            // Propagar: devolver ceros haria que un fallo se viera como un dashboard vacio
-            throw new IllegalStateException("Error al obtener estadisticas de tiempo de procesamiento", e);
-        }
-    }
-
-    /**
-     * Días entre el registro de la solicitud y su primer estado final (APROBADA o RECHAZADA).
-     * Devuelve null si la solicitud aún no termina o faltan fechas.
-     */
-    private Double calcularDiasHastaEstadoFinal(SolicitudEntity solicitud) {
-        Date inicio = solicitud.getFecha_registro_solicitud();
-        if (inicio == null || solicitud.getEstadosSolicitud() == null) {
-            return null;
-        }
-        Date fin = solicitud.getEstadosSolicitud().stream()
-                .filter(e -> e.getEstado_actual() != null && e.getFecha_registro_estado() != null)
-                .filter(e -> {
-                    String estado = normalizarEstado(e.getEstado_actual());
-                    return "APROBADA".equals(estado) || "RECHAZADA".equals(estado);
-                })
-                .map(EstadoSolicitudEntity::getFecha_registro_estado)
-                .min(Comparator.naturalOrder())
-                .orElse(null);
-        if (fin == null) {
-            return null;
-        }
-        double dias = (fin.getTime() - inicio.getTime()) / (1000.0 * 60 * 60 * 24);
-        return Math.max(dias, 0.0);
-    }
-
-    private static double redondear(double valor) {
-        return Math.round(valor * 10.0) / 10.0;
-    }
-
     @Override
     public Map<String, Object> obtenerTendenciasYComparativas(String periodoAcademico, Integer idPrograma) {
         Map<String, Object> resultado = new HashMap<>();
@@ -3074,36 +2743,6 @@ public class GestionarEstadisticasGatewayImplAdapter implements GestionarEstadis
         return resultado;
     }
     
-    @Override
-    @Transactional(readOnly = true)
-    public Map<String, Object> obtenerEstadisticasPorAnio(Integer anio) {
-        
-        // Calcular fechas del año completo
-        java.time.LocalDate fechaInicio = java.time.LocalDate.of(anio, 1, 1);
-        java.time.LocalDate fechaFin = java.time.LocalDate.of(anio, 12, 31);
-        
-        Date fechaInicioDate = java.sql.Date.valueOf(fechaInicio);
-        Date fechaFinDate = java.sql.Date.valueOf(fechaFin);
-        
-        // Obtener estadísticas del año completo
-        Map<String, Object> estadisticasAnio = obtenerEstadisticasPorPeriodo(fechaInicioDate, fechaFinDate);
-        
-        // Agregar información específica del año
-        estadisticasAnio.put("anio", anio);
-        estadisticasAnio.put("tipoConsulta", "porAnio");
-        
-        // Agregar desglose por semestre
-        Map<String, Object> semestre1 = obtenerEstadisticasPorSemestre(anio, 1);
-        Map<String, Object> semestre2 = obtenerEstadisticasPorSemestre(anio, 2);
-        
-        Map<String, Object> desgloseSemestres = new HashMap<>();
-        desgloseSemestres.put("semestre1", semestre1);
-        desgloseSemestres.put("semestre2", semestre2);
-        estadisticasAnio.put("desgloseSemestres", desgloseSemestres);
-        
-        return estadisticasAnio;
-    }
-
     @Override
     @Transactional(readOnly = true)
     public Map<String, Object> obtenerEstadisticasPorSemestre(Integer anio, Integer semestre) {

@@ -29,8 +29,6 @@ public interface SolicitudEcaesMapperDominio {
     @Mapping(target = "objCursoOfertadoVerano", ignore = true) // Propiedad no mapeada
     SolicitudEcaes mappearDeSolicitudEcaesDTOPeticionASolicitudEcaes(SolicitudEcaesDTOPeticion peticion);
 
-    List<SolicitudEcaes> mappearListaDeSolicitudEcaesDTOPeticionAListaDeSolicitudEcaes(List<SolicitudEcaesDTOPeticion> solicitudes);
-
     // Dominio → DTO Respuesta
     @Mapping(source = "id_solicitud", target = "id_solicitud")
     @Mapping(source = "nombre_solicitud", target = "nombre_solicitud")

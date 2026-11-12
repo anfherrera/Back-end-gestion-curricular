@@ -19,11 +19,11 @@ public interface GestionarProgramaGatewayIntPort {
 
     Programa obtenerProgramaPorCodigo(String codigo);
 
-    boolean existeProgramaPorCodigo(String codigo);
-
     List<Programa> buscarPorNombreParcial(String nombreParcial);
 
     List<Programa> listarProgramas();
     
     boolean tieneUsuariosAsociados(Integer idPrograma);
+
+    boolean existeProgramaPorCodigo(String codigo);
 }

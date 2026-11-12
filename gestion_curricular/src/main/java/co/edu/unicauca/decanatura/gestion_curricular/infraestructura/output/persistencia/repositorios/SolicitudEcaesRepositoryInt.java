@@ -101,27 +101,4 @@ public interface SolicitudEcaesRepositoryInt extends JpaRepository<SolicitudEcae
         @Param("periodoAcademico") String periodoAcademico
     );
 
-    /**
-     * Busca las solicitudes ECAES cuyo último estado sea el especificado
-     * y que pertenezcan a un usuario específico y período académico
-     */
-    @Query("SELECT s FROM SolicitudEcaesEntity s " +
-           "WHERE s.objUsuario.id_usuario = :idUsuario " +
-           "AND (:periodoAcademico IS NULL OR s.periodo_academico = :periodoAcademico) " +
-           "AND s.id_solicitud IN (" +
-           "    SELECT e.objSolicitud.id_solicitud " +
-           "    FROM EstadoSolicitudEntity e " +
-           "    WHERE e.estado_actual = :estado " +
-           "    AND e.fecha_registro_estado = (" +
-           "        SELECT MAX(e2.fecha_registro_estado) " +
-           "        FROM EstadoSolicitudEntity e2 " +
-           "        WHERE e2.objSolicitud.id_solicitud = e.objSolicitud.id_solicitud" +
-           "    )" +
-           ")")
-    List<SolicitudEcaesEntity> findByUltimoEstadoAndUsuarioAndPeriodoAcademico(
-        @Param("estado") String estado, 
-        @Param("idUsuario") Integer idUsuario,
-        @Param("periodoAcademico") String periodoAcademico
-    );
-
 }

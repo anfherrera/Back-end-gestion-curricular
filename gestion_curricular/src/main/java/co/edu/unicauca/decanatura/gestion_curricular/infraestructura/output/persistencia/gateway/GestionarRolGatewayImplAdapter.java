@@ -37,13 +37,6 @@ public class GestionarRolGatewayImplAdapter implements GestionarRolGatewayIntPor
             this.objrolRepository.findById(idRol).orElse(null), Rol.class);
     }
 
-    @Override
-    @Transactional(readOnly = true)
-    public Rol buscarRolPorNombre(String nombre) {
-        return this.rolMapper.map(
-            this.objrolRepository.buscarPorNombre(nombre).orElse(null), Rol.class);
-    }
-    
     // Nuevos métodos CRUD
     @Override
     @Transactional
@@ -99,17 +92,6 @@ public class GestionarRolGatewayImplAdapter implements GestionarRolGatewayIntPor
 
     @Override
     @Transactional(readOnly = true)
-    public boolean existeRolPorNombre(String nombre) {
-        boolean existe = false;
-        Optional<RolEntity> rolEntity = objrolRepository.buscarPorNombre(nombre);
-        if (rolEntity.isPresent()) {
-            existe = true;
-        }
-        return existe;
-    }
-
-    @Override
-    @Transactional(readOnly = true)
     public List<Rol> listarRoles() {
         List<Rol> rolesRetornar = null;
         List<RolEntity> rolesEntity = objrolRepository.findAll();
@@ -125,5 +107,11 @@ public class GestionarRolGatewayImplAdapter implements GestionarRolGatewayIntPor
     @Transactional(readOnly = true)
     public boolean tieneUsuariosAsociados(Integer idRol) {
         return !usuarioRepository.buscarPorRol(idRol).isEmpty();
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public boolean existeRolPorNombre(String nombre) {
+        return objrolRepository.buscarPorNombre(nombre).isPresent();
     }
 }

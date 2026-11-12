@@ -13,9 +13,4 @@ public interface FechaEcaesRepositoryInt extends JpaRepository<FechaEcaesEntity,
      */
     Optional<FechaEcaesEntity> findByPeriodoAcademico(String periodoAcademico);
     
-    /**
-     * Verificar si existen fechas para un período académico
-     */
-    boolean existsByPeriodoAcademico(String periodoAcademico);
-
 }

@@ -93,17 +93,6 @@ public class GestionarDocenteGatewayImplAdapter implements GestionarDocenteGatew
 
     @Override
     @Transactional(readOnly = true)
-    public boolean existeDocentePorCodigo(String codigo) {
-        boolean existe = false;
-        Optional<DocenteEntity> docenteEntity = docenteRepository.buscarPorCodigo(codigo);
-        if (docenteEntity.isPresent()) {
-            existe = true;
-        }
-        return existe;
-    }
-
-    @Override
-    @Transactional(readOnly = true)
     public List<Docente> buscarPorNombreParcial(String nombreParcial) {
         List<Docente> docentesRetornar = null;
         List<DocenteEntity> docentesEntity = docenteRepository.buscarPorNombreParcial(nombreParcial);
@@ -132,5 +121,11 @@ public class GestionarDocenteGatewayImplAdapter implements GestionarDocenteGatew
     @Transactional(readOnly = true)
     public boolean tieneCursosAsignados(Integer idDocente) {
         return !cursoOfertadoRepository.buscarPorDocente(idDocente).isEmpty();
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public boolean existeDocentePorCodigo(String codigo) {
+        return docenteRepository.buscarPorCodigo(codigo).isPresent();
     }
 }

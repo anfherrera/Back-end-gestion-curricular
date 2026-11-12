@@ -231,9 +231,9 @@ class GestionPazYSalvoFuncionalTest {
         // Paso 2: El coordinador aprueba una solicitud que el funcionario ya aprobó
         // (el flujo es Funcionario -> Coordinador -> Secretaria; no se pueden saltar pasos)
         int id = SoportePazYSalvo.crearSolicitud(mockMvc, objectMapper, tokenEstudiante);
-        org.junit.jupiter.api.Assertions.assertEquals(200,
+        org.junit.jupiter.api.Assertions.assertEquals(204,
                 SoportePazYSalvo.cambiarEstado(mockMvc, tokenFuncionario, id, "APROBADA_FUNCIONARIO"));
-        org.junit.jupiter.api.Assertions.assertEquals(200,
+        org.junit.jupiter.api.Assertions.assertEquals(204,
                 SoportePazYSalvo.cambiarEstado(mockMvc, tokenCoordinador, id, "APROBADA_COORDINADOR"));
     }
 
@@ -443,11 +443,12 @@ class GestionPazYSalvoFuncionalTest {
         
         String jsonCambioEstado = """
             {
+                "idSolicitud": 999,
                 "nuevoEstado": "APROBADO"
             }
             """;
 
-        mockMvc.perform(put("/api/solicitudes-pazysalvo/cambiarEstadoSolicitud/999")
+        mockMvc.perform(put("/api/solicitudes-pazysalvo/actualizarEstadoSolicitud")
                         .header("Authorization", tokenCoordinador)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(jsonCambioEstado))
@@ -478,11 +479,11 @@ class GestionPazYSalvoFuncionalTest {
                 .andExpect(status().isOk());
 
         // Paso 3: Aprobación completa: Funcionario -> Coordinador -> Secretaria
-        org.junit.jupiter.api.Assertions.assertEquals(200,
+        org.junit.jupiter.api.Assertions.assertEquals(204,
                 SoportePazYSalvo.cambiarEstado(mockMvc, tokenFuncionario, id, "APROBADA_FUNCIONARIO"));
-        org.junit.jupiter.api.Assertions.assertEquals(200,
+        org.junit.jupiter.api.Assertions.assertEquals(204,
                 SoportePazYSalvo.cambiarEstado(mockMvc, tokenCoordinador, id, "APROBADA_COORDINADOR"));
-        org.junit.jupiter.api.Assertions.assertEquals(200,
+        org.junit.jupiter.api.Assertions.assertEquals(204,
                 SoportePazYSalvo.cambiarEstado(mockMvc, tokenSecretaria, id, "APROBADA"));
 
         // Paso 4: Generar documento final de esa solicitud

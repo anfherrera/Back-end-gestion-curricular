@@ -199,20 +199,6 @@ public Usuario crearUsuario(Usuario usuario) {
     }
 
     @Override
-    public Usuario buscarUsuarioPorCodigo(String codigo) {
-        if (codigo == null || codigo.isBlank()) {
-            this.objFormateadorResultados.retornarRespuestaErrorEntidadExiste("El código no puede estar vacío.");
-        }
-
-        Usuario usuario = this.objGestionarUsuarioGateway.buscarUsuarioPorCodigo(codigo);
-        if (usuario == null) {
-            this.objFormateadorResultados.retornarRespuestaErrorEntidadExiste("No se encontró el usuario con ese código.");
-        }
-
-        return usuario;
-    }
-
-    @Override
     public Usuario buscarUsuarioPorCorreo(String correo) {
         if (correo == null || correo.isBlank()) {
             this.objFormateadorResultados.retornarRespuestaErrorEntidadExiste("El correo no puede estar vacío.");
@@ -227,50 +213,12 @@ public Usuario crearUsuario(Usuario usuario) {
     }
 
     @Override
-    public Usuario buscarUsuarioPorNombre(String nombre) {
-        if (nombre == null || nombre.isBlank()) {
-            this.objFormateadorResultados.retornarRespuestaErrorEntidadExiste("El nombre no puede estar vacío.");
-        }
-
-        Usuario usuario = this.objGestionarUsuarioGateway.buscarUsuarioPorNombre(nombre);
-        if (usuario == null) {
-            this.objFormateadorResultados.retornarRespuestaErrorEntidadExiste("No se encontró el usuario con ese nombre.");
-        }
-
-        return usuario;
-    }
-
-    @Override
-    public Usuario buscarSolicitudesUsuarioPorCodigo(String codigo) {
-        if (codigo == null || codigo.isBlank()) {
-            this.objFormateadorResultados.retornarRespuestaErrorEntidadExiste("El código no puede estar vacío.");
-        }
-
-        Usuario usuario = this.objGestionarUsuarioGateway.buscarSolicitudesUsuarioPorCodigo(codigo);
-        if (usuario == null) {
-            this.objFormateadorResultados.retornarRespuestaErrorEntidadExiste("No se encontraron solicitudes para el usuario.");
-        }
-
-        return usuario;
-    }
-
-    @Override
     public List<Usuario> buscarUsuariosPorRol(Integer idRol) {
         if (idRol == null) {
             this.objFormateadorResultados.retornarRespuestaErrorEntidadExiste("Debe proporcionar un ID de rol válido.");
         }
 
         return this.objGestionarUsuarioGateway.buscarUsuariosPorRol(idRol);
-    }
-
-    @Override
-    public List<Usuario> buscarUsuariosPorPrograma(Integer idPrograma) {
-        if (idPrograma == null) {
-            this.objFormateadorResultados.retornarRespuestaErrorEntidadExiste("Debe proporcionar un ID de programa válido.");
-        }
-        //this.objFormateadorResultados.retornarRespuestaErrorEntidadExiste("Buscando usuarios por programa con ID: " + idPrograma);
-
-        return this.objGestionarUsuarioGateway.buscarUsuariosPorPrograma(idPrograma);
     }
 
     @Override

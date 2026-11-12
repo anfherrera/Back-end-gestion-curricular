@@ -1,7 +1,6 @@
 package co.edu.unicauca.decanatura.gestion_curricular.dominio.casosDeUso;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 
@@ -11,7 +10,6 @@ import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.Gestionar
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.GestionarUsuarioGatewayIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.EstadoSolicitud;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Solicitud;
-import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.SolicitudEcaes;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.SolicitudHomologacion;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.SolicitudReingreso;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Usuario;
@@ -28,12 +26,6 @@ public class GestionarSolicitudCUAdapter implements GestionarSolicitudCUIntPort 
         this.objUsuario = objUsuario;
         this.objFormateadorResultados = objFormateadorResultados;
         this.objGestionarSolicitudGateway = objGestionarSolicitudGateway;
-    }
-
-    @Override
-    public SolicitudEcaes crearSolicitudEcaes(SolicitudEcaes solicitudEcaes) {
-        // Implementación pendiente
-        return null;
     }
 
     @Override
@@ -113,75 +105,15 @@ public class GestionarSolicitudCUAdapter implements GestionarSolicitudCUIntPort 
     }
 
     @Override
-    public boolean existeSolicitudPorNombre(String nombreSolicitud) {
-        // Implementación pendiente
-        return false;
-    }
-
-    @Override
-    public Integer contarSolicitudPorNombreYCursoIns(String nombreSolicitud, Integer idCurso) {
-        // Implementación pendiente
-        return 0;
-    }
-
-    @Override
-    public Integer contarSolicitudPorNombreCursoEstadoIns(String nombreSolicitud, Integer idCurso,
-            String estadoActual) {
-        // Implementación pendiente
-        return 0;
-    }
-
-    @Override
     public List<Solicitud> buscarSolicitudPorNombreCursoIns(String nombreSolicitud, Integer idCurso) {
         // Implementación pendiente
         return new ArrayList<>();
     }
 
     @Override
-    public List<Solicitud> buscarSolicitudPorNombreCursoEstadoIns(String nombreSolicitud, Integer idCurso,
-            String estadoActual) {
-        // Implementación pendiente
-        return new ArrayList<>();
-    }
-
-    @Override
-    public Integer contarSolicitudPorNombreYCursoPre(String nombreSolicitud, Integer idCurso) {
-        // Implementación pendiente
-        return 0;
-    }
-
-    @Override
-    public Integer contarSolicitudPorNombreCursoEstadoPre(String nombreSolicitud, Integer idCurso,
-            String estadoActual) {
-        // Implementación pendiente
-        return 0;
-    }
-
-    @Override
     public List<Solicitud> buscarSolicitudPorNombreCursoPre(String nombreSolicitud, Integer idCurso) {
         // Implementación pendiente
         return new ArrayList<>();
-    }
-
-    @Override
-    public List<Solicitud> buscarSolicitudPorNombreCursoEstadoPre(String nombreSolicitud, Integer idCurso,
-            String estadoActual) {
-        // Implementación pendiente
-        return new ArrayList<>();
-    }
-
-    @Override
-    public List<Solicitud> buscarSolicitudesPorFecha(Date fechaInicio, Date fechaFin) {
-        if(fechaInicio == null){
-            this.objFormateadorResultados.retornarRespuestaErrorReglaDeNegocio("La fecha de inicio no puede ser nula");
-        }
-        if(fechaFin == null){
-            this.objFormateadorResultados.retornarRespuestaErrorReglaDeNegocio("La fecha de fin no puede ser nula");
-        }
-        if(fechaInicio.after(fechaFin)){
-            this.objFormateadorResultados.retornarRespuestaErrorReglaDeNegocio("La fecha de inicio no puede ser posterior a la fecha de fin");
-        }
-        return this.objGestionarSolicitudGateway.buscarSolicitudesPorFecha(fechaInicio, fechaFin);
     }
 
     @Override
@@ -215,22 +147,6 @@ public class GestionarSolicitudCUAdapter implements GestionarSolicitudCUIntPort 
 
     private static String vacioANull(String texto) {
         return texto != null && !texto.trim().isEmpty() ? texto.trim() : null;
-    }
-
-    @Override
-    public List<Solicitud> obtenerSolicitudesPorUsuario(Integer idUsuario) {
-        if(idUsuario == null) {
-            this.objFormateadorResultados.retornarRespuestaErrorReglaDeNegocio("El ID del usuario no puede ser nulo");
-        }
-        Usuario usuario = this.objUsuario.obtenerUsuarioPorId(idUsuario);
-        if(usuario == null) {
-            this.objFormateadorResultados.retornarRespuestaErrorEntidadExiste("Usuario no encontrado");
-        }
-        List<Solicitud> solicitudes = this.objGestionarSolicitudGateway.obtenerSolicitudesPorUsuario(idUsuario);
-        if(solicitudes == null || solicitudes.isEmpty()) {  
-            this.objFormateadorResultados.retornarRespuestaErrorEntidadExiste("No se encontraron solicitudes para el usuario");
-        }
-        return solicitudes;
     }
 
 

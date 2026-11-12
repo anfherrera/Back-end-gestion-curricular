@@ -318,28 +318,6 @@ class ReingresoAceptacionTest {
                 });
     }
 
-    @Test
-    @DisplayName("CA-REING-06.2: Como secretaria quiero subir archivo PDF a una solicitud")
-    void testSecretariaPuedeSubirArchivo() throws Exception {
-        /*
-         * GIVEN: Una secretaria autenticada en el sistema
-         *        AND existe una solicitud de reingreso
-         *        AND la secretaria tiene un archivo PDF para subir
-         * 
-         * WHEN: La secretaria sube un archivo PDF a la solicitud
-         * 
-         * THEN: El sistema debe validar que el archivo sea PDF
-         *       AND debe guardar el archivo
-         *       AND debe asociarlo a la solicitud
-         *       AND debe retornar código HTTP 200 (OK)
-         */
-        
-        // Este test requiere un archivo multipart, pero validamos que el endpoint existe
-        mockMvc.perform(post("/api/solicitudes-reingreso/1/subir-archivo")
-                        .contentType(MediaType.MULTIPART_FORM_DATA));
-                // No validamos status específico porque requiere archivo real
-    }
-
     // ==================== COORDINADOR PUEDE EVALUAR SOLICITUDES ====================
 
     @Test

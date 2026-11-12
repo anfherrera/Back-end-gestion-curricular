@@ -12,8 +12,6 @@ public interface GestionarDocumentosGatewayIntPort {
 
     Documento buscarDocumentoId(Integer idDocumento);
 
-    boolean eliminarDocumento (Documento documento);
-
     /** Documentos sin solicitud que subió el usuario indicado. Con idUsuario null devuelve una lista vacía. */
     List<Documento> buscarDocumentosSinSolicitud(Integer idUsuario);
 }

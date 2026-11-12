@@ -7,8 +7,6 @@ public interface GestionarRolGatewayIntPort {
     
     // Métodos originales (mantener compatibilidad)
     Rol bucarRolPorId(Integer idRol);
-    Rol buscarRolPorNombre(String nombre);
-    
     // Nuevos métodos CRUD
     Rol guardarRol(Rol rol);
 
@@ -20,9 +18,9 @@ public interface GestionarRolGatewayIntPort {
 
     Rol obtenerRolPorNombre(String nombre);
 
-    boolean existeRolPorNombre(String nombre);
-
     List<Rol> listarRoles();
     
     boolean tieneUsuariosAsociados(Integer idRol);
+
+    boolean existeRolPorNombre(String nombre);
 }

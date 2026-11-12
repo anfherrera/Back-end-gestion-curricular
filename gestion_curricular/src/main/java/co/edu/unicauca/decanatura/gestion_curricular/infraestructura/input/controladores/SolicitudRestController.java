@@ -19,7 +19,6 @@ import lombok.extern.slf4j.Slf4j;
 import jakarta.validation.constraints.Min;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -76,31 +75,9 @@ public class SolicitudRestController {
         return ResponseEntity.ok(respuesta);
     }
 
-    @GetMapping("/buscarPorUsuario/{idUsuario}")
-    @PreAuthorize("hasAnyRole(" + Autorizacion.ROLES_STAFF + ") or @autorizacion.esUsuarioActual(#idUsuario)")
-    public ResponseEntity<List<SolicitudDTORespuesta>> obtenerPorUsuario(@PathVariable Integer idUsuario) {
-        List<Solicitud> solicitudes = solicitudCU.obtenerSolicitudesPorUsuario(idUsuario);
-        List<SolicitudDTORespuesta> respuesta = solicitudes.stream()
-                .map(mapper::mappearDeSolicitudARespuesta)
-                .collect(Collectors.toList());
-        return ResponseEntity.ok(respuesta);
-    }
-
     @GetMapping("/buscarPorNombre")
     public ResponseEntity<List<SolicitudDTORespuesta>> obtenerPorNombre(@RequestParam(name = "nombre", required = true) String nombre) {
         List<Solicitud> solicitudes = solicitudCU.obtenerSolicitudesPorNombre(nombre);
-        List<SolicitudDTORespuesta> respuesta = solicitudes.stream()
-                .map(mapper::mappearDeSolicitudARespuesta)
-                .collect(Collectors.toList());
-        return ResponseEntity.ok(respuesta);
-    }
-
-    @GetMapping("/buscarPorFechas")
-    public ResponseEntity<List<SolicitudDTORespuesta>> buscarPorFechas(
-            @RequestParam(name = "inicio", required = true) @DateTimeFormat(pattern = "yyyy-MM-dd") Date inicio,
-            @RequestParam(name = "fin", required = true)  @DateTimeFormat(pattern = "yyyy-MM-dd") Date fin) {
-
-        List<Solicitud> solicitudes = solicitudCU.buscarSolicitudesPorFecha(inicio, fin);
         List<SolicitudDTORespuesta> respuesta = solicitudes.stream()
                 .map(mapper::mappearDeSolicitudARespuesta)
                 .collect(Collectors.toList());

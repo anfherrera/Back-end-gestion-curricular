@@ -76,19 +76,6 @@ public class GestionarEstadisticasCUAdapter implements GestionarEstadisticasCUIn
     }
 
     @Override
-    public Estadistica obtenerEstadisticasSolicitudPeriodoYPrograma(Integer idEstadistica, String proceso, Date fechaInicio, Date fechaFin, Integer idPrograma) {
-        if (proceso == null || proceso.isBlank()) {
-            formateadorResultados.retornarRespuestaErrorEntidadExiste("El proceso no puede estar vacío.");
-        }
-
-        if (fechaInicio == null || fechaFin == null || idPrograma == null) {
-            formateadorResultados.retornarRespuestaErrorEntidadExiste("Parámetros incompletos para la consulta.");
-        }
-
-        return estadisticasGateway.obtenerEstadisticasSolicitudPeriodoYPrograma(idEstadistica, proceso, fechaInicio, fechaFin, idPrograma);
-    }
-
-    @Override
     public Estadistica obtenerEstadisticasSolicitudPeriodoEstadoYPrograma(Integer idEstadistica, String proceso, Date fechaInicio, Date fechaFin, String estado, Integer idPrograma) {
         if (proceso == null || proceso.isBlank()) {
             formateadorResultados.retornarRespuestaErrorEntidadExiste("El proceso no puede estar vacío.");
@@ -224,16 +211,6 @@ public class GestionarEstadisticasCUAdapter implements GestionarEstadisticasCUIn
     }
 
     @Override
-    public Map<String, Object> obtenerResumenPorProceso(String periodoAcademico, Integer idPrograma) {
-        return estadisticasGateway.obtenerResumenPorProceso(periodoAcademico, idPrograma);
-    }
-
-    @Override
-    public Map<String, Object> obtenerConfiguracionEstilos() {
-        return estadisticasGateway.obtenerConfiguracionEstilos();
-    }
-
-    @Override
     public Map<String, Object> obtenerEstadisticasPorEstado(String periodoAcademico, Integer idPrograma) {
         return estadisticasGateway.obtenerEstadisticasPorEstado(periodoAcademico, idPrograma);
     }
@@ -249,11 +226,6 @@ public class GestionarEstadisticasCUAdapter implements GestionarEstadisticasCUIn
     }
 
     @Override
-    public Map<String, Object> obtenerTiempoPromedioProcesamiento() {
-        return estadisticasGateway.obtenerTiempoPromedioProcesamiento();
-    }
-
-    @Override
     public Map<String, Object> obtenerTendenciasYComparativas(String periodoAcademico, Integer idPrograma) {
         return estadisticasGateway.obtenerTendenciasYComparativas(periodoAcademico, idPrograma);
     }
@@ -266,14 +238,6 @@ public class GestionarEstadisticasCUAdapter implements GestionarEstadisticasCUIn
     @Override
     public Map<String, Object> obtenerTendenciasTemporalesCursosVerano(String periodoAcademico, Integer idPrograma) {
         return estadisticasGateway.obtenerTendenciasTemporalesCursosVerano(periodoAcademico, idPrograma);
-    }
-
-    @Override
-    public Map<String, Object> obtenerEstadisticasPorAnio(Integer anio) {
-        if (anio == null || anio < 2020 || anio > 2030) {
-            formateadorResultados.retornarRespuestaErrorEntidadExiste("Año inválido. Debe estar entre 2020 y 2030.");
-        }
-        return estadisticasGateway.obtenerEstadisticasPorAnio(anio);
     }
 
     @Override

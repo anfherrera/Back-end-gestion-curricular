@@ -54,10 +54,8 @@ import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Usuario;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Enums.PeriodoAcademicoEnum;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarUsuarioCUIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.excepciones.EntidadNoExisteException;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.access.prepost.PreAuthorize;
 import co.edu.unicauca.decanatura.gestion_curricular.Security.Autorizacion;
-import org.springframework.security.core.context.SecurityContextHolder;
 
 @PreAuthorize("hasAnyRole(" + Autorizacion.ROLES_STAFF + ")")
 @Slf4j
@@ -604,42 +602,6 @@ public class SolicitudPazYSalvoRestController {
     }
 
     /**
-     * Cambiar estado de solicitud por ID (alias para compatibilidad con pruebas)
-     * PUT /api/solicitudes-pazysalvo/cambiarEstadoSolicitud/{id}
-     */
-    @PreAuthorize("hasAnyRole('Funcionario', 'Coordinador', 'Secretario', 'Administrador')")
-    @PutMapping("/cambiarEstadoSolicitud/{id}")
-    public ResponseEntity<Map<String, Object>> cambiarEstadoSolicitudPorId(
-            @PathVariable Integer id,
-            @RequestBody Map<String, String> requestBody) {
-        String nuevoEstado = requestBody.get("nuevoEstado");
-        if (nuevoEstado == null || nuevoEstado.isEmpty()) {
-            return ResponseEntity.badRequest().body(Map.of("error", "nuevoEstado es requerido"));
-        }
-        
-        ResponseEntity<Map<String, Object>> rechazo = validarCambioDeEstado(id, nuevoEstado);
-        if (rechazo != null) {
-            return rechazo;
-        }
-
-        // Obtener el comentario si está presente
-        String comentario = requestBody.get("comentario");
-
-        // Usar el método sobrecargado que acepta comentario
-        solicitudPazYSalvoCU.cambiarEstadoSolicitud(id, nuevoEstado, comentario);
-        
-        Map<String, Object> respuesta = new HashMap<>();
-        respuesta.put("idSolicitud", id);
-        respuesta.put("nuevoEstado", nuevoEstado);
-        if (comentario != null && !comentario.trim().isEmpty()) {
-            respuesta.put("comentario", comentario);
-        }
-        respuesta.put("mensaje", "Estado actualizado exitosamente");
-        
-        return ResponseEntity.ok(respuesta);
-    }
-
-    /**
      * Generar documento PDF de Paz y Salvo
      * GET /api/solicitudes-pazysalvo/generarDocumentoPazYSalvo/{id}/pdf
      */
@@ -1046,17 +1008,6 @@ public class SolicitudPazYSalvoRestController {
     }
 
     /**
-     * Obtener plantillas disponibles para paz y salvo (usa el servicio real como homologación)
-     */
-    @GetMapping("/plantillas-disponibles")
-    public ResponseEntity<?> obtenerPlantillasDisponibles() {
-        // Usar el servicio real igual que homologación
-        List<?> plantillas = documentGeneratorService.getTemplates("paz-salvo");
-        
-        return ResponseEntity.ok(plantillas);
-    }
-
-    /**
      * Descargar oficio por ID de solicitud de paz y salvo
      */
     @PreAuthorize("@autorizacion.esStaff() or @autorizacion.esDuenoSolicitud(#idSolicitud)")
@@ -1182,32 +1133,6 @@ public class SolicitudPazYSalvoRestController {
         return ResponseEntity.ok(todosDocumentos);
     }
 
-
-    /**
-     * Endpoint para asociar documentos huérfanos a una solicitud específica (como en homologación)
-     */
-    @PostMapping("/asociar-documentos-huerfanos/{idSolicitud}")
-    public ResponseEntity<Map<String, Object>> asociarDocumentosHuerfanos(@PathVariable Integer idSolicitud) {
-        
-        SolicitudPazYSalvo solicitud = solicitudPazYSalvoCU.buscarPorId(idSolicitud);
-        if (solicitud == null) {
-            Map<String, Object> error = new HashMap<>();
-            error.put("error", "Solicitud ID " + idSolicitud + " no encontrada");
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(error);
-        }
-        
-        Integer idDueno = solicitud.getObjUsuario() != null ? solicitud.getObjUsuario().getId_usuario() : null;
-        int documentosAsociados = documentosCU.asociarDocumentosPendientes(solicitud, idDueno, "pazysalvo");
-
-        Map<String, Object> resultado = new HashMap<>();
-        resultado.put("success", true);
-        resultado.put("documentos_asociados", documentosAsociados);
-        resultado.put("solicitud_id", idSolicitud);
-        resultado.put("mensaje", "Documentos asociados exitosamente");
-        
-        
-        return ResponseEntity.ok(resultado);
-    }
 
     /**
      * Obtener TODOS los documentos de una solicitud de paz y salvo (incluyendo los del estudiante)

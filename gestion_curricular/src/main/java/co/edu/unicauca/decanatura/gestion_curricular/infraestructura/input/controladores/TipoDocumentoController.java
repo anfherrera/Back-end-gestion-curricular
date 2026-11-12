@@ -33,21 +33,6 @@ public class TipoDocumentoController {
     }
 
     /**
-     * Obtiene solo los códigos de los tipos de documento
-     * 
-     * @return Lista de códigos de tipos de documento
-     */
-    @GetMapping("/codigos")
-    public ResponseEntity<Map<String, Object>> obtenerCodigos() {
-        Map<String, Object> response = new HashMap<>();
-        response.put("success", true);
-        response.put("data", TipoDocumentoEnum.getTodosLosCodigos());
-        response.put("message", "Códigos de tipos de documento obtenidos exitosamente");
-        
-        return ResponseEntity.ok(response);
-    }
-
-    /**
      * Valida si un código de tipo de documento es válido
      * 
      * @param codigo El código a validar

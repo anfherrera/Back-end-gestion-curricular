@@ -5,7 +5,6 @@ import java.time.format.DateTimeFormatter;
 
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarArchivosCUIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarDocumentosCUIntPort;
-import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Solicitud;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.servicios.AsociadorDocumentosPendientes;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.FormateadorResultadosIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.GestionarDocumentosGatewayIntPort;
@@ -33,11 +32,6 @@ public class GestionarDocumentosCUAdapter implements GestionarDocumentosCUIntPor
             this.formateadorResultados.retornarRespuestaErrorReglaDeNegocio("El documento no puede ser nulo.");
         }
         return gestionarDocumentosGateway.crearDocumento(documento);
-    }
-
-    @Override
-    public int asociarDocumentosPendientes(Solicitud solicitud, Integer idUsuario, String carpeta) {
-        return asociadorDocumentos.asociar(solicitud, idUsuario, carpeta);
     }
 
     @Override

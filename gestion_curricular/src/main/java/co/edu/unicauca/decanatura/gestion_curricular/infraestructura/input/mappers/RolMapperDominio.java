@@ -2,7 +2,6 @@ package co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.mapp
 
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
-import java.util.List;
 
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Rol;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.DTORespuesta.RolDTORespuesta;
@@ -16,11 +15,8 @@ public interface RolMapperDominio {
     @Mapping(target = "nombre", source = "nombre")
     RolDTORespuesta mappearDeRolARolDTORespuesta(Rol rol);
 
-    List<RolDTORespuesta> mappearDeRolesARolesDTORespuesta(List<Rol> roles);
-
     // DTO de petición -> Dominio
     @Mapping(target = "usuarios", ignore = true)
     Rol mappearDeRolDTOPeticionARol(RolDTOPeticion peticion);
 
-    List<Rol> mappearDeRolDTOPeticionARoles(List<RolDTOPeticion> peticiones);
 }

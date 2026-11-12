@@ -26,7 +26,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.HashMap;
 import java.util.ArrayList;
-import java.util.stream.Collectors;
 
 /**
  * Inscripciones a cursos de verano: creación, aceptación (con control de cupo), rechazo y comprobantes.
@@ -241,64 +240,6 @@ public class InscripcionesVeranoRestController {
 
             inscripciones.add(fila);
         }
-        return ResponseEntity.ok(inscripciones);
-    }
-
-    /**
-     * Obtener inscripciones reales de la base de datos filtradas por usuario
-     * GET /api/cursos-intersemestrales/inscripciones-reales/{id_usuario}
-     */
-    @PreAuthorize("@autorizacion.esStaff() or @autorizacion.esUsuarioActual(#id_usuario)")
-    @GetMapping("/inscripciones-reales/{id_usuario}")
-    public ResponseEntity<List<Map<String, Object>>> obtenerInscripcionesReales(@PathVariable Integer id_usuario) {
-        
-        // Consultar las inscripciones guardadas en la base de datos
-        List<SolicitudCursoVeranoIncripcion> inscripcionesUsuario = solicitudCU.buscarInscripcionesPorUsuario(id_usuario);
-
-        List<Map<String, Object>> inscripciones = inscripcionesUsuario.stream().map(solicitud -> {
-            Map<String, Object> inscripcion = new HashMap<>();
-            inscripcion.put("id", solicitud.getId_solicitud());
-            inscripcion.put("nombre_solicitud", solicitud.getNombre_solicitud());
-            inscripcion.put("fecha_solicitud", solicitud.getFecha_registro_solicitud());
-
-            // Estado mas reciente
-            String estadoActual = "Sin Estado";
-            if (solicitud.getEstadosSolicitud() != null && !solicitud.getEstadosSolicitud().isEmpty()) {
-                estadoActual = solicitud.getEstadosSolicitud()
-                    .get(solicitud.getEstadosSolicitud().size() - 1)
-                    .getEstado_actual();
-            }
-            inscripcion.put("estado", estadoActual);
-            inscripcion.put("observaciones", solicitud.getObservacion());
-
-            // Informacion del curso si existe
-            if (solicitud.getObjCursoOfertadoVerano() != null) {
-                CursoOfertadoVerano curso = solicitud.getObjCursoOfertadoVerano();
-                inscripcion.put("curso_id", curso.getId_curso());
-                inscripcion.put("salon", curso.getSalon());
-                inscripcion.put("grupo", curso.getGrupo() != null ? curso.getGrupo().toString() : "");
-                
-                // Obtener informacion de la materia
-                if (curso.getObjMateria() != null) {
-                    inscripcion.put("materia", curso.getObjMateria().getNombre());
-                }
-                
-                // Obtener informacion del docente
-                if (curso.getObjDocente() != null) {
-                    inscripcion.put("docente", curso.getObjDocente().getNombre_docente());
-                }
-            } else {
-                inscripcion.put("curso_id", null);
-                inscripcion.put("salon", "");
-                inscripcion.put("grupo", "");
-                inscripcion.put("materia", "");
-                inscripcion.put("docente", "");
-            }
-            
-            return inscripcion;
-        }).collect(Collectors.toList());
-        
-        
         return ResponseEntity.ok(inscripciones);
     }
 

@@ -224,10 +224,10 @@ class PazYSalvoAceptacionTest {
         
         // La solicitud llega al coordinador después de que el funcionario la aprueba
         int id = SoportePazYSalvo.crearSolicitud(mockMvc, objectMapper, tokenEstudiante);
-        org.junit.jupiter.api.Assertions.assertEquals(200,
+        org.junit.jupiter.api.Assertions.assertEquals(204,
                 SoportePazYSalvo.cambiarEstado(mockMvc, tokenFuncionario, id, "APROBADA_FUNCIONARIO"));
 
-        org.junit.jupiter.api.Assertions.assertEquals(200,
+        org.junit.jupiter.api.Assertions.assertEquals(204,
                 SoportePazYSalvo.cambiarEstado(mockMvc, tokenCoordinador, id, "APROBADA_COORDINADOR"));
     }
 
@@ -404,11 +404,12 @@ class PazYSalvoAceptacionTest {
         
         String jsonCambioEstado = """
             {
+                "idSolicitud": 999,
                 "nuevoEstado": "APROBADO"
             }
             """;
 
-        mockMvc.perform(put("/api/solicitudes-pazysalvo/cambiarEstadoSolicitud/999")
+        mockMvc.perform(put("/api/solicitudes-pazysalvo/actualizarEstadoSolicitud")
                         .header("Authorization", tokenCoordinador)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(jsonCambioEstado))

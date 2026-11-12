@@ -1,8 +1,5 @@
 package co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.gateway;
 
-import java.util.Date;
-import java.util.List;
-import java.util.Optional;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
@@ -34,39 +31,6 @@ public class GestionarEstadoSolicitudGatewayImplAdapter implements GestionarEsta
         return estadoSolicitudMapper.map(savedEntity, EstadoSolicitud.class);
     }
 
-    @Override
-    @Transactional(readOnly = true)
-    public EstadoSolicitud obtenerEstadoSolicitudPorId(Integer id_estado_solicitud) {
-        EstadoSolicitud estadoSolicitud = null;
-        Optional<EstadoSolicitudEntity> estadoSolicitudEntity = estadoSolicitudRepository.findById(id_estado_solicitud);
-        if(estadoSolicitudEntity.isPresent()){
-            estadoSolicitud = estadoSolicitudMapper.map(estadoSolicitudEntity.get(), EstadoSolicitud.class);
-        }
-        return estadoSolicitud;
-    }
-
-    @Override
-    @Transactional(readOnly = true)
-    public List<EstadoSolicitud> obtenerEstadoSolicitudPorFecha(Date fecha_registro_solicitud) {
-        List<EstadoSolicitud> estadoSolicitudRetornar = null;
-        List<EstadoSolicitudEntity> estadoSolicitudEntities = estadoSolicitudRepository.buscarPorFechaRegistro(fecha_registro_solicitud);
-        if(estadoSolicitudEntities != null){
-            estadoSolicitudRetornar = estadoSolicitudEntities.stream()
-                    .map(estadoSolicitudEntity -> estadoSolicitudMapper.map(estadoSolicitudEntity, EstadoSolicitud.class))
-                    .toList();
-        }
-        return estadoSolicitudRetornar;
-    }
-    @Override
-    @Transactional(readOnly = true)
-    public EstadoSolicitud obtenerEstadoSolicitudPorSolicitudId(Integer id_estado_solicitud) {
-        EstadoSolicitud estadoSolicitud = null;
-        Optional<EstadoSolicitudEntity> estadoSolicitudEntity = estadoSolicitudRepository.buscarPorSolicitud(id_estado_solicitud);
-        if(estadoSolicitudEntity !=null){
-            estadoSolicitud = estadoSolicitudMapper.map(estadoSolicitudEntity, EstadoSolicitud.class);
-        }
-        return estadoSolicitud;
-    }
     @Override
     public EstadoSolicitud guarEstadoSolicitud(EstadoSolicitud estadoSolicitud) {
         // Convertir dominio → entidad

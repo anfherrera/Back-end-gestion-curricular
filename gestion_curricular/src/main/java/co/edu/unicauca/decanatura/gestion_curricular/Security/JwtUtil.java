@@ -118,19 +118,4 @@ public class JwtUtil {
         }
     }
 
-    /**
-     * Obtiene los claims del token
-     */
-    public Claims obtenerClaims(String token) {
-        try {
-            return Jwts.parser()
-                    .setSigningKey(getSigningKey())
-                    .parseClaimsJws(token)
-                    .getBody();
-        } catch (Exception e) {
-            log.error("Error al obtener claims del token: {}", e.getMessage());
-            return null;
-        }
-    }
-
 }

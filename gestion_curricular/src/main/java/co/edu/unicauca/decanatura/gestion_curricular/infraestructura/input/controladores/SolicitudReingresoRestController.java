@@ -1,12 +1,10 @@
 package co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.controladores;
 
-import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.validacion.ArchivoMultipart;
 
 import java.util.List;
 import java.util.Map;
 import java.util.HashMap;
 import java.util.ArrayList;
-import java.util.Date;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpHeaders;
@@ -18,8 +16,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.multipart.MultipartFile;
-import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.validacion.ValidadorArchivoPdf;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.validacion.ValidadorCambioEstado;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.FlujoEstadosSolicitud;
 
@@ -33,7 +29,6 @@ import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.DTOPe
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.DTORespuesta.SolicitudReingresoDTORespuesta;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.mappers.SolicitudMapperDominio;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.mappers.SolicitudReingresoMapperDominio;
-import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Usuario;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Enums.PeriodoAcademicoEnum;
 import org.springframework.security.access.prepost.PreAuthorize;
 import co.edu.unicauca.decanatura.gestion_curricular.Security.Autorizacion;
@@ -444,69 +439,6 @@ public class SolicitudReingresoRestController {
         return ResponseEntity.ok(oficios);
     }
     
-    /**
-     * Subir archivo PDF asociado a una solicitud de reingreso
-     */
-    @PreAuthorize("@autorizacion.esStaff() or @autorizacion.esDuenoSolicitud(#idSolicitud)")
-    @PostMapping("/{idSolicitud}/subir-archivo")
-    public ResponseEntity<Map<String, Object>> subirArchivo(@PathVariable Integer idSolicitud, 
-                                                           @RequestParam("file") MultipartFile archivo) {
-        log.debug("Subiendo archivo para solicitud de reingreso: {}, nombre: {}, tamaño: {} bytes", 
-            idSolicitud, archivo.getOriginalFilename(), archivo.getSize());
-
-        // Validar que la solicitud existe
-        SolicitudReingreso solicitud = solicitudService.obtenerSolicitudReingresoPorId(idSolicitud);
-        if (solicitud == null) {
-            log.warn("Solicitud de reingreso no encontrada: {}", idSolicitud);
-            return ResponseEntity.notFound().build();
-        }
-
-        // Validar que sea un PDF real (contenido, no solo nombre o Content-Type) y el tamaño máximo
-        ValidadorArchivoPdf.Rechazo rechazo = ValidadorArchivoPdf.validar(archivo, ValidadorArchivoPdf.MAXIMO_15MB);
-        if (rechazo != null) {
-            log.warn("Archivo rechazado para reingreso {}: {}", idSolicitud, rechazo.mensaje());
-            return ResponseEntity.status(rechazo.estado()).body(Map.of("error", rechazo.mensaje()));
-        }
-
-        // Guardar el archivo usando el servicio de archivos
-        String nombreArchivo = archivo.getOriginalFilename();
-        if (nombreArchivo == null || nombreArchivo.trim().isEmpty()) {
-            nombreArchivo = "archivo_reingreso_" + idSolicitud + ".pdf";
-        }
-
-        log.debug("Guardando archivo: {}", nombreArchivo);
-        // Guardar archivo organizado en subcarpetas
-        String rutaArchivo = objGestionarArchivos.saveFile(ArchivoMultipart.de(archivo), nombreArchivo, "pdf", "reingreso", idSolicitud);
-
-        // Crear documento y asociarlo a la solicitud
-        Documento documento = new Documento();
-        documento.setNombre(nombreArchivo);
-        documento.setRuta_documento(rutaArchivo); // Guardar ruta completa con subcarpetas
-        documento.setFecha_documento(new Date());
-        documento.setEsValido(true);
-        documento.setComentario("Archivo subido por secretaría");
-
-        // Agregar el documento a la solicitud
-        if (solicitud.getDocumentos() == null) {
-            solicitud.setDocumentos(new ArrayList<>());
-        }
-        solicitud.getDocumentos().add(documento);
-
-        // Guardar la solicitud actualizada
-        solicitudService.crearSolicitudReingreso(solicitud);
-
-        log.debug("Archivo subido exitosamente para solicitud: {}, documento creado: {}", 
-            idSolicitud, documento.getNombre());
-
-        Map<String, Object> respuesta = new HashMap<>();
-        respuesta.put("success", true);
-        respuesta.put("message", "Archivo subido exitosamente");
-        respuesta.put("nombreArchivo", nombreArchivo);
-        respuesta.put("idSolicitud", idSolicitud);
-
-        return ResponseEntity.ok(respuesta);
-    }
-
     /**
      * Validar documentos requeridos para reingreso
      */

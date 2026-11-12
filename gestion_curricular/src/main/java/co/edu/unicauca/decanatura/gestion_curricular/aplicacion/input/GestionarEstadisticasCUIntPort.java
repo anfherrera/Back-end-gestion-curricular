@@ -11,7 +11,6 @@ public interface GestionarEstadisticasCUIntPort {
     Estadistica actualizarEstadistica(Estadistica estadistica);
     Boolean eliminarEstadistica(Integer idEstadistica);
     Estadistica obtenerEstadisticaPorId(Integer idEstadistica);
-    Estadistica obtenerEstadisticasSolicitudPeriodoYPrograma(Integer idEstadistica, String proceso, Date fechaInicio, Date fechaFin, Integer idPrograma);
     Estadistica obtenerEstadisticasSolicitudPeriodoEstadoYPrograma(Integer idEstadistica, String proceso, Date fechaInicio, Date fechaFin, String estado, Integer idPrograma);
     List<Estadistica> obtenerEstadisticasPeriodoEstadoYPrograma( Date fechaInicio, Date fechaFin, Integer idPrograma);
 
@@ -144,24 +143,6 @@ public interface GestionarEstadisticasCUIntPort {
     Map<String, Object> obtenerEstadisticasDetalladasPorProceso(String periodoAcademico, Integer idPrograma);
 
     /**
-     * Obtiene estadísticas resumidas por tipo de proceso para el dashboard.
-     * Formato optimizado para gráficos y KPIs con colores y estilos.
-     * 
-     * @param periodoAcademico Período académico opcional (formato: "YYYY-P", ej: "2025-2")
-     * @param idPrograma ID del programa académico opcional para filtrar
-     * @return Map con resumen por proceso
-     */
-    Map<String, Object> obtenerResumenPorProceso(String periodoAcademico, Integer idPrograma);
-
-    /**
-     * Obtiene configuración de estilos y colores para el dashboard.
-     * Incluye tema claro con fondo blanco y colores optimizados.
-     * 
-     * @return Map con configuración de estilos
-     */
-    Map<String, Object> obtenerConfiguracionEstilos();
-
-    /**
      * Obtiene estadísticas por estado de solicitudes.
      * Incluye conteos, porcentajes y análisis por estado.
      * 
@@ -192,14 +173,6 @@ public interface GestionarEstadisticasCUIntPort {
     Map<String, Object> obtenerEstadisticasPorPrograma(String periodoAcademico, Integer idPrograma);
 
     /**
-     * Obtiene estadísticas de tiempo promedio de procesamiento.
-     * Incluye tiempos por proceso, funcionario y análisis de eficiencia.
-     * 
-     * @return Map con estadísticas de tiempo de procesamiento
-     */
-    Map<String, Object> obtenerTiempoPromedioProcesamiento();
-
-    /**
      * Obtiene tendencias y comparativas del sistema.
      * Incluye análisis de crecimiento, comparaciones entre períodos y tendencias estratégicas.
      * 
@@ -227,14 +200,6 @@ public interface GestionarEstadisticasCUIntPort {
      * @return Map con tendencias temporales
      */
     Map<String, Object> obtenerTendenciasTemporalesCursosVerano(String periodoAcademico, Integer idPrograma);
-
-    /**
-     * Obtiene estadísticas agrupadas por año.
-     * 
-     * @param anio Año a consultar
-     * @return Map con estadísticas del año
-     */
-    Map<String, Object> obtenerEstadisticasPorAnio(Integer anio);
 
     /**
      * Obtiene estadísticas agrupadas por semestre (año y número de semestre).

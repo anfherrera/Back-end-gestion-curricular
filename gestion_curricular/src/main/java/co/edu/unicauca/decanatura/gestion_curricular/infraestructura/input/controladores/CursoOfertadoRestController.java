@@ -23,7 +23,6 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.Map;
 import java.util.HashMap;
-import java.util.ArrayList;
 
 @RestController
 @RequestMapping("/api/cursos-verano")
@@ -68,27 +67,6 @@ public class CursoOfertadoRestController {
     public ResponseEntity<Boolean> eliminarCurso(@Min(value = 1) @PathVariable Integer id) {
         boolean eliminado = cursoCU.eliminarCurso(id);
         return new ResponseEntity<>(eliminado ? HttpStatus.OK : HttpStatus.NOT_FOUND);
-    }
-
-    @GetMapping("/buscarCursoPorId/{id}")
-    public ResponseEntity<CursosOfertadosDTORespuesta> buscarCursoPorId(@Min(value = 1) @PathVariable Integer id) {
-        CursoOfertadoVerano curso = cursoCU.obtenerCursoPorId(id);
-        if (curso == null) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
-        return new ResponseEntity<>(
-                CursoMapper.mappearDeCursoOfertadoARespuesta(curso),
-                HttpStatus.OK
-        );
-    }
-
-    @GetMapping("/listarCursos")
-    public ResponseEntity<List<CursosOfertadosDTORespuesta>> listarCursos() {
-        List<CursoOfertadoVerano> cursos = cursoCU.listarTodos();
-        List<CursosOfertadosDTORespuesta> respuesta = cursos.stream()
-                .map(CursoMapper::mappearDeCursoOfertadoARespuesta)
-                .collect(Collectors.toList());
-        return ResponseEntity.ok(respuesta);
     }
 
     /**
@@ -155,63 +133,6 @@ public class CursoOfertadoRestController {
         respuesta.put("idCurso", idCurso);
         respuesta.put("inscripciones", inscripciones);
         respuesta.put("total", inscripciones.size());
-        return ResponseEntity.ok(respuesta);
-    }
-
-    /**
-     * Publicar cursos masivamente
-     */
-    @PostMapping("/publicarCursos")
-    public ResponseEntity<Map<String, Object>> publicarCursos(
-            @RequestBody List<Integer> idsCursos) {
-        List<CursoOfertadoVerano> cursosPublicados = cursoCU.publicarCursosMasivamente(idsCursos);
-        
-        Map<String, Object> respuesta = new HashMap<>();
-        respuesta.put("cursosPublicados", cursosPublicados.size());
-        respuesta.put("totalSolicitados", idsCursos.size());
-        respuesta.put("mensaje", "Cursos publicados exitosamente");
-        respuesta.put("cursos", cursosPublicados.stream()
-            .map(CursoMapper::mappearDeCursoOfertadoARespuesta)
-            .toList());
-        
-        return ResponseEntity.ok(respuesta);
-    }
-
-    /**
-     * Obtener estadísticas de demanda por curso
-     */
-    @GetMapping("/estadisticasDemanda")
-    public ResponseEntity<Map<String, Object>> obtenerEstadisticasDemanda() {
-        // Obtener cursos con alta demanda (más de 5 solicitudes)
-        List<SolicitudCursoVeranoPreinscripcion> cursosAltaDemanda = solicitudCU.buscarCursosConAltaDemanda(5);
-        
-        // Obtener todos los cursos para calcular estadísticas
-        List<CursoOfertadoVerano> todosLosCursos = cursoCU.listarTodos();
-        
-        int totalSolicitudes = 0;
-        List<Map<String, Object>> cursosConPuntoEquilibrio = new ArrayList<>();
-        
-        for (CursoOfertadoVerano curso : todosLosCursos) {
-            Integer solicitudesCurso = solicitudCU.contarSolicitudesPorCurso(curso.getId_curso());
-            totalSolicitudes += solicitudesCurso;
-            
-            // Verificar si alcanzó el punto de equilibrio
-            if (solicitudesCurso >= curso.getCupo_estimado()) {
-                Map<String, Object> cursoEquilibrio = new HashMap<>();
-                cursoEquilibrio.put("idCurso", curso.getId_curso());
-                cursoEquilibrio.put("nombreCurso", curso.getObjMateria().getNombre());
-                cursoEquilibrio.put("solicitudes", solicitudesCurso);
-                cursoEquilibrio.put("cupoEstimado", curso.getCupo_estimado());
-                cursosConPuntoEquilibrio.add(cursoEquilibrio);
-            }
-        }
-        
-        Map<String, Object> respuesta = new HashMap<>();
-        respuesta.put("cursosAltaDemanda", cursosAltaDemanda);
-        respuesta.put("totalSolicitudes", totalSolicitudes);
-        respuesta.put("cursosConPuntoEquilibrio", cursosConPuntoEquilibrio);
-        respuesta.put("totalCursos", todosLosCursos.size());
-        
         return ResponseEntity.ok(respuesta);
     }
 

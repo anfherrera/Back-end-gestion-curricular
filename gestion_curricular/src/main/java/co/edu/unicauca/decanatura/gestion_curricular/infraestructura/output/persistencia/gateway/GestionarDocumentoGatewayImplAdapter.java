@@ -1,7 +1,6 @@
 package co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.gateway;
 
 import java.util.List;
-import java.util.Optional;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
@@ -61,17 +60,6 @@ public class GestionarDocumentoGatewayImplAdapter implements GestionarDocumentos
         return documentoRepository.findById(idDocumento)
             .map(entity -> documentoMapper.map(entity, Documento.class))
             .orElse(null);
-    }
-
-    @Override
-    @Transactional
-    public boolean eliminarDocumento(Documento documento) {
-        Optional<DocumentoEntity> entityOpt = documentoRepository.findById(documento.getId_documento());
-        if (entityOpt.isPresent()) {
-            documentoRepository.deleteById(documento.getId_documento());
-            return true;
-        }
-        return false;
     }
 
     @Override

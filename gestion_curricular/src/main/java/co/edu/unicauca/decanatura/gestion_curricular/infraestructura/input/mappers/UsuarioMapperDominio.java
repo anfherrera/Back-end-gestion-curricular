@@ -1,6 +1,5 @@
 package co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.mappers;
 
-import java.util.List;
 
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -24,5 +23,4 @@ public interface UsuarioMapperDominio {
     @Mapping(source = "objPrograma", target = "objPrograma", nullValuePropertyMappingStrategy = org.mapstruct.NullValuePropertyMappingStrategy.IGNORE)
     UsuarioDTORespuesta mappearDeUsuarioAUsuarioDTORespuesta(Usuario usuario);
 
-    List<UsuarioDTORespuesta> mappearListaDeUsuarioAUsuarioDTORespuesta(List<Usuario> usuarios);
 }

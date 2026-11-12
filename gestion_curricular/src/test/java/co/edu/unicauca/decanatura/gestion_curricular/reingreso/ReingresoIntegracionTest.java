@@ -6,7 +6,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
-import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
@@ -218,18 +217,5 @@ class ReingresoIntegracionTest {
 
     // ==================== PRUEBAS DE SUBIDA DE ARCHIVOS ====================
 
-    @Test
-    @DisplayName("Test 17: Subir archivo PDF - Valida endpoint")
-    void testSubirArchivo() throws Exception {
-        MockMultipartFile file = new MockMultipartFile(
-                "file",
-                "prueba.pdf",
-                "application/pdf",
-                "contenido".getBytes()
-        );
-
-        mockMvc.perform(multipart("/api/solicitudes-reingreso/3/subir-archivo").file(file));
-                // Puede ser 200, 400, 404 dependiendo de datos en BD
-    }
 }
 

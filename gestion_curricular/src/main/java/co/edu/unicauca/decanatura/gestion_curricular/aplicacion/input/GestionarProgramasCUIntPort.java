@@ -15,8 +15,6 @@ public interface GestionarProgramasCUIntPort {
 
     Programa obtenerProgramaPorCodigo(String codigo);
 
-    boolean existeProgramaPorCodigo(String codigo);
-
     List<Programa> buscarPorNombreParcial(String nombreParcial);
 
     List<Programa> listarProgramas();

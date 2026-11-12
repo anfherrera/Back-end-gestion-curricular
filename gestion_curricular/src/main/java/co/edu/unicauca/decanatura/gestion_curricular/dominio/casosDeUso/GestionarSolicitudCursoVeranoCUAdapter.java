@@ -266,14 +266,6 @@ public class GestionarSolicitudCursoVeranoCUAdapter implements GestionarSolicitu
     }
 
     @Override
-    public List<SolicitudCursoVeranoPreinscripcion> buscarCursosConAltaDemanda(Integer limiteMinimo) {
-        if (limiteMinimo == null || limiteMinimo < 1) {
-            this.objFormateadorResultados.retornarRespuestaErrorReglaDeNegocio("El límite mínimo debe ser mayor a 0");
-        }
-        return this.objGestionarSolicitudGateway.buscarCursosConAltaDemanda(limiteMinimo);
-    }
-
-    @Override
     public SolicitudCursoVeranoPreinscripcion aprobarPreinscripcion(Integer idSolicitud, String comentarios) {
         if (idSolicitud == null) {
             this.objFormateadorResultados.retornarRespuestaErrorReglaDeNegocio("El ID de la solicitud no puede ser nulo");

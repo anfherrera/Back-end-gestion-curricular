@@ -1,7 +1,6 @@
 package co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input;
 
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Documento;
-import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Solicitud;
 
 public interface GestionarDocumentosCUIntPort {
 
@@ -24,12 +23,4 @@ public interface GestionarDocumentosCUIntPort {
         añadirComentario(idDocumento, comentario, null, null);
     }
 
-    /**
-     * Asocia a la solicitud los documentos que su dueño subió antes de enviarla y los mueve a
-     * la carpeta de la solicitud.
-     *
-     * @param carpeta carpeta del tipo de solicitud (p. ej. "pazysalvo", "curso-verano")
-     * @return cantidad de documentos asociados
-     */
-    int asociarDocumentosPendientes(Solicitud solicitud, Integer idUsuario, String carpeta);
 }

@@ -34,7 +34,4 @@ public interface GestionarCursoOfertadoVeranoCUIntPort {
     /** true si ya existe un curso con la misma materia, docente, período y grupo. */
     boolean existeCurso(Integer idMateria, Integer idDocente, String periodoAcademico, GrupoCursoVerano grupo);
 
-    // Método para publicación masiva
-    List<CursoOfertadoVerano> publicarCursosMasivamente(List<Integer> idsCursos);
-    
 }

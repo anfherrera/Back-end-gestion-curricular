@@ -171,14 +171,6 @@ class EstadisticasIntegracionTest {
     }
 
     @Test
-    @DisplayName("Test 14: Obtener configuración de estilos para dashboard")
-    void testObtenerConfiguracionEstilos() throws Exception {
-        mockMvc.perform(get("/api/estadisticas/configuracion-estilos"))
-                .andExpect(status().isOk())
-                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON));
-    }
-
-    @Test
     @DisplayName("Test 15: Validar estructura de respuesta de estadísticas globales")
     void testValidarEstructuraRespuestaEstadisticasGlobales() throws Exception {
         mockMvc.perform(get("/api/estadisticas/globales"))

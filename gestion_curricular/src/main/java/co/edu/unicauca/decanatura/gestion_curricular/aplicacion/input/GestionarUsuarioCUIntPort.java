@@ -19,17 +19,9 @@ public interface GestionarUsuarioCUIntPort {
     /** Igual que {@link #obtenerUsuarioPorId}, pero sin error si no existe (o si el id es nulo). */
     Optional<Usuario> buscarUsuarioPorId(Integer id_usuario);
 
-    Usuario buscarUsuarioPorCodigo(String codigo);
-
     Usuario buscarUsuarioPorCorreo(String correo);
 
-    Usuario buscarUsuarioPorNombre(String nombre);
-
-    Usuario buscarSolicitudesUsuarioPorCodigo(String codigo);
-
     List<Usuario> buscarUsuariosPorRol(Integer idRol);
-
-    List<Usuario> buscarUsuariosPorPrograma(Integer idPrograma);
 
     List<Usuario> listarUsuarios();
 

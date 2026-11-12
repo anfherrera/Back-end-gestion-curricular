@@ -19,54 +19,6 @@ public class GestionarSalonesCUAdapter implements GestionarSalonesCUIntPort {
     }
 
     @Override
-    public Salon guardarSalon(Salon salon) {
-        if (salon == null) {
-            formateadorResultados.retornarRespuestaErrorEntidadExiste("El salón no puede ser nulo.");
-        }
-
-        salon.setId_salon(null); // Asegurarse de que el ID sea nulo para una nueva creación
-
-        if (salon.getNumero_salon() == null || salon.getNumero_salon().isBlank()) {
-            formateadorResultados.retornarRespuestaErrorEntidadExiste("El número del salón es obligatorio.");
-        }
-
-        if (salonesGateway.existeSalonPorNumero(salon.getNumero_salon())) {
-            formateadorResultados.retornarRespuestaErrorEntidadExiste("Ya existe un salón con este número.");
-        }
-
-        return salonesGateway.guardarSalon(salon);
-    }
-
-    @Override
-    public Salon actualizarSalon(Salon salon) {
-        if (salon == null) {
-            formateadorResultados.retornarRespuestaErrorEntidadExiste("El salón no puede ser nulo.");
-        }
-        if (salon.getId_salon() == null) {
-            formateadorResultados.retornarRespuestaErrorEntidadExiste("Debe proporcionar un ID válido para actualizar.");
-        }
-        Salon existente = salonesGateway.obtenerSalonPorId(salon.getId_salon());
-        if (existente == null) {
-            formateadorResultados.retornarRespuestaErrorEntidadExiste("No se encontró el salón a actualizar.");
-        }
-        return salonesGateway.actualizarSalon(salon);
-    }
-
-    @Override
-    public boolean eliminarSalon(Integer idSalon) {
-        if (idSalon == null) {
-            formateadorResultados.retornarRespuestaErrorEntidadExiste("Debe proporcionar un ID válido.");
-        }
-
-        Salon existente = salonesGateway.obtenerSalonPorId(idSalon);
-        if (existente == null) {
-            formateadorResultados.retornarRespuestaErrorEntidadExiste("No se encontró el salón a eliminar.");
-        }
-
-        return salonesGateway.eliminarSalon(idSalon);
-    }
-
-    @Override
     public Salon obtenerSalonPorId(Integer idSalon) {
         if (idSalon == null) {
             formateadorResultados.retornarRespuestaErrorEntidadExiste("Debe proporcionar un ID válido.");
@@ -92,20 +44,6 @@ public class GestionarSalonesCUAdapter implements GestionarSalonesCUIntPort {
         }
 
         return salon;
-    }
-
-    @Override
-    public boolean existeSalonPorNumero(String numeroSalon) {
-        if (numeroSalon == null || numeroSalon.isBlank()) {
-            formateadorResultados.retornarRespuestaErrorEntidadExiste("Debe proporcionar un número de salón válido.");
-        }
-
-        return salonesGateway.existeSalonPorNumero(numeroSalon);
-    }
-
-    @Override
-    public List<Salon> listarSalones() {
-        return salonesGateway.listarSalones();
     }
 
     @Override

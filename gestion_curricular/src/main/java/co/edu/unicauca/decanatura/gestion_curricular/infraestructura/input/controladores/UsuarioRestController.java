@@ -194,16 +194,6 @@ public class UsuarioRestController {
         return objRespuesta;
     }
 
-    @GetMapping("/buscarPorPrograma/{id}")
-    @PreAuthorize("hasAnyRole(" + Autorizacion.ROLES_STAFF + ")")
-    public ResponseEntity<List<UsuarioDTORespuesta>> buscarUsuariosPorPrograma(@Min(value = 1) @PathVariable Integer id) {
-        List<Usuario> usuarios = objUsuarioCUIntPort.buscarUsuariosPorPrograma(id);
-        List<UsuarioDTORespuesta> respuesta = usuarios.stream()
-                .map(objUsuarioMapperDominio::mappearDeUsuarioAUsuarioDTORespuesta)
-                .collect(Collectors.toList());
-        return ResponseEntity.ok(respuesta);
-    }
-
     @GetMapping("/listarUsuarios")
     @PreAuthorize("hasRole('Administrador') or hasRole('Coordinador')")
     public ResponseEntity<List<UsuarioDTORespuesta>> obtenerUsuarios() {
