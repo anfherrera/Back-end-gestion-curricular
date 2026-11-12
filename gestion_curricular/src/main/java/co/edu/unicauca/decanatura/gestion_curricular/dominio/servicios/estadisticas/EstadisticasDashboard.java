@@ -9,6 +9,8 @@ import static co.edu.unicauca.decanatura.gestion_curricular.dominio.servicios.es
 import static co.edu.unicauca.decanatura.gestion_curricular.dominio.servicios.estadisticas.ReglasEstadisticas.redondear2;
 import static co.edu.unicauca.decanatura.gestion_curricular.dominio.servicios.estadisticas.ReglasEstadisticas.tipoProceso;
 
+import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
@@ -34,7 +36,7 @@ public class EstadisticasDashboard {
             TipoProcesoSolicitud.HOMOLOGACION, TipoProcesoSolicitud.PAZ_Y_SALVO, TipoProcesoSolicitud.REINGRESO,
             TipoProcesoSolicitud.CURSOS_VERANO, TipoProcesoSolicitud.ECAES };
 
-    private static final long NOVENTA_DIAS_MS = 90L * 24 * 60 * 60 * 1000;
+    private static final ZoneId ZONA_ACADEMICA = ZoneId.of("America/Bogota");
 
     private final GestionarEstadisticasGatewayIntPort datos;
 
@@ -45,6 +47,18 @@ public class EstadisticasDashboard {
     private List<Solicitud> solicitudes(String periodoAcademico, Integer idPrograma) {
         List<Solicitud> todas = datos.listarSolicitudesConEstadosYUsuario();
         return filtrarPorPeriodoYPrograma(todas != null ? todas : new ArrayList<>(), periodoAcademico, idPrograma);
+    }
+
+    private static Date corteTendencia(String periodo) {
+        LocalDate referencia = LocalDate.now(ZONA_ACADEMICA);
+        if (periodo != null && periodo.matches("\\d{4}-[12]")) {
+            int anio = Integer.parseInt(periodo.substring(0, 4));
+            LocalDate fin = periodo.endsWith("-1") ? LocalDate.of(anio, 6, 30) : LocalDate.of(anio, 12, 31);
+            if (fin.isBefore(referencia)) {
+                referencia = fin;
+            }
+        }
+        return Date.from(referencia.minusDays(89).atStartOfDay(ZONA_ACADEMICA).toInstant());
     }
 
     /** Contadores de una agrupación (un proceso, un mes o un programa). */
@@ -66,16 +80,11 @@ public class EstadisticasDashboard {
             return tiempos.stream().mapToDouble(Double::doubleValue).average().orElse(0);
         }
 
-        /**
-         * Compara las solicitudes de los últimos 90 días con las anteriores.
-         * Se mide contra la fecha de hoy, no contra el periodo consultado.
-         */
-        String tendenciaReciente() {
+        String tendenciaReciente(Date corte) {
             if (fechas.size() < 2) {
                 return "Estable";
             }
-            Date hace90Dias = new Date(System.currentTimeMillis() - NOVENTA_DIAS_MS);
-            long recientes = fechas.stream().filter(f -> f.after(hace90Dias)).count();
+            long recientes = fechas.stream().filter(f -> !f.before(corte)).count();
             long anteriores = fechas.size() - recientes;
             return recientes > anteriores ? "Creciente" : recientes < anteriores ? "Decreciente" : "Estable";
         }
@@ -109,6 +118,7 @@ public class EstadisticasDashboard {
     // ------------------------------------------------------------------------------------------
 
     public Map<String, Object> detalladasPorProceso(String periodoAcademico, Integer idPrograma) {
+        Date corte = corteTendencia(periodoAcademico);
         Map<String, Contador> porProceso = new HashMap<>();
         for (String proceso : PROCESOS) {
             porProceso.put(proceso, new Contador());
@@ -148,7 +158,7 @@ public class EstadisticasDashboard {
             detalleProceso.put("tiempoPromedio", redondear2(tiempoPromedio));
             detalleProceso.put("tiempoMinimo", redondear2(c.tiempos.stream().mapToDouble(Double::doubleValue).min().orElse(0)));
             detalleProceso.put("tiempoMaximo", redondear2(c.tiempos.stream().mapToDouble(Double::doubleValue).max().orElse(0)));
-            detalleProceso.put("tendencia", c.tendenciaReciente());
+            detalleProceso.put("tendencia", c.tendenciaReciente(corte));
             detalleProceso.put("descripcion", PresentacionEstadisticas.descripcionProcesoDetallada(proceso));
             detalleProceso.put("color", PresentacionEstadisticas.colorProceso(proceso));
             detalleProceso.put("icono", PresentacionEstadisticas.SIN_ICONO);
@@ -412,6 +422,7 @@ public class EstadisticasDashboard {
     // ------------------------------------------------------------------------------------------
 
     public Map<String, Object> porPrograma(String periodoAcademico, Integer idPrograma) {
+        Date corte = corteTendencia(periodoAcademico);
         List<Programa> programas = datos.listarProgramas();
         List<Solicitud> solicitudes = solicitudes(periodoAcademico, idPrograma);
         List<Usuario> estudiantes = datos.listarEstudiantes();
@@ -471,7 +482,7 @@ public class EstadisticasDashboard {
             detallePrograma.put("enviadas", c.enviadas);
             detallePrograma.put("eficiencia", redondear2(eficiencia));
             detallePrograma.put("tiempoPromedio", redondear2(tiempoPromedio));
-            detallePrograma.put("tendencia", c.tendenciaReciente());
+            detallePrograma.put("tendencia", c.tendenciaReciente(corte));
             detallePrograma.put("porcentaje", redondear2(porcentaje(c.total, solicitudes.size())));
             detallePrograma.put("procesos", c.procesos);
             detallePrograma.put("color", PresentacionEstadisticas.colorPrograma(nombre));

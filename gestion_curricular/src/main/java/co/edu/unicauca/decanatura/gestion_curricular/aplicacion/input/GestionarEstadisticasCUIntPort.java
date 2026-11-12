@@ -218,4 +218,9 @@ public interface GestionarEstadisticasCUIntPort {
      */
     Map<String, Object> obtenerEstadisticasPorPeriodoAcademico(String periodoAcademico);
 
+
+    record DatosReporte(Map<String, Object> estadisticas, Map<String, Object> cursosVerano) {
+    }
+
+    DatosReporte prepararReporte(String proceso, Integer idPrograma, String periodo, Date fechaInicio, Date fechaFin);
 }

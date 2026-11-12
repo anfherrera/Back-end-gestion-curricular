@@ -271,4 +271,18 @@ public class GestionarEstadisticasCUAdapter implements GestionarEstadisticasCUIn
         }
         return generales.porPeriodoAcademico(periodoAcademico.trim());
     }
+
+    @Override
+    public DatosReporte prepararReporte(String proceso, Integer idPrograma, String periodo, Date fechaInicio, Date fechaFin) {
+        @SuppressWarnings("unchecked")
+        Map<String, Object> estadisticas = periodo == null ? null
+                : (Map<String, Object>) obtenerResumenCompleto(periodo, idPrograma).get("estadisticasGlobales");
+        if (estadisticas == null) {
+            estadisticas = obtenerEstadisticasGlobales(proceso, idPrograma, fechaInicio, fechaFin);
+        }
+
+        Map<String, Object> cursosVerano = proceso == null || "CURSO_VERANO".equals(proceso)
+                ? obtenerEstadisticasCursosVerano(periodo, idPrograma) : null;
+        return new DatosReporte(estadisticas, cursosVerano);
+    }
 }

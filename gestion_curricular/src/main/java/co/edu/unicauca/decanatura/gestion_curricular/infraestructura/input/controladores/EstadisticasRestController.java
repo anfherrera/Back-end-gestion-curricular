@@ -139,36 +139,10 @@ public class EstadisticasRestController {
             @SuppressWarnings("unchecked")
             Map<String, Object> estadisticasGlobales = (Map<String, Object>) resumen.get("estadisticasGlobales");
             
-            // Si hay filtro de proceso, actualizar KPIs. Usar resumen.porTipoProceso (stats completas), no estadisticasGlobales.porTipoProceso (solo conteos)
-            if (proceso != null && !proceso.trim().isEmpty() && estadisticasGlobales != null) {
-                String procesoNorm = normalizarProceso(proceso);
-                if (procesoNorm != null) {
-                    @SuppressWarnings("unchecked")
-                    Map<String, Object> porTipoProcesoResumen = (Map<String, Object>) resumen.get("porTipoProceso");
-                    if (porTipoProcesoResumen != null && porTipoProcesoResumen.containsKey(procesoNorm)) {
-                        Object datosProceso = porTipoProcesoResumen.get(procesoNorm);
-                        if (datosProceso instanceof Map) {
-                            @SuppressWarnings("unchecked")
-                            Map<String, Object> statsProceso = (Map<String, Object>) datosProceso;
-                            estadisticasGlobales.put("totalSolicitudes", statsProceso.getOrDefault("totalSolicitudes", 0));
-                            estadisticasGlobales.put("totalAprobadas", statsProceso.getOrDefault("totalAprobadas", 0));
-                            estadisticasGlobales.put("totalRechazadas", statsProceso.getOrDefault("totalRechazadas", 0));
-                            estadisticasGlobales.put("totalEnProceso", statsProceso.getOrDefault("totalEnProceso", 0));
-                            Object porEstadoObj = statsProceso.get("porEstado");
-                            int totalEnviadas = 0;
-                            if (porEstadoObj instanceof Map) {
-                                Object env = ((Map<?, ?>) porEstadoObj).get("ENVIADA");
-                                totalEnviadas = env instanceof Number ? ((Number) env).intValue() : 0;
-                            }
-                            estadisticasGlobales.put("totalEnviadas", totalEnviadas);
-                            estadisticasGlobales.put("porcentajeAprobacion", statsProceso.getOrDefault("porcentajeAprobacion", 0.0));
-                            estadisticasGlobales.put("porEstado", statsProceso.getOrDefault("porEstado", new HashMap<>()));
-                            estadisticasGlobales.put("porTipoProceso", Map.of(procesoNorm, datosProceso));
-                        }
-                    }
-                }
+            if (estadisticasGlobales != null && proceso != null && !proceso.trim().isEmpty()) {
+                aplicarKpisDelProceso(estadisticasGlobales, resumen, normalizarProceso(proceso));
             }
-            
+
             return ResponseEntity.ok(estadisticasGlobales != null ? estadisticasGlobales : new HashMap<>());
         }
         
@@ -638,10 +612,6 @@ public class EstadisticasRestController {
     private static final MediaType EXCEL =
             MediaType.parseMediaType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
 
-    /** Datos del reporte completo: estadísticas generales y, si aplica, las de cursos de verano. */
-    private record DatosReporte(Map<String, Object> estadisticas, Map<String, Object> cursosVerano) {
-    }
-
     /** PDF del dashboard general. */
     @GetMapping("/export/pdf/general")
     public ResponseEntity<byte[]> exportarEstadisticasGeneralesPDF() {
@@ -667,7 +637,8 @@ public class EstadisticasRestController {
             @RequestParam(required = false) String periodoAcademico,
             @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") Date fechaInicio,
             @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") Date fechaFin) {
-        DatosReporte datos = datosReporte(proceso, idPrograma, periodoAcademico, fechaInicio, fechaFin);
+        var datos = estadisticaCU.prepararReporte(proceso, idPrograma,
+                normalizarPeriodoAcademico(periodoAcademico), fechaInicio, fechaFin);
         byte[] pdf = generadorReportes.pdfCompleto(datos.estadisticas(), datos.cursosVerano(), periodoAcademico, idPrograma);
         return archivo(pdf, MediaType.APPLICATION_PDF, "estadisticas_generales.pdf");
     }
@@ -697,32 +668,10 @@ public class EstadisticasRestController {
             @RequestParam(required = false) String periodoAcademico,
             @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") Date fechaInicio,
             @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") Date fechaFin) {
-        DatosReporte datos = datosReporte(proceso, idPrograma, periodoAcademico, fechaInicio, fechaFin);
+        var datos = estadisticaCU.prepararReporte(proceso, idPrograma,
+                normalizarPeriodoAcademico(periodoAcademico), fechaInicio, fechaFin);
         byte[] excel = generadorReportes.excel(datos.estadisticas(), datos.cursosVerano(), periodoAcademico, idPrograma);
         return archivo(excel, EXCEL, "estadisticas_generales.xlsx");
-    }
-
-    /**
-     * Con periodo académico, las estadísticas generales salen del resumen completo (el único que filtra
-     * por periodo); sin él, de las globales. Los datos de cursos de verano se incluyen si no se filtró
-     * por otro proceso; si fallan, falla el reporte entero en vez de salir sin esa sección.
-     */
-    private DatosReporte datosReporte(String proceso, Integer idPrograma, String periodoAcademico, Date fechaInicio, Date fechaFin) {
-        String periodoNormalizado = normalizarPeriodoAcademico(periodoAcademico);
-        Map<String, Object> estadisticas = null;
-        if (periodoNormalizado != null) {
-            @SuppressWarnings("unchecked")
-            Map<String, Object> globales = (Map<String, Object>) estadisticaCU
-                    .obtenerResumenCompleto(periodoNormalizado, idPrograma).get("estadisticasGlobales");
-            estadisticas = globales;
-        }
-        if (estadisticas == null) {
-            estadisticas = estadisticaCU.obtenerEstadisticasGlobales(proceso, idPrograma, fechaInicio, fechaFin);
-        }
-        Map<String, Object> cursosVerano = proceso == null || "CURSO_VERANO".equals(proceso)
-                ? estadisticaCU.obtenerEstadisticasCursosVerano(periodoNormalizado, idPrograma)
-                : null;
-        return new DatosReporte(estadisticas, cursosVerano);
     }
 
     private static String nombreArchivoCursosVerano(String periodoAcademico, Integer idPrograma) {
