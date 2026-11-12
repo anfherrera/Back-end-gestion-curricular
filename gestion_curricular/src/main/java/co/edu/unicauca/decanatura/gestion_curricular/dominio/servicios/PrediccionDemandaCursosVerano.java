@@ -7,6 +7,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Predicate;
 
 import org.apache.commons.math3.stat.regression.SimpleRegression;
 
@@ -37,8 +38,11 @@ public class PrediccionDemandaCursosVerano {
         
         try {
             // 1. PREDICCION DE DEMANDA TOTAL PARA EL PROXIMO PERIODO
+            // "Proximo periodo" = el periodo de verano completo: misma cantidad de meses que el observado,
+            // para que la estimacion sea comparable con la demanda actual (el total de todos los meses).
+            VentanaPeriodo ventana = calcularVentana(demandaPorMes);
             int demandaActual = solicitudesCursosVerano.size();
-            int demandaEstimadaProximoPeriodo = calcularDemandaEstimada(demandaActual, demandaPorMes);
+            int demandaEstimadaProximoPeriodo = calcularDemandaEstimada(demandaActual, demandaPorMes, ventana);
             
             // 2. PREDICCIONES POR MATERIA CON REGRESION LINEAL
             List<Map<String, Object>> materiasConTendenciaCreciente = new ArrayList<>();
@@ -50,11 +54,12 @@ public class PrediccionDemandaCursosVerano {
                 int solicitudesActuales = ((Number) materia.get("solicitudes")).intValue();
                 
                 // Se utiliza regresion lineal para estimar la demanda por materia
-                Map<String, Object> prediccionRegresion = calcularDemandaEstimadaMateriaPorRegresion(
-                    nombreMateria, solicitudesCursosVerano, solicitudesActuales);
-                
-                int demandaEstimada = ((Number) prediccionRegresion.get("demandaEstimada")).intValue();
-                String tendencia = (String) prediccionRegresion.get("tendencia");
+                // (la materia de la solicitud es la del curso solicitado)
+                Estimacion estimacion = estimar(solicitudesCursosVerano,
+                    s -> s.materia() != null && s.materia().equalsIgnoreCase(nombreMateria),
+                    solicitudesActuales, ventana, 0.05);
+                int demandaEstimada = estimacion.demandaEstimada();
+                String tendencia = estimacion.tendencia();
                 
                 Map<String, Object> prediccionMateria = new HashMap<>();
                 prediccionMateria.put("nombre", nombreMateria);
@@ -62,8 +67,7 @@ public class PrediccionDemandaCursosVerano {
                 prediccionMateria.put("demandaEstimada", demandaEstimada);
                 prediccionMateria.put("tendencia", tendencia);
                 prediccionMateria.put("variacion", demandaEstimada - solicitudesActuales);
-                prediccionMateria.put("porcentajeVariacion", solicitudesActuales > 0 ? 
-                    Math.round(((double)(demandaEstimada - solicitudesActuales) / solicitudesActuales) * 100.0) : 0);
+                prediccionMateria.put("porcentajeVariacion", porcentajeVariacion(solicitudesActuales, demandaEstimada));
                 // No exponemos campos tecnicos (pendiente, rSquared, modeloUtilizado) porque no aportan al usuario final
                 
                 if ("CRECIENTE".equals(tendencia)) {
@@ -86,11 +90,11 @@ public class PrediccionDemandaCursosVerano {
                 int solicitudesActuales = ((Number) programa.get("solicitudes")).intValue();
                 
                 // Se aplica regresion lineal para estimar la demanda por programa
-                Map<String, Object> prediccionRegresion = calcularDemandaEstimadaProgramaPorRegresion(
-                    nombrePrograma, solicitudesCursosVerano, solicitudesActuales);
-                
-                int demandaEstimada = ((Number) prediccionRegresion.get("demandaEstimada")).intValue();
-                String tendencia = (String) prediccionRegresion.get("tendencia");
+                Estimacion estimacion = estimar(solicitudesCursosVerano,
+                    s -> s.programa() != null && s.programa().equalsIgnoreCase(nombrePrograma),
+                    solicitudesActuales, ventana, 0.08);
+                int demandaEstimada = estimacion.demandaEstimada();
+                String tendencia = estimacion.tendencia();
                 
                 Map<String, Object> prediccionPrograma = new HashMap<>();
                 prediccionPrograma.put("nombre", nombrePrograma);
@@ -98,8 +102,7 @@ public class PrediccionDemandaCursosVerano {
                 prediccionPrograma.put("demandaEstimada", demandaEstimada);
                 prediccionPrograma.put("tendencia", tendencia);
                 prediccionPrograma.put("variacion", demandaEstimada - solicitudesActuales);
-                prediccionPrograma.put("porcentajeVariacion", solicitudesActuales > 0 ? 
-                    Math.round(((double)(demandaEstimada - solicitudesActuales) / solicitudesActuales) * 100.0) : 0);
+                prediccionPrograma.put("porcentajeVariacion", porcentajeVariacion(solicitudesActuales, demandaEstimada));
                 // Se omiten campos tecnicos (pendiente, rSquared, modeloUtilizado) que no agregan valor al frontend
                 
                 // Clasificamos la prediccion segun la tendencia detectada
@@ -447,213 +450,117 @@ public class PrediccionDemandaCursosVerano {
         return predicciones;
     }
     
+    /** Meses (1 = Enero ... 12 = Diciembre) que abarca el periodo observado, del primero al ultimo con solicitudes. */
+    private record VentanaPeriodo(int primerMes, int ultimoMes) {
+        int cantidadMeses() {
+            return ultimoMes - primerMes + 1;
+        }
+    }
+
+    /** Demanda estimada para el proximo periodo y su tendencia respecto al periodo actual. */
+    private record Estimacion(int demandaEstimada, String tendencia) {
+    }
+
+    /** Variacion porcentual (redondeada) a partir de la cual una tendencia deja de ser ESTABLE. */
+    private static final int UMBRAL_TENDENCIA = 5;
+
     /**
-     * Calcula la demanda estimada para el proximo periodo
+     * Ventana del periodo observado: del primer al ultimo mes con solicitudes. Es null si no hay datos.
      */
-    /**
-     * Calcula la demanda estimada usando REGRESION LINEAL SIMPLE
-     * Esta es una implementacion profesional para el trabajo de grado
-     */
-    private int calcularDemandaEstimada(int demandaActual, Map<String, Integer> demandaPorMes) {
-        try {
-            
-            // Crear modelo de regresion lineal
-            SimpleRegression regression = new SimpleRegression();
-            
-            // Agregar datos historicos al modelo
-            // x = numero de mes (1 = Enero ... 12 = Diciembre), y = solicitudes en ese mes.
-            // Se recorre en orden de calendario: demandaPorMes no garantiza ningun orden.
-            int mesNumero = 1;
-            for (String mes : MESES) {
-                double solicitudes = demandaPorMes.getOrDefault(mes, 0);
-                if (solicitudes > 0) { // Solo agregar meses con datos
-                    regression.addData(mesNumero, solicitudes);
+    private VentanaPeriodo calcularVentana(Map<String, Integer> demandaPorMes) {
+        int primero = 0;
+        int ultimo = 0;
+        for (int i = 0; i < MESES.size(); i++) {
+            if (demandaPorMes.getOrDefault(MESES.get(i), 0) > 0) {
+                if (primero == 0) {
+                    primero = i + 1;
                 }
-                mesNumero++;
+                ultimo = i + 1;
             }
-            
-            // Verificar si tenemos suficientes datos para la regresion
-            if (regression.getN() >= 2) {
-                // Predecir para el siguiente mes (mes 13 o siguiente periodo)
-                double prediccion = regression.predict(mesNumero);
-                
-                // Calcular demanda estimada
-                // Asegurar que la prediccion sea realista (entre 80% y 200% de la demanda actual)
-                int demandaEstimada = (int) Math.round(Math.max(prediccion, demandaActual * 0.8));
-                demandaEstimada = Math.min(demandaEstimada, demandaActual * 2);
-                
-                
-                return demandaEstimada;
-            } else {
-                // No hay suficientes datos historicos, usar estimacion conservadora
-                return (int) Math.round(demandaActual * 1.15);
-            }
-        } catch (Exception e) {
-            // En caso de error, usar estimacion conservadora
+        }
+        return primero == 0 ? null : new VentanaPeriodo(primero, ultimo);
+    }
+
+    /**
+     * Proyecta el proximo periodo completo con REGRESION LINEAL SIMPLE.
+     * x = numero de mes, y = solicitudes de ese mes; los meses de la ventana sin solicitudes cuentan como 0.
+     * El proximo periodo tiene la misma cantidad de meses que el observado y continua la tendencia:
+     * se predice cada uno de esos meses y se suman, para que el resultado sea comparable con el total
+     * del periodo actual (la suma de todos sus meses).
+     * Devuelve null si la ventana tiene menos de 2 meses (no hay recta que ajustar).
+     */
+    private Double proyectarPeriodo(Map<Integer, Integer> solicitudesPorMes, VentanaPeriodo ventana) {
+        if (ventana == null || ventana.cantidadMeses() < 2) {
+            return null;
+        }
+        SimpleRegression regression = new SimpleRegression();
+        for (int mes = ventana.primerMes(); mes <= ventana.ultimoMes(); mes++) {
+            regression.addData(mes, solicitudesPorMes.getOrDefault(mes, 0));
+        }
+        double total = 0;
+        for (int i = 1; i <= ventana.cantidadMeses(); i++) {
+            total += Math.max(0, regression.predict(ventana.ultimoMes() + i));
+        }
+        return total;
+    }
+
+    /** Mantiene la prediccion en un rango realista: entre el 80% y el 200% de la demanda actual. */
+    private int acotar(double prediccion, int demandaActual) {
+        int demandaEstimada = (int) Math.round(Math.max(prediccion, demandaActual * 0.8));
+        return Math.min(demandaEstimada, demandaActual * 2);
+    }
+
+    /**
+     * Calcula la demanda total estimada para el proximo periodo de verano.
+     */
+    private int calcularDemandaEstimada(int demandaActual, Map<String, Integer> demandaPorMes, VentanaPeriodo ventana) {
+        Map<Integer, Integer> porNumeroDeMes = new HashMap<>();
+        for (int i = 0; i < MESES.size(); i++) {
+            porNumeroDeMes.put(i + 1, demandaPorMes.getOrDefault(MESES.get(i), 0));
+        }
+        Double proyeccion = proyectarPeriodo(porNumeroDeMes, ventana);
+        if (proyeccion == null) {
+            // No hay suficientes datos historicos, usar estimacion conservadora
             return (int) Math.round(demandaActual * 1.15);
         }
+        return acotar(proyeccion, demandaActual);
     }
-    
+
     /**
-     * Calcula la demanda estimada para una materia especifica usando REGRESION LINEAL
-     * Analiza el historico de solicitudes de esa materia para predecir demanda futura
+     * Estima la demanda de una materia o un programa para el proximo periodo completo.
+     * La tendencia sale de comparar esa estimacion con la demanda actual, asi que siempre concuerda
+     * con el porcentaje de variacion que se muestra.
+     * Con menos de 2 meses en la ventana se usa una estimacion conservadora (+factor).
      */
-    private Map<String, Object> calcularDemandaEstimadaMateriaPorRegresion(
-            String nombreMateria, List<DatoDemandaCursoVerano> solicitudesCursosVerano, int demandaActual) {
-        
-        Map<String, Object> resultado = new HashMap<>();
-        
-        try {
-            
-            // Filtrar solicitudes de esta materia especifica y agrupar por mes
-            Map<Integer, Integer> solicitudesPorMes = new HashMap<>();
-            
-            for (DatoDemandaCursoVerano solicitud : solicitudesCursosVerano) {
-                // Verificar si la solicitud corresponde a esta materia (la del curso solicitado)
-                String materiaSolicitud = solicitud.materia();
-                if (materiaSolicitud != null && materiaSolicitud.equalsIgnoreCase(nombreMateria)) {
-                    Date fecha = solicitud.fechaRegistro();
-                    if (fecha != null) {
-                        Calendar cal = Calendar.getInstance();
-                        cal.setTime(fecha);
-                        int mesNumero = cal.get(Calendar.MONTH) + 1;
-                        solicitudesPorMes.put(mesNumero, solicitudesPorMes.getOrDefault(mesNumero, 0) + 1);
-                    }
-                }
+    private Estimacion estimar(List<DatoDemandaCursoVerano> solicitudes, Predicate<DatoDemandaCursoVerano> filtro,
+            int demandaActual, VentanaPeriodo ventana, double factorConservador) {
+        Map<Integer, Integer> solicitudesPorMes = new HashMap<>();
+        for (DatoDemandaCursoVerano solicitud : solicitudes) {
+            Date fecha = solicitud.fechaRegistro();
+            if (fecha != null && filtro.test(solicitud)) {
+                Calendar cal = Calendar.getInstance();
+                cal.setTime(fecha);
+                solicitudesPorMes.merge(cal.get(Calendar.MONTH) + 1, 1, Integer::sum);
             }
-            
-            // Si hay suficientes datos historicos (2+ meses), usar regresion lineal
-            if (solicitudesPorMes.size() >= 2) {
-                SimpleRegression regression = new SimpleRegression();
-                
-                for (Map.Entry<Integer, Integer> entry : solicitudesPorMes.entrySet()) {
-                    regression.addData(entry.getKey(), entry.getValue());
-                }
-                
-                // Predecir para el siguiente periodo
-                double prediccion = regression.predict(13); // Predecir para mes 13 (proximo ano)
-                double pendiente = regression.getSlope();
-                double rSquared = regression.getRSquare();
-                
-                int demandaEstimada = (int) Math.round(Math.max(prediccion, demandaActual * 0.8));
-                demandaEstimada = Math.min(demandaEstimada, demandaActual * 2); // Limitar al doble
-                
-                String tendencia = pendiente > 0.05 ? "CRECIENTE" : (pendiente < -0.05 ? "DECRECIENTE" : "ESTABLE");
-                
-                resultado.put("demandaEstimada", demandaEstimada);
-                resultado.put("tendencia", tendencia);
-                resultado.put("pendiente", Math.round(pendiente * 100.0) / 100.0);
-                resultado.put("rSquared", Math.round(rSquared * 100.0) / 100.0);
-                resultado.put("modeloUtilizado", "Regresion Lineal Simple");
-                
-            } else {
-                // Datos insuficientes, usar estimacion conservadora
-                // Usar ceil para asegurar crecimiento de al menos 1
-                int demandaEstimada = (int) Math.ceil(demandaActual * 1.05); // +5%
-                // Siempre marcar como CRECIENTE cuando usamos estimacion conservadora
-                String tendencia = "CRECIENTE";
-                double pendienteEstimada = 0.05; // 5% de crecimiento
-                
-                resultado.put("demandaEstimada", demandaEstimada);
-                resultado.put("tendencia", tendencia);
-                resultado.put("pendiente", pendienteEstimada);
-                resultado.put("rSquared", 0.0);
-                resultado.put("modeloUtilizado", "Estimacion conservadora (+5%)");
-                
-            }
-            
-        } catch (Exception e) {
-            log.error(" Error calculando regresion para materia:  {}", e.getMessage());
-            resultado.put("demandaEstimada", demandaActual);
-            resultado.put("tendencia", "ESTABLE");
-            resultado.put("pendiente", 0.0);
-            resultado.put("rSquared", 0.0);
-            resultado.put("modeloUtilizado", "Error - valor actual mantenido");
         }
-        
-        return resultado;
+
+        Double proyeccion = proyectarPeriodo(solicitudesPorMes, ventana);
+        if (proyeccion == null) {
+            // Datos insuficientes: estimacion conservadora; ceil asegura un crecimiento de al menos 1
+            return new Estimacion((int) Math.ceil(demandaActual * (1 + factorConservador)), "CRECIENTE");
+        }
+
+        int demandaEstimada = acotar(proyeccion, demandaActual);
+        int porcentaje = porcentajeVariacion(demandaActual, demandaEstimada);
+        String tendencia = porcentaje >= UMBRAL_TENDENCIA ? "CRECIENTE"
+                : porcentaje <= -UMBRAL_TENDENCIA ? "DECRECIENTE" : "ESTABLE";
+        return new Estimacion(demandaEstimada, tendencia);
     }
-    
-    /**
-     * Calcula la demanda estimada para un programa especifico usando REGRESION LINEAL
-     * Analiza el historico de solicitudes de ese programa para predecir demanda futura
-     */
-    private Map<String, Object> calcularDemandaEstimadaProgramaPorRegresion(
-            String nombrePrograma, List<DatoDemandaCursoVerano> solicitudesCursosVerano, int demandaActual) {
-        
-        Map<String, Object> resultado = new HashMap<>();
-        
-        try {
-            
-            // Filtrar solicitudes de este programa especifico y agrupar por mes
-            Map<Integer, Integer> solicitudesPorMes = new HashMap<>();
-            
-            for (DatoDemandaCursoVerano solicitud : solicitudesCursosVerano) {
-                // Verificar si la solicitud corresponde a este programa
-                if (solicitud.programa() != null) {
-                    String programaSolicitud = solicitud.programa();
-                    if (programaSolicitud != null && programaSolicitud.equalsIgnoreCase(nombrePrograma)) {
-                        Date fecha = solicitud.fechaRegistro();
-                        if (fecha != null) {
-                            Calendar cal = Calendar.getInstance();
-                            cal.setTime(fecha);
-                            int mesNumero = cal.get(Calendar.MONTH) + 1;
-                            solicitudesPorMes.put(mesNumero, solicitudesPorMes.getOrDefault(mesNumero, 0) + 1);
-                        }
-                    }
-                }
-            }
-            
-            // Si hay suficientes datos historicos (2+ meses), usar regresion lineal
-            if (solicitudesPorMes.size() >= 2) {
-                SimpleRegression regression = new SimpleRegression();
-                
-                for (Map.Entry<Integer, Integer> entry : solicitudesPorMes.entrySet()) {
-                    regression.addData(entry.getKey(), entry.getValue());
-                }
-                
-                // Predecir para el siguiente periodo
-                double prediccion = regression.predict(13); // Predecir para mes 13 (proximo ano)
-                double pendiente = regression.getSlope();
-                double rSquared = regression.getRSquare();
-                
-                int demandaEstimada = (int) Math.round(Math.max(prediccion, demandaActual * 0.8));
-                demandaEstimada = Math.min(demandaEstimada, demandaActual * 2); // Limitar al doble
-                
-                String tendencia = pendiente > 0.05 ? "CRECIENTE" : (pendiente < -0.05 ? "DECRECIENTE" : "ESTABLE");
-                
-                resultado.put("demandaEstimada", demandaEstimada);
-                resultado.put("tendencia", tendencia);
-                resultado.put("pendiente", Math.round(pendiente * 100.0) / 100.0);
-                resultado.put("rSquared", Math.round(rSquared * 100.0) / 100.0);
-                resultado.put("modeloUtilizado", "Regresion Lineal Simple");
-                
-            } else {
-                // Datos insuficientes, usar estimacion conservadora
-                // Usar ceil para asegurar crecimiento de al menos 1
-                int demandaEstimada = (int) Math.ceil(demandaActual * 1.08); // +8%
-                // Siempre marcar como CRECIENTE cuando usamos estimacion conservadora
-                String tendencia = "CRECIENTE";
-                double pendienteEstimada = 0.08; // 8% de crecimiento
-                
-                resultado.put("demandaEstimada", demandaEstimada);
-                resultado.put("tendencia", tendencia);
-                resultado.put("pendiente", pendienteEstimada);
-                resultado.put("rSquared", 0.0);
-                resultado.put("modeloUtilizado", "Estimacion conservadora (+8%)");
-                
-            }
-            
-        } catch (Exception e) {
-            log.error(" Error calculando regresion para programa:  {}", e.getMessage());
-            resultado.put("demandaEstimada", demandaActual);
-            resultado.put("tendencia", "ESTABLE");
-            resultado.put("pendiente", 0.0);
-            resultado.put("rSquared", 0.0);
-            resultado.put("modeloUtilizado", "Error - valor actual mantenido");
-        }
-        
-        return resultado;
+
+    private static int porcentajeVariacion(int demandaActual, int demandaEstimada) {
+        return demandaActual > 0
+                ? (int) Math.round(((double) (demandaEstimada - demandaActual) / demandaActual) * 100.0)
+                : 0;
     }
 
     /**

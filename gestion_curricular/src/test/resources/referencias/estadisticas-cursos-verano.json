@@ -38,40 +38,60 @@
     }
   },
   "predicciones" : {
-    "alertasCriticas" : [ ],
+    "alertasCriticas" : [ {
+      "acciones" : [ " ACCION INMEDIATA REQUERIDA", "Convocar reunion urgente con coordinacion academica", "Evaluar contratar docentes adicionales con caracter urgente", "Verificar disponibilidad de espacios fisicos alternativos", "Considerar modalidad virtual/hibrida si no hay capacidad presencial" ],
+      "categoria" : "URGENTE",
+      "crecimientoProyectado" : "100%",
+      "descripcion" : "ATENCION: La materia Programación Orientada a Objetos presenta un crecimiento proyectado del 100%, significativamente superior al promedio. Se requiere accion inmediata para garantizar cobertura.",
+      "id" : "ALERTA_CRITICA_PROGRAMACIÓN_ORIENTADA_A_OBJETOS",
+      "materia" : "Programación Orientada a Objetos",
+      "prioridad" : "CRITICA",
+      "tipo" : "ALERTA_CAPACIDAD",
+      "titulo" : " ALERTA: Crecimiento excepcional en Programación Orientada a Objetos"
+    }, {
+      "acciones" : [ " ACCION INMEDIATA REQUERIDA", "Convocar reunion urgente con coordinacion academica", "Evaluar contratar docentes adicionales con caracter urgente", "Verificar disponibilidad de espacios fisicos alternativos", "Considerar modalidad virtual/hibrida si no hay capacidad presencial" ],
+      "categoria" : "URGENTE",
+      "crecimientoProyectado" : "100%",
+      "descripcion" : "ATENCION: La materia Física I presenta un crecimiento proyectado del 100%, significativamente superior al promedio. Se requiere accion inmediata para garantizar cobertura.",
+      "id" : "ALERTA_CRITICA_FÍSICA_I",
+      "materia" : "Física I",
+      "prioridad" : "CRITICA",
+      "tipo" : "ALERTA_CAPACIDAD",
+      "titulo" : " ALERTA: Crecimiento excepcional en Física I"
+    } ],
     "confiabilidad" : "MEDIA",
-    "demandaEstimadaProximoPeriodo" : 10,
+    "demandaEstimadaProximoPeriodo" : 24,
     "estadisticasRecomendaciones" : {
-      "alertasCriticas" : 0,
-      "prioridadAlta" : 1,
-      "prioridadBaja" : 1,
+      "alertasCriticas" : 2,
+      "prioridadAlta" : 3,
+      "prioridadBaja" : 0,
       "prioridadMedia" : 1,
-      "totalRecomendaciones" : 3
+      "totalRecomendaciones" : 4
     },
     "materiasConTendenciaCreciente" : [ {
+      "demandaActual" : 3,
+      "demandaEstimada" : 6,
+      "nombre" : "Programación Orientada a Objetos",
+      "porcentajeVariacion" : 100,
+      "tendencia" : "CRECIENTE",
+      "variacion" : 3
+    }, {
+      "demandaActual" : 3,
+      "demandaEstimada" : 6,
+      "nombre" : "Física I",
+      "porcentajeVariacion" : 100,
+      "tendencia" : "CRECIENTE",
+      "variacion" : 3
+    } ],
+    "materiasConTendenciaDecreciente" : [ {
       "demandaActual" : 6,
       "demandaEstimada" : 5,
       "nombre" : "Cálculo I",
       "porcentajeVariacion" : -17,
-      "tendencia" : "CRECIENTE",
-      "variacion" : -1
-    } ],
-    "materiasConTendenciaDecreciente" : [ {
-      "demandaActual" : 3,
-      "demandaEstimada" : 2,
-      "nombre" : "Programación Orientada a Objetos",
-      "porcentajeVariacion" : -33,
       "tendencia" : "DECRECIENTE",
       "variacion" : -1
     } ],
-    "materiasEstables" : [ {
-      "demandaActual" : 3,
-      "demandaEstimada" : 2,
-      "nombre" : "Física I",
-      "porcentajeVariacion" : -33,
-      "tendencia" : "ESTABLE",
-      "variacion" : -1
-    } ],
+    "materiasEstables" : [ ],
     "prediccionesTemporales" : {
       "demandaActualMesPico" : 3,
       "demandaEstimadaMesPico" : 3,
@@ -86,32 +106,32 @@
       "tendencia" : "CRECIENTE",
       "variacion" : 4
     } ],
-    "programasConTendenciaDecreciente" : [ ],
-    "programasEstables" : [ {
+    "programasConTendenciaDecreciente" : [ {
       "demandaActual" : 8,
-      "demandaEstimada" : 6,
+      "demandaEstimada" : 7,
       "nombre" : "Ingeniería de Sistemas",
-      "porcentajeVariacion" : -25,
-      "tendencia" : "ESTABLE",
-      "variacion" : -2
+      "porcentajeVariacion" : -12,
+      "tendencia" : "DECRECIENTE",
+      "variacion" : -1
     } ],
+    "programasEstables" : [ ],
     "recomendaciones" : [ {
-      "acciones" : [ "Contratar 1 docente especializado", "Reservar 1 aula o laboratorio", "Publicar oferta academica con suficiente antelacion" ],
+      "acciones" : [ "Contratar 1 docente especializado", "Reservar 1 aula o laboratorio", "URGENTE: Iniciar gestion con 2 meses de anticipacion", "Publicar oferta academica con suficiente antelacion" ],
       "categoria" : "CURSOS_VERANO",
-      "crecimiento" : -1,
-      "demandaActual" : 6,
-      "demandaProyectada" : 5,
-      "descripcion" : "La materia Cálculo I presenta una tendencia de crecimiento del -17%, pasando de 6 a 5 estudiantes proyectados. Se recomienda ampliar la oferta para garantizar cobertura completa.",
-      "id" : "MAT_CÁLCULO_I",
+      "crecimiento" : 3,
+      "demandaActual" : 3,
+      "demandaProyectada" : 6,
+      "descripcion" : "La materia Programación Orientada a Objetos presenta una tendencia de crecimiento del 100%, pasando de 3 a 6 estudiantes proyectados. Se recomienda ampliar la oferta para garantizar cobertura completa.",
+      "id" : "MAT_PROGRAMACIÓN_ORIENTADA_A_OBJETOS",
       "impacto" : {
-        "estudiantesAtendidos" : 5,
-        "estudiantesBeneficiados" : -1,
+        "estudiantesAtendidos" : 6,
+        "estudiantesBeneficiados" : 3,
         "tasaCoberturaObjetivo" : "100%"
       },
-      "justificacion" : "Con base en las tendencias observadas en periodos anteriores, se estima un incremento de -1 estudiantes (-17% de crecimiento).",
-      "materia" : "Cálculo I",
-      "porcentajeCrecimiento" : -17,
-      "prioridad" : "BAJA",
+      "justificacion" : "Con base en las tendencias observadas en periodos anteriores, se estima un incremento de 3 estudiantes (100% de crecimiento).",
+      "materia" : "Programación Orientada a Objetos",
+      "porcentajeCrecimiento" : 100,
+      "prioridad" : "ALTA",
       "recursos" : {
         "aulas" : 1,
         "capacidadPorGrupo" : 20,
@@ -121,7 +141,34 @@
         "laboratorios" : 0
       },
       "tipo" : "OFERTA_MATERIA",
-      "titulo" : "Ampliar oferta de Cálculo I"
+      "titulo" : "Ampliar oferta de Programación Orientada a Objetos"
+    }, {
+      "acciones" : [ "Contratar 1 docente especializado", "Reservar 1 aula o laboratorio", "URGENTE: Iniciar gestion con 2 meses de anticipacion", "Publicar oferta academica con suficiente antelacion" ],
+      "categoria" : "CURSOS_VERANO",
+      "crecimiento" : 3,
+      "demandaActual" : 3,
+      "demandaProyectada" : 6,
+      "descripcion" : "La materia Física I presenta una tendencia de crecimiento del 100%, pasando de 3 a 6 estudiantes proyectados. Se recomienda ampliar la oferta para garantizar cobertura completa.",
+      "id" : "MAT_FÍSICA_I",
+      "impacto" : {
+        "estudiantesAtendidos" : 6,
+        "estudiantesBeneficiados" : 3,
+        "tasaCoberturaObjetivo" : "100%"
+      },
+      "justificacion" : "Con base en las tendencias observadas en periodos anteriores, se estima un incremento de 3 estudiantes (100% de crecimiento).",
+      "materia" : "Física I",
+      "porcentajeCrecimiento" : 100,
+      "prioridad" : "ALTA",
+      "recursos" : {
+        "aulas" : 1,
+        "capacidadPorGrupo" : 20,
+        "docentes" : 1,
+        "gruposActuales" : 1,
+        "gruposRecomendados" : 1,
+        "laboratorios" : 0
+      },
+      "tipo" : "OFERTA_MATERIA",
+      "titulo" : "Ampliar oferta de Física I"
     }, {
       "acciones" : [ "Ampliar oferta de cursos de verano en 4 cupos", "Identificar materias criticas del programa con mayor demanda", "Coordinar con director(a) de programa para validar necesidades", "Evaluar disponibilidad de docentes del programa", "CRITICO: Programa de alta demanda requiere atencion inmediata" ],
       "beneficios" : [ "Reduccion de desercion por perdida de materias", "Mejora en tiempos de graduacion", "Mayor satisfaccion estudiantil", "Optimizacion de trayectorias academicas" ],
@@ -154,11 +201,11 @@
     } ],
     "todasLasPrediccionesPorPrograma" : [ {
       "demandaActual" : 8,
-      "demandaEstimada" : 6,
+      "demandaEstimada" : 7,
       "nombre" : "Ingeniería de Sistemas",
-      "porcentajeVariacion" : -25,
-      "tendencia" : "ESTABLE",
-      "variacion" : -2
+      "porcentajeVariacion" : -12,
+      "tendencia" : "DECRECIENTE",
+      "variacion" : -1
     }, {
       "demandaActual" : 4,
       "demandaEstimada" : 8,
@@ -169,22 +216,22 @@
     } ]
   },
   "recomendaciones" : [ {
-    "acciones" : [ "Contratar 1 docente especializado", "Reservar 1 aula o laboratorio", "Publicar oferta academica con suficiente antelacion" ],
+    "acciones" : [ "Contratar 1 docente especializado", "Reservar 1 aula o laboratorio", "URGENTE: Iniciar gestion con 2 meses de anticipacion", "Publicar oferta academica con suficiente antelacion" ],
     "categoria" : "CURSOS_VERANO",
-    "crecimiento" : -1,
-    "demandaActual" : 6,
-    "demandaProyectada" : 5,
-    "descripcion" : "La materia Cálculo I presenta una tendencia de crecimiento del -17%, pasando de 6 a 5 estudiantes proyectados. Se recomienda ampliar la oferta para garantizar cobertura completa.",
-    "id" : "MAT_CÁLCULO_I",
+    "crecimiento" : 3,
+    "demandaActual" : 3,
+    "demandaProyectada" : 6,
+    "descripcion" : "La materia Programación Orientada a Objetos presenta una tendencia de crecimiento del 100%, pasando de 3 a 6 estudiantes proyectados. Se recomienda ampliar la oferta para garantizar cobertura completa.",
+    "id" : "MAT_PROGRAMACIÓN_ORIENTADA_A_OBJETOS",
     "impacto" : {
-      "estudiantesAtendidos" : 5,
-      "estudiantesBeneficiados" : -1,
+      "estudiantesAtendidos" : 6,
+      "estudiantesBeneficiados" : 3,
       "tasaCoberturaObjetivo" : "100%"
     },
-    "justificacion" : "Con base en las tendencias observadas en periodos anteriores, se estima un incremento de -1 estudiantes (-17% de crecimiento).",
-    "materia" : "Cálculo I",
-    "porcentajeCrecimiento" : -17,
-    "prioridad" : "BAJA",
+    "justificacion" : "Con base en las tendencias observadas en periodos anteriores, se estima un incremento de 3 estudiantes (100% de crecimiento).",
+    "materia" : "Programación Orientada a Objetos",
+    "porcentajeCrecimiento" : 100,
+    "prioridad" : "ALTA",
     "recursos" : {
       "aulas" : 1,
       "capacidadPorGrupo" : 20,
@@ -194,7 +241,34 @@
       "laboratorios" : 0
     },
     "tipo" : "OFERTA_MATERIA",
-    "titulo" : "Ampliar oferta de Cálculo I"
+    "titulo" : "Ampliar oferta de Programación Orientada a Objetos"
+  }, {
+    "acciones" : [ "Contratar 1 docente especializado", "Reservar 1 aula o laboratorio", "URGENTE: Iniciar gestion con 2 meses de anticipacion", "Publicar oferta academica con suficiente antelacion" ],
+    "categoria" : "CURSOS_VERANO",
+    "crecimiento" : 3,
+    "demandaActual" : 3,
+    "demandaProyectada" : 6,
+    "descripcion" : "La materia Física I presenta una tendencia de crecimiento del 100%, pasando de 3 a 6 estudiantes proyectados. Se recomienda ampliar la oferta para garantizar cobertura completa.",
+    "id" : "MAT_FÍSICA_I",
+    "impacto" : {
+      "estudiantesAtendidos" : 6,
+      "estudiantesBeneficiados" : 3,
+      "tasaCoberturaObjetivo" : "100%"
+    },
+    "justificacion" : "Con base en las tendencias observadas en periodos anteriores, se estima un incremento de 3 estudiantes (100% de crecimiento).",
+    "materia" : "Física I",
+    "porcentajeCrecimiento" : 100,
+    "prioridad" : "ALTA",
+    "recursos" : {
+      "aulas" : 1,
+      "capacidadPorGrupo" : 20,
+      "docentes" : 1,
+      "gruposActuales" : 1,
+      "gruposRecomendados" : 1,
+      "laboratorios" : 0
+    },
+    "tipo" : "OFERTA_MATERIA",
+    "titulo" : "Ampliar oferta de Física I"
   }, {
     "acciones" : [ "Ampliar oferta de cursos de verano en 4 cupos", "Identificar materias criticas del programa con mayor demanda", "Coordinar con director(a) de programa para validar necesidades", "Evaluar disponibilidad de docentes del programa", "CRITICO: Programa de alta demanda requiere atencion inmediata" ],
     "beneficios" : [ "Reduccion de desercion por perdida de materias", "Mejora en tiempos de graduacion", "Mayor satisfaccion estudiantil", "Optimizacion de trayectorias academicas" ],
