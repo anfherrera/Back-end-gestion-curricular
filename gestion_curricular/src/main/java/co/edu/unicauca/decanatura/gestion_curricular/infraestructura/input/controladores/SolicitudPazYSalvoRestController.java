@@ -7,12 +7,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarSolicitudPazYSalvoCUIntPort;
+import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarSolicitudPazYSalvoCUIntPort.RechazoCambioEstado.Motivo;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarArchivosCUIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarDocumentosCUIntPort;
-import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.CambioEstadoSolicitud;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.SolicitudPazYSalvo;
-import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.FlujoEstadosSolicitud;
-import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.validacion.ValidadorCambioEstado;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.excepciones.ReglaNegocioExcepcion;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Documento;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.EstadoSolicitud;
@@ -20,7 +18,6 @@ import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.DTOPe
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.DTOPeticion.SolicitudPazYSalvoDTOPeticion;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.DTORespuesta.SolicitudPazYSalvoDTORespuesta;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.mappers.SolicitudPazYSalvoMapperDominio;
-import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.mappers.SolicitudMapperDominio;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.validacion.ValidadorArchivoPdf;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -66,7 +63,6 @@ public class SolicitudPazYSalvoRestController {
 
     private final GestionarSolicitudPazYSalvoCUIntPort solicitudPazYSalvoCU;
     private final SolicitudPazYSalvoMapperDominio solicitudMapperDominio;
-    private final SolicitudMapperDominio solicitudMapper;
     private final GestionarArchivosCUIntPort objGestionarArchivos;
     private final GestionarDocumentosCUIntPort documentosCU;
     private final DocumentosMapperDominio documentosMapperDominio;
@@ -74,7 +70,6 @@ public class SolicitudPazYSalvoRestController {
     private final ObjectMapper objectMapper;
     private final GestionarUsuarioCUIntPort usuarioCU;
     private final Autorizacion autorizacion;
-    private final ValidadorCambioEstado validadorCambioEstado;
 
     @PreAuthorize("hasAnyRole('Estudiante', 'Administrador')")
     @PostMapping("/crearSolicitud-PazYSalvo")
@@ -470,21 +465,19 @@ public class SolicitudPazYSalvoRestController {
                 return ResponseEntity.badRequest().body(Map.of("error", "El nuevo estado es requerido"));
             }
 
-            ResponseEntity<Map<String, Object>> rechazo =
-                    validarCambioDeEstado(peticion.getIdSolicitud(), peticion.getNuevoEstado());
-            if (rechazo != null) {
-                return rechazo;
+            var rechazo = solicitudPazYSalvoCU.cambiarEstadoSolicitud(
+                    peticion.getIdSolicitud(), peticion.getNuevoEstado(), peticion.getComentario(),
+                    rol -> autorizacion.tieneRol(rol) || autorizacion.tieneRol("Administrador"));
+            if (rechazo.isPresent()) {
+                var detalle = rechazo.get();
+                HttpStatus estado = detalle.motivo() == Motivo.ROL_NO_AUTORIZADO
+                        ? HttpStatus.FORBIDDEN : HttpStatus.BAD_REQUEST;
+                Map<String, Object> cuerpo = new HashMap<>();
+                cuerpo.put("error", detalle.mensaje());
+                cuerpo.put("codigo", detalle.motivo().name());
+                cuerpo.put("estadoActual", detalle.estadoActual());
+                return ResponseEntity.status(estado).body(cuerpo);
             }
-
-            CambioEstadoSolicitud solicitud = solicitudMapper
-                    .mappearDeCambioEstadoSolicitudDTOPeticionACambioEstadoSolicitud(peticion);
-
-            // Usar el método sobrecargado que acepta comentario
-            solicitudPazYSalvoCU.cambiarEstadoSolicitud(
-                solicitud.getIdSolicitud(), 
-                solicitud.getNuevoEstado(),
-                solicitud.getComentario()
-            );
 
             return ResponseEntity.noContent().build();
         } catch (EntidadNoExisteException e) {
@@ -1135,9 +1128,4 @@ public ResponseEntity<DocumentosDTORespuesta> guardarOficioPazSalvo(
      *
      * @return null si el cambio está permitido; si no, 400 (paso no permitido) o 403 (rol incorrecto)
      */
-    private ResponseEntity<Map<String, Object>> validarCambioDeEstado(Integer idSolicitud, String nuevoEstado) {
-        SolicitudPazYSalvo solicitud = solicitudPazYSalvoCU.buscarPorId(idSolicitud);
-        return validadorCambioEstado.validar(FlujoEstadosSolicitud.TRES_APROBACIONES,
-                FlujoEstadosSolicitud.ultimoEstado(solicitud.getEstadosSolicitud()), nuevoEstado);
-    }
 }

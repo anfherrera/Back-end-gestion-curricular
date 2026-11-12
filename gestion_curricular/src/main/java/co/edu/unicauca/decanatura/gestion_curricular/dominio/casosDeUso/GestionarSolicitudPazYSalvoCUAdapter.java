@@ -3,10 +3,13 @@ package co.edu.unicauca.decanatura.gestion_curricular.dominio.casosDeUso;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
+import java.util.function.Predicate;
 
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarArchivosCUIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.servicios.AsociadorDocumentosPendientes;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarSolicitudPazYSalvoCUIntPort;
+import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarSolicitudPazYSalvoCUIntPort.RechazoCambioEstado.Motivo;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarNotificacionCUIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.FormateadorResultadosIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.GestionarDocumentosGatewayIntPort;
@@ -19,6 +22,9 @@ import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.TransicionE
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Usuario;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.excepciones.EntidadNoExisteException;
 
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
 public class GestionarSolicitudPazYSalvoCUAdapter implements GestionarSolicitudPazYSalvoCUIntPort {
 
     private final GestionarSolicitudPazYSalvoGatewayIntPort solicitudGateway;
@@ -183,15 +189,27 @@ public class GestionarSolicitudPazYSalvoCUAdapter implements GestionarSolicitudP
 
     @Override
     public void cambiarEstadoSolicitud(Integer idSolicitud, String nuevoEstado, String comentario) {
-        // Obtener el estado anterior
+        cambiarEstadoSolicitud(idSolicitud, nuevoEstado, comentario, rol -> true)
+                .ifPresent(rechazo -> formateadorResultados.retornarRespuestaErrorReglaDeNegocio(rechazo.mensaje()));
+    }
+
+    @Override
+    public Optional<RechazoCambioEstado> cambiarEstadoSolicitud(Integer idSolicitud, String nuevoEstado,
+            String comentario, Predicate<String> puedeActuarComo) {
         SolicitudPazYSalvo solicitud = buscarPorId(idSolicitud);
         String estadoAnterior = ultimoEstado(solicitud);
-
-        // Solo se permiten los pasos del flujo (ver TransicionEstadoPazYSalvo)
+        String rolResponsable;
         try {
-            TransicionEstadoPazYSalvo.validarYObtenerRolResponsable(estadoAnterior, nuevoEstado);
+            rolResponsable = TransicionEstadoPazYSalvo.validarYObtenerRolResponsable(estadoAnterior, nuevoEstado);
         } catch (IllegalArgumentException e) {
-            formateadorResultados.retornarRespuestaErrorReglaDeNegocio(e.getMessage());
+            return Optional.of(new RechazoCambioEstado(Motivo.TRANSICION_NO_PERMITIDA, e.getMessage(),
+                    TransicionEstadoPazYSalvo.normalizar(estadoAnterior)));
+        }
+
+        if (!puedeActuarComo.test(rolResponsable)) {
+            return Optional.of(new RechazoCambioEstado(Motivo.ROL_NO_AUTORIZADO,
+                    "Este paso le corresponde al rol " + rolResponsable,
+                    TransicionEstadoPazYSalvo.normalizar(estadoAnterior)));
         }
 
         EstadoSolicitud estado = new EstadoSolicitud();
@@ -207,8 +225,10 @@ public class GestionarSolicitudPazYSalvoCUAdapter implements GestionarSolicitudP
         try {
             solicitud = buscarPorId(idSolicitud); // Recargar con el nuevo estado
             this.objGestionarNotificacionCU.notificarCambioEstadoSolicitud(solicitud, estadoAnterior, nuevoEstado, "PAZ_Y_SALVO");
-        } catch (Exception e) {
+        } catch (RuntimeException e) {
+            log.warn("No se pudo notificar el cambio de estado de Paz y Salvo para la solicitud {}", idSolicitud, e);
         }
+        return Optional.empty();
     }
 
     /** Último estado con texto de la solicitud (ignora el registro inicial vacío). Null si no hay. */

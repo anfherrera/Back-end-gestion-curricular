@@ -241,12 +241,26 @@ class GestionPazYSalvoFuncionalTest {
     @DisplayName("Funcional 2b: El coordinador no puede aprobar antes que el funcionario")
     void testCoordinadorNoPuedeSaltarseAlFuncionario() throws Exception {
         int id = SoportePazYSalvo.crearSolicitud(mockMvc, objectMapper, tokenEstudiante);
-        // Desde ENVIADA el paso le corresponde al funcionario
-        org.junit.jupiter.api.Assertions.assertEquals(403,
-                SoportePazYSalvo.cambiarEstado(mockMvc, tokenCoordinador, id, "APROBADA_FUNCIONARIO"));
-        // Saltar directamente a APROBADA no es un paso válido
-        org.junit.jupiter.api.Assertions.assertEquals(400,
-                SoportePazYSalvo.cambiarEstado(mockMvc, tokenFuncionario, id, "APROBADA"));
+        mockMvc.perform(put("/api/solicitudes-pazysalvo/actualizarEstadoSolicitud")
+                        .header("Authorization", tokenCoordinador)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"idSolicitud\":%d,\"nuevoEstado\":\"APROBADA_FUNCIONARIO\"}".formatted(id)))
+                .andExpect(status().isForbidden())
+                .andExpect(jsonPath("$.codigo").value("ROL_NO_AUTORIZADO"))
+                .andExpect(jsonPath("$.estadoActual").value("ENVIADA"))
+                .andExpect(jsonPath("$.error").value("Este paso le corresponde al rol Funcionario"));
+
+        mockMvc.perform(put("/api/solicitudes-pazysalvo/actualizarEstadoSolicitud")
+                        .header("Authorization", tokenFuncionario)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"idSolicitud\":%d,\"nuevoEstado\":\"APROBADA\"}".formatted(id)))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.codigo").value("TRANSICION_NO_PERMITIDA"))
+                .andExpect(jsonPath("$.estadoActual").value("ENVIADA"))
+                .andExpect(jsonPath("$.error").isNotEmpty());
+
+        org.junit.jupiter.api.Assertions.assertEquals(204,
+                SoportePazYSalvo.cambiarEstado(mockMvc, tokenFuncionario, id, "APROBADA_FUNCIONARIO"));
     }
 
     @Test

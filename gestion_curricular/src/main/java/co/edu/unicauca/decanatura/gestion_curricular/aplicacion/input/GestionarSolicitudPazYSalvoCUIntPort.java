@@ -1,6 +1,8 @@
 package co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input;
 
 import java.util.List;
+import java.util.Optional;
+import java.util.function.Predicate;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.SolicitudPazYSalvo;
 
 public interface GestionarSolicitudPazYSalvoCUIntPort {
@@ -58,4 +60,14 @@ public interface GestionarSolicitudPazYSalvoCUIntPort {
      * @param comentario Comentario o razón del cambio de estado (especialmente para rechazos)
      */
     void cambiarEstadoSolicitud(Integer idSolicitud, String nuevoEstado, String comentario);
+
+    /** Aplica un paso solo si el actor puede actuar como el rol responsable. */
+    Optional<RechazoCambioEstado> cambiarEstadoSolicitud(Integer idSolicitud, String nuevoEstado, String comentario,
+            Predicate<String> puedeActuarComo);
+
+    record RechazoCambioEstado(Motivo motivo, String mensaje, String estadoActual) {
+        public enum Motivo {
+            TRANSICION_NO_PERMITIDA, ROL_NO_AUTORIZADO
+        }
+    }
 }
