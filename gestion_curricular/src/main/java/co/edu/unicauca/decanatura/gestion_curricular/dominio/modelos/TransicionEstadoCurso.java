@@ -30,6 +30,13 @@ public final class TransicionEstadoCurso {
         }
     }
 
+    public static boolean esEstadoValido(String estado) {
+        return estado != null && switch (estado) {
+            case "Borrador", "Abierto", "Publicado", "Preinscripcion", "Inscripcion", "Cerrado" -> true;
+            default -> false;
+        };
+    }
+
     private TransicionEstadoCurso() {
     }
 

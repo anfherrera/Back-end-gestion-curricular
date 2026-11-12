@@ -56,11 +56,12 @@ public class BeanConfiguration {
             GestionarUsuarioGatewayIntPort objGestionarUsuarioGateway,
             GestionarMateriasIntPort objGestionarMateriasGateway,
             GestionarDocenteGatewayIntPort objGestionarDocenteGateway,
+            GestionarSalonesIntPort salonesGateway,
             GestionarEstadoCursoOfertadoGatewayIntPort objGestionarEstadoCursoOfertadoGateway,
             FormateadorResultadosIntPort objFormateadorResultados,
             GestionarNotificacionCUIntPort objGestionarNotificacionCU){
                 return new GestionarCursoOfertadoVeranoCUAdapter(objGestionarCursoOfertadoVeranoGateway, objGestionarSolicitudGateway, objGestionarUsuarioGateway,
-                 objGestionarMateriasGateway, objGestionarDocenteGateway, objFormateadorResultados, objGestionarNotificacionCU);
+                 objGestionarMateriasGateway, objGestionarDocenteGateway, salonesGateway, objFormateadorResultados, objGestionarNotificacionCU);
             }
 
     // GestionarEstadisticasGatewayImplAdapter ya está definido como @Service, no necesita definición adicional

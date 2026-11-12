@@ -2,6 +2,7 @@ package co.edu.unicauca.decanatura.gestion_curricular.cursosverano;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.entidades.ProgramaEntity;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.entidades.RolEntity;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.entidades.UsuarioEntity;
@@ -15,6 +16,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
@@ -51,6 +54,9 @@ class GestionCursosVeranoFuncionalTest {
 
     @Autowired
     private ObjectMapper objectMapper;
+
+    @Autowired
+    private JdbcTemplate jdbc;
 
     @Autowired
     private UsuarioRepositoryInt usuarioRepository;
@@ -431,5 +437,68 @@ class GestionCursosVeranoFuncionalTest {
                         .header("Authorization", tokenEstudiante))
                 .andExpect(status().isOk());
     }
+    @Test
+    void crearCursoRechazaFechasInvertidas() throws Exception {
+        mockMvc.perform(post("/api/cursos-intersemestrales/cursos-verano")
+                        .header("Authorization", tokenCoordinador)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(peticionCrearCurso("2025-07-01")))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.error").value("Fechas inválidas"))
+                .andExpect(jsonPath("$.message").value("La fecha de fin debe ser posterior a la fecha de inicio"));
+    }
+
+    @Test
+    @Transactional
+    void crearCursoConservaRespuestaYResuelveElSalonPorId() throws Exception {
+        jdbc.update("INSERT INTO Materias(idMateria, codigo, nombre, creditos) VALUES (901, 'REF901', 'Materia de prueba', 3)");
+        jdbc.update("INSERT INTO Docentes(idDocente, codigo_docente, nombre_docente) VALUES (901, 'REF901', 'Docente de prueba')");
+        jdbc.update("INSERT INTO Salones(idSalon, numero_salon, activo) VALUES (901, 'REF-901', true)");
+
+        ObjectNode peticion = (ObjectNode) objectMapper.readTree(peticionCrearCurso("2025-08-01"));
+        peticion.put("id_materia", 901);
+        peticion.put("id_docente", 901);
+        peticion.put("id_salon", 901);
+
+        mockMvc.perform(post("/api/cursos-intersemestrales/cursos-verano")
+                        .header("Authorization", tokenCoordinador)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(peticion)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id_curso").isNumber())
+                .andExpect(jsonPath("$.nombre_curso").value("Materia de prueba"))
+                .andExpect(jsonPath("$.espacio_asignado").value("REF-901"))
+                .andExpect(jsonPath("$.fecha_inicio").value("2025-07-02"))
+                .andExpect(jsonPath("$.fecha_fin").value("2025-08-01"))
+                .andExpect(jsonPath("$.periodo").value("2025-2"))
+                .andExpect(jsonPath("$.estado").value("Abierto"));
+    }
+
+    @Test
+    void crearCursoConservaCodigoDeCursoDuplicado() throws Exception {
+        mockMvc.perform(post("/api/cursos-intersemestrales/cursos-verano")
+                        .header("Authorization", tokenCoordinador)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(peticionCrearCurso("2025-08-01")))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.error").value("Curso duplicado"))
+                .andExpect(jsonPath("$.codigo").value("CURSO_DUPLICADO"));
+    }
+
+    private String peticionCrearCurso(String fechaFin) {
+        return """
+                {
+                  "id_materia": 1,
+                  "id_docente": 1,
+                  "cupo_estimado": 30,
+                  "fecha_inicio": "2025-07-02",
+                  "fecha_fin": "%s",
+                  "periodoAcademico": " 2025-2 ",
+                  "espacio_asignado": "221",
+                  "grupo": " a "
+                }
+                """.formatted(fechaFin);
+    }
+
 }
 

@@ -12,7 +12,11 @@ import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.Gestionar
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.GestionarMateriasIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.GestionarSolicitudGatewayIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.GestionarUsuarioGatewayIntPort;
+import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.GestionarSalonesIntPort;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.excepciones.DatosCursoInvalidosException;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.excepciones.DatosCursoInvalidosException.Motivo;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.CursoOfertadoVerano;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Salon;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Docente;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.EstadoCursoOfertado;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.EstadoSolicitud;
@@ -29,6 +33,7 @@ public class GestionarCursoOfertadoVeranoCUAdapter implements GestionarCursoOfer
     private final GestionarUsuarioGatewayIntPort objGestionarUsuarioGateway;
     private final GestionarMateriasIntPort objGestionarMateriasGateway;
     private final GestionarDocenteGatewayIntPort objGestionarDocenteGateway;
+    private final GestionarSalonesIntPort salonesGateway;
     private final FormateadorResultadosIntPort objFormateadorResultados;
     private final GestionarNotificacionCUIntPort objGestionarNotificacionCU;
 
@@ -37,6 +42,7 @@ public class GestionarCursoOfertadoVeranoCUAdapter implements GestionarCursoOfer
             GestionarUsuarioGatewayIntPort objGestionarUsuarioGateway,
             GestionarMateriasIntPort objGestionarMateriasGateway,
             GestionarDocenteGatewayIntPort objGestionarDocenteGateway,
+            GestionarSalonesIntPort salonesGateway,
             FormateadorResultadosIntPort objFormateadorResultados,
             GestionarNotificacionCUIntPort objGestionarNotificacionCU) {
         this.objGestionarCursoOfertadoVeranoGateway = objGestionarCursoOfertadoVeranoGateway;
@@ -44,6 +50,7 @@ public class GestionarCursoOfertadoVeranoCUAdapter implements GestionarCursoOfer
         this.objGestionarUsuarioGateway = objGestionarUsuarioGateway;
         this.objGestionarMateriasGateway = objGestionarMateriasGateway;
         this.objGestionarDocenteGateway = objGestionarDocenteGateway;
+        this.salonesGateway = salonesGateway;
         this.objFormateadorResultados = objFormateadorResultados;
         this.objGestionarNotificacionCU = objGestionarNotificacionCU;
     }
@@ -199,11 +206,8 @@ public class GestionarCursoOfertadoVeranoCUAdapter implements GestionarCursoOfer
 
     @Override
     public CursoOfertadoVerano crearCurso(CursoOfertadoVerano curso) {
-        List<CursoOfertadoVerano> cursos = null;
-        CursoOfertadoVerano cursoGuardado = null;
         Materia materia = null;
         Docente docente = null;
-        Boolean bandera = false;
         if(curso == null){
             this.objFormateadorResultados.retornarRespuestaErrorEntidadExiste("No hay datos en el curso");
         }
@@ -227,23 +231,90 @@ public class GestionarCursoOfertadoVeranoCUAdapter implements GestionarCursoOfer
         if(docente == null){
             this.objFormateadorResultados.retornarRespuestaErrorEntidadExiste("No existe el docente con el ID: " + curso.getObjDocente().getId_docente());
         }            
-        cursos = this.objGestionarCursoOfertadoVeranoGateway.listarTodos();
-        if(!cursos.isEmpty()){
-            for (CursoOfertadoVerano cursoOfertadoVerano : cursos) {
-                if(curso.getObjMateria().getId_materia() == cursoOfertadoVerano.getObjMateria().getId_materia()){
-                    if(curso.getGrupo().name() == cursoOfertadoVerano.getGrupo().name()){
-                        this.objFormateadorResultados.retornarRespuestaErrorEntidadExiste("El grupo asignado ya esta en uso"+ curso.getGrupo().name());
-                        bandera = true;
-                        break;
-                    }
-                }
+        return guardarCurso(curso);
+    }
+
+    private CursoOfertadoVerano guardarCurso(CursoOfertadoVerano curso) {
+        for (CursoOfertadoVerano existente : listarTodos()) {
+            if (curso.getObjMateria().getId_materia() == existente.getObjMateria().getId_materia()
+                    && curso.getGrupo() == existente.getGrupo()) {
+                objFormateadorResultados.retornarRespuestaErrorEntidadExiste(
+                        "El grupo asignado ya esta en uso" + curso.getGrupo().name());
+                return null;
             }
         }
-        if(!bandera){
-            cursoGuardado = this.objGestionarCursoOfertadoVeranoGateway.crearCurso(curso);
+        return objGestionarCursoOfertadoVeranoGateway.crearCurso(curso);
+    }
+
+    @Override
+    public CursoOfertadoVerano crearCurso(DatosCreacion datos) {
+        if (!datos.fechaFin().after(datos.fechaInicio())) {
+            throw new DatosCursoInvalidosException(Motivo.FECHAS_INVALIDAS,
+                    "La fecha de fin debe ser posterior a la fecha de inicio");
         }
 
-        return cursoGuardado;
+        String salon = resolverSalon(datos.idSalon(), datos.espacioAsignado());
+        if (salon == null && datos.idSalon() == null) {
+            throw new DatosCursoInvalidosException(Motivo.SALON_REQUERIDO,
+                    "Debe seleccionar un salón de la lista disponible");
+        }
+        GrupoCursoVerano grupo = grupoInicial(datos.grupo());
+        Materia materia = objGestionarMateriasGateway.obtenerMateriaPorId(datos.idMateria());
+        if (materia == null) {
+            objFormateadorResultados.retornarRespuestaErrorEntidadExiste("Materia no encontrada.");
+        }
+        Docente docente = objGestionarDocenteGateway.obtenerDocentePorId(datos.idDocente());
+        if (docente == null) {
+            objFormateadorResultados.retornarRespuestaErrorEntidadExiste("Docente no encontrado.");
+        }
+
+        if (existeCurso(datos.idMateria(), datos.idDocente(), datos.periodo(), grupo)) {
+            throw new DatosCursoInvalidosException(Motivo.CURSO_DUPLICADO,
+                    "Ya existe un curso con la misma materia, docente, período académico y grupo '" + grupo
+                            + "'. Puedes crear grupos diferentes (A, B, C, D) para la misma materia y docente.");
+        }
+
+        CursoOfertadoVerano curso = new CursoOfertadoVerano();
+        curso.setCupo_estimado(datos.cupoEstimado());
+        curso.setSalon(salon);
+        curso.setGrupo(grupo);
+        curso.setFecha_inicio(datos.fechaInicio());
+        curso.setFecha_fin(datos.fechaFin());
+        curso.setPeriodo_academico(datos.periodo());
+        curso.setObjMateria(materia);
+        curso.setObjDocente(docente);
+
+        String estado = datos.estado() == null ? "" : datos.estado().trim();
+        EstadoCursoOfertado estadoInicial = new EstadoCursoOfertado();
+        estadoInicial.setEstado_actual(TransicionEstadoCurso.esEstadoValido(estado) ? estado : "Abierto");
+        estadoInicial.setFecha_registro_estado(datos.fechaInicio());
+        curso.getEstadosCursoOfertados().add(estadoInicial);
+        return guardarCurso(curso);
+    }
+
+    @Override
+    public String resolverSalon(Integer idSalon, String espacioAsignado) {
+        if (idSalon == null) {
+            return espacioAsignado == null || espacioAsignado.trim().isEmpty() ? null : espacioAsignado.trim();
+        }
+        Salon salon = salonesGateway.obtenerSalonPorId(idSalon);
+        if (salon == null) {
+            objFormateadorResultados.retornarRespuestaErrorEntidadExiste("Salón no encontrado.");
+            throw new DatosCursoInvalidosException(Motivo.SALON_NO_ENCONTRADO,
+                    "El salón con ID " + idSalon + " no existe");
+        }
+        return salon.getNumero_salon();
+    }
+
+    private GrupoCursoVerano grupoInicial(String grupo) {
+        if (grupo == null || grupo.trim().isEmpty()) {
+            return GrupoCursoVerano.A;
+        }
+        try {
+            return GrupoCursoVerano.valueOf(grupo.trim().toUpperCase());
+        } catch (IllegalArgumentException e) {
+            return GrupoCursoVerano.A;
+        }
     }
 
     @Override

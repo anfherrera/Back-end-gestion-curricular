@@ -62,6 +62,9 @@ class CursosVeranoUnidadTest {
     private GestionarDocenteGatewayIntPort docenteGateway;
 
     @Mock
+    private GestionarSalonesIntPort salonesGateway;
+
+    @Mock
     private FormateadorResultadosIntPort formateadorResultados;
 
     @Mock
@@ -80,6 +83,7 @@ class CursosVeranoUnidadTest {
                 usuarioGateway,
                 materiasGateway,
                 docenteGateway,
+                salonesGateway,
                 formateadorResultados,
                 notificacionCU
         );

@@ -1,5 +1,6 @@
 package co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input;
 
+import java.util.Date;
 import java.util.List;
 
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.CursoOfertadoVerano;
@@ -8,7 +9,15 @@ import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Enums.Grupo
 
 public interface GestionarCursoOfertadoVeranoCUIntPort {
     
+    record DatosCreacion(int idMateria, int idDocente, int cupoEstimado, Date fechaInicio, Date fechaFin,
+                         String periodo, Integer idSalon, String espacioAsignado, String grupo, String estado) {
+    }
+
     CursoOfertadoVerano crearCurso(CursoOfertadoVerano curso);
+
+    CursoOfertadoVerano crearCurso(DatosCreacion datos);
+
+    String resolverSalon(Integer idSalon, String espacioAsignado);
 
     CursoOfertadoVerano actualizarCurso(CursoOfertadoVerano curso, EstadoCursoOfertado estadoCurso);
 
