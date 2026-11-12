@@ -44,6 +44,9 @@ import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.pers
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.entidades.SolicitudPazYSalvoEntity;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.entidades.SolicitudReingresoEntity;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.entidades.UsuarioEntity;
+import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarEstadisticasCUIntPort;
+import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.FormateadorResultadosIntPort;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.casosDeUso.GestionarEstadisticasCUAdapter;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.gateway.GestionarEstadisticasGatewayImplAdapter;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.repositorios.EstadisticaRepositoryInt;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.repositorios.ProgramaRepositoryInt;
@@ -51,18 +54,19 @@ import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.pers
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.repositorios.UsuarioRepositoryInt;
 
 /**
- * Fija la respuesta de cada consulta de estadísticas para un conjunto de datos fijo, antes de sacar la
- * lógica del adaptador de persistencia al dominio. Cada caso se compara con su archivo en
+ * Fija la respuesta de cada consulta de estadísticas para un conjunto de datos fijo. Pasa por el caso de uso
+ * y el gateway real (con repositorios simulados), así que cubre también la conversión a modelos de dominio.
+ * Cada caso se compara con su archivo en
  * {@code src/test/resources/referencias/estadisticas/}.
  *
  * Los datos son de 2024 y 2025, así que la tendencia "últimos 90 días" siempre sale igual.
  * Se quitan las fechas que dependen del momento de la consulta (fechaConsulta, fechaGeneracion, fechaPrediccion).
  *
  * Para regrabar las referencias tras un cambio intencional:
- * {@code mvnw test -Dtest=EstadisticasGatewayCaracterizacionTest -DgrabarReferencia=true}
+ * {@code mvnw test -Dtest=EstadisticasCaracterizacionTest -DgrabarReferencia=true}
  */
-@DisplayName("Estadísticas - respuestas fijadas del gateway")
-class EstadisticasGatewayCaracterizacionTest {
+@DisplayName("Estadísticas - respuestas fijadas")
+class EstadisticasCaracterizacionTest {
 
     private static final Path CARPETA = Path.of("src/test/resources/referencias/estadisticas");
     private static final Set<String> FECHAS_DE_CONSULTA = Set.of("fechaConsulta", "fechaGeneracion", "fechaPrediccion");
@@ -71,14 +75,14 @@ class EstadisticasGatewayCaracterizacionTest {
             .enable(SerializationFeature.ORDER_MAP_ENTRIES_BY_KEYS);
 
     private static TimeZone zonaOriginal;
-    private static GestionarEstadisticasGatewayImplAdapter gateway;
+    private static GestionarEstadisticasCUIntPort estadisticas;
 
     @BeforeAll
     static void preparar() {
         // Los meses y periodos se calculan con la zona del sistema; se fija para que la referencia no dependa del equipo
         zonaOriginal = TimeZone.getDefault();
         TimeZone.setDefault(TimeZone.getTimeZone("America/Bogota"));
-        gateway = crearGateway();
+        estadisticas = crearCasoDeUso();
     }
 
     @AfterAll
@@ -125,8 +129,8 @@ class EstadisticasGatewayCaracterizacionTest {
     @ParameterizedTest(name = "{0}")
     @MethodSource("consultas")
     @DisplayName("La respuesta no cambia")
-    void respuestaFijada(String nombre, Function<GestionarEstadisticasGatewayImplAdapter, Object> consulta) throws Exception {
-        Object resultado = sinFechasDeConsulta(consulta.apply(gateway));
+    void respuestaFijada(String nombre, Function<GestionarEstadisticasCUIntPort, Object> consulta) throws Exception {
+        Object resultado = sinFechasDeConsulta(consulta.apply(estadisticas));
         String obtenido = JSON.writeValueAsString(resultado).replace("\r\n", "\n");
 
         Path referencia = CARPETA.resolve(nombre + ".json");
@@ -138,7 +142,7 @@ class EstadisticasGatewayCaracterizacionTest {
         assertThat(obtenido).isEqualTo(esperado);
     }
 
-    private static Arguments caso(String nombre, Function<GestionarEstadisticasGatewayImplAdapter, Object> consulta) {
+    private static Arguments caso(String nombre, Function<GestionarEstadisticasCUIntPort, Object> consulta) {
         return Arguments.of(nombre, consulta);
     }
 
@@ -146,9 +150,9 @@ class EstadisticasGatewayCaracterizacionTest {
     private static Object sinFechasDeConsulta(Object valor) {
         if (valor instanceof Map<?, ?> mapa) {
             mapa.keySet().removeIf(FECHAS_DE_CONSULTA::contains);
-            mapa.values().forEach(EstadisticasGatewayCaracterizacionTest::sinFechasDeConsulta);
+            mapa.values().forEach(EstadisticasCaracterizacionTest::sinFechasDeConsulta);
         } else if (valor instanceof Iterable<?> lista) {
-            lista.forEach(EstadisticasGatewayCaracterizacionTest::sinFechasDeConsulta);
+            lista.forEach(EstadisticasCaracterizacionTest::sinFechasDeConsulta);
         }
         return valor;
     }
@@ -157,7 +161,7 @@ class EstadisticasGatewayCaracterizacionTest {
     // Datos
     // ------------------------------------------------------------------------------------------
 
-    private static GestionarEstadisticasGatewayImplAdapter crearGateway() {
+    private static GestionarEstadisticasCUIntPort crearCasoDeUso() {
         ProgramaEntity sistemas = programa(1, "Ingeniería de Sistemas");
         ProgramaEntity electronica = programa(2, "Ingeniería Electrónica");
         ProgramaEntity civil = programa(3, "Ingeniería Civil"); // sin solicitudes
@@ -231,8 +235,9 @@ class EstadisticasGatewayCaracterizacionTest {
         UsuarioRepositoryInt usuarioRepository = mock(UsuarioRepositoryInt.class);
         when(usuarioRepository.buscarPorRol(2)).thenReturn(List.of(ana, beto, carla, dario, eva, sinPrograma));
 
-        return new GestionarEstadisticasGatewayImplAdapter(mock(EstadisticaRepositoryInt.class), programaRepository,
+        GestionarEstadisticasGatewayImplAdapter gateway = new GestionarEstadisticasGatewayImplAdapter(mock(EstadisticaRepositoryInt.class), programaRepository,
                 solicitudRepository, usuarioRepository, new ModelMapper());
+        return new GestionarEstadisticasCUAdapter(gateway, mock(FormateadorResultadosIntPort.class));
     }
 
     private static ProgramaEntity programa(int id, String nombre) {

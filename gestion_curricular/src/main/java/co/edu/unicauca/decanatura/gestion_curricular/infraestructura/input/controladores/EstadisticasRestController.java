@@ -109,7 +109,6 @@ public class EstadisticasRestController {
 
     /**
      * Obtiene estadísticas globales del sistema combinando todos los procesos.
-     * Utiliza SolicitudRepositoryInt para obtener conteos totales.
      * Acepta MÚLTIPLES FILTROS SIMULTÁNEOS (con AND).
      * 
      * @param proceso Tipo de proceso (opcional) - ej: "Reingreso", "Paz y Salvo", "Homologación"
@@ -234,7 +233,6 @@ public class EstadisticasRestController {
 
     /**
      * Obtiene estadísticas específicas por tipo de proceso.
-     * Utiliza SolicitudRepositoryInt para filtrar por tipo de solicitud.
      * 
      * @param tipoProceso Tipo de proceso (REINGRESO, HOMOLOGACION, ECAES, CURSO_VERANO, PAZ_SALVO)
      * @return ResponseEntity con estadísticas del proceso específico
@@ -248,7 +246,6 @@ public class EstadisticasRestController {
 
     /**
      * Obtiene estadísticas por estado de solicitud en todos los procesos.
-     * Utiliza SolicitudRepositoryInt para contar por estado.
      * 
      * @param estado Estado de la solicitud (EN_PROCESO, APROBADA, RECHAZADA, etc.)
      * @return ResponseEntity con estadísticas por estado
@@ -262,7 +259,6 @@ public class EstadisticasRestController {
 
     /**
      * Obtiene estadísticas por programa académico.
-     * Utiliza SolicitudRepositoryInt y ProgramaRepositoryInt para filtrar por programa.
      * 
      * @param idPrograma ID del programa académico
      * @return ResponseEntity con estadísticas del programa
@@ -276,7 +272,6 @@ public class EstadisticasRestController {
 
     /**
      * Obtiene estadísticas por período académico.
-     * Utiliza SolicitudRepositoryInt para filtrar por rango de fechas.
      * Ahora acepta tanto fechas como formato de período académico (YYYY-P).
      * 
      * @param periodoAcademico Período en formato "YYYY-P" (opcional, ej: "2024-2")
@@ -311,7 +306,6 @@ public class EstadisticasRestController {
 
     /**
      * Obtiene estadísticas combinadas por programa y período académico.
-     * Utiliza SolicitudRepositoryInt para filtrar por programa y fechas.
      * 
      * @param idPrograma ID del programa académico
      * @param fechaInicio Fecha de inicio del período
@@ -329,7 +323,6 @@ public class EstadisticasRestController {
 
     /**
      * Obtiene estadísticas detalladas por proceso y estado.
-     * Utiliza SolicitudRepositoryInt para filtrar por tipo de solicitud y estado.
      * 
      * @param tipoProceso Tipo de proceso
      * @param estado Estado de la solicitud
@@ -477,7 +470,6 @@ public class EstadisticasRestController {
     
     /**
      * Obtiene estadísticas de tendencias por período (comparación entre períodos).
-     * Utiliza SolicitudRepositoryInt para analizar tendencias temporales.
      * 
      * @param fechaInicio1 Fecha de inicio del primer período
      * @param fechaFin1 Fecha de fin del primer período
@@ -753,7 +745,6 @@ public class EstadisticasRestController {
 
     /**
      * Obtiene el número total de estudiantes registrados en el sistema.
-     * Utiliza UsuarioRepositoryInt para contar usuarios con rol de estudiante.
      * 
      * @return ResponseEntity con el conteo total de estudiantes
      */
@@ -767,7 +758,6 @@ public class EstadisticasRestController {
 
     /**
      * Obtiene la distribución de estudiantes por programa académico.
-     * Utiliza UsuarioRepositoryInt para contar estudiantes por programa.
      * 
      * @param periodoAcademico Período académico opcional (formato: "YYYY-P", ej: "2025-2")
      * @param idPrograma ID del programa académico opcional para filtrar

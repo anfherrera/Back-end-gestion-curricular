@@ -27,6 +27,8 @@ import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.pers
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.entidades.SolicitudCursoVeranoPreinscripcionEntity;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.entidades.SolicitudEntity;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.entidades.UsuarioEntity;
+import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.FormateadorResultadosIntPort;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.casosDeUso.GestionarEstadisticasCUAdapter;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.gateway.GestionarEstadisticasGatewayImplAdapter;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.repositorios.EstadisticaRepositoryInt;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.repositorios.ProgramaRepositoryInt;
@@ -55,7 +57,8 @@ class EstadisticasCursosVeranoCaracterizacionTest {
                 mock(EstadisticaRepositoryInt.class), mock(ProgramaRepositoryInt.class), solicitudRepository,
                 mock(UsuarioRepositoryInt.class), new ModelMapper());
 
-        Map<String, Object> resultado = gateway.obtenerEstadisticasCursosVerano(null, null);
+        Map<String, Object> resultado = new GestionarEstadisticasCUAdapter(gateway, mock(FormateadorResultadosIntPort.class))
+                .obtenerEstadisticasCursosVerano(null, null);
         resultado.remove("fechaConsulta");
         ((Map<?, ?>) resultado.get("predicciones")).remove("fechaPrediccion");
 
