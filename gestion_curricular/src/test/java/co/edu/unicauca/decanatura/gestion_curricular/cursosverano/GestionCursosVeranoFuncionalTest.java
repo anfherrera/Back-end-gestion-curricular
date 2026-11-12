@@ -557,6 +557,19 @@ class GestionCursosVeranoFuncionalTest {
                 .andExpect(jsonPath("$.estudiantes[2].id_solicitud_inscripcion").hasJsonPath())
                 .andExpect(jsonPath("$.estudiantes[2].id_solicitud_inscripcion").doesNotExist());
 
+        byte[] respuesta = mockMvc.perform(get("/api/cursos-intersemestrales/inscripciones")
+                        .header("Authorization", tokenCoordinador))
+                .andExpect(status().isOk())
+                .andReturn().getResponse().getContentAsByteArray();
+        var fila = java.util.stream.StreamSupport.stream(new com.fasterxml.jackson.databind.ObjectMapper()
+                        .readTree(respuesta).spliterator(), false)
+                .filter(inscripcion -> inscripcion.path("id").asInt() == 902)
+                .findFirst().orElseThrow();
+        assertThat(fila.path("cursoId").asInt()).isEqualTo(901);
+        assertThat(fila.path("estudiante").path("id_usuario").asInt()).isEqualTo(1);
+        assertThat(fila.path("archivoPago").path("nombre").asText()).isEqualTo("Sin comprobante");
+        assertThat(fila.path("archivoPago").path("url").isNull()).isTrue();
+
         byte[] pdf = mockMvc.perform(get("/api/cursos-intersemestrales/cursos-verano/901/estudiantes/export/pdf")
                         .header("Authorization", tokenCoordinador))
                 .andExpect(status().isOk())

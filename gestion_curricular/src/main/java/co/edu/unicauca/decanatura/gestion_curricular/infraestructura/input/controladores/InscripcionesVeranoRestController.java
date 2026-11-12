@@ -48,7 +48,7 @@ public class InscripcionesVeranoRestController {
      */
     @PreAuthorize("@autorizacion.esStaff() or #peticion.idUsuario == null or @autorizacion.esUsuarioActual(#peticion.idUsuario)")
     @PostMapping("/cursos-verano/inscripciones")
-    public ResponseEntity<Map<String, Object>> crearInscripcion(@RequestBody PreinscripcionCursoVeranoDTOPeticion peticion) {
+    public ResponseEntity<?> crearInscripcion(@RequestBody PreinscripcionCursoVeranoDTOPeticion peticion) {
         
         SolicitudCursoVeranoPreinscripcion preinscripcionAprobada =
                 solicitudCU.buscarPreinscripcionAprobada(peticion.getIdUsuario(), peticion.getIdCurso());
@@ -105,18 +105,13 @@ public class InscripcionesVeranoRestController {
             // No fallar la operacion por esto
         }
         
-        // 5. Preparar respuesta exitosa
-        Map<String, Object> respuesta = new HashMap<>();
-        respuesta.put("success", true);
-        respuesta.put("message", "Inscripcion creada exitosamente");
-        respuesta.put("id_solicitud", inscripcionGuardada.getId_solicitud());
-        respuesta.put("id_usuario", peticion.getIdUsuario());
-        respuesta.put("id_curso", peticion.getIdCurso());
-        respuesta.put("nombre_solicitud", peticion.getNombreSolicitud());
-        respuesta.put("fecha_inscripcion", inscripcionGuardada.getFecha_registro_solicitud());
-        respuesta.put("estado", "Inscrito");
-        
-        return ResponseEntity.ok(respuesta);
+        return ResponseEntity.ok(new InscripcionCreada(true, "Inscripcion creada exitosamente",
+                inscripcionGuardada.getId_solicitud(), peticion.getIdUsuario(), peticion.getIdCurso(),
+                peticion.getNombreSolicitud(), inscripcionGuardada.getFecha_registro_solicitud(), "Inscrito"));
+    }
+
+    record InscripcionCreada(boolean success, String message, Integer id_solicitud, Integer id_usuario,
+                             Integer id_curso, String nombre_solicitud, java.util.Date fecha_inscripcion, String estado) {
     }
 
     /**
@@ -125,44 +120,42 @@ public class InscripcionesVeranoRestController {
      */
     @PreAuthorize("hasAnyRole(" + Autorizacion.ROLES_STAFF + ")")
     @GetMapping("/inscripciones")
-    public ResponseEntity<List<Map<String, Object>>> obtenerInscripciones() {
-        // Antes se leían claves que nunca existían y se rellenaba el estudiante con datos inventados
-        List<Map<String, Object>> inscripciones = new ArrayList<>();
+    public ResponseEntity<List<InscripcionListado>> obtenerInscripciones() {
+        List<InscripcionListado> inscripciones = new ArrayList<>();
         for (Solicitud solicitud : solicitudGeneralCU.listarSolicitudes()) {
             if (!(solicitud instanceof SolicitudCursoVeranoIncripcion inscripcion)) {
                 continue;
             }
-            Map<String, Object> fila = new HashMap<>();
-            fila.put("id", inscripcion.getId_solicitud());
-            fila.put("fecha", inscripcion.getFecha_registro_solicitud());
+
             List<EstadoSolicitud> estados = inscripcion.getEstadosSolicitud();
-            fila.put("estado", estados != null && !estados.isEmpty()
-                    ? estados.get(estados.size() - 1).getEstado_actual() : null);
-            fila.put("cursoId", inscripcion.getObjCursoOfertadoVerano() != null
-                    ? inscripcion.getObjCursoOfertadoVerano().getId_curso() : null);
-
+            String estado = estados != null && !estados.isEmpty()
+                    ? estados.get(estados.size() - 1).getEstado_actual() : null;
+            var curso = inscripcion.getObjCursoOfertadoVerano();
             Usuario usuario = inscripcion.getObjUsuario();
-            fila.put("estudianteId", usuario != null ? usuario.getId_usuario() : null);
-            Map<String, Object> estudiante = new HashMap<>();
-            estudiante.put("id_usuario", usuario != null ? usuario.getId_usuario() : null);
-            estudiante.put("nombre", usuario != null ? usuario.getNombre_completo() : inscripcion.getNombre_estudiante());
-            estudiante.put("email", usuario != null ? usuario.getCorreo() : null);
-            estudiante.put("codigo_estudiante", usuario != null ? usuario.getCodigo() : null);
-            fila.put("estudiante", estudiante);
+            Integer idUsuario = usuario == null ? null : usuario.getId_usuario();
+            var estudiante = new EstudianteInscripcion(idUsuario,
+                    usuario == null ? inscripcion.getNombre_estudiante() : usuario.getNombre_completo(),
+                    usuario == null ? null : usuario.getCorreo(), usuario == null ? null : usuario.getCodigo());
 
-            // Comprobante de pago: el primer documento adjunto a la inscripcion, si hay
-            Map<String, Object> archivoPago = new HashMap<>();
-            Documento comprobante = inscripcion.getDocumentos() != null && !inscripcion.getDocumentos().isEmpty()
-                    ? inscripcion.getDocumentos().get(0) : null;
-            archivoPago.put("id_documento", comprobante != null ? comprobante.getId_documento() : null);
-            archivoPago.put("nombre", comprobante != null ? comprobante.getNombre() : "Sin comprobante");
-            archivoPago.put("url", null);
-            archivoPago.put("fecha", comprobante != null ? comprobante.getFecha_documento() : null);
-            fila.put("archivoPago", archivoPago);
-
-            inscripciones.add(fila);
+            var documentos = inscripcion.getDocumentos();
+            Documento comprobante = documentos == null || documentos.isEmpty() ? null : documentos.get(0);
+            var archivoPago = new ArchivoPago(comprobante == null ? null : comprobante.getId_documento(),
+                    comprobante == null ? "Sin comprobante" : comprobante.getNombre(), null,
+                    comprobante == null ? null : comprobante.getFecha_documento());
+            inscripciones.add(new InscripcionListado(inscripcion.getId_solicitud(), inscripcion.getFecha_registro_solicitud(),
+                    estado, curso == null ? null : curso.getId_curso(), idUsuario, estudiante, archivoPago));
         }
         return ResponseEntity.ok(inscripciones);
+    }
+
+    record InscripcionListado(Integer id, java.util.Date fecha, String estado, Integer cursoId,
+                               Integer estudianteId, EstudianteInscripcion estudiante, ArchivoPago archivoPago) {
+    }
+
+    record EstudianteInscripcion(Integer id_usuario, String nombre, String email, String codigo_estudiante) {
+    }
+
+    record ArchivoPago(Integer id_documento, String nombre, String url, java.util.Date fecha) {
     }
 
     /**
