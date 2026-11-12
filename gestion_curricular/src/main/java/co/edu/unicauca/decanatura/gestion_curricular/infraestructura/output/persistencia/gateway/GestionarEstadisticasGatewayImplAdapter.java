@@ -2,10 +2,12 @@ package co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.per
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.function.Supplier;
 
-import org.hibernate.Hibernate;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -24,18 +26,17 @@ import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.SolicitudHo
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.SolicitudPazYSalvo;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.SolicitudReingreso;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Usuario;
-import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.entidades.CursoOfertadoVeranoEntity;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.entidades.EstadisticaEntity;
-import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.entidades.EstadoSolicitudEntity;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.entidades.ProgramaEntity;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.entidades.SolicitudCursoVeranoInscripcionEntity;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.entidades.SolicitudCursoVeranoPreinscripcionEntity;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.entidades.SolicitudEcaesEntity;
-import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.entidades.SolicitudEntity;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.entidades.SolicitudHomologacionEntity;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.entidades.SolicitudPazYSalvoEntity;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.entidades.SolicitudReingresoEntity;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.entidades.UsuarioEntity;
+import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.proyecciones.FilaEstadoEstadistica;
+import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.proyecciones.FilaSolicitudEstadistica;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.repositorios.EstadisticaRepositoryInt;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.repositorios.ProgramaRepositoryInt;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.repositorios.SolicitudRepositoryInt;
@@ -165,12 +166,17 @@ public class GestionarEstadisticasGatewayImplAdapter implements GestionarEstadis
     @Override
     @Transactional(readOnly = true)
     public List<Solicitud> listarSolicitudesConEstadosYUsuario() {
-        // Una sola consulta con estados, usuario y programa; el curso y su materia se leen dentro de la transacción
-        List<SolicitudEntity> entidades = solicitudRepository.buscarTodasConEstadosYUsuario();
-        if (entidades == null) {
-            return new ArrayList<>();
+        // Dos consultas de columnas sueltas (solicitudes y estados) en lugar de cargar las entidades completas
+        Map<Integer, List<EstadoSolicitud>> estadosPorSolicitud = new HashMap<>();
+        for (FilaEstadoEstadistica fila : solicitudRepository.buscarEstadosParaEstadisticas()) {
+            EstadoSolicitud estado = new EstadoSolicitud();
+            estado.setEstado_actual(fila.estado());
+            estado.setFecha_registro_estado(fila.fecha());
+            estadosPorSolicitud.computeIfAbsent(fila.idSolicitud(), id -> new ArrayList<>()).add(estado);
         }
-        return entidades.stream().map(GestionarEstadisticasGatewayImplAdapter::aDominio).toList();
+        return solicitudRepository.buscarSolicitudesParaEstadisticas().stream()
+                .map(fila -> aDominio(fila, estadosPorSolicitud.getOrDefault(fila.idSolicitud(), new ArrayList<>())))
+                .toList();
     }
 
     @Override
@@ -231,47 +237,40 @@ public class GestionarEstadisticasGatewayImplAdapter implements GestionarEstadis
     // Conversión a modelos de dominio: solo los campos que usan las estadísticas, sin referencias de vuelta
     // ------------------------------------------------------------------------------------------
 
-    /** La solicitud conserva su subtipo, que es lo que define su proceso (ver TipoProcesoSolicitud). */
-    private static Solicitud aDominio(SolicitudEntity entidad) {
-        Object real = Hibernate.unproxy(entidad);
-        Solicitud solicitud;
-        if (real instanceof SolicitudHomologacionEntity) {
-            solicitud = new SolicitudHomologacion();
-        } else if (real instanceof SolicitudPazYSalvoEntity) {
-            solicitud = new SolicitudPazYSalvo();
-        } else if (real instanceof SolicitudReingresoEntity) {
-            solicitud = new SolicitudReingreso();
-        } else if (real instanceof SolicitudCursoVeranoPreinscripcionEntity) {
-            solicitud = new SolicitudCursoVeranoPreinscripcion();
-        } else if (real instanceof SolicitudCursoVeranoInscripcionEntity) {
-            solicitud = new SolicitudCursoVeranoIncripcion();
-        } else if (real instanceof SolicitudEcaesEntity) {
-            solicitud = new SolicitudEcaes();
-        } else {
-            solicitud = new Solicitud();
-        }
+    /** Subtipo de solicitud de dominio para cada clase de entidad: es lo que define su proceso (ver TipoProcesoSolicitud). */
+    private static final Map<Class<?>, Supplier<Solicitud>> SUBTIPOS = Map.of(
+            SolicitudHomologacionEntity.class, SolicitudHomologacion::new,
+            SolicitudPazYSalvoEntity.class, SolicitudPazYSalvo::new,
+            SolicitudReingresoEntity.class, SolicitudReingreso::new,
+            SolicitudCursoVeranoPreinscripcionEntity.class, SolicitudCursoVeranoPreinscripcion::new,
+            SolicitudCursoVeranoInscripcionEntity.class, SolicitudCursoVeranoIncripcion::new,
+            SolicitudEcaesEntity.class, SolicitudEcaes::new);
 
-        solicitud.setId_solicitud(entidad.getId_solicitud());
-        solicitud.setNombre_solicitud(entidad.getNombre_solicitud());
-        solicitud.setPeriodo_academico(entidad.getPeriodo_academico());
-        solicitud.setFecha_registro_solicitud(entidad.getFecha_registro_solicitud());
-
-        List<EstadoSolicitud> estados = new ArrayList<>();
-        if (entidad.getEstadosSolicitud() != null) {
-            for (EstadoSolicitudEntity e : entidad.getEstadosSolicitud()) {
-                EstadoSolicitud estado = new EstadoSolicitud();
-                estado.setEstado_actual(e.getEstado_actual());
-                estado.setFecha_registro_estado(e.getFecha_registro_estado());
-                estados.add(estado);
-            }
-        }
+    private static Solicitud aDominio(FilaSolicitudEstadistica fila, List<EstadoSolicitud> estados) {
+        Solicitud solicitud = SUBTIPOS.getOrDefault(fila.tipo(), Solicitud::new).get();
+        solicitud.setId_solicitud(fila.idSolicitud());
+        solicitud.setNombre_solicitud(fila.nombre());
+        solicitud.setPeriodo_academico(fila.periodoAcademico());
+        solicitud.setFecha_registro_solicitud(fila.fechaRegistro());
         solicitud.setEstadosSolicitud(estados);
 
-        if (entidad.getObjUsuario() != null) {
-            solicitud.setObjUsuario(aDominio(entidad.getObjUsuario()));
+        if (fila.idUsuario() != null) {
+            Usuario usuario = new Usuario();
+            usuario.setId_usuario(fila.idUsuario());
+            usuario.setNombre_completo(fila.nombreUsuario());
+            if (fila.idPrograma() != null) {
+                usuario.setObjPrograma(new Programa(fila.idPrograma(), fila.codigoPrograma(), fila.nombrePrograma()));
+            }
+            solicitud.setObjUsuario(usuario);
         }
-        if (entidad.getObjCursoOfertadoVerano() != null) {
-            solicitud.setObjCursoOfertadoVerano(aDominio(entidad.getObjCursoOfertadoVerano()));
+        if (fila.idCurso() != null) {
+            CursoOfertadoVerano curso = new CursoOfertadoVerano();
+            curso.setId_curso(fila.idCurso());
+            curso.setPeriodo_academico(fila.periodoCurso());
+            if (fila.idMateria() != null) {
+                curso.setObjMateria(new Materia(fila.idMateria(), fila.codigoMateria(), fila.nombreMateria(), null));
+            }
+            solicitud.setObjCursoOfertadoVerano(curso);
         }
         return solicitud;
     }
@@ -288,19 +287,5 @@ public class GestionarEstadisticasGatewayImplAdapter implements GestionarEstadis
 
     private static Programa aDominio(ProgramaEntity entidad) {
         return new Programa(entidad.getId_programa(), entidad.getCodigo(), entidad.getNombre_programa());
-    }
-
-    private static CursoOfertadoVerano aDominio(CursoOfertadoVeranoEntity entidad) {
-        CursoOfertadoVerano curso = new CursoOfertadoVerano();
-        curso.setId_curso(entidad.getId_curso());
-        curso.setPeriodo_academico(entidad.getPeriodo_academico());
-        if (entidad.getObjMateria() != null) {
-            Materia materia = new Materia();
-            materia.setId_materia(entidad.getObjMateria().getId_materia());
-            materia.setCodigo(entidad.getObjMateria().getCodigo());
-            materia.setNombre(entidad.getObjMateria().getNombre());
-            curso.setObjMateria(materia);
-        }
-        return curso;
     }
 }

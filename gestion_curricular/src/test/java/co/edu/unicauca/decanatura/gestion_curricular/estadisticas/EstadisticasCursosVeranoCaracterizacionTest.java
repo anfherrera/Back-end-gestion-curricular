@@ -52,7 +52,7 @@ class EstadisticasCursosVeranoCaracterizacionTest {
     @DisplayName("La respuesta (resumen, tendencias, predicciones y recomendaciones) no cambia")
     void respuestaFijada() throws Exception {
         SolicitudRepositoryInt solicitudRepository = mock(SolicitudRepositoryInt.class);
-        when(solicitudRepository.buscarTodasConEstadosYUsuario()).thenReturn(datos());
+        FilasEstadisticas.simular(solicitudRepository, datos());
         GestionarEstadisticasGatewayImplAdapter gateway = new GestionarEstadisticasGatewayImplAdapter(
                 mock(EstadisticaRepositoryInt.class), mock(ProgramaRepositoryInt.class), solicitudRepository,
                 mock(UsuarioRepositoryInt.class), new ModelMapper());

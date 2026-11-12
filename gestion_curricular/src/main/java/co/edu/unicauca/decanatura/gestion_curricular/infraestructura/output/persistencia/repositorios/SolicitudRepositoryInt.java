@@ -10,19 +10,34 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.entidades.SolicitudEntity;
+import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.proyecciones.FilaEstadoEstadistica;
+import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.proyecciones.FilaSolicitudEstadistica;
 
 @Repository
 public interface SolicitudRepositoryInt extends JpaRepository<SolicitudEntity, Integer>{
 
     /**
-     * Todas las solicitudes con sus estados, usuario y programa en una sola consulta
-     * (evita el problema N+1 en las estadísticas).
+     * Para las estadísticas: cada solicitud con su tipo, usuario, programa, curso y materia, como columnas
+     * sueltas. Junto con {@link #buscarEstadosParaEstadisticas()} reemplaza cargar las entidades completas.
      */
-    @Query("SELECT DISTINCT s FROM SolicitudEntity s " +
-           "LEFT JOIN FETCH s.estadosSolicitud " +
-           "LEFT JOIN FETCH s.objUsuario u " +
-           "LEFT JOIN FETCH u.objPrograma")
-    List<SolicitudEntity> buscarTodasConEstadosYUsuario();
+    @Query("SELECT new co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.proyecciones.FilaSolicitudEstadistica(" +
+           "s.id_solicitud, TYPE(s), s.nombre_solicitud, s.periodo_academico, s.fecha_registro_solicitud, " +
+           "u.id_usuario, u.nombre_completo, p.id_programa, p.codigo, p.nombre_programa, " +
+           "c.id_curso, c.periodo_academico, m.id_materia, m.codigo, m.nombre) " +
+           "FROM SolicitudEntity s " +
+           "LEFT JOIN s.objUsuario u " +
+           "LEFT JOIN u.objPrograma p " +
+           "LEFT JOIN s.objCursoOfertadoVerano c " +
+           "LEFT JOIN c.objMateria m " +
+           "ORDER BY s.id_solicitud")
+    List<FilaSolicitudEstadistica> buscarSolicitudesParaEstadisticas();
+
+    /** Para las estadísticas: todos los cambios de estado, en el orden en que se registraron. */
+    @Query("SELECT new co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.proyecciones.FilaEstadoEstadistica(" +
+           "e.objSolicitud.id_solicitud, e.estado_actual, e.fecha_registro_estado) " +
+           "FROM EstadoSolicitudEntity e " +
+           "ORDER BY e.id_estado")
+    List<FilaEstadoEstadistica> buscarEstadosParaEstadisticas();
 
     @Query("SELECT s.nombre_solicitud FROM SolicitudEntity s")
     Set<String> buscarNombresSolicitudes();

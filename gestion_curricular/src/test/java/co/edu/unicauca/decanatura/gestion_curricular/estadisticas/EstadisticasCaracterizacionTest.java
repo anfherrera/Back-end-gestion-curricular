@@ -212,7 +212,7 @@ class EstadisticasCaracterizacionTest {
                 estado("Pago_Rechazado", 2025, 7, 8)));
 
         SolicitudRepositoryInt solicitudRepository = mock(SolicitudRepositoryInt.class);
-        when(solicitudRepository.buscarTodasConEstadosYUsuario()).thenReturn(solicitudes);
+        FilasEstadisticas.simular(solicitudRepository, solicitudes);
         // Conteos de la base de datos (estadísticas globales)
         when(solicitudRepository.contarEstado("APROBADA")).thenReturn(4);
         when(solicitudRepository.contarEstado("RECHAZADA")).thenReturn(4);
