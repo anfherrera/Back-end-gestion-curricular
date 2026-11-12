@@ -150,11 +150,20 @@ El artefacto empaquetado queda en `gestion_curricular/target/gestion_curricular-
 
 
 
-## Testing
+## Pruebas
 
 ```bash
-mvn test
+cd gestion_curricular
+./mvnw test
 ```
+
+Compila y pasa las pruebas con Java 17 (producción) y Java 25. GitHub Actions corre la suite con ambas versiones
+en cada push y en cada pull request a `main` (`.github/workflows/pruebas.yml`); un pull request con pruebas en rojo
+no debería fusionarse.
+
+Algunas pruebas comparan la respuesta completa de las estadísticas con archivos de referencia en
+`src/test/resources/referencias/`. Si un cambio en la respuesta es intencional, se regraban con
+`./mvnw test -Dtest='*CaracterizacionTest' -DgrabarReferencia=true` y se revisa el diff antes de hacer commit.
 
 ## Autores
 
