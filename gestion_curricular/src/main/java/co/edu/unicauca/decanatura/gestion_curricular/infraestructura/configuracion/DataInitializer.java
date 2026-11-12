@@ -9,6 +9,7 @@ import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Rol;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Usuario;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.core.annotation.Order;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -30,6 +31,9 @@ public class DataInitializer implements CommandLineRunner {
     private final GestionarUsuarioCUIntPort usuarioCU;
     private final PasswordEncoder passwordEncoder;
 
+    @Value("${app.bootstrap-admin.cedula:}")
+    private String cedulaAdministrador;
+
     @Override
     public void run(String... args) throws Exception {
         // Esperar un poco para asegurar que la BD esté lista
@@ -43,6 +47,9 @@ public class DataInitializer implements CommandLineRunner {
             Usuario adminExistente = usuarioGateway.buscarUsuarioPorCorreo("admin@unicauca.edu.co");
             
             if (adminExistente == null) {
+                if (cedulaAdministrador.isBlank()) {
+                    return;
+                }
                 
                 // Verificar que el rol y programa existan
                 Rol rolAdmin = rolGateway.bucarRolPorId(1);
@@ -61,6 +68,7 @@ public class DataInitializer implements CommandLineRunner {
                 // Crear el usuario administrador usando el caso de uso
                 Usuario admin = new Usuario();
                 admin.setCodigo("ADMIN001");
+                admin.setCedula(cedulaAdministrador);
                 admin.setNombre_completo("Administrador del Sistema");
                 admin.setCorreo("admin@unicauca.edu.co");
                 admin.setPassword("password123"); // El caso de uso lo hashea automáticamente
@@ -105,7 +113,8 @@ public class DataInitializer implements CommandLineRunner {
                     }
                 }
             }
-        } catch (Exception e) {
+        } catch (RuntimeException e) {
+            log.warn("No se pudo inicializar la cuenta de administrador", e);
         }
     }
 }

@@ -16,17 +16,17 @@ import org.junit.jupiter.api.Test;
 
 /**
  * El dominio y los puertos (aplicacion) no deben depender de infraestructura, de la configuración
- * de seguridad ni de Spring. Revisa los imports y los nombres calificados en el código fuente.
+ * de seguridad ni de Spring o JPA. Revisa los imports y los nombres calificados en el código fuente.
  */
 @DisplayName("Arquitectura hexagonal - dependencias del núcleo")
 class ArquitecturaHexagonalTest {
 
     private static final Path RAIZ = Path.of("src/main/java/co/edu/unicauca/decanatura/gestion_curricular");
     private static final Pattern PROHIBIDO = Pattern.compile(
-            "gestion_curricular\\.infraestructura\\.|gestion_curricular\\.Security\\.|org\\.springframework\\.");
+            "gestion_curricular\\.infraestructura\\.|gestion_curricular\\.Security\\.|org\\.springframework\\.|jakarta\\.persistence\\.");
 
     @Test
-    @DisplayName("dominio/ y aplicacion/ no importan infraestructura, Security ni Spring")
+    @DisplayName("dominio/ y aplicacion/ no importan infraestructura, Security, Spring ni JPA")
     void nucleoSinDependenciasHaciaAfuera() throws IOException {
         List<String> violaciones = new ArrayList<>();
         for (String capa : List.of("dominio", "aplicacion")) {
