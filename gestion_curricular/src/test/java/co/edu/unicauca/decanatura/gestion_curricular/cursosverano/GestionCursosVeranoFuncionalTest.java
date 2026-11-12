@@ -3,6 +3,8 @@ package co.edu.unicauca.decanatura.gestion_curricular.cursosverano;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.itextpdf.text.pdf.PdfReader;
+import com.itextpdf.text.pdf.parser.PdfTextExtractor;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.entidades.ProgramaEntity;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.entidades.RolEntity;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.entidades.UsuarioEntity;
@@ -23,6 +25,7 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -536,12 +539,36 @@ class GestionCursosVeranoFuncionalTest {
                 .andExpect(jsonPath("$.estudiantes[0].id_usuario").value(26))
                 .andExpect(jsonPath("$.estudiantes[0].tiene_preinscripcion").value(false))
                 .andExpect(jsonPath("$.estudiantes[0].estado_inscripcion").value("Enviada"))
+                .andExpect(jsonPath("$.estudiantes[0].estado_preinscripcion").hasJsonPath())
+                .andExpect(jsonPath("$.estudiantes[0].estado_preinscripcion").doesNotExist())
+                .andExpect(jsonPath("$.estudiantes[0].fecha_inscripcion").exists())
+                .andExpect(jsonPath("$.estudiantes[0].fecha_preinscripcion").doesNotHaveJsonPath())
+                .andExpect(jsonPath("$.estudiantes[0].tiene_inscripcion").doesNotHaveJsonPath())
                 .andExpect(jsonPath("$.estudiantes[1].id_usuario").value(1))
                 .andExpect(jsonPath("$.estudiantes[1].id_solicitud_inscripcion").value(902))
                 .andExpect(jsonPath("$.estudiantes[1].tipo").value("Inscrito"))
+                .andExpect(jsonPath("$.estudiantes[1].id_programa").value(1))
+                .andExpect(jsonPath("$.estudiantes[1].tiene_inscripcion").value(true))
+                .andExpect(jsonPath("$.estudiantes[1].fecha_inscripcion").doesNotHaveJsonPath())
+                .andExpect(jsonPath("$.estudiantes[1].tiene_preinscripcion").doesNotHaveJsonPath())
                 .andExpect(jsonPath("$.estudiantes[2].id_usuario").value(5))
                 .andExpect(jsonPath("$.estudiantes[2].estado_inscripcion").value("Sin inscripción"))
-                .andExpect(jsonPath("$.estudiantes[2].tipo").value("Preinscrito"));
+                .andExpect(jsonPath("$.estudiantes[2].tipo").value("Preinscrito"))
+                .andExpect(jsonPath("$.estudiantes[2].id_solicitud_inscripcion").hasJsonPath())
+                .andExpect(jsonPath("$.estudiantes[2].id_solicitud_inscripcion").doesNotExist());
+
+        byte[] pdf = mockMvc.perform(get("/api/cursos-intersemestrales/cursos-verano/901/estudiantes/export/pdf")
+                        .header("Authorization", tokenCoordinador))
+                .andExpect(status().isOk())
+                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_PDF))
+                .andReturn().getResponse().getContentAsByteArray();
+        PdfReader lector = new PdfReader(pdf);
+        try {
+            assertThat(PdfTextExtractor.getTextFromPage(lector, 1))
+                    .contains("REF901", "Total Estudiantes: 3", "Juan Pérez", "Pago_Validado");
+        } finally {
+            lector.close();
+        }
     }
 
     private void registrarMateriaYDocenteDePrueba() {

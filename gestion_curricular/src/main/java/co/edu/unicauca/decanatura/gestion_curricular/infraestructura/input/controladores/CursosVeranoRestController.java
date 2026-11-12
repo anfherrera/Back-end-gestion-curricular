@@ -24,6 +24,11 @@ import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.CursoOferta
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.SolicitudCursoVeranoPreinscripcion;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Enums.PeriodoAcademicoEnum;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.DTORespuesta.CursosOfertadosDTORespuesta;
+import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.DTORespuesta.EstudiantesCursoVeranoDTORespuesta;
+import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.DTORespuesta.EstudiantesCursoVeranoDTORespuesta.Estudiante;
+import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.DTORespuesta.EstudiantesCursoVeranoDTORespuesta.InscripcionSinPreinscripcion;
+import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.DTORespuesta.EstudiantesCursoVeranoDTORespuesta.Preinscripcion;
+import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.DTORespuesta.EstudiantesCursoVeranoDTORespuesta.Programa;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.DTOPeticion.CreateCursoDTO;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.DTOPeticion.UpdateCursoDTO;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.mappers.CursosOfertadosMapperDominio;
@@ -661,59 +666,39 @@ public class CursosVeranoRestController {
      */
     @GetMapping("/cursos-verano/{idCurso}/estudiantes")
     @PreAuthorize("hasAnyRole('Funcionario', 'Coordinador', 'Administrador')")
-    public ResponseEntity<Map<String, Object>> obtenerEstudiantesDelCurso(
-            @PathVariable Integer idCurso) {
-        
+    public ResponseEntity<EstudiantesCursoVeranoDTORespuesta> obtenerEstudiantesDelCurso(@PathVariable Integer idCurso) {
+        return ResponseEntity.ofNullable(datosEstudiantesDelCurso(idCurso));
+    }
+
+    private EstudiantesCursoVeranoDTORespuesta datosEstudiantesDelCurso(Integer idCurso) {
         CursoOfertadoVerano curso = cursoCU.obtenerCursoPorId(idCurso);
         if (curso == null) {
-            return ResponseEntity.notFound().build();
+            return null;
         }
 
         var listado = solicitudCU.listarEstudiantesPorCurso(idCurso);
-        Map<String, Object> respuesta = new HashMap<>();
-        respuesta.put("id_curso", idCurso);
-        respuesta.put("nombre_curso", curso.getObjMateria() != null ? curso.getObjMateria().getNombre() : "N/A");
-        respuesta.put("codigo_curso", curso.getObjMateria() != null ? curso.getObjMateria().getCodigo() : "N/A");
-        respuesta.put("cupo_estimado", curso.getCupo_estimado());
-        respuesta.put("total_estudiantes", listado.estudiantes().size());
-        respuesta.put("total_preinscritos", listado.totalPreinscritos());
-        respuesta.put("total_inscritos", listado.totalInscritos());
-        respuesta.put("estudiantes", listado.estudiantes().stream().map(this::mapearEstudiante).toList());
-        return ResponseEntity.ok(respuesta);
+        var materia = curso.getObjMateria();
+        return new EstudiantesCursoVeranoDTORespuesta(idCurso, materia == null ? "N/A" : materia.getNombre(),
+                materia == null ? "N/A" : materia.getCodigo(), curso.getCupo_estimado(), listado.estudiantes().size(),
+                listado.totalPreinscritos(), listado.totalInscritos(),
+                listado.estudiantes().stream().map(this::mapearEstudiante).toList());
     }
 
-    private Map<String, Object> mapearEstudiante(EstudianteCurso estudiante) {
+    private Estudiante mapearEstudiante(EstudianteCurso estudiante) {
         var usuario = estudiante.usuario();
         var preinscripcion = estudiante.preinscripcion();
         var inscripcion = estudiante.inscripcion();
-        Map<String, Object> datos = new HashMap<>();
-        datos.put("id_usuario", usuario.getId_usuario());
-        datos.put("nombre_completo", usuario.getNombre_completo());
-        datos.put("codigo", usuario.getCodigo());
-        datos.put("correo", usuario.getCorreo());
-        if (usuario.getObjPrograma() != null) {
-            datos.put("programa", usuario.getObjPrograma().getNombre_programa());
-            datos.put("id_programa", usuario.getObjPrograma().getId_programa());
-        }
-
-        datos.put("estado_preinscripcion", estudiante.estadoPreinscripcion());
-        datos.put("estado_inscripcion", estudiante.estadoInscripcion());
-        datos.put("id_solicitud_inscripcion", inscripcion == null ? null : inscripcion.getId_solicitud());
-        datos.put("tipo", estudiante.inscrito() ? "Inscrito" : "Preinscrito");
-        if (preinscripcion != null) {
-            datos.put("fecha_preinscripcion", preinscripcion.getFecha_registro_solicitud());
-            datos.put("id_solicitud_preinscripcion", preinscripcion.getId_solicitud());
-            datos.put("tiene_inscripcion", inscripcion != null);
-        } else {
-            datos.put("fecha_inscripcion", inscripcion.getFecha_registro_solicitud());
-            datos.put("tiene_preinscripcion", false);
-        }
-
+        var programa = usuario.getObjPrograma();
         var condicion = preinscripcion != null ? preinscripcion.getCodicion_solicitud() : inscripcion.getCodicion_solicitud();
-        if (condicion != null) {
-            datos.put("condicion", condicion.toString());
-        }
-        return datos;
+
+        return new Estudiante(usuario.getId_usuario(), usuario.getNombre_completo(), usuario.getCodigo(), usuario.getCorreo(),
+                estudiante.estadoPreinscripcion(), estudiante.estadoInscripcion(),
+                inscripcion == null ? null : inscripcion.getId_solicitud(), estudiante.inscrito() ? "Inscrito" : "Preinscrito",
+                condicion == null ? null : condicion.toString(),
+                programa == null ? null : new Programa(programa.getId_programa(), programa.getNombre_programa()),
+                preinscripcion == null ? null : new Preinscripcion(preinscripcion.getFecha_registro_solicitud(),
+                        preinscripcion.getId_solicitud(), inscripcion != null),
+                preinscripcion == null ? new InscripcionSinPreinscripcion(inscripcion.getFecha_registro_solicitud(), false) : null);
     }
 
     /**
@@ -766,15 +751,12 @@ public class CursosVeranoRestController {
     public ResponseEntity<byte[]> exportarEstudiantesCursoPDF(
             @PathVariable Integer idCurso) {
         
-        ResponseEntity<Map<String, Object>> estudiantesResponse = obtenerEstudiantesDelCurso(idCurso);
-        
-        if (estudiantesResponse.getStatusCode() != HttpStatus.OK || estudiantesResponse.getBody() == null) {
+        EstudiantesCursoVeranoDTORespuesta datos = datosEstudiantesDelCurso(idCurso);
+        if (datos == null) {
             log.error("No se pudieron obtener los estudiantes para generar el PDF");
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+            return ResponseEntity.internalServerError().build();
         }
-        
-        Map<String, Object> datos = estudiantesResponse.getBody();
-        
+
         // Generar PDF
         byte[] pdfBytes = generadorPdf.generarPDFEstudiantesCurso(datos);
         
@@ -782,7 +764,7 @@ public class CursosVeranoRestController {
         headers.setContentType(MediaType.APPLICATION_PDF);
         
         // Nombre del archivo
-        String nombreCurso = (String) datos.get("codigo_curso");
+        String nombreCurso = datos.codigoCurso();
         if (nombreCurso == null || nombreCurso.isEmpty()) {
             nombreCurso = "curso_" + idCurso;
         }

@@ -1,6 +1,5 @@
 package co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.formateador;
 
-import org.springframework.web.bind.annotation.*;
 import lombok.extern.slf4j.Slf4j;
 import java.io.ByteArrayOutputStream;
 import java.text.SimpleDateFormat;
@@ -8,8 +7,8 @@ import java.util.Date;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Enums.PeriodoAcademicoEnum;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.DTORespuesta.CursosOfertadosDTORespuesta;
 import java.util.List;
-import java.util.Map;
-import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.formateador.GeneradorPdfCursosVerano;
+import java.util.Objects;
+import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.DTORespuesta.EstudiantesCursoVeranoDTORespuesta;
 import org.springframework.stereotype.Component;
 
 /** Genera los PDF de cursos de verano (listado de cursos y estudiantes de un curso). */
@@ -143,8 +142,7 @@ public class GeneradorPdfCursosVerano {
     /**
      * Genera un PDF con la lista de estudiantes del curso
      */
-    @SuppressWarnings("unchecked")
-    public byte[] generarPDFEstudiantesCurso(Map<String, Object> datos) {
+    public byte[] generarPDFEstudiantesCurso(EstudiantesCursoVeranoDTORespuesta datos) {
         
         ByteArrayOutputStream baos = null;
         com.itextpdf.text.Document document = null;
@@ -159,8 +157,8 @@ public class GeneradorPdfCursosVerano {
             // Título principal
             com.itextpdf.text.Font titleFont = new com.itextpdf.text.Font(
                     com.itextpdf.text.Font.FontFamily.HELVETICA, 18, com.itextpdf.text.Font.BOLD);
-            String nombreCurso = (String) datos.get("nombre_curso");
-            String codigoCurso = (String) datos.get("codigo_curso");
+            String nombreCurso = datos.nombreCurso();
+            String codigoCurso = datos.codigoCurso();
             String titulo = "ESTUDIANTES DEL CURSO: " + (nombreCurso != null ? nombreCurso : "N/A");
             if (codigoCurso != null) {
                 titulo += " (" + codigoCurso + ")";
@@ -175,17 +173,17 @@ public class GeneradorPdfCursosVerano {
                     com.itextpdf.text.Font.FontFamily.HELVETICA, 10);
             StringBuilder info = new StringBuilder();
             info.append("Fecha de generación: ").append(formatearFechaEspanol(new Date())).append("\n");
-            info.append("Cupo Estimado: ").append(datos.get("cupo_estimado")).append("\n");
-            info.append("Total Estudiantes: ").append(datos.get("total_estudiantes")).append("\n");
-            info.append("Preinscritos: ").append(datos.get("total_preinscritos")).append("\n");
-            info.append("Inscritos: ").append(datos.get("total_inscritos")).append("\n");
+            info.append("Cupo Estimado: ").append(datos.cupoEstimado()).append("\n");
+            info.append("Total Estudiantes: ").append(datos.totalEstudiantes()).append("\n");
+            info.append("Preinscritos: ").append(datos.totalPreinscritos()).append("\n");
+            info.append("Inscritos: ").append(datos.totalInscritos()).append("\n");
             
             com.itextpdf.text.Paragraph infoParagraph = new com.itextpdf.text.Paragraph(info.toString(), infoFont);
             infoParagraph.setSpacingAfter(15);
             document.add(infoParagraph);
             
             // Tabla de estudiantes
-            List<Map<String, Object>> estudiantes = (List<Map<String, Object>>) datos.get("estudiantes");
+            var estudiantes = datos.estudiantes();
             if (estudiantes != null && !estudiantes.isEmpty()) {
                 com.itextpdf.text.pdf.PdfPTable table = new com.itextpdf.text.pdf.PdfPTable(8);
                 table.setWidthPercentage(100);
@@ -208,27 +206,26 @@ public class GeneradorPdfCursosVerano {
                         com.itextpdf.text.Font.FontFamily.HELVETICA, 8);
                 
                 int contador = 1;
-                for (Map<String, Object> estudiante : estudiantes) {
+                for (var estudiante : estudiantes) {
                     table.addCell(new com.itextpdf.text.pdf.PdfPCell(new com.itextpdf.text.Phrase(
                             String.valueOf(contador++), dataFont)));
                     table.addCell(new com.itextpdf.text.pdf.PdfPCell(new com.itextpdf.text.Phrase(
-                            estudiante.get("nombre_completo") != null ? estudiante.get("nombre_completo").toString() : "-", dataFont)));
+                            Objects.toString(estudiante.nombreCompleto(), "-"), dataFont)));
                     table.addCell(new com.itextpdf.text.pdf.PdfPCell(new com.itextpdf.text.Phrase(
-                            estudiante.get("codigo") != null ? estudiante.get("codigo").toString() : "-", dataFont)));
+                            Objects.toString(estudiante.codigo(), "-"), dataFont)));
                     table.addCell(new com.itextpdf.text.pdf.PdfPCell(new com.itextpdf.text.Phrase(
-                            estudiante.get("programa") != null ? estudiante.get("programa").toString() : "-", dataFont)));
+                            estudiante.programa() == null ? "-" : Objects.toString(estudiante.programa().programa(), "-"), dataFont)));
                     table.addCell(new com.itextpdf.text.pdf.PdfPCell(new com.itextpdf.text.Phrase(
-                            estudiante.get("tipo") != null ? estudiante.get("tipo").toString() : "-", dataFont)));
-                    String estadoPreinscripcion = estudiante.get("estado_preinscripcion") != null 
-                            ? estudiante.get("estado_preinscripcion").toString() : "N/A";
+                            Objects.toString(estudiante.tipo(), "-"), dataFont)));
+                    String estadoPreinscripcion = Objects.toString(estudiante.estadoPreinscripcion(), "N/A");
                     if ("-".equals(estadoPreinscripcion) || estadoPreinscripcion.isEmpty() || estadoPreinscripcion.trim().isEmpty()) {
                         estadoPreinscripcion = "N/A";
                     }
                     table.addCell(new com.itextpdf.text.pdf.PdfPCell(new com.itextpdf.text.Phrase(estadoPreinscripcion, dataFont)));
                     table.addCell(new com.itextpdf.text.pdf.PdfPCell(new com.itextpdf.text.Phrase(
-                            estudiante.get("estado_inscripcion") != null ? estudiante.get("estado_inscripcion").toString() : "-", dataFont)));
+                            Objects.toString(estudiante.estadoInscripcion(), "-"), dataFont)));
                     table.addCell(new com.itextpdf.text.pdf.PdfPCell(new com.itextpdf.text.Phrase(
-                            estudiante.get("correo") != null ? estudiante.get("correo").toString() : "-", dataFont)));
+                            Objects.toString(estudiante.correo(), "-"), dataFont)));
                 }
                 
                 document.add(table);
