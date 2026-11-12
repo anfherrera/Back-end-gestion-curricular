@@ -19,6 +19,8 @@ public interface GestionarSolicitudCursoVeranoGatewayIntPort {
     List<SolicitudCursoVeranoPreinscripcion> buscarPreinscripcionesPorCurso(Integer idCurso);
     List<SolicitudCursoVeranoIncripcion> buscarInscripcionesPorCurso(Integer idCurso);
     
+    List<Solicitud> listarSolicitudesDeVerano(Integer idCurso);
+
     // Métodos para gestión de funcionarios - Aprobar/Rechazar
     SolicitudCursoVeranoPreinscripcion aprobarPreinscripcion(Integer idSolicitud, String comentarios);
     SolicitudCursoVeranoPreinscripcion rechazarPreinscripcion(Integer idSolicitud, String motivo);

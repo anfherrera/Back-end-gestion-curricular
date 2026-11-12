@@ -373,7 +373,9 @@ public class GestionarCursoOfertadoVeranoCUAdapter implements GestionarCursoOfer
 
     @Override
     public List<CursoOfertadoVerano> listarPorFiltros(String periodo, Integer idPrograma, boolean soloVisibles) {
-        return listarTodos().stream()
+        List<CursoOfertadoVerano> cursos = periodo == null ? listarTodos()
+                : objGestionarCursoOfertadoVeranoGateway.listarPorPeriodo(periodo);
+        return cursos.stream()
                 .filter(curso -> periodo == null || periodo.equals(curso.getPeriodo_academico()))
                 .filter(curso -> !soloVisibles || esVisibleParaEstudiantes(curso))
                 .filter(curso -> idPrograma == null || disponibleParaPrograma(curso, idPrograma))

@@ -18,6 +18,8 @@ public interface GestionarCursoOfertadoVeranoGatewayIntPort {
     
     List<CursoOfertadoVerano> listarTodos();
 
+    List<CursoOfertadoVerano> listarPorPeriodo(String periodo);
+
     Boolean asociarUsuarioCurso(Integer idUsuario, Integer idCurso);
 
     Boolean desasociarUsuarioCurso(Integer idUsuario, Integer idCurso);

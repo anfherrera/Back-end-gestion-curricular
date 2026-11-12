@@ -343,6 +343,9 @@ class CursosVeranoUnidadTest {
         when(cursoVeranoGateway.listarTodos())
                 .thenReturn(List.of(libre, conSolicitud, conInscrito, cerrado, otroPeriodo, sinEstado));
 
+        when(cursoVeranoGateway.listarPorPeriodo("2025-2"))
+                .thenReturn(List.of(libre, conSolicitud, conInscrito, cerrado, sinEstado));
+
         assertThat(cursosVeranoCU.listarPorFiltros("2025-2", 7, true))
                 .containsExactly(libre, conSolicitud, conInscrito);
         assertThat(cursosVeranoCU.listarPorFiltros("2025-2", 8, false))

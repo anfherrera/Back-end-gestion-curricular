@@ -211,7 +211,7 @@ public class PreinscripcionesVeranoRestController {
      */
     @PreAuthorize("@autorizacion.esStaff() or #peticion.idUsuario == null or @autorizacion.esUsuarioActual(#peticion.idUsuario)")
     @PostMapping("/cursos-verano/preinscripciones")
-    public ResponseEntity<Map<String, Object>> crearPreinscripcion(@RequestBody PreinscripcionCursoVeranoDTOPeticion peticion) {
+    public ResponseEntity<?> crearPreinscripcion(@RequestBody PreinscripcionCursoVeranoDTOPeticion peticion) {
         
         // Validar datos obligatorios
         if (peticion.getIdUsuario() == null || peticion.getIdCurso() == null) {
@@ -266,17 +266,14 @@ public class PreinscripcionesVeranoRestController {
         // Llamar al gateway directamente para guardar en la base de datos
         SolicitudCursoVeranoPreinscripcion solicitudGuardada = solicitudCU.crearSolicitudCursoVeranoPreinscripcion(solicitudDominio);
 
-        // Crear respuesta JSON con la estructura esperada
-        Map<String, Object> respuesta = new HashMap<>();
-        respuesta.put("id_preinscripcion", solicitudGuardada.getId_solicitud());
-        respuesta.put("idUsuario", peticion.getIdUsuario());
-        respuesta.put("idCurso", peticion.getIdCurso());
-        respuesta.put("nombreSolicitud", peticion.getNombreSolicitud());
-        respuesta.put("fecha", solicitudGuardada.getFecha_registro_solicitud());
-        respuesta.put("estado", "Pendiente");
-        respuesta.put("mensaje", "Preinscripcion creada exitosamente");
-        
+        var respuesta = new PreinscripcionCreada(solicitudGuardada.getId_solicitud(), peticion.getIdUsuario(),
+                peticion.getIdCurso(), peticion.getNombreSolicitud(), solicitudGuardada.getFecha_registro_solicitud(),
+                "Pendiente", "Preinscripcion creada exitosamente");
         return ResponseEntity.status(201).body(respuesta);
+    }
+
+    record PreinscripcionCreada(Integer id_preinscripcion, Integer idUsuario, Integer idCurso, String nombreSolicitud,
+                                java.util.Date fecha, String estado, String mensaje) {
     }
 
     /**
@@ -285,7 +282,7 @@ public class PreinscripcionesVeranoRestController {
      */
     @PreAuthorize("@autorizacion.esStaff() or #peticion.idUsuario == null or @autorizacion.esUsuarioActual(#peticion.idUsuario)")
     @PostMapping("/solicitudes/preinscripcion")
-    public ResponseEntity<Map<String, Object>> crearPreinscripcionAlias(@RequestBody PreinscripcionCursoVeranoDTOPeticion peticion) {
+    public ResponseEntity<?> crearPreinscripcionAlias(@RequestBody PreinscripcionCursoVeranoDTOPeticion peticion) {
         return crearPreinscripcion(peticion);
     }
 

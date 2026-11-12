@@ -50,65 +50,8 @@ public class InscripcionesVeranoRestController {
     @PostMapping("/cursos-verano/inscripciones")
     public ResponseEntity<Map<String, Object>> crearInscripcion(@RequestBody PreinscripcionCursoVeranoDTOPeticion peticion) {
         
-        // 1. Verificar que existe una preinscripcion valida para este usuario y curso
-        
-        // Buscar preinscripcion aprobada usando consulta especifica
-        
-        // Primero intentar buscar directamente por usuario y curso
-        Solicitud preinscripcionExistente = solicitudCU.buscarPreinscripcionPorUsuarioYCurso(peticion.getIdUsuario(), peticion.getIdCurso());
-        
-        SolicitudCursoVeranoPreinscripcion preinscripcionAprobada = null;
-        
-        if (preinscripcionExistente != null && preinscripcionExistente instanceof SolicitudCursoVeranoPreinscripcion) {
-            preinscripcionAprobada = (SolicitudCursoVeranoPreinscripcion) preinscripcionExistente;
-            
-            // Verificar si esta aprobada
-            String estadoActual = "Sin estado";
-            boolean estaAprobada = false;
-            
-            if (preinscripcionAprobada.getEstadosSolicitud() != null && !preinscripcionAprobada.getEstadosSolicitud().isEmpty()) {
-                estadoActual = preinscripcionAprobada.getEstadosSolicitud()
-                    .get(preinscripcionAprobada.getEstadosSolicitud().size() - 1).getEstado_actual();
-                estaAprobada = "Aprobada".equals(estadoActual) || "Aprobado".equals(estadoActual);
-            }
-            
-            
-            if (!estaAprobada) {
-                preinscripcionAprobada = null;
-            }
-        } else {
-            
-            // Fallback: buscar todas las preinscripciones del usuario
-            List<SolicitudCursoVeranoPreinscripcion> preinscripciones = solicitudCU.buscarSolicitudesPorUsuario(peticion.getIdUsuario());
-            
-            for (SolicitudCursoVeranoPreinscripcion preinscripcion : preinscripciones) {
-                // Verificar si coincide con el usuario y curso
-                boolean coincideUsuario = preinscripcion.getObjUsuario() != null && 
-                    preinscripcion.getObjUsuario().getId_usuario().equals(peticion.getIdUsuario());
-                boolean coincideCurso = preinscripcion.getObjCursoOfertadoVerano() != null &&
-                    preinscripcion.getObjCursoOfertadoVerano().getId_curso().equals(peticion.getIdCurso());
-                
-                
-                if (coincideUsuario && coincideCurso) {
-                    // Verificar si esta aprobada
-                    String estadoActual = "Sin estado";
-                    boolean estaAprobada = false;
-                    
-                    if (preinscripcion.getEstadosSolicitud() != null && !preinscripcion.getEstadosSolicitud().isEmpty()) {
-                        estadoActual = preinscripcion.getEstadosSolicitud()
-                            .get(preinscripcion.getEstadosSolicitud().size() - 1).getEstado_actual();
-                        estaAprobada = "Aprobada".equals(estadoActual) || "Aprobado".equals(estadoActual);
-                    }
-                    
-                    
-                    if (estaAprobada) {
-                        preinscripcionAprobada = preinscripcion;
-                        break;
-                    }
-                }
-            }
-        }
-        
+        SolicitudCursoVeranoPreinscripcion preinscripcionAprobada =
+                solicitudCU.buscarPreinscripcionAprobada(peticion.getIdUsuario(), peticion.getIdCurso());
         if (preinscripcionAprobada == null) {
             Map<String, Object> error = new HashMap<>();
             error.put("error", "No se encontro una preinscripcion aprobada para este usuario y curso");
@@ -116,32 +59,11 @@ public class InscripcionesVeranoRestController {
             return ResponseEntity.badRequest().body(error);
         }
         
-        // 1.5. VALIDACIONES DE SEGURIDAD
-        
-        // Validacion 1: Verificar que no tenga una inscripcion activa para este curso
-        List<SolicitudCursoVeranoIncripcion> inscripcionesExistentes = solicitudCU.buscarInscripcionesPorUsuarioYCurso(
-            peticion.getIdUsuario(), peticion.getIdCurso()
-        );
-        
-        if (!inscripcionesExistentes.isEmpty()) {
-            // Verificar si alguna no esta rechazada
-            boolean tieneInscripcionActiva = inscripcionesExistentes.stream()
-                .anyMatch(insc -> {
-                    if (insc.getEstadosSolicitud() == null || insc.getEstadosSolicitud().isEmpty()) {
-                        return true; // Sin estados = activa
-                    }
-                    String ultimoEstado = insc.getEstadosSolicitud().get(insc.getEstadosSolicitud().size() - 1).getEstado_actual();
-                    return !"Pago_Rechazado".equals(ultimoEstado);
-                });
-            
-            if (tieneInscripcionActiva) {
-                Map<String, Object> error = new HashMap<>();
-                error.put("error", "Ya tienes una inscripcion activa para este curso");
-                error.put("codigo", "INSCRIPCION_DUPLICADA");
-                return ResponseEntity.badRequest().body(error);
-            }
+        if (solicitudCU.tieneInscripcionActiva(peticion.getIdUsuario(), peticion.getIdCurso())) {
+            return ResponseEntity.badRequest().body(Map.of("error", "Ya tienes una inscripcion activa para este curso",
+                    "codigo", "INSCRIPCION_DUPLICADA"));
         }
-        
+
         // Validacion 2: el curso debe tener cupo disponible
         ResponseEntity<Map<String, Object>> sinCupo =
                 validarCupoDisponible(preinscripcionAprobada.getObjCursoOfertadoVerano());

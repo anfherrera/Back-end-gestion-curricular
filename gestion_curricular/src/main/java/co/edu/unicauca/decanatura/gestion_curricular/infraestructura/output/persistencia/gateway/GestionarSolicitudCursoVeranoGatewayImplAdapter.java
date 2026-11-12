@@ -60,6 +60,16 @@ public class GestionarSolicitudCursoVeranoGatewayImplAdapter implements Gestiona
     }
 
     @Override
+    @Transactional(readOnly = true)
+    public List<Solicitud> listarSolicitudesDeVerano(Integer idCurso) {
+        return solicitudRepository.listarSolicitudesDeVerano(idCurso).stream()
+                .<Solicitud>map(solicitud -> solicitud instanceof SolicitudCursoVeranoPreinscripcionEntity
+                        ? solicitudMapper.map(solicitud, SolicitudCursoVeranoPreinscripcion.class)
+                        : solicitudMapper.map(solicitud, SolicitudCursoVeranoIncripcion.class))
+                .toList();
+    }
+
+    @Override
     @Transactional
     public SolicitudCursoVeranoPreinscripcion crearSolicitudCursoVeranoPreinscripcion(
         SolicitudCursoVeranoPreinscripcion solicitudCursoVerano) {

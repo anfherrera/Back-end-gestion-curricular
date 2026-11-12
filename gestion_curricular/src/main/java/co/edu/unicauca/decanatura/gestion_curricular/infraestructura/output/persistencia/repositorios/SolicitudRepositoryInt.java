@@ -170,14 +170,21 @@ public interface SolicitudRepositoryInt extends JpaRepository<SolicitudEntity, I
     """)
     Integer contarInscripcionesPorEstado(@Param("idCurso") Integer idCurso, @Param("estado") String estado);
 
-    @Query("""
+    String SOLICITUDES_CON_DATOS = """
     SELECT s FROM SolicitudEntity s
     JOIN FETCH s.objUsuario u
     LEFT JOIN FETCH s.estadosSolicitud es
     LEFT JOIN FETCH s.objCursoOfertadoVerano c
     LEFT JOIN FETCH c.objMateria m
-    """)
+    """;
+    @Query(SOLICITUDES_CON_DATOS)
     List<SolicitudEntity> findAllWithJoins();
+
+    @Query(SOLICITUDES_CON_DATOS + """
+        WHERE TYPE(s) IN (SolicitudCursoVeranoPreinscripcionEntity, SolicitudCursoVeranoInscripcionEntity)
+          AND (:idCurso IS NULL OR c.id_curso = :idCurso)
+        """)
+    List<SolicitudEntity> listarSolicitudesDeVerano(@Param("idCurso") Integer idCurso);
 
     /**
      * Busca solicitudes con historial completo aplicando filtros opcionales

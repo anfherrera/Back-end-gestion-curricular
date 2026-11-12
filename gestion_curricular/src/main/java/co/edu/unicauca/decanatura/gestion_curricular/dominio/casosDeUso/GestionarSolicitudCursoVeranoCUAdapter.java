@@ -2,6 +2,7 @@ package co.edu.unicauca.decanatura.gestion_curricular.dominio.casosDeUso;
 
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -183,17 +184,12 @@ public class GestionarSolicitudCursoVeranoCUAdapter implements GestionarSolicitu
         }
 
         // Verificar que la preinscripción esté aprobada
-        String estadoPreinscripcion = ultimoEstado(preinscripcionBuscar.getEstadosSolicitud());
-        if (!"Aprobado".equals(estadoPreinscripcion) && !"Aprobada".equals(estadoPreinscripcion)) {
+        if (!preinscripcionAprobada(preinscripcionBuscar)) {
             this.objFormateadorResultados.retornarRespuestaErrorReglaDeNegocio("Su preinscripción no ha sido aprobada");
         }
 
         // No puede tener otra inscripción activa (una con pago rechazado no cuenta)
-        boolean tieneInscripcionActiva = this.objGestionarSolicitudGateway
-                .buscarInscripcionesPorUsuarioYCurso(usuarioBuscar.getId_usuario(), cursoABuscar.getId_curso())
-                .stream()
-                .anyMatch(insc -> !"Pago_Rechazado".equals(ultimoEstado(insc.getEstadosSolicitud())));
-        if (tieneInscripcionActiva) {
+        if (tieneInscripcionActiva(usuarioBuscar.getId_usuario(), cursoABuscar.getId_curso())) {
             this.objFormateadorResultados.retornarRespuestaErrorReglaDeNegocio("Ya tiene una inscripción activa para este curso");
         }
 
@@ -495,5 +491,52 @@ public class GestionarSolicitudCursoVeranoCUAdapter implements GestionarSolicitu
                     "El curso no está recibiendo " + queSolicitud + " (estado actual: "
                             + (actual != null ? actual : "sin estado") + ", se requiere: " + estadoRequerido + ")");
         }
+    }
+    @Override
+    public List<Solicitud> listarSolicitudesParaReporte(Integer idCurso, String estado, String periodo, Date inicio, Date fin) {
+        String estadoFiltro = estado == null || estado.trim().isEmpty() ? null : estado.trim();
+        Date finInclusivo = fin == null ? null : new Date(fin.getTime() + 24L * 60 * 60 * 1000 - 1);
+        return objGestionarSolicitudGateway.listarSolicitudesDeVerano(idCurso).stream()
+                .filter(s -> estadoFiltro == null || estadoFiltro.equalsIgnoreCase(ultimoEstado(s.getEstadosSolicitud())))
+                .filter(s -> coincidePeriodo(s, periodo))
+                .filter(s -> coincideFecha(s.getFecha_registro_solicitud(), inicio, finInclusivo))
+                .toList();
+    }
+
+    private static boolean coincidePeriodo(Solicitud solicitud, String periodo) {
+        CursoOfertadoVerano curso = solicitud.getObjCursoOfertadoVerano();
+        return periodo == null || periodo.equals(solicitud.getPeriodo_academico())
+                || (curso != null && periodo.equals(curso.getPeriodo_academico()));
+    }
+
+    private static boolean coincideFecha(Date fecha, Date inicio, Date fin) {
+        return (inicio == null && fin == null)
+                || (fecha != null && (inicio == null || !fecha.before(inicio)) && (fin == null || !fecha.after(fin)));
+    }
+
+    @Override
+    public SolicitudCursoVeranoPreinscripcion buscarPreinscripcionAprobada(Integer idUsuario, Integer idCurso) {
+        Solicitud directa = buscarPreinscripcionPorUsuarioYCurso(idUsuario, idCurso);
+        if (directa instanceof SolicitudCursoVeranoPreinscripcion preinscripcion) {
+            return preinscripcionAprobada(preinscripcion) ? preinscripcion : null;
+        }
+
+        return buscarSolicitudesPorUsuario(idUsuario).stream()
+                .filter(s -> s.getObjUsuario() != null && Objects.equals(idUsuario, s.getObjUsuario().getId_usuario()))
+                .filter(s -> s.getObjCursoOfertadoVerano() != null
+                        && Objects.equals(idCurso, s.getObjCursoOfertadoVerano().getId_curso()))
+                .filter(GestionarSolicitudCursoVeranoCUAdapter::preinscripcionAprobada)
+                .findFirst().orElse(null);
+    }
+
+    @Override
+    public boolean tieneInscripcionActiva(Integer idUsuario, Integer idCurso) {
+        return buscarInscripcionesPorUsuarioYCurso(idUsuario, idCurso).stream()
+                .anyMatch(inscripcion -> !"Pago_Rechazado".equals(ultimoEstado(inscripcion.getEstadosSolicitud())));
+    }
+
+    private static boolean preinscripcionAprobada(Solicitud solicitud) {
+        String estado = ultimoEstado(solicitud.getEstadosSolicitud());
+        return "Aprobado".equals(estado) || "Aprobada".equals(estado);
     }
 }

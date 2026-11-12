@@ -191,6 +191,14 @@ public class GestionarCursoOfertadoVeranoGatewayImplAdapter implements Gestionar
     }
 
     @Override
+    @Transactional(readOnly = true)
+    public List<CursoOfertadoVerano> listarPorPeriodo(String periodo) {
+        return cursoRepository.listarPorPeriodo(periodo).stream()
+                .map(entity -> cursoMapper.map(entity, CursoOfertadoVerano.class))
+                .toList();
+    }
+
+    @Override
     @Transactional
     public Boolean asociarUsuarioCurso(Integer idUsuario, Integer idCurso) {
         Optional<UsuarioEntity> usuarioEntityOptional = usuarioRepository.findById(idUsuario);
@@ -266,6 +274,6 @@ public class GestionarCursoOfertadoVeranoGatewayImplAdapter implements Gestionar
         GrupoCursoVeranoEntity grupoEntity = grupo != null
                 ? GrupoCursoVeranoEntity.valueOf(grupo.name())
                 : GrupoCursoVeranoEntity.A;
-        return !cursoRepository.buscarPorMateriaDocentePeriodoGrupo(idMateria, idDocente, periodoAcademico, grupoEntity).isEmpty();
+        return cursoRepository.existePorMateriaDocentePeriodoGrupo(idMateria, idDocente, periodoAcademico, grupoEntity);
     }
 }

@@ -19,7 +19,6 @@ import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.SolicitudCu
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.SolicitudCursoVeranoIncripcion;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Usuario;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Solicitud;
-import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarSolicitudCUIntPort;
 import java.util.List;
 import java.util.Map;
 import java.util.HashMap;
@@ -39,7 +38,6 @@ public class ReportesCursosVeranoRestController {
 
     private final GestionarCursoOfertadoVeranoCUIntPort cursoCU;
     private final GestionarSolicitudCursoVeranoCUIntPort solicitudCU;
-    private final GestionarSolicitudCUIntPort solicitudGeneralCU;
     private final GeneradorExcelSolicitudesVerano generadorExcel;
 
     /**
@@ -109,11 +107,12 @@ public class ReportesCursosVeranoRestController {
      */
     private List<Map<String, Object>> formatearSolicitudesCursos(Integer idMateria, Integer idCurso, String estado,
             String periodoAcademico, Date fechaInicio, Date fechaFin) {
-        List<Solicitud> todasLasSolicitudes = solicitudGeneralCU.listarSolicitudes();
-        
-        // Aplicar filtros si se proporcionan
-        todasLasSolicitudes = filtrarSolicitudes(todasLasSolicitudes, idCurso, estado, periodoAcademico, fechaInicio, fechaFin);
-        
+        String periodo = periodoAcademico == null ? "" : periodoAcademico.trim();
+        String periodoFiltro = periodo.isEmpty() || "todos".equalsIgnoreCase(periodo)
+                ? null : SoporteCursosVerano.normalizarPeriodoAcademico(periodo);
+        List<Solicitud> todasLasSolicitudes = solicitudCU.listarSolicitudesParaReporte(idCurso, estado,
+                periodoFiltro, fechaInicio, fechaFin);
+
         List<Map<String, Object>> solicitudesFormateadas = new ArrayList<>();
         
         for (Solicitud solicitud : todasLasSolicitudes) {
@@ -253,121 +252,6 @@ public class ReportesCursosVeranoRestController {
     }
 
     /**
-     * Método auxiliar para filtrar solicitudes según los parámetros proporcionados
-     * 
-     * @param solicitudes Lista de solicitudes a filtrar
-     * @param idCurso Filtro por ID de curso (opcional)
-     * @param estado Filtro por estado (opcional)
-     * @param periodoAcademico Filtro por período académico (opcional)
-     * @param fechaInicio Filtro por fecha de inicio (opcional)
-     * @param fechaFin Filtro por fecha de fin (opcional)
-     * @return Lista de solicitudes filtradas
-     */
-    private List<Solicitud> filtrarSolicitudes(
-            List<Solicitud> solicitudes, 
-            Integer idCurso, 
-            String estado,
-            String periodoAcademico,
-            Date fechaInicio, 
-            Date fechaFin) {
-        
-        return solicitudes.stream()
-            .filter(solicitud -> {
-                // Filtrar por tipo (solo cursos intersemestrales)
-                if (!(solicitud instanceof SolicitudCursoVeranoPreinscripcion || 
-                      solicitud instanceof SolicitudCursoVeranoIncripcion)) {
-                    return false;
-                }
-                
-                // Filtrar por ID de curso
-                if (idCurso != null) {
-                    if (solicitud instanceof SolicitudCursoVeranoPreinscripcion) {
-                        SolicitudCursoVeranoPreinscripcion preinscripcion = 
-                            (SolicitudCursoVeranoPreinscripcion) solicitud;
-                        if (preinscripcion.getObjCursoOfertadoVerano() == null || 
-                            !preinscripcion.getObjCursoOfertadoVerano().getId_curso().equals(idCurso)) {
-                            return false;
-                        }
-                    } else if (solicitud instanceof SolicitudCursoVeranoIncripcion) {
-                        SolicitudCursoVeranoIncripcion inscripcion = 
-                            (SolicitudCursoVeranoIncripcion) solicitud;
-                        if (inscripcion.getObjCursoOfertadoVerano() == null || 
-                            !inscripcion.getObjCursoOfertadoVerano().getId_curso().equals(idCurso)) {
-                            return false;
-                        }
-                    }
-                }
-                
-                // Filtrar por estado
-                if (estado != null && !estado.trim().isEmpty()) {
-                    if (solicitud.getEstadosSolicitud() == null || solicitud.getEstadosSolicitud().isEmpty()) {
-                        return false;
-                    }
-                    String estadoActual = solicitud.getEstadosSolicitud()
-                        .get(solicitud.getEstadosSolicitud().size() - 1)
-                        .getEstado_actual();
-                    if (!estadoActual.equalsIgnoreCase(estado.trim())) {
-                        return false;
-                    }
-                }
-                
-                // Filtrar por período académico
-                if (periodoAcademico != null && !periodoAcademico.trim().isEmpty() && !periodoAcademico.trim().equalsIgnoreCase("todos")) {
-                    String periodoFiltro = SoporteCursosVerano.normalizarPeriodoAcademico(periodoAcademico.trim());
-                    
-                    // Verificar período en la solicitud
-                    String periodoSolicitud = solicitud.getPeriodo_academico();
-                    if (periodoSolicitud == null || !periodoSolicitud.equals(periodoFiltro)) {
-                        // Si no coincide con el período de la solicitud, verificar en el curso asociado
-                        boolean coincide = false;
-                        if (solicitud instanceof SolicitudCursoVeranoPreinscripcion) {
-                            SolicitudCursoVeranoPreinscripcion preinscripcion = 
-                                (SolicitudCursoVeranoPreinscripcion) solicitud;
-                            if (preinscripcion.getObjCursoOfertadoVerano() != null) {
-                                String periodoCurso = preinscripcion.getObjCursoOfertadoVerano().getPeriodo_academico();
-                                coincide = periodoCurso != null && periodoCurso.equals(periodoFiltro);
-                            }
-                        } else if (solicitud instanceof SolicitudCursoVeranoIncripcion) {
-                            SolicitudCursoVeranoIncripcion inscripcion = 
-                                (SolicitudCursoVeranoIncripcion) solicitud;
-                            if (inscripcion.getObjCursoOfertadoVerano() != null) {
-                                String periodoCurso = inscripcion.getObjCursoOfertadoVerano().getPeriodo_academico();
-                                coincide = periodoCurso != null && periodoCurso.equals(periodoFiltro);
-                            }
-                        }
-                        
-                        if (!coincide) {
-                            return false;
-                        }
-                    }
-                }
-                
-                // Filtrar por rango de fechas
-                if (fechaInicio != null || fechaFin != null) {
-                    Date fechaSolicitud = solicitud.getFecha_registro_solicitud();
-                    if (fechaSolicitud == null) {
-                        return false;
-                    }
-                    
-                    if (fechaInicio != null && fechaSolicitud.before(fechaInicio)) {
-                        return false;
-                    }
-                    
-                    if (fechaFin != null) {
-                        // Incluir el día completo de fechaFin
-                        Date fechaFinInclusive = new Date(fechaFin.getTime() + (24 * 60 * 60 * 1000) - 1);
-                        if (fechaSolicitud.after(fechaFinInclusive)) {
-                            return false;
-                        }
-                    }
-                }
-                
-                return true;
-            })
-            .collect(java.util.stream.Collectors.toList());
-    }
-
-    /**
      * Obtener estadisticas del dashboard de cursos intersemestrales
      * GET /api/cursos-intersemestrales/dashboard/estadisticas
      */
@@ -403,7 +287,7 @@ public class ReportesCursosVeranoRestController {
         // 2 y 3. Contar preinscripciones e inscripciones con una sola consulta
         int totalPreinscripciones = 0;
         int totalInscripciones = 0;
-        for (Solicitud solicitud : solicitudGeneralCU.listarSolicitudes()) {
+        for (Solicitud solicitud : solicitudCU.listarSolicitudesParaReporte(null, null, null, null, null)) {
             if (solicitud instanceof SolicitudCursoVeranoPreinscripcion) {
                 totalPreinscripciones++;
             } else if (solicitud instanceof SolicitudCursoVeranoIncripcion) {

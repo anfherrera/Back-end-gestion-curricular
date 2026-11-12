@@ -1,5 +1,6 @@
 package co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input;
 
+import java.util.Date;
 import java.util.List;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Solicitud;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.SolicitudCursoVeranoIncripcion;
@@ -20,6 +21,8 @@ public interface GestionarSolicitudCursoVeranoCUIntPort {
     List<SolicitudCursoVeranoPreinscripcion> buscarPreinscripcionesPorCurso(Integer idCurso);
     List<SolicitudCursoVeranoIncripcion> buscarInscripcionesPorCurso(Integer idCurso);
     
+    List<Solicitud> listarSolicitudesParaReporte(Integer idCurso, String estado, String periodo, Date inicio, Date fin);
+
     ListadoEstudiantes listarEstudiantesPorCurso(Integer idCurso);
 
     record ListadoEstudiantes(List<EstudianteCurso> estudiantes, int totalPreinscritos, int totalInscritos) {
@@ -42,6 +45,8 @@ public interface GestionarSolicitudCursoVeranoCUIntPort {
     // Consultas que usan los controladores de cursos de verano
     /** Preinscripción del usuario al curso, o null si no tiene. */
     Solicitud buscarPreinscripcionPorUsuarioYCurso(Integer idUsuario, Integer idCurso);
+    SolicitudCursoVeranoPreinscripcion buscarPreinscripcionAprobada(Integer idUsuario, Integer idCurso);
+    boolean tieneInscripcionActiva(Integer idUsuario, Integer idCurso);
     List<SolicitudCursoVeranoIncripcion> buscarInscripcionesPorUsuarioYCurso(Integer idUsuario, Integer idCurso);
     List<SolicitudCursoVeranoIncripcion> buscarInscripcionesPorUsuario(Integer idUsuario);
     /** Inscripciones del curso cuyo último estado es {@code estado}. */
