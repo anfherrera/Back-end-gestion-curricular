@@ -1,21 +1,6 @@
--- =========================================
--- DATOS INICIALES
--- =========================================
--- Nota: Las columnas cedula, periodo_academico y fecha_ceremonia se crean
--- automáticamente por Hibernate cuando ddl-auto=create, ya que están
--- definidas en las entidades JPA (UsuarioEntity y SolicitudEntity)
+-- Datos de demostración. Cargar una sola vez después de aplicar V1 y V2.
+START TRANSACTION;
 
-INSERT INTO Roles(idRol, nombre) VALUES (1,'Administrador');
-INSERT INTO Roles(idRol, nombre) VALUES (2,'Estudiante');
-INSERT INTO Roles(idRol, nombre) VALUES (3,'Coordinador');
-INSERT INTO Roles(idRol, nombre) VALUES (4,'Secretario');
-INSERT INTO Roles(idRol, nombre) VALUES (5,'Funcionario');
-INSERT INTO Roles(idRol, nombre) VALUES (6,'Docente');
-INSERT INTO Roles(idRol, nombre) VALUES (7,'Decano');
-INSERT INTO Programas(idPrograma, codigo, nombre_programa) VALUES (1,'1046','Ingenieria de Sistemas');
-INSERT INTO Programas(idPrograma, codigo, nombre_programa) VALUES (2,'1047','Ingenieria Electronica y Telecomunicaciones');
-INSERT INTO Programas(idPrograma, codigo, nombre_programa) VALUES (3,'1048','Ingenieria Automatica Industrial');
-INSERT INTO Programas(idPrograma, codigo, nombre_programa) VALUES (4,'1049','Tecnologia en Telematica');
 INSERT INTO Docentes(idDocente, codigo_docente, nombre_docente) VALUES (1, '1046','Pepe Perez');
 INSERT INTO Docentes(idDocente, codigo_docente, nombre_docente) VALUES (2, '1047','Carlos Alberto Ardila Albarracin');
 INSERT INTO Docentes(idDocente, codigo_docente, nombre_docente) VALUES (3, '1048','Carlos Alberto Cobos Lozada');
@@ -39,19 +24,6 @@ INSERT INTO Docentes(idDocente, codigo_docente, nombre_docente) VALUES (19, '106
 -- Datos de prueba para cursos de verano
 INSERT INTO Materias(idMateria, codigo, nombre, creditos) VALUES (1, 'BD001', 'Bases de Datos', 3);
 
--- Agregar más solicitudes de cursos de verano para probar la actualización automática
--- NOTA: Estas líneas están comentadas porque usan columnas obsoletas (fecha_solicitud, estado, tipo_solicitud, etc.) que no existen en la entidad actual
--- INSERT INTO Solicitudes(idSolicitud, fecha_solicitud, estado, observaciones, idUsuario, idMateria, idPrograma, tipo_solicitud) VALUES (15, '2025-08-20', 'Aprobada', 'Nueva solicitud de curso de verano - Bases de Datos', 1, 1, 1, 'CURSO_VERANO');
--- INSERT INTO Solicitudes(idSolicitud, fecha_solicitud, estado, observaciones, idUsuario, idMateria, idPrograma, tipo_solicitud) VALUES (16, '2025-08-21', 'Enviada', 'Nueva solicitud de curso de verano - Calidad de Software', 2, 2, 1, 'CURSO_VERANO');
--- INSERT INTO Solicitudes(idSolicitud, fecha_solicitud, estado, observaciones, idUsuario, idMateria, idPrograma, tipo_solicitud) VALUES (17, '2025-08-22', 'En Proceso', 'Nueva solicitud de curso de verano - Metodología de la Investigación', 3, 3, 2, 'CURSO_VERANO');
--- INSERT INTO Solicitudes(idSolicitud, fecha_solicitud, estado, observaciones, idUsuario, idMateria, idPrograma, tipo_solicitud) VALUES (18, '2025-08-23', 'Aprobada', 'Nueva solicitud de curso de verano - Bases de Datos', 4, 1, 3, 'CURSO_VERANO');
--- INSERT INTO Solicitudes(idSolicitud, fecha_solicitud, estado, observaciones, idUsuario, idMateria, idPrograma, tipo_solicitud) VALUES (19, '2025-08-24', 'Rechazada', 'Nueva solicitud de curso de verano - Calidad de Software', 5, 2, 4, 'CURSO_VERANO');
--- NOTA: Estas líneas están comentadas porque usan columnas obsoletas (fecha_solicitud, estado, tipo_solicitud, etc.) que no existen en la entidad actual
--- INSERT INTO Solicitudes(idSolicitud, fecha_solicitud, estado, observaciones, idUsuario, idMateria, idPrograma, tipo_solicitud) VALUES (15, '2025-08-20', 'Aprobada', 'Nueva solicitud de curso de verano - Bases de Datos', 1, 1, 1, 'CURSO_VERANO');
--- INSERT INTO Solicitudes(idSolicitud, fecha_solicitud, estado, observaciones, idUsuario, idMateria, idPrograma, tipo_solicitud) VALUES (16, '2025-08-21', 'Enviada', 'Nueva solicitud de curso de verano - Calidad de Software', 2, 2, 1, 'CURSO_VERANO');
--- INSERT INTO Solicitudes(idSolicitud, fecha_solicitud, estado, observaciones, idUsuario, idMateria, idPrograma, tipo_solicitud) VALUES (17, '2025-08-22', 'En Proceso', 'Nueva solicitud de curso de verano - Metodología de la Investigación', 3, 3, 2, 'CURSO_VERANO');
--- INSERT INTO Solicitudes(idSolicitud, fecha_solicitud, estado, observaciones, idUsuario, idMateria, idPrograma, tipo_solicitud) VALUES (18, '2025-08-23', 'Aprobada', 'Nueva solicitud de curso de verano - Bases de Datos', 4, 1, 3, 'CURSO_VERANO');
--- INSERT INTO Solicitudes(idSolicitud, fecha_solicitud, estado, observaciones, idUsuario, idMateria, idPrograma, tipo_solicitud) VALUES (19, '2025-08-24', 'Rechazada', 'Nueva solicitud de curso de verano - Calidad de Software', 5, 2, 4, 'CURSO_VERANO');
 
 -- Materias del programa de Ingeniería de Sistemas
 INSERT INTO Materias(idMateria, codigo, nombre, creditos) VALUES (2, 'SIS803', 'Calidad de Software', 3);
@@ -121,7 +93,6 @@ INSERT INTO Usuarios(idUsuario, codigo, nombre_completo, correo, password, estad
 -- Usuario Administrador por defecto (para desarrollo y pruebas)
 -- Correo: admin@unicauca.edu.co
 -- Password: password123 (hash BCrypt)
--- IMPORTANTE: Cambiar la contraseña en producción
 INSERT INTO Usuarios(idUsuario, codigo, nombre_completo, correo, password, estado_usuario, idfkRol, idfkPrograma, cedula) VALUES (26, 'ADMIN001', 'Administrador del Sistema', 'admin@unicauca.edu.co', '$2a$10$N9qo8uLOickgx2ZMRZoMyeIjFOjtXgjOU92LhL6YP1dPW1Z/uLlLG', 1, 1, 1, '000009000');
 INSERT INTO Usuarios(idUsuario, codigo, nombre_completo, correo, password, estado_usuario, idfkRol, idfkPrograma, cedula) VALUES (27, '1046190112', 'Daniel Cisneros', 'dcisneros@unicauca.edu.co', '$2a$12$kPCRQb320eqFwn08XBFDkuJYICOG7H5ou08fmHQ3.zaKZjAtGyI9G', 1, 2, 3, '100791411');
 INSERT INTO Usuarios(idUsuario, codigo, nombre_completo, correo, password, estado_usuario, idfkRol, idfkPrograma, cedula) VALUES (28, '55555555', 'Juan Pablo', 'juanp@unicauca.edu.co', '$2a$12$hnaM9zNGpcYBN6FEWuECjO7Eh.rJ9dXPInXbt8sz9dedJp8zxniYi', 1, 5, 3, '55555555');
@@ -130,8 +101,6 @@ INSERT INTO Usuarios(idUsuario, codigo, nombre_completo, correo, password, estad
 INSERT INTO Usuarios(idUsuario, codigo, nombre_completo, correo, password, estado_usuario, idfkRol, idfkPrograma, cedula) VALUES (31, '104619012', 'Pepa gonzalez', 'pepa@unicauca.edu.co', '$2a$12$58i1AS.C6C/fte9LKTiC/OYz88jf7vUMA3bYYsDwS54XoCYThYwtG', 1, 2, 1, '1007917455');
 
 
--- Solo insertar cursos adicionales (el curso 1 ya existe)
--- Agregar periodo_academico a los cursos
 -- Salones asignados del edificio FIET
 INSERT INTO Cursos_ofertados(idCurso, idfkMateria, idfkDocente, grupo, cupo_estimado, salon, periodo_academico) VALUES (1, 1, 1, 'A', 30, '221', '2025-2');
 INSERT INTO Cursos_ofertados(idCurso, idfkMateria, idfkDocente, grupo, cupo_estimado, salon, periodo_academico) VALUES (2, 2, 2, 'B', 25, '222', '2025-2');
@@ -139,8 +108,6 @@ INSERT INTO Cursos_ofertados(idCurso, idfkMateria, idfkDocente, grupo, cupo_esti
 
 -- Estados de cursos de verano (actualizados según el backend)
 -- Estados válidos: Borrador, Abierto, Publicado, Preinscripcion, Inscripcion, Cerrado
--- NOTA: La columna fecha_fin se crea automáticamente en desarrollo por Hibernate (ddl-auto=create-drop)
--- En producción, ejecutar el script MIGRACION_FECHA_FIN.sql manualmente ANTES de iniciar la app
 
 -- Curso 1: Bases de Datos - Estado: Preinscripcion (para que aparezca en preinscripciones)
 INSERT INTO EstadosCursos(idEstado, estado_actual, fecha_registro_estado, idfkCurso) VALUES (1, 'Borrador', '2025-06-25 08:00:00', 1);
@@ -161,7 +128,6 @@ INSERT INTO EstadosCursos(idEstado, estado_actual, fecha_registro_estado, idfkCu
 INSERT INTO EstadosCursos(idEstado, estado_actual, fecha_registro_estado, idfkCurso) VALUES (12, 'Preinscripcion', '2025-07-02 12:00:00', 3);
 INSERT INTO EstadosCursos(idEstado, estado_actual, fecha_registro_estado, idfkCurso) VALUES (13, 'Inscripcion', '2025-07-03 08:00:00', 3);
 -- Datos de prueba para inscripciones en cursos de verano
--- NOTA: Con herencia JOINED, primero se inserta en Solicitudes (tabla padre), luego en la tabla hija
 -- Inscripciones de cursos de verano (extendiendo de Solicitudes)
 INSERT INTO Solicitudes(idSolicitud, nombre_solicitud, fecha_registro_solicitud, idUsuario, idCurso, periodo_academico) VALUES (100, 'Curso de Verano - Inscripcion - Matematicas Basicas - Ana', '2025-07-15 10:30:00', 1, 1, '2025-2');
 INSERT INTO Solicitudes_Cursos_Verano_Inscripcion(idSolicitud, nombre_estudiante, codicion_solicitud, observacion) VALUES (100, 'Ana Gonzalez', 'Primera_Vez', 'Inscripcion en curso de verano');
@@ -301,7 +267,7 @@ INSERT INTO Solicitudes_PazYSalvo(idSolicitud) VALUES (46);
 -- ESTADOS DE SOLICITUDES CON DISTRIBUCIÓN EQUILIBRADA POR PROCESO
 -- Total: 50 solicitudes
 -- 45% Aprobadas = 21 solicitudes
--- 25% En Proceso (APROBADA_FUNCIONARIO + APROBADA_COORDINADOR) = 15 solicitudes  
+-- 25% En Proceso (APROBADA_FUNCIONARIO + APROBADA_COORDINADOR) = 15 solicitudes
 -- 20% Enviadas = 9 solicitudes
 -- 10% Rechazadas = 5 solicitudes
 -- ==========================================
@@ -430,3 +396,5 @@ INSERT INTO Salones(idSalon, numero_salon, edificio, activo) VALUES (12, '234', 
 -- 3. Hibernate agregará las columnas automáticamente
 -- 4. Vuelve a cambiar a ddl-auto=validate para producción
 -- =========================================
+
+COMMIT;

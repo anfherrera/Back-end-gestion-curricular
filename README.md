@@ -144,10 +144,19 @@ El artefacto empaquetado queda en `gestion_curricular/target/gestion_curricular-
 
 ## Perfiles
 
-- **dev**: Desarrollo local (crea/elimina tablas automáticamente)
+- **dev**: Desarrollo local con MySQL. Flyway migra el esquema al arrancar y Hibernate lo valida.
 - **prod**: Producción (valida esquema, usa variables de entorno)
-- **test**: Pruebas (H2 en memoria)
+- **test**: Pruebas con H2 en memoria. Hibernate crea el esquema y Spring carga los datos compartidos de `test-data.sql`.
 
+### Migraciones de desarrollo
+
+Empieza con una base MySQL vacía. V1 crea el esquema y V2 carga roles y programas. Flyway registra las versiones aplicadas en `flyway_schema_history` y conserva los datos entre arranques.
+
+Si tu base local viene de `ddl-auto=create`, conserva esa base y usa una nueva para empezar con Flyway. Puedes indicar su URL con `SPRING_DATASOURCE_URL`. Para poblar una base nueva con ejemplos, ejecuta una vez `gestion_curricular/scripts/datos_demo.sql` desde tu cliente MySQL después del primer arranque y reinicia la aplicación. El script incluye la cuenta de administrador de desarrollo.
+
+Agrega el siguiente cambio como `gestion_curricular/src/main/resources/db/migration/V3__descripcion.sql` y actualiza las entidades si corresponde. Usa una versión nueva para cada cambio y conserva intactos los archivos ya aplicados. Comprueba el arranque tanto con una base vacía como con una que ya tenga las versiones anteriores.
+
+El perfil `prod` mantiene la gestión manual del esquema.
 
 
 ## Pruebas
