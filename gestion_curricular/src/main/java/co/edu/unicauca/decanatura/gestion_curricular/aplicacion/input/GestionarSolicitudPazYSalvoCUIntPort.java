@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.function.Predicate;
 
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Documento;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.FiltroSolicitudes;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.SolicitudPazYSalvo;
 
@@ -46,6 +47,15 @@ public interface GestionarSolicitudPazYSalvoCUIntPort {
             TRANSICION_NO_PERMITIDA, ROL_NO_AUTORIZADO
         }
     }
+
+    /** Documentos de la solicitud que tienen nombre, en su orden, cada uno con su tipo según el nombre. */
+    List<DocumentoConTipo> documentosConTipo(Integer idSolicitud);
+
+    record DocumentoConTipo(Documento documento, String tipo) {
+    }
+
+    /** Oficios y resoluciones en PDF de la solicitud, en su orden. */
+    List<Documento> oficios(Integer idSolicitud);
 
     record DatosDocumento(String nombreArchivo, String nombreEstudiante, String codigoEstudiante, String programa,
                           Object fechaSolicitud, String cedula, String titulo, String director) {

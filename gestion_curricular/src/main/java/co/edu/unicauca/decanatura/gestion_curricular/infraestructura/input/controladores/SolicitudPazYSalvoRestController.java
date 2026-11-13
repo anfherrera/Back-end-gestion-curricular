@@ -649,38 +649,20 @@ public class SolicitudPazYSalvoRestController {
     @PreAuthorize("@autorizacion.esStaff() or @autorizacion.esDuenoSolicitud(#idSolicitud)")
     @GetMapping("/descargarOficio/{idSolicitud}")
     public ResponseEntity<byte[]> descargarOficioPazSalvo(@PathVariable Integer idSolicitud) {
-        // Obtener la solicitud con sus documentos
-        SolicitudPazYSalvo solicitud = solicitudPazYSalvoCU.buscarPorId(idSolicitud);
-        if (solicitud == null) {
-            return ResponseEntity.notFound().build();
-        }
-        
-        // Buscar documentos asociados a esta solicitud
-        List<Documento> documentos = solicitud.getDocumentos();
-        if (documentos == null || documentos.isEmpty()) {
-            return ResponseEntity.notFound().build();
-        }
-        
-        // Buscar documentos que sean oficios/resoluciones (subidos por secretaria)
-        for (Documento documento : documentos) {
-            if (documento.getNombre() != null && documento.getNombre().toLowerCase().endsWith(".pdf")) {
-                String nombreArchivo = documento.getNombre().toLowerCase();
-                
-                if (esOficio(nombreArchivo)) {
-                    try {
-                        // Usar getFile que maneja tanto rutas simples como rutas con subcarpetas
-                        byte[] archivo = objGestionarArchivos.getFile(
-                            documento.getRuta_documento() != null ? documento.getRuta_documento() : documento.getNombre()
-                        );
-                        
-                        return descargaPdfConNombreUtf8(archivo, documento.getNombre());
-                    } catch (Exception e) {
-                        continue; // Probar el siguiente documento
-                    }
-                }
+        // El primer oficio en PDF (subido por la secretaría) cuyo archivo se pueda leer
+        for (Documento documento : solicitudPazYSalvoCU.oficios(idSolicitud)) {
+            try {
+                // Usar getFile que maneja tanto rutas simples como rutas con subcarpetas
+                byte[] archivo = objGestionarArchivos.getFile(
+                    documento.getRuta_documento() != null ? documento.getRuta_documento() : documento.getNombre()
+                );
+
+                return descargaPdfConNombreUtf8(archivo, documento.getNombre());
+            } catch (Exception e) {
+                continue; // Probar el siguiente documento
             }
         }
-        
+
         return ResponseEntity.notFound().build();
     }
     
@@ -699,15 +681,9 @@ public class SolicitudPazYSalvoRestController {
     }
 
     private ResponseEntity<List<Map<String, Object>>> documentosConTipo(Integer idSolicitud) {
-        SolicitudPazYSalvo solicitud = solicitudPazYSalvoCU.buscarPorId(idSolicitud);
-        if (solicitud == null) {
-            return ResponseEntity.notFound().build();
-        }
         List<Map<String, Object>> documentos = new ArrayList<>();
-        for (Documento documento : solicitud.getDocumentos() != null ? solicitud.getDocumentos() : List.<Documento>of()) {
-            if (documento.getNombre() == null) {
-                continue;
-            }
+        for (var conTipo : solicitudPazYSalvoCU.documentosConTipo(idSolicitud)) {
+            Documento documento = conTipo.documento();
             Map<String, Object> doc = new HashMap<>();
             doc.put("id", documento.getId_documento());
             doc.put("nombre", documento.getNombre());
@@ -716,37 +692,10 @@ public class SolicitudPazYSalvoRestController {
             doc.put("fecha", documento.getFecha_documento());
             doc.put("esValido", documento.isEsValido());
             doc.put("comentario", documento.getComentario());
-            doc.put("tipo", tipoDeDocumento(documento.getNombre()));
+            doc.put("tipo", conTipo.tipo());
             documentos.add(doc);
         }
         return ResponseEntity.ok(documentos);
-    }
-
-    /** Oficio o resolución: lo que sube la secretaría (por el nombre del archivo). */
-    private static boolean esOficio(String nombreArchivo) {
-        String n = nombreArchivo.toLowerCase();
-        return n.contains("oficio") || n.contains("resolucion") || n.contains("paz") || n.contains("salvo") || n.contains("aprobacion");
-    }
-
-    /** Tipo de documento según el nombre del archivo. */
-    private static String tipoDeDocumento(String nombreArchivo) {
-        String n = nombreArchivo.toLowerCase();
-        if (esOficio(n)) {
-            return "Oficio/Resolución";
-        } else if (n.contains("formato") || n.contains("pm_fo_4_for_27")) {
-            return "Formato PM-FO-4-FOR-27";
-        } else if (n.contains("autorizacion") || n.contains("publicar")) {
-            return "Autorización de Publicación";
-        } else if (n.contains("hoja") && n.contains("vida")) {
-            return "Hoja de Vida Académica";
-        } else if (n.contains("comprobante") || n.contains("pago")) {
-            return "Comprobante de Pago";
-        } else if (n.contains("trabajo") && n.contains("grado")) {
-            return "Documento de Trabajo de Grado";
-        } else if (n.contains("saber") && n.contains("pro")) {
-            return "Resultado Saber Pro";
-        }
-        return "Documento del Estudiante";
     }
 
     /**
@@ -824,33 +773,15 @@ public class SolicitudPazYSalvoRestController {
     @PreAuthorize("@autorizacion.esStaff() or @autorizacion.esDuenoSolicitud(#idSolicitud)")
     @GetMapping("/obtenerOficios/{idSolicitud}")
     public ResponseEntity<List<Map<String, Object>>> obtenerOficiosPazSalvo(@PathVariable Integer idSolicitud) {
-        
-        SolicitudPazYSalvo solicitud = solicitudPazYSalvoCU.buscarPorId(idSolicitud);
-        if (solicitud == null) {
-            return ResponseEntity.notFound().build();
-        }
-        
-        List<Documento> documentos = solicitud.getDocumentos();
-        if (documentos == null || documentos.isEmpty()) {
-            return ResponseEntity.ok(new ArrayList<>());
-        }
-        
         List<Map<String, Object>> oficios = new ArrayList<>();
-        for (Documento documento : documentos) {
-            if (documento.getNombre() != null && documento.getNombre().toLowerCase().endsWith(".pdf")) {
-                String nombreArchivo = documento.getNombre().toLowerCase();
-
-                if (esOficio(nombreArchivo)) {
-                    Map<String, Object> oficio = new HashMap<>();
-                    oficio.put("id", idSolicitud);
-                    oficio.put("nombre", documento.getNombre());
-                    oficio.put("nombreArchivo", documento.getNombre());
-                    oficio.put("ruta", documento.getRuta_documento());
-                    oficios.add(oficio);
-                }
-            }
+        for (Documento documento : solicitudPazYSalvoCU.oficios(idSolicitud)) {
+            Map<String, Object> oficio = new HashMap<>();
+            oficio.put("id", idSolicitud);
+            oficio.put("nombre", documento.getNombre());
+            oficio.put("nombreArchivo", documento.getNombre());
+            oficio.put("ruta", documento.getRuta_documento());
+            oficios.add(oficio);
         }
-        
         return ResponseEntity.ok(oficios);
     }
     

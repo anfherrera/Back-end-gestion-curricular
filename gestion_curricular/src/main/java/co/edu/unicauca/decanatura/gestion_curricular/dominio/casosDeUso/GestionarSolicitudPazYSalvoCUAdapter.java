@@ -20,6 +20,8 @@ import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.Gestionar
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.GestionarEstadoSolicitudGatewayIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.GestionarSolicitudPazYSalvoGatewayIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.GestionarUsuarioGatewayIntPort;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Documento;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.DocumentosPazYSalvo;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.EstadoSolicitud;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.FiltroSolicitudes;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.FlujoEstadosSolicitud;
@@ -187,6 +189,23 @@ public class GestionarSolicitudPazYSalvoCUAdapter implements GestionarSolicitudP
             log.warn("No se pudo notificar el cambio de estado de Paz y Salvo para la solicitud {}", idSolicitud, e);
         }
         return Optional.empty();
+    }
+
+    @Override
+    public List<DocumentoConTipo> documentosConTipo(Integer idSolicitud) {
+        List<Documento> documentos = buscarPorId(idSolicitud).getDocumentos();
+        if (documentos == null) {
+            return List.of();
+        }
+        return documentos.stream()
+                .filter(d -> d.getNombre() != null)
+                .map(d -> new DocumentoConTipo(d, DocumentosPazYSalvo.tipoDeDocumento(d.getNombre())))
+                .toList();
+    }
+
+    @Override
+    public List<Documento> oficios(Integer idSolicitud) {
+        return DocumentosPazYSalvo.oficiosPdf(buscarPorId(idSolicitud).getDocumentos());
     }
 
     @Override
