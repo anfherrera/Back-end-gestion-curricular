@@ -87,10 +87,6 @@ public class GestionarCursoOfertadoVeranoCUAdapter implements GestionarCursoOfer
         if(estadoCurso.getId_estado() == null){
             this.objFormateadorResultados.retornarRespuestaErrorEntidadExiste("No hay id en el estado");
         }
-        // estadoCursoOfertado = this.objGestionarEstadoCursoOfertadoGateway.buscarPorIEstadoCursoOfertado(idEstado);
-        // if(estadoCursoOfertado == null){
-        //    this.objFormateadorResultados.retornarRespuestaErrorEntidadExiste("No existe el estado con el ID: " + idEstado);
-        // }
         if(estadoCurso.getEstado_actual() == null){
             this.objFormateadorResultados.retornarRespuestaErrorEntidadExiste("No hay datos en el estado actual");
         }
@@ -180,10 +176,6 @@ public class GestionarCursoOfertadoVeranoCUAdapter implements GestionarCursoOfer
                 if(estudiantesInscritos != null){
                     estudiantesInscritos.removeAll(usuariosRemovidos);
                     for (Usuario usuarioRemover : estudiantesInscritos) {
-                        // bandera = this.objGestionarCursoOfertadoVeranoGateway.desasociarUsuarioCurso(usuarioRemover.getId_usuario(), idCurso);
-                        // if(bandera == false){
-                        //    this.objFormateadorResultados.retornarRespuestaErrorEntidadExiste("No se pudo desasociar el usuario del curso");
-                        // }
                         cursoABuscar.getEstudiantesInscritos().remove(usuarioRemover);
                     }                
                 }
@@ -192,7 +184,6 @@ public class GestionarCursoOfertadoVeranoCUAdapter implements GestionarCursoOfer
         nuevoEstado = new EstadoCursoOfertado();
         nuevoEstado.setFecha_registro_estado(new Date());
         nuevoEstado.setEstado_actual(estadoCurso.getEstado_actual());
-        //nuevoEstado.setObjCursoOfertadoVerano(cursoABuscar);
 
         cursoActualizado = this.objGestionarCursoOfertadoVeranoGateway.actualizarCurso(cursoABuscar, nuevoEstado);
 

@@ -35,9 +35,7 @@ public class DataInitializer implements CommandLineRunner {
     private String cedulaAdministrador;
 
     @Override
-    public void run(String... args) throws Exception {
-        // Esperar un poco para asegurar que la BD esté lista
-        Thread.sleep(1000);
+    public void run(String... args) {
         crearUsuarioAdminSiNoExiste();
     }
 

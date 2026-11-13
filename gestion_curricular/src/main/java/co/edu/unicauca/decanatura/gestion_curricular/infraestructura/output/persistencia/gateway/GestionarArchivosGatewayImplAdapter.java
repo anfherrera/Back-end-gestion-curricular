@@ -51,7 +51,6 @@ public class GestionarArchivosGatewayImplAdapter implements GestionarArchivosGat
     @Override
     public String saveFile(ArchivoSubido file, String name, String fileType) throws IOException {
         String extension = getFileExtension(file.nombreOriginal());
-        //String filename = UUID.randomUUID().toString()+ "." + extension;
         if(name == null){
             throw new IOException("nombre nulo");
         }

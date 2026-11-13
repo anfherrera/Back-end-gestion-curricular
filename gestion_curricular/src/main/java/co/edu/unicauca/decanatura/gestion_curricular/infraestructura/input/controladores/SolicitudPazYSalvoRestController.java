@@ -119,12 +119,6 @@ public class SolicitudPazYSalvoRestController {
                 }
 
                 return guardarSolicitudDesdeDto(dtoPeticion);
-            } else if (peticion instanceof SolicitudPazYSalvoDTOPeticion dtoPeticion) {
-                String mensajeValidacion = validarSolicitudDto(dtoPeticion);
-                if (mensajeValidacion != null) {
-                    return respuestaBadRequest(mensajeValidacion);
-                }
-                return guardarSolicitudDesdeDto(dtoPeticion);
             }
 
             return respuestaBadRequest("Formato de solicitud no soportado");
@@ -1054,11 +1048,4 @@ public ResponseEntity<DocumentosDTORespuesta> guardarOficioPazSalvo(
                 documentosMapperDominio.mappearDeDocumentoADTORespuesta(documentoGuardado),
                 HttpStatus.CREATED);
     }
-
-    /**
-     * Verifica que el cambio de estado sea un paso válido del flujo y que lo haga el rol responsable
-     * (Funcionario → Coordinador → Secretario; el Administrador puede hacer cualquier paso válido).
-     *
-     * @return null si el cambio está permitido; si no, 400 (paso no permitido) o 403 (rol incorrecto)
-     */
 }

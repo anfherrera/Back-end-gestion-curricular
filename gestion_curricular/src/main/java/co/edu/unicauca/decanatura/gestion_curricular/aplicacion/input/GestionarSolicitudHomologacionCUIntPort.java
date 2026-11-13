@@ -101,7 +101,6 @@ public interface GestionarSolicitudHomologacionCUIntPort {
 
     void cambiarEstadoSolicitud(Integer idSolicitud, String nuevoEstado);
 
-    //SolicitudHomologacion obtenerSolicitudSeleccionada(Integer idSolicitud);
 
     
 

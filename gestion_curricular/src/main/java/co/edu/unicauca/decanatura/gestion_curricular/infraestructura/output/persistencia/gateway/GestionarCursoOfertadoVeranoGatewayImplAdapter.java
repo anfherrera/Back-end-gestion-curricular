@@ -160,7 +160,6 @@ public class GestionarCursoOfertadoVeranoGatewayImplAdapter implements Gestionar
 
         return cursoMapper.map(cursoGuardado, CursoOfertadoVerano.class);
 
-        //return null;
     }
 
     @Override

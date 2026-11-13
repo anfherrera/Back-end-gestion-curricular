@@ -6,7 +6,6 @@ import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Solicitud;
 
 public interface GestionarSolicitudCUIntPort {
     
-    // SolicitudPazYSalvo crearSolicitudPazYSalvo(SolicitudPazYSalvo solicitudPazYSalvo);
 
     // Obtener solicitud por ID
     Solicitud obtenerSolicitudPorId(Integer idSolicitud);

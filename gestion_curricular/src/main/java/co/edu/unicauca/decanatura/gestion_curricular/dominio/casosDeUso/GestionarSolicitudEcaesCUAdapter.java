@@ -65,7 +65,6 @@ public class GestionarSolicitudEcaesCUAdapter implements GestionarSolicitudEcaes
                 if (solicitudExistente.isPresent()) {
                     this.objFormateadorResultados.retornarRespuestaErrorEntidadExiste("Ya existe una solicitud con el ID: "
                     + solicitud.getId_solicitud());
-                    //return null;
                 }
             }
 
