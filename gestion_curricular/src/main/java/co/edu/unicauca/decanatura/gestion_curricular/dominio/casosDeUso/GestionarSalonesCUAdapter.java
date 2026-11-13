@@ -47,6 +47,29 @@ public class GestionarSalonesCUAdapter implements GestionarSalonesCUIntPort {
     }
 
     @Override
+    public Salon resolverSalonDeCurso(String numeroSalon, boolean conRespaldoEnActivos) {
+        if (numeroSalon == null || numeroSalon.trim().isEmpty()) {
+            return null;
+        }
+        // BUG-14: conservar las dos variantes hasta decidir un cambio de JSON.
+        String numero = conRespaldoEnActivos ? numeroSalon.trim() : numeroSalon;
+        try {
+            try {
+                return obtenerSalonPorNumero(numero);
+            } catch (Exception e) {
+                if (!conRespaldoEnActivos) {
+                    return null;
+                }
+                return listarSalonesActivos().stream()
+                        .filter(s -> s.getNumero_salon() != null && s.getNumero_salon().equals(numero))
+                        .findFirst().orElse(null);
+            }
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    @Override
     public List<Salon> listarSalonesActivos() {
         return salonesGateway.listarSalonesActivos();
     }

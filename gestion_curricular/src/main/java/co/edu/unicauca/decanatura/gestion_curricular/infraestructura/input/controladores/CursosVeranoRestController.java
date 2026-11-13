@@ -21,6 +21,7 @@ import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarS
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarSolicitudCursoVeranoCUIntPort.EstudianteCurso;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarSalonesCUIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.CursoOfertadoVerano;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Salon;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.SolicitudCursoVeranoPreinscripcion;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Enums.PeriodoAcademicoEnum;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.DTORespuesta.CursosOfertadosDTORespuesta;
@@ -120,56 +121,27 @@ public class CursosVeranoRestController {
         List<CursosOfertadosDTORespuesta> respuesta = cursos.stream()
                 .map(cursoMapper::mappearDeCursoOfertadoARespuesta)
                 .map(dto -> {
-                    // Agregar información completa del salón si existe
-                    String numeroSalon = dto.getSalon() != null ? dto.getSalon().trim() : null;
-                    
-                    if (numeroSalon != null && !numeroSalon.isEmpty()) {
-                        try {
-                            // Intentar obtener el salón por número
-                            co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Salon salon = null;
-                            try {
-                                salon = salonCU.obtenerSalonPorNumero(numeroSalon);
-                            } catch (Exception e) {
-                                // Si el método lanza excepción cuando no encuentra, intentar buscar directamente
-                                // Buscar en la lista de salones activos
-                                List<co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Salon> salonesActivos = 
-                                    salonCU.listarSalonesActivos();
-                                salon = salonesActivos.stream()
-                                    .filter(s -> s.getNumero_salon() != null && s.getNumero_salon().equals(numeroSalon))
-                                    .findFirst()
-                                    .orElse(null);
-                                if (salon != null) {
-                                }
-                            }
-                            
-                            if (salon != null) {
-                                Map<String, Object> salonInfo = new HashMap<>();
-                                salonInfo.put("id_salon", salon.getId_salon());
-                                salonInfo.put("numero_salon", salon.getNumero_salon());
-                                salonInfo.put("edificio", salon.getEdificio());
-                                salonInfo.put("activo", salon.getActivo());
-                                salonInfo.put("descripcion", salon.getNumero_salon() + 
-                                    (salon.getEdificio() != null ? " - " + salon.getEdificio() : ""));
-                                dto.setSalonInfo(salonInfo);
-                                dto.setId_salon(salon.getId_salon());
-                            } else {
-                                // Mantener el número del salón aunque no se encuentre en la tabla Salones
-                                dto.setId_salon(null);
-                                dto.setSalonInfo(null);
-                            }
-                        } catch (Exception e) {
-                            // Mantener el número del salón aunque haya error
-                            dto.setId_salon(null);
-                            dto.setSalonInfo(null);
-                        }
-                    } else {
-                        dto.setId_salon(null);
-                        dto.setSalonInfo(null);
-                    }
+                    Salon salon = salonCU.resolverSalonDeCurso(dto.getSalon(), true);
+                    dto.setSalonInfo(salonInfo(salon));
+                    dto.setId_salon(salon == null ? null : salon.getId_salon());
                     return dto;
                 })
                 .collect(Collectors.toList());
         return ResponseEntity.ok(respuesta);
+    }
+
+    private static Map<String, Object> salonInfo(Salon salon) {
+        if (salon == null) {
+            return null;
+        }
+        Map<String, Object> info = new HashMap<>();
+        info.put("id_salon", salon.getId_salon());
+        info.put("numero_salon", salon.getNumero_salon());
+        info.put("edificio", salon.getEdificio());
+        info.put("activo", salon.getActivo());
+        info.put("descripcion", salon.getNumero_salon()
+                + (salon.getEdificio() != null ? " - " + salon.getEdificio() : ""));
+        return info;
     }
 
     private String periodoOActual(String periodoAcademico) {
@@ -460,34 +432,10 @@ public class CursosVeranoRestController {
         resultado.put("cupo_estimado", cursoActualizado.getCupo_estimado());
         resultado.put("espacio_asignado", cursoActualizado.getSalon());
         
-        // Obtener información del salón si existe
-        if (cursoActualizado.getSalon() != null && !cursoActualizado.getSalon().trim().isEmpty()) {
-            try {
-                co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Salon salon = 
-                    salonCU.obtenerSalonPorNumero(cursoActualizado.getSalon());
-                if (salon != null) {
-                    Map<String, Object> salonInfo = new HashMap<>();
-                    salonInfo.put("id_salon", salon.getId_salon());
-                    salonInfo.put("numero_salon", salon.getNumero_salon());
-                    salonInfo.put("edificio", salon.getEdificio());
-                    salonInfo.put("activo", salon.getActivo());
-                    salonInfo.put("descripcion", salon.getNumero_salon() + 
-                        (salon.getEdificio() != null ? " - " + salon.getEdificio() : ""));
-                    resultado.put("salon", salonInfo);
-                    resultado.put("id_salon", salon.getId_salon());
-                } else {
-                    resultado.put("id_salon", null);
-                    resultado.put("salon", null);
-                }
-            } catch (Exception e) {
-                resultado.put("id_salon", null);
-                resultado.put("salon", null);
-            }
-        } else {
-            resultado.put("id_salon", null);
-            resultado.put("salon", null);
-        }
-        
+        Salon salon = salonCU.resolverSalonDeCurso(cursoActualizado.getSalon(), false);
+        resultado.put("salon", salonInfo(salon));
+        resultado.put("id_salon", salon == null ? null : salon.getId_salon());
+
         resultado.put("estado", dto.getEstado() != null ? dto.getEstado() : "Actualizado");
         resultado.put("message", "Curso actualizado exitosamente");
         resultado.put("debug_info", "Cambios aplicados y guardados en BD");
@@ -575,35 +523,10 @@ public class CursosVeranoRestController {
         curso.put("espacio_asignado", cursoDTO.getEspacio_asignado());
         curso.put("estado", cursoDTO.getEstado());
         
-        // Obtener información del salón si existe
-        if (cursoReal.getSalon() != null && !cursoReal.getSalon().trim().isEmpty()) {
-            try {
-                co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Salon salon = 
-                    salonCU.obtenerSalonPorNumero(cursoReal.getSalon());
-                if (salon != null) {
-                    Map<String, Object> salonInfo = new HashMap<>();
-                    salonInfo.put("id_salon", salon.getId_salon());
-                    salonInfo.put("numero_salon", salon.getNumero_salon());
-                    salonInfo.put("edificio", salon.getEdificio());
-                    salonInfo.put("activo", salon.getActivo());
-                    salonInfo.put("descripcion", salon.getNumero_salon() + 
-                        (salon.getEdificio() != null ? " - " + salon.getEdificio() : ""));
-                    curso.put("salon", salonInfo);
-                    curso.put("id_salon", salon.getId_salon()); // Para facilitar la edición
-                } else {
-                    // Si no se encuentra el salón por número, solo poner el número
-                    curso.put("id_salon", null);
-                    curso.put("salon", null);
-                }
-            } catch (Exception e) {
-                curso.put("id_salon", null);
-                curso.put("salon", null);
-            }
-        } else {
-            curso.put("id_salon", null);
-            curso.put("salon", null);
-        }
-        
+        Salon salon = salonCU.resolverSalonDeCurso(cursoReal.getSalon(), false);
+        curso.put("salon", salonInfo(salon));
+        curso.put("id_salon", salon == null ? null : salon.getId_salon());
+
         // Obtener conteo real de preinscripciones para este curso
         try {
             List<SolicitudCursoVeranoPreinscripcion> preinscripciones = solicitudCU.buscarPreinscripcionesPorCurso(id.intValue());
