@@ -7,6 +7,8 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import co.edu.unicauca.decanatura.gestion_curricular.Security.Autorizacion;
 import jakarta.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;
+import jakarta.validation.Valid;
+import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.DTOPeticion.DecisionSolicitudDTOPeticion;
 import lombok.extern.slf4j.Slf4j;
 import java.util.Date;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarSolicitudCursoVeranoCUIntPort;
@@ -375,8 +377,8 @@ public class PreinscripcionesVeranoRestController {
     @PutMapping("/preinscripciones/{idPreinscripcion}/observaciones")
     public ResponseEntity<Map<String, Object>> actualizarObservacionesPreinscripcion(
             @PathVariable Long idPreinscripcion,
-            @RequestBody Map<String, String> request) {
-        String observaciones = request.get("observaciones");
+            @RequestBody @Valid DecisionSolicitudDTOPeticion request) {
+        String observaciones = request.getObservaciones();
         
         if (observaciones == null || observaciones.trim().isEmpty()) {
             Map<String, Object> error = new HashMap<>();
@@ -422,8 +424,8 @@ public class PreinscripcionesVeranoRestController {
     @PutMapping("/preinscripciones/{idSolicitud}/aprobar")
     public ResponseEntity<Map<String, Object>> aprobarPreinscripcion(
             @PathVariable Integer idSolicitud,
-            @RequestBody(required = false) Map<String, String> requestBody) {
-        String comentarios = requestBody != null ? requestBody.get("comentarios") : null;
+            @RequestBody(required = false) @Valid DecisionSolicitudDTOPeticion requestBody) {
+        String comentarios = requestBody != null ? requestBody.getComentarios() : null;
         SolicitudCursoVeranoPreinscripcion solicitudAprobada = solicitudCU.aprobarPreinscripcion(idSolicitud, comentarios);
         
         Map<String, Object> respuesta = new HashMap<>();
@@ -442,8 +444,8 @@ public class PreinscripcionesVeranoRestController {
     @PutMapping("/preinscripciones/{idSolicitud}/rechazar")
     public ResponseEntity<Map<String, Object>> rechazarPreinscripcion(
             @PathVariable Integer idSolicitud,
-            @RequestBody Map<String, String> requestBody) {
-        String motivo = requestBody.get("motivo");
+            @RequestBody @Valid DecisionSolicitudDTOPeticion requestBody) {
+        String motivo = requestBody.getMotivo();
         if (motivo == null || motivo.trim().isEmpty()) {
             return ResponseEntity.badRequest().body(Map.of("error", "Debe proporcionar un motivo para el rechazo"));
         }

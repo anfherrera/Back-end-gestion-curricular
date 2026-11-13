@@ -136,6 +136,8 @@ Rutas abreviadas: `…/` = `gestion_curricular/src/main/java/co/edu/unicauca/dec
 
 - [ ] **ARQ-9. Hay peticiones sin tipo (`@RequestBody Object` / `Map`).** Aparecen en [SolicitudPazYSalvoRestController.java:78](gestion_curricular/src/main/java/co/edu/unicauca/decanatura/gestion_curricular/infraestructura/input/controladores/SolicitudPazYSalvoRestController.java#L78), [CursoOfertadoRestController.java:157](gestion_curricular/src/main/java/co/edu/unicauca/decanatura/gestion_curricular/infraestructura/input/controladores/CursoOfertadoRestController.java#L157) y L181, [InscripcionesVeranoRestController.java:288](gestion_curricular/src/main/java/co/edu/unicauca/decanatura/gestion_curricular/infraestructura/input/controladores/InscripcionesVeranoRestController.java#L288) y L364, y [PreinscripcionesVeranoRestController.java:385](gestion_curricular/src/main/java/co/edu/unicauca/decanatura/gestion_curricular/infraestructura/input/controladores/PreinscripcionesVeranoRestController.java#L385) y L453. Hay que reemplazarlas por DTOs con `@Valid`.
 
+  *Avance revisión 9:* siete operaciones de decisión en CursoOfertado, Preinscripciones e Inscripciones reciben `DecisionSolicitudDTOPeticion` con `@Valid`. Se mantienen la coerción de escalares a texto, el rechazo de valores anidados en cualquier clave y las reglas específicas de cada operación (incluidos motivos por defecto). Caracterización MockMvc previa: 56 combinaciones, referencia nueva `verano-endpoints/decisiones.json`, tres ejecuciones independientes. Siguen pendientes la creación de Paz y Salvo y la validación de pago; el punto no se cierra parcialmente.
+
 - [ ] **ARQ-10. Hay respuestas sin tipo (`Map<String, Object>`).** Son 91 en total. Las que más tienen son Estadísticas (22), Inscripciones (10), Preinscripciones (7) y PeriodoAcademico (7). Hay que pasarlas a `record` o DTOs de respuesta, siguiendo el mismo camino que ya se hizo en Cursos de verano (commits `53af9a6` y `3128386`). ⚠️ **frontend**: el JSON debe quedar idéntico; las pruebas de caracterización de `test/resources/referencias` lo comprueban.
 
 - [ ] **ARQ-11. Los controladores capturan errores por su cuenta.** Repiten `try/catch` para excepciones que ya resuelve `RestApiExceptionHandler`: Paz y Salvo (5), Preinscripciones (3), Usuario, Inscripciones y CursoOfertado. También hay 86 `catch (Exception e)` en `main`. Hay que quitar los locales y dejar que el manejador global responda. Revisar sobre todo los que se tragan el error:
@@ -222,11 +224,17 @@ Rutas abreviadas: `…/` = `gestion_curricular/src/main/java/co/edu/unicauca/dec
 
   ⚠️ **frontend**
 
+  *Evaluación revisión 9:* los pares no son alias intercambiables. `/estado/{estado}` filtra un estado, mientras `/estado-solicitudes` distribuye estados con filtros de período/programa; `/periodo` consulta un período o fechas, mientras `/por-periodo` analiza la distribución temporal; `/programa/{id}` consulta un programa, mientras `/por-programa` distribuye programas; `/proceso/{tipo}` filtra un proceso, mientras `/estadisticas-por-proceso` distribuye procesos; `/tendencias` compara dos rangos de fechas (o devuelve globales si faltan), mientras `/tendencias-comparativas` analiza período/programa. Se conservan todas las rutas y las consultas distintas. Sigue abierto: confirmar uso con frontend antes de retirar rutas.
+
 - [ ] **DUP-9. Hay dos rutas para lo mismo:** `/obtenerDocumentos/{id}` y `/obtenerDocumentos/coordinador/{id}` en Paz y Salvo (L737-746). ⚠️ **frontend**
+
+  *Evaluación revisión 9:* ambas rutas delegan ya en `documentosConTipo`; no queda duplicación del armado de documentos. La ruta general permite personal o dueño mediante `@PreAuthorize`; la del coordinador hereda la restricción de personal del controlador. Se mantienen ambas rutas y sus permisos. Sigue abierto únicamente decidir con frontend la retirada de una ruta.
 
 - [ ] **DUP-10. El mapeo de objetos se hace de tres formas:** con `ModelMapper` genérico ([Mapper](gestion_curricular/src/main/java/co/edu/unicauca/decanatura/gestion_curricular/infraestructura/output/persistencia/mappers/Mapper.java)), con un segundo bean `ModelMapper` llamado `mapperCurso` ([MapperCursosOfertados](gestion_curricular/src/main/java/co/edu/unicauca/decanatura/gestion_curricular/infraestructura/output/persistencia/mappers/MapperCursosOfertados.java)) y con mapeo manual. Hay que elegir una sola estrategia. Lo más recomendable es MapStruct o mapeo manual explícito, que da errores en compilación en lugar de en ejecución.
 
 ---
+
+*Evaluación DUP-10, revisión 9:* siguen activos el bean primario `modelMapper`, el bean `mapperCurso` y los mappers manuales/MapStruct. Los mappers compartidos de reportes de ARQ-3 no sustituyen estos mapeos de persistencia. Las configuraciones contienen cortes de ciclos, omisión de relaciones y valores alternativos específicos: adoptar una estrategia común exige caracterizar esas proyecciones por separado. Punto abierto; no se declara resuelto por reutilizar los mappers HTTP existentes.
 
 ## 3. Código muerto
 

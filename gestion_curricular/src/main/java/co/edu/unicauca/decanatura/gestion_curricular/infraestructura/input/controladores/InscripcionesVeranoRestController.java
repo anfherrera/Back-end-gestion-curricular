@@ -8,6 +8,8 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.security.access.prepost.PreAuthorize;
 import co.edu.unicauca.decanatura.gestion_curricular.Security.Autorizacion;
 import lombok.RequiredArgsConstructor;
+import jakarta.validation.Valid;
+import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.DTOPeticion.DecisionSolicitudDTOPeticion;
 import lombok.extern.slf4j.Slf4j;
 import java.util.Date;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarCursoOfertadoVeranoCUIntPort;
@@ -280,10 +282,10 @@ public class InscripcionesVeranoRestController {
     @PutMapping("/inscripciones/{idInscripcion}/aceptar")
     public ResponseEntity<Map<String, Object>> aceptarInscripcionEstudiante(
             @PathVariable Long idInscripcion,
-            @RequestBody Map<String, String> request) {
+            @RequestBody @Valid DecisionSolicitudDTOPeticion request) {
         try {
             
-            String observaciones = request.get("observaciones");
+            String observaciones = request.getObservaciones();
             if (observaciones == null || observaciones.trim().isEmpty()) {
                 observaciones = "Inscripcion aceptada por funcionario/coordinador";
             }
@@ -351,9 +353,9 @@ public class InscripcionesVeranoRestController {
     @PutMapping("/inscripciones/{idInscripcion}/rechazar")
     public ResponseEntity<Map<String, Object>> rechazarInscripcionEstudiante(
             @PathVariable Long idInscripcion,
-            @RequestBody Map<String, String> request) {
+            @RequestBody @Valid DecisionSolicitudDTOPeticion request) {
         
-        String motivo = request.get("motivo");
+        String motivo = request.getMotivo();
         if (motivo == null || motivo.trim().isEmpty()) {
             motivo = "Inscripcion rechazada por funcionario/coordinador";
         } else {

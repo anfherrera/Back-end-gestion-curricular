@@ -1,8 +1,9 @@
 package co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.controladores;
 
-import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;
+import jakarta.validation.Valid;
+import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.DTOPeticion.DecisionSolicitudDTOPeticion;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -136,8 +137,8 @@ public class CursoOfertadoRestController {
     @PutMapping("/preinscripciones/{idSolicitud}/aprobar")
     public ResponseEntity<Map<String, Object>> aprobarPreinscripcion(
             @Min(value = 1) @PathVariable Integer idSolicitud,
-            @RequestBody(required = false) Map<String, String> requestBody) {
-        String comentarios = requestBody != null ? requestBody.get("comentarios") : null;
+            @RequestBody(required = false) @Valid DecisionSolicitudDTOPeticion requestBody) {
+        String comentarios = requestBody != null ? requestBody.getComentarios() : null;
         SolicitudCursoVeranoPreinscripcion solicitudAprobada = solicitudCU.aprobarPreinscripcion(idSolicitud, comentarios);
         
         Map<String, Object> respuesta = new HashMap<>();
@@ -154,8 +155,8 @@ public class CursoOfertadoRestController {
     @PutMapping("/preinscripciones/{idSolicitud}/rechazar")
     public ResponseEntity<Map<String, Object>> rechazarPreinscripcion(
             @Min(value = 1) @PathVariable Integer idSolicitud,
-            @RequestBody Map<String, String> requestBody) {
-        String motivo = requestBody.get("motivo");
+            @RequestBody @Valid DecisionSolicitudDTOPeticion requestBody) {
+        String motivo = requestBody.getMotivo();
         if (motivo == null || motivo.trim().isEmpty()) {
             return ResponseEntity.badRequest().body(Map.of("error", "Debe proporcionar un motivo para el rechazo"));
         }
