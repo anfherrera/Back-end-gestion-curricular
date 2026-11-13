@@ -188,8 +188,7 @@ public class GestionarSolicitudReingresoCUAdapter  implements GestionarSolicitud
                 case "ESTUDIANTE":
                     return solicitud.getObjUsuario().getId_usuario().equals(idUsuario);
                 case "FUNCIONARIO":
-                    // BUG-7: al crear se guarda "Enviada" (textoGuardado), así que comparar con "ENVIADA" nunca coincide.
-                    return ultimoEstado != null && EstadosSolicitud.ENVIADA.name().equals(ultimoEstado.getEstado_actual());
+                    return ultimoEstado != null && EstadosSolicitud.ENVIADA.textoGuardado().equals(ultimoEstado.getEstado_actual());
                 case "COORDINADOR":
                     return ultimoEstado != null && EstadosSolicitud.APROBADA_FUNCIONARIO.textoGuardado().equals(ultimoEstado.getEstado_actual());
                 default:
