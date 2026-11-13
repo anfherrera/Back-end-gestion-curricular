@@ -79,4 +79,38 @@ public final class TipoProcesoSolicitud {
         }
         return null;
     }
+
+    /**
+     * Proceso pedido como filtro de estadísticas ("Homologación", "Curso Intersemestral", "paz_y_salvo"...),
+     * llevado a la clave con que se agrupan las estadísticas por proceso.
+     *
+     * <p>BUG-13: no es la misma regla que {@link #porNombre}: no quita tildes salvo en "homologación", exige
+     * "curso" junto a "verano" o "intersemestral", no reconoce "homolog" ni "inscripción", y si no reconoce el
+     * texto lo devuelve recortado en lugar de null. Se conservan las dos hasta decidir cuál vale.
+     *
+     * @return null si viene null o en blanco
+     */
+    public static String delFiltro(String proceso) {
+        if (proceso == null || proceso.trim().isEmpty()) {
+            return null;
+        }
+        String p = proceso.trim();
+        String n = p.toLowerCase();
+        if (n.contains("reingreso")) {
+            return REINGRESO;
+        }
+        if (n.contains("homologacion") || n.contains("homologación")) {
+            return HOMOLOGACION;
+        }
+        if (n.contains("paz") && n.contains("salvo")) {
+            return PAZ_Y_SALVO;
+        }
+        if (n.contains("ecaes")) {
+            return ECAES;
+        }
+        if (n.contains("curso") && (n.contains("verano") || n.contains("intersemestral"))) {
+            return CURSOS_VERANO;
+        }
+        return p;
+    }
 }

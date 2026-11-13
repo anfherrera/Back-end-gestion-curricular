@@ -2,6 +2,7 @@ package co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.cont
 
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Enums.EstadosSolicitud;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Enums.PeriodoAcademicoEnum;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.servicios.estadisticas.TipoProcesoSolicitud;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarEstadisticasCUIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Estadistica;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.DTORespuesta.EstadisticaDTORespuesta;
@@ -140,7 +141,7 @@ public class EstadisticasRestController {
             Map<String, Object> estadisticasGlobales = (Map<String, Object>) resumen.get("estadisticasGlobales");
             
             if (estadisticasGlobales != null && proceso != null && !proceso.trim().isEmpty()) {
-                aplicarKpisDelProceso(estadisticasGlobales, resumen, normalizarProceso(proceso));
+                aplicarKpisDelProceso(estadisticasGlobales, resumen, TipoProcesoSolicitud.delFiltro(proceso));
             }
 
             return ResponseEntity.ok(estadisticasGlobales != null ? estadisticasGlobales : new HashMap<>());
@@ -327,7 +328,7 @@ public class EstadisticasRestController {
         
         // Si hay filtro de proceso, actualizar KPIs con datos solo de ese proceso.
         // IMPORTANTE: usar resumen.porTipoProceso (Map con stats completas), NO estadisticasGlobales.porTipoProceso (solo conteos Integer)
-        String procesoNormalizado = normalizarProceso(proceso);
+        String procesoNormalizado = TipoProcesoSolicitud.delFiltro(proceso);
         if (procesoNormalizado != null) {
             @SuppressWarnings("unchecked")
             Map<String, Object> porTipoProcesoResumen = (Map<String, Object>) resumen.get("porTipoProceso");
@@ -371,22 +372,6 @@ public class EstadisticasRestController {
         }
         
         return ResponseEntity.ok(resumen);
-    }
-    
-    /**
-     * Normaliza el nombre del proceso para coincidir con las keys del backend.
-     * Acepta variantes: "Homologación", "Curso Verano", "Cursos Intersemestrales", etc.
-     */
-    private String normalizarProceso(String proceso) {
-        if (proceso == null || proceso.trim().isEmpty()) return null;
-        String p = proceso.trim();
-        String lower = p.toLowerCase();
-        if (lower.contains("reingreso")) return "Reingreso";
-        if (lower.contains("homologacion") || lower.contains("homologación")) return "Homologacion";
-        if ((lower.contains("paz") && lower.contains("salvo"))) return "Paz y Salvo";
-        if (lower.contains("ecaes")) return "ECAES";
-        if (lower.contains("curso") && (lower.contains("verano") || lower.contains("intersemestral"))) return "Cursos de Verano";
-        return p; // Devolver tal cual si no hay match
     }
 
     /**
@@ -440,7 +425,7 @@ public class EstadisticasRestController {
 
         // Con filtro de proceso y de periodo/programa, los KPIs salen de las estadísticas de ese proceso
         if (hayProceso && estadisticasGlobales != null && resumen != null) {
-            aplicarKpisDelProceso(estadisticasGlobales, resumen, normalizarProceso(proceso));
+            aplicarKpisDelProceso(estadisticasGlobales, resumen, TipoProcesoSolicitud.delFiltro(proceso));
         }
 
         Map<String, Object> dashboardEjecutivo = new HashMap<>();
