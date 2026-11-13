@@ -326,6 +326,8 @@ Rutas abreviadas: `…/` = `gestion_curricular/src/main/java/co/edu/unicauca/dec
 
 - [ ] **BUG-17. Lectura y escritura conservan representaciones distintas del período informado.** Los filtros con `PeriodoAcademicoEnum.oActual` recortan `" 2025-2 "` a `"2025-2"`; los flujos de escritura de verano conservan `" 2025-2 "`. Si no hay período actual en el enum, la escritura también conserva la entrada nula o en blanco. DUP-6 extrae esa segunda política a `completarSiFalta`, sin unificarla con los filtros. Se conservan ambas variantes; elegir una representación única requiere decisión antes de cambiar los valores guardados o los filtros.
 
+- [ ] **BUG-18. Las descargas usan disposiciones HTTP diferentes.** Los reportes de Estadísticas, verano e historial construyen `form-data; name="attachment"; filename=...`; otras descargas usan `attachment; filename=...`, con o sin `filename*` UTF-8. DUP-7 conserva los tres formatos en métodos explícitos de `RespuestasArchivo`; no los homogeneiza. Corregir `form-data` o añadir UTF-8 a todas las rutas cambia cabeceras y requiere decisión previa.
+
 ## 5. Nombres y estilo (P3)
 
 - [ ] **EST-1. Errores de escritura en nombres:**

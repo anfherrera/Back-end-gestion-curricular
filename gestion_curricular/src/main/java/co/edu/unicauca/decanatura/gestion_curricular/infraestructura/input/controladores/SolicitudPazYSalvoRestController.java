@@ -1,5 +1,7 @@
 package co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.controladores;
 
+import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.RespuestasArchivo;
+
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.validacion.ArchivoMultipart;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -453,7 +455,7 @@ public class SolicitudPazYSalvoRestController {
 
     private static ResponseEntity<byte[]> descarga(byte[] contenido, String nombreArchivo, MediaType tipo) {
         return ResponseEntity.ok()
-                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + nombreArchivo + "\"")
+                .header(HttpHeaders.CONTENT_DISPOSITION, RespuestasArchivo.adjunto(nombreArchivo))
                 .contentType(tipo)
                 .body(contenido);
     }
@@ -546,11 +548,9 @@ public class SolicitudPazYSalvoRestController {
     }
 
     private static ResponseEntity<byte[]> descargaPdfConNombreUtf8(byte[] contenido, String nombre) {
-        String codificado = java.net.URLEncoder.encode(nombre, java.nio.charset.StandardCharsets.UTF_8)
-                .replace("+", "%20");
         return ResponseEntity.ok()
                 .header(HttpHeaders.CONTENT_DISPOSITION,
-                        "attachment; filename=\"" + nombre + "\"; filename*=UTF-8''" + codificado)
+                        RespuestasArchivo.adjuntoUtf8(nombre))
                 .contentType(MediaType.APPLICATION_PDF)
                 .body(contenido);
     }

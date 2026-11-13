@@ -1,5 +1,7 @@
 package co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.controladores;
 
+import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.RespuestasArchivo;
+
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarEstadisticasCUIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Estadistica;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.DTOPeticion.EstadisticaDTOPeticion;
@@ -435,7 +437,7 @@ public class EstadisticasRestController {
     private static ResponseEntity<byte[]> archivo(byte[] contenido, MediaType tipo, String nombreArchivo) {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(tipo);
-        headers.setContentDispositionFormData("attachment", nombreArchivo);
+        headers.set(HttpHeaders.CONTENT_DISPOSITION, RespuestasArchivo.formulario(nombreArchivo));
         return new ResponseEntity<>(contenido, headers, HttpStatus.OK);
     }
 

@@ -1,5 +1,7 @@
 package co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.controladores;
 
+import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.RespuestasArchivo;
+
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.validacion.ArchivoMultipart;
 
 import lombok.RequiredArgsConstructor;
@@ -266,9 +268,7 @@ public class ArchivosRestController {
             }
             
             // Configurar Content-Disposition con filename y filename* (UTF-8) - igual que Paz y Salvo
-            String encoded = java.net.URLEncoder.encode(nombreArchivo, java.nio.charset.StandardCharsets.UTF_8)
-                .replace("+", "%20");
-            String contentDisposition = "attachment; filename=\"" + nombreArchivo + "\"; filename*=UTF-8''" + encoded;
+            String contentDisposition = RespuestasArchivo.adjuntoUtf8(nombreArchivo);
 
             // Crear StreamingResponseBody para transferencia eficiente
             StreamingResponseBody stream = outputStream -> {
@@ -367,7 +367,7 @@ public class ArchivosRestController {
                     Resource resource = new InputStreamResource(Files.newInputStream(filePathTemp));
                     
                     // Configurar headers para descarga
-                    String contentDisposition = "attachment; filename=\"" + documento.getNombre() + "\"";
+                    String contentDisposition = RespuestasArchivo.adjunto(documento.getNombre());
                     
                     return ResponseEntity.ok()
                         .header(HttpHeaders.CONTENT_DISPOSITION, contentDisposition)

@@ -1,5 +1,7 @@
 package co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.controladores;
 
+import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.RespuestasArchivo;
+
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.DTORespuesta.DocumentRequest;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GenerarDocumentosCUIntPort;
 import lombok.RequiredArgsConstructor;
@@ -28,7 +30,7 @@ public class DocumentGeneratorController {
         String nombreArchivo = generarNombreArchivo(request);
         
         return ResponseEntity.ok()
-            .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + nombreArchivo + "\"")
+            .header(HttpHeaders.CONTENT_DISPOSITION, RespuestasArchivo.adjunto(nombreArchivo))
             .contentType(MediaType.APPLICATION_OCTET_STREAM)
             .body(documentBytes);
     }

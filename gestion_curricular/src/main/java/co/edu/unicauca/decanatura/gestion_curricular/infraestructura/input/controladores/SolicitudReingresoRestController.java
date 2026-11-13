@@ -1,5 +1,7 @@
 package co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.controladores;
 
+import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.RespuestasArchivo;
+
 
 import java.util.List;
 import java.util.Map;
@@ -252,7 +254,7 @@ public class SolicitudReingresoRestController {
                             documento.getNombre(), archivo.length);
                         
                         // Configurar el header Content-Disposition correctamente
-                        String contentDisposition = "attachment; filename=\"" + documento.getNombre() + "\"";
+                        String contentDisposition = RespuestasArchivo.adjunto(documento.getNombre());
                         log.debug("Content-Disposition: {}", contentDisposition);
                         
                         return ResponseEntity.ok()

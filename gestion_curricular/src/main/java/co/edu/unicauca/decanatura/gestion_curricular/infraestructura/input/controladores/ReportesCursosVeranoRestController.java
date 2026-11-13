@@ -1,5 +1,7 @@
 package co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.controladores;
 
+import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.RespuestasArchivo;
+
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Enums.EstadoSolicitudCursoVerano;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.HttpHeaders;
@@ -91,7 +93,7 @@ public class ReportesCursosVeranoRestController {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_OCTET_STREAM);
         String nombreArchivo = "solicitudes_cursos_intersemestrales_" + new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date()) + ".xlsx";
-        headers.setContentDispositionFormData("attachment", nombreArchivo);
+        headers.set(HttpHeaders.CONTENT_DISPOSITION, RespuestasArchivo.formulario(nombreArchivo));
         
         
         return new ResponseEntity<>(excelBytes, headers, HttpStatus.OK);

@@ -1,5 +1,7 @@
 package co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.controladores;
 
+import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.RespuestasArchivo;
+
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Enums.EstadoSolicitudCursoVerano;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.HttpHeaders;
@@ -602,7 +604,7 @@ public class InscripcionesVeranoRestController {
                     }
                     
                     // Configurar headers para descarga
-                    String contentDisposition = "attachment; filename=\"" + documento.getNombre() + "\"";
+                    String contentDisposition = RespuestasArchivo.adjunto(documento.getNombre());
                     
                     return ResponseEntity.ok()
                         .header(HttpHeaders.CONTENT_DISPOSITION, contentDisposition)

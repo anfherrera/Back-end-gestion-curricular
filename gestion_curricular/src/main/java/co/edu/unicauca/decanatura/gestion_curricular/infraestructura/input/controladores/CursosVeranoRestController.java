@@ -1,5 +1,7 @@
 package co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.controladores;
 
+import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.RespuestasArchivo;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -618,7 +620,7 @@ public class CursosVeranoRestController {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
         String fecha = sdf.format(new Date());
         String filename = "cursos_verano_" + fecha + ".pdf";
-        headers.setContentDispositionFormData("attachment", filename);
+        headers.set(HttpHeaders.CONTENT_DISPOSITION, RespuestasArchivo.formulario(filename));
         
         return new ResponseEntity<>(pdfBytes, headers, HttpStatus.OK);
     }
@@ -655,7 +657,7 @@ public class CursosVeranoRestController {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
         String fecha = sdf.format(new Date());
         String filename = "estudiantes_" + nombreCurso + "_" + fecha + ".pdf";
-        headers.setContentDispositionFormData("attachment", filename);
+        headers.set(HttpHeaders.CONTENT_DISPOSITION, RespuestasArchivo.formulario(filename));
         
         return new ResponseEntity<>(pdfBytes, headers, HttpStatus.OK);
     }

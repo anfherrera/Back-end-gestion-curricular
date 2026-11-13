@@ -1,5 +1,7 @@
 package co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.controladores;
 
+import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.RespuestasArchivo;
+
 import co.edu.unicauca.decanatura.gestion_curricular.Security.Autorizacion;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarSolicitudCUIntPort;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -203,7 +205,7 @@ public class SolicitudRestController {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
         String fecha = sdf.format(new Date());
         String filename = "historial_solicitudes_" + fecha + ".pdf";
-        headers.setContentDispositionFormData("attachment", filename);
+        headers.set(HttpHeaders.CONTENT_DISPOSITION, RespuestasArchivo.formulario(filename));
         
         return new ResponseEntity<>(pdfBytes, headers, HttpStatus.OK);
     }

@@ -1,5 +1,7 @@
 package co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.controladores;
 
+import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.RespuestasArchivo;
+
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.validacion.ArchivoMultipart;
 
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -268,7 +270,7 @@ public class SolicitudHomologacionRestController {
             } else {
                 archivo = objGestionarArchivos.getFile(nombreDescarga);
             }
-            String contentDisposition = "attachment; filename=\"" + nombreDescarga + "\"";
+            String contentDisposition = RespuestasArchivo.adjunto(nombreDescarga);
             return ResponseEntity.ok()
                     .header(HttpHeaders.CONTENT_DISPOSITION, contentDisposition)
                     .contentType(MediaType.APPLICATION_PDF)
