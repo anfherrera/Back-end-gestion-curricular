@@ -20,6 +20,7 @@ Rutas abreviadas: `…/` = `gestion_curricular/src/main/java/co/edu/unicauca/dec
 | 2 | 2026-11-13 | Claude | DUP-4, DUP-3 | Enums de estado sin cambiar valores guardados ni JSON. Nuevos BUG-7 y BUG-8, documentados y sin corregir. 458 pruebas en JDK 17 y 25. |
 | 3 | 2026-11-13 | Claude | BUG-7, ARQ-2, DUP-2 | `ListarSolicitudesPorRolTest`, `ReglasCupoTest`. Regla de cupo única en `ReglasCupo`; queda pendiente decidir si se quita la verificación del controlador (cambia el JSON del 409). 477 pruebas en JDK 17 y 25. |
 | 4 | 2026-11-13 | Claude | ARQ-7, DUP-1 | `ListadosPorRolCaracterizacionTest` (antes de tocar nada) y `ListadorSolicitudesTest`. Un `listar(FiltroSolicitudes)` por tipo; el flujo decide el estado. −1136 líneas netas en `main`. Única diferencia: coordinador en ECAES (BUG-10, acordada). Nuevos BUG-9 y BUG-10, sin corregir. 453 pruebas (1 omitida) en JDK 17 y 25. |
+| 5 | 2026-11-13 | Claude | BUG-1 (avance de ARQ-6 y DUP-6) | `PazYSalvoCaracterizacionTest` (antes de tocar nada) y `DocumentosPazYSalvoTest`. Paz y Salvo: clasificación de documentos, requeridos, comentario de rechazo, período por defecto y carga del usuario pasan al dominio o al caso de uso; el controlador baja de 1010 a 829 líneas. Diferencias acordadas: BUG-1 y el mensaje de usuario inexistente al crear. Nuevo BUG-11, sin corregir. 473 pruebas (1 omitida) en JDK 17 y 25. |
 |   |       |         |                 |       |
 
 ## Resumen de la línea base
@@ -68,16 +69,25 @@ Rutas abreviadas: `…/` = `gestion_curricular/src/main/java/co/edu/unicauca/dec
 - [ ] **ARQ-5. `Autorizacion` consulta JPA directamente.** [Autorizacion.java:43-44](gestion_curricular/src/main/java/co/edu/unicauca/decanatura/gestion_curricular/Security/Autorizacion.java#L43-L44) usa `SolicitudRepositoryInt`, `DocumentoRepositoryInt` y entidades JPA. Debe usar los puertos `GestionarSolicitudGatewayIntPort` y `GestionarDocumentosGatewayIntPort`, añadiendo los métodos que falten (por ejemplo `idDuenoDeSolicitud(id)`).
 
 - [ ] **ARQ-6. Los controladores contienen reglas de negocio.** Hay que moverlas a casos de uso o servicios de dominio. Los casos más claros:
-  - Paz y Salvo [SolicitudPazYSalvoRestController.java](gestion_curricular/src/main/java/co/edu/unicauca/decanatura/gestion_curricular/infraestructura/input/controladores/SolicitudPazYSalvoRestController.java):
-    - clasificación de documentos por nombre (`esOficio`, `tipoDeDocumento`, L772-797)
-    - documentos requeridos y `todosCompletos` (L908-961)
-    - búsqueda del último comentario de rechazo (L817-833)
-    - período académico por defecto (L165-171 y L221-227)
-    - carga del usuario completo antes de guardar (L154-163)
+  - Paz y Salvo [SolicitudPazYSalvoRestController.java](gestion_curricular/src/main/java/co/edu/unicauca/decanatura/gestion_curricular/infraestructura/input/controladores/SolicitudPazYSalvoRestController.java): *hecho, ver el avance más abajo.*
+    - ~~clasificación de documentos por nombre (`esOficio`, `tipoDeDocumento`, L772-797)~~
+    - ~~documentos requeridos y `todosCompletos` (L908-961)~~
+    - ~~búsqueda del último comentario de rechazo (L817-833)~~
+    - ~~período académico por defecto (L165-171 y L221-227)~~
+    - ~~carga del usuario completo antes de guardar (L154-163)~~
   - Estadísticas [EstadisticasRestController.java](gestion_curricular/src/main/java/co/edu/unicauca/decanatura/gestion_curricular/infraestructura/input/controladores/EstadisticasRestController.java): `calcularTasaProcesamiento`, `calcularEficienciaAprobacion`, `aplicarKpisDelProceso`, `normalizarProceso` y `normalizarPeriodoAcademico` (L383-610).
   - Cursos de verano: la validación de cupo en el controlador (ver DUP-2) y la elección de salón dentro de [CursosVeranoRestController.java](gestion_curricular/src/main/java/co/edu/unicauca/decanatura/gestion_curricular/infraestructura/input/controladores/CursosVeranoRestController.java) (L129-140, L466, L581).
 
   Meta orientativa: ningún controlador por encima de ~250 líneas, y cada método solo valida la entrada, llama al caso de uso y mapea el resultado.
+
+  *Avance con Paz y Salvo (revisión 5). Quedan Estadísticas y Cursos de verano, así que el punto sigue abierto:*
+  - Nueva [DocumentosPazYSalvo](gestion_curricular/src/main/java/co/edu/unicauca/decanatura/gestion_curricular/dominio/modelos/DocumentosPazYSalvo.java) (dominio): `esOficio`, `esOficioPdf`, `oficiosPdf`, `tipoDeDocumento`, `esFormatoPmFo4For27` (BUG-1) y el enum `Requerido` con `revisar(documentos)`, que devuelve qué requeridos hay, `todosCompletos` y el total. Saber Pro se informa pero no es obligatorio, igual que antes.
+  - `SolicitudPazYSalvo.ultimoComentarioDeRechazo()`: misma regla (rechazo más reciente por fecha; vacío si ese no tiene comentario).
+  - El caso de uso tiene `documentosConTipo(id)`, `oficios(id)`, `revisarDocumentosRequeridos(id)` y `comentarios(id)`. `obtenerDocumentos` (y `/coordinador`), `obtenerOficios`, `descargarOficio`, `validarDocumentosRequeridos` y `obtenerComentarios` solo lo llaman y arman el JSON, que no cambia (salvo BUG-1).
+  - `guardar` pone el período actual si no viene (`PeriodoAcademicoEnum.oActual`, ver DUP-6) y carga el usuario una sola vez: si no existe responde "Usuario no encontrado con ID: X"; si la solicitud solo trae el id, la completa. El controlador ya no inyecta `GestionarUsuarioCUIntPort`.
+  - Diferencias acordadas en `crearSolicitud-PazYSalvo` (mismo código 400): con el cuerpo tipo DTO, el mensaje de usuario inexistente pasa de "Usuario no encontrado" a "Usuario no encontrado con ID: X"; con `idUsuario` inexistente y además fecha o período inválidos, ahora se informa primero el error de fecha o período.
+  - El controlador pasa de 1010 a 829 líneas; sigue lejos de ~250. Lo que le queda son otros puntos: el armado del cuerpo `Map` al crear (ARQ-9), los `try/catch` (ARQ-11), el registro de documentos (DUP-5), las cabeceras de descarga (DUP-7), `/{id}` con tres significados (BUG-4) y el generador de documentos (ARQ-3).
+  - Pruebas: `PazYSalvoCaracterizacionTest` (escrita antes de tocar nada; referencias en `test/resources/referencias/pazysalvo/`) y `DocumentosPazYSalvoTest`. `ListadosPorRolCaracterizacionTest` pasa sin regrabar.
 
 - [x] **ARQ-7. Qué estado ve cada rol está decidido en los gateways.** Por ejemplo, [GestionarSolicitudHomologacionGatewayImplAdapter](gestion_curricular/src/main/java/co/edu/unicauca/decanatura/gestion_curricular/infraestructura/output/persistencia/gateway/GestionarSolicitudHomologacionGatewayImplAdapter.java) usa `findByUltimoEstado...("APROBADA_FUNCIONARIO", …)` para el coordinador. Hay que llevar esa decisión a [FlujoEstadosSolicitud](gestion_curricular/src/main/java/co/edu/unicauca/decanatura/gestion_curricular/dominio/modelos/FlujoEstadosSolicitud.java) (por ejemplo `estadoPendientePara(rol)`). El gateway solo debe recibir el estado ya decidido. Se resuelve junto con DUP-1.
   *Hecho:*
@@ -165,6 +175,7 @@ Rutas abreviadas: `…/` = `gestion_curricular/src/main/java/co/edu/unicauca/dec
 
 - [ ] **DUP-6. El período académico por defecto se calcula en cada controlador.** El patrón "si no viene período, usar `PeriodoAcademicoEnum.getPeriodoActual()`" está en 11 archivos de infraestructura (5 veces solo en Paz y Salvo). Debe vivir en el caso de uso o en `PeriodoAcademicoEnum.oActual(String)`.
   *Avance con DUP-1:* los listados de homologación, reingreso, ECAES y paz y salvo usan `PeriodoDeConsulta.oActual` / `oTodos` (en el paquete de controladores). Quedan los demás usos, entre ellos los de crear solicitud en paz y salvo.
+  *Avance con ARQ-6:* existe `PeriodoAcademicoEnum.oActual(String)` (dominio) y `PeriodoDeConsulta.oActual` delega en él. Crear solicitud de paz y salvo ya no calcula el período en el controlador: lo pone el caso de uso. Quedan los demás controladores.
 
 - [ ] **DUP-7. Las cabeceras de descarga se arman en cada controlador** (`Content-Disposition`, nombre en UTF-8): `descarga` y `descargaPdfConNombreUtf8` en Paz y Salvo, `archivo` en Estadísticas, y otros parecidos en Reportes y Archivos. Hay que crear una sola utilidad, por ejemplo `infraestructura/input/RespuestasArchivo`.
 
@@ -221,7 +232,7 @@ Rutas abreviadas: `…/` = `gestion_curricular/src/main/java/co/edu/unicauca/dec
 
 ## 4. Errores encontrados durante la revisión
 
-- [ ] **BUG-1. Las dos funciones de Paz y Salvo esperan nombres de formato distintos.** `tipoDeDocumento` busca `pm_fo_4_for_27` con guion bajo ([L783](gestion_curricular/src/main/java/co/edu/unicauca/decanatura/gestion_curricular/infraestructura/input/controladores/SolicitudPazYSalvoRestController.java#L783)). `validarDocumentosRequeridos` busca `pm-fo-4-for-27` con guion ([L933](gestion_curricular/src/main/java/co/edu/unicauca/decanatura/gestion_curricular/infraestructura/input/controladores/SolicitudPazYSalvoRestController.java#L933)). Un archivo puede salir clasificado como formato y aun así quedar como "falta". Se corrige al moverlo al dominio (ARQ-6), con una prueba.
+- [x] **BUG-1. Las dos funciones de Paz y Salvo esperan nombres de formato distintos.** *Hecho, con el cambio de JSON acordado: una sola regla, `DocumentosPazYSalvo.esFormatoPmFo4For27`. Es el formato si el nombre contiene el código con guiones, guiones bajos, espacios o sin separador; la palabra "formato" no hace falta ni basta. En `validarDocumentosRequeridos`, `formato_pm_fo_4_for_27.pdf` o `pm_fo_4_for_27.pdf` pasan de "falta" a entregado (y `todosCompletos` puede pasar a true). En `obtenerDocumentos`, un archivo con "formato" pero sin el código (`formato.pdf`) deja de mostrarse como "Formato PM-FO-4-FOR-27". Pruebas: `DocumentosPazYSalvoTest` y `PazYSalvoCaracterizacionTest` (solo esas dos diferencias en las referencias).* Además de los separadores, las reglas diferían en la lógica: la etiqueta pedía "formato" **o** el código y la validación, "formato" **y** el código. `tipoDeDocumento` busca `pm_fo_4_for_27` con guion bajo ([L783](gestion_curricular/src/main/java/co/edu/unicauca/decanatura/gestion_curricular/infraestructura/input/controladores/SolicitudPazYSalvoRestController.java#L783)). `validarDocumentosRequeridos` busca `pm-fo-4-for-27` con guion ([L933](gestion_curricular/src/main/java/co/edu/unicauca/decanatura/gestion_curricular/infraestructura/input/controladores/SolicitudPazYSalvoRestController.java#L933)). Un archivo puede salir clasificado como formato y aun así quedar como "falta". Se corrige al moverlo al dominio (ARQ-6), con una prueba.
 
 - [x] **BUG-2. La clave JWT tiene un valor por defecto en el código.** En [JwtUtil.java:21](gestion_curricular/src/main/java/co/edu/unicauca/decanatura/gestion_curricular/Security/JwtUtil.java#L21) está `app.jwt.secret` con un default. Si falta la variable en producción, la app arranca con una clave pública. Hay que quitar el default y fallar al arrancar si no está definida. *Además se exige un mínimo de 32 bytes.*
 
@@ -242,6 +253,8 @@ Rutas abreviadas: `…/` = `gestion_curricular/src/main/java/co/edu/unicauca/dec
 - [ ] **BUG-9. El listado "por rol" de homologación y reingreso no incluye a la secretaría.** `listarSolicitudesPorRol` con `SECRETARIA` devuelve `[]` en homologación (`GET /listarSolicitud-Homologacion/porRol`) y reingreso (`GET /listarSolicitud-Reingreso/porUser`), mientras que en paz y salvo devuelve las de último estado `APROBADA_COORDINADOR`. Se conservó tal cual en DUP-1 (marcado con `// BUG-9` en los dos casos de uso). Quitar ese `if` hace que la secretaría vea sus pendientes; cambia el JSON con `rol=SECRETARIA`, así que se coordina con el frontend. ⚠️ **frontend**
 
 - [ ] **BUG-10. El coordinador no tiene paso en ECAES, pero hay una vista de coordinador.** `GET /listarSolicitud-ecaes/porRol?rol=COORDINADOR` buscaba ECAES con último estado `APROBADA_FUNCIONARIO`, que el flujo ECAES (`Enviada → PRE_REGISTRADO | RECHAZADA`) no permite, así que siempre salía vacía con datos válidos. Desde DUP-1 el flujo decide y la lista es `[]` sin consultar. *Decisión pendiente*: si el coordinador debe ver algo de ECAES (por ejemplo las `PRE_REGISTRADO` de su programa), hay que añadir ese paso al flujo; si no, el frontend puede dejar de pedirla. ⚠️ **frontend**
+
+- [ ] **BUG-11. Al crear un paz y salvo, la fecha enviada se valida pero se descarta.** El cuerpo con `idUsuario` acepta `fecha_solicitud` y responde 400 si no es `yyyy-MM-dd`; el cuerpo tipo DTO exige `fecha_registro_solicitud` (400 si falta) y también `nombre_solicitud`. Pero [GestionarSolicitudPazYSalvoGatewayImplAdapter.guardar](gestion_curricular/src/main/java/co/edu/unicauca/decanatura/gestion_curricular/infraestructura/output/persistencia/gateway/GestionarSolicitudPazYSalvoGatewayImplAdapter.java) siempre guarda la fecha del servidor y arma el nombre con el del estudiante, así que ni la fecha ni el nombre enviados llegan a la base (lo fija `crear-solicitud.json`: `fecha_registro_solicitud` sale con la fecha de hoy). *Decisión pendiente*: si la fecha de registro debe ser siempre la del servidor, sobran esas validaciones y la obligatoriedad (cambia qué peticiones dan 400; ⚠️ **frontend**); si debe respetarse la enviada, hay que cambiar el gateway.
 
 ## 5. Nombres y estilo (P3)
 
