@@ -12,6 +12,7 @@ import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarS
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarNotificacionCUIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarArchivosCUIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.servicios.AsociadorDocumentosPendientes;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.servicios.ListadorSolicitudes;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.FormateadorResultadosIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.GestionarDocumentosGatewayIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.GestionarEstadoSolicitudGatewayIntPort;
@@ -19,6 +20,7 @@ import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.Gestionar
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.GestionarUsuarioGatewayIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.excepciones.EntidadNoExisteException;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.EstadoSolicitud;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.FiltroSolicitudes;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.FlujoEstadosSolicitud;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.SolicitudHomologacion;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Usuario;
@@ -35,6 +37,7 @@ public class GestionarSolicitudHomologacionCUAdapter implements GestionarSolicit
     private final GestionarEstadoSolicitudGatewayIntPort objGestionarEstadoSolicitudGateway;
     private final GestionarNotificacionCUIntPort objGestionarNotificacionCU;
     private final AsociadorDocumentosPendientes asociadorDocumentos;
+    private final ListadorSolicitudes<SolicitudHomologacion> listador;
 
     public GestionarSolicitudHomologacionCUAdapter(FormateadorResultadosIntPort formateadorResultados, GestionarSolicitudHomologacionGatewayIntPort gestionarSolicitudHomologacionGateway
     ,GestionarUsuarioGatewayIntPort gestionarUsuarioGateway, GestionarDocumentosGatewayIntPort gestionarDocumentosGateway, GestionarEstadoSolicitudGatewayIntPort gestionarEstadoSolicitudGateway,
@@ -46,6 +49,7 @@ public class GestionarSolicitudHomologacionCUAdapter implements GestionarSolicit
         this.objGestionarEstadoSolicitudGateway = gestionarEstadoSolicitudGateway;
         this.objGestionarNotificacionCU = objGestionarNotificacionCU;
         this.asociadorDocumentos = new AsociadorDocumentosPendientes(gestionarDocumentosGateway, gestionarArchivos);
+        this.listador = new ListadorSolicitudes<>(FLUJO, gestionarSolicitudHomologacionGateway);
     }
     @Override
     public SolicitudHomologacion guardar(SolicitudHomologacion solicitud) {
@@ -104,99 +108,18 @@ public class GestionarSolicitudHomologacionCUAdapter implements GestionarSolicit
     }
 
     @Override
-    public List<SolicitudHomologacion> listarSolicitudesToFuncionario() {
-        return objGestionarSolicitudHomologacionGateway.listarSolicitudesToFuncionario();
-    }
-    @Override
-    public List<SolicitudHomologacion> listarSolicitudesToCoordinador() {
-        return objGestionarSolicitudHomologacionGateway.listarSolicitudesToCoordinador();
-    }
-
-    @Override
-    public List<SolicitudHomologacion> listarSolicitudesToCoordinadorPorPrograma(Integer idPrograma) {
-        return objGestionarSolicitudHomologacionGateway.listarSolicitudesToCoordinadorPorPrograma(idPrograma);
-    }
-
-    @Override
-    public List<SolicitudHomologacion> listarSolicitudesToFuncionarioPorPeriodo(String periodoAcademico) {
-        return objGestionarSolicitudHomologacionGateway.listarSolicitudesToFuncionarioPorPeriodo(periodoAcademico);
-    }
-
-    @Override
-    public List<SolicitudHomologacion> listarSolicitudesToCoordinadorPorProgramaYPeriodo(Integer idPrograma, String periodoAcademico) {
-        return objGestionarSolicitudHomologacionGateway.listarSolicitudesToCoordinadorPorProgramaYPeriodo(idPrograma, periodoAcademico);
-    }
-
-    @Override
-    public List<SolicitudHomologacion> listarSolicitudesToSecretariaPorPeriodo(String periodoAcademico) {
-        return objGestionarSolicitudHomologacionGateway.listarSolicitudesToSecretariaPorPeriodo(periodoAcademico);
-    }
-
-    @Override
-    public List<SolicitudHomologacion> listarSolicitudesAprobadasToSecretariaPorPeriodo(String periodoAcademico) {
-        return objGestionarSolicitudHomologacionGateway.listarSolicitudesAprobadasToSecretariaPorPeriodo(periodoAcademico);
-    }
-
-    @Override
-    public List<SolicitudHomologacion> listarSolicitudesPorUsuarioYPeriodo(Integer idUsuario, String periodoAcademico) {
-        return objGestionarSolicitudHomologacionGateway.listarSolicitudesPorUsuarioYPeriodo(idUsuario, periodoAcademico);
-    }
-
-    @Override
-    public List<SolicitudHomologacion> listarSolicitudesToSecretaria() {
-        return objGestionarSolicitudHomologacionGateway.listarSolicitudesToSecretaria();
-    }
-
-    @Override
-    public List<SolicitudHomologacion> listarSolicitudesAprobadasToSecretaria() {
-        return objGestionarSolicitudHomologacionGateway.listarSolicitudesAprobadasToSecretaria();
-    }
-
-    @Override
-    public List<SolicitudHomologacion> listarSolicitudesAprobadasToFuncionario() {
-        return objGestionarSolicitudHomologacionGateway.listarSolicitudesAprobadasToFuncionario();
-    }
-
-    @Override
-    public List<SolicitudHomologacion> listarSolicitudesAprobadasToFuncionarioPorPeriodo(String periodoAcademico) {
-        return objGestionarSolicitudHomologacionGateway.listarSolicitudesAprobadasToFuncionarioPorPeriodo(periodoAcademico);
-    }
-
-    @Override
-    public List<SolicitudHomologacion> listarSolicitudesAprobadasToCoordinador() {
-        return objGestionarSolicitudHomologacionGateway.listarSolicitudesAprobadasToCoordinador();
-    }
-
-    @Override
-    public List<SolicitudHomologacion> listarSolicitudesAprobadasToCoordinadorPorPrograma(Integer idPrograma) {
-        return objGestionarSolicitudHomologacionGateway.listarSolicitudesAprobadasToCoordinadorPorPrograma(idPrograma);
-    }
-
-    @Override
-    public List<SolicitudHomologacion> listarSolicitudesAprobadasToCoordinadorPorProgramaYPeriodo(Integer idPrograma, String periodoAcademico) {
-        return objGestionarSolicitudHomologacionGateway.listarSolicitudesAprobadasToCoordinadorPorProgramaYPeriodo(idPrograma, periodoAcademico);
+    public List<SolicitudHomologacion> listar(FiltroSolicitudes filtro) {
+        return listador.listar(filtro);
     }
 
     @Override
     public List<SolicitudHomologacion> listarSolicitudesPorRol(String rol, Integer idUsuario) {
-        List<SolicitudHomologacion> todas = objGestionarSolicitudHomologacionGateway.listarSolicitudes();
-
-        return todas.stream().filter(solicitud -> {
-            EstadoSolicitud ultimoEstado = solicitud.ultimoRegistroEstado();
-
-            switch (rol) {
-                case "ESTUDIANTE":
-                    return solicitud.getObjUsuario().getId_usuario().equals(idUsuario);
-                case "FUNCIONARIO":
-                    return ultimoEstado != null && EstadosSolicitud.ENVIADA.textoGuardado().equals(ultimoEstado.getEstado_actual());
-                case "COORDINADOR":
-                    return ultimoEstado != null && EstadosSolicitud.APROBADA_FUNCIONARIO.textoGuardado().equals(ultimoEstado.getEstado_actual());
-                default:
-                    return false;
-            }
-        }).toList();
+        // BUG-9: este listado nunca incluyó a la secretaría (paz y salvo sí); se conserva hasta decidirlo
+        if ("SECRETARIA".equals(rol)) {
+            return List.of();
+        }
+        return listador.listarPorRol(rol, idUsuario);
     }
-
 
     @Override
     public SolicitudHomologacion buscarPorId(Integer idSolicitud) {

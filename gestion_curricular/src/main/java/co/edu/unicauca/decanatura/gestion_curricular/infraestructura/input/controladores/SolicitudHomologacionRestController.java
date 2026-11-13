@@ -16,7 +16,7 @@ import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.DTOPe
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.DTORespuesta.SolicitudHomologacionDTORespuesta;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.mappers.SolicitudHomologacioneMapperDominio;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.mappers.SolicitudMapperDominio;
-import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Enums.PeriodoAcademicoEnum;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.FiltroSolicitudes;
 import org.springframework.security.access.prepost.PreAuthorize;
 import co.edu.unicauca.decanatura.gestion_curricular.Security.Autorizacion;
 import jakarta.validation.Valid;
@@ -88,83 +88,30 @@ public class SolicitudHomologacionRestController {
     @GetMapping("/listarSolicitud-Homologacion/Funcionario")
     public ResponseEntity<List<SolicitudHomologacionDTORespuesta>> listarSolicitudHomologacionToFuncionario(
             @RequestParam(required = false) String periodoAcademico) {
-        // Si no se proporciona período, usar el período académico actual basado en la fecha
-        if (periodoAcademico == null || periodoAcademico.trim().isEmpty()) {
-            PeriodoAcademicoEnum periodoActual = PeriodoAcademicoEnum.getPeriodoActual();
-            if (periodoActual != null) {
-                periodoAcademico = periodoActual.getValor();
-                log.debug("Usando período académico actual automático: {}", periodoAcademico);
-            }
-        }
-        
-        List<SolicitudHomologacion> solicitudes;
-        if (periodoAcademico != null && !periodoAcademico.trim().isEmpty()) {
-            solicitudes = solicitudHomologacionCU.listarSolicitudesToFuncionarioPorPeriodo(periodoAcademico.trim());
-        } else {
-            solicitudes = solicitudHomologacionCU.listarSolicitudesToFuncionario();
-        }
-        
-        List<SolicitudHomologacionDTORespuesta> respuesta = solicitudMapperDominio.mappearListaDeSolicitudHomologacionARespuesta(solicitudes);
-        return ResponseEntity.ok(respuesta);
+        return responder(solicitudHomologacionCU.listar(FiltroSolicitudes.pendientesDe(
+                FlujoEstadosSolicitud.FUNCIONARIO, null, PeriodoDeConsulta.oActual(periodoAcademico))));
     }
 
     @GetMapping("/listarSolicitud-Homologacion/Coordinador")
     public ResponseEntity<List<SolicitudHomologacionDTORespuesta>> listarSolicitudHomologacionToCoordinador(
             @RequestParam(required = false) String periodoAcademico) {
-        // Obtener el programa del coordinador autenticado
         Integer idPrograma = autorizacion.idProgramaCoordinadorActual();
-        
-        // Si no se proporciona período, usar el período académico actual basado en la fecha
-        if (periodoAcademico == null || periodoAcademico.trim().isEmpty()) {
-            PeriodoAcademicoEnum periodoActual = PeriodoAcademicoEnum.getPeriodoActual();
-            if (periodoActual != null) {
-                periodoAcademico = periodoActual.getValor();
-                log.debug("Usando período académico actual automático: {}", periodoAcademico);
-            }
-        }
-        
-        List<SolicitudHomologacion> solicitudes;
-        if (idPrograma != null) {
-            // Filtrar por programa y período del coordinador
-            if (periodoAcademico != null && !periodoAcademico.trim().isEmpty()) {
-                solicitudes = solicitudHomologacionCU.listarSolicitudesToCoordinadorPorProgramaYPeriodo(idPrograma, periodoAcademico.trim());
-            } else {
-                solicitudes = solicitudHomologacionCU.listarSolicitudesToCoordinadorPorPrograma(idPrograma);
-            }
-        } else {
-            // Si no se puede obtener el programa, retornar todas (fallback)
+        if (idPrograma == null) {
+            // Si no se puede obtener el programa, se devuelven todas, de todos los períodos (fallback)
             log.warn("No se pudo obtener el programa del coordinador, retornando todas las solicitudes");
-            solicitudes = solicitudHomologacionCU.listarSolicitudesToCoordinador();
+            return responder(solicitudHomologacionCU.listar(
+                    FiltroSolicitudes.pendientesDe(FlujoEstadosSolicitud.COORDINADOR, null, null)));
         }
-        
-        List<SolicitudHomologacionDTORespuesta> respuesta = solicitudMapperDominio.mappearListaDeSolicitudHomologacionARespuesta(solicitudes);
-        return ResponseEntity.ok(respuesta);
+        return responder(solicitudHomologacionCU.listar(FiltroSolicitudes.pendientesDe(
+                FlujoEstadosSolicitud.COORDINADOR, idPrograma, PeriodoDeConsulta.oActual(periodoAcademico))));
     }
 
     @GetMapping("/listarSolicitud-Homologacion/Secretaria")
     public ResponseEntity<List<SolicitudHomologacionDTORespuesta>> listarSolicitudHomologacionToSecretaria(
             @RequestParam(required = false) String periodoAcademico) {
-        // Si no se proporciona período, usar el período académico actual basado en la fecha
-        if (periodoAcademico == null || periodoAcademico.trim().isEmpty()) {
-            PeriodoAcademicoEnum periodoActual = PeriodoAcademicoEnum.getPeriodoActual();
-            if (periodoActual != null) {
-                periodoAcademico = periodoActual.getValor();
-                log.debug("Usando período académico actual automático: {}", periodoAcademico);
-            }
-        }
-        
-        List<SolicitudHomologacion> solicitudes;
-        if (periodoAcademico != null && !periodoAcademico.trim().isEmpty()) {
-            solicitudes = solicitudHomologacionCU.listarSolicitudesToSecretariaPorPeriodo(periodoAcademico.trim());
-        } else {
-            solicitudes = solicitudHomologacionCU.listarSolicitudesToSecretaria();
-        }
-        
-        List<SolicitudHomologacionDTORespuesta> respuesta = solicitudMapperDominio.mappearListaDeSolicitudHomologacionARespuesta(solicitudes);
-        return ResponseEntity.ok(respuesta);
+        return responder(solicitudHomologacionCU.listar(FiltroSolicitudes.pendientesDe(
+                FlujoEstadosSolicitud.SECRETARIO, null, PeriodoDeConsulta.oActual(periodoAcademico))));
     }
-
-
 
     @PreAuthorize("isAuthenticated()")
     @GetMapping("/listarSolicitud-Homologacion/porRol")
@@ -182,119 +129,56 @@ public class SolicitudHomologacionRestController {
             }
         }
 
-        // Si no se proporciona período, usar el período académico actual basado en la fecha
-        if (periodoAcademico == null || periodoAcademico.trim().isEmpty()) {
-            PeriodoAcademicoEnum periodoActual = PeriodoAcademicoEnum.getPeriodoActual();
-            if (periodoActual != null) {
-                periodoAcademico = periodoActual.getValor();
-                log.debug("Usando período académico actual automático: {}", periodoAcademico);
-            }
+        String periodo = PeriodoDeConsulta.oActual(periodoAcademico);
+        if ("ESTUDIANTE".equals(rol) && idUsuario != null && periodo != null) {
+            return responder(solicitudHomologacionCU.listar(FiltroSolicitudes.deEstudiante(idUsuario, periodo)));
         }
-
-        List<SolicitudHomologacion> solicitudes;
-        if ("ESTUDIANTE".equals(rol) && idUsuario != null && periodoAcademico != null && !periodoAcademico.trim().isEmpty()) {
-            solicitudes = solicitudHomologacionCU.listarSolicitudesPorUsuarioYPeriodo(idUsuario, periodoAcademico.trim());
-        } else {
-            solicitudes = solicitudHomologacionCU.listarSolicitudesPorRol(rol, idUsuario);
-        }
-
-        List<SolicitudHomologacionDTORespuesta> respuesta =
-                solicitudMapperDominio.mappearListaDeSolicitudHomologacionARespuesta(solicitudes);
-
-        return ResponseEntity.ok(respuesta);
-    }
-
-    @GetMapping("/listarSolicitud-Homologacion/Secretaria/Aprobadas")
-    public ResponseEntity<List<SolicitudHomologacionDTORespuesta>> listarSolicitudHomologacionAprobadasToSecretaria(
-            @RequestParam(required = false) String periodoAcademico) {
-        List<SolicitudHomologacion> solicitudes;
-        
-        // Si se solicita "todos" o está vacío/null, mostrar todas las solicitudes sin filtrar
-        if (periodoAcademico == null || periodoAcademico.trim().isEmpty() || 
-            periodoAcademico.trim().equalsIgnoreCase("todos") ||
-            periodoAcademico.trim().equalsIgnoreCase("todos los periodos") ||
-            periodoAcademico.trim().equalsIgnoreCase("todos los períodos")) {
-            log.debug("Mostrando todas las solicitudes procesadas sin filtrar por período");
-            solicitudes = solicitudHomologacionCU.listarSolicitudesAprobadasToSecretaria();
-        } else {
-            // Filtrar por período académico específico
-            solicitudes = solicitudHomologacionCU.listarSolicitudesAprobadasToSecretariaPorPeriodo(periodoAcademico.trim());
-        }
-        
-        List<SolicitudHomologacionDTORespuesta> respuesta = solicitudMapperDominio.mappearListaDeSolicitudHomologacionARespuesta(solicitudes);
-        return ResponseEntity.ok(respuesta);
+        return responder(solicitudHomologacionCU.listarSolicitudesPorRol(rol, idUsuario));
     }
 
     /**
-     * Listar solicitudes de Homologación ya procesadas por el funcionario (estado APROBADA_FUNCIONARIO)
-     * GET /api/solicitudes-homologacion/listarSolicitud-Homologacion/Funcionario/Aprobadas
-     * 
-     * Este endpoint permite al funcionario ver un historial de las solicitudes 
-     * que ya ha procesado y enviado al coordinador.
-     * 
-     * @param periodoAcademico Período académico opcional (formato: "YYYY-P", ej: "2025-2")
+     * Solicitudes que la secretaría ya aprobó (pasaron por APROBADA).
+     * @param periodoAcademico opcional; vacío o "todos" muestra todos los períodos
+     */
+    @GetMapping("/listarSolicitud-Homologacion/Secretaria/Aprobadas")
+    public ResponseEntity<List<SolicitudHomologacionDTORespuesta>> listarSolicitudHomologacionAprobadasToSecretaria(
+            @RequestParam(required = false) String periodoAcademico) {
+        return responder(solicitudHomologacionCU.listar(FiltroSolicitudes.procesadasPor(
+                FlujoEstadosSolicitud.SECRETARIO, null, PeriodoDeConsulta.oTodos(periodoAcademico))));
+    }
+
+    /**
+     * Solicitudes que el funcionario ya procesó y envió al coordinador (pasaron por APROBADA_FUNCIONARIO).
+     * @param periodoAcademico opcional ("2025-2"); vacío o "todos" muestra todos los períodos
      */
     @GetMapping("/listarSolicitud-Homologacion/Funcionario/Aprobadas")
     public ResponseEntity<List<SolicitudHomologacionDTORespuesta>> listarSolicitudHomologacionAprobadasToFuncionario(
             @RequestParam(required = false) String periodoAcademico) {
-        List<SolicitudHomologacion> solicitudes;
-        
-        // Si se solicita "todos" o está vacío/null, mostrar todas las solicitudes sin filtrar
-        if (periodoAcademico == null || periodoAcademico.trim().isEmpty() || 
-            periodoAcademico.trim().equalsIgnoreCase("todos") ||
-            periodoAcademico.trim().equalsIgnoreCase("todos los periodos") ||
-            periodoAcademico.trim().equalsIgnoreCase("todos los períodos")) {
-            log.debug("Mostrando todas las solicitudes procesadas sin filtrar por período");
-            solicitudes = solicitudHomologacionCU.listarSolicitudesAprobadasToFuncionario();
-        } else {
-            // Filtrar por período académico específico
-            solicitudes = solicitudHomologacionCU.listarSolicitudesAprobadasToFuncionarioPorPeriodo(periodoAcademico.trim());
-        }
-        
-        List<SolicitudHomologacionDTORespuesta> respuesta = solicitudMapperDominio.mappearListaDeSolicitudHomologacionARespuesta(solicitudes);
-        return ResponseEntity.ok(respuesta);
+        return responder(solicitudHomologacionCU.listar(FiltroSolicitudes.procesadasPor(
+                FlujoEstadosSolicitud.FUNCIONARIO, null, PeriodoDeConsulta.oTodos(periodoAcademico))));
     }
 
     /**
-     * Listar solicitudes de Homologación ya procesadas por el coordinador (estado APROBADA_COORDINADOR)
-     * GET /api/solicitudes-homologacion/listarSolicitud-Homologacion/Coordinador/Aprobadas
-     * 
-     * Este endpoint permite al coordinador ver un historial de las solicitudes 
-     * que ya ha procesado y enviado a la secretaría.
-     * 
-     * @param periodoAcademico Período académico opcional (formato: "YYYY-P", ej: "2025-2")
+     * Solicitudes del programa del coordinador que él ya procesó y envió a la secretaría
+     * (pasaron por APROBADA_COORDINADOR).
+     * @param periodoAcademico opcional ("2025-2"); vacío o "todos" muestra todos los períodos
      */
     @GetMapping("/listarSolicitud-Homologacion/Coordinador/Aprobadas")
     public ResponseEntity<List<SolicitudHomologacionDTORespuesta>> listarSolicitudHomologacionAprobadasToCoordinador(
             @RequestParam(required = false) String periodoAcademico) {
-        // Obtener el programa del coordinador autenticado
         Integer idPrograma = autorizacion.idProgramaCoordinadorActual();
-        
-        List<SolicitudHomologacion> solicitudes;
-        
-        // Si se solicita "todos" o está vacío/null, mostrar todas las solicitudes sin filtrar por período
-        boolean mostrarTodos = periodoAcademico == null || periodoAcademico.trim().isEmpty() || 
-            periodoAcademico.trim().equalsIgnoreCase("todos") ||
-            periodoAcademico.trim().equalsIgnoreCase("todos los periodos") ||
-            periodoAcademico.trim().equalsIgnoreCase("todos los períodos");
-        
-        if (idPrograma != null) {
-            if (mostrarTodos) {
-                // Filtrar solo por programa, sin período
-                log.debug("Mostrando todas las solicitudes procesadas del programa {} sin filtrar por período", idPrograma);
-                solicitudes = solicitudHomologacionCU.listarSolicitudesAprobadasToCoordinadorPorPrograma(idPrograma);
-            } else {
-                // Filtrar por programa y período del coordinador
-                solicitudes = solicitudHomologacionCU.listarSolicitudesAprobadasToCoordinadorPorProgramaYPeriodo(idPrograma, periodoAcademico.trim());
-            }
-        } else {
-            // Si no se puede obtener el programa, retornar todas (fallback)
+        if (idPrograma == null) {
+            // Si no se puede obtener el programa, se devuelven todas, de todos los períodos (fallback)
             log.warn("No se pudo obtener el programa del coordinador, retornando todas las solicitudes");
-            solicitudes = solicitudHomologacionCU.listarSolicitudesAprobadasToCoordinador();
+            return responder(solicitudHomologacionCU.listar(
+                    FiltroSolicitudes.procesadasPor(FlujoEstadosSolicitud.COORDINADOR, null, null)));
         }
-        
-        List<SolicitudHomologacionDTORespuesta> respuesta = solicitudMapperDominio.mappearListaDeSolicitudHomologacionARespuesta(solicitudes);
-        return ResponseEntity.ok(respuesta);
+        return responder(solicitudHomologacionCU.listar(FiltroSolicitudes.procesadasPor(
+                FlujoEstadosSolicitud.COORDINADOR, idPrograma, PeriodoDeConsulta.oTodos(periodoAcademico))));
+    }
+
+    private ResponseEntity<List<SolicitudHomologacionDTORespuesta>> responder(List<SolicitudHomologacion> solicitudes) {
+        return ResponseEntity.ok(solicitudMapperDominio.mappearListaDeSolicitudHomologacionARespuesta(solicitudes));
     }
 
 
