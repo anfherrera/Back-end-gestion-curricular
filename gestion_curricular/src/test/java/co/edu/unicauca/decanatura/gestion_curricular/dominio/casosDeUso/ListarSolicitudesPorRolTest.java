@@ -101,7 +101,7 @@ class ListarSolicitudesPorRolTest {
     @DisplayName("ECAES")
     void ecaes() {
         GestionarPreRegistroEcaesGatewayIntPort gateway = mock(GestionarPreRegistroEcaesGatewayIntPort.class);
-        when(gateway.listar()).thenReturn(List.of(
+        simularUltimoEstado(gateway, List.of(
                 conEstados(new SolicitudEcaes(), 1, ENVIADA),
                 conEstados(new SolicitudEcaes(), 2, ENVIADA, EstadosSolicitud.PRE_REGISTRADO.textoGuardado())));
         GestionarSolicitudEcaesCUAdapter cu = new GestionarSolicitudEcaesCUAdapter(

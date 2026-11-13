@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Optional;
 
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.FechaEcaes;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.FiltroSolicitudes;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.SolicitudEcaes;
 
 public interface GestionarSolicitudEcaesCUIntPort {
@@ -19,31 +20,16 @@ public interface GestionarSolicitudEcaesCUIntPort {
 
     List<FechaEcaes> listarFechasEcaes();
 
-    List<SolicitudEcaes> listarSolicitudesToFuncionario();
+    /**
+     * Solicitudes de un estudiante o pendientes de un rol (ver {@link FiltroSolicitudes}). En el flujo ECAES
+     * solo decide el funcionario; ECAES no tiene listado de procesadas.
+     */
+    List<SolicitudEcaes> listar(FiltroSolicitudes filtro);
 
     /**
-     * Lista solicitudes ECAES para funcionario filtradas por período académico
-     * @param periodoAcademico Período académico (formato: "YYYY-P", ej: "2025-2")
-     * @return Lista de solicitudes del período específico
+     * Listado "por rol" con el rol en mayúsculas (ESTUDIANTE, FUNCIONARIO), sin programa ni período.
+     * Cualquier otro rol devuelve una lista vacía.
      */
-    List<SolicitudEcaes> listarSolicitudesToFuncionarioPorPeriodo(String periodoAcademico);
-
-    /**
-     * Lista solicitudes ECAES para coordinador filtradas por programa y período académico
-     * @param idPrograma ID del programa académico del coordinador
-     * @param periodoAcademico Período académico (formato: "YYYY-P", ej: "2025-2")
-     * @return Lista de solicitudes del programa y período específicos
-     */
-    List<SolicitudEcaes> listarSolicitudesToCoordinadorPorProgramaYPeriodo(Integer idPrograma, String periodoAcademico);
-
-    /**
-     * Lista solicitudes ECAES para estudiante filtradas por usuario y período académico
-     * @param idUsuario ID del usuario (estudiante)
-     * @param periodoAcademico Período académico (formato: "YYYY-P", ej: "2025-2")
-     * @return Lista de solicitudes del usuario y período específicos
-     */
-    List<SolicitudEcaes> listarSolicitudesPorUsuarioYPeriodo(Integer idUsuario, String periodoAcademico);
-
     List<SolicitudEcaes> listarSolicitudesPorRol(String rol, Integer idUsuario);
 
     /**

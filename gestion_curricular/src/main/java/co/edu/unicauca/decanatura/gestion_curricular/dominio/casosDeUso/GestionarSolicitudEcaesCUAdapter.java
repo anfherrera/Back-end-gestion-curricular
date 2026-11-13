@@ -10,12 +10,14 @@ import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarS
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarNotificacionCUIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarArchivosCUIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.servicios.AsociadorDocumentosPendientes;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.servicios.ListadorSolicitudes;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.FormateadorResultadosIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.GestionarDocumentosGatewayIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.GestionarEstadoSolicitudGatewayIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.GestionarPreRegistroEcaesGatewayIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.GestionarUsuarioGatewayIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.EstadoSolicitud;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.FiltroSolicitudes;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.FlujoEstadosSolicitud;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.FechaEcaes;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.SolicitudEcaes;
@@ -34,6 +36,7 @@ public class GestionarSolicitudEcaesCUAdapter implements GestionarSolicitudEcaes
     private final GestionarUsuarioGatewayIntPort objGestionarUsuarioGateway;
     private final GestionarNotificacionCUIntPort objGestionarNotificacionCU;
     private final AsociadorDocumentosPendientes asociadorDocumentos;
+    private final ListadorSolicitudes<SolicitudEcaes> listador;
 
 
     public GestionarSolicitudEcaesCUAdapter(GestionarPreRegistroEcaesGatewayIntPort objGestionarSolicitudEcaesGateway,
@@ -51,7 +54,8 @@ public class GestionarSolicitudEcaesCUAdapter implements GestionarSolicitudEcaes
         this.objGestionarUsuarioGateway = objGestionarUsuarioGateway;
         this.objGestionarNotificacionCU = objGestionarNotificacionCU;
         this.asociadorDocumentos = new AsociadorDocumentosPendientes(objDocumentosGateway, gestionarArchivos);
-    
+        this.listador = new ListadorSolicitudes<>(FlujoEstadosSolicitud.ECAES, objGestionarSolicitudEcaesGateway);
+
     }
 
    
@@ -154,42 +158,15 @@ public class GestionarSolicitudEcaesCUAdapter implements GestionarSolicitudEcaes
         return objGestionarSolicitudEcaesGateway.listarFechasEcaes();
     }
 
+    /** En el flujo ECAES solo decide el funcionario: el coordinador y la secretaría reciben una lista vacía. */
     @Override
-    public List<SolicitudEcaes> listarSolicitudesToFuncionario() {
-        return objGestionarSolicitudEcaesGateway.listarSolicitudesToFuncionario();
-    }
-
-    @Override
-    public List<SolicitudEcaes> listarSolicitudesToFuncionarioPorPeriodo(String periodoAcademico) {
-        return objGestionarSolicitudEcaesGateway.listarSolicitudesToFuncionarioPorPeriodo(periodoAcademico);
-    }
-
-    @Override
-    public List<SolicitudEcaes> listarSolicitudesToCoordinadorPorProgramaYPeriodo(Integer idPrograma, String periodoAcademico) {
-        return objGestionarSolicitudEcaesGateway.listarSolicitudesToCoordinadorPorProgramaYPeriodo(idPrograma, periodoAcademico);
-    }
-
-    @Override
-    public List<SolicitudEcaes> listarSolicitudesPorUsuarioYPeriodo(Integer idUsuario, String periodoAcademico) {
-        return objGestionarSolicitudEcaesGateway.listarSolicitudesPorUsuarioYPeriodo(idUsuario, periodoAcademico);
+    public List<SolicitudEcaes> listar(FiltroSolicitudes filtro) {
+        return listador.listar(filtro);
     }
 
     @Override
     public List<SolicitudEcaes> listarSolicitudesPorRol(String rol, Integer idUsuario) {
-        List<SolicitudEcaes> todas = objGestionarSolicitudEcaesGateway.listar();
-
-        return todas.stream().filter(solicitud -> {
-            EstadoSolicitud ultimoEstado = solicitud.ultimoRegistroEstado();
-
-            switch (rol) {
-                case "ESTUDIANTE":
-                    return solicitud.getObjUsuario().getId_usuario().equals(idUsuario);
-                case "FUNCIONARIO":
-                    return ultimoEstado != null && EstadosSolicitud.ENVIADA.textoGuardado().equals(ultimoEstado.getEstado_actual());
-                default:
-                    return false;
-            }
-        }).toList();
+        return listador.listarPorRol(rol, idUsuario);
     }
 
     @Override

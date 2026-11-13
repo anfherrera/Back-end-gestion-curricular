@@ -1,6 +1,5 @@
 package co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.gateway;
 
-import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Enums.EstadosSolicitud;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -56,33 +55,19 @@ public class GestionarPreRegistroEcaesGatewayImplAdapter implements GestionarPre
     }
 
     @Override
-    public List<SolicitudEcaes> listarSolicitudesToFuncionario() {
-        return solicitudEcaesRepository.findByUltimoEstado(EstadosSolicitud.ENVIADA.textoGuardado()) .stream()
-            .map(entity -> mapper.map(entity, SolicitudEcaes.class))
-            .collect(Collectors.toList());
+    public List<SolicitudEcaes> listarPorUsuario(Integer idUsuario, String periodo) {
+        return aDominio(solicitudEcaesRepository.findByUsuarioYPeriodo(idUsuario, periodo));
     }
 
     @Override
-    public List<SolicitudEcaes> listarSolicitudesToFuncionarioPorPeriodo(String periodoAcademico) {
-        return solicitudEcaesRepository.findByUltimoEstadoAndPeriodoAcademico(EstadosSolicitud.ENVIADA.textoGuardado(), periodoAcademico).stream()
-                .map(entity -> mapper.map(entity, SolicitudEcaes.class))
-                .collect(Collectors.toList());
+    public List<SolicitudEcaes> listarPorUltimoEstado(String estado, Integer idPrograma, String periodo) {
+        return aDominio(idPrograma == null
+                ? solicitudEcaesRepository.findByUltimoEstadoAndPeriodoAcademico(estado, periodo)
+                : solicitudEcaesRepository.findByUltimoEstadoAndProgramaAndPeriodoAcademico(estado, idPrograma, periodo));
     }
 
-    @Override
-    public List<SolicitudEcaes> listarSolicitudesToCoordinadorPorProgramaYPeriodo(Integer idPrograma, String periodoAcademico) {
-        if (idPrograma == null) {
-            return listar();
-        }
-        return solicitudEcaesRepository.findByUltimoEstadoAndProgramaAndPeriodoAcademico(EstadosSolicitud.APROBADA_FUNCIONARIO.textoGuardado(), idPrograma, periodoAcademico).stream()
-                .map(entity -> mapper.map(entity, SolicitudEcaes.class))
-                .collect(Collectors.toList());
-    }
-
-    @Override
-    public List<SolicitudEcaes> listarSolicitudesPorUsuarioYPeriodo(Integer idUsuario, String periodoAcademico) {
-        // Todas las solicitudes del estudiante, sin importar el estado; el filtro lo hace la base de datos
-        return solicitudEcaesRepository.findByUsuarioYPeriodo(idUsuario, periodoAcademico).stream()
+    private List<SolicitudEcaes> aDominio(List<SolicitudEcaesEntity> entidades) {
+        return entidades.stream()
                 .map(entity -> mapper.map(entity, SolicitudEcaes.class))
                 .collect(Collectors.toList());
     }

@@ -15,23 +15,6 @@ public interface SolicitudEcaesRepositoryInt extends JpaRepository<SolicitudEcae
     List<SolicitudEcaesEntity> listarSolicitudesConUsuarios();
 
     /**
-     * Busca las solicitudes Ecaes cuyo último estado sea "--"
-     * @return Lista de solicitudes con último estado "--"
-     */
-    @Query("SELECT s FROM SolicitudEcaesEntity s " +
-           "WHERE s.id_solicitud IN (" +
-           "    SELECT e.objSolicitud.id_solicitud " +
-           "    FROM EstadoSolicitudEntity e " +
-           "    WHERE e.estado_actual = :estado " +
-           "    AND e.fecha_registro_estado = (" +
-           "        SELECT MAX(e2.fecha_registro_estado) " +
-           "        FROM EstadoSolicitudEntity e2 " +
-           "        WHERE e2.objSolicitud.id_solicitud = e.objSolicitud.id_solicitud" +
-           "    )" +
-           ")")
-    List<SolicitudEcaesEntity> findByUltimoEstado(@Param("estado") String estado);
-
-    /**
      * Busca las solicitudes ECAES cuyo último estado sea el especificado
      * y que pertenezcan a un período académico específico
      */
