@@ -209,6 +209,11 @@ public class GestionarSolicitudPazYSalvoCUAdapter implements GestionarSolicitudP
     }
 
     @Override
+    public DocumentosPazYSalvo.RevisionDocumentos revisarDocumentosRequeridos(Integer idSolicitud) {
+        return DocumentosPazYSalvo.revisar(buscarPorId(idSolicitud).getDocumentos());
+    }
+
+    @Override
     public Optional<DatosDocumento> prepararDocumento(Integer id, String cedula, String titulo, String director,
                                                       boolean fechaLocal) {
         SolicitudPazYSalvo solicitud = buscarPorId(id);

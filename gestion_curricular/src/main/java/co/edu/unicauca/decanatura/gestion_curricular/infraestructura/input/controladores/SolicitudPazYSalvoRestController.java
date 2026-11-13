@@ -791,56 +791,15 @@ public class SolicitudPazYSalvoRestController {
     @PreAuthorize("@autorizacion.esStaff() or @autorizacion.esDuenoSolicitud(#idSolicitud)")
     @GetMapping("/validarDocumentosRequeridos/{idSolicitud}")
     public ResponseEntity<Map<String, Object>> validarDocumentosRequeridosPazSalvo(@PathVariable Integer idSolicitud) {
-        
-        SolicitudPazYSalvo solicitud = solicitudPazYSalvoCU.buscarPorId(idSolicitud);
-        if (solicitud == null) {
-            return ResponseEntity.notFound().build();
-        }
-        
-        List<Documento> documentos = solicitud.getDocumentos();
-        if (documentos == null) {
-            documentos = new ArrayList<>();
-        }
-        
+        var revision = solicitudPazYSalvoCU.revisarDocumentosRequeridos(idSolicitud);
+
         Map<String, Boolean> documentosRequeridos = new HashMap<>();
-        documentosRequeridos.put("formato_pm_fo_4_for_27", false);
-        documentosRequeridos.put("autorizacion_publicar", false);
-        documentosRequeridos.put("hoja_vida_academica", false);
-        documentosRequeridos.put("comprobante_pago", false);
-        documentosRequeridos.put("documento_trabajo_grado", false);
-        documentosRequeridos.put("resultado_saber_pro", false);
-        
-        for (Documento documento : documentos) {
-            if (documento.getNombre() != null) {
-                String nombre = documento.getNombre().toLowerCase();
-                
-                if (nombre.contains("formato") && nombre.contains("pm-fo-4-for-27")) {
-                    documentosRequeridos.put("formato_pm_fo_4_for_27", true);
-                } else if (nombre.contains("autorizacion") && nombre.contains("publicar")) {
-                    documentosRequeridos.put("autorizacion_publicar", true);
-                } else if (nombre.contains("hoja") && nombre.contains("vida") && nombre.contains("academica")) {
-                    documentosRequeridos.put("hoja_vida_academica", true);
-                } else if (nombre.contains("comprobante") && nombre.contains("pago")) {
-                    documentosRequeridos.put("comprobante_pago", true);
-                } else if (nombre.contains("documento") && nombre.contains("trabajo") && nombre.contains("grado")) {
-                    documentosRequeridos.put("documento_trabajo_grado", true);
-                } else if (nombre.contains("resultado") && nombre.contains("saber")) {
-                    documentosRequeridos.put("resultado_saber_pro", true);
-                }
-            }
-        }
-        
-        boolean todosCompletos = documentosRequeridos.get("formato_pm_fo_4_for_27") &&
-                               documentosRequeridos.get("autorizacion_publicar") &&
-                               documentosRequeridos.get("hoja_vida_academica") &&
-                               documentosRequeridos.get("comprobante_pago") &&
-                               documentosRequeridos.get("documento_trabajo_grado");
-        
+        revision.entregados().forEach((requerido, entregado) -> documentosRequeridos.put(requerido.clave(), entregado));
+
         Map<String, Object> resultado = new HashMap<>();
         resultado.put("documentosRequeridos", documentosRequeridos);
-        resultado.put("todosCompletos", todosCompletos);
-        resultado.put("totalDocumentos", documentos.size());
-        
+        resultado.put("todosCompletos", revision.todosCompletos());
+        resultado.put("totalDocumentos", revision.totalDocumentos());
         return ResponseEntity.ok(resultado);
     }
     /**
