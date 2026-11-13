@@ -14,6 +14,7 @@ import lombok.extern.slf4j.Slf4j;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.GestionarSolicitudCursoVeranoGatewayIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.excepciones.CupoAgotadoException;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.NombreSolicitud;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.ReglasCupo;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.CursoOfertadoVerano;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Solicitud;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.SolicitudCursoVeranoIncripcion;
@@ -524,25 +525,15 @@ public class GestionarSolicitudCursoVeranoGatewayImplAdapter implements Gestiona
         if (estados == null || estados.isEmpty()) {
             return false;
         }
-        return ESTADOS_INSCRIPCION_QUE_OCUPAN_CUPO.contains(estados.get(estados.size() - 1).getEstado_actual());
+        return ReglasCupo.estadoOcupaCupo(estados.get(estados.size() - 1).getEstado_actual());
     }
-
-    /**
-     * Estados (último estado de la inscripción) que cuentan como cupo ocupado.
-     * "APROBADA" y "Aprobada" son variantes antiguas que el código ya no escribe; se siguen aceptando al leer.
-     */
-    public static final java.util.List<String> ESTADOS_INSCRIPCION_QUE_OCUPAN_CUPO = java.util.List.of(
-            EstadoSolicitudCursoVerano.PAGO_VALIDADO.texto(),
-            EstadoSolicitudCursoVerano.INSCRIPCION_COMPLETADA.texto(),
-            "APROBADA", "Aprobada",
-            EstadoSolicitudCursoVerano.APROBADO.texto());
 
     @Override
     @Transactional(readOnly = true)
     public Integer contarInscripcionesAceptadasPorCurso(Integer idCurso) {
-        // Ocupan cupo las inscripciones aceptadas: pago validado, completadas o marcadas como aprobadas
+        // Ocupan cupo las inscripciones aceptadas (ver ReglasCupo)
         int total = 0;
-        for (String estado : ESTADOS_INSCRIPCION_QUE_OCUPAN_CUPO) {
+        for (String estado : ReglasCupo.ESTADOS_QUE_OCUPAN_CUPO) {
             Integer n = solicitudRepository.contarInscripcionesPorEstado(idCurso, estado);
             total += n != null ? n : 0;
         }

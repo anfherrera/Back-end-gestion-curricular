@@ -18,7 +18,7 @@ Rutas abreviadas: `…/` = `gestion_curricular/src/main/java/co/edu/unicauca/dec
 | 0 | 2026-11-13 | Revisión inicial | — | Línea base: 283 clases, 29.4k líneas en `main`. |
 | 1 | 2026-11-13 | Claude | ARQ-1, MUE-1, MUE-2, MUE-3, MUE-4, MUE-8, BUG-2, BUG-3, BUG-5, BUG-6 | Prueba de arquitectura con línea base. |
 | 2 | 2026-11-13 | Claude | DUP-4, DUP-3 | Enums de estado sin cambiar valores guardados ni JSON. Nuevos BUG-7 y BUG-8, documentados y sin corregir. 458 pruebas en JDK 17 y 25. |
-| 3 | 2026-11-13 | Claude | BUG-7 | `ListarSolicitudesPorRolTest`. 461 pruebas en JDK 17 y 25. |
+| 3 | 2026-11-13 | Claude | BUG-7, ARQ-2 | `ListarSolicitudesPorRolTest`, `ReglasCupoTest`. 472 pruebas en JDK 17 y 25. |
 |   |       |         |                 |       |
 
 ## Resumen de la línea base
@@ -47,7 +47,12 @@ Rutas abreviadas: `…/` = `gestion_curricular/src/main/java/co/edu/unicauca/dec
 
   Al principio fallará. Sirve como lista viva de lo que falta y evita que el problema vuelva. Se puede valorar ArchUnit en lugar de regex.
 
-- [ ] **ARQ-2. Un controlador usa una constante del gateway.** [InscripcionesVeranoRestController.java:670](gestion_curricular/src/main/java/co/edu/unicauca/decanatura/gestion_curricular/infraestructura/input/controladores/InscripcionesVeranoRestController.java#L670) usa `GestionarSolicitudCursoVeranoGatewayImplAdapter.ESTADOS_INSCRIPCION_QUE_OCUPAN_CUPO`. Esa lista es una regla de negocio. Hay que moverla al dominio (por ejemplo `SolicitudCursoVeranoIncripcion.ocupaCupo()` o una clase `ReglasCupo`) y que el gateway y el controlador la lean de ahí. Ver también DUP-2.
+- [x] **ARQ-2. Un controlador usa una constante del gateway.** [InscripcionesVeranoRestController.java:670](gestion_curricular/src/main/java/co/edu/unicauca/decanatura/gestion_curricular/infraestructura/input/controladores/InscripcionesVeranoRestController.java#L670) usa `GestionarSolicitudCursoVeranoGatewayImplAdapter.ESTADOS_INSCRIPCION_QUE_OCUPAN_CUPO`. Esa lista es una regla de negocio. Hay que moverla al dominio (por ejemplo `SolicitudCursoVeranoIncripcion.ocupaCupo()` o una clase `ReglasCupo`) y que el gateway y el controlador la lean de ahí. Ver también DUP-2.
+  *Hecho:*
+  - Nueva [ReglasCupo](gestion_curricular/src/main/java/co/edu/unicauca/decanatura/gestion_curricular/dominio/modelos/ReglasCupo.java) con `ESTADOS_QUE_OCUPAN_CUPO` (misma lista y orden), `estadoOcupaCupo(String)` y `ocupaCupo(Solicitud)`. El gateway la usa para contar y en `yaOcupaCupo`; el controlador usa `ReglasCupo.ocupaCupo` y se borró su helper privado.
+  - `InscripcionesVeranoRestController` salió de la línea base de `ArquitecturaHexagonalTest`.
+  - Única diferencia: antes, si el último registro tenía `estado_actual` null, `List.of(...).contains(null)` lanzaba `NullPointerException` en el controlador y en el gateway; ahora se considera que no ocupa cupo y la petición sigue a la validación del caso de uso, que la rechaza como regla de negocio. Igual que en DUP-3, no ocurre en la práctica.
+  - Prueba: `ReglasCupoTest`.
 
 - [ ] **ARQ-3. Los generadores de documentos no tienen puerto.** Los controladores inyectan clases concretas de `infraestructura/output/formateador`:
   - [CursosVeranoRestController.java:40](gestion_curricular/src/main/java/co/edu/unicauca/decanatura/gestion_curricular/infraestructura/input/controladores/CursosVeranoRestController.java#L40): `GeneradorPdfCursosVerano`

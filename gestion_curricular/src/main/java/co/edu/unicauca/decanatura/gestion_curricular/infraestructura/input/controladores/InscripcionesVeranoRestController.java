@@ -16,6 +16,7 @@ import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.CursoOferta
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.SolicitudCursoVeranoPreinscripcion;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.SolicitudCursoVeranoIncripcion;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Documento;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.ReglasCupo;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Usuario;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Solicitud;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Enums.CondicionSolicitudVerano;
@@ -297,7 +298,7 @@ public class InscripcionesVeranoRestController {
             }
             
             // 2. El curso debe tener cupo (si la inscripcion ya ocupaba cupo, aceptarla de nuevo no suma)
-            if (!ocupaCupo(inscripcion)) {
+            if (!ReglasCupo.ocupaCupo(inscripcion)) {
                 ResponseEntity<Map<String, Object>> sinCupo = validarCupoDisponible(inscripcion.getObjCursoOfertadoVerano());
                 if (sinCupo != null) {
                     return sinCupo;
@@ -644,15 +645,5 @@ public class InscripcionesVeranoRestController {
                     .CupoAgotadoException(curso.getCupo_estimado(), ocupadosSeguro));
         }
         return null;
-    }
-
-    /** true si el último estado de la inscripción ya ocupa un cupo del curso. */
-    private boolean ocupaCupo(SolicitudCursoVeranoIncripcion inscripcion) {
-        if (inscripcion.ultimoRegistroEstado() == null) {
-            return false;
-        }
-        return co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.gateway
-                .GestionarSolicitudCursoVeranoGatewayImplAdapter.ESTADOS_INSCRIPCION_QUE_OCUPAN_CUPO
-                .contains(inscripcion.estadoActual());
     }
 }
