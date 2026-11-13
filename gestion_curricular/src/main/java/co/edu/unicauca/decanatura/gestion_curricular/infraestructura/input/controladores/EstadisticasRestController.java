@@ -2,6 +2,7 @@ package co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.cont
 
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarEstadisticasCUIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Estadistica;
+import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.DTOPeticion.EstadisticaDTOPeticion;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.DTORespuesta.EstadisticaDTORespuesta;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.mappers.EstadisticaMapperDominio;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GenerarReportesEstadisticasCUIntPort;
@@ -36,8 +37,8 @@ public class EstadisticasRestController {
     private final GenerarReportesEstadisticasCUIntPort generadorReportes;
 
     @PostMapping("/crear")
-    public ResponseEntity<EstadisticaDTORespuesta> crearEstadistica(@RequestBody @Valid Estadistica estadistica) {
-        Estadistica creada = estadisticaCU.crearEstadistica(estadistica);
+    public ResponseEntity<EstadisticaDTORespuesta> crearEstadistica(@RequestBody @Valid EstadisticaDTOPeticion estadistica) {
+        Estadistica creada = estadisticaCU.crearEstadistica(mapper.mappearDeEstadisticaDTOPeticionAEstadistica(estadistica));
         return new ResponseEntity<>(
                 mapper.mappearDeEstadisticaAEstadisticaDTORespuesta(creada),
                 HttpStatus.CREATED
@@ -45,8 +46,8 @@ public class EstadisticasRestController {
     }
 
     @PutMapping("/actualizar")
-    public ResponseEntity<EstadisticaDTORespuesta> actualizarEstadistica(@RequestBody @Valid Estadistica estadistica) {
-        Estadistica actualizada = estadisticaCU.actualizarEstadistica(estadistica);
+    public ResponseEntity<EstadisticaDTORespuesta> actualizarEstadistica(@RequestBody @Valid EstadisticaDTOPeticion estadistica) {
+        Estadistica actualizada = estadisticaCU.actualizarEstadistica(mapper.mappearDeEstadisticaDTOPeticionAEstadistica(estadistica));
         return new ResponseEntity<>(
                 mapper.mappearDeEstadisticaAEstadisticaDTORespuesta(actualizada),
                 HttpStatus.ACCEPTED

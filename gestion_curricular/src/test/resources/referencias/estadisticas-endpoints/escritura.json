@@ -1,0 +1,86 @@
+{
+  "POST0" : {
+    "status" : 201,
+    "contentType" : "application/json",
+    "body" : {
+      "id_estadistica" : null,
+      "nombre" : null,
+      "total_solicitudes" : null,
+      "total_aprobadas" : null,
+      "total_rechazadas" : null,
+      "periodos_academico" : [ ],
+      "nombres_procesos" : [ ],
+      "nombres_programas" : [ ]
+    }
+  },
+  "POST1" : {
+    "status" : 201,
+    "contentType" : "application/json",
+    "body" : {
+      "id_estadistica" : null,
+      "nombre" : null,
+      "total_solicitudes" : null,
+      "total_aprobadas" : null,
+      "total_rechazadas" : null,
+      "periodos_academico" : null,
+      "nombres_procesos" : null,
+      "nombres_programas" : null
+    }
+  },
+  "POST2" : {
+    "status" : 201,
+    "contentType" : "application/json",
+    "body" : {
+      "id_estadistica" : 4,
+      "nombre" : "",
+      "total_solicitudes" : -1,
+      "total_aprobadas" : 7,
+      "total_rechazadas" : 2,
+      "periodos_academico" : [ 0, 86400000 ],
+      "nombres_procesos" : [ "B", "A" ],
+      "nombres_programas" : [ "Z", "X" ]
+    }
+  },
+  "PUT0" : {
+    "status" : 202,
+    "contentType" : "application/json",
+    "body" : {
+      "id_estadistica" : null,
+      "nombre" : null,
+      "total_solicitudes" : null,
+      "total_aprobadas" : null,
+      "total_rechazadas" : null,
+      "periodos_academico" : [ ],
+      "nombres_procesos" : [ ],
+      "nombres_programas" : [ ]
+    }
+  },
+  "PUT1" : {
+    "status" : 202,
+    "contentType" : "application/json",
+    "body" : {
+      "id_estadistica" : null,
+      "nombre" : null,
+      "total_solicitudes" : null,
+      "total_aprobadas" : null,
+      "total_rechazadas" : null,
+      "periodos_academico" : null,
+      "nombres_procesos" : null,
+      "nombres_programas" : null
+    }
+  },
+  "PUT2" : {
+    "status" : 202,
+    "contentType" : "application/json",
+    "body" : {
+      "id_estadistica" : 4,
+      "nombre" : "",
+      "total_solicitudes" : -1,
+      "total_aprobadas" : 7,
+      "total_rechazadas" : 2,
+      "periodos_academico" : [ 0, 86400000 ],
+      "nombres_procesos" : [ "B", "A" ],
+      "nombres_programas" : [ "Z", "X" ]
+    }
+  }
+}
