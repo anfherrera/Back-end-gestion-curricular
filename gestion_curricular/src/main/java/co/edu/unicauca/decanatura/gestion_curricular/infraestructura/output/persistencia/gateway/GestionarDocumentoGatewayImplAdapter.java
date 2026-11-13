@@ -15,6 +15,25 @@ import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.pers
 @Service
 @Transactional
 public class GestionarDocumentoGatewayImplAdapter implements GestionarDocumentosGatewayIntPort {
+    @Override
+    @Transactional(readOnly = true)
+    public java.util.Optional<AccesoDocumento> accesoDocumento(Integer idDocumento) {
+        return documentoRepository.findById(idDocumento).map(this::acceso);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<AccesoDocumento> accesosPorNombre(String nombre) {
+        return documentoRepository.findAllByNombre(nombre).stream().map(this::acceso).toList();
+    }
+
+    private AccesoDocumento acceso(DocumentoEntity documento) {
+        SolicitudEntity solicitud = documento.getObjSolicitud();
+        Integer dueno = solicitud != null && solicitud.getObjUsuario() != null
+                ? solicitud.getObjUsuario().getId_usuario() : null;
+        return new AccesoDocumento(documento.getIdUsuarioSubio(), dueno,
+                documento.getRuta_documento(), documento.getNombre());
+    }
 
 
     private final DocumentoRepositoryInt documentoRepository;

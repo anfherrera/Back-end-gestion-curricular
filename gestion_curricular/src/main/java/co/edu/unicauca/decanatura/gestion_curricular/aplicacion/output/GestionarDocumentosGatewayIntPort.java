@@ -5,6 +5,13 @@ import java.util.List;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Documento;
 
 public interface GestionarDocumentosGatewayIntPort {
+    /** Datos mínimos de acceso, sin cargar el grafo completo de una solicitud. */
+    record AccesoDocumento(Integer idUsuarioSubio, Integer idDuenoSolicitud, String ruta, String nombre) {}
+
+    java.util.Optional<AccesoDocumento> accesoDocumento(Integer idDocumento);
+
+    /** Conserva el orden de la consulta por nombre. */
+    List<AccesoDocumento> accesosPorNombre(String nombre);
     
     Documento crearDocumento(Documento documento);
 

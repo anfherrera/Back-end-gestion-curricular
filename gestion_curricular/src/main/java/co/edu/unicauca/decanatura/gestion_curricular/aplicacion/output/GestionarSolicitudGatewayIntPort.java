@@ -7,6 +7,8 @@ import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Solicitud;
 
 
 public interface GestionarSolicitudGatewayIntPort {
+    /** Dueño de la solicitud; null si no existe o no tiene usuario. */
+    Integer idDuenoDeSolicitud(Integer idSolicitud);
     
 
     Solicitud actualizarSolicitud(Solicitud solicitud, EstadoSolicitud estadoSolicitud);

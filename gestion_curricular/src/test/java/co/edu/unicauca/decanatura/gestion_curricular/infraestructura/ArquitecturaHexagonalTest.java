@@ -68,7 +68,7 @@ class ArquitecturaHexagonalTest {
     void seguridadNoUsaPersistencia() throws IOException {
         comprobarConLineaBase("Security",
                 Pattern.compile("persistencia\\.(repositorios|entidades)\\."),
-                Set.of("Security/Autorizacion.java")); // ARQ-5
+                Set.of());
     }
 
     private static void comprobarConLineaBase(String capa, Pattern prohibido, Set<String> lineaBase) throws IOException {

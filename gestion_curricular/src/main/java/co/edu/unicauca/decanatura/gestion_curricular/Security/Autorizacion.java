@@ -14,10 +14,9 @@ import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.Gestionar
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.GestionarUsuarioGatewayIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Rol;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Usuario;
-import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.entidades.DocumentoEntity;
-import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.entidades.SolicitudEntity;
-import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.repositorios.DocumentoRepositoryInt;
-import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.repositorios.SolicitudRepositoryInt;
+import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.GestionarDocumentosGatewayIntPort;
+import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.GestionarDocumentosGatewayIntPort.AccesoDocumento;
+import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.GestionarSolicitudGatewayIntPort;
 import lombok.RequiredArgsConstructor;
 
 /**
@@ -40,8 +39,8 @@ public class Autorizacion {
 
     private final GestionarUsuarioGatewayIntPort usuarioGateway;
     private final GestionarRolGatewayIntPort rolGateway;
-    private final SolicitudRepositoryInt solicitudRepository;
-    private final DocumentoRepositoryInt documentoRepository;
+    private final GestionarSolicitudGatewayIntPort solicitudGateway;
+    private final GestionarDocumentosGatewayIntPort documentoGateway;
 
     /** true si el usuario autenticado tiene un rol administrativo. */
     public boolean esStaff() {
@@ -85,10 +84,7 @@ public class Autorizacion {
         if (actual == null || idSolicitud == null) {
             return false;
         }
-        SolicitudEntity solicitud = solicitudRepository.findById(idSolicitud).orElse(null);
-        return solicitud != null
-                && solicitud.getObjUsuario() != null
-                && actual.equals(solicitud.getObjUsuario().getId_usuario());
+        return actual.equals(solicitudGateway.idDuenoDeSolicitud(idSolicitud));
     }
 
     /** true si el usuario autenticado puede asignar ese rol: solo el Administrador asigna el rol Administrador. */
@@ -133,7 +129,7 @@ public class Autorizacion {
         if (idDocumento == null) {
             return false;
         }
-        return documentoRepository.findById(idDocumento).map(this::esDelUsuarioActual).orElse(false);
+        return documentoGateway.accesoDocumento(idDocumento).map(this::esDelUsuarioActual).orElse(false);
     }
 
     /**
@@ -147,25 +143,21 @@ public class Autorizacion {
             return Optional.empty();
         }
         boolean staff = esStaff();
-        return documentoRepository.findAllByNombre(nombreArchivo).stream()
+        return documentoGateway.accesosPorNombre(nombreArchivo).stream()
                 .filter(d -> staff || esDelUsuarioActual(d))
                 .findFirst()
-                .map(d -> d.getRuta_documento() != null && !d.getRuta_documento().isBlank()
-                        ? d.getRuta_documento() : d.getNombre());
+                .map(d -> d.ruta() != null && !d.ruta().isBlank() ? d.ruta() : d.nombre());
     }
 
-    private boolean esDelUsuarioActual(DocumentoEntity documento) {
+    private boolean esDelUsuarioActual(AccesoDocumento documento) {
         Integer actual = idUsuarioActual();
         if (actual == null) {
             return false;
         }
-        if (actual.equals(documento.getIdUsuarioSubio())) {
+        if (actual.equals(documento.idUsuarioSubio())) {
             return true;
         }
-        SolicitudEntity solicitud = documento.getObjSolicitud();
-        return solicitud != null
-                && solicitud.getObjUsuario() != null
-                && actual.equals(solicitud.getObjUsuario().getId_usuario());
+        return actual.equals(documento.idDuenoSolicitud());
     }
 
     /** Usuario autenticado (cargado desde la BD) o null si no hay sesión. */

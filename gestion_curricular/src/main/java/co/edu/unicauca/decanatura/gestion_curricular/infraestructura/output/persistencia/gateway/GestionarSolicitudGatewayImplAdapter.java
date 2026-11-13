@@ -33,6 +33,13 @@ import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.pers
 @Service
 @Transactional
 public class GestionarSolicitudGatewayImplAdapter implements GestionarSolicitudGatewayIntPort {
+    @Override
+    @Transactional(readOnly = true)
+    public Integer idDuenoDeSolicitud(Integer idSolicitud) {
+        return solicitudRepository.findById(idSolicitud)
+                .map(SolicitudEntity::getObjUsuario)
+                .map(usuario -> usuario.getId_usuario()).orElse(null);
+    }
 
     private final SolicitudRepositoryInt solicitudRepository;
     private final UsuarioRepositoryInt usuarioRepository;
