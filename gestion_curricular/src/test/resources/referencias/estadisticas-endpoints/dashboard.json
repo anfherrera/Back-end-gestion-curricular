@@ -1,0 +1,1279 @@
+{
+  "GET /dashboard" : {
+    "estado" : 200,
+    "cuerpo" : {
+      "fechaGeneracion" : "<ahora>",
+      "resumenEstados" : {
+        "APROBADA" : 4,
+        "APROBADA_COORDINADOR" : 1,
+        "APROBADA_FUNCIONARIO" : 0,
+        "ENVIADA" : 5,
+        "RECHAZADA" : 4
+      },
+      "resumenGlobal" : {
+        "fechaConsulta" : "<ahora>",
+        "porEstado" : {
+          "APROBADA" : 4,
+          "APROBADA_COORDINADOR" : 1,
+          "APROBADA_FUNCIONARIO" : 0,
+          "ENVIADA" : 5,
+          "RECHAZADA" : 4
+        },
+        "porPrograma" : {
+          "Ingeniería Civil" : 0,
+          "Ingeniería Electrónica" : 5,
+          "Ingeniería de Sistemas" : 8
+        },
+        "porTipoProceso" : {
+          "Cursos de Verano" : 5,
+          "ECAES" : 2,
+          "Homologacion" : 3,
+          "Paz y Salvo" : 2,
+          "Reingreso" : 2
+        },
+        "porcentajeAprobacion" : 28.6,
+        "totalAprobadas" : 4,
+        "totalEnProceso" : 1,
+        "totalEnviadas" : 5,
+        "totalRechazadas" : 4,
+        "totalSolicitudes" : 14
+      },
+      "topProcesos" : {
+        "Cursos de Verano" : 5,
+        "ECAES" : 2,
+        "Homologacion" : 3,
+        "Paz y Salvo" : 2,
+        "Reingreso" : 2
+      }
+    }
+  },
+  "GET /dashboard?periodoAcademico=[]" : {
+    "estado" : 200,
+    "cuerpo" : {
+      "fechaGeneracion" : "<ahora>",
+      "resumenEstados" : {
+        "APROBADA" : 4,
+        "APROBADA_COORDINADOR" : 1,
+        "APROBADA_FUNCIONARIO" : 0,
+        "ENVIADA" : 5,
+        "RECHAZADA" : 4
+      },
+      "resumenGlobal" : {
+        "fechaConsulta" : "<ahora>",
+        "porEstado" : {
+          "APROBADA" : 4,
+          "APROBADA_COORDINADOR" : 1,
+          "APROBADA_FUNCIONARIO" : 0,
+          "ENVIADA" : 5,
+          "RECHAZADA" : 4
+        },
+        "porPrograma" : {
+          "Ingeniería Civil" : 0,
+          "Ingeniería Electrónica" : 5,
+          "Ingeniería de Sistemas" : 8
+        },
+        "porTipoProceso" : {
+          "Cursos de Verano" : 5,
+          "ECAES" : 2,
+          "Homologacion" : 3,
+          "Paz y Salvo" : 2,
+          "Reingreso" : 2
+        },
+        "porcentajeAprobacion" : 28.6,
+        "totalAprobadas" : 4,
+        "totalEnProceso" : 1,
+        "totalEnviadas" : 5,
+        "totalRechazadas" : 4,
+        "totalSolicitudes" : 14
+      },
+      "topProcesos" : {
+        "Cursos de Verano" : 5,
+        "ECAES" : 2,
+        "Homologacion" : 3,
+        "Paz y Salvo" : 2,
+        "Reingreso" : 2
+      }
+    }
+  },
+  "GET /dashboard?periodoAcademico=[   ]" : {
+    "estado" : 200,
+    "cuerpo" : {
+      "fechaGeneracion" : "<ahora>",
+      "resumenEstados" : {
+        "APROBADA" : 4,
+        "APROBADA_COORDINADOR" : 1,
+        "APROBADA_FUNCIONARIO" : 0,
+        "ENVIADA" : 5,
+        "RECHAZADA" : 4
+      },
+      "resumenGlobal" : {
+        "fechaConsulta" : "<ahora>",
+        "porEstado" : {
+          "APROBADA" : 4,
+          "APROBADA_COORDINADOR" : 1,
+          "APROBADA_FUNCIONARIO" : 0,
+          "ENVIADA" : 5,
+          "RECHAZADA" : 4
+        },
+        "porPrograma" : {
+          "Ingeniería Civil" : 0,
+          "Ingeniería Electrónica" : 5,
+          "Ingeniería de Sistemas" : 8
+        },
+        "porTipoProceso" : {
+          "Cursos de Verano" : 5,
+          "ECAES" : 2,
+          "Homologacion" : 3,
+          "Paz y Salvo" : 2,
+          "Reingreso" : 2
+        },
+        "porcentajeAprobacion" : 28.6,
+        "totalAprobadas" : 4,
+        "totalEnProceso" : 1,
+        "totalEnviadas" : 5,
+        "totalRechazadas" : 4,
+        "totalSolicitudes" : 14
+      },
+      "topProcesos" : {
+        "Cursos de Verano" : 5,
+        "ECAES" : 2,
+        "Homologacion" : 3,
+        "Paz y Salvo" : 2,
+        "Reingreso" : 2
+      }
+    }
+  },
+  "GET /dashboard?periodoAcademico=[2025-1]" : {
+    "estado" : 200,
+    "cuerpo" : {
+      "fechaGeneracion" : "<ahora>",
+      "filtrosAplicados" : {
+        "periodoAcademico" : "2025-1"
+      },
+      "resumenEstados" : null,
+      "resumenGlobal" : {
+        "fechaConsulta" : "<ahora>",
+        "porPrograma" : {
+          "Ingeniería Civil" : 1,
+          "Ingeniería Electrónica" : 2,
+          "Ingeniería de Sistemas" : 4
+        },
+        "porTipoProceso" : {
+          "Cursos de Verano" : 2,
+          "ECAES" : 1,
+          "Homologacion" : 2,
+          "Paz y Salvo" : 1,
+          "Reingreso" : 1
+        },
+        "porcentajeAprobacion" : 42.86,
+        "totalAprobadas" : 3,
+        "totalEnProceso" : 1,
+        "totalEnviadas" : 2,
+        "totalRechazadas" : 1,
+        "totalSolicitudes" : 7
+      },
+      "topProcesos" : {
+        "Cursos de Verano" : 2,
+        "ECAES" : 1,
+        "Homologacion" : 2,
+        "Paz y Salvo" : 1,
+        "Reingreso" : 1
+      }
+    }
+  },
+  "GET /dashboard?periodoAcademico=[ 2025-2 ]" : {
+    "estado" : 200,
+    "cuerpo" : {
+      "fechaGeneracion" : "<ahora>",
+      "filtrosAplicados" : {
+        "periodoAcademico" : "2025-2"
+      },
+      "resumenEstados" : null,
+      "resumenGlobal" : {
+        "fechaConsulta" : "<ahora>",
+        "porPrograma" : {
+          "Ingeniería Electrónica" : 3,
+          "Ingeniería de Sistemas" : 3
+        },
+        "porTipoProceso" : {
+          "Cursos de Verano" : 5,
+          "ECAES" : 1,
+          "Paz y Salvo" : 1
+        },
+        "porcentajeAprobacion" : 28.57,
+        "totalAprobadas" : 2,
+        "totalEnProceso" : 0,
+        "totalEnviadas" : 2,
+        "totalRechazadas" : 3,
+        "totalSolicitudes" : 7
+      },
+      "topProcesos" : {
+        "Cursos de Verano" : 5,
+        "ECAES" : 1,
+        "Paz y Salvo" : 1
+      }
+    }
+  },
+  "GET /dashboard?periodoAcademico=[2025 - Primer Semestre]" : {
+    "estado" : 200,
+    "cuerpo" : {
+      "fechaGeneracion" : "<ahora>",
+      "filtrosAplicados" : {
+        "periodoAcademico" : "2025-2"
+      },
+      "resumenEstados" : null,
+      "resumenGlobal" : {
+        "fechaConsulta" : "<ahora>",
+        "porPrograma" : {
+          "Ingeniería Electrónica" : 3,
+          "Ingeniería de Sistemas" : 3
+        },
+        "porTipoProceso" : {
+          "Cursos de Verano" : 5,
+          "ECAES" : 1,
+          "Paz y Salvo" : 1
+        },
+        "porcentajeAprobacion" : 28.57,
+        "totalAprobadas" : 2,
+        "totalEnProceso" : 0,
+        "totalEnviadas" : 2,
+        "totalRechazadas" : 3,
+        "totalSolicitudes" : 7
+      },
+      "topProcesos" : {
+        "Cursos de Verano" : 5,
+        "ECAES" : 1,
+        "Paz y Salvo" : 1
+      }
+    }
+  },
+  "GET /dashboard?periodoAcademico=[Segundo Período 2025]" : {
+    "estado" : 200,
+    "cuerpo" : {
+      "fechaGeneracion" : "<ahora>",
+      "filtrosAplicados" : {
+        "periodoAcademico" : "2025-2"
+      },
+      "resumenEstados" : null,
+      "resumenGlobal" : {
+        "fechaConsulta" : "<ahora>",
+        "porPrograma" : {
+          "Ingeniería Electrónica" : 3,
+          "Ingeniería de Sistemas" : 3
+        },
+        "porTipoProceso" : {
+          "Cursos de Verano" : 5,
+          "ECAES" : 1,
+          "Paz y Salvo" : 1
+        },
+        "porcentajeAprobacion" : 28.57,
+        "totalAprobadas" : 2,
+        "totalEnProceso" : 0,
+        "totalEnviadas" : 2,
+        "totalRechazadas" : 3,
+        "totalSolicitudes" : 7
+      },
+      "topProcesos" : {
+        "Cursos de Verano" : 5,
+        "ECAES" : 1,
+        "Paz y Salvo" : 1
+      }
+    }
+  },
+  "GET /dashboard?periodoAcademico=[primer semestre 1999]" : {
+    "estado" : 200,
+    "cuerpo" : {
+      "fechaGeneracion" : "<ahora>",
+      "filtrosAplicados" : {
+        "periodoAcademico" : "1999-1"
+      },
+      "resumenEstados" : null,
+      "resumenGlobal" : {
+        "fechaConsulta" : "<ahora>",
+        "porPrograma" : { },
+        "porTipoProceso" : { },
+        "porcentajeAprobacion" : 0.0,
+        "totalAprobadas" : 0,
+        "totalEnProceso" : 0,
+        "totalEnviadas" : 0,
+        "totalRechazadas" : 0,
+        "totalSolicitudes" : 0
+      },
+      "topProcesos" : { }
+    }
+  },
+  "GET /dashboard?periodoAcademico=[2025-3]" : {
+    "estado" : 200,
+    "cuerpo" : {
+      "fechaGeneracion" : "<ahora>",
+      "filtrosAplicados" : {
+        "periodoAcademico" : "2025-2"
+      },
+      "resumenEstados" : null,
+      "resumenGlobal" : {
+        "fechaConsulta" : "<ahora>",
+        "porPrograma" : {
+          "Ingeniería Electrónica" : 3,
+          "Ingeniería de Sistemas" : 3
+        },
+        "porTipoProceso" : {
+          "Cursos de Verano" : 5,
+          "ECAES" : 1,
+          "Paz y Salvo" : 1
+        },
+        "porcentajeAprobacion" : 28.57,
+        "totalAprobadas" : 2,
+        "totalEnProceso" : 0,
+        "totalEnviadas" : 2,
+        "totalRechazadas" : 3,
+        "totalSolicitudes" : 7
+      },
+      "topProcesos" : {
+        "Cursos de Verano" : 5,
+        "ECAES" : 1,
+        "Paz y Salvo" : 1
+      }
+    }
+  },
+  "GET /dashboard?periodoAcademico=[sin año]" : {
+    "estado" : 200,
+    "cuerpo" : {
+      "fechaGeneracion" : "<ahora>",
+      "filtrosAplicados" : {
+        "periodoAcademico" : "sin año"
+      },
+      "resumenEstados" : null,
+      "resumenGlobal" : {
+        "fechaConsulta" : "<ahora>",
+        "porPrograma" : { },
+        "porTipoProceso" : { },
+        "porcentajeAprobacion" : 0.0,
+        "totalAprobadas" : 0,
+        "totalEnProceso" : 0,
+        "totalEnviadas" : 0,
+        "totalRechazadas" : 0,
+        "totalSolicitudes" : 0
+      },
+      "topProcesos" : { }
+    }
+  },
+  "GET /dashboard?periodoAcademico=[2025-2]" : {
+    "estado" : 200,
+    "cuerpo" : {
+      "fechaGeneracion" : "<ahora>",
+      "filtrosAplicados" : {
+        "periodoAcademico" : "2025-2"
+      },
+      "resumenEstados" : null,
+      "resumenGlobal" : {
+        "fechaConsulta" : "<ahora>",
+        "porPrograma" : {
+          "Ingeniería Electrónica" : 3,
+          "Ingeniería de Sistemas" : 3
+        },
+        "porTipoProceso" : {
+          "Cursos de Verano" : 5,
+          "ECAES" : 1,
+          "Paz y Salvo" : 1
+        },
+        "porcentajeAprobacion" : 28.57,
+        "totalAprobadas" : 2,
+        "totalEnProceso" : 0,
+        "totalEnviadas" : 2,
+        "totalRechazadas" : 3,
+        "totalSolicitudes" : 7
+      },
+      "topProcesos" : {
+        "Cursos de Verano" : 5,
+        "ECAES" : 1,
+        "Paz y Salvo" : 1
+      }
+    }
+  },
+  "GET /dashboard?periodoAcademico=[2025-2]&proceso=[  ]" : {
+    "estado" : 200,
+    "cuerpo" : {
+      "fechaGeneracion" : "<ahora>",
+      "filtrosAplicados" : {
+        "periodoAcademico" : "2025-2"
+      },
+      "resumenEstados" : null,
+      "resumenGlobal" : {
+        "fechaConsulta" : "<ahora>",
+        "porPrograma" : {
+          "Ingeniería Electrónica" : 3,
+          "Ingeniería de Sistemas" : 3
+        },
+        "porTipoProceso" : {
+          "Cursos de Verano" : 5,
+          "ECAES" : 1,
+          "Paz y Salvo" : 1
+        },
+        "porcentajeAprobacion" : 28.57,
+        "totalAprobadas" : 2,
+        "totalEnProceso" : 0,
+        "totalEnviadas" : 2,
+        "totalRechazadas" : 3,
+        "totalSolicitudes" : 7
+      },
+      "topProcesos" : {
+        "Cursos de Verano" : 5,
+        "ECAES" : 1,
+        "Paz y Salvo" : 1
+      }
+    }
+  },
+  "GET /dashboard?periodoAcademico=[2025-2]&proceso=[Reingreso]" : {
+    "estado" : 200,
+    "cuerpo" : {
+      "fechaGeneracion" : "<ahora>",
+      "filtrosAplicados" : {
+        "periodoAcademico" : "2025-2",
+        "proceso" : "Reingreso"
+      },
+      "resumenEstados" : {
+        "APROBADA" : 0,
+        "APROBADA_COORDINADOR" : 0,
+        "APROBADA_FUNCIONARIO" : 0,
+        "ENVIADA" : 0,
+        "RECHAZADA" : 0
+      },
+      "resumenGlobal" : {
+        "fechaConsulta" : "<ahora>",
+        "porEstado" : {
+          "APROBADA" : 0,
+          "APROBADA_COORDINADOR" : 0,
+          "APROBADA_FUNCIONARIO" : 0,
+          "ENVIADA" : 0,
+          "RECHAZADA" : 0
+        },
+        "porPrograma" : {
+          "Ingeniería Electrónica" : 3,
+          "Ingeniería de Sistemas" : 3
+        },
+        "porTipoProceso" : {
+          "Reingreso" : {
+            "descripcion" : "Solicitudes de reingreso a programas academicos",
+            "fechaConsulta" : "<ahora>",
+            "porEstado" : {
+              "APROBADA" : 0,
+              "APROBADA_COORDINADOR" : 0,
+              "APROBADA_FUNCIONARIO" : 0,
+              "ENVIADA" : 0,
+              "RECHAZADA" : 0
+            },
+            "porPrograma" : { },
+            "porTipoProceso" : { },
+            "porcentajeAprobacion" : 0.0,
+            "tipoProceso" : "Reingreso",
+            "totalAprobadas" : 0,
+            "totalEnProceso" : 0,
+            "totalRechazadas" : 0,
+            "totalSolicitudes" : 0
+          }
+        },
+        "porcentajeAprobacion" : 0.0,
+        "totalAprobadas" : 0,
+        "totalEnProceso" : 0,
+        "totalEnviadas" : 0,
+        "totalRechazadas" : 0,
+        "totalSolicitudes" : 0
+      },
+      "topProcesos" : {
+        "Reingreso" : {
+          "descripcion" : "Solicitudes de reingreso a programas academicos",
+          "fechaConsulta" : "<ahora>",
+          "porEstado" : {
+            "APROBADA" : 0,
+            "APROBADA_COORDINADOR" : 0,
+            "APROBADA_FUNCIONARIO" : 0,
+            "ENVIADA" : 0,
+            "RECHAZADA" : 0
+          },
+          "porPrograma" : { },
+          "porTipoProceso" : { },
+          "porcentajeAprobacion" : 0.0,
+          "tipoProceso" : "Reingreso",
+          "totalAprobadas" : 0,
+          "totalEnProceso" : 0,
+          "totalRechazadas" : 0,
+          "totalSolicitudes" : 0
+        }
+      }
+    }
+  },
+  "GET /dashboard?periodoAcademico=[2025-2]&proceso=[homologación]" : {
+    "estado" : 200,
+    "cuerpo" : {
+      "fechaGeneracion" : "<ahora>",
+      "filtrosAplicados" : {
+        "periodoAcademico" : "2025-2",
+        "proceso" : "homologación"
+      },
+      "resumenEstados" : {
+        "APROBADA" : 0,
+        "APROBADA_COORDINADOR" : 0,
+        "APROBADA_FUNCIONARIO" : 0,
+        "ENVIADA" : 0,
+        "RECHAZADA" : 0
+      },
+      "resumenGlobal" : {
+        "fechaConsulta" : "<ahora>",
+        "porEstado" : {
+          "APROBADA" : 0,
+          "APROBADA_COORDINADOR" : 0,
+          "APROBADA_FUNCIONARIO" : 0,
+          "ENVIADA" : 0,
+          "RECHAZADA" : 0
+        },
+        "porPrograma" : {
+          "Ingeniería Electrónica" : 3,
+          "Ingeniería de Sistemas" : 3
+        },
+        "porTipoProceso" : {
+          "Homologacion" : {
+            "descripcion" : "Solicitudes de homologacion de materias",
+            "fechaConsulta" : "<ahora>",
+            "porEstado" : {
+              "APROBADA" : 0,
+              "APROBADA_COORDINADOR" : 0,
+              "APROBADA_FUNCIONARIO" : 0,
+              "ENVIADA" : 0,
+              "RECHAZADA" : 0
+            },
+            "porPrograma" : { },
+            "porTipoProceso" : { },
+            "porcentajeAprobacion" : 0.0,
+            "tipoProceso" : "Homologacion",
+            "totalAprobadas" : 0,
+            "totalEnProceso" : 0,
+            "totalRechazadas" : 0,
+            "totalSolicitudes" : 0
+          }
+        },
+        "porcentajeAprobacion" : 0.0,
+        "totalAprobadas" : 0,
+        "totalEnProceso" : 0,
+        "totalEnviadas" : 0,
+        "totalRechazadas" : 0,
+        "totalSolicitudes" : 0
+      },
+      "topProcesos" : {
+        "Homologacion" : {
+          "descripcion" : "Solicitudes de homologacion de materias",
+          "fechaConsulta" : "<ahora>",
+          "porEstado" : {
+            "APROBADA" : 0,
+            "APROBADA_COORDINADOR" : 0,
+            "APROBADA_FUNCIONARIO" : 0,
+            "ENVIADA" : 0,
+            "RECHAZADA" : 0
+          },
+          "porPrograma" : { },
+          "porTipoProceso" : { },
+          "porcentajeAprobacion" : 0.0,
+          "tipoProceso" : "Homologacion",
+          "totalAprobadas" : 0,
+          "totalEnProceso" : 0,
+          "totalRechazadas" : 0,
+          "totalSolicitudes" : 0
+        }
+      }
+    }
+  },
+  "GET /dashboard?periodoAcademico=[2025-2]&proceso=[HOMOLOGACION]" : {
+    "estado" : 200,
+    "cuerpo" : {
+      "fechaGeneracion" : "<ahora>",
+      "filtrosAplicados" : {
+        "periodoAcademico" : "2025-2",
+        "proceso" : "HOMOLOGACION"
+      },
+      "resumenEstados" : {
+        "APROBADA" : 0,
+        "APROBADA_COORDINADOR" : 0,
+        "APROBADA_FUNCIONARIO" : 0,
+        "ENVIADA" : 0,
+        "RECHAZADA" : 0
+      },
+      "resumenGlobal" : {
+        "fechaConsulta" : "<ahora>",
+        "porEstado" : {
+          "APROBADA" : 0,
+          "APROBADA_COORDINADOR" : 0,
+          "APROBADA_FUNCIONARIO" : 0,
+          "ENVIADA" : 0,
+          "RECHAZADA" : 0
+        },
+        "porPrograma" : {
+          "Ingeniería Electrónica" : 3,
+          "Ingeniería de Sistemas" : 3
+        },
+        "porTipoProceso" : {
+          "Homologacion" : {
+            "descripcion" : "Solicitudes de homologacion de materias",
+            "fechaConsulta" : "<ahora>",
+            "porEstado" : {
+              "APROBADA" : 0,
+              "APROBADA_COORDINADOR" : 0,
+              "APROBADA_FUNCIONARIO" : 0,
+              "ENVIADA" : 0,
+              "RECHAZADA" : 0
+            },
+            "porPrograma" : { },
+            "porTipoProceso" : { },
+            "porcentajeAprobacion" : 0.0,
+            "tipoProceso" : "Homologacion",
+            "totalAprobadas" : 0,
+            "totalEnProceso" : 0,
+            "totalRechazadas" : 0,
+            "totalSolicitudes" : 0
+          }
+        },
+        "porcentajeAprobacion" : 0.0,
+        "totalAprobadas" : 0,
+        "totalEnProceso" : 0,
+        "totalEnviadas" : 0,
+        "totalRechazadas" : 0,
+        "totalSolicitudes" : 0
+      },
+      "topProcesos" : {
+        "Homologacion" : {
+          "descripcion" : "Solicitudes de homologacion de materias",
+          "fechaConsulta" : "<ahora>",
+          "porEstado" : {
+            "APROBADA" : 0,
+            "APROBADA_COORDINADOR" : 0,
+            "APROBADA_FUNCIONARIO" : 0,
+            "ENVIADA" : 0,
+            "RECHAZADA" : 0
+          },
+          "porPrograma" : { },
+          "porTipoProceso" : { },
+          "porcentajeAprobacion" : 0.0,
+          "tipoProceso" : "Homologacion",
+          "totalAprobadas" : 0,
+          "totalEnProceso" : 0,
+          "totalRechazadas" : 0,
+          "totalSolicitudes" : 0
+        }
+      }
+    }
+  },
+  "GET /dashboard?periodoAcademico=[2025-2]&proceso=[paz_y_salvo]" : {
+    "estado" : 200,
+    "cuerpo" : {
+      "fechaGeneracion" : "<ahora>",
+      "filtrosAplicados" : {
+        "periodoAcademico" : "2025-2",
+        "proceso" : "paz_y_salvo"
+      },
+      "resumenEstados" : {
+        "APROBADA" : 0,
+        "APROBADA_COORDINADOR" : 0,
+        "APROBADA_FUNCIONARIO" : 0,
+        "ENVIADA" : 1,
+        "RECHAZADA" : 0
+      },
+      "resumenGlobal" : {
+        "fechaConsulta" : "<ahora>",
+        "porEstado" : {
+          "APROBADA" : 0,
+          "APROBADA_COORDINADOR" : 0,
+          "APROBADA_FUNCIONARIO" : 0,
+          "ENVIADA" : 1,
+          "RECHAZADA" : 0
+        },
+        "porPrograma" : {
+          "Ingeniería Electrónica" : 3,
+          "Ingeniería de Sistemas" : 3
+        },
+        "porTipoProceso" : {
+          "Paz y Salvo" : {
+            "descripcion" : "Proceso academico",
+            "fechaConsulta" : "<ahora>",
+            "porEstado" : {
+              "APROBADA" : 0,
+              "APROBADA_COORDINADOR" : 0,
+              "APROBADA_FUNCIONARIO" : 0,
+              "ENVIADA" : 1,
+              "RECHAZADA" : 0
+            },
+            "porPrograma" : { },
+            "porTipoProceso" : { },
+            "porcentajeAprobacion" : 0.0,
+            "tipoProceso" : "Paz y Salvo",
+            "totalAprobadas" : 0,
+            "totalEnProceso" : 0,
+            "totalRechazadas" : 0,
+            "totalSolicitudes" : 1
+          }
+        },
+        "porcentajeAprobacion" : 0.0,
+        "totalAprobadas" : 0,
+        "totalEnProceso" : 0,
+        "totalEnviadas" : 1,
+        "totalRechazadas" : 0,
+        "totalSolicitudes" : 1
+      },
+      "topProcesos" : {
+        "Paz y Salvo" : {
+          "descripcion" : "Proceso academico",
+          "fechaConsulta" : "<ahora>",
+          "porEstado" : {
+            "APROBADA" : 0,
+            "APROBADA_COORDINADOR" : 0,
+            "APROBADA_FUNCIONARIO" : 0,
+            "ENVIADA" : 1,
+            "RECHAZADA" : 0
+          },
+          "porPrograma" : { },
+          "porTipoProceso" : { },
+          "porcentajeAprobacion" : 0.0,
+          "tipoProceso" : "Paz y Salvo",
+          "totalAprobadas" : 0,
+          "totalEnProceso" : 0,
+          "totalRechazadas" : 0,
+          "totalSolicitudes" : 1
+        }
+      }
+    }
+  },
+  "GET /dashboard?periodoAcademico=[2025-2]&proceso=[ECAES]" : {
+    "estado" : 200,
+    "cuerpo" : {
+      "fechaGeneracion" : "<ahora>",
+      "filtrosAplicados" : {
+        "periodoAcademico" : "2025-2",
+        "proceso" : "ECAES"
+      },
+      "resumenEstados" : {
+        "APROBADA" : 0,
+        "APROBADA_COORDINADOR" : 0,
+        "APROBADA_FUNCIONARIO" : 0,
+        "ENVIADA" : 0,
+        "RECHAZADA" : 1
+      },
+      "resumenGlobal" : {
+        "fechaConsulta" : "<ahora>",
+        "porEstado" : {
+          "APROBADA" : 0,
+          "APROBADA_COORDINADOR" : 0,
+          "APROBADA_FUNCIONARIO" : 0,
+          "ENVIADA" : 0,
+          "RECHAZADA" : 1
+        },
+        "porPrograma" : {
+          "Ingeniería Electrónica" : 3,
+          "Ingeniería de Sistemas" : 3
+        },
+        "porTipoProceso" : {
+          "ECAES" : {
+            "descripcion" : "Solicitudes para examenes ECAES",
+            "fechaConsulta" : "<ahora>",
+            "porEstado" : {
+              "APROBADA" : 0,
+              "APROBADA_COORDINADOR" : 0,
+              "APROBADA_FUNCIONARIO" : 0,
+              "ENVIADA" : 0,
+              "RECHAZADA" : 1
+            },
+            "porPrograma" : { },
+            "porTipoProceso" : { },
+            "porcentajeAprobacion" : 0.0,
+            "tipoProceso" : "ECAES",
+            "totalAprobadas" : 0,
+            "totalEnProceso" : 0,
+            "totalRechazadas" : 1,
+            "totalSolicitudes" : 1
+          }
+        },
+        "porcentajeAprobacion" : 0.0,
+        "totalAprobadas" : 0,
+        "totalEnProceso" : 0,
+        "totalEnviadas" : 0,
+        "totalRechazadas" : 1,
+        "totalSolicitudes" : 1
+      },
+      "topProcesos" : {
+        "ECAES" : {
+          "descripcion" : "Solicitudes para examenes ECAES",
+          "fechaConsulta" : "<ahora>",
+          "porEstado" : {
+            "APROBADA" : 0,
+            "APROBADA_COORDINADOR" : 0,
+            "APROBADA_FUNCIONARIO" : 0,
+            "ENVIADA" : 0,
+            "RECHAZADA" : 1
+          },
+          "porPrograma" : { },
+          "porTipoProceso" : { },
+          "porcentajeAprobacion" : 0.0,
+          "tipoProceso" : "ECAES",
+          "totalAprobadas" : 0,
+          "totalEnProceso" : 0,
+          "totalRechazadas" : 1,
+          "totalSolicitudes" : 1
+        }
+      }
+    }
+  },
+  "GET /dashboard?periodoAcademico=[2025-2]&proceso=[Curso Intersemestral]" : {
+    "estado" : 200,
+    "cuerpo" : {
+      "fechaGeneracion" : "<ahora>",
+      "filtrosAplicados" : {
+        "periodoAcademico" : "2025-2",
+        "proceso" : "Curso Intersemestral"
+      },
+      "resumenEstados" : {
+        "APROBADA" : 2,
+        "APROBADA_COORDINADOR" : 0,
+        "APROBADA_FUNCIONARIO" : 0,
+        "ENVIADA" : 1,
+        "RECHAZADA" : 2
+      },
+      "resumenGlobal" : {
+        "fechaConsulta" : "<ahora>",
+        "porEstado" : {
+          "APROBADA" : 2,
+          "APROBADA_COORDINADOR" : 0,
+          "APROBADA_FUNCIONARIO" : 0,
+          "ENVIADA" : 1,
+          "RECHAZADA" : 2
+        },
+        "porPrograma" : {
+          "Ingeniería Electrónica" : 3,
+          "Ingeniería de Sistemas" : 3
+        },
+        "porTipoProceso" : {
+          "Cursos de Verano" : {
+            "descripcion" : "Proceso academico",
+            "fechaConsulta" : "<ahora>",
+            "porEstado" : {
+              "APROBADA" : 2,
+              "APROBADA_COORDINADOR" : 0,
+              "APROBADA_FUNCIONARIO" : 0,
+              "ENVIADA" : 1,
+              "RECHAZADA" : 2
+            },
+            "porPrograma" : { },
+            "porTipoProceso" : { },
+            "porcentajeAprobacion" : 40.0,
+            "tipoProceso" : "Cursos de Verano",
+            "totalAprobadas" : 2,
+            "totalEnProceso" : 0,
+            "totalRechazadas" : 2,
+            "totalSolicitudes" : 5
+          }
+        },
+        "porcentajeAprobacion" : 40.0,
+        "totalAprobadas" : 2,
+        "totalEnProceso" : 0,
+        "totalEnviadas" : 1,
+        "totalRechazadas" : 2,
+        "totalSolicitudes" : 5
+      },
+      "topProcesos" : {
+        "Cursos de Verano" : {
+          "descripcion" : "Proceso academico",
+          "fechaConsulta" : "<ahora>",
+          "porEstado" : {
+            "APROBADA" : 2,
+            "APROBADA_COORDINADOR" : 0,
+            "APROBADA_FUNCIONARIO" : 0,
+            "ENVIADA" : 1,
+            "RECHAZADA" : 2
+          },
+          "porPrograma" : { },
+          "porTipoProceso" : { },
+          "porcentajeAprobacion" : 40.0,
+          "tipoProceso" : "Cursos de Verano",
+          "totalAprobadas" : 2,
+          "totalEnProceso" : 0,
+          "totalRechazadas" : 2,
+          "totalSolicitudes" : 5
+        }
+      }
+    }
+  },
+  "GET /dashboard?periodoAcademico=[2025-2]&proceso=[CURSO_VERANO]" : {
+    "estado" : 200,
+    "cuerpo" : {
+      "fechaGeneracion" : "<ahora>",
+      "filtrosAplicados" : {
+        "periodoAcademico" : "2025-2",
+        "proceso" : "CURSO_VERANO"
+      },
+      "resumenEstados" : {
+        "APROBADA" : 2,
+        "APROBADA_COORDINADOR" : 0,
+        "APROBADA_FUNCIONARIO" : 0,
+        "ENVIADA" : 1,
+        "RECHAZADA" : 2
+      },
+      "resumenGlobal" : {
+        "fechaConsulta" : "<ahora>",
+        "porEstado" : {
+          "APROBADA" : 2,
+          "APROBADA_COORDINADOR" : 0,
+          "APROBADA_FUNCIONARIO" : 0,
+          "ENVIADA" : 1,
+          "RECHAZADA" : 2
+        },
+        "porPrograma" : {
+          "Ingeniería Electrónica" : 3,
+          "Ingeniería de Sistemas" : 3
+        },
+        "porTipoProceso" : {
+          "Cursos de Verano" : {
+            "descripcion" : "Proceso academico",
+            "fechaConsulta" : "<ahora>",
+            "porEstado" : {
+              "APROBADA" : 2,
+              "APROBADA_COORDINADOR" : 0,
+              "APROBADA_FUNCIONARIO" : 0,
+              "ENVIADA" : 1,
+              "RECHAZADA" : 2
+            },
+            "porPrograma" : { },
+            "porTipoProceso" : { },
+            "porcentajeAprobacion" : 40.0,
+            "tipoProceso" : "Cursos de Verano",
+            "totalAprobadas" : 2,
+            "totalEnProceso" : 0,
+            "totalRechazadas" : 2,
+            "totalSolicitudes" : 5
+          }
+        },
+        "porcentajeAprobacion" : 40.0,
+        "totalAprobadas" : 2,
+        "totalEnProceso" : 0,
+        "totalEnviadas" : 1,
+        "totalRechazadas" : 2,
+        "totalSolicitudes" : 5
+      },
+      "topProcesos" : {
+        "Cursos de Verano" : {
+          "descripcion" : "Proceso academico",
+          "fechaConsulta" : "<ahora>",
+          "porEstado" : {
+            "APROBADA" : 2,
+            "APROBADA_COORDINADOR" : 0,
+            "APROBADA_FUNCIONARIO" : 0,
+            "ENVIADA" : 1,
+            "RECHAZADA" : 2
+          },
+          "porPrograma" : { },
+          "porTipoProceso" : { },
+          "porcentajeAprobacion" : 40.0,
+          "tipoProceso" : "Cursos de Verano",
+          "totalAprobadas" : 2,
+          "totalEnProceso" : 0,
+          "totalRechazadas" : 2,
+          "totalSolicitudes" : 5
+        }
+      }
+    }
+  },
+  "GET /dashboard?periodoAcademico=[2025-2]&proceso=[verano]" : {
+    "estado" : 200,
+    "cuerpo" : {
+      "fechaGeneracion" : "<ahora>",
+      "filtrosAplicados" : {
+        "periodoAcademico" : "2025-2",
+        "proceso" : "verano"
+      },
+      "resumenEstados" : null,
+      "resumenGlobal" : {
+        "fechaConsulta" : "<ahora>",
+        "porPrograma" : {
+          "Ingeniería Electrónica" : 3,
+          "Ingeniería de Sistemas" : 3
+        },
+        "porTipoProceso" : {
+          "Cursos de Verano" : 5,
+          "ECAES" : 1,
+          "Paz y Salvo" : 1
+        },
+        "porcentajeAprobacion" : 28.57,
+        "totalAprobadas" : 2,
+        "totalEnProceso" : 0,
+        "totalEnviadas" : 2,
+        "totalRechazadas" : 3,
+        "totalSolicitudes" : 7
+      },
+      "topProcesos" : {
+        "Cursos de Verano" : 5,
+        "ECAES" : 1,
+        "Paz y Salvo" : 1
+      }
+    }
+  },
+  "GET /dashboard?periodoAcademico=[2025-2]&proceso=[homolog]" : {
+    "estado" : 200,
+    "cuerpo" : {
+      "fechaGeneracion" : "<ahora>",
+      "filtrosAplicados" : {
+        "periodoAcademico" : "2025-2",
+        "proceso" : "homolog"
+      },
+      "resumenEstados" : null,
+      "resumenGlobal" : {
+        "fechaConsulta" : "<ahora>",
+        "porPrograma" : {
+          "Ingeniería Electrónica" : 3,
+          "Ingeniería de Sistemas" : 3
+        },
+        "porTipoProceso" : {
+          "Cursos de Verano" : 5,
+          "ECAES" : 1,
+          "Paz y Salvo" : 1
+        },
+        "porcentajeAprobacion" : 28.57,
+        "totalAprobadas" : 2,
+        "totalEnProceso" : 0,
+        "totalEnviadas" : 2,
+        "totalRechazadas" : 3,
+        "totalSolicitudes" : 7
+      },
+      "topProcesos" : {
+        "Cursos de Verano" : 5,
+        "ECAES" : 1,
+        "Paz y Salvo" : 1
+      }
+    }
+  },
+  "GET /dashboard?periodoAcademico=[2025-2]&proceso=[Desconocido]" : {
+    "estado" : 200,
+    "cuerpo" : {
+      "fechaGeneracion" : "<ahora>",
+      "filtrosAplicados" : {
+        "periodoAcademico" : "2025-2",
+        "proceso" : "Desconocido"
+      },
+      "resumenEstados" : null,
+      "resumenGlobal" : {
+        "fechaConsulta" : "<ahora>",
+        "porPrograma" : {
+          "Ingeniería Electrónica" : 3,
+          "Ingeniería de Sistemas" : 3
+        },
+        "porTipoProceso" : {
+          "Cursos de Verano" : 5,
+          "ECAES" : 1,
+          "Paz y Salvo" : 1
+        },
+        "porcentajeAprobacion" : 28.57,
+        "totalAprobadas" : 2,
+        "totalEnProceso" : 0,
+        "totalEnviadas" : 2,
+        "totalRechazadas" : 3,
+        "totalSolicitudes" : 7
+      },
+      "topProcesos" : {
+        "Cursos de Verano" : 5,
+        "ECAES" : 1,
+        "Paz y Salvo" : 1
+      }
+    }
+  },
+  "GET /dashboard?proceso=[ECAES]" : {
+    "estado" : 200,
+    "cuerpo" : {
+      "fechaGeneracion" : "<ahora>",
+      "filtrosAplicados" : {
+        "proceso" : "ECAES"
+      },
+      "resumenEstados" : {
+        "APROBADA" : 0,
+        "APROBADA_COORDINADOR" : 0,
+        "APROBADA_FUNCIONARIO" : 0,
+        "ENVIADA" : 0,
+        "RECHAZADA" : 0
+      },
+      "resumenGlobal" : {
+        "fechaConsulta" : "<ahora>",
+        "porEstado" : {
+          "APROBADA" : 0,
+          "APROBADA_COORDINADOR" : 0,
+          "APROBADA_FUNCIONARIO" : 0,
+          "ENVIADA" : 0,
+          "RECHAZADA" : 0
+        },
+        "porPrograma" : {
+          "Ingeniería Civil" : 0,
+          "Ingeniería Electrónica" : 0,
+          "Ingeniería de Sistemas" : 0
+        },
+        "porTipoProceso" : {
+          "ECAES" : 2
+        },
+        "porcentajeAprobacion" : 0.0,
+        "totalAprobadas" : 0,
+        "totalEnProceso" : 0,
+        "totalEnviadas" : 0,
+        "totalRechazadas" : 0,
+        "totalSolicitudes" : 0
+      },
+      "topProcesos" : {
+        "ECAES" : 2
+      }
+    }
+  },
+  "GET /dashboard?proceso=[Homologacion]" : {
+    "estado" : 200,
+    "cuerpo" : {
+      "fechaGeneracion" : "<ahora>",
+      "filtrosAplicados" : {
+        "proceso" : "Homologacion"
+      },
+      "resumenEstados" : {
+        "APROBADA" : 0,
+        "APROBADA_COORDINADOR" : 0,
+        "APROBADA_FUNCIONARIO" : 0,
+        "ENVIADA" : 0,
+        "RECHAZADA" : 0
+      },
+      "resumenGlobal" : {
+        "fechaConsulta" : "<ahora>",
+        "porEstado" : {
+          "APROBADA" : 0,
+          "APROBADA_COORDINADOR" : 0,
+          "APROBADA_FUNCIONARIO" : 0,
+          "ENVIADA" : 0,
+          "RECHAZADA" : 0
+        },
+        "porPrograma" : {
+          "Ingeniería Civil" : 0,
+          "Ingeniería Electrónica" : 0,
+          "Ingeniería de Sistemas" : 1
+        },
+        "porTipoProceso" : {
+          "Homologacion" : 3
+        },
+        "porcentajeAprobacion" : 0.0,
+        "totalAprobadas" : 0,
+        "totalEnProceso" : 0,
+        "totalEnviadas" : 0,
+        "totalRechazadas" : 0,
+        "totalSolicitudes" : 0
+      },
+      "topProcesos" : {
+        "Homologacion" : 3
+      }
+    }
+  },
+  "GET /dashboard?idPrograma=[2]" : {
+    "estado" : 200,
+    "cuerpo" : {
+      "fechaGeneracion" : "<ahora>",
+      "filtrosAplicados" : {
+        "idPrograma" : 2
+      },
+      "resumenEstados" : null,
+      "resumenGlobal" : {
+        "fechaConsulta" : "<ahora>",
+        "porPrograma" : {
+          "Ingeniería Electrónica" : 5
+        },
+        "porTipoProceso" : {
+          "Cursos de Verano" : 2,
+          "ECAES" : 1,
+          "Homologacion" : 1,
+          "Paz y Salvo" : 1
+        },
+        "porcentajeAprobacion" : 20.0,
+        "totalAprobadas" : 1,
+        "totalEnProceso" : 1,
+        "totalEnviadas" : 1,
+        "totalRechazadas" : 2,
+        "totalSolicitudes" : 5
+      },
+      "topProcesos" : {
+        "Cursos de Verano" : 2,
+        "ECAES" : 1,
+        "Homologacion" : 1,
+        "Paz y Salvo" : 1
+      }
+    }
+  },
+  "GET /dashboard?idPrograma=[2]&proceso=[Homologación]" : {
+    "estado" : 200,
+    "cuerpo" : {
+      "fechaGeneracion" : "<ahora>",
+      "filtrosAplicados" : {
+        "idPrograma" : 2,
+        "proceso" : "Homologación"
+      },
+      "resumenEstados" : {
+        "APROBADA" : 0,
+        "APROBADA_COORDINADOR" : 1,
+        "APROBADA_FUNCIONARIO" : 0,
+        "ENVIADA" : 0,
+        "RECHAZADA" : 0
+      },
+      "resumenGlobal" : {
+        "fechaConsulta" : "<ahora>",
+        "porEstado" : {
+          "APROBADA" : 0,
+          "APROBADA_COORDINADOR" : 1,
+          "APROBADA_FUNCIONARIO" : 0,
+          "ENVIADA" : 0,
+          "RECHAZADA" : 0
+        },
+        "porPrograma" : {
+          "Ingeniería Electrónica" : 5
+        },
+        "porTipoProceso" : {
+          "Homologacion" : {
+            "descripcion" : "Solicitudes de homologacion de materias",
+            "fechaConsulta" : "<ahora>",
+            "porEstado" : {
+              "APROBADA" : 0,
+              "APROBADA_COORDINADOR" : 1,
+              "APROBADA_FUNCIONARIO" : 0,
+              "ENVIADA" : 0,
+              "RECHAZADA" : 0
+            },
+            "porPrograma" : { },
+            "porTipoProceso" : { },
+            "porcentajeAprobacion" : 0.0,
+            "tipoProceso" : "Homologacion",
+            "totalAprobadas" : 0,
+            "totalEnProceso" : 1,
+            "totalRechazadas" : 0,
+            "totalSolicitudes" : 1
+          }
+        },
+        "porcentajeAprobacion" : 0.0,
+        "totalAprobadas" : 0,
+        "totalEnProceso" : 1,
+        "totalEnviadas" : 0,
+        "totalRechazadas" : 0,
+        "totalSolicitudes" : 1
+      },
+      "topProcesos" : {
+        "Homologacion" : {
+          "descripcion" : "Solicitudes de homologacion de materias",
+          "fechaConsulta" : "<ahora>",
+          "porEstado" : {
+            "APROBADA" : 0,
+            "APROBADA_COORDINADOR" : 1,
+            "APROBADA_FUNCIONARIO" : 0,
+            "ENVIADA" : 0,
+            "RECHAZADA" : 0
+          },
+          "porPrograma" : { },
+          "porTipoProceso" : { },
+          "porcentajeAprobacion" : 0.0,
+          "tipoProceso" : "Homologacion",
+          "totalAprobadas" : 0,
+          "totalEnProceso" : 1,
+          "totalRechazadas" : 0,
+          "totalSolicitudes" : 1
+        }
+      }
+    }
+  }
+}

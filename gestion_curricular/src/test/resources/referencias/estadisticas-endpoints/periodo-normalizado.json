@@ -1,0 +1,4417 @@
+{
+  "GET /estudiantes-por-programa" : {
+    "estado" : 200,
+    "cuerpo" : {
+      "descripcion" : "Distribucion de estudiantes por programa academico",
+      "estudiantesPorPrograma" : {
+        "Ingeniería Civil" : 1,
+        "Ingeniería Electrónica" : 2,
+        "Ingeniería de Sistemas" : 2
+      },
+      "fechaConsulta" : "<ahora>",
+      "totalEstudiantes" : 6
+    }
+  },
+  "GET /estudiantes-por-programa?periodoAcademico=[  ]" : {
+    "estado" : 200,
+    "cuerpo" : {
+      "descripcion" : "Distribucion de estudiantes por programa academico",
+      "estudiantesPorPrograma" : {
+        "Ingeniería Civil" : 1,
+        "Ingeniería Electrónica" : 2,
+        "Ingeniería de Sistemas" : 2
+      },
+      "fechaConsulta" : "<ahora>",
+      "totalEstudiantes" : 6
+    }
+  },
+  "GET /estudiantes-por-programa?periodoAcademico=[ 2025-1 ]" : {
+    "estado" : 200,
+    "cuerpo" : {
+      "descripcion" : "Distribucion de estudiantes por programa academico",
+      "estudiantesPorPrograma" : {
+        "Ingeniería Civil" : 1,
+        "Ingeniería Electrónica" : 2,
+        "Ingeniería de Sistemas" : 2
+      },
+      "fechaConsulta" : "<ahora>",
+      "totalEstudiantes" : 6
+    }
+  },
+  "GET /estudiantes-por-programa?periodoAcademico=[2025 - Primer Semestre]" : {
+    "estado" : 200,
+    "cuerpo" : {
+      "descripcion" : "Distribucion de estudiantes por programa academico",
+      "estudiantesPorPrograma" : {
+        "Ingeniería Civil" : 1,
+        "Ingeniería Electrónica" : 2,
+        "Ingeniería de Sistemas" : 2
+      },
+      "fechaConsulta" : "<ahora>",
+      "totalEstudiantes" : 6
+    }
+  },
+  "GET /estudiantes-por-programa?periodoAcademico=[sin año]" : {
+    "estado" : 200,
+    "cuerpo" : {
+      "descripcion" : "Distribucion de estudiantes por programa academico",
+      "estudiantesPorPrograma" : {
+        "Ingeniería Civil" : 1,
+        "Ingeniería Electrónica" : 2,
+        "Ingeniería de Sistemas" : 2
+      },
+      "fechaConsulta" : "<ahora>",
+      "totalEstudiantes" : 6
+    }
+  },
+  "GET /estudiantes-por-programa?periodoAcademico=[2025-2]&idPrograma=[2]" : {
+    "estado" : 200,
+    "cuerpo" : {
+      "descripcion" : "Distribucion de estudiantes por programa academico",
+      "estudiantesPorPrograma" : {
+        "Ingeniería Electrónica" : 2
+      },
+      "fechaConsulta" : "<ahora>",
+      "totalEstudiantes" : 2
+    }
+  },
+  "GET /estadisticas-por-proceso" : {
+    "estado" : 200,
+    "cuerpo" : {
+      "descripcion" : "Estadisticas detalladas por proceso con analisis de eficiencia y tiempo - DATOS REALES",
+      "estadisticasPorProceso" : {
+        "Cursos de Verano" : {
+          "aprobadas" : 2,
+          "color" : "#8B5CF6",
+          "descripcion" : "Solicitudes de cursos intersemestrales/verano",
+          "eficiencia" : 40.0,
+          "enProceso" : 0,
+          "enviadas" : 1,
+          "icono" : "",
+          "proceso" : "Cursos de Verano",
+          "rechazadas" : 2,
+          "tendencia" : "Decreciente",
+          "tiempoMaximo" : 10.0,
+          "tiempoMinimo" : 0.0,
+          "tiempoPromedio" : 5.5,
+          "totalSolicitudes" : 5
+        },
+        "ECAES" : {
+          "aprobadas" : 1,
+          "color" : "#EF4444",
+          "descripcion" : "Solicitudes de inscripcion a examenes ECAES",
+          "eficiencia" : 50.0,
+          "enProceso" : 0,
+          "enviadas" : 0,
+          "icono" : "",
+          "proceso" : "ECAES",
+          "rechazadas" : 1,
+          "tendencia" : "Decreciente",
+          "tiempoMaximo" : 3.0,
+          "tiempoMinimo" : 0.0,
+          "tiempoPromedio" : 1.5,
+          "totalSolicitudes" : 2
+        },
+        "Homologacion" : {
+          "aprobadas" : 1,
+          "color" : "#3B82F6",
+          "descripcion" : "Solicitudes de homologacion de materias",
+          "eficiencia" : 33.33,
+          "enProceso" : 1,
+          "enviadas" : 0,
+          "icono" : "",
+          "proceso" : "Homologacion",
+          "rechazadas" : 1,
+          "tendencia" : "Decreciente",
+          "tiempoMaximo" : 27.0,
+          "tiempoMinimo" : 17.0,
+          "tiempoPromedio" : 22.0,
+          "totalSolicitudes" : 3
+        },
+        "Paz y Salvo" : {
+          "aprobadas" : 1,
+          "color" : "#10B981",
+          "descripcion" : "Solicitudes de paz y salvo",
+          "eficiencia" : 50.0,
+          "enProceso" : 0,
+          "enviadas" : 1,
+          "icono" : "",
+          "proceso" : "Paz y Salvo",
+          "rechazadas" : 0,
+          "tendencia" : "Decreciente",
+          "tiempoMaximo" : 28.0,
+          "tiempoMinimo" : 28.0,
+          "tiempoPromedio" : 28.0,
+          "totalSolicitudes" : 2
+        },
+        "Reingreso" : {
+          "aprobadas" : 0,
+          "color" : "#F59E0B",
+          "descripcion" : "Solicitudes de reingreso a programas academicos",
+          "eficiencia" : 0.0,
+          "enProceso" : 0,
+          "enviadas" : 2,
+          "icono" : "",
+          "proceso" : "Reingreso",
+          "rechazadas" : 0,
+          "tendencia" : "Decreciente",
+          "tiempoMaximo" : 0.0,
+          "tiempoMinimo" : 0.0,
+          "tiempoPromedio" : 0.0,
+          "totalSolicitudes" : 2
+        }
+      },
+      "fechaConsulta" : "<ahora>",
+      "resumenComparativo" : {
+        "demandaMaxima" : 5,
+        "eficienciaMaxima" : 50.0,
+        "procesoMasDemandado" : "Cursos de Verano",
+        "procesoMasEficiente" : "Paz y Salvo",
+        "procesoMasRapido" : "ECAES",
+        "tiempoMinimo" : 1.5,
+        "totalProcesos" : 5
+      }
+    }
+  },
+  "GET /estadisticas-por-proceso?periodoAcademico=[  ]" : {
+    "estado" : 200,
+    "cuerpo" : {
+      "descripcion" : "Estadisticas detalladas por proceso con analisis de eficiencia y tiempo - DATOS REALES",
+      "estadisticasPorProceso" : {
+        "Cursos de Verano" : {
+          "aprobadas" : 2,
+          "color" : "#8B5CF6",
+          "descripcion" : "Solicitudes de cursos intersemestrales/verano",
+          "eficiencia" : 40.0,
+          "enProceso" : 0,
+          "enviadas" : 1,
+          "icono" : "",
+          "proceso" : "Cursos de Verano",
+          "rechazadas" : 2,
+          "tendencia" : "Decreciente",
+          "tiempoMaximo" : 10.0,
+          "tiempoMinimo" : 0.0,
+          "tiempoPromedio" : 5.5,
+          "totalSolicitudes" : 5
+        },
+        "ECAES" : {
+          "aprobadas" : 1,
+          "color" : "#EF4444",
+          "descripcion" : "Solicitudes de inscripcion a examenes ECAES",
+          "eficiencia" : 50.0,
+          "enProceso" : 0,
+          "enviadas" : 0,
+          "icono" : "",
+          "proceso" : "ECAES",
+          "rechazadas" : 1,
+          "tendencia" : "Decreciente",
+          "tiempoMaximo" : 3.0,
+          "tiempoMinimo" : 0.0,
+          "tiempoPromedio" : 1.5,
+          "totalSolicitudes" : 2
+        },
+        "Homologacion" : {
+          "aprobadas" : 1,
+          "color" : "#3B82F6",
+          "descripcion" : "Solicitudes de homologacion de materias",
+          "eficiencia" : 33.33,
+          "enProceso" : 1,
+          "enviadas" : 0,
+          "icono" : "",
+          "proceso" : "Homologacion",
+          "rechazadas" : 1,
+          "tendencia" : "Decreciente",
+          "tiempoMaximo" : 27.0,
+          "tiempoMinimo" : 17.0,
+          "tiempoPromedio" : 22.0,
+          "totalSolicitudes" : 3
+        },
+        "Paz y Salvo" : {
+          "aprobadas" : 1,
+          "color" : "#10B981",
+          "descripcion" : "Solicitudes de paz y salvo",
+          "eficiencia" : 50.0,
+          "enProceso" : 0,
+          "enviadas" : 1,
+          "icono" : "",
+          "proceso" : "Paz y Salvo",
+          "rechazadas" : 0,
+          "tendencia" : "Decreciente",
+          "tiempoMaximo" : 28.0,
+          "tiempoMinimo" : 28.0,
+          "tiempoPromedio" : 28.0,
+          "totalSolicitudes" : 2
+        },
+        "Reingreso" : {
+          "aprobadas" : 0,
+          "color" : "#F59E0B",
+          "descripcion" : "Solicitudes de reingreso a programas academicos",
+          "eficiencia" : 0.0,
+          "enProceso" : 0,
+          "enviadas" : 2,
+          "icono" : "",
+          "proceso" : "Reingreso",
+          "rechazadas" : 0,
+          "tendencia" : "Decreciente",
+          "tiempoMaximo" : 0.0,
+          "tiempoMinimo" : 0.0,
+          "tiempoPromedio" : 0.0,
+          "totalSolicitudes" : 2
+        }
+      },
+      "fechaConsulta" : "<ahora>",
+      "resumenComparativo" : {
+        "demandaMaxima" : 5,
+        "eficienciaMaxima" : 50.0,
+        "procesoMasDemandado" : "Cursos de Verano",
+        "procesoMasEficiente" : "Paz y Salvo",
+        "procesoMasRapido" : "ECAES",
+        "tiempoMinimo" : 1.5,
+        "totalProcesos" : 5
+      }
+    }
+  },
+  "GET /estadisticas-por-proceso?periodoAcademico=[ 2025-1 ]" : {
+    "estado" : 200,
+    "cuerpo" : {
+      "descripcion" : "Estadisticas detalladas por proceso con analisis de eficiencia y tiempo - DATOS REALES",
+      "estadisticasPorProceso" : {
+        "Cursos de Verano" : {
+          "aprobadas" : 1,
+          "color" : "#8B5CF6",
+          "descripcion" : "Solicitudes de cursos intersemestrales/verano",
+          "eficiencia" : 50.0,
+          "enProceso" : 0,
+          "enviadas" : 1,
+          "icono" : "",
+          "proceso" : "Cursos de Verano",
+          "rechazadas" : 0,
+          "tendencia" : "Creciente",
+          "tiempoMaximo" : 10.0,
+          "tiempoMinimo" : 10.0,
+          "tiempoPromedio" : 10.0,
+          "totalSolicitudes" : 2
+        },
+        "ECAES" : {
+          "aprobadas" : 1,
+          "color" : "#EF4444",
+          "descripcion" : "Solicitudes de inscripcion a examenes ECAES",
+          "eficiencia" : 100.0,
+          "enProceso" : 0,
+          "enviadas" : 0,
+          "icono" : "",
+          "proceso" : "ECAES",
+          "rechazadas" : 0,
+          "tendencia" : "Estable",
+          "tiempoMaximo" : 3.0,
+          "tiempoMinimo" : 3.0,
+          "tiempoPromedio" : 3.0,
+          "totalSolicitudes" : 1
+        },
+        "Homologacion" : {
+          "aprobadas" : 0,
+          "color" : "#3B82F6",
+          "descripcion" : "Solicitudes de homologacion de materias",
+          "eficiencia" : 0.0,
+          "enProceso" : 1,
+          "enviadas" : 0,
+          "icono" : "",
+          "proceso" : "Homologacion",
+          "rechazadas" : 1,
+          "tendencia" : "Decreciente",
+          "tiempoMaximo" : 17.0,
+          "tiempoMinimo" : 17.0,
+          "tiempoPromedio" : 17.0,
+          "totalSolicitudes" : 2
+        },
+        "Paz y Salvo" : {
+          "aprobadas" : 1,
+          "color" : "#10B981",
+          "descripcion" : "Solicitudes de paz y salvo",
+          "eficiencia" : 100.0,
+          "enProceso" : 0,
+          "enviadas" : 0,
+          "icono" : "",
+          "proceso" : "Paz y Salvo",
+          "rechazadas" : 0,
+          "tendencia" : "Estable",
+          "tiempoMaximo" : 28.0,
+          "tiempoMinimo" : 28.0,
+          "tiempoPromedio" : 28.0,
+          "totalSolicitudes" : 1
+        },
+        "Reingreso" : {
+          "aprobadas" : 0,
+          "color" : "#F59E0B",
+          "descripcion" : "Solicitudes de reingreso a programas academicos",
+          "eficiencia" : 0.0,
+          "enProceso" : 0,
+          "enviadas" : 1,
+          "icono" : "",
+          "proceso" : "Reingreso",
+          "rechazadas" : 0,
+          "tendencia" : "Estable",
+          "tiempoMaximo" : 0.0,
+          "tiempoMinimo" : 0.0,
+          "tiempoPromedio" : 0.0,
+          "totalSolicitudes" : 1
+        }
+      },
+      "fechaConsulta" : "<ahora>",
+      "resumenComparativo" : {
+        "demandaMaxima" : 2,
+        "eficienciaMaxima" : 100.0,
+        "procesoMasDemandado" : "Homologacion",
+        "procesoMasEficiente" : "Paz y Salvo",
+        "procesoMasRapido" : "ECAES",
+        "tiempoMinimo" : 3.0,
+        "totalProcesos" : 5
+      }
+    }
+  },
+  "GET /estadisticas-por-proceso?periodoAcademico=[2025 - Primer Semestre]" : {
+    "estado" : 200,
+    "cuerpo" : {
+      "descripcion" : "Estadisticas detalladas por proceso con analisis de eficiencia y tiempo - DATOS REALES",
+      "estadisticasPorProceso" : {
+        "Cursos de Verano" : {
+          "aprobadas" : 2,
+          "color" : "#8B5CF6",
+          "descripcion" : "Solicitudes de cursos intersemestrales/verano",
+          "eficiencia" : 40.0,
+          "enProceso" : 0,
+          "enviadas" : 1,
+          "icono" : "",
+          "proceso" : "Cursos de Verano",
+          "rechazadas" : 2,
+          "tendencia" : "Decreciente",
+          "tiempoMaximo" : 10.0,
+          "tiempoMinimo" : 0.0,
+          "tiempoPromedio" : 5.5,
+          "totalSolicitudes" : 5
+        },
+        "ECAES" : {
+          "aprobadas" : 0,
+          "color" : "#EF4444",
+          "descripcion" : "Solicitudes de inscripcion a examenes ECAES",
+          "eficiencia" : 0.0,
+          "enProceso" : 0,
+          "enviadas" : 0,
+          "icono" : "",
+          "proceso" : "ECAES",
+          "rechazadas" : 1,
+          "tendencia" : "Estable",
+          "tiempoMaximo" : 0.0,
+          "tiempoMinimo" : 0.0,
+          "tiempoPromedio" : 0.0,
+          "totalSolicitudes" : 1
+        },
+        "Homologacion" : {
+          "aprobadas" : 0,
+          "color" : "#3B82F6",
+          "descripcion" : "Solicitudes de homologacion de materias",
+          "eficiencia" : 0.0,
+          "enProceso" : 0,
+          "enviadas" : 0,
+          "icono" : "",
+          "proceso" : "Homologacion",
+          "rechazadas" : 0,
+          "tendencia" : "Estable",
+          "tiempoMaximo" : 0.0,
+          "tiempoMinimo" : 0.0,
+          "tiempoPromedio" : 0.0,
+          "totalSolicitudes" : 0
+        },
+        "Paz y Salvo" : {
+          "aprobadas" : 0,
+          "color" : "#10B981",
+          "descripcion" : "Solicitudes de paz y salvo",
+          "eficiencia" : 0.0,
+          "enProceso" : 0,
+          "enviadas" : 1,
+          "icono" : "",
+          "proceso" : "Paz y Salvo",
+          "rechazadas" : 0,
+          "tendencia" : "Estable",
+          "tiempoMaximo" : 0.0,
+          "tiempoMinimo" : 0.0,
+          "tiempoPromedio" : 0.0,
+          "totalSolicitudes" : 1
+        },
+        "Reingreso" : {
+          "aprobadas" : 0,
+          "color" : "#F59E0B",
+          "descripcion" : "Solicitudes de reingreso a programas academicos",
+          "eficiencia" : 0.0,
+          "enProceso" : 0,
+          "enviadas" : 0,
+          "icono" : "",
+          "proceso" : "Reingreso",
+          "rechazadas" : 0,
+          "tendencia" : "Estable",
+          "tiempoMaximo" : 0.0,
+          "tiempoMinimo" : 0.0,
+          "tiempoPromedio" : 0.0,
+          "totalSolicitudes" : 0
+        }
+      },
+      "fechaConsulta" : "<ahora>",
+      "resumenComparativo" : {
+        "demandaMaxima" : 5,
+        "eficienciaMaxima" : 40.0,
+        "procesoMasDemandado" : "Cursos de Verano",
+        "procesoMasEficiente" : "Cursos de Verano",
+        "procesoMasRapido" : "Cursos de Verano",
+        "tiempoMinimo" : 5.5,
+        "totalProcesos" : 5
+      }
+    }
+  },
+  "GET /estadisticas-por-proceso?periodoAcademico=[sin año]" : {
+    "estado" : 200,
+    "cuerpo" : {
+      "descripcion" : "Estadisticas detalladas por proceso con analisis de eficiencia y tiempo - DATOS REALES",
+      "estadisticasPorProceso" : {
+        "Cursos de Verano" : {
+          "aprobadas" : 0,
+          "color" : "#8B5CF6",
+          "descripcion" : "Solicitudes de cursos intersemestrales/verano",
+          "eficiencia" : 0.0,
+          "enProceso" : 0,
+          "enviadas" : 0,
+          "icono" : "",
+          "proceso" : "Cursos de Verano",
+          "rechazadas" : 0,
+          "tendencia" : "Estable",
+          "tiempoMaximo" : 0.0,
+          "tiempoMinimo" : 0.0,
+          "tiempoPromedio" : 0.0,
+          "totalSolicitudes" : 0
+        },
+        "ECAES" : {
+          "aprobadas" : 0,
+          "color" : "#EF4444",
+          "descripcion" : "Solicitudes de inscripcion a examenes ECAES",
+          "eficiencia" : 0.0,
+          "enProceso" : 0,
+          "enviadas" : 0,
+          "icono" : "",
+          "proceso" : "ECAES",
+          "rechazadas" : 0,
+          "tendencia" : "Estable",
+          "tiempoMaximo" : 0.0,
+          "tiempoMinimo" : 0.0,
+          "tiempoPromedio" : 0.0,
+          "totalSolicitudes" : 0
+        },
+        "Homologacion" : {
+          "aprobadas" : 0,
+          "color" : "#3B82F6",
+          "descripcion" : "Solicitudes de homologacion de materias",
+          "eficiencia" : 0.0,
+          "enProceso" : 0,
+          "enviadas" : 0,
+          "icono" : "",
+          "proceso" : "Homologacion",
+          "rechazadas" : 0,
+          "tendencia" : "Estable",
+          "tiempoMaximo" : 0.0,
+          "tiempoMinimo" : 0.0,
+          "tiempoPromedio" : 0.0,
+          "totalSolicitudes" : 0
+        },
+        "Paz y Salvo" : {
+          "aprobadas" : 0,
+          "color" : "#10B981",
+          "descripcion" : "Solicitudes de paz y salvo",
+          "eficiencia" : 0.0,
+          "enProceso" : 0,
+          "enviadas" : 0,
+          "icono" : "",
+          "proceso" : "Paz y Salvo",
+          "rechazadas" : 0,
+          "tendencia" : "Estable",
+          "tiempoMaximo" : 0.0,
+          "tiempoMinimo" : 0.0,
+          "tiempoPromedio" : 0.0,
+          "totalSolicitudes" : 0
+        },
+        "Reingreso" : {
+          "aprobadas" : 0,
+          "color" : "#F59E0B",
+          "descripcion" : "Solicitudes de reingreso a programas academicos",
+          "eficiencia" : 0.0,
+          "enProceso" : 0,
+          "enviadas" : 0,
+          "icono" : "",
+          "proceso" : "Reingreso",
+          "rechazadas" : 0,
+          "tendencia" : "Estable",
+          "tiempoMaximo" : 0.0,
+          "tiempoMinimo" : 0.0,
+          "tiempoPromedio" : 0.0,
+          "totalSolicitudes" : 0
+        }
+      },
+      "fechaConsulta" : "<ahora>",
+      "resumenComparativo" : {
+        "demandaMaxima" : 0,
+        "eficienciaMaxima" : 0.0,
+        "procesoMasDemandado" : null,
+        "procesoMasEficiente" : null,
+        "procesoMasRapido" : null,
+        "tiempoMinimo" : 9.223372036854776E16,
+        "totalProcesos" : 5
+      }
+    }
+  },
+  "GET /estadisticas-por-proceso?periodoAcademico=[2025-2]&idPrograma=[2]" : {
+    "estado" : 200,
+    "cuerpo" : {
+      "descripcion" : "Estadisticas detalladas por proceso con analisis de eficiencia y tiempo - DATOS REALES",
+      "estadisticasPorProceso" : {
+        "Cursos de Verano" : {
+          "aprobadas" : 0,
+          "color" : "#8B5CF6",
+          "descripcion" : "Solicitudes de cursos intersemestrales/verano",
+          "eficiencia" : 0.0,
+          "enProceso" : 0,
+          "enviadas" : 0,
+          "icono" : "",
+          "proceso" : "Cursos de Verano",
+          "rechazadas" : 2,
+          "tendencia" : "Decreciente",
+          "tiempoMaximo" : 2.0,
+          "tiempoMinimo" : 0.0,
+          "tiempoPromedio" : 1.0,
+          "totalSolicitudes" : 2
+        },
+        "ECAES" : {
+          "aprobadas" : 0,
+          "color" : "#EF4444",
+          "descripcion" : "Solicitudes de inscripcion a examenes ECAES",
+          "eficiencia" : 0.0,
+          "enProceso" : 0,
+          "enviadas" : 0,
+          "icono" : "",
+          "proceso" : "ECAES",
+          "rechazadas" : 0,
+          "tendencia" : "Estable",
+          "tiempoMaximo" : 0.0,
+          "tiempoMinimo" : 0.0,
+          "tiempoPromedio" : 0.0,
+          "totalSolicitudes" : 0
+        },
+        "Homologacion" : {
+          "aprobadas" : 0,
+          "color" : "#3B82F6",
+          "descripcion" : "Solicitudes de homologacion de materias",
+          "eficiencia" : 0.0,
+          "enProceso" : 0,
+          "enviadas" : 0,
+          "icono" : "",
+          "proceso" : "Homologacion",
+          "rechazadas" : 0,
+          "tendencia" : "Estable",
+          "tiempoMaximo" : 0.0,
+          "tiempoMinimo" : 0.0,
+          "tiempoPromedio" : 0.0,
+          "totalSolicitudes" : 0
+        },
+        "Paz y Salvo" : {
+          "aprobadas" : 0,
+          "color" : "#10B981",
+          "descripcion" : "Solicitudes de paz y salvo",
+          "eficiencia" : 0.0,
+          "enProceso" : 0,
+          "enviadas" : 1,
+          "icono" : "",
+          "proceso" : "Paz y Salvo",
+          "rechazadas" : 0,
+          "tendencia" : "Estable",
+          "tiempoMaximo" : 0.0,
+          "tiempoMinimo" : 0.0,
+          "tiempoPromedio" : 0.0,
+          "totalSolicitudes" : 1
+        },
+        "Reingreso" : {
+          "aprobadas" : 0,
+          "color" : "#F59E0B",
+          "descripcion" : "Solicitudes de reingreso a programas academicos",
+          "eficiencia" : 0.0,
+          "enProceso" : 0,
+          "enviadas" : 0,
+          "icono" : "",
+          "proceso" : "Reingreso",
+          "rechazadas" : 0,
+          "tendencia" : "Estable",
+          "tiempoMaximo" : 0.0,
+          "tiempoMinimo" : 0.0,
+          "tiempoPromedio" : 0.0,
+          "totalSolicitudes" : 0
+        }
+      },
+      "fechaConsulta" : "<ahora>",
+      "resumenComparativo" : {
+        "demandaMaxima" : 2,
+        "eficienciaMaxima" : 0.0,
+        "procesoMasDemandado" : "Cursos de Verano",
+        "procesoMasEficiente" : null,
+        "procesoMasRapido" : "Cursos de Verano",
+        "tiempoMinimo" : 1.0,
+        "totalProcesos" : 5
+      }
+    }
+  },
+  "GET /estado-solicitudes" : {
+    "estado" : 200,
+    "cuerpo" : {
+      "analisis" : {
+        "estadoMasComun" : "APROBADA",
+        "estadoMasEficiente" : "APROBADA",
+        "estadoMenosComun" : "ENVIADA",
+        "estadosActivos" : 4,
+        "maxSolicitudes" : 5,
+        "minSolicitudes" : 4,
+        "solicitudesCompletadas" : 9,
+        "solicitudesPendientes" : 5,
+        "tasaResolucion" : 64.29,
+        "totalSolicitudes" : 14
+      },
+      "descripcion" : "Estadisticas por estado de solicitudes con analisis de distribucion - DATOS REALES",
+      "estados" : {
+        "APROBADA" : {
+          "cantidad" : 5,
+          "color" : "#28a745",
+          "descripcion" : "Solicitudes aprobadas y procesadas",
+          "estado" : "APROBADA",
+          "icono" : "fas fa-check-circle",
+          "porcentaje" : 35.71,
+          "procesos" : {
+            "Cursos de Verano" : 2,
+            "ECAES" : 1,
+            "Homologacion" : 1,
+            "Paz y Salvo" : 1
+          },
+          "programas" : {
+            "Ingeniería Electrónica" : 1,
+            "Ingeniería de Sistemas" : 4
+          }
+        },
+        "ENVIADA" : {
+          "cantidad" : 4,
+          "color" : "#ffc107",
+          "descripcion" : "Solicitudes enviadas pendientes de revision",
+          "estado" : "ENVIADA",
+          "icono" : "fas fa-paper-plane",
+          "porcentaje" : 28.57,
+          "procesos" : {
+            "Cursos de Verano" : 1,
+            "Paz y Salvo" : 1,
+            "Reingreso" : 2
+          },
+          "programas" : {
+            "Ingeniería Civil" : 1,
+            "Ingeniería Electrónica" : 1,
+            "Ingeniería de Sistemas" : 2
+          }
+        },
+        "EN_PROCESO" : {
+          "cantidad" : 1,
+          "color" : "#17a2b8",
+          "descripcion" : "Solicitudes en proceso de revisión",
+          "estado" : "EN_PROCESO",
+          "icono" : "fas fa-clock",
+          "porcentaje" : 7.14,
+          "procesos" : {
+            "Homologacion" : 1
+          },
+          "programas" : {
+            "Ingeniería Electrónica" : 1
+          }
+        },
+        "RECHAZADA" : {
+          "cantidad" : 4,
+          "color" : "#dc3545",
+          "descripcion" : "Solicitudes rechazadas",
+          "estado" : "RECHAZADA",
+          "icono" : "fas fa-times-circle",
+          "porcentaje" : 28.57,
+          "procesos" : {
+            "Cursos de Verano" : 2,
+            "ECAES" : 1,
+            "Homologacion" : 1
+          },
+          "programas" : {
+            "Ingeniería Electrónica" : 2,
+            "Ingeniería de Sistemas" : 1
+          }
+        }
+      },
+      "fechaConsulta" : "<ahora>",
+      "totalSolicitudes" : 14
+    }
+  },
+  "GET /estado-solicitudes?periodoAcademico=[  ]" : {
+    "estado" : 200,
+    "cuerpo" : {
+      "analisis" : {
+        "estadoMasComun" : "APROBADA",
+        "estadoMasEficiente" : "APROBADA",
+        "estadoMenosComun" : "ENVIADA",
+        "estadosActivos" : 4,
+        "maxSolicitudes" : 5,
+        "minSolicitudes" : 4,
+        "solicitudesCompletadas" : 9,
+        "solicitudesPendientes" : 5,
+        "tasaResolucion" : 64.29,
+        "totalSolicitudes" : 14
+      },
+      "descripcion" : "Estadisticas por estado de solicitudes con analisis de distribucion - DATOS REALES",
+      "estados" : {
+        "APROBADA" : {
+          "cantidad" : 5,
+          "color" : "#28a745",
+          "descripcion" : "Solicitudes aprobadas y procesadas",
+          "estado" : "APROBADA",
+          "icono" : "fas fa-check-circle",
+          "porcentaje" : 35.71,
+          "procesos" : {
+            "Cursos de Verano" : 2,
+            "ECAES" : 1,
+            "Homologacion" : 1,
+            "Paz y Salvo" : 1
+          },
+          "programas" : {
+            "Ingeniería Electrónica" : 1,
+            "Ingeniería de Sistemas" : 4
+          }
+        },
+        "ENVIADA" : {
+          "cantidad" : 4,
+          "color" : "#ffc107",
+          "descripcion" : "Solicitudes enviadas pendientes de revision",
+          "estado" : "ENVIADA",
+          "icono" : "fas fa-paper-plane",
+          "porcentaje" : 28.57,
+          "procesos" : {
+            "Cursos de Verano" : 1,
+            "Paz y Salvo" : 1,
+            "Reingreso" : 2
+          },
+          "programas" : {
+            "Ingeniería Civil" : 1,
+            "Ingeniería Electrónica" : 1,
+            "Ingeniería de Sistemas" : 2
+          }
+        },
+        "EN_PROCESO" : {
+          "cantidad" : 1,
+          "color" : "#17a2b8",
+          "descripcion" : "Solicitudes en proceso de revisión",
+          "estado" : "EN_PROCESO",
+          "icono" : "fas fa-clock",
+          "porcentaje" : 7.14,
+          "procesos" : {
+            "Homologacion" : 1
+          },
+          "programas" : {
+            "Ingeniería Electrónica" : 1
+          }
+        },
+        "RECHAZADA" : {
+          "cantidad" : 4,
+          "color" : "#dc3545",
+          "descripcion" : "Solicitudes rechazadas",
+          "estado" : "RECHAZADA",
+          "icono" : "fas fa-times-circle",
+          "porcentaje" : 28.57,
+          "procesos" : {
+            "Cursos de Verano" : 2,
+            "ECAES" : 1,
+            "Homologacion" : 1
+          },
+          "programas" : {
+            "Ingeniería Electrónica" : 2,
+            "Ingeniería de Sistemas" : 1
+          }
+        }
+      },
+      "fechaConsulta" : "<ahora>",
+      "totalSolicitudes" : 14
+    }
+  },
+  "GET /estado-solicitudes?periodoAcademico=[ 2025-1 ]" : {
+    "estado" : 200,
+    "cuerpo" : {
+      "analisis" : {
+        "estadoMasComun" : "APROBADA",
+        "estadoMasEficiente" : "APROBADA",
+        "estadoMenosComun" : "RECHAZADA",
+        "estadosActivos" : 4,
+        "maxSolicitudes" : 3,
+        "minSolicitudes" : 1,
+        "solicitudesCompletadas" : 4,
+        "solicitudesPendientes" : 3,
+        "tasaResolucion" : 57.14,
+        "totalSolicitudes" : 7
+      },
+      "descripcion" : "Estadisticas por estado de solicitudes con analisis de distribucion - DATOS REALES",
+      "estados" : {
+        "APROBADA" : {
+          "cantidad" : 3,
+          "color" : "#28a745",
+          "descripcion" : "Solicitudes aprobadas y procesadas",
+          "estado" : "APROBADA",
+          "icono" : "fas fa-check-circle",
+          "porcentaje" : 42.86,
+          "procesos" : {
+            "Cursos de Verano" : 1,
+            "ECAES" : 1,
+            "Paz y Salvo" : 1
+          },
+          "programas" : {
+            "Ingeniería Electrónica" : 1,
+            "Ingeniería de Sistemas" : 2
+          }
+        },
+        "ENVIADA" : {
+          "cantidad" : 2,
+          "color" : "#ffc107",
+          "descripcion" : "Solicitudes enviadas pendientes de revision",
+          "estado" : "ENVIADA",
+          "icono" : "fas fa-paper-plane",
+          "porcentaje" : 28.57,
+          "procesos" : {
+            "Cursos de Verano" : 1,
+            "Reingreso" : 1
+          },
+          "programas" : {
+            "Ingeniería Civil" : 1,
+            "Ingeniería de Sistemas" : 1
+          }
+        },
+        "EN_PROCESO" : {
+          "cantidad" : 1,
+          "color" : "#17a2b8",
+          "descripcion" : "Solicitudes en proceso de revisión",
+          "estado" : "EN_PROCESO",
+          "icono" : "fas fa-clock",
+          "porcentaje" : 14.29,
+          "procesos" : {
+            "Homologacion" : 1
+          },
+          "programas" : {
+            "Ingeniería Electrónica" : 1
+          }
+        },
+        "RECHAZADA" : {
+          "cantidad" : 1,
+          "color" : "#dc3545",
+          "descripcion" : "Solicitudes rechazadas",
+          "estado" : "RECHAZADA",
+          "icono" : "fas fa-times-circle",
+          "porcentaje" : 14.29,
+          "procesos" : {
+            "Homologacion" : 1
+          },
+          "programas" : {
+            "Ingeniería de Sistemas" : 1
+          }
+        }
+      },
+      "fechaConsulta" : "<ahora>",
+      "totalSolicitudes" : 7
+    }
+  },
+  "GET /estado-solicitudes?periodoAcademico=[2025 - Primer Semestre]" : {
+    "estado" : 200,
+    "cuerpo" : {
+      "analisis" : {
+        "estadoMasComun" : "RECHAZADA",
+        "estadoMasEficiente" : "APROBADA",
+        "estadoMenosComun" : "APROBADA",
+        "estadosActivos" : 4,
+        "maxSolicitudes" : 3,
+        "minSolicitudes" : 2,
+        "solicitudesCompletadas" : 5,
+        "solicitudesPendientes" : 2,
+        "tasaResolucion" : 71.43,
+        "totalSolicitudes" : 7
+      },
+      "descripcion" : "Estadisticas por estado de solicitudes con analisis de distribucion - DATOS REALES",
+      "estados" : {
+        "APROBADA" : {
+          "cantidad" : 2,
+          "color" : "#28a745",
+          "descripcion" : "Solicitudes aprobadas y procesadas",
+          "estado" : "APROBADA",
+          "icono" : "fas fa-check-circle",
+          "porcentaje" : 28.57,
+          "procesos" : {
+            "Cursos de Verano" : 2
+          },
+          "programas" : {
+            "Ingeniería de Sistemas" : 2
+          }
+        },
+        "ENVIADA" : {
+          "cantidad" : 2,
+          "color" : "#ffc107",
+          "descripcion" : "Solicitudes enviadas pendientes de revision",
+          "estado" : "ENVIADA",
+          "icono" : "fas fa-paper-plane",
+          "porcentaje" : 28.57,
+          "procesos" : {
+            "Cursos de Verano" : 1,
+            "Paz y Salvo" : 1
+          },
+          "programas" : {
+            "Ingeniería Electrónica" : 1,
+            "Ingeniería de Sistemas" : 1
+          }
+        },
+        "EN_PROCESO" : {
+          "cantidad" : 0,
+          "color" : "#17a2b8",
+          "descripcion" : "Solicitudes en proceso de revisión",
+          "estado" : "EN_PROCESO",
+          "icono" : "fas fa-clock",
+          "porcentaje" : 0.0,
+          "procesos" : { },
+          "programas" : { }
+        },
+        "RECHAZADA" : {
+          "cantidad" : 3,
+          "color" : "#dc3545",
+          "descripcion" : "Solicitudes rechazadas",
+          "estado" : "RECHAZADA",
+          "icono" : "fas fa-times-circle",
+          "porcentaje" : 42.86,
+          "procesos" : {
+            "Cursos de Verano" : 2,
+            "ECAES" : 1
+          },
+          "programas" : {
+            "Ingeniería Electrónica" : 2
+          }
+        }
+      },
+      "fechaConsulta" : "<ahora>",
+      "totalSolicitudes" : 7
+    }
+  },
+  "GET /estado-solicitudes?periodoAcademico=[sin año]" : {
+    "estado" : 200,
+    "cuerpo" : {
+      "analisis" : {
+        "estadoMasComun" : null,
+        "estadoMasEficiente" : null,
+        "estadoMenosComun" : null,
+        "estadosActivos" : 4,
+        "maxSolicitudes" : 0,
+        "minSolicitudes" : 2147483647,
+        "solicitudesCompletadas" : 0,
+        "solicitudesPendientes" : 0,
+        "tasaResolucion" : 0.0,
+        "totalSolicitudes" : 0
+      },
+      "descripcion" : "Estadisticas por estado de solicitudes con analisis de distribucion - DATOS REALES",
+      "estados" : {
+        "APROBADA" : {
+          "cantidad" : 0,
+          "color" : "#28a745",
+          "descripcion" : "Solicitudes aprobadas y procesadas",
+          "estado" : "APROBADA",
+          "icono" : "fas fa-check-circle",
+          "porcentaje" : 0.0,
+          "procesos" : { },
+          "programas" : { }
+        },
+        "ENVIADA" : {
+          "cantidad" : 0,
+          "color" : "#ffc107",
+          "descripcion" : "Solicitudes enviadas pendientes de revision",
+          "estado" : "ENVIADA",
+          "icono" : "fas fa-paper-plane",
+          "porcentaje" : 0.0,
+          "procesos" : { },
+          "programas" : { }
+        },
+        "EN_PROCESO" : {
+          "cantidad" : 0,
+          "color" : "#17a2b8",
+          "descripcion" : "Solicitudes en proceso de revisión",
+          "estado" : "EN_PROCESO",
+          "icono" : "fas fa-clock",
+          "porcentaje" : 0.0,
+          "procesos" : { },
+          "programas" : { }
+        },
+        "RECHAZADA" : {
+          "cantidad" : 0,
+          "color" : "#dc3545",
+          "descripcion" : "Solicitudes rechazadas",
+          "estado" : "RECHAZADA",
+          "icono" : "fas fa-times-circle",
+          "porcentaje" : 0.0,
+          "procesos" : { },
+          "programas" : { }
+        }
+      },
+      "fechaConsulta" : "<ahora>",
+      "totalSolicitudes" : 0
+    }
+  },
+  "GET /estado-solicitudes?periodoAcademico=[2025-2]&idPrograma=[2]" : {
+    "estado" : 200,
+    "cuerpo" : {
+      "analisis" : {
+        "estadoMasComun" : "RECHAZADA",
+        "estadoMasEficiente" : null,
+        "estadoMenosComun" : "ENVIADA",
+        "estadosActivos" : 4,
+        "maxSolicitudes" : 2,
+        "minSolicitudes" : 1,
+        "solicitudesCompletadas" : 2,
+        "solicitudesPendientes" : 1,
+        "tasaResolucion" : 66.67,
+        "totalSolicitudes" : 3
+      },
+      "descripcion" : "Estadisticas por estado de solicitudes con analisis de distribucion - DATOS REALES",
+      "estados" : {
+        "APROBADA" : {
+          "cantidad" : 0,
+          "color" : "#28a745",
+          "descripcion" : "Solicitudes aprobadas y procesadas",
+          "estado" : "APROBADA",
+          "icono" : "fas fa-check-circle",
+          "porcentaje" : 0.0,
+          "procesos" : { },
+          "programas" : { }
+        },
+        "ENVIADA" : {
+          "cantidad" : 1,
+          "color" : "#ffc107",
+          "descripcion" : "Solicitudes enviadas pendientes de revision",
+          "estado" : "ENVIADA",
+          "icono" : "fas fa-paper-plane",
+          "porcentaje" : 33.33,
+          "procesos" : {
+            "Paz y Salvo" : 1
+          },
+          "programas" : {
+            "Ingeniería Electrónica" : 1
+          }
+        },
+        "EN_PROCESO" : {
+          "cantidad" : 0,
+          "color" : "#17a2b8",
+          "descripcion" : "Solicitudes en proceso de revisión",
+          "estado" : "EN_PROCESO",
+          "icono" : "fas fa-clock",
+          "porcentaje" : 0.0,
+          "procesos" : { },
+          "programas" : { }
+        },
+        "RECHAZADA" : {
+          "cantidad" : 2,
+          "color" : "#dc3545",
+          "descripcion" : "Solicitudes rechazadas",
+          "estado" : "RECHAZADA",
+          "icono" : "fas fa-times-circle",
+          "porcentaje" : 66.67,
+          "procesos" : {
+            "Cursos de Verano" : 2
+          },
+          "programas" : {
+            "Ingeniería Electrónica" : 2
+          }
+        }
+      },
+      "fechaConsulta" : "<ahora>",
+      "totalSolicitudes" : 3
+    }
+  },
+  "GET /por-periodo" : {
+    "estado" : 200,
+    "cuerpo" : {
+      "descripcion" : "Estadisticas por periodo/mes con analisis de tendencias - DATOS REALES",
+      "fechaConsulta" : "<ahora>",
+      "mesesOrdenados" : [ {
+        "aprobadas" : 0,
+        "color" : "#FF6B6B",
+        "descripcion" : "Mes de inicio de ano academico - Periodo de inscripciones",
+        "eficiencia" : 0.0,
+        "enviadas" : 1,
+        "icono" : "",
+        "mes" : "Enero",
+        "porcentaje" : 7.14,
+        "procesos" : {
+          "Reingreso" : 1
+        },
+        "rechazadas" : 0,
+        "tiempoPromedio" : 0.0,
+        "total" : 1
+      }, {
+        "aprobadas" : 0,
+        "color" : "#4ECDC4",
+        "descripcion" : "Mes de inicio de clases - Periodo de ajustes academicos",
+        "eficiencia" : 0.0,
+        "enviadas" : 0,
+        "icono" : "",
+        "mes" : "Febrero",
+        "porcentaje" : 7.14,
+        "procesos" : {
+          "Homologacion" : 1
+        },
+        "rechazadas" : 1,
+        "tiempoPromedio" : 17.0,
+        "total" : 1
+      }, {
+        "aprobadas" : 0,
+        "color" : "#45B7D1",
+        "descripcion" : "Mes de estabilizacion academica - Periodo regular",
+        "eficiencia" : 0.0,
+        "enviadas" : 1,
+        "icono" : "",
+        "mes" : "Marzo",
+        "porcentaje" : 7.14,
+        "procesos" : {
+          "Homologacion" : 1
+        },
+        "rechazadas" : 0,
+        "tiempoPromedio" : 0.0,
+        "total" : 1
+      }, {
+        "aprobadas" : 1,
+        "color" : "#96CEB4",
+        "descripcion" : "Mes de evaluaciones parciales - Periodo de examenes",
+        "eficiencia" : 100.0,
+        "enviadas" : 0,
+        "icono" : "",
+        "mes" : "Abril",
+        "porcentaje" : 7.14,
+        "procesos" : {
+          "Paz y Salvo" : 1
+        },
+        "rechazadas" : 0,
+        "tiempoPromedio" : 28.0,
+        "total" : 1
+      }, {
+        "aprobadas" : 1,
+        "color" : "#FFEAA7",
+        "descripcion" : "Mes de mitad de semestre - Periodo de seguimiento",
+        "eficiencia" : 100.0,
+        "enviadas" : 0,
+        "icono" : "",
+        "mes" : "Mayo",
+        "porcentaje" : 7.14,
+        "procesos" : {
+          "ECAES" : 1
+        },
+        "rechazadas" : 0,
+        "tiempoPromedio" : 3.0,
+        "total" : 1
+      }, {
+        "aprobadas" : 1,
+        "color" : "#DDA0DD",
+        "descripcion" : "Mes de finalizacion de semestre - Periodo de examenes finales",
+        "eficiencia" : 50.0,
+        "enviadas" : 1,
+        "icono" : "",
+        "mes" : "Junio",
+        "porcentaje" : 14.29,
+        "procesos" : {
+          "Cursos de Verano" : 2
+        },
+        "rechazadas" : 0,
+        "tiempoPromedio" : 10.0,
+        "total" : 2
+      }, {
+        "aprobadas" : 1,
+        "color" : "#98D8C8",
+        "descripcion" : "Mes de vacaciones - Periodo de cursos de verano",
+        "eficiencia" : 33.33,
+        "enviadas" : 0,
+        "icono" : "",
+        "mes" : "Julio",
+        "porcentaje" : 21.43,
+        "procesos" : {
+          "Cursos de Verano" : 3
+        },
+        "rechazadas" : 2,
+        "tiempoPromedio" : 4.0,
+        "total" : 3
+      }, {
+        "aprobadas" : 1,
+        "color" : "#F7DC6F",
+        "descripcion" : "Mes de inicio de segundo semestre - Periodo de inscripciones",
+        "eficiencia" : 50.0,
+        "enviadas" : 1,
+        "icono" : "",
+        "mes" : "Agosto",
+        "porcentaje" : 14.29,
+        "procesos" : {
+          "Homologacion" : 1,
+          "Paz y Salvo" : 1
+        },
+        "rechazadas" : 0,
+        "tiempoPromedio" : 27.0,
+        "total" : 2
+      }, {
+        "aprobadas" : 0,
+        "color" : "#BB8FCE",
+        "descripcion" : "Mes de estabilizacion - Periodo regular de clases",
+        "eficiencia" : 0.0,
+        "enviadas" : 0,
+        "icono" : "",
+        "mes" : "Septiembre",
+        "porcentaje" : 7.14,
+        "procesos" : {
+          "ECAES" : 1
+        },
+        "rechazadas" : 1,
+        "tiempoPromedio" : 0.0,
+        "total" : 1
+      }, {
+        "aprobadas" : 0,
+        "color" : "#85C1E9",
+        "descripcion" : "Mes de evaluaciones - Periodo de examenes parciales",
+        "eficiencia" : 0.0,
+        "enviadas" : 0,
+        "icono" : "",
+        "mes" : "Octubre",
+        "porcentaje" : 0.0,
+        "procesos" : { },
+        "rechazadas" : 0,
+        "tiempoPromedio" : 0.0,
+        "total" : 0
+      }, {
+        "aprobadas" : 0,
+        "color" : "#F8C471",
+        "descripcion" : "Mes de preparacion final - Periodo de proyectos",
+        "eficiencia" : 0.0,
+        "enviadas" : 1,
+        "icono" : "",
+        "mes" : "Noviembre",
+        "porcentaje" : 7.14,
+        "procesos" : {
+          "Reingreso" : 1
+        },
+        "rechazadas" : 0,
+        "tiempoPromedio" : 0.0,
+        "total" : 1
+      }, {
+        "aprobadas" : 0,
+        "color" : "#F1948A",
+        "descripcion" : "Mes de finalizacion de ano - Periodo de graduaciones",
+        "eficiencia" : 0.0,
+        "enviadas" : 0,
+        "icono" : "",
+        "mes" : "Diciembre",
+        "porcentaje" : 0.0,
+        "procesos" : { },
+        "rechazadas" : 0,
+        "tiempoPromedio" : 0.0,
+        "total" : 0
+      } ],
+      "porMes" : {
+        "Abril" : {
+          "aprobadas" : 1,
+          "color" : "#96CEB4",
+          "descripcion" : "Mes de evaluaciones parciales - Periodo de examenes",
+          "eficiencia" : 100.0,
+          "enviadas" : 0,
+          "icono" : "",
+          "mes" : "Abril",
+          "porcentaje" : 7.14,
+          "procesos" : {
+            "Paz y Salvo" : 1
+          },
+          "rechazadas" : 0,
+          "tiempoPromedio" : 28.0,
+          "total" : 1
+        },
+        "Agosto" : {
+          "aprobadas" : 1,
+          "color" : "#F7DC6F",
+          "descripcion" : "Mes de inicio de segundo semestre - Periodo de inscripciones",
+          "eficiencia" : 50.0,
+          "enviadas" : 1,
+          "icono" : "",
+          "mes" : "Agosto",
+          "porcentaje" : 14.29,
+          "procesos" : {
+            "Homologacion" : 1,
+            "Paz y Salvo" : 1
+          },
+          "rechazadas" : 0,
+          "tiempoPromedio" : 27.0,
+          "total" : 2
+        },
+        "Diciembre" : {
+          "aprobadas" : 0,
+          "color" : "#F1948A",
+          "descripcion" : "Mes de finalizacion de ano - Periodo de graduaciones",
+          "eficiencia" : 0.0,
+          "enviadas" : 0,
+          "icono" : "",
+          "mes" : "Diciembre",
+          "porcentaje" : 0.0,
+          "procesos" : { },
+          "rechazadas" : 0,
+          "tiempoPromedio" : 0.0,
+          "total" : 0
+        },
+        "Enero" : {
+          "aprobadas" : 0,
+          "color" : "#FF6B6B",
+          "descripcion" : "Mes de inicio de ano academico - Periodo de inscripciones",
+          "eficiencia" : 0.0,
+          "enviadas" : 1,
+          "icono" : "",
+          "mes" : "Enero",
+          "porcentaje" : 7.14,
+          "procesos" : {
+            "Reingreso" : 1
+          },
+          "rechazadas" : 0,
+          "tiempoPromedio" : 0.0,
+          "total" : 1
+        },
+        "Febrero" : {
+          "aprobadas" : 0,
+          "color" : "#4ECDC4",
+          "descripcion" : "Mes de inicio de clases - Periodo de ajustes academicos",
+          "eficiencia" : 0.0,
+          "enviadas" : 0,
+          "icono" : "",
+          "mes" : "Febrero",
+          "porcentaje" : 7.14,
+          "procesos" : {
+            "Homologacion" : 1
+          },
+          "rechazadas" : 1,
+          "tiempoPromedio" : 17.0,
+          "total" : 1
+        },
+        "Julio" : {
+          "aprobadas" : 1,
+          "color" : "#98D8C8",
+          "descripcion" : "Mes de vacaciones - Periodo de cursos de verano",
+          "eficiencia" : 33.33,
+          "enviadas" : 0,
+          "icono" : "",
+          "mes" : "Julio",
+          "porcentaje" : 21.43,
+          "procesos" : {
+            "Cursos de Verano" : 3
+          },
+          "rechazadas" : 2,
+          "tiempoPromedio" : 4.0,
+          "total" : 3
+        },
+        "Junio" : {
+          "aprobadas" : 1,
+          "color" : "#DDA0DD",
+          "descripcion" : "Mes de finalizacion de semestre - Periodo de examenes finales",
+          "eficiencia" : 50.0,
+          "enviadas" : 1,
+          "icono" : "",
+          "mes" : "Junio",
+          "porcentaje" : 14.29,
+          "procesos" : {
+            "Cursos de Verano" : 2
+          },
+          "rechazadas" : 0,
+          "tiempoPromedio" : 10.0,
+          "total" : 2
+        },
+        "Marzo" : {
+          "aprobadas" : 0,
+          "color" : "#45B7D1",
+          "descripcion" : "Mes de estabilizacion academica - Periodo regular",
+          "eficiencia" : 0.0,
+          "enviadas" : 1,
+          "icono" : "",
+          "mes" : "Marzo",
+          "porcentaje" : 7.14,
+          "procesos" : {
+            "Homologacion" : 1
+          },
+          "rechazadas" : 0,
+          "tiempoPromedio" : 0.0,
+          "total" : 1
+        },
+        "Mayo" : {
+          "aprobadas" : 1,
+          "color" : "#FFEAA7",
+          "descripcion" : "Mes de mitad de semestre - Periodo de seguimiento",
+          "eficiencia" : 100.0,
+          "enviadas" : 0,
+          "icono" : "",
+          "mes" : "Mayo",
+          "porcentaje" : 7.14,
+          "procesos" : {
+            "ECAES" : 1
+          },
+          "rechazadas" : 0,
+          "tiempoPromedio" : 3.0,
+          "total" : 1
+        },
+        "Noviembre" : {
+          "aprobadas" : 0,
+          "color" : "#F8C471",
+          "descripcion" : "Mes de preparacion final - Periodo de proyectos",
+          "eficiencia" : 0.0,
+          "enviadas" : 1,
+          "icono" : "",
+          "mes" : "Noviembre",
+          "porcentaje" : 7.14,
+          "procesos" : {
+            "Reingreso" : 1
+          },
+          "rechazadas" : 0,
+          "tiempoPromedio" : 0.0,
+          "total" : 1
+        },
+        "Octubre" : {
+          "aprobadas" : 0,
+          "color" : "#85C1E9",
+          "descripcion" : "Mes de evaluaciones - Periodo de examenes parciales",
+          "eficiencia" : 0.0,
+          "enviadas" : 0,
+          "icono" : "",
+          "mes" : "Octubre",
+          "porcentaje" : 0.0,
+          "procesos" : { },
+          "rechazadas" : 0,
+          "tiempoPromedio" : 0.0,
+          "total" : 0
+        },
+        "Septiembre" : {
+          "aprobadas" : 0,
+          "color" : "#BB8FCE",
+          "descripcion" : "Mes de estabilizacion - Periodo regular de clases",
+          "eficiencia" : 0.0,
+          "enviadas" : 0,
+          "icono" : "",
+          "mes" : "Septiembre",
+          "porcentaje" : 7.14,
+          "procesos" : {
+            "ECAES" : 1
+          },
+          "rechazadas" : 1,
+          "tiempoPromedio" : 0.0,
+          "total" : 1
+        }
+      },
+      "tendencias" : {
+        "crecimientoPromedio" : 0.0,
+        "eficienciaMaxima" : 100.0,
+        "maxSolicitudes" : 3,
+        "mesMasActivo" : "Julio",
+        "mesMasEficiente" : "Abril",
+        "mesMasRapido" : "Mayo",
+        "mesesAnalizados" : 10,
+        "promedioMensual" : 1.4,
+        "tendenciaGeneral" : "Estable",
+        "tiempoMinimo" : 3.0,
+        "totalSolicitudes" : 14
+      },
+      "todosLosMeses" : [ "Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre" ]
+    }
+  },
+  "GET /por-periodo?periodoAcademico=[  ]" : {
+    "estado" : 200,
+    "cuerpo" : {
+      "descripcion" : "Estadisticas por periodo/mes con analisis de tendencias - DATOS REALES",
+      "fechaConsulta" : "<ahora>",
+      "mesesOrdenados" : [ {
+        "aprobadas" : 0,
+        "color" : "#FF6B6B",
+        "descripcion" : "Mes de inicio de ano academico - Periodo de inscripciones",
+        "eficiencia" : 0.0,
+        "enviadas" : 1,
+        "icono" : "",
+        "mes" : "Enero",
+        "porcentaje" : 7.14,
+        "procesos" : {
+          "Reingreso" : 1
+        },
+        "rechazadas" : 0,
+        "tiempoPromedio" : 0.0,
+        "total" : 1
+      }, {
+        "aprobadas" : 0,
+        "color" : "#4ECDC4",
+        "descripcion" : "Mes de inicio de clases - Periodo de ajustes academicos",
+        "eficiencia" : 0.0,
+        "enviadas" : 0,
+        "icono" : "",
+        "mes" : "Febrero",
+        "porcentaje" : 7.14,
+        "procesos" : {
+          "Homologacion" : 1
+        },
+        "rechazadas" : 1,
+        "tiempoPromedio" : 17.0,
+        "total" : 1
+      }, {
+        "aprobadas" : 0,
+        "color" : "#45B7D1",
+        "descripcion" : "Mes de estabilizacion academica - Periodo regular",
+        "eficiencia" : 0.0,
+        "enviadas" : 1,
+        "icono" : "",
+        "mes" : "Marzo",
+        "porcentaje" : 7.14,
+        "procesos" : {
+          "Homologacion" : 1
+        },
+        "rechazadas" : 0,
+        "tiempoPromedio" : 0.0,
+        "total" : 1
+      }, {
+        "aprobadas" : 1,
+        "color" : "#96CEB4",
+        "descripcion" : "Mes de evaluaciones parciales - Periodo de examenes",
+        "eficiencia" : 100.0,
+        "enviadas" : 0,
+        "icono" : "",
+        "mes" : "Abril",
+        "porcentaje" : 7.14,
+        "procesos" : {
+          "Paz y Salvo" : 1
+        },
+        "rechazadas" : 0,
+        "tiempoPromedio" : 28.0,
+        "total" : 1
+      }, {
+        "aprobadas" : 1,
+        "color" : "#FFEAA7",
+        "descripcion" : "Mes de mitad de semestre - Periodo de seguimiento",
+        "eficiencia" : 100.0,
+        "enviadas" : 0,
+        "icono" : "",
+        "mes" : "Mayo",
+        "porcentaje" : 7.14,
+        "procesos" : {
+          "ECAES" : 1
+        },
+        "rechazadas" : 0,
+        "tiempoPromedio" : 3.0,
+        "total" : 1
+      }, {
+        "aprobadas" : 1,
+        "color" : "#DDA0DD",
+        "descripcion" : "Mes de finalizacion de semestre - Periodo de examenes finales",
+        "eficiencia" : 50.0,
+        "enviadas" : 1,
+        "icono" : "",
+        "mes" : "Junio",
+        "porcentaje" : 14.29,
+        "procesos" : {
+          "Cursos de Verano" : 2
+        },
+        "rechazadas" : 0,
+        "tiempoPromedio" : 10.0,
+        "total" : 2
+      }, {
+        "aprobadas" : 1,
+        "color" : "#98D8C8",
+        "descripcion" : "Mes de vacaciones - Periodo de cursos de verano",
+        "eficiencia" : 33.33,
+        "enviadas" : 0,
+        "icono" : "",
+        "mes" : "Julio",
+        "porcentaje" : 21.43,
+        "procesos" : {
+          "Cursos de Verano" : 3
+        },
+        "rechazadas" : 2,
+        "tiempoPromedio" : 4.0,
+        "total" : 3
+      }, {
+        "aprobadas" : 1,
+        "color" : "#F7DC6F",
+        "descripcion" : "Mes de inicio de segundo semestre - Periodo de inscripciones",
+        "eficiencia" : 50.0,
+        "enviadas" : 1,
+        "icono" : "",
+        "mes" : "Agosto",
+        "porcentaje" : 14.29,
+        "procesos" : {
+          "Homologacion" : 1,
+          "Paz y Salvo" : 1
+        },
+        "rechazadas" : 0,
+        "tiempoPromedio" : 27.0,
+        "total" : 2
+      }, {
+        "aprobadas" : 0,
+        "color" : "#BB8FCE",
+        "descripcion" : "Mes de estabilizacion - Periodo regular de clases",
+        "eficiencia" : 0.0,
+        "enviadas" : 0,
+        "icono" : "",
+        "mes" : "Septiembre",
+        "porcentaje" : 7.14,
+        "procesos" : {
+          "ECAES" : 1
+        },
+        "rechazadas" : 1,
+        "tiempoPromedio" : 0.0,
+        "total" : 1
+      }, {
+        "aprobadas" : 0,
+        "color" : "#85C1E9",
+        "descripcion" : "Mes de evaluaciones - Periodo de examenes parciales",
+        "eficiencia" : 0.0,
+        "enviadas" : 0,
+        "icono" : "",
+        "mes" : "Octubre",
+        "porcentaje" : 0.0,
+        "procesos" : { },
+        "rechazadas" : 0,
+        "tiempoPromedio" : 0.0,
+        "total" : 0
+      }, {
+        "aprobadas" : 0,
+        "color" : "#F8C471",
+        "descripcion" : "Mes de preparacion final - Periodo de proyectos",
+        "eficiencia" : 0.0,
+        "enviadas" : 1,
+        "icono" : "",
+        "mes" : "Noviembre",
+        "porcentaje" : 7.14,
+        "procesos" : {
+          "Reingreso" : 1
+        },
+        "rechazadas" : 0,
+        "tiempoPromedio" : 0.0,
+        "total" : 1
+      }, {
+        "aprobadas" : 0,
+        "color" : "#F1948A",
+        "descripcion" : "Mes de finalizacion de ano - Periodo de graduaciones",
+        "eficiencia" : 0.0,
+        "enviadas" : 0,
+        "icono" : "",
+        "mes" : "Diciembre",
+        "porcentaje" : 0.0,
+        "procesos" : { },
+        "rechazadas" : 0,
+        "tiempoPromedio" : 0.0,
+        "total" : 0
+      } ],
+      "porMes" : {
+        "Abril" : {
+          "aprobadas" : 1,
+          "color" : "#96CEB4",
+          "descripcion" : "Mes de evaluaciones parciales - Periodo de examenes",
+          "eficiencia" : 100.0,
+          "enviadas" : 0,
+          "icono" : "",
+          "mes" : "Abril",
+          "porcentaje" : 7.14,
+          "procesos" : {
+            "Paz y Salvo" : 1
+          },
+          "rechazadas" : 0,
+          "tiempoPromedio" : 28.0,
+          "total" : 1
+        },
+        "Agosto" : {
+          "aprobadas" : 1,
+          "color" : "#F7DC6F",
+          "descripcion" : "Mes de inicio de segundo semestre - Periodo de inscripciones",
+          "eficiencia" : 50.0,
+          "enviadas" : 1,
+          "icono" : "",
+          "mes" : "Agosto",
+          "porcentaje" : 14.29,
+          "procesos" : {
+            "Homologacion" : 1,
+            "Paz y Salvo" : 1
+          },
+          "rechazadas" : 0,
+          "tiempoPromedio" : 27.0,
+          "total" : 2
+        },
+        "Diciembre" : {
+          "aprobadas" : 0,
+          "color" : "#F1948A",
+          "descripcion" : "Mes de finalizacion de ano - Periodo de graduaciones",
+          "eficiencia" : 0.0,
+          "enviadas" : 0,
+          "icono" : "",
+          "mes" : "Diciembre",
+          "porcentaje" : 0.0,
+          "procesos" : { },
+          "rechazadas" : 0,
+          "tiempoPromedio" : 0.0,
+          "total" : 0
+        },
+        "Enero" : {
+          "aprobadas" : 0,
+          "color" : "#FF6B6B",
+          "descripcion" : "Mes de inicio de ano academico - Periodo de inscripciones",
+          "eficiencia" : 0.0,
+          "enviadas" : 1,
+          "icono" : "",
+          "mes" : "Enero",
+          "porcentaje" : 7.14,
+          "procesos" : {
+            "Reingreso" : 1
+          },
+          "rechazadas" : 0,
+          "tiempoPromedio" : 0.0,
+          "total" : 1
+        },
+        "Febrero" : {
+          "aprobadas" : 0,
+          "color" : "#4ECDC4",
+          "descripcion" : "Mes de inicio de clases - Periodo de ajustes academicos",
+          "eficiencia" : 0.0,
+          "enviadas" : 0,
+          "icono" : "",
+          "mes" : "Febrero",
+          "porcentaje" : 7.14,
+          "procesos" : {
+            "Homologacion" : 1
+          },
+          "rechazadas" : 1,
+          "tiempoPromedio" : 17.0,
+          "total" : 1
+        },
+        "Julio" : {
+          "aprobadas" : 1,
+          "color" : "#98D8C8",
+          "descripcion" : "Mes de vacaciones - Periodo de cursos de verano",
+          "eficiencia" : 33.33,
+          "enviadas" : 0,
+          "icono" : "",
+          "mes" : "Julio",
+          "porcentaje" : 21.43,
+          "procesos" : {
+            "Cursos de Verano" : 3
+          },
+          "rechazadas" : 2,
+          "tiempoPromedio" : 4.0,
+          "total" : 3
+        },
+        "Junio" : {
+          "aprobadas" : 1,
+          "color" : "#DDA0DD",
+          "descripcion" : "Mes de finalizacion de semestre - Periodo de examenes finales",
+          "eficiencia" : 50.0,
+          "enviadas" : 1,
+          "icono" : "",
+          "mes" : "Junio",
+          "porcentaje" : 14.29,
+          "procesos" : {
+            "Cursos de Verano" : 2
+          },
+          "rechazadas" : 0,
+          "tiempoPromedio" : 10.0,
+          "total" : 2
+        },
+        "Marzo" : {
+          "aprobadas" : 0,
+          "color" : "#45B7D1",
+          "descripcion" : "Mes de estabilizacion academica - Periodo regular",
+          "eficiencia" : 0.0,
+          "enviadas" : 1,
+          "icono" : "",
+          "mes" : "Marzo",
+          "porcentaje" : 7.14,
+          "procesos" : {
+            "Homologacion" : 1
+          },
+          "rechazadas" : 0,
+          "tiempoPromedio" : 0.0,
+          "total" : 1
+        },
+        "Mayo" : {
+          "aprobadas" : 1,
+          "color" : "#FFEAA7",
+          "descripcion" : "Mes de mitad de semestre - Periodo de seguimiento",
+          "eficiencia" : 100.0,
+          "enviadas" : 0,
+          "icono" : "",
+          "mes" : "Mayo",
+          "porcentaje" : 7.14,
+          "procesos" : {
+            "ECAES" : 1
+          },
+          "rechazadas" : 0,
+          "tiempoPromedio" : 3.0,
+          "total" : 1
+        },
+        "Noviembre" : {
+          "aprobadas" : 0,
+          "color" : "#F8C471",
+          "descripcion" : "Mes de preparacion final - Periodo de proyectos",
+          "eficiencia" : 0.0,
+          "enviadas" : 1,
+          "icono" : "",
+          "mes" : "Noviembre",
+          "porcentaje" : 7.14,
+          "procesos" : {
+            "Reingreso" : 1
+          },
+          "rechazadas" : 0,
+          "tiempoPromedio" : 0.0,
+          "total" : 1
+        },
+        "Octubre" : {
+          "aprobadas" : 0,
+          "color" : "#85C1E9",
+          "descripcion" : "Mes de evaluaciones - Periodo de examenes parciales",
+          "eficiencia" : 0.0,
+          "enviadas" : 0,
+          "icono" : "",
+          "mes" : "Octubre",
+          "porcentaje" : 0.0,
+          "procesos" : { },
+          "rechazadas" : 0,
+          "tiempoPromedio" : 0.0,
+          "total" : 0
+        },
+        "Septiembre" : {
+          "aprobadas" : 0,
+          "color" : "#BB8FCE",
+          "descripcion" : "Mes de estabilizacion - Periodo regular de clases",
+          "eficiencia" : 0.0,
+          "enviadas" : 0,
+          "icono" : "",
+          "mes" : "Septiembre",
+          "porcentaje" : 7.14,
+          "procesos" : {
+            "ECAES" : 1
+          },
+          "rechazadas" : 1,
+          "tiempoPromedio" : 0.0,
+          "total" : 1
+        }
+      },
+      "tendencias" : {
+        "crecimientoPromedio" : 0.0,
+        "eficienciaMaxima" : 100.0,
+        "maxSolicitudes" : 3,
+        "mesMasActivo" : "Julio",
+        "mesMasEficiente" : "Abril",
+        "mesMasRapido" : "Mayo",
+        "mesesAnalizados" : 10,
+        "promedioMensual" : 1.4,
+        "tendenciaGeneral" : "Estable",
+        "tiempoMinimo" : 3.0,
+        "totalSolicitudes" : 14
+      },
+      "todosLosMeses" : [ "Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre" ]
+    }
+  },
+  "GET /por-periodo?periodoAcademico=[ 2025-1 ]" : {
+    "estado" : 200,
+    "cuerpo" : {
+      "descripcion" : "Estadisticas por periodo/mes con analisis de tendencias - DATOS REALES",
+      "fechaConsulta" : "<ahora>",
+      "mesesOrdenados" : [ {
+        "aprobadas" : 0,
+        "color" : "#FF6B6B",
+        "descripcion" : "Mes de inicio de ano academico - Periodo de inscripciones",
+        "eficiencia" : 0.0,
+        "enviadas" : 1,
+        "icono" : "",
+        "mes" : "Enero",
+        "porcentaje" : 14.29,
+        "procesos" : {
+          "Reingreso" : 1
+        },
+        "rechazadas" : 0,
+        "tiempoPromedio" : 0.0,
+        "total" : 1
+      }, {
+        "aprobadas" : 0,
+        "color" : "#4ECDC4",
+        "descripcion" : "Mes de inicio de clases - Periodo de ajustes academicos",
+        "eficiencia" : 0.0,
+        "enviadas" : 0,
+        "icono" : "",
+        "mes" : "Febrero",
+        "porcentaje" : 14.29,
+        "procesos" : {
+          "Homologacion" : 1
+        },
+        "rechazadas" : 1,
+        "tiempoPromedio" : 17.0,
+        "total" : 1
+      }, {
+        "aprobadas" : 0,
+        "color" : "#45B7D1",
+        "descripcion" : "Mes de estabilizacion academica - Periodo regular",
+        "eficiencia" : 0.0,
+        "enviadas" : 1,
+        "icono" : "",
+        "mes" : "Marzo",
+        "porcentaje" : 14.29,
+        "procesos" : {
+          "Homologacion" : 1
+        },
+        "rechazadas" : 0,
+        "tiempoPromedio" : 0.0,
+        "total" : 1
+      }, {
+        "aprobadas" : 1,
+        "color" : "#96CEB4",
+        "descripcion" : "Mes de evaluaciones parciales - Periodo de examenes",
+        "eficiencia" : 100.0,
+        "enviadas" : 0,
+        "icono" : "",
+        "mes" : "Abril",
+        "porcentaje" : 14.29,
+        "procesos" : {
+          "Paz y Salvo" : 1
+        },
+        "rechazadas" : 0,
+        "tiempoPromedio" : 28.0,
+        "total" : 1
+      }, {
+        "aprobadas" : 1,
+        "color" : "#FFEAA7",
+        "descripcion" : "Mes de mitad de semestre - Periodo de seguimiento",
+        "eficiencia" : 100.0,
+        "enviadas" : 0,
+        "icono" : "",
+        "mes" : "Mayo",
+        "porcentaje" : 14.29,
+        "procesos" : {
+          "ECAES" : 1
+        },
+        "rechazadas" : 0,
+        "tiempoPromedio" : 3.0,
+        "total" : 1
+      }, {
+        "aprobadas" : 1,
+        "color" : "#DDA0DD",
+        "descripcion" : "Mes de finalizacion de semestre - Periodo de examenes finales",
+        "eficiencia" : 50.0,
+        "enviadas" : 1,
+        "icono" : "",
+        "mes" : "Junio",
+        "porcentaje" : 28.57,
+        "procesos" : {
+          "Cursos de Verano" : 2
+        },
+        "rechazadas" : 0,
+        "tiempoPromedio" : 10.0,
+        "total" : 2
+      }, {
+        "aprobadas" : 0,
+        "color" : "#98D8C8",
+        "descripcion" : "Mes de vacaciones - Periodo de cursos de verano",
+        "eficiencia" : 0.0,
+        "enviadas" : 0,
+        "icono" : "",
+        "mes" : "Julio",
+        "porcentaje" : 0.0,
+        "procesos" : { },
+        "rechazadas" : 0,
+        "tiempoPromedio" : 0.0,
+        "total" : 0
+      }, {
+        "aprobadas" : 0,
+        "color" : "#F7DC6F",
+        "descripcion" : "Mes de inicio de segundo semestre - Periodo de inscripciones",
+        "eficiencia" : 0.0,
+        "enviadas" : 0,
+        "icono" : "",
+        "mes" : "Agosto",
+        "porcentaje" : 0.0,
+        "procesos" : { },
+        "rechazadas" : 0,
+        "tiempoPromedio" : 0.0,
+        "total" : 0
+      }, {
+        "aprobadas" : 0,
+        "color" : "#BB8FCE",
+        "descripcion" : "Mes de estabilizacion - Periodo regular de clases",
+        "eficiencia" : 0.0,
+        "enviadas" : 0,
+        "icono" : "",
+        "mes" : "Septiembre",
+        "porcentaje" : 0.0,
+        "procesos" : { },
+        "rechazadas" : 0,
+        "tiempoPromedio" : 0.0,
+        "total" : 0
+      }, {
+        "aprobadas" : 0,
+        "color" : "#85C1E9",
+        "descripcion" : "Mes de evaluaciones - Periodo de examenes parciales",
+        "eficiencia" : 0.0,
+        "enviadas" : 0,
+        "icono" : "",
+        "mes" : "Octubre",
+        "porcentaje" : 0.0,
+        "procesos" : { },
+        "rechazadas" : 0,
+        "tiempoPromedio" : 0.0,
+        "total" : 0
+      }, {
+        "aprobadas" : 0,
+        "color" : "#F8C471",
+        "descripcion" : "Mes de preparacion final - Periodo de proyectos",
+        "eficiencia" : 0.0,
+        "enviadas" : 0,
+        "icono" : "",
+        "mes" : "Noviembre",
+        "porcentaje" : 0.0,
+        "procesos" : { },
+        "rechazadas" : 0,
+        "tiempoPromedio" : 0.0,
+        "total" : 0
+      }, {
+        "aprobadas" : 0,
+        "color" : "#F1948A",
+        "descripcion" : "Mes de finalizacion de ano - Periodo de graduaciones",
+        "eficiencia" : 0.0,
+        "enviadas" : 0,
+        "icono" : "",
+        "mes" : "Diciembre",
+        "porcentaje" : 0.0,
+        "procesos" : { },
+        "rechazadas" : 0,
+        "tiempoPromedio" : 0.0,
+        "total" : 0
+      } ],
+      "porMes" : {
+        "Abril" : {
+          "aprobadas" : 1,
+          "color" : "#96CEB4",
+          "descripcion" : "Mes de evaluaciones parciales - Periodo de examenes",
+          "eficiencia" : 100.0,
+          "enviadas" : 0,
+          "icono" : "",
+          "mes" : "Abril",
+          "porcentaje" : 14.29,
+          "procesos" : {
+            "Paz y Salvo" : 1
+          },
+          "rechazadas" : 0,
+          "tiempoPromedio" : 28.0,
+          "total" : 1
+        },
+        "Agosto" : {
+          "aprobadas" : 0,
+          "color" : "#F7DC6F",
+          "descripcion" : "Mes de inicio de segundo semestre - Periodo de inscripciones",
+          "eficiencia" : 0.0,
+          "enviadas" : 0,
+          "icono" : "",
+          "mes" : "Agosto",
+          "porcentaje" : 0.0,
+          "procesos" : { },
+          "rechazadas" : 0,
+          "tiempoPromedio" : 0.0,
+          "total" : 0
+        },
+        "Diciembre" : {
+          "aprobadas" : 0,
+          "color" : "#F1948A",
+          "descripcion" : "Mes de finalizacion de ano - Periodo de graduaciones",
+          "eficiencia" : 0.0,
+          "enviadas" : 0,
+          "icono" : "",
+          "mes" : "Diciembre",
+          "porcentaje" : 0.0,
+          "procesos" : { },
+          "rechazadas" : 0,
+          "tiempoPromedio" : 0.0,
+          "total" : 0
+        },
+        "Enero" : {
+          "aprobadas" : 0,
+          "color" : "#FF6B6B",
+          "descripcion" : "Mes de inicio de ano academico - Periodo de inscripciones",
+          "eficiencia" : 0.0,
+          "enviadas" : 1,
+          "icono" : "",
+          "mes" : "Enero",
+          "porcentaje" : 14.29,
+          "procesos" : {
+            "Reingreso" : 1
+          },
+          "rechazadas" : 0,
+          "tiempoPromedio" : 0.0,
+          "total" : 1
+        },
+        "Febrero" : {
+          "aprobadas" : 0,
+          "color" : "#4ECDC4",
+          "descripcion" : "Mes de inicio de clases - Periodo de ajustes academicos",
+          "eficiencia" : 0.0,
+          "enviadas" : 0,
+          "icono" : "",
+          "mes" : "Febrero",
+          "porcentaje" : 14.29,
+          "procesos" : {
+            "Homologacion" : 1
+          },
+          "rechazadas" : 1,
+          "tiempoPromedio" : 17.0,
+          "total" : 1
+        },
+        "Julio" : {
+          "aprobadas" : 0,
+          "color" : "#98D8C8",
+          "descripcion" : "Mes de vacaciones - Periodo de cursos de verano",
+          "eficiencia" : 0.0,
+          "enviadas" : 0,
+          "icono" : "",
+          "mes" : "Julio",
+          "porcentaje" : 0.0,
+          "procesos" : { },
+          "rechazadas" : 0,
+          "tiempoPromedio" : 0.0,
+          "total" : 0
+        },
+        "Junio" : {
+          "aprobadas" : 1,
+          "color" : "#DDA0DD",
+          "descripcion" : "Mes de finalizacion de semestre - Periodo de examenes finales",
+          "eficiencia" : 50.0,
+          "enviadas" : 1,
+          "icono" : "",
+          "mes" : "Junio",
+          "porcentaje" : 28.57,
+          "procesos" : {
+            "Cursos de Verano" : 2
+          },
+          "rechazadas" : 0,
+          "tiempoPromedio" : 10.0,
+          "total" : 2
+        },
+        "Marzo" : {
+          "aprobadas" : 0,
+          "color" : "#45B7D1",
+          "descripcion" : "Mes de estabilizacion academica - Periodo regular",
+          "eficiencia" : 0.0,
+          "enviadas" : 1,
+          "icono" : "",
+          "mes" : "Marzo",
+          "porcentaje" : 14.29,
+          "procesos" : {
+            "Homologacion" : 1
+          },
+          "rechazadas" : 0,
+          "tiempoPromedio" : 0.0,
+          "total" : 1
+        },
+        "Mayo" : {
+          "aprobadas" : 1,
+          "color" : "#FFEAA7",
+          "descripcion" : "Mes de mitad de semestre - Periodo de seguimiento",
+          "eficiencia" : 100.0,
+          "enviadas" : 0,
+          "icono" : "",
+          "mes" : "Mayo",
+          "porcentaje" : 14.29,
+          "procesos" : {
+            "ECAES" : 1
+          },
+          "rechazadas" : 0,
+          "tiempoPromedio" : 3.0,
+          "total" : 1
+        },
+        "Noviembre" : {
+          "aprobadas" : 0,
+          "color" : "#F8C471",
+          "descripcion" : "Mes de preparacion final - Periodo de proyectos",
+          "eficiencia" : 0.0,
+          "enviadas" : 0,
+          "icono" : "",
+          "mes" : "Noviembre",
+          "porcentaje" : 0.0,
+          "procesos" : { },
+          "rechazadas" : 0,
+          "tiempoPromedio" : 0.0,
+          "total" : 0
+        },
+        "Octubre" : {
+          "aprobadas" : 0,
+          "color" : "#85C1E9",
+          "descripcion" : "Mes de evaluaciones - Periodo de examenes parciales",
+          "eficiencia" : 0.0,
+          "enviadas" : 0,
+          "icono" : "",
+          "mes" : "Octubre",
+          "porcentaje" : 0.0,
+          "procesos" : { },
+          "rechazadas" : 0,
+          "tiempoPromedio" : 0.0,
+          "total" : 0
+        },
+        "Septiembre" : {
+          "aprobadas" : 0,
+          "color" : "#BB8FCE",
+          "descripcion" : "Mes de estabilizacion - Periodo regular de clases",
+          "eficiencia" : 0.0,
+          "enviadas" : 0,
+          "icono" : "",
+          "mes" : "Septiembre",
+          "porcentaje" : 0.0,
+          "procesos" : { },
+          "rechazadas" : 0,
+          "tiempoPromedio" : 0.0,
+          "total" : 0
+        }
+      },
+      "tendencias" : {
+        "crecimientoPromedio" : 100.0,
+        "eficienciaMaxima" : 100.0,
+        "maxSolicitudes" : 2,
+        "mesMasActivo" : "Junio",
+        "mesMasEficiente" : "Abril",
+        "mesMasRapido" : "Mayo",
+        "mesesAnalizados" : 6,
+        "promedioMensual" : 1.17,
+        "tendenciaGeneral" : "Creciente",
+        "tiempoMinimo" : 3.0,
+        "totalSolicitudes" : 7
+      },
+      "todosLosMeses" : [ "Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre" ]
+    }
+  },
+  "GET /por-periodo?periodoAcademico=[2025 - Primer Semestre]" : {
+    "estado" : 200,
+    "cuerpo" : {
+      "descripcion" : "Estadisticas por periodo/mes con analisis de tendencias - DATOS REALES",
+      "fechaConsulta" : "<ahora>",
+      "mesesOrdenados" : [ {
+        "aprobadas" : 0,
+        "color" : "#FF6B6B",
+        "descripcion" : "Mes de inicio de ano academico - Periodo de inscripciones",
+        "eficiencia" : 0.0,
+        "enviadas" : 0,
+        "icono" : "",
+        "mes" : "Enero",
+        "porcentaje" : 0.0,
+        "procesos" : { },
+        "rechazadas" : 0,
+        "tiempoPromedio" : 0.0,
+        "total" : 0
+      }, {
+        "aprobadas" : 0,
+        "color" : "#4ECDC4",
+        "descripcion" : "Mes de inicio de clases - Periodo de ajustes academicos",
+        "eficiencia" : 0.0,
+        "enviadas" : 0,
+        "icono" : "",
+        "mes" : "Febrero",
+        "porcentaje" : 0.0,
+        "procesos" : { },
+        "rechazadas" : 0,
+        "tiempoPromedio" : 0.0,
+        "total" : 0
+      }, {
+        "aprobadas" : 0,
+        "color" : "#45B7D1",
+        "descripcion" : "Mes de estabilizacion academica - Periodo regular",
+        "eficiencia" : 0.0,
+        "enviadas" : 0,
+        "icono" : "",
+        "mes" : "Marzo",
+        "porcentaje" : 0.0,
+        "procesos" : { },
+        "rechazadas" : 0,
+        "tiempoPromedio" : 0.0,
+        "total" : 0
+      }, {
+        "aprobadas" : 0,
+        "color" : "#96CEB4",
+        "descripcion" : "Mes de evaluaciones parciales - Periodo de examenes",
+        "eficiencia" : 0.0,
+        "enviadas" : 0,
+        "icono" : "",
+        "mes" : "Abril",
+        "porcentaje" : 0.0,
+        "procesos" : { },
+        "rechazadas" : 0,
+        "tiempoPromedio" : 0.0,
+        "total" : 0
+      }, {
+        "aprobadas" : 0,
+        "color" : "#FFEAA7",
+        "descripcion" : "Mes de mitad de semestre - Periodo de seguimiento",
+        "eficiencia" : 0.0,
+        "enviadas" : 0,
+        "icono" : "",
+        "mes" : "Mayo",
+        "porcentaje" : 0.0,
+        "procesos" : { },
+        "rechazadas" : 0,
+        "tiempoPromedio" : 0.0,
+        "total" : 0
+      }, {
+        "aprobadas" : 1,
+        "color" : "#DDA0DD",
+        "descripcion" : "Mes de finalizacion de semestre - Periodo de examenes finales",
+        "eficiencia" : 50.0,
+        "enviadas" : 1,
+        "icono" : "",
+        "mes" : "Junio",
+        "porcentaje" : 28.57,
+        "procesos" : {
+          "Cursos de Verano" : 2
+        },
+        "rechazadas" : 0,
+        "tiempoPromedio" : 10.0,
+        "total" : 2
+      }, {
+        "aprobadas" : 1,
+        "color" : "#98D8C8",
+        "descripcion" : "Mes de vacaciones - Periodo de cursos de verano",
+        "eficiencia" : 33.33,
+        "enviadas" : 0,
+        "icono" : "",
+        "mes" : "Julio",
+        "porcentaje" : 42.86,
+        "procesos" : {
+          "Cursos de Verano" : 3
+        },
+        "rechazadas" : 2,
+        "tiempoPromedio" : 4.0,
+        "total" : 3
+      }, {
+        "aprobadas" : 0,
+        "color" : "#F7DC6F",
+        "descripcion" : "Mes de inicio de segundo semestre - Periodo de inscripciones",
+        "eficiencia" : 0.0,
+        "enviadas" : 1,
+        "icono" : "",
+        "mes" : "Agosto",
+        "porcentaje" : 14.29,
+        "procesos" : {
+          "Paz y Salvo" : 1
+        },
+        "rechazadas" : 0,
+        "tiempoPromedio" : 0.0,
+        "total" : 1
+      }, {
+        "aprobadas" : 0,
+        "color" : "#BB8FCE",
+        "descripcion" : "Mes de estabilizacion - Periodo regular de clases",
+        "eficiencia" : 0.0,
+        "enviadas" : 0,
+        "icono" : "",
+        "mes" : "Septiembre",
+        "porcentaje" : 14.29,
+        "procesos" : {
+          "ECAES" : 1
+        },
+        "rechazadas" : 1,
+        "tiempoPromedio" : 0.0,
+        "total" : 1
+      }, {
+        "aprobadas" : 0,
+        "color" : "#85C1E9",
+        "descripcion" : "Mes de evaluaciones - Periodo de examenes parciales",
+        "eficiencia" : 0.0,
+        "enviadas" : 0,
+        "icono" : "",
+        "mes" : "Octubre",
+        "porcentaje" : 0.0,
+        "procesos" : { },
+        "rechazadas" : 0,
+        "tiempoPromedio" : 0.0,
+        "total" : 0
+      }, {
+        "aprobadas" : 0,
+        "color" : "#F8C471",
+        "descripcion" : "Mes de preparacion final - Periodo de proyectos",
+        "eficiencia" : 0.0,
+        "enviadas" : 0,
+        "icono" : "",
+        "mes" : "Noviembre",
+        "porcentaje" : 0.0,
+        "procesos" : { },
+        "rechazadas" : 0,
+        "tiempoPromedio" : 0.0,
+        "total" : 0
+      }, {
+        "aprobadas" : 0,
+        "color" : "#F1948A",
+        "descripcion" : "Mes de finalizacion de ano - Periodo de graduaciones",
+        "eficiencia" : 0.0,
+        "enviadas" : 0,
+        "icono" : "",
+        "mes" : "Diciembre",
+        "porcentaje" : 0.0,
+        "procesos" : { },
+        "rechazadas" : 0,
+        "tiempoPromedio" : 0.0,
+        "total" : 0
+      } ],
+      "porMes" : {
+        "Abril" : {
+          "aprobadas" : 0,
+          "color" : "#96CEB4",
+          "descripcion" : "Mes de evaluaciones parciales - Periodo de examenes",
+          "eficiencia" : 0.0,
+          "enviadas" : 0,
+          "icono" : "",
+          "mes" : "Abril",
+          "porcentaje" : 0.0,
+          "procesos" : { },
+          "rechazadas" : 0,
+          "tiempoPromedio" : 0.0,
+          "total" : 0
+        },
+        "Agosto" : {
+          "aprobadas" : 0,
+          "color" : "#F7DC6F",
+          "descripcion" : "Mes de inicio de segundo semestre - Periodo de inscripciones",
+          "eficiencia" : 0.0,
+          "enviadas" : 1,
+          "icono" : "",
+          "mes" : "Agosto",
+          "porcentaje" : 14.29,
+          "procesos" : {
+            "Paz y Salvo" : 1
+          },
+          "rechazadas" : 0,
+          "tiempoPromedio" : 0.0,
+          "total" : 1
+        },
+        "Diciembre" : {
+          "aprobadas" : 0,
+          "color" : "#F1948A",
+          "descripcion" : "Mes de finalizacion de ano - Periodo de graduaciones",
+          "eficiencia" : 0.0,
+          "enviadas" : 0,
+          "icono" : "",
+          "mes" : "Diciembre",
+          "porcentaje" : 0.0,
+          "procesos" : { },
+          "rechazadas" : 0,
+          "tiempoPromedio" : 0.0,
+          "total" : 0
+        },
+        "Enero" : {
+          "aprobadas" : 0,
+          "color" : "#FF6B6B",
+          "descripcion" : "Mes de inicio de ano academico - Periodo de inscripciones",
+          "eficiencia" : 0.0,
+          "enviadas" : 0,
+          "icono" : "",
+          "mes" : "Enero",
+          "porcentaje" : 0.0,
+          "procesos" : { },
+          "rechazadas" : 0,
+          "tiempoPromedio" : 0.0,
+          "total" : 0
+        },
+        "Febrero" : {
+          "aprobadas" : 0,
+          "color" : "#4ECDC4",
+          "descripcion" : "Mes de inicio de clases - Periodo de ajustes academicos",
+          "eficiencia" : 0.0,
+          "enviadas" : 0,
+          "icono" : "",
+          "mes" : "Febrero",
+          "porcentaje" : 0.0,
+          "procesos" : { },
+          "rechazadas" : 0,
+          "tiempoPromedio" : 0.0,
+          "total" : 0
+        },
+        "Julio" : {
+          "aprobadas" : 1,
+          "color" : "#98D8C8",
+          "descripcion" : "Mes de vacaciones - Periodo de cursos de verano",
+          "eficiencia" : 33.33,
+          "enviadas" : 0,
+          "icono" : "",
+          "mes" : "Julio",
+          "porcentaje" : 42.86,
+          "procesos" : {
+            "Cursos de Verano" : 3
+          },
+          "rechazadas" : 2,
+          "tiempoPromedio" : 4.0,
+          "total" : 3
+        },
+        "Junio" : {
+          "aprobadas" : 1,
+          "color" : "#DDA0DD",
+          "descripcion" : "Mes de finalizacion de semestre - Periodo de examenes finales",
+          "eficiencia" : 50.0,
+          "enviadas" : 1,
+          "icono" : "",
+          "mes" : "Junio",
+          "porcentaje" : 28.57,
+          "procesos" : {
+            "Cursos de Verano" : 2
+          },
+          "rechazadas" : 0,
+          "tiempoPromedio" : 10.0,
+          "total" : 2
+        },
+        "Marzo" : {
+          "aprobadas" : 0,
+          "color" : "#45B7D1",
+          "descripcion" : "Mes de estabilizacion academica - Periodo regular",
+          "eficiencia" : 0.0,
+          "enviadas" : 0,
+          "icono" : "",
+          "mes" : "Marzo",
+          "porcentaje" : 0.0,
+          "procesos" : { },
+          "rechazadas" : 0,
+          "tiempoPromedio" : 0.0,
+          "total" : 0
+        },
+        "Mayo" : {
+          "aprobadas" : 0,
+          "color" : "#FFEAA7",
+          "descripcion" : "Mes de mitad de semestre - Periodo de seguimiento",
+          "eficiencia" : 0.0,
+          "enviadas" : 0,
+          "icono" : "",
+          "mes" : "Mayo",
+          "porcentaje" : 0.0,
+          "procesos" : { },
+          "rechazadas" : 0,
+          "tiempoPromedio" : 0.0,
+          "total" : 0
+        },
+        "Noviembre" : {
+          "aprobadas" : 0,
+          "color" : "#F8C471",
+          "descripcion" : "Mes de preparacion final - Periodo de proyectos",
+          "eficiencia" : 0.0,
+          "enviadas" : 0,
+          "icono" : "",
+          "mes" : "Noviembre",
+          "porcentaje" : 0.0,
+          "procesos" : { },
+          "rechazadas" : 0,
+          "tiempoPromedio" : 0.0,
+          "total" : 0
+        },
+        "Octubre" : {
+          "aprobadas" : 0,
+          "color" : "#85C1E9",
+          "descripcion" : "Mes de evaluaciones - Periodo de examenes parciales",
+          "eficiencia" : 0.0,
+          "enviadas" : 0,
+          "icono" : "",
+          "mes" : "Octubre",
+          "porcentaje" : 0.0,
+          "procesos" : { },
+          "rechazadas" : 0,
+          "tiempoPromedio" : 0.0,
+          "total" : 0
+        },
+        "Septiembre" : {
+          "aprobadas" : 0,
+          "color" : "#BB8FCE",
+          "descripcion" : "Mes de estabilizacion - Periodo regular de clases",
+          "eficiencia" : 0.0,
+          "enviadas" : 0,
+          "icono" : "",
+          "mes" : "Septiembre",
+          "porcentaje" : 14.29,
+          "procesos" : {
+            "ECAES" : 1
+          },
+          "rechazadas" : 1,
+          "tiempoPromedio" : 0.0,
+          "total" : 1
+        }
+      },
+      "tendencias" : {
+        "crecimientoPromedio" : 0.0,
+        "eficienciaMaxima" : 50.0,
+        "maxSolicitudes" : 3,
+        "mesMasActivo" : "Julio",
+        "mesMasEficiente" : "Junio",
+        "mesMasRapido" : "Julio",
+        "mesesAnalizados" : 4,
+        "promedioMensual" : 1.75,
+        "tendenciaGeneral" : "Estable",
+        "tiempoMinimo" : 4.0,
+        "totalSolicitudes" : 7
+      },
+      "todosLosMeses" : [ "Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre" ]
+    }
+  },
+  "GET /por-periodo?periodoAcademico=[sin año]" : {
+    "estado" : 200,
+    "cuerpo" : {
+      "descripcion" : "Estadisticas por periodo/mes con analisis de tendencias - DATOS REALES",
+      "fechaConsulta" : "<ahora>",
+      "mesesOrdenados" : [ {
+        "aprobadas" : 0,
+        "color" : "#FF6B6B",
+        "descripcion" : "Mes de inicio de ano academico - Periodo de inscripciones",
+        "eficiencia" : 0.0,
+        "enviadas" : 0,
+        "icono" : "",
+        "mes" : "Enero",
+        "porcentaje" : 0.0,
+        "procesos" : { },
+        "rechazadas" : 0,
+        "tiempoPromedio" : 0.0,
+        "total" : 0
+      }, {
+        "aprobadas" : 0,
+        "color" : "#4ECDC4",
+        "descripcion" : "Mes de inicio de clases - Periodo de ajustes academicos",
+        "eficiencia" : 0.0,
+        "enviadas" : 0,
+        "icono" : "",
+        "mes" : "Febrero",
+        "porcentaje" : 0.0,
+        "procesos" : { },
+        "rechazadas" : 0,
+        "tiempoPromedio" : 0.0,
+        "total" : 0
+      }, {
+        "aprobadas" : 0,
+        "color" : "#45B7D1",
+        "descripcion" : "Mes de estabilizacion academica - Periodo regular",
+        "eficiencia" : 0.0,
+        "enviadas" : 0,
+        "icono" : "",
+        "mes" : "Marzo",
+        "porcentaje" : 0.0,
+        "procesos" : { },
+        "rechazadas" : 0,
+        "tiempoPromedio" : 0.0,
+        "total" : 0
+      }, {
+        "aprobadas" : 0,
+        "color" : "#96CEB4",
+        "descripcion" : "Mes de evaluaciones parciales - Periodo de examenes",
+        "eficiencia" : 0.0,
+        "enviadas" : 0,
+        "icono" : "",
+        "mes" : "Abril",
+        "porcentaje" : 0.0,
+        "procesos" : { },
+        "rechazadas" : 0,
+        "tiempoPromedio" : 0.0,
+        "total" : 0
+      }, {
+        "aprobadas" : 0,
+        "color" : "#FFEAA7",
+        "descripcion" : "Mes de mitad de semestre - Periodo de seguimiento",
+        "eficiencia" : 0.0,
+        "enviadas" : 0,
+        "icono" : "",
+        "mes" : "Mayo",
+        "porcentaje" : 0.0,
+        "procesos" : { },
+        "rechazadas" : 0,
+        "tiempoPromedio" : 0.0,
+        "total" : 0
+      }, {
+        "aprobadas" : 0,
+        "color" : "#DDA0DD",
+        "descripcion" : "Mes de finalizacion de semestre - Periodo de examenes finales",
+        "eficiencia" : 0.0,
+        "enviadas" : 0,
+        "icono" : "",
+        "mes" : "Junio",
+        "porcentaje" : 0.0,
+        "procesos" : { },
+        "rechazadas" : 0,
+        "tiempoPromedio" : 0.0,
+        "total" : 0
+      }, {
+        "aprobadas" : 0,
+        "color" : "#98D8C8",
+        "descripcion" : "Mes de vacaciones - Periodo de cursos de verano",
+        "eficiencia" : 0.0,
+        "enviadas" : 0,
+        "icono" : "",
+        "mes" : "Julio",
+        "porcentaje" : 0.0,
+        "procesos" : { },
+        "rechazadas" : 0,
+        "tiempoPromedio" : 0.0,
+        "total" : 0
+      }, {
+        "aprobadas" : 0,
+        "color" : "#F7DC6F",
+        "descripcion" : "Mes de inicio de segundo semestre - Periodo de inscripciones",
+        "eficiencia" : 0.0,
+        "enviadas" : 0,
+        "icono" : "",
+        "mes" : "Agosto",
+        "porcentaje" : 0.0,
+        "procesos" : { },
+        "rechazadas" : 0,
+        "tiempoPromedio" : 0.0,
+        "total" : 0
+      }, {
+        "aprobadas" : 0,
+        "color" : "#BB8FCE",
+        "descripcion" : "Mes de estabilizacion - Periodo regular de clases",
+        "eficiencia" : 0.0,
+        "enviadas" : 0,
+        "icono" : "",
+        "mes" : "Septiembre",
+        "porcentaje" : 0.0,
+        "procesos" : { },
+        "rechazadas" : 0,
+        "tiempoPromedio" : 0.0,
+        "total" : 0
+      }, {
+        "aprobadas" : 0,
+        "color" : "#85C1E9",
+        "descripcion" : "Mes de evaluaciones - Periodo de examenes parciales",
+        "eficiencia" : 0.0,
+        "enviadas" : 0,
+        "icono" : "",
+        "mes" : "Octubre",
+        "porcentaje" : 0.0,
+        "procesos" : { },
+        "rechazadas" : 0,
+        "tiempoPromedio" : 0.0,
+        "total" : 0
+      }, {
+        "aprobadas" : 0,
+        "color" : "#F8C471",
+        "descripcion" : "Mes de preparacion final - Periodo de proyectos",
+        "eficiencia" : 0.0,
+        "enviadas" : 0,
+        "icono" : "",
+        "mes" : "Noviembre",
+        "porcentaje" : 0.0,
+        "procesos" : { },
+        "rechazadas" : 0,
+        "tiempoPromedio" : 0.0,
+        "total" : 0
+      }, {
+        "aprobadas" : 0,
+        "color" : "#F1948A",
+        "descripcion" : "Mes de finalizacion de ano - Periodo de graduaciones",
+        "eficiencia" : 0.0,
+        "enviadas" : 0,
+        "icono" : "",
+        "mes" : "Diciembre",
+        "porcentaje" : 0.0,
+        "procesos" : { },
+        "rechazadas" : 0,
+        "tiempoPromedio" : 0.0,
+        "total" : 0
+      } ],
+      "porMes" : {
+        "Abril" : {
+          "aprobadas" : 0,
+          "color" : "#96CEB4",
+          "descripcion" : "Mes de evaluaciones parciales - Periodo de examenes",
+          "eficiencia" : 0.0,
+          "enviadas" : 0,
+          "icono" : "",
+          "mes" : "Abril",
+          "porcentaje" : 0.0,
+          "procesos" : { },
+          "rechazadas" : 0,
+          "tiempoPromedio" : 0.0,
+          "total" : 0
+        },
+        "Agosto" : {
+          "aprobadas" : 0,
+          "color" : "#F7DC6F",
+          "descripcion" : "Mes de inicio de segundo semestre - Periodo de inscripciones",
+          "eficiencia" : 0.0,
+          "enviadas" : 0,
+          "icono" : "",
+          "mes" : "Agosto",
+          "porcentaje" : 0.0,
+          "procesos" : { },
+          "rechazadas" : 0,
+          "tiempoPromedio" : 0.0,
+          "total" : 0
+        },
+        "Diciembre" : {
+          "aprobadas" : 0,
+          "color" : "#F1948A",
+          "descripcion" : "Mes de finalizacion de ano - Periodo de graduaciones",
+          "eficiencia" : 0.0,
+          "enviadas" : 0,
+          "icono" : "",
+          "mes" : "Diciembre",
+          "porcentaje" : 0.0,
+          "procesos" : { },
+          "rechazadas" : 0,
+          "tiempoPromedio" : 0.0,
+          "total" : 0
+        },
+        "Enero" : {
+          "aprobadas" : 0,
+          "color" : "#FF6B6B",
+          "descripcion" : "Mes de inicio de ano academico - Periodo de inscripciones",
+          "eficiencia" : 0.0,
+          "enviadas" : 0,
+          "icono" : "",
+          "mes" : "Enero",
+          "porcentaje" : 0.0,
+          "procesos" : { },
+          "rechazadas" : 0,
+          "tiempoPromedio" : 0.0,
+          "total" : 0
+        },
+        "Febrero" : {
+          "aprobadas" : 0,
+          "color" : "#4ECDC4",
+          "descripcion" : "Mes de inicio de clases - Periodo de ajustes academicos",
+          "eficiencia" : 0.0,
+          "enviadas" : 0,
+          "icono" : "",
+          "mes" : "Febrero",
+          "porcentaje" : 0.0,
+          "procesos" : { },
+          "rechazadas" : 0,
+          "tiempoPromedio" : 0.0,
+          "total" : 0
+        },
+        "Julio" : {
+          "aprobadas" : 0,
+          "color" : "#98D8C8",
+          "descripcion" : "Mes de vacaciones - Periodo de cursos de verano",
+          "eficiencia" : 0.0,
+          "enviadas" : 0,
+          "icono" : "",
+          "mes" : "Julio",
+          "porcentaje" : 0.0,
+          "procesos" : { },
+          "rechazadas" : 0,
+          "tiempoPromedio" : 0.0,
+          "total" : 0
+        },
+        "Junio" : {
+          "aprobadas" : 0,
+          "color" : "#DDA0DD",
+          "descripcion" : "Mes de finalizacion de semestre - Periodo de examenes finales",
+          "eficiencia" : 0.0,
+          "enviadas" : 0,
+          "icono" : "",
+          "mes" : "Junio",
+          "porcentaje" : 0.0,
+          "procesos" : { },
+          "rechazadas" : 0,
+          "tiempoPromedio" : 0.0,
+          "total" : 0
+        },
+        "Marzo" : {
+          "aprobadas" : 0,
+          "color" : "#45B7D1",
+          "descripcion" : "Mes de estabilizacion academica - Periodo regular",
+          "eficiencia" : 0.0,
+          "enviadas" : 0,
+          "icono" : "",
+          "mes" : "Marzo",
+          "porcentaje" : 0.0,
+          "procesos" : { },
+          "rechazadas" : 0,
+          "tiempoPromedio" : 0.0,
+          "total" : 0
+        },
+        "Mayo" : {
+          "aprobadas" : 0,
+          "color" : "#FFEAA7",
+          "descripcion" : "Mes de mitad de semestre - Periodo de seguimiento",
+          "eficiencia" : 0.0,
+          "enviadas" : 0,
+          "icono" : "",
+          "mes" : "Mayo",
+          "porcentaje" : 0.0,
+          "procesos" : { },
+          "rechazadas" : 0,
+          "tiempoPromedio" : 0.0,
+          "total" : 0
+        },
+        "Noviembre" : {
+          "aprobadas" : 0,
+          "color" : "#F8C471",
+          "descripcion" : "Mes de preparacion final - Periodo de proyectos",
+          "eficiencia" : 0.0,
+          "enviadas" : 0,
+          "icono" : "",
+          "mes" : "Noviembre",
+          "porcentaje" : 0.0,
+          "procesos" : { },
+          "rechazadas" : 0,
+          "tiempoPromedio" : 0.0,
+          "total" : 0
+        },
+        "Octubre" : {
+          "aprobadas" : 0,
+          "color" : "#85C1E9",
+          "descripcion" : "Mes de evaluaciones - Periodo de examenes parciales",
+          "eficiencia" : 0.0,
+          "enviadas" : 0,
+          "icono" : "",
+          "mes" : "Octubre",
+          "porcentaje" : 0.0,
+          "procesos" : { },
+          "rechazadas" : 0,
+          "tiempoPromedio" : 0.0,
+          "total" : 0
+        },
+        "Septiembre" : {
+          "aprobadas" : 0,
+          "color" : "#BB8FCE",
+          "descripcion" : "Mes de estabilizacion - Periodo regular de clases",
+          "eficiencia" : 0.0,
+          "enviadas" : 0,
+          "icono" : "",
+          "mes" : "Septiembre",
+          "porcentaje" : 0.0,
+          "procesos" : { },
+          "rechazadas" : 0,
+          "tiempoPromedio" : 0.0,
+          "total" : 0
+        }
+      },
+      "tendencias" : {
+        "crecimientoPromedio" : 0.0,
+        "eficienciaMaxima" : 0.0,
+        "maxSolicitudes" : 0,
+        "mesMasActivo" : null,
+        "mesMasEficiente" : null,
+        "mesMasRapido" : null,
+        "mesesAnalizados" : 0,
+        "promedioMensual" : 0.0,
+        "tendenciaGeneral" : "Estable",
+        "tiempoMinimo" : 9.223372036854776E16,
+        "totalSolicitudes" : 0
+      },
+      "todosLosMeses" : [ "Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre" ]
+    }
+  },
+  "GET /por-periodo?periodoAcademico=[2025-2]&idPrograma=[2]" : {
+    "estado" : 200,
+    "cuerpo" : {
+      "descripcion" : "Estadisticas por periodo/mes con analisis de tendencias - DATOS REALES",
+      "fechaConsulta" : "<ahora>",
+      "mesesOrdenados" : [ {
+        "aprobadas" : 0,
+        "color" : "#FF6B6B",
+        "descripcion" : "Mes de inicio de ano academico - Periodo de inscripciones",
+        "eficiencia" : 0.0,
+        "enviadas" : 0,
+        "icono" : "",
+        "mes" : "Enero",
+        "porcentaje" : 0.0,
+        "procesos" : { },
+        "rechazadas" : 0,
+        "tiempoPromedio" : 0.0,
+        "total" : 0
+      }, {
+        "aprobadas" : 0,
+        "color" : "#4ECDC4",
+        "descripcion" : "Mes de inicio de clases - Periodo de ajustes academicos",
+        "eficiencia" : 0.0,
+        "enviadas" : 0,
+        "icono" : "",
+        "mes" : "Febrero",
+        "porcentaje" : 0.0,
+        "procesos" : { },
+        "rechazadas" : 0,
+        "tiempoPromedio" : 0.0,
+        "total" : 0
+      }, {
+        "aprobadas" : 0,
+        "color" : "#45B7D1",
+        "descripcion" : "Mes de estabilizacion academica - Periodo regular",
+        "eficiencia" : 0.0,
+        "enviadas" : 0,
+        "icono" : "",
+        "mes" : "Marzo",
+        "porcentaje" : 0.0,
+        "procesos" : { },
+        "rechazadas" : 0,
+        "tiempoPromedio" : 0.0,
+        "total" : 0
+      }, {
+        "aprobadas" : 0,
+        "color" : "#96CEB4",
+        "descripcion" : "Mes de evaluaciones parciales - Periodo de examenes",
+        "eficiencia" : 0.0,
+        "enviadas" : 0,
+        "icono" : "",
+        "mes" : "Abril",
+        "porcentaje" : 0.0,
+        "procesos" : { },
+        "rechazadas" : 0,
+        "tiempoPromedio" : 0.0,
+        "total" : 0
+      }, {
+        "aprobadas" : 0,
+        "color" : "#FFEAA7",
+        "descripcion" : "Mes de mitad de semestre - Periodo de seguimiento",
+        "eficiencia" : 0.0,
+        "enviadas" : 0,
+        "icono" : "",
+        "mes" : "Mayo",
+        "porcentaje" : 0.0,
+        "procesos" : { },
+        "rechazadas" : 0,
+        "tiempoPromedio" : 0.0,
+        "total" : 0
+      }, {
+        "aprobadas" : 0,
+        "color" : "#DDA0DD",
+        "descripcion" : "Mes de finalizacion de semestre - Periodo de examenes finales",
+        "eficiencia" : 0.0,
+        "enviadas" : 0,
+        "icono" : "",
+        "mes" : "Junio",
+        "porcentaje" : 0.0,
+        "procesos" : { },
+        "rechazadas" : 0,
+        "tiempoPromedio" : 0.0,
+        "total" : 0
+      }, {
+        "aprobadas" : 0,
+        "color" : "#98D8C8",
+        "descripcion" : "Mes de vacaciones - Periodo de cursos de verano",
+        "eficiencia" : 0.0,
+        "enviadas" : 0,
+        "icono" : "",
+        "mes" : "Julio",
+        "porcentaje" : 66.67,
+        "procesos" : {
+          "Cursos de Verano" : 2
+        },
+        "rechazadas" : 2,
+        "tiempoPromedio" : 1.0,
+        "total" : 2
+      }, {
+        "aprobadas" : 0,
+        "color" : "#F7DC6F",
+        "descripcion" : "Mes de inicio de segundo semestre - Periodo de inscripciones",
+        "eficiencia" : 0.0,
+        "enviadas" : 1,
+        "icono" : "",
+        "mes" : "Agosto",
+        "porcentaje" : 33.33,
+        "procesos" : {
+          "Paz y Salvo" : 1
+        },
+        "rechazadas" : 0,
+        "tiempoPromedio" : 0.0,
+        "total" : 1
+      }, {
+        "aprobadas" : 0,
+        "color" : "#BB8FCE",
+        "descripcion" : "Mes de estabilizacion - Periodo regular de clases",
+        "eficiencia" : 0.0,
+        "enviadas" : 0,
+        "icono" : "",
+        "mes" : "Septiembre",
+        "porcentaje" : 0.0,
+        "procesos" : { },
+        "rechazadas" : 0,
+        "tiempoPromedio" : 0.0,
+        "total" : 0
+      }, {
+        "aprobadas" : 0,
+        "color" : "#85C1E9",
+        "descripcion" : "Mes de evaluaciones - Periodo de examenes parciales",
+        "eficiencia" : 0.0,
+        "enviadas" : 0,
+        "icono" : "",
+        "mes" : "Octubre",
+        "porcentaje" : 0.0,
+        "procesos" : { },
+        "rechazadas" : 0,
+        "tiempoPromedio" : 0.0,
+        "total" : 0
+      }, {
+        "aprobadas" : 0,
+        "color" : "#F8C471",
+        "descripcion" : "Mes de preparacion final - Periodo de proyectos",
+        "eficiencia" : 0.0,
+        "enviadas" : 0,
+        "icono" : "",
+        "mes" : "Noviembre",
+        "porcentaje" : 0.0,
+        "procesos" : { },
+        "rechazadas" : 0,
+        "tiempoPromedio" : 0.0,
+        "total" : 0
+      }, {
+        "aprobadas" : 0,
+        "color" : "#F1948A",
+        "descripcion" : "Mes de finalizacion de ano - Periodo de graduaciones",
+        "eficiencia" : 0.0,
+        "enviadas" : 0,
+        "icono" : "",
+        "mes" : "Diciembre",
+        "porcentaje" : 0.0,
+        "procesos" : { },
+        "rechazadas" : 0,
+        "tiempoPromedio" : 0.0,
+        "total" : 0
+      } ],
+      "porMes" : {
+        "Abril" : {
+          "aprobadas" : 0,
+          "color" : "#96CEB4",
+          "descripcion" : "Mes de evaluaciones parciales - Periodo de examenes",
+          "eficiencia" : 0.0,
+          "enviadas" : 0,
+          "icono" : "",
+          "mes" : "Abril",
+          "porcentaje" : 0.0,
+          "procesos" : { },
+          "rechazadas" : 0,
+          "tiempoPromedio" : 0.0,
+          "total" : 0
+        },
+        "Agosto" : {
+          "aprobadas" : 0,
+          "color" : "#F7DC6F",
+          "descripcion" : "Mes de inicio de segundo semestre - Periodo de inscripciones",
+          "eficiencia" : 0.0,
+          "enviadas" : 1,
+          "icono" : "",
+          "mes" : "Agosto",
+          "porcentaje" : 33.33,
+          "procesos" : {
+            "Paz y Salvo" : 1
+          },
+          "rechazadas" : 0,
+          "tiempoPromedio" : 0.0,
+          "total" : 1
+        },
+        "Diciembre" : {
+          "aprobadas" : 0,
+          "color" : "#F1948A",
+          "descripcion" : "Mes de finalizacion de ano - Periodo de graduaciones",
+          "eficiencia" : 0.0,
+          "enviadas" : 0,
+          "icono" : "",
+          "mes" : "Diciembre",
+          "porcentaje" : 0.0,
+          "procesos" : { },
+          "rechazadas" : 0,
+          "tiempoPromedio" : 0.0,
+          "total" : 0
+        },
+        "Enero" : {
+          "aprobadas" : 0,
+          "color" : "#FF6B6B",
+          "descripcion" : "Mes de inicio de ano academico - Periodo de inscripciones",
+          "eficiencia" : 0.0,
+          "enviadas" : 0,
+          "icono" : "",
+          "mes" : "Enero",
+          "porcentaje" : 0.0,
+          "procesos" : { },
+          "rechazadas" : 0,
+          "tiempoPromedio" : 0.0,
+          "total" : 0
+        },
+        "Febrero" : {
+          "aprobadas" : 0,
+          "color" : "#4ECDC4",
+          "descripcion" : "Mes de inicio de clases - Periodo de ajustes academicos",
+          "eficiencia" : 0.0,
+          "enviadas" : 0,
+          "icono" : "",
+          "mes" : "Febrero",
+          "porcentaje" : 0.0,
+          "procesos" : { },
+          "rechazadas" : 0,
+          "tiempoPromedio" : 0.0,
+          "total" : 0
+        },
+        "Julio" : {
+          "aprobadas" : 0,
+          "color" : "#98D8C8",
+          "descripcion" : "Mes de vacaciones - Periodo de cursos de verano",
+          "eficiencia" : 0.0,
+          "enviadas" : 0,
+          "icono" : "",
+          "mes" : "Julio",
+          "porcentaje" : 66.67,
+          "procesos" : {
+            "Cursos de Verano" : 2
+          },
+          "rechazadas" : 2,
+          "tiempoPromedio" : 1.0,
+          "total" : 2
+        },
+        "Junio" : {
+          "aprobadas" : 0,
+          "color" : "#DDA0DD",
+          "descripcion" : "Mes de finalizacion de semestre - Periodo de examenes finales",
+          "eficiencia" : 0.0,
+          "enviadas" : 0,
+          "icono" : "",
+          "mes" : "Junio",
+          "porcentaje" : 0.0,
+          "procesos" : { },
+          "rechazadas" : 0,
+          "tiempoPromedio" : 0.0,
+          "total" : 0
+        },
+        "Marzo" : {
+          "aprobadas" : 0,
+          "color" : "#45B7D1",
+          "descripcion" : "Mes de estabilizacion academica - Periodo regular",
+          "eficiencia" : 0.0,
+          "enviadas" : 0,
+          "icono" : "",
+          "mes" : "Marzo",
+          "porcentaje" : 0.0,
+          "procesos" : { },
+          "rechazadas" : 0,
+          "tiempoPromedio" : 0.0,
+          "total" : 0
+        },
+        "Mayo" : {
+          "aprobadas" : 0,
+          "color" : "#FFEAA7",
+          "descripcion" : "Mes de mitad de semestre - Periodo de seguimiento",
+          "eficiencia" : 0.0,
+          "enviadas" : 0,
+          "icono" : "",
+          "mes" : "Mayo",
+          "porcentaje" : 0.0,
+          "procesos" : { },
+          "rechazadas" : 0,
+          "tiempoPromedio" : 0.0,
+          "total" : 0
+        },
+        "Noviembre" : {
+          "aprobadas" : 0,
+          "color" : "#F8C471",
+          "descripcion" : "Mes de preparacion final - Periodo de proyectos",
+          "eficiencia" : 0.0,
+          "enviadas" : 0,
+          "icono" : "",
+          "mes" : "Noviembre",
+          "porcentaje" : 0.0,
+          "procesos" : { },
+          "rechazadas" : 0,
+          "tiempoPromedio" : 0.0,
+          "total" : 0
+        },
+        "Octubre" : {
+          "aprobadas" : 0,
+          "color" : "#85C1E9",
+          "descripcion" : "Mes de evaluaciones - Periodo de examenes parciales",
+          "eficiencia" : 0.0,
+          "enviadas" : 0,
+          "icono" : "",
+          "mes" : "Octubre",
+          "porcentaje" : 0.0,
+          "procesos" : { },
+          "rechazadas" : 0,
+          "tiempoPromedio" : 0.0,
+          "total" : 0
+        },
+        "Septiembre" : {
+          "aprobadas" : 0,
+          "color" : "#BB8FCE",
+          "descripcion" : "Mes de estabilizacion - Periodo regular de clases",
+          "eficiencia" : 0.0,
+          "enviadas" : 0,
+          "icono" : "",
+          "mes" : "Septiembre",
+          "porcentaje" : 0.0,
+          "procesos" : { },
+          "rechazadas" : 0,
+          "tiempoPromedio" : 0.0,
+          "total" : 0
+        }
+      },
+      "tendencias" : {
+        "crecimientoPromedio" : 50.0,
+        "eficienciaMaxima" : 0.0,
+        "maxSolicitudes" : 2,
+        "mesMasActivo" : "Julio",
+        "mesMasEficiente" : null,
+        "mesMasRapido" : "Julio",
+        "mesesAnalizados" : 2,
+        "promedioMensual" : 1.5,
+        "tendenciaGeneral" : "Decreciente",
+        "tiempoMinimo" : 1.0,
+        "totalSolicitudes" : 3
+      },
+      "todosLosMeses" : [ "Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre" ]
+    }
+  },
+  "GET /por-programa" : {
+    "estado" : 200,
+    "cuerpo" : {
+      "analisis" : {
+        "eficienciaMaxima" : 57.14,
+        "maxEstudiantes" : 2,
+        "maxSolicitudes" : 7,
+        "programaConMasEstudiantes" : "Ingeniería de Sistemas",
+        "programaMasActivo" : "Ingeniería de Sistemas",
+        "programaMasEficiente" : "Ingeniería de Sistemas",
+        "programaMasRapido" : "Ingeniería Electrónica",
+        "tiempoMinimo" : 1.67,
+        "totalEstudiantes" : 6,
+        "totalProgramas" : 3,
+        "totalSolicitudes" : 14
+      },
+      "descripcion" : "Estadisticas por programa academico con analisis de rendimiento - DATOS REALES",
+      "estudiantesPorPrograma" : {
+        "Ingeniería Civil" : 1,
+        "Ingeniería Electrónica" : 2,
+        "Ingeniería de Sistemas" : 2
+      },
+      "fechaConsulta" : "<ahora>",
+      "porPrograma" : {
+        "Ingeniería Civil" : {
+          "aprobadas" : 0,
+          "codigo" : null,
+          "color" : "#6B7280",
+          "descripcion" : "Programa academico",
+          "eficiencia" : 0.0,
+          "enviadas" : 1,
+          "estudiantes" : 1,
+          "icono" : "",
+          "nombre" : "Ingeniería Civil",
+          "porcentaje" : 7.14,
+          "procesos" : {
+            "Reingreso" : 1
+          },
+          "rechazadas" : 0,
+          "tendencia" : "Estable",
+          "tiempoPromedio" : 0.0,
+          "totalSolicitudes" : 1
+        },
+        "Ingeniería Electrónica" : {
+          "aprobadas" : 1,
+          "codigo" : null,
+          "color" : "#6B7280",
+          "descripcion" : "Programa academico",
+          "eficiencia" : 20.0,
+          "enviadas" : 2,
+          "estudiantes" : 2,
+          "icono" : "",
+          "nombre" : "Ingeniería Electrónica",
+          "porcentaje" : 35.71,
+          "procesos" : {
+            "Cursos de Verano" : 2,
+            "ECAES" : 1,
+            "Homologacion" : 1,
+            "Paz y Salvo" : 1
+          },
+          "rechazadas" : 2,
+          "tendencia" : "Decreciente",
+          "tiempoPromedio" : 1.67,
+          "totalSolicitudes" : 5
+        },
+        "Ingeniería de Sistemas" : {
+          "aprobadas" : 4,
+          "codigo" : null,
+          "color" : "#6B7280",
+          "descripcion" : "Programa academico",
+          "eficiencia" : 57.14,
+          "enviadas" : 2,
+          "estudiantes" : 2,
+          "icono" : "",
+          "nombre" : "Ingeniería de Sistemas",
+          "porcentaje" : 50.0,
+          "procesos" : {
+            "Cursos de Verano" : 3,
+            "Homologacion" : 2,
+            "Paz y Salvo" : 1,
+            "Reingreso" : 1
+          },
+          "rechazadas" : 1,
+          "tendencia" : "Decreciente",
+          "tiempoPromedio" : 18.4,
+          "totalSolicitudes" : 7
+        }
+      },
+      "solicitudesPorPrograma" : {
+        "Ingeniería Civil" : 1,
+        "Ingeniería Electrónica" : 5,
+        "Ingeniería de Sistemas" : 7
+      }
+    }
+  },
+  "GET /por-programa?periodoAcademico=[  ]" : {
+    "estado" : 200,
+    "cuerpo" : {
+      "analisis" : {
+        "eficienciaMaxima" : 57.14,
+        "maxEstudiantes" : 2,
+        "maxSolicitudes" : 7,
+        "programaConMasEstudiantes" : "Ingeniería de Sistemas",
+        "programaMasActivo" : "Ingeniería de Sistemas",
+        "programaMasEficiente" : "Ingeniería de Sistemas",
+        "programaMasRapido" : "Ingeniería Electrónica",
+        "tiempoMinimo" : 1.67,
+        "totalEstudiantes" : 6,
+        "totalProgramas" : 3,
+        "totalSolicitudes" : 14
+      },
+      "descripcion" : "Estadisticas por programa academico con analisis de rendimiento - DATOS REALES",
+      "estudiantesPorPrograma" : {
+        "Ingeniería Civil" : 1,
+        "Ingeniería Electrónica" : 2,
+        "Ingeniería de Sistemas" : 2
+      },
+      "fechaConsulta" : "<ahora>",
+      "porPrograma" : {
+        "Ingeniería Civil" : {
+          "aprobadas" : 0,
+          "codigo" : null,
+          "color" : "#6B7280",
+          "descripcion" : "Programa academico",
+          "eficiencia" : 0.0,
+          "enviadas" : 1,
+          "estudiantes" : 1,
+          "icono" : "",
+          "nombre" : "Ingeniería Civil",
+          "porcentaje" : 7.14,
+          "procesos" : {
+            "Reingreso" : 1
+          },
+          "rechazadas" : 0,
+          "tendencia" : "Estable",
+          "tiempoPromedio" : 0.0,
+          "totalSolicitudes" : 1
+        },
+        "Ingeniería Electrónica" : {
+          "aprobadas" : 1,
+          "codigo" : null,
+          "color" : "#6B7280",
+          "descripcion" : "Programa academico",
+          "eficiencia" : 20.0,
+          "enviadas" : 2,
+          "estudiantes" : 2,
+          "icono" : "",
+          "nombre" : "Ingeniería Electrónica",
+          "porcentaje" : 35.71,
+          "procesos" : {
+            "Cursos de Verano" : 2,
+            "ECAES" : 1,
+            "Homologacion" : 1,
+            "Paz y Salvo" : 1
+          },
+          "rechazadas" : 2,
+          "tendencia" : "Decreciente",
+          "tiempoPromedio" : 1.67,
+          "totalSolicitudes" : 5
+        },
+        "Ingeniería de Sistemas" : {
+          "aprobadas" : 4,
+          "codigo" : null,
+          "color" : "#6B7280",
+          "descripcion" : "Programa academico",
+          "eficiencia" : 57.14,
+          "enviadas" : 2,
+          "estudiantes" : 2,
+          "icono" : "",
+          "nombre" : "Ingeniería de Sistemas",
+          "porcentaje" : 50.0,
+          "procesos" : {
+            "Cursos de Verano" : 3,
+            "Homologacion" : 2,
+            "Paz y Salvo" : 1,
+            "Reingreso" : 1
+          },
+          "rechazadas" : 1,
+          "tendencia" : "Decreciente",
+          "tiempoPromedio" : 18.4,
+          "totalSolicitudes" : 7
+        }
+      },
+      "solicitudesPorPrograma" : {
+        "Ingeniería Civil" : 1,
+        "Ingeniería Electrónica" : 5,
+        "Ingeniería de Sistemas" : 7
+      }
+    }
+  },
+  "GET /por-programa?periodoAcademico=[ 2025-1 ]" : {
+    "estado" : 200,
+    "cuerpo" : {
+      "analisis" : {
+        "eficienciaMaxima" : 50.0,
+        "maxEstudiantes" : 2,
+        "maxSolicitudes" : 4,
+        "programaConMasEstudiantes" : "Ingeniería de Sistemas",
+        "programaMasActivo" : "Ingeniería de Sistemas",
+        "programaMasEficiente" : "Ingeniería de Sistemas",
+        "programaMasRapido" : "Ingeniería Electrónica",
+        "tiempoMinimo" : 3.0,
+        "totalEstudiantes" : 6,
+        "totalProgramas" : 3,
+        "totalSolicitudes" : 7
+      },
+      "descripcion" : "Estadisticas por programa academico con analisis de rendimiento - DATOS REALES",
+      "estudiantesPorPrograma" : {
+        "Ingeniería Civil" : 1,
+        "Ingeniería Electrónica" : 2,
+        "Ingeniería de Sistemas" : 2
+      },
+      "fechaConsulta" : "<ahora>",
+      "porPrograma" : {
+        "Ingeniería Civil" : {
+          "aprobadas" : 0,
+          "codigo" : null,
+          "color" : "#6B7280",
+          "descripcion" : "Programa academico",
+          "eficiencia" : 0.0,
+          "enviadas" : 1,
+          "estudiantes" : 1,
+          "icono" : "",
+          "nombre" : "Ingeniería Civil",
+          "porcentaje" : 14.29,
+          "procesos" : {
+            "Reingreso" : 1
+          },
+          "rechazadas" : 0,
+          "tendencia" : "Estable",
+          "tiempoPromedio" : 0.0,
+          "totalSolicitudes" : 1
+        },
+        "Ingeniería Electrónica" : {
+          "aprobadas" : 1,
+          "codigo" : null,
+          "color" : "#6B7280",
+          "descripcion" : "Programa academico",
+          "eficiencia" : 50.0,
+          "enviadas" : 1,
+          "estudiantes" : 2,
+          "icono" : "",
+          "nombre" : "Ingeniería Electrónica",
+          "porcentaje" : 28.57,
+          "procesos" : {
+            "ECAES" : 1,
+            "Homologacion" : 1
+          },
+          "rechazadas" : 0,
+          "tendencia" : "Estable",
+          "tiempoPromedio" : 3.0,
+          "totalSolicitudes" : 2
+        },
+        "Ingeniería de Sistemas" : {
+          "aprobadas" : 2,
+          "codigo" : null,
+          "color" : "#6B7280",
+          "descripcion" : "Programa academico",
+          "eficiencia" : 50.0,
+          "enviadas" : 1,
+          "estudiantes" : 2,
+          "icono" : "",
+          "nombre" : "Ingeniería de Sistemas",
+          "porcentaje" : 57.14,
+          "procesos" : {
+            "Cursos de Verano" : 2,
+            "Homologacion" : 1,
+            "Paz y Salvo" : 1
+          },
+          "rechazadas" : 1,
+          "tendencia" : "Creciente",
+          "tiempoPromedio" : 18.33,
+          "totalSolicitudes" : 4
+        }
+      },
+      "solicitudesPorPrograma" : {
+        "Ingeniería Civil" : 1,
+        "Ingeniería Electrónica" : 2,
+        "Ingeniería de Sistemas" : 4
+      }
+    }
+  },
+  "GET /por-programa?periodoAcademico=[2025 - Primer Semestre]" : {
+    "estado" : 200,
+    "cuerpo" : {
+      "analisis" : {
+        "eficienciaMaxima" : 66.67,
+        "maxEstudiantes" : 2,
+        "maxSolicitudes" : 3,
+        "programaConMasEstudiantes" : "Ingeniería de Sistemas",
+        "programaMasActivo" : "Ingeniería de Sistemas",
+        "programaMasEficiente" : "Ingeniería de Sistemas",
+        "programaMasRapido" : "Ingeniería Electrónica",
+        "tiempoMinimo" : 1.0,
+        "totalEstudiantes" : 6,
+        "totalProgramas" : 3,
+        "totalSolicitudes" : 7
+      },
+      "descripcion" : "Estadisticas por programa academico con analisis de rendimiento - DATOS REALES",
+      "estudiantesPorPrograma" : {
+        "Ingeniería Civil" : 1,
+        "Ingeniería Electrónica" : 2,
+        "Ingeniería de Sistemas" : 2
+      },
+      "fechaConsulta" : "<ahora>",
+      "porPrograma" : {
+        "Ingeniería Civil" : {
+          "aprobadas" : 0,
+          "codigo" : null,
+          "color" : "#6B7280",
+          "descripcion" : "Programa academico",
+          "eficiencia" : 0.0,
+          "enviadas" : 0,
+          "estudiantes" : 1,
+          "icono" : "",
+          "nombre" : "Ingeniería Civil",
+          "porcentaje" : 0.0,
+          "procesos" : { },
+          "rechazadas" : 0,
+          "tendencia" : "Estable",
+          "tiempoPromedio" : 0.0,
+          "totalSolicitudes" : 0
+        },
+        "Ingeniería Electrónica" : {
+          "aprobadas" : 0,
+          "codigo" : null,
+          "color" : "#6B7280",
+          "descripcion" : "Programa academico",
+          "eficiencia" : 0.0,
+          "enviadas" : 1,
+          "estudiantes" : 2,
+          "icono" : "",
+          "nombre" : "Ingeniería Electrónica",
+          "porcentaje" : 42.86,
+          "procesos" : {
+            "Cursos de Verano" : 2,
+            "Paz y Salvo" : 1
+          },
+          "rechazadas" : 2,
+          "tendencia" : "Decreciente",
+          "tiempoPromedio" : 1.0,
+          "totalSolicitudes" : 3
+        },
+        "Ingeniería de Sistemas" : {
+          "aprobadas" : 2,
+          "codigo" : null,
+          "color" : "#6B7280",
+          "descripcion" : "Programa academico",
+          "eficiencia" : 66.67,
+          "enviadas" : 1,
+          "estudiantes" : 2,
+          "icono" : "",
+          "nombre" : "Ingeniería de Sistemas",
+          "porcentaje" : 42.86,
+          "procesos" : {
+            "Cursos de Verano" : 3
+          },
+          "rechazadas" : 0,
+          "tendencia" : "Decreciente",
+          "tiempoPromedio" : 10.0,
+          "totalSolicitudes" : 3
+        }
+      },
+      "solicitudesPorPrograma" : {
+        "Ingeniería Civil" : 0,
+        "Ingeniería Electrónica" : 3,
+        "Ingeniería de Sistemas" : 3
+      }
+    }
+  },
+  "GET /por-programa?periodoAcademico=[sin año]" : {
+    "estado" : 200,
+    "cuerpo" : {
+      "analisis" : {
+        "eficienciaMaxima" : 0.0,
+        "maxEstudiantes" : 2,
+        "maxSolicitudes" : 0,
+        "programaConMasEstudiantes" : "Ingeniería de Sistemas",
+        "programaMasActivo" : null,
+        "programaMasEficiente" : null,
+        "programaMasRapido" : null,
+        "tiempoMinimo" : 9.223372036854776E16,
+        "totalEstudiantes" : 6,
+        "totalProgramas" : 3,
+        "totalSolicitudes" : 0
+      },
+      "descripcion" : "Estadisticas por programa academico con analisis de rendimiento - DATOS REALES",
+      "estudiantesPorPrograma" : {
+        "Ingeniería Civil" : 1,
+        "Ingeniería Electrónica" : 2,
+        "Ingeniería de Sistemas" : 2
+      },
+      "fechaConsulta" : "<ahora>",
+      "porPrograma" : {
+        "Ingeniería Civil" : {
+          "aprobadas" : 0,
+          "codigo" : null,
+          "color" : "#6B7280",
+          "descripcion" : "Programa academico",
+          "eficiencia" : 0.0,
+          "enviadas" : 0,
+          "estudiantes" : 1,
+          "icono" : "",
+          "nombre" : "Ingeniería Civil",
+          "porcentaje" : 0.0,
+          "procesos" : { },
+          "rechazadas" : 0,
+          "tendencia" : "Estable",
+          "tiempoPromedio" : 0.0,
+          "totalSolicitudes" : 0
+        },
+        "Ingeniería Electrónica" : {
+          "aprobadas" : 0,
+          "codigo" : null,
+          "color" : "#6B7280",
+          "descripcion" : "Programa academico",
+          "eficiencia" : 0.0,
+          "enviadas" : 0,
+          "estudiantes" : 2,
+          "icono" : "",
+          "nombre" : "Ingeniería Electrónica",
+          "porcentaje" : 0.0,
+          "procesos" : { },
+          "rechazadas" : 0,
+          "tendencia" : "Estable",
+          "tiempoPromedio" : 0.0,
+          "totalSolicitudes" : 0
+        },
+        "Ingeniería de Sistemas" : {
+          "aprobadas" : 0,
+          "codigo" : null,
+          "color" : "#6B7280",
+          "descripcion" : "Programa academico",
+          "eficiencia" : 0.0,
+          "enviadas" : 0,
+          "estudiantes" : 2,
+          "icono" : "",
+          "nombre" : "Ingeniería de Sistemas",
+          "porcentaje" : 0.0,
+          "procesos" : { },
+          "rechazadas" : 0,
+          "tendencia" : "Estable",
+          "tiempoPromedio" : 0.0,
+          "totalSolicitudes" : 0
+        }
+      },
+      "solicitudesPorPrograma" : {
+        "Ingeniería Civil" : 0,
+        "Ingeniería Electrónica" : 0,
+        "Ingeniería de Sistemas" : 0
+      }
+    }
+  },
+  "GET /por-programa?periodoAcademico=[2025-2]&idPrograma=[2]" : {
+    "estado" : 200,
+    "cuerpo" : {
+      "analisis" : {
+        "eficienciaMaxima" : 0.0,
+        "maxEstudiantes" : 2,
+        "maxSolicitudes" : 3,
+        "programaConMasEstudiantes" : "Ingeniería de Sistemas",
+        "programaMasActivo" : "Ingeniería Electrónica",
+        "programaMasEficiente" : null,
+        "programaMasRapido" : "Ingeniería Electrónica",
+        "tiempoMinimo" : 1.0,
+        "totalEstudiantes" : 6,
+        "totalProgramas" : 3,
+        "totalSolicitudes" : 3
+      },
+      "descripcion" : "Estadisticas por programa academico con analisis de rendimiento - DATOS REALES",
+      "estudiantesPorPrograma" : {
+        "Ingeniería Civil" : 1,
+        "Ingeniería Electrónica" : 2,
+        "Ingeniería de Sistemas" : 2
+      },
+      "fechaConsulta" : "<ahora>",
+      "porPrograma" : {
+        "Ingeniería Civil" : {
+          "aprobadas" : 0,
+          "codigo" : null,
+          "color" : "#6B7280",
+          "descripcion" : "Programa academico",
+          "eficiencia" : 0.0,
+          "enviadas" : 0,
+          "estudiantes" : 1,
+          "icono" : "",
+          "nombre" : "Ingeniería Civil",
+          "porcentaje" : 0.0,
+          "procesos" : { },
+          "rechazadas" : 0,
+          "tendencia" : "Estable",
+          "tiempoPromedio" : 0.0,
+          "totalSolicitudes" : 0
+        },
+        "Ingeniería Electrónica" : {
+          "aprobadas" : 0,
+          "codigo" : null,
+          "color" : "#6B7280",
+          "descripcion" : "Programa academico",
+          "eficiencia" : 0.0,
+          "enviadas" : 1,
+          "estudiantes" : 2,
+          "icono" : "",
+          "nombre" : "Ingeniería Electrónica",
+          "porcentaje" : 100.0,
+          "procesos" : {
+            "Cursos de Verano" : 2,
+            "Paz y Salvo" : 1
+          },
+          "rechazadas" : 2,
+          "tendencia" : "Decreciente",
+          "tiempoPromedio" : 1.0,
+          "totalSolicitudes" : 3
+        },
+        "Ingeniería de Sistemas" : {
+          "aprobadas" : 0,
+          "codigo" : null,
+          "color" : "#6B7280",
+          "descripcion" : "Programa academico",
+          "eficiencia" : 0.0,
+          "enviadas" : 0,
+          "estudiantes" : 2,
+          "icono" : "",
+          "nombre" : "Ingeniería de Sistemas",
+          "porcentaje" : 0.0,
+          "procesos" : { },
+          "rechazadas" : 0,
+          "tendencia" : "Estable",
+          "tiempoPromedio" : 0.0,
+          "totalSolicitudes" : 0
+        }
+      },
+      "solicitudesPorPrograma" : {
+        "Ingeniería Civil" : 0,
+        "Ingeniería Electrónica" : 3,
+        "Ingeniería de Sistemas" : 0
+      }
+    }
+  },
+  "GET /tendencias-comparativas" : {
+    "estado" : 200,
+    "cuerpo" : {
+      "comparativaProcesos" : {
+        "aprobadasPorProceso" : {
+          "Cursos de Verano" : 2,
+          "ECAES" : 1,
+          "Homologacion" : 1,
+          "Paz y Salvo" : 1,
+          "Reingreso" : 0
+        },
+        "demandaMasAlta" : 5,
+        "eficienciaMasAlta" : 50.0,
+        "procesoMasDemandado" : "Cursos de Verano",
+        "procesoMasEficiente" : "Paz y Salvo",
+        "solicitudesPorProceso" : {
+          "Cursos de Verano" : 5,
+          "ECAES" : 2,
+          "Homologacion" : 3,
+          "Paz y Salvo" : 2,
+          "Reingreso" : 2
+        }
+      },
+      "comparativaProgramas" : {
+        "estudiantesPorPrograma" : {
+          "Ingeniería Civil" : 1,
+          "Ingeniería Electrónica" : 2,
+          "Ingeniería de Sistemas" : 2
+        },
+        "maxEstudiantes" : 2,
+        "maxSolicitudes" : 7,
+        "programaConMasEstudiantes" : "Ingeniería de Sistemas",
+        "programaMasActivo" : "Ingeniería de Sistemas",
+        "solicitudesPorPrograma" : {
+          "Ingeniería Civil" : 1,
+          "Ingeniería Electrónica" : 5,
+          "Ingeniería de Sistemas" : 7
+        }
+      },
+      "crecimientoTemporal" : {
+        "crecimientoEstudiantes" : 0.0,
+        "crecimientoSolicitudes" : 0.0,
+        "estudiantesPorMes" : {
+          "Abril" : 1,
+          "Agosto" : 2,
+          "Diciembre" : 0,
+          "Enero" : 1,
+          "Febrero" : 1,
+          "Julio" : 3,
+          "Junio" : 2,
+          "Marzo" : 1,
+          "Mayo" : 1,
+          "Noviembre" : 1,
+          "Octubre" : 0,
+          "Septiembre" : 1
+        },
+        "mesesAnalizados" : 10,
+        "solicitudesPorMes" : {
+          "Abril" : 1,
+          "Agosto" : 2,
+          "Diciembre" : 0,
+          "Enero" : 1,
+          "Febrero" : 1,
+          "Julio" : 3,
+          "Junio" : 2,
+          "Marzo" : 1,
+          "Mayo" : 1,
+          "Noviembre" : 1,
+          "Octubre" : 0,
+          "Septiembre" : 1
+        },
+        "tendenciaEstudiantes" : "Estable",
+        "tendenciaSolicitudes" : "Estable",
+        "totalEstudiantes" : 6,
+        "totalSolicitudes" : 14
+      },
+      "descripcion" : "Analisis de tendencias y comparativas estrategicas - DATOS REALES",
+      "fechaConsulta" : "<ahora>",
+      "resumenEstrategico" : {
+        "periodoAnalizado" : "Ultimos 12 meses",
+        "recomendacionEstrategica" : " TENDENCIA ESTABLE: Mantener recursos actuales.  EFICIENCIA MODERADA: Optimizar procesos de aprobacion.  ENFOQUE: Ingeniería de Sistemas requiere atencion prioritaria.",
+        "totalEstudiantes" : 6,
+        "totalProgramas" : 3,
+        "totalSolicitudes" : 14
+      }
+    }
+  },
+  "GET /tendencias-comparativas?periodoAcademico=[  ]" : {
+    "estado" : 200,
+    "cuerpo" : {
+      "comparativaProcesos" : {
+        "aprobadasPorProceso" : {
+          "Cursos de Verano" : 2,
+          "ECAES" : 1,
+          "Homologacion" : 1,
+          "Paz y Salvo" : 1,
+          "Reingreso" : 0
+        },
+        "demandaMasAlta" : 5,
+        "eficienciaMasAlta" : 50.0,
+        "procesoMasDemandado" : "Cursos de Verano",
+        "procesoMasEficiente" : "Paz y Salvo",
+        "solicitudesPorProceso" : {
+          "Cursos de Verano" : 5,
+          "ECAES" : 2,
+          "Homologacion" : 3,
+          "Paz y Salvo" : 2,
+          "Reingreso" : 2
+        }
+      },
+      "comparativaProgramas" : {
+        "estudiantesPorPrograma" : {
+          "Ingeniería Civil" : 1,
+          "Ingeniería Electrónica" : 2,
+          "Ingeniería de Sistemas" : 2
+        },
+        "maxEstudiantes" : 2,
+        "maxSolicitudes" : 7,
+        "programaConMasEstudiantes" : "Ingeniería de Sistemas",
+        "programaMasActivo" : "Ingeniería de Sistemas",
+        "solicitudesPorPrograma" : {
+          "Ingeniería Civil" : 1,
+          "Ingeniería Electrónica" : 5,
+          "Ingeniería de Sistemas" : 7
+        }
+      },
+      "crecimientoTemporal" : {
+        "crecimientoEstudiantes" : 0.0,
+        "crecimientoSolicitudes" : 0.0,
+        "estudiantesPorMes" : {
+          "Abril" : 1,
+          "Agosto" : 2,
+          "Diciembre" : 0,
+          "Enero" : 1,
+          "Febrero" : 1,
+          "Julio" : 3,
+          "Junio" : 2,
+          "Marzo" : 1,
+          "Mayo" : 1,
+          "Noviembre" : 1,
+          "Octubre" : 0,
+          "Septiembre" : 1
+        },
+        "mesesAnalizados" : 10,
+        "solicitudesPorMes" : {
+          "Abril" : 1,
+          "Agosto" : 2,
+          "Diciembre" : 0,
+          "Enero" : 1,
+          "Febrero" : 1,
+          "Julio" : 3,
+          "Junio" : 2,
+          "Marzo" : 1,
+          "Mayo" : 1,
+          "Noviembre" : 1,
+          "Octubre" : 0,
+          "Septiembre" : 1
+        },
+        "tendenciaEstudiantes" : "Estable",
+        "tendenciaSolicitudes" : "Estable",
+        "totalEstudiantes" : 6,
+        "totalSolicitudes" : 14
+      },
+      "descripcion" : "Analisis de tendencias y comparativas estrategicas - DATOS REALES",
+      "fechaConsulta" : "<ahora>",
+      "resumenEstrategico" : {
+        "periodoAnalizado" : "Ultimos 12 meses",
+        "recomendacionEstrategica" : " TENDENCIA ESTABLE: Mantener recursos actuales.  EFICIENCIA MODERADA: Optimizar procesos de aprobacion.  ENFOQUE: Ingeniería de Sistemas requiere atencion prioritaria.",
+        "totalEstudiantes" : 6,
+        "totalProgramas" : 3,
+        "totalSolicitudes" : 14
+      }
+    }
+  },
+  "GET /tendencias-comparativas?periodoAcademico=[ 2025-1 ]" : {
+    "estado" : 200,
+    "cuerpo" : {
+      "comparativaProcesos" : {
+        "aprobadasPorProceso" : {
+          "Cursos de Verano" : 1,
+          "ECAES" : 1,
+          "Homologacion" : 0,
+          "Paz y Salvo" : 1,
+          "Reingreso" : 0
+        },
+        "demandaMasAlta" : 2,
+        "eficienciaMasAlta" : 100.0,
+        "procesoMasDemandado" : "Cursos de Verano",
+        "procesoMasEficiente" : "Paz y Salvo",
+        "solicitudesPorProceso" : {
+          "Cursos de Verano" : 2,
+          "ECAES" : 1,
+          "Homologacion" : 2,
+          "Paz y Salvo" : 1,
+          "Reingreso" : 1
+        }
+      },
+      "comparativaProgramas" : {
+        "estudiantesPorPrograma" : {
+          "Ingeniería Civil" : 1,
+          "Ingeniería Electrónica" : 2,
+          "Ingeniería de Sistemas" : 2
+        },
+        "maxEstudiantes" : 2,
+        "maxSolicitudes" : 4,
+        "programaConMasEstudiantes" : "Ingeniería de Sistemas",
+        "programaMasActivo" : "Ingeniería de Sistemas",
+        "solicitudesPorPrograma" : {
+          "Ingeniería Civil" : 1,
+          "Ingeniería Electrónica" : 2,
+          "Ingeniería de Sistemas" : 4
+        }
+      },
+      "crecimientoTemporal" : {
+        "crecimientoEstudiantes" : 100.0,
+        "crecimientoSolicitudes" : 100.0,
+        "estudiantesPorMes" : {
+          "Abril" : 1,
+          "Agosto" : 0,
+          "Diciembre" : 0,
+          "Enero" : 1,
+          "Febrero" : 1,
+          "Julio" : 0,
+          "Junio" : 2,
+          "Marzo" : 1,
+          "Mayo" : 1,
+          "Noviembre" : 0,
+          "Octubre" : 0,
+          "Septiembre" : 0
+        },
+        "mesesAnalizados" : 6,
+        "solicitudesPorMes" : {
+          "Abril" : 1,
+          "Agosto" : 0,
+          "Diciembre" : 0,
+          "Enero" : 1,
+          "Febrero" : 1,
+          "Julio" : 0,
+          "Junio" : 2,
+          "Marzo" : 1,
+          "Mayo" : 1,
+          "Noviembre" : 0,
+          "Octubre" : 0,
+          "Septiembre" : 0
+        },
+        "tendenciaEstudiantes" : "Creciente",
+        "tendenciaSolicitudes" : "Creciente",
+        "totalEstudiantes" : 6,
+        "totalSolicitudes" : 7
+      },
+      "descripcion" : "Analisis de tendencias y comparativas estrategicas - DATOS REALES",
+      "fechaConsulta" : "<ahora>",
+      "resumenEstrategico" : {
+        "periodoAnalizado" : "Ultimos 12 meses",
+        "recomendacionEstrategica" : " CRECIMIENTO ALTO: Urgente aumentar recursos para Cursos de Verano.  ENFOQUE: Ingeniería de Sistemas requiere atencion prioritaria.",
+        "totalEstudiantes" : 6,
+        "totalProgramas" : 3,
+        "totalSolicitudes" : 7
+      }
+    }
+  },
+  "GET /tendencias-comparativas?periodoAcademico=[2025 - Primer Semestre]" : {
+    "estado" : 200,
+    "cuerpo" : {
+      "comparativaProcesos" : {
+        "aprobadasPorProceso" : {
+          "Cursos de Verano" : 2,
+          "ECAES" : 0,
+          "Homologacion" : 0,
+          "Paz y Salvo" : 0,
+          "Reingreso" : 0
+        },
+        "demandaMasAlta" : 5,
+        "eficienciaMasAlta" : 40.0,
+        "procesoMasDemandado" : "Cursos de Verano",
+        "procesoMasEficiente" : "Cursos de Verano",
+        "solicitudesPorProceso" : {
+          "Cursos de Verano" : 5,
+          "ECAES" : 1,
+          "Homologacion" : 0,
+          "Paz y Salvo" : 1,
+          "Reingreso" : 0
+        }
+      },
+      "comparativaProgramas" : {
+        "estudiantesPorPrograma" : {
+          "Ingeniería Civil" : 1,
+          "Ingeniería Electrónica" : 2,
+          "Ingeniería de Sistemas" : 2
+        },
+        "maxEstudiantes" : 2,
+        "maxSolicitudes" : 3,
+        "programaConMasEstudiantes" : "Ingeniería de Sistemas",
+        "programaMasActivo" : "Ingeniería de Sistemas",
+        "solicitudesPorPrograma" : {
+          "Ingeniería Civil" : 0,
+          "Ingeniería Electrónica" : 3,
+          "Ingeniería de Sistemas" : 3
+        }
+      },
+      "crecimientoTemporal" : {
+        "crecimientoEstudiantes" : 0.0,
+        "crecimientoSolicitudes" : 0.0,
+        "estudiantesPorMes" : {
+          "Abril" : 0,
+          "Agosto" : 1,
+          "Diciembre" : 0,
+          "Enero" : 0,
+          "Febrero" : 0,
+          "Julio" : 3,
+          "Junio" : 2,
+          "Marzo" : 0,
+          "Mayo" : 0,
+          "Noviembre" : 0,
+          "Octubre" : 0,
+          "Septiembre" : 1
+        },
+        "mesesAnalizados" : 4,
+        "solicitudesPorMes" : {
+          "Abril" : 0,
+          "Agosto" : 1,
+          "Diciembre" : 0,
+          "Enero" : 0,
+          "Febrero" : 0,
+          "Julio" : 3,
+          "Junio" : 2,
+          "Marzo" : 0,
+          "Mayo" : 0,
+          "Noviembre" : 0,
+          "Octubre" : 0,
+          "Septiembre" : 1
+        },
+        "tendenciaEstudiantes" : "Estable",
+        "tendenciaSolicitudes" : "Estable",
+        "totalEstudiantes" : 6,
+        "totalSolicitudes" : 7
+      },
+      "descripcion" : "Analisis de tendencias y comparativas estrategicas - DATOS REALES",
+      "fechaConsulta" : "<ahora>",
+      "resumenEstrategico" : {
+        "periodoAnalizado" : "Ultimos 12 meses",
+        "recomendacionEstrategica" : " TENDENCIA ESTABLE: Mantener recursos actuales.  EFICIENCIA MODERADA: Optimizar procesos de aprobacion.  ENFOQUE: Ingeniería de Sistemas requiere atencion prioritaria.",
+        "totalEstudiantes" : 6,
+        "totalProgramas" : 3,
+        "totalSolicitudes" : 7
+      }
+    }
+  },
+  "GET /tendencias-comparativas?periodoAcademico=[sin año]" : {
+    "estado" : 200,
+    "cuerpo" : {
+      "comparativaProcesos" : {
+        "aprobadasPorProceso" : {
+          "Cursos de Verano" : 0,
+          "ECAES" : 0,
+          "Homologacion" : 0,
+          "Paz y Salvo" : 0,
+          "Reingreso" : 0
+        },
+        "demandaMasAlta" : 0,
+        "eficienciaMasAlta" : 0.0,
+        "procesoMasDemandado" : null,
+        "procesoMasEficiente" : null,
+        "solicitudesPorProceso" : {
+          "Cursos de Verano" : 0,
+          "ECAES" : 0,
+          "Homologacion" : 0,
+          "Paz y Salvo" : 0,
+          "Reingreso" : 0
+        }
+      },
+      "comparativaProgramas" : {
+        "estudiantesPorPrograma" : {
+          "Ingeniería Civil" : 1,
+          "Ingeniería Electrónica" : 2,
+          "Ingeniería de Sistemas" : 2
+        },
+        "maxEstudiantes" : 2,
+        "maxSolicitudes" : 0,
+        "programaConMasEstudiantes" : "Ingeniería de Sistemas",
+        "programaMasActivo" : null,
+        "solicitudesPorPrograma" : {
+          "Ingeniería Civil" : 0,
+          "Ingeniería Electrónica" : 0,
+          "Ingeniería de Sistemas" : 0
+        }
+      },
+      "crecimientoTemporal" : {
+        "crecimientoEstudiantes" : 0.0,
+        "crecimientoSolicitudes" : 0.0,
+        "estudiantesPorMes" : {
+          "Abril" : 0,
+          "Agosto" : 0,
+          "Diciembre" : 0,
+          "Enero" : 0,
+          "Febrero" : 0,
+          "Julio" : 0,
+          "Junio" : 0,
+          "Marzo" : 0,
+          "Mayo" : 0,
+          "Noviembre" : 0,
+          "Octubre" : 0,
+          "Septiembre" : 0
+        },
+        "mesesAnalizados" : 0,
+        "solicitudesPorMes" : {
+          "Abril" : 0,
+          "Agosto" : 0,
+          "Diciembre" : 0,
+          "Enero" : 0,
+          "Febrero" : 0,
+          "Julio" : 0,
+          "Junio" : 0,
+          "Marzo" : 0,
+          "Mayo" : 0,
+          "Noviembre" : 0,
+          "Octubre" : 0,
+          "Septiembre" : 0
+        },
+        "tendenciaEstudiantes" : "Estable",
+        "tendenciaSolicitudes" : "Estable",
+        "totalEstudiantes" : 6,
+        "totalSolicitudes" : 0
+      },
+      "descripcion" : "Analisis de tendencias y comparativas estrategicas - DATOS REALES",
+      "fechaConsulta" : "<ahora>",
+      "resumenEstrategico" : {
+        "periodoAnalizado" : "Ultimos 12 meses",
+        "recomendacionEstrategica" : " TENDENCIA ESTABLE: Mantener recursos actuales.  BAJA EFICIENCIA: Revisar procesos de aprobacion. ",
+        "totalEstudiantes" : 6,
+        "totalProgramas" : 3,
+        "totalSolicitudes" : 0
+      }
+    }
+  },
+  "GET /tendencias-comparativas?periodoAcademico=[2025-2]&idPrograma=[2]" : {
+    "estado" : 200,
+    "cuerpo" : {
+      "comparativaProcesos" : {
+        "aprobadasPorProceso" : {
+          "Cursos de Verano" : 0,
+          "ECAES" : 0,
+          "Homologacion" : 0,
+          "Paz y Salvo" : 0,
+          "Reingreso" : 0
+        },
+        "demandaMasAlta" : 2,
+        "eficienciaMasAlta" : 0.0,
+        "procesoMasDemandado" : "Cursos de Verano",
+        "procesoMasEficiente" : null,
+        "solicitudesPorProceso" : {
+          "Cursos de Verano" : 2,
+          "ECAES" : 0,
+          "Homologacion" : 0,
+          "Paz y Salvo" : 1,
+          "Reingreso" : 0
+        }
+      },
+      "comparativaProgramas" : {
+        "estudiantesPorPrograma" : {
+          "Ingeniería Civil" : 1,
+          "Ingeniería Electrónica" : 2,
+          "Ingeniería de Sistemas" : 2
+        },
+        "maxEstudiantes" : 2,
+        "maxSolicitudes" : 3,
+        "programaConMasEstudiantes" : "Ingeniería de Sistemas",
+        "programaMasActivo" : "Ingeniería Electrónica",
+        "solicitudesPorPrograma" : {
+          "Ingeniería Civil" : 0,
+          "Ingeniería Electrónica" : 3,
+          "Ingeniería de Sistemas" : 0
+        }
+      },
+      "crecimientoTemporal" : {
+        "crecimientoEstudiantes" : 50.0,
+        "crecimientoSolicitudes" : 50.0,
+        "estudiantesPorMes" : {
+          "Abril" : 0,
+          "Agosto" : 1,
+          "Diciembre" : 0,
+          "Enero" : 0,
+          "Febrero" : 0,
+          "Julio" : 2,
+          "Junio" : 0,
+          "Marzo" : 0,
+          "Mayo" : 0,
+          "Noviembre" : 0,
+          "Octubre" : 0,
+          "Septiembre" : 0
+        },
+        "mesesAnalizados" : 2,
+        "solicitudesPorMes" : {
+          "Abril" : 0,
+          "Agosto" : 1,
+          "Diciembre" : 0,
+          "Enero" : 0,
+          "Febrero" : 0,
+          "Julio" : 2,
+          "Junio" : 0,
+          "Marzo" : 0,
+          "Mayo" : 0,
+          "Noviembre" : 0,
+          "Octubre" : 0,
+          "Septiembre" : 0
+        },
+        "tendenciaEstudiantes" : "Decreciente",
+        "tendenciaSolicitudes" : "Decreciente",
+        "totalEstudiantes" : 6,
+        "totalSolicitudes" : 3
+      },
+      "descripcion" : "Analisis de tendencias y comparativas estrategicas - DATOS REALES",
+      "fechaConsulta" : "<ahora>",
+      "resumenEstrategico" : {
+        "periodoAnalizado" : "Ultimos 12 meses",
+        "recomendacionEstrategica" : " DECRECIMIENTO MODERADO: Revisar estrategias para Cursos de Verano.  BAJA EFICIENCIA: Revisar procesos de aprobacion.  ENFOQUE: Ingeniería Electrónica requiere atencion prioritaria.",
+        "totalEstudiantes" : 6,
+        "totalProgramas" : 3,
+        "totalSolicitudes" : 3
+      }
+    }
+  }
+}

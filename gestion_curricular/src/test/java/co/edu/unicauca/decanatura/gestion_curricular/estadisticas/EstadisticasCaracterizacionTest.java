@@ -161,7 +161,8 @@ class EstadisticasCaracterizacionTest {
     // Datos
     // ------------------------------------------------------------------------------------------
 
-    private static GestionarEstadisticasCUIntPort crearCasoDeUso() {
+    /** Caso de uso real sobre el conjunto fijo. También lo usa {@link EstadisticasEndpointsCaracterizacionTest}. */
+    static GestionarEstadisticasCUIntPort crearCasoDeUso() {
         ProgramaEntity sistemas = programa(1, "Ingeniería de Sistemas");
         ProgramaEntity electronica = programa(2, "Ingeniería Electrónica");
         ProgramaEntity civil = programa(3, "Ingeniería Civil"); // sin solicitudes
