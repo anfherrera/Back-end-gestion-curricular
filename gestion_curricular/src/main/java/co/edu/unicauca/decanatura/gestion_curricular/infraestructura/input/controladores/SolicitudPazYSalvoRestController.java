@@ -19,6 +19,8 @@ import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.SolicitudPa
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.controladorExcepciones.ErroresPazYSalvo;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Documento;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.DTOPeticion.CambioEstadoSolicitudDTOPeticion;
+import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.DTOPeticion.CrearSolicitudPazYSalvoDTOPeticion;
+import jakarta.validation.Valid;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.DTOPeticion.SolicitudPazYSalvoDTOPeticion;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.DTORespuesta.SolicitudPazYSalvoDTORespuesta;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.mappers.SolicitudPazYSalvoMapperDominio;
@@ -75,53 +77,42 @@ public class SolicitudPazYSalvoRestController {
     @PreAuthorize("hasAnyRole('Estudiante', 'Administrador')")
     @PostMapping("/crearSolicitud-PazYSalvo")
     public ResponseEntity<?> crearSolicitudPazYSalvo(
-            @RequestBody Object peticion) {
+            @Valid @RequestBody CrearSolicitudPazYSalvoDTOPeticion peticion) {
         return ErroresPazYSalvo.alCrear(() -> {
-            if (peticion == null) {
+            if (!peticion.esObjeto()) {
+                return respuestaBadRequest("Formato de solicitud no soportado");
+            }
+            if (peticion.estaVacia()) {
                 return respuestaBadRequest("Los datos de la solicitud son requeridos");
             }
 
-            if (peticion instanceof Map<?, ?>) {
-                @SuppressWarnings("unchecked")
-                Map<String, Object> mapPeticion = new HashMap<>((Map<String, Object>) peticion);
-
-                if (mapPeticion.isEmpty()) {
-                    return respuestaBadRequest("Los datos de la solicitud son requeridos");
+            // Un estudiante solo puede crear solicitudes a su nombre: el usuario sale del token JWT,
+            // no del cuerpo de la petición.
+            if (!autorizacion.esStaff()) {
+                Integer idUsuarioActual = autorizacion.idUsuarioActual();
+                if (idUsuarioActual == null) {
+                    return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                            .body(Map.of("error", "Usuario no autenticado"));
                 }
-
-                // Un estudiante solo puede crear solicitudes a su nombre: el usuario sale del token JWT,
-                // no del cuerpo de la petición.
-                if (!autorizacion.esStaff()) {
-                    Integer idUsuarioActual = autorizacion.idUsuarioActual();
-                    if (idUsuarioActual == null) {
-                        return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                                .body(Map.of("error", "Usuario no autenticado"));
-                    }
-                    mapPeticion.remove("objUsuario");
-                    mapPeticion.put("idUsuario", idUsuarioActual);
-                }
-
-                if (mapPeticion.containsKey("idUsuario")) {
-                    Object idUsuario = mapPeticion.get("idUsuario");
-                    if (idUsuario == null || idUsuario.toString().isBlank()) {
-                        return respuestaBadRequest("El campo idUsuario es obligatorio");
-                    }
-
-                    SolicitudPazYSalvo solicitud = construirSolicitudBasica(mapPeticion);
-                    return guardarSolicitudDominio(solicitud);
-                }
-
-                SolicitudPazYSalvoDTOPeticion dtoPeticion = objectMapper.convertValue(mapPeticion,
-                        SolicitudPazYSalvoDTOPeticion.class);
-                String mensajeValidacion = validarSolicitudDto(dtoPeticion);
-                if (mensajeValidacion != null) {
-                    return respuestaBadRequest(mensajeValidacion);
-                }
-
-                return guardarSolicitudDesdeDto(dtoPeticion);
+                peticion.asignarUsuario(idUsuarioActual);
             }
 
-            return respuestaBadRequest("Formato de solicitud no soportado");
+            if (peticion.traeIdUsuario()) {
+                String idUsuario = peticion.getIdUsuario();
+                if (idUsuario == null || idUsuario.isBlank()) {
+                    return respuestaBadRequest("El campo idUsuario es obligatorio");
+                }
+                return guardarSolicitudDominio(construirSolicitudBasica(peticion));
+            }
+
+            SolicitudPazYSalvoDTOPeticion dtoPeticion = objectMapper.convertValue(peticion.getCampos(),
+                    SolicitudPazYSalvoDTOPeticion.class);
+            String mensajeValidacion = validarSolicitudDto(dtoPeticion);
+            if (mensajeValidacion != null) {
+                return respuestaBadRequest(mensajeValidacion);
+            }
+
+            return guardarSolicitudDesdeDto(dtoPeticion);
         });
     }
 
@@ -144,15 +135,15 @@ public class SolicitudPazYSalvoRestController {
         return new ResponseEntity<>(respuesta, HttpStatus.CREATED);
     }
 
-    private SolicitudPazYSalvo construirSolicitudBasica(Map<String, Object> mapPeticion) {
+    private SolicitudPazYSalvo construirSolicitudBasica(CrearSolicitudPazYSalvoDTOPeticion peticion) {
         // Solo el id: el caso de uso comprueba que exista y carga el usuario completo
         Usuario usuario = new Usuario();
-        usuario.setId_usuario(Integer.valueOf(mapPeticion.get("idUsuario").toString().trim()));
+        usuario.setId_usuario(Integer.valueOf(peticion.getIdUsuario().trim()));
         SolicitudPazYSalvo solicitud = new SolicitudPazYSalvo();
         solicitud.setObjUsuario(usuario);
 
-        if (mapPeticion.containsKey("fecha_solicitud") && mapPeticion.get("fecha_solicitud") != null) {
-            String fechaSolicitud = mapPeticion.get("fecha_solicitud").toString();
+        String fechaSolicitud = peticion.getFechaSolicitud();
+        if (fechaSolicitud != null) {
             if (!fechaSolicitud.isBlank()) {
                 try {
                     LocalDate fecha = LocalDate.parse(fechaSolicitud);
@@ -168,8 +159,8 @@ public class SolicitudPazYSalvoRestController {
         }
 
         // Período académico: si viene, debe ser válido (si no viene, el caso de uso pone el actual)
-        if (mapPeticion.containsKey("periodo_academico") && mapPeticion.get("periodo_academico") != null) {
-            String periodoAcademico = mapPeticion.get("periodo_academico").toString().trim();
+        if (peticion.getPeriodoAcademico() != null) {
+            String periodoAcademico = peticion.getPeriodoAcademico().trim();
             if (!periodoAcademico.isBlank()) {
                 if (PeriodoAcademicoEnum.esValido(periodoAcademico)) {
                     solicitud.setPeriodo_academico(periodoAcademico);
@@ -180,15 +171,15 @@ public class SolicitudPazYSalvoRestController {
         }
 
         // Guardar título y director del trabajo de grado si se proporcionan
-        if (mapPeticion.containsKey("titulo_trabajo_grado") && mapPeticion.get("titulo_trabajo_grado") != null) {
-            String titulo = mapPeticion.get("titulo_trabajo_grado").toString().trim();
+        if (peticion.getTituloTrabajoGrado() != null) {
+            String titulo = peticion.getTituloTrabajoGrado().trim();
             if (!titulo.isEmpty()) {
                 solicitud.setTitulo_trabajo_grado(titulo);
             }
         }
-        
-        if (mapPeticion.containsKey("director_trabajo_grado") && mapPeticion.get("director_trabajo_grado") != null) {
-            String director = mapPeticion.get("director_trabajo_grado").toString().trim();
+
+        if (peticion.getDirectorTrabajoGrado() != null) {
+            String director = peticion.getDirectorTrabajoGrado().trim();
             if (!director.isEmpty()) {
                 solicitud.setDirector_trabajo_grado(director);
             }
