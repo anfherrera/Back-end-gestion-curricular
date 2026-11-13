@@ -29,6 +29,21 @@
       "totalDocumentos" : 12
     }
   },
+  "GET /validarDocumentosRequeridos/{formato-con-guion-bajo}" : {
+    "estado" : 200,
+    "cuerpo" : {
+      "documentosRequeridos" : {
+        "autorizacion_publicar" : true,
+        "comprobante_pago" : true,
+        "documento_trabajo_grado" : true,
+        "formato_pm_fo_4_for_27" : false,
+        "hoja_vida_academica" : true,
+        "resultado_saber_pro" : false
+      },
+      "todosCompletos" : false,
+      "totalDocumentos" : 5
+    }
+  },
   "GET /validarDocumentosRequeridos/{sin-documentos}" : {
     "estado" : 200,
     "cuerpo" : {

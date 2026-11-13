@@ -22,6 +22,10 @@
       "ruta" : "pazysalvo/caract/paz_y_salvo_firmado.PDF"
     } ]
   },
+  "GET /obtenerOficios/{formato-con-guion-bajo}" : {
+    "estado" : 200,
+    "cuerpo" : [ ]
+  },
   "GET /obtenerOficios/{sin-documentos}" : {
     "estado" : 200,
     "cuerpo" : [ ]

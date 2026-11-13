@@ -149,6 +149,15 @@ class PazYSalvoCaracterizacionTest {
                 doc("Autorizacion para publicar.pdf", null),
                 doc("carta.pdf", null));
 
+        // Los cinco obligatorios, con el formato escrito solo con guion bajo (BUG-1)
+        solicitud("formato-con-guion-bajo", dueno, List.of(
+                estado("Enviada", t)),
+                doc("formato_pm_fo_4_for_27.pdf", null),
+                doc("autorizacion_publicar.pdf", null),
+                doc("hoja_vida_academica.pdf", null),
+                doc("comprobante_pago.pdf", null),
+                doc("documento_trabajo_grado.pdf", null));
+
         solicitud("sin-documentos", dueno, List.of(estado("Enviada", t)));
 
         solicitud("nombre-nulo", dueno, List.of(estado("Enviada", t)),

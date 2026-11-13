@@ -11,6 +11,12 @@
       "mensaje" : "No hay comentarios para esta solicitud"
     }
   },
+  "GET /obtenerComentarios/{formato-con-guion-bajo}" : {
+    "estado" : 200,
+    "cuerpo" : {
+      "mensaje" : "No hay comentarios para esta solicitud"
+    }
+  },
   "GET /obtenerComentarios/{sin-documentos}" : {
     "estado" : 200,
     "cuerpo" : {
