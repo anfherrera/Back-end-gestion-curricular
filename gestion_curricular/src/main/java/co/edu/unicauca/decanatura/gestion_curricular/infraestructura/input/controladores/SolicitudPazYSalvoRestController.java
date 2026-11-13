@@ -1,6 +1,5 @@
 package co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.controladores;
 
-import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Enums.EstadosSolicitud;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.validacion.ArchivoMultipart;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -17,7 +16,6 @@ import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.FlujoEstado
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.SolicitudPazYSalvo;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.excepciones.ReglaNegocioExcepcion;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Documento;
-import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.EstadoSolicitud;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.DTOPeticion.CambioEstadoSolicitudDTOPeticion;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.DTOPeticion.SolicitudPazYSalvoDTOPeticion;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.DTORespuesta.SolicitudPazYSalvoDTORespuesta;
@@ -708,62 +706,28 @@ public class SolicitudPazYSalvoRestController {
     @PreAuthorize("@autorizacion.esStaff() or @autorizacion.esDuenoSolicitud(#idSolicitud)")
     @GetMapping("/obtenerComentarios/{idSolicitud}")
     public ResponseEntity<Map<String, Object>> obtenerComentariosSolicitud(@PathVariable Integer idSolicitud) {
-        
-        SolicitudPazYSalvo solicitud = solicitudPazYSalvoCU.buscarPorId(idSolicitud);
-        if (solicitud == null) {
-            return ResponseEntity.notFound().build();
-        }
-        
+        var comentarios = solicitudPazYSalvoCU.comentarios(idSolicitud);
+
         Map<String, Object> respuesta = new HashMap<>();
-        
-        // 1. Buscar comentario de rechazo en los estados
-        String comentarioRechazo = null;
-        if (solicitud.getEstadosSolicitud() != null && !solicitud.getEstadosSolicitud().isEmpty()) {
-            // Buscar el último estado de rechazo
-            List<EstadoSolicitud> estadosRechazados = solicitud.getEstadosSolicitud().stream()
-                .filter(estado -> EstadosSolicitud.RECHAZADA.name().equalsIgnoreCase(estado.getEstado_actual()) || 
-                                "RECHAZADO".equalsIgnoreCase(estado.getEstado_actual()))
-                .sorted((a, b) -> b.getFecha_registro_estado().compareTo(a.getFecha_registro_estado()))
-                .collect(java.util.stream.Collectors.toList());
-            
-            if (!estadosRechazados.isEmpty()) {
-                EstadoSolicitud ultimoRechazo = estadosRechazados.get(0);
-                if (ultimoRechazo.getComentario() != null && !ultimoRechazo.getComentario().trim().isEmpty()) {
-                    comentarioRechazo = ultimoRechazo.getComentario().trim();
-                }
-            }
+        if (comentarios.comentarioRechazo() != null) {
+            respuesta.put("comentarioRechazo", comentarios.comentarioRechazo());
         }
-        
-        // Solo agregar comentario de rechazo si existe
-        if (comentarioRechazo != null && !comentarioRechazo.isEmpty()) {
-            respuesta.put("comentarioRechazo", comentarioRechazo);
-        }
-        
-        // 2. Buscar documentos que tienen comentarios
+
         List<Map<String, Object>> documentosConComentarios = new ArrayList<>();
-        if (solicitud.getDocumentos() != null && !solicitud.getDocumentos().isEmpty()) {
-            for (Documento documento : solicitud.getDocumentos()) {
-                if (documento.getComentario() != null && !documento.getComentario().trim().isEmpty()) {
-                    Map<String, Object> doc = new HashMap<>();
-                    doc.put("id", documento.getId_documento());
-                    doc.put("nombre", documento.getNombre());
-                    doc.put("comentario", documento.getComentario().trim());
-                    documentosConComentarios.add(doc);
-                }
-            }
+        for (var comentario : comentarios.documentos()) {
+            Map<String, Object> doc = new HashMap<>();
+            doc.put("id", comentario.idDocumento());
+            doc.put("nombre", comentario.nombre());
+            doc.put("comentario", comentario.comentario());
+            documentosConComentarios.add(doc);
         }
-        
-        // Solo agregar documentos con comentarios si hay alguno
         if (!documentosConComentarios.isEmpty()) {
             respuesta.put("documentosConComentarios", documentosConComentarios);
         }
-        
-        // Si no hay ningún comentario, devolver objeto vacío
+
         if (respuesta.isEmpty()) {
             respuesta.put("mensaje", "No hay comentarios para esta solicitud");
         }
-        
-        
         return ResponseEntity.ok(respuesta);
     }
 

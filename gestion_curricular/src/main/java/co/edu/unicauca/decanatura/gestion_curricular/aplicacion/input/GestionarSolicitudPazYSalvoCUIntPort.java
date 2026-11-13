@@ -61,6 +61,19 @@ public interface GestionarSolicitudPazYSalvoCUIntPort {
     /** Qué documentos requeridos ha entregado el estudiante y si están todos los obligatorios. */
     RevisionDocumentos revisarDocumentosRequeridos(Integer idSolicitud);
 
+    /** Comentario del último rechazo y documentos con comentario de la solicitud. */
+    ComentariosSolicitud comentarios(Integer idSolicitud);
+
+    /**
+     * @param comentarioRechazo ver {@link SolicitudPazYSalvo#ultimoComentarioDeRechazo()}; null si no hay
+     * @param documentos        los documentos con comentario no vacío, en su orden, con el comentario recortado
+     */
+    record ComentariosSolicitud(String comentarioRechazo, List<ComentarioDocumento> documentos) {
+    }
+
+    record ComentarioDocumento(Integer idDocumento, String nombre, String comentario) {
+    }
+
     record DatosDocumento(String nombreArchivo, String nombreEstudiante, String codigoEstudiante, String programa,
                           Object fechaSolicitud, String cedula, String titulo, String director) {
     }

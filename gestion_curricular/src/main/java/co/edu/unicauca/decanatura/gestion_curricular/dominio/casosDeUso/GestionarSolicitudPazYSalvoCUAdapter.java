@@ -214,6 +214,17 @@ public class GestionarSolicitudPazYSalvoCUAdapter implements GestionarSolicitudP
     }
 
     @Override
+    public ComentariosSolicitud comentarios(Integer idSolicitud) {
+        SolicitudPazYSalvo solicitud = buscarPorId(idSolicitud);
+        List<ComentarioDocumento> documentos = solicitud.getDocumentos() == null ? List.of()
+                : solicitud.getDocumentos().stream()
+                        .filter(d -> d.getComentario() != null && !d.getComentario().trim().isEmpty())
+                        .map(d -> new ComentarioDocumento(d.getId_documento(), d.getNombre(), d.getComentario().trim()))
+                        .toList();
+        return new ComentariosSolicitud(solicitud.ultimoComentarioDeRechazo().orElse(null), documentos);
+    }
+
+    @Override
     public Optional<DatosDocumento> prepararDocumento(Integer id, String cedula, String titulo, String director,
                                                       boolean fechaLocal) {
         SolicitudPazYSalvo solicitud = buscarPorId(id);
