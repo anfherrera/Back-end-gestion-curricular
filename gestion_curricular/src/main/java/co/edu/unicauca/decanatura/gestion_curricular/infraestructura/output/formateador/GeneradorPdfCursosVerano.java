@@ -14,12 +14,26 @@ import org.springframework.stereotype.Component;
 /** Genera los PDF de cursos de verano (listado de cursos y estudiantes de un curso). */
 @Component
 @Slf4j
-public class GeneradorPdfCursosVerano {
+@lombok.RequiredArgsConstructor
+public class GeneradorPdfCursosVerano implements co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.GenerarPdfCursosVeranoIntPort {
+    private final co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.mappers.CursosOfertadosMapperDominio cursoMapper;
+
+    @Override
+    public byte[] generarPDFCursos(List<co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.CursoOfertadoVerano> cursos,
+            String periodoAcademico, Integer idPrograma) {
+        return renderizarCursos(cursos.stream().map(cursoMapper::mappearDeCursoOfertadoARespuesta).toList(), periodoAcademico, idPrograma);
+    }
+
+    @Override
+    public byte[] generarPDFEstudiantesCurso(co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.CursoOfertadoVerano curso,
+            co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.ListadoEstudiantes estudiantes) {
+        return renderizarEstudiantes(co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.mappers.EstudiantesCursoVeranoMapper.mapear(curso, estudiantes));
+    }
 
     /**
      * Genera un PDF con los cursos filtrados
      */
-    public byte[] generarPDFCursos(List<CursosOfertadosDTORespuesta> cursos, String periodoAcademico, Integer idPrograma) {
+    private byte[] renderizarCursos(List<CursosOfertadosDTORespuesta> cursos, String periodoAcademico, Integer idPrograma) {
         
         ByteArrayOutputStream baos = null;
         com.itextpdf.text.Document document = null;
@@ -142,7 +156,7 @@ public class GeneradorPdfCursosVerano {
     /**
      * Genera un PDF con la lista de estudiantes del curso
      */
-    public byte[] generarPDFEstudiantesCurso(EstudiantesCursoVeranoDTORespuesta datos) {
+    private byte[] renderizarEstudiantes(EstudiantesCursoVeranoDTORespuesta datos) {
         
         ByteArrayOutputStream baos = null;
         com.itextpdf.text.Document document = null;

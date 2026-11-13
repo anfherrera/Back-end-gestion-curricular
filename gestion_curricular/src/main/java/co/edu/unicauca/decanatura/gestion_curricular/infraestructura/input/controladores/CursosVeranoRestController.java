@@ -18,7 +18,7 @@ import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarC
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarCursoOfertadoVeranoCUIntPort.DatosCreacion;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.excepciones.DatosCursoInvalidosException;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarSolicitudCursoVeranoCUIntPort;
-import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarSolicitudCursoVeranoCUIntPort.EstudianteCurso;
+import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GenerarReportesCursosVeranoCUIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarSalonesCUIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.CursoOfertadoVerano;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Salon;
@@ -38,7 +38,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.HashMap;
 import java.util.stream.Collectors;
-import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.formateador.GeneradorPdfCursosVerano;
 
 /**
  * Cursos de verano: listados, creación, edición, eliminación, estudiantes del curso y exportación a PDF.
@@ -54,7 +53,7 @@ public class CursosVeranoRestController {
     private final GestionarSolicitudCursoVeranoCUIntPort solicitudCU;
     private final CursosOfertadosMapperDominio cursoMapper;
     private final GestionarSalonesCUIntPort salonCU;
-    private final GeneradorPdfCursosVerano generadorPdf;
+    private final GenerarReportesCursosVeranoCUIntPort generadorPdf;
 
     /**
      * Obtener cursos de verano (endpoint principal que llama el frontend)
@@ -600,29 +599,9 @@ public class CursosVeranoRestController {
         }
 
         var listado = solicitudCU.listarEstudiantesPorCurso(idCurso);
-        var materia = curso.getObjMateria();
-        return new EstudiantesCursoVeranoDTORespuesta(idCurso, materia == null ? "N/A" : materia.getNombre(),
-                materia == null ? "N/A" : materia.getCodigo(), curso.getCupo_estimado(), listado.estudiantes().size(),
-                listado.totalPreinscritos(), listado.totalInscritos(),
-                listado.estudiantes().stream().map(this::mapearEstudiante).toList());
+        return co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.mappers.EstudiantesCursoVeranoMapper.mapear(curso, listado);
     }
 
-    private Estudiante mapearEstudiante(EstudianteCurso estudiante) {
-        var usuario = estudiante.usuario();
-        var preinscripcion = estudiante.preinscripcion();
-        var inscripcion = estudiante.inscripcion();
-        var programa = usuario.getObjPrograma();
-        var condicion = preinscripcion != null ? preinscripcion.getCodicion_solicitud() : inscripcion.getCodicion_solicitud();
-
-        return new Estudiante(usuario.getId_usuario(), usuario.getNombre_completo(), usuario.getCodigo(), usuario.getCorreo(),
-                estudiante.estadoPreinscripcion(), estudiante.estadoInscripcion(),
-                inscripcion == null ? null : inscripcion.getId_solicitud(), estudiante.inscrito() ? "Inscrito" : "Preinscrito",
-                condicion == null ? null : condicion.toString(),
-                programa == null ? null : new Programa(programa.getId_programa(), programa.getNombre_programa()),
-                preinscripcion == null ? null : new Preinscripcion(preinscripcion.getFecha_registro_solicitud(),
-                        preinscripcion.getId_solicitud(), inscripcion != null),
-                preinscripcion == null ? new InscripcionSinPreinscripcion(inscripcion.getFecha_registro_solicitud(), false) : null);
-    }
 
     /**
      * Exportar cursos filtrados a PDF
@@ -638,17 +617,7 @@ public class CursosVeranoRestController {
             @RequestParam(required = false) String periodoAcademico,
             @RequestParam(required = false) Integer idPrograma) {
         
-        ResponseEntity<List<CursosOfertadosDTORespuesta>> cursosResponse = obtenerTodosLosCursosVerano(periodoAcademico, idPrograma);
-        
-        if (cursosResponse.getStatusCode() != HttpStatus.OK || cursosResponse.getBody() == null) {
-            log.error("No se pudieron obtener los cursos para generar el PDF");
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-        }
-        
-        List<CursosOfertadosDTORespuesta> cursos = cursosResponse.getBody();
-        
-        // Generar PDF
-        byte[] pdfBytes = generadorPdf.generarPDFCursos(cursos, periodoAcademico, idPrograma);
+        byte[] pdfBytes = generadorPdf.generarPdfCursos(periodoAcademico, idPrograma);
         
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_PDF);
@@ -674,14 +643,14 @@ public class CursosVeranoRestController {
     public ResponseEntity<byte[]> exportarEstudiantesCursoPDF(
             @PathVariable Integer idCurso) {
         
-        EstudiantesCursoVeranoDTORespuesta datos = datosEstudiantesDelCurso(idCurso);
+        var datos = generadorPdf.generarPdfEstudiantes(idCurso);
         if (datos == null) {
             log.error("No se pudieron obtener los estudiantes para generar el PDF");
             return ResponseEntity.internalServerError().build();
         }
 
         // Generar PDF
-        byte[] pdfBytes = generadorPdf.generarPDFEstudiantesCurso(datos);
+        byte[] pdfBytes = datos.contenido();
         
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_PDF);

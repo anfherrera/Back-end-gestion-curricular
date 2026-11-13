@@ -15,7 +15,7 @@ import org.springframework.stereotype.Component;
 /** Genera el Excel del listado de solicitudes de cursos de verano. */
 @Component
 @Slf4j
-public class GeneradorExcelSolicitudesVerano {
+public class GeneradorExcelSolicitudesVerano implements co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.GenerarExcelSolicitudesVeranoIntPort {
 
     /**
      * Genera un archivo Excel con las solicitudes de cursos intersemestrales
@@ -28,12 +28,13 @@ public class GeneradorExcelSolicitudesVerano {
      * @param fechaFin Filtro de fecha fin aplicado (opcional)
      * @return Array de bytes del archivo Excel
      */
-    public byte[] generarExcelSolicitudes(List<Map<String, Object>> solicitudes, 
+    public byte[] generarExcelSolicitudes(List<Solicitud> datos,
                                           Integer idCurso, 
                                           String estado, 
                                           String periodoAcademico,
                                           Date fechaInicio, 
                                           Date fechaFin) {
+        List<Map<String, Object>> solicitudes = co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.mappers.ReporteSolicitudesVeranoMapper.formatear(datos, null);
         try {
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
             org.apache.poi.xssf.usermodel.XSSFWorkbook workbook = new org.apache.poi.xssf.usermodel.XSSFWorkbook();

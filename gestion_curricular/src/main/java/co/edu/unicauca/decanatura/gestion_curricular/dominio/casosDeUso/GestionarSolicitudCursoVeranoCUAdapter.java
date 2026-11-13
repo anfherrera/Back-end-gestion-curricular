@@ -2,6 +2,8 @@ package co.edu.unicauca.decanatura.gestion_curricular.dominio.casosDeUso;
 
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Enums.EstadoSolicitudCursoVerano;
 import java.util.ArrayList;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.ListadoEstudiantes;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.EstudianteCurso;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;

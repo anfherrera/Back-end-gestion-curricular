@@ -163,6 +163,80 @@ class CursosVeranoEndpointsCaracterizacionTest {
         valor.set("json", JSON.readTree(respuesta.getContentAsByteArray()));
     }
 
+    @Test void exportacionesPdfExcelYEstudiantes() throws Exception {
+        datos.preparar(" 221 ", "encontrado");
+        CursoOfertadoVerano curso = datos.cursos.obtenerCursoPorId(71);
+        Materia materia = new Materia();
+        materia.setCodigo("MAT-71");
+        materia.setNombre("Materia de prueba");
+        curso.setObjMateria(materia);
+        Usuario usuario = new Usuario();
+        usuario.setId_usuario(81);
+        usuario.setNombre_completo("Ana Pérez");
+        usuario.setCodigo("1046");
+        usuario.setCorreo("ana@unicauca.edu.co");
+        SolicitudCursoVeranoPreinscripcion pre = new SolicitudCursoVeranoPreinscripcion();
+        pre.setId_solicitud(91);
+        pre.setObjUsuario(usuario);
+        pre.setObjCursoOfertadoVerano(curso);
+        pre.setFecha_registro_solicitud(curso.getFecha_inicio());
+        pre.setObservacion("Motivo de prueba");
+        when(datos.solicitudes.buscarPreinscripcionesPorCurso(71)).thenReturn(List.of(pre));
+        when(datos.solicitudes.listarSolicitudesDeVerano(null)).thenReturn(List.of(pre));
+        ObjectNode respuestas = JSON.createObjectNode();
+        consultar(respuestas, "estudiantes", get(BASE + "/cursos-verano/71/estudiantes"));
+        for (boolean vacio : new boolean[]{false, true}) {
+            if (vacio) {
+                when(datos.cursos.listarTodos()).thenReturn(List.of());
+                when(datos.cursos.listarPorPeriodo(anyString())).thenReturn(List.of());
+                when(datos.solicitudes.buscarPreinscripcionesPorCurso(71)).thenReturn(List.of());
+                when(datos.solicitudes.listarSolicitudesDeVerano(null)).thenReturn(List.of());
+            }
+            for (String periodo : List.of("todos", "2025-2", "2025 - Primer Semestre")) {
+                for (String ruta : List.of("/cursos-verano/todos/export/pdf", "/cursos-verano/71/estudiantes/export/pdf", "/solicitudes/export/excel")) {
+                    var respuesta = mvc.perform(get(BASE + ruta).param("periodoAcademico", periodo))
+                            .andReturn().getResponse();
+                    assertThat(respuesta.getStatus()).isEqualTo(200);
+                    ObjectNode valor = respuestas.putObject(vacio + periodo + ruta);
+                    valor.put("http", respuesta.getStatus());
+                    valor.put("tipo", respuesta.getContentType());
+                    valor.put("disposicion", respuesta.getHeader("Content-Disposition")
+                            .replaceAll("\\d{8}_\\d{6}", "<ahora>").replaceAll("\\d{4}-\\d{2}-\\d{2}", "<hoy>"));
+                    if (ruta.endsWith("pdf")) {
+                        var lector = new com.itextpdf.text.pdf.PdfReader(respuesta.getContentAsByteArray());
+                        var paginas = valor.putArray("paginas");
+                        try {
+                            for (int pagina = 1; pagina <= lector.getNumberOfPages(); pagina++) {
+                                paginas.add(com.itextpdf.text.pdf.parser.PdfTextExtractor.getTextFromPage(lector, pagina)
+                                        .replaceAll("Fecha de generación: [^\\n]*", "Fecha de generación: <ahora>")
+                                        .replaceAll("Período actual: [^)]+", "Período actual: <actual>"));
+                            }
+                        } finally { lector.close(); }
+                    } else {
+                        var hojas = valor.putObject("hojas");
+                        try (var libro = new org.apache.poi.xssf.usermodel.XSSFWorkbook(new java.io.ByteArrayInputStream(respuesta.getContentAsByteArray()))) {
+                            var formato = new org.apache.poi.ss.usermodel.DataFormatter();
+                            for (var hoja : libro) {
+                                var filas = hojas.putArray(hoja.getSheetName());
+                                for (var fila : hoja) {
+                                    var celdas = filas.addArray();
+                                    for (var celda : fila) celdas.add(formato.formatCellValue(celda)
+                                            .replaceAll("Fecha de generacion: .*", "Fecha de generacion: <ahora>")
+                                            .replaceAll("Período actual: [^)]+", "Período actual: <actual>"));
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        Path archivo = REFERENCIAS.resolve("exportaciones.json");
+        if (Boolean.getBoolean("grabarExportacionesVerano") && !Files.exists(archivo)) {
+            Files.writeString(archivo, JSON.writerWithDefaultPrettyPrinter().writeValueAsString(respuestas));
+        }
+        assertThat(respuestas).isEqualTo(JSON.readTree(Files.readString(archivo)));
+    }
+
     private void comparar(String nombre, JsonNode actual) throws Exception {
         Path archivo = REFERENCIAS.resolve(nombre + ".json");
         if (Boolean.getBoolean("grabarReferencia")) {

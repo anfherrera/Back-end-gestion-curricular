@@ -47,9 +47,7 @@ class ArquitecturaHexagonalTest {
     void entradaNoUsaSalida() throws IOException {
         comprobarConLineaBase("infraestructura/input",
                 Pattern.compile(PAQUETE + "infraestructura\\.output\\."),
-                Set.of(
-                        "infraestructura/input/controladores/CursosVeranoRestController.java",          // ARQ-3
-                        "infraestructura/input/controladores/ReportesCursosVeranoRestController.java")); // ARQ-3
+                Set.of());
     }
 
     @Test

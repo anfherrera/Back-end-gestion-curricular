@@ -94,7 +94,30 @@ class GeneracionDocumentosCaracterizacionTest {
             Files.createDirectories(REFERENCIA.getParent());
             Files.writeString(REFERENCIA, JSON.writerWithDefaultPrettyPrinter().writeValueAsString(respuestas));
         }
-        assertThat(respuestas).isEqualTo(JSON.readTree(Files.readString(REFERENCIA)));
+        assertThat(normalizarFechasPartidas(respuestas, LocalDate.now()))
+                .isEqualTo(normalizarFechasPartidas((ObjectNode) JSON.readTree(Files.readString(REFERENCIA)),
+                        LocalDate.of(2026, 11, 13))); // Fecha en que se obtuvo la referencia previa al refactor.
+    }
+
+    private static ObjectNode normalizarFechasPartidas(ObjectNode datos, LocalDate fechaGeneracion) {
+        ObjectNode copia = datos.deepCopy();
+        String diaMes = fechaGeneracion.getDayOfMonth() + " de "
+                + fechaGeneracion.format(DateTimeFormatter.ofPattern("MMMM", new Locale("es", "ES")));
+        copia.elements().forEachRemaining(valor -> {
+            if (valor.has("texto")) {
+                String texto = valor.get("texto").asText()
+                        .replace("día " + diaMes + " del año en curso", "día <fecha-generacion> del año en curso")
+                        .replace("del " + fechaGeneracion.getYear() + ", se notificó", "del <año-generacion>, se notificó")
+                        .replace("(" + fechaGeneracion.getDayOfMonth() + ") días del mes de "
+                                        + fechaGeneracion.format(DateTimeFormatter.ofPattern("MMMM", new Locale("es", "ES")))
+                                        + " de " + fechaGeneracion.getYear(), "(<día>) días del mes de <mes> de <año>")
+                        .replace("(" + fechaGeneracion.getDayOfMonth() + ") días del mes de "
+                                        + fechaGeneracion.format(DateTimeFormatter.ofPattern("MMMM", new Locale("es", "ES")))
+                                        + " del año " + fechaGeneracion.getYear(), "(<día>) días del mes de <mes> del año <año>");
+                ((ObjectNode) valor).put("texto", texto);
+            }
+        });
+        return copia;
     }
 
     private static ObjectNode cabeceras(MockHttpServletResponse r) {

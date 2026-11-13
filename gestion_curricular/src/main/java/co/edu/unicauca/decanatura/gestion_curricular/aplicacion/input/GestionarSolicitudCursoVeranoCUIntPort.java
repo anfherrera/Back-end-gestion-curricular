@@ -1,6 +1,6 @@
 package co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input;
 
-import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Enums.EstadoSolicitudCursoVerano;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.ListadoEstudiantes;
 import java.util.Date;
 import java.util.List;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.CursoOfertadoVerano;
@@ -27,16 +27,6 @@ public interface GestionarSolicitudCursoVeranoCUIntPort {
 
     ListadoEstudiantes listarEstudiantesPorCurso(Integer idCurso);
 
-    record ListadoEstudiantes(List<EstudianteCurso> estudiantes, int totalPreinscritos, int totalInscritos) {
-    }
-
-    record EstudianteCurso(Usuario usuario, SolicitudCursoVeranoPreinscripcion preinscripcion,
-                           SolicitudCursoVeranoIncripcion inscripcion, String estadoPreinscripcion,
-                           String estadoInscripcion) {
-        public boolean inscrito() {
-            return EstadoSolicitudCursoVerano.PAGO_VALIDADO.texto().equals(estadoInscripcion);
-        }
-    }
 
     // Métodos para gestión de funcionarios - Aprobar/Rechazar
     SolicitudCursoVeranoPreinscripcion aprobarPreinscripcion(Integer idSolicitud, String comentarios);

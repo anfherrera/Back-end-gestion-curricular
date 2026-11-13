@@ -50,6 +50,14 @@ import co.edu.unicauca.decanatura.gestion_curricular.dominio.casosDeUso.Gestiona
 @Configuration
 public class BeanConfiguration {
     @Bean
+    public co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GenerarReportesCursosVeranoCUIntPort crearGenerarReportesCursosVerano(
+            co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarCursoOfertadoVeranoCUIntPort cursos,
+            co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarSolicitudCursoVeranoCUIntPort solicitudes,
+            co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.GenerarPdfCursosVeranoIntPort pdf,
+            co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.GenerarExcelSolicitudesVeranoIntPort excel) {
+        return new co.edu.unicauca.decanatura.gestion_curricular.dominio.casosDeUso.GenerarReportesCursosVeranoCUAdapter(cursos, solicitudes, pdf, excel);
+    }
+    @Bean
     public co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GenerarDocumentosCUIntPort crearGenerarDocumentos(
             co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarSolicitudHomologacionCUIntPort homologacion,
             co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarSolicitudReingresoCUIntPort reingreso,
