@@ -1,5 +1,6 @@
 package co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.gateway;
 
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Enums.EstadosSolicitud;
 import java.util.List;
 import java.util.Optional;
 
@@ -44,14 +45,14 @@ public class GestionarSolicitudHomologacionGatewayImplAdapter implements Gestion
 
     @Override
     public List<SolicitudHomologacion> listarSolicitudesToFuncionario() {
-        return  solicitudHomologacionRepository.findByUltimoEstado("Enviada").stream()
+        return  solicitudHomologacionRepository.findByUltimoEstado(EstadosSolicitud.ENVIADA.textoGuardado()).stream()
                .map(entity -> mapper.map(entity, SolicitudHomologacion.class))
                .toList();
     }
 
     @Override
     public List<SolicitudHomologacion> listarSolicitudesToCoordinador() {
-       return  solicitudHomologacionRepository.findByUltimoEstado("APROBADA_FUNCIONARIO").stream()
+       return  solicitudHomologacionRepository.findByUltimoEstado(EstadosSolicitud.APROBADA_FUNCIONARIO.textoGuardado()).stream()
                .map(entity -> mapper.map(entity, SolicitudHomologacion.class))
                .toList();
     }
@@ -61,7 +62,7 @@ public class GestionarSolicitudHomologacionGatewayImplAdapter implements Gestion
         if (idPrograma == null) {
             return listarSolicitudesToCoordinador();
         }
-        return solicitudHomologacionRepository.findByUltimoEstadoAndPrograma("APROBADA_FUNCIONARIO", idPrograma)
+        return solicitudHomologacionRepository.findByUltimoEstadoAndPrograma(EstadosSolicitud.APROBADA_FUNCIONARIO.textoGuardado(), idPrograma)
                 .stream()
                 .map(entity -> mapper.map(entity, SolicitudHomologacion.class))
                 .toList();
@@ -69,7 +70,7 @@ public class GestionarSolicitudHomologacionGatewayImplAdapter implements Gestion
 
     @Override
     public List<SolicitudHomologacion> listarSolicitudesToSecretaria() {
-       return  solicitudHomologacionRepository.findByUltimoEstado("APROBADA_COORDINADOR").stream()
+       return  solicitudHomologacionRepository.findByUltimoEstado(EstadosSolicitud.APROBADA_COORDINADOR.textoGuardado()).stream()
                .map(entity -> mapper.map(entity, SolicitudHomologacion.class))
                .toList();
     }
@@ -77,7 +78,7 @@ public class GestionarSolicitudHomologacionGatewayImplAdapter implements Gestion
     @Override
     public List<SolicitudHomologacion> listarSolicitudesAprobadasToSecretaria() {
         // Buscar en historial completo, no solo último estado
-        return solicitudHomologacionRepository.findByEstadoEnHistorialAndPeriodoAcademico("APROBADA", null).stream()
+        return solicitudHomologacionRepository.findByEstadoEnHistorialAndPeriodoAcademico(EstadosSolicitud.APROBADA.textoGuardado(), null).stream()
                .map(entity -> mapper.map(entity, SolicitudHomologacion.class))
                .toList();
     }
@@ -91,7 +92,7 @@ public class GestionarSolicitudHomologacionGatewayImplAdapter implements Gestion
 
     @Override
     public List<SolicitudHomologacion> listarSolicitudesToFuncionarioPorPeriodo(String periodoAcademico) {
-        return solicitudHomologacionRepository.findByUltimoEstadoAndPeriodoAcademico("Enviada", periodoAcademico).stream()
+        return solicitudHomologacionRepository.findByUltimoEstadoAndPeriodoAcademico(EstadosSolicitud.ENVIADA.textoGuardado(), periodoAcademico).stream()
                 .map(entity -> mapper.map(entity, SolicitudHomologacion.class))
                 .toList();
     }
@@ -101,14 +102,14 @@ public class GestionarSolicitudHomologacionGatewayImplAdapter implements Gestion
         if (idPrograma == null) {
             return listarSolicitudesToCoordinador();
         }
-        return solicitudHomologacionRepository.findByUltimoEstadoAndProgramaAndPeriodoAcademico("APROBADA_FUNCIONARIO", idPrograma, periodoAcademico).stream()
+        return solicitudHomologacionRepository.findByUltimoEstadoAndProgramaAndPeriodoAcademico(EstadosSolicitud.APROBADA_FUNCIONARIO.textoGuardado(), idPrograma, periodoAcademico).stream()
                 .map(entity -> mapper.map(entity, SolicitudHomologacion.class))
                 .toList();
     }
 
     @Override
     public List<SolicitudHomologacion> listarSolicitudesToSecretariaPorPeriodo(String periodoAcademico) {
-        return solicitudHomologacionRepository.findByUltimoEstadoAndPeriodoAcademico("APROBADA_COORDINADOR", periodoAcademico).stream()
+        return solicitudHomologacionRepository.findByUltimoEstadoAndPeriodoAcademico(EstadosSolicitud.APROBADA_COORDINADOR.textoGuardado(), periodoAcademico).stream()
                 .map(entity -> mapper.map(entity, SolicitudHomologacion.class))
                 .toList();
     }
@@ -116,7 +117,7 @@ public class GestionarSolicitudHomologacionGatewayImplAdapter implements Gestion
     @Override
     public List<SolicitudHomologacion> listarSolicitudesAprobadasToSecretariaPorPeriodo(String periodoAcademico) {
         // Buscar en historial completo, no solo último estado
-        return solicitudHomologacionRepository.findByEstadoEnHistorialAndPeriodoAcademico("APROBADA", periodoAcademico).stream()
+        return solicitudHomologacionRepository.findByEstadoEnHistorialAndPeriodoAcademico(EstadosSolicitud.APROBADA.textoGuardado(), periodoAcademico).stream()
                 .map(entity -> mapper.map(entity, SolicitudHomologacion.class))
                 .toList();
     }
@@ -132,7 +133,7 @@ public class GestionarSolicitudHomologacionGatewayImplAdapter implements Gestion
     @Override
     public List<SolicitudHomologacion> listarSolicitudesAprobadasToFuncionario() {
         // Solicitudes que el funcionario ya procesó (aprobó) - buscar en historial completo
-        return solicitudHomologacionRepository.findByEstadoEnHistorialAndPeriodoAcademico("APROBADA_FUNCIONARIO", null).stream()
+        return solicitudHomologacionRepository.findByEstadoEnHistorialAndPeriodoAcademico(EstadosSolicitud.APROBADA_FUNCIONARIO.textoGuardado(), null).stream()
                 .map(entity -> mapper.map(entity, SolicitudHomologacion.class))
                 .toList();
     }
@@ -140,7 +141,7 @@ public class GestionarSolicitudHomologacionGatewayImplAdapter implements Gestion
     @Override
     public List<SolicitudHomologacion> listarSolicitudesAprobadasToFuncionarioPorPeriodo(String periodoAcademico) {
         // Buscar en historial completo, no solo último estado
-        return solicitudHomologacionRepository.findByEstadoEnHistorialAndPeriodoAcademico("APROBADA_FUNCIONARIO", periodoAcademico).stream()
+        return solicitudHomologacionRepository.findByEstadoEnHistorialAndPeriodoAcademico(EstadosSolicitud.APROBADA_FUNCIONARIO.textoGuardado(), periodoAcademico).stream()
                 .map(entity -> mapper.map(entity, SolicitudHomologacion.class))
                 .toList();
     }
@@ -148,7 +149,7 @@ public class GestionarSolicitudHomologacionGatewayImplAdapter implements Gestion
     @Override
     public List<SolicitudHomologacion> listarSolicitudesAprobadasToCoordinador() {
         // Solicitudes que el coordinador ya procesó (aprobó) - buscar en historial completo
-        return solicitudHomologacionRepository.findByEstadoEnHistorialAndPeriodoAcademico("APROBADA_COORDINADOR", null).stream()
+        return solicitudHomologacionRepository.findByEstadoEnHistorialAndPeriodoAcademico(EstadosSolicitud.APROBADA_COORDINADOR.textoGuardado(), null).stream()
                 .map(entity -> mapper.map(entity, SolicitudHomologacion.class))
                 .toList();
     }
@@ -159,7 +160,7 @@ public class GestionarSolicitudHomologacionGatewayImplAdapter implements Gestion
             return listarSolicitudesAprobadasToCoordinador();
         }
         // Buscar en historial completo, no solo último estado
-        return solicitudHomologacionRepository.findByEstadoEnHistorialAndProgramaAndPeriodoAcademico("APROBADA_COORDINADOR", idPrograma, null).stream()
+        return solicitudHomologacionRepository.findByEstadoEnHistorialAndProgramaAndPeriodoAcademico(EstadosSolicitud.APROBADA_COORDINADOR.textoGuardado(), idPrograma, null).stream()
                 .map(entity -> mapper.map(entity, SolicitudHomologacion.class))
                 .toList();
     }
@@ -170,7 +171,7 @@ public class GestionarSolicitudHomologacionGatewayImplAdapter implements Gestion
             return listarSolicitudesAprobadasToCoordinador();
         }
         // Buscar en historial completo, no solo último estado
-        return solicitudHomologacionRepository.findByEstadoEnHistorialAndProgramaAndPeriodoAcademico("APROBADA_COORDINADOR", idPrograma, periodoAcademico).stream()
+        return solicitudHomologacionRepository.findByEstadoEnHistorialAndProgramaAndPeriodoAcademico(EstadosSolicitud.APROBADA_COORDINADOR.textoGuardado(), idPrograma, periodoAcademico).stream()
                 .map(entity -> mapper.map(entity, SolicitudHomologacion.class))
                 .toList();
     }

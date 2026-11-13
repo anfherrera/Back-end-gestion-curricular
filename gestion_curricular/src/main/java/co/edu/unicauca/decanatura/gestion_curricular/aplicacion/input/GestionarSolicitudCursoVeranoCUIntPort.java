@@ -1,5 +1,6 @@
 package co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input;
 
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Enums.EstadoSolicitudCursoVerano;
 import java.util.Date;
 import java.util.List;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Solicitud;
@@ -32,7 +33,7 @@ public interface GestionarSolicitudCursoVeranoCUIntPort {
                            SolicitudCursoVeranoIncripcion inscripcion, String estadoPreinscripcion,
                            String estadoInscripcion) {
         public boolean inscrito() {
-            return "Pago_Validado".equals(estadoInscripcion);
+            return EstadoSolicitudCursoVerano.PAGO_VALIDADO.texto().equals(estadoInscripcion);
         }
     }
 

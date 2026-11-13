@@ -1,5 +1,6 @@
 package co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.controladores;
 
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Enums.EstadoSolicitudCursoVerano;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -103,9 +104,9 @@ public class PreinscripcionesVeranoRestController {
             // Acciones disponibles basadas en el estado
             List<String> accionesDisponibles = new ArrayList<>();
             
-            if ("Aprobado".equals(estadoActual)) {
+            if (EstadoSolicitudCursoVerano.APROBADO.texto().equals(estadoActual)) {
                 accionesDisponibles.add("inscribirse");
-            } else if ("Rechazado".equals(estadoActual)) {
+            } else if (EstadoSolicitudCursoVerano.RECHAZADO.texto().equals(estadoActual)) {
                 accionesDisponibles.add("ver_motivo");
             } else {
                 accionesDisponibles.add("esperando_respuesta");

@@ -1,5 +1,6 @@
 package co.edu.unicauca.decanatura.gestion_curricular.dominio.casosDeUso;
 
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Enums.EstadosSolicitud;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -75,7 +76,7 @@ public class GestionarSolicitudHomologacionCUAdapter implements GestionarSolicit
         asociadorDocumentos.asociar(solicitudGuardada, idUsuario, "homologacion");
 
         EstadoSolicitud estadoInicial = new EstadoSolicitud();
-        estadoInicial.setEstado_actual("Enviada");//Se pone por defecto el estado de Enviada
+        estadoInicial.setEstado_actual(EstadosSolicitud.ENVIADA.textoGuardado());//Se pone por defecto el estado de Enviada
         estadoInicial.setFecha_registro_estado(new Date());
         estadoInicial.setObjSolicitud(solicitudGuardada); // establecer vínculo
             
@@ -190,9 +191,10 @@ public class GestionarSolicitudHomologacionCUAdapter implements GestionarSolicit
                 case "ESTUDIANTE":
                     return solicitud.getObjUsuario().getId_usuario().equals(idUsuario);
                 case "FUNCIONARIO":
-                    return ultimoEstado != null && "ENVIADA".equals(ultimoEstado.getEstado_actual());
+                    // BUG-7: al crear se guarda "Enviada" (textoGuardado), así que comparar con "ENVIADA" nunca coincide.
+                    return ultimoEstado != null && EstadosSolicitud.ENVIADA.name().equals(ultimoEstado.getEstado_actual());
                 case "COORDINADOR":
-                    return ultimoEstado != null && "APROBADA_FUNCIONARIO".equals(ultimoEstado.getEstado_actual());
+                    return ultimoEstado != null && EstadosSolicitud.APROBADA_FUNCIONARIO.textoGuardado().equals(ultimoEstado.getEstado_actual());
                 default:
                     return false;
             }

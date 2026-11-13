@@ -1,5 +1,6 @@
 package co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.gateway;
 
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Enums.EstadosSolicitud;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -41,7 +42,7 @@ public class GestionarSolicitudPazYSalvoGatewayImplAdapter implements GestionarS
 
         // Crear estado inicial
         EstadoSolicitudEntity estadoSolicitudEntity = new EstadoSolicitudEntity();
-        estadoSolicitudEntity.setEstado_actual("Enviada"); // antes quedaba vacío y el caso de uso agregaba un segundo estado
+        estadoSolicitudEntity.setEstado_actual(EstadosSolicitud.ENVIADA.textoGuardado()); // antes quedaba vacío y el caso de uso agregaba un segundo estado
         estadoSolicitudEntity.setFecha_registro_estado(new Date());
         estadoSolicitudEntity.setObjSolicitud(entity);
 
@@ -63,14 +64,14 @@ public class GestionarSolicitudPazYSalvoGatewayImplAdapter implements GestionarS
     @Override
     public List<SolicitudPazYSalvo> listarSolicitudesToFuncionario() {
         // Buscar solo las solicitudes cuyo último estado sea "Enviada"
-        return solicitudRepository.findByUltimoEstado("Enviada").stream()
+        return solicitudRepository.findByUltimoEstado(EstadosSolicitud.ENVIADA.textoGuardado()).stream()
                 .map(entity -> mapper.map(entity, SolicitudPazYSalvo.class))
                 .toList();
     }
 
     @Override
     public List<SolicitudPazYSalvo> listarSolicitudesToCoordinador() {
-        return solicitudRepository.findByUltimoEstado("APROBADA_FUNCIONARIO").stream()
+        return solicitudRepository.findByUltimoEstado(EstadosSolicitud.APROBADA_FUNCIONARIO.textoGuardado()).stream()
                 .map(entity -> mapper.map(entity, SolicitudPazYSalvo.class))
                 .toList();
     }
@@ -80,14 +81,14 @@ public class GestionarSolicitudPazYSalvoGatewayImplAdapter implements GestionarS
         if (idPrograma == null) {
             return listarSolicitudesToCoordinador();
         }
-        return solicitudRepository.findByUltimoEstadoAndPrograma("APROBADA_FUNCIONARIO", idPrograma).stream()
+        return solicitudRepository.findByUltimoEstadoAndPrograma(EstadosSolicitud.APROBADA_FUNCIONARIO.textoGuardado(), idPrograma).stream()
                 .map(entity -> mapper.map(entity, SolicitudPazYSalvo.class))
                 .toList();
     }
 
     @Override
     public List<SolicitudPazYSalvo> listarSolicitudesToSecretaria() {
-        return solicitudRepository.findByUltimoEstado("APROBADA_COORDINADOR").stream()
+        return solicitudRepository.findByUltimoEstado(EstadosSolicitud.APROBADA_COORDINADOR.textoGuardado()).stream()
                 .map(entity -> mapper.map(entity, SolicitudPazYSalvo.class))
                 .toList();
     }
@@ -129,14 +130,14 @@ public class GestionarSolicitudPazYSalvoGatewayImplAdapter implements GestionarS
         if (idPrograma == null) {
             return listarSolicitudesToCoordinador();
         }
-        return solicitudRepository.findByUltimoEstadoAndProgramaAndPeriodoAcademico("APROBADA_FUNCIONARIO", idPrograma, periodoAcademico).stream()
+        return solicitudRepository.findByUltimoEstadoAndProgramaAndPeriodoAcademico(EstadosSolicitud.APROBADA_FUNCIONARIO.textoGuardado(), idPrograma, periodoAcademico).stream()
                 .map(entity -> mapper.map(entity, SolicitudPazYSalvo.class))
                 .toList();
     }
 
     @Override
     public List<SolicitudPazYSalvo> listarSolicitudesToSecretariaPorPeriodo(String periodoAcademico) {
-        return solicitudRepository.findByUltimoEstadoAndPeriodoAcademico("APROBADA_COORDINADOR", periodoAcademico).stream()
+        return solicitudRepository.findByUltimoEstadoAndPeriodoAcademico(EstadosSolicitud.APROBADA_COORDINADOR.textoGuardado(), periodoAcademico).stream()
                 .map(entity -> mapper.map(entity, SolicitudPazYSalvo.class))
                 .toList();
     }

@@ -1,5 +1,6 @@
 package co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.controladores;
 
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Enums.EstadosSolicitud;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.validacion.ArchivoMultipart;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -813,7 +814,7 @@ public class SolicitudPazYSalvoRestController {
         if (solicitud.getEstadosSolicitud() != null && !solicitud.getEstadosSolicitud().isEmpty()) {
             // Buscar el último estado de rechazo
             List<EstadoSolicitud> estadosRechazados = solicitud.getEstadosSolicitud().stream()
-                .filter(estado -> "RECHAZADA".equalsIgnoreCase(estado.getEstado_actual()) || 
+                .filter(estado -> EstadosSolicitud.RECHAZADA.name().equalsIgnoreCase(estado.getEstado_actual()) || 
                                 "RECHAZADO".equalsIgnoreCase(estado.getEstado_actual()))
                 .sorted((a, b) -> b.getFecha_registro_estado().compareTo(a.getFecha_registro_estado()))
                 .collect(java.util.stream.Collectors.toList());

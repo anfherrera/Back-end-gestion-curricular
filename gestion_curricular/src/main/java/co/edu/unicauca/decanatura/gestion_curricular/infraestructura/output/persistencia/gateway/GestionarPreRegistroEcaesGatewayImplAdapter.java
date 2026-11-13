@@ -1,5 +1,6 @@
 package co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.gateway;
 
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Enums.EstadosSolicitud;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -56,14 +57,14 @@ public class GestionarPreRegistroEcaesGatewayImplAdapter implements GestionarPre
 
     @Override
     public List<SolicitudEcaes> listarSolicitudesToFuncionario() {
-        return solicitudEcaesRepository.findByUltimoEstado("Enviada") .stream()
+        return solicitudEcaesRepository.findByUltimoEstado(EstadosSolicitud.ENVIADA.textoGuardado()) .stream()
             .map(entity -> mapper.map(entity, SolicitudEcaes.class))
             .collect(Collectors.toList());
     }
 
     @Override
     public List<SolicitudEcaes> listarSolicitudesToFuncionarioPorPeriodo(String periodoAcademico) {
-        return solicitudEcaesRepository.findByUltimoEstadoAndPeriodoAcademico("Enviada", periodoAcademico).stream()
+        return solicitudEcaesRepository.findByUltimoEstadoAndPeriodoAcademico(EstadosSolicitud.ENVIADA.textoGuardado(), periodoAcademico).stream()
                 .map(entity -> mapper.map(entity, SolicitudEcaes.class))
                 .collect(Collectors.toList());
     }
@@ -73,7 +74,7 @@ public class GestionarPreRegistroEcaesGatewayImplAdapter implements GestionarPre
         if (idPrograma == null) {
             return listar();
         }
-        return solicitudEcaesRepository.findByUltimoEstadoAndProgramaAndPeriodoAcademico("APROBADA_FUNCIONARIO", idPrograma, periodoAcademico).stream()
+        return solicitudEcaesRepository.findByUltimoEstadoAndProgramaAndPeriodoAcademico(EstadosSolicitud.APROBADA_FUNCIONARIO.textoGuardado(), idPrograma, periodoAcademico).stream()
                 .map(entity -> mapper.map(entity, SolicitudEcaes.class))
                 .collect(Collectors.toList());
     }

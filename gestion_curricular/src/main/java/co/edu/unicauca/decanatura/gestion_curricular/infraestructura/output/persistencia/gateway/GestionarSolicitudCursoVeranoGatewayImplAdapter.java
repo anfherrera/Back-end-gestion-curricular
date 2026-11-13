@@ -1,5 +1,6 @@
 package co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.gateway;
 
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Enums.EstadoSolicitudCursoVerano;
 import java.util.Date;
 import java.util.List;
 import java.util.ArrayList;
@@ -84,7 +85,7 @@ public class GestionarSolicitudCursoVeranoGatewayImplAdapter implements Gestiona
 
         estadoSolicitudEntity = new EstadoSolicitudEntity();
         estadoSolicitudEntity.setFecha_registro_estado(new Date());
-        estadoSolicitudEntity.setEstado_actual("Enviada");
+        estadoSolicitudEntity.setEstado_actual(EstadoSolicitudCursoVerano.ENVIADA.texto());
         estadoSolicitudEntity.setObjSolicitud(solicitudCursoVeranoEntity);
         
         List<EstadoSolicitudEntity> estadosSolcitud = solicitudCursoVeranoEntity.getEstadosSolicitud();
@@ -168,7 +169,7 @@ public class GestionarSolicitudCursoVeranoGatewayImplAdapter implements Gestiona
         
         estadoSolicitudEntity = new EstadoSolicitudEntity();
         estadoSolicitudEntity.setFecha_registro_estado(new Date());
-        estadoSolicitudEntity.setEstado_actual("Enviada");
+        estadoSolicitudEntity.setEstado_actual(EstadoSolicitudCursoVerano.ENVIADA.texto());
         estadoSolicitudEntity.setObjSolicitud(solicitudCursoVeranoEntity);
         
         List<EstadoSolicitudEntity> estadosSolcitud = solicitudCursoVeranoEntity.getEstadosSolicitud();
@@ -317,7 +318,7 @@ public class GestionarSolicitudCursoVeranoGatewayImplAdapter implements Gestiona
         // Crear nuevo estado "Aprobado"
         EstadoSolicitudEntity estadoEntity = new EstadoSolicitudEntity();
         estadoEntity.setFecha_registro_estado(new Date());
-        estadoEntity.setEstado_actual("Aprobado");
+        estadoEntity.setEstado_actual(EstadoSolicitudCursoVerano.APROBADO.texto());
         estadoEntity.setObjSolicitud(solicitudEntity);
         if (comentarios != null && !comentarios.trim().isEmpty()) {
             estadoEntity.setComentario(comentarios.trim());
@@ -355,7 +356,7 @@ public class GestionarSolicitudCursoVeranoGatewayImplAdapter implements Gestiona
         // Crear nuevo estado "Rechazado"
         EstadoSolicitudEntity estadoEntity = new EstadoSolicitudEntity();
         estadoEntity.setFecha_registro_estado(new Date());
-        estadoEntity.setEstado_actual("Rechazado");
+        estadoEntity.setEstado_actual(EstadoSolicitudCursoVerano.RECHAZADO.texto());
         estadoEntity.setObjSolicitud(solicitudEntity);
         estadoEntity.setComentario(motivo.trim());
         
@@ -393,7 +394,7 @@ public class GestionarSolicitudCursoVeranoGatewayImplAdapter implements Gestiona
         // Crear nuevo estado según validación
         EstadoSolicitudEntity estadoEntity = new EstadoSolicitudEntity();
         estadoEntity.setFecha_registro_estado(new Date());
-        estadoEntity.setEstado_actual(esValido ? "Pago_Validado" : "Pago_Rechazado");
+        estadoEntity.setEstado_actual(esValido ? EstadoSolicitudCursoVerano.PAGO_VALIDADO.texto() : EstadoSolicitudCursoVerano.PAGO_RECHAZADO.texto());
         estadoEntity.setObjSolicitud(solicitudEntity);
         if (observaciones != null && !observaciones.trim().isEmpty()) {
             estadoEntity.setComentario(observaciones.trim());
@@ -423,7 +424,7 @@ public class GestionarSolicitudCursoVeranoGatewayImplAdapter implements Gestiona
         // Crear nuevo estado "Inscripcion_Completada"
         EstadoSolicitudEntity estadoEntity = new EstadoSolicitudEntity();
         estadoEntity.setFecha_registro_estado(new Date());
-        estadoEntity.setEstado_actual("Inscripcion_Completada");
+        estadoEntity.setEstado_actual(EstadoSolicitudCursoVerano.INSCRIPCION_COMPLETADA.texto());
         estadoEntity.setObjSolicitud(solicitudEntity);
         
         // Guardar el estado
@@ -526,9 +527,15 @@ public class GestionarSolicitudCursoVeranoGatewayImplAdapter implements Gestiona
         return ESTADOS_INSCRIPCION_QUE_OCUPAN_CUPO.contains(estados.get(estados.size() - 1).getEstado_actual());
     }
 
-    /** Estados (último estado de la inscripción) que cuentan como cupo ocupado. */
-    public static final java.util.List<String> ESTADOS_INSCRIPCION_QUE_OCUPAN_CUPO =
-            java.util.List.of("Pago_Validado", "Inscripcion_Completada", "APROBADA", "Aprobada", "Aprobado");
+    /**
+     * Estados (último estado de la inscripción) que cuentan como cupo ocupado.
+     * "APROBADA" y "Aprobada" son variantes antiguas que el código ya no escribe; se siguen aceptando al leer.
+     */
+    public static final java.util.List<String> ESTADOS_INSCRIPCION_QUE_OCUPAN_CUPO = java.util.List.of(
+            EstadoSolicitudCursoVerano.PAGO_VALIDADO.texto(),
+            EstadoSolicitudCursoVerano.INSCRIPCION_COMPLETADA.texto(),
+            "APROBADA", "Aprobada",
+            EstadoSolicitudCursoVerano.APROBADO.texto());
 
     @Override
     @Transactional(readOnly = true)

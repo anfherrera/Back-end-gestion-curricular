@@ -1,5 +1,7 @@
 package co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos;
 
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Enums.EstadosSolicitud;
+
 import java.text.Normalizer;
 import java.util.HashMap;
 import java.util.List;
@@ -27,12 +29,13 @@ import java.util.Set;
  */
 public final class FlujoEstadosSolicitud {
 
-    public static final String ENVIADA = "ENVIADA";
-    public static final String APROBADA_FUNCIONARIO = "APROBADA_FUNCIONARIO";
-    public static final String APROBADA_COORDINADOR = "APROBADA_COORDINADOR";
-    public static final String APROBADA = "APROBADA";
-    public static final String RECHAZADA = "RECHAZADA";
-    public static final String PRE_REGISTRADO = "PRE_REGISTRADO";
+    // Formas canónicas de EstadosSolicitud, como texto para los mapas del flujo.
+    public static final String ENVIADA = EstadosSolicitud.ENVIADA.name();
+    public static final String APROBADA_FUNCIONARIO = EstadosSolicitud.APROBADA_FUNCIONARIO.name();
+    public static final String APROBADA_COORDINADOR = EstadosSolicitud.APROBADA_COORDINADOR.name();
+    public static final String APROBADA = EstadosSolicitud.APROBADA.name();
+    public static final String RECHAZADA = EstadosSolicitud.RECHAZADA.name();
+    public static final String PRE_REGISTRADO = EstadosSolicitud.PRE_REGISTRADO.name();
 
     public static final String FUNCIONARIO = "Funcionario";
     public static final String COORDINADOR = "Coordinador";

@@ -1,5 +1,6 @@
 package co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.gateway;
 
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Enums.EstadosSolicitud;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -77,8 +78,8 @@ public class GestionarEstadisticasGatewayImplAdapter implements GestionarEstadis
         }
         EstadisticaEntity estadisticaEntity = estadisticaMapper.map(estadistica, EstadisticaEntity.class);
         estadisticaEntity.setTotal_solicitudes(solicitudRepository.totalSolicitudes());
-        estadisticaEntity.setTotal_aprobadas(solicitudRepository.contarEstado("APROBADA"));
-        estadisticaEntity.setTotal_rechazadas(solicitudRepository.contarEstado("RECHAZADA"));
+        estadisticaEntity.setTotal_aprobadas(solicitudRepository.contarEstado(EstadosSolicitud.APROBADA.textoGuardado()));
+        estadisticaEntity.setTotal_rechazadas(solicitudRepository.contarEstado(EstadosSolicitud.RECHAZADA.textoGuardado()));
         estadisticaEntity.setNombres_procesos(new ArrayList<String>(solicitudRepository.buscarNombresSolicitudes()));
         estadisticaEntity.setPeriodos_academico(new ArrayList<Date>());
         estadisticaEntity.setNombres_programas(new ArrayList<String>(programaRepository.buscarNombresProgramas()));
@@ -93,8 +94,8 @@ public class GestionarEstadisticasGatewayImplAdapter implements GestionarEstadis
             .orElseThrow(() -> new RuntimeException("Estadistica no encontrada con ID: " + estadistica.getId_estadistica()));
         EstadisticaEntity estadisticaEntity = estadisticaMapper.map(estadistica, EstadisticaEntity.class);
         estadisticaEntity.setTotal_solicitudes(solicitudRepository.totalSolicitudes());
-        estadisticaEntity.setTotal_aprobadas(solicitudRepository.contarEstado("APROBADA"));
-        estadisticaEntity.setTotal_rechazadas(solicitudRepository.contarEstado("RECHAZADA"));
+        estadisticaEntity.setTotal_aprobadas(solicitudRepository.contarEstado(EstadosSolicitud.APROBADA.textoGuardado()));
+        estadisticaEntity.setTotal_rechazadas(solicitudRepository.contarEstado(EstadosSolicitud.RECHAZADA.textoGuardado()));
         estadisticaEntity.setNombres_procesos(new ArrayList<String>(solicitudRepository.buscarNombresSolicitudes()));
         estadisticaEntity.setPeriodos_academico(new ArrayList<Date>());
         estadisticaEntity.setNombres_programas(new ArrayList<String>(programaRepository.buscarNombresProgramas()));
@@ -151,8 +152,8 @@ public class GestionarEstadisticasGatewayImplAdapter implements GestionarEstadis
                 Estadistica estadistica = new Estadistica();
                 estadistica.setNombre(proceso);
                 estadistica.setTotal_solicitudes(solicitudRepository.contarNombreFechaYPrograma(proceso, fechaInicio, fechaFin, idPrograma));
-                estadistica.setTotal_aprobadas(solicitudRepository.contarNombreFechaEstadoYPrograma(proceso, fechaInicio, fechaFin, "APROBADA", idPrograma));
-                estadistica.setTotal_rechazadas(solicitudRepository.contarNombreFechaEstadoYPrograma(proceso, fechaInicio, fechaFin, "RECHAZADA", idPrograma));
+                estadistica.setTotal_aprobadas(solicitudRepository.contarNombreFechaEstadoYPrograma(proceso, fechaInicio, fechaFin, EstadosSolicitud.APROBADA.textoGuardado(), idPrograma));
+                estadistica.setTotal_rechazadas(solicitudRepository.contarNombreFechaEstadoYPrograma(proceso, fechaInicio, fechaFin, EstadosSolicitud.RECHAZADA.textoGuardado(), idPrograma));
                 estadisticas.add(estadistica);
             }
         }

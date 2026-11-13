@@ -1,5 +1,6 @@
 package co.edu.unicauca.decanatura.gestion_curricular.dominio.servicios.estadisticas;
 
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Enums.EstadosSolicitud;
 import static co.edu.unicauca.decanatura.gestion_curricular.dominio.servicios.estadisticas.ReglasEstadisticas.ESTADOS;
 import static co.edu.unicauca.decanatura.gestion_curricular.dominio.servicios.estadisticas.ReglasEstadisticas.PROCESOS;
 import static co.edu.unicauca.decanatura.gestion_curricular.dominio.servicios.estadisticas.ReglasEstadisticas.enRango;
@@ -57,23 +58,23 @@ public class EstadisticasGenerales {
         int totalEnviadas;
 
         if (proceso == null && idPrograma == null && fechaInicio == null && fechaFin == null) {
-            totalAprobadas = datos.contarSolicitudesPorEstado("APROBADA");
-            totalRechazadas = datos.contarSolicitudesPorEstado("RECHAZADA");
-            enProcesoFuncionario = datos.contarSolicitudesPorEstado("APROBADA_FUNCIONARIO");
-            enProcesoCoordinador = datos.contarSolicitudesPorEstado("APROBADA_COORDINADOR");
+            totalAprobadas = datos.contarSolicitudesPorEstado(EstadosSolicitud.APROBADA.name());
+            totalRechazadas = datos.contarSolicitudesPorEstado(EstadosSolicitud.RECHAZADA.name());
+            enProcesoFuncionario = datos.contarSolicitudesPorEstado(EstadosSolicitud.APROBADA_FUNCIONARIO.name());
+            enProcesoCoordinador = datos.contarSolicitudesPorEstado(EstadosSolicitud.APROBADA_COORDINADOR.name());
             // PRE_REGISTRADO se trata como ENVIADA para estadísticas
-            totalEnviadas = datos.contarSolicitudesPorEstado("ENVIADA") + datos.contarSolicitudesPorEstado("PRE_REGISTRADO");
+            totalEnviadas = datos.contarSolicitudesPorEstado(EstadosSolicitud.ENVIADA.name()) + datos.contarSolicitudesPorEstado(EstadosSolicitud.PRE_REGISTRADO.name());
 
             totalSolicitudes = totalAprobadas + totalRechazadas + enProcesoFuncionario + enProcesoCoordinador + totalEnviadas;
             if (totalSolicitudes == 0) {
                 totalSolicitudes = datos.contarTotalSolicitudes();
             }
         } else {
-            totalAprobadas = datos.contarSolicitudesPorEstadoConFiltros("APROBADA", proceso, idPrograma, fechaInicio, fechaFin);
-            totalRechazadas = datos.contarSolicitudesPorEstadoConFiltros("RECHAZADA", proceso, idPrograma, fechaInicio, fechaFin);
-            enProcesoFuncionario = datos.contarSolicitudesPorEstadoConFiltros("APROBADA_FUNCIONARIO", proceso, idPrograma, fechaInicio, fechaFin);
-            enProcesoCoordinador = datos.contarSolicitudesPorEstadoConFiltros("APROBADA_COORDINADOR", proceso, idPrograma, fechaInicio, fechaFin);
-            totalEnviadas = datos.contarSolicitudesPorEstadoConFiltros("ENVIADA", proceso, idPrograma, fechaInicio, fechaFin);
+            totalAprobadas = datos.contarSolicitudesPorEstadoConFiltros(EstadosSolicitud.APROBADA.name(), proceso, idPrograma, fechaInicio, fechaFin);
+            totalRechazadas = datos.contarSolicitudesPorEstadoConFiltros(EstadosSolicitud.RECHAZADA.name(), proceso, idPrograma, fechaInicio, fechaFin);
+            enProcesoFuncionario = datos.contarSolicitudesPorEstadoConFiltros(EstadosSolicitud.APROBADA_FUNCIONARIO.name(), proceso, idPrograma, fechaInicio, fechaFin);
+            enProcesoCoordinador = datos.contarSolicitudesPorEstadoConFiltros(EstadosSolicitud.APROBADA_COORDINADOR.name(), proceso, idPrograma, fechaInicio, fechaFin);
+            totalEnviadas = datos.contarSolicitudesPorEstadoConFiltros(EstadosSolicitud.ENVIADA.name(), proceso, idPrograma, fechaInicio, fechaFin);
 
             totalSolicitudes = datos.contarSolicitudesConFiltros(proceso, idPrograma, fechaInicio, fechaFin);
             if (totalSolicitudes == 0) {
@@ -125,11 +126,11 @@ public class EstadisticasGenerales {
         estadisticas.put("porPrograma", porPrograma);
 
         Map<String, Integer> porEstado = new HashMap<>();
-        porEstado.put("APROBADA", totalAprobadas);
-        porEstado.put("RECHAZADA", totalRechazadas);
-        porEstado.put("APROBADA_FUNCIONARIO", enProcesoFuncionario);
-        porEstado.put("APROBADA_COORDINADOR", enProcesoCoordinador);
-        porEstado.put("ENVIADA", totalEnviadas);
+        porEstado.put(EstadosSolicitud.APROBADA.name(), totalAprobadas);
+        porEstado.put(EstadosSolicitud.RECHAZADA.name(), totalRechazadas);
+        porEstado.put(EstadosSolicitud.APROBADA_FUNCIONARIO.name(), enProcesoFuncionario);
+        porEstado.put(EstadosSolicitud.APROBADA_COORDINADOR.name(), enProcesoCoordinador);
+        porEstado.put(EstadosSolicitud.ENVIADA.name(), totalEnviadas);
         estadisticas.put("porEstado", porEstado);
         estadisticas.put("fechaConsulta", new Date());
         return normalizarEstadistica(estadisticas);
@@ -159,15 +160,15 @@ public class EstadisticasGenerales {
         }
 
         int total = solicitudes.size();
-        int aprobadas = porEstado.getOrDefault("APROBADA", 0);
+        int aprobadas = porEstado.getOrDefault(EstadosSolicitud.APROBADA.name(), 0);
 
         Map<String, Object> r = new HashMap<>();
         r.put("totalSolicitudes", total);
         r.put("totalAprobadas", aprobadas);
-        r.put("totalRechazadas", porEstado.getOrDefault("RECHAZADA", 0));
-        r.put("totalEnProceso", porEstado.getOrDefault("APROBADA_FUNCIONARIO", 0)
-                + porEstado.getOrDefault("APROBADA_COORDINADOR", 0));
-        r.put("totalEnviadas", porEstado.getOrDefault("ENVIADA", 0));
+        r.put("totalRechazadas", porEstado.getOrDefault(EstadosSolicitud.RECHAZADA.name(), 0));
+        r.put("totalEnProceso", porEstado.getOrDefault(EstadosSolicitud.APROBADA_FUNCIONARIO.name(), 0)
+                + porEstado.getOrDefault(EstadosSolicitud.APROBADA_COORDINADOR.name(), 0));
+        r.put("totalEnviadas", porEstado.getOrDefault(EstadosSolicitud.ENVIADA.name(), 0));
         r.put("porcentajeAprobacion", total > 0 ? Math.round(aprobadas * 1000.0 / total) / 10.0 : 0.0);
         r.put("porEstado", porEstado);
         r.put("porTipoProceso", porTipoProceso);
@@ -205,7 +206,7 @@ public class EstadisticasGenerales {
         Map<String, Object> estadisticas = agregar(conEstado);
         estadisticas.put("estado", estado);
         estadisticas.put("porEstado", new HashMap<>()); // Vacío para estado específico
-        estadisticas.put("porcentajeAprobacion", "APROBADA".equals(estadoNormalizado) && !conEstado.isEmpty() ? 100.0 : 0.0);
+        estadisticas.put("porcentajeAprobacion", EstadosSolicitud.APROBADA.name().equals(estadoNormalizado) && !conEstado.isEmpty() ? 100.0 : 0.0);
         estadisticas.put("descripcionEstado", PresentacionEstadisticas.descripcionEstado(estado));
         return normalizarEstadistica(estadisticas);
     }
@@ -333,10 +334,10 @@ public class EstadisticasGenerales {
         Map<String, Integer> porPrograma = new HashMap<>();
 
         for (Solicitud solicitud : solicitudes) {
-            switch (estadoActual(solicitud)) {
-                case "APROBADA" -> totalAprobadas++;
-                case "RECHAZADA" -> totalRechazadas++;
-                case "ENVIADA" -> totalEnviadas++;
+            switch (EstadosSolicitud.valueOf(estadoActual(solicitud))) {
+                case APROBADA -> totalAprobadas++;
+                case RECHAZADA -> totalRechazadas++;
+                case ENVIADA -> totalEnviadas++;
                 default -> totalEnProceso++; // APROBADA_FUNCIONARIO y APROBADA_COORDINADOR
             }
             String proceso = tipoProceso(solicitud);
@@ -376,15 +377,15 @@ public class EstadisticasGenerales {
         }
 
         int total = delProceso.size();
-        int totalAprobadas = porEstado.get("APROBADA");
+        int totalAprobadas = porEstado.get(EstadosSolicitud.APROBADA.name());
         double porcentajeAprobacion = total > 0 ? (totalAprobadas * 100.0) / total : 0.0;
 
         Map<String, Object> estadisticas = new HashMap<>();
         estadisticas.put("tipoProceso", tipoProceso);
         estadisticas.put("totalSolicitudes", total);
         estadisticas.put("totalAprobadas", totalAprobadas);
-        estadisticas.put("totalRechazadas", porEstado.get("RECHAZADA"));
-        estadisticas.put("totalEnProceso", porEstado.get("APROBADA_FUNCIONARIO") + porEstado.get("APROBADA_COORDINADOR"));
+        estadisticas.put("totalRechazadas", porEstado.get(EstadosSolicitud.RECHAZADA.name()));
+        estadisticas.put("totalEnProceso", porEstado.get(EstadosSolicitud.APROBADA_FUNCIONARIO.name()) + porEstado.get(EstadosSolicitud.APROBADA_COORDINADOR.name()));
         estadisticas.put("porcentajeAprobacion", Math.round(porcentajeAprobacion * 10.0) / 10.0);
         estadisticas.put("porEstado", porEstado);
         estadisticas.put("porTipoProceso", new HashMap<>());
@@ -413,15 +414,15 @@ public class EstadisticasGenerales {
         }
 
         int total = conEstado.size();
-        boolean enProceso = estado.equals("APROBADA_FUNCIONARIO") || estado.equals("APROBADA_COORDINADOR");
+        boolean enProceso = estado.equals(EstadosSolicitud.APROBADA_FUNCIONARIO.name()) || estado.equals(EstadosSolicitud.APROBADA_COORDINADOR.name());
 
         Map<String, Object> estadisticas = new HashMap<>();
         estadisticas.put("estado", estado);
         estadisticas.put("totalSolicitudes", total);
-        estadisticas.put("totalAprobadas", estado.equals("APROBADA") ? total : 0);
-        estadisticas.put("totalRechazadas", estado.equals("RECHAZADA") ? total : 0);
+        estadisticas.put("totalAprobadas", estado.equals(EstadosSolicitud.APROBADA.name()) ? total : 0);
+        estadisticas.put("totalRechazadas", estado.equals(EstadosSolicitud.RECHAZADA.name()) ? total : 0);
         estadisticas.put("totalEnProceso", enProceso ? total : 0);
-        estadisticas.put("porcentajeAprobacion", estado.equals("APROBADA") ? 100.0 : 0.0);
+        estadisticas.put("porcentajeAprobacion", estado.equals(EstadosSolicitud.APROBADA.name()) ? 100.0 : 0.0);
         estadisticas.put("porTipoProceso", porTipoProceso);
         estadisticas.put("porPrograma", porPrograma);
         estadisticas.put("porEstado", new HashMap<>());

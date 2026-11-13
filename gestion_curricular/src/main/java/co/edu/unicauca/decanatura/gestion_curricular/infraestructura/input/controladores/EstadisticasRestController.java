@@ -1,5 +1,6 @@
 package co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.controladores;
 
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Enums.EstadosSolicitud;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarEstadisticasCUIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Estadistica;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.DTORespuesta.EstadisticaDTORespuesta;
@@ -349,7 +350,7 @@ public class EstadisticasRestController {
                         Object porEstadoObj = statsProceso.get("porEstado");
                         int totalEnviadas = 0;
                         if (porEstadoObj instanceof Map) {
-                            Object env = ((Map<?, ?>) porEstadoObj).get("ENVIADA");
+                            Object env = ((Map<?, ?>) porEstadoObj).get(EstadosSolicitud.ENVIADA.name());
                             totalEnviadas = env instanceof Number ? ((Number) env).intValue() : 0;
                         }
                         estadisticasGlobales.put("totalEnviadas", totalEnviadas);
@@ -535,7 +536,7 @@ public class EstadisticasRestController {
         estadisticasGlobales.put("totalRechazadas", statsProceso.getOrDefault("totalRechazadas", 0));
         estadisticasGlobales.put("totalEnProceso", statsProceso.getOrDefault("totalEnProceso", 0));
         int totalEnviadas = 0;
-        if (statsProceso.get("porEstado") instanceof Map<?, ?> porEstado && porEstado.get("ENVIADA") instanceof Number env) {
+        if (statsProceso.get("porEstado") instanceof Map<?, ?> porEstado && porEstado.get(EstadosSolicitud.ENVIADA.name()) instanceof Number env) {
             totalEnviadas = env.intValue();
         }
         estadisticasGlobales.put("totalEnviadas", totalEnviadas);

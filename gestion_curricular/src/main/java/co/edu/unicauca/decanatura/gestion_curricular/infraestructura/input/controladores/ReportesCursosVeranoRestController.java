@@ -1,5 +1,6 @@
 package co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.controladores;
 
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Enums.EstadoSolicitudCursoVerano;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -190,7 +191,7 @@ public class ReportesCursosVeranoRestController {
                     }
                     
                     // Estado de la preinscripcion
-                    String estadoPreinscripcion = "Enviada";
+                    String estadoPreinscripcion = EstadoSolicitudCursoVerano.ENVIADA.texto();
                     if (preinscripcion.getEstadosSolicitud() != null && !preinscripcion.getEstadosSolicitud().isEmpty()) {
                         estadoPreinscripcion = preinscripcion.getEstadosSolicitud().get(preinscripcion.getEstadosSolicitud().size() - 1).getEstado_actual();
                     }
@@ -224,7 +225,7 @@ public class ReportesCursosVeranoRestController {
                     }
                     
                     // Estado de la inscripcion
-                    String estadoInscripcion = "Enviada";
+                    String estadoInscripcion = EstadoSolicitudCursoVerano.ENVIADA.texto();
                     if (inscripcion.getEstadosSolicitud() != null && !inscripcion.getEstadosSolicitud().isEmpty()) {
                         estadoInscripcion = inscripcion.getEstadosSolicitud().get(inscripcion.getEstadosSolicitud().size() - 1).getEstado_actual();
                     }
@@ -407,15 +408,15 @@ public class ReportesCursosVeranoRestController {
                     String estadoPreinscripcion = preinscripcion.getEstadosSolicitud() != null && !preinscripcion.getEstadosSolicitud().isEmpty() 
                         ? preinscripcion.getEstadosSolicitud().get(preinscripcion.getEstadosSolicitud().size() - 1).getEstado_actual() : "Enviado";
                     
-                    if ("Aprobado".equals(estadoPreinscripcion)) {
+                    if (EstadoSolicitudCursoVerano.APROBADO.texto().equals(estadoPreinscripcion)) {
                         if ("Inscripcion".equals(estadoCurso)) {
                             accionesDisponibles.add("proceder_inscripcion");
                         } else {
                             accionesDisponibles.add("esperando_inscripcion");
                         }
-                    } else if ("Enviada".equals(estadoPreinscripcion)) {
+                    } else if (EstadoSolicitudCursoVerano.ENVIADA.texto().equals(estadoPreinscripcion)) {
                         accionesDisponibles.add("esperando_aprobacion");
-                    } else if ("Rechazada".equals(estadoPreinscripcion)) {
+                    } else if ("Rechazada".equals(estadoPreinscripcion)) { // BUG-8: se guarda "Rechazado", nunca coincide
                         accionesDisponibles.add("revisar_motivo_rechazo");
                     }
                 } else {
@@ -423,9 +424,9 @@ public class ReportesCursosVeranoRestController {
                     String estadoPreinscripcion = preinscripcion.getEstadosSolicitud() != null && !preinscripcion.getEstadosSolicitud().isEmpty() 
                         ? preinscripcion.getEstadosSolicitud().get(preinscripcion.getEstadosSolicitud().size() - 1).getEstado_actual() : "Enviado";
                     
-                    if ("Enviada".equals(estadoPreinscripcion)) {
+                    if (EstadoSolicitudCursoVerano.ENVIADA.texto().equals(estadoPreinscripcion)) {
                         accionesDisponibles.add("esperando_aprobacion_curso");
-                    } else if ("Aprobado".equals(estadoPreinscripcion)) {
+                    } else if (EstadoSolicitudCursoVerano.APROBADO.texto().equals(estadoPreinscripcion)) {
                         accionesDisponibles.add("curso_aprobado_esperando_apertura");
                     }
                 }
@@ -455,7 +456,7 @@ public class ReportesCursosVeranoRestController {
                 inscripcionMap.put("fecha", inscripcion.getFecha_registro_solicitud());
                 
                 // Obtener el estado actual de la inscripcion
-                String estadoInscripcion = "Enviada";
+                String estadoInscripcion = EstadoSolicitudCursoVerano.ENVIADA.texto();
                 if (inscripcion.getEstadosSolicitud() != null && !inscripcion.getEstadosSolicitud().isEmpty()) {
                     estadoInscripcion = inscripcion.getEstadosSolicitud().get(inscripcion.getEstadosSolicitud().size() - 1).getEstado_actual();
                 }
@@ -478,28 +479,28 @@ public class ReportesCursosVeranoRestController {
                 
                 // Mapear estadoCurso basado en el estado de la inscripcion
                 String estadoCurso = "PENDIENTE";
-                if ("Pago_Validado".equals(estadoInscripcion)) {
+                if (EstadoSolicitudCursoVerano.PAGO_VALIDADO.texto().equals(estadoInscripcion)) {
                     estadoCurso = "INSCRITO";
-                } else if ("Inscripcion_Completada".equals(estadoInscripcion)) {
+                } else if (EstadoSolicitudCursoVerano.INSCRIPCION_COMPLETADA.texto().equals(estadoInscripcion)) {
                     estadoCurso = "ACTIVO";
                 } else if ("Curso_Aprobado".equals(estadoInscripcion)) {
                     estadoCurso = "APROBADO";
                 } else if ("Curso_Finalizado".equals(estadoInscripcion)) {
                     estadoCurso = "FINALIZADO";
-                } else if ("Enviada".equals(estadoInscripcion)) {
+                } else if (EstadoSolicitudCursoVerano.ENVIADA.texto().equals(estadoInscripcion)) {
                     estadoCurso = "PENDIENTE";
-                } else if ("Pago_Rechazado".equals(estadoInscripcion)) {
+                } else if (EstadoSolicitudCursoVerano.PAGO_RECHAZADO.texto().equals(estadoInscripcion)) {
                     estadoCurso = "RECHAZADO";
                 }
                 inscripcionMap.put("estadoCurso", estadoCurso);
                 
                 // Determinar acciones disponibles basadas en el estado
                 List<String> accionesDisponibles = new ArrayList<>();
-                if ("Enviada".equals(estadoInscripcion)) {
+                if (EstadoSolicitudCursoVerano.ENVIADA.texto().equals(estadoInscripcion)) {
                     accionesDisponibles.add("esperando_validacion_pago");
-                } else if ("Pago_Validado".equals(estadoInscripcion)) {
+                } else if (EstadoSolicitudCursoVerano.PAGO_VALIDADO.texto().equals(estadoInscripcion)) {
                     accionesDisponibles.add("inscripcion_aceptada");
-                } else if ("Pago_Rechazado".equals(estadoInscripcion)) {
+                } else if (EstadoSolicitudCursoVerano.PAGO_RECHAZADO.texto().equals(estadoInscripcion)) {
                     accionesDisponibles.add("pago_rechazado");
                 }
                 

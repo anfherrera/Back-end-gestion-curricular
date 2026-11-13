@@ -1,5 +1,6 @@
 package co.edu.unicauca.decanatura.gestion_curricular.dominio.servicios.estadisticas;
 
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Enums.EstadosSolicitud;
 import static co.edu.unicauca.decanatura.gestion_curricular.dominio.servicios.estadisticas.ReglasEstadisticas.MESES;
 import static co.edu.unicauca.decanatura.gestion_curricular.dominio.servicios.estadisticas.ReglasEstadisticas.estadoActual;
 import static co.edu.unicauca.decanatura.gestion_curricular.dominio.servicios.estadisticas.ReglasEstadisticas.mesDeRegistro;
@@ -113,7 +114,7 @@ public class EstadisticasCursosVerano {
         List<Map<String, Object>> analisisPorPrograma = ranking(demandaPorPrograma, total, Long.MAX_VALUE);
 
         // Tasa de aprobación: solo las completamente aprobadas, no las en proceso
-        int aprobadas = porEstado.getOrDefault("APROBADA", 0);
+        int aprobadas = porEstado.getOrDefault(EstadosSolicitud.APROBADA.name(), 0);
         double tasaAprobacion = total > 0 ? (aprobadas * 100.0) / total : 0.0;
 
         Map<String, Object> predicciones = prediccionDemanda.generar(
@@ -124,12 +125,12 @@ public class EstadisticasCursosVerano {
                 (List<Map<String, Object>>) predicciones.getOrDefault("recomendaciones", new ArrayList<>());
 
         // Estados con la misma forma que /estado-solicitudes; "EN_PROCESO" junta funcionario y coordinador
-        int enProceso = porEstado.getOrDefault("APROBADA_FUNCIONARIO", 0) + porEstado.getOrDefault("APROBADA_COORDINADOR", 0);
+        int enProceso = porEstado.getOrDefault(EstadosSolicitud.APROBADA_FUNCIONARIO.name(), 0) + porEstado.getOrDefault(EstadosSolicitud.APROBADA_COORDINADOR.name(), 0);
         Map<String, Integer> estadosSolicitudes = new HashMap<>();
-        estadosSolicitudes.put("APROBADA", aprobadas);
-        estadosSolicitudes.put("ENVIADA", porEstado.getOrDefault("ENVIADA", 0));
+        estadosSolicitudes.put(EstadosSolicitud.APROBADA.name(), aprobadas);
+        estadosSolicitudes.put(EstadosSolicitud.ENVIADA.name(), porEstado.getOrDefault(EstadosSolicitud.ENVIADA.name(), 0));
         estadosSolicitudes.put("EN_PROCESO", enProceso);
-        estadosSolicitudes.put("RECHAZADA", porEstado.getOrDefault("RECHAZADA", 0));
+        estadosSolicitudes.put(EstadosSolicitud.RECHAZADA.name(), porEstado.getOrDefault(EstadosSolicitud.RECHAZADA.name(), 0));
 
         Map<String, Object> estadosEstructurados = new HashMap<>();
         estadosSolicitudes.forEach((estado, cantidad) -> {

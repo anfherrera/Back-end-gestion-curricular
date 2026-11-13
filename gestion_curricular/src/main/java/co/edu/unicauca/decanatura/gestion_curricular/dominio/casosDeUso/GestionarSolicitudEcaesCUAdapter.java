@@ -1,5 +1,6 @@
 package co.edu.unicauca.decanatura.gestion_curricular.dominio.casosDeUso;
 
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Enums.EstadosSolicitud;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -81,7 +82,7 @@ public class GestionarSolicitudEcaesCUAdapter implements GestionarSolicitudEcaes
             SolicitudEcaes solicitudGuardada = this.objGestionarSolicitudEcaesGateway.guardar(solicitud);
 
             EstadoSolicitud estadoInicial = new EstadoSolicitud();
-            estadoInicial.setEstado_actual("Enviada");//Se pone por defecto el estado de Enviada
+            estadoInicial.setEstado_actual(EstadosSolicitud.ENVIADA.textoGuardado());//Se pone por defecto el estado de Enviada
             estadoInicial.setFecha_registro_estado(new Date());
             estadoInicial.setObjSolicitud(solicitudGuardada); // establecer vínculo
             
@@ -187,7 +188,8 @@ public class GestionarSolicitudEcaesCUAdapter implements GestionarSolicitudEcaes
                 case "ESTUDIANTE":
                     return solicitud.getObjUsuario().getId_usuario().equals(idUsuario);
                 case "FUNCIONARIO":
-                    return ultimoEstado != null && "ENVIADA".equals(ultimoEstado.getEstado_actual());
+                    // BUG-7: al crear se guarda "Enviada" (textoGuardado), así que comparar con "ENVIADA" nunca coincide.
+                    return ultimoEstado != null && EstadosSolicitud.ENVIADA.name().equals(ultimoEstado.getEstado_actual());
                 default:
                     return false;
             }

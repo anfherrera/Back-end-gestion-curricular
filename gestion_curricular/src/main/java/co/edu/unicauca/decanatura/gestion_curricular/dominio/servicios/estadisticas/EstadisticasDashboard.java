@@ -1,5 +1,6 @@
 package co.edu.unicauca.decanatura.gestion_curricular.dominio.servicios.estadisticas;
 
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Enums.EstadosSolicitud;
 import static co.edu.unicauca.decanatura.gestion_curricular.dominio.servicios.estadisticas.ReglasEstadisticas.MESES;
 import static co.edu.unicauca.decanatura.gestion_curricular.dominio.servicios.estadisticas.ReglasEstadisticas.diasDeProcesamiento;
 import static co.edu.unicauca.decanatura.gestion_curricular.dominio.servicios.estadisticas.ReglasEstadisticas.estadoActual;
@@ -97,15 +98,15 @@ public class EstadisticasDashboard {
     private static void contar(Contador c, Solicitud solicitud, boolean separarEnProceso) {
         c.total++;
         String estado = estadoActual(solicitud);
-        switch (estado) {
-            case "APROBADA" -> c.aprobadas++;
-            case "RECHAZADA" -> c.rechazadas++;
-            case "APROBADA_FUNCIONARIO", "APROBADA_COORDINADOR" -> {
+        switch (EstadosSolicitud.valueOf(estado)) { // estadoActual siempre devuelve la forma canónica
+            case APROBADA -> c.aprobadas++;
+            case RECHAZADA -> c.rechazadas++;
+            case APROBADA_FUNCIONARIO, APROBADA_COORDINADOR -> {
                 if (separarEnProceso) c.enProceso++; else c.enviadas++;
             }
             default -> c.enviadas++;
         }
-        if ("APROBADA".equals(estado) || "RECHAZADA".equals(estado)) {
+        if (EstadosSolicitud.APROBADA.name().equals(estado) || EstadosSolicitud.RECHAZADA.name().equals(estado)) {
             Double dias = diasDeProcesamiento(solicitud);
             if (dias != null) {
                 c.tiempos.add(dias);
@@ -233,7 +234,7 @@ public class EstadisticasDashboard {
         int minSolicitudes = Integer.MAX_VALUE;
 
         // Siempre se incluyen los estados principales, aunque tengan 0 solicitudes
-        for (String estado : new String[] { "APROBADA", "ENVIADA", "RECHAZADA" }) {
+        for (String estado : new String[] { EstadosSolicitud.APROBADA.name(), EstadosSolicitud.ENVIADA.name(), EstadosSolicitud.RECHAZADA.name() }) {
             int total = totalPorEstado.get(estado);
             Map<String, Object> detalleEstado = new HashMap<>();
             detalleEstado.put("estado", estado);
@@ -255,18 +256,18 @@ public class EstadisticasDashboard {
                     minSolicitudes = total;
                     estadoMenosComun = estado;
                 }
-                if ("APROBADA".equals(estado)) {
+                if (EstadosSolicitud.APROBADA.name().equals(estado)) {
                     estadoMasEficiente = estado;
                 }
             }
         }
 
         // "EN_PROCESO" junta las aprobadas por funcionario y por coordinador
-        int totalEnProceso = totalPorEstado.get("APROBADA_FUNCIONARIO") + totalPorEstado.get("APROBADA_COORDINADOR");
-        Map<String, Integer> procesosEnProceso = new HashMap<>(procesosPorEstado.get("APROBADA_FUNCIONARIO"));
-        procesosPorEstado.get("APROBADA_COORDINADOR").forEach((k, v) -> procesosEnProceso.merge(k, v, Integer::sum));
-        Map<String, Integer> programasEnProceso = new HashMap<>(programasPorEstado.get("APROBADA_FUNCIONARIO"));
-        programasPorEstado.get("APROBADA_COORDINADOR").forEach((k, v) -> programasEnProceso.merge(k, v, Integer::sum));
+        int totalEnProceso = totalPorEstado.get(EstadosSolicitud.APROBADA_FUNCIONARIO.name()) + totalPorEstado.get(EstadosSolicitud.APROBADA_COORDINADOR.name());
+        Map<String, Integer> procesosEnProceso = new HashMap<>(procesosPorEstado.get(EstadosSolicitud.APROBADA_FUNCIONARIO.name()));
+        procesosPorEstado.get(EstadosSolicitud.APROBADA_COORDINADOR.name()).forEach((k, v) -> procesosEnProceso.merge(k, v, Integer::sum));
+        Map<String, Integer> programasEnProceso = new HashMap<>(programasPorEstado.get(EstadosSolicitud.APROBADA_FUNCIONARIO.name()));
+        programasPorEstado.get(EstadosSolicitud.APROBADA_COORDINADOR.name()).forEach((k, v) -> programasEnProceso.merge(k, v, Integer::sum));
 
         Map<String, Object> detalleEnProceso = new HashMap<>();
         detalleEnProceso.put("estado", "EN_PROCESO");
@@ -284,7 +285,7 @@ public class EstadisticasDashboard {
             estadoMasComun = "EN_PROCESO";
         }
 
-        int completadas = totalPorEstado.get("APROBADA") + totalPorEstado.get("RECHAZADA");
+        int completadas = totalPorEstado.get(EstadosSolicitud.APROBADA.name()) + totalPorEstado.get(EstadosSolicitud.RECHAZADA.name());
         Map<String, Object> analisis = new HashMap<>();
         analisis.put("estadoMasComun", estadoMasComun);
         analisis.put("estadoMenosComun", estadoMenosComun);
@@ -293,7 +294,7 @@ public class EstadisticasDashboard {
         analisis.put("minSolicitudes", minSolicitudes);
         analisis.put("totalSolicitudes", totalSolicitudes);
         analisis.put("estadosActivos", resumenPorEstado.size());
-        analisis.put("solicitudesPendientes", totalPorEstado.get("ENVIADA") + totalEnProceso);
+        analisis.put("solicitudesPendientes", totalPorEstado.get(EstadosSolicitud.ENVIADA.name()) + totalEnProceso);
         analisis.put("solicitudesCompletadas", completadas);
         analisis.put("tasaResolucion", redondear2(porcentaje(completadas, totalSolicitudes)));
 
@@ -611,7 +612,7 @@ public class EstadisticasDashboard {
             String proceso = tipoProceso(solicitud);
             if (proceso != null) {
                 solicitudesPorProceso.merge(proceso, 1, Integer::sum);
-                if ("APROBADA".equals(estadoActual(solicitud))) {
+                if (EstadosSolicitud.APROBADA.name().equals(estadoActual(solicitud))) {
                     aprobadasPorProceso.merge(proceso, 1, Integer::sum);
                 }
             }

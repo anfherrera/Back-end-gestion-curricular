@@ -1,5 +1,6 @@
 package co.edu.unicauca.decanatura.gestion_curricular.dominio.casosDeUso;
 
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Enums.EstadoSolicitudCursoVerano;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -112,7 +113,7 @@ public class GestionarCursoOfertadoVeranoCUAdapter implements GestionarCursoOfer
                         estadoSolicitud.setFecha_registro_estado(new Date());
                         // Nota: La lógica de aprobación/rechazo basada en esSeleccionado fue eliminada
                         // Todas las solicitudes se aprueban por defecto
-                        estadoSolicitud.setEstado_actual("Aprobado");
+                        estadoSolicitud.setEstado_actual(EstadoSolicitudCursoVerano.APROBADO.texto());
                         solicitud = this.objGestionarSolicitudGateway.actualizarSolicitud(solicitud, estadoSolicitud);
                         usuario = this.objGestionarUsuarioGateway.buscarUsuarioPorSolicitud(solicitud.getId_solicitud());
                         bandera = this.objGestionarCursoOfertadoVeranoGateway.asociarUsuarioCurso(usuario.getId_usuario(), idCurso);
@@ -123,7 +124,7 @@ public class GestionarCursoOfertadoVeranoCUAdapter implements GestionarCursoOfer
                         // Notificar cambio de estado - Preinscripción Aprobada
                         try {
                             this.objGestionarNotificacionCU.notificarCambioEstadoSolicitud(
-                                solicitud, estadoAnterior, "Aprobado", "CURSO_VERANO_PREINSCRIPCION"
+                                solicitud, estadoAnterior, EstadoSolicitudCursoVerano.APROBADO.texto(), "CURSO_VERANO_PREINSCRIPCION"
                             );
                         } catch (Exception e) {
                         }
@@ -154,7 +155,7 @@ public class GestionarCursoOfertadoVeranoCUAdapter implements GestionarCursoOfer
                     estadoSolicitud.setFecha_registro_estado(new Date());
                     // Nota: La lógica de aprobación/rechazo basada en esSeleccionado fue eliminada
                     // Todas las solicitudes se aprueban por defecto
-                    estadoSolicitud.setEstado_actual("Aprobado");
+                    estadoSolicitud.setEstado_actual(EstadoSolicitudCursoVerano.APROBADO.texto());
                     solicitud = this.objGestionarSolicitudGateway.actualizarSolicitud(solicitud, estadoSolicitud);
                     usuario = this.objGestionarUsuarioGateway.buscarUsuarioPorSolicitud(solicitud.getId_solicitud());
                     if(solicitudes.size() < cursoABuscar.getEstudiantesInscritos().size()){
@@ -168,7 +169,7 @@ public class GestionarCursoOfertadoVeranoCUAdapter implements GestionarCursoOfer
                     // Notificar cambio de estado - Inscripción Aprobada
                     try {
                         this.objGestionarNotificacionCU.notificarCambioEstadoSolicitud(
-                            solicitud, estadoAnterior, "Aprobado", "CURSO_VERANO_INSCRIPCION"
+                            solicitud, estadoAnterior, EstadoSolicitudCursoVerano.APROBADO.texto(), "CURSO_VERANO_INSCRIPCION"
                         );
                     } catch (Exception e) {
                     }

@@ -1,5 +1,6 @@
 package co.edu.unicauca.decanatura.gestion_curricular.dominio.casosDeUso;
 
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Enums.EstadosSolicitud;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.ArrayList;
@@ -90,7 +91,7 @@ public class GestionarSolicitudPazYSalvoCUAdapter implements GestionarSolicitudP
                         .anyMatch(e -> e.getEstado_actual() != null && !e.getEstado_actual().isBlank());
         if (!yaTieneEstadoInicial) {
             EstadoSolicitud estadoInicial = new EstadoSolicitud();
-            estadoInicial.setEstado_actual("Enviada");
+            estadoInicial.setEstado_actual(EstadosSolicitud.ENVIADA.textoGuardado());
             estadoInicial.setFecha_registro_estado(new Date());
             estadoInicial.setObjSolicitud(solicitudGuardada);
 
@@ -167,11 +168,11 @@ public class GestionarSolicitudPazYSalvoCUAdapter implements GestionarSolicitudP
                 case "ESTUDIANTE":
                     return solicitud.getObjUsuario().getId_usuario().equals(idUsuario);
                 case "FUNCIONARIO":
-                    return ultimoEstado != null && "Enviada".equals(ultimoEstado.getEstado_actual());
+                    return ultimoEstado != null && EstadosSolicitud.ENVIADA.textoGuardado().equals(ultimoEstado.getEstado_actual());
                 case "COORDINADOR":
-                    return ultimoEstado != null && "APROBADA_FUNCIONARIO".equals(ultimoEstado.getEstado_actual());
+                    return ultimoEstado != null && EstadosSolicitud.APROBADA_FUNCIONARIO.textoGuardado().equals(ultimoEstado.getEstado_actual());
                 case "SECRETARIA":
-                    return ultimoEstado != null && "APROBADA_COORDINADOR".equals(ultimoEstado.getEstado_actual());
+                    return ultimoEstado != null && EstadosSolicitud.APROBADA_COORDINADOR.textoGuardado().equals(ultimoEstado.getEstado_actual());
                 default:
                     return false;
             }

@@ -1,5 +1,6 @@
 package co.edu.unicauca.decanatura.gestion_curricular.dominio.casosDeUso;
 
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Enums.EstadosSolicitud;
 import java.util.List;
 
 import lombok.extern.slf4j.Slf4j;
@@ -128,7 +129,7 @@ public class GestionarNotificacionCUAdapter implements GestionarNotificacionCUIn
                 return;
             }
 
-            String estadoActual = "ENVIADA";
+            String estadoActual = EstadosSolicitud.ENVIADA.name();
             if (solicitud.getEstadosSolicitud() != null && !solicitud.getEstadosSolicitud().isEmpty()) {
                 estadoActual = solicitud.getEstadosSolicitud().get(solicitud.getEstadosSolicitud().size() - 1).getEstado_actual();
             }
@@ -242,10 +243,10 @@ public class GestionarNotificacionCUAdapter implements GestionarNotificacionCUIn
             estadoAnterior + " → " + estadoNuevo;
         
         // Agregar información adicional según el estado
-        if ("APROBADA".equals(estadoNuevo) || "APROBADA_COORDINADOR".equals(estadoNuevo) || "APROBADA_FUNCIONARIO".equals(estadoNuevo)) {
+        if (EstadosSolicitud.APROBADA.name().equals(estadoNuevo) || EstadosSolicitud.APROBADA_COORDINADOR.name().equals(estadoNuevo) || EstadosSolicitud.APROBADA_FUNCIONARIO.name().equals(estadoNuevo)) {
             notificacion.setEsUrgente(true);
             mensaje += ". ¡Su solicitud ha sido aprobada!";
-        } else if ("RECHAZADA".equals(estadoNuevo)) {
+        } else if (EstadosSolicitud.RECHAZADA.name().equals(estadoNuevo)) {
             notificacion.setEsUrgente(true);
             mensaje += ". Su solicitud ha sido rechazada. Por favor, revise los detalles.";
         }
@@ -263,12 +264,12 @@ public class GestionarNotificacionCUAdapter implements GestionarNotificacionCUIn
         crearNotificacion(notificacion);
 
         // Notificar a coordinadores cuando el funcionario aprueba (estado: APROBADA_FUNCIONARIO)
-        if ("APROBADA_FUNCIONARIO".equals(estadoNuevo)) {
+        if (EstadosSolicitud.APROBADA_FUNCIONARIO.name().equals(estadoNuevo)) {
             notificarAlRol(solicitud, tipoSolicitud, estadoNuevo, "Coordinador");
         }
 
         // Notificar a secretarias cuando el coordinador aprueba (estado: APROBADA_COORDINADOR)
-        if ("APROBADA_COORDINADOR".equals(estadoNuevo)) {
+        if (EstadosSolicitud.APROBADA_COORDINADOR.name().equals(estadoNuevo)) {
             notificarAlRol(solicitud, tipoSolicitud, estadoNuevo, "Secretario");
         }
     }

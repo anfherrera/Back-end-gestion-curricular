@@ -1,5 +1,6 @@
 package co.edu.unicauca.decanatura.gestion_curricular.dominio.servicios.estadisticas;
 
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Enums.EstadosSolicitud;
 import java.text.Normalizer;
 import java.util.Calendar;
 import java.util.Comparator;
@@ -27,7 +28,7 @@ final class ReglasEstadisticas {
             TipoProcesoSolicitud.CURSOS_VERANO, TipoProcesoSolicitud.ECAES };
 
     static final String[] ESTADOS = {
-            "APROBADA", "RECHAZADA", "ENVIADA", "APROBADA_FUNCIONARIO", "APROBADA_COORDINADOR" };
+            EstadosSolicitud.APROBADA.name(), EstadosSolicitud.RECHAZADA.name(), EstadosSolicitud.ENVIADA.name(), EstadosSolicitud.APROBADA_FUNCIONARIO.name(), EstadosSolicitud.APROBADA_COORDINADOR.name() };
 
     /** Calendar.MONTH devuelve 0-11: 0=Enero, 11=Diciembre. */
     static final String[] MESES = { "Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio",
@@ -118,7 +119,7 @@ final class ReglasEstadisticas {
     /** Estado más reciente de la solicitud, normalizado a uno de {@link #ESTADOS}. */
     static String estadoActual(Solicitud solicitud) {
         if (solicitud.getEstadosSolicitud() == null || solicitud.getEstadosSolicitud().isEmpty()) {
-            return "ENVIADA";
+            return EstadosSolicitud.ENVIADA.name();
         }
         return solicitud.getEstadosSolicitud().stream()
                 // Ignora estados sin texto (p. ej. el registro inicial vacío) y tolera fechas nulas
@@ -127,7 +128,7 @@ final class ReglasEstadisticas {
                         Comparator.nullsFirst(Comparator.naturalOrder())))
                 .map(EstadoSolicitud::getEstado_actual)
                 .map(ReglasEstadisticas::normalizarEstado)
-                .orElse("ENVIADA");
+                .orElse(EstadosSolicitud.ENVIADA.name());
     }
 
     /** Fecha del último cambio de estado (o la de registro si no tiene estados). */
@@ -156,7 +157,7 @@ final class ReglasEstadisticas {
      * estados de cursos de verano...) en los 5 valores de {@link #ESTADOS}.
      */
     static String normalizarEstado(String estado) {
-        if (estado == null || estado.isBlank()) return "ENVIADA";
+        if (estado == null || estado.isBlank()) return EstadosSolicitud.ENVIADA.name();
 
         String clave = Normalizer.normalize(estado.trim(), Normalizer.Form.NFD)
                 .replaceAll("\\p{M}", "")
@@ -171,32 +172,32 @@ final class ReglasEstadisticas {
             case "PREINSCRITO":
             case "PREINSCRITA":
             case "PENDIENTE":
-                return "ENVIADA";
+                return EstadosSolicitud.ENVIADA.name();
             case "EN_PROCESO":
             case "ENPROCESO":
             case "APROBADA_FUNCIONARIO":
             case "APROBADO_FUNCIONARIO":
             case "PAGO_VALIDADO":       // Cursos de verano: pago revisado, falta completar la inscripción
-                return "APROBADA_FUNCIONARIO";
+                return EstadosSolicitud.APROBADA_FUNCIONARIO.name();
             case "APROBADA_COORDINADOR":
             case "APROBADO_COORDINADOR":
-                return "APROBADA_COORDINADOR";
+                return EstadosSolicitud.APROBADA_COORDINADOR.name();
             case "APROBADA":
             case "APROBADO":
             case "INSCRIPCION_COMPLETADA": // Cursos de verano: proceso terminado con éxito
             case "INSCRITO":
             case "INSCRITA":
-                return "APROBADA";
+                return EstadosSolicitud.APROBADA.name();
             case "RECHAZADA":
             case "RECHAZADO":
             case "PAGO_RECHAZADO":
-                return "RECHAZADA";
+                return EstadosSolicitud.RECHAZADA.name();
             default:
                 // Se cuenta como ENVIADA para no descuadrar los totales, pero se avisa en el log.
                 if (estadosDesconocidosReportados.add(estado)) {
                     log.warn("Estadísticas: estado de solicitud no reconocido '{}', se cuenta como ENVIADA", estado);
                 }
-                return "ENVIADA";
+                return EstadosSolicitud.ENVIADA.name();
         }
     }
 

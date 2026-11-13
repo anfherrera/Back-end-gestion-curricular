@@ -1,5 +1,6 @@
 package co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.controladores;
 
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Enums.EstadoSolicitudCursoVerano;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -180,7 +181,7 @@ public class InscripcionesVeranoRestController {
         List<EstadoSolicitud> estados = solicitud.getEstadosSolicitud();
         String estadoActual = estados != null && !estados.isEmpty()
             ? estados.get(estados.size() - 1).getEstado_actual() : null;
-        if ("Aprobado".equalsIgnoreCase(estadoActual)) {
+        if (EstadoSolicitudCursoVerano.APROBADO.texto().equalsIgnoreCase(estadoActual)) {
             Map<String, Object> error = new HashMap<>();
             error.put("error", "No se puede cancelar");
             error.put("message", "No se puede cancelar una inscripcion que ya ha sido aprobada");
@@ -225,7 +226,7 @@ public class InscripcionesVeranoRestController {
                 }
                 
                 // Si la inscripcion ya fue aceptada (Pago_Validado), no la mostrar en la lista
-                if ("Pago_Validado".equals(estadoActual)) {
+                if (EstadoSolicitudCursoVerano.PAGO_VALIDADO.texto().equals(estadoActual)) {
                     continue; // Saltar esta inscripcion
                 }
                 
@@ -386,7 +387,7 @@ public class InscripcionesVeranoRestController {
         }
         
         // 2. Verificar que la inscripcion este en estado valido para rechazar
-        if (!"Enviada".equals(estadoActual) && !"Pago_Validado".equals(estadoActual)) {
+        if (!EstadoSolicitudCursoVerano.ENVIADA.texto().equals(estadoActual) && !EstadoSolicitudCursoVerano.PAGO_VALIDADO.texto().equals(estadoActual)) {
             Map<String, Object> error = new HashMap<>();
             error.put("error", "La inscripcion no puede ser rechazada en su estado actual: " + estadoActual);
             return ResponseEntity.badRequest().body(error);
@@ -540,9 +541,9 @@ public class InscripcionesVeranoRestController {
         Map<String, Object> estadisticas = new HashMap<>();
         
         // Contar inscripciones por estado con logging detallado
-        Integer pendientes = solicitudCU.contarInscripcionesPorEstado(idCurso.intValue(), "Enviada");
-        Integer aceptadas = solicitudCU.contarInscripcionesPorEstado(idCurso.intValue(), "Pago_Validado");
-        Integer rechazadas = solicitudCU.contarInscripcionesPorEstado(idCurso.intValue(), "Pago_Rechazado");
+        Integer pendientes = solicitudCU.contarInscripcionesPorEstado(idCurso.intValue(), EstadoSolicitudCursoVerano.ENVIADA.texto());
+        Integer aceptadas = solicitudCU.contarInscripcionesPorEstado(idCurso.intValue(), EstadoSolicitudCursoVerano.PAGO_VALIDADO.texto());
+        Integer rechazadas = solicitudCU.contarInscripcionesPorEstado(idCurso.intValue(), EstadoSolicitudCursoVerano.PAGO_RECHAZADO.texto());
         
         
         Integer totalInscripciones = pendientes + aceptadas + rechazadas;
