@@ -1,6 +1,5 @@
 package co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.gateway;
 
-import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Enums.EstadosSolicitud;
 import java.util.List;
 import java.util.Optional;
 
@@ -36,52 +35,30 @@ public class GestionarSolicitudReingresoImplAdapter implements GestionarSolicitu
 
     @Override
     public List<SolicitudReingreso> listarSolicitudesReingreso() {
-        return solicitudReingresoRepository.findAll()
-                .stream()
-                .map(entity -> mapper.map(entity, SolicitudReingreso.class))
-                .toList();
+        return aDominio(solicitudReingresoRepository.findAll());
     }
 
     @Override
-    public List<SolicitudReingreso> listarSolicitudesReingresoToFuncionario() {
-       return solicitudReingresoRepository.findByUltimoEstado(EstadosSolicitud.ENVIADA.textoGuardado())
-                .stream()
-                .map(entity -> mapper.map(entity, SolicitudReingreso.class))
-                .toList();
+    public List<SolicitudReingreso> listarPorUsuario(Integer idUsuario, String periodo) {
+        return aDominio(solicitudReingresoRepository.findByUsuarioYPeriodo(idUsuario, periodo));
     }
 
     @Override
-    public List<SolicitudReingreso> listarSolicitudesReingresoToSecretaria() {
-        return solicitudReingresoRepository.findByUltimoEstado(EstadosSolicitud.APROBADA_COORDINADOR.textoGuardado())
-                .stream()
-                .map(entity -> mapper.map(entity, SolicitudReingreso.class))
-                .toList();
+    public List<SolicitudReingreso> listarPorUltimoEstado(String estado, Integer idPrograma, String periodo) {
+        return aDominio(idPrograma == null
+                ? solicitudReingresoRepository.findByUltimoEstadoAndPeriodoAcademico(estado, periodo)
+                : solicitudReingresoRepository.findByUltimoEstadoAndProgramaAndPeriodoAcademico(estado, idPrograma, periodo));
     }
 
     @Override
-    public List<SolicitudReingreso> listarSolicitudesReingresoToCoordinador() {
-        return solicitudReingresoRepository.findByUltimoEstado(EstadosSolicitud.APROBADA_FUNCIONARIO.textoGuardado())
-                .stream()
-                .map(entity -> mapper.map(entity, SolicitudReingreso.class))
-                .toList();
+    public List<SolicitudReingreso> listarPorEstadoEnHistorial(String estado, Integer idPrograma, String periodo) {
+        return aDominio(idPrograma == null
+                ? solicitudReingresoRepository.findByEstadoEnHistorialAndPeriodoAcademico(estado, periodo)
+                : solicitudReingresoRepository.findByEstadoEnHistorialAndProgramaAndPeriodoAcademico(estado, idPrograma, periodo));
     }
 
-    @Override
-    public List<SolicitudReingreso> listarSolicitudesReingresoToCoordinadorPorPrograma(Integer idPrograma) {
-        if (idPrograma == null) {
-            return listarSolicitudesReingresoToCoordinador();
-        }
-        return solicitudReingresoRepository.findByUltimoEstadoAndPrograma(EstadosSolicitud.APROBADA_FUNCIONARIO.textoGuardado(), idPrograma)
-                .stream()
-                .map(entity -> mapper.map(entity, SolicitudReingreso.class))
-                .toList();
-    }
-
-    @Override
-    public List<SolicitudReingreso> listarSolicitudesAprobadasToSecretaria() {
-        // Buscar en historial completo, no solo último estado
-        return solicitudReingresoRepository.findByEstadoEnHistorialAndPeriodoAcademico(EstadosSolicitud.APROBADA.textoGuardado(), null)
-                .stream()
+    private List<SolicitudReingreso> aDominio(List<SolicitudReingresoEntity> entidades) {
+        return entidades.stream()
                 .map(entity -> mapper.map(entity, SolicitudReingreso.class))
                 .toList();
     }
@@ -94,92 +71,6 @@ public class GestionarSolicitudReingresoImplAdapter implements GestionarSolicitu
     }
 
     @Override
-    public List<SolicitudReingreso> listarSolicitudesReingresoToFuncionarioPorPeriodo(String periodoAcademico) {
-        return solicitudReingresoRepository.findByUltimoEstadoAndPeriodoAcademico(EstadosSolicitud.ENVIADA.textoGuardado(), periodoAcademico).stream()
-                .map(entity -> mapper.map(entity, SolicitudReingreso.class))
-                .toList();
-    }
-
-    @Override
-    public List<SolicitudReingreso> listarSolicitudesReingresoToCoordinadorPorProgramaYPeriodo(Integer idPrograma, String periodoAcademico) {
-        if (idPrograma == null) {
-            return listarSolicitudesReingresoToCoordinador();
-        }
-        return solicitudReingresoRepository.findByUltimoEstadoAndProgramaAndPeriodoAcademico(EstadosSolicitud.APROBADA_FUNCIONARIO.textoGuardado(), idPrograma, periodoAcademico).stream()
-                .map(entity -> mapper.map(entity, SolicitudReingreso.class))
-                .toList();
-    }
-
-    @Override
-    public List<SolicitudReingreso> listarSolicitudesReingresoToSecretariaPorPeriodo(String periodoAcademico) {
-        return solicitudReingresoRepository.findByUltimoEstadoAndPeriodoAcademico(EstadosSolicitud.APROBADA_COORDINADOR.textoGuardado(), periodoAcademico).stream()
-                .map(entity -> mapper.map(entity, SolicitudReingreso.class))
-                .toList();
-    }
-
-    @Override
-    public List<SolicitudReingreso> listarSolicitudesAprobadasToSecretariaPorPeriodo(String periodoAcademico) {
-        // Buscar en historial completo, no solo último estado
-        return solicitudReingresoRepository.findByEstadoEnHistorialAndPeriodoAcademico(EstadosSolicitud.APROBADA.textoGuardado(), periodoAcademico).stream()
-                .map(entity -> mapper.map(entity, SolicitudReingreso.class))
-                .toList();
-    }
-
-    @Override
-    public List<SolicitudReingreso> listarSolicitudesReingresoPorUsuarioYPeriodo(Integer idUsuario, String periodoAcademico) {
-        // Todas las solicitudes del estudiante, sin importar el estado; el filtro lo hace la base de datos
-        return solicitudReingresoRepository.findByUsuarioYPeriodo(idUsuario, periodoAcademico).stream()
-                .map(entity -> mapper.map(entity, SolicitudReingreso.class))
-                .toList();
-    }
-
-    @Override
-    public List<SolicitudReingreso> listarSolicitudesAprobadasToFuncionario() {
-        // Solicitudes que el funcionario ya procesó (aprobó) - buscar en historial completo
-        return solicitudReingresoRepository.findByEstadoEnHistorialAndPeriodoAcademico(EstadosSolicitud.APROBADA_FUNCIONARIO.textoGuardado(), null).stream()
-                .map(entity -> mapper.map(entity, SolicitudReingreso.class))
-                .toList();
-    }
-
-    @Override
-    public List<SolicitudReingreso> listarSolicitudesAprobadasToFuncionarioPorPeriodo(String periodoAcademico) {
-        // Buscar en historial completo, no solo último estado
-        return solicitudReingresoRepository.findByEstadoEnHistorialAndPeriodoAcademico(EstadosSolicitud.APROBADA_FUNCIONARIO.textoGuardado(), periodoAcademico).stream()
-                .map(entity -> mapper.map(entity, SolicitudReingreso.class))
-                .toList();
-    }
-
-    @Override
-    public List<SolicitudReingreso> listarSolicitudesAprobadasToCoordinador() {
-        // Solicitudes que el coordinador ya procesó (aprobó) - buscar en historial completo
-        return solicitudReingresoRepository.findByEstadoEnHistorialAndPeriodoAcademico(EstadosSolicitud.APROBADA_COORDINADOR.textoGuardado(), null).stream()
-                .map(entity -> mapper.map(entity, SolicitudReingreso.class))
-                .toList();
-    }
-
-    @Override
-    public List<SolicitudReingreso> listarSolicitudesAprobadasToCoordinadorPorPrograma(Integer idPrograma) {
-        if (idPrograma == null) {
-            return listarSolicitudesAprobadasToCoordinador();
-        }
-        // Buscar en historial completo, no solo último estado
-        return solicitudReingresoRepository.findByEstadoEnHistorialAndProgramaAndPeriodoAcademico(EstadosSolicitud.APROBADA_COORDINADOR.textoGuardado(), idPrograma, null).stream()
-                .map(entity -> mapper.map(entity, SolicitudReingreso.class))
-                .toList();
-    }
-
-    @Override
-    public List<SolicitudReingreso> listarSolicitudesAprobadasToCoordinadorPorProgramaYPeriodo(Integer idPrograma, String periodoAcademico) {
-        if (idPrograma == null) {
-            return listarSolicitudesAprobadasToCoordinador();
-        }
-        // Buscar en historial completo, no solo último estado
-        return solicitudReingresoRepository.findByEstadoEnHistorialAndProgramaAndPeriodoAcademico(EstadosSolicitud.APROBADA_COORDINADOR.textoGuardado(), idPrograma, periodoAcademico).stream()
-                .map(entity -> mapper.map(entity, SolicitudReingreso.class))
-                .toList();
-    }
-
-    @Override
     public void cambiarEstadoSolicitudReingreso(Integer idSolicitud, EstadoSolicitud nuevoEstado) {
       SolicitudReingresoEntity solicitudEntity = (SolicitudReingresoEntity) solicitudReingresoRepository.findById(idSolicitud)
               .orElseThrow(() -> new EntidadNoExisteException("Solicitud de Reingreso no encontrada con ID: " + idSolicitud));
@@ -189,9 +80,4 @@ public class GestionarSolicitudReingresoImplAdapter implements GestionarSolicitu
       solicitudEntity.getEstadosSolicitud().add(nuevo);
       solicitudReingresoRepository.save(solicitudEntity);
     }
-
-    
-
-
-
 }

@@ -29,7 +29,7 @@ import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.DTOPe
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.DTORespuesta.SolicitudReingresoDTORespuesta;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.mappers.SolicitudMapperDominio;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.mappers.SolicitudReingresoMapperDominio;
-import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Enums.PeriodoAcademicoEnum;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.FiltroSolicitudes;
 import org.springframework.security.access.prepost.PreAuthorize;
 import co.edu.unicauca.decanatura.gestion_curricular.Security.Autorizacion;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.DTOPeticion.UsuarioDTOPeticion;
@@ -91,198 +91,85 @@ public class SolicitudReingresoRestController {
             }
         }
 
-        // Si no se proporciona período, usar el período académico actual basado en la fecha
-        if (periodoAcademico == null || periodoAcademico.trim().isEmpty()) {
-            PeriodoAcademicoEnum periodoActual = PeriodoAcademicoEnum.getPeriodoActual();
-            if (periodoActual != null) {
-                periodoAcademico = periodoActual.getValor();
-                log.debug("Usando período académico actual automático: {}", periodoAcademico);
-            }
+        String periodo = PeriodoDeConsulta.oActual(periodoAcademico);
+        if ("ESTUDIANTE".equals(rol) && idUsuario != null && periodo != null) {
+            return responder(solicitudService.listar(FiltroSolicitudes.deEstudiante(idUsuario, periodo)));
         }
-
-        List<SolicitudReingreso> solicitudes;
-        if ("ESTUDIANTE".equals(rol) && idUsuario != null && periodoAcademico != null && !periodoAcademico.trim().isEmpty()) {
-            solicitudes = solicitudService.listarSolicitudesReingresoPorUsuarioYPeriodo(idUsuario, periodoAcademico.trim());
-        } else {
-            solicitudes = solicitudService.listarSolicitudesReingresoPorRol(rol, idUsuario);
-        }
-
-        List<SolicitudReingresoDTORespuesta> respuesta =
-                solicitudReingresoMapper.mappearDeListaSolicitudReingresoASolicitudReingresoDTORespuesta(solicitudes);
-
-        return ResponseEntity.ok(respuesta);
+        return responder(solicitudService.listarSolicitudesReingresoPorRol(rol, idUsuario));
     }
 
-        @GetMapping("/listarSolicitud-Reingreso/Funcionario")
+    @GetMapping("/listarSolicitud-Reingreso/Funcionario")
     public ResponseEntity<List<SolicitudReingresoDTORespuesta>> listarSolicitudReingresoToFuncionario(
             @RequestParam(required = false) String periodoAcademico) {
-        // Si no se proporciona período, usar el período académico actual basado en la fecha
-        if (periodoAcademico == null || periodoAcademico.trim().isEmpty()) {
-            PeriodoAcademicoEnum periodoActual = PeriodoAcademicoEnum.getPeriodoActual();
-            if (periodoActual != null) {
-                periodoAcademico = periodoActual.getValor();
-                log.debug("Usando período académico actual automático: {}", periodoAcademico);
-            }
-        }
-        
-        List<SolicitudReingreso> solicitudes;
-        if (periodoAcademico != null && !periodoAcademico.trim().isEmpty()) {
-            solicitudes = solicitudService.listarSolicitudesReingresoToFuncionarioPorPeriodo(periodoAcademico.trim());
-        } else {
-            solicitudes = solicitudService.listarSolicitudesReingresoToFuncionario();
-        }
-        
-        List<SolicitudReingresoDTORespuesta> respuesta = solicitudReingresoMapper.mappearDeListaSolicitudReingresoASolicitudReingresoDTORespuesta(solicitudes);
-        return ResponseEntity.ok(respuesta);
+        return responder(solicitudService.listar(FiltroSolicitudes.pendientesDe(
+                FlujoEstadosSolicitud.FUNCIONARIO, null, PeriodoDeConsulta.oActual(periodoAcademico))));
     }
 
     @GetMapping("/listarSolicitud-Reingreso/Coordinador")
     public ResponseEntity<List<SolicitudReingresoDTORespuesta>> listarSolicitudReingresoToCoordinador(
             @RequestParam(required = false) String periodoAcademico) {
-        // Obtener el programa del coordinador autenticado
         Integer idPrograma = autorizacion.idProgramaCoordinadorActual();
-        
-        // Si no se proporciona período, usar el período académico actual basado en la fecha
-        if (periodoAcademico == null || periodoAcademico.trim().isEmpty()) {
-            PeriodoAcademicoEnum periodoActual = PeriodoAcademicoEnum.getPeriodoActual();
-            if (periodoActual != null) {
-                periodoAcademico = periodoActual.getValor();
-                log.debug("Usando período académico actual automático: {}", periodoAcademico);
-            }
-        }
-        
-        List<SolicitudReingreso> solicitudes;
-        if (idPrograma != null) {
-            // Filtrar por programa y período del coordinador
-            if (periodoAcademico != null && !periodoAcademico.trim().isEmpty()) {
-                solicitudes = solicitudService.listarSolicitudesReingresoToCoordinadorPorProgramaYPeriodo(idPrograma, periodoAcademico.trim());
-            } else {
-                solicitudes = solicitudService.listarSolicitudesReingresoToCoordinadorPorPrograma(idPrograma);
-            }
-        } else {
-            // Si no se puede obtener el programa, retornar todas (fallback)
+        if (idPrograma == null) {
+            // Si no se puede obtener el programa, se devuelven todas, de todos los períodos (fallback)
             log.warn("No se pudo obtener el programa del coordinador, retornando todas las solicitudes");
-            solicitudes = solicitudService.listarSolicitudesReingresoToCoordinador();
+            return responder(solicitudService.listar(
+                    FiltroSolicitudes.pendientesDe(FlujoEstadosSolicitud.COORDINADOR, null, null)));
         }
-        
-        List<SolicitudReingresoDTORespuesta> respuesta = solicitudReingresoMapper.mappearDeListaSolicitudReingresoASolicitudReingresoDTORespuesta(solicitudes);
-        return ResponseEntity.ok(respuesta);
+        return responder(solicitudService.listar(FiltroSolicitudes.pendientesDe(
+                FlujoEstadosSolicitud.COORDINADOR, idPrograma, PeriodoDeConsulta.oActual(periodoAcademico))));
     }
 
     @GetMapping("/listarSolicitud-Reingreso/Secretaria")
     public ResponseEntity<List<SolicitudReingresoDTORespuesta>> listarSolicitudReingresoToSecretaria(
             @RequestParam(required = false) String periodoAcademico) {
-        // Si no se proporciona período, usar el período académico actual basado en la fecha
-        if (periodoAcademico == null || periodoAcademico.trim().isEmpty()) {
-            PeriodoAcademicoEnum periodoActual = PeriodoAcademicoEnum.getPeriodoActual();
-            if (periodoActual != null) {
-                periodoAcademico = periodoActual.getValor();
-                log.debug("Usando período académico actual automático: {}", periodoAcademico);
-            }
-        }
-        
-        List<SolicitudReingreso> solicitudes;
-        if (periodoAcademico != null && !periodoAcademico.trim().isEmpty()) {
-            solicitudes = solicitudService.listarSolicitudesReingresoToSecretariaPorPeriodo(periodoAcademico.trim());
-        } else {
-            solicitudes = solicitudService.listarSolicitudesReingresoToSecretaria();
-        }
-        
-        List<SolicitudReingresoDTORespuesta> respuesta = solicitudReingresoMapper.mappearDeListaSolicitudReingresoASolicitudReingresoDTORespuesta(solicitudes);
-        return ResponseEntity.ok(respuesta);
-    }
-
-    @GetMapping("/listarSolicitud-Reingreso/Secretaria/Aprobadas")
-    public ResponseEntity<List<SolicitudReingresoDTORespuesta>> listarSolicitudReingresoAprobadasToSecretaria(
-            @RequestParam(required = false) String periodoAcademico) {
-        List<SolicitudReingreso> solicitudes;
-        
-        // Si se solicita "todos" o está vacío/null, mostrar todas las solicitudes sin filtrar
-        if (periodoAcademico == null || periodoAcademico.trim().isEmpty() || 
-            periodoAcademico.trim().equalsIgnoreCase("todos") ||
-            periodoAcademico.trim().equalsIgnoreCase("todos los periodos") ||
-            periodoAcademico.trim().equalsIgnoreCase("todos los períodos")) {
-            log.debug("Mostrando todas las solicitudes procesadas sin filtrar por período");
-            solicitudes = solicitudService.listarSolicitudesAprobadasToSecretaria();
-        } else {
-            // Filtrar por período académico específico
-            solicitudes = solicitudService.listarSolicitudesAprobadasToSecretariaPorPeriodo(periodoAcademico.trim());
-        }
-        
-        List<SolicitudReingresoDTORespuesta> respuesta = solicitudReingresoMapper.mappearDeListaSolicitudReingresoASolicitudReingresoDTORespuesta(solicitudes);
-        return ResponseEntity.ok(respuesta);
+        return responder(solicitudService.listar(FiltroSolicitudes.pendientesDe(
+                FlujoEstadosSolicitud.SECRETARIO, null, PeriodoDeConsulta.oActual(periodoAcademico))));
     }
 
     /**
-     * Listar solicitudes de Reingreso ya procesadas por el funcionario (estado APROBADA_FUNCIONARIO)
-     * GET /api/solicitudes-reingreso/listarSolicitud-Reingreso/Funcionario/Aprobadas
-     * 
-     * Este endpoint permite al funcionario ver un historial de las solicitudes 
-     * que ya ha procesado y enviado al coordinador.
-     * 
-     * @param periodoAcademico Período académico opcional (formato: "YYYY-P", ej: "2025-2")
+     * Solicitudes que la secretaría ya aprobó (pasaron por APROBADA).
+     * @param periodoAcademico opcional; vacío o "todos" muestra todos los períodos
+     */
+    @GetMapping("/listarSolicitud-Reingreso/Secretaria/Aprobadas")
+    public ResponseEntity<List<SolicitudReingresoDTORespuesta>> listarSolicitudReingresoAprobadasToSecretaria(
+            @RequestParam(required = false) String periodoAcademico) {
+        return responder(solicitudService.listar(FiltroSolicitudes.procesadasPor(
+                FlujoEstadosSolicitud.SECRETARIO, null, PeriodoDeConsulta.oTodos(periodoAcademico))));
+    }
+
+    /**
+     * Solicitudes que el funcionario ya procesó y envió al coordinador (pasaron por APROBADA_FUNCIONARIO).
+     * @param periodoAcademico opcional ("2025-2"); vacío o "todos" muestra todos los períodos
      */
     @GetMapping("/listarSolicitud-Reingreso/Funcionario/Aprobadas")
     public ResponseEntity<List<SolicitudReingresoDTORespuesta>> listarSolicitudReingresoAprobadasToFuncionario(
             @RequestParam(required = false) String periodoAcademico) {
-        List<SolicitudReingreso> solicitudes;
-        
-        // Si se solicita "todos" o está vacío/null, mostrar todas las solicitudes sin filtrar
-        if (periodoAcademico == null || periodoAcademico.trim().isEmpty() || 
-            periodoAcademico.trim().equalsIgnoreCase("todos") ||
-            periodoAcademico.trim().equalsIgnoreCase("todos los periodos") ||
-            periodoAcademico.trim().equalsIgnoreCase("todos los períodos")) {
-            log.debug("Mostrando todas las solicitudes procesadas sin filtrar por período");
-            solicitudes = solicitudService.listarSolicitudesAprobadasToFuncionario();
-        } else {
-            // Filtrar por período académico específico
-            solicitudes = solicitudService.listarSolicitudesAprobadasToFuncionarioPorPeriodo(periodoAcademico.trim());
-        }
-        
-        List<SolicitudReingresoDTORespuesta> respuesta = solicitudReingresoMapper.mappearDeListaSolicitudReingresoASolicitudReingresoDTORespuesta(solicitudes);
-        return ResponseEntity.ok(respuesta);
+        return responder(solicitudService.listar(FiltroSolicitudes.procesadasPor(
+                FlujoEstadosSolicitud.FUNCIONARIO, null, PeriodoDeConsulta.oTodos(periodoAcademico))));
     }
 
     /**
-     * Listar solicitudes de Reingreso ya procesadas por el coordinador (estado APROBADA_COORDINADOR)
-     * GET /api/solicitudes-reingreso/listarSolicitud-Reingreso/Coordinador/Aprobadas
-     * 
-     * Este endpoint permite al coordinador ver un historial de las solicitudes 
-     * que ya ha procesado y enviado a la secretaría.
-     * 
-     * @param periodoAcademico Período académico opcional (formato: "YYYY-P", ej: "2025-2")
+     * Solicitudes del programa del coordinador que él ya procesó y envió a la secretaría
+     * (pasaron por APROBADA_COORDINADOR).
+     * @param periodoAcademico opcional ("2025-2"); vacío o "todos" muestra todos los períodos
      */
     @GetMapping("/listarSolicitud-Reingreso/Coordinador/Aprobadas")
     public ResponseEntity<List<SolicitudReingresoDTORespuesta>> listarSolicitudReingresoAprobadasToCoordinador(
             @RequestParam(required = false) String periodoAcademico) {
-        // Obtener el programa del coordinador autenticado
         Integer idPrograma = autorizacion.idProgramaCoordinadorActual();
-        
-        List<SolicitudReingreso> solicitudes;
-        
-        // Si se solicita "todos" o está vacío/null, mostrar todas las solicitudes sin filtrar por período
-        boolean mostrarTodos = periodoAcademico == null || periodoAcademico.trim().isEmpty() || 
-            periodoAcademico.trim().equalsIgnoreCase("todos") ||
-            periodoAcademico.trim().equalsIgnoreCase("todos los periodos") ||
-            periodoAcademico.trim().equalsIgnoreCase("todos los períodos");
-        
-        if (idPrograma != null) {
-            if (mostrarTodos) {
-                // Filtrar solo por programa, sin período
-                log.debug("Mostrando todas las solicitudes procesadas del programa {} sin filtrar por período", idPrograma);
-                solicitudes = solicitudService.listarSolicitudesAprobadasToCoordinadorPorPrograma(idPrograma);
-            } else {
-                // Filtrar por programa y período del coordinador
-                solicitudes = solicitudService.listarSolicitudesAprobadasToCoordinadorPorProgramaYPeriodo(idPrograma, periodoAcademico.trim());
-            }
-        } else {
-            // Si no se puede obtener el programa, retornar todas (fallback)
+        if (idPrograma == null) {
+            // Si no se puede obtener el programa, se devuelven todas, de todos los períodos (fallback)
             log.warn("No se pudo obtener el programa del coordinador, retornando todas las solicitudes");
-            solicitudes = solicitudService.listarSolicitudesAprobadasToCoordinador();
+            return responder(solicitudService.listar(
+                    FiltroSolicitudes.procesadasPor(FlujoEstadosSolicitud.COORDINADOR, null, null)));
         }
-        
-        List<SolicitudReingresoDTORespuesta> respuesta = solicitudReingresoMapper.mappearDeListaSolicitudReingresoASolicitudReingresoDTORespuesta(solicitudes);
-        return ResponseEntity.ok(respuesta);
+        return responder(solicitudService.listar(FiltroSolicitudes.procesadasPor(
+                FlujoEstadosSolicitud.COORDINADOR, idPrograma, PeriodoDeConsulta.oTodos(periodoAcademico))));
+    }
+
+    private ResponseEntity<List<SolicitudReingresoDTORespuesta>> responder(List<SolicitudReingreso> solicitudes) {
+        return ResponseEntity.ok(
+                solicitudReingresoMapper.mappearDeListaSolicitudReingresoASolicitudReingresoDTORespuesta(solicitudes));
     }
 
     @PreAuthorize("@autorizacion.esStaff() or @autorizacion.esDuenoSolicitud(#id)")

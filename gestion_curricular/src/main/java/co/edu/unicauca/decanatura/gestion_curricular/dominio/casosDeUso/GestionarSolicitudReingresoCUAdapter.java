@@ -10,6 +10,7 @@ import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarS
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarNotificacionCUIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarArchivosCUIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.servicios.AsociadorDocumentosPendientes;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.servicios.ListadorSolicitudes;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.FormateadorResultadosIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.GestionarDocumentosGatewayIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.GestionarEstadoSolicitudGatewayIntPort;
@@ -17,6 +18,7 @@ import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.Gestionar
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.GestionarUsuarioGatewayIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.excepciones.EntidadNoExisteException;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.EstadoSolicitud;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.FiltroSolicitudes;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.FlujoEstadosSolicitud;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.SolicitudReingreso;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Usuario;
@@ -32,6 +34,7 @@ public class GestionarSolicitudReingresoCUAdapter  implements GestionarSolicitud
     private final GestionarSolicitudReingresoGatewayIntPort objGestionarSolicitudReingresoGateway;
     private final GestionarNotificacionCUIntPort objGestionarNotificacionCU;
     private final AsociadorDocumentosPendientes asociadorDocumentos;
+    private final ListadorSolicitudes<SolicitudReingreso> listador;
 
     public GestionarSolicitudReingresoCUAdapter(GestionarUsuarioGatewayIntPort objGestionarUsuarioGateway,
             GestionarDocumentosGatewayIntPort objGestionarDocumentosGateway,
@@ -47,6 +50,7 @@ public class GestionarSolicitudReingresoCUAdapter  implements GestionarSolicitud
         this.objGestionarSolicitudReingresoGateway = objGestionarSolicitudReingresoGateway;
         this.objGestionarNotificacionCU = objGestionarNotificacionCU;
         this.asociadorDocumentos = new AsociadorDocumentosPendientes(objGestionarDocumentosGateway, gestionarArchivos);
+        this.listador = new ListadorSolicitudes<>(FLUJO, objGestionarSolicitudReingresoGateway);
     }
 
     @Override
@@ -103,98 +107,17 @@ public class GestionarSolicitudReingresoCUAdapter  implements GestionarSolicitud
     }
 
     @Override
-    public List<SolicitudReingreso> listarSolicitudesReingresoToFuncionario() {
-        return objGestionarSolicitudReingresoGateway.listarSolicitudesReingresoToFuncionario();
-    }
-
-    @Override
-    public List<SolicitudReingreso> listarSolicitudesReingresoToSecretaria() {
-        return objGestionarSolicitudReingresoGateway.listarSolicitudesReingresoToSecretaria();
-    }
-
-    @Override
-    public List<SolicitudReingreso> listarSolicitudesReingresoToCoordinador() {
-        return objGestionarSolicitudReingresoGateway.listarSolicitudesReingresoToCoordinador();
-    }
-
-    @Override
-    public List<SolicitudReingreso> listarSolicitudesReingresoToCoordinadorPorPrograma(Integer idPrograma) {
-        return objGestionarSolicitudReingresoGateway.listarSolicitudesReingresoToCoordinadorPorPrograma(idPrograma);
-    }
-
-    @Override
-    public List<SolicitudReingreso> listarSolicitudesReingresoToFuncionarioPorPeriodo(String periodoAcademico) {
-        return objGestionarSolicitudReingresoGateway.listarSolicitudesReingresoToFuncionarioPorPeriodo(periodoAcademico);
-    }
-
-    @Override
-    public List<SolicitudReingreso> listarSolicitudesReingresoToCoordinadorPorProgramaYPeriodo(Integer idPrograma, String periodoAcademico) {
-        return objGestionarSolicitudReingresoGateway.listarSolicitudesReingresoToCoordinadorPorProgramaYPeriodo(idPrograma, periodoAcademico);
-    }
-
-    @Override
-    public List<SolicitudReingreso> listarSolicitudesReingresoToSecretariaPorPeriodo(String periodoAcademico) {
-        return objGestionarSolicitudReingresoGateway.listarSolicitudesReingresoToSecretariaPorPeriodo(periodoAcademico);
-    }
-
-    @Override
-    public List<SolicitudReingreso> listarSolicitudesAprobadasToSecretariaPorPeriodo(String periodoAcademico) {
-        return objGestionarSolicitudReingresoGateway.listarSolicitudesAprobadasToSecretariaPorPeriodo(periodoAcademico);
-    }
-
-    @Override
-    public List<SolicitudReingreso> listarSolicitudesReingresoPorUsuarioYPeriodo(Integer idUsuario, String periodoAcademico) {
-        return objGestionarSolicitudReingresoGateway.listarSolicitudesReingresoPorUsuarioYPeriodo(idUsuario, periodoAcademico);
-    }
-
-    @Override
-    public List<SolicitudReingreso> listarSolicitudesAprobadasToSecretaria() {
-        return objGestionarSolicitudReingresoGateway.listarSolicitudesAprobadasToSecretaria();
-    }
-
-    @Override
-    public List<SolicitudReingreso> listarSolicitudesAprobadasToFuncionario() {
-        return objGestionarSolicitudReingresoGateway.listarSolicitudesAprobadasToFuncionario();
-    }
-
-    @Override
-    public List<SolicitudReingreso> listarSolicitudesAprobadasToFuncionarioPorPeriodo(String periodoAcademico) {
-        return objGestionarSolicitudReingresoGateway.listarSolicitudesAprobadasToFuncionarioPorPeriodo(periodoAcademico);
-    }
-
-    @Override
-    public List<SolicitudReingreso> listarSolicitudesAprobadasToCoordinador() {
-        return objGestionarSolicitudReingresoGateway.listarSolicitudesAprobadasToCoordinador();
-    }
-
-    @Override
-    public List<SolicitudReingreso> listarSolicitudesAprobadasToCoordinadorPorPrograma(Integer idPrograma) {
-        return objGestionarSolicitudReingresoGateway.listarSolicitudesAprobadasToCoordinadorPorPrograma(idPrograma);
-    }
-
-    @Override
-    public List<SolicitudReingreso> listarSolicitudesAprobadasToCoordinadorPorProgramaYPeriodo(Integer idPrograma, String periodoAcademico) {
-        return objGestionarSolicitudReingresoGateway.listarSolicitudesAprobadasToCoordinadorPorProgramaYPeriodo(idPrograma, periodoAcademico);
+    public List<SolicitudReingreso> listar(FiltroSolicitudes filtro) {
+        return listador.listar(filtro);
     }
 
     @Override
     public List<SolicitudReingreso> listarSolicitudesReingresoPorRol(String rol, Integer idUsuario) {
-       List<SolicitudReingreso> todas = objGestionarSolicitudReingresoGateway.listarSolicitudesReingreso();
-
-        return todas.stream().filter(solicitud -> {
-            EstadoSolicitud ultimoEstado = solicitud.ultimoRegistroEstado();
-
-            switch (rol) {
-                case "ESTUDIANTE":
-                    return solicitud.getObjUsuario().getId_usuario().equals(idUsuario);
-                case "FUNCIONARIO":
-                    return ultimoEstado != null && EstadosSolicitud.ENVIADA.textoGuardado().equals(ultimoEstado.getEstado_actual());
-                case "COORDINADOR":
-                    return ultimoEstado != null && EstadosSolicitud.APROBADA_FUNCIONARIO.textoGuardado().equals(ultimoEstado.getEstado_actual());
-                default:
-                    return false;
-            }
-        }).toList();
+        // BUG-9: este listado nunca incluyó a la secretaría (paz y salvo sí); se conserva hasta decidirlo
+        if ("SECRETARIA".equals(rol)) {
+            return List.of();
+        }
+        return listador.listarPorRol(rol, idUsuario);
     }
 
     @Override

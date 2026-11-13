@@ -83,7 +83,7 @@ class ListarSolicitudesPorRolTest {
     @DisplayName("Reingreso")
     void reingreso() {
         GestionarSolicitudReingresoGatewayIntPort gateway = mock(GestionarSolicitudReingresoGatewayIntPort.class);
-        when(gateway.listarSolicitudesReingreso()).thenReturn(List.of(
+        simularUltimoEstado(gateway, List.of(
                 conEstados(new SolicitudReingreso(), 1, ENVIADA),
                 conEstados(new SolicitudReingreso(), 2, ENVIADA, APROBADA_FUNCIONARIO)));
         GestionarSolicitudReingresoCUAdapter cu = new GestionarSolicitudReingresoCUAdapter(
