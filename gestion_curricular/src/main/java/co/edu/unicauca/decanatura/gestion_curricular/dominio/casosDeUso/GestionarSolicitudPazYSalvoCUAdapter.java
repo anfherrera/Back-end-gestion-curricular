@@ -73,9 +73,16 @@ public class GestionarSolicitudPazYSalvoCUAdapter implements GestionarSolicitudP
             formateadorResultados.retornarRespuestaErrorReglaDeNegocio("El usuario no puede ser nulo o sin ID");
         }
 
-        Usuario usuario = usuarioGateway.obtenerUsuarioPorId(solicitud.getObjUsuario().getId_usuario());
+        Integer idUsuario = solicitud.getObjUsuario().getId_usuario();
+        Usuario usuario = usuarioGateway.obtenerUsuarioPorId(idUsuario);
         if (usuario == null) {
-            formateadorResultados.retornarRespuestaErrorEntidadExiste("Usuario no encontrado");
+            throw new EntidadNoExisteException("Usuario no encontrado con ID: " + idUsuario);
+        }
+        // Si la solicitud solo trae el id del usuario (sin nombre), se completa con el de la base de datos;
+        // el gateway arma el nombre de la solicitud con él
+        String nombre = solicitud.getObjUsuario().getNombre_completo();
+        if (nombre == null || nombre.trim().isEmpty()) {
+            solicitud.setObjUsuario(usuario);
         }
 
         // Un estudiante solo puede tener una solicitud de Paz y Salvo en trámite a la vez

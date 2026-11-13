@@ -51,7 +51,6 @@ import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.mappe
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Solicitud;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Usuario;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Enums.PeriodoAcademicoEnum;
-import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarUsuarioCUIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.excepciones.EntidadNoExisteException;
 import org.springframework.security.access.prepost.PreAuthorize;
 import co.edu.unicauca.decanatura.gestion_curricular.Security.Autorizacion;
@@ -70,7 +69,6 @@ public class SolicitudPazYSalvoRestController {
     private final DocumentosMapperDominio documentosMapperDominio;
     private final co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.formateador.DocumentGeneratorService documentGeneratorService;
     private final ObjectMapper objectMapper;
-    private final GestionarUsuarioCUIntPort usuarioCU;
     private final Autorizacion autorizacion;
 
     @PreAuthorize("hasAnyRole('Estudiante', 'Administrador')")
@@ -146,18 +144,7 @@ public class SolicitudPazYSalvoRestController {
     private ResponseEntity<SolicitudPazYSalvoDTORespuesta> guardarSolicitudDominio(
             SolicitudPazYSalvo solicitud) {
 
-        // Asegurar que el usuario esté completo (cargar desde la base de datos si solo tiene el ID)
-        if (solicitud.getObjUsuario() != null && solicitud.getObjUsuario().getId_usuario() != null) {
-            if (solicitud.getObjUsuario().getNombre_completo() == null || solicitud.getObjUsuario().getNombre_completo().trim().isEmpty()) {
-                Usuario usuarioCompleto = usuarioCU.buscarUsuarioPorId(solicitud.getObjUsuario().getId_usuario()).orElse(null);
-                if (usuarioCompleto != null) {
-                    solicitud.setObjUsuario(usuarioCompleto);
-                }
-            }
-            // El nombre de la solicitud lo pone el gateway al guardar (NombreSolicitud)
-        }
-
-        // Sin período académico, el caso de uso pone el actual
+        // El caso de uso carga el usuario si solo viene su id y pone el período actual si no viene
         SolicitudPazYSalvo solicitudCreada = solicitudPazYSalvoCU.guardar(solicitud);
         SolicitudPazYSalvoDTORespuesta respuesta = solicitudMapperDominio.mappearDeSolicitudARespuesta(solicitudCreada);
 
@@ -165,17 +152,11 @@ public class SolicitudPazYSalvoRestController {
     }
 
     private SolicitudPazYSalvo construirSolicitudBasica(Map<String, Object> mapPeticion) {
-        Integer idUsuario = Integer.valueOf(mapPeticion.get("idUsuario").toString().trim());
-
-        // Cargar el usuario completo para obtener el nombre
-        Usuario usuarioCompleto = usuarioCU.buscarUsuarioPorId(idUsuario).orElse(null);
-        if (usuarioCompleto == null) {
-            throw new EntidadNoExisteException("Usuario no encontrado con ID: " + idUsuario);
-        }
-
-        // El nombre de la solicitud lo pone el gateway al guardar (NombreSolicitud)
+        // Solo el id: el caso de uso comprueba que exista y carga el usuario completo
+        Usuario usuario = new Usuario();
+        usuario.setId_usuario(Integer.valueOf(mapPeticion.get("idUsuario").toString().trim()));
         SolicitudPazYSalvo solicitud = new SolicitudPazYSalvo();
-        solicitud.setObjUsuario(usuarioCompleto);
+        solicitud.setObjUsuario(usuario);
 
         if (mapPeticion.containsKey("fecha_solicitud") && mapPeticion.get("fecha_solicitud") != null) {
             String fechaSolicitud = mapPeticion.get("fecha_solicitud").toString();

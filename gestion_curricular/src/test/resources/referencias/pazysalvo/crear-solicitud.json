@@ -211,7 +211,7 @@
   "POST [admin dto, usuario inexistente] {\"objUsuario\": {\"id_usuario\": 2000000001}, \"nombre_solicitud\": \"X\", \"fecha_registro_solicitud\": \"2025-03-01\"}" : {
     "estado" : 400,
     "cuerpo" : {
-      "error" : "Usuario no encontrado"
+      "error" : "Usuario no encontrado con ID: 2000000001"
     }
   },
   "POST [admin dto, sin nombre] {\"objUsuario\": {\"id_usuario\": {crea5}}, \"fecha_registro_solicitud\": \"2025-03-01\"}" : {
