@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarSolicitudPazYSalvoCUIntPort;
-import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarSolicitudPazYSalvoCUIntPort.DatosDocumento;
+import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GenerarDocumentosCUIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarSolicitudPazYSalvoCUIntPort.RechazoCambioEstado.Motivo;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarArchivosCUIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarDocumentosCUIntPort;
@@ -67,7 +67,7 @@ public class SolicitudPazYSalvoRestController {
     private final GestionarArchivosCUIntPort objGestionarArchivos;
     private final GestionarDocumentosCUIntPort documentosCU;
     private final DocumentosMapperDominio documentosMapperDominio;
-    private final co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.formateador.DocumentGeneratorService documentGeneratorService;
+    private final GenerarDocumentosCUIntPort documentGeneratorService;
     private final ObjectMapper objectMapper;
     private final Autorizacion autorizacion;
 
@@ -433,17 +433,12 @@ public class SolicitudPazYSalvoRestController {
     /** Documento con número PYS-{id} y fecha de hoy. */
     private ResponseEntity<byte[]> documentoPazYSalvoPorDefecto(Integer id, String titulo, String director,
             String nombreArchivo, MediaType tipo) throws java.io.IOException {
-        var datos = solicitudPazYSalvoCU.prepararDocumento(id, null, titulo, director, true);
+        var datos = documentGeneratorService.generarPazYSalvo(id, null, titulo, director, true,
+                MediaType.APPLICATION_PDF.equals(tipo), null, null, null);
         if (datos.isEmpty()) {
             return ResponseEntity.internalServerError().build();
         }
-        String numero = "PYS-" + id;
-        String fecha = LocalDate.now().toString();
-        String observaciones = "Paz y Salvo generado";
-        byte[] contenido = MediaType.APPLICATION_PDF.equals(tipo)
-                ? documentGeneratorService.generarPazYSalvoPdf(numero, fecha, observaciones, datos.get())
-                : generarDocumentoPazYSalvo(numero, fecha, observaciones, datos.get());
-        return descarga(contenido, nombreArchivo, tipo);
+        return descarga(datos.get().contenido(), nombreArchivo, tipo);
     }
 
     /** POST /generar-documento/{idSolicitud}: documento con número, fecha y observaciones del funcionario. */
@@ -457,36 +452,14 @@ public class SolicitudPazYSalvoRestController {
             @RequestParam(value = "tituloTrabajoGrado", required = false) String tituloTrabajoGrado,
             @RequestParam(value = "directorTrabajoGrado", required = false) String directorTrabajoGrado)
             throws java.io.IOException {
-        var datos = solicitudPazYSalvoCU.prepararDocumento(idSolicitud, cedulaEstudiante, tituloTrabajoGrado,
-                directorTrabajoGrado, false);
+        var datos = documentGeneratorService.generarPazYSalvo(idSolicitud, cedulaEstudiante, tituloTrabajoGrado,
+                directorTrabajoGrado, false, false, numeroDocumento, fechaDocumento, observaciones);
         if (datos.isEmpty()) {
             return ResponseEntity.internalServerError().build();
         }
 
-        String nombreLimpio = datos.get().nombreArchivo().replaceAll("[^a-zA-Z0-9]", "_");
-        String nombreArchivo = String.format("PAZ_SALVO_%s_%s.docx", nombreLimpio, numeroDocumento);
-        return descarga(generarDocumentoPazYSalvo(numeroDocumento, fechaDocumentoNormalizada(fechaDocumento),
-                observaciones == null ? "" : observaciones, datos.get()), nombreArchivo,
+        return descarga(datos.get().contenido(), datos.get().nombreArchivo(),
                 MediaType.APPLICATION_OCTET_STREAM);
-    }
-
-    /** "YYYY-MM-DD" (si viene con hora se toma solo la fecha); si falta o no tiene ese formato, la fecha de hoy. */
-    private static String fechaDocumentoNormalizada(String fechaDocumento) {
-        if (fechaDocumento != null && !fechaDocumento.trim().isEmpty()) {
-            String fecha = fechaDocumento.trim();
-            if (fecha.contains("T")) {
-                fecha = fecha.substring(0, 10);
-            }
-            if (fecha.matches("\\d{4}-\\d{2}-\\d{2}")) {
-                return fecha;
-            }
-        }
-        return LocalDate.now().toString();
-    }
-
-    private byte[] generarDocumentoPazYSalvo(String numero, String fecha, String observaciones, DatosDocumento datos)
-            throws java.io.IOException {
-        return documentGeneratorService.generarPazYSalvo(numero, fecha, observaciones, datos).toByteArray();
     }
 
     private static ResponseEntity<byte[]> descarga(byte[] contenido, String nombreArchivo, MediaType tipo) {

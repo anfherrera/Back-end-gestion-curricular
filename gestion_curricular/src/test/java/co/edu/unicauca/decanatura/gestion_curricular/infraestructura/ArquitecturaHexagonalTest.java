@@ -49,9 +49,7 @@ class ArquitecturaHexagonalTest {
                 Pattern.compile(PAQUETE + "infraestructura\\.output\\."),
                 Set.of(
                         "infraestructura/input/controladores/CursosVeranoRestController.java",          // ARQ-3
-                        "infraestructura/input/controladores/DocumentGeneratorController.java",         // ARQ-3
-                        "infraestructura/input/controladores/ReportesCursosVeranoRestController.java",  // ARQ-3
-                        "infraestructura/input/controladores/SolicitudPazYSalvoRestController.java"));  // ARQ-3
+                        "infraestructura/input/controladores/ReportesCursosVeranoRestController.java")); // ARQ-3
     }
 
     @Test
@@ -59,7 +57,7 @@ class ArquitecturaHexagonalTest {
     void salidaNoUsaPuertosDeEntrada() throws IOException {
         comprobarConLineaBase("infraestructura/output",
                 Pattern.compile(PAQUETE + "aplicacion\\.input\\."),
-                Set.of("infraestructura/output/formateador/DocumentGeneratorService.java")); // ARQ-4
+                Set.of());
     }
 
     @Test

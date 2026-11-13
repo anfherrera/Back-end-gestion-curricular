@@ -1,6 +1,7 @@
 package co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input;
 
 import java.util.List;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.DatosDocumento;
 import java.util.Optional;
 import java.util.function.Predicate;
 
@@ -74,9 +75,6 @@ public interface GestionarSolicitudPazYSalvoCUIntPort {
     record ComentarioDocumento(Integer idDocumento, String nombre, String comentario) {
     }
 
-    record DatosDocumento(String nombreArchivo, String nombreEstudiante, String codigoEstudiante, String programa,
-                          Object fechaSolicitud, String cedula, String titulo, String director) {
-    }
 
     Optional<DatosDocumento> prepararDocumento(Integer id, String cedula, String titulo, String director,
                                                boolean fechaLocal);

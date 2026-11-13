@@ -50,6 +50,14 @@ import co.edu.unicauca.decanatura.gestion_curricular.dominio.casosDeUso.Gestiona
 @Configuration
 public class BeanConfiguration {
     @Bean
+    public co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GenerarDocumentosCUIntPort crearGenerarDocumentos(
+            co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarSolicitudHomologacionCUIntPort homologacion,
+            co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarSolicitudReingresoCUIntPort reingreso,
+            co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarSolicitudPazYSalvoCUIntPort paz,
+            co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.GenerarDocumentosIntPort generador) {
+        return new co.edu.unicauca.decanatura.gestion_curricular.dominio.casosDeUso.GenerarDocumentosCUAdapter(homologacion, reingreso, paz, generador);
+    }
+    @Bean
     public co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GenerarReportesEstadisticasCUIntPort crearGenerarReportesEstadisticas(
             co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarEstadisticasCUIntPort estadisticas,
             co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.GenerarReportesEstadisticasIntPort generador) {
