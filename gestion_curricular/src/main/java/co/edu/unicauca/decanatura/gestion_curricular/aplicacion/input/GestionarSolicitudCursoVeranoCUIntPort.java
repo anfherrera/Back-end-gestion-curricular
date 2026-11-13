@@ -3,6 +3,7 @@ package co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Enums.EstadoSolicitudCursoVerano;
 import java.util.Date;
 import java.util.List;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.CursoOfertadoVerano;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Solicitud;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.SolicitudCursoVeranoIncripcion;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.SolicitudCursoVeranoPreinscripcion;
@@ -54,6 +55,19 @@ public interface GestionarSolicitudCursoVeranoCUIntPort {
     Integer contarInscripcionesPorEstado(Integer idCurso, String estado);
     /** Inscripciones que ocupan cupo (pago validado o completadas). */
     Integer contarInscripcionesAceptadasPorCurso(Integer idCurso);
+
+    /**
+     * Exige que el curso tenga un cupo libre (ver {@code ReglasCupo}). Un curso null o sin id no se limita.
+     *
+     * @throws co.edu.unicauca.decanatura.gestion_curricular.dominio.excepciones.CupoAgotadoException si está lleno
+     */
+    void verificarCupoDisponible(CursoOfertadoVerano curso);
+
+    /**
+     * Igual que {@link #verificarCupoDisponible}, salvo que la inscripción ya ocupe un cupo:
+     * aceptarla otra vez no suma.
+     */
+    void verificarCupoParaAceptar(SolicitudCursoVeranoIncripcion inscripcion);
     /** Actualiza las observaciones de una preinscripción. */
     SolicitudCursoVeranoPreinscripcion actualizarObservacionesPreinscripcion(SolicitudCursoVeranoPreinscripcion preinscripcion);
 }

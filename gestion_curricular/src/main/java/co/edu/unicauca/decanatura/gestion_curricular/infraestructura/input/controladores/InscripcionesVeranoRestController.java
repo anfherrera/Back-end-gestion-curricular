@@ -16,7 +16,7 @@ import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.CursoOferta
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.SolicitudCursoVeranoPreinscripcion;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.SolicitudCursoVeranoIncripcion;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Documento;
-import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.ReglasCupo;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.excepciones.CupoAgotadoException;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Usuario;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Solicitud;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Enums.CondicionSolicitudVerano;
@@ -67,10 +67,10 @@ public class InscripcionesVeranoRestController {
         }
 
         // Validacion 2: el curso debe tener cupo disponible
-        ResponseEntity<Map<String, Object>> sinCupo =
-                validarCupoDisponible(preinscripcionAprobada.getObjCursoOfertadoVerano());
-        if (sinCupo != null) {
-            return sinCupo;
+        try {
+            solicitudCU.verificarCupoDisponible(preinscripcionAprobada.getObjCursoOfertadoVerano());
+        } catch (CupoAgotadoException e) {
+            return SoporteCursosVerano.respuestaCupoAgotado(e);
         }
         
         // 2. Crear la inscripcion usando el modelo de dominio
@@ -298,12 +298,7 @@ public class InscripcionesVeranoRestController {
             }
             
             // 2. El curso debe tener cupo (si la inscripcion ya ocupaba cupo, aceptarla de nuevo no suma)
-            if (!ReglasCupo.ocupaCupo(inscripcion)) {
-                ResponseEntity<Map<String, Object>> sinCupo = validarCupoDisponible(inscripcion.getObjCursoOfertadoVerano());
-                if (sinCupo != null) {
-                    return sinCupo;
-                }
-            }
+            solicitudCU.verificarCupoParaAceptar(inscripcion);
 
             // 3. Validar pago de la inscripcion (marcar como aceptada)
             SolicitudCursoVeranoIncripcion inscripcionAceptada = solicitudCU.validarPago(
@@ -342,8 +337,8 @@ public class InscripcionesVeranoRestController {
             
             return ResponseEntity.ok(respuesta);
 
-        } catch (co.edu.unicauca.decanatura.gestion_curricular.dominio.excepciones.CupoAgotadoException e) {
-            // Otro funcionario ocupó el último cupo mientras tanto
+        } catch (CupoAgotadoException e) {
+            // Sin cupo, o bien otro funcionario ocupó el último cupo mientras tanto
             return SoporteCursosVerano.respuestaCupoAgotado(e);
         }
     }
@@ -623,27 +618,5 @@ public class InscripcionesVeranoRestController {
         return ResponseEntity.status(404)
             .header("Content-Type", "application/json")
             .body("{\"error\":\"No se encontro ningun comprobante PDF valido\",\"idInscripcion\":" + idInscripcion + "}");
-    }
-
-    /**
-     * Verifica que el curso tenga cupo. El cupo del curso es {@code cupo_estimado}
-     * (el frontend lo muestra como cupo máximo). Ocupan cupo las inscripciones con pago
-     * validado o completadas.
-     *
-     * @return null si hay cupo; si no, una respuesta 409 con código CUPO_AGOTADO
-     */
-    private ResponseEntity<Map<String, Object>> validarCupoDisponible(
-            co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.CursoOfertadoVerano curso) {
-        if (curso == null || curso.getId_curso() == null || curso.getCupo_estimado() == null
-                || curso.getCupo_estimado() <= 0) {
-            return null; // Curso sin cupo definido: no se limita
-        }
-        Integer ocupados = solicitudCU.contarInscripcionesAceptadasPorCurso(curso.getId_curso());
-        int ocupadosSeguro = ocupados != null ? ocupados : 0;
-        if (ocupadosSeguro >= curso.getCupo_estimado()) {
-            return SoporteCursosVerano.respuestaCupoAgotado(new co.edu.unicauca.decanatura.gestion_curricular.dominio.excepciones
-                    .CupoAgotadoException(curso.getCupo_estimado(), ocupadosSeguro));
-        }
-        return null;
     }
 }

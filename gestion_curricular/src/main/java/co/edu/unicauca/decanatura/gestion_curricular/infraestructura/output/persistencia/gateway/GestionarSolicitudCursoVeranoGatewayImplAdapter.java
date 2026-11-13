@@ -510,14 +510,8 @@ public class GestionarSolicitudCursoVeranoGatewayImplAdapter implements Gestiona
         }
         CursoOfertadoVeranoEntity bloqueado = cursoOfertadoVeranoRepository.bloquearPorId(curso.getId_curso())
                 .orElse(curso);
-        Integer cupo = bloqueado.getCupo_estimado();
-        if (cupo == null || cupo <= 0) {
-            return; // Curso sin cupo definido: no se limita
-        }
-        int ocupados = contarInscripcionesAceptadasPorCurso(bloqueado.getId_curso());
-        if (ocupados >= cupo) {
-            throw new CupoAgotadoException(cupo, ocupados);
-        }
+        ReglasCupo.exigirCupoLibre(bloqueado.getCupo_estimado(),
+                () -> contarInscripcionesAceptadasPorCurso(bloqueado.getId_curso()));
     }
 
     private static boolean yaOcupaCupo(SolicitudEntity inscripcion) {

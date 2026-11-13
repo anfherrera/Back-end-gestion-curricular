@@ -18,7 +18,7 @@ Rutas abreviadas: `…/` = `gestion_curricular/src/main/java/co/edu/unicauca/dec
 | 0 | 2026-11-13 | Revisión inicial | — | Línea base: 283 clases, 29.4k líneas en `main`. |
 | 1 | 2026-11-13 | Claude | ARQ-1, MUE-1, MUE-2, MUE-3, MUE-4, MUE-8, BUG-2, BUG-3, BUG-5, BUG-6 | Prueba de arquitectura con línea base. |
 | 2 | 2026-11-13 | Claude | DUP-4, DUP-3 | Enums de estado sin cambiar valores guardados ni JSON. Nuevos BUG-7 y BUG-8, documentados y sin corregir. 458 pruebas en JDK 17 y 25. |
-| 3 | 2026-11-13 | Claude | BUG-7, ARQ-2 | `ListarSolicitudesPorRolTest`, `ReglasCupoTest`. 472 pruebas en JDK 17 y 25. |
+| 3 | 2026-11-13 | Claude | BUG-7, ARQ-2, DUP-2 | `ListarSolicitudesPorRolTest`, `ReglasCupoTest`. Regla de cupo única en `ReglasCupo`; queda pendiente decidir si se quita la verificación del controlador (cambia el JSON del 409). 477 pruebas en JDK 17 y 25. |
 |   |       |         |                 |       |
 
 ## Resumen de la línea base
@@ -108,12 +108,20 @@ Rutas abreviadas: `…/` = `gestion_curricular/src/main/java/co/edu/unicauca/dec
 
   Los métodos del caso de uso solo delegan en el gateway (por ejemplo `listarSolicitudesToCoordinadorPorProgramaYPeriodo`). La propuesta es un único `listar(FiltroSolicitudes filtro)`, donde `FiltroSolicitudes` es un `record` del dominio con rol, idPrograma, periodo e idUsuario. El estado que corresponde a cada rol lo decide `FlujoEstadosSolicitud` (ARQ-7). ⚠️ **frontend**: se pueden mantener las rutas actuales llamando todas al nuevo método, y retirarlas después.
 
-- [ ] **DUP-2. La regla de cupo está en cuatro lugares:**
+- [x] **DUP-2. La regla de cupo está en cuatro lugares:**
   - [InscripcionesVeranoRestController.java:648-660](gestion_curricular/src/main/java/co/edu/unicauca/decanatura/gestion_curricular/infraestructura/input/controladores/InscripcionesVeranoRestController.java#L648-L660) (`validarCupoDisponible`)
   - [GestionarSolicitudCursoVeranoCUAdapter.java:199](gestion_curricular/src/main/java/co/edu/unicauca/decanatura/gestion_curricular/dominio/casosDeUso/GestionarSolicitudCursoVeranoCUAdapter.java#L199) y [L390](gestion_curricular/src/main/java/co/edu/unicauca/decanatura/gestion_curricular/dominio/casosDeUso/GestionarSolicitudCursoVeranoCUAdapter.java#L390)
   - [GestionarSolicitudCursoVeranoGatewayImplAdapter.java:525](gestion_curricular/src/main/java/co/edu/unicauca/decanatura/gestion_curricular/infraestructura/output/persistencia/gateway/GestionarSolicitudCursoVeranoGatewayImplAdapter.java#L525) (con bloqueo, necesario por concurrencia)
 
   Debe quedar una sola regla en el dominio, y el gateway se encarga solo del bloqueo y el conteo. Las pruebas `CupoConcurrenteTest` y `CupoCursoVeranoTest` deben seguir pasando.
+  *Hecho, sin cambios de comportamiento:*
+  - La regla es `ReglasCupo.exigirCupoLibre(cupo, contarOcupados)`: sin cupo definido (null o ≤ 0) no limita ni cuenta; un conteo null vale 0; si los ocupados llegan al cupo lanza `CupoAgotadoException`.
+  - El caso de uso la aplica en `verificarCupoDisponible(curso)` y `verificarCupoParaAceptar(inscripcion)` (nuevos en `GestionarSolicitudCursoVeranoCUIntPort`), que usan también `crearSolicitudCursoVeranoInscripcion` y `validarPago`.
+  - El gateway solo bloquea el curso y pasa el conteo a `exigirCupoLibre`.
+  - El controlador llama al caso de uso y convierte la excepción con `SoporteCursosVerano.respuestaCupoAgotado`, así que el 409 conserva su JSON (`codigo`, `cupo`, `ocupados`). Se borró `validarCupoDisponible`.
+  - Sigue habiendo varios **puntos de control** a propósito: el controlador valida antes del caso de uso porque su 409 tiene un JSON distinto del de `RestApiExceptionHandler` (que no trae `cupo` ni `ocupados`), y el gateway vuelve a contar con bloqueo por concurrencia. Quitar la verificación del controlador cambiaría el JSON del 409 al crear y el código de respuesta al aceptar una inscripción que no está en `Enviada` con el curso lleno (hoy 409, pasaría a 400). *Decisión pendiente*, junto con ARQ-11. ⚠️ **frontend**
+  - `GestionarSolicitudCursoVeranoCUIntPort.contarInscripcionesAceptadasPorCurso` ya no lo usa ningún controlador.
+  - Pruebas: `ReglasCupoTest` y dos casos nuevos en `CupoCursoVeranoTest`.
 
 - [x] **DUP-3. El último estado se calcula a mano 21 veces** (`getEstadosSolicitud().get(size() - 1)`), aunque ya existe [FlujoEstadosSolicitud.ultimoEstado(...)](gestion_curricular/src/main/java/co/edu/unicauca/decanatura/gestion_curricular/dominio/modelos/FlujoEstadosSolicitud.java#L128). Hay que añadir `Solicitud.estadoActual()` y usarlo en todas partes. Dónde aparece: ReportesCursosVerano (7), GestionarSolicitudCursoVeranoCU (6), InscripcionesVerano (6), PreinscripcionesVerano (4), GestionarCursoOfertadoVeranoCU (3), CursosVerano (2) y otros 4.
   *Hecho:*

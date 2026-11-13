@@ -22,6 +22,7 @@ import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.Gestionar
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.GestionarUsuarioGatewayIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.CursoOfertadoVerano;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.EstadoSolicitud;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.ReglasCupo;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Solicitud;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.SolicitudCursoVeranoIncripcion;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.SolicitudCursoVeranoPreinscripcion;
@@ -195,13 +196,7 @@ public class GestionarSolicitudCursoVeranoCUAdapter implements GestionarSolicitu
         }
 
         // El curso debe tener cupo (se vuelve a verificar con bloqueo al aceptar la inscripción)
-        Integer cupo = cursoABuscar.getCupo_estimado();
-        if (cupo != null && cupo > 0) {
-            Integer ocupados = this.objGestionarSolicitudGateway.contarInscripcionesAceptadasPorCurso(cursoABuscar.getId_curso());
-            if (ocupados != null && ocupados >= cupo) {
-                throw new co.edu.unicauca.decanatura.gestion_curricular.dominio.excepciones.CupoAgotadoException(cupo, ocupados);
-            }
-        }
+        verificarCupoDisponible(cursoABuscar);
 
         // La relación usuario-solicitud la guarda la solicitud (objUsuario); ver crearSolicitudCursoVeranoPreinscripcion
         solicitudCursoVerano.setObjUsuario(usuarioBuscar);
@@ -374,19 +369,9 @@ public class GestionarSolicitudCursoVeranoCUAdapter implements GestionarSolicitu
             this.objFormateadorResultados.retornarRespuestaErrorReglaDeNegocio("La solicitud no está en estado 'Enviada' o 'Pago_Validado' para validar el pago. Estado actual: " + estadoActual);
         }
         
-        // Regla de cupo: aceptar una inscripción nueva no puede superar el cupo del curso
-        if (esValido && EstadoSolicitudCursoVerano.ENVIADA.texto().equals(estadoActual)
-                && solicitud.getObjCursoOfertadoVerano() != null
-                && solicitud.getObjCursoOfertadoVerano().getId_curso() != null) {
-            Integer cupo = solicitud.getObjCursoOfertadoVerano().getCupo_estimado();
-            if (cupo != null && cupo > 0) {
-                Integer ocupados = this.objGestionarSolicitudGateway
-                        .contarInscripcionesAceptadasPorCurso(solicitud.getObjCursoOfertadoVerano().getId_curso());
-                if (ocupados != null && ocupados >= cupo) {
-                    throw new co.edu.unicauca.decanatura.gestion_curricular.dominio.excepciones
-                            .CupoAgotadoException(cupo, ocupados);
-                }
-            }
+        // Regla de cupo: aceptar una inscripción nueva (Enviada) no puede superar el cupo del curso
+        if (esValido && EstadoSolicitudCursoVerano.ENVIADA.texto().equals(estadoActual)) {
+            verificarCupoDisponible(solicitud.getObjCursoOfertadoVerano());
         }
 
         // Validar el pago (el gateway vuelve a contar con el curso bloqueado, por si otro
@@ -453,6 +438,22 @@ public class GestionarSolicitudCursoVeranoCUAdapter implements GestionarSolicitu
     @Override
     public Integer contarInscripcionesAceptadasPorCurso(Integer idCurso) {
         return this.objGestionarSolicitudGateway.contarInscripcionesAceptadasPorCurso(idCurso);
+    }
+
+    @Override
+    public void verificarCupoDisponible(CursoOfertadoVerano curso) {
+        if (curso == null || curso.getId_curso() == null) {
+            return;
+        }
+        ReglasCupo.exigirCupoLibre(curso.getCupo_estimado(),
+                () -> this.objGestionarSolicitudGateway.contarInscripcionesAceptadasPorCurso(curso.getId_curso()));
+    }
+
+    @Override
+    public void verificarCupoParaAceptar(SolicitudCursoVeranoIncripcion inscripcion) {
+        if (!ReglasCupo.ocupaCupo(inscripcion)) {
+            verificarCupoDisponible(inscripcion.getObjCursoOfertadoVerano());
+        }
     }
 
     @Override
