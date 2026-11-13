@@ -4,6 +4,7 @@ import jakarta.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;
 import jakarta.validation.Valid;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.DTOPeticion.DecisionSolicitudDTOPeticion;
+import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.DTOPeticion.ValidacionPagoDTOPeticion;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -179,10 +180,10 @@ public class CursoOfertadoRestController {
     @PutMapping("/inscripciones/{idSolicitud}/validar-pago")
     public ResponseEntity<Map<String, Object>> validarPago(
             @Min(value = 1) @PathVariable Integer idSolicitud,
-            @RequestBody Map<String, Object> requestBody) {
+            @RequestBody @Valid ValidacionPagoDTOPeticion requestBody) {
         try {
-            Boolean esValido = (Boolean) requestBody.get("esValido");
-            String observaciones = (String) requestBody.get("observaciones");
+            Boolean esValido = requestBody.getEsValido();
+            String observaciones = requestBody.getObservaciones();
             
             if (esValido == null) {
                 return ResponseEntity.badRequest().body(Map.of("error", "Debe especificar si el pago es válido"));
