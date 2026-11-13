@@ -1,0 +1,792 @@
+{
+  "sin parametros, staff" : {
+    "status" : 200,
+    "body" : {
+      "tipo" : "application/pdf",
+      "guardadoEnBD" : true,
+      "tamaño" : 18,
+      "fechaSubida" : "<ahora>",
+      "ruta" : "/uploads/archivos/comprobante.pago.pdf",
+      "id" : "<milisegundos>",
+      "nombre" : "comprobante.pago.pdf"
+    },
+    "eventos" : [ "guardar(comprobante.pago.pdf,pdf)", "usuarioActual", "registro" ],
+    "documentos" : [ {
+      "id_documento" : 11,
+      "nombre" : "comprobante.pago.pdf",
+      "ruta_documento" : "comprobante.pago.pdf",
+      "fecha_documento" : "<ahora>",
+      "esValido" : true,
+      "comentario" : null,
+      "idUsuarioSubio" : 31,
+      "objSolicitud" : null
+    } ]
+  },
+  "sin parametros, estudiante" : {
+    "status" : 200,
+    "body" : {
+      "tipo" : "application/pdf",
+      "guardadoEnBD" : true,
+      "tamaño" : 18,
+      "fechaSubida" : "<ahora>",
+      "ruta" : "/uploads/archivos/comprobante.pago.pdf",
+      "id" : "<milisegundos>",
+      "nombre" : "comprobante.pago.pdf"
+    },
+    "eventos" : [ "guardar(comprobante.pago.pdf,pdf)", "usuarioActual", "registro" ],
+    "documentos" : [ {
+      "id_documento" : 11,
+      "nombre" : "comprobante.pago.pdf",
+      "ruta_documento" : "comprobante.pago.pdf",
+      "fecha_documento" : "<ahora>",
+      "esValido" : true,
+      "comentario" : null,
+      "idUsuarioSubio" : 31,
+      "objSolicitud" : null
+    } ]
+  },
+  "inscripcion con nombre" : {
+    "status" : 200,
+    "body" : {
+      "tipo" : "application/pdf",
+      "guardadoEnBD" : true,
+      "solicitudId" : "7",
+      "tamaño" : 18,
+      "fechaSubida" : "<ahora>",
+      "inscripcionId" : "7",
+      "ruta" : "/uploads/archivos/curso-verano/solicitud_70/comprobante.pago_Jos__P_rez___7.pdf",
+      "id" : "<milisegundos>",
+      "nombre" : "comprobante.pago.pdf"
+    },
+    "eventos" : [ "esStaff", "inscripcion(7)", "inscripcion(7)", "guardar(comprobante.pago_Jos__P_rez___7.pdf,pdf,curso-verano,70)", "usuarioActual", "inscripcion(7)", "registro" ],
+    "documentos" : [ {
+      "id_documento" : 11,
+      "nombre" : "comprobante.pago_Jos__P_rez___7.pdf",
+      "ruta_documento" : "curso-verano/solicitud_70/comprobante.pago_Jos__P_rez___7.pdf",
+      "fecha_documento" : "<ahora>",
+      "esValido" : true,
+      "comentario" : null,
+      "idUsuarioSubio" : 31,
+      "objSolicitud" : {
+        "id_solicitud" : 70,
+        "nombre_solicitud" : null,
+        "periodo_academico" : null,
+        "fecha_ceremonia" : null,
+        "fecha_registro_solicitud" : null,
+        "estadosSolicitud" : [ ],
+        "objUsuario" : {
+          "id_usuario" : 40,
+          "nombre_completo" : "José Pérez-Ñ",
+          "objRol" : null,
+          "codigo" : null,
+          "cedula" : null,
+          "correo" : null,
+          "password" : null,
+          "estado_usuario" : false,
+          "objPrograma" : null,
+          "solicitudes" : [ ],
+          "cursosOfertadosInscritos" : [ ]
+        },
+        "documentos" : [ ],
+        "objCursoOfertadoVerano" : null,
+        "nombre_estudiante" : null,
+        "codicion_solicitud" : null,
+        "observacion" : null
+      }
+    } ]
+  },
+  "inscripcion con nombre en blanco" : {
+    "status" : 200,
+    "body" : {
+      "tipo" : "application/pdf",
+      "guardadoEnBD" : true,
+      "solicitudId" : "8",
+      "tamaño" : 18,
+      "fechaSubida" : "<ahora>",
+      "inscripcionId" : "8",
+      "ruta" : "/uploads/archivos/curso-verano/solicitud_80/comprobante.pago_8.pdf",
+      "id" : "<milisegundos>",
+      "nombre" : "comprobante.pago.pdf"
+    },
+    "eventos" : [ "esStaff", "inscripcion(8)", "inscripcion(8)", "guardar(comprobante.pago_8.pdf,pdf,curso-verano,80)", "usuarioActual", "inscripcion(8)", "registro" ],
+    "documentos" : [ {
+      "id_documento" : 11,
+      "nombre" : "comprobante.pago_8.pdf",
+      "ruta_documento" : "curso-verano/solicitud_80/comprobante.pago_8.pdf",
+      "fecha_documento" : "<ahora>",
+      "esValido" : true,
+      "comentario" : null,
+      "idUsuarioSubio" : 31,
+      "objSolicitud" : {
+        "id_solicitud" : 80,
+        "nombre_solicitud" : null,
+        "periodo_academico" : null,
+        "fecha_ceremonia" : null,
+        "fecha_registro_solicitud" : null,
+        "estadosSolicitud" : [ ],
+        "objUsuario" : {
+          "id_usuario" : 40,
+          "nombre_completo" : "   ",
+          "objRol" : null,
+          "codigo" : null,
+          "cedula" : null,
+          "correo" : null,
+          "password" : null,
+          "estado_usuario" : false,
+          "objPrograma" : null,
+          "solicitudes" : [ ],
+          "cursosOfertadosInscritos" : [ ]
+        },
+        "documentos" : [ ],
+        "objCursoOfertadoVerano" : null,
+        "nombre_estudiante" : null,
+        "codicion_solicitud" : null,
+        "observacion" : null
+      }
+    } ]
+  },
+  "inscripcion sin usuario" : {
+    "status" : 200,
+    "body" : {
+      "tipo" : "application/pdf",
+      "guardadoEnBD" : true,
+      "solicitudId" : "9",
+      "tamaño" : 18,
+      "fechaSubida" : "<ahora>",
+      "inscripcionId" : "9",
+      "ruta" : "/uploads/archivos/curso-verano/solicitud_90/comprobante.pago_9.pdf",
+      "id" : "<milisegundos>",
+      "nombre" : "comprobante.pago.pdf"
+    },
+    "eventos" : [ "esStaff", "inscripcion(9)", "inscripcion(9)", "guardar(comprobante.pago_9.pdf,pdf,curso-verano,90)", "usuarioActual", "inscripcion(9)", "registro" ],
+    "documentos" : [ {
+      "id_documento" : 11,
+      "nombre" : "comprobante.pago_9.pdf",
+      "ruta_documento" : "curso-verano/solicitud_90/comprobante.pago_9.pdf",
+      "fecha_documento" : "<ahora>",
+      "esValido" : true,
+      "comentario" : null,
+      "idUsuarioSubio" : 31,
+      "objSolicitud" : {
+        "id_solicitud" : 90,
+        "nombre_solicitud" : null,
+        "periodo_academico" : null,
+        "fecha_ceremonia" : null,
+        "fecha_registro_solicitud" : null,
+        "estadosSolicitud" : [ ],
+        "objUsuario" : null,
+        "documentos" : [ ],
+        "objCursoOfertadoVerano" : null,
+        "nombre_estudiante" : null,
+        "codicion_solicitud" : null,
+        "observacion" : null
+      }
+    } ]
+  },
+  "inscripcion inexistente" : {
+    "status" : 200,
+    "body" : {
+      "tipo" : "application/pdf",
+      "guardadoEnBD" : true,
+      "solicitudId" : "10",
+      "tamaño" : 18,
+      "fechaSubida" : "<ahora>",
+      "inscripcionId" : "10",
+      "ruta" : "/uploads/archivos/comprobante.pago_10.pdf",
+      "id" : "<milisegundos>",
+      "nombre" : "comprobante.pago.pdf"
+    },
+    "eventos" : [ "esStaff", "inscripcion(10)", "inscripcion(10)", "guardar(comprobante.pago_10.pdf,pdf)", "usuarioActual", "inscripcion(10)", "registro" ],
+    "documentos" : [ {
+      "id_documento" : 11,
+      "nombre" : "comprobante.pago_10.pdf",
+      "ruta_documento" : "comprobante.pago_10.pdf",
+      "fecha_documento" : "<ahora>",
+      "esValido" : true,
+      "comentario" : null,
+      "idUsuarioSubio" : 31,
+      "objSolicitud" : {
+        "id_solicitud" : 10,
+        "nombre_solicitud" : null,
+        "periodo_academico" : null,
+        "fecha_ceremonia" : null,
+        "fecha_registro_solicitud" : null,
+        "estadosSolicitud" : [ ],
+        "objUsuario" : null,
+        "documentos" : [ ],
+        "objCursoOfertadoVerano" : null
+      }
+    } ]
+  },
+  "inscripcion con error" : {
+    "status" : 200,
+    "body" : {
+      "tipo" : "application/pdf",
+      "guardadoEnBD" : true,
+      "solicitudId" : "11",
+      "tamaño" : 18,
+      "fechaSubida" : "<ahora>",
+      "inscripcionId" : "11",
+      "ruta" : "/uploads/archivos/comprobante.pago_11.pdf",
+      "id" : "<milisegundos>",
+      "nombre" : "comprobante.pago.pdf"
+    },
+    "eventos" : [ "esStaff", "inscripcion(11)", "inscripcion(11)", "guardar(comprobante.pago_11.pdf,pdf)", "usuarioActual", "inscripcion(11)", "registro" ],
+    "documentos" : [ {
+      "id_documento" : 11,
+      "nombre" : "comprobante.pago_11.pdf",
+      "ruta_documento" : "comprobante.pago_11.pdf",
+      "fecha_documento" : "<ahora>",
+      "esValido" : true,
+      "comentario" : null,
+      "idUsuarioSubio" : 31,
+      "objSolicitud" : {
+        "id_solicitud" : 11,
+        "nombre_solicitud" : null,
+        "periodo_academico" : null,
+        "fecha_ceremonia" : null,
+        "fecha_registro_solicitud" : null,
+        "estadosSolicitud" : [ ],
+        "objUsuario" : null,
+        "documentos" : [ ],
+        "objCursoOfertadoVerano" : null
+      }
+    } ]
+  },
+  "inscripcion con espacios" : {
+    "status" : 200,
+    "body" : {
+      "tipo" : "application/pdf",
+      "guardadoEnBD" : true,
+      "solicitudId" : " 7 ",
+      "tamaño" : 18,
+      "fechaSubida" : "<ahora>",
+      "inscripcionId" : " 7 ",
+      "ruta" : "/uploads/archivos/comprobante.pago_ 7 .pdf",
+      "id" : "<milisegundos>",
+      "nombre" : "comprobante.pago.pdf"
+    },
+    "eventos" : [ "esStaff", "guardar(comprobante.pago_ 7 .pdf,pdf)", "usuarioActual", "registro" ],
+    "documentos" : [ {
+      "id_documento" : 11,
+      "nombre" : "comprobante.pago_ 7 .pdf",
+      "ruta_documento" : "comprobante.pago_ 7 .pdf",
+      "fecha_documento" : "<ahora>",
+      "esValido" : true,
+      "comentario" : null,
+      "idUsuarioSubio" : 31,
+      "objSolicitud" : null
+    } ]
+  },
+  "inscripcion no numerica" : {
+    "status" : 200,
+    "body" : {
+      "tipo" : "application/pdf",
+      "guardadoEnBD" : true,
+      "solicitudId" : "abc",
+      "tamaño" : 18,
+      "fechaSubida" : "<ahora>",
+      "inscripcionId" : "abc",
+      "ruta" : "/uploads/archivos/comprobante.pago_abc.pdf",
+      "id" : "<milisegundos>",
+      "nombre" : "comprobante.pago.pdf"
+    },
+    "eventos" : [ "esStaff", "guardar(comprobante.pago_abc.pdf,pdf)", "usuarioActual", "registro" ],
+    "documentos" : [ {
+      "id_documento" : 11,
+      "nombre" : "comprobante.pago_abc.pdf",
+      "ruta_documento" : "comprobante.pago_abc.pdf",
+      "fecha_documento" : "<ahora>",
+      "esValido" : true,
+      "comentario" : null,
+      "idUsuarioSubio" : 31,
+      "objSolicitud" : null
+    } ]
+  },
+  "inscripcion en blanco" : {
+    "status" : 200,
+    "body" : {
+      "tipo" : "application/pdf",
+      "guardadoEnBD" : true,
+      "tamaño" : 18,
+      "fechaSubida" : "<ahora>",
+      "ruta" : "/uploads/archivos/comprobante.pago.pdf",
+      "id" : "<milisegundos>",
+      "nombre" : "comprobante.pago.pdf"
+    },
+    "eventos" : [ "guardar(comprobante.pago.pdf,pdf)", "usuarioActual", "registro" ],
+    "documentos" : [ {
+      "id_documento" : 11,
+      "nombre" : "comprobante.pago.pdf",
+      "ruta_documento" : "comprobante.pago.pdf",
+      "fecha_documento" : "<ahora>",
+      "esValido" : true,
+      "comentario" : null,
+      "idUsuarioSubio" : 31,
+      "objSolicitud" : null
+    } ]
+  },
+  "inscripcion con tipo" : {
+    "status" : 200,
+    "body" : {
+      "tipo" : "application/pdf",
+      "guardadoEnBD" : true,
+      "solicitudId" : "7",
+      "tamaño" : 18,
+      "fechaSubida" : "<ahora>",
+      "inscripcionId" : "7",
+      "ruta" : "/uploads/archivos/homologacion/solicitud_7/comprobante.pago_Jos__P_rez___7.pdf",
+      "tipoSolicitud" : "homologacion",
+      "id" : "<milisegundos>",
+      "nombre" : "comprobante.pago.pdf"
+    },
+    "eventos" : [ "esStaff", "inscripcion(7)", "guardar(comprobante.pago_Jos__P_rez___7.pdf,pdf,homologacion,7)", "usuarioActual", "inscripcion(7)", "registro" ],
+    "documentos" : [ {
+      "id_documento" : 11,
+      "nombre" : "comprobante.pago_Jos__P_rez___7.pdf",
+      "ruta_documento" : "homologacion/solicitud_7/comprobante.pago_Jos__P_rez___7.pdf",
+      "fecha_documento" : "<ahora>",
+      "esValido" : true,
+      "comentario" : null,
+      "idUsuarioSubio" : 31,
+      "objSolicitud" : {
+        "id_solicitud" : 70,
+        "nombre_solicitud" : null,
+        "periodo_academico" : null,
+        "fecha_ceremonia" : null,
+        "fecha_registro_solicitud" : null,
+        "estadosSolicitud" : [ ],
+        "objUsuario" : {
+          "id_usuario" : 40,
+          "nombre_completo" : "José Pérez-Ñ",
+          "objRol" : null,
+          "codigo" : null,
+          "cedula" : null,
+          "correo" : null,
+          "password" : null,
+          "estado_usuario" : false,
+          "objPrograma" : null,
+          "solicitudes" : [ ],
+          "cursosOfertadosInscritos" : [ ]
+        },
+        "documentos" : [ ],
+        "objCursoOfertadoVerano" : null,
+        "nombre_estudiante" : null,
+        "codicion_solicitud" : null,
+        "observacion" : null
+      }
+    } ]
+  },
+  "solicitud con tipo" : {
+    "status" : 200,
+    "body" : {
+      "tipo" : "application/pdf",
+      "guardadoEnBD" : true,
+      "solicitudId" : "5",
+      "tamaño" : 18,
+      "fechaSubida" : "<ahora>",
+      "ruta" : "/uploads/archivos/reingreso/solicitud_5/comprobante.pago.pdf",
+      "tipoSolicitud" : "reingreso",
+      "id" : "<milisegundos>",
+      "nombre" : "comprobante.pago.pdf"
+    },
+    "eventos" : [ "esStaff", "guardar(comprobante.pago.pdf,pdf,reingreso,5)", "usuarioActual", "inscripcion(5)", "registro" ],
+    "documentos" : [ {
+      "id_documento" : 11,
+      "nombre" : "comprobante.pago.pdf",
+      "ruta_documento" : "reingreso/solicitud_5/comprobante.pago.pdf",
+      "fecha_documento" : "<ahora>",
+      "esValido" : true,
+      "comentario" : null,
+      "idUsuarioSubio" : 31,
+      "objSolicitud" : {
+        "id_solicitud" : 5,
+        "nombre_solicitud" : null,
+        "periodo_academico" : null,
+        "fecha_ceremonia" : null,
+        "fecha_registro_solicitud" : null,
+        "estadosSolicitud" : [ ],
+        "objUsuario" : null,
+        "documentos" : [ ],
+        "objCursoOfertadoVerano" : null
+      }
+    } ]
+  },
+  "solicitud no numerica con tipo" : {
+    "status" : 200,
+    "body" : {
+      "tipo" : "application/pdf",
+      "guardadoEnBD" : true,
+      "solicitudId" : "x5",
+      "tamaño" : 18,
+      "fechaSubida" : "<ahora>",
+      "ruta" : "/uploads/archivos/comprobante.pago.pdf",
+      "tipoSolicitud" : "reingreso",
+      "id" : "<milisegundos>",
+      "nombre" : "comprobante.pago.pdf"
+    },
+    "eventos" : [ "esStaff", "guardar(comprobante.pago.pdf,pdf)", "usuarioActual", "registro" ],
+    "documentos" : [ {
+      "id_documento" : 11,
+      "nombre" : "comprobante.pago.pdf",
+      "ruta_documento" : "comprobante.pago.pdf",
+      "fecha_documento" : "<ahora>",
+      "esValido" : true,
+      "comentario" : null,
+      "idUsuarioSubio" : 31,
+      "objSolicitud" : null
+    } ]
+  },
+  "alias idSolicitud que es inscripcion" : {
+    "status" : 200,
+    "body" : {
+      "tipo" : "application/pdf",
+      "guardadoEnBD" : true,
+      "solicitudId" : "7",
+      "tamaño" : 18,
+      "fechaSubida" : "<ahora>",
+      "ruta" : "/uploads/archivos/comprobante.pago.pdf",
+      "id" : "<milisegundos>",
+      "nombre" : "comprobante.pago.pdf"
+    },
+    "eventos" : [ "esStaff", "guardar(comprobante.pago.pdf,pdf)", "usuarioActual", "inscripcion(7)", "registro" ],
+    "documentos" : [ {
+      "id_documento" : 11,
+      "nombre" : "comprobante.pago.pdf",
+      "ruta_documento" : "comprobante.pago.pdf",
+      "fecha_documento" : "<ahora>",
+      "esValido" : true,
+      "comentario" : null,
+      "idUsuarioSubio" : 31,
+      "objSolicitud" : {
+        "id_solicitud" : 70,
+        "nombre_solicitud" : null,
+        "periodo_academico" : null,
+        "fecha_ceremonia" : null,
+        "fecha_registro_solicitud" : null,
+        "estadosSolicitud" : [ ],
+        "objUsuario" : {
+          "id_usuario" : 40,
+          "nombre_completo" : "José Pérez-Ñ",
+          "objRol" : null,
+          "codigo" : null,
+          "cedula" : null,
+          "correo" : null,
+          "password" : null,
+          "estado_usuario" : false,
+          "objPrograma" : null,
+          "solicitudes" : [ ],
+          "cursosOfertadosInscritos" : [ ]
+        },
+        "documentos" : [ ],
+        "objCursoOfertadoVerano" : null,
+        "nombre_estudiante" : null,
+        "codicion_solicitud" : null,
+        "observacion" : null
+      }
+    } ]
+  },
+  "solicitud inexistente como inscripcion" : {
+    "status" : 200,
+    "body" : {
+      "tipo" : "application/pdf",
+      "guardadoEnBD" : true,
+      "solicitudId" : "10",
+      "tamaño" : 18,
+      "fechaSubida" : "<ahora>",
+      "ruta" : "/uploads/archivos/comprobante.pago.pdf",
+      "id" : "<milisegundos>",
+      "nombre" : "comprobante.pago.pdf"
+    },
+    "eventos" : [ "esStaff", "guardar(comprobante.pago.pdf,pdf)", "usuarioActual", "inscripcion(10)", "registro" ],
+    "documentos" : [ {
+      "id_documento" : 11,
+      "nombre" : "comprobante.pago.pdf",
+      "ruta_documento" : "comprobante.pago.pdf",
+      "fecha_documento" : "<ahora>",
+      "esValido" : true,
+      "comentario" : null,
+      "idUsuarioSubio" : 31,
+      "objSolicitud" : {
+        "id_solicitud" : 10,
+        "nombre_solicitud" : null,
+        "periodo_academico" : null,
+        "fecha_ceremonia" : null,
+        "fecha_registro_solicitud" : null,
+        "estadosSolicitud" : [ ],
+        "objUsuario" : null,
+        "documentos" : [ ],
+        "objCursoOfertadoVerano" : null
+      }
+    } ]
+  },
+  "solicitud con error al buscar inscripcion" : {
+    "status" : 200,
+    "body" : {
+      "tipo" : "application/pdf",
+      "guardadoEnBD" : true,
+      "solicitudId" : "11",
+      "tamaño" : 18,
+      "fechaSubida" : "<ahora>",
+      "ruta" : "/uploads/archivos/comprobante.pago.pdf",
+      "id" : "<milisegundos>",
+      "nombre" : "comprobante.pago.pdf"
+    },
+    "eventos" : [ "esStaff", "guardar(comprobante.pago.pdf,pdf)", "usuarioActual", "inscripcion(11)", "registro" ],
+    "documentos" : [ {
+      "id_documento" : 11,
+      "nombre" : "comprobante.pago.pdf",
+      "ruta_documento" : "comprobante.pago.pdf",
+      "fecha_documento" : "<ahora>",
+      "esValido" : true,
+      "comentario" : null,
+      "idUsuarioSubio" : 31,
+      "objSolicitud" : {
+        "id_solicitud" : 11,
+        "nombre_solicitud" : null,
+        "periodo_academico" : null,
+        "fecha_ceremonia" : null,
+        "fecha_registro_solicitud" : null,
+        "estadosSolicitud" : [ ],
+        "objUsuario" : null,
+        "documentos" : [ ],
+        "objCursoOfertadoVerano" : null
+      }
+    } ]
+  },
+  "solicitud en blanco usa alias" : {
+    "status" : 200,
+    "body" : {
+      "tipo" : "application/pdf",
+      "guardadoEnBD" : true,
+      "solicitudId" : "12",
+      "tamaño" : 18,
+      "fechaSubida" : "<ahora>",
+      "ruta" : "/uploads/archivos/comprobante.pago.pdf",
+      "id" : "<milisegundos>",
+      "nombre" : "comprobante.pago.pdf"
+    },
+    "eventos" : [ "esStaff", "guardar(comprobante.pago.pdf,pdf)", "usuarioActual", "inscripcion(12)", "registro" ],
+    "documentos" : [ {
+      "id_documento" : 11,
+      "nombre" : "comprobante.pago.pdf",
+      "ruta_documento" : "comprobante.pago.pdf",
+      "fecha_documento" : "<ahora>",
+      "esValido" : true,
+      "comentario" : null,
+      "idUsuarioSubio" : 31,
+      "objSolicitud" : {
+        "id_solicitud" : 12,
+        "nombre_solicitud" : null,
+        "periodo_academico" : null,
+        "fecha_ceremonia" : null,
+        "fecha_registro_solicitud" : null,
+        "estadosSolicitud" : [ ],
+        "objUsuario" : null,
+        "documentos" : [ ],
+        "objCursoOfertadoVerano" : null
+      }
+    } ]
+  },
+  "inscripcion tiene prioridad sobre solicitud" : {
+    "status" : 200,
+    "body" : {
+      "tipo" : "application/pdf",
+      "guardadoEnBD" : true,
+      "solicitudId" : "7",
+      "tamaño" : 18,
+      "fechaSubida" : "<ahora>",
+      "inscripcionId" : "7",
+      "ruta" : "/uploads/archivos/curso-verano/solicitud_70/comprobante.pago_Jos__P_rez___7.pdf",
+      "id" : "<milisegundos>",
+      "nombre" : "comprobante.pago.pdf"
+    },
+    "eventos" : [ "esStaff", "esDueno(7)", "inscripcion(7)", "inscripcion(7)", "guardar(comprobante.pago_Jos__P_rez___7.pdf,pdf,curso-verano,70)", "usuarioActual", "inscripcion(7)", "registro" ],
+    "documentos" : [ {
+      "id_documento" : 11,
+      "nombre" : "comprobante.pago_Jos__P_rez___7.pdf",
+      "ruta_documento" : "curso-verano/solicitud_70/comprobante.pago_Jos__P_rez___7.pdf",
+      "fecha_documento" : "<ahora>",
+      "esValido" : true,
+      "comentario" : null,
+      "idUsuarioSubio" : 31,
+      "objSolicitud" : {
+        "id_solicitud" : 70,
+        "nombre_solicitud" : null,
+        "periodo_academico" : null,
+        "fecha_ceremonia" : null,
+        "fecha_registro_solicitud" : null,
+        "estadosSolicitud" : [ ],
+        "objUsuario" : {
+          "id_usuario" : 40,
+          "nombre_completo" : "José Pérez-Ñ",
+          "objRol" : null,
+          "codigo" : null,
+          "cedula" : null,
+          "correo" : null,
+          "password" : null,
+          "estado_usuario" : false,
+          "objPrograma" : null,
+          "solicitudes" : [ ],
+          "cursosOfertadosInscritos" : [ ]
+        },
+        "documentos" : [ ],
+        "objCursoOfertadoVerano" : null,
+        "nombre_estudiante" : null,
+        "codicion_solicitud" : null,
+        "observacion" : null
+      }
+    } ]
+  },
+  "estudiante no dueno" : {
+    "status" : 403,
+    "body" : {
+      "error" : "No puede adjuntar archivos a una solicitud que no es suya"
+    },
+    "eventos" : [ "esStaff", "esDueno(5)" ],
+    "documentos" : [ ]
+  },
+  "estudiante con id invalido" : {
+    "status" : 400,
+    "body" : {
+      "error" : "ID de solicitud inválido"
+    },
+    "eventos" : [ "esStaff" ],
+    "documentos" : [ ]
+  },
+  "estudiante con id con espacios y tipo" : {
+    "status" : 200,
+    "body" : {
+      "tipo" : "application/pdf",
+      "guardadoEnBD" : true,
+      "solicitudId" : " 5 ",
+      "tamaño" : 18,
+      "fechaSubida" : "<ahora>",
+      "ruta" : "/uploads/archivos/comprobante.pago.pdf",
+      "tipoSolicitud" : "x",
+      "id" : "<milisegundos>",
+      "nombre" : "comprobante.pago.pdf"
+    },
+    "eventos" : [ "esStaff", "esDueno(5)", "guardar(comprobante.pago.pdf,pdf)", "usuarioActual", "registro" ],
+    "documentos" : [ {
+      "id_documento" : 11,
+      "nombre" : "comprobante.pago.pdf",
+      "ruta_documento" : "comprobante.pago.pdf",
+      "fecha_documento" : "<ahora>",
+      "esValido" : true,
+      "comentario" : null,
+      "idUsuarioSubio" : 31,
+      "objSolicitud" : null
+    } ]
+  },
+  "registro devuelve null" : {
+    "status" : 200,
+    "body" : {
+      "tipo" : "application/pdf",
+      "guardadoEnBD" : false,
+      "solicitudId" : "5",
+      "tamaño" : 18,
+      "fechaSubida" : "<ahora>",
+      "ruta" : "/uploads/archivos/comprobante.pago.pdf",
+      "id" : "<milisegundos>",
+      "nombre" : "comprobante.pago.pdf"
+    },
+    "eventos" : [ "esStaff", "guardar(comprobante.pago.pdf,pdf)", "usuarioActual", "inscripcion(5)", "registro" ],
+    "documentos" : [ {
+      "id_documento" : null,
+      "nombre" : "comprobante.pago.pdf",
+      "ruta_documento" : "comprobante.pago.pdf",
+      "fecha_documento" : "<ahora>",
+      "esValido" : true,
+      "comentario" : null,
+      "idUsuarioSubio" : 31,
+      "objSolicitud" : {
+        "id_solicitud" : 5,
+        "nombre_solicitud" : null,
+        "periodo_academico" : null,
+        "fecha_ceremonia" : null,
+        "fecha_registro_solicitud" : null,
+        "estadosSolicitud" : [ ],
+        "objUsuario" : null,
+        "documentos" : [ ],
+        "objCursoOfertadoVerano" : null
+      }
+    } ]
+  },
+  "registro lanza error" : {
+    "status" : 200,
+    "body" : {
+      "tipo" : "application/pdf",
+      "guardadoEnBD" : false,
+      "solicitudId" : "5",
+      "tamaño" : 18,
+      "fechaSubida" : "<ahora>",
+      "ruta" : "/uploads/archivos/comprobante.pago.pdf",
+      "id" : "<milisegundos>",
+      "nombre" : "comprobante.pago.pdf"
+    },
+    "eventos" : [ "esStaff", "guardar(comprobante.pago.pdf,pdf)", "usuarioActual", "inscripcion(5)", "registro" ],
+    "documentos" : [ {
+      "id_documento" : null,
+      "nombre" : "comprobante.pago.pdf",
+      "ruta_documento" : "comprobante.pago.pdf",
+      "fecha_documento" : "<ahora>",
+      "esValido" : true,
+      "comentario" : null,
+      "idUsuarioSubio" : 31,
+      "objSolicitud" : {
+        "id_solicitud" : 5,
+        "nombre_solicitud" : null,
+        "periodo_academico" : null,
+        "fecha_ceremonia" : null,
+        "fecha_registro_solicitud" : null,
+        "estadosSolicitud" : [ ],
+        "objUsuario" : null,
+        "documentos" : [ ],
+        "objCursoOfertadoVerano" : null
+      }
+    } ]
+  },
+  "usuario actual lanza error" : {
+    "status" : 200,
+    "body" : {
+      "tipo" : "application/pdf",
+      "guardadoEnBD" : false,
+      "tamaño" : 18,
+      "fechaSubida" : "<ahora>",
+      "ruta" : "/uploads/archivos/comprobante.pago.pdf",
+      "id" : "<milisegundos>",
+      "nombre" : "comprobante.pago.pdf"
+    },
+    "eventos" : [ "guardar(comprobante.pago.pdf,pdf)", "usuarioActual" ],
+    "documentos" : [ ]
+  },
+  "archivo vacio" : {
+    "status" : 400,
+    "body" : {
+      "error" : "No se proporcionó archivo o está vacío"
+    },
+    "eventos" : [ "esStaff" ],
+    "documentos" : [ ]
+  },
+  "archivo no pdf" : {
+    "status" : 415,
+    "body" : {
+      "error" : "Solo se permiten archivos PDF. El archivo no es un PDF válido."
+    },
+    "eventos" : [ "esStaff" ],
+    "documentos" : [ ]
+  },
+  "guardado falla" : {
+    "status" : 500,
+    "body" : {
+      "codigoError" : "GC-0001",
+      "mensaje" : "Ha ocurrido un error inesperado. Por favor, inténtelo de nuevo.",
+      "codigoHttp" : 500,
+      "url" : "http://localhost/api/archivos/subir/pdf",
+      "metodo" : "POST"
+    },
+    "eventos" : [ "esStaff", "inscripcion(7)", "inscripcion(7)", "guardar(comprobante.pago_Jos__P_rez___7.pdf,pdf,curso-verano,70)", "guardar(comprobante.pago_Jos__P_rez___7.pdf,pdf)" ],
+    "documentos" : [ ]
+  }
+}

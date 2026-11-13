@@ -169,19 +169,10 @@ public class ArchivosRestController {
         
         boolean documentoGuardadoEnBD = false;
         try {
-            Documento documento = new Documento();
-            // Extraer solo el nombre del archivo (sin la ruta) para el campo nombre
-            String nombreArchivoSimple = nombreArchivo.contains("/") 
-                ? nombreArchivo.substring(nombreArchivo.lastIndexOf("/") + 1) 
-                : nombreArchivo;
-            documento.setNombre(nombreArchivoSimple);
-            // Guardar la ruta completa en ruta_documento
-            documento.setRuta_documento(nombreArchivo);
-            documento.setFecha_documento(new java.util.Date());
-            documento.setEsValido(true);
             // Si no trae solicitud, se asociará a la próxima solicitud que cree este mismo usuario
-            documento.setIdUsuarioSubio(autorizacion.idUsuarioActual());
-
+            Integer idUsuarioSubio = autorizacion.idUsuarioActual();
+            // BUG-20: sin inscripción con ese id, se asocia a la solicitud con el mismo id, sea cual sea
+            Solicitud destino = null;
             if (solicitudIdUnificado != null && !solicitudIdUnificado.trim().isEmpty()) {
                 Integer solicitudIdParsed = null;
                 try {
@@ -190,29 +181,18 @@ public class ArchivosRestController {
                 }
 
                 if (solicitudIdParsed != null) {
-                    SolicitudCursoVeranoIncripcion inscripcionReal = null;
                     try {
-                        inscripcionReal = solicitudCursoVeranoCU.buscarPorIdInscripcion(solicitudIdParsed);
+                        destino = solicitudCursoVeranoCU.buscarPorIdInscripcion(solicitudIdParsed);
                     } catch (Exception e) {
                     }
-
-                    if (inscripcionReal != null) {
-                        documento.setObjSolicitud(inscripcionReal);
-                    } else {
-                        Solicitud solicitudGenerica = new Solicitud();
-                        solicitudGenerica.setId_solicitud(solicitudIdParsed);
-                        documento.setObjSolicitud(solicitudGenerica);
+                    if (destino == null) {
+                        destino = new Solicitud();
+                        destino.setId_solicitud(solicitudIdParsed);
                     }
                 }
             }
-            
-            Documento documentoGuardado = documentosCU.registrarDocumento(documento);
-            
-            if (documentoGuardado != null) {
-                documentoGuardadoEnBD = true;
-            } else {
-            }
-            
+
+            documentoGuardadoEnBD = documentosCU.registrarArchivoGuardado(nombreArchivo, destino, idUsuarioSubio) != null;
         } catch (Exception e) {
             log.error("Error al guardar documento en BD: {}", nombreArchivo, e);
         }

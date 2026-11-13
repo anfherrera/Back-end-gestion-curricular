@@ -1,5 +1,7 @@
 package co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input;
 
+import java.util.function.BooleanSupplier;
+
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Documento;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.ArchivoSubido;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Solicitud;
@@ -17,6 +19,22 @@ public interface GestionarDocumentosCUIntPort {
     /** Guarda y registra un PDF; conserva la política de nombre de cada operación. */
     Documento adjuntarASolicitud(ArchivoSubido archivo, Solicitud solicitud, String carpeta,
             String comentario, boolean usarNombreGuardado);
+
+    /** Resultado de {@link #guardarYAdjuntarSiExiste}: {@code documento} es lo que devolvió el registro. */
+    record AdjuntoCondicional(boolean solicitudExiste, Documento documento) {}
+
+    /**
+     * Guarda el archivo con su tipo y nombre original y solo después comprueba la solicitud: si no existe
+     * no lo registra, y el archivo queda en disco (BUG-21). Lo usa el oficio Word de Paz y Salvo.
+     */
+    AdjuntoCondicional guardarYAdjuntarSiExiste(ArchivoSubido archivo, String tipoArchivo, String carpeta,
+            Integer idSolicitud, BooleanSupplier solicitudExiste);
+
+    /**
+     * Registra un archivo que ya está en {@code ruta}: el nombre es el último segmento de la ruta.
+     * {@code solicitud} e {@code idUsuario} pueden ser null.
+     */
+    Documento registrarArchivoGuardado(String ruta, Solicitud solicitud, Integer idUsuario);
 
     /**
      * Añade un comentario al documento concatenándolo al existente (no reemplaza).

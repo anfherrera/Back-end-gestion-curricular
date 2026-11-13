@@ -3,6 +3,7 @@ package co.edu.unicauca.decanatura.gestion_curricular.dominio.casosDeUso;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Date;
+import java.util.function.BooleanSupplier;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.ArchivoSubido;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Solicitud;
 
@@ -44,9 +45,31 @@ public class GestionarDocumentosCUAdapter implements GestionarDocumentosCUIntPor
         String nombre = archivo.nombreOriginal();
         String ruta = archivos.saveFile(archivo, nombre, "pdf", carpeta, solicitud.getId_solicitud());
         if (usarNombreGuardado) {
-            nombre = ruta.contains("/") ? ruta.substring(ruta.lastIndexOf('/') + 1) : ruta;
+            nombre = nombreDeRuta(ruta);
         }
         return registrarGuardado(nombre, ruta, solicitud, null, comentario);
+    }
+
+    @Override
+    public AdjuntoCondicional guardarYAdjuntarSiExiste(ArchivoSubido archivo, String tipoArchivo, String carpeta,
+            Integer idSolicitud, BooleanSupplier solicitudExiste) {
+        String nombre = archivo.nombreOriginal();
+        String ruta = archivos.saveFile(archivo, nombre, tipoArchivo, carpeta, idSolicitud);
+        if (!solicitudExiste.getAsBoolean()) {
+            return new AdjuntoCondicional(false, null);
+        }
+        Solicitud solicitud = new Solicitud();
+        solicitud.setId_solicitud(idSolicitud);
+        return new AdjuntoCondicional(true, registrarGuardado(nombre, ruta, solicitud, null, null));
+    }
+
+    @Override
+    public Documento registrarArchivoGuardado(String ruta, Solicitud solicitud, Integer idUsuario) {
+        return registrarGuardado(nombreDeRuta(ruta), ruta, solicitud, idUsuario, null);
+    }
+
+    private static String nombreDeRuta(String ruta) {
+        return ruta.contains("/") ? ruta.substring(ruta.lastIndexOf('/') + 1) : ruta;
     }
 
     private Documento registrarGuardado(String nombre, String ruta, Solicitud solicitud,

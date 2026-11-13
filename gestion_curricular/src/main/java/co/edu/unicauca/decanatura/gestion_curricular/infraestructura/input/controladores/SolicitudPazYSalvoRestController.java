@@ -662,35 +662,16 @@ public ResponseEntity<DocumentosDTORespuesta> guardarOficioPazSalvo(
         return ResponseEntity.status(HttpStatus.UNSUPPORTED_MEDIA_TYPE).body(null);
     }
     
-        // Guardar archivo organizado en subcarpetas
-        String rutaArchivo = this.objGestionarArchivos.saveFile(ArchivoMultipart.de(file), nombreOriginal, "docx", "pazysalvo", idSolicitud);
-    
-    // Crear documento
-    Documento doc = new Documento();
-    doc.setNombre(nombreOriginal);
-    doc.setRuta_documento(rutaArchivo); // Guardar ruta completa con subcarpetas
-    doc.setFecha_documento(new Date());
-    doc.setEsValido(true);
-    
-    // Asociar solicitud
-    SolicitudPazYSalvo solicitud = solicitudPazYSalvoCU.buscarPorId(idSolicitud);
-    if (solicitud != null) {
-        Solicitud objSolicitud = new Solicitud();
-        objSolicitud.setId_solicitud(idSolicitud);
-        doc.setObjSolicitud(objSolicitud);
-    } else {
+    // Guarda en subcarpetas y después comprueba la solicitud (BUG-21: con 404 el archivo queda en disco)
+    var adjunto = documentosCU.guardarYAdjuntarSiExiste(ArchivoMultipart.de(file), "docx",
+            "pazysalvo", idSolicitud, () -> solicitudPazYSalvoCU.buscarPorId(idSolicitud) != null);
+    if (!adjunto.solicitudExiste()) {
         return ResponseEntity.notFound().build();
     }
-    
-    // Guardar documento en BD
-    Documento documentoGuardado = documentosCU.registrarDocumento(doc);
-    
-    ResponseEntity<DocumentosDTORespuesta> respuesta = new ResponseEntity<>(
-        documentosMapperDominio.mappearDeDocumentoADTORespuesta(documentoGuardado), 
+    return new ResponseEntity<>(
+        documentosMapperDominio.mappearDeDocumentoADTORespuesta(adjunto.documento()),
         HttpStatus.CREATED
     );
-    
-    return respuesta;
 }
 
     /**
