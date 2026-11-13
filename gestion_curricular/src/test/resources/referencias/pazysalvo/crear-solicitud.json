@@ -1,0 +1,302 @@
+{
+  "POST [estudiante, solo fecha] {\"fecha_solicitud\": \"2025-01-15\"}" : {
+    "estado" : 201,
+    "cuerpo" : {
+      "categoria" : null,
+      "documentos" : [ ],
+      "estadosSolicitud" : [ {
+        "comentario" : null,
+        "estado_actual" : "Enviada",
+        "fecha_registro_estado" : "<hoy>",
+        "id_estado" : "<id>",
+        "objSolicitud" : null
+      } ],
+      "fecha_ceremonia" : null,
+      "fecha_registro_solicitud" : "<hoy>",
+      "id_solicitud" : "<id>",
+      "nombre_solicitud" : "Solicitud Paz y Salvo - Estudiante crea1",
+      "objUsuario" : {
+        "cedula" : "PYSCARcrea1",
+        "codigo" : "PYSCAR-crea1",
+        "correo" : "crea1.pys.caract@example.test",
+        "estado_usuario" : true,
+        "id_usuario" : "{crea1}",
+        "nombre_completo" : "Estudiante crea1",
+        "objPrograma" : {
+          "codigo" : "PYS-CAR",
+          "id_programa" : "<id>",
+          "nombre_programa" : "Programa de caracterización paz y salvo"
+        },
+        "rol" : {
+          "id_rol" : "<id>",
+          "nombre" : "Estudiante"
+        }
+      },
+      "periodo_academico" : "<periodoActual>",
+      "tipo_solicitud" : null
+    }
+  },
+  "POST [estudiante, segunda en trámite] {\"fecha_solicitud\": \"2025-01-16\"}" : {
+    "estado" : 409,
+    "cuerpo" : {
+      "codigo" : "REGLA_NEGOCIO",
+      "error" : "GC-0004 - Violación a regla de negocio: Ya tiene una solicitud de Paz y Salvo en trámite. Debe esperar a que sea aprobada o rechazada."
+    }
+  },
+  "POST [estudiante, período, título y director] {\"fecha_solicitud\": \"2025-01-15\", \"periodo_academico\": \" 2024-2 \", \"titulo_trabajo_grado\": \"  Un título  \", \"director_trabajo_grado\": \"  \", \"idUsuario\": 2000000001, \"objUsuario\": {\"id_usuario\": 2000000001}}" : {
+    "estado" : 201,
+    "cuerpo" : {
+      "categoria" : null,
+      "documentos" : [ ],
+      "estadosSolicitud" : [ {
+        "comentario" : null,
+        "estado_actual" : "Enviada",
+        "fecha_registro_estado" : "<hoy>",
+        "id_estado" : "<id>",
+        "objSolicitud" : null
+      } ],
+      "fecha_ceremonia" : null,
+      "fecha_registro_solicitud" : "<hoy>",
+      "id_solicitud" : "<id>",
+      "nombre_solicitud" : "Solicitud Paz y Salvo - Estudiante crea2",
+      "objUsuario" : {
+        "cedula" : "PYSCARcrea2",
+        "codigo" : "PYSCAR-crea2",
+        "correo" : "crea2.pys.caract@example.test",
+        "estado_usuario" : true,
+        "id_usuario" : "{crea2}",
+        "nombre_completo" : "Estudiante crea2",
+        "objPrograma" : {
+          "codigo" : "PYS-CAR",
+          "id_programa" : "<id>",
+          "nombre_programa" : "Programa de caracterización paz y salvo"
+        },
+        "rol" : {
+          "id_rol" : "<id>",
+          "nombre" : "Estudiante"
+        }
+      },
+      "periodo_academico" : "2024-2",
+      "tipo_solicitud" : null
+    }
+  },
+  "POST [estudiante, período inválido] {\"periodo_academico\": \"2024-9\"}" : {
+    "estado" : 400,
+    "cuerpo" : {
+      "error" : "Formato de solicitud inválido: Período académico inválido. Use formato: YYYY-P (ej: 2024-2)"
+    }
+  },
+  "POST [estudiante, fecha inválida] {\"fecha_solicitud\": \"15/01/2025\"}" : {
+    "estado" : 400,
+    "cuerpo" : {
+      "error" : "Formato de solicitud inválido: fecha_solicitud con formato inválido (yyyy-MM-dd)"
+    }
+  },
+  "POST [estudiante, fecha en blanco y sin período] {\"fecha_solicitud\": \" \"}" : {
+    "estado" : 201,
+    "cuerpo" : {
+      "categoria" : null,
+      "documentos" : [ ],
+      "estadosSolicitud" : [ {
+        "comentario" : null,
+        "estado_actual" : "Enviada",
+        "fecha_registro_estado" : "<hoy>",
+        "id_estado" : "<id>",
+        "objSolicitud" : null
+      } ],
+      "fecha_ceremonia" : null,
+      "fecha_registro_solicitud" : "<hoy>",
+      "id_solicitud" : "<id>",
+      "nombre_solicitud" : "Solicitud Paz y Salvo - Estudiante crea3",
+      "objUsuario" : {
+        "cedula" : "PYSCARcrea3",
+        "codigo" : "PYSCAR-crea3",
+        "correo" : "crea3.pys.caract@example.test",
+        "estado_usuario" : true,
+        "id_usuario" : "{crea3}",
+        "nombre_completo" : "Estudiante crea3",
+        "objPrograma" : {
+          "codigo" : "PYS-CAR",
+          "id_programa" : "<id>",
+          "nombre_programa" : "Programa de caracterización paz y salvo"
+        },
+        "rol" : {
+          "id_rol" : "<id>",
+          "nombre" : "Estudiante"
+        }
+      },
+      "periodo_academico" : "<periodoActual>",
+      "tipo_solicitud" : null
+    }
+  },
+  "POST [estudiante, cuerpo vacío] {}" : {
+    "estado" : 400,
+    "cuerpo" : {
+      "error" : "Los datos de la solicitud son requeridos"
+    }
+  },
+  "POST [estudiante, cuerpo que no es objeto] [1]" : {
+    "estado" : 400,
+    "cuerpo" : {
+      "error" : "Formato de solicitud no soportado"
+    }
+  },
+  "POST [estudiante sin cuenta] {\"x\":1}" : {
+    "estado" : 401,
+    "cuerpo" : {
+      "error" : "Usuario no autenticado"
+    }
+  },
+  "POST [admin, idUsuario inexistente] {\"idUsuario\": 2000000001}" : {
+    "estado" : 400,
+    "cuerpo" : {
+      "error" : "Usuario no encontrado con ID: 2000000001"
+    }
+  },
+  "POST [admin, idUsuario en blanco] {\"idUsuario\": \" \"}" : {
+    "estado" : 400,
+    "cuerpo" : {
+      "error" : "El campo idUsuario es obligatorio"
+    }
+  },
+  "POST [admin, idUsuario no numérico] {\"idUsuario\": \"abc\"}" : {
+    "estado" : 400,
+    "cuerpo" : {
+      "error" : "Formato de solicitud inválido: For input string: \"abc\""
+    }
+  },
+  "POST [admin, idUsuario] {\"idUsuario\": {crea4}, \"fecha_solicitud\": \"2025-02-01\"}" : {
+    "estado" : 201,
+    "cuerpo" : {
+      "categoria" : null,
+      "documentos" : [ ],
+      "estadosSolicitud" : [ {
+        "comentario" : null,
+        "estado_actual" : "Enviada",
+        "fecha_registro_estado" : "<hoy>",
+        "id_estado" : "<id>",
+        "objSolicitud" : null
+      } ],
+      "fecha_ceremonia" : null,
+      "fecha_registro_solicitud" : "<hoy>",
+      "id_solicitud" : "<id>",
+      "nombre_solicitud" : "Solicitud Paz y Salvo - Estudiante crea4",
+      "objUsuario" : {
+        "cedula" : "PYSCARcrea4",
+        "codigo" : "PYSCAR-crea4",
+        "correo" : "crea4.pys.caract@example.test",
+        "estado_usuario" : true,
+        "id_usuario" : "{crea4}",
+        "nombre_completo" : "Estudiante crea4",
+        "objPrograma" : {
+          "codigo" : "PYS-CAR",
+          "id_programa" : "<id>",
+          "nombre_programa" : "Programa de caracterización paz y salvo"
+        },
+        "rol" : {
+          "id_rol" : "<id>",
+          "nombre" : "Estudiante"
+        }
+      },
+      "periodo_academico" : "<periodoActual>",
+      "tipo_solicitud" : null
+    }
+  },
+  "POST [admin dto, sin usuario] {\"nombre_solicitud\": \"X\"}" : {
+    "estado" : 400,
+    "cuerpo" : {
+      "error" : "El usuario de la solicitud es obligatorio"
+    }
+  },
+  "POST [admin dto, usuario inexistente] {\"objUsuario\": {\"id_usuario\": 2000000001}, \"nombre_solicitud\": \"X\", \"fecha_registro_solicitud\": \"2025-03-01\"}" : {
+    "estado" : 400,
+    "cuerpo" : {
+      "error" : "Usuario no encontrado"
+    }
+  },
+  "POST [admin dto, sin nombre] {\"objUsuario\": {\"id_usuario\": {crea5}}, \"fecha_registro_solicitud\": \"2025-03-01\"}" : {
+    "estado" : 400,
+    "cuerpo" : {
+      "error" : "El nombre de la solicitud es obligatorio"
+    }
+  },
+  "POST [admin dto, sin fecha] {\"objUsuario\": {\"id_usuario\": {crea5}}, \"nombre_solicitud\": \"X\"}" : {
+    "estado" : 400,
+    "cuerpo" : {
+      "error" : "La fecha de la solicitud es obligatoria"
+    }
+  },
+  "POST [admin dto, período inválido] {\"objUsuario\": {\"id_usuario\": {crea5}}, \"nombre_solicitud\": \"X\", \"fecha_registro_solicitud\": \"2025-03-01\", \"periodo_academico\": \"2024-9\"}" : {
+    "estado" : 400,
+    "cuerpo" : {
+      "error" : "Período académico inválido. Use formato: YYYY-P (ej: 2024-2)"
+    }
+  },
+  "POST [admin dto, sin período] {\"objUsuario\": {\"id_usuario\": {crea5}}, \"nombre_solicitud\": \"X\", \"fecha_registro_solicitud\": \"2025-03-01\", \"periodo_academico\": \"  \"}" : {
+    "estado" : 201,
+    "cuerpo" : {
+      "categoria" : null,
+      "documentos" : [ ],
+      "estadosSolicitud" : [ {
+        "comentario" : null,
+        "estado_actual" : "Enviada",
+        "fecha_registro_estado" : "<hoy>",
+        "id_estado" : "<id>",
+        "objSolicitud" : null
+      } ],
+      "fecha_ceremonia" : null,
+      "fecha_registro_solicitud" : "<hoy>",
+      "id_solicitud" : "<id>",
+      "nombre_solicitud" : "Solicitud Paz y Salvo - Estudiante crea5",
+      "objUsuario" : {
+        "cedula" : "PYSCARcrea5",
+        "codigo" : "PYSCAR-crea5",
+        "correo" : "crea5.pys.caract@example.test",
+        "estado_usuario" : true,
+        "id_usuario" : "{crea5}",
+        "nombre_completo" : "Estudiante crea5",
+        "objPrograma" : {
+          "codigo" : "PYS-CAR",
+          "id_programa" : "<id>",
+          "nombre_programa" : "Programa de caracterización paz y salvo"
+        },
+        "rol" : {
+          "id_rol" : "<id>",
+          "nombre" : "Estudiante"
+        }
+      },
+      "periodo_academico" : "<periodoActual>",
+      "tipo_solicitud" : null
+    }
+  },
+  "POST [admin dto, con período y nombre] {\"objUsuario\": {\"id_usuario\": {crea6}, \"nombre_completo\": \"Nombre enviado\"}, \"nombre_solicitud\": \"X\", \"fecha_registro_solicitud\": \"2025-03-01\", \"periodo_academico\": \"2024-1\"}" : {
+    "estado" : 201,
+    "cuerpo" : {
+      "categoria" : null,
+      "documentos" : [ ],
+      "estadosSolicitud" : [ {
+        "comentario" : null,
+        "estado_actual" : "Enviada",
+        "fecha_registro_estado" : "<hoy>",
+        "id_estado" : "<id>",
+        "objSolicitud" : null
+      } ],
+      "fecha_ceremonia" : null,
+      "fecha_registro_solicitud" : "<hoy>",
+      "id_solicitud" : "<id>",
+      "nombre_solicitud" : "Solicitud Paz y Salvo - Nombre enviado",
+      "objUsuario" : {
+        "cedula" : null,
+        "codigo" : null,
+        "correo" : null,
+        "estado_usuario" : false,
+        "id_usuario" : "{crea6}",
+        "nombre_completo" : "Nombre enviado",
+        "objPrograma" : null,
+        "rol" : null
+      },
+      "periodo_academico" : "2024-1",
+      "tipo_solicitud" : null
+    }
+  }
+}

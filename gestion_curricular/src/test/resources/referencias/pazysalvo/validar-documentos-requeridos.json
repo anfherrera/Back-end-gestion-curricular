@@ -1,0 +1,117 @@
+{
+  "GET /validarDocumentosRequeridos/{completa-con-guion}" : {
+    "estado" : 200,
+    "cuerpo" : {
+      "documentosRequeridos" : {
+        "autorizacion_publicar" : true,
+        "comprobante_pago" : true,
+        "documento_trabajo_grado" : true,
+        "formato_pm_fo_4_for_27" : true,
+        "hoja_vida_academica" : true,
+        "resultado_saber_pro" : false
+      },
+      "todosCompletos" : true,
+      "totalDocumentos" : 7
+    }
+  },
+  "GET /validarDocumentosRequeridos/{variantes-de-nombre}" : {
+    "estado" : 200,
+    "cuerpo" : {
+      "documentosRequeridos" : {
+        "autorizacion_publicar" : true,
+        "comprobante_pago" : false,
+        "documento_trabajo_grado" : true,
+        "formato_pm_fo_4_for_27" : true,
+        "hoja_vida_academica" : false,
+        "resultado_saber_pro" : true
+      },
+      "todosCompletos" : false,
+      "totalDocumentos" : 12
+    }
+  },
+  "GET /validarDocumentosRequeridos/{sin-documentos}" : {
+    "estado" : 200,
+    "cuerpo" : {
+      "documentosRequeridos" : {
+        "autorizacion_publicar" : false,
+        "comprobante_pago" : false,
+        "documento_trabajo_grado" : false,
+        "formato_pm_fo_4_for_27" : false,
+        "hoja_vida_academica" : false,
+        "resultado_saber_pro" : false
+      },
+      "todosCompletos" : false,
+      "totalDocumentos" : 0
+    }
+  },
+  "GET /validarDocumentosRequeridos/{nombre-nulo}" : {
+    "estado" : 200,
+    "cuerpo" : {
+      "documentosRequeridos" : {
+        "autorizacion_publicar" : false,
+        "comprobante_pago" : false,
+        "documento_trabajo_grado" : false,
+        "formato_pm_fo_4_for_27" : false,
+        "hoja_vida_academica" : false,
+        "resultado_saber_pro" : false
+      },
+      "todosCompletos" : false,
+      "totalDocumentos" : 2
+    }
+  },
+  "GET /validarDocumentosRequeridos/{rechazos-ultimo-sin-comentario}" : {
+    "estado" : 200,
+    "cuerpo" : {
+      "documentosRequeridos" : {
+        "autorizacion_publicar" : false,
+        "comprobante_pago" : true,
+        "documento_trabajo_grado" : false,
+        "formato_pm_fo_4_for_27" : false,
+        "hoja_vida_academica" : true,
+        "resultado_saber_pro" : false
+      },
+      "todosCompletos" : false,
+      "totalDocumentos" : 3
+    }
+  },
+  "GET /validarDocumentosRequeridos/{rechazos-con-comentario}" : {
+    "estado" : 200,
+    "cuerpo" : {
+      "documentosRequeridos" : {
+        "autorizacion_publicar" : false,
+        "comprobante_pago" : false,
+        "documento_trabajo_grado" : false,
+        "formato_pm_fo_4_for_27" : false,
+        "hoja_vida_academica" : false,
+        "resultado_saber_pro" : false
+      },
+      "todosCompletos" : false,
+      "totalDocumentos" : 0
+    }
+  },
+  "GET /validarDocumentosRequeridos/{sin-comentarios}" : {
+    "estado" : 200,
+    "cuerpo" : {
+      "documentosRequeridos" : {
+        "autorizacion_publicar" : false,
+        "comprobante_pago" : false,
+        "documento_trabajo_grado" : false,
+        "formato_pm_fo_4_for_27" : false,
+        "hoja_vida_academica" : false,
+        "resultado_saber_pro" : false
+      },
+      "todosCompletos" : false,
+      "totalDocumentos" : 1
+    }
+  },
+  "GET /validarDocumentosRequeridos/{inexistente}" : {
+    "estado" : 404,
+    "cuerpo" : {
+      "codigoError" : "GC-0003",
+      "codigoHttp" : 404,
+      "mensaje" : "Entidad no encontrada, Solicitud de Paz y Salvo no encontrada con ID: 2000000000",
+      "metodo" : "GET",
+      "url" : "http://localhost/api/solicitudes-pazysalvo/validarDocumentosRequeridos/2000000000"
+    }
+  }
+}

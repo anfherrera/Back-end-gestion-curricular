@@ -1,0 +1,60 @@
+{
+  "GET /obtenerOficios/{completa-con-guion}" : {
+    "estado" : 200,
+    "cuerpo" : [ {
+      "id" : "<id>",
+      "nombre" : "oficio_123.pdf",
+      "nombreArchivo" : "oficio_123.pdf",
+      "ruta" : "pazysalvo/caract/oficio_123.pdf"
+    } ]
+  },
+  "GET /obtenerOficios/{variantes-de-nombre}" : {
+    "estado" : 200,
+    "cuerpo" : [ {
+      "id" : "<id>",
+      "nombre" : "aprobacion_documento_trabajo_grado.pdf",
+      "nombreArchivo" : "aprobacion_documento_trabajo_grado.pdf",
+      "ruta" : "pazysalvo/caract/aprobacion_documento_trabajo_grado.pdf"
+    }, {
+      "id" : "<id>",
+      "nombre" : "paz_y_salvo_firmado.PDF",
+      "nombreArchivo" : "paz_y_salvo_firmado.PDF",
+      "ruta" : "pazysalvo/caract/paz_y_salvo_firmado.PDF"
+    } ]
+  },
+  "GET /obtenerOficios/{sin-documentos}" : {
+    "estado" : 200,
+    "cuerpo" : [ ]
+  },
+  "GET /obtenerOficios/{nombre-nulo}" : {
+    "estado" : 200,
+    "cuerpo" : [ ]
+  },
+  "GET /obtenerOficios/{rechazos-ultimo-sin-comentario}" : {
+    "estado" : 200,
+    "cuerpo" : [ {
+      "id" : "<id>",
+      "nombre" : "oficio.pdf",
+      "nombreArchivo" : "oficio.pdf",
+      "ruta" : "pazysalvo/caract/oficio.pdf"
+    } ]
+  },
+  "GET /obtenerOficios/{rechazos-con-comentario}" : {
+    "estado" : 200,
+    "cuerpo" : [ ]
+  },
+  "GET /obtenerOficios/{sin-comentarios}" : {
+    "estado" : 200,
+    "cuerpo" : [ ]
+  },
+  "GET /obtenerOficios/{inexistente}" : {
+    "estado" : 404,
+    "cuerpo" : {
+      "codigoError" : "GC-0003",
+      "codigoHttp" : 404,
+      "mensaje" : "Entidad no encontrada, Solicitud de Paz y Salvo no encontrada con ID: 2000000000",
+      "metodo" : "GET",
+      "url" : "http://localhost/api/solicitudes-pazysalvo/obtenerOficios/2000000000"
+    }
+  }
+}
