@@ -1,11 +1,21 @@
 package co.edu.unicauca.decanatura.gestion_curricular.dominio.casosDeUso;
 
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Enums.EstadosSolicitud;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Enums.PeriodoAcademicoEnum;
+import java.time.LocalDate;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.DatosDocumento;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
+import java.util.function.Predicate;
 
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarArchivosCUIntPort;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.servicios.AsociadorDocumentosPendientes;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.servicios.ListadorSolicitudes;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarSolicitudPazYSalvoCUIntPort;
+import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarSolicitudPazYSalvoCUIntPort.RechazoCambioEstado.Motivo;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarNotificacionCUIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.FormateadorResultadosIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.GestionarDocumentosGatewayIntPort;
@@ -13,12 +23,18 @@ import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.Gestionar
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.GestionarSolicitudPazYSalvoGatewayIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.GestionarUsuarioGatewayIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Documento;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.DocumentosPazYSalvo;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.EstadoSolicitud;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.FiltroSolicitudes;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.FlujoEstadosSolicitud;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.SolicitudPazYSalvo;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.TransicionEstadoPazYSalvo;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Usuario;
-import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.controladorExcepciones.excepcionesPropias.EntidadNoExisteException;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.excepciones.EntidadNoExisteException;
 
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
 public class GestionarSolicitudPazYSalvoCUAdapter implements GestionarSolicitudPazYSalvoCUIntPort {
 
     private final GestionarSolicitudPazYSalvoGatewayIntPort solicitudGateway;
@@ -26,7 +42,8 @@ public class GestionarSolicitudPazYSalvoCUAdapter implements GestionarSolicitudP
     private final GestionarDocumentosGatewayIntPort documentosGateway;
     private final GestionarEstadoSolicitudGatewayIntPort estadoSolicitudGateway;
     private final FormateadorResultadosIntPort formateadorResultados;
-    private final GestionarArchivosCUIntPort gestionarArchivos;
+    private final AsociadorDocumentosPendientes asociadorDocumentos;
+    private final ListadorSolicitudes<SolicitudPazYSalvo> listador;
     private final GestionarNotificacionCUIntPort objGestionarNotificacionCU;
 
     public GestionarSolicitudPazYSalvoCUAdapter(
@@ -42,7 +59,8 @@ public class GestionarSolicitudPazYSalvoCUAdapter implements GestionarSolicitudP
         this.documentosGateway = documentosGateway;
         this.estadoSolicitudGateway = estadoSolicitudGateway;
         this.formateadorResultados = formateadorResultados;
-        this.gestionarArchivos = gestionarArchivos;
+        this.asociadorDocumentos = new AsociadorDocumentosPendientes(documentosGateway, gestionarArchivos);
+        this.listador = new ListadorSolicitudes<>(FlujoEstadosSolicitud.TRES_APROBACIONES, solicitudGateway);
         this.objGestionarNotificacionCU = objGestionarNotificacionCU;
     }
 
@@ -56,9 +74,16 @@ public class GestionarSolicitudPazYSalvoCUAdapter implements GestionarSolicitudP
             formateadorResultados.retornarRespuestaErrorReglaDeNegocio("El usuario no puede ser nulo o sin ID");
         }
 
-        Usuario usuario = usuarioGateway.obtenerUsuarioPorId(solicitud.getObjUsuario().getId_usuario());
+        Integer idUsuario = solicitud.getObjUsuario().getId_usuario();
+        Usuario usuario = usuarioGateway.obtenerUsuarioPorId(idUsuario);
         if (usuario == null) {
-            formateadorResultados.retornarRespuestaErrorEntidadExiste("Usuario no encontrado");
+            throw new EntidadNoExisteException("Usuario no encontrado con ID: " + idUsuario);
+        }
+        // Si la solicitud solo trae el id del usuario (sin nombre), se completa con el de la base de datos;
+        // el gateway arma el nombre de la solicitud con él
+        String nombre = solicitud.getObjUsuario().getNombre_completo();
+        if (nombre == null || nombre.trim().isEmpty()) {
+            solicitud.setObjUsuario(usuario);
         }
 
         // Un estudiante solo puede tener una solicitud de Paz y Salvo en trámite a la vez
@@ -69,31 +94,19 @@ public class GestionarSolicitudPazYSalvoCUAdapter implements GestionarSolicitudP
                     "Ya tiene una solicitud de Paz y Salvo en trámite. Debe esperar a que sea aprobada o rechazada.");
         }
 
+        // Sin período académico: el actual. Uno con texto se guarda tal cual llegó.
+        if (solicitud.getPeriodo_academico() == null || solicitud.getPeriodo_academico().trim().isEmpty()) {
+            String periodoActual = PeriodoAcademicoEnum.oActual(null);
+            if (periodoActual != null) {
+                solicitud.setPeriodo_academico(periodoActual);
+            }
+        }
+
         // Guardar solicitud
         SolicitudPazYSalvo solicitudGuardada = solicitudGateway.guardar(solicitud);
 
-        // Asociar documentos sin solicitud y moverlos a carpeta organizada
-        List<Documento> documentosSinSolicitud = documentosGateway.buscarDocumentosSinSolicitud();
-        for (Documento doc : documentosSinSolicitud) {
-            // Mover archivo a carpeta organizada si está en la raíz
-            String rutaActual = doc.getRuta_documento() != null ? doc.getRuta_documento() : doc.getNombre();
-            if (rutaActual != null && !rutaActual.contains("/")) {
-                // El archivo está en la raíz, moverlo a carpeta organizada
-                String nuevaRuta = gestionarArchivos.moverArchivoAOrganizado(
-                    rutaActual, 
-                    doc.getNombre(), 
-                    "pazysalvo", 
-                    solicitudGuardada.getId_solicitud()
-                );
-                if (nuevaRuta != null) {
-                    doc.setRuta_documento(nuevaRuta);
-                }
-            }
-            
-            // Asociar documento a la solicitud
-            doc.setObjSolicitud(solicitudGuardada);
-            documentosGateway.actualizarDocumento(doc);
-        }
+        // Mover a la carpeta de la solicitud y asociar los documentos que este estudiante subió antes de enviarla
+        asociadorDocumentos.asociar(solicitudGuardada, usuario.getId_usuario(), "pazysalvo");
 
         // Estado inicial "Enviada": el gateway ya lo crea al guardar; solo se agrega si falta,
         // para no dejar dos estados iniciales.
@@ -102,7 +115,7 @@ public class GestionarSolicitudPazYSalvoCUAdapter implements GestionarSolicitudP
                         .anyMatch(e -> e.getEstado_actual() != null && !e.getEstado_actual().isBlank());
         if (!yaTieneEstadoInicial) {
             EstadoSolicitud estadoInicial = new EstadoSolicitud();
-            estadoInicial.setEstado_actual("Enviada");
+            estadoInicial.setEstado_actual(EstadosSolicitud.ENVIADA.textoGuardado());
             estadoInicial.setFecha_registro_estado(new Date());
             estadoInicial.setObjSolicitud(solicitudGuardada);
 
@@ -113,9 +126,8 @@ public class GestionarSolicitudPazYSalvoCUAdapter implements GestionarSolicitudP
             estadoSolicitudGateway.guarEstadoSolicitud(estadoInicial);
         }
 
-        // Asociar solicitud al usuario
-        usuario.getSolicitudes().add(solicitudGuardada);
-        usuarioGateway.actualizarUsuario(usuario);
+        // No se guarda el usuario: la relación usuario-solicitudes es mappedBy (la solicitud ya
+        // lleva su usuario) y, por orphanRemoval, guardar una lista incompleta podría borrar solicitudes.
 
         // Crear notificación automática para el estudiante
         try {
@@ -132,103 +144,13 @@ public class GestionarSolicitudPazYSalvoCUAdapter implements GestionarSolicitudP
     }
 
     @Override
-    public List<SolicitudPazYSalvo> listarSolicitudesToFuncionario() {
-       return solicitudGateway.listarSolicitudesToFuncionario();
-    }
-
-    @Override
-    public List<SolicitudPazYSalvo> listarSolicitudesToCoordinador() {
-        return solicitudGateway.listarSolicitudesToCoordinador();
-    }
-
-    @Override
-    public List<SolicitudPazYSalvo> listarSolicitudesToCoordinadorPorPrograma(Integer idPrograma) {
-        return solicitudGateway.listarSolicitudesToCoordinadorPorPrograma(idPrograma);
-    }
-
-    @Override
-    public List<SolicitudPazYSalvo> listarSolicitudesToSecretaria() {
-        return solicitudGateway.listarSolicitudesToSecretaria();
-    }
-
-    @Override
-    public List<SolicitudPazYSalvo> listarSolicitudesAprobadasToSecretaria() {
-        return solicitudGateway.listarSolicitudesAprobadasToSecretaria();
-    }
-
-    @Override
-    public List<SolicitudPazYSalvo> listarSolicitudesAprobadasToFuncionario() {
-        return solicitudGateway.listarSolicitudesAprobadasToFuncionario();
-    }
-
-    @Override
-    public List<SolicitudPazYSalvo> listarSolicitudesAprobadasToCoordinador() {
-        return solicitudGateway.listarSolicitudesAprobadasToCoordinador();
-    }
-
-    @Override
-    public List<SolicitudPazYSalvo> listarSolicitudesAprobadasToCoordinadorPorPrograma(Integer idPrograma) {
-        return solicitudGateway.listarSolicitudesAprobadasToCoordinadorPorPrograma(idPrograma);
-    }
-
-    @Override
-    public List<SolicitudPazYSalvo> listarSolicitudesToFuncionarioPorPeriodo(String periodoAcademico) {
-        return solicitudGateway.listarSolicitudesToFuncionarioPorPeriodo(periodoAcademico);
-    }
-
-    @Override
-    public List<SolicitudPazYSalvo> listarSolicitudesAprobadasToFuncionarioPorPeriodo(String periodoAcademico) {
-        return solicitudGateway.listarSolicitudesAprobadasToFuncionarioPorPeriodo(periodoAcademico);
-    }
-
-    @Override
-    public List<SolicitudPazYSalvo> listarSolicitudesToCoordinadorPorProgramaYPeriodo(Integer idPrograma, String periodoAcademico) {
-        return solicitudGateway.listarSolicitudesToCoordinadorPorProgramaYPeriodo(idPrograma, periodoAcademico);
-    }
-
-    @Override
-    public List<SolicitudPazYSalvo> listarSolicitudesAprobadasToCoordinadorPorProgramaYPeriodo(Integer idPrograma, String periodoAcademico) {
-        return solicitudGateway.listarSolicitudesAprobadasToCoordinadorPorProgramaYPeriodo(idPrograma, periodoAcademico);
-    }
-
-    @Override
-    public List<SolicitudPazYSalvo> listarSolicitudesToSecretariaPorPeriodo(String periodoAcademico) {
-        return solicitudGateway.listarSolicitudesToSecretariaPorPeriodo(periodoAcademico);
-    }
-
-    @Override
-    public List<SolicitudPazYSalvo> listarSolicitudesAprobadasToSecretariaPorPeriodo(String periodoAcademico) {
-        return solicitudGateway.listarSolicitudesAprobadasToSecretariaPorPeriodo(periodoAcademico);
-    }
-
-    @Override
-    public List<SolicitudPazYSalvo> listarSolicitudesPorUsuarioYPeriodo(Integer idUsuario, String periodoAcademico) {
-        return solicitudGateway.listarSolicitudesPorUsuarioYPeriodo(idUsuario, periodoAcademico);
+    public List<SolicitudPazYSalvo> listar(FiltroSolicitudes filtro) {
+        return listador.listar(filtro);
     }
 
     @Override
     public List<SolicitudPazYSalvo> listarSolicitudesPorRol(String rol, Integer idUsuario) {
-        List<SolicitudPazYSalvo> todas = solicitudGateway.listarSolicitudes();
-
-        return todas.stream().filter(solicitud -> {
-            List<EstadoSolicitud> estados = solicitud.getEstadosSolicitud();
-            EstadoSolicitud ultimoEstado = estados != null && !estados.isEmpty()
-                ? estados.get(estados.size() - 1)
-                : null;
-
-            switch (rol) {
-                case "ESTUDIANTE":
-                    return solicitud.getObjUsuario().getId_usuario().equals(idUsuario);
-                case "FUNCIONARIO":
-                    return ultimoEstado != null && "Enviada".equals(ultimoEstado.getEstado_actual());
-                case "COORDINADOR":
-                    return ultimoEstado != null && "APROBADA_FUNCIONARIO".equals(ultimoEstado.getEstado_actual());
-                case "SECRETARIA":
-                    return ultimoEstado != null && "APROBADA_COORDINADOR".equals(ultimoEstado.getEstado_actual());
-                default:
-                    return false;
-            }
-        }).toList();
+        return listador.listarPorRol(rol, idUsuario);
     }
 
     @Override
@@ -244,15 +166,27 @@ public class GestionarSolicitudPazYSalvoCUAdapter implements GestionarSolicitudP
 
     @Override
     public void cambiarEstadoSolicitud(Integer idSolicitud, String nuevoEstado, String comentario) {
-        // Obtener el estado anterior
+        cambiarEstadoSolicitud(idSolicitud, nuevoEstado, comentario, rol -> true)
+                .ifPresent(rechazo -> formateadorResultados.retornarRespuestaErrorReglaDeNegocio(rechazo.mensaje()));
+    }
+
+    @Override
+    public Optional<RechazoCambioEstado> cambiarEstadoSolicitud(Integer idSolicitud, String nuevoEstado,
+            String comentario, Predicate<String> puedeActuarComo) {
         SolicitudPazYSalvo solicitud = buscarPorId(idSolicitud);
         String estadoAnterior = ultimoEstado(solicitud);
-
-        // Solo se permiten los pasos del flujo (ver TransicionEstadoPazYSalvo)
+        String rolResponsable;
         try {
-            TransicionEstadoPazYSalvo.validarYObtenerRolResponsable(estadoAnterior, nuevoEstado);
+            rolResponsable = TransicionEstadoPazYSalvo.validarYObtenerRolResponsable(estadoAnterior, nuevoEstado);
         } catch (IllegalArgumentException e) {
-            formateadorResultados.retornarRespuestaErrorReglaDeNegocio(e.getMessage());
+            return Optional.of(new RechazoCambioEstado(Motivo.TRANSICION_NO_PERMITIDA, e.getMessage(),
+                    TransicionEstadoPazYSalvo.normalizar(estadoAnterior)));
+        }
+
+        if (!puedeActuarComo.test(rolResponsable)) {
+            return Optional.of(new RechazoCambioEstado(Motivo.ROL_NO_AUTORIZADO,
+                    "Este paso le corresponde al rol " + rolResponsable,
+                    TransicionEstadoPazYSalvo.normalizar(estadoAnterior)));
         }
 
         EstadoSolicitud estado = new EstadoSolicitud();
@@ -268,23 +202,82 @@ public class GestionarSolicitudPazYSalvoCUAdapter implements GestionarSolicitudP
         try {
             solicitud = buscarPorId(idSolicitud); // Recargar con el nuevo estado
             this.objGestionarNotificacionCU.notificarCambioEstadoSolicitud(solicitud, estadoAnterior, nuevoEstado, "PAZ_Y_SALVO");
-        } catch (Exception e) {
+        } catch (RuntimeException e) {
+            log.warn("No se pudo notificar el cambio de estado de Paz y Salvo para la solicitud {}", idSolicitud, e);
         }
+        return Optional.empty();
+    }
+
+    @Override
+    public List<DocumentoConTipo> documentosConTipo(Integer idSolicitud) {
+        List<Documento> documentos = buscarPorId(idSolicitud).getDocumentos();
+        if (documentos == null) {
+            return List.of();
+        }
+        return documentos.stream()
+                .filter(d -> d.getNombre() != null)
+                .map(d -> new DocumentoConTipo(d, DocumentosPazYSalvo.tipoDeDocumento(d.getNombre())))
+                .toList();
+    }
+
+    @Override
+    public List<Documento> oficios(Integer idSolicitud) {
+        return DocumentosPazYSalvo.oficiosPdf(buscarPorId(idSolicitud).getDocumentos());
+    }
+
+    @Override
+    public DocumentosPazYSalvo.RevisionDocumentos revisarDocumentosRequeridos(Integer idSolicitud) {
+        return DocumentosPazYSalvo.revisar(buscarPorId(idSolicitud).getDocumentos());
+    }
+
+    @Override
+    public ComentariosSolicitud comentarios(Integer idSolicitud) {
+        SolicitudPazYSalvo solicitud = buscarPorId(idSolicitud);
+        List<ComentarioDocumento> documentos = solicitud.getDocumentos() == null ? List.of()
+                : solicitud.getDocumentos().stream()
+                        .filter(d -> d.getComentario() != null && !d.getComentario().trim().isEmpty())
+                        .map(d -> new ComentarioDocumento(d.getId_documento(), d.getNombre(), d.getComentario().trim()))
+                        .toList();
+        return new ComentariosSolicitud(solicitud.ultimoComentarioDeRechazo().orElse(null), documentos);
+    }
+
+    @Override
+    public Optional<DatosDocumento> prepararDocumento(Integer id, String cedula, String titulo, String director,
+                                                      boolean fechaLocal) {
+        SolicitudPazYSalvo solicitud = buscarPorId(id);
+        if (solicitud.getObjUsuario() == null || solicitud.getObjUsuario().getId_usuario() == null) {
+            return Optional.empty();
+        }
+        Usuario usuario = usuarioGateway.obtenerUsuarioPorId(solicitud.getObjUsuario().getId_usuario());
+        if (usuario == null) {
+            return Optional.empty();
+        }
+        Date registro = solicitud.getFecha_registro_solicitud();
+        Object fecha = fechaLocal
+                ? (registro == null ? LocalDate.now() : registro.toInstant().atZone(ZoneId.systemDefault()).toLocalDate())
+                : registro;
+        return Optional.of(new DatosDocumento(solicitud.getObjUsuario().getNombre_completo(),
+                usuario.getNombre_completo(), usuario.getCodigo(),
+                usuario.getObjPrograma() == null ? "Ingeniería Electrónica y Telecomunicaciones"
+                        : usuario.getObjPrograma().getNombre_programa(),
+                fecha, primeroConTexto(cedula, usuario.getCedula(), "No especificada", false),
+                primeroConTexto(titulo, solicitud.getTitulo_trabajo_grado(), "Trabajo de grado", true),
+                primeroConTexto(director, solicitud.getDirector_trabajo_grado(), "Director asignado", true)));
+    }
+
+    private static String primeroConTexto(String enviado, String guardado, String porDefecto, boolean recortar) {
+        for (String valor : new String[] { enviado, guardado }) {
+            if (valor != null && !valor.trim().isEmpty()) {
+                return recortar ? valor.trim() : valor;
+            }
+        }
+        return porDefecto;
     }
 
     /** Último estado con texto de la solicitud (ignora el registro inicial vacío). Null si no hay. */
     public static String ultimoEstado(SolicitudPazYSalvo solicitud) {
-        List<EstadoSolicitud> estados = solicitud.getEstadosSolicitud();
-        if (estados == null) {
-            return null;
-        }
-        for (int i = estados.size() - 1; i >= 0; i--) {
-            String estado = estados.get(i).getEstado_actual();
-            if (estado != null && !estado.isBlank()) {
-                return estado;
-            }
-        }
-        return null;
+        return co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.FlujoEstadosSolicitud
+                .ultimoEstado(solicitud.getEstadosSolicitud());
     }
 
     

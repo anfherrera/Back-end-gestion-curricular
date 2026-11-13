@@ -15,8 +15,6 @@ public interface GestionarRolesCUIntPort {
 
     Rol obtenerRolPorNombre(String nombre);
 
-    boolean existeRolPorNombre(String nombre);
-
     List<Rol> listarRoles();
 }
 

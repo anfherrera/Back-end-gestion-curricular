@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import co.edu.unicauca.decanatura.gestion_curricular.Security.Autorizacion;
 import co.edu.unicauca.decanatura.gestion_curricular.Security.JwtUtil;
 import co.edu.unicauca.decanatura.gestion_curricular.Security.LoginRateLimiter;
 import co.edu.unicauca.decanatura.gestion_curricular.Security.SecurityAuditService;
@@ -63,7 +64,7 @@ public class UsuarioRestController {
 
 
     @PostMapping("/crearUsuario")
-    @PreAuthorize("hasRole('Administrador') or hasRole('Coordinador')")
+    @PreAuthorize("(hasRole('Administrador') or hasRole('Coordinador')) and @autorizacion.puedeAsignarRol(#peticion.id_rol)")
     public ResponseEntity<UsuarioDTORespuesta> crearUsuario(@RequestBody @Valid UsuarioDTOPeticion peticion) {
         try {
             if (peticion == null) {
@@ -134,7 +135,9 @@ public class UsuarioRestController {
     }
     
     @PutMapping("/actualizarUsuario")
-    @PreAuthorize("hasRole('Administrador') or hasRole('Coordinador')")
+    @PreAuthorize("(hasRole('Administrador') or hasRole('Coordinador'))"
+            + " and @autorizacion.puedeAsignarRol(#peticion.id_rol)"
+            + " and @autorizacion.puedeModificarUsuario(#peticion.id_usuario)")
     public ResponseEntity<UsuarioDTORespuesta> actualizarrUsuario(@RequestBody @Valid UsuarioDTOPeticion peticion) {
         Usuario usuario = new Usuario();
         usuario.setId_usuario(peticion.getId_usuario());
@@ -168,15 +171,13 @@ public class UsuarioRestController {
     }
 
     @GetMapping("/buscarUsuarioPorId/{id}")
+    @PreAuthorize("hasAnyRole(" + Autorizacion.ROLES_STAFF + ") or @autorizacion.esUsuarioActual(#id)")
     public ResponseEntity<UsuarioDTORespuesta> buscarUsuarioPorId(@Min(value = 1) @PathVariable Integer id) {
         Usuario usuario = objUsuarioCUIntPort.obtenerUsuarioPorId(id);
-        ResponseEntity<UsuarioDTORespuesta> objRespuesta = null;
         if (usuario == null) {
-            objRespuesta = new ResponseEntity<UsuarioDTORespuesta>(HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
-        objRespuesta = new ResponseEntity<UsuarioDTORespuesta>(
-        objUsuarioMapperDominio.mappearDeUsuarioAUsuarioDTORespuesta(usuario), HttpStatus.OK);
-        return objRespuesta;
+        return new ResponseEntity<>(objUsuarioMapperDominio.mappearDeUsuarioAUsuarioDTORespuesta(usuario), HttpStatus.OK);
     }
 
     @DeleteMapping("/eliminarUsuario/{id}")
@@ -193,16 +194,8 @@ public class UsuarioRestController {
         return objRespuesta;
     }
 
-    @GetMapping("/buscarPorPrograma/{id}")
-    public ResponseEntity<List<UsuarioDTORespuesta>> buscarUsuariosPorPrograma(@Min(value = 1) @PathVariable Integer id) {
-        List<Usuario> usuarios = objUsuarioCUIntPort.buscarUsuariosPorPrograma(id);
-        List<UsuarioDTORespuesta> respuesta = usuarios.stream()
-                .map(objUsuarioMapperDominio::mappearDeUsuarioAUsuarioDTORespuesta)
-                .collect(Collectors.toList());
-        return ResponseEntity.ok(respuesta);
-    }
-
     @GetMapping("/listarUsuarios")
+    @PreAuthorize("hasRole('Administrador') or hasRole('Coordinador')")
     public ResponseEntity<List<UsuarioDTORespuesta>> obtenerUsuarios() {
         List<Usuario> usuarios = objUsuarioCUIntPort.listarUsuarios();
         List<UsuarioDTORespuesta> respuesta = usuarios.stream()
@@ -222,6 +215,7 @@ public class UsuarioRestController {
             content = @Content)
     })
     @PutMapping("/cambiarEstado/{id}")
+    @PreAuthorize("hasRole('Administrador')")
     public ResponseEntity<UsuarioDTORespuesta> cambiarEstadoUsuario(
             @Parameter(description = "ID del usuario", required = true)
             @Min(value = 1) @PathVariable Integer id) {

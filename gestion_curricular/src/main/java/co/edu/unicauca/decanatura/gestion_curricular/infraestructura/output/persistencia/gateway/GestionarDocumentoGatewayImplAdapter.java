@@ -1,7 +1,6 @@
 package co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.gateway;
 
 import java.util.List;
-import java.util.Optional;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
@@ -16,6 +15,25 @@ import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.pers
 @Service
 @Transactional
 public class GestionarDocumentoGatewayImplAdapter implements GestionarDocumentosGatewayIntPort {
+    @Override
+    @Transactional(readOnly = true)
+    public java.util.Optional<AccesoDocumento> accesoDocumento(Integer idDocumento) {
+        return documentoRepository.findById(idDocumento).map(this::acceso);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<AccesoDocumento> accesosPorNombre(String nombre) {
+        return documentoRepository.findAllByNombre(nombre).stream().map(this::acceso).toList();
+    }
+
+    private AccesoDocumento acceso(DocumentoEntity documento) {
+        SolicitudEntity solicitud = documento.getObjSolicitud();
+        Integer dueno = solicitud != null && solicitud.getObjUsuario() != null
+                ? solicitud.getObjUsuario().getId_usuario() : null;
+        return new AccesoDocumento(documento.getIdUsuarioSubio(), dueno,
+                documento.getRuta_documento(), documento.getNombre());
+    }
 
 
     private final DocumentoRepositoryInt documentoRepository;
@@ -64,37 +82,13 @@ public class GestionarDocumentoGatewayImplAdapter implements GestionarDocumentos
     }
 
     @Override
-    @Transactional
-    public boolean eliminarDocumento(Documento documento) {
-        Optional<DocumentoEntity> entityOpt = documentoRepository.findById(documento.getId_documento());
-        if (entityOpt.isPresent()) {
-            documentoRepository.deleteById(documento.getId_documento());
-            return true;
-        }
-        return false;
-    }
-
-    @Override
-    public List<Documento> buscarDocumentosSinSolicitud() {
-       return documentoRepository.findByobjSolicitudIsNull()
+    public List<Documento> buscarDocumentosSinSolicitud(Integer idUsuario) {
+       if (idUsuario == null) {
+           return List.of();
+       }
+       return documentoRepository.findByObjSolicitudIsNullAndIdUsuarioSubio(idUsuario)
             .stream()
             .map(entity -> documentoMapper.map(entity, Documento.class))
             .toList();
     }
-
-    @Override
-    public void añadirComentario(Documento documento, String comentario) {
-        
-        
-    }
-
-    @Override
-    @Transactional(readOnly = true)
-    public Optional<Documento> buscarDocumentoPorNombre(String nombre) {
-        return documentoRepository.findByNombre(nombre)
-            .map(entity -> documentoMapper.map(entity, Documento.class));
-    }
-
-    
-    
 }

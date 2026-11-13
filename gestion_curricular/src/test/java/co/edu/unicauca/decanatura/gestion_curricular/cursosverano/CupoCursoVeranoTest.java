@@ -1,5 +1,6 @@
 package co.edu.unicauca.decanatura.gestion_curricular.cursosverano;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -26,6 +27,7 @@ import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.Gestionar
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.GestionarSolicitudCursoVeranoGatewayIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.GestionarUsuarioGatewayIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.casosDeUso.GestionarSolicitudCursoVeranoCUAdapter;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.excepciones.CupoAgotadoException;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.CursoOfertadoVerano;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.EstadoSolicitud;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.SolicitudCursoVeranoIncripcion;
@@ -76,10 +78,11 @@ class CupoCursoVeranoTest {
         when(gateway.buscarSolicitudInscripcionPorId(50)).thenReturn(inscripcionEnviada(7, 2));
         when(gateway.contarInscripcionesAceptadasPorCurso(7)).thenReturn(2);
 
-        IllegalStateException e = assertThrows(IllegalStateException.class,
+        CupoAgotadoException e = assertThrows(CupoAgotadoException.class,
                 () -> casoDeUso.validarPago(50, true, "ok"));
-        assertTrue(e.getMessage().contains("regla"));
-        verify(formateador).retornarRespuestaErrorReglaDeNegocio(org.mockito.ArgumentMatchers.contains("cupos"));
+        assertTrue(e.getMessage().contains("cupos"));
+        assertEquals(2, e.getCupo());
+        assertEquals(2, e.getOcupados());
         verify(gateway, never()).validarPago(eq(50), eq(true), anyString());
     }
 
@@ -103,5 +106,32 @@ class CupoCursoVeranoTest {
         casoDeUso.validarPago(50, false, "pago inválido");
 
         verify(gateway).validarPago(50, false, "pago inválido");
+    }
+
+    @Test
+    @DisplayName("verificarCupoDisponible: curso lleno lanza; curso null o sin id no se limita")
+    void verificarCupoDisponible() {
+        when(gateway.contarInscripcionesAceptadasPorCurso(7)).thenReturn(2);
+        CursoOfertadoVerano curso = inscripcionEnviada(7, 2).getObjCursoOfertadoVerano();
+
+        assertThrows(CupoAgotadoException.class, () -> casoDeUso.verificarCupoDisponible(curso));
+        casoDeUso.verificarCupoDisponible(null);
+        curso.setId_curso(null);
+        casoDeUso.verificarCupoDisponible(curso);
+    }
+
+    @Test
+    @DisplayName("verificarCupoParaAceptar: una inscripción que ya ocupa cupo no vuelve a contar")
+    void verificarCupoParaAceptar() {
+        when(gateway.contarInscripcionesAceptadasPorCurso(7)).thenReturn(2);
+        SolicitudCursoVeranoIncripcion inscripcion = inscripcionEnviada(7, 2);
+
+        assertThrows(CupoAgotadoException.class, () -> casoDeUso.verificarCupoParaAceptar(inscripcion));
+
+        EstadoSolicitud validado = new EstadoSolicitud();
+        validado.setEstado_actual("Pago_Validado");
+        validado.setFecha_registro_estado(new Date());
+        inscripcion.getEstadosSolicitud().add(validado);
+        casoDeUso.verificarCupoParaAceptar(inscripcion);
     }
 }

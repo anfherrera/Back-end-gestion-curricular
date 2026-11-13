@@ -10,6 +10,10 @@ import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 
+import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.repositorios.SolicitudRepositoryInt;
+import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.repositorios.UsuarioRepositoryInt;
+import co.edu.unicauca.decanatura.gestion_curricular.soporte.SolicitudesDePrueba;
+
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -43,9 +47,23 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest
 @AutoConfigureMockMvc(addFilters = false)
 @ActiveProfiles("test")
-@WithMockUser(roles = { "SECRETARIA", "FUNCIONARIO", "COORDINADOR", "ESTUDIANTE" })
+@WithMockUser(username = "juan.perez@unicauca.edu.co", roles = { "Secretario", "Funcionario", "Coordinador", "Estudiante" })
 @DisplayName("Pruebas de Aceptación - Reingreso")
 class ReingresoAceptacionTest {
+
+    @Autowired
+    private SolicitudRepositoryInt solicitudRepository;
+
+    @Autowired
+    private UsuarioRepositoryInt usuarioRepository;
+
+    private SolicitudesDePrueba solicitudes() {
+        return new SolicitudesDePrueba(solicitudRepository, usuarioRepository);
+    }
+
+    private static String cambioEstado(int idSolicitud, String nuevoEstado) {
+        return "{\"idSolicitud\": %d, \"nuevoEstado\": \"%s\"}".formatted(idSolicitud, nuevoEstado);
+    }
 
     @Autowired
     private MockMvc mockMvc;
@@ -214,12 +232,7 @@ class ReingresoAceptacionTest {
          *       AND la solicitud debe quedar disponible para el coordinador
          */
         
-        String jsonCambioEstado = """
-            {
-                "idSolicitud": 4,
-                "nuevoEstado": "APROBADA_FUNCIONARIO"
-            }
-            """;
+        String jsonCambioEstado = cambioEstado(solicitudes().reingreso("Enviada"), "APROBADA_FUNCIONARIO");
 
         // Puede ser 204 (éxito) o 404 (si la solicitud no existe)
         mockMvc.perform(put("/api/solicitudes-reingreso/actualizarEstadoSolicitud-Reingreso")
@@ -305,28 +318,6 @@ class ReingresoAceptacionTest {
                 });
     }
 
-    @Test
-    @DisplayName("CA-REING-06.2: Como secretaria quiero subir archivo PDF a una solicitud")
-    void testSecretariaPuedeSubirArchivo() throws Exception {
-        /*
-         * GIVEN: Una secretaria autenticada en el sistema
-         *        AND existe una solicitud de reingreso
-         *        AND la secretaria tiene un archivo PDF para subir
-         * 
-         * WHEN: La secretaria sube un archivo PDF a la solicitud
-         * 
-         * THEN: El sistema debe validar que el archivo sea PDF
-         *       AND debe guardar el archivo
-         *       AND debe asociarlo a la solicitud
-         *       AND debe retornar código HTTP 200 (OK)
-         */
-        
-        // Este test requiere un archivo multipart, pero validamos que el endpoint existe
-        mockMvc.perform(post("/api/solicitudes-reingreso/1/subir-archivo")
-                        .contentType(MediaType.MULTIPART_FORM_DATA));
-                // No validamos status específico porque requiere archivo real
-    }
-
     // ==================== COORDINADOR PUEDE EVALUAR SOLICITUDES ====================
 
     @Test
@@ -374,12 +365,7 @@ class ReingresoAceptacionTest {
          *       AND la solicitud debe quedar disponible para secretaria
          */
         
-        String jsonAprobacion = """
-            {
-                "idSolicitud": 3,
-                "nuevoEstado": "APROBADA_COORDINADOR"
-            }
-            """;
+        String jsonAprobacion = cambioEstado(solicitudes().reingreso("APROBADA_FUNCIONARIO"), "APROBADA_COORDINADOR");
 
         // Puede ser 204 (éxito) o 404 (si la solicitud no existe o no está en estado adecuado)
         mockMvc.perform(put("/api/solicitudes-reingreso/actualizarEstadoSolicitud-Reingreso")

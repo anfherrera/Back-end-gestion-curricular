@@ -8,6 +8,7 @@ import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.pers
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.repositorios.ProgramaRepositoryInt;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.repositorios.RolRepositoryInt;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.repositorios.UsuarioRepositoryInt;
+import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.repositorios.SolicitudRepositoryInt;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -58,6 +59,9 @@ class GestionPazYSalvoFuncionalTest {
 
     @Autowired
     private UsuarioRepositoryInt usuarioRepository;
+
+    @Autowired
+    private SolicitudRepositoryInt solicitudRepository;
 
     @Autowired
     private RolRepositoryInt rolRepository;
@@ -227,9 +231,9 @@ class GestionPazYSalvoFuncionalTest {
         // Paso 2: El coordinador aprueba una solicitud que el funcionario ya aprobó
         // (el flujo es Funcionario -> Coordinador -> Secretaria; no se pueden saltar pasos)
         int id = SoportePazYSalvo.crearSolicitud(mockMvc, objectMapper, tokenEstudiante);
-        org.junit.jupiter.api.Assertions.assertEquals(200,
+        org.junit.jupiter.api.Assertions.assertEquals(204,
                 SoportePazYSalvo.cambiarEstado(mockMvc, tokenFuncionario, id, "APROBADA_FUNCIONARIO"));
-        org.junit.jupiter.api.Assertions.assertEquals(200,
+        org.junit.jupiter.api.Assertions.assertEquals(204,
                 SoportePazYSalvo.cambiarEstado(mockMvc, tokenCoordinador, id, "APROBADA_COORDINADOR"));
     }
 
@@ -237,12 +241,26 @@ class GestionPazYSalvoFuncionalTest {
     @DisplayName("Funcional 2b: El coordinador no puede aprobar antes que el funcionario")
     void testCoordinadorNoPuedeSaltarseAlFuncionario() throws Exception {
         int id = SoportePazYSalvo.crearSolicitud(mockMvc, objectMapper, tokenEstudiante);
-        // Desde ENVIADA el paso le corresponde al funcionario
-        org.junit.jupiter.api.Assertions.assertEquals(403,
-                SoportePazYSalvo.cambiarEstado(mockMvc, tokenCoordinador, id, "APROBADA_FUNCIONARIO"));
-        // Saltar directamente a APROBADA no es un paso válido
-        org.junit.jupiter.api.Assertions.assertEquals(400,
-                SoportePazYSalvo.cambiarEstado(mockMvc, tokenFuncionario, id, "APROBADA"));
+        mockMvc.perform(put("/api/solicitudes-pazysalvo/actualizarEstadoSolicitud")
+                        .header("Authorization", tokenCoordinador)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"idSolicitud\":%d,\"nuevoEstado\":\"APROBADA_FUNCIONARIO\"}".formatted(id)))
+                .andExpect(status().isForbidden())
+                .andExpect(jsonPath("$.codigo").value("ROL_NO_AUTORIZADO"))
+                .andExpect(jsonPath("$.estadoActual").value("ENVIADA"))
+                .andExpect(jsonPath("$.error").value("Este paso le corresponde al rol Funcionario"));
+
+        mockMvc.perform(put("/api/solicitudes-pazysalvo/actualizarEstadoSolicitud")
+                        .header("Authorization", tokenFuncionario)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"idSolicitud\":%d,\"nuevoEstado\":\"APROBADA\"}".formatted(id)))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.codigo").value("TRANSICION_NO_PERMITIDA"))
+                .andExpect(jsonPath("$.estadoActual").value("ENVIADA"))
+                .andExpect(jsonPath("$.error").isNotEmpty());
+
+        org.junit.jupiter.api.Assertions.assertEquals(204,
+                SoportePazYSalvo.cambiarEstado(mockMvc, tokenFuncionario, id, "APROBADA_FUNCIONARIO"));
     }
 
     @Test
@@ -357,7 +375,8 @@ class GestionPazYSalvoFuncionalTest {
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON));
 
         // Y no puede consultar las de otro usuario
-        int idCoordinador = SoportePazYSalvo.idUsuario(usuarioRepository, COORDINADOR_EMAIL);
+        int idCoordinador = SoportePazYSalvo.idAjeno(solicitudRepository, idEstudiante,
+                SoportePazYSalvo.idUsuario(usuarioRepository, COORDINADOR_EMAIL));
         mockMvc.perform(get("/api/solicitudes-pazysalvo/listarSolicitud-PazYSalvo/" + idCoordinador)
                         .header("Authorization", tokenEstudiante))
                 .andExpect(status().isForbidden());
@@ -438,11 +457,12 @@ class GestionPazYSalvoFuncionalTest {
         
         String jsonCambioEstado = """
             {
+                "idSolicitud": 999,
                 "nuevoEstado": "APROBADO"
             }
             """;
 
-        mockMvc.perform(put("/api/solicitudes-pazysalvo/cambiarEstadoSolicitud/999")
+        mockMvc.perform(put("/api/solicitudes-pazysalvo/actualizarEstadoSolicitud")
                         .header("Authorization", tokenCoordinador)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(jsonCambioEstado))
@@ -473,11 +493,11 @@ class GestionPazYSalvoFuncionalTest {
                 .andExpect(status().isOk());
 
         // Paso 3: Aprobación completa: Funcionario -> Coordinador -> Secretaria
-        org.junit.jupiter.api.Assertions.assertEquals(200,
+        org.junit.jupiter.api.Assertions.assertEquals(204,
                 SoportePazYSalvo.cambiarEstado(mockMvc, tokenFuncionario, id, "APROBADA_FUNCIONARIO"));
-        org.junit.jupiter.api.Assertions.assertEquals(200,
+        org.junit.jupiter.api.Assertions.assertEquals(204,
                 SoportePazYSalvo.cambiarEstado(mockMvc, tokenCoordinador, id, "APROBADA_COORDINADOR"));
-        org.junit.jupiter.api.Assertions.assertEquals(200,
+        org.junit.jupiter.api.Assertions.assertEquals(204,
                 SoportePazYSalvo.cambiarEstado(mockMvc, tokenSecretaria, id, "APROBADA"));
 
         // Paso 4: Generar documento final de esa solicitud

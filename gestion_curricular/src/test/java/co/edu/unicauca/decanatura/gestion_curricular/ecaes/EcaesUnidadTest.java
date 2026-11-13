@@ -6,6 +6,8 @@ import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarA
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.*;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.casosDeUso.GestionarSolicitudEcaesCUAdapter;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.FechaEcaes;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.FiltroSolicitudes;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.FlujoEstadosSolicitud;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.SolicitudEcaes;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -242,20 +244,31 @@ class EcaesUnidadTest {
     // ==================== PRUEBAS DE FILTRADO POR ROL ====================
 
     @Test
-    @DisplayName("Test 10: Listar solicitudes para Funcionario - Delega correctamente")
+    @DisplayName("Test 10: Listar solicitudes para Funcionario - Pide al gateway las de último estado Enviada")
     void testListarSolicitudesParaFuncionarioDelegaCorrectamente() {
         // Arrange
         List<SolicitudEcaes> listaEsperada = Arrays.asList(solicitudEjemplo);
-        when(solicitudGateway.listarSolicitudesToFuncionario())
+        when(solicitudGateway.listarPorUltimoEstado("Enviada", null, null))
                 .thenReturn(listaEsperada);
 
         // Act
-        List<SolicitudEcaes> resultado = solicitudEcaesCU.listarSolicitudesToFuncionario();
+        List<SolicitudEcaes> resultado = solicitudEcaesCU.listar(
+                FiltroSolicitudes.pendientesDe(FlujoEstadosSolicitud.FUNCIONARIO, null, null));
 
         // Assert
         assertThat(resultado).isNotNull();
         assertThat(resultado).hasSize(1);
-        verify(solicitudGateway, times(1)).listarSolicitudesToFuncionario();
+        verify(solicitudGateway, times(1)).listarPorUltimoEstado("Enviada", null, null);
+    }
+
+    @Test
+    @DisplayName("Test 10b: Listar solicitudes para Coordinador - El flujo ECAES no le asigna estado: lista vacía")
+    void testListarSolicitudesParaCoordinadorEsVacio() {
+        List<SolicitudEcaes> resultado = solicitudEcaesCU.listar(
+                FiltroSolicitudes.pendientesDe(FlujoEstadosSolicitud.COORDINADOR, 1, "2025-2"));
+
+        assertThat(resultado).isEmpty();
+        verify(solicitudGateway, never()).listarPorUltimoEstado(anyString(), any(), any());
     }
 
     // ==================== PRUEBAS DE CAMBIO DE ESTADO ====================

@@ -1,5 +1,9 @@
 package co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.controladores;
 
+import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.RespuestasArchivo;
+
+import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.validacion.ArchivoMultipart;
+
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -14,11 +18,9 @@ import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.DTOPe
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.DTORespuesta.SolicitudHomologacionDTORespuesta;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.mappers.SolicitudHomologacioneMapperDominio;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.mappers.SolicitudMapperDominio;
-import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.GestionarUsuarioGatewayIntPort;
-import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Usuario;
-import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Enums.PeriodoAcademicoEnum;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.FiltroSolicitudes;
+import org.springframework.security.access.prepost.PreAuthorize;
+import co.edu.unicauca.decanatura.gestion_curricular.Security.Autorizacion;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -39,8 +41,11 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.multipart.MultipartFile;
+import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.validacion.ValidadorArchivoPdf;
+import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.validacion.ValidadorCambioEstado;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.FlujoEstadosSolicitud;
 
-import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.GestionarDocumentosGatewayIntPort;
+import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarDocumentosCUIntPort;
 
 import java.util.Date;
 
@@ -51,17 +56,22 @@ import java.util.Date;
 @RequestMapping("/api/solicitudes-homologacion")
 @RequiredArgsConstructor
 @Slf4j
+@PreAuthorize("hasAnyRole(" + Autorizacion.ROLES_STAFF + ")")
 public class SolicitudHomologacionRestController {
     private final GestionarSolicitudHomologacionCUIntPort solicitudHomologacionCU;
     private final SolicitudHomologacioneMapperDominio solicitudMapperDominio;
     private final SolicitudMapperDominio solicitudMapper;
     private final GestionarArchivosCUIntPort objGestionarArchivos;
-    private final GestionarDocumentosGatewayIntPort objGestionarDocumentosGateway;
-    private final GestionarUsuarioGatewayIntPort usuarioGateway;
+    private final GestionarDocumentosCUIntPort documentosCU;
+    private final Autorizacion autorizacion;
+    private final ValidadorCambioEstado validadorCambioEstado;
     private static final String MARCADOR_OFICIO_HOMOLOGACION = "[OFICIO_HOMOLOGACION]";
 
+    @PreAuthorize("hasAnyRole('Estudiante', 'Administrador')")
     @PostMapping("/crearSolicitud-Homologacion")
     public ResponseEntity<SolicitudHomologacionDTORespuesta> crearSolicitudHomologacion(@Valid @RequestBody SolicitudHomologacionDTOPeticion peticion) {
+        // El solicitante sale del token, no de lo que envía el cliente
+        peticion.getObjUsuario().setId_usuario(autorizacion.idSolicitante(peticion.getObjUsuario().getId_usuario()));
         SolicitudHomologacion solicitud = solicitudMapperDominio.mappearDeSolicitudHomologacionDTOPeticionASolicitudHomologacion(peticion);
         SolicitudHomologacion solicitudCreada = solicitudHomologacionCU.guardar(solicitud);
         ResponseEntity<SolicitudHomologacionDTORespuesta> respuesta = new ResponseEntity<>
@@ -80,206 +90,101 @@ public class SolicitudHomologacionRestController {
     @GetMapping("/listarSolicitud-Homologacion/Funcionario")
     public ResponseEntity<List<SolicitudHomologacionDTORespuesta>> listarSolicitudHomologacionToFuncionario(
             @RequestParam(required = false) String periodoAcademico) {
-        // Si no se proporciona período, usar el período académico actual basado en la fecha
-        if (periodoAcademico == null || periodoAcademico.trim().isEmpty()) {
-            PeriodoAcademicoEnum periodoActual = PeriodoAcademicoEnum.getPeriodoActual();
-            if (periodoActual != null) {
-                periodoAcademico = periodoActual.getValor();
-                log.debug("Usando período académico actual automático: {}", periodoAcademico);
-            }
-        }
-        
-        List<SolicitudHomologacion> solicitudes;
-        if (periodoAcademico != null && !periodoAcademico.trim().isEmpty()) {
-            solicitudes = solicitudHomologacionCU.listarSolicitudesToFuncionarioPorPeriodo(periodoAcademico.trim());
-        } else {
-            solicitudes = solicitudHomologacionCU.listarSolicitudesToFuncionario();
-        }
-        
-        List<SolicitudHomologacionDTORespuesta> respuesta = solicitudMapperDominio.mappearListaDeSolicitudHomologacionARespuesta(solicitudes);
-        return ResponseEntity.ok(respuesta);
+        return responder(solicitudHomologacionCU.listar(FiltroSolicitudes.pendientesDe(
+                FlujoEstadosSolicitud.FUNCIONARIO, null, PeriodoDeConsulta.oActual(periodoAcademico))));
     }
 
     @GetMapping("/listarSolicitud-Homologacion/Coordinador")
     public ResponseEntity<List<SolicitudHomologacionDTORespuesta>> listarSolicitudHomologacionToCoordinador(
             @RequestParam(required = false) String periodoAcademico) {
-        // Obtener el programa del coordinador autenticado
-        Integer idPrograma = obtenerProgramaCoordinadorAutenticado();
-        
-        // Si no se proporciona período, usar el período académico actual basado en la fecha
-        if (periodoAcademico == null || periodoAcademico.trim().isEmpty()) {
-            PeriodoAcademicoEnum periodoActual = PeriodoAcademicoEnum.getPeriodoActual();
-            if (periodoActual != null) {
-                periodoAcademico = periodoActual.getValor();
-                log.debug("Usando período académico actual automático: {}", periodoAcademico);
-            }
-        }
-        
-        List<SolicitudHomologacion> solicitudes;
-        if (idPrograma != null) {
-            // Filtrar por programa y período del coordinador
-            if (periodoAcademico != null && !periodoAcademico.trim().isEmpty()) {
-                solicitudes = solicitudHomologacionCU.listarSolicitudesToCoordinadorPorProgramaYPeriodo(idPrograma, periodoAcademico.trim());
-            } else {
-                solicitudes = solicitudHomologacionCU.listarSolicitudesToCoordinadorPorPrograma(idPrograma);
-            }
-        } else {
-            // Si no se puede obtener el programa, retornar todas (fallback)
+        Integer idPrograma = autorizacion.idProgramaCoordinadorActual();
+        if (idPrograma == null) {
+            // Si no se puede obtener el programa, se devuelven todas, de todos los períodos (fallback)
             log.warn("No se pudo obtener el programa del coordinador, retornando todas las solicitudes");
-            solicitudes = solicitudHomologacionCU.listarSolicitudesToCoordinador();
+            return responder(solicitudHomologacionCU.listar(
+                    FiltroSolicitudes.pendientesDe(FlujoEstadosSolicitud.COORDINADOR, null, null)));
         }
-        
-        List<SolicitudHomologacionDTORespuesta> respuesta = solicitudMapperDominio.mappearListaDeSolicitudHomologacionARespuesta(solicitudes);
-        return ResponseEntity.ok(respuesta);
+        return responder(solicitudHomologacionCU.listar(FiltroSolicitudes.pendientesDe(
+                FlujoEstadosSolicitud.COORDINADOR, idPrograma, PeriodoDeConsulta.oActual(periodoAcademico))));
     }
 
     @GetMapping("/listarSolicitud-Homologacion/Secretaria")
     public ResponseEntity<List<SolicitudHomologacionDTORespuesta>> listarSolicitudHomologacionToSecretaria(
             @RequestParam(required = false) String periodoAcademico) {
-        // Si no se proporciona período, usar el período académico actual basado en la fecha
-        if (periodoAcademico == null || periodoAcademico.trim().isEmpty()) {
-            PeriodoAcademicoEnum periodoActual = PeriodoAcademicoEnum.getPeriodoActual();
-            if (periodoActual != null) {
-                periodoAcademico = periodoActual.getValor();
-                log.debug("Usando período académico actual automático: {}", periodoAcademico);
-            }
-        }
-        
-        List<SolicitudHomologacion> solicitudes;
-        if (periodoAcademico != null && !periodoAcademico.trim().isEmpty()) {
-            solicitudes = solicitudHomologacionCU.listarSolicitudesToSecretariaPorPeriodo(periodoAcademico.trim());
-        } else {
-            solicitudes = solicitudHomologacionCU.listarSolicitudesToSecretaria();
-        }
-        
-        List<SolicitudHomologacionDTORespuesta> respuesta = solicitudMapperDominio.mappearListaDeSolicitudHomologacionARespuesta(solicitudes);
-        return ResponseEntity.ok(respuesta);
+        return responder(solicitudHomologacionCU.listar(FiltroSolicitudes.pendientesDe(
+                FlujoEstadosSolicitud.SECRETARIO, null, PeriodoDeConsulta.oActual(periodoAcademico))));
     }
 
-
-
+    @PreAuthorize("isAuthenticated()")
     @GetMapping("/listarSolicitud-Homologacion/porRol")
     public ResponseEntity<List<SolicitudHomologacionDTORespuesta>> listarSolicitudPorRol(
             @RequestParam String rol,
             @RequestParam(required = false) Integer idUsuario,
             @RequestParam(required = false) String periodoAcademico) {
 
-        // Si no se proporciona período, usar el período académico actual basado en la fecha
-        if (periodoAcademico == null || periodoAcademico.trim().isEmpty()) {
-            PeriodoAcademicoEnum periodoActual = PeriodoAcademicoEnum.getPeriodoActual();
-            if (periodoActual != null) {
-                periodoAcademico = periodoActual.getValor();
-                log.debug("Usando período académico actual automático: {}", periodoAcademico);
+        // Quien no es staff solo puede ver sus propias solicitudes
+        if (!autorizacion.esStaff()) {
+            rol = "ESTUDIANTE";
+            idUsuario = autorizacion.idUsuarioActual();
+            if (idUsuario == null) {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
             }
         }
 
-        List<SolicitudHomologacion> solicitudes;
-        if ("ESTUDIANTE".equals(rol) && idUsuario != null && periodoAcademico != null && !periodoAcademico.trim().isEmpty()) {
-            solicitudes = solicitudHomologacionCU.listarSolicitudesPorUsuarioYPeriodo(idUsuario, periodoAcademico.trim());
-        } else {
-            solicitudes = solicitudHomologacionCU.listarSolicitudesPorRol(rol, idUsuario);
+        String periodo = PeriodoDeConsulta.oActual(periodoAcademico);
+        if ("ESTUDIANTE".equals(rol) && idUsuario != null && periodo != null) {
+            return responder(solicitudHomologacionCU.listar(FiltroSolicitudes.deEstudiante(idUsuario, periodo)));
         }
-
-        List<SolicitudHomologacionDTORespuesta> respuesta =
-                solicitudMapperDominio.mappearListaDeSolicitudHomologacionARespuesta(solicitudes);
-
-        return ResponseEntity.ok(respuesta);
-    }
-
-    @GetMapping("/listarSolicitud-Homologacion/Secretaria/Aprobadas")
-    public ResponseEntity<List<SolicitudHomologacionDTORespuesta>> listarSolicitudHomologacionAprobadasToSecretaria(
-            @RequestParam(required = false) String periodoAcademico) {
-        List<SolicitudHomologacion> solicitudes;
-        
-        // Si se solicita "todos" o está vacío/null, mostrar todas las solicitudes sin filtrar
-        if (periodoAcademico == null || periodoAcademico.trim().isEmpty() || 
-            periodoAcademico.trim().equalsIgnoreCase("todos") ||
-            periodoAcademico.trim().equalsIgnoreCase("todos los periodos") ||
-            periodoAcademico.trim().equalsIgnoreCase("todos los períodos")) {
-            log.debug("Mostrando todas las solicitudes procesadas sin filtrar por período");
-            solicitudes = solicitudHomologacionCU.listarSolicitudesAprobadasToSecretaria();
-        } else {
-            // Filtrar por período académico específico
-            solicitudes = solicitudHomologacionCU.listarSolicitudesAprobadasToSecretariaPorPeriodo(periodoAcademico.trim());
-        }
-        
-        List<SolicitudHomologacionDTORespuesta> respuesta = solicitudMapperDominio.mappearListaDeSolicitudHomologacionARespuesta(solicitudes);
-        return ResponseEntity.ok(respuesta);
+        return responder(solicitudHomologacionCU.listarSolicitudesPorRol(rol, idUsuario));
     }
 
     /**
-     * Listar solicitudes de Homologación ya procesadas por el funcionario (estado APROBADA_FUNCIONARIO)
-     * GET /api/solicitudes-homologacion/listarSolicitud-Homologacion/Funcionario/Aprobadas
-     * 
-     * Este endpoint permite al funcionario ver un historial de las solicitudes 
-     * que ya ha procesado y enviado al coordinador.
-     * 
-     * @param periodoAcademico Período académico opcional (formato: "YYYY-P", ej: "2025-2")
+     * Solicitudes que la secretaría ya aprobó (pasaron por APROBADA).
+     * @param periodoAcademico opcional; vacío o "todos" muestra todos los períodos
+     */
+    @GetMapping("/listarSolicitud-Homologacion/Secretaria/Aprobadas")
+    public ResponseEntity<List<SolicitudHomologacionDTORespuesta>> listarSolicitudHomologacionAprobadasToSecretaria(
+            @RequestParam(required = false) String periodoAcademico) {
+        return responder(solicitudHomologacionCU.listar(FiltroSolicitudes.procesadasPor(
+                FlujoEstadosSolicitud.SECRETARIO, null, PeriodoDeConsulta.oTodos(periodoAcademico))));
+    }
+
+    /**
+     * Solicitudes que el funcionario ya procesó y envió al coordinador (pasaron por APROBADA_FUNCIONARIO).
+     * @param periodoAcademico opcional ("2025-2"); vacío o "todos" muestra todos los períodos
      */
     @GetMapping("/listarSolicitud-Homologacion/Funcionario/Aprobadas")
     public ResponseEntity<List<SolicitudHomologacionDTORespuesta>> listarSolicitudHomologacionAprobadasToFuncionario(
             @RequestParam(required = false) String periodoAcademico) {
-        List<SolicitudHomologacion> solicitudes;
-        
-        // Si se solicita "todos" o está vacío/null, mostrar todas las solicitudes sin filtrar
-        if (periodoAcademico == null || periodoAcademico.trim().isEmpty() || 
-            periodoAcademico.trim().equalsIgnoreCase("todos") ||
-            periodoAcademico.trim().equalsIgnoreCase("todos los periodos") ||
-            periodoAcademico.trim().equalsIgnoreCase("todos los períodos")) {
-            log.debug("Mostrando todas las solicitudes procesadas sin filtrar por período");
-            solicitudes = solicitudHomologacionCU.listarSolicitudesAprobadasToFuncionario();
-        } else {
-            // Filtrar por período académico específico
-            solicitudes = solicitudHomologacionCU.listarSolicitudesAprobadasToFuncionarioPorPeriodo(periodoAcademico.trim());
-        }
-        
-        List<SolicitudHomologacionDTORespuesta> respuesta = solicitudMapperDominio.mappearListaDeSolicitudHomologacionARespuesta(solicitudes);
-        return ResponseEntity.ok(respuesta);
+        return responder(solicitudHomologacionCU.listar(FiltroSolicitudes.procesadasPor(
+                FlujoEstadosSolicitud.FUNCIONARIO, null, PeriodoDeConsulta.oTodos(periodoAcademico))));
     }
 
     /**
-     * Listar solicitudes de Homologación ya procesadas por el coordinador (estado APROBADA_COORDINADOR)
-     * GET /api/solicitudes-homologacion/listarSolicitud-Homologacion/Coordinador/Aprobadas
-     * 
-     * Este endpoint permite al coordinador ver un historial de las solicitudes 
-     * que ya ha procesado y enviado a la secretaría.
-     * 
-     * @param periodoAcademico Período académico opcional (formato: "YYYY-P", ej: "2025-2")
+     * Solicitudes del programa del coordinador que él ya procesó y envió a la secretaría
+     * (pasaron por APROBADA_COORDINADOR).
+     * @param periodoAcademico opcional ("2025-2"); vacío o "todos" muestra todos los períodos
      */
     @GetMapping("/listarSolicitud-Homologacion/Coordinador/Aprobadas")
     public ResponseEntity<List<SolicitudHomologacionDTORespuesta>> listarSolicitudHomologacionAprobadasToCoordinador(
             @RequestParam(required = false) String periodoAcademico) {
-        // Obtener el programa del coordinador autenticado
-        Integer idPrograma = obtenerProgramaCoordinadorAutenticado();
-        
-        List<SolicitudHomologacion> solicitudes;
-        
-        // Si se solicita "todos" o está vacío/null, mostrar todas las solicitudes sin filtrar por período
-        boolean mostrarTodos = periodoAcademico == null || periodoAcademico.trim().isEmpty() || 
-            periodoAcademico.trim().equalsIgnoreCase("todos") ||
-            periodoAcademico.trim().equalsIgnoreCase("todos los periodos") ||
-            periodoAcademico.trim().equalsIgnoreCase("todos los períodos");
-        
-        if (idPrograma != null) {
-            if (mostrarTodos) {
-                // Filtrar solo por programa, sin período
-                log.debug("Mostrando todas las solicitudes procesadas del programa {} sin filtrar por período", idPrograma);
-                solicitudes = solicitudHomologacionCU.listarSolicitudesAprobadasToCoordinadorPorPrograma(idPrograma);
-            } else {
-                // Filtrar por programa y período del coordinador
-                solicitudes = solicitudHomologacionCU.listarSolicitudesAprobadasToCoordinadorPorProgramaYPeriodo(idPrograma, periodoAcademico.trim());
-            }
-        } else {
-            // Si no se puede obtener el programa, retornar todas (fallback)
+        Integer idPrograma = autorizacion.idProgramaCoordinadorActual();
+        if (idPrograma == null) {
+            // Si no se puede obtener el programa, se devuelven todas, de todos los períodos (fallback)
             log.warn("No se pudo obtener el programa del coordinador, retornando todas las solicitudes");
-            solicitudes = solicitudHomologacionCU.listarSolicitudesAprobadasToCoordinador();
+            return responder(solicitudHomologacionCU.listar(
+                    FiltroSolicitudes.procesadasPor(FlujoEstadosSolicitud.COORDINADOR, null, null)));
         }
-        
-        List<SolicitudHomologacionDTORespuesta> respuesta = solicitudMapperDominio.mappearListaDeSolicitudHomologacionARespuesta(solicitudes);
-        return ResponseEntity.ok(respuesta);
+        return responder(solicitudHomologacionCU.listar(FiltroSolicitudes.procesadasPor(
+                FlujoEstadosSolicitud.COORDINADOR, idPrograma, PeriodoDeConsulta.oTodos(periodoAcademico))));
+    }
+
+    private ResponseEntity<List<SolicitudHomologacionDTORespuesta>> responder(List<SolicitudHomologacion> solicitudes) {
+        return ResponseEntity.ok(solicitudMapperDominio.mappearListaDeSolicitudHomologacionARespuesta(solicitudes));
     }
 
 
+    @PreAuthorize("@autorizacion.esStaff() or @autorizacion.esDuenoSolicitud(#id)")
     @GetMapping("/listarSolicitud-Homologacion/{id}")
     public ResponseEntity<SolicitudHomologacionDTORespuesta> listarHomologacionById(@PathVariable Integer id) {
         SolicitudHomologacion solicitud = solicitudHomologacionCU.buscarPorId(id);
@@ -288,236 +193,179 @@ public class SolicitudHomologacionRestController {
     }
 
     @PutMapping("/actualizarEstadoSolicitud")
-    public ResponseEntity<Void> actualizarEstadoSolicitudHomologacion(@RequestBody CambioEstadoSolicitudDTOPeticion peticion) {
+    public ResponseEntity<Map<String, Object>> actualizarEstadoSolicitudHomologacion(@RequestBody CambioEstadoSolicitudDTOPeticion peticion) {
         CambioEstadoSolicitud solicitud = solicitudMapper.mappearDeCambioEstadoSolicitudDTOPeticionACambioEstadoSolicitud(peticion);
+        // Solo el rol responsable del paso puede hacerlo (Funcionario → Coordinador → Secretario)
+        String estadoActual = FlujoEstadosSolicitud.ultimoEstado(
+                solicitudHomologacionCU.buscarPorId(solicitud.getIdSolicitud()).getEstadosSolicitud());
+        ResponseEntity<Map<String, Object>> rechazo = validadorCambioEstado.validar(
+                FlujoEstadosSolicitud.TRES_APROBACIONES, estadoActual, solicitud.getNuevoEstado());
+        if (rechazo != null) {
+            return rechazo;
+        }
         solicitudHomologacionCU.cambiarEstadoSolicitud(solicitud.getIdSolicitud(), solicitud.getNuevoEstado());
         return ResponseEntity.noContent().build();
     }
 
-    // @GetMapping(" ")
-    // public ResponseEntity<SolicitudHomologacionDTORespuesta> obtenerSolicitudHomologacionSeleccionada() {
-    //    SolicitudHomologacion solicitud = solicitudHomologacionCU. obtenerSolicitudHomologacion();
-    //    SolicitudHomologacionDTORespuesta respuesta = solicitudMapperDominio.mappearDeSolicitudHomologacionASolicitudHomologacionDTORespuesta(solicitud);
-    //    return ResponseEntity.ok(respuesta);
-    // }
-
     /**
      * Descargar oficio por ID de solicitud
      */
+    @PreAuthorize("@autorizacion.esStaff() or @autorizacion.esDuenoSolicitud(#idSolicitud)")
     @GetMapping("/descargarOficio/{idSolicitud}")
     public ResponseEntity<byte[]> descargarOficio(@PathVariable Integer idSolicitud) {
-        try {
-            // Obtener la solicitud con sus documentos
-            SolicitudHomologacion solicitud = solicitudHomologacionCU.buscarPorId(idSolicitud);
-            if (solicitud == null) {
-                return ResponseEntity.notFound().build();
-            }
-            
-            // Buscar documentos asociados a esta solicitud
-            List<Documento> documentos = solicitud.getDocumentos();
-            if (documentos == null || documentos.isEmpty()) {
-                return ResponseEntity.notFound().build();
-            }
-            
-            // Prioridad 1: documentos marcados explícitamente como oficio/resolución de homologación (subidos por secretaría)
-            Documento documentoSeleccionado = null;
-            for (Documento d : documentos) {
-                if (d == null) continue;
-                String comentario = d.getComentario();
-                if (comentario != null && comentario.contains(MARCADOR_OFICIO_HOMOLOGACION)) {
-                    if (documentoSeleccionado == null) {
-                        documentoSeleccionado = d;
-                    } else {
-                        Date fSel = documentoSeleccionado.getFecha_documento();
-                        Date fNew = d.getFecha_documento();
-                        if (fSel == null && fNew != null) {
-                            documentoSeleccionado = d;
-                        } else if (fSel != null && fNew != null && fNew.after(fSel)) {
-                            documentoSeleccionado = d;
-                        }
-                    }
-                }
-            }
-
-            // Prioridad 2 (fallback): heurística por nombre (resolucion/oficio) excluyendo formulario del estudiante
-            if (documentoSeleccionado == null) {
-                for (Documento d : documentos) {
-                    if (d != null && d.getNombre() != null && esDocumentoOficioHomologacion(d)) {
-                        documentoSeleccionado = d;
-                        break;
-                    }
-                }
-            }
-
-            if (documentoSeleccionado == null) {
-                return ResponseEntity.notFound().build();
-            }
-
-            try {
-                String nombreDescarga = documentoSeleccionado.getNombre();
-                String rutaDocumento = documentoSeleccionado.getRuta_documento() != null
-                        ? documentoSeleccionado.getRuta_documento()
-                        : nombreDescarga;
-                byte[] archivo;
-                if (rutaDocumento != null && rutaDocumento.contains("/")) {
-                    archivo = objGestionarArchivos.getFileByPath(rutaDocumento);
+        // Obtener la solicitud con sus documentos
+        SolicitudHomologacion solicitud = solicitudHomologacionCU.buscarPorId(idSolicitud);
+        if (solicitud == null) {
+            return ResponseEntity.notFound().build();
+        }
+        
+        // Buscar documentos asociados a esta solicitud
+        List<Documento> documentos = solicitud.getDocumentos();
+        if (documentos == null || documentos.isEmpty()) {
+            return ResponseEntity.notFound().build();
+        }
+        
+        // Prioridad 1: documentos marcados explícitamente como oficio/resolución de homologación (subidos por secretaría)
+        Documento documentoSeleccionado = null;
+        for (Documento d : documentos) {
+            if (d == null) continue;
+            String comentario = d.getComentario();
+            if (comentario != null && comentario.contains(MARCADOR_OFICIO_HOMOLOGACION)) {
+                if (documentoSeleccionado == null) {
+                    documentoSeleccionado = d;
                 } else {
-                    archivo = objGestionarArchivos.getFile(nombreDescarga);
+                    Date fSel = documentoSeleccionado.getFecha_documento();
+                    Date fNew = d.getFecha_documento();
+                    if (fSel == null && fNew != null) {
+                        documentoSeleccionado = d;
+                    } else if (fSel != null && fNew != null && fNew.after(fSel)) {
+                        documentoSeleccionado = d;
+                    }
                 }
-                String contentDisposition = "attachment; filename=\"" + nombreDescarga + "\"";
-                return ResponseEntity.ok()
-                        .header(HttpHeaders.CONTENT_DISPOSITION, contentDisposition)
-                        .contentType(MediaType.APPLICATION_PDF)
-                        .body(archivo);
-            } catch (Exception e) {
-                log.debug("No se pudo cargar el oficio/resolución seleccionado: {}", e.getMessage());
-                return ResponseEntity.notFound().build();
             }
-                
+        }
+
+        // Prioridad 2 (fallback): heurística por nombre (resolucion/oficio) excluyendo formulario del estudiante
+        if (documentoSeleccionado == null) {
+            for (Documento d : documentos) {
+                if (d != null && d.getNombre() != null && esDocumentoOficioHomologacion(d)) {
+                    documentoSeleccionado = d;
+                    break;
+                }
+            }
+        }
+
+        if (documentoSeleccionado == null) {
+            return ResponseEntity.notFound().build();
+        }
+
+        try {
+            String nombreDescarga = documentoSeleccionado.getNombre();
+            String rutaDocumento = documentoSeleccionado.getRuta_documento() != null
+                    ? documentoSeleccionado.getRuta_documento()
+                    : nombreDescarga;
+            byte[] archivo;
+            if (rutaDocumento != null && rutaDocumento.contains("/")) {
+                archivo = objGestionarArchivos.getFileByPath(rutaDocumento);
+            } else {
+                archivo = objGestionarArchivos.getFile(nombreDescarga);
+            }
+            String contentDisposition = RespuestasArchivo.adjunto(nombreDescarga);
+            return ResponseEntity.ok()
+                    .header(HttpHeaders.CONTENT_DISPOSITION, contentDisposition)
+                    .contentType(MediaType.APPLICATION_PDF)
+                    .body(archivo);
         } catch (Exception e) {
-            log.error("Error al descargar oficio para solicitud {}: {}", idSolicitud, e.getMessage(), e);
-            return ResponseEntity.internalServerError().build();
+            log.debug("No se pudo cargar el oficio/resolución seleccionado: {}", e.getMessage());
+            return ResponseEntity.notFound().build();
         }
     }
     
     /**
      * Obtener oficios disponibles para una solicitud
      */
+    @PreAuthorize("@autorizacion.esStaff() or @autorizacion.esDuenoSolicitud(#idSolicitud)")
     @GetMapping("/obtenerOficios/{idSolicitud}")
     public ResponseEntity<List<Map<String, Object>>> obtenerOficios(@PathVariable Integer idSolicitud) {
-        try {
-            // Obtener la solicitud con sus documentos
-            SolicitudHomologacion solicitud = solicitudHomologacionCU.buscarPorId(idSolicitud);
-            if (solicitud == null) {
-                return ResponseEntity.notFound().build();
-            }
-            
-            // Buscar documentos asociados a esta solicitud
-            List<Documento> documentos = solicitud.getDocumentos();
-            if (documentos == null || documentos.isEmpty()) {
-                return ResponseEntity.ok(new ArrayList<>()); // Retornar lista vacía
-            }
-            
-            // Crear lista de oficios basada en los documentos reales.
-            // Prioridad: marcados explícitamente como oficio/resolución de homologación, fallback a heurística por nombre.
-            List<Map<String, Object>> oficios = new ArrayList<>();
-            for (Documento documento : documentos) {
-                if (documento == null || documento.getNombre() == null) continue;
-                boolean esMarcado = documento.getComentario() != null
-                        && documento.getComentario().contains(MARCADOR_OFICIO_HOMOLOGACION);
-                if (esMarcado || esDocumentoOficioHomologacion(documento)) {
-                    Map<String, Object> oficio = new HashMap<>();
-                    oficio.put("id", idSolicitud);
-                    oficio.put("nombre", documento.getNombre());
-                    oficio.put("nombreArchivo", documento.getNombre());
-                    oficio.put("ruta", documento.getRuta_documento());
-                    oficios.add(oficio);
-                }
-            }
-            
-            return ResponseEntity.ok(oficios);
-            
-        } catch (Exception e) {
-            log.error("Error al obtener oficios para solicitud {}: {}", idSolicitud, e.getMessage(), e);
-            return ResponseEntity.internalServerError().build();
+        // Obtener la solicitud con sus documentos
+        SolicitudHomologacion solicitud = solicitudHomologacionCU.buscarPorId(idSolicitud);
+        if (solicitud == null) {
+            return ResponseEntity.notFound().build();
         }
+        
+        // Buscar documentos asociados a esta solicitud
+        List<Documento> documentos = solicitud.getDocumentos();
+        if (documentos == null || documentos.isEmpty()) {
+            return ResponseEntity.ok(new ArrayList<>()); // Retornar lista vacía
+        }
+        
+        // Crear lista de oficios basada en los documentos reales.
+        // Prioridad: marcados explícitamente como oficio/resolución de homologación, fallback a heurística por nombre.
+        List<Map<String, Object>> oficios = new ArrayList<>();
+        for (Documento documento : documentos) {
+            if (documento == null || documento.getNombre() == null) continue;
+            boolean esMarcado = documento.getComentario() != null
+                    && documento.getComentario().contains(MARCADOR_OFICIO_HOMOLOGACION);
+            if (esMarcado || esDocumentoOficioHomologacion(documento)) {
+                Map<String, Object> oficio = new HashMap<>();
+                oficio.put("id", idSolicitud);
+                oficio.put("nombre", documento.getNombre());
+                oficio.put("nombreArchivo", documento.getNombre());
+                oficio.put("ruta", documento.getRuta_documento());
+                oficios.add(oficio);
+            }
+        }
+        
+        return ResponseEntity.ok(oficios);
     }
     
     /**
      * Validar documentos requeridos para homologación
      */
+    @PreAuthorize("@autorizacion.esStaff() or @autorizacion.esDuenoSolicitud(#idSolicitud)")
     @GetMapping("/validarDocumentosRequeridos/{idSolicitud}")
     public ResponseEntity<Map<String, Object>> validarDocumentosRequeridos(@PathVariable Integer idSolicitud) {
-        try {
-            // Obtener la solicitud con sus documentos
-            SolicitudHomologacion solicitud = solicitudHomologacionCU.buscarPorId(idSolicitud);
-            if (solicitud == null) {
-                return ResponseEntity.notFound().build();
-            }
-            
-            List<Documento> documentos = solicitud.getDocumentos();
-            if (documentos == null) {
-                documentos = new ArrayList<>();
-            }
-            
-            // Documentos requeridos para homologación
-            Map<String, Boolean> documentosRequeridos = new HashMap<>();
-            documentosRequeridos.put("formulario_homologacion", false);
-            documentosRequeridos.put("certificado_notas", false);
-            documentosRequeridos.put("programa_academico", false);
-            
-            // Verificar qué documentos están presentes
-            for (Documento documento : documentos) {
-                if (documento.getNombre() != null) {
-                    String nombre = documento.getNombre().toLowerCase();
-                    
-                    if (nombre.contains("formulario") && nombre.contains("homologacion")) {
-                        documentosRequeridos.put("formulario_homologacion", true);
-                    } else if (nombre.contains("certificado") && nombre.contains("notas")) {
-                        documentosRequeridos.put("certificado_notas", true);
-                    } else if (nombre.contains("programa") && nombre.contains("academico")) {
-                        documentosRequeridos.put("programa_academico", true);
-                    }
+        // Obtener la solicitud con sus documentos
+        SolicitudHomologacion solicitud = solicitudHomologacionCU.buscarPorId(idSolicitud);
+        if (solicitud == null) {
+            return ResponseEntity.notFound().build();
+        }
+        
+        List<Documento> documentos = solicitud.getDocumentos();
+        if (documentos == null) {
+            documentos = new ArrayList<>();
+        }
+        
+        // Documentos requeridos para homologación
+        Map<String, Boolean> documentosRequeridos = new HashMap<>();
+        documentosRequeridos.put("formulario_homologacion", false);
+        documentosRequeridos.put("certificado_notas", false);
+        documentosRequeridos.put("programa_academico", false);
+        
+        // Verificar qué documentos están presentes
+        for (Documento documento : documentos) {
+            if (documento.getNombre() != null) {
+                String nombre = documento.getNombre().toLowerCase();
+                
+                if (nombre.contains("formulario") && nombre.contains("homologacion")) {
+                    documentosRequeridos.put("formulario_homologacion", true);
+                } else if (nombre.contains("certificado") && nombre.contains("notas")) {
+                    documentosRequeridos.put("certificado_notas", true);
+                } else if (nombre.contains("programa") && nombre.contains("academico")) {
+                    documentosRequeridos.put("programa_academico", true);
                 }
             }
-            
-            // Calcular si todos los documentos están presentes
-            boolean todosCompletos = documentosRequeridos.values().stream().allMatch(Boolean::booleanValue);
-            
-            Map<String, Object> resultado = new HashMap<>();
-            resultado.put("documentosRequeridos", documentosRequeridos);
-            resultado.put("todosCompletos", todosCompletos);
-            resultado.put("totalDocumentos", documentos.size());
-            
-            return ResponseEntity.ok(resultado);
-            
-        } catch (Exception e) {
-            log.error("Error al validar documentos requeridos para solicitud {}: {}", idSolicitud, e.getMessage(), e);
-            return ResponseEntity.internalServerError().build();
         }
-    }
-
-    /**
-     * Obtiene el ID del programa académico del coordinador autenticado.
-     * @return ID del programa o null si no se puede obtener
-     */
-    private Integer obtenerProgramaCoordinadorAutenticado() {
-        try {
-            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-            if (authentication == null || !authentication.isAuthenticated()) {
-                log.warn("No hay usuario autenticado");
-                return null;
-            }
-
-            String email = authentication.getName();
-            Usuario usuarioAutenticado = usuarioGateway.buscarUsuarioPorCorreo(email);
-            
-            if (usuarioAutenticado == null) {
-                log.warn("Usuario autenticado no encontrado: {}", email);
-                return null;
-            }
-
-            // Verificar que sea coordinador
-            String rolNombre = usuarioAutenticado.getObjRol() != null 
-                    ? usuarioAutenticado.getObjRol().getNombre() 
-                    : null;
-            
-            if (!"Coordinador".equals(rolNombre)) {
-                log.warn("El usuario autenticado no es coordinador: {}", rolNombre);
-                return null;
-            }
-
-            // Obtener el programa del coordinador
-            if (usuarioAutenticado.getObjPrograma() != null && usuarioAutenticado.getObjPrograma().getId_programa() != null) {
-                return usuarioAutenticado.getObjPrograma().getId_programa();
-            }
-
-            log.warn("El coordinador no tiene programa asignado");
-            return null;
-        } catch (Exception e) {
-            log.error("Error al obtener programa del coordinador autenticado", e);
-            return null;
-        }
+        
+        // Calcular si todos los documentos están presentes
+        boolean todosCompletos = documentosRequeridos.values().stream().allMatch(Boolean::booleanValue);
+        
+        Map<String, Object> resultado = new HashMap<>();
+        resultado.put("documentosRequeridos", documentosRequeridos);
+        resultado.put("todosCompletos", todosCompletos);
+        resultado.put("totalDocumentos", documentos.size());
+        
+        return ResponseEntity.ok(resultado);
     }
 
     /**
@@ -546,49 +394,25 @@ public class SolicitudHomologacionRestController {
     public ResponseEntity<Map<String, Object>> subirResolucion(
             @PathVariable Integer idSolicitud,
             @RequestParam("file") MultipartFile file) {
-        try {
-            SolicitudHomologacion solicitud = solicitudHomologacionCU.buscarPorId(idSolicitud);
-            if (solicitud == null) {
-                return ResponseEntity.notFound().build();
-            }
-            String nombreOriginal = file.getOriginalFilename();
-            if (nombreOriginal == null || nombreOriginal.isBlank()) {
-                return ResponseEntity.badRequest().body(Map.of("error", "Nombre de archivo no válido"));
-            }
-            if (!nombreOriginal.toLowerCase(Locale.ROOT).endsWith(".pdf")) {
-                return ResponseEntity.status(HttpStatus.UNSUPPORTED_MEDIA_TYPE)
-                    .body(Map.of("error", "Solo se permiten archivos PDF"));
-            }
-            long maxSize = 10 * 1024 * 1024; // 10MB
-            if (file.getSize() > maxSize) {
-                return ResponseEntity.status(HttpStatus.PAYLOAD_TOO_LARGE)
-                    .body(Map.of("error", "Archivo demasiado grande. Máximo 10MB"));
-            }
-            String rutaArchivo = objGestionarArchivos.saveFile(file, nombreOriginal, "pdf", "homologacion", idSolicitud);
-            String nombreArchivo = rutaArchivo.contains("/") ? rutaArchivo.substring(rutaArchivo.lastIndexOf("/") + 1) : rutaArchivo;
-
-            Documento documento = new Documento();
-            documento.setNombre(nombreArchivo);
-            documento.setRuta_documento(rutaArchivo);
-            documento.setFecha_documento(new Date());
-            documento.setEsValido(true);
-            documento.setComentario(MARCADOR_OFICIO_HOMOLOGACION + " Archivo subido por secretaría");
-            documento.setObjSolicitud(solicitud);
-
-            Documento guardado = objGestionarDocumentosGateway.crearDocumento(documento);
-
-            Map<String, Object> respuesta = new HashMap<>();
-            respuesta.put("success", true);
-            respuesta.put("message", "Resolución subida correctamente");
-            respuesta.put("idDocumento", guardado.getId_documento());
-            respuesta.put("nombre", nombreArchivo);
-            respuesta.put("idSolicitud", idSolicitud);
-            return ResponseEntity.ok(respuesta);
-        } catch (Exception e) {
-            log.error("Error al subir resolución de homologación para solicitud {}: {}", idSolicitud, e.getMessage(), e);
-            return ResponseEntity.internalServerError()
-                .body(Map.of("error", "Error al subir el archivo: " + e.getMessage()));
+        SolicitudHomologacion solicitud = solicitudHomologacionCU.buscarPorId(idSolicitud);
+        if (solicitud == null) {
+            return ResponseEntity.notFound().build();
         }
+        ValidadorArchivoPdf.Rechazo rechazo = ValidadorArchivoPdf.validar(file, ValidadorArchivoPdf.MAXIMO_10MB);
+        if (rechazo != null) {
+            return ResponseEntity.status(rechazo.estado()).body(Map.of("error", rechazo.mensaje()));
+        }
+        String nombreOriginal = file.getOriginalFilename();
+        Documento guardado = documentosCU.adjuntarASolicitud(ArchivoMultipart.de(file), solicitud,
+                "homologacion", MARCADOR_OFICIO_HOMOLOGACION + " Archivo subido por secretaría", true);
+        String nombreArchivo = guardado.getNombre();
+        Map<String, Object> respuesta = new HashMap<>();
+        respuesta.put("success", true);
+        respuesta.put("message", "Resolución subida correctamente");
+        respuesta.put("idDocumento", guardado.getId_documento());
+        respuesta.put("nombre", nombreArchivo);
+        respuesta.put("idSolicitud", idSolicitud);
+        return ResponseEntity.ok(respuesta);
     }
 
 }

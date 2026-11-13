@@ -99,15 +99,6 @@ public class GestionarRolesCUAdapter implements GestionarRolesCUIntPort {
     }
 
     @Override
-    public boolean existeRolPorNombre(String nombre) {
-        if (nombre == null || nombre.isBlank()) {
-            formateadorResultados.retornarRespuestaErrorEntidadExiste("Debe proporcionar un nombre válido.");
-        }
-
-        return rolesGateway.existeRolPorNombre(nombre);
-    }
-
-    @Override
     public List<Rol> listarRoles() {
         return rolesGateway.listarRoles();
     }

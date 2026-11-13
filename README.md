@@ -144,17 +144,37 @@ El artefacto empaquetado queda en `gestion_curricular/target/gestion_curricular-
 
 ## Perfiles
 
-- **dev**: Desarrollo local (crea/elimina tablas automáticamente)
+- **dev**: Desarrollo local con MySQL. Flyway migra el esquema al arrancar y Hibernate lo valida.
 - **prod**: Producción (valida esquema, usa variables de entorno)
-- **test**: Pruebas (H2 en memoria)
+- **test**: Pruebas con H2 en memoria. Hibernate crea el esquema y Spring carga los datos compartidos de `test-data.sql`.
+
+### Migraciones de desarrollo
+
+Empieza con una base MySQL vacía. V1 crea el esquema y V2 carga roles y programas. Flyway registra las versiones aplicadas en `flyway_schema_history` y conserva los datos entre arranques.
+
+Si tu base local viene de `ddl-auto=create`, conserva esa base y usa una nueva para empezar con Flyway. Puedes indicar su URL con `SPRING_DATASOURCE_URL`. Para poblar una base nueva con ejemplos, ejecuta una vez `gestion_curricular/scripts/datos_demo.sql` desde tu cliente MySQL después del primer arranque y reinicia la aplicación. El primer arranque crea la cuenta de administrador de desarrollo. El script agrega los demás datos de ejemplo.
+
+Agrega el siguiente cambio como `gestion_curricular/src/main/resources/db/migration/V3__descripcion.sql` y actualiza las entidades si corresponde. Usa una versión nueva para cada cambio y conserva intactos los archivos ya aplicados. Comprueba el arranque tanto con una base vacía como con una que ya tenga las versiones anteriores.
+
+El perfil `prod` mantiene la gestión manual del esquema.
 
 
+## Pruebas
 
-## Testing
+GitHub Actions también inicia el perfil dev dos veces contra un MySQL vacío y comprueba que Flyway conserva los datos.
 
 ```bash
-mvn test
+cd gestion_curricular
+./mvnw test
 ```
+
+Compila y pasa las pruebas con Java 17 (producción) y Java 25. GitHub Actions corre la suite con ambas versiones
+en cada push y en cada pull request a `main` (`.github/workflows/pruebas.yml`); un pull request con pruebas en rojo
+no debería fusionarse.
+
+Algunas pruebas comparan la respuesta completa de las estadísticas con archivos de referencia en
+`src/test/resources/referencias/`. Si un cambio en la respuesta es intencional, se regraban con
+`./mvnw test -Dtest='*CaracterizacionTest' -DgrabarReferencia=true` y se revisa el diff antes de hacer commit.
 
 ## Autores
 

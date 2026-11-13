@@ -1,0 +1,24 @@
+{
+  "idPrograma" : 1,
+  "porEstado" : {
+    "APROBADA" : 4,
+    "APROBADA_COORDINADOR" : 0,
+    "APROBADA_FUNCIONARIO" : 0,
+    "ENVIADA" : 2,
+    "RECHAZADA" : 1
+  },
+  "porPrograma" : { },
+  "porTipoProceso" : {
+    "Cursos de Verano" : 3,
+    "ECAES" : 0,
+    "Homologacion" : 2,
+    "Paz y Salvo" : 1,
+    "Reingreso" : 1
+  },
+  "porcentajeAprobacion" : 57.1,
+  "totalAprobadas" : 4,
+  "totalEnProceso" : 0,
+  "totalEnviadas" : 2,
+  "totalRechazadas" : 1,
+  "totalSolicitudes" : 7
+}

@@ -27,7 +27,12 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 public class SeguridadConfig {
     
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
-    
+
+    /** Catálogos que solo el Administrador puede modificar. */
+    private static final String[] CATALOGOS = {
+        "/api/roles/**", "/api/programas/**", "/api/materias/**", "/api/docentes/**"
+    };
+
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
@@ -78,6 +83,22 @@ public class SeguridadConfig {
                 .requestMatchers(HttpMethod.PUT, "/api/estadisticas/**").hasRole("Administrador")
                 .requestMatchers(HttpMethod.DELETE, "/api/estadisticas/**").hasRole("Administrador")
                 .requestMatchers("/api/estadisticas/**")
+                    .hasAnyRole("Administrador", "Funcionario", "Coordinador", "Secretario", "Decano")
+                // Catálogos: cualquiera autenticado consulta; solo el Administrador crea, modifica o elimina
+                .requestMatchers(HttpMethod.POST, CATALOGOS).hasRole("Administrador")
+                .requestMatchers(HttpMethod.PUT, CATALOGOS).hasRole("Administrador")
+                .requestMatchers(HttpMethod.DELETE, CATALOGOS).hasRole("Administrador")
+                // Cursos ofertados (/api/cursos-verano): estudiantes solo consultan la oferta;
+                // gestionar cursos, preinscripciones, inscripciones y pagos es del staff
+                .requestMatchers(HttpMethod.GET,
+                    "/api/cursos-verano/listarCursos",
+                    "/api/cursos-verano/disponibles",
+                    "/api/cursos-verano/todos",
+                    "/api/cursos-verano/buscarCursoPorId/*").authenticated()
+                .requestMatchers("/api/cursos-verano/**")
+                    .hasAnyRole("Administrador", "Funcionario", "Coordinador", "Secretario", "Decano")
+                // Generación de documentos desde plantillas: solo staff
+                .requestMatchers("/api/documentos/generar", "/api/documentos/templates/**")
                     .hasAnyRole("Administrador", "Funcionario", "Coordinador", "Secretario", "Decano")
                 // Todos los demás endpoints requieren autenticación
                 .anyRequest().authenticated()

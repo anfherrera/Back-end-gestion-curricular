@@ -1,6 +1,13 @@
 package co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input;
 
 import java.util.List;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.DatosDocumento;
+import java.util.Optional;
+import java.util.function.Predicate;
+
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Documento;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.DocumentosPazYSalvo.RevisionDocumentos;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.FiltroSolicitudes;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.SolicitudPazYSalvo;
 
 public interface GestionarSolicitudPazYSalvoCUIntPort {
@@ -9,84 +16,16 @@ public interface GestionarSolicitudPazYSalvoCUIntPort {
 
     List<SolicitudPazYSalvo> listarSolicitudes();
 
-    List<SolicitudPazYSalvo> listarSolicitudesToFuncionario();
-
-    List<SolicitudPazYSalvo> listarSolicitudesToCoordinador();
+    /**
+     * Solicitudes de un estudiante o pendientes de un rol (ver {@link FiltroSolicitudes}).
+     * Paz y salvo no tiene listado de procesadas.
+     */
+    List<SolicitudPazYSalvo> listar(FiltroSolicitudes filtro);
 
     /**
-     * Lista solicitudes para coordinador filtradas por programa académico
-     * @param idPrograma ID del programa académico del coordinador
-     * @return Lista de solicitudes del programa específico
+     * Listado "por rol" con el rol en mayúsculas (ESTUDIANTE, FUNCIONARIO, COORDINADOR, SECRETARIA), sin
+     * programa ni período. Cualquier otro rol devuelve una lista vacía.
      */
-    List<SolicitudPazYSalvo> listarSolicitudesToCoordinadorPorPrograma(Integer idPrograma);
-
-    List<SolicitudPazYSalvo> listarSolicitudesToSecretaria();
-
-    List<SolicitudPazYSalvo> listarSolicitudesAprobadasToSecretaria();
-
-    List<SolicitudPazYSalvo> listarSolicitudesAprobadasToFuncionario();
-
-    List<SolicitudPazYSalvo> listarSolicitudesAprobadasToCoordinador();
-
-    /**
-     * Lista solicitudes aprobadas para coordinador filtradas por programa académico
-     * @param idPrograma ID del programa académico del coordinador
-     * @return Lista de solicitudes aprobadas del programa específico
-     */
-    List<SolicitudPazYSalvo> listarSolicitudesAprobadasToCoordinadorPorPrograma(Integer idPrograma);
-
-    /**
-     * Lista solicitudes para funcionario filtradas por período académico
-     * @param periodoAcademico Período académico (formato: "YYYY-P", ej: "2025-2")
-     * @return Lista de solicitudes del período específico
-     */
-    List<SolicitudPazYSalvo> listarSolicitudesToFuncionarioPorPeriodo(String periodoAcademico);
-
-    /**
-     * Lista solicitudes aprobadas para funcionario filtradas por período académico
-     * @param periodoAcademico Período académico (formato: "YYYY-P", ej: "2025-2")
-     * @return Lista de solicitudes aprobadas del período específico
-     */
-    List<SolicitudPazYSalvo> listarSolicitudesAprobadasToFuncionarioPorPeriodo(String periodoAcademico);
-
-    /**
-     * Lista solicitudes para coordinador filtradas por programa y período académico
-     * @param idPrograma ID del programa académico del coordinador
-     * @param periodoAcademico Período académico (formato: "YYYY-P", ej: "2025-2")
-     * @return Lista de solicitudes del programa y período específicos
-     */
-    List<SolicitudPazYSalvo> listarSolicitudesToCoordinadorPorProgramaYPeriodo(Integer idPrograma, String periodoAcademico);
-
-    /**
-     * Lista solicitudes aprobadas para coordinador filtradas por programa y período académico
-     * @param idPrograma ID del programa académico del coordinador
-     * @param periodoAcademico Período académico (formato: "YYYY-P", ej: "2025-2")
-     * @return Lista de solicitudes aprobadas del programa y período específicos
-     */
-    List<SolicitudPazYSalvo> listarSolicitudesAprobadasToCoordinadorPorProgramaYPeriodo(Integer idPrograma, String periodoAcademico);
-
-    /**
-     * Lista solicitudes para secretaría filtradas por período académico
-     * @param periodoAcademico Período académico (formato: "YYYY-P", ej: "2025-2")
-     * @return Lista de solicitudes del período específico
-     */
-    List<SolicitudPazYSalvo> listarSolicitudesToSecretariaPorPeriodo(String periodoAcademico);
-
-    /**
-     * Lista solicitudes aprobadas para secretaría filtradas por período académico
-     * @param periodoAcademico Período académico (formato: "YYYY-P", ej: "2025-2")
-     * @return Lista de solicitudes aprobadas del período específico
-     */
-    List<SolicitudPazYSalvo> listarSolicitudesAprobadasToSecretariaPorPeriodo(String periodoAcademico);
-
-    /**
-     * Lista solicitudes para estudiante filtradas por usuario y período académico
-     * @param idUsuario ID del usuario (estudiante)
-     * @param periodoAcademico Período académico (formato: "YYYY-P", ej: "2025-2")
-     * @return Lista de solicitudes del usuario y período específicos
-     */
-    List<SolicitudPazYSalvo> listarSolicitudesPorUsuarioYPeriodo(Integer idUsuario, String periodoAcademico);
-
     List<SolicitudPazYSalvo> listarSolicitudesPorRol(String rol, Integer idUsuario);
 
     SolicitudPazYSalvo buscarPorId(Integer idSolicitud);
@@ -100,4 +39,43 @@ public interface GestionarSolicitudPazYSalvoCUIntPort {
      * @param comentario Comentario o razón del cambio de estado (especialmente para rechazos)
      */
     void cambiarEstadoSolicitud(Integer idSolicitud, String nuevoEstado, String comentario);
+
+    /** Aplica un paso solo si el actor puede actuar como el rol responsable. */
+    Optional<RechazoCambioEstado> cambiarEstadoSolicitud(Integer idSolicitud, String nuevoEstado, String comentario,
+            Predicate<String> puedeActuarComo);
+
+    record RechazoCambioEstado(Motivo motivo, String mensaje, String estadoActual) {
+        public enum Motivo {
+            TRANSICION_NO_PERMITIDA, ROL_NO_AUTORIZADO
+        }
+    }
+
+    /** Documentos de la solicitud que tienen nombre, en su orden, cada uno con su tipo según el nombre. */
+    List<DocumentoConTipo> documentosConTipo(Integer idSolicitud);
+
+    record DocumentoConTipo(Documento documento, String tipo) {
+    }
+
+    /** Oficios y resoluciones en PDF de la solicitud, en su orden. */
+    List<Documento> oficios(Integer idSolicitud);
+
+    /** Qué documentos requeridos ha entregado el estudiante y si están todos los obligatorios. */
+    RevisionDocumentos revisarDocumentosRequeridos(Integer idSolicitud);
+
+    /** Comentario del último rechazo y documentos con comentario de la solicitud. */
+    ComentariosSolicitud comentarios(Integer idSolicitud);
+
+    /**
+     * @param comentarioRechazo ver {@link SolicitudPazYSalvo#ultimoComentarioDeRechazo()}; null si no hay
+     * @param documentos        los documentos con comentario no vacío, en su orden, con el comentario recortado
+     */
+    record ComentariosSolicitud(String comentarioRechazo, List<ComentarioDocumento> documentos) {
+    }
+
+    record ComentarioDocumento(Integer idDocumento, String nombre, String comentario) {
+    }
+
+
+    Optional<DatosDocumento> prepararDocumento(Integer id, String cedula, String titulo, String director,
+                                               boolean fechaLocal);
 }

@@ -9,7 +9,6 @@ import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import lombok.extern.slf4j.Slf4j;
 
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.GestionarCursoOfertadoVeranoGatewayIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.CursoOfertadoVerano;
@@ -30,7 +29,6 @@ import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.pers
 
 @Service
 @Transactional
-@Slf4j
 public class GestionarCursoOfertadoVeranoGatewayImplAdapter implements GestionarCursoOfertadoVeranoGatewayIntPort {
 
     private final CursoOfertadoVeranoRepositoryInt cursoRepository;
@@ -160,7 +158,6 @@ public class GestionarCursoOfertadoVeranoGatewayImplAdapter implements Gestionar
 
         return cursoMapper.map(cursoGuardado, CursoOfertadoVerano.class);
 
-        //return null;
     }
 
     @Override
@@ -184,41 +181,18 @@ public class GestionarCursoOfertadoVeranoGatewayImplAdapter implements Gestionar
 
     @Override
     @Transactional(readOnly = true)
-    public List<CursoOfertadoVerano> buscarPorGrupo(GrupoCursoVerano grupo) {
-        GrupoCursoVeranoEntity grupoEntity = cursoMapper.map(grupo, GrupoCursoVeranoEntity.class);
-        return cursoRepository.buscarPorGrupo(grupoEntity).stream()
-            .map(entity -> cursoMapper.map(entity, CursoOfertadoVerano.class))
-            .toList();
-    }
-
-    @Override
-    @Transactional(readOnly = true)
-    public List<CursoOfertadoVerano> buscarPorMateria(Integer idMateria) {
-        return cursoRepository.buscarPorMateria(idMateria).stream()
-            .map(entity -> cursoMapper.map(entity, CursoOfertadoVerano.class))
-            .toList();
-    }
-
-    @Override
-    @Transactional(readOnly = true)
-    public List<CursoOfertadoVerano> buscarPorDocente(Integer idDocente) {
-        return cursoRepository.buscarPorDocente(idDocente).stream()
-            .map(entity -> cursoMapper.map(entity, CursoOfertadoVerano.class))
-            .toList();
-    }
-
-    @Override
-    @Transactional(readOnly = true)
-    public Integer contarPorSalon(String salon) {
-        return cursoRepository.contarPorSalon(salon);
-    }
-
-    @Override
-    @Transactional(readOnly = true)
     public List<CursoOfertadoVerano> listarTodos() {
         return cursoRepository.findAll().stream()
             .map(entity -> cursoMapper.map(entity, CursoOfertadoVerano.class))
             .toList();
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<CursoOfertadoVerano> listarPorPeriodo(String periodo) {
+        return cursoRepository.listarPorPeriodo(periodo).stream()
+                .map(entity -> cursoMapper.map(entity, CursoOfertadoVerano.class))
+                .toList();
     }
 
     @Override
@@ -266,5 +240,37 @@ public class GestionarCursoOfertadoVeranoGatewayImplAdapter implements Gestionar
 
 
         return usuarioYaEliminado;
+    }
+
+    @Override
+    public CursoOfertadoVerano guardarCambiosCurso(Integer idCurso, Integer cupoEstimado, String salon, String nuevoEstado) {
+        CursoOfertadoVeranoEntity curso = cursoRepository.findByIdConEstados(idCurso);
+        if (curso == null) {
+            return null;
+        }
+        if (cupoEstimado != null) {
+            curso.setCupo_estimado(cupoEstimado);
+        }
+        if (salon != null) {
+            curso.setSalon(salon);
+        }
+        CursoOfertadoVeranoEntity guardado = cursoRepository.save(curso);
+        if (nuevoEstado != null) {
+            EstadoCursoOfertadoEntity estado = new EstadoCursoOfertadoEntity();
+            estado.setEstado_actual(nuevoEstado);
+            estado.setFecha_registro_estado(new Date());
+            estado.setObjCursoOfertadoVerano(guardado);
+            objEstadoCursoOfertadoRepository.save(estado);
+        }
+        return cursoMapper.map(guardado, CursoOfertadoVerano.class);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public boolean existeCurso(Integer idMateria, Integer idDocente, String periodoAcademico, GrupoCursoVerano grupo) {
+        GrupoCursoVeranoEntity grupoEntity = grupo != null
+                ? GrupoCursoVeranoEntity.valueOf(grupo.name())
+                : GrupoCursoVeranoEntity.A;
+        return cursoRepository.existePorMateriaDocentePeriodoGrupo(idMateria, idDocente, periodoAcademico, grupoEntity);
     }
 }

@@ -1,0 +1,201 @@
+{
+  "" : {
+    "status" : 400,
+    "body" : {
+      "codigoError" : "GC-0400",
+      "mensaje" : "La petición no tiene el formato esperado: revise los parámetros y el cuerpo enviados",
+      "codigoHttp" : 400,
+      "url" : "http://localhost/api/cursos-verano/inscripciones/7/validar-pago",
+      "metodo" : "PUT"
+    },
+    "llamadas" : [ ]
+  },
+  "null" : {
+    "status" : 400,
+    "body" : {
+      "codigoError" : "GC-0400",
+      "mensaje" : "La petición no tiene el formato esperado: revise los parámetros y el cuerpo enviados",
+      "codigoHttp" : 400,
+      "url" : "http://localhost/api/cursos-verano/inscripciones/7/validar-pago",
+      "metodo" : "PUT"
+    },
+    "llamadas" : [ ]
+  },
+  "{}" : {
+    "status" : 400,
+    "body" : {
+      "error" : "Debe especificar si el pago es válido"
+    },
+    "llamadas" : [ ]
+  },
+  "[]" : {
+    "status" : 400,
+    "body" : {
+      "codigoError" : "GC-0400",
+      "mensaje" : "La petición no tiene el formato esperado: revise los parámetros y el cuerpo enviados",
+      "codigoHttp" : 400,
+      "url" : "http://localhost/api/cursos-verano/inscripciones/7/validar-pago",
+      "metodo" : "PUT"
+    },
+    "llamadas" : [ ]
+  },
+  "\"x\"" : {
+    "status" : 400,
+    "body" : {
+      "codigoError" : "GC-0400",
+      "mensaje" : "La petición no tiene el formato esperado: revise los parámetros y el cuerpo enviados",
+      "codigoHttp" : 400,
+      "url" : "http://localhost/api/cursos-verano/inscripciones/7/validar-pago",
+      "metodo" : "PUT"
+    },
+    "llamadas" : [ ]
+  },
+  "{\"esValido\":true}" : {
+    "status" : 200,
+    "body" : {
+      "success" : true,
+      "solicitud" : {
+        "id_solicitud" : 7,
+        "nombre_solicitud" : null,
+        "periodo_academico" : null,
+        "fecha_ceremonia" : null,
+        "fecha_registro_solicitud" : null,
+        "estadosSolicitud" : [ ],
+        "objUsuario" : null,
+        "documentos" : [ ],
+        "objCursoOfertadoVerano" : null,
+        "nombre_estudiante" : null,
+        "codicion_solicitud" : null,
+        "observacion" : null
+      },
+      "message" : "Pago validado exitosamente"
+    },
+    "llamadas" : [ [ 7, true, null ] ]
+  },
+  "{\"esValido\":false,\"observaciones\":\"  nota  \"}" : {
+    "status" : 200,
+    "body" : {
+      "success" : true,
+      "solicitud" : {
+        "id_solicitud" : 7,
+        "nombre_solicitud" : null,
+        "periodo_academico" : null,
+        "fecha_ceremonia" : null,
+        "fecha_registro_solicitud" : null,
+        "estadosSolicitud" : [ ],
+        "objUsuario" : null,
+        "documentos" : [ ],
+        "objCursoOfertadoVerano" : null,
+        "nombre_estudiante" : null,
+        "codicion_solicitud" : null,
+        "observacion" : null
+      },
+      "message" : "Pago rechazado"
+    },
+    "llamadas" : [ [ 7, false, "  nota  " ] ]
+  },
+  "{\"esValido\":null,\"observaciones\":\"x\"}" : {
+    "status" : 400,
+    "body" : {
+      "error" : "Debe especificar si el pago es válido"
+    },
+    "llamadas" : [ ]
+  },
+  "{\"esValido\":\"true\"}" : {
+    "status" : 500,
+    "body" : {
+      "codigoError" : "GC-0001",
+      "mensaje" : "Ha ocurrido un error inesperado. Por favor, inténtelo de nuevo.",
+      "codigoHttp" : 500,
+      "url" : "http://localhost/api/cursos-verano/inscripciones/7/validar-pago",
+      "metodo" : "PUT"
+    },
+    "llamadas" : [ ]
+  },
+  "{\"esValido\":1}" : {
+    "status" : 500,
+    "body" : {
+      "codigoError" : "GC-0001",
+      "mensaje" : "Ha ocurrido un error inesperado. Por favor, inténtelo de nuevo.",
+      "codigoHttp" : 500,
+      "url" : "http://localhost/api/cursos-verano/inscripciones/7/validar-pago",
+      "metodo" : "PUT"
+    },
+    "llamadas" : [ ]
+  },
+  "{\"esValido\":{\"a\":1}}" : {
+    "status" : 500,
+    "body" : {
+      "codigoError" : "GC-0001",
+      "mensaje" : "Ha ocurrido un error inesperado. Por favor, inténtelo de nuevo.",
+      "codigoHttp" : 500,
+      "url" : "http://localhost/api/cursos-verano/inscripciones/7/validar-pago",
+      "metodo" : "PUT"
+    },
+    "llamadas" : [ ]
+  },
+  "{\"esValido\":true,\"observaciones\":45}" : {
+    "status" : 500,
+    "body" : {
+      "codigoError" : "GC-0001",
+      "mensaje" : "Ha ocurrido un error inesperado. Por favor, inténtelo de nuevo.",
+      "codigoHttp" : 500,
+      "url" : "http://localhost/api/cursos-verano/inscripciones/7/validar-pago",
+      "metodo" : "PUT"
+    },
+    "llamadas" : [ ]
+  },
+  "{\"esValido\":true,\"observaciones\":{\"a\":1}}" : {
+    "status" : 500,
+    "body" : {
+      "codigoError" : "GC-0001",
+      "mensaje" : "Ha ocurrido un error inesperado. Por favor, inténtelo de nuevo.",
+      "codigoHttp" : 500,
+      "url" : "http://localhost/api/cursos-verano/inscripciones/7/validar-pago",
+      "metodo" : "PUT"
+    },
+    "llamadas" : [ ]
+  },
+  "{\"esValido\":true,\"observaciones\":null,\"extra\":[1]}" : {
+    "status" : 200,
+    "body" : {
+      "success" : true,
+      "solicitud" : {
+        "id_solicitud" : 7,
+        "nombre_solicitud" : null,
+        "periodo_academico" : null,
+        "fecha_ceremonia" : null,
+        "fecha_registro_solicitud" : null,
+        "estadosSolicitud" : [ ],
+        "objUsuario" : null,
+        "documentos" : [ ],
+        "objCursoOfertadoVerano" : null,
+        "nombre_estudiante" : null,
+        "codicion_solicitud" : null,
+        "observacion" : null
+      },
+      "message" : "Pago validado exitosamente"
+    },
+    "llamadas" : [ [ 7, true, null ] ]
+  },
+  "{\"esValido\":true,\"observaciones\":\"cupo\"}" : {
+    "status" : 409,
+    "body" : {
+      "codigo" : "CUPO_AGOTADO",
+      "error" : "El curso no tiene cupos disponibles (3 de 3 ocupados)",
+      "ocupados" : 3,
+      "cupo" : 3
+    },
+    "llamadas" : [ [ 7, true, "cupo" ] ]
+  },
+  "{\"esValido\":false,\"observaciones\":\"cupo\"}" : {
+    "status" : 409,
+    "body" : {
+      "codigo" : "CUPO_AGOTADO",
+      "error" : "El curso no tiene cupos disponibles (3 de 3 ocupados)",
+      "ocupados" : 3,
+      "cupo" : 3
+    },
+    "llamadas" : [ [ 7, false, "cupo" ] ]
+  }
+}

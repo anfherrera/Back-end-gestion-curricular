@@ -3,6 +3,8 @@ package co.edu.unicauca.decanatura.gestion_curricular.Security;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+import jakarta.annotation.PostConstruct;
+
 import java.nio.charset.StandardCharsets;
 import java.util.Date;
 import javax.crypto.SecretKey;
@@ -18,11 +20,25 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class JwtUtil {
 
-    @Value("${app.jwt.secret:mi_clave_super_secreta_de_256_bits_minimo_para_produccion_segura}")
+    /** Mínimo de 256 bits para HMAC; una clave más corta se puede adivinar por fuerza bruta. */
+    private static final int LONGITUD_MINIMA_CLAVE = 32;
+
+    @Value("${app.jwt.secret}")
     private String SECRET_KEY;
-    
+
     @Value("${app.jwt.expiration:3600000}") // 1 hora por defecto
     private Long EXPIRATION_TIME;
+
+    /** Si la clave falta o es corta, la aplicación no arranca: nunca se firma con una clave conocida. */
+    @PostConstruct
+    void validarClave() {
+        if (SECRET_KEY == null || SECRET_KEY.isBlank()
+                || SECRET_KEY.getBytes(StandardCharsets.UTF_8).length < LONGITUD_MINIMA_CLAVE) {
+            throw new IllegalStateException(
+                    "app.jwt.secret (JWT_SECRET) debe estar definida y tener al menos "
+                            + LONGITUD_MINIMA_CLAVE + " bytes");
+        }
+    }
 
     /**
      * Genera una clave secreta segura a partir de la cadena de configuración
@@ -53,14 +69,6 @@ public class JwtUtil {
             .signWith(SignatureAlgorithm.HS512, getSigningKey())
             .compact();
     }
-
-    // public String extraerCorreo(String token) {
-    //    return Jwts.parser()
-    //            .setSigningKey(SECRET_KEY)
-    //            .parseClaimsJws(token)
-    //            .getBody()
-    //            .getSubject();
-    // }
 
     public String extraerCorreoDesdeToken(String token) {
         try {
@@ -115,21 +123,6 @@ public class JwtUtil {
         } catch (Exception e) {
             log.error("Error al validar token: {}", e.getMessage());
             return false;
-        }
-    }
-
-    /**
-     * Obtiene los claims del token
-     */
-    public Claims obtenerClaims(String token) {
-        try {
-            return Jwts.parser()
-                    .setSigningKey(getSigningKey())
-                    .parseClaimsJws(token)
-                    .getBody();
-        } catch (Exception e) {
-            log.error("Error al obtener claims del token: {}", e.getMessage());
-            return null;
         }
     }
 

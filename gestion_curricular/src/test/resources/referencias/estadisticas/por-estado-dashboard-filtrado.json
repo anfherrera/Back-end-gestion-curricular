@@ -1,0 +1,66 @@
+{
+  "analisis" : {
+    "estadoMasComun" : "APROBADA",
+    "estadoMasEficiente" : "APROBADA",
+    "estadoMenosComun" : "APROBADA",
+    "estadosActivos" : 4,
+    "maxSolicitudes" : 1,
+    "minSolicitudes" : 1,
+    "solicitudesCompletadas" : 1,
+    "solicitudesPendientes" : 1,
+    "tasaResolucion" : 50.0,
+    "totalSolicitudes" : 2
+  },
+  "descripcion" : "Estadisticas por estado de solicitudes con analisis de distribucion - DATOS REALES",
+  "estados" : {
+    "APROBADA" : {
+      "cantidad" : 1,
+      "color" : "#28a745",
+      "descripcion" : "Solicitudes aprobadas y procesadas",
+      "estado" : "APROBADA",
+      "icono" : "fas fa-check-circle",
+      "porcentaje" : 50.0,
+      "procesos" : {
+        "ECAES" : 1
+      },
+      "programas" : {
+        "Ingeniería Electrónica" : 1
+      }
+    },
+    "ENVIADA" : {
+      "cantidad" : 0,
+      "color" : "#ffc107",
+      "descripcion" : "Solicitudes enviadas pendientes de revision",
+      "estado" : "ENVIADA",
+      "icono" : "fas fa-paper-plane",
+      "porcentaje" : 0.0,
+      "procesos" : { },
+      "programas" : { }
+    },
+    "EN_PROCESO" : {
+      "cantidad" : 1,
+      "color" : "#17a2b8",
+      "descripcion" : "Solicitudes en proceso de revisión",
+      "estado" : "EN_PROCESO",
+      "icono" : "fas fa-clock",
+      "porcentaje" : 50.0,
+      "procesos" : {
+        "Homologacion" : 1
+      },
+      "programas" : {
+        "Ingeniería Electrónica" : 1
+      }
+    },
+    "RECHAZADA" : {
+      "cantidad" : 0,
+      "color" : "#dc3545",
+      "descripcion" : "Solicitudes rechazadas",
+      "estado" : "RECHAZADA",
+      "icono" : "fas fa-times-circle",
+      "porcentaje" : 0.0,
+      "procesos" : { },
+      "programas" : { }
+    }
+  },
+  "totalSolicitudes" : 2
+}

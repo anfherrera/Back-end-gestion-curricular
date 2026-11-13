@@ -19,11 +19,11 @@ public interface GestionarDocenteGatewayIntPort {
 
     Docente obtenerDocentePorCodigo(String codigo);
 
-    boolean existeDocentePorCodigo(String codigo);
-
     List<Docente> buscarPorNombreParcial(String nombreParcial);
 
     List<Docente> listarDocentes();
     
     boolean tieneCursosAsignados(Integer idDocente);
+
+    boolean existeDocentePorCodigo(String codigo);
 }

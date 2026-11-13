@@ -5,6 +5,8 @@ import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarN
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarArchivosCUIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.*;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.casosDeUso.GestionarSolicitudReingresoCUAdapter;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.FiltroSolicitudes;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.FlujoEstadosSolicitud;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.SolicitudReingreso;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -163,77 +165,70 @@ class ReingresoUnidadTest {
     // ==================== PRUEBAS DE FILTRADO POR ROL ====================
 
     @Test
-    @DisplayName("Test 6: Listar solicitudes para Funcionario - Delega correctamente")
+    @DisplayName("Test 6: Listar solicitudes para Funcionario - Pide al gateway las de último estado Enviada")
     void testListarSolicitudesParaFuncionarioDelegaCorrectamente() {
         // Arrange
         List<SolicitudReingreso> listaEsperada = Arrays.asList(solicitudEjemplo);
-        when(solicitudGateway.listarSolicitudesReingresoToFuncionario())
+        when(solicitudGateway.listarPorUltimoEstado("Enviada", null, null))
                 .thenReturn(listaEsperada);
 
         // Act
-        List<SolicitudReingreso> resultado = solicitudReingresoCU.listarSolicitudesReingresoToFuncionario();
+        List<SolicitudReingreso> resultado = solicitudReingresoCU.listar(
+                FiltroSolicitudes.pendientesDe(FlujoEstadosSolicitud.FUNCIONARIO, null, null));
 
         // Assert
         assertThat(resultado).isNotNull();
         assertThat(resultado).hasSize(1);
-        verify(solicitudGateway, times(1)).listarSolicitudesReingresoToFuncionario();
+        verify(solicitudGateway, times(1)).listarPorUltimoEstado("Enviada", null, null);
     }
 
     @Test
-    @DisplayName("Test 7: Listar solicitudes para Coordinador - Delega correctamente")
+    @DisplayName("Test 7: Listar solicitudes para Coordinador - Pide las de último estado APROBADA_FUNCIONARIO")
     void testListarSolicitudesParaCoordinadorDelegaCorrectamente() {
         // Arrange
         List<SolicitudReingreso> listaEsperada = Arrays.asList(solicitudEjemplo);
-        when(solicitudGateway.listarSolicitudesReingresoToCoordinador())
+        when(solicitudGateway.listarPorUltimoEstado("APROBADA_FUNCIONARIO", 1, "2025-2"))
                 .thenReturn(listaEsperada);
 
         // Act
-        List<SolicitudReingreso> resultado = solicitudReingresoCU.listarSolicitudesReingresoToCoordinador();
+        List<SolicitudReingreso> resultado = solicitudReingresoCU.listar(
+                FiltroSolicitudes.pendientesDe(FlujoEstadosSolicitud.COORDINADOR, 1, "2025-2"));
 
         // Assert
         assertThat(resultado).isNotNull();
-        verify(solicitudGateway, times(1)).listarSolicitudesReingresoToCoordinador();
+        verify(solicitudGateway, times(1)).listarPorUltimoEstado("APROBADA_FUNCIONARIO", 1, "2025-2");
     }
 
     @Test
-    @DisplayName("Test 8: Listar solicitudes para Secretaria - Delega correctamente")
+    @DisplayName("Test 8: Listar solicitudes para Secretaria - Pide las de último estado APROBADA_COORDINADOR")
     void testListarSolicitudesParaSecretariaDelegaCorrectamente() {
         // Arrange
         List<SolicitudReingreso> listaEsperada = Arrays.asList(solicitudEjemplo);
-        when(solicitudGateway.listarSolicitudesReingresoToSecretaria())
+        when(solicitudGateway.listarPorUltimoEstado("APROBADA_COORDINADOR", null, null))
                 .thenReturn(listaEsperada);
 
         // Act
-        List<SolicitudReingreso> resultado = solicitudReingresoCU.listarSolicitudesReingresoToSecretaria();
+        List<SolicitudReingreso> resultado = solicitudReingresoCU.listar(
+                FiltroSolicitudes.pendientesDe(FlujoEstadosSolicitud.SECRETARIO, null, null));
 
         // Assert
         assertThat(resultado).isNotNull();
-        verify(solicitudGateway, times(1)).listarSolicitudesReingresoToSecretaria();
+        verify(solicitudGateway, times(1)).listarPorUltimoEstado("APROBADA_COORDINADOR", null, null);
     }
 
     // ==================== PRUEBAS DE FILTRADO POR ROL Y USUARIO ====================
 
     @Test
-    @DisplayName("Test 9: Listar solicitudes por rol ESTUDIANTE - Filtra correctamente")
+    @DisplayName("Test 9: Listar solicitudes por rol ESTUDIANTE - Pide al gateway las del usuario")
     void testListarSolicitudesPorRolEstudiante() {
         // Arrange
         SolicitudReingreso solicitud1 = new SolicitudReingreso();
-        SolicitudReingreso solicitud2 = new SolicitudReingreso();
-        
-        // Necesitamos mockear usuarios para las solicitudes
-        co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Usuario usuario1 = 
+        co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Usuario usuario1 =
             new co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Usuario();
         usuario1.setId_usuario(1);
-        
-        co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Usuario usuario2 = 
-            new co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Usuario();
-        usuario2.setId_usuario(2);
-        
         solicitud1.setObjUsuario(usuario1);
-        solicitud2.setObjUsuario(usuario2);
-        
-        List<SolicitudReingreso> todasLasSolicitudes = Arrays.asList(solicitud1, solicitud2);
-        when(solicitudGateway.listarSolicitudesReingreso()).thenReturn(todasLasSolicitudes);
+        // El filtro por usuario lo hace la base de datos
+        when(solicitudGateway.listarPorUsuario(1, null)).thenReturn(List.of(solicitud1));
 
         // Act
         List<SolicitudReingreso> resultado = solicitudReingresoCU.listarSolicitudesReingresoPorRol("ESTUDIANTE", 1);

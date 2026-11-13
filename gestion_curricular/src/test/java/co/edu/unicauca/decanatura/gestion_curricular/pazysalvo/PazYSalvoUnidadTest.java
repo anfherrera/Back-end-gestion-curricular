@@ -5,6 +5,8 @@ import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarS
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarNotificacionCUIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.*;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.casosDeUso.GestionarSolicitudPazYSalvoCUAdapter;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.FiltroSolicitudes;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.FlujoEstadosSolicitud;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.SolicitudPazYSalvo;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -162,52 +164,55 @@ class PazYSalvoUnidadTest {
     // ==================== PRUEBAS DE FILTRADO POR ROL ====================
 
     @Test
-    @DisplayName("Test 6: Listar solicitudes para Funcionario - Delega correctamente")
+    @DisplayName("Test 6: Listar solicitudes para Funcionario - Pide al gateway las de último estado Enviada")
     void testListarSolicitudesParaFuncionarioDelegaCorrectamente() {
         // Arrange
         List<SolicitudPazYSalvo> listaEsperada = Arrays.asList(solicitudEjemplo);
-        when(solicitudGateway.listarSolicitudesToFuncionario())
+        when(solicitudGateway.listarPorUltimoEstado("Enviada", null, null))
                 .thenReturn(listaEsperada);
 
         // Act
-        List<SolicitudPazYSalvo> resultado = solicitudPazYSalvoCU.listarSolicitudesToFuncionario();
+        List<SolicitudPazYSalvo> resultado = solicitudPazYSalvoCU.listar(
+                FiltroSolicitudes.pendientesDe(FlujoEstadosSolicitud.FUNCIONARIO, null, null));
 
         // Assert
         assertThat(resultado).isNotNull();
         assertThat(resultado).hasSize(1);
-        verify(solicitudGateway, times(1)).listarSolicitudesToFuncionario();
+        verify(solicitudGateway, times(1)).listarPorUltimoEstado("Enviada", null, null);
     }
 
     @Test
-    @DisplayName("Test 7: Listar solicitudes para Coordinador - Delega correctamente")
+    @DisplayName("Test 7: Listar solicitudes para Coordinador - Pide las de último estado APROBADA_FUNCIONARIO")
     void testListarSolicitudesParaCoordinadorDelegaCorrectamente() {
         // Arrange
         List<SolicitudPazYSalvo> listaEsperada = Arrays.asList(solicitudEjemplo);
-        when(solicitudGateway.listarSolicitudesToCoordinador())
+        when(solicitudGateway.listarPorUltimoEstado("APROBADA_FUNCIONARIO", 1, "2025-2"))
                 .thenReturn(listaEsperada);
 
         // Act
-        List<SolicitudPazYSalvo> resultado = solicitudPazYSalvoCU.listarSolicitudesToCoordinador();
+        List<SolicitudPazYSalvo> resultado = solicitudPazYSalvoCU.listar(
+                FiltroSolicitudes.pendientesDe(FlujoEstadosSolicitud.COORDINADOR, 1, "2025-2"));
 
         // Assert
         assertThat(resultado).isNotNull();
-        verify(solicitudGateway, times(1)).listarSolicitudesToCoordinador();
+        verify(solicitudGateway, times(1)).listarPorUltimoEstado("APROBADA_FUNCIONARIO", 1, "2025-2");
     }
 
     @Test
-    @DisplayName("Test 8: Listar solicitudes para Secretaria - Delega correctamente")
+    @DisplayName("Test 8: Listar solicitudes para Secretaria - Pide las de último estado APROBADA_COORDINADOR")
     void testListarSolicitudesParaSecretariaDelegaCorrectamente() {
         // Arrange
         List<SolicitudPazYSalvo> listaEsperada = Arrays.asList(solicitudEjemplo);
-        when(solicitudGateway.listarSolicitudesToSecretaria())
+        when(solicitudGateway.listarPorUltimoEstado("APROBADA_COORDINADOR", null, null))
                 .thenReturn(listaEsperada);
 
         // Act
-        List<SolicitudPazYSalvo> resultado = solicitudPazYSalvoCU.listarSolicitudesToSecretaria();
+        List<SolicitudPazYSalvo> resultado = solicitudPazYSalvoCU.listar(
+                FiltroSolicitudes.pendientesDe(FlujoEstadosSolicitud.SECRETARIO, null, null));
 
         // Assert
         assertThat(resultado).isNotNull();
-        verify(solicitudGateway, times(1)).listarSolicitudesToSecretaria();
+        verify(solicitudGateway, times(1)).listarPorUltimoEstado("APROBADA_COORDINADOR", null, null);
     }
 
     // ==================== PRUEBAS DE MANEJO DE EXCEPCIONES ====================

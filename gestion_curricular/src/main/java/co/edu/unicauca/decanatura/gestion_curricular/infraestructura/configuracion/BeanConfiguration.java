@@ -49,6 +49,28 @@ import co.edu.unicauca.decanatura.gestion_curricular.dominio.casosDeUso.Gestiona
 
 @Configuration
 public class BeanConfiguration {
+    @Bean
+    public co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GenerarReportesCursosVeranoCUIntPort crearGenerarReportesCursosVerano(
+            co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarCursoOfertadoVeranoCUIntPort cursos,
+            co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarSolicitudCursoVeranoCUIntPort solicitudes,
+            co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.GenerarPdfCursosVeranoIntPort pdf,
+            co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.GenerarExcelSolicitudesVeranoIntPort excel) {
+        return new co.edu.unicauca.decanatura.gestion_curricular.dominio.casosDeUso.GenerarReportesCursosVeranoCUAdapter(cursos, solicitudes, pdf, excel);
+    }
+    @Bean
+    public co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GenerarDocumentosCUIntPort crearGenerarDocumentos(
+            co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarSolicitudHomologacionCUIntPort homologacion,
+            co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarSolicitudReingresoCUIntPort reingreso,
+            co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarSolicitudPazYSalvoCUIntPort paz,
+            co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.GenerarDocumentosIntPort generador) {
+        return new co.edu.unicauca.decanatura.gestion_curricular.dominio.casosDeUso.GenerarDocumentosCUAdapter(homologacion, reingreso, paz, generador);
+    }
+    @Bean
+    public co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GenerarReportesEstadisticasCUIntPort crearGenerarReportesEstadisticas(
+            co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarEstadisticasCUIntPort estadisticas,
+            co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.GenerarReportesEstadisticasIntPort generador) {
+        return new co.edu.unicauca.decanatura.gestion_curricular.dominio.casosDeUso.GenerarReportesEstadisticasCUAdapter(estadisticas, generador);
+    }
 
     @Bean
     public GestionarCursoOfertadoVeranoCUAdapter crearGestionarCursoOfertadoVeranoCUInt(GestionarCursoOfertadoVeranoGatewayIntPort objGestionarCursoOfertadoVeranoGateway,
@@ -56,11 +78,12 @@ public class BeanConfiguration {
             GestionarUsuarioGatewayIntPort objGestionarUsuarioGateway,
             GestionarMateriasIntPort objGestionarMateriasGateway,
             GestionarDocenteGatewayIntPort objGestionarDocenteGateway,
+            GestionarSalonesIntPort salonesGateway,
             GestionarEstadoCursoOfertadoGatewayIntPort objGestionarEstadoCursoOfertadoGateway,
             FormateadorResultadosIntPort objFormateadorResultados,
             GestionarNotificacionCUIntPort objGestionarNotificacionCU){
                 return new GestionarCursoOfertadoVeranoCUAdapter(objGestionarCursoOfertadoVeranoGateway, objGestionarSolicitudGateway, objGestionarUsuarioGateway,
-                 objGestionarMateriasGateway, objGestionarDocenteGateway, objFormateadorResultados, objGestionarNotificacionCU);
+                 objGestionarMateriasGateway, objGestionarDocenteGateway, salonesGateway, objFormateadorResultados, objGestionarNotificacionCU);
             }
 
     // GestionarEstadisticasGatewayImplAdapter ya está definido como @Service, no necesita definición adicional
@@ -98,7 +121,7 @@ public class BeanConfiguration {
                                     GestionarRolGatewayIntPort objGestionarRolGateway,
                                      FormateadorResultadosIntPort objFormateadorResultados,
                                      PasswordEncoder passwordEncoder) {
-        return new GestionarUsuarioCUAdapter(objGestionarUsuarioGateway, objGestionarProgramaGateway, objGestionarRolGateway, objFormateadorResultados, passwordEncoder);
+        return new GestionarUsuarioCUAdapter(objGestionarUsuarioGateway, objGestionarProgramaGateway, objGestionarRolGateway, objFormateadorResultados, passwordEncoder::encode);
     }
 
     @Bean
@@ -170,8 +193,9 @@ public class BeanConfiguration {
 
     @Bean
     public GestionarDocumentosCUAdapter crearGestionarDocumentosCUInt(GestionarDocumentosGatewayIntPort objGestionarDocumentosGateway,
-            FormateadorResultadosIntPort objFormateadorResultados) {
-        return new GestionarDocumentosCUAdapter(objGestionarDocumentosGateway, objFormateadorResultados);
+            FormateadorResultadosIntPort objFormateadorResultados,
+            GestionarArchivosCUIntPort objGestionarArchivos) {
+        return new GestionarDocumentosCUAdapter(objGestionarDocumentosGateway, objFormateadorResultados, objGestionarArchivos);
     }
 
     @Bean    public GestionarArchivosCUIAdapter crearGestionarArchivosCUInt(GestionarArchivosGatewayIntPort objGestionarArchivos, FormateadorResultadosIntPort objFormateadorResultados){

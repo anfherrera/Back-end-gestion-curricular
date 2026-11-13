@@ -1,39 +1,38 @@
 package co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.controladores;
 
+import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.RespuestasArchivo;
+
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.DTORespuesta.DocumentRequest;
-import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.formateador.DocumentGeneratorService;
-import org.springframework.beans.factory.annotation.Autowired;
+import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GenerarDocumentosCUIntPort;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 
 @RestController
 @RequestMapping("/api/documentos")
+@RequiredArgsConstructor
 public class DocumentGeneratorController {
 
-    @Autowired
-    private DocumentGeneratorService documentGeneratorService;
+    private final GenerarDocumentosCUIntPort documentGeneratorService;
 
     /**
      * Generar documento usando plantilla
      */
     @PostMapping("/generar")
-    public ResponseEntity<byte[]> generarDocumento(@RequestBody DocumentRequest request) {
-        try {
-            ByteArrayOutputStream documentBytes = documentGeneratorService.generarDocumento(request);
-            String nombreArchivo = generarNombreArchivo(request);
-            
-            return ResponseEntity.ok()
-                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + nombreArchivo + "\"")
-                .contentType(MediaType.APPLICATION_OCTET_STREAM)
-                .body(documentBytes.toByteArray());
-                
-        } catch (Exception e) {
-            return ResponseEntity.internalServerError().build();
-        }
+    public ResponseEntity<byte[]> generarDocumento(@RequestBody DocumentRequest request) throws IOException {
+        byte[] documentBytes = documentGeneratorService.generarDocumento(request.getIdSolicitud(), request.getTipoDocumento(),
+                request.getDatosDocumento(), request.getDatosSolicitud());
+        String nombreArchivo = generarNombreArchivo(request);
+        
+        return ResponseEntity.ok()
+            .header(HttpHeaders.CONTENT_DISPOSITION, RespuestasArchivo.adjunto(nombreArchivo))
+            .contentType(MediaType.APPLICATION_OCTET_STREAM)
+            .body(documentBytes);
     }
 
     /**
@@ -41,11 +40,7 @@ public class DocumentGeneratorController {
      */
     @GetMapping("/templates/{proceso}")
     public ResponseEntity<?> getTemplates(@PathVariable String proceso) {
-        try {
-            return ResponseEntity.ok(documentGeneratorService.getTemplates(proceso));
-        } catch (Exception e) {
-            return ResponseEntity.internalServerError().build();
-        }
+        return ResponseEntity.ok(documentGeneratorService.getTemplates(proceso));
     }
 
     private String generarNombreArchivo(DocumentRequest request) {

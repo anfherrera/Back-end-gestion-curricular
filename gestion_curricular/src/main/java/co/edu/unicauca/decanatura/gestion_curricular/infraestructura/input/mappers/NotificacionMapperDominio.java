@@ -1,6 +1,5 @@
 package co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.mappers;
 
-import java.util.List;
 
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -38,8 +37,6 @@ public interface NotificacionMapperDominio {
     @Mapping(expression = "java(notificacion.getObjCurso() != null && notificacion.getObjCurso().getObjMateria() != null ? notificacion.getObjCurso().getObjMateria().getNombre() : null)", target = "nombreMateria")
     @Mapping(expression = "java(notificacion.getObjCurso() != null && notificacion.getObjCurso().getObjMateria() != null ? notificacion.getObjCurso().getObjMateria().getCodigo() + \" - \" + notificacion.getObjCurso().getObjMateria().getNombre() : null)", target = "nombreCurso")
     NotificacionDTORespuesta mappearDeNotificacionARespuesta(Notificacion notificacion);
-
-    List<NotificacionDTORespuesta> mappearListaDeNotificacionARespuesta(List<Notificacion> notificaciones);
 
     // DTO Petición → Modelo (parcial, ya que necesita resolverse las relaciones)
     @Mapping(target = "id_notificacion", ignore = true) // Se genera automáticamente

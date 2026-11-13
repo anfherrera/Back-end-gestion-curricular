@@ -1,0 +1,282 @@
+{
+  "Borrador/FUNCIONARIO" : {
+    "http" : 200,
+    "json" : {
+      "permitido" : false,
+      "error" : "Operacion no permitida",
+      "message" : "El rol FUNCIONARIO no puede realizar la operacion 'consultar_permisos' en el estado Borrador"
+    }
+  },
+  "Borrador/COORDINADOR" : {
+    "http" : 200,
+    "json" : {
+      "permitido" : false,
+      "error" : "Operacion no permitida",
+      "message" : "El rol COORDINADOR no puede realizar la operacion 'consultar_permisos' en el estado Borrador"
+    }
+  },
+  "Borrador/ESTUDIANTE" : {
+    "http" : 200,
+    "json" : {
+      "permitido" : false,
+      "error" : "Sin permisos",
+      "message" : "Este rol no tiene permisos para realizar operaciones en el estado: Borrador"
+    }
+  },
+  "Borrador/ADMINISTRADOR" : {
+    "http" : 200,
+    "json" : {
+      "permitido" : false,
+      "error" : "Rol no valido",
+      "message" : "No se encontraron permisos para el rol: ADMINISTRADOR"
+    }
+  },
+  "Borrador/funcionario" : {
+    "http" : 200,
+    "json" : {
+      "permitido" : false,
+      "error" : "Rol no valido",
+      "message" : "No se encontraron permisos para el rol: funcionario"
+    }
+  },
+  "Abierto/FUNCIONARIO" : {
+    "http" : 200,
+    "json" : {
+      "permitido" : false,
+      "error" : "Operacion no permitida",
+      "message" : "El rol FUNCIONARIO no puede realizar la operacion 'consultar_permisos' en el estado Abierto"
+    }
+  },
+  "Abierto/COORDINADOR" : {
+    "http" : 200,
+    "json" : {
+      "permitido" : false,
+      "error" : "Operacion no permitida",
+      "message" : "El rol COORDINADOR no puede realizar la operacion 'consultar_permisos' en el estado Abierto"
+    }
+  },
+  "Abierto/ESTUDIANTE" : {
+    "http" : 200,
+    "json" : {
+      "permitido" : false,
+      "error" : "Sin permisos",
+      "message" : "Este rol no tiene permisos para realizar operaciones en el estado: Abierto"
+    }
+  },
+  "Abierto/ADMINISTRADOR" : {
+    "http" : 200,
+    "json" : {
+      "permitido" : false,
+      "error" : "Rol no valido",
+      "message" : "No se encontraron permisos para el rol: ADMINISTRADOR"
+    }
+  },
+  "Abierto/funcionario" : {
+    "http" : 200,
+    "json" : {
+      "permitido" : false,
+      "error" : "Rol no valido",
+      "message" : "No se encontraron permisos para el rol: funcionario"
+    }
+  },
+  "Publicado/FUNCIONARIO" : {
+    "http" : 200,
+    "json" : {
+      "permitido" : false,
+      "error" : "Operacion no permitida",
+      "message" : "El rol FUNCIONARIO no puede realizar la operacion 'consultar_permisos' en el estado Publicado"
+    }
+  },
+  "Publicado/COORDINADOR" : {
+    "http" : 200,
+    "json" : {
+      "permitido" : false,
+      "error" : "Operacion no permitida",
+      "message" : "El rol COORDINADOR no puede realizar la operacion 'consultar_permisos' en el estado Publicado"
+    }
+  },
+  "Publicado/ESTUDIANTE" : {
+    "http" : 200,
+    "json" : {
+      "permitido" : false,
+      "error" : "Operacion no permitida",
+      "message" : "El rol ESTUDIANTE no puede realizar la operacion 'consultar_permisos' en el estado Publicado"
+    }
+  },
+  "Publicado/ADMINISTRADOR" : {
+    "http" : 200,
+    "json" : {
+      "permitido" : false,
+      "error" : "Rol no valido",
+      "message" : "No se encontraron permisos para el rol: ADMINISTRADOR"
+    }
+  },
+  "Publicado/funcionario" : {
+    "http" : 200,
+    "json" : {
+      "permitido" : false,
+      "error" : "Rol no valido",
+      "message" : "No se encontraron permisos para el rol: funcionario"
+    }
+  },
+  "Preinscripcion/FUNCIONARIO" : {
+    "http" : 200,
+    "json" : {
+      "permitido" : false,
+      "error" : "Operacion no permitida",
+      "message" : "El rol FUNCIONARIO no puede realizar la operacion 'consultar_permisos' en el estado Preinscripcion"
+    }
+  },
+  "Preinscripcion/COORDINADOR" : {
+    "http" : 200,
+    "json" : {
+      "permitido" : false,
+      "error" : "Operacion no permitida",
+      "message" : "El rol COORDINADOR no puede realizar la operacion 'consultar_permisos' en el estado Preinscripcion"
+    }
+  },
+  "Preinscripcion/ESTUDIANTE" : {
+    "http" : 200,
+    "json" : {
+      "permitido" : false,
+      "error" : "Operacion no permitida",
+      "message" : "El rol ESTUDIANTE no puede realizar la operacion 'consultar_permisos' en el estado Preinscripcion"
+    }
+  },
+  "Preinscripcion/ADMINISTRADOR" : {
+    "http" : 200,
+    "json" : {
+      "permitido" : false,
+      "error" : "Rol no valido",
+      "message" : "No se encontraron permisos para el rol: ADMINISTRADOR"
+    }
+  },
+  "Preinscripcion/funcionario" : {
+    "http" : 200,
+    "json" : {
+      "permitido" : false,
+      "error" : "Rol no valido",
+      "message" : "No se encontraron permisos para el rol: funcionario"
+    }
+  },
+  "Inscripcion/FUNCIONARIO" : {
+    "http" : 200,
+    "json" : {
+      "permitido" : false,
+      "error" : "Operacion no permitida",
+      "message" : "El rol FUNCIONARIO no puede realizar la operacion 'consultar_permisos' en el estado Inscripcion"
+    }
+  },
+  "Inscripcion/COORDINADOR" : {
+    "http" : 200,
+    "json" : {
+      "permitido" : false,
+      "error" : "Operacion no permitida",
+      "message" : "El rol COORDINADOR no puede realizar la operacion 'consultar_permisos' en el estado Inscripcion"
+    }
+  },
+  "Inscripcion/ESTUDIANTE" : {
+    "http" : 200,
+    "json" : {
+      "permitido" : false,
+      "error" : "Operacion no permitida",
+      "message" : "El rol ESTUDIANTE no puede realizar la operacion 'consultar_permisos' en el estado Inscripcion"
+    }
+  },
+  "Inscripcion/ADMINISTRADOR" : {
+    "http" : 200,
+    "json" : {
+      "permitido" : false,
+      "error" : "Rol no valido",
+      "message" : "No se encontraron permisos para el rol: ADMINISTRADOR"
+    }
+  },
+  "Inscripcion/funcionario" : {
+    "http" : 200,
+    "json" : {
+      "permitido" : false,
+      "error" : "Rol no valido",
+      "message" : "No se encontraron permisos para el rol: funcionario"
+    }
+  },
+  "Cerrado/FUNCIONARIO" : {
+    "http" : 200,
+    "json" : {
+      "permitido" : false,
+      "error" : "Operacion no permitida",
+      "message" : "El rol FUNCIONARIO no puede realizar la operacion 'consultar_permisos' en el estado Cerrado"
+    }
+  },
+  "Cerrado/COORDINADOR" : {
+    "http" : 200,
+    "json" : {
+      "permitido" : false,
+      "error" : "Operacion no permitida",
+      "message" : "El rol COORDINADOR no puede realizar la operacion 'consultar_permisos' en el estado Cerrado"
+    }
+  },
+  "Cerrado/ESTUDIANTE" : {
+    "http" : 200,
+    "json" : {
+      "permitido" : false,
+      "error" : "Operacion no permitida",
+      "message" : "El rol ESTUDIANTE no puede realizar la operacion 'consultar_permisos' en el estado Cerrado"
+    }
+  },
+  "Cerrado/ADMINISTRADOR" : {
+    "http" : 200,
+    "json" : {
+      "permitido" : false,
+      "error" : "Rol no valido",
+      "message" : "No se encontraron permisos para el rol: ADMINISTRADOR"
+    }
+  },
+  "Cerrado/funcionario" : {
+    "http" : 200,
+    "json" : {
+      "permitido" : false,
+      "error" : "Rol no valido",
+      "message" : "No se encontraron permisos para el rol: funcionario"
+    }
+  },
+  "desconocido/FUNCIONARIO" : {
+    "http" : 200,
+    "json" : {
+      "permitido" : false,
+      "error" : "Estado desconocido",
+      "message" : "No se pueden determinar permisos para el estado: desconocido"
+    }
+  },
+  "desconocido/COORDINADOR" : {
+    "http" : 200,
+    "json" : {
+      "permitido" : false,
+      "error" : "Estado desconocido",
+      "message" : "No se pueden determinar permisos para el estado: desconocido"
+    }
+  },
+  "desconocido/ESTUDIANTE" : {
+    "http" : 200,
+    "json" : {
+      "permitido" : false,
+      "error" : "Estado desconocido",
+      "message" : "No se pueden determinar permisos para el estado: desconocido"
+    }
+  },
+  "desconocido/ADMINISTRADOR" : {
+    "http" : 200,
+    "json" : {
+      "permitido" : false,
+      "error" : "Estado desconocido",
+      "message" : "No se pueden determinar permisos para el estado: desconocido"
+    }
+  },
+  "desconocido/funcionario" : {
+    "http" : 200,
+    "json" : {
+      "permitido" : false,
+      "error" : "Estado desconocido",
+      "message" : "No se pueden determinar permisos para el estado: desconocido"
+    }
+  }
+}

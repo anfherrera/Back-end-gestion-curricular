@@ -93,17 +93,6 @@ public class GestionarProgramaGatewayImplAdapter implements GestionarProgramaGat
 
     @Override
     @Transactional(readOnly = true)
-    public boolean existeProgramaPorCodigo(String codigo) {
-        boolean existe = false;
-        Optional<ProgramaEntity> programaEntity = programaRepository.buscarPorCodigo(codigo);
-        if (programaEntity.isPresent()) {
-            existe = true;
-        }
-        return existe;
-    }
-
-    @Override
-    @Transactional(readOnly = true)
     public List<Programa> buscarPorNombreParcial(String nombreParcial) {
         List<Programa> programasRetornar = null;
         List<ProgramaEntity> programasEntity = programaRepository.buscarPorNombreParcial(nombreParcial);
@@ -132,5 +121,11 @@ public class GestionarProgramaGatewayImplAdapter implements GestionarProgramaGat
     @Transactional(readOnly = true)
     public boolean tieneUsuariosAsociados(Integer idPrograma) {
         return !usuarioRepository.buscarPorPrograma(idPrograma).isEmpty();
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public boolean existeProgramaPorCodigo(String codigo) {
+        return programaRepository.buscarPorCodigo(codigo).isPresent();
     }
 }

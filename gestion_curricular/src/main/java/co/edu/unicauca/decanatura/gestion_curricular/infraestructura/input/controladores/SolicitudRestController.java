@@ -1,6 +1,10 @@
 package co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.controladores;
 
+import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.RespuestasArchivo;
+
+import co.edu.unicauca.decanatura.gestion_curricular.Security.Autorizacion;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarSolicitudCUIntPort;
+import org.springframework.security.access.prepost.PreAuthorize;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Solicitud;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.SolicitudCursoVeranoPreinscripcion;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.SolicitudCursoVeranoIncripcion;
@@ -12,21 +16,11 @@ import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.SolicitudEc
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Enums.PeriodoAcademicoEnum;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.DTORespuesta.SolicitudDTORespuesta;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.mappers.*;
-import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.repositorios.SolicitudRepositoryInt;
-import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.entidades.SolicitudEntity;
-import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.entidades.SolicitudCursoVeranoPreinscripcionEntity;
-import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.entidades.SolicitudCursoVeranoInscripcionEntity;
-import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.entidades.SolicitudPazYSalvoEntity;
-import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.entidades.SolicitudReingresoEntity;
-import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.entidades.SolicitudHomologacionEntity;
-import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.entidades.SolicitudEcaesEntity;
-import org.modelmapper.ModelMapper;
 import lombok.extern.slf4j.Slf4j;
 
 import jakarta.validation.constraints.Min;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -47,15 +41,11 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 @Validated
 @Slf4j
+@PreAuthorize("hasAnyRole(" + Autorizacion.ROLES_STAFF + ")")
 public class SolicitudRestController {
 
     private final GestionarSolicitudCUIntPort solicitudCU;
     private final SolicitudMapperDominio mapper;
-    private final SolicitudRepositoryInt solicitudRepository;
-    private final ModelMapper modelMapper;
-//    private final SolicitudPazYSalvoMapperDominio solicitudPazYSalvoMapper;
-//    private final SolicitudCursoDeVeranoPreinscripcionMapperDominio solicitudCursoVeranoPreinscripcionMapper;
-//    private final SolicitudCursoDeVeranoInscripcionMapperDominio solicitudCursoDeVeranoInscripcionMapper;
 
     
 
@@ -72,6 +62,7 @@ public class SolicitudRestController {
     }
 
     @DeleteMapping("/eliminar/{id}")
+    @PreAuthorize("hasRole('Administrador')")
     public ResponseEntity<Boolean> eliminarSolicitud(@Min(value = 1) @PathVariable Integer id) {
         boolean eliminada = solicitudCU.eliminarSolicitud(id);
         return new ResponseEntity<>(eliminada ? HttpStatus.OK : HttpStatus.NOT_FOUND);
@@ -80,15 +71,6 @@ public class SolicitudRestController {
     @GetMapping("/listar")
     public ResponseEntity<List<SolicitudDTORespuesta>> listarSolicitudes() {
         List<Solicitud> solicitudes = solicitudCU.listarSolicitudes();
-        List<SolicitudDTORespuesta> respuesta = solicitudes.stream()
-                .map(mapper::mappearDeSolicitudARespuesta)
-                .collect(Collectors.toList());
-        return ResponseEntity.ok(respuesta);
-    }
-
-    @GetMapping("/buscarPorUsuario/{idUsuario}")
-    public ResponseEntity<List<SolicitudDTORespuesta>> obtenerPorUsuario(@PathVariable Integer idUsuario) {
-        List<Solicitud> solicitudes = solicitudCU.obtenerSolicitudesPorUsuario(idUsuario);
         List<SolicitudDTORespuesta> respuesta = solicitudes.stream()
                 .map(mapper::mappearDeSolicitudARespuesta)
                 .collect(Collectors.toList());
@@ -104,59 +86,6 @@ public class SolicitudRestController {
         return ResponseEntity.ok(respuesta);
     }
 
-    @GetMapping("/buscarPorFechas")
-    public ResponseEntity<List<SolicitudDTORespuesta>> buscarPorFechas(
-            @RequestParam(name = "inicio", required = true) @DateTimeFormat(pattern = "yyyy-MM-dd") Date inicio,
-            @RequestParam(name = "fin", required = true)  @DateTimeFormat(pattern = "yyyy-MM-dd") Date fin) {
-
-        List<Solicitud> solicitudes = solicitudCU.buscarSolicitudesPorFecha(inicio, fin);
-        List<SolicitudDTORespuesta> respuesta = solicitudes.stream()
-                .map(mapper::mappearDeSolicitudARespuesta)
-                .collect(Collectors.toList());
-        return ResponseEntity.ok(respuesta);
-    }
-
-//    @PostMapping("/crearPazYSalvo")
-//    public ResponseEntity<SolicitudDTORespuesta> crearSolicitudPazYSalvo(@RequestBody SolicitudPazYSalvoDTOPeticion solicitud) {
-//        SolicitudPazYSalvo solicitudPazYSalvo = solicitudPazYSalvoMapper.mappearDeSolicitudDTOPeticionASolicitud(solicitud);
-//        SolicitudPazYSalvo solicitudGuardada = solicitudCU.crearSolicitudPazYSalvo(solicitudPazYSalvo);
-//        return new ResponseEntity<>(
-//                mapper.mappearDeSolicitudARespuesta(solicitudGuardada),
-//                HttpStatus.CREATED
-//        );
-//    }
-
-//    @PostMapping("/crearCursoVeranoPreinscripcion")
-//    public ResponseEntity<SolicitudCursoVeranoPreinscripcionDTORespuesta> crearSolicitudCursoVeranoPreinscripcion(
-//            @RequestBody SolicitudCurosoVeranoPreinscripcionDTOPeticion solicitud) {
-
-//        SolicitudCursoVeranoPreinscripcion solicitudDominio = solicitudCursoVeranoPreinscripcionMapper
-//                .mappearDePeticionASolicitudCursoVeranoPreinscripcion(solicitud);
-
-//        SolicitudCursoVeranoPreinscripcion solicitudGuardada = solicitudCU
-//                .crearSolicitudCursoVeranoPreinscripcion(solicitudDominio);
-
-//        SolicitudCursoVeranoPreinscripcionDTORespuesta respuesta = solicitudCursoVeranoPreinscripcionMapper
-//                .mappearDeSolicitudCursoVeranoPreinscripcionARespuesta(solicitudGuardada);
-
-//        return new ResponseEntity<>(respuesta, HttpStatus.CREATED);
-//    }
-
-//    @PostMapping("/crearCursoVeranoInscripcion")
-//    public ResponseEntity<SolicitudCursoVeranoInscripcionDTORespuesta> crearSolicitudCursoVeranoInscripcion(
-//            @RequestBody SolicitudCursoVeranoInscripcionDTOPeticion solicitud) {
-
-//        SolicitudCursoVeranoIncripcion solicitudDominio = solicitudCursoDeVeranoInscripcionMapper
-//                .mappearDePeticionASolicitudCursoVeranoIncripcion(solicitud);
-
-//        SolicitudCursoVeranoIncripcion solicitudGuardada = solicitudCU
-//                .crearSolicitudCursoVeranoInscripcion(solicitudDominio);
-
-//        SolicitudCursoVeranoInscripcionDTORespuesta respuesta = solicitudCursoDeVeranoInscripcionMapper
-//                .mappearDeSolicitudCursoVeranoIncripcionARespuesta(solicitudGuardada);
-
-//        return new ResponseEntity<>(respuesta, HttpStatus.CREATED);
-//    }
 
     /**
      * Obtiene el historial completo de solicitudes con filtros opcionales
@@ -176,93 +105,60 @@ public class SolicitudRestController {
             @RequestParam(required = false) String estadoActual,
             @RequestParam(required = false) Integer idUsuario) {
         
-        try {
-            List<SolicitudEntity> solicitudesEntityFiltradas = solicitudRepository.buscarHistorialConFiltros(
-                periodoAcademico != null && !periodoAcademico.trim().isEmpty() ? periodoAcademico.trim() : null,
-                idUsuario,
-                estadoActual != null && !estadoActual.trim().isEmpty() ? estadoActual.trim() : null
-            );
-            
-            if (solicitudesEntityFiltradas == null || solicitudesEntityFiltradas.isEmpty()) {
-                // Obtener totales del sistema para estadísticas
-                Long totalSistema = solicitudRepository.contarHistorialConFiltros(null, null, null);
-                Long totalProcesadas = solicitudRepository.contarSolicitudesProcesadas(null, null);
-                
-                Map<String, Object> respuestaVacia = new HashMap<>();
-                respuestaVacia.put("solicitudes", new ArrayList<>());
-                respuestaVacia.put("total", 0);
-                respuestaVacia.put("total_solicitudes_sistema", totalSistema != null ? totalSistema.intValue() : 0);
-                respuestaVacia.put("total_solicitudes_procesadas", totalProcesadas != null ? totalProcesadas.intValue() : 0);
-                respuestaVacia.put("total_solicitudes_no_procesadas", 
-                    (totalSistema != null && totalProcesadas != null) ? (totalSistema.intValue() - totalProcesadas.intValue()) : 0);
-                return ResponseEntity.ok(respuestaVacia);
-            }
-            
-            // Convertir entidades a modelos de dominio
-            List<Solicitud> todasLasSolicitudesDominio = solicitudesEntityFiltradas.stream()
-                .map(this::mapearEntityADominio)
-                .filter(s -> s != null)
+        List<Solicitud> todasLasSolicitudesDominio = solicitudCU.buscarHistorial(periodoAcademico, idUsuario, estadoActual);
+
+        // Convertir a DTOs y aplicar filtro de tipoSolicitud (que no se puede hacer fácilmente en SQL)
+        List<SolicitudDTORespuesta> todasLasSolicitudesDTO = todasLasSolicitudesDominio.stream()
+                .map(solicitud -> {
+                    SolicitudDTORespuesta dto = mapper.mappearDeSolicitudARespuesta(solicitud);
+                    determinarCategoriaYTipo(solicitud, dto);
+                    return dto;
+                })
                 .collect(Collectors.toList());
-            
-            // Convertir a DTOs y aplicar filtro de tipoSolicitud (que no se puede hacer fácilmente en SQL)
-            List<SolicitudDTORespuesta> todasLasSolicitudesDTO = todasLasSolicitudesDominio.stream()
-                    .map(solicitud -> {
-                        SolicitudDTORespuesta dto = mapper.mappearDeSolicitudARespuesta(solicitud);
-                        determinarCategoriaYTipo(solicitud, dto);
-                        return dto;
-                    })
-                    .collect(Collectors.toList());
-            
-            // Aplicar filtro por tipoSolicitud (este filtro se hace en memoria porque requiere análisis del nombre)
-            List<SolicitudDTORespuesta> solicitudesFiltradas = todasLasSolicitudesDTO.stream()
-                    .filter(s -> {
-                        if (tipoSolicitud != null && !tipoSolicitud.trim().isEmpty()) {
-                            String nombreSolicitud = s.getNombre_solicitud() != null ? s.getNombre_solicitud().toLowerCase() : "";
-                            String tipoFiltro = tipoSolicitud.trim().toLowerCase();
-                            String tipoNormalizado = tipoFiltro
-                                    .replace("académico", "")
-                                    .replace("academico", "")
-                                    .trim();
-                            
-                            boolean coincide = false;
-                            if (tipoNormalizado.contains("paz") && tipoNormalizado.contains("salvo")) {
-                                coincide = nombreSolicitud.contains("paz") && nombreSolicitud.contains("salvo");
-                            } else if (tipoNormalizado.contains("reingreso")) {
-                                coincide = nombreSolicitud.contains("reingreso");
-                            } else if (tipoNormalizado.contains("homologacion") || tipoNormalizado.contains("homologación")) {
-                                coincide = nombreSolicitud.contains("homologacion") || nombreSolicitud.contains("homologación");
-                            } else if (tipoNormalizado.contains("ecaes")) {
-                                coincide = nombreSolicitud.contains("ecaes");
-                            } else if (tipoNormalizado.contains("curso") && (tipoNormalizado.contains("verano") || tipoNormalizado.contains("intersemestral"))) {
-                                coincide = nombreSolicitud.contains("curso") && (nombreSolicitud.contains("verano") || nombreSolicitud.contains("intersemestral"));
-                            } else {
-                                coincide = nombreSolicitud.contains(tipoNormalizado);
-                            }
-                            return coincide;
+        
+        // Aplicar filtro por tipoSolicitud (este filtro se hace en memoria porque requiere análisis del nombre)
+        List<SolicitudDTORespuesta> solicitudesFiltradas = todasLasSolicitudesDTO.stream()
+                .filter(s -> {
+                    if (tipoSolicitud != null && !tipoSolicitud.trim().isEmpty()) {
+                        String nombreSolicitud = s.getNombre_solicitud() != null ? s.getNombre_solicitud().toLowerCase() : "";
+                        String tipoFiltro = tipoSolicitud.trim().toLowerCase();
+                        String tipoNormalizado = tipoFiltro
+                                .replace("académico", "")
+                                .replace("academico", "")
+                                .trim();
+                        
+                        boolean coincide = false;
+                        if (tipoNormalizado.contains("paz") && tipoNormalizado.contains("salvo")) {
+                            coincide = nombreSolicitud.contains("paz") && nombreSolicitud.contains("salvo");
+                        } else if (tipoNormalizado.contains("reingreso")) {
+                            coincide = nombreSolicitud.contains("reingreso");
+                        } else if (tipoNormalizado.contains("homologacion") || tipoNormalizado.contains("homologación")) {
+                            coincide = nombreSolicitud.contains("homologacion") || nombreSolicitud.contains("homologación");
+                        } else if (tipoNormalizado.contains("ecaes")) {
+                            coincide = nombreSolicitud.contains("ecaes");
+                        } else if (tipoNormalizado.contains("curso") && (tipoNormalizado.contains("verano") || tipoNormalizado.contains("intersemestral"))) {
+                            coincide = nombreSolicitud.contains("curso") && (nombreSolicitud.contains("verano") || nombreSolicitud.contains("intersemestral"));
+                        } else {
+                            coincide = nombreSolicitud.contains(tipoNormalizado);
                         }
-                        return true;
-                    })
-                    .collect(Collectors.toList());
-            
-            // Obtener totales usando queries optimizadas
-            Long totalSistema = solicitudRepository.contarHistorialConFiltros(null, null, null);
-            Long totalProcesadas = solicitudRepository.contarSolicitudesProcesadas(null, null);
-            
-            // Construir respuesta
-            Map<String, Object> respuesta = new HashMap<>();
-            respuesta.put("solicitudes", solicitudesFiltradas);
-            respuesta.put("total", solicitudesFiltradas.size());
-            respuesta.put("total_solicitudes_sistema", totalSistema != null ? totalSistema.intValue() : 0);
-            respuesta.put("total_solicitudes_procesadas", totalProcesadas != null ? totalProcesadas.intValue() : 0);
-            respuesta.put("total_solicitudes_no_procesadas", 
-                (totalSistema != null && totalProcesadas != null) ? (totalSistema.intValue() - totalProcesadas.intValue()) : 0);
-            
-            return ResponseEntity.ok(respuesta);
-            
-        } catch (Exception e) {
-            log.error("Error al obtener historial completo: {}", e.getMessage(), e);
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-        }
+                        return coincide;
+                    }
+                    return true;
+                })
+                .collect(Collectors.toList());
+        
+        // Totales del sistema (sin filtros) para las estadísticas del encabezado
+        long totalSistema = solicitudCU.contarHistorial();
+        long totalProcesadas = solicitudCU.contarSolicitudesProcesadas();
+
+        Map<String, Object> respuesta = new HashMap<>();
+        respuesta.put("solicitudes", solicitudesFiltradas);
+        respuesta.put("total", solicitudesFiltradas.size());
+        respuesta.put("total_solicitudes_sistema", (int) totalSistema);
+        respuesta.put("total_solicitudes_procesadas", (int) totalProcesadas);
+        respuesta.put("total_solicitudes_no_procesadas", (int) (totalSistema - totalProcesadas));
+        
+        return ResponseEntity.ok(respuesta);
     }
 
     /**
@@ -283,41 +179,35 @@ public class SolicitudRestController {
             @RequestParam(required = false) String estadoActual,
             @RequestParam(required = false) Integer idUsuario) {
         
-        try {
-            ResponseEntity<Map<String, Object>> historialResponse = obtenerHistorialCompleto(
-                    periodoAcademico, tipoSolicitud, estadoActual, idUsuario);
-            
-            if (historialResponse.getStatusCode() != HttpStatus.OK || historialResponse.getBody() == null) {
-                log.error("No se pudo obtener el historial para generar el PDF");
-                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
-            }
-            
-            Map<String, Object> historialData = historialResponse.getBody();
-            @SuppressWarnings("unchecked")
-            List<SolicitudDTORespuesta> solicitudes = (List<SolicitudDTORespuesta>) historialData.get("solicitudes");
-            
-            if (solicitudes == null) {
-                solicitudes = new ArrayList<>();
-            }
-            
-            // Generar PDF
-            byte[] pdfBytes = generarPDFHistorial(solicitudes, historialData, periodoAcademico, tipoSolicitud, estadoActual);
-            
-            HttpHeaders headers = new HttpHeaders();
-            headers.setContentType(MediaType.APPLICATION_PDF);
-            
-            // Nombre del archivo con fecha
-            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-            String fecha = sdf.format(new Date());
-            String filename = "historial_solicitudes_" + fecha + ".pdf";
-            headers.setContentDispositionFormData("attachment", filename);
-            
-            return new ResponseEntity<>(pdfBytes, headers, HttpStatus.OK);
-            
-        } catch (Exception e) {
-            log.error("Error al generar PDF del historial: {}", e.getMessage(), e);
+        ResponseEntity<Map<String, Object>> historialResponse = obtenerHistorialCompleto(
+                periodoAcademico, tipoSolicitud, estadoActual, idUsuario);
+        
+        if (historialResponse.getStatusCode() != HttpStatus.OK || historialResponse.getBody() == null) {
+            log.error("No se pudo obtener el historial para generar el PDF");
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
+        
+        Map<String, Object> historialData = historialResponse.getBody();
+        @SuppressWarnings("unchecked")
+        List<SolicitudDTORespuesta> solicitudes = (List<SolicitudDTORespuesta>) historialData.get("solicitudes");
+        
+        if (solicitudes == null) {
+            solicitudes = new ArrayList<>();
+        }
+        
+        // Generar PDF
+        byte[] pdfBytes = generarPDFHistorial(solicitudes, historialData, periodoAcademico, tipoSolicitud, estadoActual);
+        
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_PDF);
+        
+        // Nombre del archivo con fecha
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+        String fecha = sdf.format(new Date());
+        String filename = "historial_solicitudes_" + fecha + ".pdf";
+        headers.set(HttpHeaders.CONTENT_DISPOSITION, RespuestasArchivo.formulario(filename));
+        
+        return new ResponseEntity<>(pdfBytes, headers, HttpStatus.OK);
     }
 
     /**
@@ -495,27 +385,8 @@ public class SolicitudRestController {
             return baos.toByteArray();
             
         } catch (Exception e) {
-            log.error("Error al generar el PDF del historial: {}", e.getMessage(), e);
-            
-            // Generar PDF de error
-            try {
-                ByteArrayOutputStream errorBaos = new ByteArrayOutputStream();
-                com.itextpdf.text.Document errorDoc = new com.itextpdf.text.Document();
-                com.itextpdf.text.pdf.PdfWriter.getInstance(errorDoc, errorBaos);
-                
-                errorDoc.open();
-                com.itextpdf.text.Font errorFont = new com.itextpdf.text.Font(
-                        com.itextpdf.text.Font.FontFamily.HELVETICA, 12);
-                com.itextpdf.text.Paragraph errorMsg = new com.itextpdf.text.Paragraph(
-                        "Error al generar el reporte: " + e.getMessage(), errorFont);
-                errorDoc.add(errorMsg);
-                errorDoc.close();
-                
-                return errorBaos.toByteArray();
-            } catch (Exception ex) {
-                log.error("No se pudo generar el PDF alterno con información de error: {}", ex.getMessage(), ex);
-                return new byte[0];
-            }
+            // Propagar: antes se devolvía un PDF con el texto del error y código 200
+            throw new IllegalStateException("Error al generar el PDF del historial", e);
         } finally {
             try {
                 if (document != null && document.isOpen()) {
@@ -557,23 +428,6 @@ public class SolicitudRestController {
             SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
             return sdf.format(fecha);
         }
-    }
-
-    private Solicitud mapearEntityADominio(SolicitudEntity entity) {
-        if (entity instanceof SolicitudCursoVeranoPreinscripcionEntity) {
-            return modelMapper.map(entity, SolicitudCursoVeranoPreinscripcion.class);
-        } else if (entity instanceof SolicitudEcaesEntity) {
-            return modelMapper.map(entity, SolicitudEcaes.class);
-        } else if (entity instanceof SolicitudReingresoEntity) {
-            return modelMapper.map(entity, SolicitudReingreso.class);
-        } else if (entity instanceof SolicitudHomologacionEntity) {
-            return modelMapper.map(entity, SolicitudHomologacion.class);
-        } else if (entity instanceof SolicitudPazYSalvoEntity) {
-            return modelMapper.map(entity, SolicitudPazYSalvo.class);
-        } else if (entity instanceof SolicitudCursoVeranoInscripcionEntity) {
-            return modelMapper.map(entity, SolicitudCursoVeranoIncripcion.class);
-        }
-        return null;
     }
 
     private void determinarCategoriaYTipo(Solicitud solicitud, SolicitudDTORespuesta dto) {

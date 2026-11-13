@@ -1,0 +1,371 @@
+{
+  "analisisPorPrograma" : [ {
+    "nombre" : "Ingeniería de Sistemas",
+    "porcentaje" : 66.67,
+    "solicitudes" : 8
+  }, {
+    "nombre" : "Ingeniería Electrónica",
+    "porcentaje" : 33.33,
+    "solicitudes" : 4
+  } ],
+  "descripcion" : "Estadisticas detalladas de cursos de verano - Analisis de demanda y recomendaciones",
+  "estadosSolicitudes" : {
+    "APROBADA" : 3,
+    "ENVIADA" : 5,
+    "EN_PROCESO" : 3,
+    "RECHAZADA" : 1
+  },
+  "estadosSolicitudesEstructurados" : {
+    "APROBADA" : {
+      "cantidad" : 3,
+      "estado" : "APROBADA",
+      "porcentaje" : 25.0
+    },
+    "ENVIADA" : {
+      "cantidad" : 5,
+      "estado" : "ENVIADA",
+      "porcentaje" : 41.67
+    },
+    "EN_PROCESO" : {
+      "cantidad" : 3,
+      "estado" : "EN_PROCESO",
+      "porcentaje" : 25.0
+    },
+    "RECHAZADA" : {
+      "cantidad" : 1,
+      "estado" : "RECHAZADA",
+      "porcentaje" : 8.33
+    }
+  },
+  "predicciones" : {
+    "alertasCriticas" : [ {
+      "acciones" : [ " ACCION INMEDIATA REQUERIDA", "Convocar reunion urgente con coordinacion academica", "Evaluar contratar docentes adicionales con caracter urgente", "Verificar disponibilidad de espacios fisicos alternativos", "Considerar modalidad virtual/hibrida si no hay capacidad presencial" ],
+      "categoria" : "URGENTE",
+      "crecimientoProyectado" : "100%",
+      "descripcion" : "ATENCION: La materia Programación Orientada a Objetos presenta un crecimiento proyectado del 100%, significativamente superior al promedio. Se requiere accion inmediata para garantizar cobertura.",
+      "id" : "ALERTA_CRITICA_PROGRAMACIÓN_ORIENTADA_A_OBJETOS",
+      "materia" : "Programación Orientada a Objetos",
+      "prioridad" : "CRITICA",
+      "tipo" : "ALERTA_CAPACIDAD",
+      "titulo" : " ALERTA: Crecimiento excepcional en Programación Orientada a Objetos"
+    }, {
+      "acciones" : [ " ACCION INMEDIATA REQUERIDA", "Convocar reunion urgente con coordinacion academica", "Evaluar contratar docentes adicionales con caracter urgente", "Verificar disponibilidad de espacios fisicos alternativos", "Considerar modalidad virtual/hibrida si no hay capacidad presencial" ],
+      "categoria" : "URGENTE",
+      "crecimientoProyectado" : "100%",
+      "descripcion" : "ATENCION: La materia Física I presenta un crecimiento proyectado del 100%, significativamente superior al promedio. Se requiere accion inmediata para garantizar cobertura.",
+      "id" : "ALERTA_CRITICA_FÍSICA_I",
+      "materia" : "Física I",
+      "prioridad" : "CRITICA",
+      "tipo" : "ALERTA_CAPACIDAD",
+      "titulo" : " ALERTA: Crecimiento excepcional en Física I"
+    } ],
+    "confiabilidad" : "MEDIA",
+    "demandaEstimadaProximoPeriodo" : 24,
+    "estadisticasRecomendaciones" : {
+      "alertasCriticas" : 2,
+      "prioridadAlta" : 3,
+      "prioridadBaja" : 0,
+      "prioridadMedia" : 1,
+      "totalRecomendaciones" : 4
+    },
+    "materiasConTendenciaCreciente" : [ {
+      "demandaActual" : 3,
+      "demandaEstimada" : 6,
+      "nombre" : "Programación Orientada a Objetos",
+      "porcentajeVariacion" : 100,
+      "tendencia" : "CRECIENTE",
+      "variacion" : 3
+    }, {
+      "demandaActual" : 3,
+      "demandaEstimada" : 6,
+      "nombre" : "Física I",
+      "porcentajeVariacion" : 100,
+      "tendencia" : "CRECIENTE",
+      "variacion" : 3
+    } ],
+    "materiasConTendenciaDecreciente" : [ {
+      "demandaActual" : 6,
+      "demandaEstimada" : 5,
+      "nombre" : "Cálculo I",
+      "porcentajeVariacion" : -17,
+      "tendencia" : "DECRECIENTE",
+      "variacion" : -1
+    } ],
+    "materiasEstables" : [ ],
+    "prediccionesTemporales" : {
+      "demandaActualMesPico" : 3,
+      "demandaEstimadaMesPico" : 3,
+      "mesPico" : "Agosto",
+      "mesesRecomendados" : [ "Julio", "Agosto", "Septiembre" ]
+    },
+    "programasConTendenciaCreciente" : [ {
+      "demandaActual" : 4,
+      "demandaEstimada" : 8,
+      "nombre" : "Ingeniería Electrónica",
+      "porcentajeVariacion" : 100,
+      "tendencia" : "CRECIENTE",
+      "variacion" : 4
+    } ],
+    "programasConTendenciaDecreciente" : [ {
+      "demandaActual" : 8,
+      "demandaEstimada" : 7,
+      "nombre" : "Ingeniería de Sistemas",
+      "porcentajeVariacion" : -12,
+      "tendencia" : "DECRECIENTE",
+      "variacion" : -1
+    } ],
+    "programasEstables" : [ ],
+    "recomendaciones" : [ {
+      "acciones" : [ "Contratar 1 docente especializado", "Reservar 1 aula o laboratorio", "URGENTE: Iniciar gestion con 2 meses de anticipacion", "Publicar oferta academica con suficiente antelacion" ],
+      "categoria" : "CURSOS_VERANO",
+      "crecimiento" : 3,
+      "demandaActual" : 3,
+      "demandaProyectada" : 6,
+      "descripcion" : "La materia Programación Orientada a Objetos presenta una tendencia de crecimiento del 100%, pasando de 3 a 6 estudiantes proyectados. Se recomienda ampliar la oferta para garantizar cobertura completa.",
+      "id" : "MAT_PROGRAMACIÓN_ORIENTADA_A_OBJETOS",
+      "impacto" : {
+        "estudiantesAtendidos" : 6,
+        "estudiantesBeneficiados" : 3,
+        "tasaCoberturaObjetivo" : "100%"
+      },
+      "justificacion" : "Con base en las tendencias observadas en periodos anteriores, se estima un incremento de 3 estudiantes (100% de crecimiento).",
+      "materia" : "Programación Orientada a Objetos",
+      "porcentajeCrecimiento" : 100,
+      "prioridad" : "ALTA",
+      "recursos" : {
+        "aulas" : 1,
+        "capacidadPorGrupo" : 20,
+        "docentes" : 1,
+        "gruposActuales" : 1,
+        "gruposRecomendados" : 1,
+        "laboratorios" : 0
+      },
+      "tipo" : "OFERTA_MATERIA",
+      "titulo" : "Ampliar oferta de Programación Orientada a Objetos"
+    }, {
+      "acciones" : [ "Contratar 1 docente especializado", "Reservar 1 aula o laboratorio", "URGENTE: Iniciar gestion con 2 meses de anticipacion", "Publicar oferta academica con suficiente antelacion" ],
+      "categoria" : "CURSOS_VERANO",
+      "crecimiento" : 3,
+      "demandaActual" : 3,
+      "demandaProyectada" : 6,
+      "descripcion" : "La materia Física I presenta una tendencia de crecimiento del 100%, pasando de 3 a 6 estudiantes proyectados. Se recomienda ampliar la oferta para garantizar cobertura completa.",
+      "id" : "MAT_FÍSICA_I",
+      "impacto" : {
+        "estudiantesAtendidos" : 6,
+        "estudiantesBeneficiados" : 3,
+        "tasaCoberturaObjetivo" : "100%"
+      },
+      "justificacion" : "Con base en las tendencias observadas en periodos anteriores, se estima un incremento de 3 estudiantes (100% de crecimiento).",
+      "materia" : "Física I",
+      "porcentajeCrecimiento" : 100,
+      "prioridad" : "ALTA",
+      "recursos" : {
+        "aulas" : 1,
+        "capacidadPorGrupo" : 20,
+        "docentes" : 1,
+        "gruposActuales" : 1,
+        "gruposRecomendados" : 1,
+        "laboratorios" : 0
+      },
+      "tipo" : "OFERTA_MATERIA",
+      "titulo" : "Ampliar oferta de Física I"
+    }, {
+      "acciones" : [ "Ampliar oferta de cursos de verano en 4 cupos", "Identificar materias criticas del programa con mayor demanda", "Coordinar con director(a) de programa para validar necesidades", "Evaluar disponibilidad de docentes del programa", "CRITICO: Programa de alta demanda requiere atencion inmediata" ],
+      "beneficios" : [ "Reduccion de desercion por perdida de materias", "Mejora en tiempos de graduacion", "Mayor satisfaccion estudiantil", "Optimizacion de trayectorias academicas" ],
+      "categoria" : "ESTRATEGIA_ACADEMICA",
+      "descripcion" : "Ingeniería Electrónica muestra un crecimiento significativo del 100% en la demanda de cursos de verano. Se proyectan 8 solicitudes para el proximo periodo, con un incremento de 4 estudiantes. Es prioritario garantizar oferta academica suficiente para este programa.",
+      "id" : "PROG_INGENIERÍA_ELECTRÓNICA",
+      "incremento" : 4,
+      "justificacion" : "El analisis de tendencias historicas indica un crecimiento sostenido de 4 solicitudes. Representa una oportunidad para mejorar los indicadores academicos del programa.",
+      "porcentajeIncremento" : 100,
+      "prioridad" : "ALTA",
+      "programa" : "Ingeniería Electrónica",
+      "solicitudesActuales" : 4,
+      "solicitudesProyectadas" : 8,
+      "tipo" : "ENFOQUE_PROGRAMA",
+      "titulo" : "Priorizar oferta para Ingeniería Electrónica"
+    }, {
+      "acciones" : [ "Publicar calendario de cursos de verano 8 semanas antes de Agosto", "Preparar capacidad para 3 estudiantes", "Coordinar disponibilidad de docentes con 6 semanas de anticipacion", "Reservar aulas y laboratorios con 4 semanas de anticipacion" ],
+      "categoria" : "CALENDARIO_ACADEMICO",
+      "descripcion" : "Agosto es el mes pico de demanda para cursos de verano. Se proyecta un incremento del 0%, pasando de 3 a 3 solicitudes. Es fundamental anticipar la planificacion academica y logistica.",
+      "id" : "TEMPORAL_AGOSTO",
+      "incrementoEsperado" : 0,
+      "justificacion" : "Analisis historico indica que Agosto concentra el mayor volumen de solicitudes. Planificacion anticipada garantiza mejor experiencia estudiantil.",
+      "mesPico" : "Agosto",
+      "porcentajeCrecimiento" : 0,
+      "prioridad" : "MEDIA",
+      "solicitudesActuales" : 3,
+      "solicitudesProyectadas" : 3,
+      "tipo" : "PLANIFICACION_TEMPORAL",
+      "titulo" : "Preparar oferta anticipada para Agosto"
+    } ],
+    "todasLasPrediccionesPorPrograma" : [ {
+      "demandaActual" : 8,
+      "demandaEstimada" : 7,
+      "nombre" : "Ingeniería de Sistemas",
+      "porcentajeVariacion" : -12,
+      "tendencia" : "DECRECIENTE",
+      "variacion" : -1
+    }, {
+      "demandaActual" : 4,
+      "demandaEstimada" : 8,
+      "nombre" : "Ingeniería Electrónica",
+      "porcentajeVariacion" : 100,
+      "tendencia" : "CRECIENTE",
+      "variacion" : 4
+    } ]
+  },
+  "recomendaciones" : [ {
+    "acciones" : [ "Contratar 1 docente especializado", "Reservar 1 aula o laboratorio", "URGENTE: Iniciar gestion con 2 meses de anticipacion", "Publicar oferta academica con suficiente antelacion" ],
+    "categoria" : "CURSOS_VERANO",
+    "crecimiento" : 3,
+    "demandaActual" : 3,
+    "demandaProyectada" : 6,
+    "descripcion" : "La materia Programación Orientada a Objetos presenta una tendencia de crecimiento del 100%, pasando de 3 a 6 estudiantes proyectados. Se recomienda ampliar la oferta para garantizar cobertura completa.",
+    "id" : "MAT_PROGRAMACIÓN_ORIENTADA_A_OBJETOS",
+    "impacto" : {
+      "estudiantesAtendidos" : 6,
+      "estudiantesBeneficiados" : 3,
+      "tasaCoberturaObjetivo" : "100%"
+    },
+    "justificacion" : "Con base en las tendencias observadas en periodos anteriores, se estima un incremento de 3 estudiantes (100% de crecimiento).",
+    "materia" : "Programación Orientada a Objetos",
+    "porcentajeCrecimiento" : 100,
+    "prioridad" : "ALTA",
+    "recursos" : {
+      "aulas" : 1,
+      "capacidadPorGrupo" : 20,
+      "docentes" : 1,
+      "gruposActuales" : 1,
+      "gruposRecomendados" : 1,
+      "laboratorios" : 0
+    },
+    "tipo" : "OFERTA_MATERIA",
+    "titulo" : "Ampliar oferta de Programación Orientada a Objetos"
+  }, {
+    "acciones" : [ "Contratar 1 docente especializado", "Reservar 1 aula o laboratorio", "URGENTE: Iniciar gestion con 2 meses de anticipacion", "Publicar oferta academica con suficiente antelacion" ],
+    "categoria" : "CURSOS_VERANO",
+    "crecimiento" : 3,
+    "demandaActual" : 3,
+    "demandaProyectada" : 6,
+    "descripcion" : "La materia Física I presenta una tendencia de crecimiento del 100%, pasando de 3 a 6 estudiantes proyectados. Se recomienda ampliar la oferta para garantizar cobertura completa.",
+    "id" : "MAT_FÍSICA_I",
+    "impacto" : {
+      "estudiantesAtendidos" : 6,
+      "estudiantesBeneficiados" : 3,
+      "tasaCoberturaObjetivo" : "100%"
+    },
+    "justificacion" : "Con base en las tendencias observadas en periodos anteriores, se estima un incremento de 3 estudiantes (100% de crecimiento).",
+    "materia" : "Física I",
+    "porcentajeCrecimiento" : 100,
+    "prioridad" : "ALTA",
+    "recursos" : {
+      "aulas" : 1,
+      "capacidadPorGrupo" : 20,
+      "docentes" : 1,
+      "gruposActuales" : 1,
+      "gruposRecomendados" : 1,
+      "laboratorios" : 0
+    },
+    "tipo" : "OFERTA_MATERIA",
+    "titulo" : "Ampliar oferta de Física I"
+  }, {
+    "acciones" : [ "Ampliar oferta de cursos de verano en 4 cupos", "Identificar materias criticas del programa con mayor demanda", "Coordinar con director(a) de programa para validar necesidades", "Evaluar disponibilidad de docentes del programa", "CRITICO: Programa de alta demanda requiere atencion inmediata" ],
+    "beneficios" : [ "Reduccion de desercion por perdida de materias", "Mejora en tiempos de graduacion", "Mayor satisfaccion estudiantil", "Optimizacion de trayectorias academicas" ],
+    "categoria" : "ESTRATEGIA_ACADEMICA",
+    "descripcion" : "Ingeniería Electrónica muestra un crecimiento significativo del 100% en la demanda de cursos de verano. Se proyectan 8 solicitudes para el proximo periodo, con un incremento de 4 estudiantes. Es prioritario garantizar oferta academica suficiente para este programa.",
+    "id" : "PROG_INGENIERÍA_ELECTRÓNICA",
+    "incremento" : 4,
+    "justificacion" : "El analisis de tendencias historicas indica un crecimiento sostenido de 4 solicitudes. Representa una oportunidad para mejorar los indicadores academicos del programa.",
+    "porcentajeIncremento" : 100,
+    "prioridad" : "ALTA",
+    "programa" : "Ingeniería Electrónica",
+    "solicitudesActuales" : 4,
+    "solicitudesProyectadas" : 8,
+    "tipo" : "ENFOQUE_PROGRAMA",
+    "titulo" : "Priorizar oferta para Ingeniería Electrónica"
+  }, {
+    "acciones" : [ "Publicar calendario de cursos de verano 8 semanas antes de Agosto", "Preparar capacidad para 3 estudiantes", "Coordinar disponibilidad de docentes con 6 semanas de anticipacion", "Reservar aulas y laboratorios con 4 semanas de anticipacion" ],
+    "categoria" : "CALENDARIO_ACADEMICO",
+    "descripcion" : "Agosto es el mes pico de demanda para cursos de verano. Se proyecta un incremento del 0%, pasando de 3 a 3 solicitudes. Es fundamental anticipar la planificacion academica y logistica.",
+    "id" : "TEMPORAL_AGOSTO",
+    "incrementoEsperado" : 0,
+    "justificacion" : "Analisis historico indica que Agosto concentra el mayor volumen de solicitudes. Planificacion anticipada garantiza mejor experiencia estudiantil.",
+    "mesPico" : "Agosto",
+    "porcentajeCrecimiento" : 0,
+    "prioridad" : "MEDIA",
+    "solicitudesActuales" : 3,
+    "solicitudesProyectadas" : 3,
+    "tipo" : "PLANIFICACION_TEMPORAL",
+    "titulo" : "Preparar oferta anticipada para Agosto"
+  } ],
+  "resumen" : {
+    "materiasUnicas" : 3,
+    "programasParticipantes" : 2,
+    "tasaAprobacion" : 25.0,
+    "totalSolicitudes" : 12
+  },
+  "tendenciasTemporales" : [ {
+    "mes" : "Enero",
+    "porcentaje" : 8.33,
+    "solicitudes" : 1
+  }, {
+    "mes" : "Febrero",
+    "porcentaje" : 8.33,
+    "solicitudes" : 1
+  }, {
+    "mes" : "Marzo",
+    "porcentaje" : 8.33,
+    "solicitudes" : 1
+  }, {
+    "mes" : "Abril",
+    "porcentaje" : 0.0,
+    "solicitudes" : 0
+  }, {
+    "mes" : "Mayo",
+    "porcentaje" : 8.33,
+    "solicitudes" : 1
+  }, {
+    "mes" : "Junio",
+    "porcentaje" : 16.67,
+    "solicitudes" : 2
+  }, {
+    "mes" : "Julio",
+    "porcentaje" : 16.67,
+    "solicitudes" : 2
+  }, {
+    "mes" : "Agosto",
+    "porcentaje" : 25.0,
+    "solicitudes" : 3
+  }, {
+    "mes" : "Septiembre",
+    "porcentaje" : 8.33,
+    "solicitudes" : 1
+  }, {
+    "mes" : "Octubre",
+    "porcentaje" : 0.0,
+    "solicitudes" : 0
+  }, {
+    "mes" : "Noviembre",
+    "porcentaje" : 0.0,
+    "solicitudes" : 0
+  }, {
+    "mes" : "Diciembre",
+    "porcentaje" : 0.0,
+    "solicitudes" : 0
+  } ],
+  "todosLosMeses" : [ "Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre" ],
+  "topMaterias" : [ {
+    "nombre" : "Cálculo I",
+    "porcentaje" : 50.0,
+    "solicitudes" : 6
+  }, {
+    "nombre" : "Programación Orientada a Objetos",
+    "porcentaje" : 25.0,
+    "solicitudes" : 3
+  }, {
+    "nombre" : "Física I",
+    "porcentaje" : 25.0,
+    "solicitudes" : 3
+  } ]
+}

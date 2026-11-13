@@ -16,7 +16,6 @@ import java.util.ArrayList;
 
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.GestionarUsuarioGatewayIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Usuario;
-import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.entidades.SolicitudEntity;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.entidades.UsuarioEntity;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.repositorios.SolicitudRepositoryInt;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.repositorios.UsuarioRepositoryInt;
@@ -129,9 +128,6 @@ public class GestionarUsuarioGatewayImplAdapter implements GestionarUsuarioGatew
     public boolean eliminarUsuario(Integer id_usuario) {
         Optional<UsuarioEntity> usuarioEntity = usuarioRepository.findById(id_usuario);
         if (usuarioEntity.isPresent()) {
-            // usuarioRepository.delete(usuarioEntity.get());
-            // usuarioRepository.deleteById(id_usuario);
-            // usuarioRepository.flush(); // Asegura que la eliminación se realice inmediatamente
             usuarioRepository.eliminarPorId(usuarioEntity.get().getId_usuario());
             return true;
         }
@@ -156,13 +152,6 @@ public class GestionarUsuarioGatewayImplAdapter implements GestionarUsuarioGatew
 
     @Override
     @Transactional(readOnly = true)
-    public Usuario buscarUsuarioPorCodigo(String codigo) {
-        UsuarioEntity usuarioEntity = usuarioRepository.buscarIdUsuarioPorCodigo(codigo);
-        return usuarioEntity != null ? usuarioMapper.map(usuarioEntity, Usuario.class) : null;
-    }
-
-    @Override
-    @Transactional(readOnly = true)
     public Usuario buscarUsuarioPorCorreo(String correo) {
         // Usar buscarPorCorreoWithRelations para cargar programa y rol (necesario para filtros de coordinador)
         Optional<UsuarioEntity> usuarioEntity = usuarioRepository.buscarPorCorreoWithRelations(correo);
@@ -181,48 +170,11 @@ public class GestionarUsuarioGatewayImplAdapter implements GestionarUsuarioGatew
 
     @Override
     @Transactional(readOnly = true)
-    public Usuario buscarUsuarioPorNombre(String nombre) {
-        List<UsuarioEntity> usuarios = usuarioRepository.buscarPorNombreParcial(nombre);
-        return usuarios.isEmpty() ? null : usuarioMapper.map(usuarios.get(0), Usuario.class);
-    }
-
-    @Override
-    @Transactional(readOnly = true)
-    public Usuario buscarSolicitudesUsuarioPorCodigo(String codigo) {
-        UsuarioEntity usuarioEntity = usuarioRepository.buscarIdUsuarioPorCodigo(codigo);
-        if (usuarioEntity == null) return null;
-
-        List<SolicitudEntity> solicitudesEntity = solicitudRepository.buscarSolicitudesPorUsuario(usuarioEntity.getId_usuario());
-        if(solicitudesEntity == null){
-            solicitudesEntity = List.of();
-        }
-
-        
-        usuarioEntity.setSolicitudes(solicitudesEntity);
-
-        return usuarioMapper.map(usuarioEntity, Usuario.class);
-    }
-
-    @Override
-    @Transactional(readOnly = true)
     public List<Usuario> buscarUsuariosPorRol(Integer idRol) {
         List<UsuarioEntity> entities = usuarioRepository.buscarPorRol(idRol);
         return entities.stream()
                 .map(entity -> usuarioMapper.map(entity, Usuario.class))
                 .toList();
-    }
-
-    @Override
-    @Transactional(readOnly = true)
-    public List<Usuario> buscarUsuariosPorPrograma(Integer idPrograma) {
-        List<UsuarioEntity> entities = usuarioRepository.buscarPorPrograma(idPrograma);
-        List<Usuario> usuarios = null;
-        if(entities != null){
-            usuarios = entities.stream()
-                    .map(entity -> usuarioMapper.map(entity, Usuario.class))
-                    .toList();
-        }
-        return usuarios;
     }
 
     @Override
@@ -268,5 +220,12 @@ public class GestionarUsuarioGatewayImplAdapter implements GestionarUsuarioGatew
                 usuario.getPassword() != null ? usuario.getPassword() : "",
                 authorities
         );
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Usuario buscarUsuarioPorCodigo(String codigo) {
+        UsuarioEntity usuarioEntity = usuarioRepository.buscarIdUsuarioPorCodigo(codigo);
+        return usuarioEntity != null ? usuarioMapper.map(usuarioEntity, Usuario.class) : null;
     }
 }

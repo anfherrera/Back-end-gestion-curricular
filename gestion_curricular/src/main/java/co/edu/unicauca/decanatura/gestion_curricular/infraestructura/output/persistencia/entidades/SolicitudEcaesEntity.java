@@ -30,9 +30,6 @@ public class SolicitudEcaesEntity extends SolicitudEntity {
     private Date fecha_expedicion;
     @Column(nullable = false)
     private Date fecha_nacimiento;
-    // @Lob
-    // @Column(name = "archivo_datos")
-     //private byte[] archivo_datos; //se puede usar si se quiere almacenar el documento en la base de datos
 
 
 }

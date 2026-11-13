@@ -11,9 +11,6 @@ import java.util.Optional;
 
 public interface RolRepositoryInt extends JpaRepository<RolEntity, Integer> {
 
-    @Query(value = "SELECT COUNT(*) FROM roles WHERE nombre = ?1", nativeQuery = true)
-    Integer contarPorNombre(String nombre);
-
     @Query("SELECT r FROM RolEntity r WHERE r.nombre = :nombre")
     Optional<RolEntity> buscarPorNombre(@Param("nombre") String nombre);
 

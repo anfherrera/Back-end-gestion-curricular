@@ -4,23 +4,8 @@ import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Materia;
 
 public interface GestionarMateriasIntPort {
 
-    Materia guardarMateria(Materia materia);
-
-    Materia actualizarMateria(Materia materia);
-
-    boolean eliminarMateria(Integer idMateria);
-
     Materia obtenerMateriaPorId(Integer idMateria);
-
-    Materia obtenerMateriaPorCodigo(String codigo);
-
-    boolean existeMateriaPorCodigo(String codigo);
-
-    List<Materia> buscarPorNombreParcial(String nombreParcial);
-
-    List<Materia> buscarPorCreditos(Integer creditos);
 
     List<Materia> listarMaterias();
     
-    boolean tieneCursosAsociados(Integer idMateria);
 }

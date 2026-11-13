@@ -1,16 +1,15 @@
 package co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.formateador;
 
-import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarSolicitudHomologacionCUIntPort;
-import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarSolicitudReingresoCUIntPort;
+import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.GenerarDocumentosIntPort;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.DatosDocumento;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.DatosGeneracionDocumento;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.PlantillaDocumento;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.SolicitudHomologacion;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.SolicitudReingreso;
-import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.DTORespuesta.DocumentRequest;
-import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.DTORespuesta.DocumentTemplate;
 import org.apache.poi.xwpf.usermodel.*;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Service;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -21,15 +20,28 @@ import java.util.*;
 
 @Service
 @RequiredArgsConstructor
-@Slf4j
-public class DocumentGeneratorService {
-    private final GestionarSolicitudHomologacionCUIntPort solicitudHomologacionCU;
-    private final GestionarSolicitudReingresoCUIntPort solicitudReingresoCU;
+public class DocumentGeneratorService implements GenerarDocumentosIntPort {
+
+    public byte[] generarPazYSalvo(String numero, String fecha, String observaciones,
+                                                  DatosDocumento datos, boolean pdf) throws IOException {
+        Map<String, Object> solicitud = new HashMap<>();
+        solicitud.put("nombreEstudiante", datos.nombreEstudiante());
+        solicitud.put("codigoEstudiante", datos.codigoEstudiante());
+        solicitud.put("programa", datos.programa());
+        solicitud.put("fechaSolicitud", datos.fechaSolicitud());
+        solicitud.put("cedulaEstudiante", datos.cedula());
+        solicitud.put("tituloTrabajoGrado", datos.titulo());
+        solicitud.put("directorTrabajoGrado", datos.director());
+        byte[] docx = generarDocumento(new DatosGeneracionDocumento(0, "PAZ_SALVO",
+                Map.of("numeroDocumento", numero, "fechaDocumento", fecha, "observaciones", observaciones),
+                solicitud, null, null));
+        return pdf ? GeneradorPdfPazYSalvo.desdePlantillaRellena(docx) : docx;
+    }
 
     /**
      * Generar documento Word usando plantilla
      */
-    public ByteArrayOutputStream generarDocumento(DocumentRequest request) throws IOException {
+    public byte[] generarDocumento(DatosGeneracionDocumento request) throws IOException {
         String templatePath = obtenerRutaPlantilla(request.getTipoDocumento());
         
         // Cargar plantilla
@@ -39,32 +51,24 @@ public class DocumentGeneratorService {
             throw new IOException("Plantilla no encontrada: " + templatePath);
         }
         
-        InputStream templateStream = resource.getInputStream();
-        
-        // Crear documento desde plantilla
-        XWPFDocument document = new XWPFDocument(templateStream);
-        
-        // Reemplazar placeholders
-        reemplazarPlaceholders(document, request);
-        
-        // Convertir a bytes con codificación UTF-8
-        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-        document.write(outputStream);
-        document.close();
-        templateStream.close();
-        
-        return outputStream;
+        try (InputStream templateStream = resource.getInputStream();
+             XWPFDocument document = new XWPFDocument(templateStream)) {
+            reemplazarPlaceholders(document, request);
+            ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+            document.write(outputStream);
+            return outputStream.toByteArray();
+        }
     }
 
     /**
      * Obtener plantillas disponibles por proceso
      */
-    public List<DocumentTemplate> getTemplates(String proceso) {
-        Map<String, List<DocumentTemplate>> templates = new HashMap<>();
+    public List<PlantillaDocumento> getTemplates(String proceso) {
+        Map<String, List<PlantillaDocumento>> templates = new HashMap<>();
         
         // Plantilla de homologación
         templates.put("homologacion", Arrays.asList(
-            new DocumentTemplate(
+            new PlantillaDocumento(
                 "OFICIO_HOMOLOGACION",
                 "Oficio de Homologación",
                 "Documento oficial que aprueba la homologación de asignaturas",
@@ -75,7 +79,7 @@ public class DocumentGeneratorService {
         
         // Plantilla de paz y salvo
         templates.put("paz-salvo", Arrays.asList(
-            new DocumentTemplate(
+            new PlantillaDocumento(
                 "PAZ_SALVO",
                 "Paz y Salvo",
                 "Documento que certifica que el estudiante no tiene pendientes académicos",
@@ -86,7 +90,7 @@ public class DocumentGeneratorService {
         
         // Plantilla de reingreso
         templates.put("reingreso", Arrays.asList(
-            new DocumentTemplate(
+            new PlantillaDocumento(
                 "RESOLUCION_REINGRESO",
                 "Resolución de Reingreso",
                 "Documento que autoriza el reingreso del estudiante al programa",
@@ -107,7 +111,7 @@ public class DocumentGeneratorService {
         return rutas.getOrDefault(tipoDocumento, "templates/documento-generico.docx");
     }
 
-    private void reemplazarPlaceholders(XWPFDocument document, DocumentRequest request) {
+    private void reemplazarPlaceholders(XWPFDocument document, DatosGeneracionDocumento request) {
         Map<String, String> replacements = crearMapaReemplazos(request);
         
         // Reemplazar en párrafos
@@ -407,7 +411,7 @@ public class DocumentGeneratorService {
         int fontSize;
         String text;
     }
-    private Map<String, String> crearMapaReemplazos(DocumentRequest request) {
+    private Map<String, String> crearMapaReemplazos(DatosGeneracionDocumento request) {
         Map<String, String> replacements = new HashMap<>();
         
         // Datos del documento
@@ -450,15 +454,7 @@ public class DocumentGeneratorService {
             replacements.put("TIPO_PROCESO", "homologación de asignaturas");
             replacements.put("TITULO_DOCUMENTO", "RESOLUCIÓN DE HOMOLOGACIÓN");
             
-            // Obtener la solicitud completa desde la base de datos para acceder a los nuevos campos
-            SolicitudHomologacion solicitudHomologacion = null;
-            try {
-                if (request.getIdSolicitud() > 0) {
-                    solicitudHomologacion = solicitudHomologacionCU.buscarPorId(request.getIdSolicitud());
-                }
-            } catch (Exception e) {
-                // Si no se puede obtener la solicitud, continuar con valores del mapa
-            }
+            SolicitudHomologacion solicitudHomologacion = request.homologacion();
             
             // Cédula del estudiante: obtener desde el usuario asociado a la solicitud
             String cedulaEstudiante = "No especificada";
@@ -623,16 +619,7 @@ public class DocumentGeneratorService {
             replacements.put("TIPO_PROCESO", "reingreso al programa");
             replacements.put("TITULO_DOCUMENTO", "RESOLUCIÓN DE REINGRESO");
             
-            // Obtener la solicitud completa desde la base de datos para acceder a los datos reales
-            SolicitudReingreso solicitudReingreso = null;
-            try {
-                if (request.getIdSolicitud() > 0) {
-                    solicitudReingreso = solicitudReingresoCU.obtenerSolicitudReingresoPorId(request.getIdSolicitud());
-                }
-            } catch (Exception e) {
-                // Si no se puede obtener la solicitud, continuar con valores del mapa como fallback
-                log.warn("No se pudo obtener la solicitud de reingreso con ID: " + request.getIdSolicitud(), e);
-            }
+            SolicitudReingreso solicitudReingreso = request.reingreso();
             
             // Cédula del estudiante: obtener desde el usuario asociado a la solicitud
             String cedulaEstudiante = "No especificada";

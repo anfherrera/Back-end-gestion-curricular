@@ -50,3 +50,5 @@ package-lock.json
 
 ### Archivos Postman (opcional) ###
 *.postman_collection.json
+### Archivos subidos en tiempo de ejecución ###
+/Archivos/

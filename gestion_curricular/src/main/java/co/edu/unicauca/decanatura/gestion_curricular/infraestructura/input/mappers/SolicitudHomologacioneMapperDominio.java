@@ -37,5 +37,4 @@ public interface SolicitudHomologacioneMapperDominio {
 
     List<SolicitudHomologacionDTORespuesta> mappearListaDeSolicitudHomologacionARespuesta(List<SolicitudHomologacion> solicitudes);
 
-    List<SolicitudHomologacion> mappearListaDeSolicitudHomologacionDTOPeticionAListaDeSolicitudHomologacion(List<SolicitudHomologacionDTOPeticion> solicitudes);
 }

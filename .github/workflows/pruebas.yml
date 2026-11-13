@@ -1,0 +1,80 @@
+name: Pruebas
+
+on:
+  push:
+  pull_request:
+    branches: [main]
+
+# Si llega un push nuevo a la misma rama, se cancela la ejecución anterior
+concurrency:
+  group: pruebas-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  pruebas:
+    name: Pruebas (Java ${{ matrix.java }})
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    strategy:
+      fail-fast: false
+      matrix:
+        # 17: la versión de producción (Dockerfile). 25: la que usan los equipos de desarrollo.
+        java: ['17', '25']
+    defaults:
+      run:
+        working-directory: gestion_curricular
+
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: ${{ matrix.java }}
+          cache: maven
+
+      - name: Compilar y correr las pruebas
+        run: ./mvnw -B -ntp verify
+
+      - name: Guardar los reportes si algo falla
+        if: failure()
+        uses: actions/upload-artifact@v5
+        with:
+          name: reportes-pruebas-java-${{ matrix.java }}
+          path: gestion_curricular/target/surefire-reports/
+          retention-days: 7
+
+  migraciones-mysql:
+    name: Migraciones (MySQL 8.0)
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    services:
+      mysql:
+        image: mysql:8.0
+        env:
+          MYSQL_ROOT_PASSWORD: root
+          MYSQL_DATABASE: curricular
+          MYSQL_USER: curricular
+          MYSQL_PASSWORD: curricular
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd="mysqladmin ping -h 127.0.0.1 --silent"
+          --health-interval=5s
+          --health-timeout=5s
+          --health-retries=20
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: '17'
+          cache: maven
+      - name: Verificar arranques y persistencia
+        working-directory: gestion_curricular
+        env:
+          FLYWAY_TEST_MYSQL_URL: jdbc:mysql://127.0.0.1:3306/curricular?useSSL=false&allowPublicKeyRetrieval=true
+        run: ./mvnw -B -ntp -Dtest=MigracionesMySqlTest test

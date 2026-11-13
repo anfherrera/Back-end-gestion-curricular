@@ -1,5 +1,8 @@
 package co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Enums;
 
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 /**
  * Enum para los períodos académicos disponibles
  * Genera períodos desde 2020 en adelante con formato YYYY-P
@@ -187,7 +190,62 @@ public enum PeriodoAcademicoEnum {
             return null;
         }
     }
-    
+
+    /**
+     * El período dado, recortado, si tiene texto; si no, el valor del período actual.
+     * No valida el período dado.
+     * @return null solo si no viene y la fecha no corresponde a ningún período conocido
+     */
+    public static String oActual(String periodoAcademico) {
+        if (periodoAcademico != null && !periodoAcademico.trim().isEmpty()) {
+            return periodoAcademico.trim();
+        }
+        PeriodoAcademicoEnum actual = getPeriodoActual();
+        return actual != null ? actual.getValor() : null;
+    }
+
+    /**
+     * Escritura de verano: conserva el valor informado, sin recortarlo. Si falta,
+     * usa el actual; si la fecha queda fuera del enum, conserva también null o blanco.
+     * No se unifica con la normalización de los filtros de lectura.
+     */
+    public static String completarSiFalta(String periodoAcademico) {
+        if (periodoAcademico != null && !periodoAcademico.trim().isEmpty()) {
+            return periodoAcademico;
+        }
+        String actual = oActual(null);
+        return actual != null ? actual : periodoAcademico;
+    }
+
+    private static final Pattern ANIO = Pattern.compile("(\\d{4})");
+
+    /**
+     * Lleva a "YYYY-P" un período escrito de forma legible ("2025-2", "Segundo Período 2025", "2025 II"...).
+     * Si ya tiene ese formato se devuelve recortado; si no tiene un año de cuatro cifras, se devuelve recortado
+     * tal cual. No valida que el período exista.
+     *
+     * <p>BUG-12: el período es 2 si el texto contiene "segundo", "ii" o el dígito 2 en cualquier parte, incluido
+     * el año, así que "2025 - Primer Semestre" y "2025-3" dan "2025-2". Se conserva hasta decidir la corrección.
+     *
+     * @return null si viene null o en blanco
+     */
+    public static String normalizar(String periodo) {
+        if (periodo == null || periodo.trim().isEmpty()) {
+            return null;
+        }
+        String limpio = periodo.trim();
+        if (limpio.matches("\\d{4}-[12]")) {
+            return limpio;
+        }
+        Matcher anio = ANIO.matcher(limpio);
+        if (!anio.find()) {
+            return limpio;
+        }
+        String texto = limpio.toLowerCase();
+        boolean segundo = texto.contains("segundo") || texto.contains("2") || texto.contains("ii");
+        return anio.group(1) + "-" + (segundo ? 2 : 1);
+    }
+
     @Override
     public String toString() {
         return valor;

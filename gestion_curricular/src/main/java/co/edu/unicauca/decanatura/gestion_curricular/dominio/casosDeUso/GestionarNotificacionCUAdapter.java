@@ -1,5 +1,6 @@
 package co.edu.unicauca.decanatura.gestion_curricular.dominio.casosDeUso;
 
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Enums.EstadosSolicitud;
 import java.util.List;
 
 import lombok.extern.slf4j.Slf4j;
@@ -116,14 +117,6 @@ public class GestionarNotificacionCUAdapter implements GestionarNotificacionCUIn
     }
 
     @Override
-    public void eliminarAntiguas(Date fechaLimite) {
-        if (fechaLimite == null) {
-            throw new IllegalArgumentException("La fecha límite no puede ser nula.");
-        }
-        objGestionarNotificacionGateway.eliminarAntiguas(fechaLimite);
-    }
-
-    @Override
     public void notificarCreacionSolicitud(Solicitud solicitud, String tipoSolicitud) {
         try {
             if (solicitud == null) {
@@ -136,10 +129,7 @@ public class GestionarNotificacionCUAdapter implements GestionarNotificacionCUIn
                 return;
             }
 
-            String estadoActual = "ENVIADA";
-            if (solicitud.getEstadosSolicitud() != null && !solicitud.getEstadosSolicitud().isEmpty()) {
-                estadoActual = solicitud.getEstadosSolicitud().get(solicitud.getEstadosSolicitud().size() - 1).getEstado_actual();
-            }
+            String estadoActual = solicitud.estadoActual(EstadosSolicitud.ENVIADA.name());
 
             Notificacion notificacion = new Notificacion();
             notificacion.setTipoSolicitud(tipoSolicitud);
@@ -159,30 +149,23 @@ public class GestionarNotificacionCUAdapter implements GestionarNotificacionCUIn
             crearNotificacion(notificacion);
 
             // Notificar a funcionarios
-            notificarAFuncionariosYCoordinadores(solicitud, tipoSolicitud, estadoActual);
+            notificarAlRol(solicitud, tipoSolicitud, estadoActual, "Funcionario");
         } catch (Exception e) {
             log.error("Error al crear notificación de creación de solicitud: {}", e.getMessage(), e);
         }
     }
 
-    /**
-     * Notifica a todos los funcionarios cuando se crea una nueva solicitud (estado "Enviada")
-     * Los coordinadores y secretarias reciben notificaciones cuando cambia el estado
-     */
-    private void notificarAFuncionariosYCoordinadores(Solicitud solicitud, String tipoSolicitud, String estadoActual) {
+    private void notificarAlRol(Solicitud solicitud, String tipoSolicitud, String estadoActual, String nombreRol) {
         try {
-            Rol rolFuncionario = objGestionarRolGateway.obtenerRolPorNombre("Funcionario");
-            
-            if (rolFuncionario == null || rolFuncionario.getId_rol() == null) {
+            Rol rol = objGestionarRolGateway.obtenerRolPorNombre(nombreRol);
+            if (rol == null || rol.getId_rol() == null) {
                 return;
             }
-
-            List<Usuario> funcionarios = objGestionarUsuarioGateway.buscarUsuariosPorRol(rolFuncionario.getId_rol());
-            for (Usuario funcionario : funcionarios) {
-                crearNotificacionParaFuncionario(solicitud, tipoSolicitud, estadoActual, funcionario, "Funcionario");
+            for (Usuario destinatario : objGestionarUsuarioGateway.buscarUsuariosPorRol(rol.getId_rol())) {
+                crearNotificacionParaFuncionario(solicitud, tipoSolicitud, estadoActual, destinatario, nombreRol);
             }
-        } catch (Exception e) {
-            log.error("Error al notificar a funcionarios: {}", e.getMessage(), e);
+        } catch (RuntimeException e) {
+            log.error("Error al notificar al rol {}", nombreRol, e);
         }
     }
 
@@ -257,10 +240,10 @@ public class GestionarNotificacionCUAdapter implements GestionarNotificacionCUIn
             estadoAnterior + " → " + estadoNuevo;
         
         // Agregar información adicional según el estado
-        if ("APROBADA".equals(estadoNuevo) || "APROBADA_COORDINADOR".equals(estadoNuevo) || "APROBADA_FUNCIONARIO".equals(estadoNuevo)) {
+        if (EstadosSolicitud.APROBADA.name().equals(estadoNuevo) || EstadosSolicitud.APROBADA_COORDINADOR.name().equals(estadoNuevo) || EstadosSolicitud.APROBADA_FUNCIONARIO.name().equals(estadoNuevo)) {
             notificacion.setEsUrgente(true);
             mensaje += ". ¡Su solicitud ha sido aprobada!";
-        } else if ("RECHAZADA".equals(estadoNuevo)) {
+        } else if (EstadosSolicitud.RECHAZADA.name().equals(estadoNuevo)) {
             notificacion.setEsUrgente(true);
             mensaje += ". Su solicitud ha sido rechazada. Por favor, revise los detalles.";
         }
@@ -278,55 +261,13 @@ public class GestionarNotificacionCUAdapter implements GestionarNotificacionCUIn
         crearNotificacion(notificacion);
 
         // Notificar a coordinadores cuando el funcionario aprueba (estado: APROBADA_FUNCIONARIO)
-        if ("APROBADA_FUNCIONARIO".equals(estadoNuevo)) {
-            notificarACoordinadores(solicitud, tipoSolicitud, estadoNuevo);
+        if (EstadosSolicitud.APROBADA_FUNCIONARIO.name().equals(estadoNuevo)) {
+            notificarAlRol(solicitud, tipoSolicitud, estadoNuevo, "Coordinador");
         }
 
         // Notificar a secretarias cuando el coordinador aprueba (estado: APROBADA_COORDINADOR)
-        if ("APROBADA_COORDINADOR".equals(estadoNuevo)) {
-            notificarASecretarias(solicitud, tipoSolicitud, estadoNuevo);
-        }
-    }
-
-    /**
-     * Notifica a todos los coordinadores cuando una solicitud es aprobada por un funcionario
-     */
-    private void notificarACoordinadores(Solicitud solicitud, String tipoSolicitud, String estadoActual) {
-        try {
-            Rol rolCoordinador = objGestionarRolGateway.obtenerRolPorNombre("Coordinador");
-            
-            if (rolCoordinador == null || rolCoordinador.getId_rol() == null) {
-                return;
-            }
-            
-            List<Usuario> coordinadores = objGestionarUsuarioGateway.buscarUsuariosPorRol(rolCoordinador.getId_rol());
-            for (Usuario coordinador : coordinadores) {
-                crearNotificacionParaFuncionario(solicitud, tipoSolicitud, estadoActual, coordinador, "Coordinador");
-            }
-        } catch (Exception e) {
-            log.error("Error al notificar a coordinadores: {}", e.getMessage(), e);
-        }
-    }
-
-    /**
-     * Notifica a todas las secretarias cuando una solicitud es aprobada por un coordinador
-     */
-    private void notificarASecretarias(Solicitud solicitud, String tipoSolicitud, String estadoActual) {
-        try {
-            // El rol en la BD es "Secretario" (masculino)
-            Rol rolSecretaria = objGestionarRolGateway.obtenerRolPorNombre("Secretario");
-            
-            if (rolSecretaria == null || rolSecretaria.getId_rol() == null) {
-                return;
-            }
-            
-            List<Usuario> secretarias = objGestionarUsuarioGateway.buscarUsuariosPorRol(rolSecretaria.getId_rol());
-            for (Usuario secretaria : secretarias) {
-                crearNotificacionParaFuncionario(solicitud, tipoSolicitud, estadoActual, secretaria, "Secretario");
-            }
-        } catch (Exception e) {
-            log.error("Error al notificar a secretarios/secretarias: {}", e.getMessage(), e);
+        if (EstadosSolicitud.APROBADA_COORDINADOR.name().equals(estadoNuevo)) {
+            notificarAlRol(solicitud, tipoSolicitud, estadoNuevo, "Secretario");
         }
     }
 }
-

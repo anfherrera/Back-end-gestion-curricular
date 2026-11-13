@@ -99,15 +99,6 @@ public class GestionarProgramasCUAdapter implements GestionarProgramasCUIntPort 
     }
 
     @Override
-    public boolean existeProgramaPorCodigo(String codigo) {
-        if (codigo == null || codigo.isBlank()) {
-            formateadorResultados.retornarRespuestaErrorEntidadExiste("Debe proporcionar un código válido.");
-        }
-
-        return programasGateway.existeProgramaPorCodigo(codigo);
-    }
-
-    @Override
     public List<Programa> buscarPorNombreParcial(String nombreParcial) {
         if (nombreParcial == null || nombreParcial.isBlank()) {
             formateadorResultados.retornarRespuestaErrorEntidadExiste("Debe proporcionar un nombre parcial.");

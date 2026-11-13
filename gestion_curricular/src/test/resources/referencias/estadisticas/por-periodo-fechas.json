@@ -1,0 +1,29 @@
+{
+  "fechaFin" : 1751295600000,
+  "fechaInicio" : 1735743600000,
+  "porEstado" : {
+    "APROBADA" : 3,
+    "APROBADA_COORDINADOR" : 1,
+    "APROBADA_FUNCIONARIO" : 0,
+    "ENVIADA" : 2,
+    "RECHAZADA" : 1
+  },
+  "porPrograma" : {
+    "Ingeniería Civil" : 1,
+    "Ingeniería Electrónica" : 2,
+    "Ingeniería de Sistemas" : 4
+  },
+  "porTipoProceso" : {
+    "Cursos de Verano" : 2,
+    "ECAES" : 1,
+    "Homologacion" : 2,
+    "Paz y Salvo" : 1,
+    "Reingreso" : 1
+  },
+  "porcentajeAprobacion" : 42.9,
+  "totalAprobadas" : 3,
+  "totalEnProceso" : 1,
+  "totalEnviadas" : 2,
+  "totalRechazadas" : 1,
+  "totalSolicitudes" : 7
+}

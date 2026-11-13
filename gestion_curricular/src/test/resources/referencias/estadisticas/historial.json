@@ -1,0 +1,49 @@
+[ {
+  "anio" : 2025,
+  "descripcion" : "Segundo Semestre 2025",
+  "fechaFin" : 1767157200000,
+  "fechaInicio" : 1751346000000,
+  "periodo" : "2025-2",
+  "porcentajeAprobacion" : 20.0,
+  "semestre" : 2,
+  "totalAprobadas" : 1,
+  "totalEnProceso" : 0,
+  "totalRechazadas" : 3,
+  "totalSolicitudes" : 5
+}, {
+  "anio" : 2025,
+  "descripcion" : "Primer Semestre 2025",
+  "fechaFin" : 1751259600000,
+  "fechaInicio" : 1735707600000,
+  "periodo" : "2025-1",
+  "porcentajeAprobacion" : 42.9,
+  "semestre" : 1,
+  "totalAprobadas" : 3,
+  "totalEnProceso" : 1,
+  "totalRechazadas" : 1,
+  "totalSolicitudes" : 7
+}, {
+  "anio" : 2024,
+  "descripcion" : "Segundo Semestre 2024",
+  "fechaFin" : 1735621200000,
+  "fechaInicio" : 1719810000000,
+  "periodo" : "2024-2",
+  "porcentajeAprobacion" : 50.0,
+  "semestre" : 2,
+  "totalAprobadas" : 1,
+  "totalEnProceso" : 0,
+  "totalRechazadas" : 0,
+  "totalSolicitudes" : 2
+}, {
+  "anio" : 2024,
+  "descripcion" : "Primer Semestre 2024",
+  "fechaFin" : 1719723600000,
+  "fechaInicio" : 1704085200000,
+  "periodo" : "2024-1",
+  "porcentajeAprobacion" : 0.0,
+  "semestre" : 1,
+  "totalAprobadas" : 0,
+  "totalEnProceso" : 0,
+  "totalRechazadas" : 0,
+  "totalSolicitudes" : 0
+} ]

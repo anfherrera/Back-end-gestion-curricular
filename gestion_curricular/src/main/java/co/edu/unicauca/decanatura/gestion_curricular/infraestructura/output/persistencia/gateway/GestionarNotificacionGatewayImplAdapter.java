@@ -216,10 +216,5 @@ public class GestionarNotificacionGatewayImplAdapter implements GestionarNotific
         notificacionRepository.marcarComoLeida(idNotificacion);
     }
 
-    @Override
-    @Transactional
-    public void eliminarAntiguas(java.util.Date fechaLimite) {
-        notificacionRepository.eliminarAntiguas(fechaLimite);
-    }
 }
 

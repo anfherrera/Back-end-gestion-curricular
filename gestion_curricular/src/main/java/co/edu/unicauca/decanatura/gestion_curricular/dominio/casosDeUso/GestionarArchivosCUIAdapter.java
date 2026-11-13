@@ -1,6 +1,6 @@
 package co.edu.unicauca.decanatura.gestion_curricular.dominio.casosDeUso;
 
-import org.springframework.web.multipart.MultipartFile;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.ArchivoSubido;
 
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarArchivosCUIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.FormateadorResultadosIntPort;
@@ -18,7 +18,7 @@ public class GestionarArchivosCUIAdapter implements GestionarArchivosCUIntPort {
     
 
     @Override
-    public String saveFile(MultipartFile file, String name, String fileType) {
+    public String saveFile(ArchivoSubido file, String name, String fileType) {
         String filename = null;
         if(file == null){
             this.objFormateadorResultados.retornarRespuestaErrorReglaDeNegocio("el archivo no puede ser nulo");
@@ -39,7 +39,7 @@ public class GestionarArchivosCUIAdapter implements GestionarArchivosCUIntPort {
     }
 
     @Override
-    public String saveFile(MultipartFile file, String name, String fileType, String tipoSolicitud, Integer idSolicitud) {
+    public String saveFile(ArchivoSubido file, String name, String fileType, String tipoSolicitud, Integer idSolicitud) {
         String filename = null;
         if (file == null) {
             this.objFormateadorResultados.retornarRespuestaErrorReglaDeNegocio("el archivo no puede ser nulo");

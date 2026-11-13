@@ -1,0 +1,158 @@
+{
+  "caso-0" : {
+    "http" : 200,
+    "json" : [ {
+      "tipo" : "Preinscripcion",
+      "codigo" : "N/A",
+      "estado" : "Enviada",
+      "codigoMateria" : null,
+      "grupoCurso" : null,
+      "nombreCompleto" : "Usuario no disponible",
+      "motivoSolicitud" : "Curso de prueba",
+      "condicion" : "PRIMERA_VEZ",
+      "fecha" : "2025-07-01T12:00:00.000+00:00",
+      "idMateria" : null,
+      "curso" : "Curso no disponible",
+      "idCurso" : null,
+      "id" : 91
+    } ]
+  },
+  "caso-1" : {
+    "http" : 200,
+    "json" : [ {
+      "tipo" : "Preinscripcion",
+      "codigo" : "N/A",
+      "estado" : "Enviada",
+      "codigoMateria" : null,
+      "grupoCurso" : null,
+      "nombreCompleto" : "Usuario no disponible",
+      "motivoSolicitud" : "Curso de prueba",
+      "condicion" : "PRIMERA_VEZ",
+      "fecha" : "2025-07-01T12:00:00.000+00:00",
+      "idMateria" : null,
+      "curso" : "Curso no disponible",
+      "idCurso" : null,
+      "id" : 91
+    } ]
+  },
+  "caso-2" : {
+    "http" : 200,
+    "json" : [ {
+      "tipo" : "Preinscripcion",
+      "codigo" : "N/A",
+      "estado" : "Enviada",
+      "codigoMateria" : null,
+      "grupoCurso" : null,
+      "nombreCompleto" : "Usuario no disponible",
+      "motivoSolicitud" : "Curso de prueba",
+      "condicion" : "PRIMERA_VEZ",
+      "fecha" : "2025-07-01T12:00:00.000+00:00",
+      "idMateria" : null,
+      "curso" : "Curso no disponible",
+      "idCurso" : null,
+      "id" : 91
+    } ]
+  },
+  "caso-3" : {
+    "http" : 200,
+    "json" : [ {
+      "tipo" : "Preinscripcion",
+      "codigo" : "N/A",
+      "estado" : "Enviada",
+      "codigoMateria" : null,
+      "grupoCurso" : null,
+      "nombreCompleto" : "Usuario no disponible",
+      "motivoSolicitud" : "Curso de prueba",
+      "condicion" : "PRIMERA_VEZ",
+      "fecha" : "2025-07-01T12:00:00.000+00:00",
+      "idMateria" : null,
+      "curso" : "Curso no disponible",
+      "idCurso" : null,
+      "id" : 91
+    } ]
+  },
+  "caso-4" : {
+    "http" : 200,
+    "json" : [ ]
+  },
+  "caso-5" : {
+    "http" : 200,
+    "json" : [ {
+      "tipo" : "Preinscripcion",
+      "codigo" : "N/A",
+      "estado" : "Enviada",
+      "codigoMateria" : null,
+      "grupoCurso" : null,
+      "nombreCompleto" : "Usuario no disponible",
+      "motivoSolicitud" : "Curso de prueba",
+      "condicion" : "PRIMERA_VEZ",
+      "fecha" : "2025-07-01T12:00:00.000+00:00",
+      "idMateria" : null,
+      "curso" : "Curso no disponible",
+      "idCurso" : null,
+      "id" : 91
+    } ]
+  },
+  "caso-6" : {
+    "http" : 200,
+    "json" : [ {
+      "tipo" : "Preinscripcion",
+      "codigo" : "N/A",
+      "estado" : "Enviada",
+      "codigoMateria" : null,
+      "grupoCurso" : null,
+      "nombreCompleto" : "Usuario no disponible",
+      "motivoSolicitud" : "Curso de prueba",
+      "condicion" : "PRIMERA_VEZ",
+      "fecha" : "2025-07-01T12:00:00.000+00:00",
+      "idMateria" : null,
+      "curso" : "Curso no disponible",
+      "idCurso" : null,
+      "id" : 91
+    } ]
+  },
+  "caso-7" : {
+    "http" : 200,
+    "json" : [ {
+      "tipo" : "Preinscripcion",
+      "codigo" : "N/A",
+      "estado" : "Enviada",
+      "codigoMateria" : null,
+      "grupoCurso" : null,
+      "nombreCompleto" : "Usuario no disponible",
+      "motivoSolicitud" : "Curso de prueba",
+      "condicion" : "PRIMERA_VEZ",
+      "fecha" : "2025-07-01T12:00:00.000+00:00",
+      "idMateria" : null,
+      "curso" : "Curso no disponible",
+      "idCurso" : null,
+      "id" : 91
+    } ]
+  },
+  "caso-8" : {
+    "http" : 200,
+    "json" : [ ]
+  },
+  "caso-9" : {
+    "http" : 200,
+    "json" : [ {
+      "tipo" : "Preinscripcion",
+      "codigo" : "N/A",
+      "estado" : "Enviada",
+      "codigoMateria" : null,
+      "grupoCurso" : null,
+      "nombreCompleto" : "Usuario no disponible",
+      "motivoSolicitud" : "Curso de prueba",
+      "condicion" : "PRIMERA_VEZ",
+      "fecha" : "2025-07-01T12:00:00.000+00:00",
+      "idMateria" : null,
+      "curso" : "Curso no disponible",
+      "idCurso" : null,
+      "id" : 91
+    } ]
+  },
+  "caso-10" : {
+    "http" : 200,
+    "json" : [ ]
+  }
+}

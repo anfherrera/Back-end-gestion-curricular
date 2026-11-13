@@ -42,11 +42,6 @@ public interface SolicitudMapperDominio {
     @Mapping(target = "documentos", ignore = true)
     Solicitud mappearDeSolicitudDTOPeticionASolicitud(SolicitudDTOPeticion peticion);
 
-    List<Solicitud> mappearListaDeSolicitudDTOPeticionAListaSolicitud(List<SolicitudDTOPeticion> peticiones);
-
-    //Cambio para la actualizacion del estado de la solicitud
-    CambioEstadoSolicitudDTOPeticion mappearDeCambioEstadoSolicitudACambioEstadoSolicitudDTOPeticion(CambioEstadoSolicitud solicitudPeticion);
-
     CambioEstadoSolicitud mappearDeCambioEstadoSolicitudDTOPeticionACambioEstadoSolicitud(CambioEstadoSolicitudDTOPeticion solicitudPeticion);
 
 }

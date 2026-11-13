@@ -2,6 +2,9 @@ package co.edu.unicauca.decanatura.gestion_curricular.cursosverano;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.itextpdf.text.pdf.PdfReader;
+import com.itextpdf.text.pdf.parser.PdfTextExtractor;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.entidades.ProgramaEntity;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.entidades.RolEntity;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.entidades.UsuarioEntity;
@@ -15,11 +18,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -51,6 +57,9 @@ class GestionCursosVeranoFuncionalTest {
 
     @Autowired
     private ObjectMapper objectMapper;
+
+    @Autowired
+    private JdbcTemplate jdbc;
 
     @Autowired
     private UsuarioRepositoryInt usuarioRepository;
@@ -132,6 +141,17 @@ class GestionCursosVeranoFuncionalTest {
         });
     }
 
+    /** Estudiante propio de una prueba: un estudiante solo puede preinscribirse a sí mismo y una vez por curso. */
+    private record EstudiantePrueba(int id, String token) {}
+
+    private EstudiantePrueba estudiantePropio(String sufijo) throws Exception {
+        String correo = "estudiante." + sufijo + "@unicauca.edu.co";
+        ProgramaEntity programa = programaRepository.buscarPorCodigo(TEST_PROGRAMA_CODIGO).orElseThrow();
+        RolEntity rol = rolRepository.buscarPorNombre("Estudiante").orElseThrow();
+        crearUsuarioSiNoExiste(correo, "EP" + Math.abs(sufijo.hashCode() % 1_000_000), "Estudiante " + sufijo, rol, programa);
+        int id = usuarioRepository.buscarPorCorreo(correo).orElseThrow().getId_usuario();
+        return new EstudiantePrueba(id, "Bearer " + obtenerToken(correo));
+    }
     private String obtenerToken(String correo) throws Exception {
         String loginRequest = """
             {
@@ -216,16 +236,17 @@ class GestionCursosVeranoFuncionalTest {
                 .andExpect(status().isOk());
 
         // Paso 2: Realizar preinscripción (usando usuario 6 para evitar duplicados)
+        EstudiantePrueba estudiante = estudiantePropio("flujo-preinscripcion");
         String jsonPreinscripcion = """
             {
-                "idUsuario": 6,
+                "idUsuario": %d,
                 "idCurso": 1,
                 "fecha_solicitud": "2025-01-15"
             }
-            """;
+            """.formatted(estudiante.id());
 
         mockMvc.perform(post("/api/cursos-intersemestrales/solicitudes/preinscripcion")
-                        .header("Authorization", tokenEstudiante)
+                        .header("Authorization", estudiante.token())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(jsonPreinscripcion))
                 .andExpect(status().isCreated());
@@ -369,16 +390,17 @@ class GestionCursosVeranoFuncionalTest {
                 .andExpect(jsonPath("$.idCurso").value(1));
 
         // Paso 3: Realizar preinscripción
+        EstudiantePrueba estudiante = estudiantePropio("oferta-a-preinscripcion");
         String jsonPreinscripcion = """
             {
-                "idUsuario": 7,
+                "idUsuario": %d,
                 "idCurso": 1,
                 "fecha_solicitud": "2025-01-15"
             }
-            """;
+            """.formatted(estudiante.id());
 
         mockMvc.perform(post("/api/cursos-intersemestrales/solicitudes/preinscripcion")
-                        .header("Authorization", tokenEstudiante)
+                        .header("Authorization", estudiante.token())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(jsonPreinscripcion))
                 .andExpect(status().isCreated());
@@ -418,5 +440,165 @@ class GestionCursosVeranoFuncionalTest {
                         .header("Authorization", tokenEstudiante))
                 .andExpect(status().isOk());
     }
+    @Test
+    void crearCursoRechazaFechasInvertidas() throws Exception {
+        mockMvc.perform(post("/api/cursos-intersemestrales/cursos-verano")
+                        .header("Authorization", tokenCoordinador)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(peticionCrearCurso("2025-07-01")))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.error").value("Fechas inválidas"))
+                .andExpect(jsonPath("$.message").value("La fecha de fin debe ser posterior a la fecha de inicio"));
+    }
+
+    @Test
+    @Transactional
+    void crearCursoConservaRespuestaYResuelveElSalonPorId() throws Exception {
+        registrarMateriaYDocenteDePrueba();
+        jdbc.update("INSERT INTO Salones(idSalon, numero_salon, activo) VALUES (901, 'REF-901', true)");
+
+        ObjectNode peticion = (ObjectNode) objectMapper.readTree(peticionCrearCurso("2025-08-01"));
+        peticion.put("id_materia", 901);
+        peticion.put("id_docente", 901);
+        peticion.put("id_salon", 901);
+
+        mockMvc.perform(post("/api/cursos-intersemestrales/cursos-verano")
+                        .header("Authorization", tokenCoordinador)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(peticion)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id_curso").isNumber())
+                .andExpect(jsonPath("$.nombre_curso").value("Materia de prueba"))
+                .andExpect(jsonPath("$.espacio_asignado").value("REF-901"))
+                .andExpect(jsonPath("$.fecha_inicio").value("2025-07-02"))
+                .andExpect(jsonPath("$.fecha_fin").value("2025-08-01"))
+                .andExpect(jsonPath("$.periodo").value("2025-2"))
+                .andExpect(jsonPath("$.estado").value("Abierto"));
+    }
+
+    @Test
+    void crearCursoConservaCodigoDeCursoDuplicado() throws Exception {
+        mockMvc.perform(post("/api/cursos-intersemestrales/cursos-verano")
+                        .header("Authorization", tokenCoordinador)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(peticionCrearCurso("2025-08-01")))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.error").value("Curso duplicado"))
+                .andExpect(jsonPath("$.codigo").value("CURSO_DUPLICADO"));
+    }
+
+    private String peticionCrearCurso(String fechaFin) {
+        return """
+                {
+                  "id_materia": 1,
+                  "id_docente": 1,
+                  "cupo_estimado": 30,
+                  "fecha_inicio": "2025-07-02",
+                  "fecha_fin": "%s",
+                  "periodoAcademico": " 2025-2 ",
+                  "espacio_asignado": "221",
+                  "grupo": " a "
+                }
+                """.formatted(fechaFin);
+    }
+
+    @Test
+    void listarEstudiantesDeCursoVacio() throws Exception {
+        mockMvc.perform(get("/api/cursos-intersemestrales/cursos-verano/2/estudiantes")
+                        .header("Authorization", tokenCoordinador))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.total_estudiantes").value(0))
+                .andExpect(jsonPath("$.total_preinscritos").value(0))
+                .andExpect(jsonPath("$.total_inscritos").value(0))
+                .andExpect(jsonPath("$.estudiantes").isEmpty());
+    }
+
+    @Test
+    @Transactional
+    void listarEstudiantesConPreinscripcionEInscripcion() throws Exception {
+        registrarMateriaYDocenteDePrueba();
+        jdbc.update("""
+                INSERT INTO Cursos_ofertados(idCurso, idfkMateria, idfkDocente, grupo, cupo_estimado, salon)
+                VALUES (901, 901, 901, 'A', 30, 'REF-901')
+                """);
+        registrarSolicitudVerano(901, 1, false);
+        registrarSolicitudVerano(902, 1, true);
+        registrarSolicitudVerano(903, 5, false);
+        registrarSolicitudVerano(904, 26, true);
+        jdbc.update("""
+                INSERT INTO EstadosSolicitudes(idfkSolicitud, fecha_registro_estado, estado_actual)
+                VALUES (902, '2025-07-03 08:00:00', 'Pago_Validado')
+                """);
+
+        mockMvc.perform(get("/api/cursos-intersemestrales/cursos-verano/901/estudiantes")
+                        .header("Authorization", tokenCoordinador))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.total_estudiantes").value(3))
+                .andExpect(jsonPath("$.total_preinscritos").value(2))
+                .andExpect(jsonPath("$.total_inscritos").value(1))
+                .andExpect(jsonPath("$.estudiantes[0].id_usuario").value(26))
+                .andExpect(jsonPath("$.estudiantes[0].tiene_preinscripcion").value(false))
+                .andExpect(jsonPath("$.estudiantes[0].estado_inscripcion").value("Enviada"))
+                .andExpect(jsonPath("$.estudiantes[0].estado_preinscripcion").hasJsonPath())
+                .andExpect(jsonPath("$.estudiantes[0].estado_preinscripcion").doesNotExist())
+                .andExpect(jsonPath("$.estudiantes[0].fecha_inscripcion").exists())
+                .andExpect(jsonPath("$.estudiantes[0].fecha_preinscripcion").doesNotHaveJsonPath())
+                .andExpect(jsonPath("$.estudiantes[0].tiene_inscripcion").doesNotHaveJsonPath())
+                .andExpect(jsonPath("$.estudiantes[1].id_usuario").value(1))
+                .andExpect(jsonPath("$.estudiantes[1].id_solicitud_inscripcion").value(902))
+                .andExpect(jsonPath("$.estudiantes[1].tipo").value("Inscrito"))
+                .andExpect(jsonPath("$.estudiantes[1].id_programa").value(1))
+                .andExpect(jsonPath("$.estudiantes[1].tiene_inscripcion").value(true))
+                .andExpect(jsonPath("$.estudiantes[1].fecha_inscripcion").doesNotHaveJsonPath())
+                .andExpect(jsonPath("$.estudiantes[1].tiene_preinscripcion").doesNotHaveJsonPath())
+                .andExpect(jsonPath("$.estudiantes[2].id_usuario").value(5))
+                .andExpect(jsonPath("$.estudiantes[2].estado_inscripcion").value("Sin inscripción"))
+                .andExpect(jsonPath("$.estudiantes[2].tipo").value("Preinscrito"))
+                .andExpect(jsonPath("$.estudiantes[2].id_solicitud_inscripcion").hasJsonPath())
+                .andExpect(jsonPath("$.estudiantes[2].id_solicitud_inscripcion").doesNotExist());
+
+        byte[] respuesta = mockMvc.perform(get("/api/cursos-intersemestrales/inscripciones")
+                        .header("Authorization", tokenCoordinador))
+                .andExpect(status().isOk())
+                .andReturn().getResponse().getContentAsByteArray();
+        var fila = java.util.stream.StreamSupport.stream(new com.fasterxml.jackson.databind.ObjectMapper()
+                        .readTree(respuesta).spliterator(), false)
+                .filter(inscripcion -> inscripcion.path("id").asInt() == 902)
+                .findFirst().orElseThrow();
+        assertThat(fila.path("cursoId").asInt()).isEqualTo(901);
+        assertThat(fila.path("estudiante").path("id_usuario").asInt()).isEqualTo(1);
+        assertThat(fila.path("archivoPago").path("nombre").asText()).isEqualTo("Sin comprobante");
+        assertThat(fila.path("archivoPago").path("url").isNull()).isTrue();
+
+        byte[] pdf = mockMvc.perform(get("/api/cursos-intersemestrales/cursos-verano/901/estudiantes/export/pdf")
+                        .header("Authorization", tokenCoordinador))
+                .andExpect(status().isOk())
+                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_PDF))
+                .andReturn().getResponse().getContentAsByteArray();
+        PdfReader lector = new PdfReader(pdf);
+        try {
+            assertThat(PdfTextExtractor.getTextFromPage(lector, 1))
+                    .contains("REF901", "Total Estudiantes: 3", "Juan Pérez", "Pago_Validado");
+        } finally {
+            lector.close();
+        }
+    }
+
+    private void registrarMateriaYDocenteDePrueba() {
+        jdbc.update("INSERT INTO Materias(idMateria, codigo, nombre, creditos) VALUES (901, 'REF901', 'Materia de prueba', 3)");
+        jdbc.update("INSERT INTO Docentes(idDocente, codigo_docente, nombre_docente) VALUES (901, 'REF901', 'Docente de prueba')");
+    }
+
+    private void registrarSolicitudVerano(int id, int idUsuario, boolean inscripcion) {
+        jdbc.update("""
+                INSERT INTO Solicitudes(idSolicitud, idUsuario, idCurso, fecha_registro_solicitud,
+                                        periodo_academico, nombre_solicitud)
+                VALUES (?, ?, 901, '2025-07-02 08:00:00', '2025-2', 'Curso de verano')
+                """, id, idUsuario);
+        String tabla = inscripcion ? "Solicitudes_Cursos_Verano_Inscripcion" : "Solicitudes_Cursos_Verano_Preinscripcion";
+        jdbc.update("INSERT INTO " + tabla
+                + "(idSolicitud, nombre_estudiante, observacion, codicion_solicitud) VALUES (?, 'Prueba', '', 'Primera_Vez')", id);
+    }
+
 }
 

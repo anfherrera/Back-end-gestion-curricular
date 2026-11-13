@@ -99,15 +99,6 @@ public class GestionarDocentesCUAdapter implements GestionarDocentesCUIntPort {
     }
 
     @Override
-    public boolean existeDocentePorCodigo(String codigo) {
-        if (codigo == null || codigo.isBlank()) {
-            formateadorResultados.retornarRespuestaErrorEntidadExiste("Debe proporcionar un código válido.");
-        }
-
-        return docentesGateway.existeDocentePorCodigo(codigo);
-    }
-
-    @Override
     public List<Docente> buscarPorNombreParcial(String nombreParcial) {
         if (nombreParcial == null || nombreParcial.isBlank()) {
             formateadorResultados.retornarRespuestaErrorEntidadExiste("Debe proporcionar un nombre parcial.");

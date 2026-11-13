@@ -91,29 +91,6 @@ public interface CursosOfertadosMapperDominio {
     @Named("mappearDeCursoOfertadoARespuestaDisponible")
     CursosOfertadosDTORespuesta mappearDeCursoOfertadoARespuestaDisponible(CursoOfertadoVerano curso);
 
-    // Listas - mapeo manual para evitar problemas con métodos auxiliares
-    default List<CursosOfertadosDTORespuesta> mappearListaDeCursoOfertadoARespuesta(List<CursoOfertadoVerano> cursos) {
-        if (cursos == null) {
-            return null;
-        }
-        return cursos.stream()
-                .map(this::mappearDeCursoOfertadoARespuesta)
-                .map(this::postMapCurso) // Asignar idCurso
-                .collect(java.util.stream.Collectors.toList());
-    }
-    
-    default List<CursosOfertadosDTORespuesta> mappearListaDeCursoOfertadoARespuestaDisponible(List<CursoOfertadoVerano> cursos) {
-        if (cursos == null) {
-            return null;
-        }
-        return cursos.stream()
-                .map(this::mappearDeCursoOfertadoARespuestaDisponible)
-                .map(this::postMapCurso) // Asignar idCurso
-                .collect(java.util.stream.Collectors.toList());
-    }
-    
-    List<CursoOfertadoVerano> mappearListaDeDTOPeticionACursoOfertado(List<CursosOfertadosDTOPeticion> peticiones);
-    
     // Métodos auxiliares para mapear datos reales
     @Named("crearDescripcion")
     default String crearDescripcion(String nombreMateria) {

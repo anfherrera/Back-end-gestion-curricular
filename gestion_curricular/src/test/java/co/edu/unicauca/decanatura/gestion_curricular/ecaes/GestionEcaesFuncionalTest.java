@@ -10,6 +10,10 @@ import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 
+import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.repositorios.SolicitudRepositoryInt;
+import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.repositorios.UsuarioRepositoryInt;
+import co.edu.unicauca.decanatura.gestion_curricular.soporte.SolicitudesDePrueba;
+
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -39,12 +43,26 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest
 @AutoConfigureMockMvc(addFilters = false)
 @ActiveProfiles("test")
-@WithMockUser(roles = { "SECRETARIA", "FUNCIONARIO", "COORDINADOR", "ESTUDIANTE" })
+@WithMockUser(username = "juan.perez@unicauca.edu.co", roles = { "Secretario", "Funcionario", "Coordinador", "Estudiante" })
 @DisplayName("Pruebas Funcionales - Gestión de ECAES")
 class GestionEcaesFuncionalTest {
 
     @Autowired
     private MockMvc mockMvc;
+
+    @Autowired
+    private SolicitudRepositoryInt solicitudRepository;
+
+    @Autowired
+    private UsuarioRepositoryInt usuarioRepository;
+
+    private SolicitudesDePrueba solicitudes() {
+        return new SolicitudesDePrueba(solicitudRepository, usuarioRepository);
+    }
+
+    private static String cambioEstado(int idSolicitud, String nuevoEstado) {
+        return "{\"idSolicitud\": %d, \"nuevoEstado\": \"%s\"}".formatted(idSolicitud, nuevoEstado);
+    }
 
     // ==================== FLUJO 1: PUBLICACIÓN DE FECHAS POR SECRETARIO ====================
 
@@ -220,12 +238,7 @@ class GestionEcaesFuncionalTest {
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON));
 
         // Paso 3: Secretario cambia estado a "preRegistrado" (usando ID 6 que existe en BD de test)
-        String jsonCambioEstado = """
-            {
-                "idSolicitud": 6,
-                "nuevoEstado": "preRegistrado"
-            }
-            """;
+        String jsonCambioEstado = cambioEstado(solicitudes().ecaes("Enviada"), "preRegistrado");
         
         mockMvc.perform(put("/api/solicitudes-ecaes/actualizarEstadoSolicitud")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -337,12 +350,7 @@ class GestionEcaesFuncionalTest {
                 .andExpect(status().isOk());
 
         // Paso 5: Secretario realiza preRegistro (usando ID 5 que existe en BD de test)
-        String jsonPreRegistro = """
-            {
-                "idSolicitud": 5,
-                "nuevoEstado": "preRegistrado"
-            }
-            """;
+        String jsonPreRegistro = cambioEstado(solicitudes().ecaes("Enviada"), "preRegistrado");
         
         mockMvc.perform(put("/api/solicitudes-ecaes/actualizarEstadoSolicitud")
                         .contentType(MediaType.APPLICATION_JSON)

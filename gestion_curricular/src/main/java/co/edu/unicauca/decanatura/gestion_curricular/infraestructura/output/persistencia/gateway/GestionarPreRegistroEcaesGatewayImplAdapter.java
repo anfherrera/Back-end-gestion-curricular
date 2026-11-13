@@ -12,7 +12,7 @@ import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.Gestionar
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.EstadoSolicitud;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.FechaEcaes;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.SolicitudEcaes;
-import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.controladorExcepciones.excepcionesPropias.EntidadNoExisteException;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.excepciones.EntidadNoExisteException;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.entidades.EstadoSolicitudEntity;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.entidades.FechaEcaesEntity;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.entidades.SolicitudEcaesEntity;
@@ -55,37 +55,19 @@ public class GestionarPreRegistroEcaesGatewayImplAdapter implements GestionarPre
     }
 
     @Override
-    public List<SolicitudEcaes> listarSolicitudesToFuncionario() {
-        return solicitudEcaesRepository.findByUltimoEstado("Enviada") .stream()
-            .map(entity -> mapper.map(entity, SolicitudEcaes.class))
-            .collect(Collectors.toList());
+    public List<SolicitudEcaes> listarPorUsuario(Integer idUsuario, String periodo) {
+        return aDominio(solicitudEcaesRepository.findByUsuarioYPeriodo(idUsuario, periodo));
     }
 
     @Override
-    public List<SolicitudEcaes> listarSolicitudesToFuncionarioPorPeriodo(String periodoAcademico) {
-        return solicitudEcaesRepository.findByUltimoEstadoAndPeriodoAcademico("Enviada", periodoAcademico).stream()
-                .map(entity -> mapper.map(entity, SolicitudEcaes.class))
-                .collect(Collectors.toList());
+    public List<SolicitudEcaes> listarPorUltimoEstado(String estado, Integer idPrograma, String periodo) {
+        return aDominio(idPrograma == null
+                ? solicitudEcaesRepository.findByUltimoEstadoAndPeriodoAcademico(estado, periodo)
+                : solicitudEcaesRepository.findByUltimoEstadoAndProgramaAndPeriodoAcademico(estado, idPrograma, periodo));
     }
 
-    @Override
-    public List<SolicitudEcaes> listarSolicitudesToCoordinadorPorProgramaYPeriodo(Integer idPrograma, String periodoAcademico) {
-        if (idPrograma == null) {
-            return listar();
-        }
-        return solicitudEcaesRepository.findByUltimoEstadoAndProgramaAndPeriodoAcademico("APROBADA_FUNCIONARIO", idPrograma, periodoAcademico).stream()
-                .map(entity -> mapper.map(entity, SolicitudEcaes.class))
-                .collect(Collectors.toList());
-    }
-
-    @Override
-    public List<SolicitudEcaes> listarSolicitudesPorUsuarioYPeriodo(Integer idUsuario, String periodoAcademico) {
-        // Para estudiantes, buscamos todas las solicitudes del usuario (sin filtro de estado)
-        // pero filtramos por período académico
-        return solicitudEcaesRepository.findAll().stream()
-                .filter(entity -> entity.getObjUsuario() != null && 
-                                 entity.getObjUsuario().getId_usuario().equals(idUsuario) &&
-                                 (periodoAcademico == null || periodoAcademico.equals(entity.getPeriodo_academico())))
+    private List<SolicitudEcaes> aDominio(List<SolicitudEcaesEntity> entidades) {
+        return entidades.stream()
                 .map(entity -> mapper.map(entity, SolicitudEcaes.class))
                 .collect(Collectors.toList());
     }

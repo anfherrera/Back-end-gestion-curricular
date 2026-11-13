@@ -49,9 +49,5 @@ public interface NotificacionRepositoryInt extends JpaRepository<NotificacionEnt
     @Query("UPDATE NotificacionEntity n SET n.leida = true WHERE n.id_notificacion = :idNotificacion")
     void marcarComoLeida(@Param("idNotificacion") Integer idNotificacion);
 
-    // Eliminar notificaciones antiguas (más de X días)
-    @Modifying
-    @Query("DELETE FROM NotificacionEntity n WHERE n.fechaCreacion < :fechaLimite AND n.leida = true")
-    void eliminarAntiguas(@Param("fechaLimite") java.util.Date fechaLimite);
 }
 

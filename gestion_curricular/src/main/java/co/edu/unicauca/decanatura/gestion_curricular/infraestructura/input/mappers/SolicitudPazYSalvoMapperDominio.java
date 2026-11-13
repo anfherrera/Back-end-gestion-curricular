@@ -40,5 +40,4 @@ public interface SolicitudPazYSalvoMapperDominio {
     @Mapping(target = "fecha_ceremonia", ignore = true) // Se asigna desde el caso de uso si es necesario
     SolicitudPazYSalvo mappearDeSolicitudDTOPeticionASolicitud(SolicitudPazYSalvoDTOPeticion peticion);
 
-    List<SolicitudPazYSalvo> mappearListaDeSolicitudDTOPeticionAListaSolicitud(List<SolicitudPazYSalvoDTOPeticion> peticiones);
 }

@@ -1,5 +1,6 @@
 package co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.gateway;
 
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Enums.EstadoSolicitudCursoVerano;
 import java.util.Date;
 import java.util.List;
 import java.util.ArrayList;
@@ -8,9 +9,11 @@ import java.util.Optional;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import lombok.extern.slf4j.Slf4j;
 
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.GestionarSolicitudCursoVeranoGatewayIntPort;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.excepciones.CupoAgotadoException;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.NombreSolicitud;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.ReglasCupo;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.CursoOfertadoVerano;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Solicitud;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.SolicitudCursoVeranoIncripcion;
@@ -39,7 +42,6 @@ import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Enums.Perio
 
 @Service
 @Transactional
-@Slf4j
 public class GestionarSolicitudCursoVeranoGatewayImplAdapter implements GestionarSolicitudCursoVeranoGatewayIntPort {
 
     private final SolicitudRepositoryInt solicitudRepository;
@@ -58,30 +60,31 @@ public class GestionarSolicitudCursoVeranoGatewayImplAdapter implements Gestiona
     }
 
     @Override
+    @Transactional(readOnly = true)
+    public List<Solicitud> listarSolicitudesDeVerano(Integer idCurso) {
+        return solicitudRepository.listarSolicitudesDeVerano(idCurso).stream()
+                .<Solicitud>map(solicitud -> solicitud instanceof SolicitudCursoVeranoPreinscripcionEntity
+                        ? solicitudMapper.map(solicitud, SolicitudCursoVeranoPreinscripcion.class)
+                        : solicitudMapper.map(solicitud, SolicitudCursoVeranoIncripcion.class))
+                .toList();
+    }
+
+    @Override
     @Transactional
     public SolicitudCursoVeranoPreinscripcion crearSolicitudCursoVeranoPreinscripcion(
         SolicitudCursoVeranoPreinscripcion solicitudCursoVerano) {
         SolicitudCursoVeranoPreinscripcionEntity solicitudCursoVeranoEntity = solicitudMapper.map(solicitudCursoVerano, SolicitudCursoVeranoPreinscripcionEntity.class);
         
         // Generar nombre descriptivo con el nombre del estudiante
-        String nombreSolicitud = "Solicitud Curso Verano";
-        if (solicitudCursoVerano.getObjUsuario() != null) {
-            // Intentar obtener el nombre del estudiante desde la solicitud del dominio
-            if (solicitudCursoVerano.getObjUsuario().getNombre_completo() != null && 
-                !solicitudCursoVerano.getObjUsuario().getNombre_completo().trim().isEmpty()) {
-                nombreSolicitud = "Solicitud Curso Verano - " + solicitudCursoVerano.getObjUsuario().getNombre_completo();
-            } else if (solicitudCursoVerano.getNombre_estudiante() != null && 
-                       !solicitudCursoVerano.getNombre_estudiante().trim().isEmpty()) {
-                nombreSolicitud = "Solicitud Curso Verano - " + solicitudCursoVerano.getNombre_estudiante();
-            }
-        }
-        solicitudCursoVeranoEntity.setNombre_solicitud(nombreSolicitud);
+        solicitudCursoVeranoEntity.setNombre_solicitud(NombreSolicitud.de(NombreSolicitud.CURSO_VERANO,
+                NombreSolicitud.nombreDe(solicitudCursoVerano.getObjUsuario()),
+                solicitudCursoVerano.getNombre_estudiante()));
         solicitudCursoVeranoEntity.setFecha_registro_solicitud(new Date());
         EstadoSolicitudEntity estadoSolicitudEntity = null;
 
         estadoSolicitudEntity = new EstadoSolicitudEntity();
         estadoSolicitudEntity.setFecha_registro_estado(new Date());
-        estadoSolicitudEntity.setEstado_actual("Enviada");
+        estadoSolicitudEntity.setEstado_actual(EstadoSolicitudCursoVerano.ENVIADA.texto());
         estadoSolicitudEntity.setObjSolicitud(solicitudCursoVeranoEntity);
         
         List<EstadoSolicitudEntity> estadosSolcitud = solicitudCursoVeranoEntity.getEstadosSolicitud();
@@ -99,16 +102,8 @@ public class GestionarSolicitudCursoVeranoGatewayImplAdapter implements Gestiona
                 // Para cursos nuevos, no necesitamos crear la entidad del curso
                 // Solo guardamos la solicitud con la información del curso solicitado
                 cursoOfertadoVeranoEntity = null;
-                // Para cursos nuevos, usar el período académico del dominio si está disponible
-                if (solicitudCursoVerano.getPeriodo_academico() != null && !solicitudCursoVerano.getPeriodo_academico().trim().isEmpty()) {
-                    solicitudCursoVeranoEntity.setPeriodo_academico(solicitudCursoVerano.getPeriodo_academico());
-                } else {
-                    // Si no se proporcionó período académico, establecer el período actual automáticamente
-                    PeriodoAcademicoEnum periodoActual = PeriodoAcademicoEnum.getPeriodoActual();
-                    if (periodoActual != null) {
-                        solicitudCursoVeranoEntity.setPeriodo_academico(periodoActual.getValor());
-                    }
-                }
+                solicitudCursoVeranoEntity.setPeriodo_academico(
+                        PeriodoAcademicoEnum.completarSiFalta(solicitudCursoVerano.getPeriodo_academico()));
             } else if(cursoOfertadoVeranoRepository.existsById(idCurso)){
                 cursoOfertadoVeranoEntity = cursoOfertadoVeranoRepository.findById(idCurso)
                         .orElseThrow(() -> new IllegalArgumentException("Curso ofertado no encontrado con ID: " + idCurso));
@@ -126,18 +121,10 @@ public class GestionarSolicitudCursoVeranoGatewayImplAdapter implements Gestiona
                 DocenteEntity docenteEntity = solicitudMapper.map(cursoOfertado.getObjDocente(), DocenteEntity.class);
                 cursoOfertadoVeranoEntity.setObjMateria(materiaEntity);
                 cursoOfertadoVeranoEntity.setObjDocente(docenteEntity);
-                // Si el curso tiene período académico en el dominio, asignarlo también a la solicitud
-                if (cursoOfertado.getPeriodo_academico() != null && !cursoOfertado.getPeriodo_academico().trim().isEmpty()) {
-                    cursoOfertadoVeranoEntity.setPeriodo_academico(cursoOfertado.getPeriodo_academico());
-                    solicitudCursoVeranoEntity.setPeriodo_academico(cursoOfertado.getPeriodo_academico());
-                } else {
-                    // Si el curso no tiene período académico, usar el período actual automáticamente
-                    PeriodoAcademicoEnum periodoActual = PeriodoAcademicoEnum.getPeriodoActual();
-                    if (periodoActual != null) {
-                        String periodoValor = periodoActual.getValor();
-                        cursoOfertadoVeranoEntity.setPeriodo_academico(periodoValor);
-                        solicitudCursoVeranoEntity.setPeriodo_academico(periodoValor);
-                    }
+                String periodoValor = PeriodoAcademicoEnum.completarSiFalta(cursoOfertado.getPeriodo_academico());
+                if (periodoValor != null && !periodoValor.trim().isEmpty()) {
+                    cursoOfertadoVeranoEntity.setPeriodo_academico(periodoValor);
+                    solicitudCursoVeranoEntity.setPeriodo_academico(periodoValor);
                 }
             }
             solicitudCursoVeranoEntity.setObjCursoOfertadoVerano(cursoOfertadoVeranoEntity);
@@ -158,21 +145,14 @@ public class GestionarSolicitudCursoVeranoGatewayImplAdapter implements Gestiona
         SolicitudCursoVeranoInscripcionEntity solicitudCursoVeranoEntity = solicitudMapper.map(solicitudCursoVerano, SolicitudCursoVeranoInscripcionEntity.class);
         
         // Generar nombre descriptivo con el nombre del estudiante
-        String nombreSolicitud = "Solicitud Curso Verano";
-        if (solicitudCursoVerano.getObjUsuario() != null) {
-            // Intentar obtener el nombre del estudiante desde la solicitud del dominio
-            if (solicitudCursoVerano.getObjUsuario().getNombre_completo() != null && 
-                !solicitudCursoVerano.getObjUsuario().getNombre_completo().trim().isEmpty()) {
-                nombreSolicitud = "Solicitud Curso Verano - " + solicitudCursoVerano.getObjUsuario().getNombre_completo();
-            }
-        }
-        solicitudCursoVeranoEntity.setNombre_solicitud(nombreSolicitud);
+        solicitudCursoVeranoEntity.setNombre_solicitud(NombreSolicitud.de(NombreSolicitud.CURSO_VERANO,
+                NombreSolicitud.nombreDe(solicitudCursoVerano.getObjUsuario())));
         solicitudCursoVeranoEntity.setFecha_registro_solicitud(new Date());
         EstadoSolicitudEntity estadoSolicitudEntity = null;
         
         estadoSolicitudEntity = new EstadoSolicitudEntity();
         estadoSolicitudEntity.setFecha_registro_estado(new Date());
-        estadoSolicitudEntity.setEstado_actual("Enviada");
+        estadoSolicitudEntity.setEstado_actual(EstadoSolicitudCursoVerano.ENVIADA.texto());
         estadoSolicitudEntity.setObjSolicitud(solicitudCursoVeranoEntity);
         
         List<EstadoSolicitudEntity> estadosSolcitud = solicitudCursoVeranoEntity.getEstadosSolicitud();
@@ -292,27 +272,6 @@ public class GestionarSolicitudCursoVeranoGatewayImplAdapter implements Gestiona
 
     @Override
     @Transactional(readOnly = true)
-    public Integer contarSolicitudesPorCurso(Integer idCurso) {
-        return solicitudRepository.contarSolicitudesPorCurso(idCurso);
-    }
-
-    @Override
-    @Transactional(readOnly = true)
-    public List<SolicitudCursoVeranoPreinscripcion> buscarCursosConAltaDemanda(Integer limiteMinimo) {
-        List<SolicitudEntity> solicitudesEntity = solicitudRepository.buscarCursosConAltaDemanda(limiteMinimo);
-        List<SolicitudCursoVeranoPreinscripcion> cursosAltaDemanda = new ArrayList<>();
-        
-        for (SolicitudEntity entity : solicitudesEntity) {
-            if (entity instanceof SolicitudCursoVeranoPreinscripcionEntity) {
-                cursosAltaDemanda.add(solicitudMapper.map(entity, SolicitudCursoVeranoPreinscripcion.class));
-            }
-        }
-        
-        return cursosAltaDemanda;
-    }
-
-    @Override
-    @Transactional(readOnly = true)
     public SolicitudCursoVeranoIncripcion buscarSolicitudInscripcionPorId(Integer idSolicitud) {
         return solicitudRepository.findById(idSolicitud)
             .filter(entity -> entity instanceof SolicitudCursoVeranoInscripcionEntity)
@@ -329,23 +288,20 @@ public class GestionarSolicitudCursoVeranoGatewayImplAdapter implements Gestiona
         // Buscar la solicitud sin filtrar primero
         Optional<SolicitudEntity> solicitudOpt = solicitudRepository.findById(idSolicitud);
         if (!solicitudOpt.isPresent()) {
-            // "No se encontró ninguna solicitud con ID: {}", idSolicitud);
             return null;
         }
         
         SolicitudEntity solicitudEntity = solicitudOpt.get();
-        // "Solicitud encontrada - Tipo: {}", solicitudEntity.getClass().getSimpleName());
         
         // Verificar si es del tipo correcto
         if (!(solicitudEntity instanceof SolicitudCursoVeranoPreinscripcionEntity)) {
-            // "La solicitud no es del tipo SolicitudCursoVeranoPreinscripcionEntity");
             return null;
         }
         
         // Crear nuevo estado "Aprobado"
         EstadoSolicitudEntity estadoEntity = new EstadoSolicitudEntity();
         estadoEntity.setFecha_registro_estado(new Date());
-        estadoEntity.setEstado_actual("Aprobado");
+        estadoEntity.setEstado_actual(EstadoSolicitudCursoVerano.APROBADO.texto());
         estadoEntity.setObjSolicitud(solicitudEntity);
         if (comentarios != null && !comentarios.trim().isEmpty()) {
             estadoEntity.setComentario(comentarios.trim());
@@ -358,10 +314,8 @@ public class GestionarSolicitudCursoVeranoGatewayImplAdapter implements Gestiona
         solicitudEntity.getEstadosSolicitud().add(estadoEntity);
         SolicitudEntity solicitudActualizada = solicitudRepository.save(solicitudEntity);
         
-        // "Solicitud actualizada guardada con ID: {}", solicitudActualizada.getId_solicitud());
         
         SolicitudCursoVeranoPreinscripcion resultado = solicitudMapper.map(solicitudActualizada, SolicitudCursoVeranoPreinscripcion.class);
-        // "Mapeo completado, resultado: {}", resultado != null ? "OK" : "NULL");
         
         return resultado;
     }
@@ -372,23 +326,20 @@ public class GestionarSolicitudCursoVeranoGatewayImplAdapter implements Gestiona
         // Buscar la solicitud sin filtrar primero
         Optional<SolicitudEntity> solicitudOpt = solicitudRepository.findById(idSolicitud);
         if (!solicitudOpt.isPresent()) {
-            // "No se encontró ninguna solicitud con ID: {}", idSolicitud);
             return null;
         }
         
         SolicitudEntity solicitudEntity = solicitudOpt.get();
-        // "Solicitud encontrada - Tipo: {}", solicitudEntity.getClass().getSimpleName());
         
         // Verificar si es del tipo correcto
         if (!(solicitudEntity instanceof SolicitudCursoVeranoPreinscripcionEntity)) {
-            // "La solicitud no es del tipo SolicitudCursoVeranoPreinscripcionEntity");
             return null;
         }
         
         // Crear nuevo estado "Rechazado"
         EstadoSolicitudEntity estadoEntity = new EstadoSolicitudEntity();
         estadoEntity.setFecha_registro_estado(new Date());
-        estadoEntity.setEstado_actual("Rechazado");
+        estadoEntity.setEstado_actual(EstadoSolicitudCursoVerano.RECHAZADO.texto());
         estadoEntity.setObjSolicitud(solicitudEntity);
         estadoEntity.setComentario(motivo.trim());
         
@@ -399,16 +350,17 @@ public class GestionarSolicitudCursoVeranoGatewayImplAdapter implements Gestiona
         solicitudEntity.getEstadosSolicitud().add(estadoEntity);
         SolicitudEntity solicitudActualizada = solicitudRepository.save(solicitudEntity);
         
-        // "Solicitud actualizada guardada con ID: {}", solicitudActualizada.getId_solicitud());
         
         SolicitudCursoVeranoPreinscripcion resultado = solicitudMapper.map(solicitudActualizada, SolicitudCursoVeranoPreinscripcion.class);
-        // "Mapeo completado, resultado: {}", resultado != null ? "OK" : "NULL");
         
         return resultado;
     }
 
     @Override
-    @Transactional
+    // READ_COMMITTED: en MySQL (REPEATABLE READ por defecto) el conteo de cupo, hecho después de
+    // bloquear el curso, leería la foto tomada al inicio de la transacción y no vería la
+    // inscripción que otro funcionario acaba de aceptar.
+    @Transactional(isolation = org.springframework.transaction.annotation.Isolation.READ_COMMITTED)
     public SolicitudCursoVeranoIncripcion validarPago(Integer idSolicitud, boolean esValido, String observaciones) {
         SolicitudEntity solicitudEntity = solicitudRepository.findById(idSolicitud)
             .filter(entity -> entity instanceof SolicitudCursoVeranoInscripcionEntity)
@@ -417,11 +369,15 @@ public class GestionarSolicitudCursoVeranoGatewayImplAdapter implements Gestiona
         if (solicitudEntity == null) {
             return null;
         }
-        
+
+        if (esValido) {
+            verificarCupoConBloqueo(solicitudEntity);
+        }
+
         // Crear nuevo estado según validación
         EstadoSolicitudEntity estadoEntity = new EstadoSolicitudEntity();
         estadoEntity.setFecha_registro_estado(new Date());
-        estadoEntity.setEstado_actual(esValido ? "Pago_Validado" : "Pago_Rechazado");
+        estadoEntity.setEstado_actual(esValido ? EstadoSolicitudCursoVerano.PAGO_VALIDADO.texto() : EstadoSolicitudCursoVerano.PAGO_RECHAZADO.texto());
         estadoEntity.setObjSolicitud(solicitudEntity);
         if (observaciones != null && !observaciones.trim().isEmpty()) {
             estadoEntity.setComentario(observaciones.trim());
@@ -451,7 +407,7 @@ public class GestionarSolicitudCursoVeranoGatewayImplAdapter implements Gestiona
         // Crear nuevo estado "Inscripcion_Completada"
         EstadoSolicitudEntity estadoEntity = new EstadoSolicitudEntity();
         estadoEntity.setFecha_registro_estado(new Date());
-        estadoEntity.setEstado_actual("Inscripcion_Completada");
+        estadoEntity.setEstado_actual(EstadoSolicitudCursoVerano.INSCRIPCION_COMPLETADA.texto());
         estadoEntity.setObjSolicitud(solicitudEntity);
         
         // Guardar el estado
@@ -462,16 +418,6 @@ public class GestionarSolicitudCursoVeranoGatewayImplAdapter implements Gestiona
         SolicitudEntity solicitudActualizada = solicitudRepository.save(solicitudEntity);
         
         return solicitudMapper.map(solicitudActualizada, SolicitudCursoVeranoIncripcion.class);
-    }
-
-    @Override
-    @Transactional(readOnly = true)
-    public SolicitudCursoVeranoIncripcion buscarSolicitudInscripcionPorUsuarioYCurso(Integer idUsuario, Integer idCurso) {
-        SolicitudEntity solicitudEntity = solicitudRepository.buscarSolicitudesPorUsuarioyCursoIns(idUsuario, idCurso);
-        if (solicitudEntity != null && solicitudEntity instanceof SolicitudCursoVeranoInscripcionEntity) {
-            return solicitudMapper.map(solicitudEntity, SolicitudCursoVeranoIncripcion.class);
-        }
-        return null;
     }
 
     @Override
@@ -532,16 +478,38 @@ public class GestionarSolicitudCursoVeranoGatewayImplAdapter implements Gestiona
         return inscripciones;
     }
 
-    /** Estados (último estado de la inscripción) que cuentan como cupo ocupado. */
-    public static final java.util.List<String> ESTADOS_INSCRIPCION_QUE_OCUPAN_CUPO =
-            java.util.List.of("Pago_Validado", "Inscripcion_Completada", "APROBADA", "Aprobada", "Aprobado");
+    /**
+     * Si aceptar la inscripción ocuparía un cupo nuevo, bloquea la fila del curso y vuelve a contar
+     * dentro de esta transacción. Así, si dos funcionarios aceptan a la vez, el segundo espera al
+     * primero y ve el conteo ya actualizado.
+     *
+     * @throws CupoAgotadoException si el curso ya no tiene cupo
+     */
+    private void verificarCupoConBloqueo(SolicitudEntity inscripcion) {
+        CursoOfertadoVeranoEntity curso = inscripcion.getObjCursoOfertadoVerano();
+        if (curso == null || curso.getId_curso() == null || yaOcupaCupo(inscripcion)) {
+            return;
+        }
+        CursoOfertadoVeranoEntity bloqueado = cursoOfertadoVeranoRepository.bloquearPorId(curso.getId_curso())
+                .orElse(curso);
+        ReglasCupo.exigirCupoLibre(bloqueado.getCupo_estimado(),
+                () -> contarInscripcionesAceptadasPorCurso(bloqueado.getId_curso()));
+    }
+
+    private static boolean yaOcupaCupo(SolicitudEntity inscripcion) {
+        List<EstadoSolicitudEntity> estados = inscripcion.getEstadosSolicitud();
+        if (estados == null || estados.isEmpty()) {
+            return false;
+        }
+        return ReglasCupo.estadoOcupaCupo(estados.get(estados.size() - 1).getEstado_actual());
+    }
 
     @Override
     @Transactional(readOnly = true)
     public Integer contarInscripcionesAceptadasPorCurso(Integer idCurso) {
-        // Ocupan cupo las inscripciones aceptadas: pago validado, completadas o marcadas como aprobadas
+        // Ocupan cupo las inscripciones aceptadas (ver ReglasCupo)
         int total = 0;
-        for (String estado : ESTADOS_INSCRIPCION_QUE_OCUPAN_CUPO) {
+        for (String estado : ReglasCupo.ESTADOS_QUE_OCUPAN_CUPO) {
             Integer n = solicitudRepository.contarInscripcionesPorEstado(idCurso, estado);
             total += n != null ? n : 0;
         }

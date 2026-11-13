@@ -11,7 +11,6 @@ public interface GestionarEstadisticasCUIntPort {
     Estadistica actualizarEstadistica(Estadistica estadistica);
     Boolean eliminarEstadistica(Integer idEstadistica);
     Estadistica obtenerEstadisticaPorId(Integer idEstadistica);
-    Estadistica obtenerEstadisticasSolicitudPeriodoYPrograma(Integer idEstadistica, String proceso, Date fechaInicio, Date fechaFin, Integer idPrograma);
     Estadistica obtenerEstadisticasSolicitudPeriodoEstadoYPrograma(Integer idEstadistica, String proceso, Date fechaInicio, Date fechaFin, String estado, Integer idPrograma);
     List<Estadistica> obtenerEstadisticasPeriodoEstadoYPrograma( Date fechaInicio, Date fechaFin, Integer idPrograma);
 
@@ -144,24 +143,6 @@ public interface GestionarEstadisticasCUIntPort {
     Map<String, Object> obtenerEstadisticasDetalladasPorProceso(String periodoAcademico, Integer idPrograma);
 
     /**
-     * Obtiene estadísticas resumidas por tipo de proceso para el dashboard.
-     * Formato optimizado para gráficos y KPIs con colores y estilos.
-     * 
-     * @param periodoAcademico Período académico opcional (formato: "YYYY-P", ej: "2025-2")
-     * @param idPrograma ID del programa académico opcional para filtrar
-     * @return Map con resumen por proceso
-     */
-    Map<String, Object> obtenerResumenPorProceso(String periodoAcademico, Integer idPrograma);
-
-    /**
-     * Obtiene configuración de estilos y colores para el dashboard.
-     * Incluye tema claro con fondo blanco y colores optimizados.
-     * 
-     * @return Map con configuración de estilos
-     */
-    Map<String, Object> obtenerConfiguracionEstilos();
-
-    /**
      * Obtiene estadísticas por estado de solicitudes.
      * Incluye conteos, porcentajes y análisis por estado.
      * 
@@ -190,14 +171,6 @@ public interface GestionarEstadisticasCUIntPort {
      * @return Map con estadísticas por programa
      */
     Map<String, Object> obtenerEstadisticasPorPrograma(String periodoAcademico, Integer idPrograma);
-
-    /**
-     * Obtiene estadísticas de tiempo promedio de procesamiento.
-     * Incluye tiempos por proceso, funcionario y análisis de eficiencia.
-     * 
-     * @return Map con estadísticas de tiempo de procesamiento
-     */
-    Map<String, Object> obtenerTiempoPromedioProcesamiento();
 
     /**
      * Obtiene tendencias y comparativas del sistema.
@@ -229,23 +202,6 @@ public interface GestionarEstadisticasCUIntPort {
     Map<String, Object> obtenerTendenciasTemporalesCursosVerano(String periodoAcademico, Integer idPrograma);
 
     /**
-     * Obtiene estadísticas agrupadas por año.
-     * 
-     * @param anio Año a consultar
-     * @return Map con estadísticas del año
-     */
-    Map<String, Object> obtenerEstadisticasPorAnio(Integer anio);
-
-    /**
-     * Obtiene estadísticas agrupadas por semestre (año y número de semestre).
-     * 
-     * @param anio Año a consultar
-     * @param semestre Número de semestre (1 o 2)
-     * @return Map con estadísticas del semestre
-     */
-    Map<String, Object> obtenerEstadisticasPorSemestre(Integer anio, Integer semestre);
-
-    /**
      * Obtiene historial de estadísticas por períodos académicos.
      * 
      * @param anioInicio Año de inicio (opcional)
@@ -262,4 +218,32 @@ public interface GestionarEstadisticasCUIntPort {
      */
     Map<String, Object> obtenerEstadisticasPorPeriodoAcademico(String periodoAcademico);
 
+
+    /**
+     * Estadísticas globales con filtros. Con período académico (se acepta en forma legible, ver
+     * {@code PeriodoAcademicoEnum.normalizar}) salen del resumen completo de ese período y programa, y si además
+     * hay proceso, con los KPI de ese proceso; sin período, del conteo por proceso, programa y fechas.
+     */
+    Map<String, Object> obtenerEstadisticasGlobales(String proceso, Integer idPrograma, String periodoAcademico,
+            Date fechaInicio, Date fechaFin);
+
+    /**
+     * Resumen completo del período (en forma legible o "YYYY-P") y programa; con proceso, los KPI globales y
+     * porTipoProceso se reducen a ese proceso y se anota en filtrosAplicados.
+     */
+    Map<String, Object> obtenerResumenCompleto(String periodoAcademico, Integer idPrograma, String proceso);
+
+    /** Dashboard ejecutivo: resumen global, procesos, estados y filtros aplicados. */
+    Map<String, Object> obtenerDashboardEjecutivo(String periodoAcademico, Integer idPrograma, String proceso);
+
+    /**
+     * Estadísticas globales con los indicadores de rendimiento: tasa de procesamiento (decididas sobre el total)
+     * y eficiencia de aprobación (aprobadas sobre las decididas).
+     */
+    Map<String, Object> obtenerEstadisticasRendimiento();
+
+    record DatosReporte(Map<String, Object> estadisticas, Map<String, Object> cursosVerano) {
+    }
+
+    DatosReporte prepararReporte(String proceso, Integer idPrograma, String periodo, Date fechaInicio, Date fechaFin);
 }

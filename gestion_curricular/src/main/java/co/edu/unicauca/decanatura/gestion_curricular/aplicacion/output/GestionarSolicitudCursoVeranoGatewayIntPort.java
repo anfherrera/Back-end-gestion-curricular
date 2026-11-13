@@ -19,18 +19,13 @@ public interface GestionarSolicitudCursoVeranoGatewayIntPort {
     List<SolicitudCursoVeranoPreinscripcion> buscarPreinscripcionesPorCurso(Integer idCurso);
     List<SolicitudCursoVeranoIncripcion> buscarInscripcionesPorCurso(Integer idCurso);
     
-    // Métodos para estadísticas
-    Integer contarSolicitudesPorCurso(Integer idCurso);
-    List<SolicitudCursoVeranoPreinscripcion> buscarCursosConAltaDemanda(Integer limiteMinimo);
-    
+    List<Solicitud> listarSolicitudesDeVerano(Integer idCurso);
+
     // Métodos para gestión de funcionarios - Aprobar/Rechazar
     SolicitudCursoVeranoPreinscripcion aprobarPreinscripcion(Integer idSolicitud, String comentarios);
     SolicitudCursoVeranoPreinscripcion rechazarPreinscripcion(Integer idSolicitud, String motivo);
     SolicitudCursoVeranoIncripcion validarPago(Integer idSolicitud, boolean esValido, String observaciones);
     SolicitudCursoVeranoIncripcion completarInscripcion(Integer idSolicitud);
-    
-    // Método para buscar inscripción por usuario y curso
-    SolicitudCursoVeranoIncripcion buscarSolicitudInscripcionPorUsuarioYCurso(Integer idUsuario, Integer idCurso);
     
     // Método para actualizar solicitud de curso verano
     SolicitudCursoVeranoPreinscripcion actualizarSolicitudCursoVerano(SolicitudCursoVeranoPreinscripcion solicitud);
