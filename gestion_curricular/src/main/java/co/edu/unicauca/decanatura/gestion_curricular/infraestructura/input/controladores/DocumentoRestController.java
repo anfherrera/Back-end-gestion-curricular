@@ -1,9 +1,7 @@
 package co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.controladores;
 
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
-
 import co.edu.unicauca.decanatura.gestion_curricular.Security.Autorizacion;
+import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.RespuestasArchivo;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarDocumentosCUIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarArchivosCUIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Documento;
@@ -85,10 +83,8 @@ public class DocumentoRestController {
                     ? objGestionarArchivos.getFileByPath(ruta)
                     : objGestionarArchivos.getFile(ruta);
             String nombreArchivo = documento.getNombre() != null ? documento.getNombre() : "documento";
-            String encoded = URLEncoder.encode(nombreArchivo, StandardCharsets.UTF_8).replace("+", "%20");
             HttpHeaders headers = new HttpHeaders();
-            headers.set(HttpHeaders.CONTENT_DISPOSITION,
-                    "attachment; filename=\"" + nombreArchivo + "\"; filename*=UTF-8''" + encoded);
+            headers.set(HttpHeaders.CONTENT_DISPOSITION, RespuestasArchivo.adjuntoUtf8(nombreArchivo));
             MediaType mediaType = nombreArchivo.toLowerCase().endsWith(".pdf")
                     ? MediaType.APPLICATION_PDF
                     : MediaType.APPLICATION_OCTET_STREAM;
