@@ -3,12 +3,10 @@ package co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.cont
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
-import lombok.extern.slf4j.Slf4j;
 import java.util.Map;
 import java.util.HashMap;
 
 /** Utilidades compartidas por los controladores de cursos de verano. */
-@Slf4j
 final class SoporteCursosVerano {
 
     private SoporteCursosVerano() {

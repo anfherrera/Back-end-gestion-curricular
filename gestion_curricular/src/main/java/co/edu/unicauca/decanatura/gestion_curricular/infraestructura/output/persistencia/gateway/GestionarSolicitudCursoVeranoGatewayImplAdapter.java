@@ -9,7 +9,6 @@ import java.util.Optional;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import lombok.extern.slf4j.Slf4j;
 
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.GestionarSolicitudCursoVeranoGatewayIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.excepciones.CupoAgotadoException;
@@ -43,7 +42,6 @@ import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Enums.Perio
 
 @Service
 @Transactional
-@Slf4j
 public class GestionarSolicitudCursoVeranoGatewayImplAdapter implements GestionarSolicitudCursoVeranoGatewayIntPort {
 
     private final SolicitudRepositoryInt solicitudRepository;

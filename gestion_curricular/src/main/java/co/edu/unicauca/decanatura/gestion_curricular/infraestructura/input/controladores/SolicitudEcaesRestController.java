@@ -20,7 +20,6 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import co.edu.unicauca.decanatura.gestion_curricular.Security.Autorizacion;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 
 import java.util.List;
 import java.util.Map;
@@ -42,7 +41,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 @RestController
 @RequestMapping("/api/solicitudes-ecaes")
 @RequiredArgsConstructor
-@Slf4j
 @PreAuthorize("hasAnyRole(" + Autorizacion.ROLES_STAFF + ")")
 public class SolicitudEcaesRestController {
 

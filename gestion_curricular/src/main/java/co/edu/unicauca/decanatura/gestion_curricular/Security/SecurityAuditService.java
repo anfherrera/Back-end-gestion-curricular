@@ -1,6 +1,5 @@
 package co.edu.unicauca.decanatura.gestion_curricular.Security;
 
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import jakarta.servlet.http.HttpServletRequest;
@@ -12,7 +11,6 @@ import java.util.Map;
  * Servicio de auditoría de seguridad para registrar eventos de seguridad
  */
 @Service
-@Slf4j
 public class SecurityAuditService {
 
     /**

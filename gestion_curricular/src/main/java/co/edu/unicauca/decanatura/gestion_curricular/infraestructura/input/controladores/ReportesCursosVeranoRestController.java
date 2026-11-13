@@ -12,7 +12,6 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.security.access.prepost.PreAuthorize;
 import co.edu.unicauca.decanatura.gestion_curricular.Security.Autorizacion;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarCursoOfertadoVeranoCUIntPort;
@@ -26,7 +25,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.HashMap;
 import java.util.ArrayList;
-import java.util.stream.Collectors;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GenerarReportesCursosVeranoCUIntPort;
 
 /**
@@ -36,7 +34,6 @@ import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GenerarRep
 @RestController
 @RequestMapping("/api/cursos-intersemestrales")
 @RequiredArgsConstructor
-@Slf4j
 public class ReportesCursosVeranoRestController {
 
     private final GestionarCursoOfertadoVeranoCUIntPort cursoCU;

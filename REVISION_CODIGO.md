@@ -26,6 +26,7 @@ Rutas abreviadas: `…/` = `gestion_curricular/src/main/java/co/edu/unicauca/dec
 | 8 | 2026-11-13 | Codex | ARQ-3, ARQ-4, ARQ-5 | Cuatro commits por extracción: autorización, reportes de Estadísticas, documentos (ARQ-3/4 juntos por compartir el flujo y sus datos) y reportes de verano. Los casos de uso reúnen los datos e invocan puertos de salida; los controladores solicitan documentos por puertos de entrada. Autorización consulta gateways con datos mínimos de acceso. Caracterizaciones MockMvc nuevas ejecutadas tres veces antes de mover flujos; HTTP/JSON, cabeceras, texto Word/PDF y celdas Excel. Referencias previas intactas; solo se añaden `documentos/generacion.json` y `verano-endpoints/exportaciones.json`. Verificación antes de cada commit en JDK 25 y 17; cierre con `clean verify`: 530 pruebas, 1 omitida, cero fallos. Se borraron los informes antes de verificar y se contaron los XML al terminar. Los compilados inconsistentes en `target` se resolvieron recompilando desde cero. Pendientes de comportamiento y puntos fuera de alcance conservados. |
 
 | 9 | 2026-11-13 | Codex | ARQ-8, DUP-6 (sesión en curso) | Extracciones separadas de DTO de Estadísticas (ARQ-8), decisiones de verano (avance ARQ-9), respuestas de documentos de Paz y Salvo (avance ARQ-10), errores compatibles (avance ARQ-11), uploads PDF (avance DUP-5) y período por defecto (DUP-6). Se reutilizan puertos, ArchivoSubido, MapStruct y las caracterizaciones de documentos; las referencias anteriores no se regraban. Cada prueba nueva se ejecuta tres veces antes del refactor. Los commits creados hasta DUP-6 pasan clean verify en JDK 25 y 17; última cifra confirmada para ambos: 536 pruebas, una omitida y cero fallos. Evaluados DUP-8..10: permanecen abiertos por sus diferencias reales y decisiones de frontend/mapeo. BUG-16/17 documentados; contratos y variantes conservados. ARQ-9..11 y DUP-5 permanecen abiertos para el trabajo restante. |
+| 10 | 2026-11-13 | Claude | DUP-7, MUE-5, MUE-7 | DUP-7: la última cabecera armada a mano (`DocumentoRestController`) pasa a `RespuestasArchivo.adjuntoUtf8`; caracterizaciones de descargas sin regrabar. MUE-5: tres plantillas sin uso borradas. MUE-7: 14 `@Slf4j` sin uso y un import. `clean verify` en JDK 25 y 17: 537 pruebas, 1 omitida, cero fallos. |
 
 ## Resumen de la línea base
 
@@ -269,11 +270,11 @@ Rutas abreviadas: `…/` = `gestion_curricular/src/main/java/co/edu/unicauca/dec
 
 ### P2
 
-- [ ] **MUE-5. Hay plantillas que ningún código usa:** `oficio-homologacion-nuevo.docx`, `oficio-homologacion-template.txt` y `resolucion-reingreso-template.txt` en `src/main/resources/templates/`.
+- [x] **MUE-5. Hay plantillas que ningún código usa:** `oficio-homologacion-nuevo.docx`, `oficio-homologacion-template.txt` y `resolucion-reingreso-template.txt` en `src/main/resources/templates/`. *Borradas: `DocumentGeneratorService` elige la plantilla con un mapa fijo de tres rutas (`oficio-homologacion.docx`, `oficio-paz-salvo.docx`, `resolucion-reingreso.docx`) y ningún otro código ni prueba las nombra.*
 
 - [ ] **MUE-6. Hay una migración fuera de Flyway.** [migraciones/2026-11-11_documentos_usuario_subio.sql](gestion_curricular/src/main/resources/migraciones/2026-11-11_documentos_usuario_subio.sql) agrega una columna que ya está en `V1__esquema_inicial.sql`. Producción tiene `spring.flyway.enabled=false`. *Decisión pendiente*: activar Flyway en producción con `baseline-on-migrate`, de modo que los cambios futuros sean `V3__…`, `V4__…`, y retirar la carpeta `migraciones/`.
 
-- [ ] **MUE-7. Métodos sin uso.**
+- [x] **MUE-7. Métodos sin uso.** *Hecho: se quitó `@Slf4j` (y su import) de las 14 clases que no usaban `log`, entre ellas tres casos de uso del dominio, y el import de `Collectors`.*
   - ~~`GestionarSolicitudHomologacionCUIntPort.obtenerSolicitudSeleccionada`~~: era una línea comentada; se borró con MUE-3.
   - `@Slf4j` sin ningún `log.`: aparece en 12 clases. Algunas: GestionarSolicitudCursoVeranoCU, GestionarSolicitudEcaesCU, GestionarSolicitudHomologacionCU, EstadisticasRestController, NotificacionRestController, Preinscripciones, Reportes, SolicitudPazYSalvoRestController, SoporteCursosVerano y SecurityAuditService.
   - Import no usado: `Collectors` en ReportesCursosVeranoRestController.

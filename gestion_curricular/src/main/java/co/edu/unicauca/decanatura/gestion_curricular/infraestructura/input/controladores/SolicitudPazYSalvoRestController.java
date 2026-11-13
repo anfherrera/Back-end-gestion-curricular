@@ -28,7 +28,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import java.util.Date;
 
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
@@ -59,7 +58,6 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import co.edu.unicauca.decanatura.gestion_curricular.Security.Autorizacion;
 
 @PreAuthorize("hasAnyRole(" + Autorizacion.ROLES_STAFF + ")")
-@Slf4j
 @RestController
 @RequestMapping("/api/solicitudes-pazysalvo")
 @RequiredArgsConstructor

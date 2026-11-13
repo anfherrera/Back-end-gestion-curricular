@@ -23,10 +23,8 @@ import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.FechaEcaes;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.SolicitudEcaes;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Usuario;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.excepciones.EntidadNoExisteException;
-import lombok.extern.slf4j.Slf4j;
 
 
-@Slf4j
 public class GestionarSolicitudEcaesCUAdapter implements GestionarSolicitudEcaesCUIntPort {
 
     private final GestionarPreRegistroEcaesGatewayIntPort objGestionarSolicitudEcaesGateway;

@@ -9,7 +9,6 @@ import jakarta.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;
 import jakarta.validation.Valid;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.DTOPeticion.DecisionSolicitudDTOPeticion;
-import lombok.extern.slf4j.Slf4j;
 import java.util.Date;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarSolicitudCursoVeranoCUIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.CursoOfertadoVerano;
@@ -38,7 +37,6 @@ import java.util.stream.Collectors;
 @RestController
 @RequestMapping("/api/cursos-intersemestrales")
 @RequiredArgsConstructor
-@Slf4j
 public class PreinscripcionesVeranoRestController {
 
     private final GestionarSolicitudCursoVeranoCUIntPort solicitudCU;
