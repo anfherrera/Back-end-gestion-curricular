@@ -274,6 +274,25 @@ public class GestionarEstadisticasCUAdapter implements GestionarEstadisticasCUIn
     }
 
     @Override
+    public Map<String, Object> obtenerEstadisticasGlobales(String proceso, Integer idPrograma, String periodoAcademico,
+            Date fechaInicio, Date fechaFin) {
+        if (periodoAcademico != null && !periodoAcademico.trim().isEmpty()) {
+            return generales.globalesDelPeriodo(PeriodoAcademicoEnum.normalizar(periodoAcademico), idPrograma, proceso);
+        }
+        return generales.globales(proceso, idPrograma, fechaInicio, fechaFin);
+    }
+
+    @Override
+    public Map<String, Object> obtenerResumenCompleto(String periodoAcademico, Integer idPrograma, String proceso) {
+        return generales.resumenCompleto(PeriodoAcademicoEnum.normalizar(periodoAcademico), idPrograma, proceso);
+    }
+
+    @Override
+    public Map<String, Object> obtenerDashboardEjecutivo(String periodoAcademico, Integer idPrograma, String proceso) {
+        return generales.dashboardEjecutivo(PeriodoAcademicoEnum.normalizar(periodoAcademico), idPrograma, proceso);
+    }
+
+    @Override
     public Map<String, Object> obtenerEstadisticasRendimiento() {
         return generales.rendimiento();
     }

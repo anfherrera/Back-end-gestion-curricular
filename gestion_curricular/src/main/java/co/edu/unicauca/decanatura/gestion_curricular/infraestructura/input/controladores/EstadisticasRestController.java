@@ -1,8 +1,5 @@
 package co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.controladores;
 
-import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Enums.EstadosSolicitud;
-import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Enums.PeriodoAcademicoEnum;
-import co.edu.unicauca.decanatura.gestion_curricular.dominio.servicios.estadisticas.TipoProcesoSolicitud;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarEstadisticasCUIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Estadistica;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.DTORespuesta.EstadisticaDTORespuesta;
@@ -134,22 +131,8 @@ public class EstadisticasRestController {
             @RequestParam(required = false) String periodoAcademico,
             @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") Date fechaInicio,
             @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") Date fechaFin) {
-        // Si hay período académico, usar resumen completo que soporta filtros por período
-        if (periodoAcademico != null && !periodoAcademico.trim().isEmpty()) {
-            Map<String, Object> resumen = estadisticaCU.obtenerResumenCompleto(periodoAcademico, idPrograma);
-            @SuppressWarnings("unchecked")
-            Map<String, Object> estadisticasGlobales = (Map<String, Object>) resumen.get("estadisticasGlobales");
-            
-            if (estadisticasGlobales != null && proceso != null && !proceso.trim().isEmpty()) {
-                aplicarKpisDelProceso(estadisticasGlobales, resumen, TipoProcesoSolicitud.delFiltro(proceso));
-            }
-
-            return ResponseEntity.ok(estadisticasGlobales != null ? estadisticasGlobales : new HashMap<>());
-        }
-        
-        // Si no hay período académico, usar el método original
-        Map<String, Object> estadisticas = estadisticaCU.obtenerEstadisticasGlobales(proceso, idPrograma, fechaInicio, fechaFin);
-        return ResponseEntity.ok(estadisticas);
+        return ResponseEntity.ok(
+                estadisticaCU.obtenerEstadisticasGlobales(proceso, idPrograma, periodoAcademico, fechaInicio, fechaFin));
     }
 
     /**
@@ -324,54 +307,7 @@ public class EstadisticasRestController {
             @RequestParam(required = false) String periodoAcademico,
             @RequestParam(required = false) Integer idPrograma,
             @RequestParam(required = false) String proceso) {
-        Map<String, Object> resumen = estadisticaCU.obtenerResumenCompleto(periodoAcademico, idPrograma);
-        
-        // Si hay filtro de proceso, actualizar KPIs con datos solo de ese proceso.
-        // IMPORTANTE: usar resumen.porTipoProceso (Map con stats completas), NO estadisticasGlobales.porTipoProceso (solo conteos Integer)
-        String procesoNormalizado = TipoProcesoSolicitud.delFiltro(proceso);
-        if (procesoNormalizado != null) {
-            @SuppressWarnings("unchecked")
-            Map<String, Object> porTipoProcesoResumen = (Map<String, Object>) resumen.get("porTipoProceso");
-            if (porTipoProcesoResumen != null && porTipoProcesoResumen.containsKey(procesoNormalizado)) {
-                Object datosProceso = porTipoProcesoResumen.get(procesoNormalizado);
-                if (datosProceso instanceof Map) {
-                    @SuppressWarnings("unchecked")
-                    Map<String, Object> statsProceso = (Map<String, Object>) datosProceso;
-                    @SuppressWarnings("unchecked")
-                    Map<String, Object> estadisticasGlobales = (Map<String, Object>) resumen.get("estadisticasGlobales");
-                    if (estadisticasGlobales != null) {
-                        estadisticasGlobales.put("totalSolicitudes", statsProceso.getOrDefault("totalSolicitudes", 0));
-                        estadisticasGlobales.put("totalAprobadas", statsProceso.getOrDefault("totalAprobadas", 0));
-                        estadisticasGlobales.put("totalRechazadas", statsProceso.getOrDefault("totalRechazadas", 0));
-                        estadisticasGlobales.put("totalEnProceso", statsProceso.getOrDefault("totalEnProceso", 0));
-                        Object porEstadoObj = statsProceso.get("porEstado");
-                        int totalEnviadas = 0;
-                        if (porEstadoObj instanceof Map) {
-                            Object env = ((Map<?, ?>) porEstadoObj).get(EstadosSolicitud.ENVIADA.name());
-                            totalEnviadas = env instanceof Number ? ((Number) env).intValue() : 0;
-                        }
-                        estadisticasGlobales.put("totalEnviadas", totalEnviadas);
-                        estadisticasGlobales.put("porcentajeAprobacion", statsProceso.getOrDefault("porcentajeAprobacion", 0.0));
-                        estadisticasGlobales.put("porEstado", statsProceso.getOrDefault("porEstado", new HashMap<>()));
-                        estadisticasGlobales.put("porTipoProceso", Map.of(procesoNormalizado, datosProceso));
-                    }
-                }
-            }
-            if (porTipoProcesoResumen != null && porTipoProcesoResumen.containsKey(procesoNormalizado)) {
-                resumen.put("porTipoProceso", Map.of(procesoNormalizado, porTipoProcesoResumen.get(procesoNormalizado)));
-            }
-            if (resumen.get("filtrosAplicados") instanceof Map) {
-                @SuppressWarnings("unchecked")
-                Map<String, Object> filtrosAplicados = (Map<String, Object>) resumen.get("filtrosAplicados");
-                filtrosAplicados.put("proceso", procesoNormalizado);
-            } else {
-                Map<String, Object> filtros = new HashMap<>();
-                filtros.put("proceso", procesoNormalizado);
-                resumen.put("filtrosAplicados", filtros);
-            }
-        }
-        
-        return ResponseEntity.ok(resumen);
+        return ResponseEntity.ok(estadisticaCU.obtenerResumenCompleto(periodoAcademico, idPrograma, proceso));
     }
 
     /**
@@ -409,71 +345,7 @@ public class EstadisticasRestController {
             @RequestParam(required = false) String periodoAcademico,
             @RequestParam(required = false) Integer idPrograma,
             @RequestParam(required = false) String proceso) {
-        String periodoNormalizado = PeriodoAcademicoEnum.normalizar(periodoAcademico);
-        boolean hayProceso = proceso != null && !proceso.trim().isEmpty();
-
-        Map<String, Object> estadisticasGlobales;
-        Map<String, Object> resumen = null;
-        if (periodoNormalizado != null || idPrograma != null) {
-            resumen = estadisticaCU.obtenerResumenCompleto(periodoNormalizado, idPrograma);
-            @SuppressWarnings("unchecked")
-            Map<String, Object> globales = (Map<String, Object>) resumen.get("estadisticasGlobales");
-            estadisticasGlobales = globales;
-        } else {
-            estadisticasGlobales = estadisticaCU.obtenerEstadisticasGlobales(proceso, idPrograma, null, null);
-        }
-
-        // Con filtro de proceso y de periodo/programa, los KPIs salen de las estadísticas de ese proceso
-        if (hayProceso && estadisticasGlobales != null && resumen != null) {
-            aplicarKpisDelProceso(estadisticasGlobales, resumen, TipoProcesoSolicitud.delFiltro(proceso));
-        }
-
-        Map<String, Object> dashboardEjecutivo = new HashMap<>();
-        dashboardEjecutivo.put("resumenGlobal", estadisticasGlobales);
-        dashboardEjecutivo.put("topProcesos", estadisticasGlobales != null ? estadisticasGlobales.get("porTipoProceso") : new HashMap<>());
-        dashboardEjecutivo.put("resumenEstados", estadisticasGlobales != null ? estadisticasGlobales.get("porEstado") : new HashMap<>());
-        dashboardEjecutivo.put("fechaGeneracion", new Date());
-
-        if (periodoNormalizado != null || idPrograma != null || hayProceso) {
-            Map<String, Object> filtrosAplicados = new HashMap<>();
-            if (periodoNormalizado != null) {
-                filtrosAplicados.put("periodoAcademico", periodoNormalizado);
-            }
-            if (idPrograma != null) {
-                filtrosAplicados.put("idPrograma", idPrograma);
-            }
-            if (hayProceso) {
-                filtrosAplicados.put("proceso", proceso);
-            }
-            dashboardEjecutivo.put("filtrosAplicados", filtrosAplicados);
-        }
-
-        return ResponseEntity.ok(dashboardEjecutivo);
-    }
-
-    /** Reemplaza los KPIs globales por los del proceso indicado, tomados de resumen.porTipoProceso. */
-    private void aplicarKpisDelProceso(Map<String, Object> estadisticasGlobales, Map<String, Object> resumen, String procesoNorm) {
-        if (procesoNorm == null) {
-            return;
-        }
-        Object porTipoProceso = resumen.get("porTipoProceso");
-        if (!(porTipoProceso instanceof Map<?, ?> porTipo) || !(porTipo.get(procesoNorm) instanceof Map<?, ?> datosProceso)) {
-            return;
-        }
-        @SuppressWarnings("unchecked")
-        Map<String, Object> statsProceso = (Map<String, Object>) datosProceso;
-        estadisticasGlobales.put("totalSolicitudes", statsProceso.getOrDefault("totalSolicitudes", 0));
-        estadisticasGlobales.put("totalAprobadas", statsProceso.getOrDefault("totalAprobadas", 0));
-        estadisticasGlobales.put("totalRechazadas", statsProceso.getOrDefault("totalRechazadas", 0));
-        estadisticasGlobales.put("totalEnProceso", statsProceso.getOrDefault("totalEnProceso", 0));
-        int totalEnviadas = 0;
-        if (statsProceso.get("porEstado") instanceof Map<?, ?> porEstado && porEstado.get(EstadosSolicitud.ENVIADA.name()) instanceof Number env) {
-            totalEnviadas = env.intValue();
-        }
-        estadisticasGlobales.put("totalEnviadas", totalEnviadas);
-        estadisticasGlobales.put("porcentajeAprobacion", statsProceso.getOrDefault("porcentajeAprobacion", 0.0));
-        estadisticasGlobales.put("porEstado", statsProceso.getOrDefault("porEstado", new HashMap<>()));
-        estadisticasGlobales.put("porTipoProceso", Map.of(procesoNorm, statsProceso));
+        return ResponseEntity.ok(estadisticaCU.obtenerDashboardEjecutivo(periodoAcademico, idPrograma, proceso));
     }
 
     /**

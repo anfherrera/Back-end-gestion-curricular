@@ -220,6 +220,23 @@ public interface GestionarEstadisticasCUIntPort {
 
 
     /**
+     * Estadísticas globales con filtros. Con período académico (se acepta en forma legible, ver
+     * {@code PeriodoAcademicoEnum.normalizar}) salen del resumen completo de ese período y programa, y si además
+     * hay proceso, con los KPI de ese proceso; sin período, del conteo por proceso, programa y fechas.
+     */
+    Map<String, Object> obtenerEstadisticasGlobales(String proceso, Integer idPrograma, String periodoAcademico,
+            Date fechaInicio, Date fechaFin);
+
+    /**
+     * Resumen completo del período (en forma legible o "YYYY-P") y programa; con proceso, los KPI globales y
+     * porTipoProceso se reducen a ese proceso y se anota en filtrosAplicados.
+     */
+    Map<String, Object> obtenerResumenCompleto(String periodoAcademico, Integer idPrograma, String proceso);
+
+    /** Dashboard ejecutivo: resumen global, procesos, estados y filtros aplicados. */
+    Map<String, Object> obtenerDashboardEjecutivo(String periodoAcademico, Integer idPrograma, String proceso);
+
+    /**
      * Estadísticas globales con los indicadores de rendimiento: tasa de procesamiento (decididas sobre el total)
      * y eficiencia de aprobación (aprobadas sobre las decididas).
      */
