@@ -215,6 +215,25 @@ final class ReglasEstadisticas {
         return estadistica;
     }
 
+    /** Porcentaje de solicitudes decididas (aprobadas + rechazadas) sobre el total, sin redondear; 0 si no hay solicitudes. */
+    static double tasaProcesamiento(Integer totalSolicitudes, Integer totalAprobadas, Integer totalRechazadas) {
+        if (totalSolicitudes == null || totalSolicitudes == 0) {
+            return 0.0;
+        }
+        int procesadas = (totalAprobadas != null ? totalAprobadas : 0) + (totalRechazadas != null ? totalRechazadas : 0);
+        return (double) procesadas / totalSolicitudes * 100;
+    }
+
+    /** Porcentaje de aprobadas entre las decididas (aprobadas + rechazadas), sin redondear; 0 si no hay decididas. */
+    static double eficienciaAprobacion(Integer totalAprobadas, Integer totalRechazadas) {
+        int aprobadas = totalAprobadas != null ? totalAprobadas : 0;
+        int decididas = aprobadas + (totalRechazadas != null ? totalRechazadas : 0);
+        if (decididas == 0) {
+            return 0.0;
+        }
+        return (double) aprobadas / decididas * 100;
+    }
+
     static double redondear2(double valor) {
         return Math.round(valor * 100.0) / 100.0;
     }

@@ -553,59 +553,7 @@ public class EstadisticasRestController {
      */
     @GetMapping("/rendimiento")
     public ResponseEntity<Map<String, Object>> obtenerEstadisticasRendimiento() {
-        // Combinar estadísticas globales con métricas de rendimiento
-        Map<String, Object> estadisticasGlobales = estadisticaCU.obtenerEstadisticasGlobales();
-        
-        Map<String, Object> rendimiento = Map.of(
-            "estadisticasGlobales", estadisticasGlobales,
-            "indicadoresRendimiento", Map.of(
-                "tasaProcesamiento", calcularTasaProcesamiento(estadisticasGlobales),
-                "eficienciaAprobacion", calcularEficienciaAprobacion(estadisticasGlobales),
-                "tiempoPromedioProcesamiento", "N/A"
-            ),
-            "fechaConsulta", new Date()
-        );
-        
-        return ResponseEntity.ok(rendimiento);
-    }
-
-    /**
-     * Método auxiliar para calcular tasa de procesamiento
-     */
-    private Double calcularTasaProcesamiento(Map<String, Object> estadisticas) {
-        Integer totalSolicitudes = (Integer) estadisticas.get("totalSolicitudes");
-        Integer totalAprobadas = (Integer) estadisticas.get("totalAprobadas");
-        Integer totalRechazadas = (Integer) estadisticas.get("totalRechazadas");
-        
-        if (totalSolicitudes == null || totalSolicitudes == 0) {
-            return 0.0;
-        }
-        
-        Integer procesadas = (totalAprobadas != null ? totalAprobadas : 0) + 
-                           (totalRechazadas != null ? totalRechazadas : 0);
-        
-        return (double) procesadas / totalSolicitudes * 100;
-    }
-
-    /**
-     * Método auxiliar para calcular eficiencia de aprobación
-     */
-    private Double calcularEficienciaAprobacion(Map<String, Object> estadisticas) {
-        Integer totalAprobadas = (Integer) estadisticas.get("totalAprobadas");
-        Integer totalRechazadas = (Integer) estadisticas.get("totalRechazadas");
-        
-        if (totalAprobadas == null && totalRechazadas == null) {
-            return 0.0;
-        }
-        
-        Integer totalDecididas = (totalAprobadas != null ? totalAprobadas : 0) + 
-                                (totalRechazadas != null ? totalRechazadas : 0);
-        
-        if (totalDecididas == 0) {
-            return 0.0;
-        }
-        
-        return (double) (totalAprobadas != null ? totalAprobadas : 0) / totalDecididas * 100;
+        return ResponseEntity.ok(estadisticaCU.obtenerEstadisticasRendimiento());
     }
 
     // ===== Exportación a PDF y Excel (los documentos los arma GeneradorReportesEstadisticas) =====

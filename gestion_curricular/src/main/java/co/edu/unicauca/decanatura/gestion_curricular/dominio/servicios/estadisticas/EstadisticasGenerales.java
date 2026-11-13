@@ -4,12 +4,14 @@ import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Enums.Estad
 import static co.edu.unicauca.decanatura.gestion_curricular.dominio.servicios.estadisticas.ReglasEstadisticas.ESTADOS;
 import static co.edu.unicauca.decanatura.gestion_curricular.dominio.servicios.estadisticas.ReglasEstadisticas.PROCESOS;
 import static co.edu.unicauca.decanatura.gestion_curricular.dominio.servicios.estadisticas.ReglasEstadisticas.enRango;
+import static co.edu.unicauca.decanatura.gestion_curricular.dominio.servicios.estadisticas.ReglasEstadisticas.eficienciaAprobacion;
 import static co.edu.unicauca.decanatura.gestion_curricular.dominio.servicios.estadisticas.ReglasEstadisticas.estadoActual;
 import static co.edu.unicauca.decanatura.gestion_curricular.dominio.servicios.estadisticas.ReglasEstadisticas.filtrarPorPeriodoYPrograma;
 import static co.edu.unicauca.decanatura.gestion_curricular.dominio.servicios.estadisticas.ReglasEstadisticas.idPrograma;
 import static co.edu.unicauca.decanatura.gestion_curricular.dominio.servicios.estadisticas.ReglasEstadisticas.nombrePrograma;
 import static co.edu.unicauca.decanatura.gestion_curricular.dominio.servicios.estadisticas.ReglasEstadisticas.normalizarEstadistica;
 import static co.edu.unicauca.decanatura.gestion_curricular.dominio.servicios.estadisticas.ReglasEstadisticas.normalizarEstado;
+import static co.edu.unicauca.decanatura.gestion_curricular.dominio.servicios.estadisticas.ReglasEstadisticas.tasaProcesamiento;
 import static co.edu.unicauca.decanatura.gestion_curricular.dominio.servicios.estadisticas.ReglasEstadisticas.tipoProceso;
 
 import java.time.LocalDate;
@@ -134,6 +136,21 @@ public class EstadisticasGenerales {
         estadisticas.put("porEstado", porEstado);
         estadisticas.put("fechaConsulta", new Date());
         return normalizarEstadistica(estadisticas);
+    }
+
+    /** Estadísticas globales sin filtros, con la tasa de procesamiento y la eficiencia de aprobación. */
+    public Map<String, Object> rendimiento() {
+        Map<String, Object> globales = globales(null, null, null, null);
+        Integer total = (Integer) globales.get("totalSolicitudes");
+        Integer aprobadas = (Integer) globales.get("totalAprobadas");
+        Integer rechazadas = (Integer) globales.get("totalRechazadas");
+        return Map.of(
+                "estadisticasGlobales", globales,
+                "indicadoresRendimiento", Map.of(
+                        "tasaProcesamiento", tasaProcesamiento(total, aprobadas, rechazadas),
+                        "eficienciaAprobacion", eficienciaAprobacion(aprobadas, rechazadas),
+                        "tiempoPromedioProcesamiento", "N/A"),
+                "fechaConsulta", new Date());
     }
 
     // ------------------------------------------------------------------------------------------

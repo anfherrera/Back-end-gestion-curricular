@@ -219,6 +219,12 @@ public interface GestionarEstadisticasCUIntPort {
     Map<String, Object> obtenerEstadisticasPorPeriodoAcademico(String periodoAcademico);
 
 
+    /**
+     * Estadísticas globales con los indicadores de rendimiento: tasa de procesamiento (decididas sobre el total)
+     * y eficiencia de aprobación (aprobadas sobre las decididas).
+     */
+    Map<String, Object> obtenerEstadisticasRendimiento();
+
     record DatosReporte(Map<String, Object> estadisticas, Map<String, Object> cursosVerano) {
     }
 

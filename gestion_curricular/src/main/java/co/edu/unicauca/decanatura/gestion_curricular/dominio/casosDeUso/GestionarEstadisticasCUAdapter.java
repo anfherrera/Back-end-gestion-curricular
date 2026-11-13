@@ -273,6 +273,11 @@ public class GestionarEstadisticasCUAdapter implements GestionarEstadisticasCUIn
     }
 
     @Override
+    public Map<String, Object> obtenerEstadisticasRendimiento() {
+        return generales.rendimiento();
+    }
+
+    @Override
     public DatosReporte prepararReporte(String proceso, Integer idPrograma, String periodo, Date fechaInicio, Date fechaFin) {
         @SuppressWarnings("unchecked")
         Map<String, Object> estadisticas = periodo == null ? null
