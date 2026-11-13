@@ -8,6 +8,7 @@ import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarE
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.FormateadorResultadosIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.GestionarEstadisticasGatewayIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Estadistica;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Enums.PeriodoAcademicoEnum;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.servicios.estadisticas.EstadisticasCursosVerano;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.servicios.estadisticas.EstadisticasDashboard;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.servicios.estadisticas.EstadisticasGenerales;
@@ -188,7 +189,7 @@ public class GestionarEstadisticasCUAdapter implements GestionarEstadisticasCUIn
 
     @Override
     public Map<String, Object> obtenerResumenCompleto(String periodoAcademico, Integer idPrograma) {
-        return generales.resumenCompleto(periodoAcademico, idPrograma);
+        return generales.resumenCompleto(PeriodoAcademicoEnum.normalizar(periodoAcademico), idPrograma);
     }
 
     @Override
@@ -216,27 +217,27 @@ public class GestionarEstadisticasCUAdapter implements GestionarEstadisticasCUIn
 
     @Override
     public Map<String, Object> obtenerEstadisticasDetalladasPorProceso(String periodoAcademico, Integer idPrograma) {
-        return dashboard.detalladasPorProceso(periodoAcademico, idPrograma);
+        return dashboard.detalladasPorProceso(PeriodoAcademicoEnum.normalizar(periodoAcademico), idPrograma);
     }
 
     @Override
     public Map<String, Object> obtenerEstadisticasPorEstado(String periodoAcademico, Integer idPrograma) {
-        return dashboard.porEstado(periodoAcademico, idPrograma);
+        return dashboard.porEstado(PeriodoAcademicoEnum.normalizar(periodoAcademico), idPrograma);
     }
 
     @Override
     public Map<String, Object> obtenerEstadisticasPorPeriodo(String periodoAcademico, Integer idPrograma) {
-        return dashboard.porPeriodo(periodoAcademico, idPrograma);
+        return dashboard.porPeriodo(PeriodoAcademicoEnum.normalizar(periodoAcademico), idPrograma);
     }
 
     @Override
     public Map<String, Object> obtenerEstadisticasPorPrograma(String periodoAcademico, Integer idPrograma) {
-        return dashboard.porPrograma(periodoAcademico, idPrograma);
+        return dashboard.porPrograma(PeriodoAcademicoEnum.normalizar(periodoAcademico), idPrograma);
     }
 
     @Override
     public Map<String, Object> obtenerTendenciasYComparativas(String periodoAcademico, Integer idPrograma) {
-        return dashboard.tendenciasYComparativas(periodoAcademico, idPrograma);
+        return dashboard.tendenciasYComparativas(PeriodoAcademicoEnum.normalizar(periodoAcademico), idPrograma);
     }
 
     @Override
@@ -278,7 +279,8 @@ public class GestionarEstadisticasCUAdapter implements GestionarEstadisticasCUIn
     }
 
     @Override
-    public DatosReporte prepararReporte(String proceso, Integer idPrograma, String periodo, Date fechaInicio, Date fechaFin) {
+    public DatosReporte prepararReporte(String proceso, Integer idPrograma, String periodoAcademico, Date fechaInicio, Date fechaFin) {
+        String periodo = PeriodoAcademicoEnum.normalizar(periodoAcademico);
         @SuppressWarnings("unchecked")
         Map<String, Object> estadisticas = periodo == null ? null
                 : (Map<String, Object>) obtenerResumenCompleto(periodo, idPrograma).get("estadisticasGlobales");

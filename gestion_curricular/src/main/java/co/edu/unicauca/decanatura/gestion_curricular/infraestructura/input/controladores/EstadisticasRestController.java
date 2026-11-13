@@ -1,6 +1,7 @@
 package co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.controladores;
 
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Enums.EstadosSolicitud;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Enums.PeriodoAcademicoEnum;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarEstadisticasCUIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Estadistica;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.DTORespuesta.EstadisticaDTORespuesta;
@@ -134,9 +135,7 @@ public class EstadisticasRestController {
             @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") Date fechaFin) {
         // Si hay período académico, usar resumen completo que soporta filtros por período
         if (periodoAcademico != null && !periodoAcademico.trim().isEmpty()) {
-            String periodoNormalizado = normalizarPeriodoAcademico(periodoAcademico);
-            
-            Map<String, Object> resumen = estadisticaCU.obtenerResumenCompleto(periodoNormalizado, idPrograma);
+            Map<String, Object> resumen = estadisticaCU.obtenerResumenCompleto(periodoAcademico, idPrograma);
             @SuppressWarnings("unchecked")
             Map<String, Object> estadisticasGlobales = (Map<String, Object>) resumen.get("estadisticasGlobales");
             
@@ -324,10 +323,7 @@ public class EstadisticasRestController {
             @RequestParam(required = false) String periodoAcademico,
             @RequestParam(required = false) Integer idPrograma,
             @RequestParam(required = false) String proceso) {
-        // Normalizar el período académico si viene en formato legible
-        String periodoNormalizado = normalizarPeriodoAcademico(periodoAcademico);
-        
-        Map<String, Object> resumen = estadisticaCU.obtenerResumenCompleto(periodoNormalizado, idPrograma);
+        Map<String, Object> resumen = estadisticaCU.obtenerResumenCompleto(periodoAcademico, idPrograma);
         
         // Si hay filtro de proceso, actualizar KPIs con datos solo de ese proceso.
         // IMPORTANTE: usar resumen.porTipoProceso (Map con stats completas), NO estadisticasGlobales.porTipoProceso (solo conteos Integer)
@@ -394,56 +390,6 @@ public class EstadisticasRestController {
     }
 
     /**
-     * Normaliza el formato del período académico a YYYY-P
-     * Acepta formatos como "2025 - Primer Semestre", "2025 segundo semestre", "2025-2", "Segundo Período 2025", etc.
-     */
-    private String normalizarPeriodoAcademico(String periodo) {
-        if (periodo == null || periodo.trim().isEmpty()) {
-            return null;
-        }
-        
-        String periodoLimpio = periodo.trim();
-        
-        // Si ya está en formato YYYY-P, retornarlo
-        if (periodoLimpio.matches("\\d{4}-[12]")) {
-            return periodoLimpio;
-        }
-        
-        // Intentar extraer año y período de formatos como "2025 - Primer Semestre" o "2025 Segundo Semestre"
-        try {
-            // Buscar año (4 dígitos)
-            java.util.regex.Pattern añoPattern = java.util.regex.Pattern.compile("(\\d{4})");
-            java.util.regex.Matcher añoMatcher = añoPattern.matcher(periodoLimpio);
-            
-            if (añoMatcher.find()) {
-                String año = añoMatcher.group(1);
-                
-                // Buscar indicador de período (case insensitive)
-                String periodoLower = periodoLimpio.toLowerCase();
-                int numeroPeriodo = 1; // Por defecto primer período
-                
-                if (periodoLower.contains("segundo") || periodoLower.contains("2") || 
-                    periodoLower.contains("ii") || periodoLower.contains("2do") || 
-                    periodoLower.contains("2º") || periodoLower.contains("segundo semestre")) {
-                    numeroPeriodo = 2;
-                } else if (periodoLower.contains("primer") || periodoLower.contains("primero") || 
-                          periodoLower.contains("1") || periodoLower.contains("i") || 
-                          periodoLower.contains("1er") || periodoLower.contains("1º") ||
-                          periodoLower.contains("primer semestre")) {
-                    numeroPeriodo = 1;
-                }
-                
-                String periodoNormalizado = año + "-" + numeroPeriodo;
-                return periodoNormalizado;
-            }
-        } catch (Exception e) {
-        }
-        
-        // Si no se pudo normalizar, retornar el original
-        return periodoLimpio;
-    }
-    
-    /**
      * Obtiene estadísticas de tendencias por período (comparación entre períodos).
      * 
      * @param fechaInicio1 Fecha de inicio del primer período
@@ -478,7 +424,7 @@ public class EstadisticasRestController {
             @RequestParam(required = false) String periodoAcademico,
             @RequestParam(required = false) Integer idPrograma,
             @RequestParam(required = false) String proceso) {
-        String periodoNormalizado = normalizarPeriodoAcademico(periodoAcademico);
+        String periodoNormalizado = PeriodoAcademicoEnum.normalizar(periodoAcademico);
         boolean hayProceso = proceso != null && !proceso.trim().isEmpty();
 
         Map<String, Object> estadisticasGlobales;
@@ -587,7 +533,7 @@ public class EstadisticasRestController {
             @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") Date fechaInicio,
             @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") Date fechaFin) {
         var datos = estadisticaCU.prepararReporte(proceso, idPrograma,
-                normalizarPeriodoAcademico(periodoAcademico), fechaInicio, fechaFin);
+                periodoAcademico, fechaInicio, fechaFin);
         byte[] pdf = generadorReportes.pdfCompleto(datos.estadisticas(), datos.cursosVerano(), periodoAcademico, idPrograma);
         return archivo(pdf, MediaType.APPLICATION_PDF, "estadisticas_generales.pdf");
     }
@@ -618,7 +564,7 @@ public class EstadisticasRestController {
             @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") Date fechaInicio,
             @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") Date fechaFin) {
         var datos = estadisticaCU.prepararReporte(proceso, idPrograma,
-                normalizarPeriodoAcademico(periodoAcademico), fechaInicio, fechaFin);
+                periodoAcademico, fechaInicio, fechaFin);
         byte[] excel = generadorReportes.excel(datos.estadisticas(), datos.cursosVerano(), periodoAcademico, idPrograma);
         return archivo(excel, EXCEL, "estadisticas_generales.xlsx");
     }
@@ -665,8 +611,7 @@ public class EstadisticasRestController {
     public ResponseEntity<Map<String, Object>> obtenerEstudiantesPorPrograma(
             @RequestParam(required = false) String periodoAcademico,
             @RequestParam(required = false) Integer idPrograma) {
-        String periodoNormalizado = normalizarPeriodoAcademico(periodoAcademico);
-        Map<String, Object> resultado = estadisticaCU.obtenerEstudiantesPorPrograma(periodoNormalizado, idPrograma);
+        Map<String, Object> resultado = estadisticaCU.obtenerEstudiantesPorPrograma(periodoAcademico, idPrograma);
         return ResponseEntity.ok(resultado);
     }
 
@@ -682,8 +627,7 @@ public class EstadisticasRestController {
     public ResponseEntity<Map<String, Object>> obtenerEstadisticasDetalladasPorProceso(
             @RequestParam(required = false) String periodoAcademico,
             @RequestParam(required = false) Integer idPrograma) {
-        String periodoNormalizado = normalizarPeriodoAcademico(periodoAcademico);
-        Map<String, Object> resultado = estadisticaCU.obtenerEstadisticasDetalladasPorProceso(periodoNormalizado, idPrograma);
+        Map<String, Object> resultado = estadisticaCU.obtenerEstadisticasDetalladasPorProceso(periodoAcademico, idPrograma);
         return ResponseEntity.ok(resultado);
     }
 
@@ -699,8 +643,7 @@ public class EstadisticasRestController {
     public ResponseEntity<Map<String, Object>> obtenerEstadisticasPorEstado(
             @RequestParam(required = false) String periodoAcademico,
             @RequestParam(required = false) Integer idPrograma) {
-        String periodoNormalizado = normalizarPeriodoAcademico(periodoAcademico);
-        Map<String, Object> resultado = estadisticaCU.obtenerEstadisticasPorEstado(periodoNormalizado, idPrograma);
+        Map<String, Object> resultado = estadisticaCU.obtenerEstadisticasPorEstado(periodoAcademico, idPrograma);
         return ResponseEntity.ok(resultado);
     }
 
@@ -716,8 +659,7 @@ public class EstadisticasRestController {
     public ResponseEntity<Map<String, Object>> obtenerEstadisticasPorPeriodo(
             @RequestParam(required = false) String periodoAcademico,
             @RequestParam(required = false) Integer idPrograma) {
-        String periodoNormalizado = normalizarPeriodoAcademico(periodoAcademico);
-        Map<String, Object> resultado = estadisticaCU.obtenerEstadisticasPorPeriodo(periodoNormalizado, idPrograma);
+        Map<String, Object> resultado = estadisticaCU.obtenerEstadisticasPorPeriodo(periodoAcademico, idPrograma);
         return ResponseEntity.ok(resultado);
     }
 
@@ -733,8 +675,7 @@ public class EstadisticasRestController {
     public ResponseEntity<Map<String, Object>> obtenerEstadisticasPorPrograma(
             @RequestParam(required = false) String periodoAcademico,
             @RequestParam(required = false) Integer idPrograma) {
-        String periodoNormalizado = normalizarPeriodoAcademico(periodoAcademico);
-        Map<String, Object> resultado = estadisticaCU.obtenerEstadisticasPorPrograma(periodoNormalizado, idPrograma);
+        Map<String, Object> resultado = estadisticaCU.obtenerEstadisticasPorPrograma(periodoAcademico, idPrograma);
         return ResponseEntity.ok(resultado);
     }
 
@@ -750,8 +691,7 @@ public class EstadisticasRestController {
     public ResponseEntity<Map<String, Object>> obtenerTendenciasYComparativas(
             @RequestParam(required = false) String periodoAcademico,
             @RequestParam(required = false) Integer idPrograma) {
-        String periodoNormalizado = normalizarPeriodoAcademico(periodoAcademico);
-        Map<String, Object> resultado = estadisticaCU.obtenerTendenciasYComparativas(periodoNormalizado, idPrograma);
+        Map<String, Object> resultado = estadisticaCU.obtenerTendenciasYComparativas(periodoAcademico, idPrograma);
         return ResponseEntity.ok(resultado);
     }
 

@@ -1,5 +1,8 @@
 package co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Enums;
 
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 /**
  * Enum para los períodos académicos disponibles
  * Genera períodos desde 2020 en adelante con formato YYYY-P
@@ -199,6 +202,35 @@ public enum PeriodoAcademicoEnum {
         }
         PeriodoAcademicoEnum actual = getPeriodoActual();
         return actual != null ? actual.getValor() : null;
+    }
+
+    private static final Pattern ANIO = Pattern.compile("(\\d{4})");
+
+    /**
+     * Lleva a "YYYY-P" un período escrito de forma legible ("2025-2", "Segundo Período 2025", "2025 II"...).
+     * Si ya tiene ese formato se devuelve recortado; si no tiene un año de cuatro cifras, se devuelve recortado
+     * tal cual. No valida que el período exista.
+     *
+     * <p>BUG-12: el período es 2 si el texto contiene "segundo", "ii" o el dígito 2 en cualquier parte, incluido
+     * el año, así que "2025 - Primer Semestre" y "2025-3" dan "2025-2". Se conserva hasta decidir la corrección.
+     *
+     * @return null si viene null o en blanco
+     */
+    public static String normalizar(String periodo) {
+        if (periodo == null || periodo.trim().isEmpty()) {
+            return null;
+        }
+        String limpio = periodo.trim();
+        if (limpio.matches("\\d{4}-[12]")) {
+            return limpio;
+        }
+        Matcher anio = ANIO.matcher(limpio);
+        if (!anio.find()) {
+            return limpio;
+        }
+        String texto = limpio.toLowerCase();
+        boolean segundo = texto.contains("segundo") || texto.contains("2") || texto.contains("ii");
+        return anio.group(1) + "-" + (segundo ? 2 : 1);
     }
 
     @Override
