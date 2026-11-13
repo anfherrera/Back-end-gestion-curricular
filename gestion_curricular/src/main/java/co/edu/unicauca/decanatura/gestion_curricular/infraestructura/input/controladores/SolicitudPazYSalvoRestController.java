@@ -12,6 +12,8 @@ import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarS
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarSolicitudPazYSalvoCUIntPort.RechazoCambioEstado.Motivo;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarArchivosCUIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarDocumentosCUIntPort;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.FiltroSolicitudes;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.FlujoEstadosSolicitud;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.SolicitudPazYSalvo;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.excepciones.ReglaNegocioExcepcion;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Documento;
@@ -288,11 +290,11 @@ public class SolicitudPazYSalvoRestController {
 
         switch (rolNormalizado) {
             case "coordinador":
-                return solicitudPazYSalvoCU.listarSolicitudesToCoordinador();
+                return solicitudPazYSalvoCU.listar(FiltroSolicitudes.pendientesDe(FlujoEstadosSolicitud.COORDINADOR, null, null));
             case "funcionario":
-                return solicitudPazYSalvoCU.listarSolicitudesToFuncionario();
+                return solicitudPazYSalvoCU.listar(FiltroSolicitudes.pendientesDe(FlujoEstadosSolicitud.FUNCIONARIO, null, null));
             case "secretaria":
-                return solicitudPazYSalvoCU.listarSolicitudesToSecretaria();
+                return solicitudPazYSalvoCU.listar(FiltroSolicitudes.pendientesDe(FlujoEstadosSolicitud.SECRETARIO, null, null));
             case "":
                 return solicitudPazYSalvoCU.listarSolicitudes();
             default:
@@ -308,64 +310,35 @@ public class SolicitudPazYSalvoRestController {
         return ResponseEntity.ok(respuesta);
     }
 
+    /** Sin período: el funcionario de paz y salvo ve las enviadas de todos los períodos. */
     @GetMapping("/listarSolicitud-PazYSalvo/Funcionario")
     public ResponseEntity<List<SolicitudPazYSalvoDTORespuesta>> listarSolicitudPazYSalvoFuncionario() {
-        List<SolicitudPazYSalvo> solicitudes = solicitudPazYSalvoCU.listarSolicitudesToFuncionario();
-        List<SolicitudPazYSalvoDTORespuesta> respuesta = solicitudMapperDominio.mappearListaDeSolicitudesARespuesta(solicitudes);
-        return ResponseEntity.ok(respuesta);
+        return responder(solicitudPazYSalvoCU.listar(
+                FiltroSolicitudes.pendientesDe(FlujoEstadosSolicitud.FUNCIONARIO, null, null)));
     }
 
     @GetMapping("/listarSolicitud-PazYSalvo/Coordinador")
     public ResponseEntity<List<SolicitudPazYSalvoDTORespuesta>> listarSolicitudPazYSalvoToCoordinador(
             @RequestParam(required = false) String periodoAcademico) {
-        // Obtener el programa del coordinador autenticado
         Integer idPrograma = autorizacion.idProgramaCoordinadorActual();
-        
-        // Si no se proporciona período, usar el período académico actual basado en la fecha
-        if (periodoAcademico == null || periodoAcademico.trim().isEmpty()) {
-            PeriodoAcademicoEnum periodoActual = PeriodoAcademicoEnum.getPeriodoActual();
-            if (periodoActual != null) {
-                periodoAcademico = periodoActual.getValor();
-            }
+        if (idPrograma == null) {
+            // Si no se puede obtener el programa, se devuelven todas, de todos los períodos (fallback)
+            return responder(solicitudPazYSalvoCU.listar(
+                    FiltroSolicitudes.pendientesDe(FlujoEstadosSolicitud.COORDINADOR, null, null)));
         }
-        
-        List<SolicitudPazYSalvo> solicitudes;
-        if (idPrograma != null) {
-            // Filtrar por programa y período del coordinador
-            if (periodoAcademico != null && !periodoAcademico.trim().isEmpty()) {
-                solicitudes = solicitudPazYSalvoCU.listarSolicitudesToCoordinadorPorProgramaYPeriodo(idPrograma, periodoAcademico.trim());
-            } else {
-                solicitudes = solicitudPazYSalvoCU.listarSolicitudesToCoordinadorPorPrograma(idPrograma);
-            }
-        } else {
-            // Si no se puede obtener el programa, retornar todas (fallback)
-            solicitudes = solicitudPazYSalvoCU.listarSolicitudesToCoordinador();
-        }
-        
-        List<SolicitudPazYSalvoDTORespuesta> respuesta = solicitudMapperDominio.mappearListaDeSolicitudesARespuesta(solicitudes);
-        return ResponseEntity.ok(respuesta);
+        return responder(solicitudPazYSalvoCU.listar(FiltroSolicitudes.pendientesDe(
+                FlujoEstadosSolicitud.COORDINADOR, idPrograma, PeriodoDeConsulta.oActual(periodoAcademico))));
     }
 
     @GetMapping("/listarSolicitud-PazYSalvo/Secretaria")
     public ResponseEntity<List<SolicitudPazYSalvoDTORespuesta>> listarSolicitudPazYSalvoToSecretaria(
             @RequestParam(required = false) String periodoAcademico) {
-        // Si no se proporciona período, usar el período académico actual basado en la fecha
-        if (periodoAcademico == null || periodoAcademico.trim().isEmpty()) {
-            PeriodoAcademicoEnum periodoActual = PeriodoAcademicoEnum.getPeriodoActual();
-            if (periodoActual != null) {
-                periodoAcademico = periodoActual.getValor();
-            }
-        }
-        
-        List<SolicitudPazYSalvo> solicitudes;
-        if (periodoAcademico != null && !periodoAcademico.trim().isEmpty()) {
-            solicitudes = solicitudPazYSalvoCU.listarSolicitudesToSecretariaPorPeriodo(periodoAcademico.trim());
-        } else {
-            solicitudes = solicitudPazYSalvoCU.listarSolicitudesToSecretaria();
-        }
-        
-        List<SolicitudPazYSalvoDTORespuesta> respuesta = solicitudMapperDominio.mappearListaDeSolicitudesARespuesta(solicitudes);
-        return ResponseEntity.ok(respuesta);
+        return responder(solicitudPazYSalvoCU.listar(FiltroSolicitudes.pendientesDe(
+                FlujoEstadosSolicitud.SECRETARIO, null, PeriodoDeConsulta.oActual(periodoAcademico))));
+    }
+
+    private ResponseEntity<List<SolicitudPazYSalvoDTORespuesta>> responder(List<SolicitudPazYSalvo> solicitudes) {
+        return ResponseEntity.ok(solicitudMapperDominio.mappearListaDeSolicitudesARespuesta(solicitudes));
     }
 
     @PreAuthorize("isAuthenticated()")
@@ -417,24 +390,9 @@ public class SolicitudPazYSalvoRestController {
                 SolicitudPazYSalvoDTORespuesta respuesta = solicitudMapperDominio.mappearDeSolicitudARespuesta(solicitud);
                 return ResponseEntity.ok(respuesta);
             } catch (EntidadNoExisteException ex) {
-                // Si no se proporciona período, usar el período académico actual
-                if (periodoAcademico == null || periodoAcademico.trim().isEmpty()) {
-                    PeriodoAcademicoEnum periodoActual = PeriodoAcademicoEnum.getPeriodoActual();
-                    if (periodoActual != null) {
-                        periodoAcademico = periodoActual.getValor();
-                    }
-                }
-                
-                List<SolicitudPazYSalvo> solicitudes;
-                if (periodoAcademico != null && !periodoAcademico.trim().isEmpty()) {
-                    solicitudes = solicitudPazYSalvoCU.listarSolicitudesPorUsuarioYPeriodo(idNumero, periodoAcademico.trim());
-                } else {
-                    solicitudes = solicitudPazYSalvoCU.listarSolicitudesPorRol("ESTUDIANTE", idNumero);
-                }
-                
-                List<SolicitudPazYSalvoDTORespuesta> respuesta = solicitudMapperDominio
-                        .mappearListaDeSolicitudesARespuesta(solicitudes);
-                return ResponseEntity.ok(respuesta);
+                // El id es de un usuario: sus solicitudes del período pedido o del actual
+                return responder(solicitudPazYSalvoCU.listar(
+                        FiltroSolicitudes.deEstudiante(idNumero, PeriodoDeConsulta.oActual(periodoAcademico))));
             }
         }
 

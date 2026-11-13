@@ -62,33 +62,19 @@ public class GestionarSolicitudPazYSalvoGatewayImplAdapter implements GestionarS
     }
 
     @Override
-    public List<SolicitudPazYSalvo> listarSolicitudesToFuncionario() {
-        // Buscar solo las solicitudes cuyo último estado sea "Enviada"
-        return solicitudRepository.findByUltimoEstado(EstadosSolicitud.ENVIADA.textoGuardado()).stream()
-                .map(entity -> mapper.map(entity, SolicitudPazYSalvo.class))
-                .toList();
+    public List<SolicitudPazYSalvo> listarPorUsuario(Integer idUsuario, String periodo) {
+        return aDominio(solicitudRepository.findByUsuarioYPeriodo(idUsuario, periodo));
     }
 
     @Override
-    public List<SolicitudPazYSalvo> listarSolicitudesToCoordinador() {
-        return solicitudRepository.findByUltimoEstado(EstadosSolicitud.APROBADA_FUNCIONARIO.textoGuardado()).stream()
-                .map(entity -> mapper.map(entity, SolicitudPazYSalvo.class))
-                .toList();
+    public List<SolicitudPazYSalvo> listarPorUltimoEstado(String estado, Integer idPrograma, String periodo) {
+        return aDominio(idPrograma == null
+                ? solicitudRepository.findByUltimoEstadoAndPeriodoAcademico(estado, periodo)
+                : solicitudRepository.findByUltimoEstadoAndProgramaAndPeriodoAcademico(estado, idPrograma, periodo));
     }
 
-    @Override
-    public List<SolicitudPazYSalvo> listarSolicitudesToCoordinadorPorPrograma(Integer idPrograma) {
-        if (idPrograma == null) {
-            return listarSolicitudesToCoordinador();
-        }
-        return solicitudRepository.findByUltimoEstadoAndPrograma(EstadosSolicitud.APROBADA_FUNCIONARIO.textoGuardado(), idPrograma).stream()
-                .map(entity -> mapper.map(entity, SolicitudPazYSalvo.class))
-                .toList();
-    }
-
-    @Override
-    public List<SolicitudPazYSalvo> listarSolicitudesToSecretaria() {
-        return solicitudRepository.findByUltimoEstado(EstadosSolicitud.APROBADA_COORDINADOR.textoGuardado()).stream()
+    private List<SolicitudPazYSalvo> aDominio(List<SolicitudPazYSalvoEntity> entidades) {
+        return entidades.stream()
                 .map(entity -> mapper.map(entity, SolicitudPazYSalvo.class))
                 .toList();
     }
@@ -123,31 +109,6 @@ public class GestionarSolicitudPazYSalvoGatewayImplAdapter implements GestionarS
                     }
                     return mapper.map(entity, SolicitudPazYSalvo.class);
                 });
-    }
-
-    @Override
-    public List<SolicitudPazYSalvo> listarSolicitudesToCoordinadorPorProgramaYPeriodo(Integer idPrograma, String periodoAcademico) {
-        if (idPrograma == null) {
-            return listarSolicitudesToCoordinador();
-        }
-        return solicitudRepository.findByUltimoEstadoAndProgramaAndPeriodoAcademico(EstadosSolicitud.APROBADA_FUNCIONARIO.textoGuardado(), idPrograma, periodoAcademico).stream()
-                .map(entity -> mapper.map(entity, SolicitudPazYSalvo.class))
-                .toList();
-    }
-
-    @Override
-    public List<SolicitudPazYSalvo> listarSolicitudesToSecretariaPorPeriodo(String periodoAcademico) {
-        return solicitudRepository.findByUltimoEstadoAndPeriodoAcademico(EstadosSolicitud.APROBADA_COORDINADOR.textoGuardado(), periodoAcademico).stream()
-                .map(entity -> mapper.map(entity, SolicitudPazYSalvo.class))
-                .toList();
-    }
-
-    @Override
-    public List<SolicitudPazYSalvo> listarSolicitudesPorUsuarioYPeriodo(Integer idUsuario, String periodoAcademico) {
-        // Todas las solicitudes del estudiante, sin importar el estado; el filtro lo hace la base de datos
-        return solicitudRepository.findByUsuarioYPeriodo(idUsuario, periodoAcademico).stream()
-                .map(entity -> mapper.map(entity, SolicitudPazYSalvo.class))
-                .toList();
     }
 
     @Override

@@ -11,6 +11,7 @@ import java.util.function.Predicate;
 
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarArchivosCUIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.servicios.AsociadorDocumentosPendientes;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.servicios.ListadorSolicitudes;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarSolicitudPazYSalvoCUIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarSolicitudPazYSalvoCUIntPort.RechazoCambioEstado.Motivo;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarNotificacionCUIntPort;
@@ -20,6 +21,8 @@ import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.Gestionar
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.GestionarSolicitudPazYSalvoGatewayIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.GestionarUsuarioGatewayIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.EstadoSolicitud;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.FiltroSolicitudes;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.FlujoEstadosSolicitud;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.SolicitudPazYSalvo;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.TransicionEstadoPazYSalvo;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Usuario;
@@ -36,6 +39,7 @@ public class GestionarSolicitudPazYSalvoCUAdapter implements GestionarSolicitudP
     private final GestionarEstadoSolicitudGatewayIntPort estadoSolicitudGateway;
     private final FormateadorResultadosIntPort formateadorResultados;
     private final AsociadorDocumentosPendientes asociadorDocumentos;
+    private final ListadorSolicitudes<SolicitudPazYSalvo> listador;
     private final GestionarNotificacionCUIntPort objGestionarNotificacionCU;
 
     public GestionarSolicitudPazYSalvoCUAdapter(
@@ -52,6 +56,7 @@ public class GestionarSolicitudPazYSalvoCUAdapter implements GestionarSolicitudP
         this.estadoSolicitudGateway = estadoSolicitudGateway;
         this.formateadorResultados = formateadorResultados;
         this.asociadorDocumentos = new AsociadorDocumentosPendientes(documentosGateway, gestionarArchivos);
+        this.listador = new ListadorSolicitudes<>(FlujoEstadosSolicitud.TRES_APROBACIONES, solicitudGateway);
         this.objGestionarNotificacionCU = objGestionarNotificacionCU;
     }
 
@@ -120,60 +125,13 @@ public class GestionarSolicitudPazYSalvoCUAdapter implements GestionarSolicitudP
     }
 
     @Override
-    public List<SolicitudPazYSalvo> listarSolicitudesToFuncionario() {
-       return solicitudGateway.listarSolicitudesToFuncionario();
-    }
-
-    @Override
-    public List<SolicitudPazYSalvo> listarSolicitudesToCoordinador() {
-        return solicitudGateway.listarSolicitudesToCoordinador();
-    }
-
-    @Override
-    public List<SolicitudPazYSalvo> listarSolicitudesToCoordinadorPorPrograma(Integer idPrograma) {
-        return solicitudGateway.listarSolicitudesToCoordinadorPorPrograma(idPrograma);
-    }
-
-    @Override
-    public List<SolicitudPazYSalvo> listarSolicitudesToSecretaria() {
-        return solicitudGateway.listarSolicitudesToSecretaria();
-    }
-
-    @Override
-    public List<SolicitudPazYSalvo> listarSolicitudesToCoordinadorPorProgramaYPeriodo(Integer idPrograma, String periodoAcademico) {
-        return solicitudGateway.listarSolicitudesToCoordinadorPorProgramaYPeriodo(idPrograma, periodoAcademico);
-    }
-
-    @Override
-    public List<SolicitudPazYSalvo> listarSolicitudesToSecretariaPorPeriodo(String periodoAcademico) {
-        return solicitudGateway.listarSolicitudesToSecretariaPorPeriodo(periodoAcademico);
-    }
-
-    @Override
-    public List<SolicitudPazYSalvo> listarSolicitudesPorUsuarioYPeriodo(Integer idUsuario, String periodoAcademico) {
-        return solicitudGateway.listarSolicitudesPorUsuarioYPeriodo(idUsuario, periodoAcademico);
+    public List<SolicitudPazYSalvo> listar(FiltroSolicitudes filtro) {
+        return listador.listar(filtro);
     }
 
     @Override
     public List<SolicitudPazYSalvo> listarSolicitudesPorRol(String rol, Integer idUsuario) {
-        List<SolicitudPazYSalvo> todas = solicitudGateway.listarSolicitudes();
-
-        return todas.stream().filter(solicitud -> {
-            EstadoSolicitud ultimoEstado = solicitud.ultimoRegistroEstado();
-
-            switch (rol) {
-                case "ESTUDIANTE":
-                    return solicitud.getObjUsuario().getId_usuario().equals(idUsuario);
-                case "FUNCIONARIO":
-                    return ultimoEstado != null && EstadosSolicitud.ENVIADA.textoGuardado().equals(ultimoEstado.getEstado_actual());
-                case "COORDINADOR":
-                    return ultimoEstado != null && EstadosSolicitud.APROBADA_FUNCIONARIO.textoGuardado().equals(ultimoEstado.getEstado_actual());
-                case "SECRETARIA":
-                    return ultimoEstado != null && EstadosSolicitud.APROBADA_COORDINADOR.textoGuardado().equals(ultimoEstado.getEstado_actual());
-                default:
-                    return false;
-            }
-        }).toList();
+        return listador.listarPorRol(rol, idUsuario);
     }
 
     @Override
