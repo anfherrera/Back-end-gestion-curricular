@@ -289,7 +289,7 @@
       "nombre" : "formato.pdf",
       "nombreArchivo" : "formato.pdf",
       "ruta" : "pazysalvo/caract/formato.pdf",
-      "tipo" : "Formato PM-FO-4-FOR-27"
+      "tipo" : "Documento del Estudiante"
     } ]
   },
   "GET /obtenerDocumentos/{inexistente}" : {
@@ -592,7 +592,7 @@
       "nombre" : "formato.pdf",
       "nombreArchivo" : "formato.pdf",
       "ruta" : "pazysalvo/caract/formato.pdf",
-      "tipo" : "Formato PM-FO-4-FOR-27"
+      "tipo" : "Documento del Estudiante"
     } ]
   },
   "GET /obtenerDocumentos/coordinador/{inexistente}" : {

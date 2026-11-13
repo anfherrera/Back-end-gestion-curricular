@@ -19,6 +19,16 @@ public final class DocumentosPazYSalvo {
                 || n.contains("aprobacion");
     }
 
+    /**
+     * El formato PM-FO-4-FOR-27: el nombre contiene el código, con guiones, guiones bajos, espacios o sin
+     * separador, y no hace falta la palabra "formato" (BUG-1). Es la misma regla para el tipo que se muestra y
+     * para los documentos requeridos.
+     */
+    public static boolean esFormatoPmFo4For27(String nombreArchivo) {
+        return nombreArchivo != null
+                && nombreArchivo.toLowerCase().replaceAll("[-_\\s]", "").contains("pmfo4for27");
+    }
+
     /** Oficio en PDF: los que se listan y descargan como oficio de la solicitud. */
     public static boolean esOficioPdf(String nombreArchivo) {
         return nombreArchivo != null && nombreArchivo.toLowerCase().endsWith(".pdf") && esOficio(nombreArchivo);
@@ -64,7 +74,7 @@ public final class DocumentosPazYSalvo {
         /** @param n nombre del archivo en minúsculas */
         private boolean encaja(String n) {
             return switch (this) {
-                case FORMATO_PM_FO_4_FOR_27 -> n.contains("formato") && n.contains("pm-fo-4-for-27");
+                case FORMATO_PM_FO_4_FOR_27 -> esFormatoPmFo4For27(n);
                 case AUTORIZACION_PUBLICAR -> n.contains("autorizacion") && n.contains("publicar");
                 case HOJA_VIDA_ACADEMICA -> n.contains("hoja") && n.contains("vida") && n.contains("academica");
                 case COMPROBANTE_PAGO -> n.contains("comprobante") && n.contains("pago");
@@ -112,7 +122,7 @@ public final class DocumentosPazYSalvo {
         String n = nombreArchivo.toLowerCase();
         if (esOficio(n)) {
             return "Oficio/Resolución";
-        } else if (n.contains("formato") || n.contains("pm_fo_4_for_27")) {
+        } else if (esFormatoPmFo4For27(n)) {
             return "Formato PM-FO-4-FOR-27";
         } else if (n.contains("autorizacion") || n.contains("publicar")) {
             return "Autorización de Publicación";

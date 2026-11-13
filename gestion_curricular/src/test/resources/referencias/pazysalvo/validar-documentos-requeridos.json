@@ -36,11 +36,11 @@
         "autorizacion_publicar" : true,
         "comprobante_pago" : true,
         "documento_trabajo_grado" : true,
-        "formato_pm_fo_4_for_27" : false,
+        "formato_pm_fo_4_for_27" : true,
         "hoja_vida_academica" : true,
         "resultado_saber_pro" : false
       },
-      "todosCompletos" : false,
+      "todosCompletos" : true,
       "totalDocumentos" : 5
     }
   },
