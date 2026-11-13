@@ -47,6 +47,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
 
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.DTORespuesta.DocumentosDTORespuesta;
+import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.DTORespuesta.DocumentosPazYSalvoDTORespuesta.*;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.mappers.DocumentosMapperDominio;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Solicitud;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Usuario;
@@ -606,30 +607,23 @@ public class SolicitudPazYSalvoRestController {
     /** Todos los documentos de la solicitud (los del estudiante y los oficios), con su tipo. */
     @PreAuthorize("@autorizacion.esStaff() or @autorizacion.esDuenoSolicitud(#idSolicitud)")
     @GetMapping("/obtenerDocumentos/{idSolicitud}")
-    public ResponseEntity<List<Map<String, Object>>> obtenerDocumentosPazSalvo(@PathVariable Integer idSolicitud) {
+    public ResponseEntity<List<DocumentoConTipo>> obtenerDocumentosPazSalvo(@PathVariable Integer idSolicitud) {
         return documentosConTipo(idSolicitud);
     }
 
     /** Igual que /obtenerDocumentos/{id}, solo para el personal (es la que usa la bandeja del coordinador). */
     @GetMapping("/obtenerDocumentos/coordinador/{idSolicitud}")
-    public ResponseEntity<List<Map<String, Object>>> obtenerDocumentosPazSalvoCoordinador(@PathVariable Integer idSolicitud) {
+    public ResponseEntity<List<DocumentoConTipo>> obtenerDocumentosPazSalvoCoordinador(@PathVariable Integer idSolicitud) {
         return documentosConTipo(idSolicitud);
     }
 
-    private ResponseEntity<List<Map<String, Object>>> documentosConTipo(Integer idSolicitud) {
-        List<Map<String, Object>> documentos = new ArrayList<>();
+    private ResponseEntity<List<DocumentoConTipo>> documentosConTipo(Integer idSolicitud) {
+        List<DocumentoConTipo> documentos = new ArrayList<>();
         for (var conTipo : solicitudPazYSalvoCU.documentosConTipo(idSolicitud)) {
             Documento documento = conTipo.documento();
-            Map<String, Object> doc = new HashMap<>();
-            doc.put("id", documento.getId_documento());
-            doc.put("nombre", documento.getNombre());
-            doc.put("nombreArchivo", documento.getNombre());
-            doc.put("ruta", documento.getRuta_documento());
-            doc.put("fecha", documento.getFecha_documento());
-            doc.put("esValido", documento.isEsValido());
-            doc.put("comentario", documento.getComentario());
-            doc.put("tipo", conTipo.tipo());
-            documentos.add(doc);
+            documentos.add(new DocumentoConTipo(documento.getId_documento(), documento.getNombre(),
+                    documento.getNombre(), documento.getRuta_documento(), documento.getFecha_documento(),
+                    documento.isEsValido(), documento.getComentario(), conTipo.tipo()));
         }
         return ResponseEntity.ok(documentos);
     }
@@ -643,30 +637,15 @@ public class SolicitudPazYSalvoRestController {
      */
     @PreAuthorize("@autorizacion.esStaff() or @autorizacion.esDuenoSolicitud(#idSolicitud)")
     @GetMapping("/obtenerComentarios/{idSolicitud}")
-    public ResponseEntity<Map<String, Object>> obtenerComentariosSolicitud(@PathVariable Integer idSolicitud) {
+    public ResponseEntity<Comentarios> obtenerComentariosSolicitud(@PathVariable Integer idSolicitud) {
         var comentarios = solicitudPazYSalvoCU.comentarios(idSolicitud);
 
-        Map<String, Object> respuesta = new HashMap<>();
-        if (comentarios.comentarioRechazo() != null) {
-            respuesta.put("comentarioRechazo", comentarios.comentarioRechazo());
-        }
-
-        List<Map<String, Object>> documentosConComentarios = new ArrayList<>();
-        for (var comentario : comentarios.documentos()) {
-            Map<String, Object> doc = new HashMap<>();
-            doc.put("id", comentario.idDocumento());
-            doc.put("nombre", comentario.nombre());
-            doc.put("comentario", comentario.comentario());
-            documentosConComentarios.add(doc);
-        }
-        if (!documentosConComentarios.isEmpty()) {
-            respuesta.put("documentosConComentarios", documentosConComentarios);
-        }
-
-        if (respuesta.isEmpty()) {
-            respuesta.put("mensaje", "No hay comentarios para esta solicitud");
-        }
-        return ResponseEntity.ok(respuesta);
+        List<Comentario> documentos = comentarios.documentos().stream()
+                .map(c -> new Comentario(c.idDocumento(), c.nombre(), c.comentario())).toList();
+        String mensaje = comentarios.comentarioRechazo() == null && documentos.isEmpty()
+                ? "No hay comentarios para esta solicitud" : null;
+        return ResponseEntity.ok(new Comentarios(comentarios.comentarioRechazo(),
+                documentos.isEmpty() ? null : documentos, mensaje));
     }
 
     /**
@@ -674,15 +653,10 @@ public class SolicitudPazYSalvoRestController {
      */
     @PreAuthorize("@autorizacion.esStaff() or @autorizacion.esDuenoSolicitud(#idSolicitud)")
     @GetMapping("/obtenerOficios/{idSolicitud}")
-    public ResponseEntity<List<Map<String, Object>>> obtenerOficiosPazSalvo(@PathVariable Integer idSolicitud) {
-        List<Map<String, Object>> oficios = new ArrayList<>();
+    public ResponseEntity<List<Oficio>> obtenerOficiosPazSalvo(@PathVariable Integer idSolicitud) {
+        List<Oficio> oficios = new ArrayList<>();
         for (Documento documento : solicitudPazYSalvoCU.oficios(idSolicitud)) {
-            Map<String, Object> oficio = new HashMap<>();
-            oficio.put("id", idSolicitud);
-            oficio.put("nombre", documento.getNombre());
-            oficio.put("nombreArchivo", documento.getNombre());
-            oficio.put("ruta", documento.getRuta_documento());
-            oficios.add(oficio);
+            oficios.add(new Oficio(idSolicitud, documento.getNombre(), documento.getNombre(), documento.getRuta_documento()));
         }
         return ResponseEntity.ok(oficios);
     }
@@ -692,17 +666,13 @@ public class SolicitudPazYSalvoRestController {
      */
     @PreAuthorize("@autorizacion.esStaff() or @autorizacion.esDuenoSolicitud(#idSolicitud)")
     @GetMapping("/validarDocumentosRequeridos/{idSolicitud}")
-    public ResponseEntity<Map<String, Object>> validarDocumentosRequeridosPazSalvo(@PathVariable Integer idSolicitud) {
+    public ResponseEntity<Revision> validarDocumentosRequeridosPazSalvo(@PathVariable Integer idSolicitud) {
         var revision = solicitudPazYSalvoCU.revisarDocumentosRequeridos(idSolicitud);
 
         Map<String, Boolean> documentosRequeridos = new HashMap<>();
         revision.entregados().forEach((requerido, entregado) -> documentosRequeridos.put(requerido.clave(), entregado));
 
-        Map<String, Object> resultado = new HashMap<>();
-        resultado.put("documentosRequeridos", documentosRequeridos);
-        resultado.put("todosCompletos", revision.todosCompletos());
-        resultado.put("totalDocumentos", revision.totalDocumentos());
-        return ResponseEntity.ok(resultado);
+        return ResponseEntity.ok(new Revision(documentosRequeridos, revision.todosCompletos(), revision.totalDocumentos()));
     }
     /**
  * Guardar oficio generado para una solicitud de paz y salvo
