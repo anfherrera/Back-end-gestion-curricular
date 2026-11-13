@@ -1,0 +1,161 @@
+{
+  "/api/solicitudes-pazysalvo/subir-documento existe=true" : {
+    "status" : 200,
+    "documentos" : [ {
+      "id_documento" : 11,
+      "nombre" : "original.pdf",
+      "ruta_documento" : "servidor/guardado.pdf",
+      "fecha_documento" : "<ahora>",
+      "esValido" : true,
+      "comentario" : null,
+      "idUsuarioSubio" : 31,
+      "objSolicitud" : null
+    } ],
+    "eventos" : [ "archivo", "registro" ],
+    "body" : {
+      "success" : true,
+      "message" : "Documento subido exitosamente (sin asociar)",
+      "documento_id" : 11,
+      "nombre" : "original.pdf",
+      "fecha" : "<ahora>"
+    }
+  },
+  "/api/solicitudes-pazysalvo/subir-documento existe=false" : {
+    "status" : 200,
+    "documentos" : [ {
+      "id_documento" : 11,
+      "nombre" : "original.pdf",
+      "ruta_documento" : "servidor/guardado.pdf",
+      "fecha_documento" : "<ahora>",
+      "esValido" : true,
+      "comentario" : null,
+      "idUsuarioSubio" : 31,
+      "objSolicitud" : null
+    } ],
+    "eventos" : [ "archivo", "registro" ],
+    "body" : {
+      "success" : true,
+      "message" : "Documento subido exitosamente (sin asociar)",
+      "documento_id" : 11,
+      "nombre" : "original.pdf",
+      "fecha" : "<ahora>"
+    }
+  },
+  "/api/solicitudes-pazysalvo/subir-oficio-pdf/7 existe=true" : {
+    "status" : 201,
+    "documentos" : [ {
+      "id_documento" : 11,
+      "nombre" : "original.pdf",
+      "ruta_documento" : "servidor/guardado.pdf",
+      "fecha_documento" : "<ahora>",
+      "esValido" : true,
+      "comentario" : null,
+      "idUsuarioSubio" : null,
+      "objSolicitud" : {
+        "id_solicitud" : 7,
+        "nombre_solicitud" : null,
+        "periodo_academico" : null,
+        "fecha_ceremonia" : null,
+        "fecha_registro_solicitud" : null,
+        "estadosSolicitud" : [ ],
+        "objUsuario" : null,
+        "documentos" : [ ],
+        "objCursoOfertadoVerano" : null
+      }
+    } ],
+    "eventos" : [ "solicitud", "archivo", "registro" ],
+    "body" : {
+      "id_documento" : 11,
+      "nombre" : "original.pdf",
+      "ruta_documento" : "servidor/guardado.pdf",
+      "fecha_documento" : "<ahora>",
+      "esValido" : true,
+      "comentario" : null
+    }
+  },
+  "/api/solicitudes-pazysalvo/subir-oficio-pdf/7 existe=false" : {
+    "status" : 404,
+    "documentos" : [ ],
+    "eventos" : [ "solicitud" ],
+    "body" : null
+  },
+  "/api/solicitudes-pazysalvo/guardarOficio existe=true" : {
+    "status" : 201,
+    "documentos" : [ {
+      "id_documento" : 11,
+      "nombre" : "original.docx",
+      "ruta_documento" : "servidor/guardado.pdf",
+      "fecha_documento" : "<ahora>",
+      "esValido" : true,
+      "comentario" : null,
+      "idUsuarioSubio" : null,
+      "objSolicitud" : {
+        "id_solicitud" : 7,
+        "nombre_solicitud" : null,
+        "periodo_academico" : null,
+        "fecha_ceremonia" : null,
+        "fecha_registro_solicitud" : null,
+        "estadosSolicitud" : [ ],
+        "objUsuario" : null,
+        "documentos" : [ ],
+        "objCursoOfertadoVerano" : null
+      }
+    } ],
+    "eventos" : [ "archivo", "solicitud", "registro" ],
+    "body" : {
+      "id_documento" : 11,
+      "nombre" : "original.docx",
+      "ruta_documento" : "servidor/guardado.pdf",
+      "fecha_documento" : "<ahora>",
+      "esValido" : true,
+      "comentario" : null
+    }
+  },
+  "/api/solicitudes-pazysalvo/guardarOficio existe=false" : {
+    "status" : 404,
+    "documentos" : [ ],
+    "eventos" : [ "archivo", "solicitud" ],
+    "body" : null
+  },
+  "/api/solicitudes-homologacion/7/subir-resolucion existe=true" : {
+    "status" : 200,
+    "documentos" : [ {
+      "id_documento" : 11,
+      "nombre" : "guardado.pdf",
+      "ruta_documento" : "servidor/guardado.pdf",
+      "fecha_documento" : "<ahora>",
+      "esValido" : true,
+      "comentario" : "[OFICIO_HOMOLOGACION] Archivo subido por secretaría",
+      "idUsuarioSubio" : null,
+      "objSolicitud" : {
+        "id_solicitud" : 7,
+        "nombre_solicitud" : null,
+        "periodo_academico" : null,
+        "fecha_ceremonia" : null,
+        "fecha_registro_solicitud" : null,
+        "estadosSolicitud" : [ ],
+        "objUsuario" : null,
+        "documentos" : [ ],
+        "objCursoOfertadoVerano" : null,
+        "ruta_PM_FO_4_FOR_27" : null,
+        "ruta_contenido_programatico" : null,
+        "programa_origen" : null,
+        "programa_destino" : null
+      }
+    } ],
+    "eventos" : [ "solicitud", "archivo", "registro" ],
+    "body" : {
+      "idDocumento" : 11,
+      "success" : true,
+      "idSolicitud" : 7,
+      "message" : "Resolución subida correctamente",
+      "nombre" : "guardado.pdf"
+    }
+  },
+  "/api/solicitudes-homologacion/7/subir-resolucion existe=false" : {
+    "status" : 404,
+    "documentos" : [ ],
+    "eventos" : [ "solicitud" ],
+    "body" : null
+  }
+}

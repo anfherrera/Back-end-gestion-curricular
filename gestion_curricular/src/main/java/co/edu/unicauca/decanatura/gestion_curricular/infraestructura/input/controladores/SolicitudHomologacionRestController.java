@@ -401,19 +401,9 @@ public class SolicitudHomologacionRestController {
             return ResponseEntity.status(rechazo.estado()).body(Map.of("error", rechazo.mensaje()));
         }
         String nombreOriginal = file.getOriginalFilename();
-        String rutaArchivo = objGestionarArchivos.saveFile(ArchivoMultipart.de(file), nombreOriginal, "pdf", "homologacion", idSolicitud);
-        String nombreArchivo = rutaArchivo.contains("/") ? rutaArchivo.substring(rutaArchivo.lastIndexOf("/") + 1) : rutaArchivo;
-
-        Documento documento = new Documento();
-        documento.setNombre(nombreArchivo);
-        documento.setRuta_documento(rutaArchivo);
-        documento.setFecha_documento(new Date());
-        documento.setEsValido(true);
-        documento.setComentario(MARCADOR_OFICIO_HOMOLOGACION + " Archivo subido por secretaría");
-        documento.setObjSolicitud(solicitud);
-
-        Documento guardado = documentosCU.registrarDocumento(documento);
-
+        Documento guardado = documentosCU.adjuntarASolicitud(ArchivoMultipart.de(file), solicitud,
+                "homologacion", MARCADOR_OFICIO_HOMOLOGACION + " Archivo subido por secretaría", true);
+        String nombreArchivo = guardado.getNombre();
         Map<String, Object> respuesta = new HashMap<>();
         respuesta.put("success", true);
         respuesta.put("message", "Resolución subida correctamente");

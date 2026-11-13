@@ -472,21 +472,8 @@ public class SolicitudPazYSalvoRestController {
         }
         String nombreOriginal = file.getOriginalFilename();
 
-        // Guardar archivo (sin ID de solicitud, se guarda en raíz para documentos huérfanos)
-        // Nota: Este endpoint es para documentos sin asociar, se mantiene en raíz
-        String rutaArchivo = this.objGestionarArchivos.saveFile(ArchivoMultipart.de(file), nombreOriginal, "pdf");
-        
-        // Crear documento SIN asociar a solicitud (como en homologación)
-        Documento doc = new Documento();
-        doc.setNombre(nombreOriginal);
-        doc.setRuta_documento(rutaArchivo);
-        doc.setFecha_documento(new Date());
-        doc.setEsValido(true);
-        // Sin solicitud todavía: se asociará a la próxima solicitud que cree este mismo usuario
-        doc.setIdUsuarioSubio(autorizacion.idUsuarioActual());
-        
-        Documento documentoGuardado = documentosCU.registrarDocumento(doc);
-        
+        Documento documentoGuardado = documentosCU.subirDocumento(ArchivoMultipart.de(file), autorizacion.idUsuarioActual());
+
         return ResponseEntity.ok(new DocumentoSubido(true, "Documento subido exitosamente (sin asociar)",
                 documentoGuardado.getId_documento(), nombreOriginal, documentoGuardado.getFecha_documento()));
     }
@@ -737,22 +724,10 @@ public ResponseEntity<DocumentosDTORespuesta> guardarOficioPazSalvo(
             return ResponseEntity.notFound().build();
         }
 
-        // Guardar archivo organizado en subcarpetas
-        String rutaArchivo = objGestionarArchivos.saveFile(ArchivoMultipart.de(file), nombreOriginal, "pdf", "pazysalvo", idSolicitud);
-
-        // Registrar documento y asociar
-        Documento documento = new Documento();
-        documento.setNombre(nombreOriginal);
-        documento.setRuta_documento(rutaArchivo); // Guardar ruta completa con subcarpetas
-        documento.setFecha_documento(new Date());
-        documento.setEsValido(true);
-
         Solicitud objSolicitud = new Solicitud();
         objSolicitud.setId_solicitud(idSolicitud);
-        documento.setObjSolicitud(objSolicitud);
-
-        Documento documentoGuardado = documentosCU.registrarDocumento(documento);
-
+        Documento documentoGuardado = documentosCU.adjuntarASolicitud(
+                ArchivoMultipart.de(file), objSolicitud, "pazysalvo", null, false);
         return new ResponseEntity<>(
                 documentosMapperDominio.mappearDeDocumentoADTORespuesta(documentoGuardado),
                 HttpStatus.CREATED);
