@@ -129,10 +129,7 @@ public class GestionarNotificacionCUAdapter implements GestionarNotificacionCUIn
                 return;
             }
 
-            String estadoActual = EstadosSolicitud.ENVIADA.name();
-            if (solicitud.getEstadosSolicitud() != null && !solicitud.getEstadosSolicitud().isEmpty()) {
-                estadoActual = solicitud.getEstadosSolicitud().get(solicitud.getEstadosSolicitud().size() - 1).getEstado_actual();
-            }
+            String estadoActual = solicitud.estadoActual(EstadosSolicitud.ENVIADA.name());
 
             Notificacion notificacion = new Notificacion();
             notificacion.setTipoSolicitud(tipoSolicitud);

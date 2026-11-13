@@ -105,9 +105,7 @@ public class GestionarCursoOfertadoVeranoCUAdapter implements GestionarCursoOfer
                     this.objFormateadorResultados.retornarRespuestaErrorReglaDeNegocio("No se puede publicar el curso, porque no se alcanzo el cupo estimado");
                 }
                     for (Solicitud solicitud : solicitudes) {
-                        String estadoAnterior = solicitud.getEstadosSolicitud() != null && !solicitud.getEstadosSolicitud().isEmpty()
-                                ? solicitud.getEstadosSolicitud().get(solicitud.getEstadosSolicitud().size() - 1).getEstado_actual()
-                                : "Pendiente";
+                        String estadoAnterior = solicitud.estadoActual("Pendiente");
                         
                         estadoSolicitud = new EstadoSolicitud();
                         estadoSolicitud.setFecha_registro_estado(new Date());
@@ -147,9 +145,7 @@ public class GestionarCursoOfertadoVeranoCUAdapter implements GestionarCursoOfer
                 }
                 estudiantesInscritos = new ArrayList<Usuario>(cursoABuscar.getEstudiantesInscritos());
                 for (Solicitud solicitud : solicitudes) {
-                    String estadoAnterior = solicitud.getEstadosSolicitud() != null && !solicitud.getEstadosSolicitud().isEmpty()
-                            ? solicitud.getEstadosSolicitud().get(solicitud.getEstadosSolicitud().size() - 1).getEstado_actual()
-                            : "Pendiente";
+                    String estadoAnterior = solicitud.estadoActual("Pendiente");
                     
                     estadoSolicitud = new EstadoSolicitud();
                     estadoSolicitud.setFecha_registro_estado(new Date());

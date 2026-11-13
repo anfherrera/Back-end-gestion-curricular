@@ -182,10 +182,7 @@ public class GestionarSolicitudReingresoCUAdapter  implements GestionarSolicitud
        List<SolicitudReingreso> todas = objGestionarSolicitudReingresoGateway.listarSolicitudesReingreso();
 
         return todas.stream().filter(solicitud -> {
-            List<EstadoSolicitud> estados = solicitud.getEstadosSolicitud();
-            EstadoSolicitud ultimoEstado = estados != null && !estados.isEmpty()
-                ? estados.get(estados.size() - 1)
-                : null;
+            EstadoSolicitud ultimoEstado = solicitud.ultimoRegistroEstado();
 
             switch (rol) {
                 case "ESTUDIANTE":

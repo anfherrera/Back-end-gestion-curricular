@@ -128,9 +128,7 @@ public class InscripcionesVeranoRestController {
                 continue;
             }
 
-            List<EstadoSolicitud> estados = inscripcion.getEstadosSolicitud();
-            String estado = estados != null && !estados.isEmpty()
-                    ? estados.get(estados.size() - 1).getEstado_actual() : null;
+            String estado = inscripcion.estadoActual();
             var curso = inscripcion.getObjCursoOfertadoVerano();
             Usuario usuario = inscripcion.getObjUsuario();
             Integer idUsuario = usuario == null ? null : usuario.getId_usuario();
@@ -178,9 +176,7 @@ public class InscripcionesVeranoRestController {
         }
 
         // No se puede cancelar una inscripcion ya aprobada
-        List<EstadoSolicitud> estados = solicitud.getEstadosSolicitud();
-        String estadoActual = estados != null && !estados.isEmpty()
-            ? estados.get(estados.size() - 1).getEstado_actual() : null;
+        String estadoActual = solicitud.estadoActual();
         if (EstadoSolicitudCursoVerano.APROBADO.texto().equalsIgnoreCase(estadoActual)) {
             Map<String, Object> error = new HashMap<>();
             error.put("error", "No se puede cancelar");
@@ -220,10 +216,7 @@ public class InscripcionesVeranoRestController {
         for (SolicitudCursoVeranoIncripcion inscripcion : inscripciones) {
             try {
                 // 2.1. Verificar el estado de la inscripcion - SOLO mostrar las que NO estan aceptadas
-                String estadoActual = "Inscrito"; // Estado por defecto
-                if (inscripcion.getEstadosSolicitud() != null && !inscripcion.getEstadosSolicitud().isEmpty()) {
-                    estadoActual = inscripcion.getEstadosSolicitud().get(inscripcion.getEstadosSolicitud().size() - 1).getEstado_actual();
-                }
+                String estadoActual = inscripcion.estadoActual("Inscrito"); // Estado por defecto
                 
                 // Si la inscripcion ya fue aceptada (Pago_Validado), no la mostrar en la lista
                 if (EstadoSolicitudCursoVerano.PAGO_VALIDADO.texto().equals(estadoActual)) {
@@ -380,11 +373,7 @@ public class InscripcionesVeranoRestController {
             return ResponseEntity.badRequest().body(error);
         }
         
-        String estadoActual = null;
-        if (inscripcion.getEstadosSolicitud() != null && !inscripcion.getEstadosSolicitud().isEmpty()) {
-            co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.EstadoSolicitud ultimo = inscripcion.getEstadosSolicitud().get(inscripcion.getEstadosSolicitud().size() - 1);
-            estadoActual = ultimo.getEstado_actual();
-        }
+        String estadoActual = inscripcion.estadoActual();
         
         // 2. Verificar que la inscripcion este en estado valido para rechazar
         if (!EstadoSolicitudCursoVerano.ENVIADA.texto().equals(estadoActual) && !EstadoSolicitudCursoVerano.PAGO_VALIDADO.texto().equals(estadoActual)) {
@@ -414,11 +403,7 @@ public class InscripcionesVeranoRestController {
             return ResponseEntity.internalServerError().body(error);
         }
         
-        String nuevoEstado = null;
-        if (inscripcionRechazada.getEstadosSolicitud() != null && !inscripcionRechazada.getEstadosSolicitud().isEmpty()) {
-            co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.EstadoSolicitud ultimoNuevo = inscripcionRechazada.getEstadosSolicitud().get(inscripcionRechazada.getEstadosSolicitud().size() - 1);
-            nuevoEstado = ultimoNuevo.getEstado_actual();
-        }
+        String nuevoEstado = inscripcionRechazada.estadoActual();
         
         // 4. Preparar respuesta
         Map<String, Object> respuesta = new HashMap<>();
@@ -663,12 +648,11 @@ public class InscripcionesVeranoRestController {
 
     /** true si el último estado de la inscripción ya ocupa un cupo del curso. */
     private boolean ocupaCupo(SolicitudCursoVeranoIncripcion inscripcion) {
-        if (inscripcion.getEstadosSolicitud() == null || inscripcion.getEstadosSolicitud().isEmpty()) {
+        if (inscripcion.ultimoRegistroEstado() == null) {
             return false;
         }
-        String ultimo = inscripcion.getEstadosSolicitud()
-                .get(inscripcion.getEstadosSolicitud().size() - 1).getEstado_actual();
         return co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.gateway
-                .GestionarSolicitudCursoVeranoGatewayImplAdapter.ESTADOS_INSCRIPCION_QUE_OCUPAN_CUPO.contains(ultimo);
+                .GestionarSolicitudCursoVeranoGatewayImplAdapter.ESTADOS_INSCRIPCION_QUE_OCUPAN_CUPO
+                .contains(inscripcion.estadoActual());
     }
 }

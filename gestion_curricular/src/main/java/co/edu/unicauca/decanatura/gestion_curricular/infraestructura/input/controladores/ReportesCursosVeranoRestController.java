@@ -191,10 +191,7 @@ public class ReportesCursosVeranoRestController {
                     }
                     
                     // Estado de la preinscripcion
-                    String estadoPreinscripcion = EstadoSolicitudCursoVerano.ENVIADA.texto();
-                    if (preinscripcion.getEstadosSolicitud() != null && !preinscripcion.getEstadosSolicitud().isEmpty()) {
-                        estadoPreinscripcion = preinscripcion.getEstadosSolicitud().get(preinscripcion.getEstadosSolicitud().size() - 1).getEstado_actual();
-                    }
+                    String estadoPreinscripcion = preinscripcion.estadoActual(EstadoSolicitudCursoVerano.ENVIADA.texto());
                     solicitudInfo.put("estado", estadoPreinscripcion);
                     
                     // Condicion academica del estudiante (Primera Vez, Repitencia, Habilitacion, etc.)
@@ -225,10 +222,7 @@ public class ReportesCursosVeranoRestController {
                     }
                     
                     // Estado de la inscripcion
-                    String estadoInscripcion = EstadoSolicitudCursoVerano.ENVIADA.texto();
-                    if (inscripcion.getEstadosSolicitud() != null && !inscripcion.getEstadosSolicitud().isEmpty()) {
-                        estadoInscripcion = inscripcion.getEstadosSolicitud().get(inscripcion.getEstadosSolicitud().size() - 1).getEstado_actual();
-                    }
+                    String estadoInscripcion = inscripcion.estadoActual(EstadoSolicitudCursoVerano.ENVIADA.texto());
                     solicitudInfo.put("estado", estadoInscripcion);
                     solicitudInfo.put("condicion", condicion);
                 }
@@ -339,8 +333,7 @@ public class ReportesCursosVeranoRestController {
                 Map<String, Object> preinscripcionMap = new HashMap<>();
                 preinscripcionMap.put("id", preinscripcion.getId_solicitud());
                 preinscripcionMap.put("fecha", preinscripcion.getFecha_registro_solicitud());
-                preinscripcionMap.put("estado", preinscripcion.getEstadosSolicitud() != null && !preinscripcion.getEstadosSolicitud().isEmpty() 
-                    ? preinscripcion.getEstadosSolicitud().get(preinscripcion.getEstadosSolicitud().size() - 1).getEstado_actual() : "Enviado");
+                preinscripcionMap.put("estado", preinscripcion.estadoActual("Enviado"));
                 
                 // Determinar el tipo correcto de solicitud
                 String tipoSolicitud = "Preinscripcion";
@@ -405,8 +398,7 @@ public class ReportesCursosVeranoRestController {
                     }
                     
                     // Determinar acciones disponibles basado en el estado de la preinscripcion y del curso
-                    String estadoPreinscripcion = preinscripcion.getEstadosSolicitud() != null && !preinscripcion.getEstadosSolicitud().isEmpty() 
-                        ? preinscripcion.getEstadosSolicitud().get(preinscripcion.getEstadosSolicitud().size() - 1).getEstado_actual() : "Enviado";
+                    String estadoPreinscripcion = preinscripcion.estadoActual("Enviado");
                     
                     if (EstadoSolicitudCursoVerano.APROBADO.texto().equals(estadoPreinscripcion)) {
                         if ("Inscripcion".equals(estadoCurso)) {
@@ -421,8 +413,7 @@ public class ReportesCursosVeranoRestController {
                     }
                 } else {
                     // Para solicitudes de curso nuevo
-                    String estadoPreinscripcion = preinscripcion.getEstadosSolicitud() != null && !preinscripcion.getEstadosSolicitud().isEmpty() 
-                        ? preinscripcion.getEstadosSolicitud().get(preinscripcion.getEstadosSolicitud().size() - 1).getEstado_actual() : "Enviado";
+                    String estadoPreinscripcion = preinscripcion.estadoActual("Enviado");
                     
                     if (EstadoSolicitudCursoVerano.ENVIADA.texto().equals(estadoPreinscripcion)) {
                         accionesDisponibles.add("esperando_aprobacion_curso");
@@ -456,10 +447,7 @@ public class ReportesCursosVeranoRestController {
                 inscripcionMap.put("fecha", inscripcion.getFecha_registro_solicitud());
                 
                 // Obtener el estado actual de la inscripcion
-                String estadoInscripcion = EstadoSolicitudCursoVerano.ENVIADA.texto();
-                if (inscripcion.getEstadosSolicitud() != null && !inscripcion.getEstadosSolicitud().isEmpty()) {
-                    estadoInscripcion = inscripcion.getEstadosSolicitud().get(inscripcion.getEstadosSolicitud().size() - 1).getEstado_actual();
-                }
+                String estadoInscripcion = inscripcion.estadoActual(EstadoSolicitudCursoVerano.ENVIADA.texto());
                 inscripcionMap.put("estado", estadoInscripcion);
                 
                 inscripcionMap.put("tipoSolicitud", "Inscripcion");

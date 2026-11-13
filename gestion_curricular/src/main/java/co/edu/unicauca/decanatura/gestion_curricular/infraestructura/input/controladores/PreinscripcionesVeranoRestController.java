@@ -77,16 +77,11 @@ public class PreinscripcionesVeranoRestController {
             Map<String, Object> preinscripcionMap = new HashMap<>();
             preinscripcionMap.put("id", preinscripcion.getId_solicitud());
             preinscripcionMap.put("fecha", preinscripcion.getFecha_registro_solicitud());
-            String estadoActual = preinscripcion.getEstadosSolicitud() != null && !preinscripcion.getEstadosSolicitud().isEmpty() 
-                ? preinscripcion.getEstadosSolicitud().get(preinscripcion.getEstadosSolicitud().size() - 1).getEstado_actual()
-                : "Enviado";
+            String estadoActual = preinscripcion.estadoActual("Enviado");
             preinscripcionMap.put("estado", estadoActual);
-            String comentarioEstado = null;
-            if (preinscripcion.getEstadosSolicitud() != null && !preinscripcion.getEstadosSolicitud().isEmpty()) {
-                co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.EstadoSolicitud ultimoEstado =
-                    preinscripcion.getEstadosSolicitud().get(preinscripcion.getEstadosSolicitud().size() - 1);
-                comentarioEstado = ultimoEstado.getComentario();
-            }
+            co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.EstadoSolicitud ultimoEstado =
+                preinscripcion.ultimoRegistroEstado();
+            String comentarioEstado = ultimoEstado == null ? null : ultimoEstado.getComentario();
             if (comentarioEstado != null && !comentarioEstado.trim().isEmpty()) {
                 preinscripcionMap.put("comentarioEstado", comentarioEstado);
             }
@@ -313,10 +308,7 @@ public class PreinscripcionesVeranoRestController {
             preinscripcionMap.put("fecha_preinscripcion", preinscripcion.getFecha_registro_solicitud());
             
             // Estado de la solicitud
-            String estado = "Pendiente"; // Valor por defecto
-            if (preinscripcion.getEstadosSolicitud() != null && !preinscripcion.getEstadosSolicitud().isEmpty()) {
-                estado = preinscripcion.getEstadosSolicitud().get(preinscripcion.getEstadosSolicitud().size() - 1).getEstado_actual();
-            }
+            String estado = preinscripcion.estadoActual("Pendiente"); // Valor por defecto
             preinscripcionMap.put("estado", estado);
             
             // Observaciones
@@ -411,8 +403,7 @@ public class PreinscripcionesVeranoRestController {
         Map<String, Object> preinscripcion = new HashMap<>();
         preinscripcion.put("id_preinscripcion", solicitudActualizada.getId_solicitud());
         preinscripcion.put("observaciones", solicitudActualizada.getObservacion());
-        preinscripcion.put("estado", solicitudActualizada.getEstadosSolicitud() != null && !solicitudActualizada.getEstadosSolicitud().isEmpty() 
-            ? solicitudActualizada.getEstadosSolicitud().get(solicitudActualizada.getEstadosSolicitud().size() - 1).getEstado_actual() : "Pendiente");
+        preinscripcion.put("estado", solicitudActualizada.estadoActual("Pendiente"));
         
         respuesta.put("preinscripcion", preinscripcion);
         

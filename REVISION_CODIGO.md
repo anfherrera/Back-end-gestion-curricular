@@ -17,6 +17,7 @@ Rutas abreviadas: `…/` = `gestion_curricular/src/main/java/co/edu/unicauca/dec
 |---|-------|---------|-----------------|-------|
 | 0 | 2026-11-13 | Revisión inicial | — | Línea base: 283 clases, 29.4k líneas en `main`. |
 | 1 | 2026-11-13 | Claude | ARQ-1, MUE-1, MUE-2, MUE-3, MUE-4, MUE-8, BUG-2, BUG-3, BUG-5, BUG-6 | Prueba de arquitectura con línea base. |
+| 2 | 2026-11-13 | Claude | DUP-4, DUP-3 | Enums de estado sin cambiar valores guardados ni JSON. Nuevos BUG-7 y BUG-8, documentados y sin corregir. 458 pruebas en JDK 17 y 25. |
 |   |       |         |                 |       |
 
 ## Resumen de la línea base
@@ -108,7 +109,13 @@ Rutas abreviadas: `…/` = `gestion_curricular/src/main/java/co/edu/unicauca/dec
 
   Debe quedar una sola regla en el dominio, y el gateway se encarga solo del bloqueo y el conteo. Las pruebas `CupoConcurrenteTest` y `CupoCursoVeranoTest` deben seguir pasando.
 
-- [ ] **DUP-3. El último estado se calcula a mano 21 veces** (`getEstadosSolicitud().get(size() - 1)`), aunque ya existe [FlujoEstadosSolicitud.ultimoEstado(...)](gestion_curricular/src/main/java/co/edu/unicauca/decanatura/gestion_curricular/dominio/modelos/FlujoEstadosSolicitud.java#L128). Hay que añadir `Solicitud.estadoActual()` y usarlo en todas partes. Dónde aparece: ReportesCursosVerano (7), GestionarSolicitudCursoVeranoCU (6), InscripcionesVerano (6), PreinscripcionesVerano (4), GestionarCursoOfertadoVeranoCU (3), CursosVerano (2) y otros 4.
+- [x] **DUP-3. El último estado se calcula a mano 21 veces** (`getEstadosSolicitud().get(size() - 1)`), aunque ya existe [FlujoEstadosSolicitud.ultimoEstado(...)](gestion_curricular/src/main/java/co/edu/unicauca/decanatura/gestion_curricular/dominio/modelos/FlujoEstadosSolicitud.java#L128). Hay que añadir `Solicitud.estadoActual()` y usarlo en todas partes. Dónde aparece: ReportesCursosVerano (7), GestionarSolicitudCursoVeranoCU (6), InscripcionesVerano (6), PreinscripcionesVerano (4), GestionarCursoOfertadoVeranoCU (3), CursosVerano (2) y otros 4.
+  *Hecho:*
+  - [Solicitud](gestion_curricular/src/main/java/co/edu/unicauca/decanatura/gestion_curricular/dominio/modelos/Solicitud.java) tiene `ultimoRegistroEstado()`, `estadoActual()` y `estadoActual(siNoHayEstados)`. Se usan en los casos de uso, en los controladores de verano y en los cuatro `listarSolicitudesPorRol`. Se borró el helper privado `ultimoEstado(List)` de `GestionarSolicitudCursoVeranoCUAdapter`.
+  - **No delega en `FlujoEstadosSolicitud.ultimoEstado`**, que salta los registros con estado vacío; el código anterior no lo hacía. Así no cambia ningún resultado. Unificar los dos queda como *decisión pendiente*.
+  - Única diferencia: antes, si la lista de estados era null o el último `estado_actual` era null, cuatro validaciones de `GestionarSolicitudCursoVeranoCUAdapter` (aprobar, rechazar, completar inscripción) lanzaban `NullPointerException`; ahora responden con el error de regla de negocio. En la práctica no ocurre, porque la lista nunca es null y el constructor pone `"Enviado"` por defecto.
+  - Fuera de alcance: los estados de **curso** (`getEstadosCursoOfertados`, 8 sitios) ya tienen `TransicionEstadoCurso.estadoActual`, que devuelve `SIN_ESTADO` y no null. `yaOcupaCupo` del gateway trabaja sobre la entidad JPA y se revisa con DUP-2.
+  - Prueba: `SolicitudEstadoActualTest`.
 
 - [x] **DUP-4. Los estados se escriben como texto.** `"APROBADA_FUNCIONARIO"` aparece 35 veces, `"APROBADA_COORDINADOR"` 30, `"APROBADA"` 30, `"ENVIADA"` 24, `"RECHAZADA"` 22 y `"Pago_Validado"` 11. Hay que usar el enum [EstadosSolicitud](gestion_curricular/src/main/java/co/edu/unicauca/decanatura/gestion_curricular/dominio/modelos/Enums/EstadosSolicitud.java), que hoy no se usa en ningún sitio, y crear uno para los estados de cursos de verano (`Pago_Validado`, `Inscrito`, …).
   *Hecho. Los valores guardados y los del JSON no cambian:*

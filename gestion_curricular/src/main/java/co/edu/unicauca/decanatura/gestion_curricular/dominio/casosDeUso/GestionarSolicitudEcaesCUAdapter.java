@@ -179,10 +179,7 @@ public class GestionarSolicitudEcaesCUAdapter implements GestionarSolicitudEcaes
         List<SolicitudEcaes> todas = objGestionarSolicitudEcaesGateway.listar();
 
         return todas.stream().filter(solicitud -> {
-            List<EstadoSolicitud> estados = solicitud.getEstadosSolicitud();
-            EstadoSolicitud ultimoEstado = estados != null && !estados.isEmpty()
-                ? estados.get(estados.size() - 1)
-                : null;
+            EstadoSolicitud ultimoEstado = solicitud.ultimoRegistroEstado();
 
             switch (rol) {
                 case "ESTUDIANTE":

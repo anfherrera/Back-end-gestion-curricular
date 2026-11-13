@@ -282,7 +282,7 @@ public class GestionarSolicitudCursoVeranoCUAdapter implements GestionarSolicitu
 
             usuariosPreinscritos.add(usuario.getId_usuario());
             var inscripcion = primeraInscripcionPorUsuario.get(usuario.getId_usuario());
-            String estadoInscripcion = inscripcion == null ? null : ultimoEstado(inscripcion.getEstadosSolicitud());
+            String estadoInscripcion = inscripcion == null ? null : inscripcion.estadoActual();
             estudiantes.add(new EstudianteCurso(usuario, preinscripcion, inscripcion, estadoOEnviada(preinscripcion),
                     Objects.toString(estadoInscripcion, "Sin inscripción")));
         }
@@ -302,8 +302,7 @@ public class GestionarSolicitudCursoVeranoCUAdapter implements GestionarSolicitu
     }
 
     private static String estadoOEnviada(Solicitud solicitud) {
-        List<EstadoSolicitud> estados = solicitud.getEstadosSolicitud();
-        return estados == null || estados.isEmpty() ? EstadoSolicitudCursoVerano.ENVIADA.texto() : ultimoEstado(estados);
+        return solicitud.estadoActual(EstadoSolicitudCursoVerano.ENVIADA.texto());
     }
 
     @Override
@@ -319,8 +318,7 @@ public class GestionarSolicitudCursoVeranoCUAdapter implements GestionarSolicitu
         }
         
         // Verificar que esté en estado "Enviada"
-        if (solicitud.getEstadosSolicitud().isEmpty() || 
-            !solicitud.getEstadosSolicitud().get(solicitud.getEstadosSolicitud().size() - 1).getEstado_actual().equals(EstadoSolicitudCursoVerano.ENVIADA.texto())) {
+        if (!EstadoSolicitudCursoVerano.ENVIADA.texto().equals(solicitud.estadoActual())) {
             this.objFormateadorResultados.retornarRespuestaErrorReglaDeNegocio("La solicitud no está en estado 'Enviada' para ser aprobada");
         }
         
@@ -347,8 +345,7 @@ public class GestionarSolicitudCursoVeranoCUAdapter implements GestionarSolicitu
         }
         
         // Verificar que esté en estado "Enviada"
-        if (solicitud.getEstadosSolicitud().isEmpty() || 
-            !solicitud.getEstadosSolicitud().get(solicitud.getEstadosSolicitud().size() - 1).getEstado_actual().equals(EstadoSolicitudCursoVerano.ENVIADA.texto())) {
+        if (!EstadoSolicitudCursoVerano.ENVIADA.texto().equals(solicitud.estadoActual())) {
             this.objFormateadorResultados.retornarRespuestaErrorReglaDeNegocio("La solicitud no está en estado 'Enviada' para ser rechazada");
         }
         
@@ -371,12 +368,8 @@ public class GestionarSolicitudCursoVeranoCUAdapter implements GestionarSolicitu
         }
         
         // Verificar que esté en estado "Enviada" o "Pago_Validado" usando el último estado
-        String estadoActual = null;
-        if (solicitud.getEstadosSolicitud() != null && !solicitud.getEstadosSolicitud().isEmpty()) {
-            EstadoSolicitud ultimoEstado = solicitud.getEstadosSolicitud().get(solicitud.getEstadosSolicitud().size() - 1);
-            estadoActual = ultimoEstado.getEstado_actual();
-        }
-        
+        String estadoActual = solicitud.estadoActual();
+
         if (estadoActual == null || (!estadoActual.equals(EstadoSolicitudCursoVerano.ENVIADA.texto()) && !estadoActual.equals(EstadoSolicitudCursoVerano.PAGO_VALIDADO.texto()))) {
             this.objFormateadorResultados.retornarRespuestaErrorReglaDeNegocio("La solicitud no está en estado 'Enviada' o 'Pago_Validado' para validar el pago. Estado actual: " + estadoActual);
         }
@@ -416,8 +409,7 @@ public class GestionarSolicitudCursoVeranoCUAdapter implements GestionarSolicitu
         }
         
         // Verificar que el pago esté validado
-        if (solicitud.getEstadosSolicitud().isEmpty() || 
-            !solicitud.getEstadosSolicitud().get(solicitud.getEstadosSolicitud().size() - 1).getEstado_actual().equals(EstadoSolicitudCursoVerano.PAGO_VALIDADO.texto())) {
+        if (!EstadoSolicitudCursoVerano.PAGO_VALIDADO.texto().equals(solicitud.estadoActual())) {
             this.objFormateadorResultados.retornarRespuestaErrorReglaDeNegocio("El pago debe estar validado para completar la inscripción");
         }
         
@@ -474,13 +466,6 @@ public class GestionarSolicitudCursoVeranoCUAdapter implements GestionarSolicitu
 
     // ==================== Apoyo ====================
 
-    /** Último estado con texto de la lista, o null si no hay. */
-    private static String ultimoEstado(List<EstadoSolicitud> estados) {
-        if (estados == null || estados.isEmpty()) {
-            return null;
-        }
-        return estados.get(estados.size() - 1).getEstado_actual();
-    }
 
     /** Exige que el curso esté en la fase indicada (último estado). */
     private void exigirEstadoCurso(CursoOfertadoVerano curso, String estadoRequerido, String queSolicitud) {
@@ -498,7 +483,7 @@ public class GestionarSolicitudCursoVeranoCUAdapter implements GestionarSolicitu
         String estadoFiltro = estado == null || estado.trim().isEmpty() ? null : estado.trim();
         Date finInclusivo = fin == null ? null : new Date(fin.getTime() + 24L * 60 * 60 * 1000 - 1);
         return objGestionarSolicitudGateway.listarSolicitudesDeVerano(idCurso).stream()
-                .filter(s -> estadoFiltro == null || estadoFiltro.equalsIgnoreCase(ultimoEstado(s.getEstadosSolicitud())))
+                .filter(s -> estadoFiltro == null || estadoFiltro.equalsIgnoreCase(s.estadoActual()))
                 .filter(s -> coincidePeriodo(s, periodo))
                 .filter(s -> coincideFecha(s.getFecha_registro_solicitud(), inicio, finInclusivo))
                 .toList();
@@ -533,11 +518,11 @@ public class GestionarSolicitudCursoVeranoCUAdapter implements GestionarSolicitu
     @Override
     public boolean tieneInscripcionActiva(Integer idUsuario, Integer idCurso) {
         return buscarInscripcionesPorUsuarioYCurso(idUsuario, idCurso).stream()
-                .anyMatch(inscripcion -> !EstadoSolicitudCursoVerano.PAGO_RECHAZADO.texto().equals(ultimoEstado(inscripcion.getEstadosSolicitud())));
+                .anyMatch(inscripcion -> !EstadoSolicitudCursoVerano.PAGO_RECHAZADO.texto().equals(inscripcion.estadoActual()));
     }
 
     private static boolean preinscripcionAprobada(Solicitud solicitud) {
-        String estado = ultimoEstado(solicitud.getEstadosSolicitud());
+        String estado = solicitud.estadoActual();
         // "Aprobada": variante antigua que el código ya no escribe; se sigue aceptando al leer.
         return EstadoSolicitudCursoVerano.APROBADO.texto().equals(estado) || "Aprobada".equals(estado);
     }
