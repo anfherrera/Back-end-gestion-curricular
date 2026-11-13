@@ -67,7 +67,7 @@ public class CursosVeranoRestController {
             @RequestParam(required = false) String periodoAcademico,
             @RequestParam(required = false) Integer idPrograma) {
         List<CursosOfertadosDTORespuesta> respuesta = cursoCU
-                .listarPorFiltros(periodoOActual(periodoAcademico), idPrograma, false).stream()
+                .listarPorFiltros(PeriodoAcademicoEnum.oActual(periodoAcademico), idPrograma, false).stream()
                 .map(cursoMapper::mappearDeCursoOfertadoARespuestaDisponible)
                 .map(cursoMapper::postMapCurso)
                 .toList();
@@ -91,7 +91,7 @@ public class CursosVeranoRestController {
             @RequestParam(required = false, defaultValue = "false") Boolean todosLosPeriodos) {
         boolean sinFiltroDePeriodo = Boolean.TRUE.equals(todosLosPeriodos)
                 || "todos".equalsIgnoreCase(periodoAcademico == null ? null : periodoAcademico.trim());
-        String periodo = sinFiltroDePeriodo ? null : periodoOActual(periodoAcademico);
+        String periodo = sinFiltroDePeriodo ? null : PeriodoAcademicoEnum.oActual(periodoAcademico);
         List<CursosOfertadosDTORespuesta> respuesta = cursoCU.listarPorFiltros(periodo, idPrograma, true).stream()
                 .map(cursoMapper::mappearDeCursoOfertadoARespuestaDisponible)
                 .toList();
@@ -141,14 +141,6 @@ public class CursosVeranoRestController {
         info.put("descripcion", salon.getNumero_salon()
                 + (salon.getEdificio() != null ? " - " + salon.getEdificio() : ""));
         return info;
-    }
-
-    private String periodoOActual(String periodoAcademico) {
-        if (periodoAcademico != null && !periodoAcademico.trim().isEmpty()) {
-            return periodoAcademico.trim();
-        }
-        PeriodoAcademicoEnum periodoActual = PeriodoAcademicoEnum.getPeriodoActual();
-        return periodoActual == null ? null : periodoActual.getValor();
     }
 
     /**

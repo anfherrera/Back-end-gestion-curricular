@@ -204,6 +204,19 @@ public enum PeriodoAcademicoEnum {
         return actual != null ? actual.getValor() : null;
     }
 
+    /**
+     * Escritura de verano: conserva el valor informado, sin recortarlo. Si falta,
+     * usa el actual; si la fecha queda fuera del enum, conserva también null o blanco.
+     * No se unifica con la normalización de los filtros de lectura.
+     */
+    public static String completarSiFalta(String periodoAcademico) {
+        if (periodoAcademico != null && !periodoAcademico.trim().isEmpty()) {
+            return periodoAcademico;
+        }
+        String actual = oActual(null);
+        return actual != null ? actual : periodoAcademico;
+    }
+
     private static final Pattern ANIO = Pattern.compile("(\\d{4})");
 
     /**

@@ -104,16 +104,8 @@ public class GestionarSolicitudCursoVeranoGatewayImplAdapter implements Gestiona
                 // Para cursos nuevos, no necesitamos crear la entidad del curso
                 // Solo guardamos la solicitud con la información del curso solicitado
                 cursoOfertadoVeranoEntity = null;
-                // Para cursos nuevos, usar el período académico del dominio si está disponible
-                if (solicitudCursoVerano.getPeriodo_academico() != null && !solicitudCursoVerano.getPeriodo_academico().trim().isEmpty()) {
-                    solicitudCursoVeranoEntity.setPeriodo_academico(solicitudCursoVerano.getPeriodo_academico());
-                } else {
-                    // Si no se proporcionó período académico, establecer el período actual automáticamente
-                    PeriodoAcademicoEnum periodoActual = PeriodoAcademicoEnum.getPeriodoActual();
-                    if (periodoActual != null) {
-                        solicitudCursoVeranoEntity.setPeriodo_academico(periodoActual.getValor());
-                    }
-                }
+                solicitudCursoVeranoEntity.setPeriodo_academico(
+                        PeriodoAcademicoEnum.completarSiFalta(solicitudCursoVerano.getPeriodo_academico()));
             } else if(cursoOfertadoVeranoRepository.existsById(idCurso)){
                 cursoOfertadoVeranoEntity = cursoOfertadoVeranoRepository.findById(idCurso)
                         .orElseThrow(() -> new IllegalArgumentException("Curso ofertado no encontrado con ID: " + idCurso));
@@ -131,18 +123,10 @@ public class GestionarSolicitudCursoVeranoGatewayImplAdapter implements Gestiona
                 DocenteEntity docenteEntity = solicitudMapper.map(cursoOfertado.getObjDocente(), DocenteEntity.class);
                 cursoOfertadoVeranoEntity.setObjMateria(materiaEntity);
                 cursoOfertadoVeranoEntity.setObjDocente(docenteEntity);
-                // Si el curso tiene período académico en el dominio, asignarlo también a la solicitud
-                if (cursoOfertado.getPeriodo_academico() != null && !cursoOfertado.getPeriodo_academico().trim().isEmpty()) {
-                    cursoOfertadoVeranoEntity.setPeriodo_academico(cursoOfertado.getPeriodo_academico());
-                    solicitudCursoVeranoEntity.setPeriodo_academico(cursoOfertado.getPeriodo_academico());
-                } else {
-                    // Si el curso no tiene período académico, usar el período actual automáticamente
-                    PeriodoAcademicoEnum periodoActual = PeriodoAcademicoEnum.getPeriodoActual();
-                    if (periodoActual != null) {
-                        String periodoValor = periodoActual.getValor();
-                        cursoOfertadoVeranoEntity.setPeriodo_academico(periodoValor);
-                        solicitudCursoVeranoEntity.setPeriodo_academico(periodoValor);
-                    }
+                String periodoValor = PeriodoAcademicoEnum.completarSiFalta(cursoOfertado.getPeriodo_academico());
+                if (periodoValor != null && !periodoValor.trim().isEmpty()) {
+                    cursoOfertadoVeranoEntity.setPeriodo_academico(periodoValor);
+                    solicitudCursoVeranoEntity.setPeriodo_academico(periodoValor);
                 }
             }
             solicitudCursoVeranoEntity.setObjCursoOfertadoVerano(cursoOfertadoVeranoEntity);

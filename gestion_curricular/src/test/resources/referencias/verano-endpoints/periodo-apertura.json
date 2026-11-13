@@ -1,0 +1,25 @@
+{
+  "Primera_Vez" : {
+    "status" : 200,
+    "body" : {
+      "fecha" : "<ahora>",
+      "codigo" : "123",
+      "estado" : "Pendiente",
+      "objUsuario" : {
+        "nombre_completo" : "Estudiante",
+        "id_usuario" : 31
+      },
+      "id_solicitud" : 7,
+      "curso" : "Materia",
+      "nombreCompleto" : "Estudiante",
+      "condicion" : "Primera_Vez"
+    }
+  },
+  "INVALIDA" : {
+    "status" : 400,
+    "body" : {
+      "tipo" : "VALIDATION_ERROR",
+      "error" : "Error de validacion: Condicion invalida: INVALIDA. Valores validos: [Primera_Vez, Habilitación, Repeteción]"
+    }
+  }
+}

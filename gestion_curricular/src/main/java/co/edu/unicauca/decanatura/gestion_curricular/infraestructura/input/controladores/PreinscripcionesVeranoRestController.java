@@ -155,15 +155,8 @@ public class PreinscripcionesVeranoRestController {
                             .NombreSolicitud.CURSO_VERANO, peticion.getNombreCompleto()));
             solicitudDominio.setFecha_registro_solicitud(new java.util.Date());
             
-            // Si no se proporcionó período académico, establecer el período actual automáticamente
-            // El gateway también lo manejará, pero es mejor establecerlo aquí para consistencia
-            if (solicitudDominio.getPeriodo_academico() == null || solicitudDominio.getPeriodo_academico().trim().isEmpty()) {
-                PeriodoAcademicoEnum periodoActual = PeriodoAcademicoEnum.getPeriodoActual();
-                if (periodoActual != null) {
-                    solicitudDominio.setPeriodo_academico(periodoActual.getValor());
-                }
-            }
-            
+            solicitudDominio.setPeriodo_academico(PeriodoAcademicoEnum.completarSiFalta(solicitudDominio.getPeriodo_academico()));
+
             // Crear un curso con ID = 0 para indicar que es un curso nuevo
             CursoOfertadoVerano cursoTemporal = new CursoOfertadoVerano();
             cursoTemporal.setId_curso(0); // ID = 0 indica curso nuevo
