@@ -157,14 +157,7 @@ public class SolicitudPazYSalvoRestController {
             // El nombre de la solicitud lo pone el gateway al guardar (NombreSolicitud)
         }
 
-        // Si no se proporcionó período académico, establecer el período actual automáticamente
-        if (solicitud.getPeriodo_academico() == null || solicitud.getPeriodo_academico().trim().isEmpty()) {
-            PeriodoAcademicoEnum periodoActual = PeriodoAcademicoEnum.getPeriodoActual();
-            if (periodoActual != null) {
-                solicitud.setPeriodo_academico(periodoActual.getValor());
-            }
-        }
-
+        // Sin período académico, el caso de uso pone el actual
         SolicitudPazYSalvo solicitudCreada = solicitudPazYSalvoCU.guardar(solicitud);
         SolicitudPazYSalvoDTORespuesta respuesta = solicitudMapperDominio.mappearDeSolicitudARespuesta(solicitudCreada);
 
@@ -200,11 +193,10 @@ public class SolicitudPazYSalvoRestController {
             solicitud.setFecha_registro_solicitud(new Date());
         }
 
-        // Agregar período académico: si se proporciona, validarlo; si no, usar el período actual automáticamente
+        // Período académico: si viene, debe ser válido (si no viene, el caso de uso pone el actual)
         if (mapPeticion.containsKey("periodo_academico") && mapPeticion.get("periodo_academico") != null) {
             String periodoAcademico = mapPeticion.get("periodo_academico").toString().trim();
             if (!periodoAcademico.isBlank()) {
-                // Validar formato del período académico
                 if (PeriodoAcademicoEnum.esValido(periodoAcademico)) {
                     solicitud.setPeriodo_academico(periodoAcademico);
                 } else {
@@ -212,15 +204,7 @@ public class SolicitudPazYSalvoRestController {
                 }
             }
         }
-        
-        // Si no se proporcionó período académico, establecer el período actual automáticamente
-        if (solicitud.getPeriodo_academico() == null || solicitud.getPeriodo_academico().trim().isEmpty()) {
-            PeriodoAcademicoEnum periodoActual = PeriodoAcademicoEnum.getPeriodoActual();
-            if (periodoActual != null) {
-                solicitud.setPeriodo_academico(periodoActual.getValor());
-            }
-        }
-        
+
         // Guardar título y director del trabajo de grado si se proporcionan
         if (mapPeticion.containsKey("titulo_trabajo_grado") && mapPeticion.get("titulo_trabajo_grado") != null) {
             String titulo = mapPeticion.get("titulo_trabajo_grado").toString().trim();

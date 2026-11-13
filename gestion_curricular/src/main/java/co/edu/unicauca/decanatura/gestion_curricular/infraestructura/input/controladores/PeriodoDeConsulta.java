@@ -14,15 +14,11 @@ final class PeriodoDeConsulta {
     }
 
     /**
-     * Listados de pendientes: el período pedido o, si no viene, el actual.
+     * Listados de pendientes: el período pedido o, si no viene, el actual ({@link PeriodoAcademicoEnum#oActual}).
      * @return null (sin filtro) solo si no viene y la fecha no corresponde a ningún período conocido
      */
     static String oActual(String periodoAcademico) {
-        if (periodoAcademico != null && !periodoAcademico.trim().isEmpty()) {
-            return periodoAcademico.trim();
-        }
-        PeriodoAcademicoEnum actual = PeriodoAcademicoEnum.getPeriodoActual();
-        return actual != null ? actual.getValor() : null;
+        return PeriodoAcademicoEnum.oActual(periodoAcademico);
     }
 
     /**

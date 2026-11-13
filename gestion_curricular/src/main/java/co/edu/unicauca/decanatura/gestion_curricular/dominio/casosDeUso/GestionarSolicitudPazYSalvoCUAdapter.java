@@ -1,6 +1,7 @@
 package co.edu.unicauca.decanatura.gestion_curricular.dominio.casosDeUso;
 
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Enums.EstadosSolicitud;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Enums.PeriodoAcademicoEnum;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.ArrayList;
@@ -83,6 +84,14 @@ public class GestionarSolicitudPazYSalvoCUAdapter implements GestionarSolicitudP
         if (tieneSolicitudActiva) {
             formateadorResultados.retornarRespuestaErrorReglaDeNegocio(
                     "Ya tiene una solicitud de Paz y Salvo en trámite. Debe esperar a que sea aprobada o rechazada.");
+        }
+
+        // Sin período académico: el actual. Uno con texto se guarda tal cual llegó.
+        if (solicitud.getPeriodo_academico() == null || solicitud.getPeriodo_academico().trim().isEmpty()) {
+            String periodoActual = PeriodoAcademicoEnum.oActual(null);
+            if (periodoActual != null) {
+                solicitud.setPeriodo_academico(periodoActual);
+            }
         }
 
         // Guardar solicitud

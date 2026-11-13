@@ -187,7 +187,20 @@ public enum PeriodoAcademicoEnum {
             return null;
         }
     }
-    
+
+    /**
+     * El período dado, recortado, si tiene texto; si no, el valor del período actual.
+     * No valida el período dado.
+     * @return null solo si no viene y la fecha no corresponde a ningún período conocido
+     */
+    public static String oActual(String periodoAcademico) {
+        if (periodoAcademico != null && !periodoAcademico.trim().isEmpty()) {
+            return periodoAcademico.trim();
+        }
+        PeriodoAcademicoEnum actual = getPeriodoActual();
+        return actual != null ? actual.getValor() : null;
+    }
+
     @Override
     public String toString() {
         return valor;
