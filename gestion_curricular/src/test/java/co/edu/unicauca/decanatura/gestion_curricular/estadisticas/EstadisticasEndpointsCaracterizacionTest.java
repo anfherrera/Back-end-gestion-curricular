@@ -10,8 +10,10 @@ import java.nio.file.Path;
 import java.time.Instant;
 import java.time.OffsetDateTime;
 import java.time.format.DateTimeParseException;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TimeZone;
@@ -63,7 +65,8 @@ import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarE
  *
  * <p>Antes de comparar se ordenan los campos de cada objeto y se reemplazan por {@code "<ahora>"} las fechas que
  * dependen del momento de la consulta ({@code fechaConsulta}, {@code fechaGeneracion}, {@code fechaPrediccion}),
- * y en los PDF y Excel la línea "Fecha de generación". El orden de las listas sí se compara.
+ * y en los PDF y Excel la línea "Fecha de generación". El orden de las listas JSON sí se compara; el de las
+ * líneas del PDF y las filas del Excel no (ver {@link #ordenadas}).
  *
  * <p>Referencias en {@code src/test/resources/referencias/estadisticas-endpoints/}. Para regrabarlas tras un
  * cambio intencional: {@code mvnw test -Dtest=EstadisticasEndpointsCaracterizacionTest -DgrabarReferencia=true}
@@ -294,8 +297,9 @@ class EstadisticasEndpointsCaracterizacionTest {
         return instante != null && Math.abs(instante.toEpochMilli() - System.currentTimeMillis()) < 48 * 3_600_000L;
     }
 
+    /** Líneas de texto del PDF, ordenadas (ver {@link #ordenadas}). */
     private static JsonNode textoPdf(byte[] contenido) throws Exception {
-        ArrayNode lineas = JSON.createArrayNode();
+        List<String> lineas = new ArrayList<>();
         PdfReader lector = new PdfReader(contenido);
         try {
             for (int pagina = 1; pagina <= lector.getNumberOfPages(); pagina++) {
@@ -306,26 +310,37 @@ class EstadisticasEndpointsCaracterizacionTest {
         } finally {
             lector.close();
         }
-        return lineas;
+        return ordenadas(lineas);
     }
 
+    /** Filas de cada hoja (celdas separadas por " | "), ordenadas (ver {@link #ordenadas}). */
     private static JsonNode celdasExcel(byte[] contenido) throws Exception {
         ObjectNode hojas = JSON.createObjectNode();
         DataFormatter formato = new DataFormatter();
         try (XSSFWorkbook libro = new XSSFWorkbook(new ByteArrayInputStream(contenido))) {
             for (Sheet hoja : libro) {
-                ArrayNode filas = JSON.createArrayNode();
+                List<String> filas = new ArrayList<>();
                 for (Row fila : hoja) {
-                    ArrayNode celdas = JSON.createArrayNode();
+                    List<String> celdas = new ArrayList<>();
                     for (Cell celda : fila) {
                         celdas.add(sinFechaDeGeneracion(formato.formatCellValue(celda)));
                     }
-                    filas.add(celdas);
+                    filas.add(String.join(" | ", celdas));
                 }
-                hojas.set(hoja.getSheetName(), filas);
+                hojas.set(hoja.getSheetName(), ordenadas(filas));
             }
         }
         return hojas;
+    }
+
+    /**
+     * Parte de lo que se imprime sale de mapas creados con {@code Map.of}, cuyo orden de iteración cambia entre
+     * ejecuciones; por eso en los documentos se compara qué líneas hay, no en qué orden.
+     */
+    private static JsonNode ordenadas(List<String> lineas) {
+        ArrayNode salida = JSON.createArrayNode();
+        lineas.stream().sorted().forEach(salida::add);
+        return salida;
     }
 
     private static String sinFechaDeGeneracion(String texto) {
