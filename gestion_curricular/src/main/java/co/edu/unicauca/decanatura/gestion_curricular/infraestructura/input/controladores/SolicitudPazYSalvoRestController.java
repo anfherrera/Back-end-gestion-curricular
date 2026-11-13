@@ -14,7 +14,7 @@ import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarD
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.FiltroSolicitudes;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.FlujoEstadosSolicitud;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.SolicitudPazYSalvo;
-import co.edu.unicauca.decanatura.gestion_curricular.dominio.excepciones.ReglaNegocioExcepcion;
+import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.controladorExcepciones.ErroresPazYSalvo;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Documento;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.DTOPeticion.CambioEstadoSolicitudDTOPeticion;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.DTOPeticion.SolicitudPazYSalvoDTOPeticion;
@@ -76,7 +76,7 @@ public class SolicitudPazYSalvoRestController {
     @PostMapping("/crearSolicitud-PazYSalvo")
     public ResponseEntity<?> crearSolicitudPazYSalvo(
             @RequestBody Object peticion) {
-        try {
+        return ErroresPazYSalvo.alCrear(() -> {
             if (peticion == null) {
                 return respuestaBadRequest("Los datos de la solicitud son requeridos");
             }
@@ -122,15 +122,7 @@ public class SolicitudPazYSalvoRestController {
             }
 
             return respuestaBadRequest("Formato de solicitud no soportado");
-        } catch (ReglaNegocioExcepcion e) {
-            // Ej.: el estudiante ya tiene una solicitud en trámite
-            return ResponseEntity.status(HttpStatus.CONFLICT)
-                    .body(Map.of("error", e.formatException(), "codigo", "REGLA_NEGOCIO"));
-        } catch (IllegalArgumentException e) {
-            return respuestaBadRequest("Formato de solicitud inválido: " + e.getMessage());
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
-        }
+        });
     }
 
     private ResponseEntity<SolicitudPazYSalvoDTORespuesta> guardarSolicitudDesdeDto(
@@ -370,7 +362,7 @@ public class SolicitudPazYSalvoRestController {
     @PutMapping("/actualizarEstadoSolicitud")
     public ResponseEntity<?> actualizarEstadoSolicitudPazYSalvo(
             @RequestBody CambioEstadoSolicitudDTOPeticion peticion) {
-        try {
+        return ErroresPazYSalvo.alCambiarEstado(() -> {
             if (peticion == null) {
                 return ResponseEntity.badRequest().body(Map.of("error", "La petición no puede ser nula"));
             }
@@ -398,11 +390,7 @@ public class SolicitudPazYSalvoRestController {
             }
 
             return ResponseEntity.noContent().build();
-        } catch (EntidadNoExisteException e) {
-            return ResponseEntity.notFound().build();
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
-        }
+        });
     }
 
     // ===== Documento de Paz y Salvo (plantilla PAZ_SALVO de DocumentGeneratorService) =====

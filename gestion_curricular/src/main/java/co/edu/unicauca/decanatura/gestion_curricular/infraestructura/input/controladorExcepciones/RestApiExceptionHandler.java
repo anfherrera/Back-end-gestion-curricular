@@ -44,6 +44,11 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class RestApiExceptionHandler {
 
+        @ExceptionHandler(RespuestaHttpExcepcion.class)
+        public ResponseEntity<Object> handleRespuestaCompatible(RespuestaHttpExcepcion ex) {
+                return ResponseEntity.status(ex.estado()).body(ex.cuerpo());
+        }
+
         // ==================== 4xx: errores del cliente o de reglas de negocio ====================
 
         @ExceptionHandler(EntidadYaExisteException.class)
