@@ -50,7 +50,6 @@ class ArquitecturaHexagonalTest {
                 Set.of(
                         "infraestructura/input/controladores/CursosVeranoRestController.java",          // ARQ-3
                         "infraestructura/input/controladores/DocumentGeneratorController.java",         // ARQ-3
-                        "infraestructura/input/controladores/EstadisticasRestController.java",          // ARQ-3
                         "infraestructura/input/controladores/ReportesCursosVeranoRestController.java",  // ARQ-3
                         "infraestructura/input/controladores/SolicitudPazYSalvoRestController.java"));  // ARQ-3
     }

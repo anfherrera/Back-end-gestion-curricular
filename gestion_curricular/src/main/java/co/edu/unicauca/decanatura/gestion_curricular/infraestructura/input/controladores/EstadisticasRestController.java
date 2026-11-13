@@ -4,7 +4,7 @@ import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarE
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Estadistica;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.DTORespuesta.EstadisticaDTORespuesta;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.mappers.EstadisticaMapperDominio;
-import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.formateador.GeneradorReportesEstadisticas;
+import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GenerarReportesEstadisticasCUIntPort;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;
@@ -33,7 +33,7 @@ public class EstadisticasRestController {
 
     private final GestionarEstadisticasCUIntPort estadisticaCU;
     private final EstadisticaMapperDominio mapper;
-    private final GeneradorReportesEstadisticas generadorReportes;
+    private final GenerarReportesEstadisticasCUIntPort generadorReportes;
 
     @PostMapping("/crear")
     public ResponseEntity<EstadisticaDTORespuesta> crearEstadistica(@RequestBody @Valid Estadistica estadistica) {
@@ -367,7 +367,7 @@ public class EstadisticasRestController {
     /** PDF del dashboard general. */
     @GetMapping("/export/pdf/general")
     public ResponseEntity<byte[]> exportarEstadisticasGeneralesPDF() {
-        byte[] pdf = generadorReportes.pdfGeneral(estadisticaCU.obtenerEstadisticasGlobales());
+        byte[] pdf = generadorReportes.pdfGeneral();
         return archivo(pdf, MediaType.APPLICATION_PDF, "estadisticas_generales_dashboard.pdf");
     }
 
@@ -376,8 +376,7 @@ public class EstadisticasRestController {
     public ResponseEntity<byte[]> exportarEstadisticasCursosVeranoPDF(
             @RequestParam(required = false) String periodoAcademico,
             @RequestParam(required = false) Integer idPrograma) {
-        Map<String, Object> datos = estadisticaCU.obtenerEstadisticasCursosVerano(periodoAcademico, idPrograma);
-        byte[] pdf = generadorReportes.pdfCursosVerano(datos, periodoAcademico, idPrograma);
+        byte[] pdf = generadorReportes.pdfCursosVerano(periodoAcademico, idPrograma);
         return archivo(pdf, MediaType.APPLICATION_PDF, nombreArchivoCursosVerano(periodoAcademico, idPrograma) + ".pdf");
     }
 
@@ -389,16 +388,14 @@ public class EstadisticasRestController {
             @RequestParam(required = false) String periodoAcademico,
             @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") Date fechaInicio,
             @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") Date fechaFin) {
-        var datos = estadisticaCU.prepararReporte(proceso, idPrograma,
-                periodoAcademico, fechaInicio, fechaFin);
-        byte[] pdf = generadorReportes.pdfCompleto(datos.estadisticas(), datos.cursosVerano(), periodoAcademico, idPrograma);
+        byte[] pdf = generadorReportes.pdfCompleto(proceso, idPrograma, periodoAcademico, fechaInicio, fechaFin);
         return archivo(pdf, MediaType.APPLICATION_PDF, "estadisticas_generales.pdf");
     }
 
     /** Excel del dashboard general. */
     @GetMapping("/export/excel/general")
     public ResponseEntity<byte[]> exportarEstadisticasGeneralesExcel() {
-        byte[] excel = generadorReportes.excel(estadisticaCU.obtenerEstadisticasGlobales(), null, null, null);
+        byte[] excel = generadorReportes.excelGeneral();
         return archivo(excel, EXCEL, "estadisticas_generales_dashboard.xlsx");
     }
 
@@ -407,8 +404,7 @@ public class EstadisticasRestController {
     public ResponseEntity<byte[]> exportarEstadisticasCursosVeranoExcel(
             @RequestParam(required = false) String periodoAcademico,
             @RequestParam(required = false) Integer idPrograma) {
-        Map<String, Object> datos = estadisticaCU.obtenerEstadisticasCursosVerano(periodoAcademico, idPrograma);
-        byte[] excel = generadorReportes.excel(null, datos, periodoAcademico, idPrograma);
+        byte[] excel = generadorReportes.excelCursosVerano(periodoAcademico, idPrograma);
         return archivo(excel, EXCEL, nombreArchivoCursosVerano(periodoAcademico, idPrograma) + ".xlsx");
     }
 
@@ -420,9 +416,7 @@ public class EstadisticasRestController {
             @RequestParam(required = false) String periodoAcademico,
             @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") Date fechaInicio,
             @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") Date fechaFin) {
-        var datos = estadisticaCU.prepararReporte(proceso, idPrograma,
-                periodoAcademico, fechaInicio, fechaFin);
-        byte[] excel = generadorReportes.excel(datos.estadisticas(), datos.cursosVerano(), periodoAcademico, idPrograma);
+        byte[] excel = generadorReportes.excelCompleto(proceso, idPrograma, periodoAcademico, fechaInicio, fechaFin);
         return archivo(excel, EXCEL, "estadisticas_generales.xlsx");
     }
 

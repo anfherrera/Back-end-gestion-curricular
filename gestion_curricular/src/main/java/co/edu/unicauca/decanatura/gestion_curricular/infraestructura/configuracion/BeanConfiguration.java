@@ -49,6 +49,12 @@ import co.edu.unicauca.decanatura.gestion_curricular.dominio.casosDeUso.Gestiona
 
 @Configuration
 public class BeanConfiguration {
+    @Bean
+    public co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GenerarReportesEstadisticasCUIntPort crearGenerarReportesEstadisticas(
+            co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarEstadisticasCUIntPort estadisticas,
+            co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.GenerarReportesEstadisticasIntPort generador) {
+        return new co.edu.unicauca.decanatura.gestion_curricular.dominio.casosDeUso.GenerarReportesEstadisticasCUAdapter(estadisticas, generador);
+    }
 
     @Bean
     public GestionarCursoOfertadoVeranoCUAdapter crearGestionarCursoOfertadoVeranoCUInt(GestionarCursoOfertadoVeranoGatewayIntPort objGestionarCursoOfertadoVeranoGateway,

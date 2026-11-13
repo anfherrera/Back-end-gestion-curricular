@@ -21,7 +21,7 @@ import com.itextpdf.text.pdf.PdfWriter;
  * a partir de los datos que entrega el caso de uso de estadísticas.
  */
 @Component
-public class GeneradorReportesEstadisticas {
+public class GeneradorReportesEstadisticas implements co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.GenerarReportesEstadisticasIntPort {
 
     /** Agrega el contenido propio de cada reporte a un documento PDF ya abierto. */
     @FunctionalInterface
