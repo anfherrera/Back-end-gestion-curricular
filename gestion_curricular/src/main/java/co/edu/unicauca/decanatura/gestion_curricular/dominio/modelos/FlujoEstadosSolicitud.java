@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 
 /**
@@ -125,6 +126,35 @@ public final class FlujoEstadosSolicitud {
                     + ". Desde " + actual + " solo se permite: " + permitidos);
         }
         return rolResponsable.get(actual);
+    }
+
+    /**
+     * Estado en el que una solicitud espera la decisión de {@code rol}: ENVIADA para el Funcionario,
+     * APROBADA_FUNCIONARIO para el Coordinador y APROBADA_COORDINADOR para el Secretario.
+     *
+     * @param rol {@link #FUNCIONARIO}, {@link #COORDINADOR} o {@link #SECRETARIO}
+     * @return vacío si el rol no decide ningún paso de este flujo (el Coordinador en ECAES)
+     */
+    public Optional<EstadosSolicitud> estadoPendientePara(String rol) {
+        return rolResponsable.entrySet().stream()
+                .filter(paso -> paso.getValue().equals(rol))
+                .map(paso -> EstadosSolicitud.valueOf(paso.getKey()))
+                .findFirst();
+    }
+
+    /**
+     * Estado al que pasa la solicitud cuando {@code rol} la aprueba (el siguiente que no es RECHAZADA).
+     * Sirve para listar lo que el rol ya procesó: APROBADA_FUNCIONARIO para el Funcionario,
+     * APROBADA_COORDINADOR para el Coordinador y APROBADA para el Secretario.
+     *
+     * @return vacío si el rol no decide ningún paso de este flujo
+     */
+    public Optional<EstadosSolicitud> estadoAprobadoPor(String rol) {
+        return estadoPendientePara(rol)
+                .flatMap(pendiente -> siguientes.get(pendiente.name()).stream()
+                        .filter(siguiente -> !RECHAZADA.equals(siguiente))
+                        .map(EstadosSolicitud::valueOf)
+                        .findFirst());
     }
 
     /** Último estado con texto de la lista (ignora registros vacíos). Null si no hay. */
