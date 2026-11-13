@@ -16,7 +16,7 @@ Rutas abreviadas: `…/` = `gestion_curricular/src/main/java/co/edu/unicauca/dec
 | # | Fecha | Revisor | Puntos cerrados | Notas |
 |---|-------|---------|-----------------|-------|
 | 0 | 2026-11-13 | Revisión inicial | — | Línea base: 283 clases, 29.4k líneas en `main`. |
-| 1 | 2026-11-13 | Claude | ARQ-1, MUE-1, MUE-2, MUE-3, MUE-4, MUE-8, BUG-2, BUG-3, BUG-6 | Prueba de arquitectura con línea base. Se abre BUG-5. |
+| 1 | 2026-11-13 | Claude | ARQ-1, MUE-1, MUE-2, MUE-3, MUE-4, MUE-8, BUG-2, BUG-3, BUG-5, BUG-6 | Prueba de arquitectura con línea base. |
 |   |       |         |                 |       |
 
 ## Resumen de la línea base
@@ -181,7 +181,7 @@ Rutas abreviadas: `…/` = `gestion_curricular/src/main/java/co/edu/unicauca/dec
 
 - [ ] **BUG-4. `GET /listarSolicitud-PazYSalvo/{id}` tiene tres significados.** Según el caso, `{id}` es un id de solicitud, un id de usuario (si la solicitud no existe) o un nombre de rol ([L400-450](gestion_curricular/src/main/java/co/edu/unicauca/decanatura/gestion_curricular/infraestructura/input/controladores/SolicitudPazYSalvoRestController.java#L400-L450)). Es confuso y difícil de autorizar bien. Hay que separarlo en rutas explícitas. ⚠️ **frontend**
 
-- [ ] **BUG-5. `DataInitializer` restablece la contraseña del administrador en cada arranque.** En [DataInitializer](gestion_curricular/src/main/java/co/edu/unicauca/decanatura/gestion_curricular/infraestructura/configuracion/DataInitializer.java) (`crearUsuarioAdminSiNoExiste`), si `admin@unicauca.edu.co` existe y su contraseña no es `password123`, la vuelve a poner en `password123`. Cambiar la contraseña del admin no sirve: al reiniciar queda la conocida. *Decisión pendiente*: crear el admin solo si no existe, con la contraseña tomada de una variable de entorno (como ya se hace con la cédula), y no tocarlo después.
+- [x] **BUG-5. `DataInitializer` restablece la contraseña del administrador en cada arranque.** *Hecho: solo crea la cuenta si no existe, con `ADMIN_CEDULA` y `ADMIN_PASSWORD` (en `dev`, `password123` por defecto), y no la toca después. `test-data.sql` traía un hash que no era de `password123` y funcionaba solo porque el inicializador lo sobrescribía; se corrigió.* En [DataInitializer](gestion_curricular/src/main/java/co/edu/unicauca/decanatura/gestion_curricular/infraestructura/configuracion/DataInitializer.java) (`crearUsuarioAdminSiNoExiste`), si `admin@unicauca.edu.co` existe y su contraseña no es `password123`, la vuelve a poner en `password123`. Cambiar la contraseña del admin no sirve: al reiniciar queda la conocida. *Decisión pendiente*: crear el admin solo si no existe, con la contraseña tomada de una variable de entorno (como ya se hace con la cédula), y no tocarlo después.
 
 - [x] **BUG-6. Una prueba fallaba en JDK 17 en Windows.** `test-data.sql` se cargaba con el charset de la plataforma (Windows-1252), así que "Juan Pérez" llegaba corrupto y `listarEstudiantesConPreinscripcionEInscripcion` fallaba. Se añadió `spring.sql.init.encoding=UTF-8` en `application-test.properties`. No afecta a producción.
 

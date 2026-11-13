@@ -86,7 +86,7 @@ INSERT INTO EstadosCursos(idEstado, estado_actual, fecha_registro_estado, idfkCu
 INSERT INTO EstadosCursos(idEstado, estado_actual, fecha_registro_estado, idfkCurso) VALUES (12, 'Preinscripcion', '2025-07-02 12:00:00', 3);
 INSERT INTO EstadosCursos(idEstado, estado_actual, fecha_registro_estado, idfkCurso) VALUES (13, 'Inscripcion', '2025-07-03 08:00:00', 3);
 
-INSERT INTO Usuarios(idUsuario, codigo, nombre_completo, correo, password, estado_usuario, idfkRol, idfkPrograma, cedula) VALUES (26, 'ADMIN001', 'Administrador del Sistema', 'admin@unicauca.edu.co', '$2a$10$N9qo8uLOickgx2ZMRZoMyeIjFOjtXgjOU92LhL6YP1dPW1Z/uLlLG', 1, 1, 1, '000009000');
+INSERT INTO Usuarios(idUsuario, codigo, nombre_completo, correo, password, estado_usuario, idfkRol, idfkPrograma, cedula) VALUES (26, 'ADMIN001', 'Administrador del Sistema', 'admin@unicauca.edu.co', '$2a$10$m32rNR7WwYjS4Tmu08UcpeeOokBlY1OPtQ1h3MgJv70zGeolkD.Qu', 1, 1, 1, '000009000');
 
 -- Solicitud aprobada usada para generar certificados de paz y salvo.
 INSERT INTO Solicitudes(idSolicitud, nombre_solicitud, fecha_registro_solicitud, idUsuario, periodo_academico) VALUES (37, 'Solicitud de Paz y Salvo', '2025-08-26 09:20:00', 1, '2025-2');

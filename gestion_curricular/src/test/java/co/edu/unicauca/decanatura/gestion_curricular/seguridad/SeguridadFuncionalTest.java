@@ -81,7 +81,7 @@ class SeguridadFuncionalTest {
     @Test
     @DisplayName("Seguridad Funcional 3: Login con credenciales correctas retorna 200 y token")
     void testLoginCredencialesCorrectasRetorna200YToken() throws Exception {
-        // Admin en test-data.sql: password123 (hash BCrypt); DataInitializer asegura que coincida
+        // Admin en test-data.sql: password123 (hash BCrypt)
         String json = """
             {"correo": "admin@unicauca.edu.co", "password": "password123"}
             """;

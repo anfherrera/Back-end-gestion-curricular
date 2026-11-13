@@ -12,108 +12,72 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.core.annotation.Order;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
 /**
- * Inicializador de datos que se ejecuta al iniciar la aplicación
- * Crea el usuario administrador si no existe
+ * Crea la cuenta de administrador la primera vez que arranca la aplicación, si se configuraron
+ * {@code app.bootstrap-admin.cedula} y {@code app.bootstrap-admin.password}.
+ *
+ * <p>Si la cuenta ya existe no se modifica: la contraseña que el administrador haya cambiado se conserva.
  */
 @Component
-@Order(1) // Ejecutar después de que Spring Security esté configurado
+@Order(1)
 @RequiredArgsConstructor
 @Slf4j
 public class DataInitializer implements CommandLineRunner {
+
+    static final String CORREO_ADMINISTRADOR = "admin@unicauca.edu.co";
+    private static final int ID_ROL_ADMINISTRADOR = 1;
+    private static final int ID_PROGRAMA_POR_DEFECTO = 1;
 
     private final GestionarUsuarioGatewayIntPort usuarioGateway;
     private final GestionarRolGatewayIntPort rolGateway;
     private final GestionarProgramaGatewayIntPort programaGateway;
     private final GestionarUsuarioCUIntPort usuarioCU;
-    private final PasswordEncoder passwordEncoder;
 
     @Value("${app.bootstrap-admin.cedula:}")
     private String cedulaAdministrador;
 
+    @Value("${app.bootstrap-admin.password:}")
+    private String passwordAdministrador;
+
     @Override
     public void run(String... args) {
-        crearUsuarioAdminSiNoExiste();
-    }
-
-    private void crearUsuarioAdminSiNoExiste() {
+        if (cedulaAdministrador.isBlank() || passwordAdministrador.isBlank()) {
+            return;
+        }
         try {
-            // Buscar si el usuario admin ya existe
-            Usuario adminExistente = usuarioGateway.buscarUsuarioPorCorreo("admin@unicauca.edu.co");
-            
-            if (adminExistente == null) {
-                if (cedulaAdministrador.isBlank()) {
-                    return;
-                }
-                
-                // Verificar que el rol y programa existan
-                Rol rolAdmin = rolGateway.bucarRolPorId(1);
-                Programa programa = programaGateway.buscarPorIdPrograma(1);
-                
-                if (rolAdmin == null) {
-                    log.error("No se puede crear el usuario admin: El rol Administrador (ID=1) no existe en la base de datos");
-                    return;
-                }
-                
-                if (programa == null) {
-                    log.error("No se puede crear el usuario admin: El programa (ID=1) no existe en la base de datos");
-                    return;
-                }
-                
-                // Crear el usuario administrador usando el caso de uso
-                Usuario admin = new Usuario();
-                admin.setCodigo("ADMIN001");
-                admin.setCedula(cedulaAdministrador);
-                admin.setNombre_completo("Administrador del Sistema");
-                admin.setCorreo("admin@unicauca.edu.co");
-                admin.setPassword("password123"); // El caso de uso lo hashea automáticamente
-                admin.setEstado_usuario(true);
-                
-                // Configurar rol Administrador (idRol=1)
-                admin.setObjRol(rolAdmin);
-                
-                // Configurar programa (idPrograma=1 - Ingenieria de Sistemas)
-                admin.setObjPrograma(programa);
-                
-                // Crear el usuario usando el caso de uso (tiene validaciones y hashea la password)
-                usuarioCU.crearUsuario(admin);
-                
-            } else {
-                
-                // Verificar si el usuario tiene el rol correcto
-                if (adminExistente.getObjRol() == null || adminExistente.getObjRol().getId_rol() != 1) {
-                    Rol rolAdmin = rolGateway.bucarRolPorId(1);
-                    if (rolAdmin != null) {
-                        adminExistente.setObjRol(rolAdmin);
-                        usuarioGateway.actualizarUsuario(adminExistente);
-                    }
-                }
-                
-                // Verificar si la contraseña está hasheada correctamente (BCrypt empieza con $2a$ o $2b$)
-                String passwordActual = adminExistente.getPassword();
-                boolean passwordCorrectamenteHasheada = passwordActual != null && 
-                    (passwordActual.startsWith("$2a$") || passwordActual.startsWith("$2b$"));
-                
-                if (!passwordCorrectamenteHasheada) {
-                    // Actualizar la contraseña hasheada
-                    adminExistente.setPassword(passwordEncoder.encode("password123"));
-                    usuarioGateway.actualizarUsuario(adminExistente);
-                } else {
-                    // Verificar que la contraseña funcione
-                    boolean passwordValida = passwordEncoder.matches("password123", passwordActual);
-                    if (!passwordValida) {
-                        adminExistente.setPassword(passwordEncoder.encode("password123"));
-                        usuarioGateway.actualizarUsuario(adminExistente);
-                    } else {
-                    }
-                }
+            if (usuarioGateway.buscarUsuarioPorCorreo(CORREO_ADMINISTRADOR) == null) {
+                crearAdministrador();
             }
         } catch (RuntimeException e) {
             log.warn("No se pudo inicializar la cuenta de administrador", e);
         }
     }
-}
 
+    private void crearAdministrador() {
+        Rol rolAdmin = rolGateway.bucarRolPorId(ID_ROL_ADMINISTRADOR);
+        if (rolAdmin == null) {
+            log.error("No se puede crear el administrador: el rol Administrador (ID={}) no existe", ID_ROL_ADMINISTRADOR);
+            return;
+        }
+        Programa programa = programaGateway.buscarPorIdPrograma(ID_PROGRAMA_POR_DEFECTO);
+        if (programa == null) {
+            log.error("No se puede crear el administrador: el programa (ID={}) no existe", ID_PROGRAMA_POR_DEFECTO);
+            return;
+        }
+
+        Usuario admin = new Usuario();
+        admin.setCodigo("ADMIN001");
+        admin.setCedula(cedulaAdministrador);
+        admin.setNombre_completo("Administrador del Sistema");
+        admin.setCorreo(CORREO_ADMINISTRADOR);
+        admin.setPassword(passwordAdministrador); // el caso de uso la guarda con BCrypt
+        admin.setEstado_usuario(true);
+        admin.setObjRol(rolAdmin);
+        admin.setObjPrograma(programa);
+
+        usuarioCU.crearUsuario(admin);
+        log.info("Cuenta de administrador {} creada", CORREO_ADMINISTRADOR);
+    }
+}
