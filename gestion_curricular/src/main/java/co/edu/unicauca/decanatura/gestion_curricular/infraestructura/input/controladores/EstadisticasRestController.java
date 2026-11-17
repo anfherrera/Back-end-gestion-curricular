@@ -1,7 +1,6 @@
 package co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.controladores;
 
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -23,6 +22,8 @@ import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Estadistica
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.RespuestasArchivo;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.dto.peticion.EstadisticaDTOPeticion;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.dto.respuesta.EstadisticaDTORespuesta;
+import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.dto.respuesta.EstadisticasFiltradasDTORespuesta.ErrorPeriodo;
+import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.dto.respuesta.EstadisticasFiltradasDTORespuesta.Filtradas;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.mappers.EstadisticaMapperDominio;
 
 @RestController
@@ -146,7 +147,7 @@ public class EstadisticasRestController {
      * @return ResponseEntity con estadísticas filtradas
      */
     @GetMapping("/filtradas")
-    public ResponseEntity<Map<String, Object>> obtenerEstadisticasFiltradas(
+    public ResponseEntity<Filtradas> obtenerEstadisticasFiltradas(
             @RequestParam(name = "nombreProceso", required = false) String nombreProceso,
             @RequestParam(name = "idPrograma", required = false) Integer idPrograma,
             @RequestParam(name = "estado", required = false) String estado,
@@ -175,18 +176,7 @@ public class EstadisticasRestController {
         }
         
         // Asegurar que la estructura JSON tenga el formato solicitado
-        Map<String, Object> respuesta = new HashMap<>();
-        respuesta.put("fechaConsulta", estadisticas.get("fechaConsulta"));
-        respuesta.put("totalSolicitudes", estadisticas.get("totalSolicitudes"));
-        respuesta.put("totalAprobadas", estadisticas.get("totalAprobadas"));
-        respuesta.put("totalRechazadas", estadisticas.get("totalRechazadas"));
-        respuesta.put("totalEnProceso", estadisticas.get("totalEnProceso"));
-        respuesta.put("porcentajeAprobacion", estadisticas.get("porcentajeAprobacion"));
-        respuesta.put("porTipoProceso", estadisticas.get("porTipoProceso"));
-        respuesta.put("porPrograma", estadisticas.get("porPrograma"));
-        respuesta.put("porEstado", estadisticas.get("porEstado"));
-        
-        return ResponseEntity.ok(respuesta);
+        return ResponseEntity.ok(Filtradas.de(estadisticas));
     }
 
     /**
@@ -238,7 +228,7 @@ public class EstadisticasRestController {
      * @return ResponseEntity con estadísticas del período
      */
     @GetMapping("/periodo")
-    public ResponseEntity<Map<String, Object>> obtenerEstadisticasPorPeriodo(
+    public ResponseEntity<?> obtenerEstadisticasPorPeriodo(
             @RequestParam(name = "periodoAcademico", required = false) String periodoAcademico,
             @RequestParam(name = "fechaInicio", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") Date fechaInicio,
             @RequestParam(name = "fechaFin", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") Date fechaFin) {
@@ -254,9 +244,8 @@ public class EstadisticasRestController {
         } 
         // Si no se proporciona nada, retornar error
         else {
-            Map<String, Object> error = new HashMap<>();
-            error.put("error", "Debe proporcionar 'periodoAcademico' (ej: '2024-2') o 'fechaInicio' y 'fechaFin'");
-            return ResponseEntity.badRequest().body(error);
+            return ResponseEntity.badRequest().body(new ErrorPeriodo(
+                    "Debe proporcionar 'periodoAcademico' (ej: '2024-2') o 'fechaInicio' y 'fechaFin'"));
         }
         
         return ResponseEntity.ok(estadisticas);

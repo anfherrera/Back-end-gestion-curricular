@@ -1,0 +1,165 @@
+package co.edu.unicauca.decanatura.gestion_curricular.estadisticas;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
+
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
+import org.junit.jupiter.api.Test;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.RequestBuilder;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+
+import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GenerarReportesEstadisticasCUIntPort;
+import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarEstadisticasCUIntPort;
+import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.controladores.EstadisticasRestController;
+import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.excepciones.RestApiExceptionHandler;
+import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.mappers.EstadisticaMapperDominio;
+
+/**
+ * Fija {@code /api/estadisticas/filtradas} y el 400 de {@code /periodo} antes de tiparlos (ARQ-10). Los mapas del
+ * caso de uso son fijos y mezclan tipos; {@code claves} lista cada clave con su ruta y tipo JSON en orden de
+ * escritura.
+ */
+class EstadisticasFiltradasCaracterizacionTest {
+    private static final long MARZO = 1710522000000L;
+
+    private final ObjectMapper json = new ObjectMapper();
+
+    /**
+     * En el otro caso, {@code %20} dentro de la ruta se codifica de nuevo y llega como texto; aquí los blancos
+     * llegan como parámetro.
+     */
+    @Test
+    void conservaLosParametrosEnBlanco() throws Exception {
+        MockMvc mvc = montar();
+        ObjectNode resultados = json.createObjectNode();
+        registrar(resultados, "proceso en blanco", mvc,
+            get("/api/estadisticas/filtradas").param("nombreProceso", "  ").param("idPrograma", "2"));
+        registrar(resultados, "estado en blanco", mvc,
+            get("/api/estadisticas/filtradas").param("estado", " ").param("fechaInicio", "2024-01-01")
+                .param("fechaFin", "2024-06-30"));
+        registrar(resultados, "periodo academico con espacios", mvc,
+            get("/api/estadisticas/periodo").param("periodoAcademico", " 2024-1 "));
+        registrar(resultados, "periodo en blanco con inicio", mvc,
+            get("/api/estadisticas/periodo").param("periodoAcademico", "  ").param("fechaInicio", "2024-01-01"));
+        registrar(resultados, "periodo sin parametros", mvc, get("/api/estadisticas/periodo"));
+
+        Path referencia = Path.of("src/test/resources/referencias/estadisticas-endpoints/filtradas-periodo-blancos.json");
+        if (Boolean.getBoolean("grabarReferencia") && Files.notExists(referencia)) {
+            Files.writeString(referencia, json.writerWithDefaultPrettyPrinter().writeValueAsString(resultados));
+        }
+        assertThat(resultados).isEqualTo(json.readTree(Files.readString(referencia)));
+    }
+
+    @Test
+    void conservaFiltradasYElRechazoDelPeriodo() throws Exception {
+        MockMvc mvc = montar();
+        ObjectNode resultados = json.createObjectNode();
+
+        String base = "/api/estadisticas/filtradas";
+        registrar(resultados, "proceso", mvc, base + "?nombreProceso=Reingreso&idPrograma=1");
+        registrar(resultados, "proceso en blanco", mvc, base + "?nombreProceso=%20%20&idPrograma=2");
+        registrar(resultados, "estado", mvc, base + "?idPrograma=0&estado=APROBADA");
+        registrar(resultados, "fechas", mvc, base + "?fechaInicio=2024-01-01&fechaFin=2024-06-30");
+        registrar(resultados, "solo inicio", mvc, base + "?fechaInicio=2024-01-01");
+        registrar(resultados, "sin filtros", mvc, base);
+
+        String periodo = "/api/estadisticas/periodo";
+        registrar(resultados, "periodo academico", mvc, periodo + "?periodoAcademico=%202024-1%20");
+        registrar(resultados, "periodo fechas", mvc, periodo + "?fechaInicio=2024-01-01&fechaFin=2024-06-30");
+        registrar(resultados, "periodo sin datos", mvc, periodo + "?periodoAcademico=%20&fechaInicio=2024-01-01");
+
+        Path referencia = Path.of("src/test/resources/referencias/estadisticas-endpoints/filtradas-periodo.json");
+        if (Boolean.getBoolean("grabarReferencia") && Files.notExists(referencia)) {
+            Files.writeString(referencia, json.writerWithDefaultPrettyPrinter().writeValueAsString(resultados));
+        }
+        assertThat(resultados).isEqualTo(json.readTree(Files.readString(referencia)));
+    }
+
+    private MockMvc montar() {
+        var cu = mock(GestionarEstadisticasCUIntPort.class);
+        when(cu.obtenerEstadisticasPorProceso(anyString())).thenAnswer(i -> completo("proceso", 10, 4L, 66.7));
+        when(cu.obtenerEstadisticasPorPrograma(anyInt())).thenAnswer(i -> completo("programa", 8, 2, 25.0));
+        when(cu.obtenerEstadisticasPorEstado(anyString())).thenAnswer(i -> {
+            Map<String, Object> incompleto = new HashMap<>();
+            incompleto.put("totalSolicitudes", 3);
+            incompleto.put("porEstado", null);
+            incompleto.put("extra", "no se copia");
+            return incompleto;
+        });
+        when(cu.obtenerEstadisticasPorPeriodo(any(Date.class), any(Date.class)))
+            .thenAnswer(i -> completo("periodo", 5, 5L, 100.0));
+        when(cu.obtenerEstadisticasGlobales()).thenAnswer(i -> completo("globales", 0, 0, 0.0));
+        when(cu.obtenerEstadisticasPorPeriodoAcademico(anyString())).thenAnswer(i -> completo("academico", 1, 1, 1.0));
+        return MockMvcBuilders.standaloneSetup(new EstadisticasRestController(cu,
+                mock(EstadisticaMapperDominio.class), mock(GenerarReportesEstadisticasCUIntPort.class)))
+            .setControllerAdvice(new RestApiExceptionHandler()).build();
+    }
+
+    private void registrar(ObjectNode resultados, String nombre, MockMvc mvc, String ruta) throws Exception {
+        registrar(resultados, nombre, mvc, get(ruta));
+    }
+
+    private void registrar(ObjectNode resultados, String nombre, MockMvc mvc, RequestBuilder peticion)
+            throws Exception {
+        var respuesta = mvc.perform(peticion).andReturn().getResponse();
+        byte[] cuerpo = respuesta.getContentAsByteArray();
+        JsonNode body = cuerpo.length == 0 ? json.nullNode() : json.readTree(cuerpo);
+        ObjectNode resultado = resultados.putObject(nombre);
+        resultado.put("status", respuesta.getStatus());
+        resultado.set("body", body);
+        ArrayNode claves = resultado.putArray("claves");
+        recorrer(body, "", claves);
+    }
+
+    private static void recorrer(JsonNode nodo, String ruta, ArrayNode claves) {
+        if (nodo.isObject()) {
+            nodo.fields().forEachRemaining(campo -> {
+                String hija = ruta + "." + campo.getKey();
+                claves.add(hija + ":" + campo.getValue().getNodeType());
+                recorrer(campo.getValue(), hija, claves);
+            });
+        } else if (nodo.isArray()) {
+            for (int i = 0; i < nodo.size(); i++) {
+                recorrer(nodo.get(i), ruta + "[" + i + "]", claves);
+            }
+        }
+    }
+
+    /** Mapa como los del dominio: {@code HashMap} con totales numéricos, porcentaje y desgloses anidados. */
+    private static Map<String, Object> completo(String origen, Number total, Number aprobadas, double porcentaje) {
+        Map<String, Object> mapa = new HashMap<>();
+        mapa.put("fechaConsulta", new Date(MARZO));
+        mapa.put("totalSolicitudes", total);
+        mapa.put("totalAprobadas", aprobadas);
+        mapa.put("totalRechazadas", 1);
+        mapa.put("totalEnProceso", 2L);
+        mapa.put("porcentajeAprobacion", porcentaje);
+        Map<String, Object> porTipo = new HashMap<>();
+        porTipo.put("Reingreso", Map.of("total", 3));
+        mapa.put("porTipoProceso", porTipo);
+        Map<String, Integer> porPrograma = new HashMap<>();
+        porPrograma.put("Sistemas", 4);
+        mapa.put("porPrograma", porPrograma);
+        Map<String, Integer> porEstado = new HashMap<>();
+        porEstado.put("APROBADA", 2);
+        porEstado.put("RECHAZADA", 1);
+        mapa.put("porEstado", porEstado);
+        mapa.put("origen", origen);
+        return mapa;
+    }
+}
