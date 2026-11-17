@@ -32,7 +32,7 @@ public interface CursosOfertadosMapperDominio {
     @Mapping(target = "fecha_inicio", ignore = true) // Se asigna manualmente en el controlador
     @Mapping(target = "fecha_fin", ignore = true) // Se asigna manualmente en el controlador
     @Mapping(target = "periodo_academico", ignore = true) // Se asigna manualmente en el controlador
-    CursoOfertadoVerano mappearDeDTOPeticionACursoOfertado(CursosOfertadosDTOPeticion peticion);
+    CursoOfertadoVerano mapearDeDTOPeticionACursoOfertado(CursosOfertadosDTOPeticion peticion);
 
     // Dominio → DTO Respuesta
     @Mapping(source = "id_curso", target = "id_curso")
@@ -56,7 +56,7 @@ public interface CursosOfertadosMapperDominio {
     @Mapping(source = ".", target = "periodo", qualifiedByName = "calcularPeriodoDesdeCurso")
     @Mapping(target = "id_salon", ignore = true) // Se asignará manualmente después del mapeo
     @Mapping(target = "salonInfo", ignore = true) // Se asignará manualmente después del mapeo
-    CursosOfertadosDTORespuesta mappearDeCursoOfertadoARespuesta(CursoOfertadoVerano curso);
+    CursosOfertadosDTORespuesta mapearDeCursoOfertadoARespuesta(CursoOfertadoVerano curso);
     
     // Método post-mapping para asignar idCurso desde id_curso
     default CursosOfertadosDTORespuesta postMapCurso(CursosOfertadosDTORespuesta dto) {
@@ -88,8 +88,8 @@ public interface CursosOfertadosMapperDominio {
     @Mapping(source = ".", target = "periodo", qualifiedByName = "calcularPeriodoDesdeCurso")
     @Mapping(target = "id_salon", ignore = true) // Se asignará manualmente después del mapeo
     @Mapping(target = "salonInfo", ignore = true) // Se asignará manualmente después del mapeo
-    @Named("mappearDeCursoOfertadoARespuestaDisponible")
-    CursosOfertadosDTORespuesta mappearDeCursoOfertadoARespuestaDisponible(CursoOfertadoVerano curso);
+    @Named("mapearDeCursoOfertadoARespuestaDisponible")
+    CursosOfertadosDTORespuesta mapearDeCursoOfertadoARespuestaDisponible(CursoOfertadoVerano curso);
 
     // Métodos auxiliares para mapear datos reales
     @Named("crearDescripcion")

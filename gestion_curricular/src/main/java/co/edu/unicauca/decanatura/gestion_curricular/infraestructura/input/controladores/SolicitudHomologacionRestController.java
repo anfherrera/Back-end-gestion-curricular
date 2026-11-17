@@ -72,17 +72,17 @@ public class SolicitudHomologacionRestController {
     public ResponseEntity<SolicitudHomologacionDTORespuesta> crearSolicitudHomologacion(@Valid @RequestBody SolicitudHomologacionDTOPeticion peticion) {
         // El solicitante sale del token, no de lo que envía el cliente
         peticion.getObjUsuario().setId_usuario(autorizacion.idSolicitante(peticion.getObjUsuario().getId_usuario()));
-        SolicitudHomologacion solicitud = solicitudMapperDominio.mappearDeSolicitudHomologacionDTOPeticionASolicitudHomologacion(peticion);
+        SolicitudHomologacion solicitud = solicitudMapperDominio.mapearDeSolicitudHomologacionDTOPeticionASolicitudHomologacion(peticion);
         SolicitudHomologacion solicitudCreada = solicitudHomologacionCU.guardar(solicitud);
         ResponseEntity<SolicitudHomologacionDTORespuesta> respuesta = new ResponseEntity<>
-        (solicitudMapperDominio.mappearDeSolicitudHomologacionASolicitudHomologacionDTORespuesta(solicitudCreada), HttpStatus.CREATED);
+        (solicitudMapperDominio.mapearDeSolicitudHomologacionASolicitudHomologacionDTORespuesta(solicitudCreada), HttpStatus.CREATED);
         return respuesta;
     }
 
     @GetMapping("/listarSolicitud-Homologacion")
     public ResponseEntity<List<SolicitudHomologacionDTORespuesta>> listarSolicitudHomologacion() {
         List<SolicitudHomologacion> solicitudes = solicitudHomologacionCU.listarSolicitudes();
-        List<SolicitudHomologacionDTORespuesta> respuesta = solicitudMapperDominio.mappearListaDeSolicitudHomologacionARespuesta(solicitudes);
+        List<SolicitudHomologacionDTORespuesta> respuesta = solicitudMapperDominio.mapearListaDeSolicitudHomologacionARespuesta(solicitudes);
         return ResponseEntity.ok(respuesta);
     }
 
@@ -180,7 +180,7 @@ public class SolicitudHomologacionRestController {
     }
 
     private ResponseEntity<List<SolicitudHomologacionDTORespuesta>> responder(List<SolicitudHomologacion> solicitudes) {
-        return ResponseEntity.ok(solicitudMapperDominio.mappearListaDeSolicitudHomologacionARespuesta(solicitudes));
+        return ResponseEntity.ok(solicitudMapperDominio.mapearListaDeSolicitudHomologacionARespuesta(solicitudes));
     }
 
 
@@ -188,13 +188,13 @@ public class SolicitudHomologacionRestController {
     @GetMapping("/listarSolicitud-Homologacion/{id}")
     public ResponseEntity<SolicitudHomologacionDTORespuesta> listarHomologacionById(@PathVariable Integer id) {
         SolicitudHomologacion solicitud = solicitudHomologacionCU.buscarPorId(id);
-        SolicitudHomologacionDTORespuesta respuesta = solicitudMapperDominio.mappearDeSolicitudHomologacionASolicitudHomologacionDTORespuesta(solicitud);
+        SolicitudHomologacionDTORespuesta respuesta = solicitudMapperDominio.mapearDeSolicitudHomologacionASolicitudHomologacionDTORespuesta(solicitud);
         return ResponseEntity.ok(respuesta);
     }
 
     @PutMapping("/actualizarEstadoSolicitud")
     public ResponseEntity<Map<String, Object>> actualizarEstadoSolicitudHomologacion(@RequestBody CambioEstadoSolicitudDTOPeticion peticion) {
-        CambioEstadoSolicitud solicitud = solicitudMapper.mappearDeCambioEstadoSolicitudDTOPeticionACambioEstadoSolicitud(peticion);
+        CambioEstadoSolicitud solicitud = solicitudMapper.mapearDeCambioEstadoSolicitudDTOPeticionACambioEstadoSolicitud(peticion);
         // Solo el rol responsable del paso puede hacerlo (Funcionario → Coordinador → Secretario)
         String estadoActual = FlujoEstadosSolicitud.ultimoEstado(
                 solicitudHomologacionCU.buscarPorId(solicitud.getIdSolicitud()).getEstadosSolicitud());

@@ -25,7 +25,7 @@ public interface SolicitudCursoDeVeranoPreinscripcionMapperDominio {
     @Mapping(target = "codicion_solicitud", source = "codicion_solicitud")
     @Mapping(target = "nombre_estudiante", source = "nombre_estudiante")
     @Mapping(target = "observacion", source = "observacion")
-    SolicitudCursoVeranoPreinscripcionDTORespuesta mappearDeSolicitudCursoVeranoPreinscripcionARespuesta(
+    SolicitudCursoVeranoPreinscripcionDTORespuesta mapearDeSolicitudCursoVeranoPreinscripcionARespuesta(
         SolicitudCursoVeranoPreinscripcion solicitud);
 
 }

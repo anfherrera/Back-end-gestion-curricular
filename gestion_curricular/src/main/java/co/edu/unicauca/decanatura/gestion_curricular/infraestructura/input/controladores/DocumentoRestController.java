@@ -40,7 +40,7 @@ public class DocumentoRestController {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
         return new ResponseEntity<>(
-                mapperDocumento.mappearDeDocumentoADTORespuesta(documento),
+                mapperDocumento.mapearDeDocumentoADTORespuesta(documento),
                 HttpStatus.OK
         );
     }

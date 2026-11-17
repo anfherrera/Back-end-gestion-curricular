@@ -32,16 +32,16 @@ public interface SolicitudMapperDominio {
     @Mapping(source = "estadosSolicitud", target = "estadosSolicitud")
     @Mapping(source = "objUsuario", target = "objUsuario")
     @Mapping(source = "documentos", target = "documentos")
-    SolicitudDTORespuesta mappearDeSolicitudARespuesta(Solicitud solicitud);
+    SolicitudDTORespuesta mapearDeSolicitudARespuesta(Solicitud solicitud);
 
-    List<SolicitudDTORespuesta> mappearListaDeSolicitudesARespuesta(List<Solicitud> solicitudes);
+    List<SolicitudDTORespuesta> mapearListaDeSolicitudesARespuesta(List<Solicitud> solicitudes);
 
     // DTO Petición → Modelo
     @Mapping(target = "estadosSolicitud", ignore = true) // No viene en el DTO de petición
     @Mapping(target = "objCursoOfertadoVerano", ignore = true) 
     @Mapping(target = "documentos", ignore = true)
-    Solicitud mappearDeSolicitudDTOPeticionASolicitud(SolicitudDTOPeticion peticion);
+    Solicitud mapearDeSolicitudDTOPeticionASolicitud(SolicitudDTOPeticion peticion);
 
-    CambioEstadoSolicitud mappearDeCambioEstadoSolicitudDTOPeticionACambioEstadoSolicitud(CambioEstadoSolicitudDTOPeticion solicitudPeticion);
+    CambioEstadoSolicitud mapearDeCambioEstadoSolicitudDTOPeticionACambioEstadoSolicitud(CambioEstadoSolicitudDTOPeticion solicitudPeticion);
 
 }

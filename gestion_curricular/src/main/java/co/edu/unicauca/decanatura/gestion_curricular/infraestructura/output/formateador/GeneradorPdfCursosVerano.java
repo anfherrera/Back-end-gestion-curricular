@@ -21,7 +21,7 @@ public class GeneradorPdfCursosVerano implements co.edu.unicauca.decanatura.gest
     @Override
     public byte[] generarPDFCursos(List<co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.CursoOfertadoVerano> cursos,
             String periodoAcademico, Integer idPrograma) {
-        return renderizarCursos(cursos.stream().map(cursoMapper::mappearDeCursoOfertadoARespuesta).toList(), periodoAcademico, idPrograma);
+        return renderizarCursos(cursos.stream().map(cursoMapper::mapearDeCursoOfertadoARespuesta).toList(), periodoAcademico, idPrograma);
     }
 
     @Override

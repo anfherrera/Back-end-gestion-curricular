@@ -29,15 +29,15 @@ public interface SolicitudPazYSalvoMapperDominio {
     @Mapping(source = "estadosSolicitud", target = "estadosSolicitud") // CORREGIDO
     @Mapping(source = "objUsuario", target = "objUsuario")
     @Mapping(source = "documentos", target = "documentos") 
-    SolicitudPazYSalvoDTORespuesta mappearDeSolicitudARespuesta(SolicitudPazYSalvo solicitud);
+    SolicitudPazYSalvoDTORespuesta mapearDeSolicitudARespuesta(SolicitudPazYSalvo solicitud);
 
-    List<SolicitudPazYSalvoDTORespuesta> mappearListaDeSolicitudesARespuesta(List<SolicitudPazYSalvo> solicitudes);
+    List<SolicitudPazYSalvoDTORespuesta> mapearListaDeSolicitudesARespuesta(List<SolicitudPazYSalvo> solicitudes);
 
     // DTO Petición → Modelo
     @Mapping(target = "estadosSolicitud", ignore = true) 
     @Mapping(target = "objCursoOfertadoVerano", ignore = true) 
     @Mapping(target = "documentos", ignore = true)
     @Mapping(target = "fecha_ceremonia", ignore = true) // Se asigna desde el caso de uso si es necesario
-    SolicitudPazYSalvo mappearDeSolicitudDTOPeticionASolicitud(SolicitudPazYSalvoDTOPeticion peticion);
+    SolicitudPazYSalvo mapearDeSolicitudDTOPeticionASolicitud(SolicitudPazYSalvoDTOPeticion peticion);
 
 }

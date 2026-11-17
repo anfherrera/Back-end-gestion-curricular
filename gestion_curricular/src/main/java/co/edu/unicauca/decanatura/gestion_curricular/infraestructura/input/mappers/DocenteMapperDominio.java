@@ -10,9 +10,9 @@ import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.DTOPe
 public interface DocenteMapperDominio {
 
     // Dominio -> DTO de respuesta
-    DocenteDTORespuesta mappearDeDocenteADocenteDTORespuesta(Docente docente);
+    DocenteDTORespuesta mapearDeDocenteADocenteDTORespuesta(Docente docente);
 
     // DTO de petición -> Dominio
-    Docente mappearDeDocenteDTOPeticionADocente(DocenteDTOPeticion peticion);
+    Docente mapearDeDocenteDTOPeticionADocente(DocenteDTOPeticion peticion);
 
 }

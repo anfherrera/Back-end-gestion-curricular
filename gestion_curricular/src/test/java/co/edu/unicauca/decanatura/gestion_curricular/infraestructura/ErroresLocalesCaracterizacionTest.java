@@ -159,14 +159,14 @@ class ErroresLocalesCaracterizacionTest {
             Usuario u = i.getArgument(0); u.setObjRol(null); return u; }));
         caso("crearUsuario sin programa", crearUsuario, m -> when(m.usuario().crearUsuario(any())).thenAnswer(i -> {
             Usuario u = i.getArgument(0); u.setObjPrograma(null); return u; }));
-        caso("crearUsuario mapper null", crearUsuario, m -> when(m.usuarioMapper().mappearDeUsuarioAUsuarioDTORespuesta(any())).thenReturn(null));
-        caso("crearUsuario mapper source null", crearUsuario, m -> when(m.usuarioMapper().mappearDeUsuarioAUsuarioDTORespuesta(any()))
+        caso("crearUsuario mapper null", crearUsuario, m -> when(m.usuarioMapper().mapearDeUsuarioAUsuarioDTORespuesta(any())).thenReturn(null));
+        caso("crearUsuario mapper source null", crearUsuario, m -> when(m.usuarioMapper().mapearDeUsuarioAUsuarioDTORespuesta(any()))
             .thenThrow(new IllegalArgumentException("source cannot be null")));
         for (var e : EXCEPCIONES.entrySet()) {
             caso("crearUsuario crear " + e.getKey(), crearUsuario,
                 m -> when(m.usuario().crearUsuario(any())).thenThrow(e.getValue().get()));
             caso("crearUsuario mapper " + e.getKey(), crearUsuario,
-                m -> when(m.usuarioMapper().mappearDeUsuarioAUsuarioDTORespuesta(any())).thenThrow(e.getValue().get()));
+                m -> when(m.usuarioMapper().mapearDeUsuarioAUsuarioDTORespuesta(any())).thenThrow(e.getValue().get()));
         }
 
         JsonNode actual = json.valueToTree(resultados);
@@ -216,7 +216,12 @@ class ErroresLocalesCaracterizacionTest {
         Stream.of(m.solicitud(), m.curso(), m.usuario(), m.usuarioMapper())
             .flatMap(mk -> Mockito.mockingDetails(mk).getInvocations().stream())
             .sorted(Comparator.comparingInt(Invocation::getSequenceNumber))
-            .forEach(i -> llamadas.add(i.getMethod().getName()));
+            .forEach(i -> {
+                String metodo = i.getMethod().getName();
+                // La referencia registra el nombre anterior para esta misma llamada al mapper.
+                llamadas.add(metodo.equals("mapearDeUsuarioAUsuarioDTORespuesta")
+                    ? "mappearDeUsuarioAUsuarioDTORespuesta" : metodo);
+            });
 
         Map<String, Object> snapshot = new LinkedHashMap<>();
         snapshot.put("status", respuesta.getStatus());
@@ -254,7 +259,7 @@ class ErroresLocalesCaracterizacionTest {
             u.setId_usuario(21);
             return u;
         });
-        when(m.usuarioMapper().mappearDeUsuarioAUsuarioDTORespuesta(any())).thenAnswer(i -> {
+        when(m.usuarioMapper().mapearDeUsuarioAUsuarioDTORespuesta(any())).thenAnswer(i -> {
             Usuario u = i.getArgument(0);
             if (u == null) return null;
             var dto = new UsuarioDTORespuesta();

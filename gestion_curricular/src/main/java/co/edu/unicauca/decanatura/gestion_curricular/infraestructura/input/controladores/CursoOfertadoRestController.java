@@ -40,10 +40,10 @@ public class CursoOfertadoRestController {
 
     @PostMapping("/crearCurso")
     public ResponseEntity<CursosOfertadosDTORespuesta> crearCurso(@RequestBody @Valid CursosOfertadosDTOPeticion peticion) {
-        CursoOfertadoVerano curso = CursoMapper.mappearDeDTOPeticionACursoOfertado(peticion);
+        CursoOfertadoVerano curso = CursoMapper.mapearDeDTOPeticionACursoOfertado(peticion);
         CursoOfertadoVerano cursoCreado = cursoCU.crearCurso(curso);
         return new ResponseEntity<>(
-                CursoMapper.mappearDeCursoOfertadoARespuesta(cursoCreado),
+                CursoMapper.mapearDeCursoOfertadoARespuesta(cursoCreado),
                 HttpStatus.CREATED
         );
     }
@@ -53,15 +53,15 @@ public class CursoOfertadoRestController {
         if(peticion.getEstadoCursoOfertado() == null) {
             return new ResponseEntity<>(HttpStatus.CONFLICT);
         }
-        EstadoCursoOfertado nuevoEstado = estadoCursoMapper.mappearDeDTOPeticionAEstadoCursoOfertado(peticion.getEstadoCursoOfertado());
+        EstadoCursoOfertado nuevoEstado = estadoCursoMapper.mapearDeDTOPeticionAEstadoCursoOfertado(peticion.getEstadoCursoOfertado());
 
         if (nuevoEstado == null) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
-        CursoOfertadoVerano curso = CursoMapper.mappearDeDTOPeticionACursoOfertado(peticion);
+        CursoOfertadoVerano curso = CursoMapper.mapearDeDTOPeticionACursoOfertado(peticion);
         CursoOfertadoVerano cursoActualizado = cursoCU.actualizarCurso(curso, nuevoEstado); // sin nuevo estado
         return new ResponseEntity<>(
-                CursoMapper.mappearDeCursoOfertadoARespuesta(cursoActualizado),
+                CursoMapper.mapearDeCursoOfertadoARespuesta(cursoActualizado),
                 HttpStatus.ACCEPTED
         );
     }
@@ -87,7 +87,7 @@ public class CursoOfertadoRestController {
                 .collect(Collectors.toList());
         
         List<CursosOfertadosDTORespuesta> respuesta = cursosDisponibles.stream()
-                .map(CursoMapper::mappearDeCursoOfertadoARespuesta)
+                .map(CursoMapper::mapearDeCursoOfertadoARespuesta)
                 .collect(Collectors.toList());
         return ResponseEntity.ok(respuesta);
     }
@@ -100,7 +100,7 @@ public class CursoOfertadoRestController {
         List<CursoOfertadoVerano> cursos = cursoCU.listarTodos();
         // Para funcionarios, mostrar todos los cursos sin filtro de estado
         List<CursosOfertadosDTORespuesta> respuesta = cursos.stream()
-                .map(CursoMapper::mappearDeCursoOfertadoARespuesta)
+                .map(CursoMapper::mapearDeCursoOfertadoARespuesta)
                 .collect(Collectors.toList());
         return ResponseEntity.ok(respuesta);
     }

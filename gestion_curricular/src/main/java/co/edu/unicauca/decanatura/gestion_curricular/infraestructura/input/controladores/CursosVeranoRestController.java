@@ -70,7 +70,7 @@ public class CursosVeranoRestController {
             @RequestParam(required = false) Integer idPrograma) {
         List<CursosOfertadosDTORespuesta> respuesta = cursoCU
                 .listarPorFiltros(PeriodoAcademicoEnum.oActual(periodoAcademico), idPrograma, false).stream()
-                .map(cursoMapper::mappearDeCursoOfertadoARespuestaDisponible)
+                .map(cursoMapper::mapearDeCursoOfertadoARespuestaDisponible)
                 .map(cursoMapper::postMapCurso)
                 .toList();
 
@@ -95,7 +95,7 @@ public class CursosVeranoRestController {
                 || "todos".equalsIgnoreCase(periodoAcademico == null ? null : periodoAcademico.trim());
         String periodo = sinFiltroDePeriodo ? null : PeriodoAcademicoEnum.oActual(periodoAcademico);
         List<CursosOfertadosDTORespuesta> respuesta = cursoCU.listarPorFiltros(periodo, idPrograma, true).stream()
-                .map(cursoMapper::mappearDeCursoOfertadoARespuestaDisponible)
+                .map(cursoMapper::mapearDeCursoOfertadoARespuestaDisponible)
                 .toList();
 
         return ResponseEntity.ok(respuesta);
@@ -120,7 +120,7 @@ public class CursosVeranoRestController {
                 ? null : SoporteCursosVerano.normalizarPeriodoAcademico(periodo);
         List<CursoOfertadoVerano> cursos = cursoCU.listarPorFiltros(periodoFiltro, idPrograma, false);
         List<CursosOfertadosDTORespuesta> respuesta = cursos.stream()
-                .map(cursoMapper::mappearDeCursoOfertadoARespuesta)
+                .map(cursoMapper::mapearDeCursoOfertadoARespuesta)
                 .map(dto -> {
                     Salon salon = salonCU.resolverSalonDeCurso(dto.getSalon(), true);
                     dto.setSalonInfo(salonInfo(salon));
@@ -179,7 +179,7 @@ public class CursosVeranoRestController {
         }
         
         List<CursosOfertadosDTORespuesta> respuesta = cursosPreinscripcion.stream()
-                .map(cursoMapper::mappearDeCursoOfertadoARespuesta)
+                .map(cursoMapper::mapearDeCursoOfertadoARespuesta)
                 .collect(Collectors.toList());
         
         return ResponseEntity.ok(respuesta);
@@ -220,7 +220,7 @@ public class CursosVeranoRestController {
         }
         
         List<CursosOfertadosDTORespuesta> respuesta = cursosInscripcion.stream()
-                .map(cursoMapper::mappearDeCursoOfertadoARespuesta)
+                .map(cursoMapper::mapearDeCursoOfertadoARespuesta)
                 .collect(Collectors.toList());
         
         return ResponseEntity.ok(respuesta);
@@ -292,7 +292,7 @@ public class CursosVeranoRestController {
             return errorDatosCurso(e);
         }
 
-        CursosOfertadosDTORespuesta cursoDTO = cursoMapper.mappearDeCursoOfertadoARespuesta(cursoCreado);
+        CursosOfertadosDTORespuesta cursoDTO = cursoMapper.mapearDeCursoOfertadoARespuesta(cursoCreado);
         
         // Crear respuesta con datos reales del curso creado
         // Usar las fechas y período académico proporcionados por el usuario en lugar de los calculados
@@ -495,7 +495,7 @@ public class CursosVeranoRestController {
         }
         
         // Usar el mapper existente para obtener datos estructurados
-        CursosOfertadosDTORespuesta cursoDTO = cursoMapper.mappearDeCursoOfertadoARespuesta(cursoReal);
+        CursosOfertadosDTORespuesta cursoDTO = cursoMapper.mapearDeCursoOfertadoARespuesta(cursoReal);
         
         // Verificar docente después del mapeo
         if (cursoDTO.getObjDocente() == null) {
@@ -549,7 +549,7 @@ public class CursosVeranoRestController {
     public ResponseEntity<List<CursosOfertadosDTORespuesta>> filtrarCursosPorPeriodo(@PathVariable String periodo) {
         List<CursoOfertadoVerano> cursos = cursoCU.listarTodos();
         List<CursosOfertadosDTORespuesta> respuesta = cursos.stream()
-                .map(cursoMapper::mappearDeCursoOfertadoARespuestaDisponible)
+                .map(cursoMapper::mapearDeCursoOfertadoARespuestaDisponible)
                 .map(cursoMapper::postMapCurso) // Asignar idCurso
                 .collect(Collectors.toList());
         return ResponseEntity.ok(respuesta);
@@ -566,7 +566,7 @@ public class CursosVeranoRestController {
         List<CursosOfertadosDTORespuesta> respuesta = cursos.stream()
                 .filter(curso -> curso.getObjMateria() != null && 
                                curso.getObjMateria().getId_materia().equals(idMateria))
-                .map(cursoMapper::mappearDeCursoOfertadoARespuestaDisponible)
+                .map(cursoMapper::mapearDeCursoOfertadoARespuestaDisponible)
                 .map(cursoMapper::postMapCurso) // Asignar idCurso
                 .collect(Collectors.toList());
         return ResponseEntity.ok(respuesta);

@@ -38,18 +38,18 @@ public class EstadisticasRestController {
 
     @PostMapping("/crear")
     public ResponseEntity<EstadisticaDTORespuesta> crearEstadistica(@RequestBody @Valid EstadisticaDTOPeticion estadistica) {
-        Estadistica creada = estadisticaCU.crearEstadistica(mapper.mappearDeEstadisticaDTOPeticionAEstadistica(estadistica));
+        Estadistica creada = estadisticaCU.crearEstadistica(mapper.mapearDeEstadisticaDTOPeticionAEstadistica(estadistica));
         return new ResponseEntity<>(
-                mapper.mappearDeEstadisticaAEstadisticaDTORespuesta(creada),
+                mapper.mapearDeEstadisticaAEstadisticaDTORespuesta(creada),
                 HttpStatus.CREATED
         );
     }
 
     @PutMapping("/actualizar")
     public ResponseEntity<EstadisticaDTORespuesta> actualizarEstadistica(@RequestBody @Valid EstadisticaDTOPeticion estadistica) {
-        Estadistica actualizada = estadisticaCU.actualizarEstadistica(mapper.mappearDeEstadisticaDTOPeticionAEstadistica(estadistica));
+        Estadistica actualizada = estadisticaCU.actualizarEstadistica(mapper.mapearDeEstadisticaDTOPeticionAEstadistica(estadistica));
         return new ResponseEntity<>(
-                mapper.mappearDeEstadisticaAEstadisticaDTORespuesta(actualizada),
+                mapper.mapearDeEstadisticaAEstadisticaDTORespuesta(actualizada),
                 HttpStatus.ACCEPTED
         );
     }
@@ -67,7 +67,7 @@ public class EstadisticasRestController {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
         return new ResponseEntity<>(
-                mapper.mappearDeEstadisticaAEstadisticaDTORespuesta(estadistica),
+                mapper.mapearDeEstadisticaAEstadisticaDTORespuesta(estadistica),
                 HttpStatus.OK
         );
     }
@@ -86,7 +86,7 @@ public class EstadisticasRestController {
         );
 
         return new ResponseEntity<>(
-                mapper.mappearDeEstadisticaAEstadisticaDTORespuesta(resultado),
+                mapper.mapearDeEstadisticaAEstadisticaDTORespuesta(resultado),
                 HttpStatus.OK
         );
     }
@@ -102,7 +102,7 @@ public class EstadisticasRestController {
         );
 
         List<EstadisticaDTORespuesta> respuesta = lista.stream()
-                .map(mapper::mappearDeEstadisticaAEstadisticaDTORespuesta)
+                .map(mapper::mapearDeEstadisticaAEstadisticaDTORespuesta)
                 .collect(Collectors.toList());
 
         return ResponseEntity.ok(respuesta);

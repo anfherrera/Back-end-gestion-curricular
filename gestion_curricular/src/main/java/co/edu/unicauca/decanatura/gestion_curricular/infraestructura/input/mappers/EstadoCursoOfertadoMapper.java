@@ -17,7 +17,7 @@ public interface EstadoCursoOfertadoMapper {
     @Mapping(source = "estado_actual", target = "estado_actual")
     @Mapping(target = "fecha_registro_estado", ignore = true)
     @Mapping(target = "objCursoOfertadoVerano", ignore = true)
-    EstadoCursoOfertado mappearDeDTOPeticionAEstadoCursoOfertado(EstadoCursoOfertadoDTOPeticion dtoPeticion);
+    EstadoCursoOfertado mapearDeDTOPeticionAEstadoCursoOfertado(EstadoCursoOfertadoDTOPeticion dtoPeticion);
 
 
     

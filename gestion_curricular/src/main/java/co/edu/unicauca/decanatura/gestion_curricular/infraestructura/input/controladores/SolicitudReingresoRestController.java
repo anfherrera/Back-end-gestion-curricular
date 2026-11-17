@@ -63,17 +63,17 @@ public class SolicitudReingresoRestController {
             solicitudDTO.setObjUsuario(new UsuarioDTOPeticion());
         }
         solicitudDTO.getObjUsuario().setId_usuario(autorizacion.idSolicitante(solicitudDTO.getObjUsuario().getId_usuario()));
-        SolicitudReingreso solicitud = solicitudReingresoMapper.mappearDeSolicitudReingresoDTOPeticionASolicitudReingreso(solicitudDTO);
+        SolicitudReingreso solicitud = solicitudReingresoMapper.mapearDeSolicitudReingresoDTOPeticionASolicitudReingreso(solicitudDTO);
         SolicitudReingreso solicitudCreada = solicitudService.crearSolicitudReingreso(solicitud);
         ResponseEntity<SolicitudReingresoDTORespuesta> respuesta = new ResponseEntity<>
-        (solicitudReingresoMapper.mappearDeSolicitudReingresoASolicitudReingresoDTORespuesta(solicitudCreada), HttpStatus.CREATED);
+        (solicitudReingresoMapper.mapearDeSolicitudReingresoASolicitudReingresoDTORespuesta(solicitudCreada), HttpStatus.CREATED);
         return respuesta;
     }
 
     @GetMapping("/listarSolicitudes-Reingreso")
     public ResponseEntity<List<SolicitudReingresoDTORespuesta>> listarSolicitudesReingreso() {
         List<SolicitudReingreso> solicitudes = solicitudService.listarSolicitudesReingreso();
-        List<SolicitudReingresoDTORespuesta> solicitudesDTO = solicitudReingresoMapper.mappearDeListaSolicitudReingresoASolicitudReingresoDTORespuesta(solicitudes);
+        List<SolicitudReingresoDTORespuesta> solicitudesDTO = solicitudReingresoMapper.mapearDeListaSolicitudReingresoASolicitudReingresoDTORespuesta(solicitudes);
         return ResponseEntity.ok(solicitudesDTO);
     }
     
@@ -171,20 +171,20 @@ public class SolicitudReingresoRestController {
 
     private ResponseEntity<List<SolicitudReingresoDTORespuesta>> responder(List<SolicitudReingreso> solicitudes) {
         return ResponseEntity.ok(
-                solicitudReingresoMapper.mappearDeListaSolicitudReingresoASolicitudReingresoDTORespuesta(solicitudes));
+                solicitudReingresoMapper.mapearDeListaSolicitudReingresoASolicitudReingresoDTORespuesta(solicitudes));
     }
 
     @PreAuthorize("@autorizacion.esStaff() or @autorizacion.esDuenoSolicitud(#id)")
     @GetMapping("/listarSolicitud-Reingreo/{id}")
     public ResponseEntity<SolicitudReingresoDTORespuesta> listarReingresoById(@PathVariable Integer id) {
         SolicitudReingreso solicitud = solicitudService.obtenerSolicitudReingresoPorId(id);
-        SolicitudReingresoDTORespuesta respuesta = solicitudReingresoMapper.mappearDeSolicitudReingresoASolicitudReingresoDTORespuesta(solicitud);
+        SolicitudReingresoDTORespuesta respuesta = solicitudReingresoMapper.mapearDeSolicitudReingresoASolicitudReingresoDTORespuesta(solicitud);
         return ResponseEntity.ok(respuesta);
     }
 
     @PutMapping("/actualizarEstadoSolicitud-Reingreso")
     public ResponseEntity<Map<String, Object>> actualizarEstadoSolicitudReingreso(@RequestBody CambioEstadoSolicitudDTOPeticion peticion) {
-        CambioEstadoSolicitud solicitud = solicitudMapper.mappearDeCambioEstadoSolicitudDTOPeticionACambioEstadoSolicitud(peticion);
+        CambioEstadoSolicitud solicitud = solicitudMapper.mapearDeCambioEstadoSolicitudDTOPeticionACambioEstadoSolicitud(peticion);
         // Solo el rol responsable del paso puede hacerlo (Funcionario → Coordinador → Secretario)
         String estadoActual = FlujoEstadosSolicitud.ultimoEstado(
                 solicitudService.obtenerSolicitudReingresoPorId(solicitud.getIdSolicitud()).getEstadosSolicitud());

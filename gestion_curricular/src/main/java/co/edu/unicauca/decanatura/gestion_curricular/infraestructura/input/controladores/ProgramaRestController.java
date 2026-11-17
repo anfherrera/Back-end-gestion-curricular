@@ -48,20 +48,20 @@ public class ProgramaRestController {
     })
     @PostMapping("/crearPrograma")
     public ResponseEntity<ProgramaDTORespuesta> crearPrograma(@RequestBody @Valid ProgramaDTOPeticion peticion) {
-        Programa programa = objProgramaMapperDominio.mappearDeProgramaDTOPeticionAPrograma(peticion);
+        Programa programa = objProgramaMapperDominio.mapearDeProgramaDTOPeticionAPrograma(peticion);
         Programa programaCreado = objProgramaCUIntPort.guardarPrograma(programa);
         return new ResponseEntity<>(
-                objProgramaMapperDominio.mappearDeProgramaAProgramaDTORespuesta(programaCreado),
+                objProgramaMapperDominio.mapearDeProgramaAProgramaDTORespuesta(programaCreado),
                 HttpStatus.CREATED
         );
     }
 
     @PutMapping("/actualizarPrograma")
     public ResponseEntity<ProgramaDTORespuesta> actualizarPrograma(@RequestBody @Valid ProgramaDTOPeticion peticion) {
-        Programa programa = objProgramaMapperDominio.mappearDeProgramaDTOPeticionAPrograma(peticion);
+        Programa programa = objProgramaMapperDominio.mapearDeProgramaDTOPeticionAPrograma(peticion);
         Programa programaActualizado = objProgramaCUIntPort.actualizarPrograma(programa);
         return new ResponseEntity<>(
-                objProgramaMapperDominio.mappearDeProgramaAProgramaDTORespuesta(programaActualizado),
+                objProgramaMapperDominio.mapearDeProgramaAProgramaDTORespuesta(programaActualizado),
                 HttpStatus.ACCEPTED
         );
     }
@@ -73,7 +73,7 @@ public class ProgramaRestController {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
         return new ResponseEntity<>(
-                objProgramaMapperDominio.mappearDeProgramaAProgramaDTORespuesta(programa),
+                objProgramaMapperDominio.mapearDeProgramaAProgramaDTORespuesta(programa),
                 HttpStatus.OK
         );
     }
@@ -88,7 +88,7 @@ public class ProgramaRestController {
     public ResponseEntity<List<ProgramaDTORespuesta>> buscarPorNombre(@RequestParam(name = "nombre", required = true) String nombre) {
         List<Programa> programas = objProgramaCUIntPort.buscarPorNombreParcial(nombre);
         List<ProgramaDTORespuesta> respuesta = programas.stream()
-                .map(objProgramaMapperDominio::mappearDeProgramaAProgramaDTORespuesta)
+                .map(objProgramaMapperDominio::mapearDeProgramaAProgramaDTORespuesta)
                 .collect(Collectors.toList());
         return ResponseEntity.ok(respuesta);
     }
@@ -100,7 +100,7 @@ public class ProgramaRestController {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
         return new ResponseEntity<>(
-                objProgramaMapperDominio.mappearDeProgramaAProgramaDTORespuesta(programa),
+                objProgramaMapperDominio.mapearDeProgramaAProgramaDTORespuesta(programa),
                 HttpStatus.OK
         );
     }
@@ -117,7 +117,7 @@ public class ProgramaRestController {
     public ResponseEntity<List<ProgramaDTORespuesta>> listarProgramas() {
         List<Programa> programas = objProgramaCUIntPort.listarProgramas();
         List<ProgramaDTORespuesta> respuesta = programas.stream()
-                .map(objProgramaMapperDominio::mappearDeProgramaAProgramaDTORespuesta)
+                .map(objProgramaMapperDominio::mapearDeProgramaAProgramaDTORespuesta)
                 .collect(Collectors.toList());
         return ResponseEntity.ok(respuesta);
     }

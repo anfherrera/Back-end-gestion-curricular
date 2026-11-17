@@ -15,9 +15,9 @@ public interface EstadisticaMapperDominio {
     @Mapping(target = "periodos_academico", expression = "java(peticion.getPeriodos_academico())")
     @Mapping(target = "nombres_procesos", expression = "java(peticion.getNombres_procesos())")
     @Mapping(target = "nombres_programas", expression = "java(peticion.getNombres_programas())")
-    Estadistica mappearDeEstadisticaDTOPeticionAEstadistica(EstadisticaDTOPeticion peticion);
+    Estadistica mapearDeEstadisticaDTOPeticionAEstadistica(EstadisticaDTOPeticion peticion);
 
     // Dominio -> DTO de respuesta
-    EstadisticaDTORespuesta mappearDeEstadisticaAEstadisticaDTORespuesta(Estadistica estadistica);
+    EstadisticaDTORespuesta mapearDeEstadisticaAEstadisticaDTORespuesta(Estadistica estadistica);
 
 }

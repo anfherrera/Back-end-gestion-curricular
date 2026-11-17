@@ -28,20 +28,20 @@ public class DocenteRestController {
 
     @PostMapping("/crearDocente")
     public ResponseEntity<DocenteDTORespuesta> crearDocente(@RequestBody @Valid DocenteDTOPeticion peticion) {
-        Docente docente = objDocenteMapperDominio.mappearDeDocenteDTOPeticionADocente(peticion);
+        Docente docente = objDocenteMapperDominio.mapearDeDocenteDTOPeticionADocente(peticion);
         Docente docenteCreado = objDocenteCUIntPort.guardarDocente(docente);
         return new ResponseEntity<>(
-                objDocenteMapperDominio.mappearDeDocenteADocenteDTORespuesta(docenteCreado),
+                objDocenteMapperDominio.mapearDeDocenteADocenteDTORespuesta(docenteCreado),
                 HttpStatus.CREATED
         );
     }
 
     @PutMapping("/actualizarDocente")
     public ResponseEntity<DocenteDTORespuesta> actualizarDocente(@RequestBody @Valid DocenteDTOPeticion peticion) {
-        Docente docente = objDocenteMapperDominio.mappearDeDocenteDTOPeticionADocente(peticion);
+        Docente docente = objDocenteMapperDominio.mapearDeDocenteDTOPeticionADocente(peticion);
         Docente docenteActualizado = objDocenteCUIntPort.actualizarDocente(docente);
         return new ResponseEntity<>(
-                objDocenteMapperDominio.mappearDeDocenteADocenteDTORespuesta(docenteActualizado),
+                objDocenteMapperDominio.mapearDeDocenteADocenteDTORespuesta(docenteActualizado),
                 HttpStatus.ACCEPTED
         );
     }
@@ -53,7 +53,7 @@ public class DocenteRestController {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
         return new ResponseEntity<>(
-                objDocenteMapperDominio.mappearDeDocenteADocenteDTORespuesta(docente),
+                objDocenteMapperDominio.mapearDeDocenteADocenteDTORespuesta(docente),
                 HttpStatus.OK
         );
     }
@@ -68,7 +68,7 @@ public class DocenteRestController {
     public ResponseEntity<List<DocenteDTORespuesta>> buscarPorNombre(@RequestParam(name = "nombre", required = true) String nombre) {
         List<Docente> docentes = objDocenteCUIntPort.buscarPorNombreParcial(nombre);
         List<DocenteDTORespuesta> respuesta = docentes.stream()
-                .map(objDocenteMapperDominio::mappearDeDocenteADocenteDTORespuesta)
+                .map(objDocenteMapperDominio::mapearDeDocenteADocenteDTORespuesta)
                 .collect(Collectors.toList());
         return ResponseEntity.ok(respuesta);
     }
@@ -80,7 +80,7 @@ public class DocenteRestController {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
         return new ResponseEntity<>(
-                objDocenteMapperDominio.mappearDeDocenteADocenteDTORespuesta(docente),
+                objDocenteMapperDominio.mapearDeDocenteADocenteDTORespuesta(docente),
                 HttpStatus.OK
         );
     }
@@ -89,7 +89,7 @@ public class DocenteRestController {
     public ResponseEntity<List<DocenteDTORespuesta>> listarDocentes() {
         List<Docente> docentes = objDocenteCUIntPort.listarDocentes();
         List<DocenteDTORespuesta> respuesta = docentes.stream()
-                .map(objDocenteMapperDominio::mappearDeDocenteADocenteDTORespuesta)
+                .map(objDocenteMapperDominio::mapearDeDocenteADocenteDTORespuesta)
                 .collect(Collectors.toList());
         return ResponseEntity.ok(respuesta);
     }

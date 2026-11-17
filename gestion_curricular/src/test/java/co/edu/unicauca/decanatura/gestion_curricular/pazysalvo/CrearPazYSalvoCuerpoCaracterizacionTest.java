@@ -126,14 +126,14 @@ class CrearPazYSalvoCuerpoCaracterizacionTest {
             return i.getArgument(0);
         });
         var mapper = mock(SolicitudPazYSalvoMapperDominio.class);
-        when(mapper.mappearDeSolicitudDTOPeticionASolicitud(any())).thenAnswer(i -> {
+        when(mapper.mapearDeSolicitudDTOPeticionASolicitud(any())).thenAnswer(i -> {
             SolicitudPazYSalvoDTOPeticion dto = i.getArgument(0);
             ObjectNode nodo = json.createObjectNode();
             nodo.set("dto", json.valueToTree(dto));
             capturas.add(nodo);
             return new SolicitudPazYSalvo();
         });
-        when(mapper.mappearDeSolicitudARespuesta(any())).thenReturn(new SolicitudPazYSalvoDTORespuesta());
+        when(mapper.mapearDeSolicitudARespuesta(any())).thenReturn(new SolicitudPazYSalvoDTORespuesta());
         var autorizacion = new Autorizacion(null, null, null, null) {
             @Override public boolean esStaff() { return esStaff; }
             @Override public Integer idUsuarioActual() { return idActual; }

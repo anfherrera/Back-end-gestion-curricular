@@ -17,6 +17,6 @@ public interface DocumentosMapperDominio {
     @Mapping(source = "fecha_documento",                target = "fecha_documento")
     @Mapping(source = "esValido",                       target = "esValido")
     @Mapping(source = "comentario",                     target = "comentario")
-    DocumentosDTORespuesta mappearDeDocumentoADTORespuesta(Documento documento);
+    DocumentosDTORespuesta mapearDeDocumentoADTORespuesta(Documento documento);
 
 }

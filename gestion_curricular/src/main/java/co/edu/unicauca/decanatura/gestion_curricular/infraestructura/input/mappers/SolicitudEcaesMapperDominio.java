@@ -30,7 +30,7 @@ public interface SolicitudEcaesMapperDominio {
     @Mapping(target = "documentos", ignore = true)
     @Mapping(target = "objCursoOfertadoVerano", ignore = true) // Propiedad no mapeada
     @Mapping(target = "tipoDocumento", qualifiedByName = "tipoDocumentoEcaes")
-    SolicitudEcaes mappearDeSolicitudEcaesDTOPeticionASolicitudEcaes(SolicitudEcaesDTOPeticion peticion);
+    SolicitudEcaes mapearDeSolicitudEcaesDTOPeticionASolicitudEcaes(SolicitudEcaesDTOPeticion peticion);
 
     @Named("tipoDocumentoEcaes")
     default TipoDocumento tipoDocumentoEcaes(String codigo) {
@@ -54,18 +54,18 @@ public interface SolicitudEcaesMapperDominio {
     @Mapping(source = "estadosSolicitud", target = "estadosSolicitud")
     @Mapping(source = "objUsuario", target = "objUsuario")
     @Mapping(source = "documentos", target = "documentos")
-    SolicitudEcaesDTORespuesta mappearDeSolicitudEcaesARespuesta(SolicitudEcaes solicitudEcaes);
+    SolicitudEcaesDTORespuesta mapearDeSolicitudEcaesARespuesta(SolicitudEcaes solicitudEcaes);
 
-    List<SolicitudEcaesDTORespuesta> mappearListaDeSolicitudEcaesARespuesta(List<SolicitudEcaes> solicitudes);
+    List<SolicitudEcaesDTORespuesta> mapearListaDeSolicitudEcaesARespuesta(List<SolicitudEcaes> solicitudes);
 
     //DTO de peticion  → fechas ecaes dominio    
-    FechaEcaes mappearDeFechasEcaesDTOPeticionAFechaEcaes(FechasEcaesDTOPeticion fechasEcaes);
+    FechaEcaes mapearDeFechasEcaesDTOPeticionAFechaEcaes(FechasEcaesDTOPeticion fechasEcaes);
 
     // Fechas ecaes dominio → DTO respuesta
-    FechaEcaesDTORespuesta mappearDeFechaEcaesAFechaEcaesDTORespuesta(FechaEcaes fechaEcaes);    
+    FechaEcaesDTORespuesta mapearDeFechaEcaesAFechaEcaesDTORespuesta(FechaEcaes fechaEcaes);
 
     // Lista de fechas ecaes dominio → Lista de DTO respuesta
-    List<FechaEcaesDTORespuesta> mappearListaDeFechaEcaesAFechaEcaesDTORespuesta(List<FechaEcaes> fechasEcaes); 
+    List<FechaEcaesDTORespuesta> mapearListaDeFechaEcaesAFechaEcaesDTORespuesta(List<FechaEcaes> fechasEcaes);
     
    
 }

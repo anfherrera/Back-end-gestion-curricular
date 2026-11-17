@@ -13,10 +13,10 @@ public interface RolMapperDominio {
     // Dominio -> DTO de respuesta
     @Mapping(target = "id_rol", source = "id_rol")
     @Mapping(target = "nombre", source = "nombre")
-    RolDTORespuesta mappearDeRolARolDTORespuesta(Rol rol);
+    RolDTORespuesta mapearDeRolARolDTORespuesta(Rol rol);
 
     // DTO de petición -> Dominio
     @Mapping(target = "usuarios", ignore = true)
-    Rol mappearDeRolDTOPeticionARol(RolDTOPeticion peticion);
+    Rol mapearDeRolDTOPeticionARol(RolDTOPeticion peticion);
 
 }

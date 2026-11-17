@@ -372,7 +372,7 @@ Rutas abreviadas: `…/` = `gestion_curricular/src/main/java/co/edu/unicauca/dec
   - `SolicitudCurosoVerano…`
   - [x] `SolicitudHomologacioneMapperDominio` → `SolicitudHomologacionMapperDominio`. Las referencias de registro y descargas pasaron antes y después, junto con la integración de Homologación tras el cambio.
   - [x] `bucarRolPorId` → `buscarRolPorId`. Errores locales e inicialización pasaron antes y después.
-  - `mappear…` → `mapear…` (todos los mappers)
+  - [x] `mappear…` → `mapear…` en mappers y consumidores. Ocho caracterizaciones antes y después. La de errores registra el nombre histórico de la llamada al mapper de Usuario para conservar su referencia.
   - `GestionarArchivosCUIAdapter` → `GestionarArchivosCUAdapter`
   - `GestionarSolicitudReingresoImplAdapter` → `…ReingresoGatewayImplAdapter`
 

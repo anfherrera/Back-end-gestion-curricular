@@ -54,7 +54,7 @@ public class NotificacionRestController {
     @PreAuthorize("hasAnyRole(" + Autorizacion.ROLES_STAFF + ")")
     public ResponseEntity<NotificacionDTORespuesta> crearNotificacion(
             @Valid @RequestBody NotificacionDTOPeticion peticion) {
-        Notificacion notificacion = notificacionMapper.mappearDeNotificacionDTOPeticionANotificacion(peticion);
+        Notificacion notificacion = notificacionMapper.mapearDeNotificacionDTOPeticionANotificacion(peticion);
         
         // Resolver usuario
         Usuario usuario = usuarioCU.buscarUsuarioPorId(peticion.getIdUsuario()).orElse(null);
@@ -96,7 +96,7 @@ public class NotificacionRestController {
         
         Notificacion notificacionCreada = notificacionCU.crearNotificacion(notificacion);
         return new ResponseEntity<>(
-                notificacionMapper.mappearDeNotificacionARespuesta(notificacionCreada),
+                notificacionMapper.mapearDeNotificacionARespuesta(notificacionCreada),
                 HttpStatus.CREATED);
     }
 
@@ -113,7 +113,7 @@ public class NotificacionRestController {
         
         List<Notificacion> notificaciones = notificacionCU.buscarPorUsuario(idUsuario);
         List<NotificacionDTORespuesta> respuesta = notificaciones.stream()
-                .map(notificacionMapper::mappearDeNotificacionARespuesta)
+                .map(notificacionMapper::mapearDeNotificacionARespuesta)
                 .collect(Collectors.toList());
         
         return ResponseEntity.ok(respuesta);
@@ -132,7 +132,7 @@ public class NotificacionRestController {
         
         List<Notificacion> notificaciones = notificacionCU.buscarNoLeidasPorUsuario(idUsuario);
         List<NotificacionDTORespuesta> respuesta = notificaciones.stream()
-                .map(notificacionMapper::mappearDeNotificacionARespuesta)
+                .map(notificacionMapper::mapearDeNotificacionARespuesta)
                 .collect(Collectors.toList());
         
         return ResponseEntity.ok(respuesta);
@@ -151,7 +151,7 @@ public class NotificacionRestController {
         
         List<Notificacion> notificaciones = notificacionCU.buscarUrgentesPorUsuario(idUsuario);
         List<NotificacionDTORespuesta> respuesta = notificaciones.stream()
-                .map(notificacionMapper::mappearDeNotificacionARespuesta)
+                .map(notificacionMapper::mapearDeNotificacionARespuesta)
                 .collect(Collectors.toList());
         return ResponseEntity.ok(respuesta);
     }
@@ -179,7 +179,7 @@ public class NotificacionRestController {
             @Parameter(description = "Tipo de solicitud") @PathVariable String tipoSolicitud) {
         List<Notificacion> notificaciones = notificacionCU.buscarPorTipoSolicitud(tipoSolicitud);
         List<NotificacionDTORespuesta> respuesta = notificaciones.stream()
-                .map(notificacionMapper::mappearDeNotificacionARespuesta)
+                .map(notificacionMapper::mapearDeNotificacionARespuesta)
                 .collect(Collectors.toList());
         return ResponseEntity.ok(respuesta);
     }
@@ -201,7 +201,7 @@ public class NotificacionRestController {
         }
         
         List<NotificacionDTORespuesta> respuesta = notificaciones.stream()
-                .map(notificacionMapper::mappearDeNotificacionARespuesta)
+                .map(notificacionMapper::mapearDeNotificacionARespuesta)
                 .collect(Collectors.toList());
         return ResponseEntity.ok(respuesta);
     }
@@ -222,7 +222,7 @@ public class NotificacionRestController {
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);
         }
         
-        return ResponseEntity.ok(notificacionMapper.mappearDeNotificacionARespuesta(notificacion));
+        return ResponseEntity.ok(notificacionMapper.mapearDeNotificacionARespuesta(notificacion));
     }
 
     @PutMapping("/{idNotificacion}/marcar-leida")

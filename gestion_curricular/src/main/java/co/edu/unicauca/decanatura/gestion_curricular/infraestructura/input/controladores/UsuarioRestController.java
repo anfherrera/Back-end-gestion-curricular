@@ -113,7 +113,7 @@ public class UsuarioRestController {
             }
             
             UsuarioDTORespuesta respuesta = ErroresUsuario.alMapearCreado(
-                    () -> objUsuarioMapperDominio.mappearDeUsuarioAUsuarioDTORespuesta(usuarioCreado),
+                    () -> objUsuarioMapperDominio.mapearDeUsuarioAUsuarioDTORespuesta(usuarioCreado),
                     usuarioCreado);
             
             if (respuesta == null) {
@@ -155,7 +155,7 @@ public class UsuarioRestController {
         
         Usuario usuarioActualizado = objUsuarioCUIntPort.actualizarUsuario(usuario);
         return new ResponseEntity<>(
-            objUsuarioMapperDominio.mappearDeUsuarioAUsuarioDTORespuesta(usuarioActualizado), 
+            objUsuarioMapperDominio.mapearDeUsuarioAUsuarioDTORespuesta(usuarioActualizado),
             HttpStatus.ACCEPTED
         );
     }
@@ -167,7 +167,7 @@ public class UsuarioRestController {
         if (usuario == null) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
-        return new ResponseEntity<>(objUsuarioMapperDominio.mappearDeUsuarioAUsuarioDTORespuesta(usuario), HttpStatus.OK);
+        return new ResponseEntity<>(objUsuarioMapperDominio.mapearDeUsuarioAUsuarioDTORespuesta(usuario), HttpStatus.OK);
     }
 
     @DeleteMapping("/eliminarUsuario/{id}")
@@ -189,7 +189,7 @@ public class UsuarioRestController {
     public ResponseEntity<List<UsuarioDTORespuesta>> obtenerUsuarios() {
         List<Usuario> usuarios = objUsuarioCUIntPort.listarUsuarios();
         List<UsuarioDTORespuesta> respuesta = usuarios.stream()
-                .map(objUsuarioMapperDominio::mappearDeUsuarioAUsuarioDTORespuesta)
+                .map(objUsuarioMapperDominio::mapearDeUsuarioAUsuarioDTORespuesta)
                 .collect(Collectors.toList());
         return ResponseEntity.ok(respuesta);
     }
@@ -219,7 +219,7 @@ public class UsuarioRestController {
         
         Usuario usuarioActualizado = objUsuarioCUIntPort.actualizarUsuario(usuario);
         return new ResponseEntity<>(
-            objUsuarioMapperDominio.mappearDeUsuarioAUsuarioDTORespuesta(usuarioActualizado), 
+            objUsuarioMapperDominio.mapearDeUsuarioAUsuarioDTORespuesta(usuarioActualizado),
             HttpStatus.OK
         );
     }
@@ -260,7 +260,7 @@ public class UsuarioRestController {
             String token = jwtUtil.generarToken(userDetails.getUsername());
 
             Usuario usuario = objUsuarioCUIntPort.buscarUsuarioPorCorreo(request.getCorreo());
-            UsuarioDTORespuesta usuarioDTO = objUsuarioMapperDominio.mappearDeUsuarioAUsuarioDTORespuesta(usuario);
+            UsuarioDTORespuesta usuarioDTO = objUsuarioMapperDominio.mapearDeUsuarioAUsuarioDTORespuesta(usuario);
 
             // Limpiar contadores por éxito
             loginRateLimiter.onSuccess(request.getCorreo(), ip);

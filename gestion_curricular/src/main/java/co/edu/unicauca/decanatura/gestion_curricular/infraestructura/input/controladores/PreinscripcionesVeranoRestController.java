@@ -54,7 +54,7 @@ public class PreinscripcionesVeranoRestController {
             @Min(value = 1) @PathVariable Integer id) {
         List<SolicitudCursoVeranoPreinscripcion> solicitudes = solicitudCU.buscarSolicitudesPorUsuario(id);
         List<SolicitudCursoVeranoPreinscripcionDTORespuesta> respuesta = solicitudes.stream()
-                .map(solicitudMapper::mappearDeSolicitudCursoVeranoPreinscripcionARespuesta)
+                .map(solicitudMapper::mapearDeSolicitudCursoVeranoPreinscripcionARespuesta)
                 .collect(Collectors.toList());
         return ResponseEntity.ok(respuesta);
     }
@@ -329,7 +329,7 @@ public class PreinscripcionesVeranoRestController {
             
             // Informacion del curso usando el mapper existente
             if (preinscripcion.getObjCursoOfertadoVerano() != null) {
-                CursosOfertadosDTORespuesta cursoDTO = cursoMapper.mappearDeCursoOfertadoARespuesta(preinscripcion.getObjCursoOfertadoVerano());
+                CursosOfertadosDTORespuesta cursoDTO = cursoMapper.mapearDeCursoOfertadoARespuesta(preinscripcion.getObjCursoOfertadoVerano());
                 
                 Map<String, Object> cursoMap = new HashMap<>();
                 cursoMap.put("id_curso", cursoDTO.getId_curso());

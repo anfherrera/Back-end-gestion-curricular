@@ -56,7 +56,7 @@ public class SolicitudRestController {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
         return new ResponseEntity<>(
-                mapper.mappearDeSolicitudARespuesta(solicitud),
+                mapper.mapearDeSolicitudARespuesta(solicitud),
                 HttpStatus.OK
         );
     }
@@ -72,7 +72,7 @@ public class SolicitudRestController {
     public ResponseEntity<List<SolicitudDTORespuesta>> listarSolicitudes() {
         List<Solicitud> solicitudes = solicitudCU.listarSolicitudes();
         List<SolicitudDTORespuesta> respuesta = solicitudes.stream()
-                .map(mapper::mappearDeSolicitudARespuesta)
+                .map(mapper::mapearDeSolicitudARespuesta)
                 .collect(Collectors.toList());
         return ResponseEntity.ok(respuesta);
     }
@@ -81,7 +81,7 @@ public class SolicitudRestController {
     public ResponseEntity<List<SolicitudDTORespuesta>> obtenerPorNombre(@RequestParam(name = "nombre", required = true) String nombre) {
         List<Solicitud> solicitudes = solicitudCU.obtenerSolicitudesPorNombre(nombre);
         List<SolicitudDTORespuesta> respuesta = solicitudes.stream()
-                .map(mapper::mappearDeSolicitudARespuesta)
+                .map(mapper::mapearDeSolicitudARespuesta)
                 .collect(Collectors.toList());
         return ResponseEntity.ok(respuesta);
     }
@@ -110,7 +110,7 @@ public class SolicitudRestController {
         // Convertir a DTOs y aplicar filtro de tipoSolicitud (que no se puede hacer fácilmente en SQL)
         List<SolicitudDTORespuesta> todasLasSolicitudesDTO = todasLasSolicitudesDominio.stream()
                 .map(solicitud -> {
-                    SolicitudDTORespuesta dto = mapper.mappearDeSolicitudARespuesta(solicitud);
+                    SolicitudDTORespuesta dto = mapper.mapearDeSolicitudARespuesta(solicitud);
                     determinarCategoriaYTipo(solicitud, dto);
                     return dto;
                 })

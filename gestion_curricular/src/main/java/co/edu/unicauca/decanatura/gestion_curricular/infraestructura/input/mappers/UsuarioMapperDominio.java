@@ -21,6 +21,6 @@ public interface UsuarioMapperDominio {
     @Mapping(source = "correo", target = "correo")
     @Mapping(source = "estado_usuario", target = "estado_usuario")
     @Mapping(source = "objPrograma", target = "objPrograma", nullValuePropertyMappingStrategy = org.mapstruct.NullValuePropertyMappingStrategy.IGNORE)
-    UsuarioDTORespuesta mappearDeUsuarioAUsuarioDTORespuesta(Usuario usuario);
+    UsuarioDTORespuesta mapearDeUsuarioAUsuarioDTORespuesta(Usuario usuario);
 
 }

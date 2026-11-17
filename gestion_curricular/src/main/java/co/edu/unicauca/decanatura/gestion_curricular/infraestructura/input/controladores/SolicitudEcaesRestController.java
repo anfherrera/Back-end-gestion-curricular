@@ -55,17 +55,17 @@ public class SolicitudEcaesRestController {
     public ResponseEntity<SolicitudEcaesDTORespuesta> crearSolicitud(@Valid @RequestBody SolicitudEcaesDTOPeticion peticion) {
         // El solicitante sale del token, no de lo que envía el cliente
         peticion.getObjUsuario().setId_usuario(autorizacion.idSolicitante(peticion.getObjUsuario().getId_usuario()));
-        SolicitudEcaes solicitud = solicitudMapperDominio.mappearDeSolicitudEcaesDTOPeticionASolicitudEcaes(peticion);
+        SolicitudEcaes solicitud = solicitudMapperDominio.mapearDeSolicitudEcaesDTOPeticionASolicitudEcaes(peticion);
         SolicitudEcaes solicitudCreada = solicitudEcaesCU.guardar(solicitud);
         ResponseEntity<SolicitudEcaesDTORespuesta> respuesta = new ResponseEntity<SolicitudEcaesDTORespuesta>
-        (solicitudMapperDominio.mappearDeSolicitudEcaesARespuesta(solicitudCreada), HttpStatus.CREATED);
+        (solicitudMapperDominio.mapearDeSolicitudEcaesARespuesta(solicitudCreada), HttpStatus.CREATED);
         return respuesta;
     }
 
     @GetMapping("/listarSolicitudes-Ecaes")
     public ResponseEntity<List<SolicitudEcaesDTORespuesta>> listarSolicitudes() {
         List<SolicitudEcaes> solicitudes = solicitudEcaesCU.listarSolicitudes();
-        List<SolicitudEcaesDTORespuesta> respuesta = solicitudMapperDominio.mappearListaDeSolicitudEcaesARespuesta(solicitudes);
+        List<SolicitudEcaesDTORespuesta> respuesta = solicitudMapperDominio.mapearListaDeSolicitudEcaesARespuesta(solicitudes);
         return ResponseEntity.ok(respuesta);
     }
 
@@ -77,13 +77,13 @@ public class SolicitudEcaesRestController {
     }
 
     private ResponseEntity<List<SolicitudEcaesDTORespuesta>> responder(List<SolicitudEcaes> solicitudes) {
-        return ResponseEntity.ok(solicitudMapperDominio.mappearListaDeSolicitudEcaesARespuesta(solicitudes));
+        return ResponseEntity.ok(solicitudMapperDominio.mapearListaDeSolicitudEcaesARespuesta(solicitudes));
     }
     @PreAuthorize("@autorizacion.esStaff() or @autorizacion.esDuenoSolicitud(#id)")
     @GetMapping("/buscarSolicitud-Ecaes/{id}")
     public ResponseEntity<SolicitudEcaesDTORespuesta> obtenerPorId(@PathVariable Integer id) {
         SolicitudEcaes solicitud = solicitudEcaesCU.buscarPorId(id);
-        SolicitudEcaesDTORespuesta respuesta = solicitudMapperDominio.mappearDeSolicitudEcaesARespuesta(solicitud);
+        SolicitudEcaesDTORespuesta respuesta = solicitudMapperDominio.mapearDeSolicitudEcaesARespuesta(solicitud);
         return ResponseEntity.ok(respuesta);
     }
 
@@ -117,9 +117,9 @@ public class SolicitudEcaesRestController {
 
     @PostMapping("/publicarFechasEcaes")
     public ResponseEntity<FechaEcaesDTORespuesta> publicarFechasEcaes(@RequestBody FechasEcaesDTOPeticion fechasEcaes) {
-        FechaEcaes fechaEcaes = solicitudMapperDominio.mappearDeFechasEcaesDTOPeticionAFechaEcaes(fechasEcaes);
+        FechaEcaes fechaEcaes = solicitudMapperDominio.mapearDeFechasEcaesDTOPeticionAFechaEcaes(fechasEcaes);
         FechaEcaes fechaPublicada = solicitudEcaesCU.publicarFechasEcaes(fechaEcaes);
-        FechaEcaesDTORespuesta respuesta = solicitudMapperDominio.mappearDeFechaEcaesAFechaEcaesDTORespuesta(fechaPublicada);
+        FechaEcaesDTORespuesta respuesta = solicitudMapperDominio.mapearDeFechaEcaesAFechaEcaesDTORespuesta(fechaPublicada);
         return new ResponseEntity<>(respuesta, HttpStatus.CREATED);
     }
 
@@ -127,14 +127,14 @@ public class SolicitudEcaesRestController {
     @GetMapping("/listarFechasEcaes")
     public ResponseEntity<List<FechaEcaesDTORespuesta>> listarFechasEcaes() {
         List<FechaEcaes> fechas = solicitudEcaesCU.listarFechasEcaes();
-        List<FechaEcaesDTORespuesta> respuesta = solicitudMapperDominio.mappearListaDeFechaEcaesAFechaEcaesDTORespuesta(fechas);
+        List<FechaEcaesDTORespuesta> respuesta = solicitudMapperDominio.mapearListaDeFechaEcaesAFechaEcaesDTORespuesta(fechas);
         return ResponseEntity.ok(respuesta);
     }
 
     
     @PutMapping("/actualizarEstadoSolicitud")
     public ResponseEntity<Map<String, Object>> actualizarEstadoSolicitud(@RequestBody CambioEstadoSolicitudDTOPeticion solicitudPeticion) {
-        CambioEstadoSolicitud solicitud = solicitudMapper.mappearDeCambioEstadoSolicitudDTOPeticionACambioEstadoSolicitud(solicitudPeticion);
+        CambioEstadoSolicitud solicitud = solicitudMapper.mapearDeCambioEstadoSolicitudDTOPeticionACambioEstadoSolicitud(solicitudPeticion);
         // Solo el Funcionario (o el Administrador) pre-registra o rechaza
         String estadoActual = FlujoEstadosSolicitud.ultimoEstado(
                 solicitudEcaesCU.buscarPorId(solicitud.getIdSolicitud()).getEstadosSolicitud());
@@ -152,7 +152,7 @@ public class SolicitudEcaesRestController {
     public ResponseEntity<FechaEcaesDTORespuesta> buscarFechasPorPeriodo(@PathVariable String periodoAcademico) {
         Optional<FechaEcaes> fechas = solicitudEcaesCU.buscarFechasPorPeriodo(periodoAcademico);
         if (fechas.isPresent()) {
-            FechaEcaesDTORespuesta respuesta = solicitudMapperDominio.mappearDeFechaEcaesAFechaEcaesDTORespuesta(fechas.get());
+            FechaEcaesDTORespuesta respuesta = solicitudMapperDominio.mapearDeFechaEcaesAFechaEcaesDTORespuesta(fechas.get());
             return ResponseEntity.ok(respuesta);
         } else {
             return ResponseEntity.notFound().build();
@@ -161,9 +161,9 @@ public class SolicitudEcaesRestController {
 
     @PutMapping("/actualizarFechasEcaes")
     public ResponseEntity<FechaEcaesDTORespuesta> actualizarFechasEcaes(@RequestBody FechasEcaesDTOPeticion fechasEcaes) {
-        FechaEcaes fechaEcaes = solicitudMapperDominio.mappearDeFechasEcaesDTOPeticionAFechaEcaes(fechasEcaes);
+        FechaEcaes fechaEcaes = solicitudMapperDominio.mapearDeFechasEcaesDTOPeticionAFechaEcaes(fechasEcaes);
         FechaEcaes fechaActualizada = solicitudEcaesCU.actualizarFechasEcaes(fechaEcaes);
-        FechaEcaesDTORespuesta respuesta = solicitudMapperDominio.mappearDeFechaEcaesAFechaEcaesDTORespuesta(fechaActualizada);
+        FechaEcaesDTORespuesta respuesta = solicitudMapperDominio.mapearDeFechaEcaesAFechaEcaesDTORespuesta(fechaActualizada);
         return ResponseEntity.ok(respuesta);
     }
     

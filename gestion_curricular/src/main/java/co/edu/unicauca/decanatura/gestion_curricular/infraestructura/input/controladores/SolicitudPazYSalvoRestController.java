@@ -120,7 +120,7 @@ public class SolicitudPazYSalvoRestController {
             SolicitudPazYSalvoDTOPeticion dtoPeticion) {
 
         SolicitudPazYSalvo solicitud = solicitudMapperDominio
-                .mappearDeSolicitudDTOPeticionASolicitud(dtoPeticion);
+                .mapearDeSolicitudDTOPeticionASolicitud(dtoPeticion);
 
         return guardarSolicitudDominio(solicitud);
     }
@@ -130,7 +130,7 @@ public class SolicitudPazYSalvoRestController {
 
         // El caso de uso carga el usuario si solo viene su id y pone el período actual si no viene
         SolicitudPazYSalvo solicitudCreada = solicitudPazYSalvoCU.guardar(solicitud);
-        SolicitudPazYSalvoDTORespuesta respuesta = solicitudMapperDominio.mappearDeSolicitudARespuesta(solicitudCreada);
+        SolicitudPazYSalvoDTORespuesta respuesta = solicitudMapperDominio.mapearDeSolicitudARespuesta(solicitudCreada);
 
         return new ResponseEntity<>(respuesta, HttpStatus.CREATED);
     }
@@ -253,7 +253,7 @@ public class SolicitudPazYSalvoRestController {
     @GetMapping("/listarSolicitud-PazYSalvo")
     public ResponseEntity<List<SolicitudPazYSalvoDTORespuesta>> listarSolicitudPazYSalvo() {
         List<SolicitudPazYSalvo> solicitudes = solicitudPazYSalvoCU.listarSolicitudes();
-        List<SolicitudPazYSalvoDTORespuesta> respuesta = solicitudMapperDominio.mappearListaDeSolicitudesARespuesta(solicitudes);
+        List<SolicitudPazYSalvoDTORespuesta> respuesta = solicitudMapperDominio.mapearListaDeSolicitudesARespuesta(solicitudes);
         return ResponseEntity.ok(respuesta);
     }
 
@@ -285,7 +285,7 @@ public class SolicitudPazYSalvoRestController {
     }
 
     private ResponseEntity<List<SolicitudPazYSalvoDTORespuesta>> responder(List<SolicitudPazYSalvo> solicitudes) {
-        return ResponseEntity.ok(solicitudMapperDominio.mappearListaDeSolicitudesARespuesta(solicitudes));
+        return ResponseEntity.ok(solicitudMapperDominio.mapearListaDeSolicitudesARespuesta(solicitudes));
     }
 
     @PreAuthorize("isAuthenticated()")
@@ -306,7 +306,7 @@ public class SolicitudPazYSalvoRestController {
         List<SolicitudPazYSalvo> solicitudes = solicitudPazYSalvoCU.listarSolicitudesPorRol(rol, idUsuario);
 
         List<SolicitudPazYSalvoDTORespuesta> respuesta =
-                solicitudMapperDominio.mappearListaDeSolicitudesARespuesta(solicitudes);
+                solicitudMapperDominio.mapearListaDeSolicitudesARespuesta(solicitudes);
 
         return ResponseEntity.ok(respuesta);
     }
@@ -334,7 +334,7 @@ public class SolicitudPazYSalvoRestController {
                     // El id corresponde a una solicitud ajena; para el estudiante se interpreta como su id de usuario
                     throw new EntidadNoExisteException("Solicitud no encontrada");
                 }
-                SolicitudPazYSalvoDTORespuesta respuesta = solicitudMapperDominio.mappearDeSolicitudARespuesta(solicitud);
+                SolicitudPazYSalvoDTORespuesta respuesta = solicitudMapperDominio.mapearDeSolicitudARespuesta(solicitud);
                 return ResponseEntity.ok(respuesta);
             } catch (EntidadNoExisteException ex) {
                 // El id es de un usuario: sus solicitudes del período pedido o del actual
@@ -345,7 +345,7 @@ public class SolicitudPazYSalvoRestController {
 
         List<SolicitudPazYSalvo> solicitudes = obtenerSolicitudesPorRol(id);
         List<SolicitudPazYSalvoDTORespuesta> respuesta = solicitudMapperDominio
-                .mappearListaDeSolicitudesARespuesta(solicitudes);
+                .mapearListaDeSolicitudesARespuesta(solicitudes);
         return ResponseEntity.ok(respuesta);
     }
 
@@ -669,7 +669,7 @@ public ResponseEntity<DocumentosDTORespuesta> guardarOficioPazSalvo(
         return ResponseEntity.notFound().build();
     }
     return new ResponseEntity<>(
-        documentosMapperDominio.mappearDeDocumentoADTORespuesta(adjunto.documento()),
+        documentosMapperDominio.mapearDeDocumentoADTORespuesta(adjunto.documento()),
         HttpStatus.CREATED
     );
 }
@@ -699,7 +699,7 @@ public ResponseEntity<DocumentosDTORespuesta> guardarOficioPazSalvo(
         Documento documentoGuardado = documentosCU.adjuntarASolicitud(
                 ArchivoMultipart.de(file), objSolicitud, "pazysalvo", null, false);
         return new ResponseEntity<>(
-                documentosMapperDominio.mappearDeDocumentoADTORespuesta(documentoGuardado),
+                documentosMapperDominio.mapearDeDocumentoADTORespuesta(documentoGuardado),
                 HttpStatus.CREATED);
     }
 }

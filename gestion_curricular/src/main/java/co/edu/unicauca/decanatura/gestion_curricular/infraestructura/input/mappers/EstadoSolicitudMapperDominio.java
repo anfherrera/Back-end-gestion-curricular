@@ -18,7 +18,7 @@ public interface EstadoSolicitudMapperDominio {
     @Mapping(source = "fecha_registro_estado", target = "fecha_registro_estado")
     @Mapping(source = "comentario", target = "comentario")
     @Mapping(target = "objSolicitud", ignore = true)
-    EstadoSolicitudDTORespuesta mappearDeEstadoSolicitudARespuesta(EstadoSolicitud estadoSolicitud);
+    EstadoSolicitudDTORespuesta mapearDeEstadoSolicitudARespuesta(EstadoSolicitud estadoSolicitud);
 
-    List<EstadoSolicitudDTORespuesta> mappearListaDeEstadosARespuesta(List<EstadoSolicitud> estados);
+    List<EstadoSolicitudDTORespuesta> mapearListaDeEstadosARespuesta(List<EstadoSolicitud> estados);
 }
