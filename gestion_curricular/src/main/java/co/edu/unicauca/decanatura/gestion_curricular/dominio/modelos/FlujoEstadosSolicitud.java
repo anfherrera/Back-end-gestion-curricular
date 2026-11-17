@@ -7,6 +7,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.TreeSet;
 
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.enums.EstadosSolicitud;
 
@@ -114,7 +115,7 @@ public final class FlujoEstadosSolicitud {
         }
         if (nuevo == null) {
             throw new IllegalArgumentException("Estado no válido: '" + nuevoEstado
-                    + "'. Estados permitidos: " + siguientes.keySet());
+                    + "'. Estados permitidos: " + new TreeSet<>(siguientes.keySet()));
         }
         Set<String> permitidos = siguientes.get(actual);
         if (!permitidos.contains(nuevo)) {
@@ -123,7 +124,7 @@ public final class FlujoEstadosSolicitud {
                         + ") y no puede cambiar a " + nuevo);
             }
             throw new IllegalArgumentException("No se puede pasar de " + actual + " a " + nuevo
-                    + ". Desde " + actual + " solo se permite: " + permitidos);
+                    + ". Desde " + actual + " solo se permite: " + new TreeSet<>(permitidos));
         }
         return rolResponsable.get(actual);
     }
