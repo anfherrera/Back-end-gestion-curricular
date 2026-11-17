@@ -1,5 +1,7 @@
 package co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.dto.peticion;
 
+import io.swagger.v3.oas.annotations.media.Schema;
+
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Min;
@@ -7,7 +9,8 @@ import jakarta.validation.constraints.Max;
 import lombok.Data;
 
 @Data
-public class CreateCursoDTO {
+@Schema(name = "CreateCursoDTO")
+public class CrearCursoDTOPeticion {
     
     /**
      * ID de la materia (obligatorio)

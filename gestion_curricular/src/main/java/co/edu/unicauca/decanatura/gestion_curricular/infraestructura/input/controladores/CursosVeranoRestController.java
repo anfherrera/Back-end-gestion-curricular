@@ -32,7 +32,7 @@ import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.dto.r
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.dto.respuesta.EstudiantesCursoVeranoDTORespuesta.InscripcionSinPreinscripcion;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.dto.respuesta.EstudiantesCursoVeranoDTORespuesta.Preinscripcion;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.dto.respuesta.EstudiantesCursoVeranoDTORespuesta.Programa;
-import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.dto.peticion.CreateCursoDTO;
+import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.dto.peticion.CrearCursoDTOPeticion;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.dto.peticion.UpdateCursoDTO;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.mappers.CursosOfertadosMapperDominio;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.TransicionEstadoCurso;
@@ -235,7 +235,7 @@ public class CursosVeranoRestController {
      */
     @PreAuthorize("hasAnyRole('Funcionario', 'Coordinador', 'Administrador')")
     @PostMapping("/cursos-verano")
-    public ResponseEntity<Map<String, Object>> crearCurso(@RequestBody CreateCursoDTO dto) {
+    public ResponseEntity<Map<String, Object>> crearCurso(@RequestBody CrearCursoDTOPeticion dto) {
         if (dto.getId_docente() != null && dto.getId_docente() <= 0) {
             return errorCurso("ID de docente inválido",
                     "El ID del docente debe ser mayor a 0. ID recibido: " + dto.getId_docente());
