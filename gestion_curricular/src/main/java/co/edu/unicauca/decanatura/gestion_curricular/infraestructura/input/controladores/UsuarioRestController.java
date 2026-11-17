@@ -55,8 +55,8 @@ import java.util.stream.Collectors;
 @Validated
 @Tag(name = "Usuarios", description = "API para la gestión de usuarios del sistema")
 public class UsuarioRestController {
-    private final GestionarUsuarioCUIntPort objUsuarioCUIntPort;
-    private final UsuarioMapperDominio objUsuarioMapperDominio;
+    private final GestionarUsuarioCUIntPort usuarioCUIntPort;
+    private final UsuarioMapperDominio usuarioMapperDominio;
     private final AuthenticationManager authManager;
     private final JwtUtil jwtUtil;
     private final UserDetailsService userDetailsService;
@@ -98,7 +98,7 @@ public class UsuarioRestController {
             programa.setId_programa(peticion.getId_programa());
             usuario.setObjPrograma(programa);
             
-            Usuario usuarioCreado = objUsuarioCUIntPort.crearUsuario(usuario);
+            Usuario usuarioCreado = usuarioCUIntPort.crearUsuario(usuario);
             
             if (usuarioCreado == null) {
                 throw new RuntimeException("Error al crear el usuario: el usuario creado es nulo");
@@ -113,7 +113,7 @@ public class UsuarioRestController {
             }
             
             UsuarioDTORespuesta respuesta = ErroresUsuario.alMapearCreado(
-                    () -> objUsuarioMapperDominio.mapearDeUsuarioAUsuarioDTORespuesta(usuarioCreado),
+                    () -> usuarioMapperDominio.mapearDeUsuarioAUsuarioDTORespuesta(usuarioCreado),
                     usuarioCreado);
             
             if (respuesta == null) {
@@ -153,9 +153,9 @@ public class UsuarioRestController {
         programa.setId_programa(peticion.getId_programa());
         usuario.setObjPrograma(programa);
         
-        Usuario usuarioActualizado = objUsuarioCUIntPort.actualizarUsuario(usuario);
+        Usuario usuarioActualizado = usuarioCUIntPort.actualizarUsuario(usuario);
         return new ResponseEntity<>(
-            objUsuarioMapperDominio.mapearDeUsuarioAUsuarioDTORespuesta(usuarioActualizado),
+            usuarioMapperDominio.mapearDeUsuarioAUsuarioDTORespuesta(usuarioActualizado),
             HttpStatus.ACCEPTED
         );
     }
@@ -163,17 +163,17 @@ public class UsuarioRestController {
     @GetMapping("/buscarUsuarioPorId/{id}")
     @PreAuthorize("hasAnyRole(" + Autorizacion.ROLES_STAFF + ") or @autorizacion.esUsuarioActual(#id)")
     public ResponseEntity<UsuarioDTORespuesta> buscarUsuarioPorId(@Min(value = 1) @PathVariable Integer id) {
-        Usuario usuario = objUsuarioCUIntPort.obtenerUsuarioPorId(id);
+        Usuario usuario = usuarioCUIntPort.obtenerUsuarioPorId(id);
         if (usuario == null) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
-        return new ResponseEntity<>(objUsuarioMapperDominio.mapearDeUsuarioAUsuarioDTORespuesta(usuario), HttpStatus.OK);
+        return new ResponseEntity<>(usuarioMapperDominio.mapearDeUsuarioAUsuarioDTORespuesta(usuario), HttpStatus.OK);
     }
 
     @DeleteMapping("/eliminarUsuario/{id}")
     @PreAuthorize("hasRole('Administrador')")
     public ResponseEntity<Boolean> eliminarUsuario(@Min(value = 1) @PathVariable Integer id) {
-        boolean respuesta = objUsuarioCUIntPort.eliminarUsuario(id);
+        boolean respuesta = usuarioCUIntPort.eliminarUsuario(id);
         ResponseEntity<Boolean> objRespuesta = null;
         if(respuesta){
             objRespuesta = new ResponseEntity<Boolean>(HttpStatus.OK);
@@ -187,9 +187,9 @@ public class UsuarioRestController {
     @GetMapping("/listarUsuarios")
     @PreAuthorize("hasRole('Administrador') or hasRole('Coordinador')")
     public ResponseEntity<List<UsuarioDTORespuesta>> obtenerUsuarios() {
-        List<Usuario> usuarios = objUsuarioCUIntPort.listarUsuarios();
+        List<Usuario> usuarios = usuarioCUIntPort.listarUsuarios();
         List<UsuarioDTORespuesta> respuesta = usuarios.stream()
-                .map(objUsuarioMapperDominio::mapearDeUsuarioAUsuarioDTORespuesta)
+                .map(usuarioMapperDominio::mapearDeUsuarioAUsuarioDTORespuesta)
                 .collect(Collectors.toList());
         return ResponseEntity.ok(respuesta);
     }
@@ -209,7 +209,7 @@ public class UsuarioRestController {
     public ResponseEntity<UsuarioDTORespuesta> cambiarEstadoUsuario(
             @Parameter(description = "ID del usuario", required = true)
             @Min(value = 1) @PathVariable Integer id) {
-        Usuario usuario = objUsuarioCUIntPort.obtenerUsuarioPorId(id);
+        Usuario usuario = usuarioCUIntPort.obtenerUsuarioPorId(id);
         if (usuario == null) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
@@ -217,9 +217,9 @@ public class UsuarioRestController {
         // Cambiar el estado (toggle)
         usuario.setEstado_usuario(!usuario.isEstado_usuario());
         
-        Usuario usuarioActualizado = objUsuarioCUIntPort.actualizarUsuario(usuario);
+        Usuario usuarioActualizado = usuarioCUIntPort.actualizarUsuario(usuario);
         return new ResponseEntity<>(
-            objUsuarioMapperDominio.mapearDeUsuarioAUsuarioDTORespuesta(usuarioActualizado),
+            usuarioMapperDominio.mapearDeUsuarioAUsuarioDTORespuesta(usuarioActualizado),
             HttpStatus.OK
         );
     }
@@ -259,8 +259,8 @@ public class UsuarioRestController {
             UserDetails userDetails = userDetailsService.loadUserByUsername(request.getCorreo());
             String token = jwtUtil.generarToken(userDetails.getUsername());
 
-            Usuario usuario = objUsuarioCUIntPort.buscarUsuarioPorCorreo(request.getCorreo());
-            UsuarioDTORespuesta usuarioDTO = objUsuarioMapperDominio.mapearDeUsuarioAUsuarioDTORespuesta(usuario);
+            Usuario usuario = usuarioCUIntPort.buscarUsuarioPorCorreo(request.getCorreo());
+            UsuarioDTORespuesta usuarioDTO = usuarioMapperDominio.mapearDeUsuarioAUsuarioDTORespuesta(usuario);
 
             // Limpiar contadores por éxito
             loginRateLimiter.onSuccess(request.getCorreo(), ip);

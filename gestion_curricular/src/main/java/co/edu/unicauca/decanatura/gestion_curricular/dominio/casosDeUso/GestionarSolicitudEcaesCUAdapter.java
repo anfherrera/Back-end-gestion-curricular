@@ -27,32 +27,32 @@ import co.edu.unicauca.decanatura.gestion_curricular.dominio.excepciones.Entidad
 
 public class GestionarSolicitudEcaesCUAdapter implements GestionarSolicitudEcaesCUIntPort {
 
-    private final GestionarPreRegistroEcaesGatewayIntPort objGestionarSolicitudEcaesGateway;
-    private final FormateadorResultadosIntPort objFormateadorResultados;
-    private final GestionarDocumentosGatewayIntPort objDocumentosGateway;
-    private final GestionarEstadoSolicitudGatewayIntPort objGestionarEstadoSolicitudGateway;
-    private final GestionarUsuarioGatewayIntPort objGestionarUsuarioGateway;
-    private final GestionarNotificacionCUIntPort objGestionarNotificacionCU;
+    private final GestionarPreRegistroEcaesGatewayIntPort gestionarSolicitudEcaesGateway;
+    private final FormateadorResultadosIntPort formateadorResultados;
+    private final GestionarDocumentosGatewayIntPort documentosGateway;
+    private final GestionarEstadoSolicitudGatewayIntPort gestionarEstadoSolicitudGateway;
+    private final GestionarUsuarioGatewayIntPort gestionarUsuarioGateway;
+    private final GestionarNotificacionCUIntPort gestionarNotificacionCU;
     private final AsociadorDocumentosPendientes asociadorDocumentos;
     private final ListadorSolicitudes<SolicitudEcaes> listador;
 
 
-    public GestionarSolicitudEcaesCUAdapter(GestionarPreRegistroEcaesGatewayIntPort objGestionarSolicitudEcaesGateway,
-            FormateadorResultadosIntPort objFormateadorResultados,
-            GestionarDocumentosGatewayIntPort objDocumentosGateway,
-            GestionarEstadoSolicitudGatewayIntPort objGestionarEstadoSolicitudGateway,
-            GestionarUsuarioGatewayIntPort objGestionarUsuarioGateway,
-            GestionarNotificacionCUIntPort objGestionarNotificacionCU,
+    public GestionarSolicitudEcaesCUAdapter(GestionarPreRegistroEcaesGatewayIntPort gestionarSolicitudEcaesGateway,
+            FormateadorResultadosIntPort formateadorResultados,
+            GestionarDocumentosGatewayIntPort documentosGateway,
+            GestionarEstadoSolicitudGatewayIntPort gestionarEstadoSolicitudGateway,
+            GestionarUsuarioGatewayIntPort gestionarUsuarioGateway,
+            GestionarNotificacionCUIntPort gestionarNotificacionCU,
             GestionarArchivosCUIntPort gestionarArchivos
             ) {
-        this.objGestionarSolicitudEcaesGateway = objGestionarSolicitudEcaesGateway;
-        this.objFormateadorResultados = objFormateadorResultados;
-        this.objDocumentosGateway = objDocumentosGateway;   
-        this.objGestionarEstadoSolicitudGateway = objGestionarEstadoSolicitudGateway;
-        this.objGestionarUsuarioGateway = objGestionarUsuarioGateway;
-        this.objGestionarNotificacionCU = objGestionarNotificacionCU;
-        this.asociadorDocumentos = new AsociadorDocumentosPendientes(objDocumentosGateway, gestionarArchivos);
-        this.listador = new ListadorSolicitudes<>(FlujoEstadosSolicitud.ECAES, objGestionarSolicitudEcaesGateway);
+        this.gestionarSolicitudEcaesGateway = gestionarSolicitudEcaesGateway;
+        this.formateadorResultados = formateadorResultados;
+        this.documentosGateway = documentosGateway;
+        this.gestionarEstadoSolicitudGateway = gestionarEstadoSolicitudGateway;
+        this.gestionarUsuarioGateway = gestionarUsuarioGateway;
+        this.gestionarNotificacionCU = gestionarNotificacionCU;
+        this.asociadorDocumentos = new AsociadorDocumentosPendientes(documentosGateway, gestionarArchivos);
+        this.listador = new ListadorSolicitudes<>(FlujoEstadosSolicitud.ECAES, gestionarSolicitudEcaesGateway);
 
     }
 
@@ -60,28 +60,28 @@ public class GestionarSolicitudEcaesCUAdapter implements GestionarSolicitudEcaes
         @Override
         public SolicitudEcaes guardar(SolicitudEcaes solicitud) {
             if(solicitud == null) {
-                this.objFormateadorResultados.retornarRespuestaErrorReglaDeNegocio("La solicitud no puede ser nula");
+                this.formateadorResultados.retornarRespuestaErrorReglaDeNegocio("La solicitud no puede ser nula");
             }
 
             if(solicitud.getId_solicitud()!=null){
-                Optional<SolicitudEcaes> solicitudExistente = objGestionarSolicitudEcaesGateway.buscarOpcionalPorId(solicitud.getId_solicitud());
+                Optional<SolicitudEcaes> solicitudExistente = gestionarSolicitudEcaesGateway.buscarOpcionalPorId(solicitud.getId_solicitud());
                 if (solicitudExistente.isPresent()) {
-                    this.objFormateadorResultados.retornarRespuestaErrorEntidadExiste("Ya existe una solicitud con el ID: "
+                    this.formateadorResultados.retornarRespuestaErrorEntidadExiste("Ya existe una solicitud con el ID: "
                     + solicitud.getId_solicitud());
                 }
             }
 
             if(solicitud.getObjUsuario() == null || solicitud.getObjUsuario().getId_usuario() == null){
-                this.objFormateadorResultados.retornarRespuestaErrorEntidadExiste("El usuario no puede ser nulo o no tener ID");
+                this.formateadorResultados.retornarRespuestaErrorEntidadExiste("El usuario no puede ser nulo o no tener ID");
             }
             Integer idUsuario = solicitud.getObjUsuario().getId_usuario();
-            Optional<Usuario> usuarioOpt = objGestionarUsuarioGateway.buscarUsuarioPorId(idUsuario);
+            Optional<Usuario> usuarioOpt = gestionarUsuarioGateway.buscarUsuarioPorId(idUsuario);
             if (usuarioOpt.isEmpty()) {
-                this.objFormateadorResultados.retornarRespuestaErrorReglaDeNegocio("Usuario ID: " + idUsuario + " no encontrado");
+                this.formateadorResultados.retornarRespuestaErrorReglaDeNegocio("Usuario ID: " + idUsuario + " no encontrado");
             }
 
 
-            SolicitudEcaes solicitudGuardada = this.objGestionarSolicitudEcaesGateway.guardar(solicitud);
+            SolicitudEcaes solicitudGuardada = this.gestionarSolicitudEcaesGateway.guardar(solicitud);
 
             EstadoSolicitud estadoInicial = new EstadoSolicitud();
             estadoInicial.setEstado_actual(EstadosSolicitud.ENVIADA.textoGuardado());//Se pone por defecto el estado de Enviada
@@ -92,13 +92,13 @@ public class GestionarSolicitudEcaesCUAdapter implements GestionarSolicitudEcaes
                 solicitudGuardada.setEstadosSolicitud(new ArrayList<>());
             }
             solicitudGuardada.getEstadosSolicitud().add(estadoInicial);
-            this.objGestionarEstadoSolicitudGateway.guarEstadoSolicitud(estadoInicial);
+            this.gestionarEstadoSolicitudGateway.guarEstadoSolicitud(estadoInicial);
             // No se guarda el usuario: la relación usuario-solicitudes es mappedBy (la solicitud ya
             // lleva su usuario) y, por orphanRemoval, guardar una lista incompleta podría borrar solicitudes.
 
             // Crear notificación automática para el estudiante
             try {
-                this.objGestionarNotificacionCU.notificarCreacionSolicitud(solicitudGuardada, "ECAES");
+                this.gestionarNotificacionCU.notificarCreacionSolicitud(solicitudGuardada, "ECAES");
             } catch (Exception e) {
             }
 
@@ -112,11 +112,11 @@ public class GestionarSolicitudEcaesCUAdapter implements GestionarSolicitudEcaes
 
     @Override
     public List<SolicitudEcaes> listarSolicitudes() {
-        return objGestionarSolicitudEcaesGateway.listar();
+        return gestionarSolicitudEcaesGateway.listar();
     }
     @Override
     public SolicitudEcaes buscarPorId(Integer idSolicitud) {
-        return objGestionarSolicitudEcaesGateway.buscarPorId(idSolicitud)
+        return gestionarSolicitudEcaesGateway.buscarPorId(idSolicitud)
             .orElseThrow(() -> new EntidadNoExisteException("Solicitud no encontrada con ID: " + idSolicitud));    
     }
     @Override
@@ -129,31 +129,31 @@ public class GestionarSolicitudEcaesCUAdapter implements GestionarSolicitudEcaes
         try {
             FlujoEstadosSolicitud.ECAES.validarYObtenerRolResponsable(estadoAnterior, nuevoEstado);
         } catch (IllegalArgumentException e) {
-            this.objFormateadorResultados.retornarRespuestaErrorReglaDeNegocio(e.getMessage());
+            this.formateadorResultados.retornarRespuestaErrorReglaDeNegocio(e.getMessage());
         }
 
         EstadoSolicitud nuevo = new EstadoSolicitud();
         nuevo.setEstado_actual(FlujoEstadosSolicitud.ECAES.normalizar(nuevoEstado));
         nuevo.setFecha_registro_estado(new Date());
 
-        objGestionarSolicitudEcaesGateway.cambiarEstadoSolicitudEcaes(idSolicitud, nuevo);
+        gestionarSolicitudEcaesGateway.cambiarEstadoSolicitudEcaes(idSolicitud, nuevo);
         
         // Crear notificación automática del cambio de estado
         try {
             solicitud = buscarPorId(idSolicitud); // Recargar con el nuevo estado
-            this.objGestionarNotificacionCU.notificarCambioEstadoSolicitud(solicitud, estadoAnterior, nuevoEstado, "ECAES");
+            this.gestionarNotificacionCU.notificarCambioEstadoSolicitud(solicitud, estadoAnterior, nuevoEstado, "ECAES");
         } catch (Exception e) {
         }
     }
 
     @Override
     public FechaEcaes publicarFechasEcaes(FechaEcaes fechasEcaes) {
-        return objGestionarSolicitudEcaesGateway.publicarFechasEcaes(fechasEcaes);
+        return gestionarSolicitudEcaesGateway.publicarFechasEcaes(fechasEcaes);
     }
 
     @Override
     public List<FechaEcaes> listarFechasEcaes() {
-        return objGestionarSolicitudEcaesGateway.listarFechasEcaes();
+        return gestionarSolicitudEcaesGateway.listarFechasEcaes();
     }
 
     /** En el flujo ECAES solo decide el funcionario: el coordinador y la secretaría reciben una lista vacía. */
@@ -169,12 +169,12 @@ public class GestionarSolicitudEcaesCUAdapter implements GestionarSolicitudEcaes
 
     @Override
     public Optional<FechaEcaes> buscarFechasPorPeriodo(String periodoAcademico) {
-        return objGestionarSolicitudEcaesGateway.buscarFechasPorPeriodo(periodoAcademico);
+        return gestionarSolicitudEcaesGateway.buscarFechasPorPeriodo(periodoAcademico);
     }
 
     @Override
     public FechaEcaes actualizarFechasEcaes(FechaEcaes fechasEcaes) {
-        return objGestionarSolicitudEcaesGateway.actualizarFechasEcaes(fechasEcaes);
+        return gestionarSolicitudEcaesGateway.actualizarFechasEcaes(fechasEcaes);
     }
 
 }

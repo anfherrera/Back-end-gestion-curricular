@@ -33,15 +33,15 @@ public class GestionarCursoOfertadoVeranoGatewayImplAdapter implements Gestionar
 
     private final CursoOfertadoVeranoRepositoryInt cursoRepository;
     private final UsuarioRepositoryInt usuarioRepository;
-    private final EstadoCursoOfertadoRepositoryInt objEstadoCursoOfertadoRepository;
+    private final EstadoCursoOfertadoRepositoryInt estadoCursoOfertadoRepository;
     private final DocenteRepositoryInt docenteRepository;
     private final MateriaRepositoryInt materiaRepository;
     private final ModelMapper cursoMapper;
 
-    public GestionarCursoOfertadoVeranoGatewayImplAdapter(CursoOfertadoVeranoRepositoryInt cursoRepository, UsuarioRepositoryInt usuarioRepository,EstadoCursoOfertadoRepositoryInt objEstadoCursoOfertadoRepository, DocenteRepositoryInt docenteRepository, MateriaRepositoryInt materiaRepository, @Qualifier("mapperCurso") ModelMapper cursoMapper) {
+    public GestionarCursoOfertadoVeranoGatewayImplAdapter(CursoOfertadoVeranoRepositoryInt cursoRepository, UsuarioRepositoryInt usuarioRepository,EstadoCursoOfertadoRepositoryInt estadoCursoOfertadoRepository, DocenteRepositoryInt docenteRepository, MateriaRepositoryInt materiaRepository, @Qualifier("mapperCurso") ModelMapper cursoMapper) {
         this.cursoRepository = cursoRepository;
         this.usuarioRepository = usuarioRepository;
-        this.objEstadoCursoOfertadoRepository = objEstadoCursoOfertadoRepository;
+        this.estadoCursoOfertadoRepository = estadoCursoOfertadoRepository;
         this.docenteRepository = docenteRepository;
         this.materiaRepository = materiaRepository;
         this.cursoMapper = cursoMapper;
@@ -150,7 +150,7 @@ public class GestionarCursoOfertadoVeranoGatewayImplAdapter implements Gestionar
             
             estadoCursoEntity.setObjCursoOfertadoVerano(cursoEntity);
 
-            estadoCursoGuardado = this.objEstadoCursoOfertadoRepository.save(estadoCursoEntity);
+            estadoCursoGuardado = this.estadoCursoOfertadoRepository.save(estadoCursoEntity);
 
             cursoEntity.getEstadosCursoOfertados().add(estadoCursoGuardado);
 
@@ -260,7 +260,7 @@ public class GestionarCursoOfertadoVeranoGatewayImplAdapter implements Gestionar
             estado.setEstado_actual(nuevoEstado);
             estado.setFecha_registro_estado(new Date());
             estado.setObjCursoOfertadoVerano(guardado);
-            objEstadoCursoOfertadoRepository.save(estado);
+            estadoCursoOfertadoRepository.save(estado);
         }
         return cursoMapper.map(guardado, CursoOfertadoVerano.class);
     }

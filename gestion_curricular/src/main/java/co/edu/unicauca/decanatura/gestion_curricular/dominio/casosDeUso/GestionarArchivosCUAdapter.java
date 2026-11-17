@@ -8,12 +8,12 @@ import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.Gestionar
 
 public class GestionarArchivosCUAdapter implements GestionarArchivosCUIntPort {
 
-    private final GestionarArchivosGatewayIntPort objGestionarArchivos;
-    private final FormateadorResultadosIntPort objFormateadorResultados;
+    private final GestionarArchivosGatewayIntPort gestionarArchivos;
+    private final FormateadorResultadosIntPort formateadorResultados;
 
-    public GestionarArchivosCUAdapter (GestionarArchivosGatewayIntPort objGestionarArchivos, FormateadorResultadosIntPort objFormateadorResultados){
-        this.objGestionarArchivos = objGestionarArchivos;
-        this.objFormateadorResultados = objFormateadorResultados;
+    public GestionarArchivosCUAdapter (GestionarArchivosGatewayIntPort gestionarArchivos, FormateadorResultadosIntPort formateadorResultados){
+        this.gestionarArchivos = gestionarArchivos;
+        this.formateadorResultados = formateadorResultados;
     }
     
 
@@ -21,18 +21,18 @@ public class GestionarArchivosCUAdapter implements GestionarArchivosCUIntPort {
     public String saveFile(ArchivoSubido file, String name, String fileType) {
         String filename = null;
         if(file == null){
-            this.objFormateadorResultados.retornarRespuestaErrorReglaDeNegocio("el archivo no puede ser nulo");
+            this.formateadorResultados.retornarRespuestaErrorReglaDeNegocio("el archivo no puede ser nulo");
         }
         if(name == null){
-            this.objFormateadorResultados.retornarRespuestaErrorReglaDeNegocio("el nombre no puede ser nulo");
+            this.formateadorResultados.retornarRespuestaErrorReglaDeNegocio("el nombre no puede ser nulo");
         }
         if(fileType == null){
-            this.objFormateadorResultados.retornarRespuestaErrorReglaDeNegocio("el tipo de archivo no puede ser nulo");
+            this.formateadorResultados.retornarRespuestaErrorReglaDeNegocio("el tipo de archivo no puede ser nulo");
         }
         try {
-            filename = this.objGestionarArchivos.saveFile(file, name, fileType);
+            filename = this.gestionarArchivos.saveFile(file, name, fileType);
         } catch (Exception e) {
-            this.objFormateadorResultados.retornarRespuestaErrorReglaDeNegocio(e.getMessage());
+            this.formateadorResultados.retornarRespuestaErrorReglaDeNegocio(e.getMessage());
         }
 
         return filename;
@@ -42,29 +42,29 @@ public class GestionarArchivosCUAdapter implements GestionarArchivosCUIntPort {
     public String saveFile(ArchivoSubido file, String name, String fileType, String tipoSolicitud, Integer idSolicitud) {
         String filename = null;
         if (file == null) {
-            this.objFormateadorResultados.retornarRespuestaErrorReglaDeNegocio("el archivo no puede ser nulo");
+            this.formateadorResultados.retornarRespuestaErrorReglaDeNegocio("el archivo no puede ser nulo");
             return null;
         }
         if (name == null) {
-            this.objFormateadorResultados.retornarRespuestaErrorReglaDeNegocio("el nombre no puede ser nulo");
+            this.formateadorResultados.retornarRespuestaErrorReglaDeNegocio("el nombre no puede ser nulo");
             return null;
         }
         if (fileType == null) {
-            this.objFormateadorResultados.retornarRespuestaErrorReglaDeNegocio("el tipo de archivo no puede ser nulo");
+            this.formateadorResultados.retornarRespuestaErrorReglaDeNegocio("el tipo de archivo no puede ser nulo");
             return null;
         }
         if (tipoSolicitud == null || tipoSolicitud.trim().isEmpty()) {
-            this.objFormateadorResultados.retornarRespuestaErrorReglaDeNegocio("el tipo de solicitud no puede ser nulo o vacío");
+            this.formateadorResultados.retornarRespuestaErrorReglaDeNegocio("el tipo de solicitud no puede ser nulo o vacío");
             return null;
         }
         if (idSolicitud == null) {
-            this.objFormateadorResultados.retornarRespuestaErrorReglaDeNegocio("el ID de solicitud no puede ser nulo");
+            this.formateadorResultados.retornarRespuestaErrorReglaDeNegocio("el ID de solicitud no puede ser nulo");
             return null;
         }
         try {
-            filename = this.objGestionarArchivos.saveFile(file, name, fileType, tipoSolicitud, idSolicitud);
+            filename = this.gestionarArchivos.saveFile(file, name, fileType, tipoSolicitud, idSolicitud);
         } catch (Exception e) {
-            this.objFormateadorResultados.retornarRespuestaErrorReglaDeNegocio(e.getMessage());
+            this.formateadorResultados.retornarRespuestaErrorReglaDeNegocio(e.getMessage());
         }
         return filename;
     }
@@ -73,13 +73,13 @@ public class GestionarArchivosCUAdapter implements GestionarArchivosCUIntPort {
     public byte[] getFile(String filename) {
         byte[] archivos = null;
         if (filename == null) {
-            this.objFormateadorResultados.retornarRespuestaErrorReglaDeNegocio("el nombre no puede ser nulo");
+            this.formateadorResultados.retornarRespuestaErrorReglaDeNegocio("el nombre no puede ser nulo");
             return null;
         }
         try {
-            archivos = this.objGestionarArchivos.getFile(filename);
+            archivos = this.gestionarArchivos.getFile(filename);
         } catch (Exception e) {
-            this.objFormateadorResultados.retornarRespuestaErrorReglaDeNegocio(e.getMessage());
+            this.formateadorResultados.retornarRespuestaErrorReglaDeNegocio(e.getMessage());
         }
         return archivos;
     }
@@ -88,13 +88,13 @@ public class GestionarArchivosCUAdapter implements GestionarArchivosCUIntPort {
     public byte[] getFileByPath(String relativePath) {
         byte[] archivos = null;
         if (relativePath == null || relativePath.trim().isEmpty()) {
-            this.objFormateadorResultados.retornarRespuestaErrorReglaDeNegocio("la ruta del archivo no puede ser nula o vacía");
+            this.formateadorResultados.retornarRespuestaErrorReglaDeNegocio("la ruta del archivo no puede ser nula o vacía");
             return null;
         }
         try {
-            archivos = this.objGestionarArchivos.getFileByPath(relativePath);
+            archivos = this.gestionarArchivos.getFileByPath(relativePath);
         } catch (Exception e) {
-            this.objFormateadorResultados.retornarRespuestaErrorReglaDeNegocio(e.getMessage());
+            this.formateadorResultados.retornarRespuestaErrorReglaDeNegocio(e.getMessage());
         }
         return archivos;
     }
@@ -102,25 +102,25 @@ public class GestionarArchivosCUAdapter implements GestionarArchivosCUIntPort {
     @Override
     public String moverArchivoAOrganizado(String rutaActual, String nombreArchivo, String tipoSolicitud, Integer idSolicitud) {
         if (rutaActual == null || rutaActual.trim().isEmpty()) {
-            this.objFormateadorResultados.retornarRespuestaErrorReglaDeNegocio("la ruta actual del archivo no puede ser nula o vacía");
+            this.formateadorResultados.retornarRespuestaErrorReglaDeNegocio("la ruta actual del archivo no puede ser nula o vacía");
             return null;
         }
         if (nombreArchivo == null || nombreArchivo.trim().isEmpty()) {
-            this.objFormateadorResultados.retornarRespuestaErrorReglaDeNegocio("el nombre del archivo no puede ser nulo o vacío");
+            this.formateadorResultados.retornarRespuestaErrorReglaDeNegocio("el nombre del archivo no puede ser nulo o vacío");
             return null;
         }
         if (tipoSolicitud == null || tipoSolicitud.trim().isEmpty()) {
-            this.objFormateadorResultados.retornarRespuestaErrorReglaDeNegocio("el tipo de solicitud no puede ser nulo o vacío");
+            this.formateadorResultados.retornarRespuestaErrorReglaDeNegocio("el tipo de solicitud no puede ser nulo o vacío");
             return null;
         }
         if (idSolicitud == null) {
-            this.objFormateadorResultados.retornarRespuestaErrorReglaDeNegocio("el ID de solicitud no puede ser nulo");
+            this.formateadorResultados.retornarRespuestaErrorReglaDeNegocio("el ID de solicitud no puede ser nulo");
             return null;
         }
         try {
-            return this.objGestionarArchivos.moverArchivoAOrganizado(rutaActual, nombreArchivo, tipoSolicitud, idSolicitud);
+            return this.gestionarArchivos.moverArchivoAOrganizado(rutaActual, nombreArchivo, tipoSolicitud, idSolicitud);
         } catch (Exception e) {
-            this.objFormateadorResultados.retornarRespuestaErrorReglaDeNegocio(e.getMessage());
+            this.formateadorResultados.retornarRespuestaErrorReglaDeNegocio(e.getMessage());
             return null;
         }
     }
@@ -128,13 +128,13 @@ public class GestionarArchivosCUAdapter implements GestionarArchivosCUIntPort {
     @Override
     public java.nio.file.Path getFileAsPath(String filename) {
         if (filename == null) {
-            this.objFormateadorResultados.retornarRespuestaErrorReglaDeNegocio("el nombre no puede ser nulo");
+            this.formateadorResultados.retornarRespuestaErrorReglaDeNegocio("el nombre no puede ser nulo");
             return null;
         }
         try {
-            return this.objGestionarArchivos.getFileAsPath(filename);
+            return this.gestionarArchivos.getFileAsPath(filename);
         } catch (Exception e) {
-            this.objFormateadorResultados.retornarRespuestaErrorReglaDeNegocio(e.getMessage());
+            this.formateadorResultados.retornarRespuestaErrorReglaDeNegocio(e.getMessage());
             return null;
         }
     }
@@ -142,13 +142,13 @@ public class GestionarArchivosCUAdapter implements GestionarArchivosCUIntPort {
     @Override
     public java.nio.file.Path getFileByPathAsPath(String relativePath) {
         if (relativePath == null || relativePath.trim().isEmpty()) {
-            this.objFormateadorResultados.retornarRespuestaErrorReglaDeNegocio("la ruta del archivo no puede ser nula o vacía");
+            this.formateadorResultados.retornarRespuestaErrorReglaDeNegocio("la ruta del archivo no puede ser nula o vacía");
             return null;
         }
         try {
-            return this.objGestionarArchivos.getFileByPathAsPath(relativePath);
+            return this.gestionarArchivos.getFileByPathAsPath(relativePath);
         } catch (Exception e) {
-            this.objFormateadorResultados.retornarRespuestaErrorReglaDeNegocio(e.getMessage());
+            this.formateadorResultados.retornarRespuestaErrorReglaDeNegocio(e.getMessage());
             return null;
         }
     }

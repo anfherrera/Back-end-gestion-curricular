@@ -23,73 +23,73 @@ import java.util.stream.Collectors;
 @Validated
 public class DocenteRestController {
 
-    private final GestionarDocentesCUIntPort objDocenteCUIntPort;
-    private final DocenteMapperDominio objDocenteMapperDominio;
+    private final GestionarDocentesCUIntPort docenteCUIntPort;
+    private final DocenteMapperDominio docenteMapperDominio;
 
     @PostMapping("/crearDocente")
     public ResponseEntity<DocenteDTORespuesta> crearDocente(@RequestBody @Valid DocenteDTOPeticion peticion) {
-        Docente docente = objDocenteMapperDominio.mapearDeDocenteDTOPeticionADocente(peticion);
-        Docente docenteCreado = objDocenteCUIntPort.guardarDocente(docente);
+        Docente docente = docenteMapperDominio.mapearDeDocenteDTOPeticionADocente(peticion);
+        Docente docenteCreado = docenteCUIntPort.guardarDocente(docente);
         return new ResponseEntity<>(
-                objDocenteMapperDominio.mapearDeDocenteADocenteDTORespuesta(docenteCreado),
+                docenteMapperDominio.mapearDeDocenteADocenteDTORespuesta(docenteCreado),
                 HttpStatus.CREATED
         );
     }
 
     @PutMapping("/actualizarDocente")
     public ResponseEntity<DocenteDTORespuesta> actualizarDocente(@RequestBody @Valid DocenteDTOPeticion peticion) {
-        Docente docente = objDocenteMapperDominio.mapearDeDocenteDTOPeticionADocente(peticion);
-        Docente docenteActualizado = objDocenteCUIntPort.actualizarDocente(docente);
+        Docente docente = docenteMapperDominio.mapearDeDocenteDTOPeticionADocente(peticion);
+        Docente docenteActualizado = docenteCUIntPort.actualizarDocente(docente);
         return new ResponseEntity<>(
-                objDocenteMapperDominio.mapearDeDocenteADocenteDTORespuesta(docenteActualizado),
+                docenteMapperDominio.mapearDeDocenteADocenteDTORespuesta(docenteActualizado),
                 HttpStatus.ACCEPTED
         );
     }
 
     @GetMapping("/buscarDocentePorId/{id}")
     public ResponseEntity<DocenteDTORespuesta> buscarDocentePorId(@Min(value = 1) @PathVariable Integer id) {
-        Docente docente = objDocenteCUIntPort.obtenerDocentePorId(id);
+        Docente docente = docenteCUIntPort.obtenerDocentePorId(id);
         if (docente == null) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
         return new ResponseEntity<>(
-                objDocenteMapperDominio.mapearDeDocenteADocenteDTORespuesta(docente),
+                docenteMapperDominio.mapearDeDocenteADocenteDTORespuesta(docente),
                 HttpStatus.OK
         );
     }
 
     @DeleteMapping("/eliminarDocente/{id}")
     public ResponseEntity<Boolean> eliminarDocente(@Min(value = 1) @PathVariable Integer id) {
-        boolean eliminado = objDocenteCUIntPort.eliminarDocente(id);
+        boolean eliminado = docenteCUIntPort.eliminarDocente(id);
         return new ResponseEntity<>(eliminado, eliminado ? HttpStatus.OK : HttpStatus.NOT_FOUND);
     }
 
     @GetMapping("/buscarPorNombre")
     public ResponseEntity<List<DocenteDTORespuesta>> buscarPorNombre(@RequestParam(name = "nombre", required = true) String nombre) {
-        List<Docente> docentes = objDocenteCUIntPort.buscarPorNombreParcial(nombre);
+        List<Docente> docentes = docenteCUIntPort.buscarPorNombreParcial(nombre);
         List<DocenteDTORespuesta> respuesta = docentes.stream()
-                .map(objDocenteMapperDominio::mapearDeDocenteADocenteDTORespuesta)
+                .map(docenteMapperDominio::mapearDeDocenteADocenteDTORespuesta)
                 .collect(Collectors.toList());
         return ResponseEntity.ok(respuesta);
     }
 
     @GetMapping("/buscarPorCodigo")
     public ResponseEntity<DocenteDTORespuesta> buscarPorCodigo(@RequestParam(name = "codigo", required = true) String codigo) {
-        Docente docente = objDocenteCUIntPort.obtenerDocentePorCodigo(codigo);
+        Docente docente = docenteCUIntPort.obtenerDocentePorCodigo(codigo);
         if (docente == null) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
         return new ResponseEntity<>(
-                objDocenteMapperDominio.mapearDeDocenteADocenteDTORespuesta(docente),
+                docenteMapperDominio.mapearDeDocenteADocenteDTORespuesta(docente),
                 HttpStatus.OK
         );
     }
 
     @GetMapping("/listarDocentes")
     public ResponseEntity<List<DocenteDTORespuesta>> listarDocentes() {
-        List<Docente> docentes = objDocenteCUIntPort.listarDocentes();
+        List<Docente> docentes = docenteCUIntPort.listarDocentes();
         List<DocenteDTORespuesta> respuesta = docentes.stream()
-                .map(objDocenteMapperDominio::mapearDeDocenteADocenteDTORespuesta)
+                .map(docenteMapperDominio::mapearDeDocenteADocenteDTORespuesta)
                 .collect(Collectors.toList());
         return ResponseEntity.ok(respuesta);
     }

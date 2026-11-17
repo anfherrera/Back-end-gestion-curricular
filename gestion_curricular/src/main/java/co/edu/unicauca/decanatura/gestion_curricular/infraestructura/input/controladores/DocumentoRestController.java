@@ -29,7 +29,7 @@ public class DocumentoRestController {
 
     private final GestionarDocumentosCUIntPort documentoCU;
     private final DocumentosMapperDominio mapperDocumento;
-    private final GestionarArchivosCUIntPort objGestionarArchivos;
+    private final GestionarArchivosCUIntPort gestionarArchivos;
     private final Autorizacion autorizacion;
 
     @GetMapping("/buscarPorId/{id}")
@@ -80,8 +80,8 @@ public class DocumentoRestController {
         }
         try {
             byte[] contenido = ruta.contains("/")
-                    ? objGestionarArchivos.getFileByPath(ruta)
-                    : objGestionarArchivos.getFile(ruta);
+                    ? gestionarArchivos.getFileByPath(ruta)
+                    : gestionarArchivos.getFile(ruta);
             String nombreArchivo = documento.getNombre() != null ? documento.getNombre() : "documento";
             HttpHeaders headers = new HttpHeaders();
             headers.set(HttpHeaders.CONTENT_DISPOSITION, RespuestasArchivo.adjuntoUtf8(nombreArchivo));

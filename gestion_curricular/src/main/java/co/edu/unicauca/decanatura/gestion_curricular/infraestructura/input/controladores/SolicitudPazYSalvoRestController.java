@@ -67,7 +67,7 @@ public class SolicitudPazYSalvoRestController {
 
     private final GestionarSolicitudPazYSalvoCUIntPort solicitudPazYSalvoCU;
     private final SolicitudPazYSalvoMapperDominio solicitudMapperDominio;
-    private final GestionarArchivosCUIntPort objGestionarArchivos;
+    private final GestionarArchivosCUIntPort gestionarArchivos;
     private final GestionarDocumentosCUIntPort documentosCU;
     private final DocumentosMapperDominio documentosMapperDominio;
     private final GenerarDocumentosCUIntPort documentGeneratorService;
@@ -521,7 +521,7 @@ public class SolicitudPazYSalvoRestController {
         }
         
         // Obtener el archivo usando la ruta (puede ser nombre simple o ruta completa)
-        byte[] archivo = objGestionarArchivos.getFile(rutaArchivo);
+        byte[] archivo = gestionarArchivos.getFile(rutaArchivo);
         
         if (archivo == null || archivo.length == 0) {
             return ResponseEntity.notFound().build();
@@ -554,7 +554,7 @@ public class SolicitudPazYSalvoRestController {
         for (Documento documento : solicitudPazYSalvoCU.oficios(idSolicitud)) {
             try {
                 // Usar getFile que maneja tanto rutas simples como rutas con subcarpetas
-                byte[] archivo = objGestionarArchivos.getFile(
+                byte[] archivo = gestionarArchivos.getFile(
                     documento.getRuta_documento() != null ? documento.getRuta_documento() : documento.getNombre()
                 );
 

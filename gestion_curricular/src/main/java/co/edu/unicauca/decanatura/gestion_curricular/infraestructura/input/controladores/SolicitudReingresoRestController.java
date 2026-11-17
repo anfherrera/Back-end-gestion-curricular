@@ -51,7 +51,7 @@ public class SolicitudReingresoRestController {
     private final SolicitudReingresoMapperDominio solicitudReingresoMapper;
     private final GestionarSolicitudReingresoCUIntPort solicitudService;
     private final SolicitudMapperDominio solicitudMapper;
-    private final GestionarArchivosCUIntPort objGestionarArchivos;
+    private final GestionarArchivosCUIntPort gestionarArchivos;
     private final Autorizacion autorizacion;
     private final ValidadorCambioEstado validadorCambioEstado;
 
@@ -244,10 +244,10 @@ public class SolicitudReingresoRestController {
                         
                         if (rutaDocumento != null && rutaDocumento.contains("/")) {
                             // Ruta organizada (nueva estructura)
-                            archivo = objGestionarArchivos.getFileByPath(rutaDocumento);
+                            archivo = gestionarArchivos.getFileByPath(rutaDocumento);
                         } else {
                             // Ruta simple (compatibilidad hacia atrás)
-                            archivo = objGestionarArchivos.getFile(documento.getNombre());
+                            archivo = gestionarArchivos.getFile(documento.getNombre());
                         }
                         
                         log.debug("Oficio/resolución de reingreso encontrado: {}, tamaño: {} bytes", 

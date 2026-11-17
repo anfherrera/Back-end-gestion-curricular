@@ -61,7 +61,7 @@ public class SolicitudHomologacionRestController {
     private final GestionarSolicitudHomologacionCUIntPort solicitudHomologacionCU;
     private final SolicitudHomologacionMapperDominio solicitudMapperDominio;
     private final SolicitudMapperDominio solicitudMapper;
-    private final GestionarArchivosCUIntPort objGestionarArchivos;
+    private final GestionarArchivosCUIntPort gestionarArchivos;
     private final GestionarDocumentosCUIntPort documentosCU;
     private final Autorizacion autorizacion;
     private final ValidadorCambioEstado validadorCambioEstado;
@@ -266,9 +266,9 @@ public class SolicitudHomologacionRestController {
                     : nombreDescarga;
             byte[] archivo;
             if (rutaDocumento != null && rutaDocumento.contains("/")) {
-                archivo = objGestionarArchivos.getFileByPath(rutaDocumento);
+                archivo = gestionarArchivos.getFileByPath(rutaDocumento);
             } else {
-                archivo = objGestionarArchivos.getFile(nombreDescarga);
+                archivo = gestionarArchivos.getFile(nombreDescarga);
             }
             String contentDisposition = RespuestasArchivo.adjunto(nombreDescarga);
             return ResponseEntity.ok()

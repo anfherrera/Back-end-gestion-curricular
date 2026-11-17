@@ -45,7 +45,7 @@ public class InscripcionesVeranoRestController {
 
     private final GestionarCursoOfertadoVeranoCUIntPort cursoCU;
     private final GestionarSolicitudCursoVeranoCUIntPort solicitudCU;
-    private final GestionarArchivosCUIntPort objGestionarArchivos;
+    private final GestionarArchivosCUIntPort gestionarArchivos;
     private final GestionarSolicitudCUIntPort solicitudGeneralCU;
 
     /**
@@ -570,15 +570,15 @@ public class InscripcionesVeranoRestController {
                     try {
                         if (rutaDocumento != null && rutaDocumento.contains("/")) {
                             // Ruta organizada (nueva estructura)
-                            archivo = objGestionarArchivos.getFileByPath(rutaDocumento);
+                            archivo = gestionarArchivos.getFileByPath(rutaDocumento);
                         } else {
                             // Ruta simple (compatibilidad hacia atrás)
-                            archivo = objGestionarArchivos.getFile(documento.getNombre());
+                            archivo = gestionarArchivos.getFile(documento.getNombre());
                         }
                     } catch (Exception e) {
                         // Si falla con la ruta, intentar con el nombre como fallback
                         if (documento.getRuta_documento() != null && !documento.getRuta_documento().equals(documento.getNombre())) {
-                            archivo = objGestionarArchivos.getFile(documento.getNombre());
+                            archivo = gestionarArchivos.getFile(documento.getNombre());
                         } else {
                             throw e; // Re-lanzar si no hay alternativa
                         }

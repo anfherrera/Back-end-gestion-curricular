@@ -17,17 +17,17 @@ import java.util.Date;
 @Slf4j
 public class GestionarNotificacionCUAdapter implements GestionarNotificacionCUIntPort {
 
-    private final GestionarNotificacionGatewayIntPort objGestionarNotificacionGateway;
-    private final GestionarUsuarioGatewayIntPort objGestionarUsuarioGateway;
-    private final GestionarRolGatewayIntPort objGestionarRolGateway;
+    private final GestionarNotificacionGatewayIntPort gestionarNotificacionGateway;
+    private final GestionarUsuarioGatewayIntPort gestionarUsuarioGateway;
+    private final GestionarRolGatewayIntPort gestionarRolGateway;
 
     public GestionarNotificacionCUAdapter(
-            GestionarNotificacionGatewayIntPort objGestionarNotificacionGateway,
-            GestionarUsuarioGatewayIntPort objGestionarUsuarioGateway,
-            GestionarRolGatewayIntPort objGestionarRolGateway) {
-        this.objGestionarNotificacionGateway = objGestionarNotificacionGateway;
-        this.objGestionarUsuarioGateway = objGestionarUsuarioGateway;
-        this.objGestionarRolGateway = objGestionarRolGateway;
+            GestionarNotificacionGatewayIntPort gestionarNotificacionGateway,
+            GestionarUsuarioGatewayIntPort gestionarUsuarioGateway,
+            GestionarRolGatewayIntPort gestionarRolGateway) {
+        this.gestionarNotificacionGateway = gestionarNotificacionGateway;
+        this.gestionarUsuarioGateway = gestionarUsuarioGateway;
+        this.gestionarRolGateway = gestionarRolGateway;
     }
 
     @Override
@@ -41,7 +41,7 @@ public class GestionarNotificacionCUAdapter implements GestionarNotificacionCUIn
         if (notificacion.getFechaCreacion() == null) {
             notificacion.setFechaCreacion(new Date());
         }
-        return objGestionarNotificacionGateway.crearNotificacion(notificacion);
+        return gestionarNotificacionGateway.crearNotificacion(notificacion);
     }
 
     @Override
@@ -49,7 +49,7 @@ public class GestionarNotificacionCUAdapter implements GestionarNotificacionCUIn
         if (idNotificacion == null || idNotificacion <= 0) {
             throw new IllegalArgumentException("El ID de la notificación debe ser válido.");
         }
-        return objGestionarNotificacionGateway.obtenerNotificacionPorId(idNotificacion);
+        return gestionarNotificacionGateway.obtenerNotificacionPorId(idNotificacion);
     }
 
     @Override
@@ -57,7 +57,7 @@ public class GestionarNotificacionCUAdapter implements GestionarNotificacionCUIn
         if (idUsuario == null || idUsuario <= 0) {
             throw new IllegalArgumentException("El ID del usuario debe ser válido.");
         }
-        return objGestionarNotificacionGateway.buscarPorUsuario(idUsuario);
+        return gestionarNotificacionGateway.buscarPorUsuario(idUsuario);
     }
 
     @Override
@@ -65,7 +65,7 @@ public class GestionarNotificacionCUAdapter implements GestionarNotificacionCUIn
         if (idUsuario == null || idUsuario <= 0) {
             throw new IllegalArgumentException("El ID del usuario debe ser válido.");
         }
-        return objGestionarNotificacionGateway.buscarNoLeidasPorUsuario(idUsuario);
+        return gestionarNotificacionGateway.buscarNoLeidasPorUsuario(idUsuario);
     }
 
     @Override
@@ -73,7 +73,7 @@ public class GestionarNotificacionCUAdapter implements GestionarNotificacionCUIn
         if (idUsuario == null || idUsuario <= 0) {
             throw new IllegalArgumentException("El ID del usuario debe ser válido.");
         }
-        return objGestionarNotificacionGateway.buscarUrgentesPorUsuario(idUsuario);
+        return gestionarNotificacionGateway.buscarUrgentesPorUsuario(idUsuario);
     }
 
     @Override
@@ -81,7 +81,7 @@ public class GestionarNotificacionCUAdapter implements GestionarNotificacionCUIn
         if (tipoSolicitud == null || tipoSolicitud.isBlank()) {
             throw new IllegalArgumentException("El tipo de solicitud no puede estar vacío.");
         }
-        return objGestionarNotificacionGateway.buscarPorTipoSolicitud(tipoSolicitud);
+        return gestionarNotificacionGateway.buscarPorTipoSolicitud(tipoSolicitud);
     }
 
     @Override
@@ -89,7 +89,7 @@ public class GestionarNotificacionCUAdapter implements GestionarNotificacionCUIn
         if (idSolicitud == null || idSolicitud <= 0) {
             throw new IllegalArgumentException("El ID de la solicitud debe ser válido.");
         }
-        return objGestionarNotificacionGateway.buscarPorSolicitud(idSolicitud);
+        return gestionarNotificacionGateway.buscarPorSolicitud(idSolicitud);
     }
 
     @Override
@@ -97,7 +97,7 @@ public class GestionarNotificacionCUAdapter implements GestionarNotificacionCUIn
         if (idUsuario == null || idUsuario <= 0) {
             throw new IllegalArgumentException("El ID del usuario debe ser válido.");
         }
-        return objGestionarNotificacionGateway.contarNoLeidasPorUsuario(idUsuario);
+        return gestionarNotificacionGateway.contarNoLeidasPorUsuario(idUsuario);
     }
 
     @Override
@@ -105,7 +105,7 @@ public class GestionarNotificacionCUAdapter implements GestionarNotificacionCUIn
         if (idUsuario == null || idUsuario <= 0) {
             throw new IllegalArgumentException("El ID del usuario debe ser válido.");
         }
-        objGestionarNotificacionGateway.marcarTodasComoLeidas(idUsuario);
+        gestionarNotificacionGateway.marcarTodasComoLeidas(idUsuario);
     }
 
     @Override
@@ -113,7 +113,7 @@ public class GestionarNotificacionCUAdapter implements GestionarNotificacionCUIn
         if (idNotificacion == null || idNotificacion <= 0) {
             throw new IllegalArgumentException("El ID de la notificación debe ser válido.");
         }
-        objGestionarNotificacionGateway.marcarComoLeida(idNotificacion);
+        gestionarNotificacionGateway.marcarComoLeida(idNotificacion);
     }
 
     @Override
@@ -157,11 +157,11 @@ public class GestionarNotificacionCUAdapter implements GestionarNotificacionCUIn
 
     private void notificarAlRol(Solicitud solicitud, String tipoSolicitud, String estadoActual, String nombreRol) {
         try {
-            Rol rol = objGestionarRolGateway.obtenerRolPorNombre(nombreRol);
+            Rol rol = gestionarRolGateway.obtenerRolPorNombre(nombreRol);
             if (rol == null || rol.getId_rol() == null) {
                 return;
             }
-            for (Usuario destinatario : objGestionarUsuarioGateway.buscarUsuariosPorRol(rol.getId_rol())) {
+            for (Usuario destinatario : gestionarUsuarioGateway.buscarUsuariosPorRol(rol.getId_rol())) {
                 crearNotificacionParaFuncionario(solicitud, tipoSolicitud, estadoActual, destinatario, nombreRol);
             }
         } catch (RuntimeException e) {

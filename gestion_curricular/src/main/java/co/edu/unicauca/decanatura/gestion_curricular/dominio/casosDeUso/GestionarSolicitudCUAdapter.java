@@ -11,16 +11,16 @@ import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Solicitud;
 
 public class GestionarSolicitudCUAdapter implements GestionarSolicitudCUIntPort {
 
-    private final GestionarSolicitudGatewayIntPort objGestionarSolicitudGateway;
-    private final GestionarUsuarioGatewayIntPort objUsuario;
-    private final FormateadorResultadosIntPort objFormateadorResultados;
+    private final GestionarSolicitudGatewayIntPort gestionarSolicitudGateway;
+    private final GestionarUsuarioGatewayIntPort usuario;
+    private final FormateadorResultadosIntPort formateadorResultados;
 
-    public GestionarSolicitudCUAdapter(GestionarSolicitudGatewayIntPort objGestionarSolicitudGateway,
-    GestionarUsuarioGatewayIntPort objUsuario, 
-    FormateadorResultadosIntPort objFormateadorResultados){
-        this.objUsuario = objUsuario;
-        this.objFormateadorResultados = objFormateadorResultados;
-        this.objGestionarSolicitudGateway = objGestionarSolicitudGateway;
+    public GestionarSolicitudCUAdapter(GestionarSolicitudGatewayIntPort gestionarSolicitudGateway,
+    GestionarUsuarioGatewayIntPort usuario,
+    FormateadorResultadosIntPort formateadorResultados){
+        this.usuario = usuario;
+        this.formateadorResultados = formateadorResultados;
+        this.gestionarSolicitudGateway = gestionarSolicitudGateway;
     }
 
 
@@ -28,50 +28,50 @@ public class GestionarSolicitudCUAdapter implements GestionarSolicitudCUIntPort 
     @Override
     public Solicitud obtenerSolicitudPorId(Integer idSolicitud) {
         if(idSolicitud == null) {
-            this.objFormateadorResultados.retornarRespuestaErrorReglaDeNegocio("El ID de la solicitud no puede ser nulo");
+            this.formateadorResultados.retornarRespuestaErrorReglaDeNegocio("El ID de la solicitud no puede ser nulo");
         }
-        return this.objGestionarSolicitudGateway.obtenerSolicitudPorId(idSolicitud);
+        return this.gestionarSolicitudGateway.obtenerSolicitudPorId(idSolicitud);
     }
 
     @Override
     public boolean eliminarSolicitud(Integer idSolicitud) {
         if(idSolicitud == null) {
-            this.objFormateadorResultados.retornarRespuestaErrorReglaDeNegocio("El ID de la solicitud no puede ser nulo");
+            this.formateadorResultados.retornarRespuestaErrorReglaDeNegocio("El ID de la solicitud no puede ser nulo");
         }
-        Solicitud solicitud = this.objGestionarSolicitudGateway.obtenerSolicitudPorId(idSolicitud);
+        Solicitud solicitud = this.gestionarSolicitudGateway.obtenerSolicitudPorId(idSolicitud);
         if(solicitud == null) {
-            this.objFormateadorResultados.retornarRespuestaErrorEntidadExiste("Solicitud no existe en el sistema");
+            this.formateadorResultados.retornarRespuestaErrorEntidadExiste("Solicitud no existe en el sistema");
         }
-        return this.objGestionarSolicitudGateway.eliminarSolicitud(idSolicitud);
+        return this.gestionarSolicitudGateway.eliminarSolicitud(idSolicitud);
     }
 
     @Override
     public List<Solicitud> listarSolicitudes() {
-        return this.objGestionarSolicitudGateway.listarSolicitudes();
+        return this.gestionarSolicitudGateway.listarSolicitudes();
     }
 
     @Override
     public List<Solicitud> obtenerSolicitudesPorNombre(String nombreSolicitud) {
         if (nombreSolicitud == null || nombreSolicitud.isBlank()) {
-            this.objFormateadorResultados.retornarRespuestaErrorReglaDeNegocio("El nombre de la solicitud no puede ser nulo o vacío");
+            this.formateadorResultados.retornarRespuestaErrorReglaDeNegocio("El nombre de la solicitud no puede ser nulo o vacío");
         }
-        return this.objGestionarSolicitudGateway.obtenerSolicitudesPorNombre(nombreSolicitud);
+        return this.gestionarSolicitudGateway.obtenerSolicitudesPorNombre(nombreSolicitud);
        
     }
 
     @Override
     public List<Solicitud> buscarHistorial(String periodoAcademico, Integer idUsuario, String estadoActual) {
-        return this.objGestionarSolicitudGateway.buscarHistorial(vacioANull(periodoAcademico), idUsuario, vacioANull(estadoActual));
+        return this.gestionarSolicitudGateway.buscarHistorial(vacioANull(periodoAcademico), idUsuario, vacioANull(estadoActual));
     }
 
     @Override
     public long contarHistorial() {
-        return this.objGestionarSolicitudGateway.contarHistorial();
+        return this.gestionarSolicitudGateway.contarHistorial();
     }
 
     @Override
     public long contarSolicitudesProcesadas() {
-        return this.objGestionarSolicitudGateway.contarSolicitudesProcesadas();
+        return this.gestionarSolicitudGateway.contarSolicitudesProcesadas();
     }
 
     private static String vacioANull(String texto) {

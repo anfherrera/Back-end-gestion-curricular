@@ -44,7 +44,7 @@ public class GestionarSolicitudPazYSalvoCUAdapter implements GestionarSolicitudP
     private final FormateadorResultadosIntPort formateadorResultados;
     private final AsociadorDocumentosPendientes asociadorDocumentos;
     private final ListadorSolicitudes<SolicitudPazYSalvo> listador;
-    private final GestionarNotificacionCUIntPort objGestionarNotificacionCU;
+    private final GestionarNotificacionCUIntPort gestionarNotificacionCU;
 
     public GestionarSolicitudPazYSalvoCUAdapter(
             GestionarSolicitudPazYSalvoGatewayIntPort solicitudGateway,
@@ -53,7 +53,7 @@ public class GestionarSolicitudPazYSalvoCUAdapter implements GestionarSolicitudP
             GestionarEstadoSolicitudGatewayIntPort estadoSolicitudGateway,
             FormateadorResultadosIntPort formateadorResultados,
             GestionarArchivosCUIntPort gestionarArchivos,
-            GestionarNotificacionCUIntPort objGestionarNotificacionCU) {
+            GestionarNotificacionCUIntPort gestionarNotificacionCU) {
         this.solicitudGateway = solicitudGateway;
         this.usuarioGateway = usuarioGateway;
         this.documentosGateway = documentosGateway;
@@ -61,7 +61,7 @@ public class GestionarSolicitudPazYSalvoCUAdapter implements GestionarSolicitudP
         this.formateadorResultados = formateadorResultados;
         this.asociadorDocumentos = new AsociadorDocumentosPendientes(documentosGateway, gestionarArchivos);
         this.listador = new ListadorSolicitudes<>(FlujoEstadosSolicitud.TRES_APROBACIONES, solicitudGateway);
-        this.objGestionarNotificacionCU = objGestionarNotificacionCU;
+        this.gestionarNotificacionCU = gestionarNotificacionCU;
     }
 
     @Override
@@ -131,7 +131,7 @@ public class GestionarSolicitudPazYSalvoCUAdapter implements GestionarSolicitudP
 
         // Crear notificación automática para el estudiante
         try {
-            this.objGestionarNotificacionCU.notificarCreacionSolicitud(solicitudGuardada, "PAZ_Y_SALVO");
+            this.gestionarNotificacionCU.notificarCreacionSolicitud(solicitudGuardada, "PAZ_Y_SALVO");
         } catch (Exception e) {
         }
 
@@ -201,7 +201,7 @@ public class GestionarSolicitudPazYSalvoCUAdapter implements GestionarSolicitudP
         // Crear notificación automática del cambio de estado
         try {
             solicitud = buscarPorId(idSolicitud); // Recargar con el nuevo estado
-            this.objGestionarNotificacionCU.notificarCambioEstadoSolicitud(solicitud, estadoAnterior, nuevoEstado, "PAZ_Y_SALVO");
+            this.gestionarNotificacionCU.notificarCambioEstadoSolicitud(solicitud, estadoAnterior, nuevoEstado, "PAZ_Y_SALVO");
         } catch (RuntimeException e) {
             log.warn("No se pudo notificar el cambio de estado de Paz y Salvo para la solicitud {}", idSolicitud, e);
         }
