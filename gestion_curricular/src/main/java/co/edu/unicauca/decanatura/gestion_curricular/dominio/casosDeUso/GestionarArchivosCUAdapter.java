@@ -1,10 +1,9 @@
 package co.edu.unicauca.decanatura.gestion_curricular.dominio.casosDeUso;
 
-import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.ArchivoSubido;
-
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarArchivosCUIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.FormateadorResultadosIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.GestionarArchivosGatewayIntPort;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.ArchivoSubido;
 
 public class GestionarArchivosCUAdapter implements GestionarArchivosCUIntPort {
 

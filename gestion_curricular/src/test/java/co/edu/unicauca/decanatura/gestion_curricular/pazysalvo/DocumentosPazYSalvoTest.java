@@ -12,8 +12,8 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Documento;
-import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.DocumentosPazYSalvo;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.DocumentosPazYSalvo.Requerido;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.DocumentosPazYSalvo;
 
 @DisplayName("Paz y Salvo - reglas por nombre de documento")
 class DocumentosPazYSalvoTest {

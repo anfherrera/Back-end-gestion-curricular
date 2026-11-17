@@ -1,7 +1,5 @@
 package co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos;
 
-import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.enums.EstadosSolicitud;
-
 import java.text.Normalizer;
 import java.util.HashMap;
 import java.util.List;
@@ -9,6 +7,8 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.enums.EstadosSolicitud;
 
 /**
  * Flujo de estados de un tipo de solicitud: qué pasos se permiten y qué rol decide cada uno.

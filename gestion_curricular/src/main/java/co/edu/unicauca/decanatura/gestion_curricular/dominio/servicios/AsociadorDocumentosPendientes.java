@@ -2,11 +2,12 @@ package co.edu.unicauca.decanatura.gestion_curricular.dominio.servicios;
 
 import java.util.List;
 
+import lombok.extern.slf4j.Slf4j;
+
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarArchivosCUIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.GestionarDocumentosGatewayIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Documento;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Solicitud;
-import lombok.extern.slf4j.Slf4j;
 
 /**
  * Asocia a una solicitud recién creada los documentos que su dueño subió antes de enviarla.

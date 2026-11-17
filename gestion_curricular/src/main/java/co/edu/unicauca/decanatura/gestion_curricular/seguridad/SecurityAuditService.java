@@ -1,11 +1,11 @@
 package co.edu.unicauca.decanatura.gestion_curricular.seguridad;
 
-import org.springframework.stereotype.Service;
-
-import jakarta.servlet.http.HttpServletRequest;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
+
+import jakarta.servlet.http.HttpServletRequest;
+import org.springframework.stereotype.Service;
 
 /**
  * Servicio de auditoría de seguridad para registrar eventos de seguridad

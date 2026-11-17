@@ -2,6 +2,7 @@ package co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input;
 
 import java.io.IOException;
 import java.util.*;
+
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.PlantillaDocumento;
 
 public interface GenerarDocumentosCUIntPort {

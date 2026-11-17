@@ -1,9 +1,10 @@
 package co.edu.unicauca.decanatura.gestion_curricular.dominio.excepciones;
 
-import co.edu.unicauca.decanatura.gestion_curricular.dominio.excepciones.CodigoError;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.excepciones.CodigoError;
 
 @NoArgsConstructor
 @AllArgsConstructor

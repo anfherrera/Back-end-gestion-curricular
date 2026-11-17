@@ -1,22 +1,23 @@
 package co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.formateador;
 
-import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.GenerarDocumentosIntPort;
-import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.DatosDocumento;
-import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.DatosGeneracionDocumento;
-import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.PlantillaDocumento;
-import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.SolicitudHomologacion;
-import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.SolicitudReingreso;
-import org.apache.poi.xwpf.usermodel.*;
-import org.springframework.core.io.ClassPathResource;
-import org.springframework.stereotype.Service;
-import lombok.RequiredArgsConstructor;
-
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
+
+import lombok.RequiredArgsConstructor;
+import org.apache.poi.xwpf.usermodel.*;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.stereotype.Service;
+
+import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.GenerarDocumentosIntPort;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.DatosDocumento;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.DatosGeneracionDocumento;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.PlantillaDocumento;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.SolicitudHomologacion;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.SolicitudReingreso;
 
 @Service("documentGeneratorService")
 @RequiredArgsConstructor

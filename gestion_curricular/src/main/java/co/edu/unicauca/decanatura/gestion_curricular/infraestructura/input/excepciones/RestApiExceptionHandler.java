@@ -5,7 +5,7 @@ import java.util.Map;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.ConstraintViolationException;
-
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -23,14 +23,13 @@ import org.springframework.web.method.annotation.MethodArgumentTypeMismatchExcep
 import org.springframework.web.servlet.NoHandlerFoundException;
 import org.springframework.web.servlet.resource.NoResourceFoundException;
 
-import co.edu.unicauca.decanatura.gestion_curricular.dominio.excepciones.CupoAgotadoException;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.excepciones.CodigoError;
-import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.excepciones.estructuraExcepciones.Error;
-import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.excepciones.estructuraExcepciones.ErrorUtils;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.excepciones.CupoAgotadoException;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.excepciones.EntidadNoExisteException;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.excepciones.EntidadYaExisteException;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.excepciones.ReglaNegocioExcepcion;
-import lombok.extern.slf4j.Slf4j;
+import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.excepciones.estructuraExcepciones.Error;
+import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.excepciones.estructuraExcepciones.ErrorUtils;
 
 /**
  * Único manejador global de excepciones. Todas las respuestas de error tienen la forma

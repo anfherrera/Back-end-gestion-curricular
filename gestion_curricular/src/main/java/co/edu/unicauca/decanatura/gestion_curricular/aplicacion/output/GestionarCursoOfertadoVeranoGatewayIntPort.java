@@ -1,10 +1,10 @@
 package co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output;
 
+import java.util.List;
+
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.CursoOfertadoVerano;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.EstadoCursoOfertado;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.enums.GrupoCursoVerano;
-
-import java.util.List;
 
 public interface GestionarCursoOfertadoVeranoGatewayIntPort {
 

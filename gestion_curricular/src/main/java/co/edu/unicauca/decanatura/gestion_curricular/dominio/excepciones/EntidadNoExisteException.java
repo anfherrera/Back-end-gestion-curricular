@@ -1,7 +1,8 @@
 package co.edu.unicauca.decanatura.gestion_curricular.dominio.excepciones;
 
-import co.edu.unicauca.decanatura.gestion_curricular.dominio.excepciones.CodigoError;
 import lombok.Getter;
+
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.excepciones.CodigoError;
 
 @Getter
 public class EntidadNoExisteException extends RuntimeException {

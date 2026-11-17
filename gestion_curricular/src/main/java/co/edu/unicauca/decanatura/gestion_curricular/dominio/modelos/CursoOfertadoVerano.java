@@ -4,9 +4,10 @@ package co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos;
 import java.util.ArrayList;
 import java.util.List;
 
-import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.enums.GrupoCursoVerano;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.enums.GrupoCursoVerano;
 
 @Data
 @AllArgsConstructor

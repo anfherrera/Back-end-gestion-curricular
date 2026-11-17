@@ -2,8 +2,8 @@ package co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input;
 
 import java.util.function.BooleanSupplier;
 
-import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Documento;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.ArchivoSubido;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Documento;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Solicitud;
 
 public interface GestionarDocumentosCUIntPort {

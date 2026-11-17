@@ -9,11 +9,11 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.PastOrPresent;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
-
-import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.validacion.PastOrPresentWithTolerance;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
+import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.validacion.PastOrPresentWithTolerance;
 
 @Data
 @AllArgsConstructor

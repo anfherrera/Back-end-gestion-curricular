@@ -1,13 +1,13 @@
 package co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input;
 
-import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.ListadoEstudiantes;
 import java.util.Date;
 import java.util.List;
+
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.CursoOfertadoVerano;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.ListadoEstudiantes;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Solicitud;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.SolicitudCursoVeranoInscripcion;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.SolicitudCursoVeranoPreinscripcion;
-
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Usuario;
 
 public interface GestionarSolicitudCursoVeranoCUIntPort {

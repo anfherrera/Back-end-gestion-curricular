@@ -4,10 +4,10 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Supplier;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.excepciones.CupoAgotadoException;
-import lombok.extern.slf4j.Slf4j;
 
 /**
  * Contratos históricos de error de cursos de verano, distintos del error global (BUG-16).

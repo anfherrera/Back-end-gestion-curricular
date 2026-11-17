@@ -9,10 +9,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Predicate;
 
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.math3.stat.regression.SimpleRegression;
 
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.DatoDemandaCursoVerano;
-import lombok.extern.slf4j.Slf4j;
 
 /**
  * Predicción de la demanda de cursos de verano (regresión lineal simple sobre el histórico mensual)

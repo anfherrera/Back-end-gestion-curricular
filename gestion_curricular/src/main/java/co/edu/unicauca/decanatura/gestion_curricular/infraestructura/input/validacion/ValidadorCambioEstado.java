@@ -3,13 +3,13 @@ package co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.vali
 import java.util.HashMap;
 import java.util.Map;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 
-import co.edu.unicauca.decanatura.gestion_curricular.seguridad.Autorizacion;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.FlujoEstadosSolicitud;
-import lombok.RequiredArgsConstructor;
+import co.edu.unicauca.decanatura.gestion_curricular.seguridad.Autorizacion;
 
 /**
  * Verifica que un cambio de estado sea un paso válido del flujo y que lo haga el rol responsable

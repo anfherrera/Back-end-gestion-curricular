@@ -1,10 +1,10 @@
 package co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input;
 
 import java.util.List;
-import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.DatosDocumento;
 import java.util.Optional;
 import java.util.function.Predicate;
 
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.DatosDocumento;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Documento;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.DocumentosPazYSalvo.RevisionDocumentos;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.FiltroSolicitudes;

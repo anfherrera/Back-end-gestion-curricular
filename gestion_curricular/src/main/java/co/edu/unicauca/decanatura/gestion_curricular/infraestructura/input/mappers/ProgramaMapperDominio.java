@@ -3,8 +3,8 @@ package co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.mapp
 import org.mapstruct.Mapper;
 
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Programa;
-import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.dto.respuesta.ProgramaDTORespuesta;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.dto.peticion.ProgramaDTOPeticion;
+import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.dto.respuesta.ProgramaDTORespuesta;
 
 @Mapper(componentModel = "spring", nullValuePropertyMappingStrategy = org.mapstruct.NullValuePropertyMappingStrategy.IGNORE)
 public interface ProgramaMapperDominio {
