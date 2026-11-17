@@ -6,12 +6,12 @@ import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarA
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.FormateadorResultadosIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.GestionarArchivosGatewayIntPort;
 
-public class GestionarArchivosCUIAdapter implements GestionarArchivosCUIntPort {
+public class GestionarArchivosCUAdapter implements GestionarArchivosCUIntPort {
 
     private final GestionarArchivosGatewayIntPort objGestionarArchivos;
     private final FormateadorResultadosIntPort objFormateadorResultados;
 
-    public GestionarArchivosCUIAdapter (GestionarArchivosGatewayIntPort objGestionarArchivos, FormateadorResultadosIntPort objFormateadorResultados){
+    public GestionarArchivosCUAdapter (GestionarArchivosGatewayIntPort objGestionarArchivos, FormateadorResultadosIntPort objFormateadorResultados){
         this.objGestionarArchivos = objGestionarArchivos;
         this.objFormateadorResultados = objFormateadorResultados;
     }

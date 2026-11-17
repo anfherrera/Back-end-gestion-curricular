@@ -373,7 +373,7 @@ Rutas abreviadas: `…/` = `gestion_curricular/src/main/java/co/edu/unicauca/dec
   - [x] `SolicitudHomologacioneMapperDominio` → `SolicitudHomologacionMapperDominio`. Las referencias de registro y descargas pasaron antes y después, junto con la integración de Homologación tras el cambio.
   - [x] `bucarRolPorId` → `buscarRolPorId`. Errores locales e inicialización pasaron antes y después.
   - [x] `mappear…` → `mapear…` en mappers y consumidores. Ocho caracterizaciones antes y después. La de errores registra el nombre histórico de la llamada al mapper de Usuario para conservar su referencia.
-  - `GestionarArchivosCUIAdapter` → `GestionarArchivosCUAdapter`
+  - [x] `GestionarArchivosCUIAdapter` → `GestionarArchivosCUAdapter`. Upload PDF, descargas y registro pasaron antes y después.
   - `GestionarSolicitudReingresoImplAdapter` → `…ReingresoGatewayImplAdapter`
 
   El IDE puede renombrar de forma segura, pero hay que hacerlo en un commit aparte para no mezclarlo con cambios de lógica.
