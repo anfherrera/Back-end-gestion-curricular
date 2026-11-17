@@ -33,7 +33,7 @@ import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.dto.r
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.dto.respuesta.EstudiantesCursoVeranoDTORespuesta.Preinscripcion;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.dto.respuesta.EstudiantesCursoVeranoDTORespuesta.Programa;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.dto.peticion.CrearCursoDTOPeticion;
-import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.dto.peticion.UpdateCursoDTO;
+import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.dto.peticion.ActualizarCursoDTOPeticion;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.mappers.CursosOfertadosMapperDominio;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.TransicionEstadoCurso;
 import java.util.List;
@@ -368,7 +368,7 @@ public class CursosVeranoRestController {
     @PutMapping("/cursos-verano/{id}")
     public ResponseEntity<Map<String, Object>> actualizarCurso(
             @PathVariable Long id, 
-            @RequestBody UpdateCursoDTO dto) {
+            @RequestBody ActualizarCursoDTOPeticion dto) {
         
         // Validaciones basicas
         if (dto.getCupo_estimado() != null && (dto.getCupo_estimado() < 1 || dto.getCupo_estimado() > 100)) {

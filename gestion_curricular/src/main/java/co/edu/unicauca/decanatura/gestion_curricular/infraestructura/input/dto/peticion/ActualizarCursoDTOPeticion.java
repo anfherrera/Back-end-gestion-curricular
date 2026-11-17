@@ -1,11 +1,14 @@
 package co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.dto.peticion;
 
+import io.swagger.v3.oas.annotations.media.Schema;
+
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.Max;
 import lombok.Data;
 
 @Data
-public class UpdateCursoDTO {
+@Schema(name = "UpdateCursoDTO")
+public class ActualizarCursoDTOPeticion {
     
     private String nombre_curso;
     private String codigo_curso;
