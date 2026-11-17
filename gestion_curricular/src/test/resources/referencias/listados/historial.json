@@ -1,0 +1,760 @@
+{
+  "historial" : {
+    "null" : {
+      "status" : 200,
+      "body" : {
+        "total" : 13,
+        "total_solicitudes_procesadas" : 10,
+        "total_solicitudes_sistema" : 25,
+        "total_solicitudes_no_procesadas" : 15,
+        "solicitudes" : [ {
+          "id_solicitud" : 1,
+          "nombre_solicitud" : "Solicitud de Paz y Salvo",
+          "periodo_academico" : "2024-1",
+          "fecha_ceremonia" : null,
+          "fecha_registro_solicitud" : 1710522000000,
+          "estadosSolicitud" : [ {
+            "id_estado" : null,
+            "estado_actual" : "ENVIADA",
+            "fecha_registro_estado" : 1710522000000,
+            "comentario" : null,
+            "objSolicitud" : null
+          }, {
+            "id_estado" : null,
+            "estado_actual" : "APROBADA",
+            "fecha_registro_estado" : 1710608400000,
+            "comentario" : null,
+            "objSolicitud" : null
+          }, {
+            "id_estado" : null,
+            "estado_actual" : "SIN_FECHA",
+            "fecha_registro_estado" : null,
+            "comentario" : null,
+            "objSolicitud" : null
+          } ],
+          "objUsuario" : {
+            "id_usuario" : 7,
+            "nombre_completo" : "María Fernanda Ortiz Castellanos",
+            "rol" : null,
+            "codigo" : null,
+            "cedula" : null,
+            "correo" : null,
+            "estado_usuario" : false,
+            "objPrograma" : {
+              "id_programa" : 2,
+              "codigo" : null,
+              "nombre_programa" : "Ingeniería Electrónica y Telecomunicaciones"
+            }
+          },
+          "documentos" : [ ],
+          "categoria" : "Paz y Salvo",
+          "tipo_solicitud" : "Paz y Salvo"
+        }, {
+          "id_solicitud" : 2,
+          "nombre_solicitud" : "Solicitud de Reingreso",
+          "periodo_academico" : null,
+          "fecha_ceremonia" : null,
+          "fecha_registro_solicitud" : null,
+          "estadosSolicitud" : [ ],
+          "objUsuario" : null,
+          "documentos" : [ ],
+          "categoria" : "Reingreso",
+          "tipo_solicitud" : "Reingreso"
+        }, {
+          "id_solicitud" : 3,
+          "nombre_solicitud" : null,
+          "periodo_academico" : null,
+          "fecha_ceremonia" : null,
+          "fecha_registro_solicitud" : 1710522000000,
+          "estadosSolicitud" : [ ],
+          "objUsuario" : null,
+          "documentos" : [ ],
+          "categoria" : "Homologación",
+          "tipo_solicitud" : "Homologacion"
+        }, {
+          "id_solicitud" : 4,
+          "nombre_solicitud" : "Inscripción ECAES",
+          "periodo_academico" : null,
+          "fecha_ceremonia" : null,
+          "fecha_registro_solicitud" : null,
+          "estadosSolicitud" : [ ],
+          "objUsuario" : null,
+          "documentos" : [ ],
+          "categoria" : "ECAES",
+          "tipo_solicitud" : "ECAES"
+        }, {
+          "id_solicitud" : 5,
+          "nombre_solicitud" : "Preinscripción curso de verano",
+          "periodo_academico" : null,
+          "fecha_ceremonia" : null,
+          "fecha_registro_solicitud" : 1710522000000,
+          "estadosSolicitud" : [ ],
+          "objUsuario" : null,
+          "documentos" : [ ],
+          "categoria" : "Cursos de Verano",
+          "tipo_solicitud" : "Preinscripcion"
+        }, {
+          "id_solicitud" : 6,
+          "nombre_solicitud" : "Inscripción curso verano",
+          "periodo_academico" : null,
+          "fecha_ceremonia" : null,
+          "fecha_registro_solicitud" : null,
+          "estadosSolicitud" : [ ],
+          "objUsuario" : null,
+          "documentos" : [ ],
+          "categoria" : "Cursos de Verano",
+          "tipo_solicitud" : "Inscripcion"
+        }, {
+          "id_solicitud" : 7,
+          "nombre_solicitud" : "Curso nuevo",
+          "periodo_academico" : null,
+          "fecha_ceremonia" : null,
+          "fecha_registro_solicitud" : 1710522000000,
+          "estadosSolicitud" : [ ],
+          "objUsuario" : null,
+          "documentos" : [ ],
+          "categoria" : "Cursos de Verano",
+          "tipo_solicitud" : "Curso Nuevo"
+        }, {
+          "id_solicitud" : 8,
+          "nombre_solicitud" : "Curso intersemestral de verano",
+          "periodo_academico" : null,
+          "fecha_ceremonia" : null,
+          "fecha_registro_solicitud" : null,
+          "estadosSolicitud" : [ ],
+          "objUsuario" : null,
+          "documentos" : [ ],
+          "categoria" : "Cursos de Verano",
+          "tipo_solicitud" : "Curso Verano"
+        }, {
+          "id_solicitud" : 9,
+          "nombre_solicitud" : "Otra paz y salvo",
+          "periodo_academico" : null,
+          "fecha_ceremonia" : null,
+          "fecha_registro_solicitud" : 1710522000000,
+          "estadosSolicitud" : [ ],
+          "objUsuario" : null,
+          "documentos" : [ ],
+          "categoria" : "Paz y Salvo",
+          "tipo_solicitud" : "Paz y Salvo"
+        }, {
+          "id_solicitud" : 10,
+          "nombre_solicitud" : "Reingreso extemporáneo",
+          "periodo_academico" : null,
+          "fecha_ceremonia" : null,
+          "fecha_registro_solicitud" : null,
+          "estadosSolicitud" : [ ],
+          "objUsuario" : null,
+          "documentos" : [ ],
+          "categoria" : "Reingreso",
+          "tipo_solicitud" : "Reingreso"
+        }, {
+          "id_solicitud" : 11,
+          "nombre_solicitud" : "Homologación externa",
+          "periodo_academico" : null,
+          "fecha_ceremonia" : null,
+          "fecha_registro_solicitud" : 1710522000000,
+          "estadosSolicitud" : [ ],
+          "objUsuario" : null,
+          "documentos" : [ ],
+          "categoria" : "Homologación",
+          "tipo_solicitud" : "Homologacion"
+        }, {
+          "id_solicitud" : 12,
+          "nombre_solicitud" : "Prueba ecaes",
+          "periodo_academico" : null,
+          "fecha_ceremonia" : null,
+          "fecha_registro_solicitud" : null,
+          "estadosSolicitud" : [ ],
+          "objUsuario" : null,
+          "documentos" : [ ],
+          "categoria" : "ECAES",
+          "tipo_solicitud" : "ECAES"
+        }, {
+          "id_solicitud" : 13,
+          "nombre_solicitud" : "Solicitud con un nombre bastante largo que supera los cuarenta caracteres raro",
+          "periodo_academico" : null,
+          "fecha_ceremonia" : null,
+          "fecha_registro_solicitud" : 1710522000000,
+          "estadosSolicitud" : [ ],
+          "objUsuario" : {
+            "id_usuario" : null,
+            "nombre_completo" : "Ana",
+            "rol" : null,
+            "codigo" : null,
+            "cedula" : null,
+            "correo" : null,
+            "estado_usuario" : false,
+            "objPrograma" : null
+          },
+          "documentos" : [ ],
+          "categoria" : "Otro",
+          "tipo_solicitud" : "Otro"
+        } ]
+      },
+      "claves" : {
+        "total" : "NUMBER",
+        "total_solicitudes_procesadas" : "NUMBER",
+        "total_solicitudes_sistema" : "NUMBER",
+        "total_solicitudes_no_procesadas" : "NUMBER",
+        "solicitudes" : "ARRAY"
+      }
+    },
+    "  " : {
+      "status" : 200,
+      "body" : {
+        "total" : 13,
+        "total_solicitudes_procesadas" : 10,
+        "total_solicitudes_sistema" : 25,
+        "total_solicitudes_no_procesadas" : 15,
+        "solicitudes" : [ {
+          "id_solicitud" : 1,
+          "nombre_solicitud" : "Solicitud de Paz y Salvo",
+          "periodo_academico" : "2024-1",
+          "fecha_ceremonia" : null,
+          "fecha_registro_solicitud" : 1710522000000,
+          "estadosSolicitud" : [ {
+            "id_estado" : null,
+            "estado_actual" : "ENVIADA",
+            "fecha_registro_estado" : 1710522000000,
+            "comentario" : null,
+            "objSolicitud" : null
+          }, {
+            "id_estado" : null,
+            "estado_actual" : "APROBADA",
+            "fecha_registro_estado" : 1710608400000,
+            "comentario" : null,
+            "objSolicitud" : null
+          }, {
+            "id_estado" : null,
+            "estado_actual" : "SIN_FECHA",
+            "fecha_registro_estado" : null,
+            "comentario" : null,
+            "objSolicitud" : null
+          } ],
+          "objUsuario" : {
+            "id_usuario" : 7,
+            "nombre_completo" : "María Fernanda Ortiz Castellanos",
+            "rol" : null,
+            "codigo" : null,
+            "cedula" : null,
+            "correo" : null,
+            "estado_usuario" : false,
+            "objPrograma" : {
+              "id_programa" : 2,
+              "codigo" : null,
+              "nombre_programa" : "Ingeniería Electrónica y Telecomunicaciones"
+            }
+          },
+          "documentos" : [ ],
+          "categoria" : "Paz y Salvo",
+          "tipo_solicitud" : "Paz y Salvo"
+        }, {
+          "id_solicitud" : 2,
+          "nombre_solicitud" : "Solicitud de Reingreso",
+          "periodo_academico" : null,
+          "fecha_ceremonia" : null,
+          "fecha_registro_solicitud" : null,
+          "estadosSolicitud" : [ ],
+          "objUsuario" : null,
+          "documentos" : [ ],
+          "categoria" : "Reingreso",
+          "tipo_solicitud" : "Reingreso"
+        }, {
+          "id_solicitud" : 3,
+          "nombre_solicitud" : null,
+          "periodo_academico" : null,
+          "fecha_ceremonia" : null,
+          "fecha_registro_solicitud" : 1710522000000,
+          "estadosSolicitud" : [ ],
+          "objUsuario" : null,
+          "documentos" : [ ],
+          "categoria" : "Homologación",
+          "tipo_solicitud" : "Homologacion"
+        }, {
+          "id_solicitud" : 4,
+          "nombre_solicitud" : "Inscripción ECAES",
+          "periodo_academico" : null,
+          "fecha_ceremonia" : null,
+          "fecha_registro_solicitud" : null,
+          "estadosSolicitud" : [ ],
+          "objUsuario" : null,
+          "documentos" : [ ],
+          "categoria" : "ECAES",
+          "tipo_solicitud" : "ECAES"
+        }, {
+          "id_solicitud" : 5,
+          "nombre_solicitud" : "Preinscripción curso de verano",
+          "periodo_academico" : null,
+          "fecha_ceremonia" : null,
+          "fecha_registro_solicitud" : 1710522000000,
+          "estadosSolicitud" : [ ],
+          "objUsuario" : null,
+          "documentos" : [ ],
+          "categoria" : "Cursos de Verano",
+          "tipo_solicitud" : "Preinscripcion"
+        }, {
+          "id_solicitud" : 6,
+          "nombre_solicitud" : "Inscripción curso verano",
+          "periodo_academico" : null,
+          "fecha_ceremonia" : null,
+          "fecha_registro_solicitud" : null,
+          "estadosSolicitud" : [ ],
+          "objUsuario" : null,
+          "documentos" : [ ],
+          "categoria" : "Cursos de Verano",
+          "tipo_solicitud" : "Inscripcion"
+        }, {
+          "id_solicitud" : 7,
+          "nombre_solicitud" : "Curso nuevo",
+          "periodo_academico" : null,
+          "fecha_ceremonia" : null,
+          "fecha_registro_solicitud" : 1710522000000,
+          "estadosSolicitud" : [ ],
+          "objUsuario" : null,
+          "documentos" : [ ],
+          "categoria" : "Cursos de Verano",
+          "tipo_solicitud" : "Curso Nuevo"
+        }, {
+          "id_solicitud" : 8,
+          "nombre_solicitud" : "Curso intersemestral de verano",
+          "periodo_academico" : null,
+          "fecha_ceremonia" : null,
+          "fecha_registro_solicitud" : null,
+          "estadosSolicitud" : [ ],
+          "objUsuario" : null,
+          "documentos" : [ ],
+          "categoria" : "Cursos de Verano",
+          "tipo_solicitud" : "Curso Verano"
+        }, {
+          "id_solicitud" : 9,
+          "nombre_solicitud" : "Otra paz y salvo",
+          "periodo_academico" : null,
+          "fecha_ceremonia" : null,
+          "fecha_registro_solicitud" : 1710522000000,
+          "estadosSolicitud" : [ ],
+          "objUsuario" : null,
+          "documentos" : [ ],
+          "categoria" : "Paz y Salvo",
+          "tipo_solicitud" : "Paz y Salvo"
+        }, {
+          "id_solicitud" : 10,
+          "nombre_solicitud" : "Reingreso extemporáneo",
+          "periodo_academico" : null,
+          "fecha_ceremonia" : null,
+          "fecha_registro_solicitud" : null,
+          "estadosSolicitud" : [ ],
+          "objUsuario" : null,
+          "documentos" : [ ],
+          "categoria" : "Reingreso",
+          "tipo_solicitud" : "Reingreso"
+        }, {
+          "id_solicitud" : 11,
+          "nombre_solicitud" : "Homologación externa",
+          "periodo_academico" : null,
+          "fecha_ceremonia" : null,
+          "fecha_registro_solicitud" : 1710522000000,
+          "estadosSolicitud" : [ ],
+          "objUsuario" : null,
+          "documentos" : [ ],
+          "categoria" : "Homologación",
+          "tipo_solicitud" : "Homologacion"
+        }, {
+          "id_solicitud" : 12,
+          "nombre_solicitud" : "Prueba ecaes",
+          "periodo_academico" : null,
+          "fecha_ceremonia" : null,
+          "fecha_registro_solicitud" : null,
+          "estadosSolicitud" : [ ],
+          "objUsuario" : null,
+          "documentos" : [ ],
+          "categoria" : "ECAES",
+          "tipo_solicitud" : "ECAES"
+        }, {
+          "id_solicitud" : 13,
+          "nombre_solicitud" : "Solicitud con un nombre bastante largo que supera los cuarenta caracteres raro",
+          "periodo_academico" : null,
+          "fecha_ceremonia" : null,
+          "fecha_registro_solicitud" : 1710522000000,
+          "estadosSolicitud" : [ ],
+          "objUsuario" : {
+            "id_usuario" : null,
+            "nombre_completo" : "Ana",
+            "rol" : null,
+            "codigo" : null,
+            "cedula" : null,
+            "correo" : null,
+            "estado_usuario" : false,
+            "objPrograma" : null
+          },
+          "documentos" : [ ],
+          "categoria" : "Otro",
+          "tipo_solicitud" : "Otro"
+        } ]
+      },
+      "claves" : {
+        "total" : "NUMBER",
+        "total_solicitudes_procesadas" : "NUMBER",
+        "total_solicitudes_sistema" : "NUMBER",
+        "total_solicitudes_no_procesadas" : "NUMBER",
+        "solicitudes" : "ARRAY"
+      }
+    },
+    "Paz y Salvo" : {
+      "status" : 200,
+      "body" : {
+        "total" : 2,
+        "total_solicitudes_procesadas" : 10,
+        "total_solicitudes_sistema" : 25,
+        "total_solicitudes_no_procesadas" : 15,
+        "solicitudes" : [ {
+          "id_solicitud" : 1,
+          "nombre_solicitud" : "Solicitud de Paz y Salvo",
+          "periodo_academico" : "2024-1",
+          "fecha_ceremonia" : null,
+          "fecha_registro_solicitud" : 1710522000000,
+          "estadosSolicitud" : [ {
+            "id_estado" : null,
+            "estado_actual" : "ENVIADA",
+            "fecha_registro_estado" : 1710522000000,
+            "comentario" : null,
+            "objSolicitud" : null
+          }, {
+            "id_estado" : null,
+            "estado_actual" : "APROBADA",
+            "fecha_registro_estado" : 1710608400000,
+            "comentario" : null,
+            "objSolicitud" : null
+          }, {
+            "id_estado" : null,
+            "estado_actual" : "SIN_FECHA",
+            "fecha_registro_estado" : null,
+            "comentario" : null,
+            "objSolicitud" : null
+          } ],
+          "objUsuario" : {
+            "id_usuario" : 7,
+            "nombre_completo" : "María Fernanda Ortiz Castellanos",
+            "rol" : null,
+            "codigo" : null,
+            "cedula" : null,
+            "correo" : null,
+            "estado_usuario" : false,
+            "objPrograma" : {
+              "id_programa" : 2,
+              "codigo" : null,
+              "nombre_programa" : "Ingeniería Electrónica y Telecomunicaciones"
+            }
+          },
+          "documentos" : [ ],
+          "categoria" : "Paz y Salvo",
+          "tipo_solicitud" : "Paz y Salvo"
+        }, {
+          "id_solicitud" : 9,
+          "nombre_solicitud" : "Otra paz y salvo",
+          "periodo_academico" : null,
+          "fecha_ceremonia" : null,
+          "fecha_registro_solicitud" : 1710522000000,
+          "estadosSolicitud" : [ ],
+          "objUsuario" : null,
+          "documentos" : [ ],
+          "categoria" : "Paz y Salvo",
+          "tipo_solicitud" : "Paz y Salvo"
+        } ]
+      },
+      "claves" : {
+        "total" : "NUMBER",
+        "total_solicitudes_procesadas" : "NUMBER",
+        "total_solicitudes_sistema" : "NUMBER",
+        "total_solicitudes_no_procesadas" : "NUMBER",
+        "solicitudes" : "ARRAY"
+      }
+    },
+    "reingreso" : {
+      "status" : 200,
+      "body" : {
+        "total" : 2,
+        "total_solicitudes_procesadas" : 10,
+        "total_solicitudes_sistema" : 25,
+        "total_solicitudes_no_procesadas" : 15,
+        "solicitudes" : [ {
+          "id_solicitud" : 2,
+          "nombre_solicitud" : "Solicitud de Reingreso",
+          "periodo_academico" : null,
+          "fecha_ceremonia" : null,
+          "fecha_registro_solicitud" : null,
+          "estadosSolicitud" : [ ],
+          "objUsuario" : null,
+          "documentos" : [ ],
+          "categoria" : "Reingreso",
+          "tipo_solicitud" : "Reingreso"
+        }, {
+          "id_solicitud" : 10,
+          "nombre_solicitud" : "Reingreso extemporáneo",
+          "periodo_academico" : null,
+          "fecha_ceremonia" : null,
+          "fecha_registro_solicitud" : null,
+          "estadosSolicitud" : [ ],
+          "objUsuario" : null,
+          "documentos" : [ ],
+          "categoria" : "Reingreso",
+          "tipo_solicitud" : "Reingreso"
+        } ]
+      },
+      "claves" : {
+        "total" : "NUMBER",
+        "total_solicitudes_procesadas" : "NUMBER",
+        "total_solicitudes_sistema" : "NUMBER",
+        "total_solicitudes_no_procesadas" : "NUMBER",
+        "solicitudes" : "ARRAY"
+      }
+    },
+    "Homologación" : {
+      "status" : 200,
+      "body" : {
+        "total" : 1,
+        "total_solicitudes_procesadas" : 10,
+        "total_solicitudes_sistema" : 25,
+        "total_solicitudes_no_procesadas" : 15,
+        "solicitudes" : [ {
+          "id_solicitud" : 11,
+          "nombre_solicitud" : "Homologación externa",
+          "periodo_academico" : null,
+          "fecha_ceremonia" : null,
+          "fecha_registro_solicitud" : 1710522000000,
+          "estadosSolicitud" : [ ],
+          "objUsuario" : null,
+          "documentos" : [ ],
+          "categoria" : "Homologación",
+          "tipo_solicitud" : "Homologacion"
+        } ]
+      },
+      "claves" : {
+        "total" : "NUMBER",
+        "total_solicitudes_procesadas" : "NUMBER",
+        "total_solicitudes_sistema" : "NUMBER",
+        "total_solicitudes_no_procesadas" : "NUMBER",
+        "solicitudes" : "ARRAY"
+      }
+    },
+    "homologacion" : {
+      "status" : 200,
+      "body" : {
+        "total" : 1,
+        "total_solicitudes_procesadas" : 10,
+        "total_solicitudes_sistema" : 25,
+        "total_solicitudes_no_procesadas" : 15,
+        "solicitudes" : [ {
+          "id_solicitud" : 11,
+          "nombre_solicitud" : "Homologación externa",
+          "periodo_academico" : null,
+          "fecha_ceremonia" : null,
+          "fecha_registro_solicitud" : 1710522000000,
+          "estadosSolicitud" : [ ],
+          "objUsuario" : null,
+          "documentos" : [ ],
+          "categoria" : "Homologación",
+          "tipo_solicitud" : "Homologacion"
+        } ]
+      },
+      "claves" : {
+        "total" : "NUMBER",
+        "total_solicitudes_procesadas" : "NUMBER",
+        "total_solicitudes_sistema" : "NUMBER",
+        "total_solicitudes_no_procesadas" : "NUMBER",
+        "solicitudes" : "ARRAY"
+      }
+    },
+    "ECAES" : {
+      "status" : 200,
+      "body" : {
+        "total" : 2,
+        "total_solicitudes_procesadas" : 10,
+        "total_solicitudes_sistema" : 25,
+        "total_solicitudes_no_procesadas" : 15,
+        "solicitudes" : [ {
+          "id_solicitud" : 4,
+          "nombre_solicitud" : "Inscripción ECAES",
+          "periodo_academico" : null,
+          "fecha_ceremonia" : null,
+          "fecha_registro_solicitud" : null,
+          "estadosSolicitud" : [ ],
+          "objUsuario" : null,
+          "documentos" : [ ],
+          "categoria" : "ECAES",
+          "tipo_solicitud" : "ECAES"
+        }, {
+          "id_solicitud" : 12,
+          "nombre_solicitud" : "Prueba ecaes",
+          "periodo_academico" : null,
+          "fecha_ceremonia" : null,
+          "fecha_registro_solicitud" : null,
+          "estadosSolicitud" : [ ],
+          "objUsuario" : null,
+          "documentos" : [ ],
+          "categoria" : "ECAES",
+          "tipo_solicitud" : "ECAES"
+        } ]
+      },
+      "claves" : {
+        "total" : "NUMBER",
+        "total_solicitudes_procesadas" : "NUMBER",
+        "total_solicitudes_sistema" : "NUMBER",
+        "total_solicitudes_no_procesadas" : "NUMBER",
+        "solicitudes" : "ARRAY"
+      }
+    },
+    "Curso de verano" : {
+      "status" : 200,
+      "body" : {
+        "total" : 3,
+        "total_solicitudes_procesadas" : 10,
+        "total_solicitudes_sistema" : 25,
+        "total_solicitudes_no_procesadas" : 15,
+        "solicitudes" : [ {
+          "id_solicitud" : 5,
+          "nombre_solicitud" : "Preinscripción curso de verano",
+          "periodo_academico" : null,
+          "fecha_ceremonia" : null,
+          "fecha_registro_solicitud" : 1710522000000,
+          "estadosSolicitud" : [ ],
+          "objUsuario" : null,
+          "documentos" : [ ],
+          "categoria" : "Cursos de Verano",
+          "tipo_solicitud" : "Preinscripcion"
+        }, {
+          "id_solicitud" : 6,
+          "nombre_solicitud" : "Inscripción curso verano",
+          "periodo_academico" : null,
+          "fecha_ceremonia" : null,
+          "fecha_registro_solicitud" : null,
+          "estadosSolicitud" : [ ],
+          "objUsuario" : null,
+          "documentos" : [ ],
+          "categoria" : "Cursos de Verano",
+          "tipo_solicitud" : "Inscripcion"
+        }, {
+          "id_solicitud" : 8,
+          "nombre_solicitud" : "Curso intersemestral de verano",
+          "periodo_academico" : null,
+          "fecha_ceremonia" : null,
+          "fecha_registro_solicitud" : null,
+          "estadosSolicitud" : [ ],
+          "objUsuario" : null,
+          "documentos" : [ ],
+          "categoria" : "Cursos de Verano",
+          "tipo_solicitud" : "Curso Verano"
+        } ]
+      },
+      "claves" : {
+        "total" : "NUMBER",
+        "total_solicitudes_procesadas" : "NUMBER",
+        "total_solicitudes_sistema" : "NUMBER",
+        "total_solicitudes_no_procesadas" : "NUMBER",
+        "solicitudes" : "ARRAY"
+      }
+    },
+    "intersemestral" : {
+      "status" : 200,
+      "body" : {
+        "total" : 1,
+        "total_solicitudes_procesadas" : 10,
+        "total_solicitudes_sistema" : 25,
+        "total_solicitudes_no_procesadas" : 15,
+        "solicitudes" : [ {
+          "id_solicitud" : 8,
+          "nombre_solicitud" : "Curso intersemestral de verano",
+          "periodo_academico" : null,
+          "fecha_ceremonia" : null,
+          "fecha_registro_solicitud" : null,
+          "estadosSolicitud" : [ ],
+          "objUsuario" : null,
+          "documentos" : [ ],
+          "categoria" : "Cursos de Verano",
+          "tipo_solicitud" : "Curso Verano"
+        } ]
+      },
+      "claves" : {
+        "total" : "NUMBER",
+        "total_solicitudes_procesadas" : "NUMBER",
+        "total_solicitudes_sistema" : "NUMBER",
+        "total_solicitudes_no_procesadas" : "NUMBER",
+        "solicitudes" : "ARRAY"
+      }
+    },
+    "Académico raro" : {
+      "status" : 200,
+      "body" : {
+        "total" : 1,
+        "total_solicitudes_procesadas" : 10,
+        "total_solicitudes_sistema" : 25,
+        "total_solicitudes_no_procesadas" : 15,
+        "solicitudes" : [ {
+          "id_solicitud" : 13,
+          "nombre_solicitud" : "Solicitud con un nombre bastante largo que supera los cuarenta caracteres raro",
+          "periodo_academico" : null,
+          "fecha_ceremonia" : null,
+          "fecha_registro_solicitud" : 1710522000000,
+          "estadosSolicitud" : [ ],
+          "objUsuario" : {
+            "id_usuario" : null,
+            "nombre_completo" : "Ana",
+            "rol" : null,
+            "codigo" : null,
+            "cedula" : null,
+            "correo" : null,
+            "estado_usuario" : false,
+            "objPrograma" : null
+          },
+          "documentos" : [ ],
+          "categoria" : "Otro",
+          "tipo_solicitud" : "Otro"
+        } ]
+      },
+      "claves" : {
+        "total" : "NUMBER",
+        "total_solicitudes_procesadas" : "NUMBER",
+        "total_solicitudes_sistema" : "NUMBER",
+        "total_solicitudes_no_procesadas" : "NUMBER",
+        "solicitudes" : "ARRAY"
+      }
+    },
+    "ninguno" : {
+      "status" : 200,
+      "body" : {
+        "total" : 0,
+        "total_solicitudes_procesadas" : 10,
+        "total_solicitudes_sistema" : 25,
+        "total_solicitudes_no_procesadas" : 15,
+        "solicitudes" : [ ]
+      },
+      "claves" : {
+        "total" : "NUMBER",
+        "total_solicitudes_procesadas" : "NUMBER",
+        "total_solicitudes_sistema" : "NUMBER",
+        "total_solicitudes_no_procesadas" : "NUMBER",
+        "solicitudes" : "ARRAY"
+      }
+    }
+  },
+  "pdf" : {
+    "null|null|null" : {
+      "status" : 200,
+      "contentType" : "application/pdf",
+      "disposicion" : "form-data; name=\"attachment\"; filename=\"historial_solicitudes_<HOY>.pdf\"",
+      "texto" : "HISTORIAL COMPLETO DE SOLICITUDES\n \nFecha de generación: <HOY>\nPeríodo Académico: Todos (Período actual: <ACTUAL>)\nTipo de Solicitud: Todos los tipos\nEstado: Todos los estados\n \nTotal Filtrado: 13 solicitudes\nTotal Sistema: 25 solicitudes\nProcesadas: 10 solicitudes\nNo Procesadas: 15 solicitudes\n \nID Solicitud Estudiante Programa Período Estado Fecha\n1 Solicitud de Paz y Salvo María Fernanda Ortiz C... Ingeniería Electrónica y Te... 2024-1 APROBADA 15/03/2024\n2 Solicitud de Reingreso N/A N/A N/A Sin estado N/A\n3 N/A N/A N/A N/A Sin estado 15/03/2024\n4 Inscripción ECAES N/A N/A N/A Sin estado N/A\n5 Preinscripción curso de verano N/A N/A N/A Sin estado 15/03/2024\n6 Inscripción curso verano N/A N/A N/A Sin estado N/A\n7 Curso nuevo N/A N/A N/A Sin estado 15/03/2024\n8 Curso intersemestral de verano N/A N/A N/A Sin estado N/A\n9 Otra paz y salvo N/A N/A N/A Sin estado 15/03/2024\n10 Reingreso extemporáneo N/A N/A N/A Sin estado N/A\n11 Homologación externa N/A N/A N/A Sin estado 15/03/2024\n12 Prueba ecaes N/A N/A N/A Sin estado N/A\n13 Solicitud con un nombre bastante larg... Ana N/A N/A Sin estado 15/03/2024\n"
+    },
+    "2024-1|Paz y Salvo|APROBADA" : {
+      "status" : 200,
+      "contentType" : "application/pdf",
+      "disposicion" : "form-data; name=\"attachment\"; filename=\"historial_solicitudes_<HOY>.pdf\"",
+      "texto" : "HISTORIAL COMPLETO DE SOLICITUDES\n \nFecha de generación: <HOY>\nPeríodo Académico: 2024-1\nTipo de Solicitud: Paz y Salvo\nEstado: APROBADA\n \nTotal Filtrado: 2 solicitudes\nTotal Sistema: 25 solicitudes\nProcesadas: 10 solicitudes\nNo Procesadas: 15 solicitudes\n \nID Solicitud Estudiante Programa Período Estado Fecha\n1 Solicitud de Paz y Salvo María Fernanda Ortiz C... Ingeniería Electrónica y Te... 2024-1 APROBADA 15/03/2024\n9 Otra paz y salvo N/A N/A N/A Sin estado 15/03/2024\n"
+    },
+    "null|ninguno|null" : {
+      "status" : 200,
+      "contentType" : "application/pdf",
+      "disposicion" : "form-data; name=\"attachment\"; filename=\"historial_solicitudes_<HOY>.pdf\"",
+      "texto" : "HISTORIAL COMPLETO DE SOLICITUDES\n \nFecha de generación: <HOY>\nPeríodo Académico: Todos (Período actual: <ACTUAL>)\nTipo de Solicitud: ninguno\nEstado: Todos los estados\n \nTotal Filtrado: 0 solicitudes\nTotal Sistema: 25 solicitudes\nProcesadas: 10 solicitudes\nNo Procesadas: 15 solicitudes\n \nNo se encontraron solicitudes con los filtros aplicados.\n \n"
+    }
+  }
+}

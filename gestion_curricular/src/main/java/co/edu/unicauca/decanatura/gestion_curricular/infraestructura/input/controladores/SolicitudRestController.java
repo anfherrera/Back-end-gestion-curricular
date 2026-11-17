@@ -30,6 +30,7 @@ import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.SolicitudPa
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.SolicitudReingreso;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.enums.PeriodoAcademicoEnum;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.RespuestasArchivo;
+import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.dto.respuesta.HistorialSolicitudesDTORespuesta;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.dto.respuesta.SolicitudDTORespuesta;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.mappers.*;
 import co.edu.unicauca.decanatura.gestion_curricular.seguridad.Autorizacion;
@@ -97,7 +98,7 @@ public class SolicitudRestController {
      */
     @GetMapping("/historial")
     @Transactional(readOnly = true)
-    public ResponseEntity<Map<String, Object>> obtenerHistorialCompleto(
+    public ResponseEntity<HistorialSolicitudesDTORespuesta> obtenerHistorialCompleto(
             @RequestParam(required = false) String periodoAcademico,
             @RequestParam(required = false) String tipoSolicitud,
             @RequestParam(required = false) String estadoActual,
@@ -149,14 +150,9 @@ public class SolicitudRestController {
         long totalSistema = solicitudCU.contarHistorial();
         long totalProcesadas = solicitudCU.contarSolicitudesProcesadas();
 
-        Map<String, Object> respuesta = new HashMap<>();
-        respuesta.put("solicitudes", solicitudesFiltradas);
-        respuesta.put("total", solicitudesFiltradas.size());
-        respuesta.put("total_solicitudes_sistema", (int) totalSistema);
-        respuesta.put("total_solicitudes_procesadas", (int) totalProcesadas);
-        respuesta.put("total_solicitudes_no_procesadas", (int) (totalSistema - totalProcesadas));
-        
-        return ResponseEntity.ok(respuesta);
+        return ResponseEntity.ok(new HistorialSolicitudesDTORespuesta(solicitudesFiltradas,
+                solicitudesFiltradas.size(), (int) totalSistema, (int) totalProcesadas,
+                (int) (totalSistema - totalProcesadas)));
     }
 
     /**
@@ -177,18 +173,17 @@ public class SolicitudRestController {
             @RequestParam(required = false) String estadoActual,
             @RequestParam(required = false) Integer idUsuario) {
         
-        ResponseEntity<Map<String, Object>> historialResponse = obtenerHistorialCompleto(
+        ResponseEntity<HistorialSolicitudesDTORespuesta> historialResponse = obtenerHistorialCompleto(
                 periodoAcademico, tipoSolicitud, estadoActual, idUsuario);
-        
+
         if (historialResponse.getStatusCode() != HttpStatus.OK || historialResponse.getBody() == null) {
             log.error("No se pudo obtener el historial para generar el PDF");
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
-        
-        Map<String, Object> historialData = historialResponse.getBody();
-        @SuppressWarnings("unchecked")
-        List<SolicitudDTORespuesta> solicitudes = (List<SolicitudDTORespuesta>) historialData.get("solicitudes");
-        
+
+        HistorialSolicitudesDTORespuesta historialData = historialResponse.getBody();
+        List<SolicitudDTORespuesta> solicitudes = historialData.solicitudes();
+
         if (solicitudes == null) {
             solicitudes = new ArrayList<>();
         }
@@ -219,7 +214,7 @@ public class SolicitudRestController {
      * @return Array de bytes del PDF
      */
     private byte[] generarPDFHistorial(List<SolicitudDTORespuesta> solicitudes, 
-                                       Map<String, Object> historialData,
+                                       HistorialSolicitudesDTORespuesta historialData,
                                        String periodoAcademico, 
                                        String tipoSolicitud, 
                                        String estadoActual) {
@@ -284,10 +279,10 @@ public class SolicitudRestController {
             // Totales
             if (historialData != null) {
                 filtrosInfo.append("\n");
-                filtrosInfo.append("Total Filtrado: ").append(historialData.get("total")).append(" solicitudes\n");
-                filtrosInfo.append("Total Sistema: ").append(historialData.get("total_solicitudes_sistema")).append(" solicitudes\n");
-                filtrosInfo.append("Procesadas: ").append(historialData.get("total_solicitudes_procesadas")).append(" solicitudes\n");
-                filtrosInfo.append("No Procesadas: ").append(historialData.get("total_solicitudes_no_procesadas")).append(" solicitudes\n");
+                filtrosInfo.append("Total Filtrado: ").append(historialData.total()).append(" solicitudes\n");
+                filtrosInfo.append("Total Sistema: ").append(historialData.totalSistema()).append(" solicitudes\n");
+                filtrosInfo.append("Procesadas: ").append(historialData.totalProcesadas()).append(" solicitudes\n");
+                filtrosInfo.append("No Procesadas: ").append(historialData.totalNoProcesadas()).append(" solicitudes\n");
             }
             
             com.itextpdf.text.Paragraph info = new com.itextpdf.text.Paragraph(filtrosInfo.toString(), infoFont);
