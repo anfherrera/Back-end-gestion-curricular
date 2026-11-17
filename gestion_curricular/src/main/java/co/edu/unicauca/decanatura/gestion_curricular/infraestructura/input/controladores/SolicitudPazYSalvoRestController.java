@@ -46,6 +46,7 @@ import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.dto.p
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.dto.peticion.SolicitudPazYSalvoDTOPeticion;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.dto.respuesta.DocumentosDTORespuesta;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.dto.respuesta.DocumentosPazYSalvoDTORespuesta.*;
+import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.dto.respuesta.RechazoCambioEstadoDTORespuesta;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.dto.respuesta.SolicitudPazYSalvoDTORespuesta;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.excepciones.ErroresPazYSalvo;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.mappers.DocumentosMapperDominio;
@@ -368,11 +369,8 @@ public class SolicitudPazYSalvoRestController {
                 var detalle = rechazo.get();
                 HttpStatus estado = detalle.motivo() == Motivo.ROL_NO_AUTORIZADO
                         ? HttpStatus.FORBIDDEN : HttpStatus.BAD_REQUEST;
-                Map<String, Object> cuerpo = new HashMap<>();
-                cuerpo.put("error", detalle.mensaje());
-                cuerpo.put("codigo", detalle.motivo().name());
-                cuerpo.put("estadoActual", detalle.estadoActual());
-                return ResponseEntity.status(estado).body(cuerpo);
+                return ResponseEntity.status(estado).body(new RechazoCambioEstadoDTORespuesta(
+                        detalle.mensaje(), detalle.motivo().name(), detalle.estadoActual()));
             }
 
             return ResponseEntity.noContent().build();
