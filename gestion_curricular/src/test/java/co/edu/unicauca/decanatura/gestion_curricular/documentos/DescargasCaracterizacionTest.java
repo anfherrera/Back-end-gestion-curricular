@@ -50,7 +50,7 @@ class DescargasCaracterizacionTest {
             documento.setNombre(nombre);
             documento.setRuta_documento("carpeta/" + nombre);
             documento.setComentario("[OFICIO_HOMOLOGACION]");
-            var inscripcion = new SolicitudCursoVeranoIncripcion();
+            var inscripcion = new SolicitudCursoVeranoInscripcion();
             inscripcion.setDocumentos(List.of(documento));
             when(verano.buscarPorIdInscripcion(7)).thenReturn(inscripcion);
             var solicitudH = new SolicitudHomologacion();

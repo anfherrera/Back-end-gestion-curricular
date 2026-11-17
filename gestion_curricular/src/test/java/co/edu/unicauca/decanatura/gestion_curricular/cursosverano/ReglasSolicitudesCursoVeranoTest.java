@@ -30,7 +30,7 @@ import co.edu.unicauca.decanatura.gestion_curricular.dominio.excepciones.CupoAgo
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.CursoOfertadoVerano;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.EstadoCursoOfertado;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.EstadoSolicitud;
-import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.SolicitudCursoVeranoIncripcion;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.SolicitudCursoVeranoInscripcion;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.SolicitudCursoVeranoPreinscripcion;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Usuario;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Enums.CondicionSolicitudVerano;
@@ -159,7 +159,7 @@ class ReglasSolicitudesCursoVeranoTest {
     @Test
     @DisplayName("Aceptar: no se puede aceptar una inscripción con el pago rechazado")
     void noAceptarRechazada() {
-        SolicitudCursoVeranoIncripcion rechazada = inscripcion("Pago_Rechazado");
+        SolicitudCursoVeranoInscripcion rechazada = inscripcion("Pago_Rechazado");
         rechazada.setId_solicitud(90);
         when(solicitudes.buscarSolicitudInscripcionPorId(90)).thenReturn(rechazada);
 
@@ -213,8 +213,8 @@ class ReglasSolicitudesCursoVeranoTest {
         return p;
     }
 
-    private static SolicitudCursoVeranoIncripcion inscripcionNueva() {
-        SolicitudCursoVeranoIncripcion i = new SolicitudCursoVeranoIncripcion();
+    private static SolicitudCursoVeranoInscripcion inscripcionNueva() {
+        SolicitudCursoVeranoInscripcion i = new SolicitudCursoVeranoInscripcion();
         i.setObjUsuario(usuarioRef());
         i.setObjCursoOfertadoVerano(cursoRef());
         i.setCodicion_solicitud(CondicionSolicitudVerano.Primera_Vez);
@@ -222,8 +222,8 @@ class ReglasSolicitudesCursoVeranoTest {
         return i;
     }
 
-    private static SolicitudCursoVeranoIncripcion inscripcion(String estado) {
-        SolicitudCursoVeranoIncripcion i = inscripcionNueva();
+    private static SolicitudCursoVeranoInscripcion inscripcion(String estado) {
+        SolicitudCursoVeranoInscripcion i = inscripcionNueva();
         i.setEstadosSolicitud(estados(estado));
         return i;
     }

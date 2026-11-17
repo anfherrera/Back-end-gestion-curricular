@@ -15,7 +15,7 @@ import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarS
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.CursoOfertadoVerano;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.EstadoCursoOfertado;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.SolicitudCursoVeranoPreinscripcion;
-import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.SolicitudCursoVeranoIncripcion;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.SolicitudCursoVeranoInscripcion;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.DTOPeticion.CursosOfertadosDTOPeticion;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.DTORespuesta.CursosOfertadosDTORespuesta;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.mappers.CursosOfertadosMapperDominio;
@@ -125,7 +125,7 @@ public class CursoOfertadoRestController {
     @GetMapping("/inscripciones/{idCurso}")
     public ResponseEntity<Map<String, Object>> obtenerInscripcionesPorCurso(
             @Min(value = 1) @PathVariable Integer idCurso) {
-        List<SolicitudCursoVeranoIncripcion> inscripciones = solicitudCU.buscarInscripcionesPorCurso(idCurso);
+        List<SolicitudCursoVeranoInscripcion> inscripciones = solicitudCU.buscarInscripcionesPorCurso(idCurso);
         Map<String, Object> respuesta = new HashMap<>();
         respuesta.put("idCurso", idCurso);
         respuesta.put("inscripciones", inscripciones);
@@ -190,7 +190,7 @@ public class CursoOfertadoRestController {
                 return ResponseEntity.badRequest().body(Map.of("error", "Debe especificar si el pago es válido"));
             }
             
-            SolicitudCursoVeranoIncripcion solicitudActualizada = solicitudCU.validarPago(idSolicitud, esValido, observaciones);
+            SolicitudCursoVeranoInscripcion solicitudActualizada = solicitudCU.validarPago(idSolicitud, esValido, observaciones);
             
             Map<String, Object> respuesta = new HashMap<>();
             respuesta.put("success", true);
@@ -207,7 +207,7 @@ public class CursoOfertadoRestController {
     @PutMapping("/inscripciones/{idSolicitud}/completar")
     public ResponseEntity<Map<String, Object>> completarInscripcion(
             @Min(value = 1) @PathVariable Integer idSolicitud) {
-        SolicitudCursoVeranoIncripcion solicitudCompletada = solicitudCU.completarInscripcion(idSolicitud);
+        SolicitudCursoVeranoInscripcion solicitudCompletada = solicitudCU.completarInscripcion(idSolicitud);
         
         Map<String, Object> respuesta = new HashMap<>();
         respuesta.put("success", true);

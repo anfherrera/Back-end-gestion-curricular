@@ -18,7 +18,7 @@ import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarC
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarSolicitudCursoVeranoCUIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.CursoOfertadoVerano;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.SolicitudCursoVeranoPreinscripcion;
-import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.SolicitudCursoVeranoIncripcion;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.SolicitudCursoVeranoInscripcion;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Usuario;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Solicitud;
 import java.util.List;
@@ -152,7 +152,7 @@ public class ReportesCursosVeranoRestController {
         for (Solicitud solicitud : solicitudCU.listarSolicitudesParaReporte(null, null, null, null, null)) {
             if (solicitud instanceof SolicitudCursoVeranoPreinscripcion) {
                 totalPreinscripciones++;
-            } else if (solicitud instanceof SolicitudCursoVeranoIncripcion) {
+            } else if (solicitud instanceof SolicitudCursoVeranoInscripcion) {
                 totalInscripciones++;
             }
         }
@@ -306,9 +306,9 @@ public class ReportesCursosVeranoRestController {
         
         try {
             // Obtener inscripciones reales de la base de datos
-            List<SolicitudCursoVeranoIncripcion> inscripcionesReales = solicitudCU.buscarInscripcionesPorUsuario(idUsuario);
+            List<SolicitudCursoVeranoInscripcion> inscripcionesReales = solicitudCU.buscarInscripcionesPorUsuario(idUsuario);
             
-            for (SolicitudCursoVeranoIncripcion inscripcion : inscripcionesReales) {
+            for (SolicitudCursoVeranoInscripcion inscripcion : inscripcionesReales) {
                 Map<String, Object> inscripcionMap = new HashMap<>();
                 inscripcionMap.put("id", inscripcion.getId_solicitud());
                 inscripcionMap.put("fecha", inscripcion.getFecha_registro_solicitud());

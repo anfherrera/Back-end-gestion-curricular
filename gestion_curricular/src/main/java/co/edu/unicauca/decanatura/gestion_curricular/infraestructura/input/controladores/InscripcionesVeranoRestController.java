@@ -18,7 +18,7 @@ import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarC
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarSolicitudCursoVeranoCUIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.CursoOfertadoVerano;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.SolicitudCursoVeranoPreinscripcion;
-import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.SolicitudCursoVeranoIncripcion;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.SolicitudCursoVeranoInscripcion;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Documento;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.controladorExcepciones.ErroresCursosVerano;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Usuario;
@@ -76,7 +76,7 @@ public class InscripcionesVeranoRestController {
         
         // 2. Crear la inscripcion usando el modelo de dominio
         
-        SolicitudCursoVeranoIncripcion nuevaInscripcion = new SolicitudCursoVeranoIncripcion();
+        SolicitudCursoVeranoInscripcion nuevaInscripcion = new SolicitudCursoVeranoInscripcion();
         nuevaInscripcion.setNombre_solicitud(peticion.getNombreSolicitud());
         nuevaInscripcion.setFecha_registro_solicitud(new java.util.Date());
         nuevaInscripcion.setObservacion("Inscripcion creada desde preinscripcion aprobada");
@@ -88,7 +88,7 @@ public class InscripcionesVeranoRestController {
         nuevaInscripcion.setCodicion_solicitud(CondicionSolicitudVerano.Primera_Vez); // Valor por defecto
         
         // 3. Guardar la inscripcion en la base de datos
-        SolicitudCursoVeranoIncripcion inscripcionGuardada = solicitudCU.crearSolicitudCursoVeranoInscripcion(nuevaInscripcion);
+        SolicitudCursoVeranoInscripcion inscripcionGuardada = solicitudCU.crearSolicitudCursoVeranoInscripcion(nuevaInscripcion);
         
         if (inscripcionGuardada == null || inscripcionGuardada.getId_solicitud() == null) {
             Map<String, Object> error = new HashMap<>();
@@ -126,7 +126,7 @@ public class InscripcionesVeranoRestController {
     public ResponseEntity<List<InscripcionListado>> obtenerInscripciones() {
         List<InscripcionListado> inscripciones = new ArrayList<>();
         for (Solicitud solicitud : solicitudGeneralCU.listarSolicitudes()) {
-            if (!(solicitud instanceof SolicitudCursoVeranoIncripcion inscripcion)) {
+            if (!(solicitud instanceof SolicitudCursoVeranoInscripcion inscripcion)) {
                 continue;
             }
 
@@ -211,11 +211,11 @@ public class InscripcionesVeranoRestController {
         List<Map<String, Object>> estudiantesInscritos = new ArrayList<>();
         
         // 1. Obtener todas las inscripciones del curso (no preinscripciones)
-        List<SolicitudCursoVeranoIncripcion> inscripciones = solicitudCU.buscarInscripcionesPorCurso(idCurso.intValue());
+        List<SolicitudCursoVeranoInscripcion> inscripciones = solicitudCU.buscarInscripcionesPorCurso(idCurso.intValue());
         
         // 2. Procesar cada inscripcion encontrada
         
-        for (SolicitudCursoVeranoIncripcion inscripcion : inscripciones) {
+        for (SolicitudCursoVeranoInscripcion inscripcion : inscripciones) {
             try {
                 // 2.1. Verificar el estado de la inscripcion - SOLO mostrar las que NO estan aceptadas
                 String estadoActual = inscripcion.estadoActual("Inscrito"); // Estado por defecto
@@ -293,7 +293,7 @@ public class InscripcionesVeranoRestController {
         }
 
         // 1. Buscar la inscripcion directamente por ID
-        SolicitudCursoVeranoIncripcion inscripcion = solicitudCU.buscarPorIdInscripcion(idInscripcion.intValue());
+        SolicitudCursoVeranoInscripcion inscripcion = solicitudCU.buscarPorIdInscripcion(idInscripcion.intValue());
 
         if (inscripcion == null) {
             Map<String, Object> error = new HashMap<>();
@@ -305,7 +305,7 @@ public class InscripcionesVeranoRestController {
         solicitudCU.verificarCupoParaAceptar(inscripcion);
 
         // 3. Validar pago de la inscripcion (marcar como aceptada)
-        SolicitudCursoVeranoIncripcion inscripcionAceptada = solicitudCU.validarPago(
+        SolicitudCursoVeranoInscripcion inscripcionAceptada = solicitudCU.validarPago(
             inscripcion.getId_solicitud(),
             true,
             observaciones
@@ -360,7 +360,7 @@ public class InscripcionesVeranoRestController {
         }
         
         // 1. Buscar la inscripcion directamente por ID
-        SolicitudCursoVeranoIncripcion inscripcion = solicitudCU.buscarPorIdInscripcion(idInscripcion.intValue());
+        SolicitudCursoVeranoInscripcion inscripcion = solicitudCU.buscarPorIdInscripcion(idInscripcion.intValue());
         
         if (inscripcion == null) {
             Map<String, Object> error = new HashMap<>();
@@ -379,7 +379,7 @@ public class InscripcionesVeranoRestController {
         
         // 3. Marcar como rechazada usando el caso de uso
         String observacionRechazo = "Inscripcion rechazada: " + motivo;
-        SolicitudCursoVeranoIncripcion inscripcionRechazada = ErroresCursosVerano.alRechazarInscripcion(
+        SolicitudCursoVeranoInscripcion inscripcionRechazada = ErroresCursosVerano.alRechazarInscripcion(
                 () -> solicitudCU.validarPago(inscripcion.getId_solicitud(), false, observacionRechazo));
         
         if (inscripcionRechazada == null) {
@@ -457,7 +457,7 @@ public class InscripcionesVeranoRestController {
     public ResponseEntity<Map<String, Object>> infoInscripcion(@PathVariable Long idInscripcion) {
         
         // 1. Buscar la inscripcion directamente por ID
-        SolicitudCursoVeranoIncripcion inscripcion = solicitudCU.buscarPorIdInscripcion(idInscripcion.intValue());
+        SolicitudCursoVeranoInscripcion inscripcion = solicitudCU.buscarPorIdInscripcion(idInscripcion.intValue());
         
         Map<String, Object> resultado = new HashMap<>();
         
@@ -542,7 +542,7 @@ public class InscripcionesVeranoRestController {
         }
         
         // 1. Buscar la inscripcion
-        SolicitudCursoVeranoIncripcion inscripcion = solicitudCU.buscarPorIdInscripcion(idInscripcion.intValue());
+        SolicitudCursoVeranoInscripcion inscripcion = solicitudCU.buscarPorIdInscripcion(idInscripcion.intValue());
         
         if (inscripcion == null) {
             return ResponseEntity.status(404)

@@ -19,8 +19,8 @@ import co.edu.unicauca.decanatura.gestion_curricular.dominio.excepciones.CupoAgo
 @DisplayName("ReglasCupo: qué inscripciones ocupan cupo")
 class ReglasCupoTest {
 
-    private static SolicitudCursoVeranoIncripcion inscripcion(String... estados) {
-        SolicitudCursoVeranoIncripcion s = new SolicitudCursoVeranoIncripcion();
+    private static SolicitudCursoVeranoInscripcion inscripcion(String... estados) {
+        SolicitudCursoVeranoInscripcion s = new SolicitudCursoVeranoInscripcion();
         for (String texto : estados) {
             EstadoSolicitud e = new EstadoSolicitud();
             e.setEstado_actual(texto);

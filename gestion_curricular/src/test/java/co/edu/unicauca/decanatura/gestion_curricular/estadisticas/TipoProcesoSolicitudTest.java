@@ -7,7 +7,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Solicitud;
-import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.SolicitudCursoVeranoIncripcion;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.SolicitudCursoVeranoInscripcion;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.SolicitudCursoVeranoPreinscripcion;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.SolicitudEcaes;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.SolicitudHomologacion;
@@ -25,7 +25,7 @@ class TipoProcesoSolicitudTest {
         homologacion.setNombre_solicitud("Solicitud de Homologación - Juan Pérez"); // con tilde
         assertEquals(TipoProcesoSolicitud.HOMOLOGACION, TipoProcesoSolicitud.de(homologacion));
 
-        SolicitudCursoVeranoIncripcion inscripcion = new SolicitudCursoVeranoIncripcion();
+        SolicitudCursoVeranoInscripcion inscripcion = new SolicitudCursoVeranoInscripcion();
         inscripcion.setNombre_solicitud("Solicitud Inscripción - María"); // no dice "curso" ni "verano"
         assertEquals(TipoProcesoSolicitud.CURSOS_VERANO, TipoProcesoSolicitud.de(inscripcion));
 

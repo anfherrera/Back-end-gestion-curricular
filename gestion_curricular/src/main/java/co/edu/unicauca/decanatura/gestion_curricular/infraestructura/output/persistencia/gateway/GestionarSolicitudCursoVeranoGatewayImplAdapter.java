@@ -16,7 +16,7 @@ import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.NombreSolic
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.ReglasCupo;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.CursoOfertadoVerano;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Solicitud;
-import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.SolicitudCursoVeranoIncripcion;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.SolicitudCursoVeranoInscripcion;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.SolicitudCursoVeranoPreinscripcion;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.SolicitudEcaes;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.SolicitudHomologacion;
@@ -65,7 +65,7 @@ public class GestionarSolicitudCursoVeranoGatewayImplAdapter implements Gestiona
         return solicitudRepository.listarSolicitudesDeVerano(idCurso).stream()
                 .<Solicitud>map(solicitud -> solicitud instanceof SolicitudCursoVeranoPreinscripcionEntity
                         ? solicitudMapper.map(solicitud, SolicitudCursoVeranoPreinscripcion.class)
-                        : solicitudMapper.map(solicitud, SolicitudCursoVeranoIncripcion.class))
+                        : solicitudMapper.map(solicitud, SolicitudCursoVeranoInscripcion.class))
                 .toList();
     }
 
@@ -140,8 +140,8 @@ public class GestionarSolicitudCursoVeranoGatewayImplAdapter implements Gestiona
 
     @Override
     @Transactional
-    public SolicitudCursoVeranoIncripcion crearSolicitudCursoVeranoInscripcion(
-            SolicitudCursoVeranoIncripcion solicitudCursoVerano) {
+    public SolicitudCursoVeranoInscripcion crearSolicitudCursoVeranoInscripcion(
+            SolicitudCursoVeranoInscripcion solicitudCursoVerano) {
         SolicitudCursoVeranoInscripcionEntity solicitudCursoVeranoEntity = solicitudMapper.map(solicitudCursoVerano, SolicitudCursoVeranoInscripcionEntity.class);
         
         // Generar nombre descriptivo con el nombre del estudiante
@@ -191,7 +191,7 @@ public class GestionarSolicitudCursoVeranoGatewayImplAdapter implements Gestiona
         }
         SolicitudCursoVeranoInscripcionEntity solicitudCursoVeranoGuardado = solicitudRepository.save(solicitudCursoVeranoEntity);
 
-        return solicitudMapper.map(solicitudCursoVeranoGuardado, SolicitudCursoVeranoIncripcion.class);
+        return solicitudMapper.map(solicitudCursoVeranoGuardado, SolicitudCursoVeranoInscripcion.class);
     }
 
     @Override
@@ -210,7 +210,7 @@ public class GestionarSolicitudCursoVeranoGatewayImplAdapter implements Gestiona
                 } else if (solicitudEntity instanceof SolicitudPazYSalvoEntity) {
                     solicitud = solicitudMapper.map(solicitudEntity, SolicitudPazYSalvo.class);
                 } else if (solicitudEntity instanceof SolicitudCursoVeranoInscripcionEntity) {
-                    solicitud = solicitudMapper.map(solicitudEntity, SolicitudCursoVeranoIncripcion.class);
+                    solicitud = solicitudMapper.map(solicitudEntity, SolicitudCursoVeranoInscripcion.class);
                 }
         }
         return solicitud;
@@ -257,13 +257,13 @@ public class GestionarSolicitudCursoVeranoGatewayImplAdapter implements Gestiona
 
     @Override
     @Transactional(readOnly = true)
-    public List<SolicitudCursoVeranoIncripcion> buscarInscripcionesPorCurso(Integer idCurso) {
+    public List<SolicitudCursoVeranoInscripcion> buscarInscripcionesPorCurso(Integer idCurso) {
         List<SolicitudEntity> solicitudesEntity = solicitudRepository.buscarInscripcionesPorCurso(idCurso);
-        List<SolicitudCursoVeranoIncripcion> inscripciones = new ArrayList<>();
+        List<SolicitudCursoVeranoInscripcion> inscripciones = new ArrayList<>();
         
         for (SolicitudEntity entity : solicitudesEntity) {
             if (entity instanceof SolicitudCursoVeranoInscripcionEntity) {
-                inscripciones.add(solicitudMapper.map(entity, SolicitudCursoVeranoIncripcion.class));
+                inscripciones.add(solicitudMapper.map(entity, SolicitudCursoVeranoInscripcion.class));
             }
         }
         
@@ -272,12 +272,12 @@ public class GestionarSolicitudCursoVeranoGatewayImplAdapter implements Gestiona
 
     @Override
     @Transactional(readOnly = true)
-    public SolicitudCursoVeranoIncripcion buscarSolicitudInscripcionPorId(Integer idSolicitud) {
+    public SolicitudCursoVeranoInscripcion buscarSolicitudInscripcionPorId(Integer idSolicitud) {
         return solicitudRepository.findById(idSolicitud)
             .filter(entity -> entity instanceof SolicitudCursoVeranoInscripcionEntity)
             .map(entity -> {
                 entity.getDocumentos().size();
-                return solicitudMapper.map(entity, SolicitudCursoVeranoIncripcion.class);
+                return solicitudMapper.map(entity, SolicitudCursoVeranoInscripcion.class);
             })
             .orElse(null);
     }
@@ -361,7 +361,7 @@ public class GestionarSolicitudCursoVeranoGatewayImplAdapter implements Gestiona
     // bloquear el curso, leería la foto tomada al inicio de la transacción y no vería la
     // inscripción que otro funcionario acaba de aceptar.
     @Transactional(isolation = org.springframework.transaction.annotation.Isolation.READ_COMMITTED)
-    public SolicitudCursoVeranoIncripcion validarPago(Integer idSolicitud, boolean esValido, String observaciones) {
+    public SolicitudCursoVeranoInscripcion validarPago(Integer idSolicitud, boolean esValido, String observaciones) {
         SolicitudEntity solicitudEntity = solicitudRepository.findById(idSolicitud)
             .filter(entity -> entity instanceof SolicitudCursoVeranoInscripcionEntity)
             .orElse(null);
@@ -390,12 +390,12 @@ public class GestionarSolicitudCursoVeranoGatewayImplAdapter implements Gestiona
         solicitudEntity.getEstadosSolicitud().add(estadoEntity);
         SolicitudEntity solicitudActualizada = solicitudRepository.save(solicitudEntity);
         
-        return solicitudMapper.map(solicitudActualizada, SolicitudCursoVeranoIncripcion.class);
+        return solicitudMapper.map(solicitudActualizada, SolicitudCursoVeranoInscripcion.class);
     }
 
     @Override
     @Transactional
-    public SolicitudCursoVeranoIncripcion completarInscripcion(Integer idSolicitud) {
+    public SolicitudCursoVeranoInscripcion completarInscripcion(Integer idSolicitud) {
         SolicitudEntity solicitudEntity = solicitudRepository.findById(idSolicitud)
             .filter(entity -> entity instanceof SolicitudCursoVeranoInscripcionEntity)
             .orElse(null);
@@ -417,7 +417,7 @@ public class GestionarSolicitudCursoVeranoGatewayImplAdapter implements Gestiona
         solicitudEntity.getEstadosSolicitud().add(estadoEntity);
         SolicitudEntity solicitudActualizada = solicitudRepository.save(solicitudEntity);
         
-        return solicitudMapper.map(solicitudActualizada, SolicitudCursoVeranoIncripcion.class);
+        return solicitudMapper.map(solicitudActualizada, SolicitudCursoVeranoInscripcion.class);
     }
 
     @Override
@@ -450,13 +450,13 @@ public class GestionarSolicitudCursoVeranoGatewayImplAdapter implements Gestiona
 
     @Override
     @Transactional(readOnly = true)
-    public List<SolicitudCursoVeranoIncripcion> buscarInscripcionesPorUsuarioYCurso(Integer idUsuario, Integer idCurso) {
+    public List<SolicitudCursoVeranoInscripcion> buscarInscripcionesPorUsuarioYCurso(Integer idUsuario, Integer idCurso) {
         List<SolicitudEntity> solicitudesEntity = solicitudRepository.buscarInscripcionesPorUsuarioYCurso(idUsuario, idCurso);
-        List<SolicitudCursoVeranoIncripcion> inscripciones = new ArrayList<>();
+        List<SolicitudCursoVeranoInscripcion> inscripciones = new ArrayList<>();
 
         for (SolicitudEntity entity : solicitudesEntity) {
             if (entity instanceof SolicitudCursoVeranoInscripcionEntity) {
-                inscripciones.add(solicitudMapper.map(entity, SolicitudCursoVeranoIncripcion.class));
+                inscripciones.add(solicitudMapper.map(entity, SolicitudCursoVeranoInscripcion.class));
             }
         }
 
@@ -465,13 +465,13 @@ public class GestionarSolicitudCursoVeranoGatewayImplAdapter implements Gestiona
 
     @Override
     @Transactional(readOnly = true)
-    public List<SolicitudCursoVeranoIncripcion> buscarInscripcionesPorUsuario(Integer idUsuario) {
+    public List<SolicitudCursoVeranoInscripcion> buscarInscripcionesPorUsuario(Integer idUsuario) {
         List<SolicitudEntity> solicitudesEntity = solicitudRepository.buscarInscripcionesPorUsuario(idUsuario);
-        List<SolicitudCursoVeranoIncripcion> inscripciones = new ArrayList<>();
+        List<SolicitudCursoVeranoInscripcion> inscripciones = new ArrayList<>();
 
         for (SolicitudEntity entity : solicitudesEntity) {
             if (entity instanceof SolicitudCursoVeranoInscripcionEntity) {
-                inscripciones.add(solicitudMapper.map(entity, SolicitudCursoVeranoIncripcion.class));
+                inscripciones.add(solicitudMapper.map(entity, SolicitudCursoVeranoInscripcion.class));
             }
         }
 

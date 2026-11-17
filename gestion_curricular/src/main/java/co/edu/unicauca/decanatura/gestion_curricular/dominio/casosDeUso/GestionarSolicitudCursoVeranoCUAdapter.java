@@ -25,7 +25,7 @@ import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.CursoOferta
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.EstadoSolicitud;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.ReglasCupo;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Solicitud;
-import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.SolicitudCursoVeranoIncripcion;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.SolicitudCursoVeranoInscripcion;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.SolicitudCursoVeranoPreinscripcion;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Usuario;
 
@@ -138,9 +138,9 @@ public class GestionarSolicitudCursoVeranoCUAdapter implements GestionarSolicitu
     }
 
     @Override
-    public SolicitudCursoVeranoIncripcion crearSolicitudCursoVeranoInscripcion(SolicitudCursoVeranoIncripcion solicitudCursoVerano) {
+    public SolicitudCursoVeranoInscripcion crearSolicitudCursoVeranoInscripcion(SolicitudCursoVeranoInscripcion solicitudCursoVerano) {
         CursoOfertadoVerano cursoABuscar = null;
-        SolicitudCursoVeranoIncripcion solicitudGuardada = null;
+        SolicitudCursoVeranoInscripcion solicitudGuardada = null;
         Usuario usuarioBuscar = null;
         Solicitud preinscripcionBuscar = null;
 
@@ -233,7 +233,7 @@ public class GestionarSolicitudCursoVeranoCUAdapter implements GestionarSolicitu
     }
 
     @Override
-    public SolicitudCursoVeranoIncripcion buscarPorIdInscripcion(Integer idSolicitud) {
+    public SolicitudCursoVeranoInscripcion buscarPorIdInscripcion(Integer idSolicitud) {
         if (idSolicitud == null) {
             this.objFormateadorResultados.retornarRespuestaErrorReglaDeNegocio("El ID de la solicitud no puede ser nulo");
         }
@@ -249,7 +249,7 @@ public class GestionarSolicitudCursoVeranoCUAdapter implements GestionarSolicitu
     }
 
     @Override
-    public List<SolicitudCursoVeranoIncripcion> buscarInscripcionesPorCurso(Integer idCurso) {
+    public List<SolicitudCursoVeranoInscripcion> buscarInscripcionesPorCurso(Integer idCurso) {
         if (idCurso == null) {
             this.objFormateadorResultados.retornarRespuestaErrorReglaDeNegocio("El ID del curso no puede ser nulo");
         }
@@ -260,7 +260,7 @@ public class GestionarSolicitudCursoVeranoCUAdapter implements GestionarSolicitu
     public ListadoEstudiantes listarEstudiantesPorCurso(Integer idCurso) {
         var preinscripciones = buscarPreinscripcionesPorCurso(idCurso);
         var inscripciones = buscarInscripcionesPorCurso(idCurso);
-        Map<Integer, SolicitudCursoVeranoIncripcion> primeraInscripcionPorUsuario = new HashMap<>();
+        Map<Integer, SolicitudCursoVeranoInscripcion> primeraInscripcionPorUsuario = new HashMap<>();
         for (var inscripcion : inscripciones) {
             if (inscripcion.getObjUsuario() != null) {
                 primeraInscripcionPorUsuario.putIfAbsent(inscripcion.getObjUsuario().getId_usuario(), inscripcion);
@@ -351,13 +351,13 @@ public class GestionarSolicitudCursoVeranoCUAdapter implements GestionarSolicitu
     }
 
     @Override
-    public SolicitudCursoVeranoIncripcion validarPago(Integer idSolicitud, boolean esValido, String observaciones) {
+    public SolicitudCursoVeranoInscripcion validarPago(Integer idSolicitud, boolean esValido, String observaciones) {
         if (idSolicitud == null) {
             this.objFormateadorResultados.retornarRespuestaErrorReglaDeNegocio("El ID de la solicitud no puede ser nulo");
         }
         
         // Buscar la solicitud
-        SolicitudCursoVeranoIncripcion solicitud = this.objGestionarSolicitudGateway.buscarSolicitudInscripcionPorId(idSolicitud);
+        SolicitudCursoVeranoInscripcion solicitud = this.objGestionarSolicitudGateway.buscarSolicitudInscripcionPorId(idSolicitud);
         if (solicitud == null) {
             this.objFormateadorResultados.retornarRespuestaErrorEntidadExiste("No se encontró la solicitud de inscripción con ID: " + idSolicitud);
         }
@@ -376,19 +376,19 @@ public class GestionarSolicitudCursoVeranoCUAdapter implements GestionarSolicitu
 
         // Validar el pago (el gateway vuelve a contar con el curso bloqueado, por si otro
         // funcionario aceptó una inscripción entre este conteo y el guardado)
-        SolicitudCursoVeranoIncripcion solicitudActualizada = this.objGestionarSolicitudGateway.validarPago(idSolicitud, esValido, observaciones);
+        SolicitudCursoVeranoInscripcion solicitudActualizada = this.objGestionarSolicitudGateway.validarPago(idSolicitud, esValido, observaciones);
         
         return solicitudActualizada;
     }
 
     @Override
-    public SolicitudCursoVeranoIncripcion completarInscripcion(Integer idSolicitud) {
+    public SolicitudCursoVeranoInscripcion completarInscripcion(Integer idSolicitud) {
         if (idSolicitud == null) {
             this.objFormateadorResultados.retornarRespuestaErrorReglaDeNegocio("El ID de la solicitud no puede ser nulo");
         }
         
         // Buscar la solicitud
-        SolicitudCursoVeranoIncripcion solicitud = this.objGestionarSolicitudGateway.buscarSolicitudInscripcionPorId(idSolicitud);
+        SolicitudCursoVeranoInscripcion solicitud = this.objGestionarSolicitudGateway.buscarSolicitudInscripcionPorId(idSolicitud);
         if (solicitud == null) {
             this.objFormateadorResultados.retornarRespuestaErrorEntidadExiste("No se encontró la solicitud de inscripción con ID: " + idSolicitud);
         }
@@ -399,7 +399,7 @@ public class GestionarSolicitudCursoVeranoCUAdapter implements GestionarSolicitu
         }
         
         // Completar la inscripción
-        SolicitudCursoVeranoIncripcion solicitudCompletada = this.objGestionarSolicitudGateway.completarInscripcion(idSolicitud);
+        SolicitudCursoVeranoInscripcion solicitudCompletada = this.objGestionarSolicitudGateway.completarInscripcion(idSolicitud);
 
         return solicitudCompletada;
     }
@@ -415,7 +415,7 @@ public class GestionarSolicitudCursoVeranoCUAdapter implements GestionarSolicitu
     }
 
     @Override
-    public List<SolicitudCursoVeranoIncripcion> buscarInscripcionesPorUsuarioYCurso(Integer idUsuario, Integer idCurso) {
+    public List<SolicitudCursoVeranoInscripcion> buscarInscripcionesPorUsuarioYCurso(Integer idUsuario, Integer idCurso) {
         if (idUsuario == null || idCurso == null) {
             return List.of();
         }
@@ -423,7 +423,7 @@ public class GestionarSolicitudCursoVeranoCUAdapter implements GestionarSolicitu
     }
 
     @Override
-    public List<SolicitudCursoVeranoIncripcion> buscarInscripcionesPorUsuario(Integer idUsuario) {
+    public List<SolicitudCursoVeranoInscripcion> buscarInscripcionesPorUsuario(Integer idUsuario) {
         if (idUsuario == null) {
             return List.of();
         }
@@ -450,7 +450,7 @@ public class GestionarSolicitudCursoVeranoCUAdapter implements GestionarSolicitu
     }
 
     @Override
-    public void verificarCupoParaAceptar(SolicitudCursoVeranoIncripcion inscripcion) {
+    public void verificarCupoParaAceptar(SolicitudCursoVeranoInscripcion inscripcion) {
         if (!ReglasCupo.ocupaCupo(inscripcion)) {
             verificarCupoDisponible(inscripcion.getObjCursoOfertadoVerano());
         }

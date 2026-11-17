@@ -30,7 +30,7 @@ import co.edu.unicauca.decanatura.gestion_curricular.dominio.casosDeUso.Gestiona
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.excepciones.CupoAgotadoException;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.CursoOfertadoVerano;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.EstadoSolicitud;
-import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.SolicitudCursoVeranoIncripcion;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.SolicitudCursoVeranoInscripcion;
 
 @DisplayName("Cursos de verano - Control de cupo al aceptar inscripciones")
 class CupoCursoVeranoTest {
@@ -54,7 +54,7 @@ class CupoCursoVeranoTest {
                 mock(GestionarNotificacionCUIntPort.class));
     }
 
-    private SolicitudCursoVeranoIncripcion inscripcionEnviada(int idCurso, int cupo) {
+    private SolicitudCursoVeranoInscripcion inscripcionEnviada(int idCurso, int cupo) {
         CursoOfertadoVerano curso = new CursoOfertadoVerano();
         curso.setId_curso(idCurso);
         curso.setCupo_estimado(cupo);
@@ -65,7 +65,7 @@ class CupoCursoVeranoTest {
         List<EstadoSolicitud> estados = new ArrayList<>();
         estados.add(enviada);
 
-        SolicitudCursoVeranoIncripcion inscripcion = new SolicitudCursoVeranoIncripcion();
+        SolicitudCursoVeranoInscripcion inscripcion = new SolicitudCursoVeranoInscripcion();
         inscripcion.setId_solicitud(50);
         inscripcion.setObjCursoOfertadoVerano(curso);
         inscripcion.setEstadosSolicitud(estados);
@@ -124,7 +124,7 @@ class CupoCursoVeranoTest {
     @DisplayName("verificarCupoParaAceptar: una inscripción que ya ocupa cupo no vuelve a contar")
     void verificarCupoParaAceptar() {
         when(gateway.contarInscripcionesAceptadasPorCurso(7)).thenReturn(2);
-        SolicitudCursoVeranoIncripcion inscripcion = inscripcionEnviada(7, 2);
+        SolicitudCursoVeranoInscripcion inscripcion = inscripcionEnviada(7, 2);
 
         assertThrows(CupoAgotadoException.class, () -> casoDeUso.verificarCupoParaAceptar(inscripcion));
 

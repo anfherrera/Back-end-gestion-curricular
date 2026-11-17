@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @EqualsAndHashCode(callSuper = true)
-public class SolicitudCursoVeranoIncripcion extends Solicitud {
+public class SolicitudCursoVeranoInscripcion extends Solicitud {
 
     private String nombre_estudiante;
     private CondicionSolicitudVerano codicion_solicitud;

@@ -49,7 +49,7 @@ import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.EstadoSolic
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Materia;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Programa;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Rol;
-import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.SolicitudCursoVeranoIncripcion;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.SolicitudCursoVeranoInscripcion;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.SolicitudCursoVeranoPreinscripcion;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Usuario;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.DTORespuesta.UsuarioDTORespuesta;
@@ -234,7 +234,7 @@ class ErroresLocalesCaracterizacionTest {
         when(cu.buscarPreinscripcionAprobada(5, 3)).thenReturn(pre);
         when(cu.tieneInscripcionActiva(5, 3)).thenReturn(false);
         when(cu.crearSolicitudCursoVeranoInscripcion(any())).thenAnswer(i -> {
-            SolicitudCursoVeranoIncripcion s = i.getArgument(0);
+            SolicitudCursoVeranoInscripcion s = i.getArgument(0);
             if (s == null) return null;
             s.setId_solicitud(9);
             return s;
@@ -282,8 +282,8 @@ class ErroresLocalesCaracterizacionTest {
         return usuario;
     }
 
-    private static SolicitudCursoVeranoIncripcion inscripcion(boolean conCurso) {
-        var s = new SolicitudCursoVeranoIncripcion();
+    private static SolicitudCursoVeranoInscripcion inscripcion(boolean conCurso) {
+        var s = new SolicitudCursoVeranoInscripcion();
         s.setId_solicitud(7);
         s.setObjUsuario(usuario());
         if (conCurso) s.setObjCursoOfertadoVerano(curso());

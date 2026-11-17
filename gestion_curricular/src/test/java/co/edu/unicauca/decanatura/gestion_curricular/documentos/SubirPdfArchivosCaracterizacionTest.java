@@ -30,7 +30,7 @@ import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.Formatead
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.GestionarDocumentosGatewayIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.casosDeUso.GestionarDocumentosCUAdapter;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Documento;
-import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.SolicitudCursoVeranoIncripcion;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.SolicitudCursoVeranoInscripcion;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Usuario;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.controladorExcepciones.RestApiExceptionHandler;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.controladores.ArchivosRestController;
@@ -130,7 +130,7 @@ class SubirPdfArchivosCaracterizacionTest {
             return switch (id) {
                 case 7 -> inscripcion(70, "José Pérez-Ñ");
                 case 8 -> inscripcion(80, "   ");
-                case 9 -> { var s = new SolicitudCursoVeranoIncripcion(); s.setId_solicitud(90); yield s; }
+                case 9 -> { var s = new SolicitudCursoVeranoInscripcion(); s.setId_solicitud(90); yield s; }
                 case 11 -> throw new IllegalStateException("fallo consulta");
                 default -> null;
             };
@@ -183,11 +183,11 @@ class SubirPdfArchivosCaracterizacionTest {
         return nodo;
     }
 
-    private static SolicitudCursoVeranoIncripcion inscripcion(int idSolicitud, String nombre) {
+    private static SolicitudCursoVeranoInscripcion inscripcion(int idSolicitud, String nombre) {
         var usuario = new Usuario();
         usuario.setId_usuario(40);
         usuario.setNombre_completo(nombre);
-        var s = new SolicitudCursoVeranoIncripcion();
+        var s = new SolicitudCursoVeranoInscripcion();
         s.setId_solicitud(idSolicitud);
         s.setObjUsuario(usuario);
         return s;

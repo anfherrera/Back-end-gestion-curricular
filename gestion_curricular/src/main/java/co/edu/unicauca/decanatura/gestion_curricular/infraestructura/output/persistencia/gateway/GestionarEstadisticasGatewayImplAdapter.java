@@ -20,7 +20,7 @@ import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Estadistica
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Materia;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Programa;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Solicitud;
-import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.SolicitudCursoVeranoIncripcion;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.SolicitudCursoVeranoInscripcion;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.SolicitudCursoVeranoPreinscripcion;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.SolicitudEcaes;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.SolicitudHomologacion;
@@ -244,7 +244,7 @@ public class GestionarEstadisticasGatewayImplAdapter implements GestionarEstadis
             SolicitudPazYSalvoEntity.class, SolicitudPazYSalvo::new,
             SolicitudReingresoEntity.class, SolicitudReingreso::new,
             SolicitudCursoVeranoPreinscripcionEntity.class, SolicitudCursoVeranoPreinscripcion::new,
-            SolicitudCursoVeranoInscripcionEntity.class, SolicitudCursoVeranoIncripcion::new,
+            SolicitudCursoVeranoInscripcionEntity.class, SolicitudCursoVeranoInscripcion::new,
             SolicitudEcaesEntity.class, SolicitudEcaes::new);
 
     private static Solicitud aDominio(FilaSolicitudEstadistica fila, List<EstadoSolicitud> estados) {

@@ -13,7 +13,7 @@ public final class ReporteSolicitudesVeranoMapper {
         for (Solicitud solicitud : todasLasSolicitudes) {
             // Solo procesar solicitudes de cursos intersemestrales
             if (solicitud instanceof SolicitudCursoVeranoPreinscripcion || 
-                solicitud instanceof SolicitudCursoVeranoIncripcion) {
+                solicitud instanceof SolicitudCursoVeranoInscripcion) {
                 
                 Map<String, Object> solicitudInfo = new HashMap<>();
                 
@@ -33,8 +33,8 @@ public final class ReporteSolicitudesVeranoMapper {
                     } else if (preinscripcion.getNombre_solicitud() != null && !preinscripcion.getNombre_solicitud().trim().isEmpty()) {
                         motivoSolicitud = preinscripcion.getNombre_solicitud();
                     }
-                } else if (solicitud instanceof SolicitudCursoVeranoIncripcion) {
-                    SolicitudCursoVeranoIncripcion inscripcion = (SolicitudCursoVeranoIncripcion) solicitud;
+                } else if (solicitud instanceof SolicitudCursoVeranoInscripcion) {
+                    SolicitudCursoVeranoInscripcion inscripcion = (SolicitudCursoVeranoInscripcion) solicitud;
                     if (inscripcion.getObservacion() != null && !inscripcion.getObservacion().trim().isEmpty()) {
                         motivoSolicitud = inscripcion.getObservacion();
                     } else if (inscripcion.getNombre_solicitud() != null && !inscripcion.getNombre_solicitud().trim().isEmpty()) {
@@ -95,8 +95,8 @@ public final class ReporteSolicitudesVeranoMapper {
                     }
                     solicitudInfo.put("condicion", condicionAcademica);
                     
-                } else if (solicitud instanceof SolicitudCursoVeranoIncripcion) {
-                    SolicitudCursoVeranoIncripcion inscripcion = (SolicitudCursoVeranoIncripcion) solicitud;
+                } else if (solicitud instanceof SolicitudCursoVeranoInscripcion) {
+                    SolicitudCursoVeranoInscripcion inscripcion = (SolicitudCursoVeranoInscripcion) solicitud;
                     
                     if (inscripcion.getObjCursoOfertadoVerano() != null) {
                         idCursoSolicitud = inscripcion.getObjCursoOfertadoVerano().getId_curso();

@@ -4,7 +4,7 @@ import java.text.Normalizer;
 
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Solicitud;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.SolicitudCursoVerano;
-import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.SolicitudCursoVeranoIncripcion;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.SolicitudCursoVeranoInscripcion;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.SolicitudCursoVeranoPreinscripcion;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.SolicitudEcaes;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.SolicitudHomologacion;
@@ -43,7 +43,7 @@ public final class TipoProcesoSolicitud {
             return REINGRESO;
         }
         if (solicitud instanceof SolicitudCursoVeranoPreinscripcion
-                || solicitud instanceof SolicitudCursoVeranoIncripcion
+                || solicitud instanceof SolicitudCursoVeranoInscripcion
                 || solicitud instanceof SolicitudCursoVerano) {
             return CURSOS_VERANO;
         }

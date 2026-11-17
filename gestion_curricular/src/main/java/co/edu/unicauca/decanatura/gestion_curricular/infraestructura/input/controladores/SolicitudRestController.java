@@ -7,7 +7,7 @@ import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarS
 import org.springframework.security.access.prepost.PreAuthorize;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Solicitud;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.SolicitudCursoVeranoPreinscripcion;
-import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.SolicitudCursoVeranoIncripcion;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.SolicitudCursoVeranoInscripcion;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.SolicitudCursoVerano;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.SolicitudPazYSalvo;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.SolicitudReingreso;
@@ -434,7 +434,7 @@ public class SolicitudRestController {
         if (solicitud instanceof SolicitudCursoVeranoPreinscripcion) {
             dto.setCategoria("Cursos de Verano");
             dto.setTipo_solicitud("Preinscripcion");
-        } else if (solicitud instanceof SolicitudCursoVeranoIncripcion) {
+        } else if (solicitud instanceof SolicitudCursoVeranoInscripcion) {
             dto.setCategoria("Cursos de Verano");
             dto.setTipo_solicitud("Inscripcion");
         } else if (solicitud instanceof SolicitudCursoVerano) {

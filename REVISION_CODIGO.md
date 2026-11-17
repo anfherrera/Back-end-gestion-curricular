@@ -368,7 +368,7 @@ Rutas abreviadas: `…/` = `gestion_curricular/src/main/java/co/edu/unicauca/dec
 ## 5. Nombres y estilo (P3)
 
 - [ ] **EST-1. Errores de escritura en nombres:**
-  - `SolicitudCursoVeranoIncripcion` → `…Inscripcion` (103 usos)
+  - [x] `SolicitudCursoVeranoIncripcion` → `SolicitudCursoVeranoInscripcion`. Cuatro caracterizaciones MockMvc de Verano y descargas pasaron tres veces antes del renombrado y se compararon con las mismas referencias después.
   - `SolicitudCurosoVerano…`
   - `SolicitudHomologacioneMapperDominio`
   - `bucarRolPorId`

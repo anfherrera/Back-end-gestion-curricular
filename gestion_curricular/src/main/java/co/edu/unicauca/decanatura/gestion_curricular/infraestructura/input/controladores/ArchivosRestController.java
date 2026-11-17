@@ -34,7 +34,7 @@ import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarS
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarDocumentosCUIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Documento;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Solicitud;
-import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.SolicitudCursoVeranoIncripcion;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.SolicitudCursoVeranoInscripcion;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.validacion.ValidadorArchivoPdf;
 
 import org.springframework.web.multipart.MultipartFile;
@@ -97,7 +97,7 @@ public class ArchivosRestController {
         String nombreUnico = nombreOriginal;
         if (inscripcionId != null && !inscripcionId.trim().isEmpty()) {
             try {
-                SolicitudCursoVeranoIncripcion inscripcion = solicitudCursoVeranoCU.buscarPorIdInscripcion(Integer.parseInt(inscripcionId));
+                SolicitudCursoVeranoInscripcion inscripcion = solicitudCursoVeranoCU.buscarPorIdInscripcion(Integer.parseInt(inscripcionId));
                 
                 if (inscripcion != null && inscripcion.getObjUsuario() != null) {
                     // Obtener el nombre del estudiante
@@ -148,7 +148,7 @@ public class ArchivosRestController {
                 Integer idInscripcionInt = Integer.parseInt(inscripcionId);
                 // Verificar que la inscripción existe antes de organizar
                 try {
-                    SolicitudCursoVeranoIncripcion inscripcion = solicitudCursoVeranoCU.buscarPorIdInscripcion(idInscripcionInt);
+                    SolicitudCursoVeranoInscripcion inscripcion = solicitudCursoVeranoCU.buscarPorIdInscripcion(idInscripcionInt);
                     if (inscripcion != null) {
                         nombreArchivo = this.objGestionarArchivos.saveFile(ArchivoMultipart.de(file), nombreUnico, "pdf", "curso-verano", inscripcion.getId_solicitud());
                     } else {
@@ -293,7 +293,7 @@ public class ArchivosRestController {
         }
         
         // 1. Buscar la inscripcion
-        SolicitudCursoVeranoIncripcion inscripcion = solicitudCursoVeranoCU.buscarPorIdInscripcion(idInscripcion.intValue());
+        SolicitudCursoVeranoInscripcion inscripcion = solicitudCursoVeranoCU.buscarPorIdInscripcion(idInscripcion.intValue());
         
         if (inscripcion == null) {
             log.error("ERROR: [ARCHIVOS] Inscripcion no encontrada: {}", idInscripcion);

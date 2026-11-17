@@ -8,7 +8,7 @@ import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Estadistica
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.EstadoSolicitud;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Programa;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Solicitud;
-import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.SolicitudCursoVeranoIncripcion;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.SolicitudCursoVeranoInscripcion;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.SolicitudEcaes;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.SolicitudHomologacion;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.SolicitudPazYSalvo;
@@ -187,7 +187,7 @@ class EstadisticasUnidadTest {
     void testPorEstadoNormalizaElEstado() {
         when(estadisticasGateway.listarSolicitudesConEstadosYUsuario()).thenReturn(List.of(
                 solicitud(new SolicitudPazYSalvo(), 1, estado("Aprobado", 1)),
-                solicitud(new SolicitudCursoVeranoIncripcion(), 1, estado("Inscripcion_Completada", 1)),
+                solicitud(new SolicitudCursoVeranoInscripcion(), 1, estado("Inscripcion_Completada", 1)),
                 solicitud(new SolicitudEcaes(), 1, estado("Enviada", 1))));
 
         Map<String, Object> resultado = estadisticasCU.obtenerEstadisticasPorEstado("aprobada");
@@ -266,8 +266,8 @@ class EstadisticasUnidadTest {
     @SuppressWarnings("unchecked")
     void testCursosVeranoPagoValidadoEnProceso() {
         when(estadisticasGateway.listarSolicitudesConEstadosYUsuario()).thenReturn(List.of(
-                solicitud(new SolicitudCursoVeranoIncripcion(), 1, estado("Pago_Validado", 7)),
-                solicitud(new SolicitudCursoVeranoIncripcion(), 1, estado("Inscripcion_Completada", 7)),
+                solicitud(new SolicitudCursoVeranoInscripcion(), 1, estado("Pago_Validado", 7)),
+                solicitud(new SolicitudCursoVeranoInscripcion(), 1, estado("Inscripcion_Completada", 7)),
                 solicitud(new SolicitudHomologacion(), 1, estado("APROBADA", 7))));
 
         Map<String, Object> resultado = estadisticasCU.obtenerEstadisticasCursosVerano(null, null);

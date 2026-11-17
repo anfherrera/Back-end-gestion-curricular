@@ -5,7 +5,7 @@ import java.nio.charset.StandardCharsets;
 import javax.sql.DataSource;
 
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarSolicitudCursoVeranoCUIntPort;
-import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.SolicitudCursoVeranoIncripcion;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.SolicitudCursoVeranoInscripcion;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.SolicitudCursoVeranoPreinscripcion;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.condition.EnabledIfEnvironmentVariable;
@@ -40,7 +40,7 @@ class MigracionesMySqlTest {
                     .isNotEmpty()
                     .allSatisfy(solicitud -> {
                         assertThat(solicitud).isInstanceOfAny(
-                                SolicitudCursoVeranoPreinscripcion.class, SolicitudCursoVeranoIncripcion.class);
+                                SolicitudCursoVeranoPreinscripcion.class, SolicitudCursoVeranoInscripcion.class);
                         assertThat(solicitud.getObjCursoOfertadoVerano().getId_curso()).isEqualTo(1);
                     });
         }

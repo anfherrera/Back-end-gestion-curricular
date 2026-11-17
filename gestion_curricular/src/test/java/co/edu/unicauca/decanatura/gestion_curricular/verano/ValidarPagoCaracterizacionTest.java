@@ -20,7 +20,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.*;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.excepciones.CupoAgotadoException;
-import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.SolicitudCursoVeranoIncripcion;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.SolicitudCursoVeranoInscripcion;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.controladores.CursoOfertadoRestController;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.controladorExcepciones.RestApiExceptionHandler;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.mappers.*;
@@ -33,7 +33,7 @@ class ValidarPagoCaracterizacionTest {
     void conservaLaInterpretacionDelCuerpo() throws Exception {
         var cu = mock(GestionarSolicitudCursoVeranoCUIntPort.class);
         List<Object> llamadas = new ArrayList<>();
-        var inscripcion = new SolicitudCursoVeranoIncripcion();
+        var inscripcion = new SolicitudCursoVeranoInscripcion();
         inscripcion.setId_solicitud(7);
         when(cu.validarPago(anyInt(), anyBoolean(), nullable(String.class))).thenAnswer(i -> {
             Object[] argumentos = i.getArguments();
