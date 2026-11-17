@@ -32,6 +32,7 @@ import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.Respu
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.dto.peticion.CambioEstadoSolicitudDTOPeticion;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.dto.peticion.SolicitudReingresoDTOPeticion;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.dto.peticion.UsuarioDTOPeticion;
+import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.dto.respuesta.RechazoCambioEstadoDTORespuesta;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.dto.respuesta.SolicitudReingresoDTORespuesta;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.mappers.SolicitudMapperDominio;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.mappers.SolicitudReingresoMapperDominio;
@@ -181,12 +182,12 @@ public class SolicitudReingresoRestController {
     }
 
     @PutMapping("/actualizarEstadoSolicitud-Reingreso")
-    public ResponseEntity<Map<String, Object>> actualizarEstadoSolicitudReingreso(@RequestBody CambioEstadoSolicitudDTOPeticion peticion) {
+    public ResponseEntity<RechazoCambioEstadoDTORespuesta> actualizarEstadoSolicitudReingreso(@RequestBody CambioEstadoSolicitudDTOPeticion peticion) {
         CambioEstadoSolicitud solicitud = solicitudMapper.mapearDeCambioEstadoSolicitudDTOPeticionACambioEstadoSolicitud(peticion);
         // Solo el rol responsable del paso puede hacerlo (Funcionario → Coordinador → Secretario)
         String estadoActual = FlujoEstadosSolicitud.ultimoEstado(
                 solicitudService.obtenerSolicitudReingresoPorId(solicitud.getIdSolicitud()).getEstadosSolicitud());
-        ResponseEntity<Map<String, Object>> rechazo = validadorCambioEstado.validar(
+        ResponseEntity<RechazoCambioEstadoDTORespuesta> rechazo = validadorCambioEstado.validar(
                 FlujoEstadosSolicitud.TRES_APROBACIONES, estadoActual, solicitud.getNuevoEstado());
         if (rechazo != null) {
             return rechazo;

@@ -1,14 +1,12 @@
 package co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.validacion;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.FlujoEstadosSolicitud;
+import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.dto.respuesta.RechazoCambioEstadoDTORespuesta;
 import co.edu.unicauca.decanatura.gestion_curricular.seguridad.Autorizacion;
 
 /**
@@ -26,7 +24,7 @@ public class ValidadorCambioEstado {
     /**
      * @return null si el cambio está permitido; si no, 400 (paso no permitido) o 403 (rol incorrecto)
      */
-    public ResponseEntity<Map<String, Object>> validar(FlujoEstadosSolicitud flujo, String estadoActual,
+    public ResponseEntity<RechazoCambioEstadoDTORespuesta> validar(FlujoEstadosSolicitud flujo, String estadoActual,
             String nuevoEstado) {
         String rolResponsable;
         try {
@@ -42,12 +40,9 @@ public class ValidadorCambioEstado {
         return null;
     }
 
-    private static ResponseEntity<Map<String, Object>> error(HttpStatus estado, String mensaje, String codigo,
-            FlujoEstadosSolicitud flujo, String estadoActual) {
-        Map<String, Object> cuerpo = new HashMap<>();
-        cuerpo.put("error", mensaje);
-        cuerpo.put("codigo", codigo);
-        cuerpo.put("estadoActual", flujo.normalizar(estadoActual));
-        return ResponseEntity.status(estado).body(cuerpo);
+    private static ResponseEntity<RechazoCambioEstadoDTORespuesta> error(HttpStatus estado, String mensaje,
+            String codigo, FlujoEstadosSolicitud flujo, String estadoActual) {
+        return ResponseEntity.status(estado)
+                .body(new RechazoCambioEstadoDTORespuesta(mensaje, codigo, flujo.normalizar(estadoActual)));
     }
 }

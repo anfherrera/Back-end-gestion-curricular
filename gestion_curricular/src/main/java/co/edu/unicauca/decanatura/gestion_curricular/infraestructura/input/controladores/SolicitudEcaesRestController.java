@@ -1,7 +1,6 @@
 package co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.controladores;
 
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 
 import jakarta.validation.Valid;
@@ -28,6 +27,7 @@ import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.dto.p
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.dto.peticion.FechasEcaesDTOPeticion;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.dto.peticion.SolicitudEcaesDTOPeticion;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.dto.respuesta.FechaEcaesDTORespuesta;
+import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.dto.respuesta.RechazoCambioEstadoDTORespuesta;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.dto.respuesta.SolicitudEcaesDTORespuesta;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.mappers.SolicitudEcaesMapperDominio;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.mappers.SolicitudMapperDominio;
@@ -131,12 +131,12 @@ public class SolicitudEcaesRestController {
 
     
     @PutMapping("/actualizarEstadoSolicitud")
-    public ResponseEntity<Map<String, Object>> actualizarEstadoSolicitud(@RequestBody CambioEstadoSolicitudDTOPeticion solicitudPeticion) {
+    public ResponseEntity<RechazoCambioEstadoDTORespuesta> actualizarEstadoSolicitud(@RequestBody CambioEstadoSolicitudDTOPeticion solicitudPeticion) {
         CambioEstadoSolicitud solicitud = solicitudMapper.mapearDeCambioEstadoSolicitudDTOPeticionACambioEstadoSolicitud(solicitudPeticion);
         // Solo el Funcionario (o el Administrador) pre-registra o rechaza
         String estadoActual = FlujoEstadosSolicitud.ultimoEstado(
                 solicitudEcaesCU.buscarPorId(solicitud.getIdSolicitud()).getEstadosSolicitud());
-        ResponseEntity<Map<String, Object>> rechazo = validadorCambioEstado.validar(
+        ResponseEntity<RechazoCambioEstadoDTORespuesta> rechazo = validadorCambioEstado.validar(
                 FlujoEstadosSolicitud.ECAES, estadoActual, solicitud.getNuevoEstado());
         if (rechazo != null) {
             return rechazo;
