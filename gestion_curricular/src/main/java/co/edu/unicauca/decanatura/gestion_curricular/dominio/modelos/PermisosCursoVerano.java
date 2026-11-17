@@ -10,9 +10,10 @@ public final class PermisosCursoVerano {
     private PermisosCursoVerano() {
     }
 
-    public static Map<String, Object> validar(String estadoCurso, String rolUsuario, String operacion) {
-        Map<String, Object> resultado = new HashMap<>();
-        resultado.put("permitido", false);
+    /** Resultado de la validación; {@code error} es null solo cuando la operación está permitida. */
+    public record Resultado(boolean permitido, String error, String message) {}
+
+    public static Resultado validar(String estadoCurso, String rolUsuario, String operacion) {
 
         // Definir matriz de permisos por estado y rol
         Map<String, List<String>> permisosPorEstado = new HashMap<>();
@@ -62,9 +63,8 @@ public final class PermisosCursoVerano {
         // Obtener permisos para el estado actual
         List<String> permisosEstado = permisosPorEstado.get(estadoCurso);
         if (permisosEstado == null) {
-            resultado.put("error", "Estado desconocido");
-            resultado.put("message", "No se pueden determinar permisos para el estado: " + estadoCurso);
-            return resultado;
+            return new Resultado(false, "Estado desconocido",
+                "No se pueden determinar permisos para el estado: " + estadoCurso);
         }
 
         // Buscar permisos para el rol especifico
@@ -74,29 +74,22 @@ public final class PermisosCursoVerano {
             .orElse(null);
 
         if (permisosRol == null) {
-            resultado.put("error", "Rol no valido");
-            resultado.put("message", "No se encontraron permisos para el rol: " + rolUsuario);
-            return resultado;
+            return new Resultado(false, "Rol no valido", "No se encontraron permisos para el rol: " + rolUsuario);
         }
 
         // Extraer las operaciones permitidas
         String operacionesPermitidas = permisosRol.split(":")[1];
 
         if ("ninguno".equals(operacionesPermitidas)) {
-            resultado.put("error", "Sin permisos");
-            resultado.put("message", "Este rol no tiene permisos para realizar operaciones en el estado: " + estadoCurso);
-            return resultado;
+            return new Resultado(false, "Sin permisos",
+                "Este rol no tiene permisos para realizar operaciones en el estado: " + estadoCurso);
         }
 
         // Verificar si la operacion especifica esta permitida
         if (operacionesPermitidas.contains(operacion) || operacionesPermitidas.contains("todas")) {
-            resultado.put("permitido", true);
-            resultado.put("message", "Operacion permitida");
-        } else {
-            resultado.put("error", "Operacion no permitida");
-            resultado.put("message", "El rol " + rolUsuario + " no puede realizar la operacion '" + operacion + "' en el estado " + estadoCurso);
+            return new Resultado(true, null, "Operacion permitida");
         }
-
-        return resultado;
+        return new Resultado(false, "Operacion no permitida",
+            "El rol " + rolUsuario + " no puede realizar la operacion '" + operacion + "' en el estado " + estadoCurso);
     }
 }

@@ -1,9 +1,7 @@
 package co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.controladores;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 import lombok.RequiredArgsConstructor;
@@ -20,6 +18,12 @@ import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Materia;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.PermisosCursoVerano;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Salon;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.enums.CondicionSolicitudVerano;
+import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.dto.respuesta.CatalogosVeranoDTORespuesta.DocenteCatalogo;
+import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.dto.respuesta.CatalogosVeranoDTORespuesta.MateriaCatalogo;
+import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.dto.respuesta.CatalogosVeranoDTORespuesta.MateriaDisponible;
+import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.dto.respuesta.CatalogosVeranoDTORespuesta.MateriaFiltro;
+import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.dto.respuesta.CatalogosVeranoDTORespuesta.Permisos;
+import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.dto.respuesta.CursosVeranoDTORespuesta.SalonInfo;
 
 /**
  * Catálogos para los formularios de cursos de verano: materias, docentes, salones, condiciones y permisos por estado.
@@ -40,21 +44,17 @@ public class CatalogosCursosVeranoRestController {
      * GET /api/cursos-intersemestrales/materias-disponibles
      */
     @GetMapping("/materias-disponibles")
-    public ResponseEntity<List<Map<String, Object>>> obtenerMateriasDisponibles() {
+    public ResponseEntity<List<MateriaDisponible>> obtenerMateriasDisponibles() {
         // Obtener todas las materias de la base de datos
         List<Materia> materias =
             materiaCU.listarMaterias();
-        
-        List<Map<String, Object>> materiasDisponibles = new ArrayList<>();
-        
+
+        List<MateriaDisponible> materiasDisponibles = new ArrayList<>();
+
         for (Materia materia : materias) {
-            Map<String, Object> materiaMap = new HashMap<>();
-            materiaMap.put("id_materia", materia.getId_materia());
-            materiaMap.put("codigo", materia.getCodigo());
-            materiaMap.put("nombre", materia.getNombre());
-            materiaMap.put("creditos", materia.getCreditos());
-            materiaMap.put("descripcion", materia.getNombre() + " (" + materia.getCodigo() + ") - " + materia.getCreditos() + " creditos");
-            materiasDisponibles.add(materiaMap);
+            materiasDisponibles.add(new MateriaDisponible(materia.getId_materia(), materia.getCodigo(),
+                materia.getNombre(), materia.getCreditos(),
+                materia.getNombre() + " (" + materia.getCodigo() + ") - " + materia.getCreditos() + " creditos"));
         }
         
         return ResponseEntity.ok(materiasDisponibles);
@@ -81,11 +81,11 @@ public class CatalogosCursosVeranoRestController {
      * GET /api/cursos-intersemestrales/permisos-estado/{estado}/{rol}
      */
     @GetMapping("/permisos-estado/{estado}/{rol}")
-    public ResponseEntity<Map<String, Object>> obtenerPermisosPorEstado(
+    public ResponseEntity<Permisos> obtenerPermisosPorEstado(
             @PathVariable String estado,
             @PathVariable String rol) {
-        Map<String, Object> permisos = PermisosCursoVerano.validar(estado, rol, "consultar_permisos");
-        return ResponseEntity.ok(permisos);
+        PermisosCursoVerano.Resultado permisos = PermisosCursoVerano.validar(estado, rol, "consultar_permisos");
+        return ResponseEntity.ok(new Permisos(permisos.permitido(), permisos.error(), permisos.message()));
     }
 
     // ==================== ENDPOINTS PARA MATERIAS Y DOCENTES ====================
@@ -95,20 +95,16 @@ public class CatalogosCursosVeranoRestController {
      * GET /api/cursos-intersemestrales/materias
      */
     @GetMapping("/materias")
-    public ResponseEntity<List<Map<String, Object>>> getTodasLasMaterias() {
+    public ResponseEntity<List<MateriaCatalogo>> getTodasLasMaterias() {
         // Obtener todas las materias de la base de datos
         List<Materia> materiasReales =
             materiaCU.listarMaterias();
-        
-        List<Map<String, Object>> materias = new ArrayList<>();
-        
+
+        List<MateriaCatalogo> materias = new ArrayList<>();
+
         for (Materia materia : materiasReales) {
-            Map<String, Object> materiaMap = new HashMap<>();
-            materiaMap.put("id_materia", materia.getId_materia());
-            materiaMap.put("nombre_materia", materia.getNombre());
-            materiaMap.put("codigo_materia", materia.getCodigo());
-            materiaMap.put("creditos", materia.getCreditos());
-            materias.add(materiaMap);
+            materias.add(new MateriaCatalogo(materia.getId_materia(), materia.getNombre(), materia.getCodigo(),
+                materia.getCreditos()));
         }
         
         return ResponseEntity.ok(materias);
@@ -119,44 +115,33 @@ public class CatalogosCursosVeranoRestController {
      * GET /api/cursos-intersemestrales/materias-filtro
      */
     @GetMapping("/materias-filtro")
-    public ResponseEntity<List<Map<String, Object>>> obtenerMateriasParaFiltro() {
+    public ResponseEntity<List<MateriaFiltro>> obtenerMateriasParaFiltro() {
         try {
-            
+
             // Obtener todas las materias de la base de datos
             List<Materia> materiasReales =
                 materiaCU.listarMaterias();
-            
-            List<Map<String, Object>> materiasFiltro = new ArrayList<>();
-            
+
+            List<MateriaFiltro> materiasFiltro = new ArrayList<>();
+
             // Agregar opcion "Todas las materias"
-            Map<String, Object> todasLasMaterias = new HashMap<>();
-            todasLasMaterias.put("id", 0);
-            todasLasMaterias.put("nombre", "Todas las materias");
-            todasLasMaterias.put("codigo", "TODAS");
-            materiasFiltro.add(todasLasMaterias);
-            
+            materiasFiltro.add(new MateriaFiltro(0, "Todas las materias", "TODAS"));
+
             // Agregar materias reales
             for (Materia materia : materiasReales) {
-                Map<String, Object> materiaMap = new HashMap<>();
-                materiaMap.put("id", materia.getId_materia());
-                materiaMap.put("nombre", materia.getNombre());
-                materiaMap.put("codigo", materia.getCodigo());
-                materiasFiltro.add(materiaMap);
+                materiasFiltro.add(new MateriaFiltro(materia.getId_materia(), materia.getNombre(),
+                    materia.getCodigo()));
             }
-            
-            
+
+
             return ResponseEntity.ok(materiasFiltro);
         } catch (Exception e) {
             log.error("Error obteniendo materias para filtro: {}", e.getMessage(), e);
-            
+
             // En caso de error, devolver al menos la opcion "Todas las materias"
-            List<Map<String, Object>> fallback = new ArrayList<>();
-            Map<String, Object> todasLasMaterias = new HashMap<>();
-            todasLasMaterias.put("id", 0);
-            todasLasMaterias.put("nombre", "Todas las materias");
-            todasLasMaterias.put("codigo", "TODAS");
-            fallback.add(todasLasMaterias);
-            
+            List<MateriaFiltro> fallback = new ArrayList<>();
+            fallback.add(new MateriaFiltro(0, "Todas las materias", "TODAS"));
+
             return ResponseEntity.ok(fallback);
         }
     }
@@ -169,31 +154,27 @@ public class CatalogosCursosVeranoRestController {
      */
     @GetMapping("/salones")
     @PreAuthorize("hasAnyRole('Funcionario', 'Coordinador', 'Administrador')")
-    public ResponseEntity<List<Map<String, Object>>> obtenerSalones() {
+    public ResponseEntity<List<SalonInfo>> obtenerSalones() {
         List<Salon> salonesReales =
             salonCU.listarSalonesActivos();
-        
-        List<Map<String, Object>> salones = new ArrayList<>();
-        
+
+        List<SalonInfo> salones = new ArrayList<>();
+
         for (Salon salon : salonesReales) {
-            Map<String, Object> salonMap = new HashMap<>();
-            salonMap.put("id_salon", salon.getId_salon());
-            salonMap.put("numero_salon", salon.getNumero_salon());
-            salonMap.put("edificio", salon.getEdificio() != null ? salon.getEdificio() : "Sin especificar");
-            salonMap.put("activo", salon.getActivo() != null ? salon.getActivo() : true);
             // Agregar descripción completa para el frontend
             String descripcion = salon.getNumero_salon();
             if (salon.getEdificio() != null && !salon.getEdificio().trim().isEmpty()) {
                 descripcion += " - " + salon.getEdificio();
             }
-            salonMap.put("descripcion", descripcion);
-            salones.add(salonMap);
+            salones.add(new SalonInfo(salon.getId_salon(), salon.getNumero_salon(),
+                salon.getEdificio() != null ? salon.getEdificio() : "Sin especificar",
+                salon.getActivo() != null ? salon.getActivo() : true, descripcion));
         }
-        
+
         // Ordenar por número de salón
         salones.sort((a, b) -> {
-            String numA = (String) a.get("numero_salon");
-            String numB = (String) b.get("numero_salon");
+            String numA = a.numeroSalon();
+            String numB = b.numeroSalon();
             if (numA == null) numA = "";
             if (numB == null) numB = "";
             return numA.compareToIgnoreCase(numB);
@@ -207,7 +188,7 @@ public class CatalogosCursosVeranoRestController {
      * GET /api/cursos-intersemestrales/docentes
      */
     @GetMapping("/docentes")
-    public ResponseEntity<List<Map<String, Object>>> getTodosLosDocentes() {
+    public ResponseEntity<List<DocenteCatalogo>> getTodosLosDocentes() {
         
         // Obtener docentes reales de la base de datos
         List<Docente> docentesDominio =
@@ -219,20 +200,12 @@ public class CatalogosCursosVeranoRestController {
         
         
         // Mapear docentes de dominio a formato de respuesta para el frontend
-        List<Map<String, Object>> docentes = docentesDominio.stream()
-            .map(docente -> {
-                Map<String, Object> docenteMap = new HashMap<>();
-                // Campo crítico: id_docente (NO id_usuario)
-                docenteMap.put("id_docente", docente.getId_docente());
-                docenteMap.put("codigo_docente", docente.getCodigo_docente());
-                docenteMap.put("nombre_docente", docente.getNombre_docente());
-                // Mantener compatibilidad con frontend (si lo necesita)
-                docenteMap.put("id_usuario", docente.getId_docente()); // Usar id_docente como id_usuario para compatibilidad
-                docenteMap.put("codigo_usuario", docente.getCodigo_docente());
-                docenteMap.put("nombre_usuario", docente.getNombre_docente());
-                
-                return docenteMap;
-            })
+        // Campo crítico: id_docente (NO id_usuario); las claves de usuario se mantienen por compatibilidad
+        // con el frontend y usan id_docente como id_usuario
+        List<DocenteCatalogo> docentes = docentesDominio.stream()
+            .map(docente -> new DocenteCatalogo(docente.getId_docente(), docente.getCodigo_docente(),
+                docente.getNombre_docente(), docente.getId_docente(), docente.getCodigo_docente(),
+                docente.getNombre_docente()))
             .collect(Collectors.toList());
 
         return ResponseEntity.ok(docentes);
