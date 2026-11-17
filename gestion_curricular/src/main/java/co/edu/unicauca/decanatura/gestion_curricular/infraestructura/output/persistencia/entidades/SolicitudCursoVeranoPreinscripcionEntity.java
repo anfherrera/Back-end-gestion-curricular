@@ -1,7 +1,7 @@
 package co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.entidades;
 
 
-import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.entidades.Enums.CondicionSolicitudVeranoEntity;
+import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.entidades.enums.CondicionSolicitudVeranoEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;

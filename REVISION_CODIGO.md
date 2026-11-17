@@ -382,7 +382,7 @@ Rutas abreviadas: `…/` = `gestion_curricular/src/main/java/co/edu/unicauca/dec
 
 - [ ] **EST-2. Hay paquetes con mayúscula:** `Security` → `seguridad`, `Enums` → `enums` (dos paquetes), `DTOPeticion` / `DTORespuesta` → `dto.peticion` / `dto.respuesta`, `controladorExcepciones` → `excepciones`.
 
-  *Avance revisión 12:* `Security` pasa a `seguridad`. La caracterización HTTP y las pruebas funcionales de seguridad se ejecutaron tres veces antes del cambio y volvieron a pasar después. Los enums de dominio pasan a `dominio.modelos.enums`. Se conserva el nombre histórico del enum en los 400 de ECAES (BUG-26).
+  *Avance revisión 12:* `Security` pasa a `seguridad`. La caracterización HTTP y las pruebas funcionales de seguridad se ejecutaron tres veces antes del cambio y volvieron a pasar después. Los enums de dominio pasan a `dominio.modelos.enums`. Se conserva el nombre histórico del enum en los 400 de ECAES (BUG-26). Los enums de persistencia también pasan a minúsculas, con las mismas caracterizaciones de verano.
 
 - [ ] **EST-3. Hay clases que no siguen la convención de nombres:**
   - En minúscula: `documentoDto`, `solicitudEcaesSalidaDto`.
