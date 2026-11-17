@@ -32,7 +32,7 @@ public class GestionarRolGatewayImplAdapter implements GestionarRolGatewayIntPor
     // Métodos originales (compatibilidad)
     @Override
     @Transactional(readOnly = true)
-    public Rol bucarRolPorId(Integer idRol) {
+    public Rol buscarRolPorId(Integer idRol) {
         return this.rolMapper.map(
             this.objrolRepository.findById(idRol).orElse(null), Rol.class);
     }

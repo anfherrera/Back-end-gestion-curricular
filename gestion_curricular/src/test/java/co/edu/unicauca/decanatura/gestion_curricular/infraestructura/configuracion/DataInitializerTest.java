@@ -58,7 +58,7 @@ class DataInitializerTest {
     @Test
     @DisplayName("crea la cuenta con la contraseña configurada si no existe")
     void creaAdministradorSiNoExiste() {
-        when(rolGateway.bucarRolPorId(1)).thenReturn(new Rol());
+        when(rolGateway.buscarRolPorId(1)).thenReturn(new Rol());
         when(programaGateway.buscarPorIdPrograma(1)).thenReturn(new Programa());
 
         inicializador.run();

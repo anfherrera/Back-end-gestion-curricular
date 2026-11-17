@@ -56,7 +56,7 @@ public class DataInitializer implements CommandLineRunner {
     }
 
     private void crearAdministrador() {
-        Rol rolAdmin = rolGateway.bucarRolPorId(ID_ROL_ADMINISTRADOR);
+        Rol rolAdmin = rolGateway.buscarRolPorId(ID_ROL_ADMINISTRADOR);
         if (rolAdmin == null) {
             log.error("No se puede crear el administrador: el rol Administrador (ID={}) no existe", ID_ROL_ADMINISTRADOR);
             return;

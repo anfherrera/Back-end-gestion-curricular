@@ -66,7 +66,7 @@ public Usuario crearUsuario(Usuario usuario) {
     if (programa == null) {
         this.objFormateadorResultados.retornarRespuestaErrorEntidadExiste("El programa enviado no existe.");
     }
-    objRol = this.objGestionarRolGateway.bucarRolPorId(usuario.getObjRol().getId_rol());
+    objRol = this.objGestionarRolGateway.buscarRolPorId(usuario.getObjRol().getId_rol());
     if (objRol == null) {
         this.objFormateadorResultados.retornarRespuestaErrorEntidadExiste("El rol con ID: '" + usuario.getObjRol().getId_rol() + "' no existe.");
     }
@@ -123,7 +123,7 @@ public Usuario crearUsuario(Usuario usuario) {
             this.objFormateadorResultados.retornarRespuestaErrorEntidadExiste("El ID del rol no puede ser nulo.");
         }
 
-        objRol = this.objGestionarRolGateway.bucarRolPorId(usuario.getObjRol().getId_rol());
+        objRol = this.objGestionarRolGateway.buscarRolPorId(usuario.getObjRol().getId_rol());
         if (objRol == null) {
             this.objFormateadorResultados.retornarRespuestaErrorEntidadExiste("El rol enviado no existe.");
         }

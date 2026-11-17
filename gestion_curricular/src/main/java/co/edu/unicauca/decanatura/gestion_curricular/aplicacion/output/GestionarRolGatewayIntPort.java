@@ -6,7 +6,7 @@ import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Rol;
 public interface GestionarRolGatewayIntPort {
     
     // Métodos originales (mantener compatibilidad)
-    Rol bucarRolPorId(Integer idRol);
+    Rol buscarRolPorId(Integer idRol);
     // Nuevos métodos CRUD
     Rol guardarRol(Rol rol);
 
