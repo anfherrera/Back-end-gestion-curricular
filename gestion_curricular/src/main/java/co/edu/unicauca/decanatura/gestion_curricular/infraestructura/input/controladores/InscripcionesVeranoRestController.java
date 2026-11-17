@@ -20,7 +20,7 @@ import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.CursoOferta
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.SolicitudCursoVeranoPreinscripcion;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.SolicitudCursoVeranoIncripcion;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Documento;
-import co.edu.unicauca.decanatura.gestion_curricular.dominio.excepciones.CupoAgotadoException;
+import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.controladorExcepciones.ErroresCursosVerano;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Usuario;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Solicitud;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Enums.CondicionSolicitudVerano;
@@ -71,11 +71,8 @@ public class InscripcionesVeranoRestController {
         }
 
         // Validacion 2: el curso debe tener cupo disponible
-        try {
-            solicitudCU.verificarCupoDisponible(preinscripcionAprobada.getObjCursoOfertadoVerano());
-        } catch (CupoAgotadoException e) {
-            return SoporteCursosVerano.respuestaCupoAgotado(e);
-        }
+        ErroresCursosVerano.conCupo(
+                () -> solicitudCU.verificarCupoDisponible(preinscripcionAprobada.getObjCursoOfertadoVerano()));
         
         // 2. Crear la inscripcion usando el modelo de dominio
         
@@ -285,66 +282,64 @@ public class InscripcionesVeranoRestController {
     public ResponseEntity<Map<String, Object>> aceptarInscripcionEstudiante(
             @PathVariable Long idInscripcion,
             @RequestBody @Valid DecisionSolicitudDTOPeticion request) {
-        try {
-            
-            String observaciones = request.getObservaciones();
-            if (observaciones == null || observaciones.trim().isEmpty()) {
-                observaciones = "Inscripcion aceptada por funcionario/coordinador";
-            }
-            
-            // 1. Buscar la inscripcion directamente por ID
-            SolicitudCursoVeranoIncripcion inscripcion = solicitudCU.buscarPorIdInscripcion(idInscripcion.intValue());
-            
-            if (inscripcion == null) {
-                Map<String, Object> error = new HashMap<>();
-                error.put("error", "No se encontro la inscripcion con ID: " + idInscripcion);
-                return ResponseEntity.badRequest().body(error);
-            }
-            
-            // 2. El curso debe tener cupo (si la inscripcion ya ocupaba cupo, aceptarla de nuevo no suma)
-            solicitudCU.verificarCupoParaAceptar(inscripcion);
+        // Sin cupo, o bien otro funcionario ocupó el último cupo mientras tanto
+        return ErroresCursosVerano.conCupo(() -> aceptarInscripcion(idInscripcion, request));
+    }
 
-            // 3. Validar pago de la inscripcion (marcar como aceptada)
-            SolicitudCursoVeranoIncripcion inscripcionAceptada = solicitudCU.validarPago(
-                inscripcion.getId_solicitud(), 
-                true, 
-                observaciones
-            );
-            
-            if (inscripcionAceptada == null) {
-                Map<String, Object> error = new HashMap<>();
-                error.put("error", "No se pudo aceptar la inscripcion");
-                return ResponseEntity.internalServerError().body(error);
-            }
-            
-            // 3. Insertar en tabla cursosestudiantes (relacion Many-to-Many)
-            try {
-                Integer idCurso = inscripcion.getObjCursoOfertadoVerano().getId_curso();
-                Integer idEstudiante = inscripcion.getObjUsuario().getId_usuario();
-                if (!cursoCU.asociarEstudiante(idCurso, idEstudiante)) {
-                    log.warn("No se pudo asociar el estudiante {} al curso {}", idEstudiante, idCurso);
-                }
-            } catch (Exception e) {
-                log.error("Error asociando estudiante al curso: {}", e.getMessage(), e);
-                // No fallar la operacion por esto, pero logear el error
-            }
-            
-            // 4. Preparar respuesta
-            Map<String, Object> respuesta = new HashMap<>();
-            respuesta.put("success", true);
-            respuesta.put("message", "Inscripcion aceptada exitosamente");
-            respuesta.put("id_inscripcion", inscripcionAceptada.getId_solicitud());
-            respuesta.put("estudiante_nombre", inscripcion.getObjUsuario().getNombre_completo());
-            respuesta.put("curso_nombre", inscripcion.getObjCursoOfertadoVerano().getObjMateria().getNombre());
-            respuesta.put("fecha_aceptacion", new java.util.Date());
-            respuesta.put("observaciones", observaciones);
-            
-            return ResponseEntity.ok(respuesta);
-
-        } catch (CupoAgotadoException e) {
-            // Sin cupo, o bien otro funcionario ocupó el último cupo mientras tanto
-            return SoporteCursosVerano.respuestaCupoAgotado(e);
+    private ResponseEntity<Map<String, Object>> aceptarInscripcion(Long idInscripcion, DecisionSolicitudDTOPeticion request) {
+        String observaciones = request.getObservaciones();
+        if (observaciones == null || observaciones.trim().isEmpty()) {
+            observaciones = "Inscripcion aceptada por funcionario/coordinador";
         }
+
+        // 1. Buscar la inscripcion directamente por ID
+        SolicitudCursoVeranoIncripcion inscripcion = solicitudCU.buscarPorIdInscripcion(idInscripcion.intValue());
+
+        if (inscripcion == null) {
+            Map<String, Object> error = new HashMap<>();
+            error.put("error", "No se encontro la inscripcion con ID: " + idInscripcion);
+            return ResponseEntity.badRequest().body(error);
+        }
+
+        // 2. El curso debe tener cupo (si la inscripcion ya ocupaba cupo, aceptarla de nuevo no suma)
+        solicitudCU.verificarCupoParaAceptar(inscripcion);
+
+        // 3. Validar pago de la inscripcion (marcar como aceptada)
+        SolicitudCursoVeranoIncripcion inscripcionAceptada = solicitudCU.validarPago(
+            inscripcion.getId_solicitud(),
+            true,
+            observaciones
+        );
+
+        if (inscripcionAceptada == null) {
+            Map<String, Object> error = new HashMap<>();
+            error.put("error", "No se pudo aceptar la inscripcion");
+            return ResponseEntity.internalServerError().body(error);
+        }
+
+        // 3. Insertar en tabla cursosestudiantes (relacion Many-to-Many)
+        try {
+            Integer idCurso = inscripcion.getObjCursoOfertadoVerano().getId_curso();
+            Integer idEstudiante = inscripcion.getObjUsuario().getId_usuario();
+            if (!cursoCU.asociarEstudiante(idCurso, idEstudiante)) {
+                log.warn("No se pudo asociar el estudiante {} al curso {}", idEstudiante, idCurso);
+            }
+        } catch (Exception e) {
+            log.error("Error asociando estudiante al curso: {}", e.getMessage(), e);
+            // No fallar la operacion por esto, pero logear el error
+        }
+
+        // 4. Preparar respuesta
+        Map<String, Object> respuesta = new HashMap<>();
+        respuesta.put("success", true);
+        respuesta.put("message", "Inscripcion aceptada exitosamente");
+        respuesta.put("id_inscripcion", inscripcionAceptada.getId_solicitud());
+        respuesta.put("estudiante_nombre", inscripcion.getObjUsuario().getNombre_completo());
+        respuesta.put("curso_nombre", inscripcion.getObjCursoOfertadoVerano().getObjMateria().getNombre());
+        respuesta.put("fecha_aceptacion", new java.util.Date());
+        respuesta.put("observaciones", observaciones);
+
+        return ResponseEntity.ok(respuesta);
     }
 
     /**
@@ -383,19 +378,9 @@ public class InscripcionesVeranoRestController {
         }
         
         // 3. Marcar como rechazada usando el caso de uso
-        SolicitudCursoVeranoIncripcion inscripcionRechazada;
-        try {
-            inscripcionRechazada = solicitudCU.validarPago(
-                inscripcion.getId_solicitud(), 
-                false, 
-                "Inscripcion rechazada: " + motivo
-            );
-        } catch (Exception e) {
-            log.error("Error en validarPago: {}", e.getMessage(), e);
-            Map<String, Object> error = new HashMap<>();
-            error.put("error", "Error al rechazar la inscripcion: " + e.getMessage());
-            return ResponseEntity.badRequest().body(error);
-        }
+        String observacionRechazo = "Inscripcion rechazada: " + motivo;
+        SolicitudCursoVeranoIncripcion inscripcionRechazada = ErroresCursosVerano.alRechazarInscripcion(
+                () -> solicitudCU.validarPago(inscripcion.getId_solicitud(), false, observacionRechazo));
         
         if (inscripcionRechazada == null) {
             Map<String, Object> error = new HashMap<>();

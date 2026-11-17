@@ -28,6 +28,7 @@ import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.DTOPe
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.DTORespuesta.LoginDTORespuesta;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.DTORespuesta.UsuarioDTORespuesta;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.mappers.UsuarioMapperDominio;
+import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.controladorExcepciones.ErroresUsuario;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -66,7 +67,8 @@ public class UsuarioRestController {
     @PostMapping("/crearUsuario")
     @PreAuthorize("(hasRole('Administrador') or hasRole('Coordinador')) and @autorizacion.puedeAsignarRol(#peticion.id_rol)")
     public ResponseEntity<UsuarioDTORespuesta> crearUsuario(@RequestBody @Valid UsuarioDTOPeticion peticion) {
-        try {
+        // BUG-22: cualquier error que no sea IllegalArgumentException acaba en un 500 genérico
+        return ErroresUsuario.alCrear(() -> {
             if (peticion == null) {
                 throw new IllegalArgumentException("La petición no puede ser nula");
             }
@@ -110,28 +112,16 @@ public class UsuarioRestController {
                 throw new RuntimeException("Error: el usuario creado no tiene programa asignado");
             }
             
-            UsuarioDTORespuesta respuesta;
-            try {
-                respuesta = objUsuarioMapperDominio.mappearDeUsuarioAUsuarioDTORespuesta(usuarioCreado);
-            } catch (Exception e) {
-                if (e.getMessage() != null && e.getMessage().contains("source cannot be null")) {
-                    throw new RuntimeException("Error al mapear usuario a DTO: " + 
-                        "Rol: " + (usuarioCreado.getObjRol() != null ? "presente" : "null") + 
-                        ", Programa: " + (usuarioCreado.getObjPrograma() != null ? "presente" : "null"), e);
-                }
-                throw new RuntimeException("Error al mapear el usuario creado a DTO de respuesta: " + e.getMessage(), e);
-            }
+            UsuarioDTORespuesta respuesta = ErroresUsuario.alMapearCreado(
+                    () -> objUsuarioMapperDominio.mappearDeUsuarioAUsuarioDTORespuesta(usuarioCreado),
+                    usuarioCreado);
             
             if (respuesta == null) {
                 throw new RuntimeException("Error al mapear el usuario creado a DTO de respuesta: resultado nulo");
             }
             
             return new ResponseEntity<>(respuesta, HttpStatus.CREATED);
-        } catch (IllegalArgumentException e) {
-            throw e;
-        } catch (Exception e) {
-            throw new RuntimeException("Error al crear el usuario: " + e.getMessage(), e);
-        }
+        });
     }
     
     @PutMapping("/actualizarUsuario")

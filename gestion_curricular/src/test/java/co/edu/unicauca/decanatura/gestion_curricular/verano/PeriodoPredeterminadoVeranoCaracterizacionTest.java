@@ -17,6 +17,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarSolicitudCursoVeranoCUIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.SolicitudCursoVeranoPreinscripcion;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Enums.PeriodoAcademicoEnum;
+import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.controladorExcepciones.RestApiExceptionHandler;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.controladores.PreinscripcionesVeranoRestController;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.mappers.*;
 
@@ -32,7 +33,8 @@ class PeriodoPredeterminadoVeranoCaracterizacionTest {
             return solicitud;
         });
         var mvc = MockMvcBuilders.standaloneSetup(new PreinscripcionesVeranoRestController(cu,
-            mock(CursosOfertadosMapperDominio.class), mock(SolicitudCursoDeVeranoPreinscripcionMapperDominio.class))).build();
+            mock(CursosOfertadosMapperDominio.class), mock(SolicitudCursoDeVeranoPreinscripcionMapperDominio.class)))
+            .setControllerAdvice(new RestApiExceptionHandler()).build();
         var json = new ObjectMapper();
         Map<String, Object> resultados = new LinkedHashMap<>();
         for (String condicion : new String[]{"Primera_Vez", "INVALIDA"}) {

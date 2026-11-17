@@ -20,6 +20,7 @@ import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.DTOPe
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.DTORespuesta.CursosOfertadosDTORespuesta;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.mappers.CursosOfertadosMapperDominio;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.mappers.EstadoCursoOfertadoMapper;
+import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.controladorExcepciones.ErroresCursosVerano;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -181,7 +182,7 @@ public class CursoOfertadoRestController {
     public ResponseEntity<Map<String, Object>> validarPago(
             @Min(value = 1) @PathVariable Integer idSolicitud,
             @RequestBody @Valid ValidacionPagoDTOPeticion requestBody) {
-        try {
+        return ErroresCursosVerano.conCupo(() -> {
             Boolean esValido = requestBody.getEsValido();
             String observaciones = requestBody.getObservaciones();
             
@@ -197,9 +198,7 @@ public class CursoOfertadoRestController {
             respuesta.put("solicitud", solicitudActualizada);
             
             return ResponseEntity.ok(respuesta);
-        } catch (co.edu.unicauca.decanatura.gestion_curricular.dominio.excepciones.CupoAgotadoException e) {
-            return SoporteCursosVerano.respuestaCupoAgotado(e);
-        }
+        });
     }
 
     /**

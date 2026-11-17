@@ -23,6 +23,7 @@ import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.DTOPe
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.DTOPeticion.PreinscripcionCursoVeranoDTOPeticion;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.mappers.CursosOfertadosMapperDominio;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.mappers.SolicitudCursoDeVeranoPreinscripcionMapperDominio;
+import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.controladorExcepciones.ErroresCursosVerano;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.EstadoSolicitud;
 import java.util.List;
 import java.util.Map;
@@ -132,7 +133,7 @@ public class PreinscripcionesVeranoRestController {
     @PreAuthorize("@autorizacion.esStaff() or #peticion.idUsuario == null or @autorizacion.esUsuarioActual(#peticion.idUsuario)")
     @PostMapping("/solicitudes-curso-nuevo")
     public ResponseEntity<Map<String, Object>> crearSolicitudCursoNuevo(@RequestBody SolicitudCursoNuevoDTOPeticion peticion) {
-        try {
+        return ErroresCursosVerano.alCrearCursoNuevo(() -> {
 
             // Mapear el DTO a nuestro modelo de dominio
             SolicitudCursoVeranoPreinscripcion solicitudDominio = new SolicitudCursoVeranoPreinscripcion();
@@ -186,12 +187,7 @@ public class PreinscripcionesVeranoRestController {
             respuesta.put("objUsuario", usuario);
             
             return ResponseEntity.ok(respuesta);
-        } catch (IllegalArgumentException e) {
-            Map<String, Object> error = new HashMap<>();
-            error.put("error", "Error de validacion: " + e.getMessage());
-            error.put("tipo", "VALIDATION_ERROR");
-            return ResponseEntity.badRequest().body(error);
-        }
+        });
     }
 
     /**
