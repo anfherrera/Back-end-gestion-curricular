@@ -41,7 +41,7 @@ class RegistroDocumentosCaracterizacionTest {
         var json = new ObjectMapper();
         var paz = new SolicitudPazYSalvoRestController(pazCU, mock(SolicitudPazYSalvoMapperDominio.class), archivos,
             documentos, Mappers.getMapper(DocumentosMapperDominio.class), mock(GenerarDocumentosCUIntPort.class), json, auth);
-        var homo = new SolicitudHomologacionRestController(homoCU, mock(SolicitudHomologacioneMapperDominio.class),
+        var homo = new SolicitudHomologacionRestController(homoCU, mock(SolicitudHomologacionMapperDominio.class),
             mock(SolicitudMapperDominio.class), archivos, documentos, auth, null);
         var mvc = MockMvcBuilders.standaloneSetup(paz, homo).setControllerAdvice(new RestApiExceptionHandler()).build();
         String[] rutas = {"/api/solicitudes-pazysalvo/subir-documento",

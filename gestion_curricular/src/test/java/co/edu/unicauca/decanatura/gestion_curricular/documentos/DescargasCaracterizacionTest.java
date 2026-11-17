@@ -39,7 +39,7 @@ class DescargasCaracterizacionTest {
         };
         var mvc = MockMvcBuilders.standaloneSetup(
             new ArchivosRestController(archivos, mock(GestionarDocumentosCUIntPort.class), mock(GestionarSolicitudPazYSalvoCUIntPort.class), verano, auth),
-            new SolicitudHomologacionRestController(homo, mock(SolicitudHomologacioneMapperDominio.class), mock(SolicitudMapperDominio.class), archivos, mock(GestionarDocumentosCUIntPort.class), auth, null),
+            new SolicitudHomologacionRestController(homo, mock(SolicitudHomologacionMapperDominio.class), mock(SolicitudMapperDominio.class), archivos, mock(GestionarDocumentosCUIntPort.class), auth, null),
             new SolicitudReingresoRestController(mock(SolicitudReingresoMapperDominio.class), reingreso, mock(SolicitudMapperDominio.class), archivos, auth, null),
             new InscripcionesVeranoRestController(mock(GestionarCursoOfertadoVeranoCUIntPort.class), verano, archivos, mock(GestionarSolicitudCUIntPort.class)))
             .build();

@@ -16,7 +16,7 @@ import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Documento;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.DTOPeticion.CambioEstadoSolicitudDTOPeticion;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.DTOPeticion.SolicitudHomologacionDTOPeticion;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.DTORespuesta.SolicitudHomologacionDTORespuesta;
-import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.mappers.SolicitudHomologacioneMapperDominio;
+import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.mappers.SolicitudHomologacionMapperDominio;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.mappers.SolicitudMapperDominio;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.FiltroSolicitudes;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -59,7 +59,7 @@ import java.util.Date;
 @PreAuthorize("hasAnyRole(" + Autorizacion.ROLES_STAFF + ")")
 public class SolicitudHomologacionRestController {
     private final GestionarSolicitudHomologacionCUIntPort solicitudHomologacionCU;
-    private final SolicitudHomologacioneMapperDominio solicitudMapperDominio;
+    private final SolicitudHomologacionMapperDominio solicitudMapperDominio;
     private final SolicitudMapperDominio solicitudMapper;
     private final GestionarArchivosCUIntPort objGestionarArchivos;
     private final GestionarDocumentosCUIntPort documentosCU;

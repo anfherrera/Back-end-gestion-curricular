@@ -17,7 +17,7 @@ import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.DTORe
         DocumentosMapperDominio.class
     }
 )
-public interface SolicitudHomologacioneMapperDominio {
+public interface SolicitudHomologacionMapperDominio {
     //DTO de petición → Dominio
     @Mapping(target = "documentos", ignore = true)
     @Mapping(target = "estadosSolicitud", ignore = true)

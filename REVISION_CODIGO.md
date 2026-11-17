@@ -370,7 +370,7 @@ Rutas abreviadas: `…/` = `gestion_curricular/src/main/java/co/edu/unicauca/dec
 - [ ] **EST-1. Errores de escritura en nombres:**
   - [x] `SolicitudCursoVeranoIncripcion` → `SolicitudCursoVeranoInscripcion`. Cuatro caracterizaciones MockMvc de Verano y descargas pasaron tres veces antes del renombrado y se compararon con las mismas referencias después.
   - `SolicitudCurosoVerano…`
-  - `SolicitudHomologacioneMapperDominio`
+  - [x] `SolicitudHomologacioneMapperDominio` → `SolicitudHomologacionMapperDominio`. Las referencias de registro y descargas pasaron antes y después, junto con la integración de Homologación tras el cambio.
   - `bucarRolPorId`
   - `mappear…` → `mapear…` (todos los mappers)
   - `GestionarArchivosCUIAdapter` → `GestionarArchivosCUAdapter`
