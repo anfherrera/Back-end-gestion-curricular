@@ -2,7 +2,7 @@ package co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.mapp
 
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
-import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.DTOPeticion.EstadisticaDTOPeticion;
+import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.dto.peticion.EstadisticaDTOPeticion;
 
 
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Estadistica;

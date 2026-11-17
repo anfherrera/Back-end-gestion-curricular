@@ -11,7 +11,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import co.edu.unicauca.decanatura.gestion_curricular.seguridad.Autorizacion;
 import lombok.RequiredArgsConstructor;
 import jakarta.validation.Valid;
-import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.DTOPeticion.DecisionSolicitudDTOPeticion;
+import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.dto.peticion.DecisionSolicitudDTOPeticion;
 import lombok.extern.slf4j.Slf4j;
 import java.util.Date;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarCursoOfertadoVeranoCUIntPort;
@@ -24,7 +24,7 @@ import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.contr
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Usuario;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Solicitud;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.enums.CondicionSolicitudVerano;
-import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.DTOPeticion.PreinscripcionCursoVeranoDTOPeticion;
+import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.dto.peticion.PreinscripcionCursoVeranoDTOPeticion;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarSolicitudCUIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.EstadoSolicitud;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarArchivosCUIntPort;

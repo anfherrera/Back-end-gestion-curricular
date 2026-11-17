@@ -4,7 +4,7 @@ import org.mapstruct.Mapper;
 
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Docente;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.dto.respuesta.DocenteDTORespuesta;
-import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.DTOPeticion.DocenteDTOPeticion;
+import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.dto.peticion.DocenteDTOPeticion;
 
 @Mapper(componentModel = "spring")
 public interface DocenteMapperDominio {

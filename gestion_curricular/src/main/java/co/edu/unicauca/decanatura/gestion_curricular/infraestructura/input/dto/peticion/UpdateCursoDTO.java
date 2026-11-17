@@ -1,4 +1,4 @@
-package co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.DTOPeticion;
+package co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.dto.peticion;
 
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.Max;
