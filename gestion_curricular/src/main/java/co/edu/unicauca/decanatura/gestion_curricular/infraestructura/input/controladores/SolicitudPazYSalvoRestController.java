@@ -384,7 +384,7 @@ public class SolicitudPazYSalvoRestController {
         });
     }
 
-    // ===== Documento de Paz y Salvo (plantilla PAZ_SALVO de DocumentGeneratorService) =====
+    // ===== Documento de Paz y Salvo (plantilla PAZ_SALVO de ServicioGeneracionDocumentos) =====
 
     /** GET /generarDocumentoPazYSalvo/{id}/pdf */
     @PreAuthorize("@autorizacion.esStaff() or @autorizacion.esDuenoSolicitud(#id)")

@@ -18,9 +18,9 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 
-@Service
+@Service("documentGeneratorService")
 @RequiredArgsConstructor
-public class DocumentGeneratorService implements GenerarDocumentosIntPort {
+public class ServicioGeneracionDocumentos implements GenerarDocumentosIntPort {
 
     public byte[] generarPazYSalvo(String numero, String fecha, String observaciones,
                                                   DatosDocumento datos, boolean pdf) throws IOException {

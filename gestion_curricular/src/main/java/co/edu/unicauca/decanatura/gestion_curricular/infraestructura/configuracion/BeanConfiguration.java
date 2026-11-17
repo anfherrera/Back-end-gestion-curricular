@@ -238,5 +238,5 @@ public class BeanConfiguration {
     // GestionarNotificacionGatewayImplAdapter ya está definido como @Service, no necesita definición adicional
 
     // JwtUtil ya está definido como @Component, no necesita definición adicional
-    // DocumentGeneratorService ya está definido como @Service, no necesita definición adicional
+    // ServicioGeneracionDocumentos ya está definido como @Service, no necesita definición adicional
 }

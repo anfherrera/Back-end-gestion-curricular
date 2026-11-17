@@ -389,6 +389,8 @@ Rutas abreviadas: `…/` = `gestion_curricular/src/main/java/co/edu/unicauca/dec
   - En inglés, cuando el resto del proyecto está en español: `DocumentGeneratorService`, `DocumentGeneratorController`, `DocumentRequest`, `DocumentTemplate`, `CreateCursoDTO`, `UpdateCursoDTO`.
   - `DocumentRequest` está en el paquete `DTORespuesta` aunque es una petición.
 
+  *Avance revisión 12:* los dos nombres en minúscula de la lista ya no existen en la rama. `DocumentGeneratorService` pasa a `ServicioGeneracionDocumentos` conservando el nombre del bean. `NombresApiCaracterizacionTest` fija las respuestas de documentos y escrituras de cursos con fechas normalizadas. La referencia nueva se ejecutó tres veces antes del primer cambio.
+
 - [x] **EST-4. `GestionClientesRuntimeException`** pasa a `GestionCurricularException`. Los contratos de error de Verano, Usuario y Paz y Salvo se caracterizaron tres veces antes y se verificaron tras el cambio. `clean verify` en JDK 17 y 25: 542 pruebas, 1 omitida y cero fallos.
 
 - [x] **EST-5. 59 campos usan el prefijo `obj`** (`objGestionarArchivos`, `objGestionarSolicitudGateway`, …). Se quita el prefijo en las 59 dependencias privadas. Los campos de modelos, DTO y entidades conservan sus nombres. Cinco caracterizaciones antes del cambio. `clean verify` en JDK 17 y 25: 542 pruebas, 1 omitida y cero fallos.
