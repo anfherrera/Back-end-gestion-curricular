@@ -3,7 +3,6 @@ package co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.cont
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -26,6 +25,10 @@ import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.SolicitudCu
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Usuario;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.enums.EstadoSolicitudCursoVerano;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.RespuestasArchivo;
+import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.dto.respuesta.ReportesVeranoDTORespuesta.ActividadInscripcion;
+import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.dto.respuesta.ReportesVeranoDTORespuesta.ActividadPreinscripcion;
+import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.dto.respuesta.ReportesVeranoDTORespuesta.Dashboard;
+import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.dto.respuesta.ReportesVeranoDTORespuesta.Seguimiento;
 import co.edu.unicauca.decanatura.gestion_curricular.seguridad.Autorizacion;
 
 /**
@@ -120,10 +123,8 @@ public class ReportesCursosVeranoRestController {
      */
     @PreAuthorize("hasAnyRole(" + Autorizacion.ROLES_STAFF + ")")
     @GetMapping("/dashboard/estadisticas")
-    public ResponseEntity<Map<String, Object>> obtenerEstadisticasDashboard() {
-        
-        Map<String, Object> estadisticas = new HashMap<>();
-        
+    public ResponseEntity<Dashboard> obtenerEstadisticasDashboard() {
+
         // 1. Contar cursos activos (estados: Publicado, Preinscripcion, Inscripcion)
         List<CursoOfertadoVerano> todosLosCursos = cursoCU.listarTodos();
         int cursosActivos = 0;
@@ -172,14 +173,9 @@ public class ReportesCursosVeranoRestController {
         }
         
         // Construir respuesta con valores validados
-        estadisticas.put("cursosActivos", Math.max(0, cursosActivos));
-        estadisticas.put("totalPreinscripciones", Math.max(0, totalPreinscripciones));
-        estadisticas.put("totalInscripciones", Math.max(0, totalInscripciones));
-        estadisticas.put("cursosGestionados", cursosGestionadosValido);
-        estadisticas.put("totalCursos", totalCursosValido);
-        estadisticas.put("porcentajeProgreso", Math.round(porcentajeProgreso));
-        
-        return ResponseEntity.ok(estadisticas);
+        return ResponseEntity.ok(new Dashboard(Math.max(0, cursosActivos), Math.max(0, totalPreinscripciones),
+                Math.max(0, totalInscripciones), cursosGestionadosValido, totalCursosValido,
+                Math.round(porcentajeProgreso)));
     }
 
     /**
@@ -188,21 +184,16 @@ public class ReportesCursosVeranoRestController {
      */
     @PreAuthorize("@autorizacion.esStaff() or @autorizacion.esUsuarioActual(#idUsuario)")
     @GetMapping("/seguimiento/{idUsuario}")
-    public ResponseEntity<Map<String, Object>> obtenerSeguimientoActividades(@PathVariable Integer idUsuario) {
-        
+    public ResponseEntity<Seguimiento> obtenerSeguimientoActividades(@PathVariable Integer idUsuario) {
+
         // Obtener preinscripciones reales de la base de datos
-        List<Map<String, Object>> preinscripciones = new ArrayList<>();
+        List<ActividadPreinscripcion> preinscripciones = new ArrayList<>();
         
         try {
             // Obtener preinscripciones reales de la base de datos
             List<SolicitudCursoVeranoPreinscripcion> preinscripcionesReales = solicitudCU.buscarSolicitudesPorUsuario(idUsuario);
             
             for (SolicitudCursoVeranoPreinscripcion preinscripcion : preinscripcionesReales) {
-                Map<String, Object> preinscripcionMap = new HashMap<>();
-                preinscripcionMap.put("id", preinscripcion.getId_solicitud());
-                preinscripcionMap.put("fecha", preinscripcion.getFecha_registro_solicitud());
-                preinscripcionMap.put("estado", preinscripcion.estadoActual("Enviado"));
-                
                 // Determinar el tipo correcto de solicitud
                 String tipoSolicitud = "Preinscripcion";
                 
@@ -226,8 +217,7 @@ public class ReportesCursosVeranoRestController {
                 if (esSolicitudCursoNuevo) {
                     tipoSolicitud = "Solicitud de Curso Nuevo";
                 }
-                preinscripcionMap.put("tipo", tipoSolicitud);
-                
+
                 // Obtener el nombre del curso correctamente
                 String nombreCurso = "Curso no disponible";
                 if (preinscripcion.getObjCursoOfertadoVerano() != null) {
@@ -249,11 +239,6 @@ public class ReportesCursosVeranoRestController {
                         nombreCurso = preinscripcion.getNombre_solicitud().split(":")[1].trim();
                     }
                 }
-                preinscripcionMap.put("curso", nombreCurso);
-                preinscripcionMap.put("estudianteId", idUsuario);
-                preinscripcionMap.put("cursoId", preinscripcion.getObjCursoOfertadoVerano() != null 
-                    ? preinscripcion.getObjCursoOfertadoVerano().getId_curso() : null);
-                
                 // Agregar informacion del estado del curso y acciones disponibles
                 String estadoCurso = "No disponible";
                 List<String> accionesDisponibles = new ArrayList<>();
@@ -290,10 +275,12 @@ public class ReportesCursosVeranoRestController {
                     }
                 }
                 
-                preinscripcionMap.put("estadoCurso", estadoCurso);
-                preinscripcionMap.put("accionesDisponibles", accionesDisponibles);
-                
-                preinscripciones.add(preinscripcionMap);
+                preinscripciones.add(new ActividadPreinscripcion(preinscripcion.getId_solicitud(),
+                        preinscripcion.getFecha_registro_solicitud(), preinscripcion.estadoActual("Enviado"),
+                        tipoSolicitud, nombreCurso, idUsuario,
+                        preinscripcion.getObjCursoOfertadoVerano() != null
+                                ? preinscripcion.getObjCursoOfertadoVerano().getId_curso() : null,
+                        estadoCurso, accionesDisponibles));
             }
             
             
@@ -303,24 +290,16 @@ public class ReportesCursosVeranoRestController {
         }
         
         // Obtener inscripciones reales del usuario
-        List<Map<String, Object>> inscripcionesUsuario = new ArrayList<>();
+        List<ActividadInscripcion> inscripcionesUsuario = new ArrayList<>();
         
         try {
             // Obtener inscripciones reales de la base de datos
             List<SolicitudCursoVeranoInscripcion> inscripcionesReales = solicitudCU.buscarInscripcionesPorUsuario(idUsuario);
             
             for (SolicitudCursoVeranoInscripcion inscripcion : inscripcionesReales) {
-                Map<String, Object> inscripcionMap = new HashMap<>();
-                inscripcionMap.put("id", inscripcion.getId_solicitud());
-                inscripcionMap.put("fecha", inscripcion.getFecha_registro_solicitud());
-                
                 // Obtener el estado actual de la inscripcion
                 String estadoInscripcion = inscripcion.estadoActual(EstadoSolicitudCursoVerano.ENVIADA.texto());
-                inscripcionMap.put("estado", estadoInscripcion);
-                
-                inscripcionMap.put("tipoSolicitud", "Inscripcion");
-                inscripcionMap.put("nombreSolicitud", inscripcion.getNombre_solicitud());
-                
+
                 // Informacion del curso - solo el nombre para evitar [object Object]
                 String nombreCurso = "Curso no disponible";
                 Integer cursoId = null;
@@ -329,10 +308,6 @@ public class ReportesCursosVeranoRestController {
                     nombreCurso = inscripcion.getObjCursoOfertadoVerano().getObjMateria().getNombre();
                     cursoId = inscripcion.getObjCursoOfertadoVerano().getId_curso();
                 }
-                inscripcionMap.put("curso", nombreCurso);
-                inscripcionMap.put("cursoId", cursoId);
-                inscripcionMap.put("estudianteId", idUsuario);
-                
                 // Mapear estadoCurso basado en el estado de la inscripcion
                 String estadoCurso = "PENDIENTE";
                 if (EstadoSolicitudCursoVerano.PAGO_VALIDADO.texto().equals(estadoInscripcion)) {
@@ -348,8 +323,6 @@ public class ReportesCursosVeranoRestController {
                 } else if (EstadoSolicitudCursoVerano.PAGO_RECHAZADO.texto().equals(estadoInscripcion)) {
                     estadoCurso = "RECHAZADO";
                 }
-                inscripcionMap.put("estadoCurso", estadoCurso);
-                
                 // Determinar acciones disponibles basadas en el estado
                 List<String> accionesDisponibles = new ArrayList<>();
                 if (EstadoSolicitudCursoVerano.ENVIADA.texto().equals(estadoInscripcion)) {
@@ -360,9 +333,10 @@ public class ReportesCursosVeranoRestController {
                     accionesDisponibles.add("pago_rechazado");
                 }
                 
-                inscripcionMap.put("accionesDisponibles", accionesDisponibles);
-                
-                inscripcionesUsuario.add(inscripcionMap);
+                inscripcionesUsuario.add(new ActividadInscripcion(inscripcion.getId_solicitud(),
+                        inscripcion.getFecha_registro_solicitud(), estadoInscripcion, "Inscripcion",
+                        inscripcion.getNombre_solicitud(), nombreCurso, cursoId, idUsuario, estadoCurso,
+                        accionesDisponibles));
             }
             
             
@@ -372,13 +346,8 @@ public class ReportesCursosVeranoRestController {
         }
         
         // Crear respuesta con estadisticas
-        Map<String, Object> respuesta = new HashMap<>();
-        respuesta.put("preinscripciones", preinscripciones);
-        respuesta.put("inscripciones", inscripcionesUsuario);
-        respuesta.put("totalPreinscripciones", preinscripciones.size());
-        respuesta.put("totalInscripciones", inscripcionesUsuario.size());
-        respuesta.put("totalActividades", preinscripciones.size() + inscripcionesUsuario.size());
-        return ResponseEntity.ok(respuesta);
+        return ResponseEntity.ok(new Seguimiento(preinscripciones, inscripcionesUsuario, preinscripciones.size(),
+                inscripcionesUsuario.size(), preinscripciones.size() + inscripcionesUsuario.size()));
     }
 
 }
