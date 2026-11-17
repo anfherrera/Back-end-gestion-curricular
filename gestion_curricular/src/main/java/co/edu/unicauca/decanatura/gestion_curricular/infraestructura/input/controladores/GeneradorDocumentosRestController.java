@@ -4,6 +4,7 @@ import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.Respu
 
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.dto.respuesta.DocumentRequest;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GenerarDocumentosCUIntPort;
+import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -13,16 +14,17 @@ import org.springframework.web.bind.annotation.*;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
-@RestController
+@RestController("documentGeneratorController")
 @RequestMapping("/api/documentos")
 @RequiredArgsConstructor
-public class DocumentGeneratorController {
+public class GeneradorDocumentosRestController {
 
     private final GenerarDocumentosCUIntPort documentGeneratorService;
 
     /**
      * Generar documento usando plantilla
      */
+    @Operation(tags = "document-generator-controller")
     @PostMapping("/generar")
     public ResponseEntity<byte[]> generarDocumento(@RequestBody DocumentRequest request) throws IOException {
         byte[] documentBytes = documentGeneratorService.generarDocumento(request.getIdSolicitud(), request.getTipoDocumento(),
@@ -38,6 +40,7 @@ public class DocumentGeneratorController {
     /**
      * Obtener plantillas disponibles para un proceso
      */
+    @Operation(tags = "document-generator-controller")
     @GetMapping("/templates/{proceso}")
     public ResponseEntity<?> getTemplates(@PathVariable String proceso) {
         return ResponseEntity.ok(documentGeneratorService.getTemplates(proceso));

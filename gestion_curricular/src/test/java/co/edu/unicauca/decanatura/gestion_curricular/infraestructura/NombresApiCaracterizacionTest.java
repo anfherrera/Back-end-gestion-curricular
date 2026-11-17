@@ -30,7 +30,7 @@ import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarS
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.CursoOfertadoVerano;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.PlantillaDocumento;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.controladores.CursosVeranoRestController;
-import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.controladores.DocumentGeneratorController;
+import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.controladores.GeneradorDocumentosRestController;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.dto.respuesta.CursosOfertadosDTORespuesta;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.excepciones.RestApiExceptionHandler;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.mappers.CursosOfertadosMapperDominio;
@@ -56,7 +56,7 @@ class NombresApiCaracterizacionTest {
         when(cursos.crearCurso(any(DatosCreacion.class))).thenReturn(curso);
         when(cursos.modificarCurso(71, 19, null, null)).thenReturn(curso);
         when(mapper.mapearDeCursoOfertadoARespuesta(curso)).thenReturn(dto);
-        var mvc = MockMvcBuilders.standaloneSetup(new DocumentGeneratorController(documentos),
+        var mvc = MockMvcBuilders.standaloneSetup(new GeneradorDocumentosRestController(documentos),
                 new CursosVeranoRestController(cursos, null, mapper, mock(GestionarSalonesCUIntPort.class), null))
                 .setControllerAdvice(new RestApiExceptionHandler()).build();
 
