@@ -28,7 +28,7 @@ Rutas abreviadas: `…/` = `gestion_curricular/src/main/java/co/edu/unicauca/dec
 | 9 | 2026-11-13 | Codex | ARQ-8, DUP-6 (sesión en curso) | Extracciones separadas de DTO de Estadísticas (ARQ-8), decisiones de verano (avance ARQ-9), respuestas de documentos de Paz y Salvo (avance ARQ-10), errores compatibles (avance ARQ-11), uploads PDF (avance DUP-5) y período por defecto (DUP-6). Se reutilizan puertos, ArchivoSubido, MapStruct y las caracterizaciones de documentos; las referencias anteriores no se regraban. Cada prueba nueva se ejecuta tres veces antes del refactor. Los commits creados hasta DUP-6 pasan clean verify en JDK 25 y 17; última cifra confirmada para ambos: 536 pruebas, una omitida y cero fallos. Evaluados DUP-8..10: permanecen abiertos por sus diferencias reales y decisiones de frontend/mapeo. BUG-16/17 documentados; contratos y variantes conservados. ARQ-9..11 y DUP-5 permanecen abiertos para el trabajo restante. |
 | 10 | 2026-11-13 | Claude | DUP-7, MUE-5, MUE-7 | DUP-7: la última cabecera armada a mano (`DocumentoRestController`) pasa a `RespuestasArchivo.adjuntoUtf8`; caracterizaciones de descargas sin regrabar. MUE-5: tres plantillas sin uso borradas. MUE-7: 14 `@Slf4j` sin uso y un import. `clean verify` en JDK 25 y 17: 537 pruebas, 1 omitida, cero fallos. |
 | 11 | 2026-11-13 | Claude | ARQ-9 | Creación de Paz y Salvo y validación de pago con DTO y `@Valid`, conservando las coerciones y errores existentes. Caracterizaciones previas `CrearPazYSalvoCuerpoCaracterizacionTest` y `ValidarPagoCaracterizacionTest` (tres ejecuciones antes del cambio). Nuevo BUG-19, sin corregir. `clean verify` en JDK 25 y 17: 539 pruebas, 1 omitida, cero fallos. |
-| 12 | 2026-11-17 | Codex | DUP-5, ARQ-11, MUE-9 | DUP-5 quedó en el commit local `d6a89d7`, que registra 540 pruebas, 1 omitida y cero fallos con JDK 25 y 17. ARQ-11 centraliza los errores compatibles de Verano y Usuario y documenta BUG-22 a BUG-24 y las capturas que actúan como políticas. Caracterizaciones focalizadas: 16 pruebas. `clean verify` en JDK 25 y 17: 541 pruebas, 1 omitida y cero fallos en cada uno. MUE-9 unifica el tipo de documento y conserva la restricción de ECAES (BUG-25). Verificación posterior en ambos JDK: 542 pruebas, 1 omitida y cero fallos. |
+| 12 | 2026-11-17 | Codex | DUP-5, ARQ-11, MUE-9, EST-1 | DUP-5 quedó en el commit local `d6a89d7`, que registra 540 pruebas, 1 omitida y cero fallos con JDK 25 y 17. ARQ-11 centraliza los errores compatibles de Verano y Usuario y documenta BUG-22 a BUG-24 y las capturas que actúan como políticas. Caracterizaciones focalizadas: 16 pruebas. `clean verify` en JDK 25 y 17: 541 pruebas, 1 omitida y cero fallos en cada uno. MUE-9 unifica el tipo de documento y conserva la restricción de ECAES (BUG-25). Verificación posterior en ambos JDK: 542 pruebas, 1 omitida y cero fallos. EST-1 completa seis renombrados en commits separados, con el mismo total tras el último. |
 
 ## Resumen de la línea base
 
@@ -367,16 +367,16 @@ Rutas abreviadas: `…/` = `gestion_curricular/src/main/java/co/edu/unicauca/dec
 
 ## 5. Nombres y estilo (P3)
 
-- [ ] **EST-1. Errores de escritura en nombres:**
+- [x] **EST-1. Errores de escritura en nombres:**
   - [x] `SolicitudCursoVeranoIncripcion` → `SolicitudCursoVeranoInscripcion`. Cuatro caracterizaciones MockMvc de Verano y descargas pasaron tres veces antes del renombrado y se compararon con las mismas referencias después.
-  - `SolicitudCurosoVerano…`
+  - [x] `SolicitudCurosoVerano…`. Sin coincidencias en la rama al revisar.
   - [x] `SolicitudHomologacioneMapperDominio` → `SolicitudHomologacionMapperDominio`. Las referencias de registro y descargas pasaron antes y después, junto con la integración de Homologación tras el cambio.
   - [x] `bucarRolPorId` → `buscarRolPorId`. Errores locales e inicialización pasaron antes y después.
   - [x] `mappear…` → `mapear…` en mappers y consumidores. Ocho caracterizaciones antes y después. La de errores registra el nombre histórico de la llamada al mapper de Usuario para conservar su referencia.
   - [x] `GestionarArchivosCUIAdapter` → `GestionarArchivosCUAdapter`. Upload PDF, descargas y registro pasaron antes y después.
-  - `GestionarSolicitudReingresoImplAdapter` → `…ReingresoGatewayImplAdapter`
+  - [x] `GestionarSolicitudReingresoImplAdapter` → `GestionarSolicitudReingresoGatewayImplAdapter`. Descargas y pruebas unitarias de Reingreso pasaron tres veces antes del cambio.
 
-  El IDE puede renombrar de forma segura, pero hay que hacerlo en un commit aparte para no mezclarlo con cambios de lógica.
+  *Cierre revisión 12:* seis renombrados en commits separados y sin regrabar referencias. `clean verify` en JDK 17 y 25 tras el último: 542 pruebas, 1 omitida y cero fallos en cada uno.
 
 - [ ] **EST-2. Hay paquetes con mayúscula:** `Security` → `seguridad`, `Enums` → `enums` (dos paquetes), `DTOPeticion` / `DTORespuesta` → `dto.peticion` / `dto.respuesta`, `controladorExcepciones` → `excepciones`.
 

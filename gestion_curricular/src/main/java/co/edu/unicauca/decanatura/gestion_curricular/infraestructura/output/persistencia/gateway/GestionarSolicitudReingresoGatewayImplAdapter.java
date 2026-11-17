@@ -17,11 +17,11 @@ import jakarta.transaction.Transactional;
 
 @Service
 @Transactional
-public class GestionarSolicitudReingresoImplAdapter implements GestionarSolicitudReingresoGatewayIntPort {
+public class GestionarSolicitudReingresoGatewayImplAdapter implements GestionarSolicitudReingresoGatewayIntPort {
     private final Mapper mapper;
     private final SolicitudReingresoRepositoryInt solicitudReingresoRepository;
 
-    public GestionarSolicitudReingresoImplAdapter(Mapper mapper, SolicitudReingresoRepositoryInt solicitudReingresoRepository) {
+    public GestionarSolicitudReingresoGatewayImplAdapter(Mapper mapper, SolicitudReingresoRepositoryInt solicitudReingresoRepository) {
         this.mapper = mapper;
         this.solicitudReingresoRepository = solicitudReingresoRepository;
     }
