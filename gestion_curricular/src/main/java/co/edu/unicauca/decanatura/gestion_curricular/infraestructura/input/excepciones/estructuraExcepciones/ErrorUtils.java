@@ -1,4 +1,4 @@
-package co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.controladorExcepciones.estructuraExcepciones;
+package co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.excepciones.estructuraExcepciones;
 
 public final class ErrorUtils {
 

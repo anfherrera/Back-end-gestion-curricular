@@ -1,4 +1,4 @@
-package co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.controladorExcepciones;
+package co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.excepciones;
 
 import static java.util.stream.Collectors.joining;
 

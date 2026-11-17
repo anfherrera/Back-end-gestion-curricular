@@ -1,4 +1,4 @@
-package co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.controladorExcepciones;
+package co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.excepciones;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -25,8 +25,8 @@ import org.springframework.web.servlet.resource.NoResourceFoundException;
 
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.excepciones.CupoAgotadoException;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.excepciones.CodigoError;
-import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.controladorExcepciones.estructuraExcepciones.Error;
-import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.controladorExcepciones.estructuraExcepciones.ErrorUtils;
+import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.excepciones.estructuraExcepciones.Error;
+import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.excepciones.estructuraExcepciones.ErrorUtils;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.excepciones.EntidadNoExisteException;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.excepciones.EntidadYaExisteException;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.excepciones.ReglaNegocioExcepcion;
