@@ -32,10 +32,10 @@ class ArquitecturaHexagonalTest {
     private static final String PAQUETE = "gestion_curricular\\.";
 
     @Test
-    @DisplayName("dominio/ y aplicacion/ no importan infraestructura, Security, Spring ni JPA")
+    @DisplayName("dominio/ y aplicacion/ no importan infraestructura, seguridad, Spring ni JPA")
     void nucleoSinDependenciasHaciaAfuera() throws IOException {
         Pattern prohibido = Pattern.compile(
-                PAQUETE + "infraestructura\\.|" + PAQUETE + "Security\\.|org\\.springframework\\.|jakarta\\.persistence\\.");
+                PAQUETE + "infraestructura\\.|" + PAQUETE + "seguridad\\.|org\\.springframework\\.|jakarta\\.persistence\\.");
         List<String> violaciones = new ArrayList<>();
         violaciones.addAll(lineasQueIncumplen("dominio", prohibido));
         violaciones.addAll(lineasQueIncumplen("aplicacion", prohibido));
@@ -59,9 +59,9 @@ class ArquitecturaHexagonalTest {
     }
 
     @Test
-    @DisplayName("Security no usa repositorios ni entidades JPA")
+    @DisplayName("seguridad no usa repositorios ni entidades JPA")
     void seguridadNoUsaPersistencia() throws IOException {
-        comprobarConLineaBase("Security",
+        comprobarConLineaBase("seguridad",
                 Pattern.compile("persistencia\\.(repositorios|entidades)\\."),
                 Set.of());
     }
