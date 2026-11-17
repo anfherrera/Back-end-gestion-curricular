@@ -1,0 +1,412 @@
+{
+  "crear curso 1" : {
+    "status" : 400,
+    "body" : {
+      "codigo" : "PREINSCRIPCION_NO_APROBADA",
+      "error" : "No se encontro una preinscripcion aprobada para este usuario y curso"
+    },
+    "claves" : [ ".codigo:STRING", ".error:STRING" ]
+  },
+  "crear curso 2" : {
+    "status" : 400,
+    "body" : {
+      "error" : "Ya tienes una inscripcion activa para este curso",
+      "codigo" : "INSCRIPCION_DUPLICADA"
+    },
+    "claves" : [ ".codigo:STRING", ".error:STRING" ]
+  },
+  "crear curso 3" : {
+    "status" : 409,
+    "body" : {
+      "codigo" : "CUPO_AGOTADO",
+      "error" : "El curso no tiene cupos disponibles (3 de 3 ocupados)",
+      "ocupados" : 3,
+      "cupo" : 3
+    },
+    "claves" : [ ".codigo:STRING", ".error:STRING", ".ocupados:NUMBER", ".cupo:NUMBER" ]
+  },
+  "crear curso 4" : {
+    "status" : 500,
+    "body" : {
+      "error" : "Error al guardar la inscripcion en la base de datos"
+    },
+    "claves" : [ ".error:STRING" ]
+  },
+  "crear curso 5" : {
+    "status" : 200,
+    "body" : {
+      "success" : true,
+      "message" : "Inscripcion creada exitosamente",
+      "id_solicitud" : 60,
+      "id_usuario" : 7,
+      "id_curso" : 5,
+      "nombre_solicitud" : "Inscripción",
+      "fecha_inscripcion" : 1710522000000,
+      "estado" : "Inscrito"
+    },
+    "claves" : [ ".success:BOOLEAN", ".message:STRING", ".id_solicitud:NUMBER", ".id_usuario:NUMBER", ".id_curso:NUMBER", ".nombre_solicitud:STRING", ".fecha_inscripcion:NUMBER", ".estado:STRING" ]
+  },
+  "cancelar 1" : {
+    "status" : 404,
+    "body" : {
+      "error" : "Inscripcion no encontrada",
+      "message" : "No existe una inscripcion con el ID: 1",
+      "status" : 404,
+      "timestamp" : "<ahora>"
+    },
+    "claves" : [ ".error:STRING", ".message:STRING", ".status:NUMBER", ".timestamp:STRING" ]
+  },
+  "cancelar 2" : {
+    "status" : 400,
+    "body" : {
+      "error" : "No se puede cancelar",
+      "message" : "No se puede cancelar una inscripcion que ya ha sido aprobada",
+      "status" : 400,
+      "timestamp" : "<ahora>"
+    },
+    "claves" : [ ".error:STRING", ".message:STRING", ".status:NUMBER", ".timestamp:STRING" ]
+  },
+  "cancelar 3" : {
+    "status" : 200,
+    "body" : {
+      "id_inscripcion" : 3,
+      "mensaje" : "Inscripcion cancelada exitosamente",
+      "status" : 200,
+      "timestamp" : "<ahora>"
+    },
+    "claves" : [ ".id_inscripcion:NUMBER", ".mensaje:STRING", ".status:NUMBER", ".timestamp:STRING" ]
+  },
+  "elegibles 1" : {
+    "status" : 200,
+    "body" : [ {
+      "nombre_completo" : "Ana Ruiz",
+      "codigo" : "1046",
+      "tiene_inscripcion_formal" : true,
+      "id_solicitud" : 30,
+      "id_curso" : 5,
+      "tipo_solicitud" : "Inscripcion",
+      "condicion_solicitud" : "Primera_Vez",
+      "nombre_curso" : "Cálculo",
+      "id_usuario" : 7,
+      "estado_actual" : "Enviada",
+      "correo" : "ana@unicauca.edu.co",
+      "motivo_inclusion" : "Estudiante inscrito en el curso",
+      "archivoPago" : {
+        "id_documento" : "validado",
+        "fecha" : 1710522000000,
+        "nombre" : "Comprobante de pago validado",
+        "url" : "/uploads/comprobantes/"
+      },
+      "fecha_solicitud" : 1710522000000,
+      "nombre_solicitud" : "Inscripción 30"
+    }, {
+      "nombre_completo" : "Ana Ruiz",
+      "codigo" : "1046",
+      "tiene_inscripcion_formal" : true,
+      "id_solicitud" : 32,
+      "id_curso" : 5,
+      "tipo_solicitud" : "Inscripcion",
+      "condicion_solicitud" : null,
+      "nombre_curso" : "Cálculo",
+      "id_usuario" : 7,
+      "estado_actual" : "Inscrito",
+      "correo" : "ana@unicauca.edu.co",
+      "motivo_inclusion" : "Estudiante inscrito en el curso",
+      "archivoPago" : {
+        "id_documento" : "validado",
+        "fecha" : 1710522000000,
+        "nombre" : "Comprobante de pago validado",
+        "url" : "/uploads/comprobantes/"
+      },
+      "fecha_solicitud" : 1710522000000,
+      "nombre_solicitud" : "Inscripción 32"
+    }, {
+      "nombre_completo" : "Ana Ruiz",
+      "codigo" : "1046",
+      "tiene_inscripcion_formal" : true,
+      "id_solicitud" : 33,
+      "tipo_solicitud" : "Inscripcion",
+      "condicion_solicitud" : null,
+      "id_usuario" : 7,
+      "estado_actual" : "Pago_Rechazado",
+      "correo" : "ana@unicauca.edu.co",
+      "motivo_inclusion" : "Estudiante inscrito en el curso",
+      "archivoPago" : {
+        "id_documento" : "validado",
+        "fecha" : null,
+        "nombre" : "Comprobante de pago validado",
+        "url" : "/uploads/comprobantes/"
+      },
+      "fecha_solicitud" : null,
+      "nombre_solicitud" : "Inscripción 33"
+    }, {
+      "nombre_completo" : "Ana Ruiz",
+      "codigo" : "1046",
+      "tiene_inscripcion_formal" : true,
+      "id_solicitud" : 34,
+      "id_curso" : null,
+      "tipo_solicitud" : "Inscripcion",
+      "condicion_solicitud" : null,
+      "nombre_curso" : null,
+      "id_usuario" : 7,
+      "estado_actual" : "Enviada",
+      "correo" : "ana@unicauca.edu.co",
+      "motivo_inclusion" : "Estudiante inscrito en el curso",
+      "archivoPago" : {
+        "id_documento" : "validado",
+        "fecha" : 1710522000000,
+        "nombre" : "Comprobante de pago validado",
+        "url" : "/uploads/comprobantes/"
+      },
+      "fecha_solicitud" : 1710522000000,
+      "nombre_solicitud" : "Inscripción 34"
+    } ],
+    "claves" : [ "[0].nombre_completo:STRING", "[0].codigo:STRING", "[0].tiene_inscripcion_formal:BOOLEAN", "[0].id_solicitud:NUMBER", "[0].id_curso:NUMBER", "[0].tipo_solicitud:STRING", "[0].condicion_solicitud:STRING", "[0].nombre_curso:STRING", "[0].id_usuario:NUMBER", "[0].estado_actual:STRING", "[0].correo:STRING", "[0].motivo_inclusion:STRING", "[0].archivoPago:OBJECT", "[0].archivoPago.id_documento:STRING", "[0].archivoPago.fecha:NUMBER", "[0].archivoPago.nombre:STRING", "[0].archivoPago.url:STRING", "[0].fecha_solicitud:NUMBER", "[0].nombre_solicitud:STRING", "[1].nombre_completo:STRING", "[1].codigo:STRING", "[1].tiene_inscripcion_formal:BOOLEAN", "[1].id_solicitud:NUMBER", "[1].id_curso:NUMBER", "[1].tipo_solicitud:STRING", "[1].condicion_solicitud:NULL", "[1].nombre_curso:STRING", "[1].id_usuario:NUMBER", "[1].estado_actual:STRING", "[1].correo:STRING", "[1].motivo_inclusion:STRING", "[1].archivoPago:OBJECT", "[1].archivoPago.id_documento:STRING", "[1].archivoPago.fecha:NUMBER", "[1].archivoPago.nombre:STRING", "[1].archivoPago.url:STRING", "[1].fecha_solicitud:NUMBER", "[1].nombre_solicitud:STRING", "[2].nombre_completo:STRING", "[2].codigo:STRING", "[2].tiene_inscripcion_formal:BOOLEAN", "[2].id_solicitud:NUMBER", "[2].tipo_solicitud:STRING", "[2].condicion_solicitud:NULL", "[2].id_usuario:NUMBER", "[2].estado_actual:STRING", "[2].correo:STRING", "[2].motivo_inclusion:STRING", "[2].archivoPago:OBJECT", "[2].archivoPago.id_documento:STRING", "[2].archivoPago.fecha:NULL", "[2].archivoPago.nombre:STRING", "[2].archivoPago.url:STRING", "[2].fecha_solicitud:NULL", "[2].nombre_solicitud:STRING", "[3].nombre_completo:STRING", "[3].codigo:STRING", "[3].tiene_inscripcion_formal:BOOLEAN", "[3].id_solicitud:NUMBER", "[3].id_curso:NULL", "[3].tipo_solicitud:STRING", "[3].condicion_solicitud:NULL", "[3].nombre_curso:NULL", "[3].id_usuario:NUMBER", "[3].estado_actual:STRING", "[3].correo:STRING", "[3].motivo_inclusion:STRING", "[3].archivoPago:OBJECT", "[3].archivoPago.id_documento:STRING", "[3].archivoPago.fecha:NUMBER", "[3].archivoPago.nombre:STRING", "[3].archivoPago.url:STRING", "[3].fecha_solicitud:NUMBER", "[3].nombre_solicitud:STRING" ]
+  },
+  "elegibles 2" : {
+    "status" : 200,
+    "body" : [ ],
+    "claves" : [ ]
+  },
+  "aceptar 1" : {
+    "status" : 400,
+    "body" : {
+      "error" : "No se encontro la inscripcion con ID: 1"
+    },
+    "claves" : [ ".error:STRING" ]
+  },
+  "aceptar 2" : {
+    "status" : 500,
+    "body" : {
+      "error" : "No se pudo aceptar la inscripcion"
+    },
+    "claves" : [ ".error:STRING" ]
+  },
+  "aceptar 3" : {
+    "status" : 200,
+    "body" : {
+      "fecha_aceptacion" : "<ahora>",
+      "estudiante_nombre" : "Ana Ruiz",
+      "success" : true,
+      "observaciones" : "Inscripcion aceptada por funcionario/coordinador",
+      "id_inscripcion" : 3,
+      "message" : "Inscripcion aceptada exitosamente",
+      "curso_nombre" : "Cálculo"
+    },
+    "claves" : [ ".fecha_aceptacion:NUMBER", ".estudiante_nombre:STRING", ".success:BOOLEAN", ".observaciones:STRING", ".id_inscripcion:NUMBER", ".message:STRING", ".curso_nombre:STRING" ]
+  },
+  "aceptar 4" : {
+    "status" : 409,
+    "body" : {
+      "codigo" : "CUPO_AGOTADO",
+      "error" : "El curso no tiene cupos disponibles (5 de 5 ocupados)",
+      "ocupados" : 5,
+      "cupo" : 5
+    },
+    "claves" : [ ".codigo:STRING", ".error:STRING", ".ocupados:NUMBER", ".cupo:NUMBER" ]
+  },
+  "aceptar 5" : {
+    "status" : 500,
+    "body" : {
+      "codigoError" : "GC-0001",
+      "mensaje" : "Ha ocurrido un error inesperado. Por favor, inténtelo de nuevo.",
+      "codigoHttp" : 500,
+      "url" : "http://localhost/api/cursos-intersemestrales/inscripciones/5/aceptar",
+      "metodo" : "PUT"
+    },
+    "claves" : [ ".codigoError:STRING", ".mensaje:STRING", ".codigoHttp:NUMBER", ".url:STRING", ".metodo:STRING" ]
+  },
+  "aceptar con observaciones" : {
+    "status" : 200,
+    "body" : {
+      "fecha_aceptacion" : "<ahora>",
+      "estudiante_nombre" : "Ana Ruiz",
+      "success" : true,
+      "observaciones" : " pago ok ",
+      "id_inscripcion" : 3,
+      "message" : "Inscripcion aceptada exitosamente",
+      "curso_nombre" : "Cálculo"
+    },
+    "claves" : [ ".fecha_aceptacion:NUMBER", ".estudiante_nombre:STRING", ".success:BOOLEAN", ".observaciones:STRING", ".id_inscripcion:NUMBER", ".message:STRING", ".curso_nombre:STRING" ]
+  },
+  "rechazar 1" : {
+    "status" : 400,
+    "body" : {
+      "error" : "No se encontro la inscripcion con ID: 1"
+    },
+    "claves" : [ ".error:STRING" ]
+  },
+  "rechazar 2" : {
+    "status" : 500,
+    "body" : {
+      "error" : "No se pudo actualizar el estado de la inscripcion"
+    },
+    "claves" : [ ".error:STRING" ]
+  },
+  "rechazar 3" : {
+    "status" : 200,
+    "body" : {
+      "motivo" : "sin pago",
+      "estudiante_nombre" : "Ana Ruiz",
+      "success" : true,
+      "nuevo_estado" : "Pago_Rechazado",
+      "id_inscripcion" : 3,
+      "message" : "Inscripcion rechazada exitosamente",
+      "curso_nombre" : "Cálculo",
+      "fecha_rechazo" : "<ahora>"
+    },
+    "claves" : [ ".motivo:STRING", ".estudiante_nombre:STRING", ".success:BOOLEAN", ".nuevo_estado:STRING", ".id_inscripcion:NUMBER", ".message:STRING", ".curso_nombre:STRING", ".fecha_rechazo:NUMBER" ]
+  },
+  "rechazar 6" : {
+    "status" : 400,
+    "body" : {
+      "error" : "La inscripcion no puede ser rechazada en su estado actual: Aprobado"
+    },
+    "claves" : [ ".error:STRING" ]
+  },
+  "rechazar 7" : {
+    "status" : 400,
+    "body" : {
+      "error" : "Error al rechazar la inscripcion: no se pudo rechazar"
+    },
+    "claves" : [ ".error:STRING" ]
+  },
+  "rechazar sin motivo" : {
+    "status" : 200,
+    "body" : {
+      "motivo" : "Inscripcion rechazada por funcionario/coordinador",
+      "estudiante_nombre" : "Ana Ruiz",
+      "success" : true,
+      "nuevo_estado" : "Pago_Rechazado",
+      "id_inscripcion" : 3,
+      "message" : "Inscripcion rechazada exitosamente",
+      "curso_nombre" : "Cálculo",
+      "fecha_rechazo" : "<ahora>"
+    },
+    "claves" : [ ".motivo:STRING", ".estudiante_nombre:STRING", ".success:BOOLEAN", ".nuevo_estado:STRING", ".id_inscripcion:NUMBER", ".message:STRING", ".curso_nombre:STRING", ".fecha_rechazo:NUMBER" ]
+  },
+  "confirmar" : {
+    "status" : 200,
+    "body" : {
+      "inscripcion" : {
+        "estudiante" : {
+          "codigo_estudiante" : "104612345660",
+          "id_usuario" : 1,
+          "apellido" : "Gonzalez",
+          "nombre" : "Ana",
+          "email" : "ana.gonzalez@unicauca.edu.co"
+        },
+        "fecha" : "2024-01-15T10:30:00",
+        "estado" : "inscrito",
+        "estudianteId" : 1,
+        "id" : 9,
+        "cursoId" : 1,
+        "archivoPago" : {
+          "id_documento" : 1,
+          "fecha" : "2024-01-15T10:30:00",
+          "nombre" : "comprobante_pago_ana.pdf",
+          "url" : "/uploads/comprobante_pago_ana.pdf"
+        }
+      },
+      "message" : "Inscripcion confirmada exitosamente"
+    },
+    "claves" : [ ".inscripcion:OBJECT", ".inscripcion.estudiante:OBJECT", ".inscripcion.estudiante.codigo_estudiante:STRING", ".inscripcion.estudiante.id_usuario:NUMBER", ".inscripcion.estudiante.apellido:STRING", ".inscripcion.estudiante.nombre:STRING", ".inscripcion.estudiante.email:STRING", ".inscripcion.fecha:STRING", ".inscripcion.estado:STRING", ".inscripcion.estudianteId:NUMBER", ".inscripcion.id:NUMBER", ".inscripcion.cursoId:NUMBER", ".inscripcion.archivoPago:OBJECT", ".inscripcion.archivoPago.id_documento:NUMBER", ".inscripcion.archivoPago.fecha:STRING", ".inscripcion.archivoPago.nombre:STRING", ".inscripcion.archivoPago.url:STRING", ".message:STRING" ]
+  },
+  "info 1" : {
+    "status" : 200,
+    "body" : {
+      "encontrada" : false,
+      "mensaje" : "Inscripcion no encontrada"
+    },
+    "claves" : [ ".encontrada:BOOLEAN", ".mensaje:STRING" ]
+  },
+  "info 3" : {
+    "status" : 200,
+    "body" : {
+      "encontrada" : true,
+      "documentos_null" : false,
+      "fecha_registro" : null,
+      "id_solicitud" : 3,
+      "documentos_count" : 0,
+      "documentos_empty" : true,
+      "nombre_solicitud" : "Inscripción 3"
+    },
+    "claves" : [ ".encontrada:BOOLEAN", ".documentos_null:BOOLEAN", ".fecha_registro:NULL", ".id_solicitud:NUMBER", ".documentos_count:NUMBER", ".documentos_empty:BOOLEAN", ".nombre_solicitud:STRING" ]
+  },
+  "info 8" : {
+    "status" : 200,
+    "body" : {
+      "encontrada" : true,
+      "documentos_null" : false,
+      "documentos" : [ {
+        "ruta" : "/r/pago.pdf",
+        "es_valido" : true,
+        "id" : 80,
+        "nombre" : "pago.pdf"
+      }, {
+        "ruta" : null,
+        "es_valido" : false,
+        "id" : 81,
+        "nombre" : null
+      } ],
+      "archivo_pago" : {
+        "id_documento" : 80,
+        "ruta_archivo" : "/r/pago.pdf",
+        "nombre_archivo" : "pago.pdf"
+      },
+      "fecha_registro" : 1710522000000,
+      "id_solicitud" : 8,
+      "documentos_count" : 2,
+      "documentos_empty" : false,
+      "nombre_solicitud" : "Inscripción 8"
+    },
+    "claves" : [ ".encontrada:BOOLEAN", ".documentos_null:BOOLEAN", ".documentos:ARRAY", ".documentos[0].ruta:STRING", ".documentos[0].es_valido:BOOLEAN", ".documentos[0].id:NUMBER", ".documentos[0].nombre:STRING", ".documentos[1].ruta:NULL", ".documentos[1].es_valido:BOOLEAN", ".documentos[1].id:NUMBER", ".documentos[1].nombre:NULL", ".archivo_pago:OBJECT", ".archivo_pago.id_documento:NUMBER", ".archivo_pago.nombre_archivo:STRING", ".archivo_pago.ruta_archivo:STRING", ".fecha_registro:NUMBER", ".id_solicitud:NUMBER", ".documentos_count:NUMBER", ".documentos_empty:BOOLEAN", ".nombre_solicitud:STRING" ]
+  },
+  "info 10" : {
+    "status" : 200,
+    "body" : {
+      "encontrada" : true,
+      "documentos_null" : true,
+      "fecha_registro" : 1710522000000,
+      "id_solicitud" : 10,
+      "documentos_count" : "NULL",
+      "documentos_empty" : false,
+      "nombre_solicitud" : "Inscripción 10"
+    },
+    "claves" : [ ".encontrada:BOOLEAN", ".documentos_null:BOOLEAN", ".fecha_registro:NUMBER", ".id_solicitud:NUMBER", ".documentos_count:STRING", ".documentos_empty:BOOLEAN", ".nombre_solicitud:STRING" ]
+  },
+  "info 11" : {
+    "status" : 500,
+    "body" : {
+      "codigoError" : "GC-0001",
+      "mensaje" : "Ha ocurrido un error inesperado. Por favor, inténtelo de nuevo.",
+      "codigoHttp" : 500,
+      "url" : "http://localhost/api/cursos-intersemestrales/inscripciones/11/info",
+      "metodo" : "GET"
+    },
+    "claves" : [ ".codigoError:STRING", ".mensaje:STRING", ".codigoHttp:NUMBER", ".url:STRING", ".metodo:STRING" ]
+  },
+  "estadisticas 1" : {
+    "status" : 200,
+    "body" : {
+      "curso_id" : 1,
+      "pendientes_revision" : 2,
+      "aceptadas" : 3,
+      "fecha_consulta" : "<ahora>",
+      "total_inscripciones" : 6,
+      "rechazadas" : 1
+    },
+    "claves" : [ ".curso_id:NUMBER", ".pendientes_revision:NUMBER", ".aceptadas:NUMBER", ".fecha_consulta:NUMBER", ".total_inscripciones:NUMBER", ".rechazadas:NUMBER" ]
+  },
+  "estadisticas 2" : {
+    "status" : 500,
+    "body" : {
+      "codigoError" : "GC-0001",
+      "mensaje" : "Ha ocurrido un error inesperado. Por favor, inténtelo de nuevo.",
+      "codigoHttp" : 500,
+      "url" : "http://localhost/api/cursos-intersemestrales/inscripciones/curso/2/estadisticas",
+      "metodo" : "GET"
+    },
+    "claves" : [ ".codigoError:STRING", ".mensaje:STRING", ".codigoHttp:NUMBER", ".url:STRING", ".metodo:STRING" ]
+  }
+}

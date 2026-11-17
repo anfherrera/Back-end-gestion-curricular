@@ -3,7 +3,6 @@ package co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.cont
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -32,6 +31,24 @@ import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.enums.Estad
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.RespuestasArchivo;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.dto.peticion.DecisionSolicitudDTOPeticion;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.dto.peticion.PreinscripcionCursoVeranoDTOPeticion;
+import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.dto.respuesta.InscripcionesVeranoDTORespuesta.ArchivoSimulado;
+import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.dto.respuesta.InscripcionesVeranoDTORespuesta.CancelacionRechazada;
+import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.dto.respuesta.InscripcionesVeranoDTORespuesta.ConfirmacionSimulada;
+import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.dto.respuesta.InscripcionesVeranoDTORespuesta.DocumentoInfo;
+import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.dto.respuesta.InscripcionesVeranoDTORespuesta.ErrorInscripcion;
+import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.dto.respuesta.InscripcionesVeranoDTORespuesta.EstadisticasInscripciones;
+import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.dto.respuesta.InscripcionesVeranoDTORespuesta.EstudianteElegible;
+import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.dto.respuesta.InscripcionesVeranoDTORespuesta.EstudianteSimulado;
+import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.dto.respuesta.InscripcionesVeranoDTORespuesta.IdCurso;
+import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.dto.respuesta.InscripcionesVeranoDTORespuesta.InfoInscripcion;
+import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.dto.respuesta.InscripcionesVeranoDTORespuesta.InfoNoEncontrada;
+import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.dto.respuesta.InscripcionesVeranoDTORespuesta.InscripcionAceptada;
+import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.dto.respuesta.InscripcionesVeranoDTORespuesta.InscripcionCancelada;
+import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.dto.respuesta.InscripcionesVeranoDTORespuesta.InscripcionRechazada;
+import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.dto.respuesta.InscripcionesVeranoDTORespuesta.InscripcionRechazadaPorFuncionario;
+import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.dto.respuesta.InscripcionesVeranoDTORespuesta.InscripcionSimulada;
+import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.dto.respuesta.InscripcionesVeranoDTORespuesta.NombreCurso;
+import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.dto.respuesta.InscripcionesVeranoDTORespuesta.PagoSupuesto;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.excepciones.ErroresCursosVerano;
 import co.edu.unicauca.decanatura.gestion_curricular.seguridad.Autorizacion;
 
@@ -61,10 +78,8 @@ public class InscripcionesVeranoRestController {
         SolicitudCursoVeranoPreinscripcion preinscripcionAprobada =
                 solicitudCU.buscarPreinscripcionAprobada(peticion.getIdUsuario(), peticion.getIdCurso());
         if (preinscripcionAprobada == null) {
-            Map<String, Object> error = new HashMap<>();
-            error.put("error", "No se encontro una preinscripcion aprobada para este usuario y curso");
-            error.put("codigo", "PREINSCRIPCION_NO_APROBADA");
-            return ResponseEntity.badRequest().body(error);
+            return ResponseEntity.badRequest().body(new InscripcionRechazada(
+                    "No se encontro una preinscripcion aprobada para este usuario y curso", "PREINSCRIPCION_NO_APROBADA"));
         }
         
         if (solicitudCU.tieneInscripcionActiva(peticion.getIdUsuario(), peticion.getIdCurso())) {
@@ -93,9 +108,8 @@ public class InscripcionesVeranoRestController {
         SolicitudCursoVeranoInscripcion inscripcionGuardada = solicitudCU.crearSolicitudCursoVeranoInscripcion(nuevaInscripcion);
         
         if (inscripcionGuardada == null || inscripcionGuardada.getId_solicitud() == null) {
-            Map<String, Object> error = new HashMap<>();
-            error.put("error", "Error al guardar la inscripcion en la base de datos");
-            return ResponseEntity.internalServerError().body(error);
+            return ResponseEntity.internalServerError().body(
+                    new ErrorInscripcion("Error al guardar la inscripcion en la base de datos"));
         }
         
         // Los documentos pendientes (comprobante) los asocia el caso de uso al crear la inscripción
@@ -167,38 +181,25 @@ public class InscripcionesVeranoRestController {
      */
     @PreAuthorize("@autorizacion.esStaff() or @autorizacion.esDuenoSolicitud(#id)")
     @DeleteMapping("/inscripciones/{id}")
-    public ResponseEntity<Map<String, Object>> cancelarInscripcion(@PathVariable Integer id) {
-        
+    public ResponseEntity<?> cancelarInscripcion(@PathVariable Integer id) {
+
         Solicitud solicitud = solicitudGeneralCU.obtenerSolicitudPorId(id);
         if (solicitud == null) {
-            Map<String, Object> error = new HashMap<>();
-            error.put("error", "Inscripcion no encontrada");
-            error.put("message", "No existe una inscripcion con el ID: " + id);
-            error.put("status", 404);
-            error.put("timestamp", LocalDateTime.now().toString());
-            return ResponseEntity.status(404).body(error);
+            return ResponseEntity.status(404).body(new CancelacionRechazada("Inscripcion no encontrada",
+                    "No existe una inscripcion con el ID: " + id, 404, LocalDateTime.now().toString()));
         }
 
         // No se puede cancelar una inscripcion ya aprobada
         String estadoActual = solicitud.estadoActual();
         if (EstadoSolicitudCursoVerano.APROBADO.texto().equalsIgnoreCase(estadoActual)) {
-            Map<String, Object> error = new HashMap<>();
-            error.put("error", "No se puede cancelar");
-            error.put("message", "No se puede cancelar una inscripcion que ya ha sido aprobada");
-            error.put("status", 400);
-            error.put("timestamp", LocalDateTime.now().toString());
-            return ResponseEntity.status(400).body(error);
+            return ResponseEntity.status(400).body(new CancelacionRechazada("No se puede cancelar",
+                    "No se puede cancelar una inscripcion que ya ha sido aprobada", 400, LocalDateTime.now().toString()));
         }
 
         solicitudGeneralCU.eliminarSolicitud(id);
-        
-        Map<String, Object> respuesta = new HashMap<>();
-        respuesta.put("mensaje", "Inscripcion cancelada exitosamente");
-        respuesta.put("id_inscripcion", id);
-        respuesta.put("status", 200);
-        respuesta.put("timestamp", LocalDateTime.now().toString());
-        
-        return ResponseEntity.ok(respuesta);
+
+        return ResponseEntity.ok(new InscripcionCancelada("Inscripcion cancelada exitosamente", id, 200,
+                LocalDateTime.now().toString()));
     }
 
     /**
@@ -207,10 +208,10 @@ public class InscripcionesVeranoRestController {
      */
     @PreAuthorize("hasAnyRole(" + Autorizacion.ROLES_STAFF + ")")
     @GetMapping("/inscripciones/estudiantes-elegibles/{idCurso}")
-    public ResponseEntity<List<Map<String, Object>>> getEstudiantesElegiblesParaInscripcion(
+    public ResponseEntity<List<EstudianteElegible>> getEstudiantesElegiblesParaInscripcion(
             @PathVariable Long idCurso) {
-        
-        List<Map<String, Object>> estudiantesInscritos = new ArrayList<>();
+
+        List<EstudianteElegible> estudiantesInscritos = new ArrayList<>();
         
         // 1. Obtener todas las inscripciones del curso (no preinscripciones)
         List<SolicitudCursoVeranoInscripcion> inscripciones = solicitudCU.buscarInscripcionesPorCurso(idCurso.intValue());
@@ -227,45 +228,27 @@ public class InscripcionesVeranoRestController {
                     continue; // Saltar esta inscripcion
                 }
                 
-                // Crear informacion del estudiante inscrito
-                Map<String, Object> estudianteInscrito = new HashMap<>();
-                
-                // Informacion basica del estudiante
-                estudianteInscrito.put("id_usuario", inscripcion.getObjUsuario().getId_usuario());
-                estudianteInscrito.put("nombre_completo", inscripcion.getObjUsuario().getNombre_completo());
-                estudianteInscrito.put("codigo", inscripcion.getObjUsuario().getCodigo());
-                estudianteInscrito.put("correo", inscripcion.getObjUsuario().getCorreo());
-                
-                // Informacion de la inscripcion
-                estudianteInscrito.put("id_solicitud", inscripcion.getId_solicitud());
-                estudianteInscrito.put("nombre_solicitud", inscripcion.getNombre_solicitud());
-                estudianteInscrito.put("fecha_solicitud", inscripcion.getFecha_registro_solicitud());
-                estudianteInscrito.put("condicion_solicitud", inscripcion.getCodicion_solicitud());
-                
-                // Informacion del curso
+                // Informacion basica del estudiante (sin usuario, la inscripcion se omite)
+                Usuario usuario = inscripcion.getObjUsuario();
+                Integer idUsuario = usuario.getId_usuario();
+
+                // Informacion del curso (sin materia, la inscripcion se omite)
+                IdCurso idCursoInscrito = null;
+                NombreCurso nombreCurso = null;
                 if (inscripcion.getObjCursoOfertadoVerano() != null) {
-                    estudianteInscrito.put("id_curso", inscripcion.getObjCursoOfertadoVerano().getId_curso());
-                    estudianteInscrito.put("nombre_curso", inscripcion.getObjCursoOfertadoVerano().getObjMateria().getNombre());
+                    idCursoInscrito = new IdCurso(inscripcion.getObjCursoOfertadoVerano().getId_curso());
+                    nombreCurso = new NombreCurso(inscripcion.getObjCursoOfertadoVerano().getObjMateria().getNombre());
                     // El codigo del curso no esta disponible en esta entidad
                 }
-                
-                // Estado de la inscripcion (ya calculado arriba)
-                estudianteInscrito.put("estado_actual", estadoActual);
-                
-                // Informacion adicional
-                estudianteInscrito.put("tipo_solicitud", "Inscripcion");
-                estudianteInscrito.put("motivo_inclusion", "Estudiante inscrito en el curso");
-                estudianteInscrito.put("tiene_inscripcion_formal", true);
-                
+
                 // Informacion del archivo de pago (asumir que esta validado)
-                Map<String, Object> archivoPago = new HashMap<>();
-                archivoPago.put("id_documento", "validado");
-                archivoPago.put("nombre", "Comprobante de pago validado");
-                archivoPago.put("url", "/uploads/comprobantes/");
-                archivoPago.put("fecha", inscripcion.getFecha_registro_solicitud());
-                estudianteInscrito.put("archivoPago", archivoPago);
-                
-                estudiantesInscritos.add(estudianteInscrito);
+                estudiantesInscritos.add(new EstudianteElegible(idUsuario, usuario.getNombre_completo(),
+                        usuario.getCodigo(), usuario.getCorreo(), inscripcion.getId_solicitud(),
+                        inscripcion.getNombre_solicitud(), inscripcion.getFecha_registro_solicitud(),
+                        inscripcion.getCodicion_solicitud(), idCursoInscrito, nombreCurso, estadoActual, "Inscripcion",
+                        "Estudiante inscrito en el curso", true,
+                        new PagoSupuesto("validado", "Comprobante de pago validado", "/uploads/comprobantes/",
+                                inscripcion.getFecha_registro_solicitud())));
             } catch (Exception e) {
                 log.error("Error: {}", e.getMessage(), e);
             }
@@ -281,14 +264,14 @@ public class InscripcionesVeranoRestController {
      */
     @PreAuthorize("hasAnyRole('Funcionario', 'Coordinador', 'Administrador')")
     @PutMapping("/inscripciones/{idInscripcion}/aceptar")
-    public ResponseEntity<Map<String, Object>> aceptarInscripcionEstudiante(
+    public ResponseEntity<?> aceptarInscripcionEstudiante(
             @PathVariable Long idInscripcion,
             @RequestBody @Valid DecisionSolicitudDTOPeticion request) {
         // Sin cupo, o bien otro funcionario ocupó el último cupo mientras tanto
         return ErroresCursosVerano.conCupo(() -> aceptarInscripcion(idInscripcion, request));
     }
 
-    private ResponseEntity<Map<String, Object>> aceptarInscripcion(Long idInscripcion, DecisionSolicitudDTOPeticion request) {
+    private ResponseEntity<?> aceptarInscripcion(Long idInscripcion, DecisionSolicitudDTOPeticion request) {
         String observaciones = request.getObservaciones();
         if (observaciones == null || observaciones.trim().isEmpty()) {
             observaciones = "Inscripcion aceptada por funcionario/coordinador";
@@ -298,9 +281,8 @@ public class InscripcionesVeranoRestController {
         SolicitudCursoVeranoInscripcion inscripcion = solicitudCU.buscarPorIdInscripcion(idInscripcion.intValue());
 
         if (inscripcion == null) {
-            Map<String, Object> error = new HashMap<>();
-            error.put("error", "No se encontro la inscripcion con ID: " + idInscripcion);
-            return ResponseEntity.badRequest().body(error);
+            return ResponseEntity.badRequest().body(
+                    new ErrorInscripcion("No se encontro la inscripcion con ID: " + idInscripcion));
         }
 
         // 2. El curso debe tener cupo (si la inscripcion ya ocupaba cupo, aceptarla de nuevo no suma)
@@ -314,9 +296,7 @@ public class InscripcionesVeranoRestController {
         );
 
         if (inscripcionAceptada == null) {
-            Map<String, Object> error = new HashMap<>();
-            error.put("error", "No se pudo aceptar la inscripcion");
-            return ResponseEntity.internalServerError().body(error);
+            return ResponseEntity.internalServerError().body(new ErrorInscripcion("No se pudo aceptar la inscripcion"));
         }
 
         // 3. Insertar en tabla cursosestudiantes (relacion Many-to-Many)
@@ -332,16 +312,9 @@ public class InscripcionesVeranoRestController {
         }
 
         // 4. Preparar respuesta
-        Map<String, Object> respuesta = new HashMap<>();
-        respuesta.put("success", true);
-        respuesta.put("message", "Inscripcion aceptada exitosamente");
-        respuesta.put("id_inscripcion", inscripcionAceptada.getId_solicitud());
-        respuesta.put("estudiante_nombre", inscripcion.getObjUsuario().getNombre_completo());
-        respuesta.put("curso_nombre", inscripcion.getObjCursoOfertadoVerano().getObjMateria().getNombre());
-        respuesta.put("fecha_aceptacion", new Date());
-        respuesta.put("observaciones", observaciones);
-
-        return ResponseEntity.ok(respuesta);
+        return ResponseEntity.ok(new InscripcionAceptada(true, "Inscripcion aceptada exitosamente",
+                inscripcionAceptada.getId_solicitud(), inscripcion.getObjUsuario().getNombre_completo(),
+                inscripcion.getObjCursoOfertadoVerano().getObjMateria().getNombre(), new Date(), observaciones));
     }
 
     /**
@@ -350,7 +323,7 @@ public class InscripcionesVeranoRestController {
      */
     @PreAuthorize("hasAnyRole('Funcionario', 'Coordinador', 'Administrador')")
     @PutMapping("/inscripciones/{idInscripcion}/rechazar")
-    public ResponseEntity<Map<String, Object>> rechazarInscripcionEstudiante(
+    public ResponseEntity<?> rechazarInscripcionEstudiante(
             @PathVariable Long idInscripcion,
             @RequestBody @Valid DecisionSolicitudDTOPeticion request) {
         
@@ -365,18 +338,16 @@ public class InscripcionesVeranoRestController {
         SolicitudCursoVeranoInscripcion inscripcion = solicitudCU.buscarPorIdInscripcion(idInscripcion.intValue());
         
         if (inscripcion == null) {
-            Map<String, Object> error = new HashMap<>();
-            error.put("error", "No se encontro la inscripcion con ID: " + idInscripcion);
-            return ResponseEntity.badRequest().body(error);
+            return ResponseEntity.badRequest().body(
+                    new ErrorInscripcion("No se encontro la inscripcion con ID: " + idInscripcion));
         }
-        
+
         String estadoActual = inscripcion.estadoActual();
-        
+
         // 2. Verificar que la inscripcion este en estado valido para rechazar
         if (!EstadoSolicitudCursoVerano.ENVIADA.texto().equals(estadoActual) && !EstadoSolicitudCursoVerano.PAGO_VALIDADO.texto().equals(estadoActual)) {
-            Map<String, Object> error = new HashMap<>();
-            error.put("error", "La inscripcion no puede ser rechazada en su estado actual: " + estadoActual);
-            return ResponseEntity.badRequest().body(error);
+            return ResponseEntity.badRequest().body(
+                    new ErrorInscripcion("La inscripcion no puede ser rechazada en su estado actual: " + estadoActual));
         }
         
         // 3. Marcar como rechazada usando el caso de uso
@@ -385,25 +356,16 @@ public class InscripcionesVeranoRestController {
                 () -> solicitudCU.validarPago(inscripcion.getId_solicitud(), false, observacionRechazo));
         
         if (inscripcionRechazada == null) {
-            Map<String, Object> error = new HashMap<>();
-            error.put("error", "No se pudo actualizar el estado de la inscripcion");
-            return ResponseEntity.internalServerError().body(error);
+            return ResponseEntity.internalServerError().body(
+                    new ErrorInscripcion("No se pudo actualizar el estado de la inscripcion"));
         }
-        
+
         String nuevoEstado = inscripcionRechazada.estadoActual();
-        
+
         // 4. Preparar respuesta
-        Map<String, Object> respuesta = new HashMap<>();
-        respuesta.put("success", true);
-        respuesta.put("message", "Inscripcion rechazada exitosamente");
-        respuesta.put("id_inscripcion", inscripcionRechazada.getId_solicitud());
-        respuesta.put("estudiante_nombre", inscripcion.getObjUsuario().getNombre_completo());
-        respuesta.put("curso_nombre", inscripcion.getObjCursoOfertadoVerano().getObjMateria().getNombre());
-        respuesta.put("fecha_rechazo", new Date());
-        respuesta.put("motivo", motivo);
-        respuesta.put("nuevo_estado", nuevoEstado);
-        
-        return ResponseEntity.ok(respuesta);
+        return ResponseEntity.ok(new InscripcionRechazadaPorFuncionario(true, "Inscripcion rechazada exitosamente",
+                inscripcionRechazada.getId_solicitud(), inscripcion.getObjUsuario().getNombre_completo(),
+                inscripcion.getObjCursoOfertadoVerano().getObjMateria().getNombre(), new Date(), motivo, nuevoEstado));
     }
 
     // ==================== ENDPOINTS PARA APROBAR Y RECHAZAR SOLICITUDES ====================
@@ -416,38 +378,15 @@ public class InscripcionesVeranoRestController {
      */
     @PreAuthorize("@autorizacion.esStaff() or @autorizacion.esDuenoSolicitud(#id.intValue())")
     @PutMapping("/inscripciones/{id}/confirmar")
-    public ResponseEntity<Map<String, Object>> confirmarInscripcion(@PathVariable Long id) {
-        // Simular confirmacion de inscripcion
-        Map<String, Object> inscripcion = new HashMap<>();
-        inscripcion.put("id", id);
-        inscripcion.put("fecha", "2024-01-15T10:30:00");
-        inscripcion.put("estado", "inscrito"); // Cambiado de "pendiente" a "inscrito"
-        inscripcion.put("estudianteId", 1);
-        inscripcion.put("cursoId", 1);
-        
-        // Informacion completa del estudiante
-        Map<String, Object> estudiante = new HashMap<>();
-        estudiante.put("id_usuario", 1);
-        estudiante.put("nombre", "Ana");
-        estudiante.put("apellido", "Gonzalez");
-        estudiante.put("email", "ana.gonzalez@unicauca.edu.co");
-        estudiante.put("codigo_estudiante", "104612345660");
-        inscripcion.put("estudiante", estudiante);
-        
-        // Informacion del archivo de pago (ya existia)
-        Map<String, Object> archivoPago = new HashMap<>();
-        archivoPago.put("id_documento", 1);
-        archivoPago.put("nombre", "comprobante_pago_ana.pdf");
-        archivoPago.put("url", "/uploads/comprobante_pago_ana.pdf");
-        archivoPago.put("fecha", "2024-01-15T10:30:00");
-        inscripcion.put("archivoPago", archivoPago);
-        
+    public ResponseEntity<ConfirmacionSimulada> confirmarInscripcion(@PathVariable Long id) {
+        // Simular confirmacion de inscripcion (BUG-33): todo salvo el id es fijo
+        var estudiante = new EstudianteSimulado(1, "Ana", "Gonzalez", "ana.gonzalez@unicauca.edu.co", "104612345660");
+        var archivoPago = new ArchivoSimulado(1, "comprobante_pago_ana.pdf", "/uploads/comprobante_pago_ana.pdf",
+                "2024-01-15T10:30:00");
+        var inscripcion = new InscripcionSimulada(id, "2024-01-15T10:30:00", "inscrito", 1, 1, estudiante, archivoPago);
+
         // Mensaje de confirmacion
-        Map<String, Object> respuesta = new HashMap<>();
-        respuesta.put("message", "Inscripcion confirmada exitosamente");
-        respuesta.put("inscripcion", inscripcion);
-        
-        return ResponseEntity.ok(respuesta);
+        return ResponseEntity.ok(new ConfirmacionSimulada("Inscripcion confirmada exitosamente", inscripcion));
     }
 
     // ==================== ENDPOINT PARA DESCARGAR COMPROBANTE DE PAGO ====================
@@ -456,62 +395,48 @@ public class InscripcionesVeranoRestController {
 
     @PreAuthorize("@autorizacion.esStaff() or @autorizacion.esDuenoSolicitud(#idInscripcion.intValue())")
     @GetMapping("/inscripciones/{idInscripcion}/info")
-    public ResponseEntity<Map<String, Object>> infoInscripcion(@PathVariable Long idInscripcion) {
-        
+    public ResponseEntity<?> infoInscripcion(@PathVariable Long idInscripcion) {
+
         // 1. Buscar la inscripcion directamente por ID
         SolicitudCursoVeranoInscripcion inscripcion = solicitudCU.buscarPorIdInscripcion(idInscripcion.intValue());
-        
-        Map<String, Object> resultado = new HashMap<>();
-        
+
         if (inscripcion == null) {
-            resultado.put("encontrada", false);
-            resultado.put("mensaje", "Inscripcion no encontrada");
-            return ResponseEntity.ok(resultado);
+            return ResponseEntity.ok(new InfoNoEncontrada(false, "Inscripcion no encontrada"));
         }
-        
-        resultado.put("encontrada", true);
-        resultado.put("id_solicitud", inscripcion.getId_solicitud());
-        resultado.put("nombre_solicitud", inscripcion.getNombre_solicitud());
-        resultado.put("fecha_registro", inscripcion.getFecha_registro_solicitud());
-        
-        // Verificar documentos
+
+        // Verificar documentos ("NULL" como texto si la lista es null)
         List<Documento> documentos = inscripcion.getDocumentos();
-        resultado.put("documentos_count", documentos != null ? documentos.size() : "NULL");
-        resultado.put("documentos_null", documentos == null);
-        resultado.put("documentos_empty", documentos != null && documentos.isEmpty());
-        
+        Object documentosCount = documentos != null ? documentos.size() : "NULL";
+
+        List<DocumentoInfo> documentosInfo = null;
+        Map<String, ?> archivoPago = null;
         if (documentos != null && !documentos.isEmpty()) {
-            List<Map<String, Object>> documentosInfo = new ArrayList<>();
+            documentosInfo = new ArrayList<>();
             for (Documento doc : documentos) {
-                Map<String, Object> docInfo = new HashMap<>();
-                docInfo.put("id", doc.getId_documento());
-                docInfo.put("nombre", doc.getNombre());
-                docInfo.put("ruta", doc.getRuta_documento());
-                docInfo.put("es_valido", doc.isEsValido());
-                documentosInfo.add(docInfo);
+                documentosInfo.add(new DocumentoInfo(doc.getId_documento(), doc.getNombre(), doc.getRuta_documento(),
+                        doc.isEsValido()));
             }
-            resultado.put("documentos", documentosInfo);
-            
-            // Agregar informacion especifica del archivo para descarga
+
+            // Agregar informacion especifica del archivo para descarga (Map.of: falla si algun valor es null)
             Documento primerDocumento = documentos.get(0);
-            resultado.put("archivo_pago", Map.of(
+            archivoPago = Map.of(
                 "nombre_archivo", primerDocumento.getNombre(),
                 "ruta_archivo", primerDocumento.getRuta_documento(),
                 "id_documento", primerDocumento.getId_documento()
-            ));
+            );
         }
-        
-        return ResponseEntity.ok(resultado);
+
+        return ResponseEntity.ok(new InfoInscripcion(true, inscripcion.getId_solicitud(),
+                inscripcion.getNombre_solicitud(), inscripcion.getFecha_registro_solicitud(), documentosCount,
+                documentos == null, documentos != null && documentos.isEmpty(), documentosInfo, archivoPago));
     }
 
     // ==================== ENDPOINT PARA SOLICITUDES DE CURSO NUEVO ====================
 
     @PreAuthorize("hasAnyRole(" + Autorizacion.ROLES_STAFF + ")")
     @GetMapping("/inscripciones/curso/{idCurso}/estadisticas")
-    public ResponseEntity<Map<String, Object>> obtenerEstadisticasInscripciones(@PathVariable Long idCurso) {
-        
-        Map<String, Object> estadisticas = new HashMap<>();
-        
+    public ResponseEntity<EstadisticasInscripciones> obtenerEstadisticasInscripciones(@PathVariable Long idCurso) {
+
         // Contar inscripciones por estado con logging detallado
         Integer pendientes = solicitudCU.contarInscripcionesPorEstado(idCurso.intValue(), EstadoSolicitudCursoVerano.ENVIADA.texto());
         Integer aceptadas = solicitudCU.contarInscripcionesPorEstado(idCurso.intValue(), EstadoSolicitudCursoVerano.PAGO_VALIDADO.texto());
@@ -520,14 +445,8 @@ public class InscripcionesVeranoRestController {
         
         Integer totalInscripciones = pendientes + aceptadas + rechazadas;
         
-        estadisticas.put("total_inscripciones", totalInscripciones);
-        estadisticas.put("pendientes_revision", pendientes);
-        estadisticas.put("aceptadas", aceptadas);
-        estadisticas.put("rechazadas", rechazadas);
-        estadisticas.put("curso_id", idCurso);
-        estadisticas.put("fecha_consulta", new Date());
-        
-        return ResponseEntity.ok(estadisticas);
+        return ResponseEntity.ok(new EstadisticasInscripciones(totalInscripciones, pendientes, aceptadas, rechazadas,
+                idCurso, new Date()));
     }
 
     /**
