@@ -2,7 +2,7 @@ package co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.dto.
 
 import java.util.List;
 
-public class DocumentTemplate {
+public class PlantillaDocumentoDTORespuesta {
     private String id;
     private String nombre;
     private String descripcion;
@@ -10,9 +10,9 @@ public class DocumentTemplate {
     private List<String> camposOpcionales;
 
     // Constructores
-    public DocumentTemplate() {}
+    public PlantillaDocumentoDTORespuesta() {}
 
-    public DocumentTemplate(String id, String nombre, String descripcion, 
+    public PlantillaDocumentoDTORespuesta(String id, String nombre, String descripcion,
                            List<String> camposRequeridos, List<String> camposOpcionales) {
         this.id = id;
         this.nombre = nombre;
