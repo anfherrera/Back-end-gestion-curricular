@@ -389,7 +389,7 @@ Rutas abreviadas: `…/` = `gestion_curricular/src/main/java/co/edu/unicauca/dec
   - En inglés, cuando el resto del proyecto está en español: `DocumentGeneratorService`, `DocumentGeneratorController`, `DocumentRequest`, `DocumentTemplate`, `CreateCursoDTO`, `UpdateCursoDTO`.
   - `DocumentRequest` está en el paquete `DTORespuesta` aunque es una petición.
 
-  *Avance revisión 12:* los dos nombres en minúscula de la lista ya no existen en la rama. `DocumentGeneratorService` pasa a `ServicioGeneracionDocumentos` conservando el nombre del bean. `NombresApiCaracterizacionTest` fija las respuestas de documentos y escrituras de cursos con fechas normalizadas. La referencia nueva se ejecutó tres veces antes del primer cambio. El controlador pasa a `GeneradorDocumentosRestController`, con el mismo bean y la etiqueta OpenAPI histórica.
+  *Avance revisión 12:* los dos nombres en minúscula de la lista ya no existen en la rama. `DocumentGeneratorService` pasa a `ServicioGeneracionDocumentos` conservando el nombre del bean. `NombresApiCaracterizacionTest` fija las respuestas de documentos y escrituras de cursos con fechas normalizadas. La referencia nueva se ejecutó tres veces antes del primer cambio. El controlador pasa a `GeneradorDocumentosRestController`, con el mismo bean y la etiqueta OpenAPI histórica. La petición `DocumentRequest` pasa a `GenerarDocumentoDTOPeticion` en `dto.peticion`, con el nombre de esquema OpenAPI histórico.
 
 - [x] **EST-4. `GestionClientesRuntimeException`** pasa a `GestionCurricularException`. Los contratos de error de Verano, Usuario y Paz y Salvo se caracterizaron tres veces antes y se verificaron tras el cambio. `clean verify` en JDK 17 y 25: 542 pruebas, 1 omitida y cero fallos.
 
@@ -405,7 +405,7 @@ Rutas abreviadas: `…/` = `gestion_curricular/src/main/java/co/edu/unicauca/dec
 
   Hay que definir una convención (sustantivos en plural, kebab-case, verbo HTTP para la acción), aplicarla a las rutas nuevas y migrar las antiguas con el frontend. ⚠️ **frontend**
 
-- [x] **EST-8.** [DocumentGeneratorController](gestion_curricular/src/main/java/co/edu/unicauca/decanatura/gestion_curricular/infraestructura/input/controladores/DocumentGeneratorController.java) usa inyección por constructor desde `dc0c27f` con `@RequiredArgsConstructor` y el puerto `GenerarDocumentosCUIntPort` como campo final. Confirmado con la suite completa de revisión 12 en JDK 17 y 25.
+- [x] **EST-8.** [GeneradorDocumentosRestController](gestion_curricular/src/main/java/co/edu/unicauca/decanatura/gestion_curricular/infraestructura/input/controladores/GeneradorDocumentosRestController.java) usa inyección por constructor desde `dc0c27f` con `@RequiredArgsConstructor` y el puerto `GenerarDocumentosCUIntPort` como campo final. Confirmado con la suite completa de revisión 12 en JDK 17 y 25.
 
 - [ ] **EST-9. Imports desordenados**, por ejemplo en Paz y Salvo: hay imports de Spring, de dominio y de `java.*` intercalados. Se puede aplicar un formateador (Spotless o el formato del IDE) a todo el proyecto en un solo commit.
 

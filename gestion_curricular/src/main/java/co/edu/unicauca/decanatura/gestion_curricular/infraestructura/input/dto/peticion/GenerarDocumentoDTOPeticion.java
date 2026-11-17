@@ -1,17 +1,20 @@
-package co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.dto.respuesta;
+package co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.dto.peticion;
 
 import java.util.Map;
 
-public class DocumentRequest {
+import io.swagger.v3.oas.annotations.media.Schema;
+
+@Schema(name = "DocumentRequest")
+public class GenerarDocumentoDTOPeticion {
     private int idSolicitud;
     private String tipoDocumento;
     private Map<String, Object> datosDocumento;
     private Map<String, Object> datosSolicitud;
 
     // Constructores
-    public DocumentRequest() {}
+    public GenerarDocumentoDTOPeticion() {}
 
-    public DocumentRequest(int idSolicitud, String tipoDocumento, 
+    public GenerarDocumentoDTOPeticion(int idSolicitud, String tipoDocumento,
                           Map<String, Object> datosDocumento, 
                           Map<String, Object> datosSolicitud) {
         this.idSolicitud = idSolicitud;

@@ -2,7 +2,7 @@ package co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.cont
 
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.RespuestasArchivo;
 
-import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.dto.respuesta.DocumentRequest;
+import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.dto.peticion.GenerarDocumentoDTOPeticion;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GenerarDocumentosCUIntPort;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
@@ -26,7 +26,7 @@ public class GeneradorDocumentosRestController {
      */
     @Operation(tags = "document-generator-controller")
     @PostMapping("/generar")
-    public ResponseEntity<byte[]> generarDocumento(@RequestBody DocumentRequest request) throws IOException {
+    public ResponseEntity<byte[]> generarDocumento(@RequestBody GenerarDocumentoDTOPeticion request) throws IOException {
         byte[] documentBytes = documentGeneratorService.generarDocumento(request.getIdSolicitud(), request.getTipoDocumento(),
                 request.getDatosDocumento(), request.getDatosSolicitud());
         String nombreArchivo = generarNombreArchivo(request);
@@ -46,7 +46,7 @@ public class GeneradorDocumentosRestController {
         return ResponseEntity.ok(documentGeneratorService.getTemplates(proceso));
     }
 
-    private String generarNombreArchivo(DocumentRequest request) {
+    private String generarNombreArchivo(GenerarDocumentoDTOPeticion request) {
         String tipoDocumento = request.getTipoDocumento() != null ? request.getTipoDocumento() : "DOCUMENTO";
         
         String nombreEstudiante = "Estudiante";
