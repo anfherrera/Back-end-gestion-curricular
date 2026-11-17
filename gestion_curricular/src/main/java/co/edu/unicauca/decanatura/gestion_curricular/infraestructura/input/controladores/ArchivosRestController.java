@@ -3,9 +3,8 @@ package co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.cont
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.HashMap;
+import java.util.Date;
 import java.util.List;
-import java.util.Map;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -29,6 +28,7 @@ import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Documento;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Solicitud;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.SolicitudCursoVeranoInscripcion;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.RespuestasArchivo;
+import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.dto.respuesta.PdfSubidoDTORespuesta;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.validacion.ArchivoMultipart;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.validacion.ValidadorArchivoPdf;
 import co.edu.unicauca.decanatura.gestion_curricular.seguridad.Autorizacion;
@@ -46,7 +46,7 @@ public class ArchivosRestController {
     private final Autorizacion autorizacion;
 
     @PostMapping("/subir/pdf")
-    public ResponseEntity<Map<String, Object>> subirPDF(
+    public ResponseEntity<?> subirPDF(
         @RequestParam(name = "file", required = true) MultipartFile file,
         @RequestParam(name = "inscripcionId", required = false) String inscripcionId,
         @RequestParam(name = "solicitudId", required = false) String solicitudId,
@@ -68,11 +68,11 @@ public class ArchivosRestController {
             try {
                 idSolicitudDestino = Integer.parseInt(solicitudIdUnificado.trim());
             } catch (NumberFormatException e) {
-                return ResponseEntity.badRequest().body(Map.of("error", "ID de solicitud inválido"));
+                return ResponseEntity.badRequest().body(new PdfSubidoDTORespuesta.Error("ID de solicitud inválido"));
             }
             if (!autorizacion.esDuenoSolicitud(idSolicitudDestino)) {
                 return ResponseEntity.status(HttpStatus.FORBIDDEN)
-                    .body(Map.of("error", "No puede adjuntar archivos a una solicitud que no es suya"));
+                    .body(new PdfSubidoDTORespuesta.Error("No puede adjuntar archivos a una solicitud que no es suya"));
             }
         }
 
@@ -81,9 +81,7 @@ public class ArchivosRestController {
         // Validar que sea un PDF real (contenido, no solo nombre o Content-Type) y el tamaño máximo
         ValidadorArchivoPdf.Rechazo rechazo = ValidadorArchivoPdf.validar(file, ValidadorArchivoPdf.MAXIMO_15MB);
         if (rechazo != null) {
-            Map<String, Object> error = new HashMap<>();
-            error.put("error", rechazo.mensaje());
-            return ResponseEntity.status(rechazo.estado()).body(error);
+            return ResponseEntity.status(rechazo.estado()).body(new PdfSubidoDTORespuesta.Error(rechazo.mensaje()));
         }
         
         String nombreArchivo;
@@ -192,28 +190,22 @@ public class ArchivosRestController {
         }
         
         // 6. Crear respuesta en el formato requerido
-        Map<String, Object> respuesta = new HashMap<>();
-        respuesta.put("id", System.currentTimeMillis());
-        respuesta.put("nombre", nombreOriginal);
-        respuesta.put("ruta", "/uploads/archivos/" + nombreArchivo);
-        respuesta.put("tamaño", file.getSize());
-        respuesta.put("tipo", file.getContentType());
-        respuesta.put("fechaSubida", new java.util.Date().toString());
-        respuesta.put("guardadoEnBD", documentoGuardadoEnBD);
-        
-        if (inscripcionId != null && !inscripcionId.trim().isEmpty()) {
-            respuesta.put("inscripcionId", inscripcionId);
-        }
-        
-        if (solicitudIdUnificado != null && !solicitudIdUnificado.trim().isEmpty()) {
-            respuesta.put("solicitudId", solicitudIdUnificado);
-        }
-        
-        if (tipoSolicitud != null && !tipoSolicitud.trim().isEmpty()) {
-            respuesta.put("tipoSolicitud", tipoSolicitud);
-        }
-        
-        return ResponseEntity.ok(respuesta);
+        return ResponseEntity.ok(new PdfSubidoDTORespuesta(
+            System.currentTimeMillis(),
+            nombreOriginal,
+            "/uploads/archivos/" + nombreArchivo,
+            file.getSize(),
+            file.getContentType(),
+            new Date().toString(),
+            documentoGuardadoEnBD,
+            conTexto(inscripcionId),
+            conTexto(solicitudIdUnificado),
+            conTexto(tipoSolicitud)));
+    }
+
+    /** El valor tal cual si tiene texto; si no, null para omitir la clave en la respuesta. */
+    private static String conTexto(String valor) {
+        return valor != null && !valor.trim().isEmpty() ? valor : null;
     }
 
     @GetMapping("/descargar/pdf")
