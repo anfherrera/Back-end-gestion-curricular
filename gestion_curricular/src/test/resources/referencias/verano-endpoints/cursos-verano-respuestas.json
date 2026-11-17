@@ -1,0 +1,527 @@
+{
+  "todos" : {
+    "status" : 200,
+    "body" : [ {
+      "id_curso" : 1,
+      "idCurso" : null,
+      "codigo_curso" : "MAT1",
+      "nombre_curso" : "Materia 1",
+      "descripcion" : "Curso de Materia 1",
+      "fecha_inicio" : "2024-03-15T17:00:00Z",
+      "fecha_fin" : "2024-04-24T17:00:00Z",
+      "cupo_maximo" : 21,
+      "cupo_disponible" : 21,
+      "espacio_asignado" : "221",
+      "estado" : "Publicado",
+      "periodo" : "2024-1",
+      "objMateria" : {
+        "id_materia" : 101,
+        "codigo" : "MAT1",
+        "nombre" : "Materia 1",
+        "creditos" : 3
+      },
+      "objDocente" : {
+        "id_docente" : 201,
+        "codigo_docente" : "D1",
+        "nombre_docente" : "Docente 1"
+      },
+      "grupo" : "A",
+      "cupo_estimado" : 21,
+      "salon" : "221",
+      "id_salon" : 81,
+      "salonInfo" : {
+        "id_salon" : 81,
+        "descripcion" : "221 - FIET",
+        "numero_salon" : "221",
+        "edificio" : "FIET",
+        "activo" : true
+      },
+      "estadosCursoOfertados" : [ {
+        "id_estado" : 1,
+        "estado_actual" : "Publicado",
+        "fecha_registro_estado" : 1710522000000,
+        "objCursoOfertadoVerano" : null
+      } ],
+      "estudiantesInscritos" : [ ]
+    }, {
+      "id_curso" : 2,
+      "idCurso" : null,
+      "codigo_curso" : "MAT2",
+      "nombre_curso" : "Materia 2",
+      "descripcion" : "Curso de Materia 2",
+      "fecha_inicio" : "2024-03-15T17:00:00Z",
+      "fecha_fin" : "2024-04-24T17:00:00Z",
+      "cupo_maximo" : 22,
+      "cupo_disponible" : 22,
+      "espacio_asignado" : "305",
+      "estado" : "Publicado",
+      "periodo" : "2024-1",
+      "objMateria" : {
+        "id_materia" : 102,
+        "codigo" : "MAT2",
+        "nombre" : "Materia 2",
+        "creditos" : 3
+      },
+      "objDocente" : {
+        "id_docente" : 202,
+        "codigo_docente" : "D2",
+        "nombre_docente" : "Docente 2"
+      },
+      "grupo" : "A",
+      "cupo_estimado" : 22,
+      "salon" : "305",
+      "id_salon" : 82,
+      "salonInfo" : {
+        "id_salon" : 82,
+        "descripcion" : "305",
+        "numero_salon" : "305",
+        "edificio" : null,
+        "activo" : null
+      },
+      "estadosCursoOfertados" : [ {
+        "id_estado" : 2,
+        "estado_actual" : "Publicado",
+        "fecha_registro_estado" : 1710522000000,
+        "objCursoOfertadoVerano" : null
+      } ],
+      "estudiantesInscritos" : [ ]
+    }, {
+      "id_curso" : 3,
+      "idCurso" : null,
+      "codigo_curso" : "MAT3",
+      "nombre_curso" : "Materia 3",
+      "descripcion" : "Curso de Materia 3",
+      "fecha_inicio" : "2024-03-15T17:00:00Z",
+      "fecha_fin" : "2024-04-24T17:00:00Z",
+      "cupo_maximo" : 23,
+      "cupo_disponible" : 23,
+      "espacio_asignado" : null,
+      "estado" : "Publicado",
+      "periodo" : "2024-1",
+      "objMateria" : {
+        "id_materia" : 103,
+        "codigo" : "MAT3",
+        "nombre" : "Materia 3",
+        "creditos" : 3
+      },
+      "objDocente" : {
+        "id_docente" : 203,
+        "codigo_docente" : "D3",
+        "nombre_docente" : "Docente 3"
+      },
+      "grupo" : "A",
+      "cupo_estimado" : 23,
+      "salon" : null,
+      "id_salon" : null,
+      "salonInfo" : null,
+      "estadosCursoOfertados" : [ {
+        "id_estado" : 3,
+        "estado_actual" : "Publicado",
+        "fecha_registro_estado" : 1710522000000,
+        "objCursoOfertadoVerano" : null
+      } ],
+      "estudiantesInscritos" : [ ]
+    }, {
+      "id_curso" : 4,
+      "idCurso" : null,
+      "codigo_curso" : "MAT4",
+      "nombre_curso" : "Materia 4",
+      "descripcion" : "Curso de Materia 4",
+      "fecha_inicio" : "2024-03-15T17:00:00Z",
+      "fecha_fin" : "2024-04-24T17:00:00Z",
+      "cupo_maximo" : 24,
+      "cupo_disponible" : 24,
+      "espacio_asignado" : "999",
+      "estado" : "Publicado",
+      "periodo" : "2024-1",
+      "objMateria" : {
+        "id_materia" : 104,
+        "codigo" : "MAT4",
+        "nombre" : "Materia 4",
+        "creditos" : 3
+      },
+      "objDocente" : {
+        "id_docente" : 204,
+        "codigo_docente" : "D4",
+        "nombre_docente" : "Docente 4"
+      },
+      "grupo" : "A",
+      "cupo_estimado" : 24,
+      "salon" : "999",
+      "id_salon" : null,
+      "salonInfo" : null,
+      "estadosCursoOfertados" : [ {
+        "id_estado" : 4,
+        "estado_actual" : "Publicado",
+        "fecha_registro_estado" : 1710522000000,
+        "objCursoOfertadoVerano" : null
+      } ],
+      "estudiantesInscritos" : [ ]
+    } ],
+    "claves" : [ "[0].id_curso:NUMBER", "[0].idCurso:NULL", "[0].codigo_curso:STRING", "[0].nombre_curso:STRING", "[0].descripcion:STRING", "[0].fecha_inicio:STRING", "[0].fecha_fin:STRING", "[0].cupo_maximo:NUMBER", "[0].cupo_disponible:NUMBER", "[0].espacio_asignado:STRING", "[0].estado:STRING", "[0].periodo:STRING", "[0].objMateria:OBJECT", "[0].objMateria.id_materia:NUMBER", "[0].objMateria.codigo:STRING", "[0].objMateria.nombre:STRING", "[0].objMateria.creditos:NUMBER", "[0].objDocente:OBJECT", "[0].objDocente.id_docente:NUMBER", "[0].objDocente.codigo_docente:STRING", "[0].objDocente.nombre_docente:STRING", "[0].grupo:STRING", "[0].cupo_estimado:NUMBER", "[0].salon:STRING", "[0].id_salon:NUMBER", "[0].salonInfo:OBJECT", "[0].salonInfo.id_salon:NUMBER", "[0].salonInfo.descripcion:STRING", "[0].salonInfo.numero_salon:STRING", "[0].salonInfo.edificio:STRING", "[0].salonInfo.activo:BOOLEAN", "[0].estadosCursoOfertados:ARRAY", "[0].estadosCursoOfertados[0].id_estado:NUMBER", "[0].estadosCursoOfertados[0].estado_actual:STRING", "[0].estadosCursoOfertados[0].fecha_registro_estado:NUMBER", "[0].estadosCursoOfertados[0].objCursoOfertadoVerano:NULL", "[0].estudiantesInscritos:ARRAY", "[1].id_curso:NUMBER", "[1].idCurso:NULL", "[1].codigo_curso:STRING", "[1].nombre_curso:STRING", "[1].descripcion:STRING", "[1].fecha_inicio:STRING", "[1].fecha_fin:STRING", "[1].cupo_maximo:NUMBER", "[1].cupo_disponible:NUMBER", "[1].espacio_asignado:STRING", "[1].estado:STRING", "[1].periodo:STRING", "[1].objMateria:OBJECT", "[1].objMateria.id_materia:NUMBER", "[1].objMateria.codigo:STRING", "[1].objMateria.nombre:STRING", "[1].objMateria.creditos:NUMBER", "[1].objDocente:OBJECT", "[1].objDocente.id_docente:NUMBER", "[1].objDocente.codigo_docente:STRING", "[1].objDocente.nombre_docente:STRING", "[1].grupo:STRING", "[1].cupo_estimado:NUMBER", "[1].salon:STRING", "[1].id_salon:NUMBER", "[1].salonInfo:OBJECT", "[1].salonInfo.id_salon:NUMBER", "[1].salonInfo.descripcion:STRING", "[1].salonInfo.numero_salon:STRING", "[1].salonInfo.edificio:NULL", "[1].salonInfo.activo:NULL", "[1].estadosCursoOfertados:ARRAY", "[1].estadosCursoOfertados[0].id_estado:NUMBER", "[1].estadosCursoOfertados[0].estado_actual:STRING", "[1].estadosCursoOfertados[0].fecha_registro_estado:NUMBER", "[1].estadosCursoOfertados[0].objCursoOfertadoVerano:NULL", "[1].estudiantesInscritos:ARRAY", "[2].id_curso:NUMBER", "[2].idCurso:NULL", "[2].codigo_curso:STRING", "[2].nombre_curso:STRING", "[2].descripcion:STRING", "[2].fecha_inicio:STRING", "[2].fecha_fin:STRING", "[2].cupo_maximo:NUMBER", "[2].cupo_disponible:NUMBER", "[2].espacio_asignado:NULL", "[2].estado:STRING", "[2].periodo:STRING", "[2].objMateria:OBJECT", "[2].objMateria.id_materia:NUMBER", "[2].objMateria.codigo:STRING", "[2].objMateria.nombre:STRING", "[2].objMateria.creditos:NUMBER", "[2].objDocente:OBJECT", "[2].objDocente.id_docente:NUMBER", "[2].objDocente.codigo_docente:STRING", "[2].objDocente.nombre_docente:STRING", "[2].grupo:STRING", "[2].cupo_estimado:NUMBER", "[2].salon:NULL", "[2].id_salon:NULL", "[2].salonInfo:NULL", "[2].estadosCursoOfertados:ARRAY", "[2].estadosCursoOfertados[0].id_estado:NUMBER", "[2].estadosCursoOfertados[0].estado_actual:STRING", "[2].estadosCursoOfertados[0].fecha_registro_estado:NUMBER", "[2].estadosCursoOfertados[0].objCursoOfertadoVerano:NULL", "[2].estudiantesInscritos:ARRAY", "[3].id_curso:NUMBER", "[3].idCurso:NULL", "[3].codigo_curso:STRING", "[3].nombre_curso:STRING", "[3].descripcion:STRING", "[3].fecha_inicio:STRING", "[3].fecha_fin:STRING", "[3].cupo_maximo:NUMBER", "[3].cupo_disponible:NUMBER", "[3].espacio_asignado:STRING", "[3].estado:STRING", "[3].periodo:STRING", "[3].objMateria:OBJECT", "[3].objMateria.id_materia:NUMBER", "[3].objMateria.codigo:STRING", "[3].objMateria.nombre:STRING", "[3].objMateria.creditos:NUMBER", "[3].objDocente:OBJECT", "[3].objDocente.id_docente:NUMBER", "[3].objDocente.codigo_docente:STRING", "[3].objDocente.nombre_docente:STRING", "[3].grupo:STRING", "[3].cupo_estimado:NUMBER", "[3].salon:STRING", "[3].id_salon:NULL", "[3].salonInfo:NULL", "[3].estadosCursoOfertados:ARRAY", "[3].estadosCursoOfertados[0].id_estado:NUMBER", "[3].estadosCursoOfertados[0].estado_actual:STRING", "[3].estadosCursoOfertados[0].fecha_registro_estado:NUMBER", "[3].estadosCursoOfertados[0].objCursoOfertadoVerano:NULL", "[3].estudiantesInscritos:ARRAY" ]
+  },
+  "detalle 1" : {
+    "status" : 200,
+    "body" : {
+      "descripcion" : "Curso de Materia 1",
+      "objDocente" : {
+        "id_docente" : 201,
+        "codigo_docente" : "D1",
+        "nombre_docente" : "Docente 1"
+      },
+      "cupo_maximo" : 21,
+      "estado" : "Publicado",
+      "fecha_inicio" : "2024-03-15T17:00:00Z",
+      "codigo_curso" : "MAT1",
+      "cupo_estimado" : 21,
+      "id_curso" : 1,
+      "solicitudes" : 2,
+      "id_salon" : 81,
+      "nombre_curso" : "Materia 1",
+      "espacio_asignado" : "221",
+      "objMateria" : {
+        "id_materia" : 101,
+        "codigo" : "MAT1",
+        "nombre" : "Materia 1",
+        "creditos" : 3
+      },
+      "fecha_fin" : "2024-04-24T17:00:00Z",
+      "idCurso" : 1,
+      "cupo_disponible" : 21,
+      "salon" : {
+        "id_salon" : 81,
+        "descripcion" : "221 - FIET",
+        "numero_salon" : "221",
+        "edificio" : "FIET",
+        "activo" : true
+      }
+    },
+    "claves" : [ ".descripcion:STRING", ".objDocente:OBJECT", ".objDocente.id_docente:NUMBER", ".objDocente.codigo_docente:STRING", ".objDocente.nombre_docente:STRING", ".cupo_maximo:NUMBER", ".estado:STRING", ".fecha_inicio:STRING", ".codigo_curso:STRING", ".cupo_estimado:NUMBER", ".id_curso:NUMBER", ".solicitudes:NUMBER", ".id_salon:NUMBER", ".nombre_curso:STRING", ".espacio_asignado:STRING", ".objMateria:OBJECT", ".objMateria.id_materia:NUMBER", ".objMateria.codigo:STRING", ".objMateria.nombre:STRING", ".objMateria.creditos:NUMBER", ".fecha_fin:STRING", ".idCurso:NUMBER", ".cupo_disponible:NUMBER", ".salon:OBJECT", ".salon.id_salon:NUMBER", ".salon.descripcion:STRING", ".salon.numero_salon:STRING", ".salon.edificio:STRING", ".salon.activo:BOOLEAN" ]
+  },
+  "detalle 2" : {
+    "status" : 200,
+    "body" : {
+      "descripcion" : "Curso de Materia 2",
+      "objDocente" : {
+        "id_docente" : 202,
+        "codigo_docente" : "D2",
+        "nombre_docente" : "Docente 2"
+      },
+      "cupo_maximo" : 22,
+      "estado" : "Publicado",
+      "fecha_inicio" : "2024-03-15T17:00:00Z",
+      "codigo_curso" : "MAT2",
+      "cupo_estimado" : 22,
+      "id_curso" : 2,
+      "solicitudes" : 0,
+      "id_salon" : null,
+      "nombre_curso" : "Materia 2",
+      "espacio_asignado" : null,
+      "objMateria" : {
+        "id_materia" : 102,
+        "codigo" : "MAT2",
+        "nombre" : "Materia 2",
+        "creditos" : 3
+      },
+      "fecha_fin" : "2024-04-24T17:00:00Z",
+      "idCurso" : 2,
+      "cupo_disponible" : 22,
+      "salon" : null
+    },
+    "claves" : [ ".descripcion:STRING", ".objDocente:OBJECT", ".objDocente.id_docente:NUMBER", ".objDocente.codigo_docente:STRING", ".objDocente.nombre_docente:STRING", ".cupo_maximo:NUMBER", ".estado:STRING", ".fecha_inicio:STRING", ".codigo_curso:STRING", ".cupo_estimado:NUMBER", ".id_curso:NUMBER", ".solicitudes:NUMBER", ".id_salon:NULL", ".nombre_curso:STRING", ".espacio_asignado:NULL", ".objMateria:OBJECT", ".objMateria.id_materia:NUMBER", ".objMateria.codigo:STRING", ".objMateria.nombre:STRING", ".objMateria.creditos:NUMBER", ".fecha_fin:STRING", ".idCurso:NUMBER", ".cupo_disponible:NUMBER", ".salon:NULL" ]
+  },
+  "detalle 3" : {
+    "status" : 200,
+    "body" : {
+      "descripcion" : "Curso de verano",
+      "objDocente" : null,
+      "cupo_maximo" : 23,
+      "estado" : "Publicado",
+      "fecha_inicio" : "2024-03-15T17:00:00Z",
+      "codigo_curso" : null,
+      "cupo_estimado" : 23,
+      "id_curso" : 3,
+      "solicitudes" : 2,
+      "id_salon" : 81,
+      "nombre_curso" : null,
+      "espacio_asignado" : "221",
+      "objMateria" : null,
+      "fecha_fin" : "2024-04-24T17:00:00Z",
+      "idCurso" : 3,
+      "cupo_disponible" : 23,
+      "salon" : {
+        "id_salon" : 81,
+        "descripcion" : "221 - FIET",
+        "numero_salon" : "221",
+        "edificio" : "FIET",
+        "activo" : true
+      }
+    },
+    "claves" : [ ".descripcion:STRING", ".objDocente:NULL", ".cupo_maximo:NUMBER", ".estado:STRING", ".fecha_inicio:STRING", ".codigo_curso:NULL", ".cupo_estimado:NUMBER", ".id_curso:NUMBER", ".solicitudes:NUMBER", ".id_salon:NUMBER", ".nombre_curso:NULL", ".espacio_asignado:STRING", ".objMateria:NULL", ".fecha_fin:STRING", ".idCurso:NUMBER", ".cupo_disponible:NUMBER", ".salon:OBJECT", ".salon.id_salon:NUMBER", ".salon.descripcion:STRING", ".salon.numero_salon:STRING", ".salon.edificio:STRING", ".salon.activo:BOOLEAN" ]
+  },
+  "crear" : {
+    "status" : 200,
+    "body" : {
+      "descripcion" : "Curso de Materia 30",
+      "objDocente" : {
+        "id_docente" : 230,
+        "codigo_docente" : "D30",
+        "nombre_docente" : "Docente 30"
+      },
+      "cupo_maximo" : 50,
+      "estado" : "Publicado",
+      "fecha_inicio" : "2025-07-01",
+      "periodo" : "2025-2",
+      "codigo_curso" : "MAT30",
+      "cupo_estimado" : 50,
+      "id_curso" : 30,
+      "message" : "Curso creado exitosamente en la base de datos",
+      "nombre_curso" : "Materia 30",
+      "espacio_asignado" : "221",
+      "objMateria" : {
+        "id_materia" : 130,
+        "codigo" : "MAT30",
+        "nombre" : "Materia 30",
+        "creditos" : 3
+      },
+      "fecha_fin" : "2025-08-15T10:00:00Z",
+      "cupo_disponible" : 50
+    },
+    "claves" : [ ".descripcion:STRING", ".objDocente:OBJECT", ".objDocente.id_docente:NUMBER", ".objDocente.codigo_docente:STRING", ".objDocente.nombre_docente:STRING", ".cupo_maximo:NUMBER", ".estado:STRING", ".fecha_inicio:STRING", ".periodo:STRING", ".codigo_curso:STRING", ".cupo_estimado:NUMBER", ".id_curso:NUMBER", ".message:STRING", ".nombre_curso:STRING", ".espacio_asignado:STRING", ".objMateria:OBJECT", ".objMateria.id_materia:NUMBER", ".objMateria.codigo:STRING", ".objMateria.nombre:STRING", ".objMateria.creditos:NUMBER", ".fecha_fin:STRING", ".cupo_disponible:NUMBER" ]
+  },
+  "crear sin materia ni docente" : {
+    "status" : 200,
+    "body" : {
+      "descripcion" : "Curso de verano",
+      "objDocente" : null,
+      "cupo_maximo" : 70,
+      "estado" : "Publicado",
+      "fecha_inicio" : "2025-07-01",
+      "periodo" : "2025-2",
+      "codigo_curso" : null,
+      "cupo_estimado" : 70,
+      "id_curso" : 50,
+      "message" : "Curso creado exitosamente en la base de datos",
+      "nombre_curso" : null,
+      "espacio_asignado" : "221",
+      "objMateria" : null,
+      "fecha_fin" : "2025-08-15T10:00:00Z",
+      "cupo_disponible" : 70
+    },
+    "claves" : [ ".descripcion:STRING", ".objDocente:NULL", ".cupo_maximo:NUMBER", ".estado:STRING", ".fecha_inicio:STRING", ".periodo:STRING", ".codigo_curso:NULL", ".cupo_estimado:NUMBER", ".id_curso:NUMBER", ".message:STRING", ".nombre_curso:NULL", ".espacio_asignado:STRING", ".objMateria:NULL", ".fecha_fin:STRING", ".cupo_disponible:NUMBER" ]
+  },
+  "crear motivo 1" : {
+    "status" : 400,
+    "body" : {
+      "message" : "motivo FECHAS_INVALIDAS",
+      "error" : "Fechas inválidas"
+    },
+    "claves" : [ ".error:STRING", ".message:STRING" ]
+  },
+  "crear motivo 2" : {
+    "status" : 400,
+    "body" : {
+      "message" : "motivo SALON_REQUERIDO",
+      "error" : "Salón requerido"
+    },
+    "claves" : [ ".error:STRING", ".message:STRING" ]
+  },
+  "crear motivo 3" : {
+    "status" : 400,
+    "body" : {
+      "message" : "motivo SALON_NO_ENCONTRADO",
+      "error" : "Salón no encontrado"
+    },
+    "claves" : [ ".error:STRING", ".message:STRING" ]
+  },
+  "crear motivo 4" : {
+    "status" : 400,
+    "body" : {
+      "codigo" : "CURSO_DUPLICADO",
+      "error" : "Curso duplicado",
+      "message" : "motivo CURSO_DUPLICADO"
+    },
+    "claves" : [ ".codigo:STRING", ".error:STRING", ".message:STRING" ]
+  },
+  "crear docente cero" : {
+    "status" : 400,
+    "body" : {
+      "message" : "El ID del docente debe ser mayor a 0. ID recibido: 0",
+      "error" : "ID de docente inválido"
+    },
+    "claves" : [ ".error:STRING", ".message:STRING" ]
+  },
+  "crear sin materia" : {
+    "status" : 400,
+    "body" : {
+      "message" : "Debe seleccionar una materia",
+      "error" : "Materia requerida"
+    },
+    "claves" : [ ".error:STRING", ".message:STRING" ]
+  },
+  "crear fecha invalida" : {
+    "status" : 400,
+    "body" : {
+      "message" : "La fecha de inicio debe estar en formato ISO 8601 (ej: '2025-01-15T08:00:00Z' o '2025-01-15')",
+      "error" : "Formato de fecha de inicio inválido"
+    },
+    "claves" : [ ".error:STRING", ".message:STRING" ]
+  },
+  "crear periodo invalido" : {
+    "status" : 400,
+    "body" : {
+      "periodosValidos" : "<periodos recientes>",
+      "error" : "Período académico inválido",
+      "message" : "El período académico '2025-3' no es válido. Debe ser un período válido como '2025-1' o '2025-2'"
+    },
+    "claves" : [ ".error:STRING", ".message:STRING", ".periodosValidos:ARRAY" ]
+  },
+  "editar cupo" : {
+    "status" : 200,
+    "body" : {
+      "id_salon" : null,
+      "nombre_curso" : "Materia 1",
+      "espacio_asignado" : null,
+      "debug_info" : "Cambios aplicados y guardados en BD",
+      "estado" : "Actualizado",
+      "codigo_curso" : "MAT1",
+      "cupo_estimado" : 21,
+      "id_curso" : 1,
+      "message" : "Curso actualizado exitosamente",
+      "salon" : null
+    },
+    "claves" : [ ".id_salon:NULL", ".nombre_curso:STRING", ".espacio_asignado:NULL", ".debug_info:STRING", ".estado:STRING", ".codigo_curso:STRING", ".cupo_estimado:NUMBER", ".id_curso:NUMBER", ".message:STRING", ".salon:NULL" ]
+  },
+  "editar salon" : {
+    "status" : 200,
+    "body" : {
+      "id_salon" : 81,
+      "nombre_curso" : "Materia 1",
+      "espacio_asignado" : "221",
+      "debug_info" : "Cambios aplicados y guardados en BD",
+      "estado" : "Publicado",
+      "codigo_curso" : "MAT1",
+      "cupo_estimado" : 21,
+      "id_curso" : 1,
+      "message" : "Curso actualizado exitosamente",
+      "salon" : {
+        "id_salon" : 81,
+        "descripcion" : "221 - FIET",
+        "numero_salon" : "221",
+        "edificio" : "FIET",
+        "activo" : true
+      }
+    },
+    "claves" : [ ".id_salon:NUMBER", ".nombre_curso:STRING", ".espacio_asignado:STRING", ".debug_info:STRING", ".estado:STRING", ".codigo_curso:STRING", ".cupo_estimado:NUMBER", ".id_curso:NUMBER", ".message:STRING", ".salon:OBJECT", ".salon.id_salon:NUMBER", ".salon.descripcion:STRING", ".salon.numero_salon:STRING", ".salon.edificio:STRING", ".salon.activo:BOOLEAN" ]
+  },
+  "editar sin materia ni salon" : {
+    "status" : 200,
+    "body" : {
+      "id_salon" : null,
+      "nombre_curso" : "Curso",
+      "espacio_asignado" : "999",
+      "debug_info" : "Cambios aplicados y guardados en BD",
+      "estado" : "Actualizado",
+      "codigo_curso" : "N/A",
+      "cupo_estimado" : 23,
+      "id_curso" : 3,
+      "message" : "Curso actualizado exitosamente",
+      "salon" : null
+    },
+    "claves" : [ ".id_salon:NULL", ".nombre_curso:STRING", ".espacio_asignado:STRING", ".debug_info:STRING", ".estado:STRING", ".codigo_curso:STRING", ".cupo_estimado:NUMBER", ".id_curso:NUMBER", ".message:STRING", ".salon:NULL" ]
+  },
+  "editar inexistente" : {
+    "status" : 404,
+    "body" : null,
+    "claves" : [ ]
+  },
+  "editar cupo invalido" : {
+    "status" : 400,
+    "body" : {
+      "error" : "Cupo invalido",
+      "message" : "El cupo estimado debe estar entre 1 y 100"
+    },
+    "claves" : [ ".error:STRING", ".message:STRING" ]
+  },
+  "editar espacio corto" : {
+    "status" : 400,
+    "body" : {
+      "error" : "Espacio invalido",
+      "message" : "El espacio asignado debe tener al menos 3 caracteres"
+    },
+    "claves" : [ ".error:STRING", ".message:STRING" ]
+  },
+  "editar sin cambios" : {
+    "status" : 400,
+    "body" : {
+      "error" : "Sin cambios",
+      "message" : "No se proporcionaron datos para actualizar"
+    },
+    "claves" : [ ".error:STRING", ".message:STRING" ]
+  },
+  "editar transicion invalida" : {
+    "status" : 400,
+    "body" : {
+      "valido" : false,
+      "error" : "Transicion invalida",
+      "message" : "No se puede"
+    },
+    "claves" : [ ".valido:BOOLEAN", ".error:STRING", ".message:STRING" ]
+  },
+  "editar estado invalido" : {
+    "status" : 400,
+    "body" : {
+      "message" : "El estado debe ser uno de: Borrador, Abierto, Publicado, Preinscripcion, Inscripcion, Cerrado",
+      "error" : "Estado invalido"
+    },
+    "claves" : [ ".error:STRING", ".message:STRING" ]
+  },
+  "editar salon inexistente" : {
+    "status" : 400,
+    "body" : {
+      "message" : "Salón 404 no existe",
+      "error" : "Salón no encontrado"
+    },
+    "claves" : [ ".error:STRING", ".message:STRING" ]
+  },
+  "eliminar 1" : {
+    "status" : 200,
+    "body" : {
+      "nombre_curso" : "Materia 1",
+      "id_curso_eliminado" : 1,
+      "message" : "Curso eliminado exitosamente"
+    },
+    "claves" : [ ".nombre_curso:STRING", ".id_curso_eliminado:NUMBER", ".message:STRING" ]
+  },
+  "eliminar 3" : {
+    "status" : 200,
+    "body" : {
+      "nombre_curso" : "Curso",
+      "id_curso_eliminado" : 3,
+      "message" : "Curso eliminado exitosamente"
+    },
+    "claves" : [ ".nombre_curso:STRING", ".id_curso_eliminado:NUMBER", ".message:STRING" ]
+  },
+  "eliminar 4" : {
+    "status" : 400,
+    "body" : {
+      "estudiantes_inscritos" : 2,
+      "error" : "No se puede eliminar el curso",
+      "message" : "El curso tiene estudiantes inscritos. No se puede eliminar."
+    },
+    "claves" : [ ".estudiantes_inscritos:NUMBER", ".error:STRING", ".message:STRING" ]
+  },
+  "eliminar 5" : {
+    "status" : 500,
+    "body" : {
+      "error" : "Error al eliminar el curso",
+      "message" : "No se pudo eliminar el curso por razones desconocidas"
+    },
+    "claves" : [ ".error:STRING", ".message:STRING" ]
+  },
+  "eliminar 9" : {
+    "status" : 404,
+    "body" : null,
+    "claves" : [ ]
+  }
+}

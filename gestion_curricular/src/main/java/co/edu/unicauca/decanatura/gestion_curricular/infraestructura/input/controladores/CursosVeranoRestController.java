@@ -4,7 +4,6 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.TimeZone;
@@ -34,6 +33,14 @@ import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.Respu
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.dto.peticion.ActualizarCursoDTOPeticion;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.dto.peticion.CrearCursoDTOPeticion;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.dto.respuesta.CursosOfertadosDTORespuesta;
+import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.dto.respuesta.CursosVeranoDTORespuesta.BorradoBloqueado;
+import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.dto.respuesta.CursosVeranoDTORespuesta.CursoActualizado;
+import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.dto.respuesta.CursosVeranoDTORespuesta.CursoCreado;
+import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.dto.respuesta.CursosVeranoDTORespuesta.CursoEliminado;
+import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.dto.respuesta.CursosVeranoDTORespuesta.Detalle;
+import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.dto.respuesta.CursosVeranoDTORespuesta.ErrorCurso;
+import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.dto.respuesta.CursosVeranoDTORespuesta.SalonInfo;
+import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.dto.respuesta.CursosVeranoDTORespuesta.TransicionRechazada;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.dto.respuesta.EstudiantesCursoVeranoDTORespuesta.Estudiante;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.dto.respuesta.EstudiantesCursoVeranoDTORespuesta.InscripcionSinPreinscripcion;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.dto.respuesta.EstudiantesCursoVeranoDTORespuesta.Preinscripcion;
@@ -133,18 +140,12 @@ public class CursosVeranoRestController {
         return ResponseEntity.ok(respuesta);
     }
 
-    private static Map<String, Object> salonInfo(Salon salon) {
+    private static SalonInfo salonInfo(Salon salon) {
         if (salon == null) {
             return null;
         }
-        Map<String, Object> info = new HashMap<>();
-        info.put("id_salon", salon.getId_salon());
-        info.put("numero_salon", salon.getNumero_salon());
-        info.put("edificio", salon.getEdificio());
-        info.put("activo", salon.getActivo());
-        info.put("descripcion", salon.getNumero_salon()
-                + (salon.getEdificio() != null ? " - " + salon.getEdificio() : ""));
-        return info;
+        return new SalonInfo(salon.getId_salon(), salon.getNumero_salon(), salon.getEdificio(), salon.getActivo(),
+                salon.getNumero_salon() + (salon.getEdificio() != null ? " - " + salon.getEdificio() : ""));
     }
 
     /**
@@ -236,7 +237,7 @@ public class CursosVeranoRestController {
      */
     @PreAuthorize("hasAnyRole('Funcionario', 'Coordinador', 'Administrador')")
     @PostMapping("/cursos-verano")
-    public ResponseEntity<Map<String, Object>> crearCurso(@RequestBody CrearCursoDTOPeticion dto) {
+    public ResponseEntity<?> crearCurso(@RequestBody CrearCursoDTOPeticion dto) {
         if (dto.getId_docente() != null && dto.getId_docente() <= 0) {
             return errorCurso("ID de docente inválido",
                     "El ID del docente debe ser mayor a 0. ID recibido: " + dto.getId_docente());
@@ -298,32 +299,18 @@ public class CursosVeranoRestController {
         
         // Crear respuesta con datos reales del curso creado
         // Usar las fechas y período académico proporcionados por el usuario en lugar de los calculados
-        Map<String, Object> nuevoCurso = new HashMap<>();
-        nuevoCurso.put("id_curso", cursoCreado.getId_curso());
-        nuevoCurso.put("nombre_curso", cursoDTO.getNombre_curso()); // De la materia
-        nuevoCurso.put("codigo_curso", cursoDTO.getCodigo_curso()); // De la materia
-        nuevoCurso.put("descripcion", cursoDTO.getDescripcion()); // Generada automáticamente
-        nuevoCurso.put("fecha_inicio", dto.getFecha_inicio()); // Usar la fecha proporcionada por el usuario
-        nuevoCurso.put("fecha_fin", dto.getFecha_fin()); // Usar la fecha proporcionada por el usuario
-        nuevoCurso.put("periodo", periodo); // Usar el período académico validado (enum)
-        nuevoCurso.put("cupo_maximo", cursoDTO.getCupo_maximo()); // Igual a cupo_estimado
-        nuevoCurso.put("cupo_disponible", cursoDTO.getCupo_disponible()); // Igual a cupo_estimado inicialmente
-        nuevoCurso.put("cupo_estimado", cursoDTO.getCupo_estimado());
-        nuevoCurso.put("espacio_asignado", cursoDTO.getEspacio_asignado());
-        nuevoCurso.put("estado", cursoDTO.getEstado()); // Estado actual
-        nuevoCurso.put("objMateria", cursoDTO.getObjMateria());
-        nuevoCurso.put("objDocente", cursoDTO.getObjDocente());
-        
-        nuevoCurso.put("message", "Curso creado exitosamente en la base de datos");
-        
-        return ResponseEntity.ok(nuevoCurso);
+        return ResponseEntity.ok(new CursoCreado(cursoCreado.getId_curso(), cursoDTO.getNombre_curso(),
+                cursoDTO.getCodigo_curso(), cursoDTO.getDescripcion(), dto.getFecha_inicio(), dto.getFecha_fin(),
+                periodo, cursoDTO.getCupo_maximo(), cursoDTO.getCupo_disponible(), cursoDTO.getCupo_estimado(),
+                cursoDTO.getEspacio_asignado(), cursoDTO.getEstado(), cursoDTO.getObjMateria(),
+                cursoDTO.getObjDocente(), "Curso creado exitosamente en la base de datos"));
     }
 
-    private ResponseEntity<Map<String, Object>> errorCurso(String error, String mensaje) {
+    private ResponseEntity<Map<String, String>> errorCurso(String error, String mensaje) {
         return ResponseEntity.badRequest().body(Map.of("error", error, "message", mensaje));
     }
 
-    private ResponseEntity<Map<String, Object>> errorDatosCurso(DatosCursoInvalidosException e) {
+    private ResponseEntity<Map<String, String>> errorDatosCurso(DatosCursoInvalidosException e) {
         return switch (e.getMotivo()) {
             case FECHAS_INVALIDAS -> errorCurso("Fechas inválidas", e.getMessage());
             case SALON_REQUERIDO -> errorCurso("Salón requerido", e.getMessage());
@@ -367,23 +354,19 @@ public class CursosVeranoRestController {
      */
     @PreAuthorize("hasAnyRole('Funcionario', 'Coordinador', 'Administrador')")
     @PutMapping("/cursos-verano/{id}")
-    public ResponseEntity<Map<String, Object>> actualizarCurso(
-            @PathVariable Long id, 
+    public ResponseEntity<?> actualizarCurso(
+            @PathVariable Long id,
             @RequestBody ActualizarCursoDTOPeticion dto) {
-        
+
         // Validaciones basicas
         if (dto.getCupo_estimado() != null && (dto.getCupo_estimado() < 1 || dto.getCupo_estimado() > 100)) {
-            Map<String, Object> error = new HashMap<>();
-            error.put("error", "Cupo invalido");
-            error.put("message", "El cupo estimado debe estar entre 1 y 100");
-            return ResponseEntity.badRequest().body(error);
+            return ResponseEntity.badRequest().body(new ErrorCurso("Cupo invalido",
+                    "El cupo estimado debe estar entre 1 y 100"));
         }
-        
+
         if (dto.getEspacio_asignado() != null && dto.getEspacio_asignado().trim().length() < 3) {
-            Map<String, Object> error = new HashMap<>();
-            error.put("error", "Espacio invalido");
-            error.put("message", "El espacio asignado debe tener al menos 3 caracteres");
-            return ResponseEntity.badRequest().body(error);
+            return ResponseEntity.badRequest().body(new ErrorCurso("Espacio invalido",
+                    "El espacio asignado debe tener al menos 3 caracteres"));
         }
         
         if (dto.getEstado() != null && !TransicionEstadoCurso.esEstadoValido(dto.getEstado())) {
@@ -399,43 +382,29 @@ public class CursosVeranoRestController {
         }
 
         if (dto.getCupo_estimado() == null && nuevoSalon == null && dto.getEstado() == null) {
-            Map<String, Object> error = new HashMap<>();
-            error.put("error", "Sin cambios");
-            error.put("message", "No se proporcionaron datos para actualizar");
-            return ResponseEntity.badRequest().body(error);
+            return ResponseEntity.badRequest().body(new ErrorCurso("Sin cambios",
+                    "No se proporcionaron datos para actualizar"));
         }
 
         CursoOfertadoVerano cursoActualizado;
         try {
             cursoActualizado = cursoCU.modificarCurso(id.intValue(), dto.getCupo_estimado(), nuevoSalon, dto.getEstado());
         } catch (TransicionEstadoCurso.TransicionInvalidaException e) {
-            Map<String, Object> error = new HashMap<>();
-            error.put("valido", false);
-            error.put("error", e.getError());
-            error.put("message", e.getMessage());
-            return ResponseEntity.badRequest().body(error);
+            return ResponseEntity.badRequest().body(new TransicionRechazada(false, e.getError(), e.getMessage()));
         }
         if (cursoActualizado == null) {
             return ResponseEntity.notFound().build();
         }
 
         // Crear respuesta con los datos actualizados
-        Map<String, Object> resultado = new HashMap<>();
-        resultado.put("id_curso", cursoActualizado.getId_curso());
-        resultado.put("nombre_curso", cursoActualizado.getObjMateria() != null ? cursoActualizado.getObjMateria().getNombre() : "Curso");
-        resultado.put("codigo_curso", cursoActualizado.getObjMateria() != null ? cursoActualizado.getObjMateria().getCodigo() : "N/A");
-        resultado.put("cupo_estimado", cursoActualizado.getCupo_estimado());
-        resultado.put("espacio_asignado", cursoActualizado.getSalon());
-        
         Salon salon = salonCU.resolverSalonDeCurso(cursoActualizado.getSalon(), false);
-        resultado.put("salon", salonInfo(salon));
-        resultado.put("id_salon", salon == null ? null : salon.getId_salon());
-
-        resultado.put("estado", dto.getEstado() != null ? dto.getEstado() : "Actualizado");
-        resultado.put("message", "Curso actualizado exitosamente");
-        resultado.put("debug_info", "Cambios aplicados y guardados en BD");
-        
-        return ResponseEntity.ok(resultado);
+        return ResponseEntity.ok(new CursoActualizado(cursoActualizado.getId_curso(),
+                cursoActualizado.getObjMateria() != null ? cursoActualizado.getObjMateria().getNombre() : "Curso",
+                cursoActualizado.getObjMateria() != null ? cursoActualizado.getObjMateria().getCodigo() : "N/A",
+                cursoActualizado.getCupo_estimado(), cursoActualizado.getSalon(), salonInfo(salon),
+                salon == null ? null : salon.getId_salon(),
+                dto.getEstado() != null ? dto.getEstado() : "Actualizado", "Curso actualizado exitosamente",
+                "Cambios aplicados y guardados en BD"));
     }
 
     /**
@@ -444,41 +413,30 @@ public class CursosVeranoRestController {
      */
     @PreAuthorize("hasAnyRole('Funcionario', 'Coordinador', 'Administrador')")
     @DeleteMapping("/cursos-verano/{id}")
-    public ResponseEntity<Map<String, Object>> eliminarCurso(@PathVariable Long id) {
-        
+    public ResponseEntity<?> eliminarCurso(@PathVariable Long id) {
+
         // Verificar que el curso existe
         CursoOfertadoVerano cursoExistente = cursoCU.obtenerCursoPorId(id.intValue());
         if (cursoExistente == null) {
-            Map<String, Object> error = new HashMap<>();
-            error.put("error", "Curso no encontrado");
-            error.put("message", "No se encontro el curso con ID: " + id);
             return ResponseEntity.notFound().build();
         }
-        
+
         // Verificar si hay estudiantes inscritos
         if (cursoExistente.getEstudiantesInscritos() != null && !cursoExistente.getEstudiantesInscritos().isEmpty()) {
-            Map<String, Object> error = new HashMap<>();
-            error.put("error", "No se puede eliminar el curso");
-            error.put("message", "El curso tiene estudiantes inscritos. No se puede eliminar.");
-            error.put("estudiantes_inscritos", cursoExistente.getEstudiantesInscritos().size());
-            return ResponseEntity.badRequest().body(error);
+            return ResponseEntity.badRequest().body(new BorradoBloqueado(
+                    cursoExistente.getEstudiantesInscritos().size(), "No se puede eliminar el curso",
+                    "El curso tiene estudiantes inscritos. No se puede eliminar."));
         }
-        
+
         // Llamar al caso de uso para eliminar
         boolean eliminado = cursoCU.eliminarCurso(id.intValue());
-        
+
         if (eliminado) {
-            Map<String, Object> resultado = new HashMap<>();
-            resultado.put("message", "Curso eliminado exitosamente");
-            resultado.put("id_curso_eliminado", id);
-            resultado.put("nombre_curso", cursoExistente.getObjMateria() != null ? cursoExistente.getObjMateria().getNombre() : "Curso");
-            
-            return ResponseEntity.ok(resultado);
+            return ResponseEntity.ok(new CursoEliminado("Curso eliminado exitosamente", id,
+                    cursoExistente.getObjMateria() != null ? cursoExistente.getObjMateria().getNombre() : "Curso"));
         } else {
-            Map<String, Object> error = new HashMap<>();
-            error.put("error", "Error al eliminar el curso");
-            error.put("message", "No se pudo eliminar el curso por razones desconocidas");
-            return ResponseEntity.status(500).body(error);
+            return ResponseEntity.status(500).body(new ErrorCurso("Error al eliminar el curso",
+                    "No se pudo eliminar el curso por razones desconocidas"));
         }
     }
 
@@ -487,7 +445,7 @@ public class CursosVeranoRestController {
      * GET /api/cursos-intersemestrales/cursos-verano/{id}
      */
     @GetMapping("/cursos-verano/{id}")
-    public ResponseEntity<Map<String, Object>> getCursoPorId(@PathVariable Long id) {
+    public ResponseEntity<Detalle> getCursoPorId(@PathVariable Long id) {
         
         // Obtener curso real de la base de datos - lanza EntidadNoExisteException si no existe
         CursoOfertadoVerano cursoReal = cursoCU.obtenerCursoPorId(id.intValue());
@@ -504,43 +462,24 @@ public class CursosVeranoRestController {
         }
         
         // Mapear a estructura esperada por el frontend
-        Map<String, Object> curso = new HashMap<>();
-        curso.put("id_curso", cursoDTO.getId_curso());
-        curso.put("idCurso", cursoDTO.getId_curso());
-        curso.put("nombre_curso", cursoDTO.getNombre_curso());
-        curso.put("codigo_curso", cursoDTO.getCodigo_curso());
-        curso.put("descripcion", cursoDTO.getDescripcion());
-        curso.put("fecha_inicio", cursoDTO.getFecha_inicio());
-        curso.put("fecha_fin", cursoDTO.getFecha_fin());
-        curso.put("cupo_maximo", cursoDTO.getCupo_maximo());
-        curso.put("cupo_disponible", cursoDTO.getCupo_disponible());
-        curso.put("cupo_estimado", cursoDTO.getCupo_estimado());
-        curso.put("espacio_asignado", cursoDTO.getEspacio_asignado());
-        curso.put("estado", cursoDTO.getEstado());
-        
         Salon salon = salonCU.resolverSalonDeCurso(cursoReal.getSalon(), false);
-        curso.put("salon", salonInfo(salon));
-        curso.put("id_salon", salon == null ? null : salon.getId_salon());
 
         // Obtener conteo real de preinscripciones para este curso
+        int solicitudes;
         try {
             List<SolicitudCursoVeranoPreinscripcion> preinscripciones = solicitudCU.buscarPreinscripcionesPorCurso(id.intValue());
-            curso.put("solicitudes", preinscripciones.size());
+            solicitudes = preinscripciones.size();
         } catch (Exception e) {
-            curso.put("solicitudes", 0);
+            solicitudes = 0;
         }
-        
+
         // Usar la informacion del DTO que ya esta mapeada correctamente
-        curso.put("objMateria", cursoDTO.getObjMateria());
-        curso.put("objDocente", cursoDTO.getObjDocente());
-        
-        // Log final para verificar que el docente está en la respuesta
-        if (curso.get("objDocente") == null) {
-        } else {
-        }
-        
-        
-        return ResponseEntity.ok(curso);
+        return ResponseEntity.ok(new Detalle(cursoDTO.getId_curso(), cursoDTO.getId_curso(),
+                cursoDTO.getNombre_curso(), cursoDTO.getCodigo_curso(), cursoDTO.getDescripcion(),
+                cursoDTO.getFecha_inicio(), cursoDTO.getFecha_fin(), cursoDTO.getCupo_maximo(),
+                cursoDTO.getCupo_disponible(), cursoDTO.getCupo_estimado(), cursoDTO.getEspacio_asignado(),
+                cursoDTO.getEstado(), salonInfo(salon), salon == null ? null : salon.getId_salon(), solicitudes,
+                cursoDTO.getObjMateria(), cursoDTO.getObjDocente()));
     }
 
     /**

@@ -1,11 +1,12 @@
 package co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.dto.respuesta;
 
 import java.util.List;
-import java.util.Map;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
+import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.dto.respuesta.CursosVeranoDTORespuesta.SalonInfo;
 
 @Data
 @AllArgsConstructor
@@ -41,7 +42,7 @@ public class CursosOfertadosDTORespuesta {
 
     // Información completa del salón (id_salon, edificio, etc.)
     private Integer id_salon; // ID del salón en la base de datos
-    private Map<String, Object> salonInfo; // Objeto con información completa del salón
+    private SalonInfo salonInfo; // Objeto con información completa del salón
 
     private List<EstadoCursoOfertadoDTORespuesta> estadosCursoOfertados;
 
