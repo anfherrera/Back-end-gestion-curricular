@@ -1,0 +1,615 @@
+{
+  "preinscripciones 1" : {
+    "status" : 200,
+    "body" : {
+      "preinscripciones" : [ {
+        "id_solicitud" : 10,
+        "nombre_solicitud" : "Solicitud 10",
+        "periodo_academico" : "2024-1",
+        "fecha_ceremonia" : null,
+        "fecha_registro_solicitud" : 1710522000000,
+        "estadosSolicitud" : [ {
+          "id_estado" : 10,
+          "estado_actual" : "Enviada",
+          "fecha_registro_estado" : 1710522000000,
+          "comentario" : null,
+          "objSolicitud" : null
+        } ],
+        "objUsuario" : null,
+        "documentos" : [ ],
+        "objCursoOfertadoVerano" : {
+          "id_curso" : 5,
+          "objMateria" : {
+            "id_materia" : 105,
+            "codigo" : null,
+            "nombre" : "Materia 5",
+            "creditos" : null
+          },
+          "objDocente" : null,
+          "grupo" : null,
+          "cupo_estimado" : null,
+          "salon" : null,
+          "fecha_inicio" : null,
+          "fecha_fin" : null,
+          "periodo_academico" : null,
+          "estadosCursoOfertados" : [ ],
+          "estudiantesInscritos" : [ ],
+          "solicitudes" : [ ]
+        },
+        "nombre_estudiante" : "Estudiante 10",
+        "codigo_estudiante" : "104610",
+        "codicion_solicitud" : null,
+        "observacion" : "observacion"
+      }, {
+        "id_solicitud" : 11,
+        "nombre_solicitud" : "Solicitud 11",
+        "periodo_academico" : "2024-1",
+        "fecha_ceremonia" : null,
+        "fecha_registro_solicitud" : 1710522000000,
+        "estadosSolicitud" : [ {
+          "id_estado" : 11,
+          "estado_actual" : "Enviada",
+          "fecha_registro_estado" : 1710522000000,
+          "comentario" : null,
+          "objSolicitud" : null
+        } ],
+        "objUsuario" : null,
+        "documentos" : [ ],
+        "objCursoOfertadoVerano" : {
+          "id_curso" : 5,
+          "objMateria" : {
+            "id_materia" : 105,
+            "codigo" : null,
+            "nombre" : "Materia 5",
+            "creditos" : null
+          },
+          "objDocente" : null,
+          "grupo" : null,
+          "cupo_estimado" : null,
+          "salon" : null,
+          "fecha_inicio" : null,
+          "fecha_fin" : null,
+          "periodo_academico" : null,
+          "estadosCursoOfertados" : [ ],
+          "estudiantesInscritos" : [ ],
+          "solicitudes" : [ ]
+        },
+        "nombre_estudiante" : "Estudiante 11",
+        "codigo_estudiante" : "104611",
+        "codicion_solicitud" : null,
+        "observacion" : null
+      } ],
+      "total" : 2,
+      "idCurso" : 1
+    },
+    "claves" : [ ".preinscripciones:ARRAY", ".preinscripciones[0].id_solicitud:NUMBER", ".preinscripciones[0].nombre_solicitud:STRING", ".preinscripciones[0].periodo_academico:STRING", ".preinscripciones[0].fecha_ceremonia:NULL", ".preinscripciones[0].fecha_registro_solicitud:NUMBER", ".preinscripciones[0].estadosSolicitud:ARRAY", ".preinscripciones[0].estadosSolicitud[0].id_estado:NUMBER", ".preinscripciones[0].estadosSolicitud[0].estado_actual:STRING", ".preinscripciones[0].estadosSolicitud[0].fecha_registro_estado:NUMBER", ".preinscripciones[0].estadosSolicitud[0].comentario:NULL", ".preinscripciones[0].estadosSolicitud[0].objSolicitud:NULL", ".preinscripciones[0].objUsuario:NULL", ".preinscripciones[0].documentos:ARRAY", ".preinscripciones[0].objCursoOfertadoVerano:OBJECT", ".preinscripciones[0].objCursoOfertadoVerano.id_curso:NUMBER", ".preinscripciones[0].objCursoOfertadoVerano.objMateria:OBJECT", ".preinscripciones[0].objCursoOfertadoVerano.objMateria.id_materia:NUMBER", ".preinscripciones[0].objCursoOfertadoVerano.objMateria.codigo:NULL", ".preinscripciones[0].objCursoOfertadoVerano.objMateria.nombre:STRING", ".preinscripciones[0].objCursoOfertadoVerano.objMateria.creditos:NULL", ".preinscripciones[0].objCursoOfertadoVerano.objDocente:NULL", ".preinscripciones[0].objCursoOfertadoVerano.grupo:NULL", ".preinscripciones[0].objCursoOfertadoVerano.cupo_estimado:NULL", ".preinscripciones[0].objCursoOfertadoVerano.salon:NULL", ".preinscripciones[0].objCursoOfertadoVerano.fecha_inicio:NULL", ".preinscripciones[0].objCursoOfertadoVerano.fecha_fin:NULL", ".preinscripciones[0].objCursoOfertadoVerano.periodo_academico:NULL", ".preinscripciones[0].objCursoOfertadoVerano.estadosCursoOfertados:ARRAY", ".preinscripciones[0].objCursoOfertadoVerano.estudiantesInscritos:ARRAY", ".preinscripciones[0].objCursoOfertadoVerano.solicitudes:ARRAY", ".preinscripciones[0].nombre_estudiante:STRING", ".preinscripciones[0].codigo_estudiante:STRING", ".preinscripciones[0].codicion_solicitud:NULL", ".preinscripciones[0].observacion:STRING", ".preinscripciones[1].id_solicitud:NUMBER", ".preinscripciones[1].nombre_solicitud:STRING", ".preinscripciones[1].periodo_academico:STRING", ".preinscripciones[1].fecha_ceremonia:NULL", ".preinscripciones[1].fecha_registro_solicitud:NUMBER", ".preinscripciones[1].estadosSolicitud:ARRAY", ".preinscripciones[1].estadosSolicitud[0].id_estado:NUMBER", ".preinscripciones[1].estadosSolicitud[0].estado_actual:STRING", ".preinscripciones[1].estadosSolicitud[0].fecha_registro_estado:NUMBER", ".preinscripciones[1].estadosSolicitud[0].comentario:NULL", ".preinscripciones[1].estadosSolicitud[0].objSolicitud:NULL", ".preinscripciones[1].objUsuario:NULL", ".preinscripciones[1].documentos:ARRAY", ".preinscripciones[1].objCursoOfertadoVerano:OBJECT", ".preinscripciones[1].objCursoOfertadoVerano.id_curso:NUMBER", ".preinscripciones[1].objCursoOfertadoVerano.objMateria:OBJECT", ".preinscripciones[1].objCursoOfertadoVerano.objMateria.id_materia:NUMBER", ".preinscripciones[1].objCursoOfertadoVerano.objMateria.codigo:NULL", ".preinscripciones[1].objCursoOfertadoVerano.objMateria.nombre:STRING", ".preinscripciones[1].objCursoOfertadoVerano.objMateria.creditos:NULL", ".preinscripciones[1].objCursoOfertadoVerano.objDocente:NULL", ".preinscripciones[1].objCursoOfertadoVerano.grupo:NULL", ".preinscripciones[1].objCursoOfertadoVerano.cupo_estimado:NULL", ".preinscripciones[1].objCursoOfertadoVerano.salon:NULL", ".preinscripciones[1].objCursoOfertadoVerano.fecha_inicio:NULL", ".preinscripciones[1].objCursoOfertadoVerano.fecha_fin:NULL", ".preinscripciones[1].objCursoOfertadoVerano.periodo_academico:NULL", ".preinscripciones[1].objCursoOfertadoVerano.estadosCursoOfertados:ARRAY", ".preinscripciones[1].objCursoOfertadoVerano.estudiantesInscritos:ARRAY", ".preinscripciones[1].objCursoOfertadoVerano.solicitudes:ARRAY", ".preinscripciones[1].nombre_estudiante:STRING", ".preinscripciones[1].codigo_estudiante:STRING", ".preinscripciones[1].codicion_solicitud:NULL", ".preinscripciones[1].observacion:NULL", ".total:NUMBER", ".idCurso:NUMBER" ]
+  },
+  "inscripciones 1" : {
+    "status" : 200,
+    "body" : {
+      "total" : 2,
+      "inscripciones" : [ {
+        "id_solicitud" : 20,
+        "nombre_solicitud" : "Solicitud 20",
+        "periodo_academico" : "2024-1",
+        "fecha_ceremonia" : null,
+        "fecha_registro_solicitud" : 1710522000000,
+        "estadosSolicitud" : [ {
+          "id_estado" : 20,
+          "estado_actual" : "Enviada",
+          "fecha_registro_estado" : 1710522000000,
+          "comentario" : null,
+          "objSolicitud" : null
+        } ],
+        "objUsuario" : null,
+        "documentos" : [ ],
+        "objCursoOfertadoVerano" : {
+          "id_curso" : 5,
+          "objMateria" : {
+            "id_materia" : 105,
+            "codigo" : null,
+            "nombre" : "Materia 5",
+            "creditos" : null
+          },
+          "objDocente" : null,
+          "grupo" : null,
+          "cupo_estimado" : null,
+          "salon" : null,
+          "fecha_inicio" : null,
+          "fecha_fin" : null,
+          "periodo_academico" : null,
+          "estadosCursoOfertados" : [ ],
+          "estudiantesInscritos" : [ ],
+          "solicitudes" : [ ]
+        },
+        "nombre_estudiante" : "Estudiante 20",
+        "codicion_solicitud" : null,
+        "observacion" : null
+      }, {
+        "id_solicitud" : 21,
+        "nombre_solicitud" : "Solicitud 21",
+        "periodo_academico" : "2024-1",
+        "fecha_ceremonia" : null,
+        "fecha_registro_solicitud" : 1710522000000,
+        "estadosSolicitud" : [ {
+          "id_estado" : 21,
+          "estado_actual" : "Enviada",
+          "fecha_registro_estado" : 1710522000000,
+          "comentario" : null,
+          "objSolicitud" : null
+        } ],
+        "objUsuario" : null,
+        "documentos" : [ ],
+        "objCursoOfertadoVerano" : {
+          "id_curso" : 5,
+          "objMateria" : {
+            "id_materia" : 105,
+            "codigo" : null,
+            "nombre" : "Materia 5",
+            "creditos" : null
+          },
+          "objDocente" : null,
+          "grupo" : null,
+          "cupo_estimado" : null,
+          "salon" : null,
+          "fecha_inicio" : null,
+          "fecha_fin" : null,
+          "periodo_academico" : null,
+          "estadosCursoOfertados" : [ ],
+          "estudiantesInscritos" : [ ],
+          "solicitudes" : [ ]
+        },
+        "nombre_estudiante" : "Estudiante 21",
+        "codicion_solicitud" : null,
+        "observacion" : null
+      } ],
+      "idCurso" : 1
+    },
+    "claves" : [ ".total:NUMBER", ".inscripciones:ARRAY", ".inscripciones[0].id_solicitud:NUMBER", ".inscripciones[0].nombre_solicitud:STRING", ".inscripciones[0].periodo_academico:STRING", ".inscripciones[0].fecha_ceremonia:NULL", ".inscripciones[0].fecha_registro_solicitud:NUMBER", ".inscripciones[0].estadosSolicitud:ARRAY", ".inscripciones[0].estadosSolicitud[0].id_estado:NUMBER", ".inscripciones[0].estadosSolicitud[0].estado_actual:STRING", ".inscripciones[0].estadosSolicitud[0].fecha_registro_estado:NUMBER", ".inscripciones[0].estadosSolicitud[0].comentario:NULL", ".inscripciones[0].estadosSolicitud[0].objSolicitud:NULL", ".inscripciones[0].objUsuario:NULL", ".inscripciones[0].documentos:ARRAY", ".inscripciones[0].objCursoOfertadoVerano:OBJECT", ".inscripciones[0].objCursoOfertadoVerano.id_curso:NUMBER", ".inscripciones[0].objCursoOfertadoVerano.objMateria:OBJECT", ".inscripciones[0].objCursoOfertadoVerano.objMateria.id_materia:NUMBER", ".inscripciones[0].objCursoOfertadoVerano.objMateria.codigo:NULL", ".inscripciones[0].objCursoOfertadoVerano.objMateria.nombre:STRING", ".inscripciones[0].objCursoOfertadoVerano.objMateria.creditos:NULL", ".inscripciones[0].objCursoOfertadoVerano.objDocente:NULL", ".inscripciones[0].objCursoOfertadoVerano.grupo:NULL", ".inscripciones[0].objCursoOfertadoVerano.cupo_estimado:NULL", ".inscripciones[0].objCursoOfertadoVerano.salon:NULL", ".inscripciones[0].objCursoOfertadoVerano.fecha_inicio:NULL", ".inscripciones[0].objCursoOfertadoVerano.fecha_fin:NULL", ".inscripciones[0].objCursoOfertadoVerano.periodo_academico:NULL", ".inscripciones[0].objCursoOfertadoVerano.estadosCursoOfertados:ARRAY", ".inscripciones[0].objCursoOfertadoVerano.estudiantesInscritos:ARRAY", ".inscripciones[0].objCursoOfertadoVerano.solicitudes:ARRAY", ".inscripciones[0].nombre_estudiante:STRING", ".inscripciones[0].codicion_solicitud:NULL", ".inscripciones[0].observacion:NULL", ".inscripciones[1].id_solicitud:NUMBER", ".inscripciones[1].nombre_solicitud:STRING", ".inscripciones[1].periodo_academico:STRING", ".inscripciones[1].fecha_ceremonia:NULL", ".inscripciones[1].fecha_registro_solicitud:NUMBER", ".inscripciones[1].estadosSolicitud:ARRAY", ".inscripciones[1].estadosSolicitud[0].id_estado:NUMBER", ".inscripciones[1].estadosSolicitud[0].estado_actual:STRING", ".inscripciones[1].estadosSolicitud[0].fecha_registro_estado:NUMBER", ".inscripciones[1].estadosSolicitud[0].comentario:NULL", ".inscripciones[1].estadosSolicitud[0].objSolicitud:NULL", ".inscripciones[1].objUsuario:NULL", ".inscripciones[1].documentos:ARRAY", ".inscripciones[1].objCursoOfertadoVerano:OBJECT", ".inscripciones[1].objCursoOfertadoVerano.id_curso:NUMBER", ".inscripciones[1].objCursoOfertadoVerano.objMateria:OBJECT", ".inscripciones[1].objCursoOfertadoVerano.objMateria.id_materia:NUMBER", ".inscripciones[1].objCursoOfertadoVerano.objMateria.codigo:NULL", ".inscripciones[1].objCursoOfertadoVerano.objMateria.nombre:STRING", ".inscripciones[1].objCursoOfertadoVerano.objMateria.creditos:NULL", ".inscripciones[1].objCursoOfertadoVerano.objDocente:NULL", ".inscripciones[1].objCursoOfertadoVerano.grupo:NULL", ".inscripciones[1].objCursoOfertadoVerano.cupo_estimado:NULL", ".inscripciones[1].objCursoOfertadoVerano.salon:NULL", ".inscripciones[1].objCursoOfertadoVerano.fecha_inicio:NULL", ".inscripciones[1].objCursoOfertadoVerano.fecha_fin:NULL", ".inscripciones[1].objCursoOfertadoVerano.periodo_academico:NULL", ".inscripciones[1].objCursoOfertadoVerano.estadosCursoOfertados:ARRAY", ".inscripciones[1].objCursoOfertadoVerano.estudiantesInscritos:ARRAY", ".inscripciones[1].objCursoOfertadoVerano.solicitudes:ARRAY", ".inscripciones[1].nombre_estudiante:STRING", ".inscripciones[1].codicion_solicitud:NULL", ".inscripciones[1].observacion:NULL", ".idCurso:NUMBER" ]
+  },
+  "preinscripciones 2" : {
+    "status" : 200,
+    "body" : {
+      "preinscripciones" : [ ],
+      "total" : 0,
+      "idCurso" : 2
+    },
+    "claves" : [ ".preinscripciones:ARRAY", ".total:NUMBER", ".idCurso:NUMBER" ]
+  },
+  "inscripciones 2" : {
+    "status" : 200,
+    "body" : {
+      "total" : 0,
+      "inscripciones" : [ ],
+      "idCurso" : 2
+    },
+    "claves" : [ ".total:NUMBER", ".inscripciones:ARRAY", ".idCurso:NUMBER" ]
+  },
+  "preinscripciones 4" : {
+    "status" : 500,
+    "body" : {
+      "codigoError" : "GC-0001",
+      "mensaje" : "Ha ocurrido un error inesperado. Por favor, inténtelo de nuevo.",
+      "codigoHttp" : 500,
+      "url" : "http://localhost/api/cursos-verano/preinscripciones/4",
+      "metodo" : "GET"
+    },
+    "claves" : [ ".codigoError:STRING", ".mensaje:STRING", ".codigoHttp:NUMBER", ".url:STRING", ".metodo:STRING" ]
+  },
+  "inscripciones 4" : {
+    "status" : 500,
+    "body" : {
+      "codigoError" : "GC-0001",
+      "mensaje" : "Ha ocurrido un error inesperado. Por favor, inténtelo de nuevo.",
+      "codigoHttp" : 500,
+      "url" : "http://localhost/api/cursos-verano/inscripciones/4",
+      "metodo" : "GET"
+    },
+    "claves" : [ ".codigoError:STRING", ".mensaje:STRING", ".codigoHttp:NUMBER", ".url:STRING", ".metodo:STRING" ]
+  },
+  "aprobar 1" : {
+    "status" : 200,
+    "body" : {
+      "success" : true,
+      "solicitud" : {
+        "id_solicitud" : 1,
+        "nombre_solicitud" : "Solicitud 1",
+        "periodo_academico" : "2024-1",
+        "fecha_ceremonia" : null,
+        "fecha_registro_solicitud" : 1710522000000,
+        "estadosSolicitud" : [ {
+          "id_estado" : 1,
+          "estado_actual" : "Enviada",
+          "fecha_registro_estado" : 1710522000000,
+          "comentario" : null,
+          "objSolicitud" : null
+        } ],
+        "objUsuario" : null,
+        "documentos" : [ ],
+        "objCursoOfertadoVerano" : {
+          "id_curso" : 5,
+          "objMateria" : {
+            "id_materia" : 105,
+            "codigo" : null,
+            "nombre" : "Materia 5",
+            "creditos" : null
+          },
+          "objDocente" : null,
+          "grupo" : null,
+          "cupo_estimado" : null,
+          "salon" : null,
+          "fecha_inicio" : null,
+          "fecha_fin" : null,
+          "periodo_academico" : null,
+          "estadosCursoOfertados" : [ ],
+          "estudiantesInscritos" : [ ],
+          "solicitudes" : [ ]
+        },
+        "nombre_estudiante" : "Estudiante 1",
+        "codigo_estudiante" : "10461",
+        "codicion_solicitud" : null,
+        "observacion" : null
+      },
+      "message" : "Preinscripción aprobada exitosamente"
+    },
+    "claves" : [ ".success:BOOLEAN", ".solicitud:OBJECT", ".solicitud.id_solicitud:NUMBER", ".solicitud.nombre_solicitud:STRING", ".solicitud.periodo_academico:STRING", ".solicitud.fecha_ceremonia:NULL", ".solicitud.fecha_registro_solicitud:NUMBER", ".solicitud.estadosSolicitud:ARRAY", ".solicitud.estadosSolicitud[0].id_estado:NUMBER", ".solicitud.estadosSolicitud[0].estado_actual:STRING", ".solicitud.estadosSolicitud[0].fecha_registro_estado:NUMBER", ".solicitud.estadosSolicitud[0].comentario:NULL", ".solicitud.estadosSolicitud[0].objSolicitud:NULL", ".solicitud.objUsuario:NULL", ".solicitud.documentos:ARRAY", ".solicitud.objCursoOfertadoVerano:OBJECT", ".solicitud.objCursoOfertadoVerano.id_curso:NUMBER", ".solicitud.objCursoOfertadoVerano.objMateria:OBJECT", ".solicitud.objCursoOfertadoVerano.objMateria.id_materia:NUMBER", ".solicitud.objCursoOfertadoVerano.objMateria.codigo:NULL", ".solicitud.objCursoOfertadoVerano.objMateria.nombre:STRING", ".solicitud.objCursoOfertadoVerano.objMateria.creditos:NULL", ".solicitud.objCursoOfertadoVerano.objDocente:NULL", ".solicitud.objCursoOfertadoVerano.grupo:NULL", ".solicitud.objCursoOfertadoVerano.cupo_estimado:NULL", ".solicitud.objCursoOfertadoVerano.salon:NULL", ".solicitud.objCursoOfertadoVerano.fecha_inicio:NULL", ".solicitud.objCursoOfertadoVerano.fecha_fin:NULL", ".solicitud.objCursoOfertadoVerano.periodo_academico:NULL", ".solicitud.objCursoOfertadoVerano.estadosCursoOfertados:ARRAY", ".solicitud.objCursoOfertadoVerano.estudiantesInscritos:ARRAY", ".solicitud.objCursoOfertadoVerano.solicitudes:ARRAY", ".solicitud.nombre_estudiante:STRING", ".solicitud.codigo_estudiante:STRING", ".solicitud.codicion_solicitud:NULL", ".solicitud.observacion:NULL", ".message:STRING" ]
+  },
+  "rechazar 1" : {
+    "status" : 200,
+    "body" : {
+      "motivo" : "sin cupo",
+      "success" : true,
+      "solicitud" : {
+        "id_solicitud" : 1,
+        "nombre_solicitud" : "Solicitud 1",
+        "periodo_academico" : "2024-1",
+        "fecha_ceremonia" : null,
+        "fecha_registro_solicitud" : 1710522000000,
+        "estadosSolicitud" : [ {
+          "id_estado" : 1,
+          "estado_actual" : "Enviada",
+          "fecha_registro_estado" : 1710522000000,
+          "comentario" : null,
+          "objSolicitud" : null
+        } ],
+        "objUsuario" : null,
+        "documentos" : [ ],
+        "objCursoOfertadoVerano" : {
+          "id_curso" : 5,
+          "objMateria" : {
+            "id_materia" : 105,
+            "codigo" : null,
+            "nombre" : "Materia 5",
+            "creditos" : null
+          },
+          "objDocente" : null,
+          "grupo" : null,
+          "cupo_estimado" : null,
+          "salon" : null,
+          "fecha_inicio" : null,
+          "fecha_fin" : null,
+          "periodo_academico" : null,
+          "estadosCursoOfertados" : [ ],
+          "estudiantesInscritos" : [ ],
+          "solicitudes" : [ ]
+        },
+        "nombre_estudiante" : "Estudiante 1",
+        "codigo_estudiante" : "10461",
+        "codicion_solicitud" : null,
+        "observacion" : null
+      },
+      "message" : "Preinscripción rechazada"
+    },
+    "claves" : [ ".motivo:STRING", ".success:BOOLEAN", ".solicitud:OBJECT", ".solicitud.id_solicitud:NUMBER", ".solicitud.nombre_solicitud:STRING", ".solicitud.periodo_academico:STRING", ".solicitud.fecha_ceremonia:NULL", ".solicitud.fecha_registro_solicitud:NUMBER", ".solicitud.estadosSolicitud:ARRAY", ".solicitud.estadosSolicitud[0].id_estado:NUMBER", ".solicitud.estadosSolicitud[0].estado_actual:STRING", ".solicitud.estadosSolicitud[0].fecha_registro_estado:NUMBER", ".solicitud.estadosSolicitud[0].comentario:NULL", ".solicitud.estadosSolicitud[0].objSolicitud:NULL", ".solicitud.objUsuario:NULL", ".solicitud.documentos:ARRAY", ".solicitud.objCursoOfertadoVerano:OBJECT", ".solicitud.objCursoOfertadoVerano.id_curso:NUMBER", ".solicitud.objCursoOfertadoVerano.objMateria:OBJECT", ".solicitud.objCursoOfertadoVerano.objMateria.id_materia:NUMBER", ".solicitud.objCursoOfertadoVerano.objMateria.codigo:NULL", ".solicitud.objCursoOfertadoVerano.objMateria.nombre:STRING", ".solicitud.objCursoOfertadoVerano.objMateria.creditos:NULL", ".solicitud.objCursoOfertadoVerano.objDocente:NULL", ".solicitud.objCursoOfertadoVerano.grupo:NULL", ".solicitud.objCursoOfertadoVerano.cupo_estimado:NULL", ".solicitud.objCursoOfertadoVerano.salon:NULL", ".solicitud.objCursoOfertadoVerano.fecha_inicio:NULL", ".solicitud.objCursoOfertadoVerano.fecha_fin:NULL", ".solicitud.objCursoOfertadoVerano.periodo_academico:NULL", ".solicitud.objCursoOfertadoVerano.estadosCursoOfertados:ARRAY", ".solicitud.objCursoOfertadoVerano.estudiantesInscritos:ARRAY", ".solicitud.objCursoOfertadoVerano.solicitudes:ARRAY", ".solicitud.nombre_estudiante:STRING", ".solicitud.codigo_estudiante:STRING", ".solicitud.codicion_solicitud:NULL", ".solicitud.observacion:NULL", ".message:STRING" ]
+  },
+  "validar pago 1" : {
+    "status" : 200,
+    "body" : {
+      "success" : true,
+      "solicitud" : {
+        "id_solicitud" : 1,
+        "nombre_solicitud" : "Solicitud 1",
+        "periodo_academico" : "2024-1",
+        "fecha_ceremonia" : null,
+        "fecha_registro_solicitud" : 1710522000000,
+        "estadosSolicitud" : [ {
+          "id_estado" : 1,
+          "estado_actual" : "Enviada",
+          "fecha_registro_estado" : 1710522000000,
+          "comentario" : null,
+          "objSolicitud" : null
+        } ],
+        "objUsuario" : null,
+        "documentos" : [ ],
+        "objCursoOfertadoVerano" : {
+          "id_curso" : 5,
+          "objMateria" : {
+            "id_materia" : 105,
+            "codigo" : null,
+            "nombre" : "Materia 5",
+            "creditos" : null
+          },
+          "objDocente" : null,
+          "grupo" : null,
+          "cupo_estimado" : null,
+          "salon" : null,
+          "fecha_inicio" : null,
+          "fecha_fin" : null,
+          "periodo_academico" : null,
+          "estadosCursoOfertados" : [ ],
+          "estudiantesInscritos" : [ ],
+          "solicitudes" : [ ]
+        },
+        "nombre_estudiante" : "Estudiante 1",
+        "codicion_solicitud" : null,
+        "observacion" : null
+      },
+      "message" : "Pago validado exitosamente"
+    },
+    "claves" : [ ".success:BOOLEAN", ".solicitud:OBJECT", ".solicitud.id_solicitud:NUMBER", ".solicitud.nombre_solicitud:STRING", ".solicitud.periodo_academico:STRING", ".solicitud.fecha_ceremonia:NULL", ".solicitud.fecha_registro_solicitud:NUMBER", ".solicitud.estadosSolicitud:ARRAY", ".solicitud.estadosSolicitud[0].id_estado:NUMBER", ".solicitud.estadosSolicitud[0].estado_actual:STRING", ".solicitud.estadosSolicitud[0].fecha_registro_estado:NUMBER", ".solicitud.estadosSolicitud[0].comentario:NULL", ".solicitud.estadosSolicitud[0].objSolicitud:NULL", ".solicitud.objUsuario:NULL", ".solicitud.documentos:ARRAY", ".solicitud.objCursoOfertadoVerano:OBJECT", ".solicitud.objCursoOfertadoVerano.id_curso:NUMBER", ".solicitud.objCursoOfertadoVerano.objMateria:OBJECT", ".solicitud.objCursoOfertadoVerano.objMateria.id_materia:NUMBER", ".solicitud.objCursoOfertadoVerano.objMateria.codigo:NULL", ".solicitud.objCursoOfertadoVerano.objMateria.nombre:STRING", ".solicitud.objCursoOfertadoVerano.objMateria.creditos:NULL", ".solicitud.objCursoOfertadoVerano.objDocente:NULL", ".solicitud.objCursoOfertadoVerano.grupo:NULL", ".solicitud.objCursoOfertadoVerano.cupo_estimado:NULL", ".solicitud.objCursoOfertadoVerano.salon:NULL", ".solicitud.objCursoOfertadoVerano.fecha_inicio:NULL", ".solicitud.objCursoOfertadoVerano.fecha_fin:NULL", ".solicitud.objCursoOfertadoVerano.periodo_academico:NULL", ".solicitud.objCursoOfertadoVerano.estadosCursoOfertados:ARRAY", ".solicitud.objCursoOfertadoVerano.estudiantesInscritos:ARRAY", ".solicitud.objCursoOfertadoVerano.solicitudes:ARRAY", ".solicitud.nombre_estudiante:STRING", ".solicitud.codicion_solicitud:NULL", ".solicitud.observacion:NULL", ".message:STRING" ]
+  },
+  "rechazar pago 1" : {
+    "status" : 200,
+    "body" : {
+      "success" : true,
+      "solicitud" : {
+        "id_solicitud" : 1,
+        "nombre_solicitud" : "Solicitud 1",
+        "periodo_academico" : "2024-1",
+        "fecha_ceremonia" : null,
+        "fecha_registro_solicitud" : 1710522000000,
+        "estadosSolicitud" : [ {
+          "id_estado" : 1,
+          "estado_actual" : "Enviada",
+          "fecha_registro_estado" : 1710522000000,
+          "comentario" : null,
+          "objSolicitud" : null
+        } ],
+        "objUsuario" : null,
+        "documentos" : [ ],
+        "objCursoOfertadoVerano" : {
+          "id_curso" : 5,
+          "objMateria" : {
+            "id_materia" : 105,
+            "codigo" : null,
+            "nombre" : "Materia 5",
+            "creditos" : null
+          },
+          "objDocente" : null,
+          "grupo" : null,
+          "cupo_estimado" : null,
+          "salon" : null,
+          "fecha_inicio" : null,
+          "fecha_fin" : null,
+          "periodo_academico" : null,
+          "estadosCursoOfertados" : [ ],
+          "estudiantesInscritos" : [ ],
+          "solicitudes" : [ ]
+        },
+        "nombre_estudiante" : "Estudiante 1",
+        "codicion_solicitud" : null,
+        "observacion" : null
+      },
+      "message" : "Pago rechazado"
+    },
+    "claves" : [ ".success:BOOLEAN", ".solicitud:OBJECT", ".solicitud.id_solicitud:NUMBER", ".solicitud.nombre_solicitud:STRING", ".solicitud.periodo_academico:STRING", ".solicitud.fecha_ceremonia:NULL", ".solicitud.fecha_registro_solicitud:NUMBER", ".solicitud.estadosSolicitud:ARRAY", ".solicitud.estadosSolicitud[0].id_estado:NUMBER", ".solicitud.estadosSolicitud[0].estado_actual:STRING", ".solicitud.estadosSolicitud[0].fecha_registro_estado:NUMBER", ".solicitud.estadosSolicitud[0].comentario:NULL", ".solicitud.estadosSolicitud[0].objSolicitud:NULL", ".solicitud.objUsuario:NULL", ".solicitud.documentos:ARRAY", ".solicitud.objCursoOfertadoVerano:OBJECT", ".solicitud.objCursoOfertadoVerano.id_curso:NUMBER", ".solicitud.objCursoOfertadoVerano.objMateria:OBJECT", ".solicitud.objCursoOfertadoVerano.objMateria.id_materia:NUMBER", ".solicitud.objCursoOfertadoVerano.objMateria.codigo:NULL", ".solicitud.objCursoOfertadoVerano.objMateria.nombre:STRING", ".solicitud.objCursoOfertadoVerano.objMateria.creditos:NULL", ".solicitud.objCursoOfertadoVerano.objDocente:NULL", ".solicitud.objCursoOfertadoVerano.grupo:NULL", ".solicitud.objCursoOfertadoVerano.cupo_estimado:NULL", ".solicitud.objCursoOfertadoVerano.salon:NULL", ".solicitud.objCursoOfertadoVerano.fecha_inicio:NULL", ".solicitud.objCursoOfertadoVerano.fecha_fin:NULL", ".solicitud.objCursoOfertadoVerano.periodo_academico:NULL", ".solicitud.objCursoOfertadoVerano.estadosCursoOfertados:ARRAY", ".solicitud.objCursoOfertadoVerano.estudiantesInscritos:ARRAY", ".solicitud.objCursoOfertadoVerano.solicitudes:ARRAY", ".solicitud.nombre_estudiante:STRING", ".solicitud.codicion_solicitud:NULL", ".solicitud.observacion:NULL", ".message:STRING" ]
+  },
+  "completar 1" : {
+    "status" : 200,
+    "body" : {
+      "success" : true,
+      "solicitud" : {
+        "id_solicitud" : 1,
+        "nombre_solicitud" : "Solicitud 1",
+        "periodo_academico" : "2024-1",
+        "fecha_ceremonia" : null,
+        "fecha_registro_solicitud" : 1710522000000,
+        "estadosSolicitud" : [ {
+          "id_estado" : 1,
+          "estado_actual" : "Enviada",
+          "fecha_registro_estado" : 1710522000000,
+          "comentario" : null,
+          "objSolicitud" : null
+        } ],
+        "objUsuario" : null,
+        "documentos" : [ ],
+        "objCursoOfertadoVerano" : {
+          "id_curso" : 5,
+          "objMateria" : {
+            "id_materia" : 105,
+            "codigo" : null,
+            "nombre" : "Materia 5",
+            "creditos" : null
+          },
+          "objDocente" : null,
+          "grupo" : null,
+          "cupo_estimado" : null,
+          "salon" : null,
+          "fecha_inicio" : null,
+          "fecha_fin" : null,
+          "periodo_academico" : null,
+          "estadosCursoOfertados" : [ ],
+          "estudiantesInscritos" : [ ],
+          "solicitudes" : [ ]
+        },
+        "nombre_estudiante" : "Estudiante 1",
+        "codicion_solicitud" : null,
+        "observacion" : null
+      },
+      "message" : "Inscripción completada exitosamente"
+    },
+    "claves" : [ ".success:BOOLEAN", ".solicitud:OBJECT", ".solicitud.id_solicitud:NUMBER", ".solicitud.nombre_solicitud:STRING", ".solicitud.periodo_academico:STRING", ".solicitud.fecha_ceremonia:NULL", ".solicitud.fecha_registro_solicitud:NUMBER", ".solicitud.estadosSolicitud:ARRAY", ".solicitud.estadosSolicitud[0].id_estado:NUMBER", ".solicitud.estadosSolicitud[0].estado_actual:STRING", ".solicitud.estadosSolicitud[0].fecha_registro_estado:NUMBER", ".solicitud.estadosSolicitud[0].comentario:NULL", ".solicitud.estadosSolicitud[0].objSolicitud:NULL", ".solicitud.objUsuario:NULL", ".solicitud.documentos:ARRAY", ".solicitud.objCursoOfertadoVerano:OBJECT", ".solicitud.objCursoOfertadoVerano.id_curso:NUMBER", ".solicitud.objCursoOfertadoVerano.objMateria:OBJECT", ".solicitud.objCursoOfertadoVerano.objMateria.id_materia:NUMBER", ".solicitud.objCursoOfertadoVerano.objMateria.codigo:NULL", ".solicitud.objCursoOfertadoVerano.objMateria.nombre:STRING", ".solicitud.objCursoOfertadoVerano.objMateria.creditos:NULL", ".solicitud.objCursoOfertadoVerano.objDocente:NULL", ".solicitud.objCursoOfertadoVerano.grupo:NULL", ".solicitud.objCursoOfertadoVerano.cupo_estimado:NULL", ".solicitud.objCursoOfertadoVerano.salon:NULL", ".solicitud.objCursoOfertadoVerano.fecha_inicio:NULL", ".solicitud.objCursoOfertadoVerano.fecha_fin:NULL", ".solicitud.objCursoOfertadoVerano.periodo_academico:NULL", ".solicitud.objCursoOfertadoVerano.estadosCursoOfertados:ARRAY", ".solicitud.objCursoOfertadoVerano.estudiantesInscritos:ARRAY", ".solicitud.objCursoOfertadoVerano.solicitudes:ARRAY", ".solicitud.nombre_estudiante:STRING", ".solicitud.codicion_solicitud:NULL", ".solicitud.observacion:NULL", ".message:STRING" ]
+  },
+  "aprobar 3" : {
+    "status" : 200,
+    "body" : {
+      "success" : true,
+      "solicitud" : null,
+      "message" : "Preinscripción aprobada exitosamente"
+    },
+    "claves" : [ ".success:BOOLEAN", ".solicitud:NULL", ".message:STRING" ]
+  },
+  "rechazar 3" : {
+    "status" : 200,
+    "body" : {
+      "motivo" : "sin cupo",
+      "success" : true,
+      "solicitud" : null,
+      "message" : "Preinscripción rechazada"
+    },
+    "claves" : [ ".motivo:STRING", ".success:BOOLEAN", ".solicitud:NULL", ".message:STRING" ]
+  },
+  "validar pago 3" : {
+    "status" : 200,
+    "body" : {
+      "success" : true,
+      "solicitud" : null,
+      "message" : "Pago validado exitosamente"
+    },
+    "claves" : [ ".success:BOOLEAN", ".solicitud:NULL", ".message:STRING" ]
+  },
+  "rechazar pago 3" : {
+    "status" : 200,
+    "body" : {
+      "success" : true,
+      "solicitud" : null,
+      "message" : "Pago rechazado"
+    },
+    "claves" : [ ".success:BOOLEAN", ".solicitud:NULL", ".message:STRING" ]
+  },
+  "completar 3" : {
+    "status" : 200,
+    "body" : {
+      "success" : true,
+      "solicitud" : null,
+      "message" : "Inscripción completada exitosamente"
+    },
+    "claves" : [ ".success:BOOLEAN", ".solicitud:NULL", ".message:STRING" ]
+  },
+  "aprobar 4" : {
+    "status" : 500,
+    "body" : {
+      "codigoError" : "GC-0001",
+      "mensaje" : "Ha ocurrido un error inesperado. Por favor, inténtelo de nuevo.",
+      "codigoHttp" : 500,
+      "url" : "http://localhost/api/cursos-verano/preinscripciones/4/aprobar",
+      "metodo" : "PUT"
+    },
+    "claves" : [ ".codigoError:STRING", ".mensaje:STRING", ".codigoHttp:NUMBER", ".url:STRING", ".metodo:STRING" ]
+  },
+  "rechazar 4" : {
+    "status" : 500,
+    "body" : {
+      "codigoError" : "GC-0001",
+      "mensaje" : "Ha ocurrido un error inesperado. Por favor, inténtelo de nuevo.",
+      "codigoHttp" : 500,
+      "url" : "http://localhost/api/cursos-verano/preinscripciones/4/rechazar",
+      "metodo" : "PUT"
+    },
+    "claves" : [ ".codigoError:STRING", ".mensaje:STRING", ".codigoHttp:NUMBER", ".url:STRING", ".metodo:STRING" ]
+  },
+  "validar pago 4" : {
+    "status" : 500,
+    "body" : {
+      "codigoError" : "GC-0001",
+      "mensaje" : "Ha ocurrido un error inesperado. Por favor, inténtelo de nuevo.",
+      "codigoHttp" : 500,
+      "url" : "http://localhost/api/cursos-verano/inscripciones/4/validar-pago",
+      "metodo" : "PUT"
+    },
+    "claves" : [ ".codigoError:STRING", ".mensaje:STRING", ".codigoHttp:NUMBER", ".url:STRING", ".metodo:STRING" ]
+  },
+  "rechazar pago 4" : {
+    "status" : 500,
+    "body" : {
+      "codigoError" : "GC-0001",
+      "mensaje" : "Ha ocurrido un error inesperado. Por favor, inténtelo de nuevo.",
+      "codigoHttp" : 500,
+      "url" : "http://localhost/api/cursos-verano/inscripciones/4/validar-pago",
+      "metodo" : "PUT"
+    },
+    "claves" : [ ".codigoError:STRING", ".mensaje:STRING", ".codigoHttp:NUMBER", ".url:STRING", ".metodo:STRING" ]
+  },
+  "completar 4" : {
+    "status" : 500,
+    "body" : {
+      "codigoError" : "GC-0001",
+      "mensaje" : "Ha ocurrido un error inesperado. Por favor, inténtelo de nuevo.",
+      "codigoHttp" : 500,
+      "url" : "http://localhost/api/cursos-verano/inscripciones/4/completar",
+      "metodo" : "PUT"
+    },
+    "claves" : [ ".codigoError:STRING", ".mensaje:STRING", ".codigoHttp:NUMBER", ".url:STRING", ".metodo:STRING" ]
+  },
+  "aprobar sin cuerpo" : {
+    "status" : 200,
+    "body" : {
+      "success" : true,
+      "solicitud" : {
+        "id_solicitud" : 1,
+        "nombre_solicitud" : "Solicitud 1",
+        "periodo_academico" : "2024-1",
+        "fecha_ceremonia" : null,
+        "fecha_registro_solicitud" : 1710522000000,
+        "estadosSolicitud" : [ {
+          "id_estado" : 1,
+          "estado_actual" : "Enviada",
+          "fecha_registro_estado" : 1710522000000,
+          "comentario" : null,
+          "objSolicitud" : null
+        } ],
+        "objUsuario" : null,
+        "documentos" : [ ],
+        "objCursoOfertadoVerano" : {
+          "id_curso" : 5,
+          "objMateria" : {
+            "id_materia" : 105,
+            "codigo" : null,
+            "nombre" : "Materia 5",
+            "creditos" : null
+          },
+          "objDocente" : null,
+          "grupo" : null,
+          "cupo_estimado" : null,
+          "salon" : null,
+          "fecha_inicio" : null,
+          "fecha_fin" : null,
+          "periodo_academico" : null,
+          "estadosCursoOfertados" : [ ],
+          "estudiantesInscritos" : [ ],
+          "solicitudes" : [ ]
+        },
+        "nombre_estudiante" : "Estudiante 1",
+        "codigo_estudiante" : "10461",
+        "codicion_solicitud" : null,
+        "observacion" : null
+      },
+      "message" : "Preinscripción aprobada exitosamente"
+    },
+    "claves" : [ ".success:BOOLEAN", ".solicitud:OBJECT", ".solicitud.id_solicitud:NUMBER", ".solicitud.nombre_solicitud:STRING", ".solicitud.periodo_academico:STRING", ".solicitud.fecha_ceremonia:NULL", ".solicitud.fecha_registro_solicitud:NUMBER", ".solicitud.estadosSolicitud:ARRAY", ".solicitud.estadosSolicitud[0].id_estado:NUMBER", ".solicitud.estadosSolicitud[0].estado_actual:STRING", ".solicitud.estadosSolicitud[0].fecha_registro_estado:NUMBER", ".solicitud.estadosSolicitud[0].comentario:NULL", ".solicitud.estadosSolicitud[0].objSolicitud:NULL", ".solicitud.objUsuario:NULL", ".solicitud.documentos:ARRAY", ".solicitud.objCursoOfertadoVerano:OBJECT", ".solicitud.objCursoOfertadoVerano.id_curso:NUMBER", ".solicitud.objCursoOfertadoVerano.objMateria:OBJECT", ".solicitud.objCursoOfertadoVerano.objMateria.id_materia:NUMBER", ".solicitud.objCursoOfertadoVerano.objMateria.codigo:NULL", ".solicitud.objCursoOfertadoVerano.objMateria.nombre:STRING", ".solicitud.objCursoOfertadoVerano.objMateria.creditos:NULL", ".solicitud.objCursoOfertadoVerano.objDocente:NULL", ".solicitud.objCursoOfertadoVerano.grupo:NULL", ".solicitud.objCursoOfertadoVerano.cupo_estimado:NULL", ".solicitud.objCursoOfertadoVerano.salon:NULL", ".solicitud.objCursoOfertadoVerano.fecha_inicio:NULL", ".solicitud.objCursoOfertadoVerano.fecha_fin:NULL", ".solicitud.objCursoOfertadoVerano.periodo_academico:NULL", ".solicitud.objCursoOfertadoVerano.estadosCursoOfertados:ARRAY", ".solicitud.objCursoOfertadoVerano.estudiantesInscritos:ARRAY", ".solicitud.objCursoOfertadoVerano.solicitudes:ARRAY", ".solicitud.nombre_estudiante:STRING", ".solicitud.codigo_estudiante:STRING", ".solicitud.codicion_solicitud:NULL", ".solicitud.observacion:NULL", ".message:STRING" ]
+  },
+  "rechazar sin motivo" : {
+    "status" : 400,
+    "body" : {
+      "error" : "Debe proporcionar un motivo para el rechazo"
+    },
+    "claves" : [ ".error:STRING" ]
+  },
+  "validar pago sin decision" : {
+    "status" : 400,
+    "body" : {
+      "error" : "Debe especificar si el pago es válido"
+    },
+    "claves" : [ ".error:STRING" ]
+  },
+  "validar pago sin cupo" : {
+    "status" : 409,
+    "body" : {
+      "codigo" : "CUPO_AGOTADO",
+      "error" : "El curso no tiene cupos disponibles (3 de 3 ocupados)",
+      "ocupados" : 3,
+      "cupo" : 3
+    },
+    "claves" : [ ".codigo:STRING", ".error:STRING", ".ocupados:NUMBER", ".cupo:NUMBER" ]
+  }
+}

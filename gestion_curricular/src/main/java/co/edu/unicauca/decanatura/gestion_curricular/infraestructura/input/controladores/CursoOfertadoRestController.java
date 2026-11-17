@@ -1,6 +1,5 @@
 package co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.controladores;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -22,6 +21,10 @@ import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.SolicitudCu
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.dto.peticion.CursosOfertadosDTOPeticion;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.dto.peticion.DecisionSolicitudDTOPeticion;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.dto.peticion.ValidacionPagoDTOPeticion;
+import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.dto.respuesta.CursoOfertadoVeranoDTORespuesta.Decision;
+import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.dto.respuesta.CursoOfertadoVeranoDTORespuesta.InscripcionesCurso;
+import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.dto.respuesta.CursoOfertadoVeranoDTORespuesta.PreinscripcionesCurso;
+import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.dto.respuesta.CursoOfertadoVeranoDTORespuesta.Rechazo;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.dto.respuesta.CursosOfertadosDTORespuesta;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.excepciones.ErroresCursosVerano;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.mappers.CursosOfertadosMapperDominio;
@@ -109,53 +112,40 @@ public class CursoOfertadoRestController {
      * Obtener preinscripciones por curso (para funcionarios)
      */
     @GetMapping("/preinscripciones/{idCurso}")
-    public ResponseEntity<Map<String, Object>> obtenerPreinscripcionesPorCurso(
+    public ResponseEntity<PreinscripcionesCurso> obtenerPreinscripcionesPorCurso(
             @Min(value = 1) @PathVariable Integer idCurso) {
         List<SolicitudCursoVeranoPreinscripcion> preinscripciones = solicitudCU.buscarPreinscripcionesPorCurso(idCurso);
-        Map<String, Object> respuesta = new HashMap<>();
-        respuesta.put("idCurso", idCurso);
-        respuesta.put("preinscripciones", preinscripciones);
-        respuesta.put("total", preinscripciones.size());
-        return ResponseEntity.ok(respuesta);
+        return ResponseEntity.ok(new PreinscripcionesCurso(idCurso, preinscripciones, preinscripciones.size()));
     }
 
     /**
      * Obtener inscripciones por curso (para funcionarios)
      */
     @GetMapping("/inscripciones/{idCurso}")
-    public ResponseEntity<Map<String, Object>> obtenerInscripcionesPorCurso(
+    public ResponseEntity<InscripcionesCurso> obtenerInscripcionesPorCurso(
             @Min(value = 1) @PathVariable Integer idCurso) {
         List<SolicitudCursoVeranoInscripcion> inscripciones = solicitudCU.buscarInscripcionesPorCurso(idCurso);
-        Map<String, Object> respuesta = new HashMap<>();
-        respuesta.put("idCurso", idCurso);
-        respuesta.put("inscripciones", inscripciones);
-        respuesta.put("total", inscripciones.size());
-        return ResponseEntity.ok(respuesta);
+        return ResponseEntity.ok(new InscripcionesCurso(idCurso, inscripciones, inscripciones.size()));
     }
 
     /**
      * Aprobar preinscripción (para funcionarios)
      */
     @PutMapping("/preinscripciones/{idSolicitud}/aprobar")
-    public ResponseEntity<Map<String, Object>> aprobarPreinscripcion(
+    public ResponseEntity<Decision<SolicitudCursoVeranoPreinscripcion>> aprobarPreinscripcion(
             @Min(value = 1) @PathVariable Integer idSolicitud,
             @RequestBody(required = false) @Valid DecisionSolicitudDTOPeticion requestBody) {
         String comentarios = requestBody != null ? requestBody.getComentarios() : null;
         SolicitudCursoVeranoPreinscripcion solicitudAprobada = solicitudCU.aprobarPreinscripcion(idSolicitud, comentarios);
-        
-        Map<String, Object> respuesta = new HashMap<>();
-        respuesta.put("success", true);
-        respuesta.put("message", "Preinscripción aprobada exitosamente");
-        respuesta.put("solicitud", solicitudAprobada);
-        
-        return ResponseEntity.ok(respuesta);
+
+        return ResponseEntity.ok(new Decision<>(true, "Preinscripción aprobada exitosamente", solicitudAprobada));
     }
 
     /**
      * Rechazar preinscripción (para funcionarios)
      */
     @PutMapping("/preinscripciones/{idSolicitud}/rechazar")
-    public ResponseEntity<Map<String, Object>> rechazarPreinscripcion(
+    public ResponseEntity<?> rechazarPreinscripcion(
             @Min(value = 1) @PathVariable Integer idSolicitud,
             @RequestBody @Valid DecisionSolicitudDTOPeticion requestBody) {
         String motivo = requestBody.getMotivo();
@@ -165,21 +155,15 @@ public class CursoOfertadoRestController {
         motivo = motivo.trim();
         
         SolicitudCursoVeranoPreinscripcion solicitudRechazada = solicitudCU.rechazarPreinscripcion(idSolicitud, motivo);
-        
-        Map<String, Object> respuesta = new HashMap<>();
-        respuesta.put("success", true);
-        respuesta.put("message", "Preinscripción rechazada");
-        respuesta.put("solicitud", solicitudRechazada);
-        respuesta.put("motivo", motivo);
-        
-        return ResponseEntity.ok(respuesta);
+
+        return ResponseEntity.ok(new Rechazo(true, "Preinscripción rechazada", solicitudRechazada, motivo));
     }
 
     /**
      * Validar pago de inscripción (para funcionarios)
      */
     @PutMapping("/inscripciones/{idSolicitud}/validar-pago")
-    public ResponseEntity<Map<String, Object>> validarPago(
+    public ResponseEntity<?> validarPago(
             @Min(value = 1) @PathVariable Integer idSolicitud,
             @RequestBody @Valid ValidacionPagoDTOPeticion requestBody) {
         return ErroresCursosVerano.conCupo(() -> {
@@ -191,13 +175,9 @@ public class CursoOfertadoRestController {
             }
             
             SolicitudCursoVeranoInscripcion solicitudActualizada = solicitudCU.validarPago(idSolicitud, esValido, observaciones);
-            
-            Map<String, Object> respuesta = new HashMap<>();
-            respuesta.put("success", true);
-            respuesta.put("message", esValido ? "Pago validado exitosamente" : "Pago rechazado");
-            respuesta.put("solicitud", solicitudActualizada);
-            
-            return ResponseEntity.ok(respuesta);
+
+            return ResponseEntity.ok(new Decision<>(true,
+                    esValido ? "Pago validado exitosamente" : "Pago rechazado", solicitudActualizada));
         });
     }
 
@@ -205,15 +185,10 @@ public class CursoOfertadoRestController {
      * Completar inscripción (para funcionarios)
      */
     @PutMapping("/inscripciones/{idSolicitud}/completar")
-    public ResponseEntity<Map<String, Object>> completarInscripcion(
+    public ResponseEntity<Decision<SolicitudCursoVeranoInscripcion>> completarInscripcion(
             @Min(value = 1) @PathVariable Integer idSolicitud) {
         SolicitudCursoVeranoInscripcion solicitudCompletada = solicitudCU.completarInscripcion(idSolicitud);
-        
-        Map<String, Object> respuesta = new HashMap<>();
-        respuesta.put("success", true);
-        respuesta.put("message", "Inscripción completada exitosamente");
-        respuesta.put("solicitud", solicitudCompletada);
-        
-        return ResponseEntity.ok(respuesta);
+
+        return ResponseEntity.ok(new Decision<>(true, "Inscripción completada exitosamente", solicitudCompletada));
     }
 }
