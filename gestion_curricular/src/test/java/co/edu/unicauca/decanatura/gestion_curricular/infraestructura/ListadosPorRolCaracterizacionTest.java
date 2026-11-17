@@ -44,7 +44,7 @@ import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.pers
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.entidades.SolicitudPazYSalvoEntity;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.entidades.SolicitudReingresoEntity;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.entidades.UsuarioEntity;
-import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.entidades.Enums.TipoDocumentoEntity;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Enums.TipoDocumento;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.repositorios.ProgramaRepositoryInt;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.repositorios.RolRepositoryInt;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.repositorios.SolicitudRepositoryInt;
@@ -145,7 +145,7 @@ class ListadosPorRolCaracterizacionTest {
         crear(SolicitudPazYSalvoEntity::new, "P");
         crear(() -> {
             SolicitudEcaesEntity s = new SolicitudEcaesEntity();
-            s.setTipoDocumento(TipoDocumentoEntity.CC);
+            s.setTipoDocumento(TipoDocumento.CC);
             s.setNumero_documento("100200300");
             s.setFecha_expedicion(new Date());
             s.setFecha_nacimiento(new Date());

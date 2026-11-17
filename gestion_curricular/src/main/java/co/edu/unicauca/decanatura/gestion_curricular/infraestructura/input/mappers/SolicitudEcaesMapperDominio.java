@@ -4,8 +4,10 @@ import java.util.List;
 
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
+import org.mapstruct.Named;
 import org.mapstruct.ReportingPolicy;
 
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Enums.TipoDocumento;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.FechaEcaes;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.SolicitudEcaes;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.DTOPeticion.FechasEcaesDTOPeticion;
@@ -27,7 +29,21 @@ public interface SolicitudEcaesMapperDominio {
     @Mapping(target = "estadosSolicitud", ignore = true) // Lo controlas desde el caso de uso
     @Mapping(target = "documentos", ignore = true)
     @Mapping(target = "objCursoOfertadoVerano", ignore = true) // Propiedad no mapeada
+    @Mapping(target = "tipoDocumento", qualifiedByName = "tipoDocumentoEcaes")
     SolicitudEcaes mappearDeSolicitudEcaesDTOPeticionASolicitudEcaes(SolicitudEcaesDTOPeticion peticion);
+
+    @Named("tipoDocumentoEcaes")
+    default TipoDocumento tipoDocumentoEcaes(String codigo) {
+        if (codigo == null) {
+            return null;
+        }
+        if (codigo.equals("CC") || codigo.equals("CE")) {
+            return TipoDocumento.valueOf(codigo);
+        }
+
+        // ECAES conserva el mensaje del enum anterior para los códigos que rechaza.
+        throw new IllegalArgumentException("No enum constant " + TipoDocumento.class.getName() + "." + codigo);
+    }
 
     // Dominio → DTO Respuesta
     @Mapping(source = "id_solicitud", target = "id_solicitud")

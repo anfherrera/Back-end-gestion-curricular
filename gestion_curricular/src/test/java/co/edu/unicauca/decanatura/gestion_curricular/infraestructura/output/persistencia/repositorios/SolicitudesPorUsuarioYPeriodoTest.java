@@ -21,7 +21,7 @@ import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.pers
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.entidades.SolicitudPazYSalvoEntity;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.entidades.SolicitudReingresoEntity;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.entidades.UsuarioEntity;
-import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.entidades.Enums.TipoDocumentoEntity;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Enums.TipoDocumento;
 import jakarta.persistence.EntityManager;
 
 /**
@@ -116,7 +116,7 @@ class SolicitudesPorUsuarioYPeriodoTest {
 
     private static SolicitudEcaesEntity ecaes() {
         SolicitudEcaesEntity s = new SolicitudEcaesEntity();
-        s.setTipoDocumento(TipoDocumentoEntity.values()[0]);
+        s.setTipoDocumento(TipoDocumento.CC);
         s.setNumero_documento("123");
         s.setFecha_expedicion(new Date());
         s.setFecha_nacimiento(new Date());

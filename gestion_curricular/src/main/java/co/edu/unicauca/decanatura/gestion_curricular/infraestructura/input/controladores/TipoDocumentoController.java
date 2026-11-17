@@ -1,6 +1,6 @@
 package co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.controladores;
 
-import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Enums.TipoDocumentoEnum;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Enums.TipoDocumento;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -26,7 +26,7 @@ public class TipoDocumentoController {
     public ResponseEntity<Map<String, Object>> obtenerTodosLosTipos() {
         Map<String, Object> response = new HashMap<>();
         response.put("success", true);
-        response.put("data", TipoDocumentoEnum.getTodosLosTipos());
+        response.put("data", TipoDocumento.getTodosLosTipos());
         response.put("message", "Tipos de documento obtenidos exitosamente");
         
         return ResponseEntity.ok(response);
@@ -40,7 +40,7 @@ public class TipoDocumentoController {
      */
     @GetMapping("/validar/{codigo}")
     public ResponseEntity<Map<String, Object>> validarTipoDocumento(@PathVariable String codigo) {
-        boolean esValido = TipoDocumentoEnum.esValido(codigo);
+        boolean esValido = TipoDocumento.esValido(codigo);
         
         Map<String, Object> response = new HashMap<>();
         response.put("success", true);
@@ -60,7 +60,7 @@ public class TipoDocumentoController {
      */
     @GetMapping("/info/{codigo}")
     public ResponseEntity<Map<String, Object>> obtenerInformacionTipoDocumento(@PathVariable String codigo) {
-        if (!TipoDocumentoEnum.esValido(codigo)) {
+        if (!TipoDocumento.esValido(codigo)) {
             Map<String, Object> errorResponse = new HashMap<>();
             errorResponse.put("success", false);
             errorResponse.put("message", "Tipo de documento no válido: " + codigo);
@@ -68,7 +68,7 @@ public class TipoDocumentoController {
             return ResponseEntity.badRequest().body(errorResponse);
         }
 
-        TipoDocumentoEnum tipoEnum = TipoDocumentoEnum.fromCodigo(codigo);
+        TipoDocumento tipoEnum = TipoDocumento.fromCodigo(codigo);
         
         Map<String, Object> info = new HashMap<>();
         info.put("codigo", tipoEnum.getCodigo());

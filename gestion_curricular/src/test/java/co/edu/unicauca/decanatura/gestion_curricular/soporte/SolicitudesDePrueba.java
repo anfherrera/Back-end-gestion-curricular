@@ -9,7 +9,7 @@ import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.pers
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.entidades.SolicitudEntity;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.entidades.SolicitudHomologacionEntity;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.entidades.SolicitudReingresoEntity;
-import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.entidades.Enums.TipoDocumentoEntity;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Enums.TipoDocumento;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.repositorios.SolicitudRepositoryInt;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.repositorios.UsuarioRepositoryInt;
 
@@ -43,7 +43,7 @@ public final class SolicitudesDePrueba {
 
     public int ecaes(String estado) {
         SolicitudEcaesEntity s = new SolicitudEcaesEntity();
-        s.setTipoDocumento(TipoDocumentoEntity.CC);
+        s.setTipoDocumento(TipoDocumento.CC);
         s.setNumero_documento("100200300");
         s.setFecha_expedicion(new Date());
         s.setFecha_nacimiento(new Date());

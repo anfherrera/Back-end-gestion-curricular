@@ -2,11 +2,12 @@ package co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.per
 
 import java.util.Date;
 
-import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.entidades.Enums.TipoDocumentoEntity;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Enums.TipoDocumento;
+import jakarta.persistence.AttributeConverter;
 import jakarta.persistence.Column;
+import jakarta.persistence.Convert;
+import jakarta.persistence.Converter;
 import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -21,9 +22,9 @@ import lombok.NoArgsConstructor;
 @EqualsAndHashCode(callSuper = true)
 public class SolicitudEcaesEntity extends SolicitudEntity {
 
-    @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
-    private TipoDocumentoEntity tipoDocumento;
+    @Convert(converter = TipoDocumentoEcaesConverter.class)
+    @Column(nullable = false, columnDefinition = "enum ('CC','CE')")
+    private TipoDocumento tipoDocumento;
     @Column(nullable = false, length = 100)
     private String numero_documento;
     @Column(nullable = false)
@@ -31,5 +32,17 @@ public class SolicitudEcaesEntity extends SolicitudEntity {
     @Column(nullable = false)
     private Date fecha_nacimiento;
 
+    /** Persiste los códigos del enum SQL existente sin derivar el esquema del catálogo. */
+    @Converter
+    public static class TipoDocumentoEcaesConverter implements AttributeConverter<TipoDocumento, String> {
+        @Override
+        public String convertToDatabaseColumn(TipoDocumento tipo) {
+            return tipo == null ? null : tipo.name();
+        }
 
+        @Override
+        public TipoDocumento convertToEntityAttribute(String codigo) {
+            return codigo == null ? null : TipoDocumento.valueOf(codigo);
+        }
+    }
 }
