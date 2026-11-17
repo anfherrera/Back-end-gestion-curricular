@@ -5,7 +5,7 @@ import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Notificacion;
-import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.DTORespuesta.NotificacionDTORespuesta;
+import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.dto.respuesta.NotificacionDTORespuesta;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.DTOPeticion.NotificacionDTOPeticion;
 
 @Mapper(

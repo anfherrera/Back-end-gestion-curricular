@@ -3,8 +3,8 @@ package co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.mapp
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.CursoOfertadoVerano;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.ListadoEstudiantes;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.EstudianteCurso;
-import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.DTORespuesta.EstudiantesCursoVeranoDTORespuesta;
-import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.DTORespuesta.EstudiantesCursoVeranoDTORespuesta.*;
+import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.dto.respuesta.EstudiantesCursoVeranoDTORespuesta;
+import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.dto.respuesta.EstudiantesCursoVeranoDTORespuesta.*;
 
 /** Mapeo compartido por la respuesta HTTP y el formateador PDF. */
 public final class EstudiantesCursoVeranoMapper {

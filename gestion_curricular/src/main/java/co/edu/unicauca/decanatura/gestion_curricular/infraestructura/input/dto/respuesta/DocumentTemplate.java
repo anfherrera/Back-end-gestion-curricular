@@ -1,4 +1,4 @@
-package co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.DTORespuesta;
+package co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.dto.respuesta;
 
 import java.util.List;
 

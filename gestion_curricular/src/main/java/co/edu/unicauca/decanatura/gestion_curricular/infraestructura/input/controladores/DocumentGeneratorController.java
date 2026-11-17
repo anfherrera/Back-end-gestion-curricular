@@ -2,7 +2,7 @@ package co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.cont
 
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.RespuestasArchivo;
 
-import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.DTORespuesta.DocumentRequest;
+import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.dto.respuesta.DocumentRequest;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GenerarDocumentosCUIntPort;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;

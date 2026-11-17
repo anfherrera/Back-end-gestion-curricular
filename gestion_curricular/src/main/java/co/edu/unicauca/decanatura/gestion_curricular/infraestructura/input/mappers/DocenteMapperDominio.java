@@ -3,7 +3,7 @@ package co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.mapp
 import org.mapstruct.Mapper;
 
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Docente;
-import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.DTORespuesta.DocenteDTORespuesta;
+import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.dto.respuesta.DocenteDTORespuesta;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.DTOPeticion.DocenteDTOPeticion;
 
 @Mapper(componentModel = "spring")

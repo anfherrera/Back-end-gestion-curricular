@@ -5,10 +5,10 @@ import java.io.ByteArrayOutputStream;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.enums.PeriodoAcademicoEnum;
-import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.DTORespuesta.CursosOfertadosDTORespuesta;
+import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.dto.respuesta.CursosOfertadosDTORespuesta;
 import java.util.List;
 import java.util.Objects;
-import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.DTORespuesta.EstudiantesCursoVeranoDTORespuesta;
+import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.dto.respuesta.EstudiantesCursoVeranoDTORespuesta;
 import org.springframework.stereotype.Component;
 
 /** Genera los PDF de cursos de verano (listado de cursos y estudiantes de un curso). */

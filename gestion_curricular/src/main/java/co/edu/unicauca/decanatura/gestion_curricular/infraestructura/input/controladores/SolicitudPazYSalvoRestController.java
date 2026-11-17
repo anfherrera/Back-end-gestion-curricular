@@ -22,7 +22,7 @@ import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.DTOPe
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.DTOPeticion.CrearSolicitudPazYSalvoDTOPeticion;
 import jakarta.validation.Valid;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.DTOPeticion.SolicitudPazYSalvoDTOPeticion;
-import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.DTORespuesta.SolicitudPazYSalvoDTORespuesta;
+import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.dto.respuesta.SolicitudPazYSalvoDTORespuesta;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.mappers.SolicitudPazYSalvoMapperDominio;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.validacion.ValidadorArchivoPdf;
 import org.springframework.web.multipart.MultipartFile;
@@ -49,8 +49,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
 
-import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.DTORespuesta.DocumentosDTORespuesta;
-import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.DTORespuesta.DocumentosPazYSalvoDTORespuesta.*;
+import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.dto.respuesta.DocumentosDTORespuesta;
+import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.dto.respuesta.DocumentosPazYSalvoDTORespuesta.*;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.mappers.DocumentosMapperDominio;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Solicitud;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Usuario;

@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.*;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarProgramasCUIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Programa;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.DTOPeticion.ProgramaDTOPeticion;
-import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.DTORespuesta.ProgramaDTORespuesta;
+import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.dto.respuesta.ProgramaDTORespuesta;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.mappers.ProgramaMapperDominio;
 
 import io.swagger.v3.oas.annotations.Operation;

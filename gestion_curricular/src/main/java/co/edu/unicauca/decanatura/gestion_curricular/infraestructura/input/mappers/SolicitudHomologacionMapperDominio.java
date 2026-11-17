@@ -7,7 +7,7 @@ import org.mapstruct.Mapping;
 
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.SolicitudHomologacion;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.DTOPeticion.SolicitudHomologacionDTOPeticion;
-import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.DTORespuesta.SolicitudHomologacionDTORespuesta;
+import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.dto.respuesta.SolicitudHomologacionDTORespuesta;
 
 @Mapper(
     componentModel = "spring",

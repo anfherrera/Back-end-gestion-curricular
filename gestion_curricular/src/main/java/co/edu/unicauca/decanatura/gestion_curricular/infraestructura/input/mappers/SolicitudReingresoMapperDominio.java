@@ -7,7 +7,7 @@ import org.mapstruct.Mapping;
 
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.SolicitudReingreso;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.DTOPeticion.SolicitudReingresoDTOPeticion;
-import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.DTORespuesta.SolicitudReingresoDTORespuesta;
+import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.dto.respuesta.SolicitudReingresoDTORespuesta;
 
 @Mapper(
     componentModel = "spring",

@@ -25,8 +25,8 @@ import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarU
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Usuario;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.DTOPeticion.LoginDTOPeticion;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.DTOPeticion.UsuarioDTOPeticion;
-import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.DTORespuesta.LoginDTORespuesta;
-import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.DTORespuesta.UsuarioDTORespuesta;
+import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.dto.respuesta.LoginDTORespuesta;
+import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.dto.respuesta.UsuarioDTORespuesta;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.mappers.UsuarioMapperDominio;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.controladorExcepciones.ErroresUsuario;
 

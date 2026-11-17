@@ -24,7 +24,7 @@ import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Notificacio
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Usuario;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Solicitud;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.DTOPeticion.NotificacionDTOPeticion;
-import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.DTORespuesta.NotificacionDTORespuesta;
+import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.dto.respuesta.NotificacionDTORespuesta;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.mappers.NotificacionMapperDominio;
 
 import io.swagger.v3.oas.annotations.Operation;

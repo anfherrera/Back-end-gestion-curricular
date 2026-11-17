@@ -29,7 +29,7 @@ import co.edu.unicauca.decanatura.gestion_curricular.seguridad.Autorizacion;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.*;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.SolicitudPazYSalvo;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.DTOPeticion.SolicitudPazYSalvoDTOPeticion;
-import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.DTORespuesta.SolicitudPazYSalvoDTORespuesta;
+import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.dto.respuesta.SolicitudPazYSalvoDTORespuesta;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.controladorExcepciones.RestApiExceptionHandler;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.controladores.SolicitudPazYSalvoRestController;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.mappers.*;

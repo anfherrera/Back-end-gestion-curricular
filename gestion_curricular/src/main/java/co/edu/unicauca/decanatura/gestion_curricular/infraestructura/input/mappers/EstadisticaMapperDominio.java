@@ -6,7 +6,7 @@ import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.DTOPe
 
 
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Estadistica;
-import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.DTORespuesta.EstadisticaDTORespuesta;
+import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.dto.respuesta.EstadisticaDTORespuesta;
 
 @Mapper(componentModel = "spring")
 public interface EstadisticaMapperDominio {

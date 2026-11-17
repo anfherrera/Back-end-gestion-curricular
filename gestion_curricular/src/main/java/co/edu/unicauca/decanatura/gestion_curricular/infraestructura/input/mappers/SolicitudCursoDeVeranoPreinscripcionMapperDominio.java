@@ -6,7 +6,7 @@ import org.mapstruct.Mapping;
 import org.mapstruct.ReportingPolicy;
 
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.SolicitudCursoVeranoPreinscripcion;
-import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.DTORespuesta.SolicitudCursoVeranoPreinscripcionDTORespuesta;
+import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.dto.respuesta.SolicitudCursoVeranoPreinscripcionDTORespuesta;
 
 @Mapper(
     componentModel = "spring",
