@@ -1,0 +1,253 @@
+{
+  "/api/solicitudes-homologacion/obtenerOficios/404" : {
+    "status" : 404,
+    "body" : null,
+    "claves" : [ ]
+  },
+  "/api/solicitudes-homologacion/obtenerOficios/1" : {
+    "status" : 200,
+    "body" : [ ],
+    "claves" : [ ]
+  },
+  "/api/solicitudes-homologacion/obtenerOficios/2" : {
+    "status" : 200,
+    "body" : [ ],
+    "claves" : [ ]
+  },
+  "/api/solicitudes-homologacion/obtenerOficios/3" : {
+    "status" : 200,
+    "body" : [ {
+      "nombreArchivo" : "oficio_reingreso.pdf",
+      "ruta" : "ruta/oficio_reingreso.pdf",
+      "id" : 3,
+      "nombre" : "oficio_reingreso.pdf"
+    }, {
+      "nombreArchivo" : "Resolucion_Final.PDF",
+      "ruta" : null,
+      "id" : 3,
+      "nombre" : "Resolucion_Final.PDF"
+    }, {
+      "nombreArchivo" : "marcado.docx",
+      "ruta" : "ruta/marcado.docx",
+      "id" : 3,
+      "nombre" : "marcado.docx"
+    } ],
+    "claves" : [ "[0].nombreArchivo:STRING", "[0].ruta:STRING", "[0].id:NUMBER", "[0].nombre:STRING", "[1].nombreArchivo:STRING", "[1].ruta:NULL", "[1].id:NUMBER", "[1].nombre:STRING", "[2].nombreArchivo:STRING", "[2].ruta:STRING", "[2].id:NUMBER", "[2].nombre:STRING" ]
+  },
+  "/api/solicitudes-homologacion/obtenerOficios/4" : {
+    "status" : 200,
+    "body" : [ ],
+    "claves" : [ ]
+  },
+  "/api/solicitudes-homologacion/validarDocumentosRequeridos/404" : {
+    "status" : 404,
+    "body" : null,
+    "claves" : [ ]
+  },
+  "/api/solicitudes-homologacion/validarDocumentosRequeridos/1" : {
+    "status" : 200,
+    "body" : {
+      "documentosRequeridos" : {
+        "formulario_homologacion" : false,
+        "certificado_notas" : false,
+        "programa_academico" : false
+      },
+      "totalDocumentos" : 0,
+      "todosCompletos" : false
+    },
+    "claves" : [ ".documentosRequeridos:OBJECT", ".documentosRequeridos.formulario_homologacion:BOOLEAN", ".documentosRequeridos.certificado_notas:BOOLEAN", ".documentosRequeridos.programa_academico:BOOLEAN", ".totalDocumentos:NUMBER", ".todosCompletos:BOOLEAN" ]
+  },
+  "/api/solicitudes-homologacion/validarDocumentosRequeridos/2" : {
+    "status" : 200,
+    "body" : {
+      "documentosRequeridos" : {
+        "formulario_homologacion" : false,
+        "certificado_notas" : false,
+        "programa_academico" : false
+      },
+      "totalDocumentos" : 0,
+      "todosCompletos" : false
+    },
+    "claves" : [ ".documentosRequeridos:OBJECT", ".documentosRequeridos.formulario_homologacion:BOOLEAN", ".documentosRequeridos.certificado_notas:BOOLEAN", ".documentosRequeridos.programa_academico:BOOLEAN", ".totalDocumentos:NUMBER", ".todosCompletos:BOOLEAN" ]
+  },
+  "/api/solicitudes-homologacion/validarDocumentosRequeridos/3" : {
+    "status" : 200,
+    "body" : {
+      "documentosRequeridos" : {
+        "formulario_homologacion" : false,
+        "certificado_notas" : true,
+        "programa_academico" : true
+      },
+      "totalDocumentos" : 9,
+      "todosCompletos" : false
+    },
+    "claves" : [ ".documentosRequeridos:OBJECT", ".documentosRequeridos.formulario_homologacion:BOOLEAN", ".documentosRequeridos.certificado_notas:BOOLEAN", ".documentosRequeridos.programa_academico:BOOLEAN", ".totalDocumentos:NUMBER", ".todosCompletos:BOOLEAN" ]
+  },
+  "/api/solicitudes-homologacion/validarDocumentosRequeridos/4" : {
+    "status" : 200,
+    "body" : {
+      "documentosRequeridos" : {
+        "formulario_homologacion" : true,
+        "certificado_notas" : true,
+        "programa_academico" : true
+      },
+      "totalDocumentos" : 6,
+      "todosCompletos" : true
+    },
+    "claves" : [ ".documentosRequeridos:OBJECT", ".documentosRequeridos.formulario_homologacion:BOOLEAN", ".documentosRequeridos.certificado_notas:BOOLEAN", ".documentosRequeridos.programa_academico:BOOLEAN", ".totalDocumentos:NUMBER", ".todosCompletos:BOOLEAN" ]
+  },
+  "/api/solicitudes-reingreso/obtenerOficios/404" : {
+    "status" : 404,
+    "body" : null,
+    "claves" : [ ]
+  },
+  "/api/solicitudes-reingreso/obtenerOficios/1" : {
+    "status" : 200,
+    "body" : [ ],
+    "claves" : [ ]
+  },
+  "/api/solicitudes-reingreso/obtenerOficios/2" : {
+    "status" : 200,
+    "body" : [ ],
+    "claves" : [ ]
+  },
+  "/api/solicitudes-reingreso/obtenerOficios/3" : {
+    "status" : 200,
+    "body" : [ {
+      "nombreArchivo" : "oficio_reingreso.pdf",
+      "ruta" : "ruta/oficio_reingreso.pdf",
+      "id" : 3,
+      "nombre" : "oficio_reingreso.pdf"
+    }, {
+      "nombreArchivo" : "Resolucion_Final.PDF",
+      "ruta" : null,
+      "id" : 3,
+      "nombre" : "Resolucion_Final.PDF"
+    }, {
+      "nombreArchivo" : "solicitud_homologacion_resolucion.pdf",
+      "ruta" : "ruta/s.pdf",
+      "id" : 3,
+      "nombre" : "solicitud_homologacion_resolucion.pdf"
+    } ],
+    "claves" : [ "[0].nombreArchivo:STRING", "[0].ruta:STRING", "[0].id:NUMBER", "[0].nombre:STRING", "[1].nombreArchivo:STRING", "[1].ruta:NULL", "[1].id:NUMBER", "[1].nombre:STRING", "[2].nombreArchivo:STRING", "[2].ruta:STRING", "[2].id:NUMBER", "[2].nombre:STRING" ]
+  },
+  "/api/solicitudes-reingreso/obtenerOficios/4" : {
+    "status" : 200,
+    "body" : [ {
+      "nombreArchivo" : "carta_solicitud_reingreso.pdf",
+      "ruta" : "r/1",
+      "id" : 4,
+      "nombre" : "carta_solicitud_reingreso.pdf"
+    } ],
+    "claves" : [ "[0].nombreArchivo:STRING", "[0].ruta:STRING", "[0].id:NUMBER", "[0].nombre:STRING" ]
+  },
+  "/api/solicitudes-reingreso/validarDocumentosRequeridos/404" : {
+    "status" : 404,
+    "body" : null,
+    "claves" : [ ]
+  },
+  "/api/solicitudes-reingreso/validarDocumentosRequeridos/1" : {
+    "status" : 200,
+    "body" : {
+      "documentosRequeridos" : {
+        "documento_identidad" : false,
+        "justificacion_ausencia" : false,
+        "certificado_notas" : false,
+        "carta_solicitud_reingreso" : false,
+        "carnet_estudiantil" : false
+      },
+      "totalDocumentos" : 0,
+      "todosCompletos" : false
+    },
+    "claves" : [ ".documentosRequeridos:OBJECT", ".documentosRequeridos.documento_identidad:BOOLEAN", ".documentosRequeridos.justificacion_ausencia:BOOLEAN", ".documentosRequeridos.certificado_notas:BOOLEAN", ".documentosRequeridos.carta_solicitud_reingreso:BOOLEAN", ".documentosRequeridos.carnet_estudiantil:BOOLEAN", ".totalDocumentos:NUMBER", ".todosCompletos:BOOLEAN" ]
+  },
+  "/api/solicitudes-reingreso/validarDocumentosRequeridos/2" : {
+    "status" : 200,
+    "body" : {
+      "documentosRequeridos" : {
+        "documento_identidad" : false,
+        "justificacion_ausencia" : false,
+        "certificado_notas" : false,
+        "carta_solicitud_reingreso" : false,
+        "carnet_estudiantil" : false
+      },
+      "totalDocumentos" : 0,
+      "todosCompletos" : false
+    },
+    "claves" : [ ".documentosRequeridos:OBJECT", ".documentosRequeridos.documento_identidad:BOOLEAN", ".documentosRequeridos.justificacion_ausencia:BOOLEAN", ".documentosRequeridos.certificado_notas:BOOLEAN", ".documentosRequeridos.carta_solicitud_reingreso:BOOLEAN", ".documentosRequeridos.carnet_estudiantil:BOOLEAN", ".totalDocumentos:NUMBER", ".todosCompletos:BOOLEAN" ]
+  },
+  "/api/solicitudes-reingreso/validarDocumentosRequeridos/3" : {
+    "status" : 200,
+    "body" : {
+      "documentosRequeridos" : {
+        "documento_identidad" : false,
+        "justificacion_ausencia" : false,
+        "certificado_notas" : true,
+        "carta_solicitud_reingreso" : false,
+        "carnet_estudiantil" : true
+      },
+      "totalDocumentos" : 9,
+      "todosCompletos" : false
+    },
+    "claves" : [ ".documentosRequeridos:OBJECT", ".documentosRequeridos.documento_identidad:BOOLEAN", ".documentosRequeridos.justificacion_ausencia:BOOLEAN", ".documentosRequeridos.certificado_notas:BOOLEAN", ".documentosRequeridos.carta_solicitud_reingreso:BOOLEAN", ".documentosRequeridos.carnet_estudiantil:BOOLEAN", ".totalDocumentos:NUMBER", ".todosCompletos:BOOLEAN" ]
+  },
+  "/api/solicitudes-reingreso/validarDocumentosRequeridos/4" : {
+    "status" : 200,
+    "body" : {
+      "documentosRequeridos" : {
+        "documento_identidad" : true,
+        "justificacion_ausencia" : true,
+        "certificado_notas" : true,
+        "carta_solicitud_reingreso" : true,
+        "carnet_estudiantil" : false
+      },
+      "totalDocumentos" : 6,
+      "todosCompletos" : true
+    },
+    "claves" : [ ".documentosRequeridos:OBJECT", ".documentosRequeridos.documento_identidad:BOOLEAN", ".documentosRequeridos.justificacion_ausencia:BOOLEAN", ".documentosRequeridos.certificado_notas:BOOLEAN", ".documentosRequeridos.carta_solicitud_reingreso:BOOLEAN", ".documentosRequeridos.carnet_estudiantil:BOOLEAN", ".totalDocumentos:NUMBER", ".todosCompletos:BOOLEAN" ]
+  },
+  "/api/solicitudes-homologacion/3/subir-resolucion resolucion.pdf (19)" : {
+    "status" : 200,
+    "body" : {
+      "idDocumento" : 55,
+      "success" : true,
+      "idSolicitud" : 3,
+      "message" : "Resolución subida correctamente",
+      "nombre" : "resolucion_guardada.pdf"
+    },
+    "claves" : [ ".idDocumento:NUMBER", ".success:BOOLEAN", ".idSolicitud:NUMBER", ".message:STRING", ".nombre:STRING" ]
+  },
+  "/api/solicitudes-homologacion/404/subir-resolucion resolucion.pdf (19)" : {
+    "status" : 404,
+    "body" : null,
+    "claves" : [ ]
+  },
+  "/api/solicitudes-homologacion/3/subir-resolucion vacio.pdf (0)" : {
+    "status" : 400,
+    "body" : {
+      "error" : "No se proporcionó archivo o está vacío"
+    },
+    "claves" : [ ".error:STRING" ]
+  },
+  "/api/solicitudes-homologacion/3/subir-resolucion resolucion.docx (19)" : {
+    "status" : 415,
+    "body" : {
+      "error" : "Solo se permiten archivos PDF. El archivo no es un PDF válido."
+    },
+    "claves" : [ ".error:STRING" ]
+  },
+  "/api/solicitudes-homologacion/3/subir-resolucion falso.pdf (5)" : {
+    "status" : 415,
+    "body" : {
+      "error" : "Solo se permiten archivos PDF. El archivo no es un PDF válido."
+    },
+    "claves" : [ ".error:STRING" ]
+  },
+  "/api/solicitudes-homologacion/3/subir-resolucion grande.pdf (11534336)" : {
+    "status" : 413,
+    "body" : {
+      "error" : "Archivo demasiado grande. Máximo 10MB"
+    },
+    "claves" : [ ".error:STRING" ]
+  }
+}

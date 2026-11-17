@@ -32,6 +32,8 @@ import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.Respu
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.dto.peticion.CambioEstadoSolicitudDTOPeticion;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.dto.peticion.SolicitudReingresoDTOPeticion;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.dto.peticion.UsuarioDTOPeticion;
+import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.dto.respuesta.DocumentosSolicitudDTORespuesta.Oficio;
+import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.dto.respuesta.DocumentosSolicitudDTORespuesta.Revision;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.dto.respuesta.RechazoCambioEstadoDTORespuesta;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.dto.respuesta.SolicitudReingresoDTORespuesta;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.mappers.SolicitudMapperDominio;
@@ -280,7 +282,7 @@ public class SolicitudReingresoRestController {
      */
     @PreAuthorize("@autorizacion.esStaff() or @autorizacion.esDuenoSolicitud(#idSolicitud)")
     @GetMapping("/obtenerOficios/{idSolicitud}")
-    public ResponseEntity<List<Map<String, Object>>> obtenerOficios(@PathVariable Integer idSolicitud) {
+    public ResponseEntity<List<Oficio>> obtenerOficios(@PathVariable Integer idSolicitud) {
         log.debug("Obteniendo oficios de reingreso para solicitud: {}", idSolicitud);
         
         // Obtener la solicitud con sus documentos
@@ -298,7 +300,7 @@ public class SolicitudReingresoRestController {
         }
         
         // Crear lista de oficios basada en los documentos reales (solo oficios/resoluciones)
-        List<Map<String, Object>> oficios = new ArrayList<>();
+        List<Oficio> oficios = new ArrayList<>();
         for (Documento documento : documentos) {
             if (documento.getNombre() != null && documento.getNombre().toLowerCase().endsWith(".pdf")) {
                 String nombreArchivo = documento.getNombre().toLowerCase();
@@ -310,12 +312,8 @@ public class SolicitudReingresoRestController {
                                  nombreArchivo.contains("aprobacion");
                 
                 if (esOficio) {
-                    Map<String, Object> oficio = new HashMap<>();
-                    oficio.put("id", idSolicitud);
-                    oficio.put("nombre", documento.getNombre());
-                    oficio.put("nombreArchivo", documento.getNombre());
-                    oficio.put("ruta", documento.getRuta_documento());
-                    oficios.add(oficio);
+                    oficios.add(new Oficio(idSolicitud, documento.getNombre(), documento.getNombre(),
+                            documento.getRuta_documento()));
                     log.debug("Agregando oficio/resolución de reingreso: {}", documento.getNombre());
                 } else {
                     log.debug("Saltando archivo del estudiante: {}", documento.getNombre());
@@ -332,7 +330,7 @@ public class SolicitudReingresoRestController {
      */
     @PreAuthorize("@autorizacion.esStaff() or @autorizacion.esDuenoSolicitud(#idSolicitud)")
     @GetMapping("/validarDocumentosRequeridos/{idSolicitud}")
-    public ResponseEntity<Map<String, Object>> validarDocumentosRequeridos(@PathVariable Integer idSolicitud) {
+    public ResponseEntity<Revision> validarDocumentosRequeridos(@PathVariable Integer idSolicitud) {
         log.debug("Validando documentos requeridos para solicitud de reingreso: {}", idSolicitud);
         
         // Obtener la solicitud con sus documentos
@@ -379,13 +377,8 @@ public class SolicitudReingresoRestController {
                                documentosRequeridos.get("documento_identidad") &&
                                documentosRequeridos.get("justificacion_ausencia");
         
-        Map<String, Object> resultado = new HashMap<>();
-        resultado.put("documentosRequeridos", documentosRequeridos);
-        resultado.put("todosCompletos", todosCompletos);
-        resultado.put("totalDocumentos", documentos.size());
-        
         log.debug("Validación de reingreso completada. Todos completos: {}", todosCompletos);
-        return ResponseEntity.ok(resultado);
+        return ResponseEntity.ok(new Revision(documentosRequeridos, todosCompletos, documentos.size()));
     }
 
 }

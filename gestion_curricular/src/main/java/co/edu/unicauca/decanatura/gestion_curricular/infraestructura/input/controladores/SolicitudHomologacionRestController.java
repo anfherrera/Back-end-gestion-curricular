@@ -36,6 +36,9 @@ import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.SolicitudHo
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.RespuestasArchivo;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.dto.peticion.CambioEstadoSolicitudDTOPeticion;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.dto.peticion.SolicitudHomologacionDTOPeticion;
+import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.dto.respuesta.DocumentosSolicitudDTORespuesta.Oficio;
+import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.dto.respuesta.DocumentosSolicitudDTORespuesta.ResolucionSubida;
+import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.dto.respuesta.DocumentosSolicitudDTORespuesta.Revision;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.dto.respuesta.RechazoCambioEstadoDTORespuesta;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.dto.respuesta.SolicitudHomologacionDTORespuesta;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.mappers.SolicitudHomologacionMapperDominio;
@@ -282,7 +285,7 @@ public class SolicitudHomologacionRestController {
      */
     @PreAuthorize("@autorizacion.esStaff() or @autorizacion.esDuenoSolicitud(#idSolicitud)")
     @GetMapping("/obtenerOficios/{idSolicitud}")
-    public ResponseEntity<List<Map<String, Object>>> obtenerOficios(@PathVariable Integer idSolicitud) {
+    public ResponseEntity<List<Oficio>> obtenerOficios(@PathVariable Integer idSolicitud) {
         // Obtener la solicitud con sus documentos
         SolicitudHomologacion solicitud = solicitudHomologacionCU.buscarPorId(idSolicitud);
         if (solicitud == null) {
@@ -297,18 +300,14 @@ public class SolicitudHomologacionRestController {
         
         // Crear lista de oficios basada en los documentos reales.
         // Prioridad: marcados explícitamente como oficio/resolución de homologación, fallback a heurística por nombre.
-        List<Map<String, Object>> oficios = new ArrayList<>();
+        List<Oficio> oficios = new ArrayList<>();
         for (Documento documento : documentos) {
             if (documento == null || documento.getNombre() == null) continue;
             boolean esMarcado = documento.getComentario() != null
                     && documento.getComentario().contains(MARCADOR_OFICIO_HOMOLOGACION);
             if (esMarcado || esDocumentoOficioHomologacion(documento)) {
-                Map<String, Object> oficio = new HashMap<>();
-                oficio.put("id", idSolicitud);
-                oficio.put("nombre", documento.getNombre());
-                oficio.put("nombreArchivo", documento.getNombre());
-                oficio.put("ruta", documento.getRuta_documento());
-                oficios.add(oficio);
+                oficios.add(new Oficio(idSolicitud, documento.getNombre(), documento.getNombre(),
+                        documento.getRuta_documento()));
             }
         }
         
@@ -320,7 +319,7 @@ public class SolicitudHomologacionRestController {
      */
     @PreAuthorize("@autorizacion.esStaff() or @autorizacion.esDuenoSolicitud(#idSolicitud)")
     @GetMapping("/validarDocumentosRequeridos/{idSolicitud}")
-    public ResponseEntity<Map<String, Object>> validarDocumentosRequeridos(@PathVariable Integer idSolicitud) {
+    public ResponseEntity<Revision> validarDocumentosRequeridos(@PathVariable Integer idSolicitud) {
         // Obtener la solicitud con sus documentos
         SolicitudHomologacion solicitud = solicitudHomologacionCU.buscarPorId(idSolicitud);
         if (solicitud == null) {
@@ -356,12 +355,7 @@ public class SolicitudHomologacionRestController {
         // Calcular si todos los documentos están presentes
         boolean todosCompletos = documentosRequeridos.values().stream().allMatch(Boolean::booleanValue);
         
-        Map<String, Object> resultado = new HashMap<>();
-        resultado.put("documentosRequeridos", documentosRequeridos);
-        resultado.put("todosCompletos", todosCompletos);
-        resultado.put("totalDocumentos", documentos.size());
-        
-        return ResponseEntity.ok(resultado);
+        return ResponseEntity.ok(new Revision(documentosRequeridos, todosCompletos, documentos.size()));
     }
 
     /**
@@ -387,7 +381,7 @@ public class SolicitudHomologacionRestController {
      * independiente del nombre del archivo.
      */
     @PostMapping("/{idSolicitud}/subir-resolucion")
-    public ResponseEntity<Map<String, Object>> subirResolucion(
+    public ResponseEntity<?> subirResolucion(
             @PathVariable Integer idSolicitud,
             @RequestParam("file") MultipartFile file) {
         SolicitudHomologacion solicitud = solicitudHomologacionCU.buscarPorId(idSolicitud);
@@ -401,14 +395,8 @@ public class SolicitudHomologacionRestController {
         String nombreOriginal = file.getOriginalFilename();
         Documento guardado = documentosCU.adjuntarASolicitud(ArchivoMultipart.de(file), solicitud,
                 "homologacion", MARCADOR_OFICIO_HOMOLOGACION + " Archivo subido por secretaría", true);
-        String nombreArchivo = guardado.getNombre();
-        Map<String, Object> respuesta = new HashMap<>();
-        respuesta.put("success", true);
-        respuesta.put("message", "Resolución subida correctamente");
-        respuesta.put("idDocumento", guardado.getId_documento());
-        respuesta.put("nombre", nombreArchivo);
-        respuesta.put("idSolicitud", idSolicitud);
-        return ResponseEntity.ok(respuesta);
+        return ResponseEntity.ok(new ResolucionSubida(true, "Resolución subida correctamente",
+                guardado.getId_documento(), guardado.getNombre(), idSolicitud));
     }
 
 }
