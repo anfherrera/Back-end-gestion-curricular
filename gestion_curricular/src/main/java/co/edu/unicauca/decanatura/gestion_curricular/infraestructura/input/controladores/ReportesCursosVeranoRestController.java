@@ -4,7 +4,6 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -29,6 +28,7 @@ import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.dto.r
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.dto.respuesta.ReportesVeranoDTORespuesta.ActividadPreinscripcion;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.dto.respuesta.ReportesVeranoDTORespuesta.Dashboard;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.dto.respuesta.ReportesVeranoDTORespuesta.Seguimiento;
+import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.dto.respuesta.ReportesVeranoDTORespuesta.SolicitudReporte;
 import co.edu.unicauca.decanatura.gestion_curricular.seguridad.Autorizacion;
 
 /**
@@ -57,14 +57,14 @@ public class ReportesCursosVeranoRestController {
      */
     @GetMapping("/solicitudes")
     @PreAuthorize("hasAnyRole('Funcionario', 'Coordinador', 'Administrador')")
-    public ResponseEntity<List<Map<String, Object>>> obtenerTodasLasSolicitudes(
+    public ResponseEntity<List<SolicitudReporte>> obtenerTodasLasSolicitudes(
             @RequestParam(value = "idMateria", required = false) Integer idMateria,
             @RequestParam(value = "periodoAcademico", required = false) String periodoAcademico,
             @RequestParam(value = "idCurso", required = false) Integer idCurso,
             @RequestParam(value = "estado", required = false) String estado,
             @RequestParam(value = "fechaInicio", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") Date fechaInicio,
             @RequestParam(value = "fechaFin", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") Date fechaFin) {
-        List<Map<String, Object>> solicitudesFormateadas = formatearSolicitudesCursos(idMateria, idCurso, estado, periodoAcademico, fechaInicio, fechaFin);
+        List<SolicitudReporte> solicitudesFormateadas = formatearSolicitudesCursos(idMateria, idCurso, estado, periodoAcademico, fechaInicio, fechaFin);
         
         
         return ResponseEntity.ok(solicitudesFormateadas);
@@ -106,7 +106,7 @@ public class ReportesCursosVeranoRestController {
      *
      * @param idMateria filtro por materia (null o 0 = sin filtro)
      */
-    private List<Map<String, Object>> formatearSolicitudesCursos(Integer idMateria, Integer idCurso, String estado,
+    private List<SolicitudReporte> formatearSolicitudesCursos(Integer idMateria, Integer idCurso, String estado,
             String periodoAcademico, Date fechaInicio, Date fechaFin) {
         String periodo = periodoAcademico == null ? "" : periodoAcademico.trim();
         String periodoFiltro = periodo.isEmpty() || "todos".equalsIgnoreCase(periodo)

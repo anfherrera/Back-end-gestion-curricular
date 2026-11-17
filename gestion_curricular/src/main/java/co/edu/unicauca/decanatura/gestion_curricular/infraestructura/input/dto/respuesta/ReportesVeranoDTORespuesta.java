@@ -30,6 +30,16 @@ public final class ReportesVeranoDTORespuesta {
     public record ActividadPreinscripcion(Integer id, Date fecha, String estado, String tipo, String curso,
             Integer estudianteId, Integer cursoId, String estadoCurso, List<String> accionesDisponibles) {}
 
+    /**
+     * Fila de {@code GET /api/cursos-intersemestrales/solicitudes} y del Excel que exporta el mismo listado
+     * ({@code ReporteSolicitudesVeranoMapper}).
+     */
+    @JsonPropertyOrder({"tipo", "codigo", "estado", "codigoMateria", "grupoCurso", "nombreCompleto",
+        "motivoSolicitud", "condicion", "fecha", "idMateria", "curso", "idCurso", "id"})
+    public record SolicitudReporte(Integer id, Date fecha, String tipo, String motivoSolicitud,
+            String nombreCompleto, String codigo, String estado, String condicion, String curso, Integer idMateria,
+            Integer idCurso, String codigoMateria, String grupoCurso) {}
+
     @JsonPropertyOrder({"accionesDisponibles", "fecha", "estado", "estudianteId", "tipoSolicitud", "curso",
         "nombreSolicitud", "estadoCurso", "id", "cursoId"})
     public record ActividadInscripcion(Integer id, Date fecha, String estado, String tipoSolicitud,
