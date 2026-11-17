@@ -1,0 +1,371 @@
+{
+  "usuario 1" : {
+    "status" : 200,
+    "body" : [ {
+      "comentarioEstado" : "  ok  ",
+      "accionesDisponibles" : [ "inscribirse" ],
+      "fecha" : 1710522000000,
+      "estado" : "Aprobado",
+      "tipo" : "Preinscripcion",
+      "estudianteId" : 7,
+      "cursoNombre" : "Cálculo",
+      "id" : 10,
+      "cursoId" : 1
+    }, {
+      "accionesDisponibles" : [ "ver_motivo" ],
+      "fecha" : null,
+      "estado" : "Rechazado",
+      "tipo" : "Preinscripcion",
+      "estudianteId" : 7,
+      "cursoNombre" : null,
+      "id" : 11,
+      "cursoId" : 2
+    }, {
+      "accionesDisponibles" : [ "esperando_respuesta" ],
+      "fecha" : 1710522000000,
+      "estado" : "Enviado",
+      "tipo" : "Preinscripcion",
+      "estudianteId" : 7,
+      "id" : 12,
+      "cursoId" : 3
+    }, {
+      "accionesDisponibles" : [ "esperando_respuesta" ],
+      "fecha" : null,
+      "estado" : "Enviada",
+      "tipo" : "Preinscripcion",
+      "estudianteId" : 7,
+      "id" : 13
+    }, {
+      "comentarioEstado" : "nota",
+      "accionesDisponibles" : [ "esperando_respuesta" ],
+      "fecha" : 1710522000000,
+      "estado" : "Otro",
+      "tipo" : "Preinscripcion",
+      "estudianteId" : 7,
+      "cursoNombre" : "Física",
+      "id" : 14,
+      "cursoId" : null
+    } ],
+    "claves" : [ "[0].comentarioEstado:STRING", "[0].accionesDisponibles:ARRAY", "[0].fecha:NUMBER", "[0].estado:STRING", "[0].tipo:STRING", "[0].estudianteId:NUMBER", "[0].cursoNombre:STRING", "[0].id:NUMBER", "[0].cursoId:NUMBER", "[1].accionesDisponibles:ARRAY", "[1].fecha:NULL", "[1].estado:STRING", "[1].tipo:STRING", "[1].estudianteId:NUMBER", "[1].cursoNombre:NULL", "[1].id:NUMBER", "[1].cursoId:NUMBER", "[2].accionesDisponibles:ARRAY", "[2].fecha:NUMBER", "[2].estado:STRING", "[2].tipo:STRING", "[2].estudianteId:NUMBER", "[2].id:NUMBER", "[2].cursoId:NUMBER", "[3].accionesDisponibles:ARRAY", "[3].fecha:NULL", "[3].estado:STRING", "[3].tipo:STRING", "[3].estudianteId:NUMBER", "[3].id:NUMBER", "[4].comentarioEstado:STRING", "[4].accionesDisponibles:ARRAY", "[4].fecha:NUMBER", "[4].estado:STRING", "[4].tipo:STRING", "[4].estudianteId:NUMBER", "[4].cursoNombre:STRING", "[4].id:NUMBER", "[4].cursoId:NULL" ]
+  },
+  "usuario 2" : {
+    "status" : 200,
+    "body" : [ ],
+    "claves" : [ ]
+  },
+  "usuario 3" : {
+    "status" : 500,
+    "body" : {
+      "codigoError" : "GC-0001",
+      "mensaje" : "Ha ocurrido un error inesperado. Por favor, inténtelo de nuevo.",
+      "codigoHttp" : 500,
+      "url" : "http://localhost/api/cursos-intersemestrales/preinscripciones/usuario/3",
+      "metodo" : "GET"
+    },
+    "claves" : [ ".codigoError:STRING", ".mensaje:STRING", ".codigoHttp:NUMBER", ".url:STRING", ".metodo:STRING" ]
+  },
+  "usuario 4" : {
+    "status" : 500,
+    "body" : {
+      "codigoError" : "GC-0001",
+      "mensaje" : "Ha ocurrido un error inesperado. Por favor, inténtelo de nuevo.",
+      "codigoHttp" : 500,
+      "url" : "http://localhost/api/cursos-intersemestrales/preinscripciones/usuario/4",
+      "metodo" : "GET"
+    },
+    "claves" : [ ".codigoError:STRING", ".mensaje:STRING", ".codigoHttp:NUMBER", ".url:STRING", ".metodo:STRING" ]
+  },
+  "usuario alias" : {
+    "status" : 200,
+    "body" : [ {
+      "comentarioEstado" : "  ok  ",
+      "accionesDisponibles" : [ "inscribirse" ],
+      "fecha" : 1710522000000,
+      "estado" : "Aprobado",
+      "tipo" : "Preinscripcion",
+      "estudianteId" : 7,
+      "cursoNombre" : "Cálculo",
+      "id" : 10,
+      "cursoId" : 1
+    }, {
+      "accionesDisponibles" : [ "ver_motivo" ],
+      "fecha" : null,
+      "estado" : "Rechazado",
+      "tipo" : "Preinscripcion",
+      "estudianteId" : 7,
+      "cursoNombre" : null,
+      "id" : 11,
+      "cursoId" : 2
+    }, {
+      "accionesDisponibles" : [ "esperando_respuesta" ],
+      "fecha" : 1710522000000,
+      "estado" : "Enviado",
+      "tipo" : "Preinscripcion",
+      "estudianteId" : 7,
+      "id" : 12,
+      "cursoId" : 3
+    }, {
+      "accionesDisponibles" : [ "esperando_respuesta" ],
+      "fecha" : null,
+      "estado" : "Enviada",
+      "tipo" : "Preinscripcion",
+      "estudianteId" : 7,
+      "id" : 13
+    }, {
+      "comentarioEstado" : "nota",
+      "accionesDisponibles" : [ "esperando_respuesta" ],
+      "fecha" : 1710522000000,
+      "estado" : "Otro",
+      "tipo" : "Preinscripcion",
+      "estudianteId" : 7,
+      "cursoNombre" : "Física",
+      "id" : 14,
+      "cursoId" : null
+    } ],
+    "claves" : [ "[0].comentarioEstado:STRING", "[0].accionesDisponibles:ARRAY", "[0].fecha:NUMBER", "[0].estado:STRING", "[0].tipo:STRING", "[0].estudianteId:NUMBER", "[0].cursoNombre:STRING", "[0].id:NUMBER", "[0].cursoId:NUMBER", "[1].accionesDisponibles:ARRAY", "[1].fecha:NULL", "[1].estado:STRING", "[1].tipo:STRING", "[1].estudianteId:NUMBER", "[1].cursoNombre:NULL", "[1].id:NUMBER", "[1].cursoId:NUMBER", "[2].accionesDisponibles:ARRAY", "[2].fecha:NUMBER", "[2].estado:STRING", "[2].tipo:STRING", "[2].estudianteId:NUMBER", "[2].id:NUMBER", "[2].cursoId:NUMBER", "[3].accionesDisponibles:ARRAY", "[3].fecha:NULL", "[3].estado:STRING", "[3].tipo:STRING", "[3].estudianteId:NUMBER", "[3].id:NUMBER", "[4].comentarioEstado:STRING", "[4].accionesDisponibles:ARRAY", "[4].fecha:NUMBER", "[4].estado:STRING", "[4].tipo:STRING", "[4].estudianteId:NUMBER", "[4].cursoNombre:STRING", "[4].id:NUMBER", "[4].cursoId:NULL" ]
+  },
+  "curso nuevo" : {
+    "status" : 200,
+    "body" : {
+      "fecha" : "<fecha de registro>",
+      "codigo" : "1046",
+      "estado" : "Pendiente",
+      "objUsuario" : {
+        "nombre_completo" : "Ana Ruiz",
+        "id_usuario" : 7
+      },
+      "id_solicitud" : 50,
+      "curso" : "Cálculo",
+      "nombreCompleto" : "Ana Ruiz",
+      "condicion" : "Primera_Vez"
+    },
+    "claves" : [ ".fecha:STRING", ".codigo:STRING", ".estado:STRING", ".objUsuario:OBJECT", ".objUsuario.nombre_completo:STRING", ".objUsuario.id_usuario:NUMBER", ".id_solicitud:NUMBER", ".curso:STRING", ".nombreCompleto:STRING", ".condicion:STRING" ]
+  },
+  "curso nuevo sin usuario" : {
+    "status" : 400,
+    "body" : {
+      "tipo" : "VALIDATION_ERROR",
+      "error" : "Error de validacion: Condicion invalida: Repitencia. Valores validos: [Primera_Vez, Habilitación, Repeteción]"
+    },
+    "claves" : [ ".tipo:STRING", ".error:STRING" ]
+  },
+  "curso nuevo condicion invalida" : {
+    "status" : 400,
+    "body" : {
+      "tipo" : "VALIDATION_ERROR",
+      "error" : "Error de validacion: Condicion invalida: Otra. Valores validos: [Primera_Vez, Habilitación, Repeteción]"
+    },
+    "claves" : [ ".tipo:STRING", ".error:STRING" ]
+  },
+  "curso nuevo invalido" : {
+    "status" : 400,
+    "body" : {
+      "tipo" : "VALIDATION_ERROR",
+      "error" : "Error de validacion: curso invalido"
+    },
+    "claves" : [ ".tipo:STRING", ".error:STRING" ]
+  },
+  "curso nuevo falla" : {
+    "status" : 500,
+    "body" : {
+      "codigoError" : "GC-0001",
+      "mensaje" : "Ha ocurrido un error inesperado. Por favor, inténtelo de nuevo.",
+      "codigoHttp" : 500,
+      "url" : "http://localhost/api/cursos-intersemestrales/solicitudes-curso-nuevo",
+      "metodo" : "POST"
+    },
+    "claves" : [ ".codigoError:STRING", ".mensaje:STRING", ".codigoHttp:NUMBER", ".url:STRING", ".metodo:STRING" ]
+  },
+  "preinscribir sin curso" : {
+    "status" : 400,
+    "body" : {
+      "codigo" : "VALIDATION_ERROR",
+      "error" : "Los campos idUsuario e idCurso son obligatorios"
+    },
+    "claves" : [ ".codigo:STRING", ".error:STRING" ]
+  },
+  "preinscribir duplicada" : {
+    "status" : 400,
+    "body" : {
+      "codigo" : "DUPLICATE_PREINSCRIPTION",
+      "error" : "Ya tienes una preinscripcion activa para este curso"
+    },
+    "claves" : [ ".codigo:STRING", ".error:STRING" ]
+  },
+  "preinscribir alias sin usuario" : {
+    "status" : 400,
+    "body" : {
+      "codigo" : "VALIDATION_ERROR",
+      "error" : "Los campos idUsuario e idCurso son obligatorios"
+    },
+    "claves" : [ ".codigo:STRING", ".error:STRING" ]
+  },
+  "curso 1" : {
+    "status" : 200,
+    "body" : [ {
+      "estado" : "Aprobado",
+      "objUsuario" : {
+        "nombre_completo" : "Ana Ruiz",
+        "codigo" : "1046",
+        "codigo_estudiante" : "1046",
+        "id_usuario" : 7,
+        "correo" : "ana@unicauca.edu.co",
+        "objRol" : {
+          "id_rol" : 2,
+          "nombre" : "Estudiante"
+        }
+      },
+      "id_solicitud" : 20,
+      "observaciones" : "observada",
+      "objCurso" : {
+        "descripcion" : "Curso de Cálculo",
+        "objDocente" : {
+          "id_docente" : 201,
+          "codigo_docente" : null,
+          "nombre_docente" : "Docente 1"
+        },
+        "cupo_maximo" : 20,
+        "estado" : "Preinscripcion",
+        "fecha_inicio" : "2024-03-15T17:00:00Z",
+        "codigo_curso" : "MAT1",
+        "cupo_estimado" : 20,
+        "id_curso" : 1,
+        "nombre_curso" : "Cálculo",
+        "espacio_asignado" : "221",
+        "objMateria" : {
+          "id_materia" : 101,
+          "codigo" : "MAT1",
+          "nombre" : "Cálculo",
+          "creditos" : 3
+        },
+        "fecha_fin" : "2024-04-24T17:00:00Z",
+        "cupo_disponible" : 20
+      },
+      "fecha_preinscripcion" : 1710522000000,
+      "condicion" : "Primera_Vez",
+      "id_preinscripcion" : 20
+    }, {
+      "estado" : "Pendiente",
+      "objUsuario" : {
+        "nombre_completo" : "Ana Ruiz",
+        "codigo" : "1046",
+        "codigo_estudiante" : null,
+        "id_usuario" : 7,
+        "correo" : "ana@unicauca.edu.co"
+      },
+      "id_solicitud" : 21,
+      "observaciones" : "",
+      "fecha_preinscripcion" : null,
+      "condicion" : "Primera_Vez",
+      "id_preinscripcion" : 21
+    }, {
+      "estado" : "Rechazado",
+      "id_solicitud" : 22,
+      "observaciones" : "",
+      "objCurso" : {
+        "descripcion" : "Curso de verano",
+        "objDocente" : {
+          "id_docente" : 202,
+          "codigo_docente" : null,
+          "nombre_docente" : "Docente 2"
+        },
+        "cupo_maximo" : 20,
+        "estado" : "Preinscripcion",
+        "fecha_inicio" : "2024-03-15T17:00:00Z",
+        "codigo_curso" : "MAT2",
+        "cupo_estimado" : 20,
+        "id_curso" : 2,
+        "nombre_curso" : null,
+        "espacio_asignado" : "221",
+        "objMateria" : {
+          "id_materia" : 102,
+          "codigo" : "MAT2",
+          "nombre" : null,
+          "creditos" : 3
+        },
+        "fecha_fin" : "2024-04-24T17:00:00Z",
+        "cupo_disponible" : 20
+      },
+      "fecha_preinscripcion" : 1710522000000,
+      "condicion" : "Primera_Vez",
+      "id_preinscripcion" : 22
+    } ],
+    "claves" : [ "[0].estado:STRING", "[0].objUsuario:OBJECT", "[0].objUsuario.nombre_completo:STRING", "[0].objUsuario.codigo:STRING", "[0].objUsuario.codigo_estudiante:STRING", "[0].objUsuario.id_usuario:NUMBER", "[0].objUsuario.correo:STRING", "[0].objUsuario.objRol:OBJECT", "[0].objUsuario.objRol.id_rol:NUMBER", "[0].objUsuario.objRol.nombre:STRING", "[0].id_solicitud:NUMBER", "[0].observaciones:STRING", "[0].objCurso:OBJECT", "[0].objCurso.descripcion:STRING", "[0].objCurso.objDocente:OBJECT", "[0].objCurso.objDocente.id_docente:NUMBER", "[0].objCurso.objDocente.codigo_docente:NULL", "[0].objCurso.objDocente.nombre_docente:STRING", "[0].objCurso.cupo_maximo:NUMBER", "[0].objCurso.estado:STRING", "[0].objCurso.fecha_inicio:STRING", "[0].objCurso.codigo_curso:STRING", "[0].objCurso.cupo_estimado:NUMBER", "[0].objCurso.id_curso:NUMBER", "[0].objCurso.nombre_curso:STRING", "[0].objCurso.espacio_asignado:STRING", "[0].objCurso.objMateria:OBJECT", "[0].objCurso.objMateria.id_materia:NUMBER", "[0].objCurso.objMateria.codigo:STRING", "[0].objCurso.objMateria.nombre:STRING", "[0].objCurso.objMateria.creditos:NUMBER", "[0].objCurso.fecha_fin:STRING", "[0].objCurso.cupo_disponible:NUMBER", "[0].fecha_preinscripcion:NUMBER", "[0].condicion:STRING", "[0].id_preinscripcion:NUMBER", "[1].estado:STRING", "[1].objUsuario:OBJECT", "[1].objUsuario.nombre_completo:STRING", "[1].objUsuario.codigo:STRING", "[1].objUsuario.codigo_estudiante:NULL", "[1].objUsuario.id_usuario:NUMBER", "[1].objUsuario.correo:STRING", "[1].id_solicitud:NUMBER", "[1].observaciones:STRING", "[1].fecha_preinscripcion:NULL", "[1].condicion:STRING", "[1].id_preinscripcion:NUMBER", "[2].estado:STRING", "[2].id_solicitud:NUMBER", "[2].observaciones:STRING", "[2].objCurso:OBJECT", "[2].objCurso.descripcion:STRING", "[2].objCurso.objDocente:OBJECT", "[2].objCurso.objDocente.id_docente:NUMBER", "[2].objCurso.objDocente.codigo_docente:NULL", "[2].objCurso.objDocente.nombre_docente:STRING", "[2].objCurso.cupo_maximo:NUMBER", "[2].objCurso.estado:STRING", "[2].objCurso.fecha_inicio:STRING", "[2].objCurso.codigo_curso:STRING", "[2].objCurso.cupo_estimado:NUMBER", "[2].objCurso.id_curso:NUMBER", "[2].objCurso.nombre_curso:NULL", "[2].objCurso.espacio_asignado:STRING", "[2].objCurso.objMateria:OBJECT", "[2].objCurso.objMateria.id_materia:NUMBER", "[2].objCurso.objMateria.codigo:STRING", "[2].objCurso.objMateria.nombre:NULL", "[2].objCurso.objMateria.creditos:NUMBER", "[2].objCurso.fecha_fin:STRING", "[2].objCurso.cupo_disponible:NUMBER", "[2].fecha_preinscripcion:NUMBER", "[2].condicion:STRING", "[2].id_preinscripcion:NUMBER" ]
+  },
+  "curso 2" : {
+    "status" : 200,
+    "body" : [ ],
+    "claves" : [ ]
+  },
+  "curso 4" : {
+    "status" : 500,
+    "body" : {
+      "codigoError" : "GC-0001",
+      "mensaje" : "Ha ocurrido un error inesperado. Por favor, inténtelo de nuevo.",
+      "codigoHttp" : 500,
+      "url" : "http://localhost/api/cursos-intersemestrales/preinscripciones/curso/4",
+      "metodo" : "GET"
+    },
+    "claves" : [ ".codigoError:STRING", ".mensaje:STRING", ".codigoHttp:NUMBER", ".url:STRING", ".metodo:STRING" ]
+  },
+  "observaciones" : {
+    "status" : 200,
+    "body" : {
+      "success" : true,
+      "preinscripcion" : {
+        "estado" : "Aprobado",
+        "observaciones" : "  revisar  ",
+        "id_preinscripcion" : 1
+      },
+      "message" : "Observaciones actualizadas exitosamente"
+    },
+    "claves" : [ ".success:BOOLEAN", ".preinscripcion:OBJECT", ".preinscripcion.estado:STRING", ".preinscripcion.observaciones:STRING", ".preinscripcion.id_preinscripcion:NUMBER", ".message:STRING" ]
+  },
+  "observaciones vacias" : {
+    "status" : 400,
+    "body" : {
+      "error" : "Las observaciones no pueden estar vacias"
+    },
+    "claves" : [ ".error:STRING" ]
+  },
+  "observaciones inexistente" : {
+    "status" : 404,
+    "body" : null,
+    "claves" : [ ]
+  },
+  "aprobar" : {
+    "status" : 200,
+    "body" : {
+      "success" : true,
+      "id_solicitud" : 5,
+      "message" : "Preinscripcion aprobada exitosamente"
+    },
+    "claves" : [ ".success:BOOLEAN", ".id_solicitud:NUMBER", ".message:STRING" ]
+  },
+  "aprobar sin cuerpo" : {
+    "status" : 200,
+    "body" : {
+      "success" : true,
+      "id_solicitud" : 5,
+      "message" : "Preinscripcion aprobada exitosamente"
+    },
+    "claves" : [ ".success:BOOLEAN", ".id_solicitud:NUMBER", ".message:STRING" ]
+  },
+  "rechazar" : {
+    "status" : 200,
+    "body" : {
+      "motivo" : "cupo",
+      "success" : true,
+      "id_solicitud" : 5,
+      "message" : "Preinscripcion rechazada"
+    },
+    "claves" : [ ".motivo:STRING", ".success:BOOLEAN", ".id_solicitud:NUMBER", ".message:STRING" ]
+  },
+  "rechazar sin motivo" : {
+    "status" : 400,
+    "body" : {
+      "error" : "Debe proporcionar un motivo para el rechazo"
+    },
+    "claves" : [ ".error:STRING" ]
+  }
+}

@@ -3,7 +3,6 @@ package co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.cont
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -29,6 +28,21 @@ import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.dto.p
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.dto.peticion.PreinscripcionCursoVeranoDTOPeticion;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.dto.peticion.SolicitudCursoNuevoDTOPeticion;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.dto.respuesta.CursosOfertadosDTORespuesta;
+import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.dto.respuesta.PreinscripcionesVeranoDTORespuesta.Aprobacion;
+import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.dto.respuesta.PreinscripcionesVeranoDTORespuesta.CursoId;
+import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.dto.respuesta.PreinscripcionesVeranoDTORespuesta.CursoNombre;
+import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.dto.respuesta.PreinscripcionesVeranoDTORespuesta.CursoNuevoSolicitado;
+import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.dto.respuesta.PreinscripcionesVeranoDTORespuesta.CursoPreinscrito;
+import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.dto.respuesta.PreinscripcionesVeranoDTORespuesta.ErrorObservaciones;
+import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.dto.respuesta.PreinscripcionesVeranoDTORespuesta.Estudiante;
+import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.dto.respuesta.PreinscripcionesVeranoDTORespuesta.Observaciones;
+import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.dto.respuesta.PreinscripcionesVeranoDTORespuesta.ObservacionesActualizadas;
+import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.dto.respuesta.PreinscripcionesVeranoDTORespuesta.PreinscripcionCurso;
+import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.dto.respuesta.PreinscripcionesVeranoDTORespuesta.PreinscripcionRechazada;
+import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.dto.respuesta.PreinscripcionesVeranoDTORespuesta.PreinscripcionUsuario;
+import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.dto.respuesta.PreinscripcionesVeranoDTORespuesta.Rechazo;
+import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.dto.respuesta.PreinscripcionesVeranoDTORespuesta.RolEstudiante;
+import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.dto.respuesta.PreinscripcionesVeranoDTORespuesta.UsuarioSolicitante;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.dto.respuesta.SolicitudCursoVeranoPreinscripcionDTORespuesta;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.excepciones.ErroresCursosVerano;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.mappers.CursosOfertadosMapperDominio;
@@ -69,35 +83,32 @@ public class PreinscripcionesVeranoRestController {
      */
     @PreAuthorize("@autorizacion.esStaff() or @autorizacion.esUsuarioActual(#id)")
     @GetMapping("/preinscripciones/usuario/{id}")
-    public ResponseEntity<List<Map<String, Object>>> obtenerPreinscripcionesPorUsuario(
+    public ResponseEntity<List<PreinscripcionUsuario>> obtenerPreinscripcionesPorUsuario(
             @Min(value = 1) @PathVariable Integer id) {
-        
-        List<Map<String, Object>> preinscripciones = new ArrayList<>();
-        
+
+        List<PreinscripcionUsuario> preinscripciones = new ArrayList<>();
+
         // Obtener preinscripciones reales de la base de datos
         List<SolicitudCursoVeranoPreinscripcion> preinscripcionesReales = solicitudCU.buscarSolicitudesPorUsuario(id);
-        
-        
+
+
         for (SolicitudCursoVeranoPreinscripcion preinscripcion : preinscripcionesReales) {
-            Map<String, Object> preinscripcionMap = new HashMap<>();
-            preinscripcionMap.put("id", preinscripcion.getId_solicitud());
-            preinscripcionMap.put("fecha", preinscripcion.getFecha_registro_solicitud());
             String estadoActual = preinscripcion.estadoActual("Enviado");
-            preinscripcionMap.put("estado", estadoActual);
             EstadoSolicitud ultimoEstado =
                 preinscripcion.ultimoRegistroEstado();
             String comentarioEstado = ultimoEstado == null ? null : ultimoEstado.getComentario();
-            if (comentarioEstado != null && !comentarioEstado.trim().isEmpty()) {
-                preinscripcionMap.put("comentarioEstado", comentarioEstado);
+            if (comentarioEstado != null && comentarioEstado.trim().isEmpty()) {
+                comentarioEstado = null;
             }
-            preinscripcionMap.put("tipo", "Preinscripcion");
-            preinscripcionMap.put("estudianteId", preinscripcion.getObjUsuario().getId_usuario());
-            
+            Integer estudianteId = preinscripcion.getObjUsuario().getId_usuario();
+
             // Informacion del curso
+            CursoId cursoId = null;
+            CursoNombre cursoNombre = null;
             if (preinscripcion.getObjCursoOfertadoVerano() != null) {
-                preinscripcionMap.put("cursoId", preinscripcion.getObjCursoOfertadoVerano().getId_curso());
+                cursoId = new CursoId(preinscripcion.getObjCursoOfertadoVerano().getId_curso());
                 if (preinscripcion.getObjCursoOfertadoVerano().getObjMateria() != null) {
-                    preinscripcionMap.put("cursoNombre", preinscripcion.getObjCursoOfertadoVerano().getObjMateria().getNombre());
+                    cursoNombre = new CursoNombre(preinscripcion.getObjCursoOfertadoVerano().getObjMateria().getNombre());
                 }
             }
             
@@ -112,11 +123,11 @@ public class PreinscripcionesVeranoRestController {
                 accionesDisponibles.add("esperando_respuesta");
             }
             
-            preinscripcionMap.put("accionesDisponibles", accionesDisponibles);
-            
-            preinscripciones.add(preinscripcionMap);
+            preinscripciones.add(new PreinscripcionUsuario(preinscripcion.getId_solicitud(),
+                preinscripcion.getFecha_registro_solicitud(), estadoActual, comentarioEstado, "Preinscripcion",
+                estudianteId, cursoId, cursoNombre, accionesDisponibles));
         }
-        
+
         return ResponseEntity.ok(preinscripciones);
     }
 
@@ -126,7 +137,7 @@ public class PreinscripcionesVeranoRestController {
      */
     @PreAuthorize("@autorizacion.esStaff() or @autorizacion.esUsuarioActual(#id)")
     @GetMapping("/solicitudes/preinscripcion/estudiante/{id}")
-    public ResponseEntity<List<Map<String, Object>>> obtenerPreinscripcionesPorEstudianteAlias(@PathVariable Integer id) {
+    public ResponseEntity<List<PreinscripcionUsuario>> obtenerPreinscripcionesPorEstudianteAlias(@PathVariable Integer id) {
         return obtenerPreinscripcionesPorUsuario(id);
     }
 
@@ -136,7 +147,7 @@ public class PreinscripcionesVeranoRestController {
      */
     @PreAuthorize("@autorizacion.esStaff() or #peticion.idUsuario == null or @autorizacion.esUsuarioActual(#peticion.idUsuario)")
     @PostMapping("/solicitudes-curso-nuevo")
-    public ResponseEntity<Map<String, Object>> crearSolicitudCursoNuevo(@RequestBody SolicitudCursoNuevoDTOPeticion peticion) {
+    public ResponseEntity<CursoNuevoSolicitado> crearSolicitudCursoNuevo(@RequestBody SolicitudCursoNuevoDTOPeticion peticion) {
         return ErroresCursosVerano.alCrearCursoNuevo(() -> {
 
             // Mapear el DTO a nuestro modelo de dominio
@@ -173,22 +184,10 @@ public class PreinscripcionesVeranoRestController {
             
 
             // Crear respuesta JSON con la estructura esperada
-            Map<String, Object> respuesta = new HashMap<>();
-            respuesta.put("id_solicitud", solicitudGuardada.getId_solicitud());
-            respuesta.put("nombreCompleto", peticion.getNombreCompleto());
-            respuesta.put("codigo", peticion.getCodigo());
-            respuesta.put("curso", peticion.getCurso());
-            respuesta.put("condicion", peticion.getCondicion());
-            respuesta.put("fecha", solicitudGuardada.getFecha_registro_solicitud().toString());
-            respuesta.put("estado", "Pendiente");
-            
-            // Crear objeto usuario
-            Map<String, Object> usuario = new HashMap<>();
-            usuario.put("id_usuario", peticion.getIdUsuario());
-            usuario.put("nombre_completo", peticion.getNombreCompleto());
-            respuesta.put("objUsuario", usuario);
-            
-            return ResponseEntity.ok(respuesta);
+            return ResponseEntity.ok(new CursoNuevoSolicitado(solicitudGuardada.getId_solicitud(),
+                peticion.getNombreCompleto(), peticion.getCodigo(), peticion.getCurso(), peticion.getCondicion(),
+                solicitudGuardada.getFecha_registro_solicitud().toString(), "Pendiente",
+                new UsuarioSolicitante(peticion.getIdUsuario(), peticion.getNombreCompleto())));
         });
     }
 
@@ -202,10 +201,8 @@ public class PreinscripcionesVeranoRestController {
         
         // Validar datos obligatorios
         if (peticion.getIdUsuario() == null || peticion.getIdCurso() == null) {
-            Map<String, Object> error = new HashMap<>();
-            error.put("error", "Los campos idUsuario e idCurso son obligatorios");
-            error.put("codigo", "VALIDATION_ERROR");
-            return ResponseEntity.badRequest().body(error);
+            return ResponseEntity.badRequest().body(new PreinscripcionRechazada(
+                "Los campos idUsuario e idCurso son obligatorios", "VALIDATION_ERROR"));
         }
         
         // Mapear el DTO a nuestro modelo de dominio
@@ -243,10 +240,8 @@ public class PreinscripcionesVeranoRestController {
         Solicitud preinscripcionExistente = solicitudCU.buscarPreinscripcionPorUsuarioYCurso(peticion.getIdUsuario(), peticion.getIdCurso());
         
         if (preinscripcionExistente != null) {
-            Map<String, Object> error = new HashMap<>();
-            error.put("error", "Ya tienes una preinscripcion activa para este curso");
-            error.put("codigo", "DUPLICATE_PREINSCRIPTION");
-            return ResponseEntity.badRequest().body(error);
+            return ResponseEntity.badRequest().body(new PreinscripcionRechazada(
+                "Ya tienes una preinscripcion activa para este curso", "DUPLICATE_PREINSCRIPTION"));
         }
         
 
@@ -281,77 +276,48 @@ public class PreinscripcionesVeranoRestController {
      */
     @PreAuthorize("hasAnyRole(" + Autorizacion.ROLES_STAFF + ")")
     @GetMapping("/preinscripciones/curso/{idCurso}")
-    public ResponseEntity<List<Map<String, Object>>> getPreinscripcionesPorCurso(
+    public ResponseEntity<List<PreinscripcionCurso>> getPreinscripcionesPorCurso(
             @PathVariable Long idCurso) {
-        
-        List<Map<String, Object>> preinscripciones = new ArrayList<>();
-        
+
+        List<PreinscripcionCurso> preinscripciones = new ArrayList<>();
+
         // Obtener preinscripciones reales de la base de datos
         List<SolicitudCursoVeranoPreinscripcion> preinscripcionesReales = solicitudCU.buscarPreinscripcionesPorCurso(idCurso.intValue());
-        
-        
+
+
         for (SolicitudCursoVeranoPreinscripcion preinscripcion : preinscripcionesReales) {
-            Map<String, Object> preinscripcionMap = new HashMap<>();
-            
-            // Informacion basica de la preinscripcion
-            preinscripcionMap.put("id_preinscripcion", preinscripcion.getId_solicitud());
-            preinscripcionMap.put("id_solicitud", preinscripcion.getId_solicitud()); // Para compatibilidad con frontend
-            preinscripcionMap.put("fecha_preinscripcion", preinscripcion.getFecha_registro_solicitud());
-            
             // Estado de la solicitud
             String estado = preinscripcion.estadoActual("Pendiente"); // Valor por defecto
-            preinscripcionMap.put("estado", estado);
-            
-            // Observaciones
-            preinscripcionMap.put("observaciones", preinscripcion.getObservacion() != null ? preinscripcion.getObservacion() : "");
-            
-            // Condicion de la solicitud
-            preinscripcionMap.put("condicion", preinscripcion.getCodicion_solicitud() != null ? 
-                preinscripcion.getCodicion_solicitud().toString() : "Primera_Vez");
-            
+
             // Informacion del usuario/estudiante
+            Estudiante estudiante = null;
             if (preinscripcion.getObjUsuario() != null) {
-                Map<String, Object> usuarioMap = new HashMap<>();
-                usuarioMap.put("id_usuario", preinscripcion.getObjUsuario().getId_usuario());
-                usuarioMap.put("nombre_completo", preinscripcion.getObjUsuario().getNombre_completo());
-                usuarioMap.put("correo", preinscripcion.getObjUsuario().getCorreo());
-                usuarioMap.put("codigo", preinscripcion.getObjUsuario().getCodigo());
-                usuarioMap.put("codigo_estudiante", preinscripcion.getCodigo_estudiante());
-                
+                Usuario usuario = preinscripcion.getObjUsuario();
                 // Informacion del rol
-                if (preinscripcion.getObjUsuario().getObjRol() != null) {
-                    Map<String, Object> rolMap = new HashMap<>();
-                    rolMap.put("id_rol", preinscripcion.getObjUsuario().getObjRol().getId_rol());
-                    rolMap.put("nombre", preinscripcion.getObjUsuario().getObjRol().getNombre());
-                    usuarioMap.put("objRol", rolMap);
-                }
-                
-                preinscripcionMap.put("objUsuario", usuarioMap);
+                RolEstudiante rol = usuario.getObjRol() == null ? null
+                    : new RolEstudiante(usuario.getObjRol().getId_rol(), usuario.getObjRol().getNombre());
+                estudiante = new Estudiante(usuario.getId_usuario(), usuario.getNombre_completo(), usuario.getCorreo(),
+                    usuario.getCodigo(), preinscripcion.getCodigo_estudiante(), rol);
             }
-            
+
             // Informacion del curso usando el mapper existente
+            CursoPreinscrito curso = null;
             if (preinscripcion.getObjCursoOfertadoVerano() != null) {
                 CursosOfertadosDTORespuesta cursoDTO = cursoMapper.mapearDeCursoOfertadoARespuesta(preinscripcion.getObjCursoOfertadoVerano());
-                
-                Map<String, Object> cursoMap = new HashMap<>();
-                cursoMap.put("id_curso", cursoDTO.getId_curso());
-                cursoMap.put("nombre_curso", cursoDTO.getNombre_curso());
-                cursoMap.put("codigo_curso", cursoDTO.getCodigo_curso());
-                cursoMap.put("descripcion", cursoDTO.getDescripcion());
-                cursoMap.put("fecha_inicio", cursoDTO.getFecha_inicio());
-                cursoMap.put("fecha_fin", cursoDTO.getFecha_fin());
-                cursoMap.put("cupo_maximo", cursoDTO.getCupo_maximo());
-                cursoMap.put("cupo_estimado", cursoDTO.getCupo_estimado());
-                cursoMap.put("cupo_disponible", cursoDTO.getCupo_disponible());
-                cursoMap.put("espacio_asignado", cursoDTO.getEspacio_asignado());
-                cursoMap.put("estado", cursoDTO.getEstado());
-                cursoMap.put("objMateria", cursoDTO.getObjMateria());
-                cursoMap.put("objDocente", cursoDTO.getObjDocente());
-                
-                preinscripcionMap.put("objCurso", cursoMap);
+                curso = new CursoPreinscrito(cursoDTO.getId_curso(), cursoDTO.getNombre_curso(),
+                    cursoDTO.getCodigo_curso(), cursoDTO.getDescripcion(), cursoDTO.getFecha_inicio(),
+                    cursoDTO.getFecha_fin(), cursoDTO.getCupo_maximo(), cursoDTO.getCupo_estimado(),
+                    cursoDTO.getCupo_disponible(), cursoDTO.getEspacio_asignado(), cursoDTO.getEstado(),
+                    cursoDTO.getObjMateria(), cursoDTO.getObjDocente());
             }
-            
-            preinscripciones.add(preinscripcionMap);
+
+            // id_solicitud repite id_preinscripcion para compatibilidad con el frontend
+            preinscripciones.add(new PreinscripcionCurso(preinscripcion.getId_solicitud(),
+                preinscripcion.getId_solicitud(), preinscripcion.getFecha_registro_solicitud(), estado,
+                preinscripcion.getObservacion() != null ? preinscripcion.getObservacion() : "",
+                preinscripcion.getCodicion_solicitud() != null
+                    ? preinscripcion.getCodicion_solicitud().toString() : "Primera_Vez",
+                estudiante, curso));
         }
         
         
@@ -364,41 +330,28 @@ public class PreinscripcionesVeranoRestController {
      */
     @PreAuthorize("hasAnyRole('Funcionario', 'Coordinador', 'Administrador')")
     @PutMapping("/preinscripciones/{idPreinscripcion}/observaciones")
-    public ResponseEntity<Map<String, Object>> actualizarObservacionesPreinscripcion(
+    public ResponseEntity<?> actualizarObservacionesPreinscripcion(
             @PathVariable Long idPreinscripcion,
             @RequestBody @Valid DecisionSolicitudDTOPeticion request) {
         String observaciones = request.getObservaciones();
-        
+
         if (observaciones == null || observaciones.trim().isEmpty()) {
-            Map<String, Object> error = new HashMap<>();
-            error.put("error", "Las observaciones no pueden estar vacias");
-            return ResponseEntity.badRequest().body(error);
+            return ResponseEntity.badRequest().body(new ErrorObservaciones("Las observaciones no pueden estar vacias"));
         }
-        
-        // Buscar la solicitud en la base de datos
+
+        // Buscar la solicitud en la base de datos (si no existe, 404 sin cuerpo)
         SolicitudCursoVeranoPreinscripcion solicitud = solicitudCU.buscarSolicitudPorId(idPreinscripcion.intValue());
         if (solicitud == null) {
-            Map<String, Object> error = new HashMap<>();
-            error.put("error", "No se encontro la preinscripcion con ID: " + idPreinscripcion);
             return ResponseEntity.notFound().build();
         }
-        
+
         // Actualizar las observaciones directamente usando el gateway de solicitudes de curso verano
         solicitud.setObservacion(observaciones);
         SolicitudCursoVeranoPreinscripcion solicitudActualizada = solicitudCU.actualizarObservacionesPreinscripcion(solicitud);
-        
-        Map<String, Object> respuesta = new HashMap<>();
-        respuesta.put("message", "Observaciones actualizadas exitosamente");
-        respuesta.put("success", true);
-        
-        Map<String, Object> preinscripcion = new HashMap<>();
-        preinscripcion.put("id_preinscripcion", solicitudActualizada.getId_solicitud());
-        preinscripcion.put("observaciones", solicitudActualizada.getObservacion());
-        preinscripcion.put("estado", solicitudActualizada.estadoActual("Pendiente"));
-        
-        respuesta.put("preinscripcion", preinscripcion);
-        
-        return ResponseEntity.ok(respuesta);
+
+        return ResponseEntity.ok(new ObservacionesActualizadas("Observaciones actualizadas exitosamente", true,
+            new Observaciones(solicitudActualizada.getId_solicitud(), solicitudActualizada.getObservacion(),
+                solicitudActualizada.estadoActual("Pendiente"))));
     }
 
     
@@ -411,18 +364,14 @@ public class PreinscripcionesVeranoRestController {
      */
     @PreAuthorize("hasAnyRole('Funcionario', 'Coordinador', 'Administrador')")
     @PutMapping("/preinscripciones/{idSolicitud}/aprobar")
-    public ResponseEntity<Map<String, Object>> aprobarPreinscripcion(
+    public ResponseEntity<Aprobacion> aprobarPreinscripcion(
             @PathVariable Integer idSolicitud,
             @RequestBody(required = false) @Valid DecisionSolicitudDTOPeticion requestBody) {
         String comentarios = requestBody != null ? requestBody.getComentarios() : null;
         SolicitudCursoVeranoPreinscripcion solicitudAprobada = solicitudCU.aprobarPreinscripcion(idSolicitud, comentarios);
-        
-        Map<String, Object> respuesta = new HashMap<>();
-        respuesta.put("success", true);
-        respuesta.put("message", "Preinscripcion aprobada exitosamente");
-        respuesta.put("id_solicitud", solicitudAprobada.getId_solicitud());
-        
-        return ResponseEntity.ok(respuesta);
+
+        return ResponseEntity.ok(new Aprobacion(true, "Preinscripcion aprobada exitosamente",
+            solicitudAprobada.getId_solicitud()));
     }
 
     /**
@@ -431,7 +380,7 @@ public class PreinscripcionesVeranoRestController {
      */
     @PreAuthorize("hasAnyRole('Funcionario', 'Coordinador', 'Administrador')")
     @PutMapping("/preinscripciones/{idSolicitud}/rechazar")
-    public ResponseEntity<Map<String, Object>> rechazarPreinscripcion(
+    public ResponseEntity<?> rechazarPreinscripcion(
             @PathVariable Integer idSolicitud,
             @RequestBody @Valid DecisionSolicitudDTOPeticion requestBody) {
         String motivo = requestBody.getMotivo();
@@ -442,12 +391,7 @@ public class PreinscripcionesVeranoRestController {
         
         SolicitudCursoVeranoPreinscripcion solicitudRechazada = solicitudCU.rechazarPreinscripcion(idSolicitud, motivo);
         
-        Map<String, Object> respuesta = new HashMap<>();
-        respuesta.put("success", true);
-        respuesta.put("message", "Preinscripcion rechazada");
-        respuesta.put("id_solicitud", solicitudRechazada.getId_solicitud());
-        respuesta.put("motivo", motivo);
-        
-        return ResponseEntity.ok(respuesta);
+        return ResponseEntity.ok(new Rechazo(true, "Preinscripcion rechazada", solicitudRechazada.getId_solicitud(),
+            motivo));
     }
 }
