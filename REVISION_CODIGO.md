@@ -152,6 +152,8 @@ Rutas abreviadas: `…/` = `gestion_curricular/src/main/java/co/edu/unicauca/dec
 
   *Avance revisión 9:* las consultas de documentos, oficios, comentarios y requeridos de Paz y Salvo usan proyecciones explícitas de `DocumentosPazYSalvoDTORespuesta`. Se conservan claves, nulos, campos omitidos y orden de las listas. Se reutilizan las caracterizaciones HTTP existentes sin regrabar referencias. El resto de respuestas con mapas sigue pendiente; ARQ-10 continúa abierto.
 
+  *Revisión 12:* punto abierto por la marca ⚠️ **frontend**. Queda pendiente migrar las respuestas restantes a tipos explícitos con caracterización previa de claves, valores nulos, campos omitidos y orden de listas.
+
 - [x] **ARQ-11. Los controladores capturan errores por su cuenta.** Repiten `try/catch` para excepciones que ya resuelve `RestApiExceptionHandler`: Paz y Salvo (5), Preinscripciones (3), Usuario, Inscripciones y CursoOfertado. También hay 86 `catch (Exception e)` en `main`. Hay que quitar los locales y dejar que el manejador global responda. Revisar sobre todo los que se tragan el error:
   - [SolicitudPazYSalvoRestController.java:724](gestion_curricular/src/main/java/co/edu/unicauca/decanatura/gestion_curricular/infraestructura/input/controladores/SolicitudPazYSalvoRestController.java#L724) (`catch (Exception e) { continue; }`)
   - [SolicitudPazYSalvoRestController.java:137](gestion_curricular/src/main/java/co/edu/unicauca/decanatura/gestion_curricular/infraestructura/input/controladores/SolicitudPazYSalvoRestController.java#L137) (devuelve 400 con el mensaje interno de cualquier excepción)
