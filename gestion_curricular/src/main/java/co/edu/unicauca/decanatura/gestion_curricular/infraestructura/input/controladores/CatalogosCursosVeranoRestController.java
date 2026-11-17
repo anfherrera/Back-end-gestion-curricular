@@ -15,6 +15,9 @@ import java.util.Map;
 import java.util.HashMap;
 import java.util.ArrayList;
 import java.util.stream.Collectors;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Docente;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Materia;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Salon;
 
 /**
  * Catálogos para los formularios de cursos de verano: materias, docentes, salones, condiciones y permisos por estado.
@@ -37,12 +40,12 @@ public class CatalogosCursosVeranoRestController {
     @GetMapping("/materias-disponibles")
     public ResponseEntity<List<Map<String, Object>>> obtenerMateriasDisponibles() {
         // Obtener todas las materias de la base de datos
-        List<co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Materia> materias = 
+        List<Materia> materias =
             materiaCU.listarMaterias();
         
         List<Map<String, Object>> materiasDisponibles = new ArrayList<>();
         
-        for (co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Materia materia : materias) {
+        for (Materia materia : materias) {
             Map<String, Object> materiaMap = new HashMap<>();
             materiaMap.put("id_materia", materia.getId_materia());
             materiaMap.put("codigo", materia.getCodigo());
@@ -92,12 +95,12 @@ public class CatalogosCursosVeranoRestController {
     @GetMapping("/materias")
     public ResponseEntity<List<Map<String, Object>>> getTodasLasMaterias() {
         // Obtener todas las materias de la base de datos
-        List<co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Materia> materiasReales = 
+        List<Materia> materiasReales =
             materiaCU.listarMaterias();
         
         List<Map<String, Object>> materias = new ArrayList<>();
         
-        for (co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Materia materia : materiasReales) {
+        for (Materia materia : materiasReales) {
             Map<String, Object> materiaMap = new HashMap<>();
             materiaMap.put("id_materia", materia.getId_materia());
             materiaMap.put("nombre_materia", materia.getNombre());
@@ -118,7 +121,7 @@ public class CatalogosCursosVeranoRestController {
         try {
             
             // Obtener todas las materias de la base de datos
-            List<co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Materia> materiasReales = 
+            List<Materia> materiasReales =
                 materiaCU.listarMaterias();
             
             List<Map<String, Object>> materiasFiltro = new ArrayList<>();
@@ -131,7 +134,7 @@ public class CatalogosCursosVeranoRestController {
             materiasFiltro.add(todasLasMaterias);
             
             // Agregar materias reales
-            for (co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Materia materia : materiasReales) {
+            for (Materia materia : materiasReales) {
                 Map<String, Object> materiaMap = new HashMap<>();
                 materiaMap.put("id", materia.getId_materia());
                 materiaMap.put("nombre", materia.getNombre());
@@ -165,12 +168,12 @@ public class CatalogosCursosVeranoRestController {
     @GetMapping("/salones")
     @PreAuthorize("hasAnyRole('Funcionario', 'Coordinador', 'Administrador')")
     public ResponseEntity<List<Map<String, Object>>> obtenerSalones() {
-        List<co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Salon> salonesReales = 
+        List<Salon> salonesReales =
             salonCU.listarSalonesActivos();
         
         List<Map<String, Object>> salones = new ArrayList<>();
         
-        for (co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Salon salon : salonesReales) {
+        for (Salon salon : salonesReales) {
             Map<String, Object> salonMap = new HashMap<>();
             salonMap.put("id_salon", salon.getId_salon());
             salonMap.put("numero_salon", salon.getNumero_salon());
@@ -205,7 +208,7 @@ public class CatalogosCursosVeranoRestController {
     public ResponseEntity<List<Map<String, Object>>> getTodosLosDocentes() {
         
         // Obtener docentes reales de la base de datos
-        List<co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Docente> docentesDominio = 
+        List<Docente> docentesDominio =
             docenteCU.listarDocentes();
         
         if (docentesDominio == null || docentesDominio.isEmpty()) {

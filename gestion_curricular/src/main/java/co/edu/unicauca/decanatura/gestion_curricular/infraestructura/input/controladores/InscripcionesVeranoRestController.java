@@ -32,6 +32,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.HashMap;
 import java.util.ArrayList;
+import java.time.LocalDateTime;
 
 /**
  * Inscripciones a cursos de verano: creación, aceptación (con control de cupo), rechazo y comprobantes.
@@ -78,7 +79,7 @@ public class InscripcionesVeranoRestController {
         
         SolicitudCursoVeranoInscripcion nuevaInscripcion = new SolicitudCursoVeranoInscripcion();
         nuevaInscripcion.setNombre_solicitud(peticion.getNombreSolicitud());
-        nuevaInscripcion.setFecha_registro_solicitud(new java.util.Date());
+        nuevaInscripcion.setFecha_registro_solicitud(new Date());
         nuevaInscripcion.setObservacion("Inscripcion creada desde preinscripcion aprobada");
         nuevaInscripcion.setObjUsuario(preinscripcionAprobada.getObjUsuario());
         nuevaInscripcion.setObjCursoOfertadoVerano(preinscripcionAprobada.getObjCursoOfertadoVerano());
@@ -114,7 +115,7 @@ public class InscripcionesVeranoRestController {
     }
 
     record InscripcionCreada(boolean success, String message, Integer id_solicitud, Integer id_usuario,
-                             Integer id_curso, String nombre_solicitud, java.util.Date fecha_inscripcion, String estado) {
+                             Integer id_curso, String nombre_solicitud, Date fecha_inscripcion, String estado) {
     }
 
     /**
@@ -149,14 +150,14 @@ public class InscripcionesVeranoRestController {
         return ResponseEntity.ok(inscripciones);
     }
 
-    record InscripcionListado(Integer id, java.util.Date fecha, String estado, Integer cursoId,
+    record InscripcionListado(Integer id, Date fecha, String estado, Integer cursoId,
                                Integer estudianteId, EstudianteInscripcion estudiante, ArchivoPago archivoPago) {
     }
 
     record EstudianteInscripcion(Integer id_usuario, String nombre, String email, String codigo_estudiante) {
     }
 
-    record ArchivoPago(Integer id_documento, String nombre, String url, java.util.Date fecha) {
+    record ArchivoPago(Integer id_documento, String nombre, String url, Date fecha) {
     }
 
     /**
@@ -173,7 +174,7 @@ public class InscripcionesVeranoRestController {
             error.put("error", "Inscripcion no encontrada");
             error.put("message", "No existe una inscripcion con el ID: " + id);
             error.put("status", 404);
-            error.put("timestamp", java.time.LocalDateTime.now().toString());
+            error.put("timestamp", LocalDateTime.now().toString());
             return ResponseEntity.status(404).body(error);
         }
 
@@ -184,7 +185,7 @@ public class InscripcionesVeranoRestController {
             error.put("error", "No se puede cancelar");
             error.put("message", "No se puede cancelar una inscripcion que ya ha sido aprobada");
             error.put("status", 400);
-            error.put("timestamp", java.time.LocalDateTime.now().toString());
+            error.put("timestamp", LocalDateTime.now().toString());
             return ResponseEntity.status(400).body(error);
         }
 
@@ -194,7 +195,7 @@ public class InscripcionesVeranoRestController {
         respuesta.put("mensaje", "Inscripcion cancelada exitosamente");
         respuesta.put("id_inscripcion", id);
         respuesta.put("status", 200);
-        respuesta.put("timestamp", java.time.LocalDateTime.now().toString());
+        respuesta.put("timestamp", LocalDateTime.now().toString());
         
         return ResponseEntity.ok(respuesta);
     }
@@ -336,7 +337,7 @@ public class InscripcionesVeranoRestController {
         respuesta.put("id_inscripcion", inscripcionAceptada.getId_solicitud());
         respuesta.put("estudiante_nombre", inscripcion.getObjUsuario().getNombre_completo());
         respuesta.put("curso_nombre", inscripcion.getObjCursoOfertadoVerano().getObjMateria().getNombre());
-        respuesta.put("fecha_aceptacion", new java.util.Date());
+        respuesta.put("fecha_aceptacion", new Date());
         respuesta.put("observaciones", observaciones);
 
         return ResponseEntity.ok(respuesta);
@@ -397,7 +398,7 @@ public class InscripcionesVeranoRestController {
         respuesta.put("id_inscripcion", inscripcionRechazada.getId_solicitud());
         respuesta.put("estudiante_nombre", inscripcion.getObjUsuario().getNombre_completo());
         respuesta.put("curso_nombre", inscripcion.getObjCursoOfertadoVerano().getObjMateria().getNombre());
-        respuesta.put("fecha_rechazo", new java.util.Date());
+        respuesta.put("fecha_rechazo", new Date());
         respuesta.put("motivo", motivo);
         respuesta.put("nuevo_estado", nuevoEstado);
         
@@ -523,7 +524,7 @@ public class InscripcionesVeranoRestController {
         estadisticas.put("aceptadas", aceptadas);
         estadisticas.put("rechazadas", rechazadas);
         estadisticas.put("curso_id", idCurso);
-        estadisticas.put("fecha_consulta", new java.util.Date());
+        estadisticas.put("fecha_consulta", new Date());
         
         return ResponseEntity.ok(estadisticas);
     }

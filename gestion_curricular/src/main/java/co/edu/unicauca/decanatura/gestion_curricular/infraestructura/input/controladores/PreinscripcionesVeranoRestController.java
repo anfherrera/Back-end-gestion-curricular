@@ -30,6 +30,8 @@ import java.util.Map;
 import java.util.HashMap;
 import java.util.ArrayList;
 import java.util.stream.Collectors;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.NombreSolicitud;
+import java.util.Arrays;
 
 /**
  * Preinscripciones a cursos de verano y solicitudes de curso nuevo.
@@ -80,7 +82,7 @@ public class PreinscripcionesVeranoRestController {
             preinscripcionMap.put("fecha", preinscripcion.getFecha_registro_solicitud());
             String estadoActual = preinscripcion.estadoActual("Enviado");
             preinscripcionMap.put("estado", estadoActual);
-            co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.EstadoSolicitud ultimoEstado =
+            EstadoSolicitud ultimoEstado =
                 preinscripcion.ultimoRegistroEstado();
             String comentarioEstado = ultimoEstado == null ? null : ultimoEstado.getComentario();
             if (comentarioEstado != null && !comentarioEstado.trim().isEmpty()) {
@@ -144,15 +146,13 @@ public class PreinscripcionesVeranoRestController {
             try {
                 solicitudDominio.setCodicion_solicitud(CondicionSolicitudVerano.valueOf(peticion.getCondicion()));
             } catch (IllegalArgumentException e) {
-                throw new IllegalArgumentException("Condicion invalida: " + peticion.getCondicion() + ". Valores validos: " + java.util.Arrays.toString(CondicionSolicitudVerano.values()));
+                throw new IllegalArgumentException("Condicion invalida: " + peticion.getCondicion() + ". Valores validos: " + Arrays.toString(CondicionSolicitudVerano.values()));
             }
             
             solicitudDominio.setObservacion("Solicitud de apertura de curso: " + peticion.getCurso());
             
-            solicitudDominio.setNombre_solicitud(co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos
-                    .NombreSolicitud.de(co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos
-                            .NombreSolicitud.CURSO_VERANO, peticion.getNombreCompleto()));
-            solicitudDominio.setFecha_registro_solicitud(new java.util.Date());
+            solicitudDominio.setNombre_solicitud(NombreSolicitud.de(NombreSolicitud.CURSO_VERANO, peticion.getNombreCompleto()));
+            solicitudDominio.setFecha_registro_solicitud(new Date());
             
             solicitudDominio.setPeriodo_academico(PeriodoAcademicoEnum.completarSiFalta(solicitudDominio.getPeriodo_academico()));
 
@@ -161,8 +161,8 @@ public class PreinscripcionesVeranoRestController {
             cursoTemporal.setId_curso(0); // ID = 0 indica curso nuevo
             solicitudDominio.setObjCursoOfertadoVerano(cursoTemporal);
             
-            co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Usuario usuarioTemporal = 
-                new co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Usuario();
+            Usuario usuarioTemporal =
+                new Usuario();
             usuarioTemporal.setId_usuario(peticion.getIdUsuario());
             solicitudDominio.setObjUsuario(usuarioTemporal);
 
@@ -231,8 +231,8 @@ public class PreinscripcionesVeranoRestController {
         
         
         // Crear usuario
-        co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Usuario usuario = 
-            new co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Usuario();
+        Usuario usuario =
+            new Usuario();
         usuario.setId_usuario(peticion.getIdUsuario());
         solicitudDominio.setObjUsuario(usuario);
 
@@ -258,7 +258,7 @@ public class PreinscripcionesVeranoRestController {
     }
 
     record PreinscripcionCreada(Integer id_preinscripcion, Integer idUsuario, Integer idCurso, String nombreSolicitud,
-                                java.util.Date fecha, String estado, String mensaje) {
+                                Date fecha, String estado, String mensaje) {
     }
 
     /**

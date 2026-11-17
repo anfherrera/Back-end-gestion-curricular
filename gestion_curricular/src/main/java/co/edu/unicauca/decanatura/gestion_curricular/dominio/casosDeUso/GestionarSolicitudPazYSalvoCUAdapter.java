@@ -276,7 +276,7 @@ public class GestionarSolicitudPazYSalvoCUAdapter implements GestionarSolicitudP
 
     /** Último estado con texto de la solicitud (ignora el registro inicial vacío). Null si no hay. */
     public static String ultimoEstado(SolicitudPazYSalvo solicitud) {
-        return co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.FlujoEstadosSolicitud
+        return FlujoEstadosSolicitud
                 .ultimoEstado(solicitud.getEstadosSolicitud());
     }
 

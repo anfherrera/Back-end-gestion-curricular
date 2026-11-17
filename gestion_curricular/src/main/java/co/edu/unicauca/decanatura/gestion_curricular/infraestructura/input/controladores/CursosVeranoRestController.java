@@ -40,6 +40,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.HashMap;
 import java.util.stream.Collectors;
+import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.mappers.EstudiantesCursoVeranoMapper;
 
 /**
  * Cursos de verano: listados, creación, edición, eliminación, estudiantes del curso y exportación a PDF.
@@ -593,7 +594,7 @@ public class CursosVeranoRestController {
         }
 
         var listado = solicitudCU.listarEstudiantesPorCurso(idCurso);
-        return co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.mappers.EstudiantesCursoVeranoMapper.mapear(curso, listado);
+        return EstudiantesCursoVeranoMapper.mapear(curso, listado);
     }
 
 
