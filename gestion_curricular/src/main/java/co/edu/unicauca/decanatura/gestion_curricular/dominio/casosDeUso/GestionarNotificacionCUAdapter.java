@@ -1,6 +1,6 @@
 package co.edu.unicauca.decanatura.gestion_curricular.dominio.casosDeUso;
 
-import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Enums.EstadosSolicitud;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.enums.EstadosSolicitud;
 import java.util.List;
 
 import lombok.extern.slf4j.Slf4j;

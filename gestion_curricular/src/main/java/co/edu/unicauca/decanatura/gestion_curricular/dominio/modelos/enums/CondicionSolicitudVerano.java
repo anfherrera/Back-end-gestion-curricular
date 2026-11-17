@@ -1,4 +1,4 @@
-package co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Enums;
+package co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.enums;
 
 public enum CondicionSolicitudVerano {
     Primera_Vez,

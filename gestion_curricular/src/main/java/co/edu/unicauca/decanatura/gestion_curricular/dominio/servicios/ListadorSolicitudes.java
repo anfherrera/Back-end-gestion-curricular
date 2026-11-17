@@ -6,7 +6,7 @@ import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.Consultar
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.FiltroSolicitudes;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.FlujoEstadosSolicitud;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Solicitud;
-import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Enums.EstadosSolicitud;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.enums.EstadosSolicitud;
 
 /**
  * Lista las solicitudes de un tipo según un {@link FiltroSolicitudes}. El estado que ve cada rol lo

@@ -208,7 +208,7 @@ public interface CursosOfertadosMapperDominio {
     }
     
     @Named("convertirGrupoAString")
-    default String convertirGrupoAString(co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Enums.GrupoCursoVerano grupo) {
+    default String convertirGrupoAString(co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.enums.GrupoCursoVerano grupo) {
         if (grupo == null) {
             return "A"; // Valor por defecto
         }

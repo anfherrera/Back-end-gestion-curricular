@@ -2,7 +2,7 @@ package co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.mapp
 
 import java.util.*;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.*;
-import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Enums.EstadoSolicitudCursoVerano;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.enums.EstadoSolicitudCursoVerano;
 
 /** Mismo mapeo de presentación para el listado HTTP y el Excel. */
 public final class ReporteSolicitudesVeranoMapper {

@@ -13,6 +13,6 @@ final class SoporteCursosVerano {
      */
     static String normalizarPeriodoAcademico(String periodo) {
         // Ambos llamadores descartan antes el texto en blanco. BUG-12 se conserva.
-        return co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Enums.PeriodoAcademicoEnum.normalizar(periodo);
+        return co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.enums.PeriodoAcademicoEnum.normalizar(periodo);
     }
 }

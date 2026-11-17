@@ -6,7 +6,7 @@ import java.io.ByteArrayOutputStream;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Solicitud;
-import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Enums.PeriodoAcademicoEnum;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.enums.PeriodoAcademicoEnum;
 import java.util.List;
 import java.util.Map;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.formateador.GeneradorExcelSolicitudesVerano;

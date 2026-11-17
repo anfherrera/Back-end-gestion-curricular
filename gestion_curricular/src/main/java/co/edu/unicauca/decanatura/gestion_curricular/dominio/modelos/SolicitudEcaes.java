@@ -2,7 +2,7 @@ package co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos;
 
 import java.util.Date;
 
-import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Enums.TipoDocumento;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.enums.TipoDocumento;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;

@@ -2,7 +2,7 @@ package co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.per
 
 import java.util.Date;
 
-import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Enums.TipoDocumento;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.enums.TipoDocumento;
 import jakarta.persistence.AttributeConverter;
 import jakarta.persistence.Column;
 import jakarta.persistence.Convert;

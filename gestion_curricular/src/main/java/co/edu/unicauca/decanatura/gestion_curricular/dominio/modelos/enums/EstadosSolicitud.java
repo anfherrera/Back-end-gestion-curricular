@@ -1,4 +1,4 @@
-package co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Enums;
+package co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.enums;
 
 /**
  * Estados de las solicitudes de homologación, reingreso, paz y salvo y ECAES.

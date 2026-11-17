@@ -1,4 +1,4 @@
-package co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Enums;
+package co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.enums;
 
 /**
  * Estados que se guardan en las preinscripciones e inscripciones de cursos de verano.

@@ -4,7 +4,7 @@ import java.util.List;
 import java.util.function.Supplier;
 
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.excepciones.CupoAgotadoException;
-import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Enums.EstadoSolicitudCursoVerano;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.enums.EstadoSolicitudCursoVerano;
 
 /**
  * Regla de cupo de los cursos de verano: qué inscripciones ocupan un cupo y cuándo el curso está lleno.

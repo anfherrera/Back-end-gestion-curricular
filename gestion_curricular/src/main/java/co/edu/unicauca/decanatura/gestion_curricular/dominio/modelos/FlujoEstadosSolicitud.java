@@ -1,6 +1,6 @@
 package co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos;
 
-import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Enums.EstadosSolicitud;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.enums.EstadosSolicitud;
 
 import java.text.Normalizer;
 import java.util.HashMap;

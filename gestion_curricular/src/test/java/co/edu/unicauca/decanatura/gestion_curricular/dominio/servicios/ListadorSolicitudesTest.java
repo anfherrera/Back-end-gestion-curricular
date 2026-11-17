@@ -18,7 +18,7 @@ import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.Consultar
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.FiltroSolicitudes;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.FlujoEstadosSolicitud;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.SolicitudHomologacion;
-import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Enums.EstadosSolicitud;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.enums.EstadosSolicitud;
 
 /** ARQ-7: el flujo decide qué estado ve cada rol; el gateway recibe el texto guardado. */
 @DisplayName("Listado de solicitudes por rol (ARQ-7)")

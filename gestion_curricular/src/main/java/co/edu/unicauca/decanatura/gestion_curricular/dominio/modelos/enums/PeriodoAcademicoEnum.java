@@ -1,4 +1,4 @@
-package co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Enums;
+package co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.enums;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;

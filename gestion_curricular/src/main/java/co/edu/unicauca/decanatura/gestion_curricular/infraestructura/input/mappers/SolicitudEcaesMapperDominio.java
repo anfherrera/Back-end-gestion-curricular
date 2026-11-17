@@ -7,7 +7,7 @@ import org.mapstruct.Mapping;
 import org.mapstruct.Named;
 import org.mapstruct.ReportingPolicy;
 
-import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Enums.TipoDocumento;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.enums.TipoDocumento;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.FechaEcaes;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.SolicitudEcaes;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.DTOPeticion.FechasEcaesDTOPeticion;
@@ -42,7 +42,7 @@ public interface SolicitudEcaesMapperDominio {
         }
 
         // ECAES conserva el mensaje del enum anterior para los códigos que rechaza.
-        throw new IllegalArgumentException("No enum constant " + TipoDocumento.class.getName() + "." + codigo);
+        throw new IllegalArgumentException("No enum constant co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Enums.TipoDocumento." + codigo);
     }
 
     // Dominio → DTO Respuesta

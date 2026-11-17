@@ -1,4 +1,4 @@
-package co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Enums;
+package co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.enums;
 
 /**
  * Enum para los tipos de documento de identidad

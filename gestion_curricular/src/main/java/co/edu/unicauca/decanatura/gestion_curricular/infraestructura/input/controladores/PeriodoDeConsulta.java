@@ -3,7 +3,7 @@ package co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.cont
 import java.util.Locale;
 import java.util.Set;
 
-import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Enums.PeriodoAcademicoEnum;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.enums.PeriodoAcademicoEnum;
 
 /** Cómo interpretan los listados de solicitudes el parámetro {@code periodoAcademico}. */
 final class PeriodoDeConsulta {
