@@ -33,7 +33,7 @@ import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.mappe
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.mappers.SolicitudReingresoMapperDominio;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.FiltroSolicitudes;
 import org.springframework.security.access.prepost.PreAuthorize;
-import co.edu.unicauca.decanatura.gestion_curricular.Security.Autorizacion;
+import co.edu.unicauca.decanatura.gestion_curricular.seguridad.Autorizacion;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.DTOPeticion.UsuarioDTOPeticion;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

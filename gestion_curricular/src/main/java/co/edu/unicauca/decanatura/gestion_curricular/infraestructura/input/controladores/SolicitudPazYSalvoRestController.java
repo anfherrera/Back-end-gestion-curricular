@@ -57,7 +57,7 @@ import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Usuario;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Enums.PeriodoAcademicoEnum;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.excepciones.EntidadNoExisteException;
 import org.springframework.security.access.prepost.PreAuthorize;
-import co.edu.unicauca.decanatura.gestion_curricular.Security.Autorizacion;
+import co.edu.unicauca.decanatura.gestion_curricular.seguridad.Autorizacion;
 
 @PreAuthorize("hasAnyRole(" + Autorizacion.ROLES_STAFF + ")")
 @RestController

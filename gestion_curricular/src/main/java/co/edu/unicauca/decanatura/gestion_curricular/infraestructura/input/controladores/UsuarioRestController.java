@@ -17,10 +17,10 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import co.edu.unicauca.decanatura.gestion_curricular.Security.Autorizacion;
-import co.edu.unicauca.decanatura.gestion_curricular.Security.JwtUtil;
-import co.edu.unicauca.decanatura.gestion_curricular.Security.LoginRateLimiter;
-import co.edu.unicauca.decanatura.gestion_curricular.Security.SecurityAuditService;
+import co.edu.unicauca.decanatura.gestion_curricular.seguridad.Autorizacion;
+import co.edu.unicauca.decanatura.gestion_curricular.seguridad.JwtUtil;
+import co.edu.unicauca.decanatura.gestion_curricular.seguridad.LoginRateLimiter;
+import co.edu.unicauca.decanatura.gestion_curricular.seguridad.SecurityAuditService;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarUsuarioCUIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Usuario;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.DTOPeticion.LoginDTOPeticion;

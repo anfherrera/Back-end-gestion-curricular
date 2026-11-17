@@ -1,4 +1,4 @@
-package co.edu.unicauca.decanatura.gestion_curricular.Security;
+package co.edu.unicauca.decanatura.gestion_curricular.seguridad;
 
 import java.time.Duration;
 import java.time.Instant;

@@ -32,9 +32,9 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
-import co.edu.unicauca.decanatura.gestion_curricular.Security.JwtUtil;
-import co.edu.unicauca.decanatura.gestion_curricular.Security.LoginRateLimiter;
-import co.edu.unicauca.decanatura.gestion_curricular.Security.SecurityAuditService;
+import co.edu.unicauca.decanatura.gestion_curricular.seguridad.JwtUtil;
+import co.edu.unicauca.decanatura.gestion_curricular.seguridad.LoginRateLimiter;
+import co.edu.unicauca.decanatura.gestion_curricular.seguridad.SecurityAuditService;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarArchivosCUIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarCursoOfertadoVeranoCUIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarSolicitudCUIntPort;
