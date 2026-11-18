@@ -5,7 +5,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
-import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -35,6 +34,8 @@ import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.pers
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.entidades.SolicitudPazYSalvoEntity;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.entidades.SolicitudReingresoEntity;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.entidades.enums.GrupoCursoVeranoEntity;
+import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.mappers.CatalogosMapperPersistencia;
+import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.mappers.SolicitudMapperPersistencia;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.repositorios.CursoOfertadoVeranoRepositoryInt;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.repositorios.EstadoSolicitudRepositoryInt;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.repositorios.SolicitudRepositoryInt;
@@ -47,16 +48,13 @@ public class GestionarSolicitudCursoVeranoGatewayImplAdapter implements Gestiona
     private final SolicitudRepositoryInt solicitudRepository;
     private final CursoOfertadoVeranoRepositoryInt cursoOfertadoVeranoRepository;
     private final EstadoSolicitudRepositoryInt estadoSolicitudRepository;
-    private final ModelMapper solicitudMapper;
 
     public GestionarSolicitudCursoVeranoGatewayImplAdapter(SolicitudRepositoryInt solicitudRepository,
                                                            CursoOfertadoVeranoRepositoryInt cursoOfertadoVeranoRepository,
-                                                           EstadoSolicitudRepositoryInt estadoSolicitudRepository,
-                                                           ModelMapper solicitudMapper) {
+                                                           EstadoSolicitudRepositoryInt estadoSolicitudRepository) {
         this.solicitudRepository = solicitudRepository;
         this.cursoOfertadoVeranoRepository = cursoOfertadoVeranoRepository;
         this.estadoSolicitudRepository = estadoSolicitudRepository;
-        this.solicitudMapper = solicitudMapper;
     }
 
     @Override
@@ -64,8 +62,8 @@ public class GestionarSolicitudCursoVeranoGatewayImplAdapter implements Gestiona
     public List<Solicitud> listarSolicitudesDeVerano(Integer idCurso) {
         return solicitudRepository.listarSolicitudesDeVerano(idCurso).stream()
                 .<Solicitud>map(solicitud -> solicitud instanceof SolicitudCursoVeranoPreinscripcionEntity
-                        ? solicitudMapper.map(solicitud, SolicitudCursoVeranoPreinscripcion.class)
-                        : solicitudMapper.map(solicitud, SolicitudCursoVeranoInscripcion.class))
+                        ? SolicitudMapperPersistencia.aDominio(solicitud, SolicitudCursoVeranoPreinscripcion.class)
+                        : SolicitudMapperPersistencia.aDominio(solicitud, SolicitudCursoVeranoInscripcion.class))
                 .toList();
     }
 
@@ -73,7 +71,7 @@ public class GestionarSolicitudCursoVeranoGatewayImplAdapter implements Gestiona
     @Transactional
     public SolicitudCursoVeranoPreinscripcion crearSolicitudCursoVeranoPreinscripcion(
         SolicitudCursoVeranoPreinscripcion solicitudCursoVerano) {
-        SolicitudCursoVeranoPreinscripcionEntity solicitudCursoVeranoEntity = solicitudMapper.map(solicitudCursoVerano, SolicitudCursoVeranoPreinscripcionEntity.class);
+        SolicitudCursoVeranoPreinscripcionEntity solicitudCursoVeranoEntity = SolicitudMapperPersistencia.aEntidad(solicitudCursoVerano, SolicitudCursoVeranoPreinscripcionEntity.class);
         
         // Generar nombre descriptivo con el nombre del estudiante
         solicitudCursoVeranoEntity.setNombre_solicitud(NombreSolicitud.de(NombreSolicitud.CURSO_VERANO,
@@ -113,12 +111,12 @@ public class GestionarSolicitudCursoVeranoGatewayImplAdapter implements Gestiona
                 }
             } else {
                 cursoOfertadoVeranoEntity = new CursoOfertadoVeranoEntity();
-                GrupoCursoVeranoEntity  grupoEntity = solicitudMapper.map(cursoOfertado.getGrupo(), GrupoCursoVeranoEntity.class);
+                GrupoCursoVeranoEntity  grupoEntity = SolicitudMapperPersistencia.aEntidad(cursoOfertado.getGrupo());
                 cursoOfertadoVeranoEntity.setGrupo(grupoEntity);
                 cursoOfertadoVeranoEntity.setCupo_estimado(cursoOfertado.getCupo_estimado());
                 cursoOfertadoVeranoEntity.setSalon(cursoOfertado.getSalon());
-                MateriaEntity materiaEntity = solicitudMapper.map(cursoOfertado.getObjMateria(), MateriaEntity.class);
-                DocenteEntity docenteEntity = solicitudMapper.map(cursoOfertado.getObjDocente(), DocenteEntity.class);
+                MateriaEntity materiaEntity = CatalogosMapperPersistencia.aEntidad(cursoOfertado.getObjMateria());
+                DocenteEntity docenteEntity = CatalogosMapperPersistencia.aEntidad(cursoOfertado.getObjDocente());
                 cursoOfertadoVeranoEntity.setObjMateria(materiaEntity);
                 cursoOfertadoVeranoEntity.setObjDocente(docenteEntity);
                 String periodoValor = PeriodoAcademicoEnum.completarSiFalta(cursoOfertado.getPeriodo_academico());
@@ -134,7 +132,7 @@ public class GestionarSolicitudCursoVeranoGatewayImplAdapter implements Gestiona
 
         SolicitudCursoVeranoPreinscripcionEntity solicitudCursoVeranoGuardado = solicitudRepository.save(solicitudCursoVeranoEntity);
 
-        return solicitudMapper.map(solicitudCursoVeranoGuardado,SolicitudCursoVeranoPreinscripcion.class);
+        return SolicitudMapperPersistencia.aDominio(solicitudCursoVeranoGuardado, SolicitudCursoVeranoPreinscripcion.class);
     }
 
 
@@ -142,7 +140,7 @@ public class GestionarSolicitudCursoVeranoGatewayImplAdapter implements Gestiona
     @Transactional
     public SolicitudCursoVeranoInscripcion crearSolicitudCursoVeranoInscripcion(
             SolicitudCursoVeranoInscripcion solicitudCursoVerano) {
-        SolicitudCursoVeranoInscripcionEntity solicitudCursoVeranoEntity = solicitudMapper.map(solicitudCursoVerano, SolicitudCursoVeranoInscripcionEntity.class);
+        SolicitudCursoVeranoInscripcionEntity solicitudCursoVeranoEntity = SolicitudMapperPersistencia.aEntidad(solicitudCursoVerano, SolicitudCursoVeranoInscripcionEntity.class);
         
         // Generar nombre descriptivo con el nombre del estudiante
         solicitudCursoVeranoEntity.setNombre_solicitud(NombreSolicitud.de(NombreSolicitud.CURSO_VERANO,
@@ -171,12 +169,12 @@ public class GestionarSolicitudCursoVeranoGatewayImplAdapter implements Gestiona
                 }
             } else {
                 cursoOfertadoVeranoEntity = new CursoOfertadoVeranoEntity();
-                GrupoCursoVeranoEntity  grupoEntity = solicitudMapper.map(cursoOfertado.getGrupo(), GrupoCursoVeranoEntity.class);
+                GrupoCursoVeranoEntity  grupoEntity = SolicitudMapperPersistencia.aEntidad(cursoOfertado.getGrupo());
                 cursoOfertadoVeranoEntity.setGrupo(grupoEntity);
                 cursoOfertadoVeranoEntity.setCupo_estimado(cursoOfertado.getCupo_estimado());
                 cursoOfertadoVeranoEntity.setSalon(cursoOfertado.getSalon());
-                MateriaEntity materiaEntity = solicitudMapper.map(cursoOfertado.getObjMateria(), MateriaEntity.class);
-                DocenteEntity docenteEntity = solicitudMapper.map(cursoOfertado.getObjDocente(), DocenteEntity.class);
+                MateriaEntity materiaEntity = CatalogosMapperPersistencia.aEntidad(cursoOfertado.getObjMateria());
+                DocenteEntity docenteEntity = CatalogosMapperPersistencia.aEntidad(cursoOfertado.getObjDocente());
                 cursoOfertadoVeranoEntity.setObjMateria(materiaEntity);
                 cursoOfertadoVeranoEntity.setObjDocente(docenteEntity);
                 // Si el curso tiene período académico en el dominio, asignarlo también a la solicitud
@@ -191,7 +189,7 @@ public class GestionarSolicitudCursoVeranoGatewayImplAdapter implements Gestiona
         }
         SolicitudCursoVeranoInscripcionEntity solicitudCursoVeranoGuardado = solicitudRepository.save(solicitudCursoVeranoEntity);
 
-        return solicitudMapper.map(solicitudCursoVeranoGuardado, SolicitudCursoVeranoInscripcion.class);
+        return SolicitudMapperPersistencia.aDominio(solicitudCursoVeranoGuardado, SolicitudCursoVeranoInscripcion.class);
     }
 
     @Override
@@ -200,17 +198,17 @@ public class GestionarSolicitudCursoVeranoGatewayImplAdapter implements Gestiona
         Solicitud solicitud = null;
         if(solicitudEntity!= null){
                 if (solicitudEntity instanceof SolicitudCursoVeranoPreinscripcionEntity) {
-                    solicitud = solicitudMapper.map(solicitudEntity, SolicitudCursoVeranoPreinscripcion.class);
+                    solicitud = SolicitudMapperPersistencia.aDominio(solicitudEntity, SolicitudCursoVeranoPreinscripcion.class);
                 } else if (solicitudEntity instanceof SolicitudEcaesEntity) {
-                    solicitud = solicitudMapper.map(solicitudEntity, SolicitudEcaes.class);
+                    solicitud = SolicitudMapperPersistencia.aDominio(solicitudEntity, SolicitudEcaes.class);
                 } else if (solicitudEntity instanceof SolicitudReingresoEntity) {
-                    solicitud = solicitudMapper.map(solicitudEntity, SolicitudReingreso.class);
+                    solicitud = SolicitudMapperPersistencia.aDominio(solicitudEntity, SolicitudReingreso.class);
                 } else if (solicitudEntity instanceof SolicitudHomologacionEntity) {
-                    solicitud = solicitudMapper.map(solicitudEntity, SolicitudHomologacion.class);
+                    solicitud = SolicitudMapperPersistencia.aDominio(solicitudEntity, SolicitudHomologacion.class);
                 } else if (solicitudEntity instanceof SolicitudPazYSalvoEntity) {
-                    solicitud = solicitudMapper.map(solicitudEntity, SolicitudPazYSalvo.class);
+                    solicitud = SolicitudMapperPersistencia.aDominio(solicitudEntity, SolicitudPazYSalvo.class);
                 } else if (solicitudEntity instanceof SolicitudCursoVeranoInscripcionEntity) {
-                    solicitud = solicitudMapper.map(solicitudEntity, SolicitudCursoVeranoInscripcion.class);
+                    solicitud = SolicitudMapperPersistencia.aDominio(solicitudEntity, SolicitudCursoVeranoInscripcion.class);
                 }
         }
         return solicitud;
@@ -224,7 +222,7 @@ public class GestionarSolicitudCursoVeranoGatewayImplAdapter implements Gestiona
         
         for (SolicitudEntity entity : solicitudesEntity) {
             if (entity instanceof SolicitudCursoVeranoPreinscripcionEntity) {
-                solicitudes.add(solicitudMapper.map(entity, SolicitudCursoVeranoPreinscripcion.class));
+                solicitudes.add(SolicitudMapperPersistencia.aDominio(entity, SolicitudCursoVeranoPreinscripcion.class));
             }
         }
         
@@ -236,7 +234,7 @@ public class GestionarSolicitudCursoVeranoGatewayImplAdapter implements Gestiona
     public SolicitudCursoVeranoPreinscripcion buscarSolicitudPorId(Integer idSolicitud) {
         return solicitudRepository.findById(idSolicitud)
             .filter(entity -> entity instanceof SolicitudCursoVeranoPreinscripcionEntity)
-            .map(entity -> solicitudMapper.map(entity, SolicitudCursoVeranoPreinscripcion.class))
+            .map(entity -> SolicitudMapperPersistencia.aDominio(entity, SolicitudCursoVeranoPreinscripcion.class))
             .orElse(null);
     }
 
@@ -248,7 +246,7 @@ public class GestionarSolicitudCursoVeranoGatewayImplAdapter implements Gestiona
         
         for (SolicitudEntity entity : solicitudesEntity) {
             if (entity instanceof SolicitudCursoVeranoPreinscripcionEntity) {
-                preinscripciones.add(solicitudMapper.map(entity, SolicitudCursoVeranoPreinscripcion.class));
+                preinscripciones.add(SolicitudMapperPersistencia.aDominio(entity, SolicitudCursoVeranoPreinscripcion.class));
             }
         }
         
@@ -263,7 +261,7 @@ public class GestionarSolicitudCursoVeranoGatewayImplAdapter implements Gestiona
         
         for (SolicitudEntity entity : solicitudesEntity) {
             if (entity instanceof SolicitudCursoVeranoInscripcionEntity) {
-                inscripciones.add(solicitudMapper.map(entity, SolicitudCursoVeranoInscripcion.class));
+                inscripciones.add(SolicitudMapperPersistencia.aDominio(entity, SolicitudCursoVeranoInscripcion.class));
             }
         }
         
@@ -277,7 +275,7 @@ public class GestionarSolicitudCursoVeranoGatewayImplAdapter implements Gestiona
             .filter(entity -> entity instanceof SolicitudCursoVeranoInscripcionEntity)
             .map(entity -> {
                 entity.getDocumentos().size();
-                return solicitudMapper.map(entity, SolicitudCursoVeranoInscripcion.class);
+                return SolicitudMapperPersistencia.aDominio(entity, SolicitudCursoVeranoInscripcion.class);
             })
             .orElse(null);
     }
@@ -315,7 +313,7 @@ public class GestionarSolicitudCursoVeranoGatewayImplAdapter implements Gestiona
         SolicitudEntity solicitudActualizada = solicitudRepository.save(solicitudEntity);
         
         
-        SolicitudCursoVeranoPreinscripcion resultado = solicitudMapper.map(solicitudActualizada, SolicitudCursoVeranoPreinscripcion.class);
+        SolicitudCursoVeranoPreinscripcion resultado = SolicitudMapperPersistencia.aDominio(solicitudActualizada, SolicitudCursoVeranoPreinscripcion.class);
         
         return resultado;
     }
@@ -351,7 +349,7 @@ public class GestionarSolicitudCursoVeranoGatewayImplAdapter implements Gestiona
         SolicitudEntity solicitudActualizada = solicitudRepository.save(solicitudEntity);
         
         
-        SolicitudCursoVeranoPreinscripcion resultado = solicitudMapper.map(solicitudActualizada, SolicitudCursoVeranoPreinscripcion.class);
+        SolicitudCursoVeranoPreinscripcion resultado = SolicitudMapperPersistencia.aDominio(solicitudActualizada, SolicitudCursoVeranoPreinscripcion.class);
         
         return resultado;
     }
@@ -390,7 +388,7 @@ public class GestionarSolicitudCursoVeranoGatewayImplAdapter implements Gestiona
         solicitudEntity.getEstadosSolicitud().add(estadoEntity);
         SolicitudEntity solicitudActualizada = solicitudRepository.save(solicitudEntity);
         
-        return solicitudMapper.map(solicitudActualizada, SolicitudCursoVeranoInscripcion.class);
+        return SolicitudMapperPersistencia.aDominio(solicitudActualizada, SolicitudCursoVeranoInscripcion.class);
     }
 
     @Override
@@ -417,7 +415,7 @@ public class GestionarSolicitudCursoVeranoGatewayImplAdapter implements Gestiona
         solicitudEntity.getEstadosSolicitud().add(estadoEntity);
         SolicitudEntity solicitudActualizada = solicitudRepository.save(solicitudEntity);
         
-        return solicitudMapper.map(solicitudActualizada, SolicitudCursoVeranoInscripcion.class);
+        return SolicitudMapperPersistencia.aDominio(solicitudActualizada, SolicitudCursoVeranoInscripcion.class);
     }
 
     @Override
@@ -445,7 +443,7 @@ public class GestionarSolicitudCursoVeranoGatewayImplAdapter implements Gestiona
         // Guardar los cambios
         SolicitudEntity solicitudActualizada = solicitudRepository.save(solicitudEntity);
         
-        return solicitudMapper.map(solicitudActualizada, SolicitudCursoVeranoPreinscripcion.class);
+        return SolicitudMapperPersistencia.aDominio(solicitudActualizada, SolicitudCursoVeranoPreinscripcion.class);
     }
 
     @Override
@@ -456,7 +454,7 @@ public class GestionarSolicitudCursoVeranoGatewayImplAdapter implements Gestiona
 
         for (SolicitudEntity entity : solicitudesEntity) {
             if (entity instanceof SolicitudCursoVeranoInscripcionEntity) {
-                inscripciones.add(solicitudMapper.map(entity, SolicitudCursoVeranoInscripcion.class));
+                inscripciones.add(SolicitudMapperPersistencia.aDominio(entity, SolicitudCursoVeranoInscripcion.class));
             }
         }
 
@@ -471,7 +469,7 @@ public class GestionarSolicitudCursoVeranoGatewayImplAdapter implements Gestiona
 
         for (SolicitudEntity entity : solicitudesEntity) {
             if (entity instanceof SolicitudCursoVeranoInscripcionEntity) {
-                inscripciones.add(solicitudMapper.map(entity, SolicitudCursoVeranoInscripcion.class));
+                inscripciones.add(SolicitudMapperPersistencia.aDominio(entity, SolicitudCursoVeranoInscripcion.class));
             }
         }
 

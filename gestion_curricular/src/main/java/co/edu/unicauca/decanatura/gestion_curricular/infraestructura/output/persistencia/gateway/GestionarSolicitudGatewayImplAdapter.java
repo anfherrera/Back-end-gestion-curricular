@@ -4,7 +4,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
-import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -25,6 +24,7 @@ import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.pers
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.entidades.SolicitudHomologacionEntity;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.entidades.SolicitudPazYSalvoEntity;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.entidades.SolicitudReingresoEntity;
+import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.mappers.SolicitudMapperPersistencia;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.repositorios.EstadoSolicitudRepositoryInt;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.repositorios.SolicitudRepositoryInt;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.repositorios.UsuarioRepositoryInt;
@@ -44,16 +44,13 @@ public class GestionarSolicitudGatewayImplAdapter implements GestionarSolicitudG
     private final SolicitudRepositoryInt solicitudRepository;
     private final UsuarioRepositoryInt usuarioRepository;
     private final EstadoSolicitudRepositoryInt estadoSolicitudRepository;
-    private final ModelMapper solicitudMapper;
 
     public GestionarSolicitudGatewayImplAdapter(SolicitudRepositoryInt solicitudRepository,
                                                 UsuarioRepositoryInt usuarioRepository,
-                                                EstadoSolicitudRepositoryInt estadoSolicitudRepository,
-                                                ModelMapper solicitudMapper) {
+                                                EstadoSolicitudRepositoryInt estadoSolicitudRepository) {
         this.solicitudRepository = solicitudRepository;
         this.usuarioRepository = usuarioRepository;
         this.estadoSolicitudRepository = estadoSolicitudRepository;
-        this.solicitudMapper = solicitudMapper;
     }
 
     @Override
@@ -63,22 +60,22 @@ public class GestionarSolicitudGatewayImplAdapter implements GestionarSolicitudG
         if (solicitudEntityOptional.isPresent()) {
             SolicitudEntity solicitudEntity = solicitudEntityOptional.get();
             if (solicitudEntity instanceof SolicitudCursoVeranoPreinscripcionEntity) {
-                return solicitudMapper.map(solicitudEntity, SolicitudCursoVeranoPreinscripcion.class);
+                return SolicitudMapperPersistencia.aDominio(solicitudEntity, SolicitudCursoVeranoPreinscripcion.class);
             } 
             if(solicitudEntity instanceof SolicitudCursoVeranoInscripcionEntity) {
-                return solicitudMapper.map(solicitudEntity, SolicitudCursoVeranoInscripcion.class);
+                return SolicitudMapperPersistencia.aDominio(solicitudEntity, SolicitudCursoVeranoInscripcion.class);
             }
             if (solicitudEntity instanceof SolicitudEcaesEntity) {
-                return solicitudMapper.map(solicitudEntity, SolicitudEcaes.class);
+                return SolicitudMapperPersistencia.aDominio(solicitudEntity, SolicitudEcaes.class);
             } 
             if (solicitudEntity instanceof SolicitudReingresoEntity) {
-                return solicitudMapper.map(solicitudEntity, SolicitudReingreso.class);
+                return SolicitudMapperPersistencia.aDominio(solicitudEntity, SolicitudReingreso.class);
             } 
             if (solicitudEntity instanceof SolicitudHomologacionEntity) {
-                return solicitudMapper.map(solicitudEntity, SolicitudHomologacion.class);
+                return SolicitudMapperPersistencia.aDominio(solicitudEntity, SolicitudHomologacion.class);
             } 
             if (solicitudEntity instanceof SolicitudPazYSalvoEntity) {
-                return solicitudMapper.map(solicitudEntity, SolicitudPazYSalvo.class);
+                return SolicitudMapperPersistencia.aDominio(solicitudEntity, SolicitudPazYSalvo.class);
             } 
         }
         return null;
@@ -134,17 +131,17 @@ public class GestionarSolicitudGatewayImplAdapter implements GestionarSolicitudG
     /** Convierte la entidad al modelo de dominio de su tipo concreto; null si el tipo no se reconoce. */
     private Solicitud aDominio(SolicitudEntity entidad) {
         if (entidad instanceof SolicitudCursoVeranoPreinscripcionEntity) {
-            return solicitudMapper.map(entidad, SolicitudCursoVeranoPreinscripcion.class);
+            return SolicitudMapperPersistencia.aDominio(entidad, SolicitudCursoVeranoPreinscripcion.class);
         } else if (entidad instanceof SolicitudEcaesEntity) {
-            return solicitudMapper.map(entidad, SolicitudEcaes.class);
+            return SolicitudMapperPersistencia.aDominio(entidad, SolicitudEcaes.class);
         } else if (entidad instanceof SolicitudReingresoEntity) {
-            return solicitudMapper.map(entidad, SolicitudReingreso.class);
+            return SolicitudMapperPersistencia.aDominio(entidad, SolicitudReingreso.class);
         } else if (entidad instanceof SolicitudHomologacionEntity) {
-            return solicitudMapper.map(entidad, SolicitudHomologacion.class);
+            return SolicitudMapperPersistencia.aDominio(entidad, SolicitudHomologacion.class);
         } else if (entidad instanceof SolicitudPazYSalvoEntity) {
-            return solicitudMapper.map(entidad, SolicitudPazYSalvo.class);
+            return SolicitudMapperPersistencia.aDominio(entidad, SolicitudPazYSalvo.class);
         } else if (entidad instanceof SolicitudCursoVeranoInscripcionEntity) {
-            return solicitudMapper.map(entidad, SolicitudCursoVeranoInscripcion.class);
+            return SolicitudMapperPersistencia.aDominio(entidad, SolicitudCursoVeranoInscripcion.class);
         }
         return null;
     }
@@ -157,17 +154,17 @@ public class GestionarSolicitudGatewayImplAdapter implements GestionarSolicitudG
         if(solicitudEntities!=null){
             solicitudes = solicitudEntities.stream().map(solicitudEntity -> {
                     if (solicitudEntity instanceof SolicitudCursoVeranoPreinscripcionEntity) {
-                        return solicitudMapper.map(solicitudEntity, SolicitudCursoVeranoPreinscripcion.class);
+                        return SolicitudMapperPersistencia.aDominio(solicitudEntity, SolicitudCursoVeranoPreinscripcion.class);
                     } else if (solicitudEntity instanceof SolicitudEcaesEntity) {
-                        return solicitudMapper.map(solicitudEntity, SolicitudEcaes.class);
+                        return SolicitudMapperPersistencia.aDominio(solicitudEntity, SolicitudEcaes.class);
                     } else if (solicitudEntity instanceof SolicitudReingresoEntity) {
-                        return solicitudMapper.map(solicitudEntity, SolicitudReingreso.class);
+                        return SolicitudMapperPersistencia.aDominio(solicitudEntity, SolicitudReingreso.class);
                     } else if (solicitudEntity instanceof SolicitudHomologacionEntity) {
-                        return solicitudMapper.map(solicitudEntity, SolicitudHomologacion.class);
+                        return SolicitudMapperPersistencia.aDominio(solicitudEntity, SolicitudHomologacion.class);
                     } else if (solicitudEntity instanceof SolicitudPazYSalvoEntity) {
-                        return solicitudMapper.map(solicitudEntity, SolicitudPazYSalvo.class);
+                        return SolicitudMapperPersistencia.aDominio(solicitudEntity, SolicitudPazYSalvo.class);
                     } else if (solicitudEntity instanceof SolicitudCursoVeranoInscripcionEntity) {
-                        return solicitudMapper.map(solicitudEntity, SolicitudCursoVeranoInscripcion.class);
+                        return SolicitudMapperPersistencia.aDominio(solicitudEntity, SolicitudCursoVeranoInscripcion.class);
                     }
                     return null;
                 })
@@ -182,24 +179,24 @@ public class GestionarSolicitudGatewayImplAdapter implements GestionarSolicitudG
     public Solicitud actualizarSolicitud(Solicitud solicitud, EstadoSolicitud estadoSolicitud) {
         SolicitudEntity solicitudEntity = null;
         if (solicitud instanceof SolicitudCursoVeranoPreinscripcion) {
-            solicitudEntity = solicitudMapper.map(solicitud, SolicitudCursoVeranoPreinscripcionEntity.class);
+            solicitudEntity = SolicitudMapperPersistencia.aEntidad(solicitud, SolicitudCursoVeranoPreinscripcionEntity.class);
         } else if (solicitud instanceof SolicitudEcaes) {
-            solicitudEntity = solicitudMapper.map(solicitud, SolicitudEcaesEntity.class);
+            solicitudEntity = SolicitudMapperPersistencia.aEntidad(solicitud, SolicitudEcaesEntity.class);
         } else if (solicitud instanceof SolicitudReingreso) {
-            solicitudEntity = solicitudMapper.map(solicitud, SolicitudReingresoEntity.class);
+            solicitudEntity = SolicitudMapperPersistencia.aEntidad(solicitud, SolicitudReingresoEntity.class);
         } else if (solicitud instanceof SolicitudHomologacion) {
-            solicitudEntity = solicitudMapper.map(solicitud, SolicitudHomologacionEntity.class);
+            solicitudEntity = SolicitudMapperPersistencia.aEntidad(solicitud, SolicitudHomologacionEntity.class);
         } else if (solicitud instanceof SolicitudPazYSalvo) {
-            solicitudEntity = solicitudMapper.map(solicitud, SolicitudPazYSalvoEntity.class);
+            solicitudEntity = SolicitudMapperPersistencia.aEntidad(solicitud, SolicitudPazYSalvoEntity.class);
         } else if (solicitud instanceof SolicitudCursoVeranoInscripcion) {
-            solicitudEntity = solicitudMapper.map(solicitud, SolicitudCursoVeranoInscripcionEntity.class);
+            solicitudEntity = SolicitudMapperPersistencia.aEntidad(solicitud, SolicitudCursoVeranoInscripcionEntity.class);
         }
 
         List<EstadoSolicitudEntity> estadosSolicitud = null;
         EstadoSolicitudEntity estadoSolicitudEntity = null;
 
         if (estadoSolicitud != null) {
-            estadoSolicitudEntity = solicitudMapper.map(estadoSolicitud, EstadoSolicitudEntity.class);
+            estadoSolicitudEntity = SolicitudMapperPersistencia.aEntidad(estadoSolicitud);
 
         } else {
             estadoSolicitudEntity = new EstadoSolicitudEntity();
@@ -219,7 +216,7 @@ public class GestionarSolicitudGatewayImplAdapter implements GestionarSolicitudG
 
         SolicitudEntity solicitudActualizada = solicitudRepository.save(solicitudEntity);
 
-        return solicitudMapper.map(solicitudActualizada, Solicitud.class);
+        return SolicitudMapperPersistencia.aDominio(solicitudActualizada, Solicitud.class);
     }
 
     @Override
@@ -230,17 +227,17 @@ public class GestionarSolicitudGatewayImplAdapter implements GestionarSolicitudG
         if(solicitudEntities != null){
             solicitudes = solicitudEntities.stream().map(solicitudEntity -> {
                 if (solicitudEntity instanceof SolicitudCursoVeranoPreinscripcionEntity) {
-                    return solicitudMapper.map(solicitudEntity, SolicitudCursoVeranoPreinscripcion.class);
+                    return SolicitudMapperPersistencia.aDominio(solicitudEntity, SolicitudCursoVeranoPreinscripcion.class);
                 } else if (solicitudEntity instanceof SolicitudEcaesEntity) {
-                    return solicitudMapper.map(solicitudEntity, SolicitudEcaes.class);
+                    return SolicitudMapperPersistencia.aDominio(solicitudEntity, SolicitudEcaes.class);
                 } else if (solicitudEntity instanceof SolicitudReingresoEntity) {
-                    return solicitudMapper.map(solicitudEntity, SolicitudReingreso.class);
+                    return SolicitudMapperPersistencia.aDominio(solicitudEntity, SolicitudReingreso.class);
                 } else if (solicitudEntity instanceof SolicitudHomologacionEntity) {
-                    return solicitudMapper.map(solicitudEntity, SolicitudHomologacion.class);
+                    return SolicitudMapperPersistencia.aDominio(solicitudEntity, SolicitudHomologacion.class);
                 } else if (solicitudEntity instanceof SolicitudPazYSalvoEntity) {
-                    return solicitudMapper.map(solicitudEntity, SolicitudPazYSalvo.class);
+                    return SolicitudMapperPersistencia.aDominio(solicitudEntity, SolicitudPazYSalvo.class);
                 } else if (solicitudEntity instanceof SolicitudCursoVeranoInscripcionEntity) {
-                    return solicitudMapper.map(solicitudEntity, SolicitudCursoVeranoInscripcion.class);
+                    return SolicitudMapperPersistencia.aDominio(solicitudEntity, SolicitudCursoVeranoInscripcion.class);
                 }
                 return null;
             }).toList();
@@ -256,17 +253,17 @@ public class GestionarSolicitudGatewayImplAdapter implements GestionarSolicitudG
         if(solicitudEntities != null){
             solicitudes = solicitudEntities.stream().map(solicitudEntity -> {
                 if (solicitudEntity instanceof SolicitudCursoVeranoPreinscripcionEntity) {
-                    return solicitudMapper.map(solicitudEntity, SolicitudCursoVeranoPreinscripcion.class);
+                    return SolicitudMapperPersistencia.aDominio(solicitudEntity, SolicitudCursoVeranoPreinscripcion.class);
                 } else if (solicitudEntity instanceof SolicitudEcaesEntity) {
-                    return solicitudMapper.map(solicitudEntity, SolicitudEcaes.class);
+                    return SolicitudMapperPersistencia.aDominio(solicitudEntity, SolicitudEcaes.class);
                 } else if (solicitudEntity instanceof SolicitudReingresoEntity) {
-                    return solicitudMapper.map(solicitudEntity, SolicitudReingreso.class);
+                    return SolicitudMapperPersistencia.aDominio(solicitudEntity, SolicitudReingreso.class);
                 } else if (solicitudEntity instanceof SolicitudHomologacionEntity) {
-                    return solicitudMapper.map(solicitudEntity, SolicitudHomologacion.class);
+                    return SolicitudMapperPersistencia.aDominio(solicitudEntity, SolicitudHomologacion.class);
                 } else if (solicitudEntity instanceof SolicitudPazYSalvoEntity) {
-                    return solicitudMapper.map(solicitudEntity, SolicitudPazYSalvo.class);
+                    return SolicitudMapperPersistencia.aDominio(solicitudEntity, SolicitudPazYSalvo.class);
                 } else if (solicitudEntity instanceof SolicitudCursoVeranoInscripcionEntity) {
-                    return solicitudMapper.map(solicitudEntity, SolicitudCursoVeranoInscripcion.class);
+                    return SolicitudMapperPersistencia.aDominio(solicitudEntity, SolicitudCursoVeranoInscripcion.class);
                 }
                 return null;
             }).toList();

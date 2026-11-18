@@ -115,6 +115,11 @@ public final class SolicitudMapperPersistencia {
         return new AlDominio().curso(entidad);
     }
 
+    public static GrupoCursoVeranoEntity aEntidad(GrupoCursoVerano grupo) {
+        Origen.exigir(grupo);
+        return GrupoCursoVeranoEntity.valueOf(grupo.name());
+    }
+
     public static Notificacion aDominio(NotificacionEntity entidad) {
         Origen.exigir(entidad);
         return new AlDominio().notificacion(entidad);
