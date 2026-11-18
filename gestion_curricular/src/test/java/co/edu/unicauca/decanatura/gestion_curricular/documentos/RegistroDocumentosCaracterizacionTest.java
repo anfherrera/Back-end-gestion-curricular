@@ -76,7 +76,20 @@ class RegistroDocumentosCaracterizacionTest {
             assertThat(Files.exists(referencia)).isFalse();
             Files.writeString(referencia, json.writerWithDefaultPrettyPrinter().writeValueAsString(actual));
         }
-        assertThat(actual).isEqualTo(json.readTree(Files.readString(referencia)));
+        var esperado = (ObjectNode) json.readTree(Files.readString(referencia));
+        // BUG-21: el oficio Word comprueba la solicitud antes de guardar el archivo. Esas entradas salen de
+        // registro-bug21.json y solo pueden diferir de la referencia anterior en el orden de los eventos.
+        var corregidos = json.readTree(Files.readString(
+            Path.of("src/test/resources/referencias/documentos/registro-bug21.json")));
+        assertThat(corregidos.size()).isEqualTo(2);
+        corregidos.fields().forEachRemaining(e -> {
+            assertThat(esperado.has(e.getKey())).as(e.getKey()).isTrue();
+            var anterior = (ObjectNode) esperado.get(e.getKey()).deepCopy();
+            anterior.set("eventos", e.getValue().get("eventos"));
+            assertThat(e.getValue()).as(e.getKey()).isEqualTo(anterior);
+            esperado.set(e.getKey(), e.getValue());
+        });
+        assertThat(actual).isEqualTo(esperado);
     }
 
     private static void normalizar(JsonNode nodo) {

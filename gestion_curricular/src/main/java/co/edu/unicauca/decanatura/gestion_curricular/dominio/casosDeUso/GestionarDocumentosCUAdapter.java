@@ -51,11 +51,11 @@ public class GestionarDocumentosCUAdapter implements GestionarDocumentosCUIntPor
     @Override
     public AdjuntoCondicional guardarYAdjuntarSiExiste(ArchivoSubido archivo, String tipoArchivo, String carpeta,
             Integer idSolicitud, BooleanSupplier solicitudExiste) {
-        String nombre = archivo.nombreOriginal();
-        String ruta = archivos.saveFile(archivo, nombre, tipoArchivo, carpeta, idSolicitud);
         if (!solicitudExiste.getAsBoolean()) {
             return new AdjuntoCondicional(false, null);
         }
+        String nombre = archivo.nombreOriginal();
+        String ruta = archivos.saveFile(archivo, nombre, tipoArchivo, carpeta, idSolicitud);
         Solicitud solicitud = new Solicitud();
         solicitud.setId_solicitud(idSolicitud);
         return new AdjuntoCondicional(true, registrarGuardado(nombre, ruta, solicitud, null, null));

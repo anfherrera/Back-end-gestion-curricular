@@ -24,8 +24,8 @@ public interface GestionarDocumentosCUIntPort {
     record AdjuntoCondicional(boolean solicitudExiste, Documento documento) {}
 
     /**
-     * Guarda el archivo con su tipo y nombre original y solo después comprueba la solicitud: si no existe
-     * no lo registra, y el archivo queda en disco (BUG-21). Lo usa el oficio Word de Paz y Salvo.
+     * Comprueba primero la solicitud: si no existe, no guarda ni registra nada. Si existe, guarda el archivo
+     * con su tipo y nombre original y lo registra. Lo usa el oficio Word de Paz y Salvo.
      */
     AdjuntoCondicional guardarYAdjuntarSiExiste(ArchivoSubido archivo, String tipoArchivo, String carpeta,
             Integer idSolicitud, BooleanSupplier solicitudExiste);

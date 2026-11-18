@@ -655,7 +655,7 @@ public ResponseEntity<DocumentosDTORespuesta> guardarOficioPazSalvo(
         return ResponseEntity.status(HttpStatus.UNSUPPORTED_MEDIA_TYPE).body(null);
     }
     
-    // Guarda en subcarpetas y después comprueba la solicitud (BUG-21: con 404 el archivo queda en disco)
+    // Comprueba la solicitud antes de guardar en subcarpetas: con 404 no queda ningún archivo en disco
     var adjunto = documentosCU.guardarYAdjuntarSiExiste(ArchivoMultipart.de(file), "docx",
             "pazysalvo", idSolicitud, () -> solicitudPazYSalvoCU.buscarPorId(idSolicitud) != null);
     if (!adjunto.solicitudExiste()) {

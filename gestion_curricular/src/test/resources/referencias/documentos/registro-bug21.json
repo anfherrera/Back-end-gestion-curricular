@@ -1,0 +1,40 @@
+{
+  "/api/solicitudes-pazysalvo/guardarOficio existe=true" : {
+    "status" : 201,
+    "documentos" : [ {
+      "id_documento" : 11,
+      "nombre" : "original.docx",
+      "ruta_documento" : "servidor/guardado.pdf",
+      "fecha_documento" : "<ahora>",
+      "esValido" : true,
+      "comentario" : null,
+      "idUsuarioSubio" : null,
+      "objSolicitud" : {
+        "id_solicitud" : 7,
+        "nombre_solicitud" : null,
+        "periodo_academico" : null,
+        "fecha_ceremonia" : null,
+        "fecha_registro_solicitud" : null,
+        "estadosSolicitud" : [ ],
+        "objUsuario" : null,
+        "documentos" : [ ],
+        "objCursoOfertadoVerano" : null
+      }
+    } ],
+    "eventos" : [ "solicitud", "archivo", "registro" ],
+    "body" : {
+      "id_documento" : 11,
+      "nombre" : "original.docx",
+      "ruta_documento" : "servidor/guardado.pdf",
+      "fecha_documento" : "<ahora>",
+      "esValido" : true,
+      "comentario" : null
+    }
+  },
+  "/api/solicitudes-pazysalvo/guardarOficio existe=false" : {
+    "status" : 404,
+    "documentos" : [ ],
+    "eventos" : [ "solicitud" ],
+    "body" : null
+  }
+}
