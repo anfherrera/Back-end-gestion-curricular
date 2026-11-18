@@ -30,7 +30,6 @@ import org.springframework.web.bind.annotation.RestController;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarArchivosCUIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarCursoOfertadoVeranoCUIntPort.DatosCreacion;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarNotificacionCUIntPort;
-import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.FormateadorResultadosIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.GestionarArchivosGatewayIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.GestionarCursoOfertadoVeranoGatewayIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.GestionarDocenteGatewayIntPort;
@@ -85,7 +84,6 @@ import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Usuario;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.enums.CondicionSolicitudVerano;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.enums.GrupoCursoVerano;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.excepciones.RestApiExceptionHandler;
-import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.formateador.FormateadorResultadosImplAdapter;
 import co.edu.unicauca.decanatura.gestion_curricular.soporte.GrafoObjetos;
 
 /**
@@ -94,8 +92,6 @@ import co.edu.unicauca.decanatura.gestion_curricular.soporte.GrafoObjetos;
  * RestApiExceptionHandler, además de la clase de la excepción.
  */
 class ErroresCasosDeUsoCaracterizacionTest {
-
-    private static final FormateadorResultadosIntPort FORMATEADOR = new FormateadorResultadosImplAdapter();
 
     private final ObjectMapper json = new ObjectMapper();
     private final Map<String, Callable<?>> casos = new LinkedHashMap<>();
