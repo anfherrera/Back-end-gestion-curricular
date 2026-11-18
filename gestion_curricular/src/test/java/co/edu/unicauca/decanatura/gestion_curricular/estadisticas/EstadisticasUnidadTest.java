@@ -14,7 +14,6 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarEstadisticasCUIntPort;
-import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.FormateadorResultadosIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.GestionarEstadisticasGatewayIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.casosDeUso.GestionarEstadisticasCUAdapter;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Estadistica;
@@ -52,9 +51,6 @@ class EstadisticasUnidadTest {
     @Mock
     private GestionarEstadisticasGatewayIntPort estadisticasGateway;
 
-    @Mock
-    private FormateadorResultadosIntPort formateadorResultados;
-
     private GestionarEstadisticasCUIntPort estadisticasCU;
 
     private Estadistica estadisticaEjemplo;
@@ -62,10 +58,7 @@ class EstadisticasUnidadTest {
     @BeforeEach
     void setUp() {
         // Crear el CU Adapter con las dependencias mockeadas
-        estadisticasCU = new GestionarEstadisticasCUAdapter(
-                estadisticasGateway,
-                formateadorResultados
-        );
+        estadisticasCU = new GestionarEstadisticasCUAdapter(estadisticasGateway);
 
         // Crear estadística de ejemplo
         estadisticaEjemplo = new Estadistica();
@@ -110,6 +103,8 @@ class EstadisticasUnidadTest {
     @DisplayName("Test 3: Actualizar estadística - Delega correctamente")
     void testActualizarEstadisticaDelegaCorrectamente() {
         // Arrange
+        estadisticaEjemplo.setId_estadistica(1);
+        when(estadisticasGateway.obtenerEstadisticaPorId(1)).thenReturn(estadisticaEjemplo);
         when(estadisticasGateway.actualizarEstadistica(any(Estadistica.class)))
                 .thenReturn(estadisticaEjemplo);
 
@@ -126,6 +121,7 @@ class EstadisticasUnidadTest {
     void testEliminarEstadisticaDelegaCorrectamente() {
         // Arrange
         int id = 1;
+        when(estadisticasGateway.obtenerEstadisticaPorId(id)).thenReturn(estadisticaEjemplo);
         when(estadisticasGateway.eliminarEstadistica(id)).thenReturn(true);
 
         // Act

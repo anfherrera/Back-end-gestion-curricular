@@ -18,7 +18,6 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.FormateadorResultadosIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.casosDeUso.GestionarEstadisticasCUAdapter;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.entidades.CursoOfertadoVeranoEntity;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.entidades.EstadoSolicitudEntity;
@@ -55,7 +54,7 @@ class EstadisticasCursosVeranoCaracterizacionTest {
                 mock(EstadisticaRepositoryInt.class), mock(ProgramaRepositoryInt.class), solicitudRepository,
                 mock(UsuarioRepositoryInt.class));
 
-        Map<String, Object> resultado = new GestionarEstadisticasCUAdapter(gateway, mock(FormateadorResultadosIntPort.class))
+        Map<String, Object> resultado = new GestionarEstadisticasCUAdapter(gateway)
                 .obtenerEstadisticasCursosVerano(null, null);
         resultado.remove("fechaConsulta");
         ((Map<?, ?>) resultado.get("predicciones")).remove("fechaPrediccion");

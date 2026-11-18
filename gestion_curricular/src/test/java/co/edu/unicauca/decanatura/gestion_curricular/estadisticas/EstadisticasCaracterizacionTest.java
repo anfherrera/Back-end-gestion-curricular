@@ -31,7 +31,6 @@ import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
 
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarEstadisticasCUIntPort;
-import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.FormateadorResultadosIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.casosDeUso.GestionarEstadisticasCUAdapter;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.entidades.CursoOfertadoVeranoEntity;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.entidades.EstadoSolicitudEntity;
@@ -236,7 +235,7 @@ class EstadisticasCaracterizacionTest {
 
         GestionarEstadisticasGatewayImplAdapter gateway = new GestionarEstadisticasGatewayImplAdapter(mock(EstadisticaRepositoryInt.class), programaRepository,
                 solicitudRepository, usuarioRepository);
-        return new GestionarEstadisticasCUAdapter(gateway, mock(FormateadorResultadosIntPort.class));
+        return new GestionarEstadisticasCUAdapter(gateway);
     }
 
     private static ProgramaEntity programa(int id, String nombre) {

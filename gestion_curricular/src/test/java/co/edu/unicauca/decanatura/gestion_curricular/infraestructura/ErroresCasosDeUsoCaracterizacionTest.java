@@ -935,7 +935,7 @@ class ErroresCasosDeUsoCaracterizacionTest {
     }
 
     private static GestionarEstadisticasCUAdapter estadisticas(GestionarEstadisticasGatewayIntPort g) {
-        return new GestionarEstadisticasCUAdapter(g, FORMATEADOR);
+        return new GestionarEstadisticasCUAdapter(g);
     }
 
     private static GestionarSolicitudEcaesCUAdapter ecaes(GestionarPreRegistroEcaesGatewayIntPort g, GestionarUsuarioGatewayIntPort u) {

@@ -87,9 +87,8 @@ public class BeanConfiguration {
     
     @Bean
     public GestionarEstadisticasCUAdapter crearGestionarEstadisticasCUInt(
-            GestionarEstadisticasGatewayIntPort estadisticasGateway,
-            FormateadorResultadosIntPort formateadorResultados) {
-                return new GestionarEstadisticasCUAdapter(estadisticasGateway,formateadorResultados);
+            GestionarEstadisticasGatewayIntPort estadisticasGateway) {
+                return new GestionarEstadisticasCUAdapter(estadisticasGateway);
     }
     
     @Bean 
