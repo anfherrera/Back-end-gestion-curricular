@@ -197,6 +197,8 @@ class InscripcionesVeranoRespuestasCaracterizacionTest {
         esperado = Correcciones.aplicar(esperado, "verano-endpoints/correcciones/inscripciones-respuestas-bug34.json");
         // BUG-35: los elegibles llevan su comprobante real (o null) y los incompletos aparecen con datos null
         esperado = Correcciones.aplicar(esperado, "verano-endpoints/correcciones/inscripciones-respuestas-bug35.json");
+        // BUG-33: confirmar no está implementado y responde 501 sin cuerpo
+        esperado = Correcciones.aplicar(esperado, "verano-endpoints/correcciones/inscripciones-respuestas-bug33.json");
         assertThat(resultados).isEqualTo(esperado);
     }
 

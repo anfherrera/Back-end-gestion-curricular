@@ -104,35 +104,6 @@ public final class InscripcionesVeranoDTORespuesta {
             String motivo,
             @JsonProperty("nuevo_estado") String nuevoEstado) {}
 
-    /** Respuesta fija de {@code /inscripciones/{id}/confirmar}: solo {@code id} sale de la petición. */
-    @JsonPropertyOrder({"inscripcion", "message"})
-    public record ConfirmacionSimulada(String message, InscripcionSimulada inscripcion) {}
-
-    @JsonPropertyOrder({"estudiante", "fecha", "estado", "estudianteId", "id", "cursoId", "archivoPago"})
-    public record InscripcionSimulada(
-            Long id,
-            String fecha,
-            String estado,
-            int estudianteId,
-            int cursoId,
-            EstudianteSimulado estudiante,
-            ArchivoSimulado archivoPago) {}
-
-    @JsonPropertyOrder({"codigo_estudiante", "id_usuario", "apellido", "nombre", "email"})
-    public record EstudianteSimulado(
-            @JsonProperty("id_usuario") int idUsuario,
-            String nombre,
-            String apellido,
-            String email,
-            @JsonProperty("codigo_estudiante") String codigoEstudiante) {}
-
-    @JsonPropertyOrder({"id_documento", "fecha", "nombre", "url"})
-    public record ArchivoSimulado(
-            @JsonProperty("id_documento") int idDocumento,
-            String nombre,
-            String url,
-            String fecha) {}
-
     /** Respuesta de {@code /inscripciones/{id}/info} cuando la inscripción no existe. */
     @JsonPropertyOrder({"encontrada", "mensaje"})
     public record InfoNoEncontrada(boolean encontrada, String mensaje) {}

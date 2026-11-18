@@ -31,15 +31,12 @@ import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.Respu
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.dto.peticion.DecisionSolicitudDTOPeticion;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.dto.peticion.PreinscripcionCursoVeranoDTOPeticion;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.dto.respuesta.InscripcionesVeranoDTORespuesta.ArchivoPagoInfo;
-import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.dto.respuesta.InscripcionesVeranoDTORespuesta.ArchivoSimulado;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.dto.respuesta.InscripcionesVeranoDTORespuesta.CancelacionRechazada;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.dto.respuesta.InscripcionesVeranoDTORespuesta.ComprobantePago;
-import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.dto.respuesta.InscripcionesVeranoDTORespuesta.ConfirmacionSimulada;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.dto.respuesta.InscripcionesVeranoDTORespuesta.DocumentoInfo;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.dto.respuesta.InscripcionesVeranoDTORespuesta.ErrorInscripcion;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.dto.respuesta.InscripcionesVeranoDTORespuesta.EstadisticasInscripciones;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.dto.respuesta.InscripcionesVeranoDTORespuesta.EstudianteElegible;
-import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.dto.respuesta.InscripcionesVeranoDTORespuesta.EstudianteSimulado;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.dto.respuesta.InscripcionesVeranoDTORespuesta.IdCurso;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.dto.respuesta.InscripcionesVeranoDTORespuesta.InfoInscripcion;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.dto.respuesta.InscripcionesVeranoDTORespuesta.InfoNoEncontrada;
@@ -47,7 +44,6 @@ import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.dto.r
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.dto.respuesta.InscripcionesVeranoDTORespuesta.InscripcionCancelada;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.dto.respuesta.InscripcionesVeranoDTORespuesta.InscripcionRechazada;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.dto.respuesta.InscripcionesVeranoDTORespuesta.InscripcionRechazadaPorFuncionario;
-import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.dto.respuesta.InscripcionesVeranoDTORespuesta.InscripcionSimulada;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.dto.respuesta.InscripcionesVeranoDTORespuesta.NombreCurso;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.excepciones.ErroresCursosVerano;
 import co.edu.unicauca.decanatura.gestion_curricular.seguridad.Autorizacion;
@@ -374,18 +370,14 @@ public class InscripcionesVeranoRestController {
     /**
      * Confirmar inscripcion de estudiante
      * PUT /api/cursos-intersemestrales/inscripciones/{id}/confirmar
+     *
+     * <p>No implementado: responde 501 sin cuerpo. Antes respondía 200 con una inscripción inventada
+     * (BUG-33) sin consultar ni modificar nada.
      */
     @PreAuthorize("@autorizacion.esStaff() or @autorizacion.esDuenoSolicitud(#id.intValue())")
     @PutMapping("/inscripciones/{id}/confirmar")
-    public ResponseEntity<ConfirmacionSimulada> confirmarInscripcion(@PathVariable Long id) {
-        // Simular confirmacion de inscripcion (BUG-33): todo salvo el id es fijo
-        var estudiante = new EstudianteSimulado(1, "Ana", "Gonzalez", "ana.gonzalez@unicauca.edu.co", "104612345660");
-        var archivoPago = new ArchivoSimulado(1, "comprobante_pago_ana.pdf", "/uploads/comprobante_pago_ana.pdf",
-                "2024-01-15T10:30:00");
-        var inscripcion = new InscripcionSimulada(id, "2024-01-15T10:30:00", "inscrito", 1, 1, estudiante, archivoPago);
-
-        // Mensaje de confirmacion
-        return ResponseEntity.ok(new ConfirmacionSimulada("Inscripcion confirmada exitosamente", inscripcion));
+    public ResponseEntity<Void> confirmarInscripcion(@PathVariable Long id) {
+        return ResponseEntity.status(501).build();
     }
 
     // ==================== ENDPOINT PARA DESCARGAR COMPROBANTE DE PAGO ====================
