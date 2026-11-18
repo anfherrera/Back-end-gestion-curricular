@@ -177,8 +177,11 @@ class ErroresLocalesCaracterizacionTest {
             Files.writeString(referencia, json.writerWithDefaultPrettyPrinter().writeValueAsString(actual));
         }
         // BUG-22: crear usuario deja pasar al manejador global los errores de dominio del caso de uso
-        assertThat(actual).isEqualTo(Correcciones.aplicar(json.readTree(Files.readString(referencia)),
-            "errores/correcciones/errores-locales-bug22.json"));
+        JsonNode esperado = Correcciones.aplicar(json.readTree(Files.readString(referencia)),
+            "errores/correcciones/errores-locales-bug22.json");
+        // BUG-24: una solicitud de curso nuevo sin condición es un 400 VALIDATION_ERROR y no un 500
+        esperado = Correcciones.aplicar(esperado, "errores/correcciones/errores-locales-bug24.json");
+        assertThat(actual).isEqualTo(esperado);
     }
 
     private static Supplier<MockHttpServletRequestBuilder> cursoNuevo(String condicion) {

@@ -155,7 +155,11 @@ public class PreinscripcionesVeranoRestController {
             solicitudDominio.setNombre_estudiante(peticion.getNombreCompleto());
             solicitudDominio.setCodigo_estudiante(peticion.getCodigo());
             
-            // Mapear la condicion con validacion
+            // Mapear la condicion con validacion; sin condición, el mismo 400 que con una inválida
+            if (peticion.getCondicion() == null) {
+                throw new IllegalArgumentException("La condicion es obligatoria. Valores validos: "
+                        + Arrays.toString(CondicionSolicitudVerano.values()));
+            }
             try {
                 solicitudDominio.setCodicion_solicitud(CondicionSolicitudVerano.valueOf(peticion.getCondicion()));
             } catch (IllegalArgumentException e) {
