@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import org.modelmapper.ModelMapper;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -15,6 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.GestionarUsuarioGatewayIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Usuario;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.entidades.UsuarioEntity;
+import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.mappers.UsuarioMapperPersistencia;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.repositorios.SolicitudRepositoryInt;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.repositorios.UsuarioRepositoryInt;
 
@@ -24,12 +24,10 @@ public class GestionarUsuarioGatewayImplAdapter implements GestionarUsuarioGatew
 
     private final UsuarioRepositoryInt usuarioRepository;
     private final SolicitudRepositoryInt solicitudRepository;
-    private final ModelMapper usuarioMapper;
 
-    public GestionarUsuarioGatewayImplAdapter(UsuarioRepositoryInt usuarioRepository, SolicitudRepositoryInt solicitudRepository, ModelMapper usuarioMapper) {
+    public GestionarUsuarioGatewayImplAdapter(UsuarioRepositoryInt usuarioRepository, SolicitudRepositoryInt solicitudRepository) {
         this.usuarioRepository = usuarioRepository;
         this.solicitudRepository = solicitudRepository;
-        this.usuarioMapper = usuarioMapper;
     }
 
     @Override
@@ -52,15 +50,9 @@ public class GestionarUsuarioGatewayImplAdapter implements GestionarUsuarioGatew
         if (usuario.getObjPrograma().getId_programa() == null) {
             throw new IllegalArgumentException("El ID del programa no puede ser nulo");
         }
-        
-        // Validar que el mapper no sea null
-        if (usuarioMapper == null) {
-            throw new IllegalStateException("El mapper de usuarios no está inicializado");
-        }
-        
         UsuarioEntity entity;
         try {
-            entity = usuarioMapper.map(usuario, UsuarioEntity.class);
+            entity = UsuarioMapperPersistencia.aEntidad(usuario);
         } catch (IllegalArgumentException e) {
             if (e.getMessage() != null && e.getMessage().contains("source cannot be null")) {
                 throw new IllegalArgumentException("Error al mapear usuario: el objeto usuario o alguna de sus propiedades es nula. " +
@@ -103,7 +95,7 @@ public class GestionarUsuarioGatewayImplAdapter implements GestionarUsuarioGatew
             throw new RuntimeException("Error: el programa no se cargó correctamente después de guardar");
         }
         
-        Usuario resultado = usuarioMapper.map(reloaded, Usuario.class);
+        Usuario resultado = UsuarioMapperPersistencia.aDominio(reloaded);
         if (resultado == null) {
             throw new IllegalArgumentException("Error al mapear la entidad guardada a usuario");
         }
@@ -116,9 +108,9 @@ public class GestionarUsuarioGatewayImplAdapter implements GestionarUsuarioGatew
         usuarioRepository.findById(usuario.getId_usuario())
                 .orElseThrow(() -> new RuntimeException("Usuario no encontrado con ID: " + usuario.getId_usuario()));
 
-        UsuarioEntity entity = usuarioMapper.map(usuario, UsuarioEntity.class);
+        UsuarioEntity entity = UsuarioMapperPersistencia.aEntidad(usuario);
         UsuarioEntity updated = usuarioRepository.save(entity);
-        return usuarioMapper.map(updated, Usuario.class);
+        return UsuarioMapperPersistencia.aDominio(updated);
     }
 
     @Override
@@ -137,14 +129,14 @@ public class GestionarUsuarioGatewayImplAdapter implements GestionarUsuarioGatew
     public Usuario obtenerUsuarioPorId(Integer id_usuario) {
         // Usar findByIdWithRelations para cargar todas las relaciones, incluyendo la cédula
         return usuarioRepository.findByIdWithRelations(id_usuario)
-                .map(entity -> usuarioMapper.map(entity, Usuario.class))
+                .map(entity -> UsuarioMapperPersistencia.aDominio(entity))
                 .orElse(null);
     }
 
     @Override
     public Optional<Usuario> buscarUsuarioPorId(Integer idUsuario) {
         return usuarioRepository.findById(idUsuario)
-            .map(entity -> Optional.of(usuarioMapper.map(entity, Usuario.class)))
+            .map(entity -> Optional.of(UsuarioMapperPersistencia.aDominio(entity)))
             .orElse(Optional.empty());
     }
 
@@ -153,7 +145,7 @@ public class GestionarUsuarioGatewayImplAdapter implements GestionarUsuarioGatew
     public Usuario buscarUsuarioPorCorreo(String correo) {
         // Usar buscarPorCorreoWithRelations para cargar programa y rol (necesario para filtros de coordinador)
         Optional<UsuarioEntity> usuarioEntity = usuarioRepository.buscarPorCorreoWithRelations(correo);
-        return usuarioEntity.map(entity -> usuarioMapper.map(entity, Usuario.class)).orElse(null);
+        return usuarioEntity.map(entity -> UsuarioMapperPersistencia.aDominio(entity)).orElse(null);
     }
 
     @Override
@@ -163,7 +155,7 @@ public class GestionarUsuarioGatewayImplAdapter implements GestionarUsuarioGatew
             return null;
         }
         Optional<UsuarioEntity> usuarioEntity = usuarioRepository.buscarPorCedula(cedula.trim());
-        return usuarioEntity.map(entity -> usuarioMapper.map(entity, Usuario.class)).orElse(null);
+        return usuarioEntity.map(entity -> UsuarioMapperPersistencia.aDominio(entity)).orElse(null);
     }
 
     @Override
@@ -171,7 +163,7 @@ public class GestionarUsuarioGatewayImplAdapter implements GestionarUsuarioGatew
     public List<Usuario> buscarUsuariosPorRol(Integer idRol) {
         List<UsuarioEntity> entities = usuarioRepository.buscarPorRol(idRol);
         return entities.stream()
-                .map(entity -> usuarioMapper.map(entity, Usuario.class))
+                .map(entity -> UsuarioMapperPersistencia.aDominio(entity))
                 .toList();
     }
 
@@ -180,7 +172,7 @@ public class GestionarUsuarioGatewayImplAdapter implements GestionarUsuarioGatew
     public List<Usuario> listarUsuarios() {
         List<UsuarioEntity> entities = usuarioRepository.findAll();
         return entities.stream()
-                .map(entity -> usuarioMapper.map(entity, Usuario.class))
+                .map(entity -> UsuarioMapperPersistencia.aDominio(entity))
                 .toList();
     }
 
@@ -189,7 +181,7 @@ public class GestionarUsuarioGatewayImplAdapter implements GestionarUsuarioGatew
         UsuarioEntity usuarioEntity = usuarioRepository.buscarUsuariosPorSolicitud(idSolicitud);
         Usuario usuario = null;
         if (usuarioEntity != null) {
-            usuario = usuarioMapper.map(usuarioEntity, Usuario.class);
+            usuario = UsuarioMapperPersistencia.aDominio(usuarioEntity);
         }
         return usuario;
     }
@@ -197,7 +189,7 @@ public class GestionarUsuarioGatewayImplAdapter implements GestionarUsuarioGatew
     @Override
     public UserDetails loadUserByUsername(String correo) throws UsernameNotFoundException {
         Usuario usuario = usuarioRepository.buscarPorCorreo(correo)
-                .map(entity -> usuarioMapper.map(entity, Usuario.class))
+                .map(entity -> UsuarioMapperPersistencia.aDominio(entity))
                 .orElseThrow(() -> new UsernameNotFoundException("Usuario no encontrado con correo: " + correo));
 
         if (usuario == null) {
@@ -224,6 +216,6 @@ public class GestionarUsuarioGatewayImplAdapter implements GestionarUsuarioGatew
     @Transactional(readOnly = true)
     public Usuario buscarUsuarioPorCodigo(String codigo) {
         UsuarioEntity usuarioEntity = usuarioRepository.buscarIdUsuarioPorCodigo(codigo);
-        return usuarioEntity != null ? usuarioMapper.map(usuarioEntity, Usuario.class) : null;
+        return usuarioEntity != null ? UsuarioMapperPersistencia.aDominio(usuarioEntity) : null;
     }
 }

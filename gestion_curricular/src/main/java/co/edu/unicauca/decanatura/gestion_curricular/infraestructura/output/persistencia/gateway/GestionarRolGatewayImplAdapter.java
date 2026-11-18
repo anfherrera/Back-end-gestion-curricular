@@ -3,13 +3,13 @@ package co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.per
 import java.util.List;
 import java.util.Optional;
 
-import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.GestionarRolGatewayIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Rol;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.entidades.RolEntity;
+import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.mappers.UsuarioMapperPersistencia;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.repositorios.RolRepositoryInt;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.repositorios.UsuarioRepositoryInt;
 
@@ -19,31 +19,27 @@ public class GestionarRolGatewayImplAdapter implements GestionarRolGatewayIntPor
 
     private final RolRepositoryInt objrolRepository;
     private final UsuarioRepositoryInt usuarioRepository;
-    private final ModelMapper rolMapper;
     
     public GestionarRolGatewayImplAdapter(RolRepositoryInt objrolRepository, 
-                                          UsuarioRepositoryInt usuarioRepository,
-                                          ModelMapper rolMapper) {
+                                          UsuarioRepositoryInt usuarioRepository) {
         this.objrolRepository = objrolRepository;
         this.usuarioRepository = usuarioRepository;
-        this.rolMapper = rolMapper;
     }
 
     // Métodos originales (compatibilidad)
     @Override
     @Transactional(readOnly = true)
     public Rol buscarRolPorId(Integer idRol) {
-        return this.rolMapper.map(
-            this.objrolRepository.findById(idRol).orElse(null), Rol.class);
+        return UsuarioMapperPersistencia.aDominio(this.objrolRepository.findById(idRol).orElse(null));
     }
 
     // Nuevos métodos CRUD
     @Override
     @Transactional
     public Rol guardarRol(Rol rol) {
-        RolEntity rolEntity = rolMapper.map(rol, RolEntity.class);
+        RolEntity rolEntity = UsuarioMapperPersistencia.aEntidad(rol);
         RolEntity savedEntity = objrolRepository.save(rolEntity);
-        return rolMapper.map(savedEntity, Rol.class);
+        return UsuarioMapperPersistencia.aDominio(savedEntity);
     }
     
     @Override
@@ -52,9 +48,9 @@ public class GestionarRolGatewayImplAdapter implements GestionarRolGatewayIntPor
         objrolRepository.findById(rol.getId_rol())
             .orElseThrow(() -> new RuntimeException("Rol no encontrado con ID: " + rol.getId_rol()));
 
-        RolEntity rolEntity = rolMapper.map(rol, RolEntity.class);
+        RolEntity rolEntity = UsuarioMapperPersistencia.aEntidad(rol);
         RolEntity savedEntity = objrolRepository.save(rolEntity);
-        return rolMapper.map(savedEntity, Rol.class);
+        return UsuarioMapperPersistencia.aDominio(savedEntity);
     }
 
     @Override
@@ -74,7 +70,7 @@ public class GestionarRolGatewayImplAdapter implements GestionarRolGatewayIntPor
     public Rol obtenerRolPorId(Integer idRol) {
         Optional<RolEntity> rolEntity = objrolRepository.findById(idRol);
         if (rolEntity.isPresent()) {
-            return rolMapper.map(rolEntity.get(), Rol.class);
+            return UsuarioMapperPersistencia.aDominio(rolEntity.get());
         }
         return null;
     }
@@ -85,7 +81,7 @@ public class GestionarRolGatewayImplAdapter implements GestionarRolGatewayIntPor
         Rol rolRetornar = null;
         Optional<RolEntity> rolEntity = objrolRepository.buscarPorNombre(nombre);
         if (rolEntity.isPresent()) {
-            rolRetornar = rolMapper.map(rolEntity.get(), Rol.class);
+            rolRetornar = UsuarioMapperPersistencia.aDominio(rolEntity.get());
         }
         return rolRetornar;
     }
@@ -97,7 +93,7 @@ public class GestionarRolGatewayImplAdapter implements GestionarRolGatewayIntPor
         List<RolEntity> rolesEntity = objrolRepository.findAll();
         if (rolesEntity != null) {
             rolesRetornar = rolesEntity.stream().map(rolEntity -> {
-                return this.rolMapper.map(rolEntity, Rol.class);
+                return UsuarioMapperPersistencia.aDominio(rolEntity);
             }).toList();
         }
         return rolesRetornar;
