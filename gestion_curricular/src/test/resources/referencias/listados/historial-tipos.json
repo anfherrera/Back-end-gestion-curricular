@@ -1,0 +1,48 @@
+{
+  "historial" : {
+    "Cursos de Verano" : {
+      "status" : 200,
+      "total" : 3,
+      "ids" : [ 5, 6, 8 ]
+    },
+    "Curso Nuevo" : {
+      "status" : 200,
+      "total" : 1,
+      "ids" : [ 7 ]
+    },
+    "Preinscripcion" : {
+      "status" : 200,
+      "total" : 0,
+      "ids" : [ ]
+    },
+    "Inscripción" : {
+      "status" : 200,
+      "total" : 3,
+      "ids" : [ 4, 5, 6 ]
+    },
+    "Otro" : {
+      "status" : 200,
+      "total" : 0,
+      "ids" : [ ]
+    },
+    "Homologacion" : {
+      "status" : 200,
+      "total" : 1,
+      "ids" : [ 11 ]
+    }
+  },
+  "pdf" : {
+    "Homologación" : {
+      "status" : 200,
+      "texto" : "HISTORIAL COMPLETO DE SOLICITUDES\n \nFecha de generación: <HOY>\nPeríodo Académico: Todos (Período actual: <ACTUAL>)\nTipo de Solicitud: Homologación\nEstado: Todos los estados\n \nTotal Filtrado: 1 solicitudes\nTotal Sistema: 25 solicitudes\nProcesadas: 10 solicitudes\nNo Procesadas: 15 solicitudes\n \nID Solicitud Estudiante Programa Período Estado Fecha\n11 Homologación externa N/A N/A N/A Sin estado 15/03/2024\n"
+    },
+    "Curso de verano" : {
+      "status" : 200,
+      "texto" : "HISTORIAL COMPLETO DE SOLICITUDES\n \nFecha de generación: <HOY>\nPeríodo Académico: Todos (Período actual: <ACTUAL>)\nTipo de Solicitud: Curso de verano\nEstado: Todos los estados\n \nTotal Filtrado: 3 solicitudes\nTotal Sistema: 25 solicitudes\nProcesadas: 10 solicitudes\nNo Procesadas: 15 solicitudes\n \nID Solicitud Estudiante Programa Período Estado Fecha\n5 Preinscripción curso de verano N/A N/A N/A Sin estado 15/03/2024\n6 Inscripción curso verano N/A N/A N/A Sin estado N/A\n8 Curso intersemestral de verano N/A N/A N/A Sin estado N/A\n"
+    },
+    "Otro" : {
+      "status" : 200,
+      "texto" : "HISTORIAL COMPLETO DE SOLICITUDES\n \nFecha de generación: <HOY>\nPeríodo Académico: Todos (Período actual: <ACTUAL>)\nTipo de Solicitud: Otro\nEstado: Todos los estados\n \nTotal Filtrado: 0 solicitudes\nTotal Sistema: 25 solicitudes\nProcesadas: 10 solicitudes\nNo Procesadas: 15 solicitudes\n \nNo se encontraron solicitudes con los filtros aplicados.\n \n"
+    }
+  }
+}

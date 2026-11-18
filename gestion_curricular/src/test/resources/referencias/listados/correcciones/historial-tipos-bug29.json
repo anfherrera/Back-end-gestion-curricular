@@ -1,0 +1,15 @@
+{
+  "/historial/Cursos de Verano/total" : 4,
+  "/historial/Cursos de Verano/ids" : [ 5, 6, 7, 8 ],
+  "/historial/Preinscripcion/total" : 1,
+  "/historial/Preinscripcion/ids" : [ 5 ],
+  "/historial/Inscripción/total" : 1,
+  "/historial/Inscripción/ids" : [ 6 ],
+  "/historial/Otro/total" : 1,
+  "/historial/Otro/ids" : [ 13 ],
+  "/historial/Homologacion/total" : 2,
+  "/historial/Homologacion/ids" : [ 3, 11 ],
+  "/pdf/Homologación/texto" : "HISTORIAL COMPLETO DE SOLICITUDES\n \nFecha de generación: <HOY>\nPeríodo Académico: Todos (Período actual: <ACTUAL>)\nTipo de Solicitud: Homologación\nEstado: Todos los estados\n \nTotal Filtrado: 2 solicitudes\nTotal Sistema: 25 solicitudes\nProcesadas: 10 solicitudes\nNo Procesadas: 15 solicitudes\n \nID Solicitud Estudiante Programa Período Estado Fecha\n3 N/A N/A N/A N/A Sin estado 15/03/2024\n11 Homologación externa N/A N/A N/A Sin estado 15/03/2024\n",
+  "/pdf/Curso de verano/texto" : "HISTORIAL COMPLETO DE SOLICITUDES\n \nFecha de generación: <HOY>\nPeríodo Académico: Todos (Período actual: <ACTUAL>)\nTipo de Solicitud: Curso de verano\nEstado: Todos los estados\n \nTotal Filtrado: 4 solicitudes\nTotal Sistema: 25 solicitudes\nProcesadas: 10 solicitudes\nNo Procesadas: 15 solicitudes\n \nID Solicitud Estudiante Programa Período Estado Fecha\n5 Preinscripción curso de verano N/A N/A N/A Sin estado 15/03/2024\n6 Inscripción curso verano N/A N/A N/A Sin estado N/A\n7 Curso nuevo N/A N/A N/A Sin estado 15/03/2024\n8 Curso intersemestral de verano N/A N/A N/A Sin estado N/A\n",
+  "/pdf/Otro/texto" : "HISTORIAL COMPLETO DE SOLICITUDES\n \nFecha de generación: <HOY>\nPeríodo Académico: Todos (Período actual: <ACTUAL>)\nTipo de Solicitud: Otro\nEstado: Todos los estados\n \nTotal Filtrado: 1 solicitudes\nTotal Sistema: 25 solicitudes\nProcesadas: 10 solicitudes\nNo Procesadas: 15 solicitudes\n \nID Solicitud Estudiante Programa Período Estado Fecha\n13 Solicitud con un nombre bastante larg... Ana N/A N/A Sin estado 15/03/2024\n"
+}

@@ -1,6 +1,7 @@
 package co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.controladores;
 
 import java.io.ByteArrayOutputStream;
+import java.text.Normalizer;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -115,35 +116,9 @@ public class SolicitudRestController {
                 })
                 .collect(Collectors.toList());
         
-        // Aplicar filtro por tipoSolicitud (este filtro se hace en memoria porque requiere análisis del nombre)
+        // Aplicar filtro por tipoSolicitud en memoria, con la categoría y el tipo calculados arriba
         List<SolicitudDTORespuesta> solicitudesFiltradas = todasLasSolicitudesDTO.stream()
-                .filter(s -> {
-                    if (tipoSolicitud != null && !tipoSolicitud.trim().isEmpty()) {
-                        String nombreSolicitud = s.getNombre_solicitud() != null ? s.getNombre_solicitud().toLowerCase() : "";
-                        String tipoFiltro = tipoSolicitud.trim().toLowerCase();
-                        String tipoNormalizado = tipoFiltro
-                                .replace("académico", "")
-                                .replace("academico", "")
-                                .trim();
-                        
-                        boolean coincide = false;
-                        if (tipoNormalizado.contains("paz") && tipoNormalizado.contains("salvo")) {
-                            coincide = nombreSolicitud.contains("paz") && nombreSolicitud.contains("salvo");
-                        } else if (tipoNormalizado.contains("reingreso")) {
-                            coincide = nombreSolicitud.contains("reingreso");
-                        } else if (tipoNormalizado.contains("homologacion") || tipoNormalizado.contains("homologación")) {
-                            coincide = nombreSolicitud.contains("homologacion") || nombreSolicitud.contains("homologación");
-                        } else if (tipoNormalizado.contains("ecaes")) {
-                            coincide = nombreSolicitud.contains("ecaes");
-                        } else if (tipoNormalizado.contains("curso") && (tipoNormalizado.contains("verano") || tipoNormalizado.contains("intersemestral"))) {
-                            coincide = nombreSolicitud.contains("curso") && (nombreSolicitud.contains("verano") || nombreSolicitud.contains("intersemestral"));
-                        } else {
-                            coincide = nombreSolicitud.contains(tipoNormalizado);
-                        }
-                        return coincide;
-                    }
-                    return true;
-                })
+                .filter(s -> tipoSolicitud == null || tipoSolicitud.trim().isEmpty() || esDelTipo(s, tipoSolicitud))
                 .collect(Collectors.toList());
         
         // Totales del sistema (sin filtros) para las estadísticas del encabezado
@@ -421,6 +396,39 @@ public class SolicitudRestController {
             SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
             return sdf.format(fecha);
         }
+    }
+
+    /**
+     * Indica si la solicitud es del tipo pedido. Un tipo que nombra un proceso (paz y salvo, reingreso,
+     * homologación, ECAES o curso de verano/intersemestral) se compara con la categoría que asigna
+     * {@link #determinarCategoriaYTipo}; cualquier otro, con la categoría o el tipo exactos. No distingue
+     * mayúsculas ni tildes.
+     */
+    private static boolean esDelTipo(SolicitudDTORespuesta dto, String tipoSolicitud) {
+        String tipo = normalizar(tipoSolicitud).replace("academico", "").trim();
+        String categoria;
+        if (tipo.contains("paz") && tipo.contains("salvo")) {
+            categoria = "Paz y Salvo";
+        } else if (tipo.contains("reingreso")) {
+            categoria = "Reingreso";
+        } else if (tipo.contains("homologacion")) {
+            categoria = "Homologación";
+        } else if (tipo.contains("ecaes")) {
+            categoria = "ECAES";
+        } else if (tipo.contains("curso") && (tipo.contains("verano") || tipo.contains("intersemestral"))) {
+            categoria = "Cursos de Verano";
+        } else {
+            return tipo.equals(normalizar(dto.getCategoria())) || tipo.equals(normalizar(dto.getTipo_solicitud()));
+        }
+        return categoria.equals(dto.getCategoria());
+    }
+
+    private static String normalizar(String texto) {
+        if (texto == null) {
+            return "";
+        }
+        return Normalizer.normalize(texto, Normalizer.Form.NFD).replaceAll("\\p{M}", "")
+                .toLowerCase(Locale.ROOT).trim();
     }
 
     private void determinarCategoriaYTipo(Solicitud solicitud, SolicitudDTORespuesta dto) {

@@ -48,6 +48,7 @@ import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.mappe
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.mappers.RolMapperDominioImpl;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.mappers.SolicitudMapperDominioImpl;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.mappers.UsuarioMapperDominioImpl;
+import co.edu.unicauca.decanatura.gestion_curricular.soporte.Correcciones;
 
 /**
  * Fija {@code GET /api/solicitudes/historial} y su exportación a PDF antes de tipar la respuesta (ARQ-10):
@@ -62,12 +63,7 @@ class HistorialSolicitudesCaracterizacionTest {
 
     @Test
     void conservaElHistorialYSuExportacion() throws Exception {
-        var cu = mock(GestionarSolicitudCUIntPort.class);
-        when(cu.buscarHistorial(any(), any(), any())).thenAnswer(i -> solicitudes());
-        when(cu.contarHistorial()).thenReturn(25L);
-        when(cu.contarSolicitudesProcesadas()).thenReturn(10L);
-        MockMvc mvc = MockMvcBuilders.standaloneSetup(new SolicitudRestController(cu, mapper()))
-            .setControllerAdvice(new RestApiExceptionHandler()).build();
+        MockMvc mvc = mvc();
 
         ObjectNode resultados = json.createObjectNode();
         String[] tipos = {null, "  ", "Paz y Salvo", "reingreso", "Homologación", "homologacion",
@@ -113,11 +109,60 @@ class HistorialSolicitudesCaracterizacionTest {
         if (Boolean.getBoolean("grabarReferencia") && Files.notExists(referencia)) {
             Files.writeString(referencia, json.writerWithDefaultPrettyPrinter().writeValueAsString(resultados));
         }
-        JsonNode grabada = json.readTree(Files.readString(referencia));
+        JsonNode grabada = Correcciones.aplicar(json.readTree(Files.readString(referencia)),
+            "listados/correcciones/historial-bug29.json");
         assertThat(resultados).isEqualTo(grabada);
         // ObjectNode no compara el orden de las claves: se comprueba aparte
         historial.fields().forEachRemaining(caso -> assertThat(nombres(caso.getValue().get("claves")))
             .as(caso.getKey()).isEqualTo(nombres(grabada.get("historial").get(caso.getKey()).get("claves"))));
+    }
+
+    /**
+     * Fija el filtro {@code tipoSolicitud} con la categoría y el tipo que el historial asigna a cada solicitud
+     * (BUG-29): qué solicitudes devuelve el historial y el texto del PDF exportado, que filtra con el mismo código.
+     */
+    @Test
+    void conservaElFiltroPorTipo() throws Exception {
+        MockMvc mvc = mvc();
+
+        ObjectNode resultados = json.createObjectNode();
+        ObjectNode historial = resultados.putObject("historial");
+        for (String tipo : new String[] {"Cursos de Verano", "Curso Nuevo", "Preinscripcion", "Inscripción", "Otro",
+            "Homologacion"}) {
+            var respuesta = mvc.perform(get("/api/solicitudes/historial").param("tipoSolicitud", tipo))
+                .andReturn().getResponse();
+            JsonNode body = json.readTree(respuesta.getContentAsByteArray());
+            ObjectNode resultado = historial.putObject(tipo);
+            resultado.put("status", respuesta.getStatus());
+            resultado.set("total", body.get("total"));
+            var ids = resultado.putArray("ids");
+            body.get("solicitudes").forEach(s -> ids.add(s.get("id_solicitud")));
+        }
+
+        ObjectNode pdf = resultados.putObject("pdf");
+        for (String tipo : new String[] {"Homologación", "Curso de verano", "Otro"}) {
+            MockHttpServletResponse respuesta = mvc.perform(get("/api/solicitudes/historial/export/pdf")
+                .param("tipoSolicitud", tipo)).andReturn().getResponse();
+            ObjectNode resultado = pdf.putObject(tipo);
+            resultado.put("status", respuesta.getStatus());
+            resultado.put("texto", texto(respuesta.getContentAsByteArray()));
+        }
+
+        Path referencia = Path.of("src/test/resources/referencias/listados/historial-tipos.json");
+        if (Boolean.getBoolean("grabarReferencia") && Files.notExists(referencia)) {
+            Files.writeString(referencia, json.writerWithDefaultPrettyPrinter().writeValueAsString(resultados));
+        }
+        assertThat(resultados).isEqualTo(Correcciones.aplicar(json.readTree(Files.readString(referencia)),
+            "listados/correcciones/historial-tipos-bug29.json"));
+    }
+
+    private MockMvc mvc() {
+        var cu = mock(GestionarSolicitudCUIntPort.class);
+        when(cu.buscarHistorial(any(), any(), any())).thenAnswer(i -> solicitudes());
+        when(cu.contarHistorial()).thenReturn(25L);
+        when(cu.contarSolicitudesProcesadas()).thenReturn(10L);
+        return MockMvcBuilders.standaloneSetup(new SolicitudRestController(cu, mapper()))
+            .setControllerAdvice(new RestApiExceptionHandler()).build();
     }
 
     private String texto(byte[] contenido) throws Exception {
