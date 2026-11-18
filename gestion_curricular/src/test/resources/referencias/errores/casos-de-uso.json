@@ -1,0 +1,2421 @@
+{
+  "docentes guardar nulo" : {
+    "estado" : 409,
+    "excepcion" : "EntidadYaExisteException",
+    "cuerpo" : {
+      "codigoError" : "GC-0002",
+      "mensaje" : "ERROR ENTIDAD YA EXISTE, El docente no puede ser nulo.",
+      "codigoHttp" : 409,
+      "url" : "http://localhost/caso",
+      "metodo" : "GET"
+    }
+  },
+  "docentes guardar codigo repetido" : {
+    "estado" : 409,
+    "excepcion" : "EntidadYaExisteException",
+    "cuerpo" : {
+      "codigoError" : "GC-0002",
+      "mensaje" : "ERROR ENTIDAD YA EXISTE, Ya existe un docente con este código.",
+      "codigoHttp" : 409,
+      "url" : "http://localhost/caso",
+      "metodo" : "GET"
+    }
+  },
+  "docentes actualizar nulo" : {
+    "estado" : 409,
+    "excepcion" : "EntidadYaExisteException",
+    "cuerpo" : {
+      "codigoError" : "GC-0002",
+      "mensaje" : "ERROR ENTIDAD YA EXISTE, El docente no puede ser nulo.",
+      "codigoHttp" : 409,
+      "url" : "http://localhost/caso",
+      "metodo" : "GET"
+    }
+  },
+  "docentes actualizar sin id" : {
+    "estado" : 409,
+    "excepcion" : "EntidadYaExisteException",
+    "cuerpo" : {
+      "codigoError" : "GC-0002",
+      "mensaje" : "ERROR ENTIDAD YA EXISTE, Debe proporcionar un ID válido para actualizar.",
+      "codigoHttp" : 409,
+      "url" : "http://localhost/caso",
+      "metodo" : "GET"
+    }
+  },
+  "docentes actualizar inexistente" : {
+    "estado" : 409,
+    "excepcion" : "EntidadYaExisteException",
+    "cuerpo" : {
+      "codigoError" : "GC-0002",
+      "mensaje" : "ERROR ENTIDAD YA EXISTE, No se encontró el docente a actualizar.",
+      "codigoHttp" : 409,
+      "url" : "http://localhost/caso",
+      "metodo" : "GET"
+    }
+  },
+  "docentes eliminar sin id" : {
+    "estado" : 409,
+    "excepcion" : "EntidadYaExisteException",
+    "cuerpo" : {
+      "codigoError" : "GC-0002",
+      "mensaje" : "ERROR ENTIDAD YA EXISTE, Debe proporcionar un ID válido.",
+      "codigoHttp" : 409,
+      "url" : "http://localhost/caso",
+      "metodo" : "GET"
+    }
+  },
+  "docentes eliminar inexistente" : {
+    "estado" : 409,
+    "excepcion" : "EntidadYaExisteException",
+    "cuerpo" : {
+      "codigoError" : "GC-0002",
+      "mensaje" : "ERROR ENTIDAD YA EXISTE, No se encontró el docente a eliminar.",
+      "codigoHttp" : 409,
+      "url" : "http://localhost/caso",
+      "metodo" : "GET"
+    }
+  },
+  "docentes eliminar con cursos" : {
+    "estado" : 400,
+    "excepcion" : "ReglaNegocioExcepcion",
+    "cuerpo" : {
+      "codigoError" : "GC-0004",
+      "mensaje" : "GC-0004 - Violación a regla de negocio: No se puede eliminar el docente porque tiene cursos asignados. Por favor, reasigne los cursos a otro docente antes de eliminar.",
+      "codigoHttp" : 400,
+      "url" : "http://localhost/caso",
+      "metodo" : "GET"
+    }
+  },
+  "docentes obtener sin id" : {
+    "estado" : 409,
+    "excepcion" : "EntidadYaExisteException",
+    "cuerpo" : {
+      "codigoError" : "GC-0002",
+      "mensaje" : "ERROR ENTIDAD YA EXISTE, Debe proporcionar un ID válido.",
+      "codigoHttp" : 409,
+      "url" : "http://localhost/caso",
+      "metodo" : "GET"
+    }
+  },
+  "docentes obtener inexistente" : {
+    "estado" : 409,
+    "excepcion" : "EntidadYaExisteException",
+    "cuerpo" : {
+      "codigoError" : "GC-0002",
+      "mensaje" : "ERROR ENTIDAD YA EXISTE, Docente no encontrado.",
+      "codigoHttp" : 409,
+      "url" : "http://localhost/caso",
+      "metodo" : "GET"
+    }
+  },
+  "docentes por codigo blanco" : {
+    "estado" : 409,
+    "excepcion" : "EntidadYaExisteException",
+    "cuerpo" : {
+      "codigoError" : "GC-0002",
+      "mensaje" : "ERROR ENTIDAD YA EXISTE, Debe proporcionar un código válido.",
+      "codigoHttp" : 409,
+      "url" : "http://localhost/caso",
+      "metodo" : "GET"
+    }
+  },
+  "docentes por codigo inexistente" : {
+    "estado" : 409,
+    "excepcion" : "EntidadYaExisteException",
+    "cuerpo" : {
+      "codigoError" : "GC-0002",
+      "mensaje" : "ERROR ENTIDAD YA EXISTE, Docente no encontrado con ese código.",
+      "codigoHttp" : 409,
+      "url" : "http://localhost/caso",
+      "metodo" : "GET"
+    }
+  },
+  "docentes nombre parcial blanco" : {
+    "estado" : 409,
+    "excepcion" : "EntidadYaExisteException",
+    "cuerpo" : {
+      "codigoError" : "GC-0002",
+      "mensaje" : "ERROR ENTIDAD YA EXISTE, Debe proporcionar un nombre parcial.",
+      "codigoHttp" : 409,
+      "url" : "http://localhost/caso",
+      "metodo" : "GET"
+    }
+  },
+  "programas guardar nulo" : {
+    "estado" : 409,
+    "excepcion" : "EntidadYaExisteException",
+    "cuerpo" : {
+      "codigoError" : "GC-0002",
+      "mensaje" : "ERROR ENTIDAD YA EXISTE, El programa no puede ser nulo.",
+      "codigoHttp" : 409,
+      "url" : "http://localhost/caso",
+      "metodo" : "GET"
+    }
+  },
+  "programas guardar codigo repetido" : {
+    "estado" : 409,
+    "excepcion" : "EntidadYaExisteException",
+    "cuerpo" : {
+      "codigoError" : "GC-0002",
+      "mensaje" : "ERROR ENTIDAD YA EXISTE, Ya existe un programa con este código.",
+      "codigoHttp" : 409,
+      "url" : "http://localhost/caso",
+      "metodo" : "GET"
+    }
+  },
+  "programas actualizar nulo" : {
+    "estado" : 409,
+    "excepcion" : "EntidadYaExisteException",
+    "cuerpo" : {
+      "codigoError" : "GC-0002",
+      "mensaje" : "ERROR ENTIDAD YA EXISTE, El programa no puede ser nulo.",
+      "codigoHttp" : 409,
+      "url" : "http://localhost/caso",
+      "metodo" : "GET"
+    }
+  },
+  "programas actualizar sin id" : {
+    "estado" : 409,
+    "excepcion" : "EntidadYaExisteException",
+    "cuerpo" : {
+      "codigoError" : "GC-0002",
+      "mensaje" : "ERROR ENTIDAD YA EXISTE, Debe proporcionar un ID válido para actualizar.",
+      "codigoHttp" : 409,
+      "url" : "http://localhost/caso",
+      "metodo" : "GET"
+    }
+  },
+  "programas actualizar inexistente" : {
+    "estado" : 409,
+    "excepcion" : "EntidadYaExisteException",
+    "cuerpo" : {
+      "codigoError" : "GC-0002",
+      "mensaje" : "ERROR ENTIDAD YA EXISTE, No se encontró el programa a actualizar.",
+      "codigoHttp" : 409,
+      "url" : "http://localhost/caso",
+      "metodo" : "GET"
+    }
+  },
+  "programas eliminar sin id" : {
+    "estado" : 409,
+    "excepcion" : "EntidadYaExisteException",
+    "cuerpo" : {
+      "codigoError" : "GC-0002",
+      "mensaje" : "ERROR ENTIDAD YA EXISTE, Debe proporcionar un ID válido.",
+      "codigoHttp" : 409,
+      "url" : "http://localhost/caso",
+      "metodo" : "GET"
+    }
+  },
+  "programas eliminar inexistente" : {
+    "estado" : 409,
+    "excepcion" : "EntidadYaExisteException",
+    "cuerpo" : {
+      "codigoError" : "GC-0002",
+      "mensaje" : "ERROR ENTIDAD YA EXISTE, No se encontró el programa a eliminar.",
+      "codigoHttp" : 409,
+      "url" : "http://localhost/caso",
+      "metodo" : "GET"
+    }
+  },
+  "programas eliminar con usuarios" : {
+    "estado" : 400,
+    "excepcion" : "ReglaNegocioExcepcion",
+    "cuerpo" : {
+      "codigoError" : "GC-0004",
+      "mensaje" : "GC-0004 - Violación a regla de negocio: No se puede eliminar el programa porque tiene usuarios asociados. Por favor, reasigne los usuarios a otro programa antes de eliminar.",
+      "codigoHttp" : 400,
+      "url" : "http://localhost/caso",
+      "metodo" : "GET"
+    }
+  },
+  "programas obtener sin id" : {
+    "estado" : 409,
+    "excepcion" : "EntidadYaExisteException",
+    "cuerpo" : {
+      "codigoError" : "GC-0002",
+      "mensaje" : "ERROR ENTIDAD YA EXISTE, Debe proporcionar un ID válido.",
+      "codigoHttp" : 409,
+      "url" : "http://localhost/caso",
+      "metodo" : "GET"
+    }
+  },
+  "programas obtener inexistente" : {
+    "estado" : 409,
+    "excepcion" : "EntidadYaExisteException",
+    "cuerpo" : {
+      "codigoError" : "GC-0002",
+      "mensaje" : "ERROR ENTIDAD YA EXISTE, Programa no encontrado.",
+      "codigoHttp" : 409,
+      "url" : "http://localhost/caso",
+      "metodo" : "GET"
+    }
+  },
+  "programas por codigo blanco" : {
+    "estado" : 409,
+    "excepcion" : "EntidadYaExisteException",
+    "cuerpo" : {
+      "codigoError" : "GC-0002",
+      "mensaje" : "ERROR ENTIDAD YA EXISTE, Debe proporcionar un código válido.",
+      "codigoHttp" : 409,
+      "url" : "http://localhost/caso",
+      "metodo" : "GET"
+    }
+  },
+  "programas por codigo inexistente" : {
+    "estado" : 409,
+    "excepcion" : "EntidadYaExisteException",
+    "cuerpo" : {
+      "codigoError" : "GC-0002",
+      "mensaje" : "ERROR ENTIDAD YA EXISTE, Programa no encontrado con ese código.",
+      "codigoHttp" : 409,
+      "url" : "http://localhost/caso",
+      "metodo" : "GET"
+    }
+  },
+  "programas nombre parcial blanco" : {
+    "estado" : 409,
+    "excepcion" : "EntidadYaExisteException",
+    "cuerpo" : {
+      "codigoError" : "GC-0002",
+      "mensaje" : "ERROR ENTIDAD YA EXISTE, Debe proporcionar un nombre parcial.",
+      "codigoHttp" : 409,
+      "url" : "http://localhost/caso",
+      "metodo" : "GET"
+    }
+  },
+  "roles guardar nulo" : {
+    "estado" : 409,
+    "excepcion" : "EntidadYaExisteException",
+    "cuerpo" : {
+      "codigoError" : "GC-0002",
+      "mensaje" : "ERROR ENTIDAD YA EXISTE, El rol no puede ser nulo.",
+      "codigoHttp" : 409,
+      "url" : "http://localhost/caso",
+      "metodo" : "GET"
+    }
+  },
+  "roles guardar nombre repetido" : {
+    "estado" : 409,
+    "excepcion" : "EntidadYaExisteException",
+    "cuerpo" : {
+      "codigoError" : "GC-0002",
+      "mensaje" : "ERROR ENTIDAD YA EXISTE, Ya existe un rol con este nombre.",
+      "codigoHttp" : 409,
+      "url" : "http://localhost/caso",
+      "metodo" : "GET"
+    }
+  },
+  "roles actualizar nulo" : {
+    "estado" : 409,
+    "excepcion" : "EntidadYaExisteException",
+    "cuerpo" : {
+      "codigoError" : "GC-0002",
+      "mensaje" : "ERROR ENTIDAD YA EXISTE, El rol no puede ser nulo.",
+      "codigoHttp" : 409,
+      "url" : "http://localhost/caso",
+      "metodo" : "GET"
+    }
+  },
+  "roles actualizar sin id" : {
+    "estado" : 409,
+    "excepcion" : "EntidadYaExisteException",
+    "cuerpo" : {
+      "codigoError" : "GC-0002",
+      "mensaje" : "ERROR ENTIDAD YA EXISTE, Debe proporcionar un ID válido para actualizar.",
+      "codigoHttp" : 409,
+      "url" : "http://localhost/caso",
+      "metodo" : "GET"
+    }
+  },
+  "roles actualizar inexistente" : {
+    "estado" : 409,
+    "excepcion" : "EntidadYaExisteException",
+    "cuerpo" : {
+      "codigoError" : "GC-0002",
+      "mensaje" : "ERROR ENTIDAD YA EXISTE, No se encontró el rol a actualizar.",
+      "codigoHttp" : 409,
+      "url" : "http://localhost/caso",
+      "metodo" : "GET"
+    }
+  },
+  "roles eliminar sin id" : {
+    "estado" : 409,
+    "excepcion" : "EntidadYaExisteException",
+    "cuerpo" : {
+      "codigoError" : "GC-0002",
+      "mensaje" : "ERROR ENTIDAD YA EXISTE, Debe proporcionar un ID válido.",
+      "codigoHttp" : 409,
+      "url" : "http://localhost/caso",
+      "metodo" : "GET"
+    }
+  },
+  "roles eliminar inexistente" : {
+    "estado" : 409,
+    "excepcion" : "EntidadYaExisteException",
+    "cuerpo" : {
+      "codigoError" : "GC-0002",
+      "mensaje" : "ERROR ENTIDAD YA EXISTE, No se encontró el rol a eliminar.",
+      "codigoHttp" : 409,
+      "url" : "http://localhost/caso",
+      "metodo" : "GET"
+    }
+  },
+  "roles eliminar con usuarios" : {
+    "estado" : 400,
+    "excepcion" : "ReglaNegocioExcepcion",
+    "cuerpo" : {
+      "codigoError" : "GC-0004",
+      "mensaje" : "GC-0004 - Violación a regla de negocio: No se puede eliminar el rol porque tiene usuarios asociados. Por favor, reasigne los usuarios a otro rol antes de eliminar.",
+      "codigoHttp" : 400,
+      "url" : "http://localhost/caso",
+      "metodo" : "GET"
+    }
+  },
+  "roles obtener sin id" : {
+    "estado" : 409,
+    "excepcion" : "EntidadYaExisteException",
+    "cuerpo" : {
+      "codigoError" : "GC-0002",
+      "mensaje" : "ERROR ENTIDAD YA EXISTE, Debe proporcionar un ID válido.",
+      "codigoHttp" : 409,
+      "url" : "http://localhost/caso",
+      "metodo" : "GET"
+    }
+  },
+  "roles obtener inexistente" : {
+    "estado" : 409,
+    "excepcion" : "EntidadYaExisteException",
+    "cuerpo" : {
+      "codigoError" : "GC-0002",
+      "mensaje" : "ERROR ENTIDAD YA EXISTE, Rol no encontrado.",
+      "codigoHttp" : 409,
+      "url" : "http://localhost/caso",
+      "metodo" : "GET"
+    }
+  },
+  "roles por nombre blanco" : {
+    "estado" : 409,
+    "excepcion" : "EntidadYaExisteException",
+    "cuerpo" : {
+      "codigoError" : "GC-0002",
+      "mensaje" : "ERROR ENTIDAD YA EXISTE, Debe proporcionar un nombre válido.",
+      "codigoHttp" : 409,
+      "url" : "http://localhost/caso",
+      "metodo" : "GET"
+    }
+  },
+  "roles por nombre inexistente" : {
+    "estado" : 409,
+    "excepcion" : "EntidadYaExisteException",
+    "cuerpo" : {
+      "codigoError" : "GC-0002",
+      "mensaje" : "ERROR ENTIDAD YA EXISTE, Rol no encontrado con ese nombre.",
+      "codigoHttp" : 409,
+      "url" : "http://localhost/caso",
+      "metodo" : "GET"
+    }
+  },
+  "materias obtener sin id" : {
+    "estado" : 409,
+    "excepcion" : "EntidadYaExisteException",
+    "cuerpo" : {
+      "codigoError" : "GC-0002",
+      "mensaje" : "ERROR ENTIDAD YA EXISTE, Debe proporcionar un ID válido.",
+      "codigoHttp" : 409,
+      "url" : "http://localhost/caso",
+      "metodo" : "GET"
+    }
+  },
+  "materias obtener inexistente" : {
+    "estado" : 409,
+    "excepcion" : "EntidadYaExisteException",
+    "cuerpo" : {
+      "codigoError" : "GC-0002",
+      "mensaje" : "ERROR ENTIDAD YA EXISTE, Materia no encontrada.",
+      "codigoHttp" : 409,
+      "url" : "http://localhost/caso",
+      "metodo" : "GET"
+    }
+  },
+  "salones obtener sin id" : {
+    "estado" : 409,
+    "excepcion" : "EntidadYaExisteException",
+    "cuerpo" : {
+      "codigoError" : "GC-0002",
+      "mensaje" : "ERROR ENTIDAD YA EXISTE, Debe proporcionar un ID válido.",
+      "codigoHttp" : 409,
+      "url" : "http://localhost/caso",
+      "metodo" : "GET"
+    }
+  },
+  "salones obtener inexistente" : {
+    "estado" : 409,
+    "excepcion" : "EntidadYaExisteException",
+    "cuerpo" : {
+      "codigoError" : "GC-0002",
+      "mensaje" : "ERROR ENTIDAD YA EXISTE, Salón no encontrado.",
+      "codigoHttp" : 409,
+      "url" : "http://localhost/caso",
+      "metodo" : "GET"
+    }
+  },
+  "salones por numero blanco" : {
+    "estado" : 409,
+    "excepcion" : "EntidadYaExisteException",
+    "cuerpo" : {
+      "codigoError" : "GC-0002",
+      "mensaje" : "ERROR ENTIDAD YA EXISTE, Debe proporcionar un número de salón válido.",
+      "codigoHttp" : 409,
+      "url" : "http://localhost/caso",
+      "metodo" : "GET"
+    }
+  },
+  "salones por numero inexistente" : {
+    "estado" : 409,
+    "excepcion" : "EntidadYaExisteException",
+    "cuerpo" : {
+      "codigoError" : "GC-0002",
+      "mensaje" : "ERROR ENTIDAD YA EXISTE, Salón no encontrado con ese número.",
+      "codigoHttp" : 409,
+      "url" : "http://localhost/caso",
+      "metodo" : "GET"
+    }
+  },
+  "salones resolver inexistente sin respaldo" : {
+    "estado" : 200,
+    "excepcion" : null,
+    "cuerpo" : null
+  },
+  "salones resolver inexistente con respaldo" : {
+    "estado" : 200,
+    "excepcion" : null,
+    "cuerpo" : null
+  },
+  "solicitud obtener sin id" : {
+    "estado" : 400,
+    "excepcion" : "ReglaNegocioExcepcion",
+    "cuerpo" : {
+      "codigoError" : "GC-0004",
+      "mensaje" : "GC-0004 - Violación a regla de negocio: El ID de la solicitud no puede ser nulo",
+      "codigoHttp" : 400,
+      "url" : "http://localhost/caso",
+      "metodo" : "GET"
+    }
+  },
+  "solicitud eliminar sin id" : {
+    "estado" : 400,
+    "excepcion" : "ReglaNegocioExcepcion",
+    "cuerpo" : {
+      "codigoError" : "GC-0004",
+      "mensaje" : "GC-0004 - Violación a regla de negocio: El ID de la solicitud no puede ser nulo",
+      "codigoHttp" : 400,
+      "url" : "http://localhost/caso",
+      "metodo" : "GET"
+    }
+  },
+  "solicitud eliminar inexistente" : {
+    "estado" : 409,
+    "excepcion" : "EntidadYaExisteException",
+    "cuerpo" : {
+      "codigoError" : "GC-0002",
+      "mensaje" : "ERROR ENTIDAD YA EXISTE, Solicitud no existe en el sistema",
+      "codigoHttp" : 409,
+      "url" : "http://localhost/caso",
+      "metodo" : "GET"
+    }
+  },
+  "solicitud por nombre blanco" : {
+    "estado" : 400,
+    "excepcion" : "ReglaNegocioExcepcion",
+    "cuerpo" : {
+      "codigoError" : "GC-0004",
+      "mensaje" : "GC-0004 - Violación a regla de negocio: El nombre de la solicitud no puede ser nulo o vacío",
+      "codigoHttp" : 400,
+      "url" : "http://localhost/caso",
+      "metodo" : "GET"
+    }
+  },
+  "archivos guardar sin archivo" : {
+    "estado" : 400,
+    "excepcion" : "ReglaNegocioExcepcion",
+    "cuerpo" : {
+      "codigoError" : "GC-0004",
+      "mensaje" : "GC-0004 - Violación a regla de negocio: el archivo no puede ser nulo",
+      "codigoHttp" : 400,
+      "url" : "http://localhost/caso",
+      "metodo" : "GET"
+    }
+  },
+  "archivos guardar sin nombre" : {
+    "estado" : 400,
+    "excepcion" : "ReglaNegocioExcepcion",
+    "cuerpo" : {
+      "codigoError" : "GC-0004",
+      "mensaje" : "GC-0004 - Violación a regla de negocio: el nombre no puede ser nulo",
+      "codigoHttp" : 400,
+      "url" : "http://localhost/caso",
+      "metodo" : "GET"
+    }
+  },
+  "archivos guardar sin tipo" : {
+    "estado" : 400,
+    "excepcion" : "ReglaNegocioExcepcion",
+    "cuerpo" : {
+      "codigoError" : "GC-0004",
+      "mensaje" : "GC-0004 - Violación a regla de negocio: el tipo de archivo no puede ser nulo",
+      "codigoHttp" : 400,
+      "url" : "http://localhost/caso",
+      "metodo" : "GET"
+    }
+  },
+  "archivos guardar falla" : {
+    "estado" : 400,
+    "excepcion" : "ReglaNegocioExcepcion",
+    "cuerpo" : {
+      "codigoError" : "GC-0004",
+      "mensaje" : "GC-0004 - Violación a regla de negocio: disco lleno",
+      "codigoHttp" : 400,
+      "url" : "http://localhost/caso",
+      "metodo" : "GET"
+    }
+  },
+  "archivos guardar carpeta sin archivo" : {
+    "estado" : 400,
+    "excepcion" : "ReglaNegocioExcepcion",
+    "cuerpo" : {
+      "codigoError" : "GC-0004",
+      "mensaje" : "GC-0004 - Violación a regla de negocio: el archivo no puede ser nulo",
+      "codigoHttp" : 400,
+      "url" : "http://localhost/caso",
+      "metodo" : "GET"
+    }
+  },
+  "archivos guardar carpeta sin nombre" : {
+    "estado" : 400,
+    "excepcion" : "ReglaNegocioExcepcion",
+    "cuerpo" : {
+      "codigoError" : "GC-0004",
+      "mensaje" : "GC-0004 - Violación a regla de negocio: el nombre no puede ser nulo",
+      "codigoHttp" : 400,
+      "url" : "http://localhost/caso",
+      "metodo" : "GET"
+    }
+  },
+  "archivos guardar carpeta sin tipo" : {
+    "estado" : 400,
+    "excepcion" : "ReglaNegocioExcepcion",
+    "cuerpo" : {
+      "codigoError" : "GC-0004",
+      "mensaje" : "GC-0004 - Violación a regla de negocio: el tipo de archivo no puede ser nulo",
+      "codigoHttp" : 400,
+      "url" : "http://localhost/caso",
+      "metodo" : "GET"
+    }
+  },
+  "archivos guardar carpeta sin tipo de solicitud" : {
+    "estado" : 400,
+    "excepcion" : "ReglaNegocioExcepcion",
+    "cuerpo" : {
+      "codigoError" : "GC-0004",
+      "mensaje" : "GC-0004 - Violación a regla de negocio: el tipo de solicitud no puede ser nulo o vacío",
+      "codigoHttp" : 400,
+      "url" : "http://localhost/caso",
+      "metodo" : "GET"
+    }
+  },
+  "archivos guardar carpeta sin id" : {
+    "estado" : 400,
+    "excepcion" : "ReglaNegocioExcepcion",
+    "cuerpo" : {
+      "codigoError" : "GC-0004",
+      "mensaje" : "GC-0004 - Violación a regla de negocio: el ID de solicitud no puede ser nulo",
+      "codigoHttp" : 400,
+      "url" : "http://localhost/caso",
+      "metodo" : "GET"
+    }
+  },
+  "archivos guardar carpeta falla" : {
+    "estado" : 400,
+    "excepcion" : "ReglaNegocioExcepcion",
+    "cuerpo" : {
+      "codigoError" : "GC-0004",
+      "mensaje" : "GC-0004 - Violación a regla de negocio: sin permisos",
+      "codigoHttp" : 400,
+      "url" : "http://localhost/caso",
+      "metodo" : "GET"
+    }
+  },
+  "archivos leer sin nombre" : {
+    "estado" : 400,
+    "excepcion" : "ReglaNegocioExcepcion",
+    "cuerpo" : {
+      "codigoError" : "GC-0004",
+      "mensaje" : "GC-0004 - Violación a regla de negocio: el nombre no puede ser nulo",
+      "codigoHttp" : 400,
+      "url" : "http://localhost/caso",
+      "metodo" : "GET"
+    }
+  },
+  "archivos leer falla" : {
+    "estado" : 400,
+    "excepcion" : "ReglaNegocioExcepcion",
+    "cuerpo" : {
+      "codigoError" : "GC-0004",
+      "mensaje" : "GC-0004 - Violación a regla de negocio: no se encontró",
+      "codigoHttp" : 400,
+      "url" : "http://localhost/caso",
+      "metodo" : "GET"
+    }
+  },
+  "archivos leer ruta blanca" : {
+    "estado" : 400,
+    "excepcion" : "ReglaNegocioExcepcion",
+    "cuerpo" : {
+      "codigoError" : "GC-0004",
+      "mensaje" : "GC-0004 - Violación a regla de negocio: la ruta del archivo no puede ser nula o vacía",
+      "codigoHttp" : 400,
+      "url" : "http://localhost/caso",
+      "metodo" : "GET"
+    }
+  },
+  "archivos leer ruta falla" : {
+    "estado" : 400,
+    "excepcion" : "ReglaNegocioExcepcion",
+    "cuerpo" : {
+      "codigoError" : "GC-0004",
+      "mensaje" : "GC-0004 - Violación a regla de negocio: ruta inválida",
+      "codigoHttp" : 400,
+      "url" : "http://localhost/caso",
+      "metodo" : "GET"
+    }
+  },
+  "archivos mover sin ruta" : {
+    "estado" : 400,
+    "excepcion" : "ReglaNegocioExcepcion",
+    "cuerpo" : {
+      "codigoError" : "GC-0004",
+      "mensaje" : "GC-0004 - Violación a regla de negocio: la ruta actual del archivo no puede ser nula o vacía",
+      "codigoHttp" : 400,
+      "url" : "http://localhost/caso",
+      "metodo" : "GET"
+    }
+  },
+  "archivos mover sin nombre" : {
+    "estado" : 400,
+    "excepcion" : "ReglaNegocioExcepcion",
+    "cuerpo" : {
+      "codigoError" : "GC-0004",
+      "mensaje" : "GC-0004 - Violación a regla de negocio: el nombre del archivo no puede ser nulo o vacío",
+      "codigoHttp" : 400,
+      "url" : "http://localhost/caso",
+      "metodo" : "GET"
+    }
+  },
+  "archivos mover sin tipo de solicitud" : {
+    "estado" : 400,
+    "excepcion" : "ReglaNegocioExcepcion",
+    "cuerpo" : {
+      "codigoError" : "GC-0004",
+      "mensaje" : "GC-0004 - Violación a regla de negocio: el tipo de solicitud no puede ser nulo o vacío",
+      "codigoHttp" : 400,
+      "url" : "http://localhost/caso",
+      "metodo" : "GET"
+    }
+  },
+  "archivos mover sin id" : {
+    "estado" : 400,
+    "excepcion" : "ReglaNegocioExcepcion",
+    "cuerpo" : {
+      "codigoError" : "GC-0004",
+      "mensaje" : "GC-0004 - Violación a regla de negocio: el ID de solicitud no puede ser nulo",
+      "codigoHttp" : 400,
+      "url" : "http://localhost/caso",
+      "metodo" : "GET"
+    }
+  },
+  "archivos mover falla" : {
+    "estado" : 400,
+    "excepcion" : "ReglaNegocioExcepcion",
+    "cuerpo" : {
+      "codigoError" : "GC-0004",
+      "mensaje" : "GC-0004 - Violación a regla de negocio: no se pudo mover",
+      "codigoHttp" : 400,
+      "url" : "http://localhost/caso",
+      "metodo" : "GET"
+    }
+  },
+  "archivos ruta sin nombre" : {
+    "estado" : 400,
+    "excepcion" : "ReglaNegocioExcepcion",
+    "cuerpo" : {
+      "codigoError" : "GC-0004",
+      "mensaje" : "GC-0004 - Violación a regla de negocio: el nombre no puede ser nulo",
+      "codigoHttp" : 400,
+      "url" : "http://localhost/caso",
+      "metodo" : "GET"
+    }
+  },
+  "archivos ruta falla" : {
+    "estado" : 400,
+    "excepcion" : "ReglaNegocioExcepcion",
+    "cuerpo" : {
+      "codigoError" : "GC-0004",
+      "mensaje" : "GC-0004 - Violación a regla de negocio: no existe",
+      "codigoHttp" : 400,
+      "url" : "http://localhost/caso",
+      "metodo" : "GET"
+    }
+  },
+  "archivos ruta relativa blanca" : {
+    "estado" : 400,
+    "excepcion" : "ReglaNegocioExcepcion",
+    "cuerpo" : {
+      "codigoError" : "GC-0004",
+      "mensaje" : "GC-0004 - Violación a regla de negocio: la ruta del archivo no puede ser nula o vacía",
+      "codigoHttp" : 400,
+      "url" : "http://localhost/caso",
+      "metodo" : "GET"
+    }
+  },
+  "archivos ruta relativa falla" : {
+    "estado" : 400,
+    "excepcion" : "ReglaNegocioExcepcion",
+    "cuerpo" : {
+      "codigoError" : "GC-0004",
+      "mensaje" : "GC-0004 - Violación a regla de negocio: fuera de la raíz",
+      "codigoHttp" : 400,
+      "url" : "http://localhost/caso",
+      "metodo" : "GET"
+    }
+  },
+  "documentos registrar nulo" : {
+    "estado" : 400,
+    "excepcion" : "ReglaNegocioExcepcion",
+    "cuerpo" : {
+      "codigoError" : "GC-0004",
+      "mensaje" : "GC-0004 - Violación a regla de negocio: El documento no puede ser nulo.",
+      "codigoHttp" : 400,
+      "url" : "http://localhost/caso",
+      "metodo" : "GET"
+    }
+  },
+  "documentos buscar sin id" : {
+    "estado" : 409,
+    "excepcion" : "EntidadYaExisteException",
+    "cuerpo" : {
+      "codigoError" : "GC-0002",
+      "mensaje" : "ERROR ENTIDAD YA EXISTE, El ID del documento debe ser un número positivo.",
+      "codigoHttp" : 409,
+      "url" : "http://localhost/caso",
+      "metodo" : "GET"
+    }
+  },
+  "documentos buscar inexistente" : {
+    "estado" : 409,
+    "excepcion" : "EntidadYaExisteException",
+    "cuerpo" : {
+      "codigoError" : "GC-0002",
+      "mensaje" : "ERROR ENTIDAD YA EXISTE, No se encontró el documento con ID: 9",
+      "codigoHttp" : 409,
+      "url" : "http://localhost/caso",
+      "metodo" : "GET"
+    }
+  },
+  "documentos comentar sin id" : {
+    "estado" : 409,
+    "excepcion" : "EntidadYaExisteException",
+    "cuerpo" : {
+      "codigoError" : "GC-0002",
+      "mensaje" : "ERROR ENTIDAD YA EXISTE, El ID del documento y el comentario son obligatorios.",
+      "codigoHttp" : 409,
+      "url" : "http://localhost/caso",
+      "metodo" : "GET"
+    }
+  },
+  "documentos comentar vacio" : {
+    "estado" : 409,
+    "excepcion" : "EntidadYaExisteException",
+    "cuerpo" : {
+      "codigoError" : "GC-0002",
+      "mensaje" : "ERROR ENTIDAD YA EXISTE, El comentario no puede estar vacío.",
+      "codigoHttp" : 409,
+      "url" : "http://localhost/caso",
+      "metodo" : "GET"
+    }
+  },
+  "documentos comentar inexistente" : {
+    "estado" : 409,
+    "excepcion" : "EntidadYaExisteException",
+    "cuerpo" : {
+      "codigoError" : "GC-0002",
+      "mensaje" : "ERROR ENTIDAD YA EXISTE, No se encontró el documento con ID: 9",
+      "codigoHttp" : 409,
+      "url" : "http://localhost/caso",
+      "metodo" : "GET"
+    }
+  },
+  "usuarios crear correo repetido" : {
+    "estado" : 409,
+    "excepcion" : "EntidadYaExisteException",
+    "cuerpo" : {
+      "codigoError" : "GC-0002",
+      "mensaje" : "ERROR ENTIDAD YA EXISTE, Ya existe un usuario con ese correo.",
+      "codigoHttp" : 409,
+      "url" : "http://localhost/caso",
+      "metodo" : "GET"
+    }
+  },
+  "usuarios crear codigo repetido" : {
+    "estado" : 409,
+    "excepcion" : "EntidadYaExisteException",
+    "cuerpo" : {
+      "codigoError" : "GC-0002",
+      "mensaje" : "ERROR ENTIDAD YA EXISTE, Ya existe un usuario con ese código.",
+      "codigoHttp" : 409,
+      "url" : "http://localhost/caso",
+      "metodo" : "GET"
+    }
+  },
+  "usuarios crear cedula repetida" : {
+    "estado" : 409,
+    "excepcion" : "EntidadYaExisteException",
+    "cuerpo" : {
+      "codigoError" : "GC-0002",
+      "mensaje" : "ERROR ENTIDAD YA EXISTE, Ya existe un usuario con esa cédula.",
+      "codigoHttp" : 409,
+      "url" : "http://localhost/caso",
+      "metodo" : "GET"
+    }
+  },
+  "usuarios crear sin programa" : {
+    "estado" : 409,
+    "excepcion" : "EntidadYaExisteException",
+    "cuerpo" : {
+      "codigoError" : "GC-0002",
+      "mensaje" : "ERROR ENTIDAD YA EXISTE, El programa del usuario no puede ser nulo o su ID no puede ser nulo.",
+      "codigoHttp" : 409,
+      "url" : "http://localhost/caso",
+      "metodo" : "GET"
+    }
+  },
+  "usuarios crear programa inexistente" : {
+    "estado" : 409,
+    "excepcion" : "EntidadYaExisteException",
+    "cuerpo" : {
+      "codigoError" : "GC-0002",
+      "mensaje" : "ERROR ENTIDAD YA EXISTE, El programa enviado no existe.",
+      "codigoHttp" : 409,
+      "url" : "http://localhost/caso",
+      "metodo" : "GET"
+    }
+  },
+  "usuarios crear rol inexistente" : {
+    "estado" : 409,
+    "excepcion" : "EntidadYaExisteException",
+    "cuerpo" : {
+      "codigoError" : "GC-0002",
+      "mensaje" : "ERROR ENTIDAD YA EXISTE, El rol con ID: '3' no existe.",
+      "codigoHttp" : 409,
+      "url" : "http://localhost/caso",
+      "metodo" : "GET"
+    }
+  },
+  "usuarios actualizar nulo" : {
+    "estado" : 409,
+    "excepcion" : "EntidadYaExisteException",
+    "cuerpo" : {
+      "codigoError" : "GC-0002",
+      "mensaje" : "ERROR ENTIDAD YA EXISTE, El usuario no puede ser nulo.",
+      "codigoHttp" : 409,
+      "url" : "http://localhost/caso",
+      "metodo" : "GET"
+    }
+  },
+  "usuarios actualizar sin id" : {
+    "estado" : 409,
+    "excepcion" : "EntidadYaExisteException",
+    "cuerpo" : {
+      "codigoError" : "GC-0002",
+      "mensaje" : "ERROR ENTIDAD YA EXISTE, El ID del usuario no puede ser nulo.",
+      "codigoHttp" : 409,
+      "url" : "http://localhost/caso",
+      "metodo" : "GET"
+    }
+  },
+  "usuarios actualizar inexistente" : {
+    "estado" : 409,
+    "excepcion" : "EntidadYaExisteException",
+    "cuerpo" : {
+      "codigoError" : "GC-0002",
+      "mensaje" : "ERROR ENTIDAD YA EXISTE, No se encontró el usuario a actualizar.",
+      "codigoHttp" : 409,
+      "url" : "http://localhost/caso",
+      "metodo" : "GET"
+    }
+  },
+  "usuarios actualizar sin programa" : {
+    "estado" : 409,
+    "excepcion" : "EntidadYaExisteException",
+    "cuerpo" : {
+      "codigoError" : "GC-0002",
+      "mensaje" : "ERROR ENTIDAD YA EXISTE, El programa del usuario no puede ser nulo",
+      "codigoHttp" : 409,
+      "url" : "http://localhost/caso",
+      "metodo" : "GET"
+    }
+  },
+  "usuarios actualizar programa sin id" : {
+    "estado" : 409,
+    "excepcion" : "EntidadYaExisteException",
+    "cuerpo" : {
+      "codigoError" : "GC-0002",
+      "mensaje" : "ERROR ENTIDAD YA EXISTE, El ID del programa del usuario no puede ser nulo.",
+      "codigoHttp" : 409,
+      "url" : "http://localhost/caso",
+      "metodo" : "GET"
+    }
+  },
+  "usuarios actualizar programa inexistente" : {
+    "estado" : 409,
+    "excepcion" : "EntidadYaExisteException",
+    "cuerpo" : {
+      "codigoError" : "GC-0002",
+      "mensaje" : "ERROR ENTIDAD YA EXISTE, El programa enviado no existe.",
+      "codigoHttp" : 409,
+      "url" : "http://localhost/caso",
+      "metodo" : "GET"
+    }
+  },
+  "usuarios actualizar sin rol" : {
+    "estado" : 409,
+    "excepcion" : "EntidadYaExisteException",
+    "cuerpo" : {
+      "codigoError" : "GC-0002",
+      "mensaje" : "ERROR ENTIDAD YA EXISTE, El rol es nulo",
+      "codigoHttp" : 409,
+      "url" : "http://localhost/caso",
+      "metodo" : "GET"
+    }
+  },
+  "usuarios actualizar rol sin id" : {
+    "estado" : 409,
+    "excepcion" : "EntidadYaExisteException",
+    "cuerpo" : {
+      "codigoError" : "GC-0002",
+      "mensaje" : "ERROR ENTIDAD YA EXISTE, El ID del rol no puede ser nulo.",
+      "codigoHttp" : 409,
+      "url" : "http://localhost/caso",
+      "metodo" : "GET"
+    }
+  },
+  "usuarios actualizar rol inexistente" : {
+    "estado" : 409,
+    "excepcion" : "EntidadYaExisteException",
+    "cuerpo" : {
+      "codigoError" : "GC-0002",
+      "mensaje" : "ERROR ENTIDAD YA EXISTE, El rol enviado no existe.",
+      "codigoHttp" : 409,
+      "url" : "http://localhost/caso",
+      "metodo" : "GET"
+    }
+  },
+  "usuarios actualizar cedula de otro" : {
+    "estado" : 409,
+    "excepcion" : "EntidadYaExisteException",
+    "cuerpo" : {
+      "codigoError" : "GC-0002",
+      "mensaje" : "ERROR ENTIDAD YA EXISTE, Ya existe otro usuario con esa cédula.",
+      "codigoHttp" : 409,
+      "url" : "http://localhost/caso",
+      "metodo" : "GET"
+    }
+  },
+  "usuarios actualizar falla el gateway" : {
+    "estado" : 409,
+    "excepcion" : "EntidadYaExisteException",
+    "cuerpo" : {
+      "codigoError" : "GC-0002",
+      "mensaje" : "ERROR ENTIDAD YA EXISTE, Error al actualizar el usuario: bloqueo",
+      "codigoHttp" : 409,
+      "url" : "http://localhost/caso",
+      "metodo" : "GET"
+    }
+  },
+  "usuarios eliminar sin id" : {
+    "estado" : 409,
+    "excepcion" : "EntidadYaExisteException",
+    "cuerpo" : {
+      "codigoError" : "GC-0002",
+      "mensaje" : "ERROR ENTIDAD YA EXISTE, El ID del usuario no puede ser nulo.",
+      "codigoHttp" : 409,
+      "url" : "http://localhost/caso",
+      "metodo" : "GET"
+    }
+  },
+  "usuarios eliminar inexistente" : {
+    "estado" : 409,
+    "excepcion" : "EntidadYaExisteException",
+    "cuerpo" : {
+      "codigoError" : "GC-0002",
+      "mensaje" : "ERROR ENTIDAD YA EXISTE, No se encontró el usuario a eliminar.",
+      "codigoHttp" : 409,
+      "url" : "http://localhost/caso",
+      "metodo" : "GET"
+    }
+  },
+  "usuarios obtener sin id" : {
+    "estado" : 409,
+    "excepcion" : "EntidadYaExisteException",
+    "cuerpo" : {
+      "codigoError" : "GC-0002",
+      "mensaje" : "ERROR ENTIDAD YA EXISTE, El ID del usuario no puede ser nulo.",
+      "codigoHttp" : 409,
+      "url" : "http://localhost/caso",
+      "metodo" : "GET"
+    }
+  },
+  "usuarios obtener inexistente" : {
+    "estado" : 404,
+    "excepcion" : "EntidadNoExisteException",
+    "cuerpo" : {
+      "codigoError" : "GC-0003",
+      "mensaje" : "Entidad no encontrada, Usuario no encontrado con ID: 5",
+      "codigoHttp" : 404,
+      "url" : "http://localhost/caso",
+      "metodo" : "GET"
+    }
+  },
+  "usuarios por correo blanco" : {
+    "estado" : 409,
+    "excepcion" : "EntidadYaExisteException",
+    "cuerpo" : {
+      "codigoError" : "GC-0002",
+      "mensaje" : "ERROR ENTIDAD YA EXISTE, El correo no puede estar vacío.",
+      "codigoHttp" : 409,
+      "url" : "http://localhost/caso",
+      "metodo" : "GET"
+    }
+  },
+  "usuarios por correo inexistente" : {
+    "estado" : 409,
+    "excepcion" : "EntidadYaExisteException",
+    "cuerpo" : {
+      "codigoError" : "GC-0002",
+      "mensaje" : "ERROR ENTIDAD YA EXISTE, No se encontró el usuario con ese correo.",
+      "codigoHttp" : 409,
+      "url" : "http://localhost/caso",
+      "metodo" : "GET"
+    }
+  },
+  "estadisticas crear nula" : {
+    "estado" : 409,
+    "excepcion" : "EntidadYaExisteException",
+    "cuerpo" : {
+      "codigoError" : "GC-0002",
+      "mensaje" : "ERROR ENTIDAD YA EXISTE, La estadística no puede ser nula.",
+      "codigoHttp" : 409,
+      "url" : "http://localhost/caso",
+      "metodo" : "GET"
+    }
+  },
+  "estadisticas actualizar sin id" : {
+    "estado" : 409,
+    "excepcion" : "EntidadYaExisteException",
+    "cuerpo" : {
+      "codigoError" : "GC-0002",
+      "mensaje" : "ERROR ENTIDAD YA EXISTE, Estadística inválida para actualización.",
+      "codigoHttp" : 409,
+      "url" : "http://localhost/caso",
+      "metodo" : "GET"
+    }
+  },
+  "estadisticas actualizar inexistente" : {
+    "estado" : 409,
+    "excepcion" : "EntidadYaExisteException",
+    "cuerpo" : {
+      "codigoError" : "GC-0002",
+      "mensaje" : "ERROR ENTIDAD YA EXISTE, No se encontró la estadística a actualizar.",
+      "codigoHttp" : 409,
+      "url" : "http://localhost/caso",
+      "metodo" : "GET"
+    }
+  },
+  "estadisticas eliminar sin id" : {
+    "estado" : 409,
+    "excepcion" : "EntidadYaExisteException",
+    "cuerpo" : {
+      "codigoError" : "GC-0002",
+      "mensaje" : "ERROR ENTIDAD YA EXISTE, Debe proporcionar un ID válido.",
+      "codigoHttp" : 409,
+      "url" : "http://localhost/caso",
+      "metodo" : "GET"
+    }
+  },
+  "estadisticas eliminar inexistente" : {
+    "estado" : 409,
+    "excepcion" : "EntidadYaExisteException",
+    "cuerpo" : {
+      "codigoError" : "GC-0002",
+      "mensaje" : "ERROR ENTIDAD YA EXISTE, Estadística no encontrada para eliminar.",
+      "codigoHttp" : 409,
+      "url" : "http://localhost/caso",
+      "metodo" : "GET"
+    }
+  },
+  "estadisticas obtener sin id" : {
+    "estado" : 409,
+    "excepcion" : "EntidadYaExisteException",
+    "cuerpo" : {
+      "codigoError" : "GC-0002",
+      "mensaje" : "ERROR ENTIDAD YA EXISTE, Debe proporcionar un ID válido.",
+      "codigoHttp" : 409,
+      "url" : "http://localhost/caso",
+      "metodo" : "GET"
+    }
+  },
+  "estadisticas obtener inexistente" : {
+    "estado" : 409,
+    "excepcion" : "EntidadYaExisteException",
+    "cuerpo" : {
+      "codigoError" : "GC-0002",
+      "mensaje" : "ERROR ENTIDAD YA EXISTE, Estadística no encontrada.",
+      "codigoHttp" : 409,
+      "url" : "http://localhost/caso",
+      "metodo" : "GET"
+    }
+  },
+  "estadisticas solicitud sin proceso" : {
+    "estado" : 409,
+    "excepcion" : "EntidadYaExisteException",
+    "cuerpo" : {
+      "codigoError" : "GC-0002",
+      "mensaje" : "ERROR ENTIDAD YA EXISTE, El proceso no puede estar vacío.",
+      "codigoHttp" : 409,
+      "url" : "http://localhost/caso",
+      "metodo" : "GET"
+    }
+  },
+  "estadisticas solicitud incompleta" : {
+    "estado" : 409,
+    "excepcion" : "EntidadYaExisteException",
+    "cuerpo" : {
+      "codigoError" : "GC-0002",
+      "mensaje" : "ERROR ENTIDAD YA EXISTE, Parámetros incompletos para la consulta.",
+      "codigoHttp" : 409,
+      "url" : "http://localhost/caso",
+      "metodo" : "GET"
+    }
+  },
+  "estadisticas periodo estado programa incompleta" : {
+    "estado" : 409,
+    "excepcion" : "EntidadYaExisteException",
+    "cuerpo" : {
+      "codigoError" : "GC-0002",
+      "mensaje" : "ERROR ENTIDAD YA EXISTE, Parámetros incompletos para la consulta.",
+      "codigoHttp" : 409,
+      "url" : "http://localhost/caso",
+      "metodo" : "GET"
+    }
+  },
+  "estadisticas por proceso vacio" : {
+    "estado" : 409,
+    "excepcion" : "EntidadYaExisteException",
+    "cuerpo" : {
+      "codigoError" : "GC-0002",
+      "mensaje" : "ERROR ENTIDAD YA EXISTE, El tipo de proceso no puede estar vacío.",
+      "codigoHttp" : 409,
+      "url" : "http://localhost/caso",
+      "metodo" : "GET"
+    }
+  },
+  "estadisticas por estado vacio" : {
+    "estado" : 409,
+    "excepcion" : "EntidadYaExisteException",
+    "cuerpo" : {
+      "codigoError" : "GC-0002",
+      "mensaje" : "ERROR ENTIDAD YA EXISTE, El estado no puede estar vacío.",
+      "codigoHttp" : 409,
+      "url" : "http://localhost/caso",
+      "metodo" : "GET"
+    }
+  },
+  "estadisticas por programa invalido" : {
+    "estado" : 409,
+    "excepcion" : "EntidadYaExisteException",
+    "cuerpo" : {
+      "codigoError" : "GC-0002",
+      "mensaje" : "ERROR ENTIDAD YA EXISTE, El ID del programa debe ser válido.",
+      "codigoHttp" : 409,
+      "url" : "http://localhost/caso",
+      "metodo" : "GET"
+    }
+  },
+  "estadisticas por periodo sin fechas" : {
+    "estado" : 409,
+    "excepcion" : "EntidadYaExisteException",
+    "cuerpo" : {
+      "codigoError" : "GC-0002",
+      "mensaje" : "ERROR ENTIDAD YA EXISTE, Las fechas de inicio y fin son requeridas.",
+      "codigoHttp" : 409,
+      "url" : "http://localhost/caso",
+      "metodo" : "GET"
+    }
+  },
+  "estadisticas por periodo invertido" : {
+    "estado" : 409,
+    "excepcion" : "EntidadYaExisteException",
+    "cuerpo" : {
+      "codigoError" : "GC-0002",
+      "mensaje" : "ERROR ENTIDAD YA EXISTE, La fecha de inicio no puede ser posterior a la fecha de fin.",
+      "codigoHttp" : 409,
+      "url" : "http://localhost/caso",
+      "metodo" : "GET"
+    }
+  },
+  "estadisticas programa y periodo programa invalido" : {
+    "estado" : 409,
+    "excepcion" : "EntidadYaExisteException",
+    "cuerpo" : {
+      "codigoError" : "GC-0002",
+      "mensaje" : "ERROR ENTIDAD YA EXISTE, El ID del programa debe ser válido.",
+      "codigoHttp" : 409,
+      "url" : "http://localhost/caso",
+      "metodo" : "GET"
+    }
+  },
+  "estadisticas programa y periodo sin fechas" : {
+    "estado" : 409,
+    "excepcion" : "EntidadYaExisteException",
+    "cuerpo" : {
+      "codigoError" : "GC-0002",
+      "mensaje" : "ERROR ENTIDAD YA EXISTE, Las fechas de inicio y fin son requeridas.",
+      "codigoHttp" : 409,
+      "url" : "http://localhost/caso",
+      "metodo" : "GET"
+    }
+  },
+  "estadisticas programa y periodo invertido" : {
+    "estado" : 409,
+    "excepcion" : "EntidadYaExisteException",
+    "cuerpo" : {
+      "codigoError" : "GC-0002",
+      "mensaje" : "ERROR ENTIDAD YA EXISTE, La fecha de inicio no puede ser posterior a la fecha de fin.",
+      "codigoHttp" : 409,
+      "url" : "http://localhost/caso",
+      "metodo" : "GET"
+    }
+  },
+  "estadisticas proceso y estado sin proceso" : {
+    "estado" : 409,
+    "excepcion" : "EntidadYaExisteException",
+    "cuerpo" : {
+      "codigoError" : "GC-0002",
+      "mensaje" : "ERROR ENTIDAD YA EXISTE, El tipo de proceso no puede estar vacío.",
+      "codigoHttp" : 409,
+      "url" : "http://localhost/caso",
+      "metodo" : "GET"
+    }
+  },
+  "estadisticas proceso y estado sin estado" : {
+    "estado" : 409,
+    "excepcion" : "EntidadYaExisteException",
+    "cuerpo" : {
+      "codigoError" : "GC-0002",
+      "mensaje" : "ERROR ENTIDAD YA EXISTE, El estado no puede estar vacío.",
+      "codigoHttp" : 409,
+      "url" : "http://localhost/caso",
+      "metodo" : "GET"
+    }
+  },
+  "estadisticas tendencias sin fechas" : {
+    "estado" : 409,
+    "excepcion" : "EntidadYaExisteException",
+    "cuerpo" : {
+      "codigoError" : "GC-0002",
+      "mensaje" : "ERROR ENTIDAD YA EXISTE, Todas las fechas son requeridas para la comparación.",
+      "codigoHttp" : 409,
+      "url" : "http://localhost/caso",
+      "metodo" : "GET"
+    }
+  },
+  "estadisticas tendencias invertidas" : {
+    "estado" : 409,
+    "excepcion" : "EntidadYaExisteException",
+    "cuerpo" : {
+      "codigoError" : "GC-0002",
+      "mensaje" : "ERROR ENTIDAD YA EXISTE, Las fechas de inicio no pueden ser posteriores a las fechas de fin.",
+      "codigoHttp" : 409,
+      "url" : "http://localhost/caso",
+      "metodo" : "GET"
+    }
+  },
+  "estadisticas historial inicio invalido" : {
+    "estado" : 409,
+    "excepcion" : "EntidadYaExisteException",
+    "cuerpo" : {
+      "codigoError" : "GC-0002",
+      "mensaje" : "ERROR ENTIDAD YA EXISTE, Año de inicio inválido. Debe estar entre 2020 y 2030.",
+      "codigoHttp" : 409,
+      "url" : "http://localhost/caso",
+      "metodo" : "GET"
+    }
+  },
+  "estadisticas historial fin invalido" : {
+    "estado" : 409,
+    "excepcion" : "EntidadYaExisteException",
+    "cuerpo" : {
+      "codigoError" : "GC-0002",
+      "mensaje" : "ERROR ENTIDAD YA EXISTE, Año de fin inválido. Debe estar entre 2020 y 2030.",
+      "codigoHttp" : 409,
+      "url" : "http://localhost/caso",
+      "metodo" : "GET"
+    }
+  },
+  "estadisticas historial invertido" : {
+    "estado" : 409,
+    "excepcion" : "EntidadYaExisteException",
+    "cuerpo" : {
+      "codigoError" : "GC-0002",
+      "mensaje" : "ERROR ENTIDAD YA EXISTE, El año de inicio no puede ser mayor al año de fin.",
+      "codigoHttp" : 409,
+      "url" : "http://localhost/caso",
+      "metodo" : "GET"
+    }
+  },
+  "estadisticas periodo academico vacio" : {
+    "estado" : 409,
+    "excepcion" : "EntidadYaExisteException",
+    "cuerpo" : {
+      "codigoError" : "GC-0002",
+      "mensaje" : "ERROR ENTIDAD YA EXISTE, El período académico no puede estar vacío.",
+      "codigoHttp" : 409,
+      "url" : "http://localhost/caso",
+      "metodo" : "GET"
+    }
+  },
+  "ecaes guardar nula" : {
+    "estado" : 400,
+    "excepcion" : "ReglaNegocioExcepcion",
+    "cuerpo" : {
+      "codigoError" : "GC-0004",
+      "mensaje" : "GC-0004 - Violación a regla de negocio: La solicitud no puede ser nula",
+      "codigoHttp" : 400,
+      "url" : "http://localhost/caso",
+      "metodo" : "GET"
+    }
+  },
+  "ecaes guardar id repetido" : {
+    "estado" : 409,
+    "excepcion" : "EntidadYaExisteException",
+    "cuerpo" : {
+      "codigoError" : "GC-0002",
+      "mensaje" : "ERROR ENTIDAD YA EXISTE, Ya existe una solicitud con el ID: 11",
+      "codigoHttp" : 409,
+      "url" : "http://localhost/caso",
+      "metodo" : "GET"
+    }
+  },
+  "ecaes guardar sin usuario" : {
+    "estado" : 409,
+    "excepcion" : "EntidadYaExisteException",
+    "cuerpo" : {
+      "codigoError" : "GC-0002",
+      "mensaje" : "ERROR ENTIDAD YA EXISTE, El usuario no puede ser nulo o no tener ID",
+      "codigoHttp" : 409,
+      "url" : "http://localhost/caso",
+      "metodo" : "GET"
+    }
+  },
+  "ecaes guardar usuario inexistente" : {
+    "estado" : 400,
+    "excepcion" : "ReglaNegocioExcepcion",
+    "cuerpo" : {
+      "codigoError" : "GC-0004",
+      "mensaje" : "GC-0004 - Violación a regla de negocio: Usuario ID: 5 no encontrado",
+      "codigoHttp" : 400,
+      "url" : "http://localhost/caso",
+      "metodo" : "GET"
+    }
+  },
+  "ecaes cambiar estado no permitido" : {
+    "estado" : 400,
+    "excepcion" : "ReglaNegocioExcepcion",
+    "cuerpo" : {
+      "codigoError" : "GC-0004",
+      "mensaje" : "GC-0004 - Violación a regla de negocio: Estado no válido: 'Inventado'. Estados permitidos: [ENVIADA, PRE_REGISTRADO, RECHAZADA]",
+      "codigoHttp" : 400,
+      "url" : "http://localhost/caso",
+      "metodo" : "GET"
+    }
+  },
+  "homologacion guardar nula" : {
+    "estado" : 400,
+    "excepcion" : "ReglaNegocioExcepcion",
+    "cuerpo" : {
+      "codigoError" : "GC-0004",
+      "mensaje" : "GC-0004 - Violación a regla de negocio: Solicitud de homologación no puede ser nula",
+      "codigoHttp" : 400,
+      "url" : "http://localhost/caso",
+      "metodo" : "GET"
+    }
+  },
+  "homologacion guardar id repetido" : {
+    "estado" : 409,
+    "excepcion" : "EntidadYaExisteException",
+    "cuerpo" : {
+      "codigoError" : "GC-0002",
+      "mensaje" : "ERROR ENTIDAD YA EXISTE, Ya existe una solicitud con el ID: 12",
+      "codigoHttp" : 409,
+      "url" : "http://localhost/caso",
+      "metodo" : "GET"
+    }
+  },
+  "homologacion guardar sin usuario" : {
+    "estado" : 409,
+    "excepcion" : "EntidadYaExisteException",
+    "cuerpo" : {
+      "codigoError" : "GC-0002",
+      "mensaje" : "ERROR ENTIDAD YA EXISTE, El usuario no puede ser nulo o no tener ID",
+      "codigoHttp" : 409,
+      "url" : "http://localhost/caso",
+      "metodo" : "GET"
+    }
+  },
+  "homologacion guardar usuario inexistente" : {
+    "estado" : 400,
+    "excepcion" : "ReglaNegocioExcepcion",
+    "cuerpo" : {
+      "codigoError" : "GC-0004",
+      "mensaje" : "GC-0004 - Violación a regla de negocio: Usuario ID: 5 no encontrado",
+      "codigoHttp" : 400,
+      "url" : "http://localhost/caso",
+      "metodo" : "GET"
+    }
+  },
+  "homologacion cambiar estado no permitido" : {
+    "estado" : 400,
+    "excepcion" : "ReglaNegocioExcepcion",
+    "cuerpo" : {
+      "codigoError" : "GC-0004",
+      "mensaje" : "GC-0004 - Violación a regla de negocio: Estado no válido: 'Inventado'. Estados permitidos: [APROBADA, APROBADA_COORDINADOR, APROBADA_FUNCIONARIO, ENVIADA, RECHAZADA]",
+      "codigoHttp" : 400,
+      "url" : "http://localhost/caso",
+      "metodo" : "GET"
+    }
+  },
+  "reingreso crear nula" : {
+    "estado" : 400,
+    "excepcion" : "ReglaNegocioExcepcion",
+    "cuerpo" : {
+      "codigoError" : "GC-0004",
+      "mensaje" : "GC-0004 - Violación a regla de negocio: Solicitud de homologación no puede ser nula",
+      "codigoHttp" : 400,
+      "url" : "http://localhost/caso",
+      "metodo" : "GET"
+    }
+  },
+  "reingreso crear id repetido" : {
+    "estado" : 409,
+    "excepcion" : "EntidadYaExisteException",
+    "cuerpo" : {
+      "codigoError" : "GC-0002",
+      "mensaje" : "ERROR ENTIDAD YA EXISTE, Ya existe una solicitud con el ID: 13",
+      "codigoHttp" : 409,
+      "url" : "http://localhost/caso",
+      "metodo" : "GET"
+    }
+  },
+  "reingreso crear sin usuario" : {
+    "estado" : 409,
+    "excepcion" : "EntidadYaExisteException",
+    "cuerpo" : {
+      "codigoError" : "GC-0002",
+      "mensaje" : "ERROR ENTIDAD YA EXISTE, El usuario no puede ser nulo o no tener ID",
+      "codigoHttp" : 409,
+      "url" : "http://localhost/caso",
+      "metodo" : "GET"
+    }
+  },
+  "reingreso crear usuario inexistente" : {
+    "estado" : 400,
+    "excepcion" : "ReglaNegocioExcepcion",
+    "cuerpo" : {
+      "codigoError" : "GC-0004",
+      "mensaje" : "GC-0004 - Violación a regla de negocio: Usuario ID: 5 no encontrado",
+      "codigoHttp" : 400,
+      "url" : "http://localhost/caso",
+      "metodo" : "GET"
+    }
+  },
+  "reingreso cambiar estado no permitido" : {
+    "estado" : 400,
+    "excepcion" : "ReglaNegocioExcepcion",
+    "cuerpo" : {
+      "codigoError" : "GC-0004",
+      "mensaje" : "GC-0004 - Violación a regla de negocio: Estado no válido: 'Inventado'. Estados permitidos: [APROBADA, APROBADA_COORDINADOR, APROBADA_FUNCIONARIO, ENVIADA, RECHAZADA]",
+      "codigoHttp" : 400,
+      "url" : "http://localhost/caso",
+      "metodo" : "GET"
+    }
+  },
+  "paz y salvo guardar nula" : {
+    "estado" : 400,
+    "excepcion" : "ReglaNegocioExcepcion",
+    "cuerpo" : {
+      "codigoError" : "GC-0004",
+      "mensaje" : "GC-0004 - Violación a regla de negocio: La solicitud no puede ser nula",
+      "codigoHttp" : 400,
+      "url" : "http://localhost/caso",
+      "metodo" : "GET"
+    }
+  },
+  "paz y salvo guardar sin usuario" : {
+    "estado" : 400,
+    "excepcion" : "ReglaNegocioExcepcion",
+    "cuerpo" : {
+      "codigoError" : "GC-0004",
+      "mensaje" : "GC-0004 - Violación a regla de negocio: El usuario no puede ser nulo o sin ID",
+      "codigoHttp" : 400,
+      "url" : "http://localhost/caso",
+      "metodo" : "GET"
+    }
+  },
+  "paz y salvo cambiar estado no permitido" : {
+    "estado" : 400,
+    "excepcion" : "ReglaNegocioExcepcion",
+    "cuerpo" : {
+      "codigoError" : "GC-0004",
+      "mensaje" : "GC-0004 - Violación a regla de negocio: Estado no válido: 'Inventado'. Estados permitidos: [APROBADA, APROBADA_COORDINADOR, APROBADA_FUNCIONARIO, ENVIADA, RECHAZADA]",
+      "codigoHttp" : 400,
+      "url" : "http://localhost/caso",
+      "metodo" : "GET"
+    }
+  },
+  "curso actualizar nulo" : {
+    "estado" : 409,
+    "excepcion" : "EntidadYaExisteException",
+    "cuerpo" : {
+      "codigoError" : "GC-0002",
+      "mensaje" : "ERROR ENTIDAD YA EXISTE, No hay datos en el curso",
+      "codigoHttp" : 409,
+      "url" : "http://localhost/caso",
+      "metodo" : "GET"
+    }
+  },
+  "curso actualizar sin id" : {
+    "estado" : 409,
+    "excepcion" : "EntidadYaExisteException",
+    "cuerpo" : {
+      "codigoError" : "GC-0002",
+      "mensaje" : "ERROR ENTIDAD YA EXISTE, No hay id en el curso",
+      "codigoHttp" : 409,
+      "url" : "http://localhost/caso",
+      "metodo" : "GET"
+    }
+  },
+  "curso actualizar inexistente" : {
+    "estado" : 409,
+    "excepcion" : "EntidadYaExisteException",
+    "cuerpo" : {
+      "codigoError" : "GC-0002",
+      "mensaje" : "ERROR ENTIDAD YA EXISTE, No se encuentra el curso",
+      "codigoHttp" : 409,
+      "url" : "http://localhost/caso",
+      "metodo" : "GET"
+    }
+  },
+  "curso actualizar sin estados" : {
+    "estado" : 409,
+    "excepcion" : "EntidadYaExisteException",
+    "cuerpo" : {
+      "codigoError" : "GC-0002",
+      "mensaje" : "ERROR ENTIDAD YA EXISTE, No se puede actualizar el curso, porque no tiene estados",
+      "codigoHttp" : 409,
+      "url" : "http://localhost/caso",
+      "metodo" : "GET"
+    }
+  },
+  "curso actualizar estado nulo" : {
+    "estado" : 409,
+    "excepcion" : "EntidadYaExisteException",
+    "cuerpo" : {
+      "codigoError" : "GC-0002",
+      "mensaje" : "ERROR ENTIDAD YA EXISTE, No hay datos en el estado",
+      "codigoHttp" : 409,
+      "url" : "http://localhost/caso",
+      "metodo" : "GET"
+    }
+  },
+  "curso actualizar estado sin id" : {
+    "estado" : 409,
+    "excepcion" : "EntidadYaExisteException",
+    "cuerpo" : {
+      "codigoError" : "GC-0002",
+      "mensaje" : "ERROR ENTIDAD YA EXISTE, No hay id en el estado",
+      "codigoHttp" : 409,
+      "url" : "http://localhost/caso",
+      "metodo" : "GET"
+    }
+  },
+  "curso actualizar estado sin texto" : {
+    "estado" : 409,
+    "excepcion" : "EntidadYaExisteException",
+    "cuerpo" : {
+      "codigoError" : "GC-0002",
+      "mensaje" : "ERROR ENTIDAD YA EXISTE, No hay datos en el estado actual",
+      "codigoHttp" : 409,
+      "url" : "http://localhost/caso",
+      "metodo" : "GET"
+    }
+  },
+  "curso preinscripcion sin publicar" : {
+    "estado" : 409,
+    "excepcion" : "EntidadYaExisteException",
+    "cuerpo" : {
+      "codigoError" : "GC-0002",
+      "mensaje" : "ERROR ENTIDAD YA EXISTE, No se puede actualizar el curso, porque no esta publicado",
+      "codigoHttp" : 409,
+      "url" : "http://localhost/caso",
+      "metodo" : "GET"
+    }
+  },
+  "curso preinscripcion sin solicitudes" : {
+    "estado" : 409,
+    "excepcion" : "EntidadYaExisteException",
+    "cuerpo" : {
+      "codigoError" : "GC-0002",
+      "mensaje" : "ERROR ENTIDAD YA EXISTE, No se puede publicar el curso, porque no hay solicitudes",
+      "codigoHttp" : 409,
+      "url" : "http://localhost/caso",
+      "metodo" : "GET"
+    }
+  },
+  "curso preinscripcion bajo el minimo" : {
+    "estado" : 400,
+    "excepcion" : "ReglaNegocioExcepcion",
+    "cuerpo" : {
+      "codigoError" : "GC-0004",
+      "mensaje" : "GC-0004 - Violación a regla de negocio: No se puede publicar el curso, porque no se alcanzo el cupo estimado",
+      "codigoHttp" : 400,
+      "url" : "http://localhost/caso",
+      "metodo" : "GET"
+    }
+  },
+  "curso preinscripcion sin asociar" : {
+    "estado" : 409,
+    "excepcion" : "EntidadYaExisteException",
+    "cuerpo" : {
+      "codigoError" : "GC-0002",
+      "mensaje" : "ERROR ENTIDAD YA EXISTE, No se pudo asociar el usuario al curso",
+      "codigoHttp" : 409,
+      "url" : "http://localhost/caso",
+      "metodo" : "GET"
+    }
+  },
+  "curso inscripcion sin publicar" : {
+    "estado" : 409,
+    "excepcion" : "EntidadYaExisteException",
+    "cuerpo" : {
+      "codigoError" : "GC-0002",
+      "mensaje" : "ERROR ENTIDAD YA EXISTE, No se puede actualizar el curso, porque no esta publicado",
+      "codigoHttp" : 409,
+      "url" : "http://localhost/caso",
+      "metodo" : "GET"
+    }
+  },
+  "curso inscripcion sin solicitudes" : {
+    "estado" : 409,
+    "excepcion" : "EntidadYaExisteException",
+    "cuerpo" : {
+      "codigoError" : "GC-0002",
+      "mensaje" : "ERROR ENTIDAD YA EXISTE, No se puede publicar el curso, porque no hay solicitudes",
+      "codigoHttp" : 409,
+      "url" : "http://localhost/caso",
+      "metodo" : "GET"
+    }
+  },
+  "curso inscripcion bajo el punto de equilibrio" : {
+    "estado" : 400,
+    "excepcion" : "ReglaNegocioExcepcion",
+    "cuerpo" : {
+      "codigoError" : "GC-0004",
+      "mensaje" : "GC-0004 - Violación a regla de negocio: No se puede abrir el curso, porque no se alcanzo el punto de equilibrio",
+      "codigoHttp" : 400,
+      "url" : "http://localhost/caso",
+      "metodo" : "GET"
+    }
+  },
+  "curso actualizar sin resultado" : {
+    "estado" : 409,
+    "excepcion" : "EntidadYaExisteException",
+    "cuerpo" : {
+      "codigoError" : "GC-0002",
+      "mensaje" : "ERROR ENTIDAD YA EXISTE, No se pudo actualizar el curso",
+      "codigoHttp" : 409,
+      "url" : "http://localhost/caso",
+      "metodo" : "GET"
+    }
+  },
+  "curso crear nulo" : {
+    "estado" : 409,
+    "excepcion" : "EntidadYaExisteException",
+    "cuerpo" : {
+      "codigoError" : "GC-0002",
+      "mensaje" : "ERROR ENTIDAD YA EXISTE, No hay datos en el curso",
+      "codigoHttp" : 409,
+      "url" : "http://localhost/caso",
+      "metodo" : "GET"
+    }
+  },
+  "curso crear sin materia" : {
+    "estado" : 409,
+    "excepcion" : "EntidadYaExisteException",
+    "cuerpo" : {
+      "codigoError" : "GC-0002",
+      "mensaje" : "ERROR ENTIDAD YA EXISTE, No hay datos en la materia",
+      "codigoHttp" : 409,
+      "url" : "http://localhost/caso",
+      "metodo" : "GET"
+    }
+  },
+  "curso crear materia sin id" : {
+    "estado" : 409,
+    "excepcion" : "EntidadYaExisteException",
+    "cuerpo" : {
+      "codigoError" : "GC-0002",
+      "mensaje" : "ERROR ENTIDAD YA EXISTE, No hay datos en la   materia",
+      "codigoHttp" : 409,
+      "url" : "http://localhost/caso",
+      "metodo" : "GET"
+    }
+  },
+  "curso crear materia inexistente" : {
+    "estado" : 409,
+    "excepcion" : "EntidadYaExisteException",
+    "cuerpo" : {
+      "codigoError" : "GC-0002",
+      "mensaje" : "ERROR ENTIDAD YA EXISTE, No existe la materia con el ID: 8",
+      "codigoHttp" : 409,
+      "url" : "http://localhost/caso",
+      "metodo" : "GET"
+    }
+  },
+  "curso crear sin docente" : {
+    "estado" : 409,
+    "excepcion" : "EntidadYaExisteException",
+    "cuerpo" : {
+      "codigoError" : "GC-0002",
+      "mensaje" : "ERROR ENTIDAD YA EXISTE, No hay datos en el docente",
+      "codigoHttp" : 409,
+      "url" : "http://localhost/caso",
+      "metodo" : "GET"
+    }
+  },
+  "curso crear docente sin id" : {
+    "estado" : 409,
+    "excepcion" : "EntidadYaExisteException",
+    "cuerpo" : {
+      "codigoError" : "GC-0002",
+      "mensaje" : "ERROR ENTIDAD YA EXISTE, No hay datos en el docente",
+      "codigoHttp" : 409,
+      "url" : "http://localhost/caso",
+      "metodo" : "GET"
+    }
+  },
+  "curso crear docente inexistente" : {
+    "estado" : 409,
+    "excepcion" : "EntidadYaExisteException",
+    "cuerpo" : {
+      "codigoError" : "GC-0002",
+      "mensaje" : "ERROR ENTIDAD YA EXISTE, No existe el docente con el ID: 4",
+      "codigoHttp" : 409,
+      "url" : "http://localhost/caso",
+      "metodo" : "GET"
+    }
+  },
+  "curso crear grupo en uso" : {
+    "estado" : 409,
+    "excepcion" : "EntidadYaExisteException",
+    "cuerpo" : {
+      "codigoError" : "GC-0002",
+      "mensaje" : "ERROR ENTIDAD YA EXISTE, El grupo asignado ya esta en usoB",
+      "codigoHttp" : 409,
+      "url" : "http://localhost/caso",
+      "metodo" : "GET"
+    }
+  },
+  "curso crear datos materia inexistente" : {
+    "estado" : 409,
+    "excepcion" : "EntidadYaExisteException",
+    "cuerpo" : {
+      "codigoError" : "GC-0002",
+      "mensaje" : "ERROR ENTIDAD YA EXISTE, Materia no encontrada.",
+      "codigoHttp" : 409,
+      "url" : "http://localhost/caso",
+      "metodo" : "GET"
+    }
+  },
+  "curso crear datos docente inexistente" : {
+    "estado" : 409,
+    "excepcion" : "EntidadYaExisteException",
+    "cuerpo" : {
+      "codigoError" : "GC-0002",
+      "mensaje" : "ERROR ENTIDAD YA EXISTE, Docente no encontrado.",
+      "codigoHttp" : 409,
+      "url" : "http://localhost/caso",
+      "metodo" : "GET"
+    }
+  },
+  "curso crear datos salon inexistente" : {
+    "estado" : 409,
+    "excepcion" : "EntidadYaExisteException",
+    "cuerpo" : {
+      "codigoError" : "GC-0002",
+      "mensaje" : "ERROR ENTIDAD YA EXISTE, Salón no encontrado.",
+      "codigoHttp" : 409,
+      "url" : "http://localhost/caso",
+      "metodo" : "GET"
+    }
+  },
+  "curso resolver salon inexistente" : {
+    "estado" : 409,
+    "excepcion" : "EntidadYaExisteException",
+    "cuerpo" : {
+      "codigoError" : "GC-0002",
+      "mensaje" : "ERROR ENTIDAD YA EXISTE, Salón no encontrado.",
+      "codigoHttp" : 409,
+      "url" : "http://localhost/caso",
+      "metodo" : "GET"
+    }
+  },
+  "curso eliminar inexistente" : {
+    "estado" : 409,
+    "excepcion" : "EntidadYaExisteException",
+    "cuerpo" : {
+      "codigoError" : "GC-0002",
+      "mensaje" : "ERROR ENTIDAD YA EXISTE, No se encuentra el curso",
+      "codigoHttp" : 409,
+      "url" : "http://localhost/caso",
+      "metodo" : "GET"
+    }
+  },
+  "curso obtener inexistente" : {
+    "estado" : 404,
+    "excepcion" : "EntidadNoExisteException",
+    "cuerpo" : {
+      "codigoError" : "GC-0003",
+      "mensaje" : "Entidad no encontrada, No se encuentra el curso",
+      "codigoHttp" : 404,
+      "url" : "http://localhost/caso",
+      "metodo" : "GET"
+    }
+  },
+  "preinscripcion nula" : {
+    "estado" : 400,
+    "excepcion" : "ReglaNegocioExcepcion",
+    "cuerpo" : {
+      "codigoError" : "GC-0004",
+      "mensaje" : "GC-0004 - Violación a regla de negocio: La solicitud de preinscripción no puede ser nula",
+      "codigoHttp" : 400,
+      "url" : "http://localhost/caso",
+      "metodo" : "GET"
+    }
+  },
+  "preinscripcion sin usuario" : {
+    "estado" : 400,
+    "excepcion" : "ReglaNegocioExcepcion",
+    "cuerpo" : {
+      "codigoError" : "GC-0004",
+      "mensaje" : "GC-0004 - Violación a regla de negocio: La solicitud de preinscripción no puede ser nula",
+      "codigoHttp" : 400,
+      "url" : "http://localhost/caso",
+      "metodo" : "GET"
+    }
+  },
+  "preinscripcion usuario sin id" : {
+    "estado" : 400,
+    "excepcion" : "ReglaNegocioExcepcion",
+    "cuerpo" : {
+      "codigoError" : "GC-0004",
+      "mensaje" : "GC-0004 - Violación a regla de negocio: El usuario de la solicitud no puede ser nulo",
+      "codigoHttp" : 400,
+      "url" : "http://localhost/caso",
+      "metodo" : "GET"
+    }
+  },
+  "preinscripcion usuario inexistente" : {
+    "estado" : 409,
+    "excepcion" : "EntidadYaExisteException",
+    "cuerpo" : {
+      "codigoError" : "GC-0002",
+      "mensaje" : "ERROR ENTIDAD YA EXISTE, Usuario no encontrado",
+      "codigoHttp" : 409,
+      "url" : "http://localhost/caso",
+      "metodo" : "GET"
+    }
+  },
+  "preinscripcion con documentos" : {
+    "estado" : 400,
+    "excepcion" : "ReglaNegocioExcepcion",
+    "cuerpo" : {
+      "codigoError" : "GC-0004",
+      "mensaje" : "GC-0004 - Violación a regla de negocio: No se debe adjuntar documentos en la solicitud de preinscripción",
+      "codigoHttp" : 400,
+      "url" : "http://localhost/caso",
+      "metodo" : "GET"
+    }
+  },
+  "preinscripcion sin curso" : {
+    "estado" : 400,
+    "excepcion" : "ReglaNegocioExcepcion",
+    "cuerpo" : {
+      "codigoError" : "GC-0004",
+      "mensaje" : "GC-0004 - Violación a regla de negocio: Debe seleccionar un curso válido",
+      "codigoHttp" : 400,
+      "url" : "http://localhost/caso",
+      "metodo" : "GET"
+    }
+  },
+  "preinscripcion curso sin id" : {
+    "estado" : 400,
+    "excepcion" : "ReglaNegocioExcepcion",
+    "cuerpo" : {
+      "codigoError" : "GC-0004",
+      "mensaje" : "GC-0004 - Violación a regla de negocio: Debe seleccionar un curso válido",
+      "codigoHttp" : 400,
+      "url" : "http://localhost/caso",
+      "metodo" : "GET"
+    }
+  },
+  "preinscripcion curso inexistente" : {
+    "estado" : 400,
+    "excepcion" : "ReglaNegocioExcepcion",
+    "cuerpo" : {
+      "codigoError" : "GC-0004",
+      "mensaje" : "GC-0004 - Violación a regla de negocio: No se encontró el curso",
+      "codigoHttp" : 400,
+      "url" : "http://localhost/caso",
+      "metodo" : "GET"
+    }
+  },
+  "preinscripcion curso en otra fase" : {
+    "estado" : 400,
+    "excepcion" : "ReglaNegocioExcepcion",
+    "cuerpo" : {
+      "codigoError" : "GC-0004",
+      "mensaje" : "GC-0004 - Violación a regla de negocio: El curso no está recibiendo preinscripciones (estado actual: Inscripcion, se requiere: Preinscripcion)",
+      "codigoHttp" : 400,
+      "url" : "http://localhost/caso",
+      "metodo" : "GET"
+    }
+  },
+  "preinscripcion curso sin estado" : {
+    "estado" : 400,
+    "excepcion" : "ReglaNegocioExcepcion",
+    "cuerpo" : {
+      "codigoError" : "GC-0004",
+      "mensaje" : "GC-0004 - Violación a regla de negocio: El curso no está recibiendo preinscripciones (estado actual: sin estado, se requiere: Preinscripcion)",
+      "codigoHttp" : 400,
+      "url" : "http://localhost/caso",
+      "metodo" : "GET"
+    }
+  },
+  "preinscripcion sin condicion" : {
+    "estado" : 400,
+    "excepcion" : "ReglaNegocioExcepcion",
+    "cuerpo" : {
+      "codigoError" : "GC-0004",
+      "mensaje" : "GC-0004 - Violación a regla de negocio: Debe seleccionar una condición de solicitud válida",
+      "codigoHttp" : 400,
+      "url" : "http://localhost/caso",
+      "metodo" : "GET"
+    }
+  },
+  "preinscripcion repetida" : {
+    "estado" : 400,
+    "excepcion" : "ReglaNegocioExcepcion",
+    "cuerpo" : {
+      "codigoError" : "GC-0004",
+      "mensaje" : "GC-0004 - Violación a regla de negocio: Ya existe una solicitud de preinscripción para este curso",
+      "codigoHttp" : 400,
+      "url" : "http://localhost/caso",
+      "metodo" : "GET"
+    }
+  },
+  "inscripcion nula" : {
+    "estado" : 400,
+    "excepcion" : "ReglaNegocioExcepcion",
+    "cuerpo" : {
+      "codigoError" : "GC-0004",
+      "mensaje" : "GC-0004 - Violación a regla de negocio: La solicitud de inscripción no puede ser nula",
+      "codigoHttp" : 400,
+      "url" : "http://localhost/caso",
+      "metodo" : "GET"
+    }
+  },
+  "inscripcion sin usuario" : {
+    "estado" : 400,
+    "excepcion" : "ReglaNegocioExcepcion",
+    "cuerpo" : {
+      "codigoError" : "GC-0004",
+      "mensaje" : "GC-0004 - Violación a regla de negocio: El usuario de la solicitud no puede ser nulo",
+      "codigoHttp" : 400,
+      "url" : "http://localhost/caso",
+      "metodo" : "GET"
+    }
+  },
+  "inscripcion usuario sin id" : {
+    "estado" : 400,
+    "excepcion" : "ReglaNegocioExcepcion",
+    "cuerpo" : {
+      "codigoError" : "GC-0004",
+      "mensaje" : "GC-0004 - Violación a regla de negocio: El usuario de la solicitud no puede ser nulo",
+      "codigoHttp" : 400,
+      "url" : "http://localhost/caso",
+      "metodo" : "GET"
+    }
+  },
+  "inscripcion usuario inexistente" : {
+    "estado" : 409,
+    "excepcion" : "EntidadYaExisteException",
+    "cuerpo" : {
+      "codigoError" : "GC-0002",
+      "mensaje" : "ERROR ENTIDAD YA EXISTE, Usuario no encontrado",
+      "codigoHttp" : 409,
+      "url" : "http://localhost/caso",
+      "metodo" : "GET"
+    }
+  },
+  "inscripcion sin curso" : {
+    "estado" : 400,
+    "excepcion" : "ReglaNegocioExcepcion",
+    "cuerpo" : {
+      "codigoError" : "GC-0004",
+      "mensaje" : "GC-0004 - Violación a regla de negocio: Debe seleccionar un curso válido",
+      "codigoHttp" : 400,
+      "url" : "http://localhost/caso",
+      "metodo" : "GET"
+    }
+  },
+  "inscripcion curso sin id" : {
+    "estado" : 400,
+    "excepcion" : "ReglaNegocioExcepcion",
+    "cuerpo" : {
+      "codigoError" : "GC-0004",
+      "mensaje" : "GC-0004 - Violación a regla de negocio: Debe seleccionar un curso válido",
+      "codigoHttp" : 400,
+      "url" : "http://localhost/caso",
+      "metodo" : "GET"
+    }
+  },
+  "inscripcion curso inexistente" : {
+    "estado" : 400,
+    "excepcion" : "ReglaNegocioExcepcion",
+    "cuerpo" : {
+      "codigoError" : "GC-0004",
+      "mensaje" : "GC-0004 - Violación a regla de negocio: No se encontró el curso",
+      "codigoHttp" : 400,
+      "url" : "http://localhost/caso",
+      "metodo" : "GET"
+    }
+  },
+  "inscripcion curso en otra fase" : {
+    "estado" : 400,
+    "excepcion" : "ReglaNegocioExcepcion",
+    "cuerpo" : {
+      "codigoError" : "GC-0004",
+      "mensaje" : "GC-0004 - Violación a regla de negocio: El curso no está recibiendo inscripciones (estado actual: Preinscripcion, se requiere: Inscripcion)",
+      "codigoHttp" : 400,
+      "url" : "http://localhost/caso",
+      "metodo" : "GET"
+    }
+  },
+  "inscripcion sin condicion" : {
+    "estado" : 400,
+    "excepcion" : "ReglaNegocioExcepcion",
+    "cuerpo" : {
+      "codigoError" : "GC-0004",
+      "mensaje" : "GC-0004 - Violación a regla de negocio: Debe seleccionar una condición de solicitud válida",
+      "codigoHttp" : 400,
+      "url" : "http://localhost/caso",
+      "metodo" : "GET"
+    }
+  },
+  "inscripcion sin preinscripcion" : {
+    "estado" : 400,
+    "excepcion" : "ReglaNegocioExcepcion",
+    "cuerpo" : {
+      "codigoError" : "GC-0004",
+      "mensaje" : "GC-0004 - Violación a regla de negocio: Debe tener una preinscripción aprobada para este curso",
+      "codigoHttp" : 400,
+      "url" : "http://localhost/caso",
+      "metodo" : "GET"
+    }
+  },
+  "inscripcion preinscripcion sin aprobar" : {
+    "estado" : 400,
+    "excepcion" : "ReglaNegocioExcepcion",
+    "cuerpo" : {
+      "codigoError" : "GC-0004",
+      "mensaje" : "GC-0004 - Violación a regla de negocio: Su preinscripción no ha sido aprobada",
+      "codigoHttp" : 400,
+      "url" : "http://localhost/caso",
+      "metodo" : "GET"
+    }
+  },
+  "inscripcion ya activa" : {
+    "estado" : 400,
+    "excepcion" : "ReglaNegocioExcepcion",
+    "cuerpo" : {
+      "codigoError" : "GC-0004",
+      "mensaje" : "GC-0004 - Violación a regla de negocio: Ya tiene una inscripción activa para este curso",
+      "codigoHttp" : 400,
+      "url" : "http://localhost/caso",
+      "metodo" : "GET"
+    }
+  },
+  "verano solicitudes por usuario sin id" : {
+    "estado" : 400,
+    "excepcion" : "ReglaNegocioExcepcion",
+    "cuerpo" : {
+      "codigoError" : "GC-0004",
+      "mensaje" : "GC-0004 - Violación a regla de negocio: El ID del usuario no puede ser nulo",
+      "codigoHttp" : 400,
+      "url" : "http://localhost/caso",
+      "metodo" : "GET"
+    }
+  },
+  "verano solicitud por id sin id" : {
+    "estado" : 400,
+    "excepcion" : "ReglaNegocioExcepcion",
+    "cuerpo" : {
+      "codigoError" : "GC-0004",
+      "mensaje" : "GC-0004 - Violación a regla de negocio: El ID de la solicitud no puede ser nulo",
+      "codigoHttp" : 400,
+      "url" : "http://localhost/caso",
+      "metodo" : "GET"
+    }
+  },
+  "verano inscripcion por id sin id" : {
+    "estado" : 400,
+    "excepcion" : "ReglaNegocioExcepcion",
+    "cuerpo" : {
+      "codigoError" : "GC-0004",
+      "mensaje" : "GC-0004 - Violación a regla de negocio: El ID de la solicitud no puede ser nulo",
+      "codigoHttp" : 400,
+      "url" : "http://localhost/caso",
+      "metodo" : "GET"
+    }
+  },
+  "verano preinscripciones por curso sin id" : {
+    "estado" : 400,
+    "excepcion" : "ReglaNegocioExcepcion",
+    "cuerpo" : {
+      "codigoError" : "GC-0004",
+      "mensaje" : "GC-0004 - Violación a regla de negocio: El ID del curso no puede ser nulo",
+      "codigoHttp" : 400,
+      "url" : "http://localhost/caso",
+      "metodo" : "GET"
+    }
+  },
+  "verano inscripciones por curso sin id" : {
+    "estado" : 400,
+    "excepcion" : "ReglaNegocioExcepcion",
+    "cuerpo" : {
+      "codigoError" : "GC-0004",
+      "mensaje" : "GC-0004 - Violación a regla de negocio: El ID del curso no puede ser nulo",
+      "codigoHttp" : 400,
+      "url" : "http://localhost/caso",
+      "metodo" : "GET"
+    }
+  },
+  "verano listar estudiantes sin curso" : {
+    "estado" : 400,
+    "excepcion" : "ReglaNegocioExcepcion",
+    "cuerpo" : {
+      "codigoError" : "GC-0004",
+      "mensaje" : "GC-0004 - Violación a regla de negocio: El ID del curso no puede ser nulo",
+      "codigoHttp" : 400,
+      "url" : "http://localhost/caso",
+      "metodo" : "GET"
+    }
+  },
+  "aprobar sin id" : {
+    "estado" : 400,
+    "excepcion" : "ReglaNegocioExcepcion",
+    "cuerpo" : {
+      "codigoError" : "GC-0004",
+      "mensaje" : "GC-0004 - Violación a regla de negocio: El ID de la solicitud no puede ser nulo",
+      "codigoHttp" : 400,
+      "url" : "http://localhost/caso",
+      "metodo" : "GET"
+    }
+  },
+  "aprobar inexistente" : {
+    "estado" : 409,
+    "excepcion" : "EntidadYaExisteException",
+    "cuerpo" : {
+      "codigoError" : "GC-0002",
+      "mensaje" : "ERROR ENTIDAD YA EXISTE, No se encontró la solicitud con ID: 30",
+      "codigoHttp" : 409,
+      "url" : "http://localhost/caso",
+      "metodo" : "GET"
+    }
+  },
+  "aprobar en otro estado" : {
+    "estado" : 400,
+    "excepcion" : "ReglaNegocioExcepcion",
+    "cuerpo" : {
+      "codigoError" : "GC-0004",
+      "mensaje" : "GC-0004 - Violación a regla de negocio: La solicitud no está en estado 'Enviada' para ser aprobada",
+      "codigoHttp" : 400,
+      "url" : "http://localhost/caso",
+      "metodo" : "GET"
+    }
+  },
+  "rechazar sin id" : {
+    "estado" : 400,
+    "excepcion" : "ReglaNegocioExcepcion",
+    "cuerpo" : {
+      "codigoError" : "GC-0004",
+      "mensaje" : "GC-0004 - Violación a regla de negocio: El ID de la solicitud no puede ser nulo",
+      "codigoHttp" : 400,
+      "url" : "http://localhost/caso",
+      "metodo" : "GET"
+    }
+  },
+  "rechazar sin motivo" : {
+    "estado" : 400,
+    "excepcion" : "ReglaNegocioExcepcion",
+    "cuerpo" : {
+      "codigoError" : "GC-0004",
+      "mensaje" : "GC-0004 - Violación a regla de negocio: Debe proporcionar un motivo para el rechazo",
+      "codigoHttp" : 400,
+      "url" : "http://localhost/caso",
+      "metodo" : "GET"
+    }
+  },
+  "rechazar inexistente" : {
+    "estado" : 409,
+    "excepcion" : "EntidadYaExisteException",
+    "cuerpo" : {
+      "codigoError" : "GC-0002",
+      "mensaje" : "ERROR ENTIDAD YA EXISTE, No se encontró la solicitud con ID: 30",
+      "codigoHttp" : 409,
+      "url" : "http://localhost/caso",
+      "metodo" : "GET"
+    }
+  },
+  "rechazar en otro estado" : {
+    "estado" : 400,
+    "excepcion" : "ReglaNegocioExcepcion",
+    "cuerpo" : {
+      "codigoError" : "GC-0004",
+      "mensaje" : "GC-0004 - Violación a regla de negocio: La solicitud no está en estado 'Enviada' para ser rechazada",
+      "codigoHttp" : 400,
+      "url" : "http://localhost/caso",
+      "metodo" : "GET"
+    }
+  },
+  "validar pago sin id" : {
+    "estado" : 400,
+    "excepcion" : "ReglaNegocioExcepcion",
+    "cuerpo" : {
+      "codigoError" : "GC-0004",
+      "mensaje" : "GC-0004 - Violación a regla de negocio: El ID de la solicitud no puede ser nulo",
+      "codigoHttp" : 400,
+      "url" : "http://localhost/caso",
+      "metodo" : "GET"
+    }
+  },
+  "validar pago inexistente" : {
+    "estado" : 409,
+    "excepcion" : "EntidadYaExisteException",
+    "cuerpo" : {
+      "codigoError" : "GC-0002",
+      "mensaje" : "ERROR ENTIDAD YA EXISTE, No se encontró la solicitud de inscripción con ID: 31",
+      "codigoHttp" : 409,
+      "url" : "http://localhost/caso",
+      "metodo" : "GET"
+    }
+  },
+  "validar pago en otro estado" : {
+    "estado" : 400,
+    "excepcion" : "ReglaNegocioExcepcion",
+    "cuerpo" : {
+      "codigoError" : "GC-0004",
+      "mensaje" : "GC-0004 - Violación a regla de negocio: La solicitud no está en estado 'Enviada' o 'Pago_Validado' para validar el pago. Estado actual: Pago_Rechazado",
+      "codigoHttp" : 400,
+      "url" : "http://localhost/caso",
+      "metodo" : "GET"
+    }
+  },
+  "validar pago sin estado" : {
+    "estado" : 400,
+    "excepcion" : "ReglaNegocioExcepcion",
+    "cuerpo" : {
+      "codigoError" : "GC-0004",
+      "mensaje" : "GC-0004 - Violación a regla de negocio: La solicitud no está en estado 'Enviada' o 'Pago_Validado' para validar el pago. Estado actual: null",
+      "codigoHttp" : 400,
+      "url" : "http://localhost/caso",
+      "metodo" : "GET"
+    }
+  },
+  "completar sin id" : {
+    "estado" : 400,
+    "excepcion" : "ReglaNegocioExcepcion",
+    "cuerpo" : {
+      "codigoError" : "GC-0004",
+      "mensaje" : "GC-0004 - Violación a regla de negocio: El ID de la solicitud no puede ser nulo",
+      "codigoHttp" : 400,
+      "url" : "http://localhost/caso",
+      "metodo" : "GET"
+    }
+  },
+  "completar inexistente" : {
+    "estado" : 409,
+    "excepcion" : "EntidadYaExisteException",
+    "cuerpo" : {
+      "codigoError" : "GC-0002",
+      "mensaje" : "ERROR ENTIDAD YA EXISTE, No se encontró la solicitud de inscripción con ID: 31",
+      "codigoHttp" : 409,
+      "url" : "http://localhost/caso",
+      "metodo" : "GET"
+    }
+  },
+  "completar sin pago validado" : {
+    "estado" : 400,
+    "excepcion" : "ReglaNegocioExcepcion",
+    "cuerpo" : {
+      "codigoError" : "GC-0004",
+      "mensaje" : "GC-0004 - Violación a regla de negocio: El pago debe estar validado para completar la inscripción",
+      "codigoHttp" : 400,
+      "url" : "http://localhost/caso",
+      "metodo" : "GET"
+    }
+  },
+  "observaciones preinscripcion nula" : {
+    "estado" : 400,
+    "excepcion" : "ReglaNegocioExcepcion",
+    "cuerpo" : {
+      "codigoError" : "GC-0004",
+      "mensaje" : "GC-0004 - Violación a regla de negocio: La preinscripción a actualizar no puede ser nula",
+      "codigoHttp" : 400,
+      "url" : "http://localhost/caso",
+      "metodo" : "GET"
+    }
+  },
+  "observaciones preinscripcion sin id" : {
+    "estado" : 400,
+    "excepcion" : "ReglaNegocioExcepcion",
+    "cuerpo" : {
+      "codigoError" : "GC-0004",
+      "mensaje" : "GC-0004 - Violación a regla de negocio: La preinscripción a actualizar no puede ser nula",
+      "codigoHttp" : 400,
+      "url" : "http://localhost/caso",
+      "metodo" : "GET"
+    }
+  }
+}
