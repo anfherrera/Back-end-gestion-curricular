@@ -39,6 +39,7 @@ import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.contr
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.controladores.SolicitudReingresoRestController;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.excepciones.RestApiExceptionHandler;
 import co.edu.unicauca.decanatura.gestion_curricular.seguridad.Autorizacion;
+import co.edu.unicauca.decanatura.gestion_curricular.soporte.Correcciones;
 
 /**
  * Fija oficios, validación de documentos requeridos y subida de resolución de Reingreso y Homologación
@@ -107,7 +108,9 @@ class DocumentosSolicitudClavesCaracterizacionTest {
         if (Boolean.getBoolean("grabarReferencia") && Files.notExists(referencia)) {
             Files.writeString(referencia, json.writerWithDefaultPrettyPrinter().writeValueAsString(resultados));
         }
-        assertThat(resultados).isEqualTo(json.readTree(Files.readString(referencia)));
+        // BUG-30: la carta de solicitud del estudiante ya no sale entre los oficios de Reingreso
+        assertThat(resultados).isEqualTo(Correcciones.aplicar(json.readTree(Files.readString(referencia)),
+            "documentos/correcciones/documentos-solicitud-claves-bug30.json"));
     }
 
     private void registrar(ObjectNode resultados, String nombre, MockHttpServletResponse respuesta) throws Exception {

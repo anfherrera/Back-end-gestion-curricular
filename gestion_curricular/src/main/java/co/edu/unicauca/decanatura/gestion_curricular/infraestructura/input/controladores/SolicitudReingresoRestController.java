@@ -229,13 +229,7 @@ public class SolicitudReingresoRestController {
             if (documento.getNombre() != null && documento.getNombre().toLowerCase().endsWith(".pdf")) {
                 String nombreArchivo = documento.getNombre().toLowerCase();
                 
-                // Filtrar solo archivos que parecen ser oficios/resoluciones de reingreso
-                boolean esOficio = nombreArchivo.contains("oficio") || 
-                                 nombreArchivo.contains("resolucion") || 
-                                 nombreArchivo.contains("reingreso") ||
-                                 nombreArchivo.contains("aprobacion");
-                
-                if (esOficio) {
+                if (esOficioReingreso(nombreArchivo)) {
                     try {
                         log.debug("Probando oficio/resolución de reingreso: {}", documento.getNombre());
                         
@@ -305,13 +299,7 @@ public class SolicitudReingresoRestController {
             if (documento.getNombre() != null && documento.getNombre().toLowerCase().endsWith(".pdf")) {
                 String nombreArchivo = documento.getNombre().toLowerCase();
                 
-                // Filtrar solo archivos que parecen ser oficios/resoluciones de reingreso
-                boolean esOficio = nombreArchivo.contains("oficio") || 
-                                 nombreArchivo.contains("resolucion") || 
-                                 nombreArchivo.contains("reingreso") ||
-                                 nombreArchivo.contains("aprobacion");
-                
-                if (esOficio) {
+                if (esOficioReingreso(nombreArchivo)) {
                     oficios.add(new Oficio(idSolicitud, documento.getNombre(), documento.getNombre(),
                             documento.getRuta_documento()));
                     log.debug("Agregando oficio/resolución de reingreso: {}", documento.getNombre());
@@ -323,6 +311,18 @@ public class SolicitudReingresoRestController {
         
         log.debug("Oficios de reingreso encontrados: {}", oficios.size());
         return ResponseEntity.ok(oficios);
+    }
+
+    /**
+     * Indica si un PDF, con el nombre ya en minúsculas, parece un oficio o resolución de reingreso. La carta de
+     * solicitud del estudiante también lleva "reingreso" en el nombre, pero es un documento requerido y no un
+     * oficio; se reconoce con el mismo criterio que {@link #validarDocumentosRequeridos}.
+     */
+    private static boolean esOficioReingreso(String nombreArchivo) {
+        boolean esCartaEstudiante = nombreArchivo.contains("carta") && nombreArchivo.contains("solicitud")
+                && nombreArchivo.contains("reingreso");
+        return !esCartaEstudiante && (nombreArchivo.contains("oficio") || nombreArchivo.contains("resolucion")
+                || nombreArchivo.contains("reingreso") || nombreArchivo.contains("aprobacion"));
     }
     
     /**
