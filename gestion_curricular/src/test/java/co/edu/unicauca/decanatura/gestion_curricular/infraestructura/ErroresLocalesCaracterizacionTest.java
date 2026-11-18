@@ -181,6 +181,8 @@ class ErroresLocalesCaracterizacionTest {
             "errores/correcciones/errores-locales-bug22.json");
         // BUG-24: una solicitud de curso nuevo sin condición es un 400 VALIDATION_ERROR y no un 500
         esperado = Correcciones.aplicar(esperado, "errores/correcciones/errores-locales-bug24.json");
+        // BUG-23: rechazar una inscripción solo traduce los argumentos inválidos; el resto va al manejador global
+        esperado = Correcciones.aplicar(esperado, "errores/correcciones/errores-locales-bug23.json");
         assertThat(actual).isEqualTo(esperado);
     }
 

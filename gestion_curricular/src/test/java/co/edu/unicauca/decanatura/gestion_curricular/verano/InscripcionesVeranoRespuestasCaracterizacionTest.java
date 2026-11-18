@@ -50,6 +50,7 @@ import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Usuario;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.enums.CondicionSolicitudVerano;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.controladores.InscripcionesVeranoRestController;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.excepciones.RestApiExceptionHandler;
+import co.edu.unicauca.decanatura.gestion_curricular.soporte.Correcciones;
 
 /**
  * Fija las respuestas con mapa de {@link InscripcionesVeranoRestController} antes de tiparlas (ARQ-10).
@@ -189,7 +190,9 @@ class InscripcionesVeranoRespuestasCaracterizacionTest {
         if (Boolean.getBoolean("grabarReferencia") && Files.notExists(referencia)) {
             Files.writeString(referencia, json.writerWithDefaultPrettyPrinter().writeValueAsString(resultados));
         }
-        assertThat(resultados).isEqualTo(json.readTree(Files.readString(referencia)));
+        // BUG-23: el error inesperado al rechazar es un 500 genérico y ya no expone su mensaje
+        assertThat(resultados).isEqualTo(Correcciones.aplicar(json.readTree(Files.readString(referencia)),
+            "verano-endpoints/correcciones/inscripciones-respuestas-bug23.json"));
     }
 
     /** Sustituye una fecha {@code Date} (milisegundos) de la hora actual, tras comprobar que es de esta ejecución. */

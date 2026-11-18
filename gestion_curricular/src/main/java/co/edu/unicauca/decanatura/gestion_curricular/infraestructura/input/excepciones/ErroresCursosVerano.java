@@ -39,11 +39,14 @@ public final class ErroresCursosVerano {
         });
     }
 
-    /** Cualquier error al rechazar una inscripción: 400 con el mensaje interno (BUG-23). */
+    /**
+     * Argumento inválido al rechazar una inscripción: 400 con su mensaje. Las excepciones de dominio y los
+     * errores inesperados siguen hasta RestApiExceptionHandler, que no envía al cliente el detalle de estos.
+     */
     public static <T> T alRechazarInscripcion(Supplier<T> operacion) {
         try {
             return operacion.get();
-        } catch (RuntimeException e) {
+        } catch (IllegalArgumentException e) {
             log.error("Error en validarPago: {}", e.getMessage(), e);
             Map<String, Object> error = new HashMap<>();
             error.put("error", "Error al rechazar la inscripcion: " + e.getMessage());
