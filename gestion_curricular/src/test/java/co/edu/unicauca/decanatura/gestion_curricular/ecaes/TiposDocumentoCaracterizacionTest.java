@@ -11,6 +11,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Map;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.junit.jupiter.api.Test;
@@ -28,6 +29,7 @@ import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.mappe
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.mappers.SolicitudEcaesMapperDominioImpl;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.mappers.UsuarioMapperDominio;
 import co.edu.unicauca.decanatura.gestion_curricular.seguridad.Autorizacion;
+import co.edu.unicauca.decanatura.gestion_curricular.soporte.Correcciones;
 
 class TiposDocumentoCaracterizacionTest {
     private final ObjectMapper json = new ObjectMapper();
@@ -57,7 +59,7 @@ class TiposDocumentoCaracterizacionTest {
             caso.set("crearEcaes", respuesta(mvc, crearEcaes(codigo)));
         }
 
-        comparar("tipos-documento.json", resultados);
+        comparar("tipos-documento.json", resultados, "ecaes/correcciones/tipos-documento-bug26.json");
 
         // Completa el mapper para fijar también las respuestas de creación exitosas.
         ReflectionTestUtils.setField(mapper, "estadoSolicitudMapperDominio", mock(EstadoSolicitudMapperDominio.class));
@@ -70,13 +72,17 @@ class TiposDocumentoCaracterizacionTest {
         comparar("tipos-documento-ecaes-validos.json", solicitudesValidas);
     }
 
-    private void comparar(String archivo, ObjectNode resultados) throws Exception {
+    private void comparar(String archivo, ObjectNode resultados, String... correcciones) throws Exception {
         var referencia = Path.of("src/test/resources/referencias/ecaes", archivo);
         if (Boolean.getBoolean("grabarReferencia") && Files.notExists(referencia)) {
             Files.createDirectories(referencia.getParent());
             Files.writeString(referencia, json.writerWithDefaultPrettyPrinter().writeValueAsString(resultados));
         }
-        assertThat(resultados).isEqualTo(json.readTree(Files.readString(referencia)));
+        JsonNode esperado = json.readTree(Files.readString(referencia));
+        for (String correccion : correcciones) {
+            esperado = Correcciones.aplicar(esperado, correccion);
+        }
+        assertThat(resultados).isEqualTo(esperado);
     }
 
 

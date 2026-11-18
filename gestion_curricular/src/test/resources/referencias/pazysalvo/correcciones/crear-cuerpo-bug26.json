@@ -1,0 +1,16 @@
+{
+  "staff {\"objUsuario\":{\"id_usuario\":12},\"nombre_solicitud\":\"X\",\"fecha_registro_solicitud\":\"01/03/2025\"}" : {
+    "status" : 400,
+    "body" : {
+      "error" : "Formato de solicitud inválido: el campo 'fecha_registro_solicitud' tiene un valor no válido"
+    },
+    "capturas" : [ ]
+  },
+  "staff {\"objUsuario\":\"12\",\"nombre_solicitud\":\"X\",\"fecha_registro_solicitud\":\"2025-03-01\"}" : {
+    "status" : 400,
+    "body" : {
+      "error" : "Formato de solicitud inválido: el campo 'objUsuario' tiene un valor no válido"
+    },
+    "capturas" : [ ]
+  }
+}

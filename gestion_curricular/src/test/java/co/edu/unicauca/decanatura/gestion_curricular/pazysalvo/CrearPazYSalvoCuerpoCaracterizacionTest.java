@@ -32,6 +32,7 @@ import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.dto.r
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.excepciones.RestApiExceptionHandler;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.mappers.*;
 import co.edu.unicauca.decanatura.gestion_curricular.seguridad.Autorizacion;
+import co.edu.unicauca.decanatura.gestion_curricular.soporte.Correcciones;
 
 /**
  * Fija cómo {@code crearSolicitud-PazYSalvo} interpreta el cuerpo (ARQ-9): forma del cuerpo,
@@ -103,7 +104,8 @@ class CrearPazYSalvoCuerpoCaracterizacionTest {
             assertThat(Files.exists(REFERENCIA)).isFalse();
             Files.writeString(REFERENCIA, json.writerWithDefaultPrettyPrinter().writeValueAsString(actual));
         }
-        assertThat(actual).isEqualTo(json.readTree(Files.readString(REFERENCIA)));
+        assertThat(actual).isEqualTo(Correcciones.aplicar(json.readTree(Files.readString(REFERENCIA)),
+                "pazysalvo/correcciones/crear-cuerpo-bug26.json"));
     }
 
     private JsonNode pedir(MockMvc mvc, String cuerpo) throws Exception {

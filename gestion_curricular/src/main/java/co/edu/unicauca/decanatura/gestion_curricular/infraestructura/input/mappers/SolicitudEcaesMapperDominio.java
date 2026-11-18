@@ -41,8 +41,9 @@ public interface SolicitudEcaesMapperDominio {
             return TipoDocumento.valueOf(codigo);
         }
 
-        // ECAES conserva el mensaje del enum anterior para los códigos que rechaza.
-        throw new IllegalArgumentException("No enum constant co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Enums.TipoDocumento." + codigo);
+        // Mensaje propio sin el nombre de la clase del enum (BUG-26).
+        throw new IllegalArgumentException("Tipo de documento no admitido en ECAES: " + codigo
+            + ". Valores admitidos: [CC, CE]");
     }
 
     // Dominio → DTO Respuesta

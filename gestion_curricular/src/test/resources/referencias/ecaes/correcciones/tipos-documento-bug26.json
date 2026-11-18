@@ -1,0 +1,9 @@
+{
+  "/TI/crearEcaes/body/mensaje" : "Tipo de documento no admitido en ECAES: TI. Valores admitidos: [CC, CE]",
+  "/PA/crearEcaes/body/mensaje" : "Tipo de documento no admitido en ECAES: PA. Valores admitidos: [CC, CE]",
+  "/RC/crearEcaes/body/mensaje" : "Tipo de documento no admitido en ECAES: RC. Valores admitidos: [CC, CE]",
+  "/NIT/crearEcaes/body/mensaje" : "Tipo de documento no admitido en ECAES: NIT. Valores admitidos: [CC, CE]",
+  "/NUIP/crearEcaes/body/mensaje" : "Tipo de documento no admitido en ECAES: NUIP. Valores admitidos: [CC, CE]",
+  "/cc/crearEcaes/body/mensaje" : "Tipo de documento no admitido en ECAES: cc. Valores admitidos: [CC, CE]",
+  "/XX/crearEcaes/body/mensaje" : "Tipo de documento no admitido en ECAES: XX. Valores admitidos: [CC, CE]"
+}
