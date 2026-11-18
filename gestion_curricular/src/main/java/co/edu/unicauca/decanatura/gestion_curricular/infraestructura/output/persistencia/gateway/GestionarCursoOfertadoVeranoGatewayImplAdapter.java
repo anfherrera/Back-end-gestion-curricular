@@ -5,8 +5,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
-import org.modelmapper.ModelMapper;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -20,6 +18,7 @@ import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.pers
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.entidades.MateriaEntity;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.entidades.UsuarioEntity;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.entidades.enums.GrupoCursoVeranoEntity;
+import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.mappers.SolicitudMapperPersistencia;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.repositorios.CursoOfertadoVeranoRepositoryInt;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.repositorios.DocenteRepositoryInt;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.repositorios.EstadoCursoOfertadoRepositoryInt;
@@ -36,15 +35,13 @@ public class GestionarCursoOfertadoVeranoGatewayImplAdapter implements Gestionar
     private final EstadoCursoOfertadoRepositoryInt estadoCursoOfertadoRepository;
     private final DocenteRepositoryInt docenteRepository;
     private final MateriaRepositoryInt materiaRepository;
-    private final ModelMapper cursoMapper;
 
-    public GestionarCursoOfertadoVeranoGatewayImplAdapter(CursoOfertadoVeranoRepositoryInt cursoRepository, UsuarioRepositoryInt usuarioRepository,EstadoCursoOfertadoRepositoryInt estadoCursoOfertadoRepository, DocenteRepositoryInt docenteRepository, MateriaRepositoryInt materiaRepository, @Qualifier("mapperCurso") ModelMapper cursoMapper) {
+    public GestionarCursoOfertadoVeranoGatewayImplAdapter(CursoOfertadoVeranoRepositoryInt cursoRepository, UsuarioRepositoryInt usuarioRepository,EstadoCursoOfertadoRepositoryInt estadoCursoOfertadoRepository, DocenteRepositoryInt docenteRepository, MateriaRepositoryInt materiaRepository) {
         this.cursoRepository = cursoRepository;
         this.usuarioRepository = usuarioRepository;
         this.estadoCursoOfertadoRepository = estadoCursoOfertadoRepository;
         this.docenteRepository = docenteRepository;
         this.materiaRepository = materiaRepository;
-        this.cursoMapper = cursoMapper;
     }
 
     @Override
@@ -59,7 +56,7 @@ public class GestionarCursoOfertadoVeranoGatewayImplAdapter implements Gestionar
         cursoEntity.setPeriodo_academico(curso.getPeriodo_academico()); // Guardar período académico directamente en el curso
         
         // Mapear grupo
-        GrupoCursoVeranoEntity grupoEntity = cursoMapper.map(curso.getGrupo(), GrupoCursoVeranoEntity.class);
+        GrupoCursoVeranoEntity grupoEntity = SolicitudMapperPersistencia.aEntidad(curso.getGrupo());
         cursoEntity.setGrupo(grupoEntity);
         
         // Obtener y asignar materia existente de la base de datos
@@ -124,7 +121,7 @@ public class GestionarCursoOfertadoVeranoGatewayImplAdapter implements Gestionar
             .orElseThrow(() -> new RuntimeException("Curso no encontrado después de guardar con ID: " + saved.getId_curso()));
         
 
-        return cursoMapper.map(cursoDesdeBD, CursoOfertadoVerano.class);
+        return SolicitudMapperPersistencia.aDominioCurso(cursoDesdeBD);
     }
 
     @Override
@@ -134,12 +131,12 @@ public class GestionarCursoOfertadoVeranoGatewayImplAdapter implements Gestionar
             .orElseThrow(() -> new RuntimeException("Curso no encontrado con ID: " + curso.getId_curso()));
             
 
-        CursoOfertadoVeranoEntity cursoEntity = cursoMapper.map(curso, CursoOfertadoVeranoEntity.class);
+        CursoOfertadoVeranoEntity cursoEntity = SolicitudMapperPersistencia.aEntidadCurso(curso);
         EstadoCursoOfertadoEntity estadoCursoEntity = null;
         EstadoCursoOfertadoEntity estadoCursoGuardado = null;
 
         if(estadoCurso != null) {
-            estadoCursoEntity = cursoMapper.map(estadoCurso, EstadoCursoOfertadoEntity.class);
+            estadoCursoEntity = SolicitudMapperPersistencia.aEntidadCurso(estadoCurso);
 
         } else {
             estadoCursoEntity = new EstadoCursoOfertadoEntity();
@@ -156,7 +153,7 @@ public class GestionarCursoOfertadoVeranoGatewayImplAdapter implements Gestionar
 
         CursoOfertadoVeranoEntity cursoGuardado = cursoRepository.save(cursoEntity);
 
-        return cursoMapper.map(cursoGuardado, CursoOfertadoVerano.class);
+        return SolicitudMapperPersistencia.aDominioCurso(cursoGuardado);
 
     }
 
@@ -175,7 +172,7 @@ public class GestionarCursoOfertadoVeranoGatewayImplAdapter implements Gestionar
     @Transactional(readOnly = true)
     public CursoOfertadoVerano obtenerCursoPorId(Integer idCurso) {
         return cursoRepository.findById(idCurso)
-            .map(entity -> cursoMapper.map(entity, CursoOfertadoVerano.class))
+            .map(entity -> SolicitudMapperPersistencia.aDominioCurso(entity))
             .orElse(null);
     }
 
@@ -183,7 +180,7 @@ public class GestionarCursoOfertadoVeranoGatewayImplAdapter implements Gestionar
     @Transactional(readOnly = true)
     public List<CursoOfertadoVerano> listarTodos() {
         return cursoRepository.findAll().stream()
-            .map(entity -> cursoMapper.map(entity, CursoOfertadoVerano.class))
+            .map(entity -> SolicitudMapperPersistencia.aDominioCurso(entity))
             .toList();
     }
 
@@ -191,7 +188,7 @@ public class GestionarCursoOfertadoVeranoGatewayImplAdapter implements Gestionar
     @Transactional(readOnly = true)
     public List<CursoOfertadoVerano> listarPorPeriodo(String periodo) {
         return cursoRepository.listarPorPeriodo(periodo).stream()
-                .map(entity -> cursoMapper.map(entity, CursoOfertadoVerano.class))
+                .map(entity -> SolicitudMapperPersistencia.aDominioCurso(entity))
                 .toList();
     }
 
@@ -262,7 +259,7 @@ public class GestionarCursoOfertadoVeranoGatewayImplAdapter implements Gestionar
             estado.setObjCursoOfertadoVerano(guardado);
             estadoCursoOfertadoRepository.save(estado);
         }
-        return cursoMapper.map(guardado, CursoOfertadoVerano.class);
+        return SolicitudMapperPersistencia.aDominioCurso(guardado);
     }
 
     @Override

@@ -111,12 +111,6 @@
 			<version>1.5.5.Final</version>
 		</dependency>
 
-		<dependency>
-			<groupId>org.modelmapper</groupId>
-			<artifactId>modelmapper</artifactId>
-			<version>2.4.5</version>
-		</dependency>
-		
 		<!-- Dependencias para exportación PDF y Excel -->
         <dependency>
             <groupId>com.itextpdf</groupId>
