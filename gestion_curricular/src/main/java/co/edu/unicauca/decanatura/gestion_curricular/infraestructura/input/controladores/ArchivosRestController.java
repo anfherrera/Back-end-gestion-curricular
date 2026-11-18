@@ -196,7 +196,7 @@ public class ArchivosRestController {
             "/uploads/archivos/" + nombreArchivo,
             file.getSize(),
             file.getContentType(),
-            new Date().toString(),
+            new Date(),
             documentoGuardadoEnBD,
             conTexto(inscripcionId),
             conTexto(solicitudIdUnificado),

@@ -30,6 +30,7 @@ import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Documento;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.controladores.ArchivosRestController;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.excepciones.RestApiExceptionHandler;
 import co.edu.unicauca.decanatura.gestion_curricular.seguridad.Autorizacion;
+import co.edu.unicauca.decanatura.gestion_curricular.soporte.Correcciones;
 
 /**
  * Fija el orden de las claves y el tipo JSON de cada valor de {@code POST /api/archivos/subir/pdf}
@@ -56,7 +57,9 @@ class SubirPdfClavesCaracterizacionTest {
         if (Boolean.getBoolean("grabarReferencia") && Files.notExists(referencia)) {
             Files.writeString(referencia, json.writerWithDefaultPrettyPrinter().writeValueAsString(actual));
         }
-        assertThat(actual).isEqualTo(json.readTree(Files.readString(referencia)));
+        // BUG-40: fechaSubida es un Date, que el ObjectMapper por defecto de MockMvc escribe en milisegundos
+        assertThat(actual).isEqualTo(Correcciones.aplicar(json.readTree(Files.readString(referencia)),
+            "documentos/correcciones/subir-pdf-claves-bug40.json"));
     }
 
     /** Lista "clave:tipo" en el orden de la respuesta, más el estado HTTP. */
