@@ -24,7 +24,6 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarArchivosCUIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarSolicitudCursoVeranoCUIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarSolicitudPazYSalvoCUIntPort;
-import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.FormateadorResultadosIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.GestionarDocumentosGatewayIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.casosDeUso.GestionarDocumentosCUAdapter;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Documento;
@@ -110,7 +109,7 @@ class SubirPdfArchivosCaracterizacionTest {
 
         var archivos = mock(GestionarArchivosCUIntPort.class);
         var gateway = mock(GestionarDocumentosGatewayIntPort.class);
-        var documentos = new GestionarDocumentosCUAdapter(gateway, mock(FormateadorResultadosIntPort.class), archivos);
+        var documentos = new GestionarDocumentosCUAdapter(gateway, archivos);
         var verano = mock(GestionarSolicitudCursoVeranoCUIntPort.class);
 
         when(archivos.saveFile(any(), anyString(), anyString())).thenAnswer(i -> {

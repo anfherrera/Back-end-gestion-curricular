@@ -918,20 +918,20 @@ class ErroresCasosDeUsoCaracterizacionTest {
     }
 
     private static GestionarSolicitudCUAdapter solicitud(GestionarSolicitudGatewayIntPort g) {
-        return new GestionarSolicitudCUAdapter(g, mock(GestionarUsuarioGatewayIntPort.class), FORMATEADOR);
+        return new GestionarSolicitudCUAdapter(g, mock(GestionarUsuarioGatewayIntPort.class));
     }
 
     private static GestionarArchivosCUAdapter archivos(GestionarArchivosGatewayIntPort g) {
-        return new GestionarArchivosCUAdapter(g, FORMATEADOR);
+        return new GestionarArchivosCUAdapter(g);
     }
 
     private static GestionarDocumentosCUAdapter documentos(GestionarDocumentosGatewayIntPort g) {
-        return new GestionarDocumentosCUAdapter(g, FORMATEADOR, mock(GestionarArchivosCUIntPort.class));
+        return new GestionarDocumentosCUAdapter(g, mock(GestionarArchivosCUIntPort.class));
     }
 
     private static GestionarUsuarioCUAdapter usuarios(GestionarUsuarioGatewayIntPort g, GestionarProgramaGatewayIntPort p,
             GestionarRolGatewayIntPort r) {
-        return new GestionarUsuarioCUAdapter(g, p, r, FORMATEADOR, clave -> "codificada");
+        return new GestionarUsuarioCUAdapter(g, p, r, clave -> "codificada");
     }
 
     private static GestionarEstadisticasCUAdapter estadisticas(GestionarEstadisticasGatewayIntPort g) {

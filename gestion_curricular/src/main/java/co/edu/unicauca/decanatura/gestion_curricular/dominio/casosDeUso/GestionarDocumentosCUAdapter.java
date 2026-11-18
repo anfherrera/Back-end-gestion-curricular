@@ -7,8 +7,9 @@ import java.util.function.BooleanSupplier;
 
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarArchivosCUIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarDocumentosCUIntPort;
-import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.FormateadorResultadosIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.GestionarDocumentosGatewayIntPort;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.excepciones.EntidadYaExisteException;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.excepciones.ReglaNegocioExcepcion;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.ArchivoSubido;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Documento;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Solicitud;
@@ -19,15 +20,12 @@ public class GestionarDocumentosCUAdapter implements GestionarDocumentosCUIntPor
     private static final DateTimeFormatter FECHA_COMENTARIO = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
 
     private final GestionarDocumentosGatewayIntPort gestionarDocumentosGateway;
-    private final FormateadorResultadosIntPort formateadorResultados;
     private final AsociadorDocumentosPendientes asociadorDocumentos;
     private final GestionarArchivosCUIntPort archivos;
 
     public GestionarDocumentosCUAdapter(GestionarDocumentosGatewayIntPort gestionarDocumentosGateway,
-                                        FormateadorResultadosIntPort formateadorResultados,
                                         GestionarArchivosCUIntPort gestionarArchivos) {
         this.gestionarDocumentosGateway = gestionarDocumentosGateway;
-        this.formateadorResultados = formateadorResultados;
         this.asociadorDocumentos = new AsociadorDocumentosPendientes(gestionarDocumentosGateway, gestionarArchivos);
         this.archivos = gestionarArchivos;
     }
@@ -88,7 +86,7 @@ public class GestionarDocumentosCUAdapter implements GestionarDocumentosCUIntPor
     @Override
     public Documento registrarDocumento(Documento documento) {
         if (documento == null) {
-            this.formateadorResultados.retornarRespuestaErrorReglaDeNegocio("El documento no puede ser nulo.");
+            throw new ReglaNegocioExcepcion("El documento no puede ser nulo.");
         }
         return gestionarDocumentosGateway.crearDocumento(documento);
     }
@@ -96,13 +94,13 @@ public class GestionarDocumentosCUAdapter implements GestionarDocumentosCUIntPor
     @Override
     public Documento buscarDocumentoId(Integer idDocumento) {
         if(idDocumento == null) {
-            this.formateadorResultados.retornarRespuestaErrorEntidadExiste("El ID del documento debe ser un número positivo.");
+            throw new EntidadYaExisteException("El ID del documento debe ser un número positivo.");
 
         }
 
         Documento documento = gestionarDocumentosGateway.buscarDocumentoId(idDocumento);
         if (documento == null) {
-            this.formateadorResultados.retornarRespuestaErrorEntidadExiste("No se encontró el documento con ID: " + idDocumento);
+            throw new EntidadYaExisteException("No se encontró el documento con ID: " + idDocumento);
         }
         return documento;
     }
@@ -110,15 +108,15 @@ public class GestionarDocumentosCUAdapter implements GestionarDocumentosCUIntPor
     @Override
     public void añadirComentario(Integer idDocumento, String comentario, String nombreUsuario, String rolUsuario) {
         if (idDocumento == null || comentario == null) {
-            this.formateadorResultados.retornarRespuestaErrorEntidadExiste("El ID del documento y el comentario son obligatorios.");
+            throw new EntidadYaExisteException("El ID del documento y el comentario son obligatorios.");
         }
         String textoNuevo = comentario.trim();
         if (textoNuevo.isEmpty()) {
-            this.formateadorResultados.retornarRespuestaErrorEntidadExiste("El comentario no puede estar vacío.");
+            throw new EntidadYaExisteException("El comentario no puede estar vacío.");
         }
         Documento documento = gestionarDocumentosGateway.buscarDocumentoId(idDocumento);
         if (documento == null) {
-            this.formateadorResultados.retornarRespuestaErrorEntidadExiste("No se encontró el documento con ID: " + idDocumento);
+            throw new EntidadYaExisteException("No se encontró el documento con ID: " + idDocumento);
         }
         String actual = documento.getComentario();
         if (actual == null) {

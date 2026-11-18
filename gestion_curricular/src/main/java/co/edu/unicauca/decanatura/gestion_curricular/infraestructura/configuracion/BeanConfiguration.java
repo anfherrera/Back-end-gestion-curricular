@@ -105,18 +105,16 @@ public class BeanConfiguration {
     
     @Bean
     public GestionarSolicitudCUAdapter GestionarSolicitudCUInt (GestionarSolicitudGatewayIntPort objGestionarSolicitudGateway,
-    GestionarUsuarioGatewayIntPort objUsuario, 
-    FormateadorResultadosIntPort objFormateadorResultados) {
-        return new GestionarSolicitudCUAdapter(objGestionarSolicitudGateway, objUsuario, objFormateadorResultados);
+    GestionarUsuarioGatewayIntPort objUsuario) {
+        return new GestionarSolicitudCUAdapter(objGestionarSolicitudGateway, objUsuario);
     }
 
     @Bean 
     public GestionarUsuarioCUAdapter crearGestionarUsuarioCUInt(GestionarUsuarioGatewayIntPort objGestionarUsuarioGateway,
                                     GestionarProgramaGatewayIntPort objGestionarProgramaGateway,
                                     GestionarRolGatewayIntPort objGestionarRolGateway,
-                                     FormateadorResultadosIntPort objFormateadorResultados,
                                      PasswordEncoder passwordEncoder) {
-        return new GestionarUsuarioCUAdapter(objGestionarUsuarioGateway, objGestionarProgramaGateway, objGestionarRolGateway, objFormateadorResultados, passwordEncoder::encode);
+        return new GestionarUsuarioCUAdapter(objGestionarUsuarioGateway, objGestionarProgramaGateway, objGestionarRolGateway, passwordEncoder::encode);
     }
 
     @Bean
@@ -188,13 +186,12 @@ public class BeanConfiguration {
 
     @Bean
     public GestionarDocumentosCUAdapter crearGestionarDocumentosCUInt(GestionarDocumentosGatewayIntPort objGestionarDocumentosGateway,
-            FormateadorResultadosIntPort objFormateadorResultados,
             GestionarArchivosCUIntPort objGestionarArchivos) {
-        return new GestionarDocumentosCUAdapter(objGestionarDocumentosGateway, objFormateadorResultados, objGestionarArchivos);
+        return new GestionarDocumentosCUAdapter(objGestionarDocumentosGateway, objGestionarArchivos);
     }
 
-    @Bean    public GestionarArchivosCUAdapter crearGestionarArchivosCUInt(GestionarArchivosGatewayIntPort objGestionarArchivos, FormateadorResultadosIntPort objFormateadorResultados){
-        return new GestionarArchivosCUAdapter(objGestionarArchivos, objFormateadorResultados);
+    @Bean    public GestionarArchivosCUAdapter crearGestionarArchivosCUInt(GestionarArchivosGatewayIntPort objGestionarArchivos){
+        return new GestionarArchivosCUAdapter(objGestionarArchivos);
     }
 
     @Bean

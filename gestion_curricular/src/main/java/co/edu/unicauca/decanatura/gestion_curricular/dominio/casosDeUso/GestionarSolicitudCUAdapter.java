@@ -3,22 +3,20 @@ package co.edu.unicauca.decanatura.gestion_curricular.dominio.casosDeUso;
 import java.util.List;
 
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarSolicitudCUIntPort;
-import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.FormateadorResultadosIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.GestionarSolicitudGatewayIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.GestionarUsuarioGatewayIntPort;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.excepciones.EntidadYaExisteException;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.excepciones.ReglaNegocioExcepcion;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Solicitud;
 
 public class GestionarSolicitudCUAdapter implements GestionarSolicitudCUIntPort {
 
     private final GestionarSolicitudGatewayIntPort gestionarSolicitudGateway;
     private final GestionarUsuarioGatewayIntPort usuario;
-    private final FormateadorResultadosIntPort formateadorResultados;
 
     public GestionarSolicitudCUAdapter(GestionarSolicitudGatewayIntPort gestionarSolicitudGateway,
-    GestionarUsuarioGatewayIntPort usuario,
-    FormateadorResultadosIntPort formateadorResultados){
+    GestionarUsuarioGatewayIntPort usuario){
         this.usuario = usuario;
-        this.formateadorResultados = formateadorResultados;
         this.gestionarSolicitudGateway = gestionarSolicitudGateway;
     }
 
@@ -27,7 +25,7 @@ public class GestionarSolicitudCUAdapter implements GestionarSolicitudCUIntPort 
     @Override
     public Solicitud obtenerSolicitudPorId(Integer idSolicitud) {
         if(idSolicitud == null) {
-            this.formateadorResultados.retornarRespuestaErrorReglaDeNegocio("El ID de la solicitud no puede ser nulo");
+            throw new ReglaNegocioExcepcion("El ID de la solicitud no puede ser nulo");
         }
         return this.gestionarSolicitudGateway.obtenerSolicitudPorId(idSolicitud);
     }
@@ -35,11 +33,11 @@ public class GestionarSolicitudCUAdapter implements GestionarSolicitudCUIntPort 
     @Override
     public boolean eliminarSolicitud(Integer idSolicitud) {
         if(idSolicitud == null) {
-            this.formateadorResultados.retornarRespuestaErrorReglaDeNegocio("El ID de la solicitud no puede ser nulo");
+            throw new ReglaNegocioExcepcion("El ID de la solicitud no puede ser nulo");
         }
         Solicitud solicitud = this.gestionarSolicitudGateway.obtenerSolicitudPorId(idSolicitud);
         if(solicitud == null) {
-            this.formateadorResultados.retornarRespuestaErrorEntidadExiste("Solicitud no existe en el sistema");
+            throw new EntidadYaExisteException("Solicitud no existe en el sistema");
         }
         return this.gestionarSolicitudGateway.eliminarSolicitud(idSolicitud);
     }
@@ -52,7 +50,7 @@ public class GestionarSolicitudCUAdapter implements GestionarSolicitudCUIntPort 
     @Override
     public List<Solicitud> obtenerSolicitudesPorNombre(String nombreSolicitud) {
         if (nombreSolicitud == null || nombreSolicitud.isBlank()) {
-            this.formateadorResultados.retornarRespuestaErrorReglaDeNegocio("El nombre de la solicitud no puede ser nulo o vacío");
+            throw new ReglaNegocioExcepcion("El nombre de la solicitud no puede ser nulo o vacío");
         }
         return this.gestionarSolicitudGateway.obtenerSolicitudesPorNombre(nombreSolicitud);
        

@@ -32,7 +32,7 @@ class RegistroDocumentosCaracterizacionTest {
     void conservaNombreAutorAsociacionYOrdenDeGuardado() throws Exception {
         var archivos = mock(GestionarArchivosCUIntPort.class);
         var gateway = mock(GestionarDocumentosGatewayIntPort.class);
-        var documentos = new GestionarDocumentosCUAdapter(gateway, mock(FormateadorResultadosIntPort.class), archivos);
+        var documentos = new GestionarDocumentosCUAdapter(gateway, archivos);
         var pazCU = mock(GestionarSolicitudPazYSalvoCUIntPort.class);
         var homoCU = mock(GestionarSolicitudHomologacionCUIntPort.class);
         var auth = new Autorizacion(null, null, null, null) {
