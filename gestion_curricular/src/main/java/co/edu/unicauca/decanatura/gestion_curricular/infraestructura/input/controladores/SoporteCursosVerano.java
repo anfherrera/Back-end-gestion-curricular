@@ -1,5 +1,7 @@
 package co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.controladores;
 
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.enums.PeriodoAcademicoEnum;
+
 /** Utilidades compartidas por los controladores de cursos de verano. */
 final class SoporteCursosVerano {
 
@@ -13,6 +15,6 @@ final class SoporteCursosVerano {
      */
     static String normalizarPeriodoAcademico(String periodo) {
         // Ambos llamadores descartan antes el texto en blanco. BUG-12 se conserva.
-        return co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.enums.PeriodoAcademicoEnum.normalizar(periodo);
+        return PeriodoAcademicoEnum.normalizar(periodo);
     }
 }

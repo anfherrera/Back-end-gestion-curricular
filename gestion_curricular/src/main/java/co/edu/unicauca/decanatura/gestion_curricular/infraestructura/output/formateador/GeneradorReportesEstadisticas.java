@@ -15,12 +15,14 @@ import com.itextpdf.text.Paragraph;
 import com.itextpdf.text.pdf.PdfWriter;
 import org.springframework.stereotype.Component;
 
+import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.GenerarReportesEstadisticasIntPort;
+
 /**
  * Genera los reportes PDF y Excel de estadísticas (dashboard general, cursos de verano y reporte completo)
  * a partir de los datos que entrega el caso de uso de estadísticas.
  */
 @Component
-public class GeneradorReportesEstadisticas implements co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.GenerarReportesEstadisticasIntPort {
+public class GeneradorReportesEstadisticas implements GenerarReportesEstadisticasIntPort {
 
     /** Agrega el contenido propio de cada reporte a un documento PDF ya abierto. */
     @FunctionalInterface

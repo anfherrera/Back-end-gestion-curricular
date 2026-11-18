@@ -12,6 +12,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.repositorios.SolicitudRepositoryInt;
+import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.repositorios.UsuarioRepositoryInt;
 
 /**
  * Utilidades para las pruebas de Paz y Salvo. Todo se hace a través de la API para respetar
@@ -70,7 +71,7 @@ final class SoportePazYSalvo {
     }
 
     /** Id del usuario autenticado según el correo. */
-    static int idUsuario(co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.repositorios.UsuarioRepositoryInt repo,
+    static int idUsuario(UsuarioRepositoryInt repo,
                          String correo) {
         return repo.buscarPorCorreo(correo).orElseThrow().getId_usuario();
     }

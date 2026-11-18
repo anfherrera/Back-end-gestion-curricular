@@ -21,6 +21,7 @@ import co.edu.unicauca.decanatura.gestion_curricular.dominio.casosDeUso.Gestiona
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.FiltroSolicitudes;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.FlujoEstadosSolicitud;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.SolicitudHomologacion;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Usuario;
 
 /**
  * ============================================================
@@ -220,8 +221,7 @@ class HomologacionUnidadTest {
     void testListarSolicitudesPorRolEstudiante() {
         // Arrange
         SolicitudHomologacion solicitud1 = new SolicitudHomologacion();
-        co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Usuario usuario1 =
-            new co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Usuario();
+        Usuario usuario1 = new Usuario();
         usuario1.setId_usuario(1);
         solicitud1.setObjUsuario(usuario1);
         // El filtro por usuario lo hace la base de datos

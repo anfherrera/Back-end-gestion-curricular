@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.GestionarSolicitudPazYSalvoGatewayIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.excepciones.EntidadNoExisteException;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.EstadoSolicitud;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.NombreSolicitud;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.SolicitudPazYSalvo;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.enums.EstadosSolicitud;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.entidades.EstadoSolicitudEntity;
@@ -32,9 +33,9 @@ public class GestionarSolicitudPazYSalvoGatewayImplAdapter implements GestionarS
         SolicitudPazYSalvoEntity entity = SolicitudMapperPersistencia.aEntidad(solicitudPazYSalvo, SolicitudPazYSalvoEntity.class);
         
         // Generar nombre descriptivo con el nombre del estudiante
-        entity.setNombre_solicitud(co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.NombreSolicitud.de(
-                co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.NombreSolicitud.PAZ_Y_SALVO,
-                co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.NombreSolicitud.nombreDe(
+        entity.setNombre_solicitud(NombreSolicitud.de(
+                NombreSolicitud.PAZ_Y_SALVO,
+                NombreSolicitud.nombreDe(
                         solicitudPazYSalvo.getObjUsuario())));
         entity.setFecha_registro_solicitud(new Date());
 

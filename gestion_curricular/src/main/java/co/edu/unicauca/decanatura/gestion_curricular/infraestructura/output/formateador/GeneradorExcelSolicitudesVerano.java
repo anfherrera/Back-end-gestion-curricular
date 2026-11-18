@@ -9,15 +9,16 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.*;
 
+import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.GenerarExcelSolicitudesVeranoIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Solicitud;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.enums.PeriodoAcademicoEnum;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.dto.respuesta.ReportesVeranoDTORespuesta.SolicitudReporte;
-import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.formateador.GeneradorExcelSolicitudesVerano;
+import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.mappers.ReporteSolicitudesVeranoMapper;
 
 /** Genera el Excel del listado de solicitudes de cursos de verano. */
 @Component
 @Slf4j
-public class GeneradorExcelSolicitudesVerano implements co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.GenerarExcelSolicitudesVeranoIntPort {
+public class GeneradorExcelSolicitudesVerano implements GenerarExcelSolicitudesVeranoIntPort {
 
     /**
      * Genera un archivo Excel con las solicitudes de cursos intersemestrales
@@ -36,7 +37,7 @@ public class GeneradorExcelSolicitudesVerano implements co.edu.unicauca.decanatu
                                           String periodoAcademico,
                                           Date fechaInicio, 
                                           Date fechaFin) {
-        List<SolicitudReporte> solicitudes = co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.mappers.ReporteSolicitudesVeranoMapper.formatear(datos, null);
+        List<SolicitudReporte> solicitudes = ReporteSolicitudesVeranoMapper.formatear(datos, null);
         try {
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
             org.apache.poi.xssf.usermodel.XSSFWorkbook workbook = new org.apache.poi.xssf.usermodel.XSSFWorkbook();

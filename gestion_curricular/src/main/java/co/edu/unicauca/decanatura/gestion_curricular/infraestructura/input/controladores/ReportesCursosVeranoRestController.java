@@ -29,6 +29,7 @@ import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.dto.r
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.dto.respuesta.ReportesVeranoDTORespuesta.Dashboard;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.dto.respuesta.ReportesVeranoDTORespuesta.Seguimiento;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.dto.respuesta.ReportesVeranoDTORespuesta.SolicitudReporte;
+import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.mappers.ReporteSolicitudesVeranoMapper;
 import co.edu.unicauca.decanatura.gestion_curricular.seguridad.Autorizacion;
 
 /**
@@ -115,7 +116,7 @@ public class ReportesCursosVeranoRestController {
         List<Solicitud> todasLasSolicitudes = solicitudCU.listarSolicitudesParaReporte(idCurso, estado,
                 periodoFiltro, fechaInicio, fechaFin);
 
-        return co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.mappers.ReporteSolicitudesVeranoMapper.formatear(todasLasSolicitudes, idMateria);
+        return ReporteSolicitudesVeranoMapper.formatear(todasLasSolicitudes, idMateria);
     }
 
     /**

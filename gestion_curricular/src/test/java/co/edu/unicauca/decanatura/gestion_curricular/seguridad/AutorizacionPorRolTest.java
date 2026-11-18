@@ -20,9 +20,11 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 
+import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.entidades.DocumentoEntity;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.entidades.ProgramaEntity;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.entidades.RolEntity;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.entidades.UsuarioEntity;
+import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.repositorios.DocumentoRepositoryInt;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.repositorios.ProgramaRepositoryInt;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.repositorios.RolRepositoryInt;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.repositorios.UsuarioRepositoryInt;
@@ -50,7 +52,7 @@ class AutorizacionPorRolTest {
     @Autowired private RolRepositoryInt rolRepository;
     @Autowired private ProgramaRepositoryInt programaRepository;
     @Autowired private PasswordEncoder passwordEncoder;
-    @Autowired private co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.repositorios.DocumentoRepositoryInt documentoRepository;
+    @Autowired private DocumentoRepositoryInt documentoRepository;
 
     private final ObjectMapper objectMapper = new ObjectMapper();
 
@@ -253,7 +255,7 @@ class AutorizacionPorRolTest {
 
     @Test
     void documentosPorAutorSolicitudYAusencia() throws Exception {
-        var documento = new co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.entidades.DocumentoEntity();
+        var documento = new DocumentoEntity();
         documento.setNombre("caracterizacion-acceso.pdf");
         documento.setRuta_documento("sin-archivo/caracterizacion-acceso.pdf");
         documento.setIdUsuarioSubio(idA);

@@ -9,27 +9,32 @@ import java.util.Objects;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
+import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.GenerarPdfCursosVeranoIntPort;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.CursoOfertadoVerano;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.ListadoEstudiantes;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.enums.PeriodoAcademicoEnum;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.dto.respuesta.CursosOfertadosDTORespuesta;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.dto.respuesta.EstudiantesCursoVeranoDTORespuesta;
+import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.mappers.CursosOfertadosMapperDominio;
+import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.mappers.EstudiantesCursoVeranoMapper;
 
 /** Genera los PDF de cursos de verano (listado de cursos y estudiantes de un curso). */
 @Component
 @Slf4j
 @lombok.RequiredArgsConstructor
-public class GeneradorPdfCursosVerano implements co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.GenerarPdfCursosVeranoIntPort {
-    private final co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.mappers.CursosOfertadosMapperDominio cursoMapper;
+public class GeneradorPdfCursosVerano implements GenerarPdfCursosVeranoIntPort {
+    private final CursosOfertadosMapperDominio cursoMapper;
 
     @Override
-    public byte[] generarPDFCursos(List<co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.CursoOfertadoVerano> cursos,
+    public byte[] generarPDFCursos(List<CursoOfertadoVerano> cursos,
             String periodoAcademico, Integer idPrograma) {
         return renderizarCursos(cursos.stream().map(cursoMapper::mapearDeCursoOfertadoARespuesta).toList(), periodoAcademico, idPrograma);
     }
 
     @Override
-    public byte[] generarPDFEstudiantesCurso(co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.CursoOfertadoVerano curso,
-            co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.ListadoEstudiantes estudiantes) {
-        return renderizarEstudiantes(co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.mappers.EstudiantesCursoVeranoMapper.mapear(curso, estudiantes));
+    public byte[] generarPDFEstudiantesCurso(CursoOfertadoVerano curso,
+            ListadoEstudiantes estudiantes) {
+        return renderizarEstudiantes(EstudiantesCursoVeranoMapper.mapear(curso, estudiantes));
     }
 
     /**

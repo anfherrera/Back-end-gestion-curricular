@@ -9,6 +9,7 @@ import org.mapstruct.Named;
 
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.CursoOfertadoVerano;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.EstadoCursoOfertado;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.enums.GrupoCursoVerano;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.dto.peticion.CursosOfertadosDTOPeticion;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.dto.respuesta.CursosOfertadosDTORespuesta;
 
@@ -208,7 +209,7 @@ public interface CursosOfertadosMapperDominio {
     }
     
     @Named("convertirGrupoAString")
-    default String convertirGrupoAString(co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.enums.GrupoCursoVerano grupo) {
+    default String convertirGrupoAString(GrupoCursoVerano grupo) {
         if (grupo == null) {
             return "A"; // Valor por defecto
         }
