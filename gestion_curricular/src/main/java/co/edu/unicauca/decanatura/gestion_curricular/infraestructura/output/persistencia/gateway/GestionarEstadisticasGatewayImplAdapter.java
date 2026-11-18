@@ -8,7 +8,6 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.function.Supplier;
 
-import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -36,6 +35,7 @@ import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.pers
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.entidades.SolicitudPazYSalvoEntity;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.entidades.SolicitudReingresoEntity;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.entidades.UsuarioEntity;
+import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.mappers.EstadisticaMapperPersistencia;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.proyecciones.FilaEstadoEstadistica;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.proyecciones.FilaSolicitudEstadistica;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.repositorios.EstadisticaRepositoryInt;
@@ -57,14 +57,12 @@ public class GestionarEstadisticasGatewayImplAdapter implements GestionarEstadis
     private final SolicitudRepositoryInt solicitudRepository;
     private final ProgramaRepositoryInt programaRepository;
     private final UsuarioRepositoryInt usuarioRepository;
-    private final ModelMapper estadisticaMapper;
 
-    public GestionarEstadisticasGatewayImplAdapter(EstadisticaRepositoryInt estadisticaRepository, ProgramaRepositoryInt programaRepository, SolicitudRepositoryInt solicitudRepository, UsuarioRepositoryInt usuarioRepository, ModelMapper estadisticaMapper) {
+    public GestionarEstadisticasGatewayImplAdapter(EstadisticaRepositoryInt estadisticaRepository, ProgramaRepositoryInt programaRepository, SolicitudRepositoryInt solicitudRepository, UsuarioRepositoryInt usuarioRepository) {
         this.estadisticaRepository = estadisticaRepository;
         this.programaRepository = programaRepository;
         this.solicitudRepository = solicitudRepository;
         this.usuarioRepository = usuarioRepository;
-        this.estadisticaMapper = estadisticaMapper;
     }
 
     @Override
@@ -76,7 +74,7 @@ public class GestionarEstadisticasGatewayImplAdapter implements GestionarEstadis
         if(programaRepository.count() <= 0) {
             throw new RuntimeException("No hay programas disponibles para crear estadisticas.");
         }
-        EstadisticaEntity estadisticaEntity = estadisticaMapper.map(estadistica, EstadisticaEntity.class);
+        EstadisticaEntity estadisticaEntity = EstadisticaMapperPersistencia.aEntidad(estadistica);
         estadisticaEntity.setTotal_solicitudes(solicitudRepository.totalSolicitudes());
         estadisticaEntity.setTotal_aprobadas(solicitudRepository.contarEstado(EstadosSolicitud.APROBADA.textoGuardado()));
         estadisticaEntity.setTotal_rechazadas(solicitudRepository.contarEstado(EstadosSolicitud.RECHAZADA.textoGuardado()));
@@ -84,7 +82,7 @@ public class GestionarEstadisticasGatewayImplAdapter implements GestionarEstadis
         estadisticaEntity.setPeriodos_academico(new ArrayList<Date>());
         estadisticaEntity.setNombres_programas(new ArrayList<String>(programaRepository.buscarNombresProgramas()));
         EstadisticaEntity savedEntity = estadisticaRepository.save(estadisticaEntity);
-        return estadisticaMapper.map(savedEntity, Estadistica.class);
+        return EstadisticaMapperPersistencia.aDominio(savedEntity);
     }
 
     @Override
@@ -92,7 +90,7 @@ public class GestionarEstadisticasGatewayImplAdapter implements GestionarEstadis
     public Estadistica actualizarEstadistica(Estadistica estadistica) {
         estadisticaRepository.findById(estadistica.getId_estadistica())
             .orElseThrow(() -> new RuntimeException("Estadistica no encontrada con ID: " + estadistica.getId_estadistica()));
-        EstadisticaEntity estadisticaEntity = estadisticaMapper.map(estadistica, EstadisticaEntity.class);
+        EstadisticaEntity estadisticaEntity = EstadisticaMapperPersistencia.aEntidad(estadistica);
         estadisticaEntity.setTotal_solicitudes(solicitudRepository.totalSolicitudes());
         estadisticaEntity.setTotal_aprobadas(solicitudRepository.contarEstado(EstadosSolicitud.APROBADA.textoGuardado()));
         estadisticaEntity.setTotal_rechazadas(solicitudRepository.contarEstado(EstadosSolicitud.RECHAZADA.textoGuardado()));
@@ -100,7 +98,7 @@ public class GestionarEstadisticasGatewayImplAdapter implements GestionarEstadis
         estadisticaEntity.setPeriodos_academico(new ArrayList<Date>());
         estadisticaEntity.setNombres_programas(new ArrayList<String>(programaRepository.buscarNombresProgramas()));
         EstadisticaEntity updatedEntity = estadisticaRepository.save(estadisticaEntity);
-        return estadisticaMapper.map(updatedEntity, Estadistica.class);
+        return EstadisticaMapperPersistencia.aDominio(updatedEntity);
     }
 
     @Override
@@ -120,7 +118,7 @@ public class GestionarEstadisticasGatewayImplAdapter implements GestionarEstadis
     public Estadistica obtenerEstadisticaPorId(Integer idEstadistica) {
        EstadisticaEntity entity = estadisticaRepository.findById(idEstadistica)
         .orElseThrow(() -> new IllegalArgumentException("Estadistica no encontrada"));
-        return estadisticaMapper.map(entity, Estadistica.class);
+        return EstadisticaMapperPersistencia.aDominio(entity);
     }
 
     @Override
@@ -137,7 +135,7 @@ public class GestionarEstadisticasGatewayImplAdapter implements GestionarEstadis
         int totalSolicitudes = solicitudRepository.contarNombreFechaEstadoYPrograma(
             proceso, fechaInicio, fechaFin, estado, idPrograma);
         estadisticaEntity.setTotal_solicitudes(totalSolicitudes);
-        return estadisticaMapper.map(estadisticaEntity, Estadistica.class);
+        return EstadisticaMapperPersistencia.aDominio(estadisticaEntity);
     }
 
     @Override

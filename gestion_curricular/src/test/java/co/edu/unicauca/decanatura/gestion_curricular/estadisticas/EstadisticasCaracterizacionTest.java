@@ -29,7 +29,6 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
-import org.modelmapper.ModelMapper;
 
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarEstadisticasCUIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.FormateadorResultadosIntPort;
@@ -236,7 +235,7 @@ class EstadisticasCaracterizacionTest {
         when(usuarioRepository.buscarPorRol(2)).thenReturn(List.of(ana, beto, carla, dario, eva, sinPrograma));
 
         GestionarEstadisticasGatewayImplAdapter gateway = new GestionarEstadisticasGatewayImplAdapter(mock(EstadisticaRepositoryInt.class), programaRepository,
-                solicitudRepository, usuarioRepository, new ModelMapper());
+                solicitudRepository, usuarioRepository);
         return new GestionarEstadisticasCUAdapter(gateway, mock(FormateadorResultadosIntPort.class));
     }
 

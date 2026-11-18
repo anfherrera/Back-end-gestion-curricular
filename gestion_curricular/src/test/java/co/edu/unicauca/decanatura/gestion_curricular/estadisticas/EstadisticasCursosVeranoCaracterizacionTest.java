@@ -17,7 +17,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.modelmapper.ModelMapper;
 
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.FormateadorResultadosIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.casosDeUso.GestionarEstadisticasCUAdapter;
@@ -54,7 +53,7 @@ class EstadisticasCursosVeranoCaracterizacionTest {
         FilasEstadisticas.simular(solicitudRepository, datos());
         GestionarEstadisticasGatewayImplAdapter gateway = new GestionarEstadisticasGatewayImplAdapter(
                 mock(EstadisticaRepositoryInt.class), mock(ProgramaRepositoryInt.class), solicitudRepository,
-                mock(UsuarioRepositoryInt.class), new ModelMapper());
+                mock(UsuarioRepositoryInt.class));
 
         Map<String, Object> resultado = new GestionarEstadisticasCUAdapter(gateway, mock(FormateadorResultadosIntPort.class))
                 .obtenerEstadisticasCursosVerano(null, null);
