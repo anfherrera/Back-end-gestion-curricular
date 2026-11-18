@@ -91,8 +91,11 @@ class SolicitudesVeranoPersistenciaCaracterizacionTest {
         casos.set("actualizarSolicitud sin estado", guardado(() -> gateway.actualizarSolicitud(dominio(4), null)));
         casos.set("actualizarSolicitud base", guardado(() -> gateway.actualizarSolicitud(
                 GrafosSolicitud.completar(new Solicitud()), null)));
-        ProyeccionValores.compararConReferencia(casos, "persistencia/solicitud.json");
-        GrafoObjetos.compararConReferencia(casos, "persistencia/proyeccion/solicitud.json");
+        // BUG-36: una solicitud de tipo no reconocido se rechaza antes de guardar ningún estado
+        ProyeccionValores.compararConReferencia(casos, "persistencia/solicitud.json",
+                "persistencia/correcciones/solicitud-bug36.json");
+        GrafoObjetos.compararConReferencia(casos, "persistencia/proyeccion/solicitud.json",
+                "persistencia/correcciones/solicitud-bug36.json");
     }
 
     @Test

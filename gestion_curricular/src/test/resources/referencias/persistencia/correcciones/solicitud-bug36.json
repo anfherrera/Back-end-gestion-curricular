@@ -1,0 +1,9 @@
+{
+  "actualizarSolicitud base" : {
+    "resultado" : {
+      "excepcion" : "java.lang.IllegalStateException",
+      "mensaje" : "Tipo de solicitud no soportado al actualizar: Solicitud"
+    },
+    "guardados" : [ ]
+  }
+}

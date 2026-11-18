@@ -51,6 +51,14 @@ public final class ProyeccionValores {
         assertThat(normalizarCasos(casos)).isEqualTo(normalizarCasos(referencia));
     }
 
+    /** Compara con la referencia después de aplicarle una corrección de {@link Correcciones}. */
+    public static void compararConReferencia(JsonNode casos, String rutaReferencia, String rutaCorreccion)
+            throws Exception {
+        JsonNode referencia = JSON.readTree(Files.readString(Path.of("src/test/resources/referencias", rutaReferencia)));
+        assertThat(normalizarCasos(casos))
+                .isEqualTo(normalizarCasos(Correcciones.aplicar(referencia, rutaCorreccion)));
+    }
+
     public static JsonNode normalizarCasos(JsonNode casos) {
         ObjectNode resultado = NODOS.objectNode();
         Iterator<Map.Entry<String, JsonNode>> campos = casos.fields();

@@ -191,6 +191,11 @@ public class GestionarSolicitudGatewayImplAdapter implements GestionarSolicitudG
         } else if (solicitud instanceof SolicitudCursoVeranoInscripcion) {
             solicitudEntity = SolicitudMapperPersistencia.aEntidad(solicitud, SolicitudCursoVeranoInscripcionEntity.class);
         }
+        if (solicitudEntity == null) {
+            // Sin entidad no se guarda el estado: quedaría huérfano
+            throw new IllegalStateException("Tipo de solicitud no soportado al actualizar: "
+                    + (solicitud == null ? "null" : solicitud.getClass().getSimpleName()));
+        }
 
         List<EstadoSolicitudEntity> estadosSolicitud = null;
         EstadoSolicitudEntity estadoSolicitudEntity = null;

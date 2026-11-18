@@ -71,7 +71,18 @@ public final class GrafoObjetos {
             Files.createDirectories(referencia.getParent());
             Files.writeString(referencia, JSON.writerWithDefaultPrettyPrinter().writeValueAsString(casos));
         }
-        JsonNode esperado = JSON.readTree(Files.readString(referencia));
+        compararConEsperado(casos, JSON.readTree(Files.readString(referencia)), rutaReferencia);
+    }
+
+    /** Compara con la referencia después de aplicarle una corrección de {@link Correcciones}. */
+    public static void compararConReferencia(JsonNode casos, String rutaReferencia, String rutaCorreccion)
+            throws Exception {
+        JsonNode referencia = JSON.readTree(Files.readString(Path.of("src/test/resources/referencias", rutaReferencia)));
+        compararConEsperado(casos, Correcciones.aplicar(referencia, rutaCorreccion), rutaReferencia);
+    }
+
+    private static void compararConEsperado(JsonNode casos, JsonNode esperado, String rutaReferencia)
+            throws Exception {
         if (!casos.equals(esperado)) {
             Path obtenido = Path.of("target/referencias-obtenidas", rutaReferencia);
             Files.createDirectories(obtenido.getParent());
