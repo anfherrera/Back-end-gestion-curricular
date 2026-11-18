@@ -1,10 +1,12 @@
 package co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.mappers;
 
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Docente;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.FechaEcaes;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Materia;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Programa;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Salon;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.entidades.DocenteEntity;
+import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.entidades.FechaEcaesEntity;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.entidades.MateriaEntity;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.entidades.ProgramaEntity;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.entidades.SalonEntity;
@@ -12,9 +14,9 @@ import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.pers
 /**
  * Mapeo explícito entre los catálogos del dominio y sus entidades (DUP-10).
  *
- * Copia los campos que ambos lados tienen; lo que solo tiene la entidad (los usuarios de un
- * programa) queda con el valor de su constructor. Como el {@code ModelMapper} que reemplaza, un
- * origen nulo lanza {@link IllegalArgumentException}.
+ * Incluye las fechas de ECAES. Copia los campos que ambos lados tienen; lo que solo tiene la
+ * entidad (los usuarios de un programa) queda con el valor de su constructor. Como el
+ * {@code ModelMapper} que reemplaza, un origen nulo lanza {@link IllegalArgumentException}.
  */
 public final class CatalogosMapperPersistencia {
 
@@ -61,6 +63,28 @@ public final class CatalogosMapperPersistencia {
         entidad.setCodigo(materia.getCodigo());
         entidad.setNombre(materia.getNombre());
         entidad.setCreditos(materia.getCreditos());
+        return entidad;
+    }
+
+    public static FechaEcaes aDominio(FechaEcaesEntity entidad) {
+        Origen.exigir(entidad);
+        return new FechaEcaes(entidad.getId_fecha_ecaes(), entidad.getPeriodoAcademico(),
+                entidad.getInscripcion_est_by_facultad(), entidad.getRegistro_recaudo_ordinario(),
+                entidad.getRegistro_recaudo_extraordinario(), entidad.getCitacion(), entidad.getAplicacion(),
+                entidad.getResultados_individuales());
+    }
+
+    public static FechaEcaesEntity aEntidad(FechaEcaes fechas) {
+        Origen.exigir(fechas);
+        FechaEcaesEntity entidad = new FechaEcaesEntity();
+        entidad.setId_fecha_ecaes(fechas.getIdFechaEcaes());
+        entidad.setPeriodoAcademico(fechas.getPeriodoAcademico());
+        entidad.setInscripcion_est_by_facultad(fechas.getInscripcion_est_by_facultad());
+        entidad.setRegistro_recaudo_ordinario(fechas.getRegistro_recaudo_ordinario());
+        entidad.setRegistro_recaudo_extraordinario(fechas.getRegistro_recaudo_extraordinario());
+        entidad.setCitacion(fechas.getCitacion());
+        entidad.setAplicacion(fechas.getAplicacion());
+        entidad.setResultados_individuales(fechas.getResultados_individuales());
         return entidad;
     }
 

@@ -71,7 +71,13 @@ public final class GrafoObjetos {
             Files.createDirectories(referencia.getParent());
             Files.writeString(referencia, JSON.writerWithDefaultPrettyPrinter().writeValueAsString(casos));
         }
-        assertThat(casos).isEqualTo(JSON.readTree(Files.readString(referencia)));
+        JsonNode esperado = JSON.readTree(Files.readString(referencia));
+        if (!casos.equals(esperado)) {
+            Path obtenido = Path.of("target/referencias-obtenidas", rutaReferencia);
+            Files.createDirectories(obtenido.getParent());
+            Files.writeString(obtenido, JSON.writerWithDefaultPrettyPrinter().writeValueAsString(casos));
+        }
+        assertThat(casos).isEqualTo(esperado);
     }
 
     private JsonNode nodo(Object valor, String ruta) {

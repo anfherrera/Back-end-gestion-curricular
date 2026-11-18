@@ -5,7 +5,6 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import jakarta.transaction.Transactional;
-import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.GestionarPreRegistroEcaesGatewayIntPort;
@@ -16,6 +15,8 @@ import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.SolicitudEc
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.entidades.EstadoSolicitudEntity;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.entidades.FechaEcaesEntity;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.entidades.SolicitudEcaesEntity;
+import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.mappers.CatalogosMapperPersistencia;
+import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.mappers.SolicitudMapperPersistencia;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.repositorios.FechaEcaesRepositoryInt;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.repositorios.SolicitudEcaesRepositoryInt;
 
@@ -26,29 +27,27 @@ public class GestionarPreRegistroEcaesGatewayImplAdapter implements GestionarPre
 
     private final SolicitudEcaesRepositoryInt solicitudEcaesRepository;
     private final FechaEcaesRepositoryInt fechaEcaesRepository;
-    private final ModelMapper mapper;
     
     public GestionarPreRegistroEcaesGatewayImplAdapter(SolicitudEcaesRepositoryInt solicitudEcaesRepository,
     FechaEcaesRepositoryInt fechaEcaesRepository) {
         this.solicitudEcaesRepository = solicitudEcaesRepository;
-        this.mapper = new ModelMapper();
         this.fechaEcaesRepository = fechaEcaesRepository;
     }
     @Override
     public SolicitudEcaes guardar(SolicitudEcaes solicitud) {
         // Convertir dominio → entidad
-        SolicitudEcaesEntity entity = mapper.map(solicitud, SolicitudEcaesEntity.class);
+        SolicitudEcaesEntity entity = SolicitudMapperPersistencia.aEntidadEcaes(solicitud);
         // Guardar en base de datos
         SolicitudEcaesEntity saved = solicitudEcaesRepository.save(entity);
         // Convertir entidad → dominio
-        return mapper.map(saved, SolicitudEcaes.class);
+        return SolicitudMapperPersistencia.aDominioEcaes(saved);
 
     }
 
     @Override
     public List<SolicitudEcaes> listar() {
         return solicitudEcaesRepository.listarSolicitudesConUsuarios().stream()
-            .map(entity -> mapper.map(entity, SolicitudEcaes.class))
+            .map(entity -> SolicitudMapperPersistencia.aDominioEcaes(entity))
             .collect(Collectors.toList());
         
     }
@@ -67,19 +66,19 @@ public class GestionarPreRegistroEcaesGatewayImplAdapter implements GestionarPre
 
     private List<SolicitudEcaes> aDominio(List<SolicitudEcaesEntity> entidades) {
         return entidades.stream()
-                .map(entity -> mapper.map(entity, SolicitudEcaes.class))
+                .map(entity -> SolicitudMapperPersistencia.aDominioEcaes(entity))
                 .collect(Collectors.toList());
     }
 
     @Override
     public Optional<SolicitudEcaes> buscarPorId(Integer id) {
         return solicitudEcaesRepository.findById(id)
-            .map(entity -> mapper.map(entity, SolicitudEcaes.class));
+            .map(entity -> SolicitudMapperPersistencia.aDominioEcaes(entity));
     }
     @Override
     public Optional<SolicitudEcaes> buscarOpcionalPorId(Integer id) {
         return solicitudEcaesRepository.findById(id)
-            .map(entity -> Optional.of(mapper.map(entity, SolicitudEcaes.class)))
+            .map(entity -> Optional.of(SolicitudMapperPersistencia.aDominioEcaes(entity)))
             .orElse(Optional.empty());
     }
     
@@ -88,7 +87,7 @@ public class GestionarPreRegistroEcaesGatewayImplAdapter implements GestionarPre
         SolicitudEcaesEntity solicitudEntity = solicitudEcaesRepository.findById(idSolicitud)
             .orElseThrow(() -> new EntidadNoExisteException("Solicitud ECAES no encontrada con ID: " + idSolicitud));
 
-        EstadoSolicitudEntity nuevo= mapper.map(nuevoEstado, EstadoSolicitudEntity.class);
+        EstadoSolicitudEntity nuevo= SolicitudMapperPersistencia.aEntidadEcaes(nuevoEstado);
         nuevo.setObjSolicitud(solicitudEntity); 
 
         solicitudEntity.getEstadosSolicitud().add(nuevo);
@@ -97,22 +96,22 @@ public class GestionarPreRegistroEcaesGatewayImplAdapter implements GestionarPre
     }
     @Override
     public FechaEcaes publicarFechasEcaes(FechaEcaes fechasEcaes) {
-        FechaEcaesEntity entity = mapper.map(fechasEcaes, FechaEcaesEntity.class);
+        FechaEcaesEntity entity = CatalogosMapperPersistencia.aEntidad(fechasEcaes);
         FechaEcaesEntity saved = fechaEcaesRepository.save(entity);
-        return mapper.map(saved, FechaEcaes.class);
+        return CatalogosMapperPersistencia.aDominio(saved);
     }
     
     @Override
     public List<FechaEcaes> listarFechasEcaes() {
         return fechaEcaesRepository.findAll().stream()
-            .map(entity -> mapper.map(entity, FechaEcaes.class))
+            .map(entity -> CatalogosMapperPersistencia.aDominio(entity))
             .collect(Collectors.toList());
     }
 
     @Override
     public Optional<FechaEcaes> buscarFechasPorPeriodo(String periodoAcademico) {
         return fechaEcaesRepository.findByPeriodoAcademico(periodoAcademico)
-            .map(entity -> mapper.map(entity, FechaEcaes.class));
+            .map(entity -> CatalogosMapperPersistencia.aDominio(entity));
     }
 
     @Override
@@ -131,12 +130,12 @@ public class GestionarPreRegistroEcaesGatewayImplAdapter implements GestionarPre
             entity.setResultados_individuales(fechasEcaes.getResultados_individuales());
             
             FechaEcaesEntity saved = fechaEcaesRepository.save(entity);
-            return mapper.map(saved, FechaEcaes.class);
+            return CatalogosMapperPersistencia.aDominio(saved);
         } else {
             // Si no existe, crear nueva
-            FechaEcaesEntity entity = mapper.map(fechasEcaes, FechaEcaesEntity.class);
+            FechaEcaesEntity entity = CatalogosMapperPersistencia.aEntidad(fechasEcaes);
             FechaEcaesEntity saved = fechaEcaesRepository.save(entity);
-            return mapper.map(saved, FechaEcaes.class);
+            return CatalogosMapperPersistencia.aDominio(saved);
         }
     }
     

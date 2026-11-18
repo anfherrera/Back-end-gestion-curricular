@@ -56,6 +56,9 @@ import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.pers
  * <li>El usuario se mapea con {@link UsuarioMapperPersistencia}: sin solicitudes ni cursos y con
  * rol y programa como copias sin relaciones.</li>
  * </ul>
+ * Los métodos {@code ...Ecaes} reproducen el {@code ModelMapper} sin configurar que usaba el
+ * gateway de ECAES: un nulo del origen sustituye al valor del constructor, y el usuario lleva
+ * también sus solicitudes y sus cursos.
  */
 public final class SolicitudMapperPersistencia {
 
@@ -82,37 +85,37 @@ public final class SolicitudMapperPersistencia {
 
     public static <D extends Solicitud> D aDominio(SolicitudEntity entidad, Class<D> tipo) {
         Origen.exigir(entidad);
-        return new AlDominio().solicitud(entidad, tipo);
+        return new AlDominio(false).solicitud(entidad, tipo);
     }
 
     public static <E extends SolicitudEntity> E aEntidad(Solicitud solicitud, Class<E> tipo) {
         Origen.exigir(solicitud);
-        return new AlaEntidad().solicitud(solicitud, tipo);
+        return new AlaEntidad(false).solicitud(solicitud, tipo);
     }
 
     public static EstadoSolicitud aDominio(EstadoSolicitudEntity entidad) {
         Origen.exigir(entidad);
-        return new AlDominio().estado(entidad);
+        return new AlDominio(false).estado(entidad);
     }
 
     public static EstadoSolicitudEntity aEntidad(EstadoSolicitud estado) {
         Origen.exigir(estado);
-        return new AlaEntidad().estado(estado);
+        return new AlaEntidad(false).estado(estado);
     }
 
     public static Documento aDominio(DocumentoEntity entidad) {
         Origen.exigir(entidad);
-        return new AlDominio().documento(entidad);
+        return new AlDominio(false).documento(entidad);
     }
 
     public static DocumentoEntity aEntidad(Documento documento) {
         Origen.exigir(documento);
-        return new AlaEntidad().documento(documento);
+        return new AlaEntidad(false).documento(documento);
     }
 
     public static CursoOfertadoVerano aDominio(CursoOfertadoVeranoEntity entidad) {
         Origen.exigir(entidad);
-        return new AlDominio().curso(entidad);
+        return new AlDominio(false).curso(entidad);
     }
 
     public static GrupoCursoVeranoEntity aEntidad(GrupoCursoVerano grupo) {
@@ -120,15 +123,38 @@ public final class SolicitudMapperPersistencia {
         return GrupoCursoVeranoEntity.valueOf(grupo.name());
     }
 
+    /** Variante de ECAES: copia los nulos y el usuario lleva sus solicitudes y cursos. */
+    public static SolicitudEcaes aDominioEcaes(SolicitudEcaesEntity entidad) {
+        Origen.exigir(entidad);
+        return new AlDominio(true).solicitud(entidad, SolicitudEcaes.class);
+    }
+
+    /** Variante de ECAES: copia los nulos y el usuario lleva sus solicitudes y cursos. */
+    public static SolicitudEcaesEntity aEntidadEcaes(SolicitudEcaes solicitud) {
+        Origen.exigir(solicitud);
+        return new AlaEntidad(true).solicitud(solicitud, SolicitudEcaesEntity.class);
+    }
+
+    /** Variante de ECAES: copia los nulos ({@code estado_actual} nulo no pasa a "Enviado"). */
+    public static EstadoSolicitudEntity aEntidadEcaes(EstadoSolicitud estado) {
+        Origen.exigir(estado);
+        return new AlaEntidad(true).estado(estado);
+    }
+
     public static Notificacion aDominio(NotificacionEntity entidad) {
         Origen.exigir(entidad);
-        return new AlDominio().notificacion(entidad);
+        return new AlDominio(false).notificacion(entidad);
     }
 
     /** Un recorrido de entidad a dominio; {@code mapeados} da un destino por origen. */
     private static final class AlDominio {
 
         private final Map<Object, Object> mapeados = new IdentityHashMap<>();
+        private final boolean copiaNulos;
+
+        AlDominio(boolean copiaNulos) {
+            this.copiaNulos = copiaNulos;
+        }
 
         <D extends Solicitud> D solicitud(SolicitudEntity entidad, Class<D> tipo) {
             Object previo = mapeados.get(entidad);
@@ -143,17 +169,17 @@ public final class SolicitudMapperPersistencia {
             solicitud.setFecha_ceremonia(entidad.getFecha_ceremonia());
             solicitud.setFecha_registro_solicitud(entidad.getFecha_registro_solicitud());
             camposPropios(entidad, solicitud);
-            if (entidad.getEstadosSolicitud() != null) {
-                solicitud.setEstadosSolicitud(lista(entidad.getEstadosSolicitud(), this::estado));
+            if (copiaNulos || entidad.getEstadosSolicitud() != null) {
+                solicitud.setEstadosSolicitud(entidad.getEstadosSolicitud() == null ? null : lista(entidad.getEstadosSolicitud(), this::estado));
             }
-            if (entidad.getObjUsuario() != null) {
-                solicitud.setObjUsuario(usuario(entidad.getObjUsuario()));
+            if (copiaNulos || entidad.getObjUsuario() != null) {
+                solicitud.setObjUsuario(entidad.getObjUsuario() == null ? null : usuario(entidad.getObjUsuario()));
             }
-            if (entidad.getDocumentos() != null) {
-                solicitud.setDocumentos(lista(entidad.getDocumentos(), this::documento));
+            if (copiaNulos || entidad.getDocumentos() != null) {
+                solicitud.setDocumentos(entidad.getDocumentos() == null ? null : lista(entidad.getDocumentos(), this::documento));
             }
-            if (entidad.getObjCursoOfertadoVerano() != null) {
-                solicitud.setObjCursoOfertadoVerano(curso(entidad.getObjCursoOfertadoVerano()));
+            if (copiaNulos || entidad.getObjCursoOfertadoVerano() != null) {
+                solicitud.setObjCursoOfertadoVerano(entidad.getObjCursoOfertadoVerano() == null ? null : curso(entidad.getObjCursoOfertadoVerano()));
             }
             return solicitud;
         }
@@ -166,13 +192,13 @@ public final class SolicitudMapperPersistencia {
             EstadoSolicitud estado = new EstadoSolicitud();
             mapeados.put(entidad, estado);
             estado.setId_estado(entidad.getId_estado());
-            if (entidad.getEstado_actual() != null) {
-                estado.setEstado_actual(entidad.getEstado_actual());
+            if (copiaNulos || entidad.getEstado_actual() != null) {
+                estado.setEstado_actual(entidad.getEstado_actual() == null ? null : entidad.getEstado_actual());
             }
             estado.setFecha_registro_estado(entidad.getFecha_registro_estado());
             estado.setComentario(entidad.getComentario());
-            if (entidad.getObjSolicitud() != null) {
-                estado.setObjSolicitud(solicitud(entidad.getObjSolicitud(), Solicitud.class));
+            if (copiaNulos || entidad.getObjSolicitud() != null) {
+                estado.setObjSolicitud(entidad.getObjSolicitud() == null ? null : solicitud(entidad.getObjSolicitud(), Solicitud.class));
             }
             return estado;
         }
@@ -191,8 +217,8 @@ public final class SolicitudMapperPersistencia {
             documento.setEsValido(entidad.isEsValido());
             documento.setComentario(entidad.getComentario());
             documento.setIdUsuarioSubio(entidad.getIdUsuarioSubio());
-            if (entidad.getObjSolicitud() != null) {
-                documento.setObjSolicitud(solicitud(entidad.getObjSolicitud(), Solicitud.class));
+            if (copiaNulos || entidad.getObjSolicitud() != null) {
+                documento.setObjSolicitud(entidad.getObjSolicitud() == null ? null : solicitud(entidad.getObjSolicitud(), Solicitud.class));
             }
             return documento;
         }
@@ -204,6 +230,12 @@ public final class SolicitudMapperPersistencia {
             }
             Usuario usuario = UsuarioMapperPersistencia.aDominio(entidad);
             mapeados.put(entidad, usuario);
+            if (copiaNulos) {
+                usuario.setSolicitudes(entidad.getSolicitudes() == null ? null
+                        : lista(entidad.getSolicitudes(), s -> solicitud(s, Solicitud.class)));
+                usuario.setCursosOfertadosInscritos(entidad.getCursosOfertadosInscritos() == null ? null
+                        : lista(entidad.getCursosOfertadosInscritos(), this::curso));
+            }
             return usuario;
         }
 
@@ -215,28 +247,28 @@ public final class SolicitudMapperPersistencia {
             CursoOfertadoVerano curso = new CursoOfertadoVerano();
             mapeados.put(entidad, curso);
             curso.setId_curso(entidad.getId_curso());
-            if (entidad.getObjMateria() != null) {
-                curso.setObjMateria(CatalogosMapperPersistencia.aDominio(entidad.getObjMateria()));
+            if (copiaNulos || entidad.getObjMateria() != null) {
+                curso.setObjMateria(entidad.getObjMateria() == null ? null : CatalogosMapperPersistencia.aDominio(entidad.getObjMateria()));
             }
-            if (entidad.getObjDocente() != null) {
-                curso.setObjDocente(CatalogosMapperPersistencia.aDominio(entidad.getObjDocente()));
+            if (copiaNulos || entidad.getObjDocente() != null) {
+                curso.setObjDocente(entidad.getObjDocente() == null ? null : CatalogosMapperPersistencia.aDominio(entidad.getObjDocente()));
             }
-            if (entidad.getGrupo() != null) {
-                curso.setGrupo(GrupoCursoVerano.valueOf(entidad.getGrupo().name()));
+            if (copiaNulos || entidad.getGrupo() != null) {
+                curso.setGrupo(entidad.getGrupo() == null ? null : GrupoCursoVerano.valueOf(entidad.getGrupo().name()));
             }
             curso.setCupo_estimado(entidad.getCupo_estimado());
             curso.setSalon(entidad.getSalon());
             curso.setFecha_inicio(entidad.getFecha_inicio());
             curso.setFecha_fin(entidad.getFecha_fin());
             curso.setPeriodo_academico(entidad.getPeriodo_academico());
-            if (entidad.getEstadosCursoOfertados() != null) {
-                curso.setEstadosCursoOfertados(lista(entidad.getEstadosCursoOfertados(), this::estadoCurso));
+            if (copiaNulos || entidad.getEstadosCursoOfertados() != null) {
+                curso.setEstadosCursoOfertados(entidad.getEstadosCursoOfertados() == null ? null : lista(entidad.getEstadosCursoOfertados(), this::estadoCurso));
             }
-            if (entidad.getEstudiantesInscritos() != null) {
-                curso.setEstudiantesInscritos(lista(entidad.getEstudiantesInscritos(), this::usuario));
+            if (copiaNulos || entidad.getEstudiantesInscritos() != null) {
+                curso.setEstudiantesInscritos(entidad.getEstudiantesInscritos() == null ? null : lista(entidad.getEstudiantesInscritos(), this::usuario));
             }
-            if (entidad.getSolicitudes() != null) {
-                curso.setSolicitudes(lista(entidad.getSolicitudes(), s -> solicitud(s, Solicitud.class)));
+            if (copiaNulos || entidad.getSolicitudes() != null) {
+                curso.setSolicitudes(entidad.getSolicitudes() == null ? null : lista(entidad.getSolicitudes(), s -> solicitud(s, Solicitud.class)));
             }
             return curso;
         }
@@ -249,12 +281,12 @@ public final class SolicitudMapperPersistencia {
             EstadoCursoOfertado estado = new EstadoCursoOfertado();
             mapeados.put(entidad, estado);
             estado.setId_estado(entidad.getId_estado());
-            if (entidad.getEstado_actual() != null) {
-                estado.setEstado_actual(entidad.getEstado_actual());
+            if (copiaNulos || entidad.getEstado_actual() != null) {
+                estado.setEstado_actual(entidad.getEstado_actual() == null ? null : entidad.getEstado_actual());
             }
             estado.setFecha_registro_estado(entidad.getFecha_registro_estado());
-            if (entidad.getObjCursoOfertadoVerano() != null) {
-                estado.setObjCursoOfertadoVerano(curso(entidad.getObjCursoOfertadoVerano()));
+            if (copiaNulos || entidad.getObjCursoOfertadoVerano() != null) {
+                estado.setObjCursoOfertadoVerano(entidad.getObjCursoOfertadoVerano() == null ? null : curso(entidad.getObjCursoOfertadoVerano()));
             }
             return estado;
         }
@@ -267,22 +299,22 @@ public final class SolicitudMapperPersistencia {
             notificacion.setTitulo(entidad.getTitulo());
             notificacion.setMensaje(entidad.getMensaje());
             notificacion.setFechaCreacion(entidad.getFechaCreacion());
-            if (entidad.getLeida() != null) {
-                notificacion.setLeida(entidad.getLeida());
+            if (copiaNulos || entidad.getLeida() != null) {
+                notificacion.setLeida(entidad.getLeida() == null ? null : entidad.getLeida());
             }
-            if (entidad.getEsUrgente() != null) {
-                notificacion.setEsUrgente(entidad.getEsUrgente());
+            if (copiaNulos || entidad.getEsUrgente() != null) {
+                notificacion.setEsUrgente(entidad.getEsUrgente() == null ? null : entidad.getEsUrgente());
             }
             notificacion.setAccion(entidad.getAccion());
             notificacion.setUrlAccion(entidad.getUrlAccion());
-            if (entidad.getObjUsuario() != null) {
-                notificacion.setObjUsuario(usuario(entidad.getObjUsuario()));
+            if (copiaNulos || entidad.getObjUsuario() != null) {
+                notificacion.setObjUsuario(entidad.getObjUsuario() == null ? null : usuario(entidad.getObjUsuario()));
             }
-            if (entidad.getObjSolicitud() != null) {
-                notificacion.setObjSolicitud(solicitud(entidad.getObjSolicitud(), Solicitud.class));
+            if (copiaNulos || entidad.getObjSolicitud() != null) {
+                notificacion.setObjSolicitud(entidad.getObjSolicitud() == null ? null : solicitud(entidad.getObjSolicitud(), Solicitud.class));
             }
-            if (entidad.getObjCurso() != null) {
-                notificacion.setObjCurso(curso(entidad.getObjCurso()));
+            if (copiaNulos || entidad.getObjCurso() != null) {
+                notificacion.setObjCurso(entidad.getObjCurso() == null ? null : curso(entidad.getObjCurso()));
             }
             return notificacion;
         }
@@ -334,6 +366,11 @@ public final class SolicitudMapperPersistencia {
     private static final class AlaEntidad {
 
         private final Map<Object, Object> mapeados = new IdentityHashMap<>();
+        private final boolean copiaNulos;
+
+        AlaEntidad(boolean copiaNulos) {
+            this.copiaNulos = copiaNulos;
+        }
 
         <E extends SolicitudEntity> E solicitud(Solicitud solicitud, Class<E> tipo) {
             Object previo = mapeados.get(solicitud);
@@ -348,17 +385,17 @@ public final class SolicitudMapperPersistencia {
             entidad.setFecha_ceremonia(solicitud.getFecha_ceremonia());
             entidad.setFecha_registro_solicitud(solicitud.getFecha_registro_solicitud());
             camposPropios(solicitud, entidad);
-            if (solicitud.getEstadosSolicitud() != null) {
-                entidad.setEstadosSolicitud(lista(solicitud.getEstadosSolicitud(), this::estado));
+            if (copiaNulos || solicitud.getEstadosSolicitud() != null) {
+                entidad.setEstadosSolicitud(solicitud.getEstadosSolicitud() == null ? null : lista(solicitud.getEstadosSolicitud(), this::estado));
             }
-            if (solicitud.getObjUsuario() != null) {
-                entidad.setObjUsuario(usuario(solicitud.getObjUsuario()));
+            if (copiaNulos || solicitud.getObjUsuario() != null) {
+                entidad.setObjUsuario(solicitud.getObjUsuario() == null ? null : usuario(solicitud.getObjUsuario()));
             }
-            if (solicitud.getDocumentos() != null) {
-                entidad.setDocumentos(lista(solicitud.getDocumentos(), this::documento));
+            if (copiaNulos || solicitud.getDocumentos() != null) {
+                entidad.setDocumentos(solicitud.getDocumentos() == null ? null : lista(solicitud.getDocumentos(), this::documento));
             }
-            if (solicitud.getObjCursoOfertadoVerano() != null) {
-                entidad.setObjCursoOfertadoVerano(curso(solicitud.getObjCursoOfertadoVerano()));
+            if (copiaNulos || solicitud.getObjCursoOfertadoVerano() != null) {
+                entidad.setObjCursoOfertadoVerano(solicitud.getObjCursoOfertadoVerano() == null ? null : curso(solicitud.getObjCursoOfertadoVerano()));
             }
             return entidad;
         }
@@ -371,13 +408,13 @@ public final class SolicitudMapperPersistencia {
             EstadoSolicitudEntity entidad = new EstadoSolicitudEntity();
             mapeados.put(estado, entidad);
             entidad.setId_estado(estado.getId_estado());
-            if (estado.getEstado_actual() != null) {
-                entidad.setEstado_actual(estado.getEstado_actual());
+            if (copiaNulos || estado.getEstado_actual() != null) {
+                entidad.setEstado_actual(estado.getEstado_actual() == null ? null : estado.getEstado_actual());
             }
             entidad.setFecha_registro_estado(estado.getFecha_registro_estado());
             entidad.setComentario(estado.getComentario());
-            if (estado.getObjSolicitud() != null) {
-                entidad.setObjSolicitud(solicitud(estado.getObjSolicitud(), SolicitudEntity.class));
+            if (copiaNulos || estado.getObjSolicitud() != null) {
+                entidad.setObjSolicitud(estado.getObjSolicitud() == null ? null : solicitud(estado.getObjSolicitud(), SolicitudEntity.class));
             }
             return entidad;
         }
@@ -396,8 +433,8 @@ public final class SolicitudMapperPersistencia {
             entidad.setEsValido(documento.isEsValido());
             entidad.setComentario(documento.getComentario());
             entidad.setIdUsuarioSubio(documento.getIdUsuarioSubio());
-            if (documento.getObjSolicitud() != null) {
-                entidad.setObjSolicitud(solicitud(documento.getObjSolicitud(), SolicitudEntity.class));
+            if (copiaNulos || documento.getObjSolicitud() != null) {
+                entidad.setObjSolicitud(documento.getObjSolicitud() == null ? null : solicitud(documento.getObjSolicitud(), SolicitudEntity.class));
             }
             return entidad;
         }
@@ -409,6 +446,12 @@ public final class SolicitudMapperPersistencia {
             }
             UsuarioEntity entidad = UsuarioMapperPersistencia.aEntidad(usuario);
             mapeados.put(usuario, entidad);
+            if (copiaNulos) {
+                entidad.setSolicitudes(usuario.getSolicitudes() == null ? null
+                        : lista(usuario.getSolicitudes(), s -> solicitud(s, SolicitudEntity.class)));
+                entidad.setCursosOfertadosInscritos(usuario.getCursosOfertadosInscritos() == null ? null
+                        : lista(usuario.getCursosOfertadosInscritos(), this::curso));
+            }
             return entidad;
         }
 
@@ -420,28 +463,28 @@ public final class SolicitudMapperPersistencia {
             CursoOfertadoVeranoEntity entidad = new CursoOfertadoVeranoEntity();
             mapeados.put(curso, entidad);
             entidad.setId_curso(curso.getId_curso());
-            if (curso.getObjMateria() != null) {
-                entidad.setObjMateria(CatalogosMapperPersistencia.aEntidad(curso.getObjMateria()));
+            if (copiaNulos || curso.getObjMateria() != null) {
+                entidad.setObjMateria(curso.getObjMateria() == null ? null : CatalogosMapperPersistencia.aEntidad(curso.getObjMateria()));
             }
-            if (curso.getObjDocente() != null) {
-                entidad.setObjDocente(CatalogosMapperPersistencia.aEntidad(curso.getObjDocente()));
+            if (copiaNulos || curso.getObjDocente() != null) {
+                entidad.setObjDocente(curso.getObjDocente() == null ? null : CatalogosMapperPersistencia.aEntidad(curso.getObjDocente()));
             }
-            if (curso.getGrupo() != null) {
-                entidad.setGrupo(GrupoCursoVeranoEntity.valueOf(curso.getGrupo().name()));
+            if (copiaNulos || curso.getGrupo() != null) {
+                entidad.setGrupo(curso.getGrupo() == null ? null : GrupoCursoVeranoEntity.valueOf(curso.getGrupo().name()));
             }
             entidad.setCupo_estimado(curso.getCupo_estimado());
             entidad.setSalon(curso.getSalon());
             entidad.setFecha_inicio(curso.getFecha_inicio());
             entidad.setFecha_fin(curso.getFecha_fin());
             entidad.setPeriodo_academico(curso.getPeriodo_academico());
-            if (curso.getEstadosCursoOfertados() != null) {
-                entidad.setEstadosCursoOfertados(lista(curso.getEstadosCursoOfertados(), this::estadoCurso));
+            if (copiaNulos || curso.getEstadosCursoOfertados() != null) {
+                entidad.setEstadosCursoOfertados(curso.getEstadosCursoOfertados() == null ? null : lista(curso.getEstadosCursoOfertados(), this::estadoCurso));
             }
-            if (curso.getEstudiantesInscritos() != null) {
-                entidad.setEstudiantesInscritos(lista(curso.getEstudiantesInscritos(), this::usuario));
+            if (copiaNulos || curso.getEstudiantesInscritos() != null) {
+                entidad.setEstudiantesInscritos(curso.getEstudiantesInscritos() == null ? null : lista(curso.getEstudiantesInscritos(), this::usuario));
             }
-            if (curso.getSolicitudes() != null) {
-                entidad.setSolicitudes(lista(curso.getSolicitudes(), s -> solicitud(s, SolicitudEntity.class)));
+            if (copiaNulos || curso.getSolicitudes() != null) {
+                entidad.setSolicitudes(curso.getSolicitudes() == null ? null : lista(curso.getSolicitudes(), s -> solicitud(s, SolicitudEntity.class)));
             }
             return entidad;
         }
@@ -454,12 +497,12 @@ public final class SolicitudMapperPersistencia {
             EstadoCursoOfertadoEntity entidad = new EstadoCursoOfertadoEntity();
             mapeados.put(estado, entidad);
             entidad.setId_estado(estado.getId_estado());
-            if (estado.getEstado_actual() != null) {
-                entidad.setEstado_actual(estado.getEstado_actual());
+            if (copiaNulos || estado.getEstado_actual() != null) {
+                entidad.setEstado_actual(estado.getEstado_actual() == null ? null : estado.getEstado_actual());
             }
             entidad.setFecha_registro_estado(estado.getFecha_registro_estado());
-            if (estado.getObjCursoOfertadoVerano() != null) {
-                entidad.setObjCursoOfertadoVerano(curso(estado.getObjCursoOfertadoVerano()));
+            if (copiaNulos || estado.getObjCursoOfertadoVerano() != null) {
+                entidad.setObjCursoOfertadoVerano(estado.getObjCursoOfertadoVerano() == null ? null : curso(estado.getObjCursoOfertadoVerano()));
             }
             return entidad;
         }

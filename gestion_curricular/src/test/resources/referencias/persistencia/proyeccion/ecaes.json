@@ -1,0 +1,1109 @@
+{
+  "listar" : [ {
+    "@tipo" : "SolicitudEcaes",
+    "documentos" : [ {
+      "@tipo" : "Documento",
+      "comentario" : "legible",
+      "esValido" : true,
+      "fecha_documento" : 1720000000000,
+      "idUsuarioSubio" : 1,
+      "id_documento" : 3,
+      "nombre" : "carta.pdf",
+      "objSolicitud" : {
+        "@ref" : "$[0]"
+      },
+      "ruta_documento" : "reingreso/carta.pdf"
+    }, {
+      "@tipo" : "Documento",
+      "comentario" : null,
+      "esValido" : false,
+      "fecha_documento" : null,
+      "idUsuarioSubio" : null,
+      "id_documento" : 4,
+      "nombre" : null,
+      "objSolicitud" : null,
+      "ruta_documento" : null
+    } ],
+    "estadosSolicitud" : [ {
+      "@tipo" : "EstadoSolicitud",
+      "comentario" : null,
+      "estado_actual" : "Enviada",
+      "fecha_registro_estado" : 1710000000000,
+      "id_estado" : 1,
+      "objSolicitud" : {
+        "@ref" : "$[0]"
+      }
+    }, {
+      "@tipo" : "EstadoSolicitud",
+      "comentario" : "revisar",
+      "estado_actual" : null,
+      "fecha_registro_estado" : null,
+      "id_estado" : 2,
+      "objSolicitud" : null
+    } ],
+    "fecha_ceremonia" : 1700000000000,
+    "fecha_registro_solicitud" : 1710000000000,
+    "id_solicitud" : 7,
+    "nombre_solicitud" : "Solicitud de prueba",
+    "objCursoOfertadoVerano" : {
+      "@tipo" : "CursoOfertadoVerano",
+      "cupo_estimado" : 20,
+      "estadosCursoOfertados" : [ {
+        "@tipo" : "EstadoCursoOfertado",
+        "estado_actual" : "Abierto",
+        "fecha_registro_estado" : 1700000000000,
+        "id_estado" : 8,
+        "objCursoOfertadoVerano" : {
+          "@ref" : "$[0].objCursoOfertadoVerano"
+        }
+      }, {
+        "@tipo" : "EstadoCursoOfertado",
+        "estado_actual" : null,
+        "fecha_registro_estado" : null,
+        "id_estado" : 9,
+        "objCursoOfertadoVerano" : null
+      } ],
+      "estudiantesInscritos" : [ {
+        "@tipo" : "Usuario",
+        "cedula" : "123",
+        "codigo" : "104",
+        "correo" : "ana@unicauca.edu.co",
+        "cursosOfertadosInscritos" : [ {
+          "@ref" : "$[0].objCursoOfertadoVerano"
+        } ],
+        "estado_usuario" : true,
+        "id_usuario" : 1,
+        "nombre_completo" : "Ana Pérez",
+        "objPrograma" : {
+          "@tipo" : "Programa",
+          "codigo" : "SIS",
+          "id_programa" : 1,
+          "nombre_programa" : "Ingeniería de Sistemas"
+        },
+        "objRol" : {
+          "@tipo" : "Rol",
+          "id_rol" : 1,
+          "nombre" : "ESTUDIANTE",
+          "usuarios" : null
+        },
+        "password" : "$2a$hash",
+        "solicitudes" : [ {
+          "@ref" : "$[0]"
+        } ]
+      } ],
+      "fecha_fin" : 1720000000000,
+      "fecha_inicio" : 1700000000000,
+      "grupo" : "GrupoCursoVerano.B",
+      "id_curso" : 4,
+      "objDocente" : {
+        "@tipo" : "Docente",
+        "codigo_docente" : "D06",
+        "id_docente" : 6,
+        "nombre_docente" : "Luis"
+      },
+      "objMateria" : {
+        "@tipo" : "Materia",
+        "codigo" : "MAT1",
+        "creditos" : 4,
+        "id_materia" : 5,
+        "nombre" : "Cálculo"
+      },
+      "periodo_academico" : "2025-1",
+      "salon" : "221",
+      "solicitudes" : [ {
+        "@ref" : "$[0]"
+      } ]
+    },
+    "objUsuario" : {
+      "@ref" : "$[0].objCursoOfertadoVerano.estudiantesInscritos[0]"
+    },
+    "periodo_academico" : "2025-1",
+    "fecha_expedicion" : 1710000000000,
+    "fecha_nacimiento" : null,
+    "numero_documento" : "123",
+    "tipoDocumento" : "TipoDocumento.CC"
+  }, {
+    "@tipo" : "SolicitudEcaes",
+    "documentos" : null,
+    "estadosSolicitud" : null,
+    "fecha_ceremonia" : null,
+    "fecha_registro_solicitud" : null,
+    "id_solicitud" : 8,
+    "nombre_solicitud" : null,
+    "objCursoOfertadoVerano" : null,
+    "objUsuario" : null,
+    "periodo_academico" : null,
+    "fecha_expedicion" : null,
+    "fecha_nacimiento" : null,
+    "numero_documento" : null,
+    "tipoDocumento" : null
+  } ],
+  "listarPorUsuario" : [ {
+    "@tipo" : "SolicitudEcaes",
+    "documentos" : [ {
+      "@tipo" : "Documento",
+      "comentario" : "legible",
+      "esValido" : true,
+      "fecha_documento" : 1720000000000,
+      "idUsuarioSubio" : 1,
+      "id_documento" : 3,
+      "nombre" : "carta.pdf",
+      "objSolicitud" : {
+        "@ref" : "$[0]"
+      },
+      "ruta_documento" : "reingreso/carta.pdf"
+    }, {
+      "@tipo" : "Documento",
+      "comentario" : null,
+      "esValido" : false,
+      "fecha_documento" : null,
+      "idUsuarioSubio" : null,
+      "id_documento" : 4,
+      "nombre" : null,
+      "objSolicitud" : null,
+      "ruta_documento" : null
+    } ],
+    "estadosSolicitud" : [ {
+      "@tipo" : "EstadoSolicitud",
+      "comentario" : null,
+      "estado_actual" : "Enviada",
+      "fecha_registro_estado" : 1710000000000,
+      "id_estado" : 1,
+      "objSolicitud" : {
+        "@ref" : "$[0]"
+      }
+    }, {
+      "@tipo" : "EstadoSolicitud",
+      "comentario" : "revisar",
+      "estado_actual" : null,
+      "fecha_registro_estado" : null,
+      "id_estado" : 2,
+      "objSolicitud" : null
+    } ],
+    "fecha_ceremonia" : 1700000000000,
+    "fecha_registro_solicitud" : 1710000000000,
+    "id_solicitud" : 7,
+    "nombre_solicitud" : "Solicitud de prueba",
+    "objCursoOfertadoVerano" : {
+      "@tipo" : "CursoOfertadoVerano",
+      "cupo_estimado" : 20,
+      "estadosCursoOfertados" : [ {
+        "@tipo" : "EstadoCursoOfertado",
+        "estado_actual" : "Abierto",
+        "fecha_registro_estado" : 1700000000000,
+        "id_estado" : 8,
+        "objCursoOfertadoVerano" : {
+          "@ref" : "$[0].objCursoOfertadoVerano"
+        }
+      }, {
+        "@tipo" : "EstadoCursoOfertado",
+        "estado_actual" : null,
+        "fecha_registro_estado" : null,
+        "id_estado" : 9,
+        "objCursoOfertadoVerano" : null
+      } ],
+      "estudiantesInscritos" : [ {
+        "@tipo" : "Usuario",
+        "cedula" : "123",
+        "codigo" : "104",
+        "correo" : "ana@unicauca.edu.co",
+        "cursosOfertadosInscritos" : [ {
+          "@ref" : "$[0].objCursoOfertadoVerano"
+        } ],
+        "estado_usuario" : true,
+        "id_usuario" : 1,
+        "nombre_completo" : "Ana Pérez",
+        "objPrograma" : {
+          "@tipo" : "Programa",
+          "codigo" : "SIS",
+          "id_programa" : 1,
+          "nombre_programa" : "Ingeniería de Sistemas"
+        },
+        "objRol" : {
+          "@tipo" : "Rol",
+          "id_rol" : 1,
+          "nombre" : "ESTUDIANTE",
+          "usuarios" : null
+        },
+        "password" : "$2a$hash",
+        "solicitudes" : [ {
+          "@ref" : "$[0]"
+        } ]
+      } ],
+      "fecha_fin" : 1720000000000,
+      "fecha_inicio" : 1700000000000,
+      "grupo" : "GrupoCursoVerano.B",
+      "id_curso" : 4,
+      "objDocente" : {
+        "@tipo" : "Docente",
+        "codigo_docente" : "D06",
+        "id_docente" : 6,
+        "nombre_docente" : "Luis"
+      },
+      "objMateria" : {
+        "@tipo" : "Materia",
+        "codigo" : "MAT1",
+        "creditos" : 4,
+        "id_materia" : 5,
+        "nombre" : "Cálculo"
+      },
+      "periodo_academico" : "2025-1",
+      "salon" : "221",
+      "solicitudes" : [ {
+        "@ref" : "$[0]"
+      } ]
+    },
+    "objUsuario" : {
+      "@ref" : "$[0].objCursoOfertadoVerano.estudiantesInscritos[0]"
+    },
+    "periodo_academico" : "2025-1",
+    "fecha_expedicion" : 1710000000000,
+    "fecha_nacimiento" : null,
+    "numero_documento" : "123",
+    "tipoDocumento" : "TipoDocumento.CC"
+  } ],
+  "buscarPorId 7" : {
+    "@optional" : {
+      "@tipo" : "SolicitudEcaes",
+      "documentos" : [ {
+        "@tipo" : "Documento",
+        "comentario" : "legible",
+        "esValido" : true,
+        "fecha_documento" : 1720000000000,
+        "idUsuarioSubio" : 1,
+        "id_documento" : 3,
+        "nombre" : "carta.pdf",
+        "objSolicitud" : {
+          "@ref" : "$.get"
+        },
+        "ruta_documento" : "reingreso/carta.pdf"
+      }, {
+        "@tipo" : "Documento",
+        "comentario" : null,
+        "esValido" : false,
+        "fecha_documento" : null,
+        "idUsuarioSubio" : null,
+        "id_documento" : 4,
+        "nombre" : null,
+        "objSolicitud" : null,
+        "ruta_documento" : null
+      } ],
+      "estadosSolicitud" : [ {
+        "@tipo" : "EstadoSolicitud",
+        "comentario" : null,
+        "estado_actual" : "Enviada",
+        "fecha_registro_estado" : 1710000000000,
+        "id_estado" : 1,
+        "objSolicitud" : {
+          "@ref" : "$.get"
+        }
+      }, {
+        "@tipo" : "EstadoSolicitud",
+        "comentario" : "revisar",
+        "estado_actual" : null,
+        "fecha_registro_estado" : null,
+        "id_estado" : 2,
+        "objSolicitud" : null
+      } ],
+      "fecha_ceremonia" : 1700000000000,
+      "fecha_registro_solicitud" : 1710000000000,
+      "id_solicitud" : 7,
+      "nombre_solicitud" : "Solicitud de prueba",
+      "objCursoOfertadoVerano" : {
+        "@tipo" : "CursoOfertadoVerano",
+        "cupo_estimado" : 20,
+        "estadosCursoOfertados" : [ {
+          "@tipo" : "EstadoCursoOfertado",
+          "estado_actual" : "Abierto",
+          "fecha_registro_estado" : 1700000000000,
+          "id_estado" : 8,
+          "objCursoOfertadoVerano" : {
+            "@ref" : "$.get.objCursoOfertadoVerano"
+          }
+        }, {
+          "@tipo" : "EstadoCursoOfertado",
+          "estado_actual" : null,
+          "fecha_registro_estado" : null,
+          "id_estado" : 9,
+          "objCursoOfertadoVerano" : null
+        } ],
+        "estudiantesInscritos" : [ {
+          "@tipo" : "Usuario",
+          "cedula" : "123",
+          "codigo" : "104",
+          "correo" : "ana@unicauca.edu.co",
+          "cursosOfertadosInscritos" : [ {
+            "@ref" : "$.get.objCursoOfertadoVerano"
+          } ],
+          "estado_usuario" : true,
+          "id_usuario" : 1,
+          "nombre_completo" : "Ana Pérez",
+          "objPrograma" : {
+            "@tipo" : "Programa",
+            "codigo" : "SIS",
+            "id_programa" : 1,
+            "nombre_programa" : "Ingeniería de Sistemas"
+          },
+          "objRol" : {
+            "@tipo" : "Rol",
+            "id_rol" : 1,
+            "nombre" : "ESTUDIANTE",
+            "usuarios" : null
+          },
+          "password" : "$2a$hash",
+          "solicitudes" : [ {
+            "@ref" : "$.get"
+          } ]
+        } ],
+        "fecha_fin" : 1720000000000,
+        "fecha_inicio" : 1700000000000,
+        "grupo" : "GrupoCursoVerano.B",
+        "id_curso" : 4,
+        "objDocente" : {
+          "@tipo" : "Docente",
+          "codigo_docente" : "D06",
+          "id_docente" : 6,
+          "nombre_docente" : "Luis"
+        },
+        "objMateria" : {
+          "@tipo" : "Materia",
+          "codigo" : "MAT1",
+          "creditos" : 4,
+          "id_materia" : 5,
+          "nombre" : "Cálculo"
+        },
+        "periodo_academico" : "2025-1",
+        "salon" : "221",
+        "solicitudes" : [ {
+          "@ref" : "$.get"
+        } ]
+      },
+      "objUsuario" : {
+        "@ref" : "$.get.objCursoOfertadoVerano.estudiantesInscritos[0]"
+      },
+      "periodo_academico" : "2025-1",
+      "fecha_expedicion" : 1710000000000,
+      "fecha_nacimiento" : null,
+      "numero_documento" : "123",
+      "tipoDocumento" : "TipoDocumento.CC"
+    }
+  },
+  "buscarOpcionalPorId 8" : {
+    "@optional" : {
+      "@tipo" : "SolicitudEcaes",
+      "documentos" : null,
+      "estadosSolicitud" : null,
+      "fecha_ceremonia" : null,
+      "fecha_registro_solicitud" : null,
+      "id_solicitud" : 8,
+      "nombre_solicitud" : null,
+      "objCursoOfertadoVerano" : null,
+      "objUsuario" : null,
+      "periodo_academico" : null,
+      "fecha_expedicion" : null,
+      "fecha_nacimiento" : null,
+      "numero_documento" : null,
+      "tipoDocumento" : null
+    }
+  },
+  "buscarOpcionalPorId 9" : {
+    "@optional" : null
+  },
+  "guardar completa" : {
+    "resultado" : {
+      "@tipo" : "SolicitudEcaes",
+      "documentos" : [ {
+        "@tipo" : "Documento",
+        "comentario" : "legible",
+        "esValido" : true,
+        "fecha_documento" : 1720000000000,
+        "idUsuarioSubio" : 1,
+        "id_documento" : 3,
+        "nombre" : "carta.pdf",
+        "objSolicitud" : {
+          "@ref" : "$"
+        },
+        "ruta_documento" : "reingreso/carta.pdf"
+      }, {
+        "@tipo" : "Documento",
+        "comentario" : null,
+        "esValido" : false,
+        "fecha_documento" : null,
+        "idUsuarioSubio" : null,
+        "id_documento" : 4,
+        "nombre" : null,
+        "objSolicitud" : null,
+        "ruta_documento" : null
+      } ],
+      "estadosSolicitud" : [ {
+        "@tipo" : "EstadoSolicitud",
+        "comentario" : null,
+        "estado_actual" : "Enviada",
+        "fecha_registro_estado" : 1710000000000,
+        "id_estado" : 1,
+        "objSolicitud" : {
+          "@ref" : "$"
+        }
+      }, {
+        "@tipo" : "EstadoSolicitud",
+        "comentario" : "revisar",
+        "estado_actual" : null,
+        "fecha_registro_estado" : null,
+        "id_estado" : 2,
+        "objSolicitud" : null
+      } ],
+      "fecha_ceremonia" : 1700000000000,
+      "fecha_registro_solicitud" : 1710000000000,
+      "id_solicitud" : 7,
+      "nombre_solicitud" : "Solicitud de prueba",
+      "objCursoOfertadoVerano" : {
+        "@tipo" : "CursoOfertadoVerano",
+        "cupo_estimado" : 20,
+        "estadosCursoOfertados" : [ {
+          "@tipo" : "EstadoCursoOfertado",
+          "estado_actual" : "Abierto",
+          "fecha_registro_estado" : 1700000000000,
+          "id_estado" : 8,
+          "objCursoOfertadoVerano" : {
+            "@ref" : "$.objCursoOfertadoVerano"
+          }
+        }, {
+          "@tipo" : "EstadoCursoOfertado",
+          "estado_actual" : null,
+          "fecha_registro_estado" : null,
+          "id_estado" : 9,
+          "objCursoOfertadoVerano" : null
+        } ],
+        "estudiantesInscritos" : [ {
+          "@tipo" : "Usuario",
+          "cedula" : "123",
+          "codigo" : "104",
+          "correo" : "ana@unicauca.edu.co",
+          "cursosOfertadosInscritos" : [ {
+            "@ref" : "$.objCursoOfertadoVerano"
+          } ],
+          "estado_usuario" : true,
+          "id_usuario" : 1,
+          "nombre_completo" : "Ana Pérez",
+          "objPrograma" : {
+            "@tipo" : "Programa",
+            "codigo" : "SIS",
+            "id_programa" : 1,
+            "nombre_programa" : "Ingeniería de Sistemas"
+          },
+          "objRol" : {
+            "@tipo" : "Rol",
+            "id_rol" : 1,
+            "nombre" : "ESTUDIANTE",
+            "usuarios" : null
+          },
+          "password" : "$2a$hash",
+          "solicitudes" : [ {
+            "@ref" : "$"
+          } ]
+        } ],
+        "fecha_fin" : 1720000000000,
+        "fecha_inicio" : 1700000000000,
+        "grupo" : "GrupoCursoVerano.B",
+        "id_curso" : 4,
+        "objDocente" : {
+          "@tipo" : "Docente",
+          "codigo_docente" : "D06",
+          "id_docente" : 6,
+          "nombre_docente" : "Luis"
+        },
+        "objMateria" : {
+          "@tipo" : "Materia",
+          "codigo" : "MAT1",
+          "creditos" : 4,
+          "id_materia" : 5,
+          "nombre" : "Cálculo"
+        },
+        "periodo_academico" : "2025-1",
+        "salon" : "221",
+        "solicitudes" : [ {
+          "@ref" : "$"
+        } ]
+      },
+      "objUsuario" : {
+        "@ref" : "$.objCursoOfertadoVerano.estudiantesInscritos[0]"
+      },
+      "periodo_academico" : "2025-1",
+      "fecha_expedicion" : null,
+      "fecha_nacimiento" : 1700000000000,
+      "numero_documento" : "987",
+      "tipoDocumento" : "TipoDocumento.CE"
+    },
+    "guardados" : [ {
+      "@tipo" : "SolicitudEcaesEntity",
+      "documentos" : [ {
+        "@tipo" : "DocumentoEntity",
+        "comentario" : "legible",
+        "esValido" : true,
+        "fecha_documento" : 1720000000000,
+        "idUsuarioSubio" : 1,
+        "id_documento" : 3,
+        "nombre" : "carta.pdf",
+        "objSolicitud" : {
+          "@ref" : "$[0]"
+        },
+        "ruta_documento" : "reingreso/carta.pdf"
+      }, {
+        "@tipo" : "DocumentoEntity",
+        "comentario" : null,
+        "esValido" : false,
+        "fecha_documento" : null,
+        "idUsuarioSubio" : null,
+        "id_documento" : 4,
+        "nombre" : null,
+        "objSolicitud" : null,
+        "ruta_documento" : null
+      } ],
+      "estadosSolicitud" : [ {
+        "@tipo" : "EstadoSolicitudEntity",
+        "comentario" : null,
+        "estado_actual" : "Enviada",
+        "fecha_registro_estado" : 1710000000000,
+        "id_estado" : 1,
+        "objSolicitud" : {
+          "@ref" : "$[0]"
+        }
+      }, {
+        "@tipo" : "EstadoSolicitudEntity",
+        "comentario" : "revisar",
+        "estado_actual" : null,
+        "fecha_registro_estado" : null,
+        "id_estado" : 2,
+        "objSolicitud" : null
+      } ],
+      "fecha_ceremonia" : 1700000000000,
+      "fecha_registro_solicitud" : 1710000000000,
+      "id_solicitud" : 7,
+      "nombre_solicitud" : "Solicitud de prueba",
+      "objCursoOfertadoVerano" : {
+        "@tipo" : "CursoOfertadoVeranoEntity",
+        "cupo_estimado" : 20,
+        "estadosCursoOfertados" : [ {
+          "@tipo" : "EstadoCursoOfertadoEntity",
+          "estado_actual" : "Abierto",
+          "fecha_registro_estado" : 1700000000000,
+          "id_estado" : 8,
+          "objCursoOfertadoVerano" : {
+            "@ref" : "$[0].objCursoOfertadoVerano"
+          }
+        }, {
+          "@tipo" : "EstadoCursoOfertadoEntity",
+          "estado_actual" : null,
+          "fecha_registro_estado" : null,
+          "id_estado" : 9,
+          "objCursoOfertadoVerano" : null
+        } ],
+        "estudiantesInscritos" : [ {
+          "@tipo" : "UsuarioEntity",
+          "cedula" : "123",
+          "codigo" : "104",
+          "correo" : "ana@unicauca.edu.co",
+          "cursosOfertadosInscritos" : [ {
+            "@ref" : "$[0].objCursoOfertadoVerano"
+          } ],
+          "estado_usuario" : true,
+          "id_usuario" : 1,
+          "nombre_completo" : "Ana Pérez",
+          "objPrograma" : {
+            "@tipo" : "ProgramaEntity",
+            "codigo" : "SIS",
+            "id_programa" : 1,
+            "nombre_programa" : "Ingeniería de Sistemas",
+            "usuarios" : [ ]
+          },
+          "objRol" : {
+            "@tipo" : "RolEntity",
+            "id_rol" : 1,
+            "nombre" : "ESTUDIANTE",
+            "usuarios" : [ ]
+          },
+          "password" : "$2a$hash",
+          "solicitudes" : [ {
+            "@ref" : "$[0]"
+          } ]
+        } ],
+        "fecha_fin" : 1720000000000,
+        "fecha_inicio" : 1700000000000,
+        "grupo" : "GrupoCursoVeranoEntity.B",
+        "id_curso" : 4,
+        "objDocente" : {
+          "@tipo" : "DocenteEntity",
+          "codigo_docente" : "D06",
+          "id_docente" : 6,
+          "nombre_docente" : "Luis"
+        },
+        "objMateria" : {
+          "@tipo" : "MateriaEntity",
+          "codigo" : "MAT1",
+          "creditos" : 4,
+          "id_materia" : 5,
+          "nombre" : "Cálculo"
+        },
+        "periodo_academico" : "2025-1",
+        "salon" : "221",
+        "solicitudes" : [ {
+          "@ref" : "$[0]"
+        } ]
+      },
+      "objUsuario" : {
+        "@ref" : "$[0].objCursoOfertadoVerano.estudiantesInscritos[0]"
+      },
+      "periodo_academico" : "2025-1",
+      "fecha_expedicion" : null,
+      "fecha_nacimiento" : 1700000000000,
+      "numero_documento" : "987",
+      "tipoDocumento" : "TipoDocumento.CE"
+    } ]
+  },
+  "guardar sin listas" : {
+    "resultado" : {
+      "@tipo" : "SolicitudEcaes",
+      "documentos" : null,
+      "estadosSolicitud" : null,
+      "fecha_ceremonia" : null,
+      "fecha_registro_solicitud" : null,
+      "id_solicitud" : null,
+      "nombre_solicitud" : null,
+      "objCursoOfertadoVerano" : null,
+      "objUsuario" : null,
+      "periodo_academico" : null,
+      "fecha_expedicion" : null,
+      "fecha_nacimiento" : null,
+      "numero_documento" : null,
+      "tipoDocumento" : null
+    },
+    "guardados" : [ {
+      "@tipo" : "SolicitudEcaesEntity",
+      "documentos" : null,
+      "estadosSolicitud" : null,
+      "fecha_ceremonia" : null,
+      "fecha_registro_solicitud" : null,
+      "id_solicitud" : null,
+      "nombre_solicitud" : null,
+      "objCursoOfertadoVerano" : null,
+      "objUsuario" : null,
+      "periodo_academico" : null,
+      "fecha_expedicion" : null,
+      "fecha_nacimiento" : null,
+      "numero_documento" : null,
+      "tipoDocumento" : null
+    } ]
+  },
+  "cambiarEstado" : {
+    "resultado" : null,
+    "guardados" : [ {
+      "@tipo" : "SolicitudEcaesEntity",
+      "documentos" : [ {
+        "@tipo" : "DocumentoEntity",
+        "comentario" : "legible",
+        "esValido" : true,
+        "fecha_documento" : 1720000000000,
+        "idUsuarioSubio" : 1,
+        "id_documento" : 3,
+        "nombre" : "carta.pdf",
+        "objSolicitud" : {
+          "@ref" : "$[0]"
+        },
+        "ruta_documento" : "reingreso/carta.pdf"
+      }, {
+        "@tipo" : "DocumentoEntity",
+        "comentario" : null,
+        "esValido" : false,
+        "fecha_documento" : null,
+        "idUsuarioSubio" : null,
+        "id_documento" : 4,
+        "nombre" : null,
+        "objSolicitud" : null,
+        "ruta_documento" : null
+      } ],
+      "estadosSolicitud" : [ {
+        "@tipo" : "EstadoSolicitudEntity",
+        "comentario" : null,
+        "estado_actual" : "Enviada",
+        "fecha_registro_estado" : 1710000000000,
+        "id_estado" : 1,
+        "objSolicitud" : {
+          "@ref" : "$[0]"
+        }
+      }, {
+        "@tipo" : "EstadoSolicitudEntity",
+        "comentario" : "revisar",
+        "estado_actual" : null,
+        "fecha_registro_estado" : null,
+        "id_estado" : 2,
+        "objSolicitud" : null
+      }, {
+        "@tipo" : "EstadoSolicitudEntity",
+        "comentario" : "ok",
+        "estado_actual" : "PRE_REGISTRADO",
+        "fecha_registro_estado" : 1720000000000,
+        "id_estado" : null,
+        "objSolicitud" : {
+          "@ref" : "$[0]"
+        }
+      } ],
+      "fecha_ceremonia" : 1700000000000,
+      "fecha_registro_solicitud" : 1710000000000,
+      "id_solicitud" : 7,
+      "nombre_solicitud" : "Solicitud de prueba",
+      "objCursoOfertadoVerano" : {
+        "@tipo" : "CursoOfertadoVeranoEntity",
+        "cupo_estimado" : 20,
+        "estadosCursoOfertados" : [ {
+          "@tipo" : "EstadoCursoOfertadoEntity",
+          "estado_actual" : "Abierto",
+          "fecha_registro_estado" : 1700000000000,
+          "id_estado" : 8,
+          "objCursoOfertadoVerano" : {
+            "@ref" : "$[0].objCursoOfertadoVerano"
+          }
+        }, {
+          "@tipo" : "EstadoCursoOfertadoEntity",
+          "estado_actual" : null,
+          "fecha_registro_estado" : null,
+          "id_estado" : 9,
+          "objCursoOfertadoVerano" : null
+        } ],
+        "estudiantesInscritos" : [ {
+          "@tipo" : "UsuarioEntity",
+          "cedula" : "123",
+          "codigo" : "104",
+          "correo" : "ana@unicauca.edu.co",
+          "cursosOfertadosInscritos" : [ {
+            "@ref" : "$[0].objCursoOfertadoVerano"
+          } ],
+          "estado_usuario" : true,
+          "id_usuario" : 1,
+          "nombre_completo" : "Ana Pérez",
+          "objPrograma" : {
+            "@tipo" : "ProgramaEntity",
+            "codigo" : "SIS",
+            "id_programa" : 1,
+            "nombre_programa" : "Ingeniería de Sistemas",
+            "usuarios" : [ {
+              "@ref" : "$[0].objCursoOfertadoVerano.estudiantesInscritos[0]"
+            } ]
+          },
+          "objRol" : {
+            "@tipo" : "RolEntity",
+            "id_rol" : 1,
+            "nombre" : "ESTUDIANTE",
+            "usuarios" : [ {
+              "@ref" : "$[0].objCursoOfertadoVerano.estudiantesInscritos[0]"
+            } ]
+          },
+          "password" : "$2a$hash",
+          "solicitudes" : [ {
+            "@ref" : "$[0]"
+          } ]
+        } ],
+        "fecha_fin" : 1720000000000,
+        "fecha_inicio" : 1700000000000,
+        "grupo" : "GrupoCursoVeranoEntity.B",
+        "id_curso" : 4,
+        "objDocente" : {
+          "@tipo" : "DocenteEntity",
+          "codigo_docente" : "D06",
+          "id_docente" : 6,
+          "nombre_docente" : "Luis"
+        },
+        "objMateria" : {
+          "@tipo" : "MateriaEntity",
+          "codigo" : "MAT1",
+          "creditos" : 4,
+          "id_materia" : 5,
+          "nombre" : "Cálculo"
+        },
+        "periodo_academico" : "2025-1",
+        "salon" : "221",
+        "solicitudes" : [ {
+          "@ref" : "$[0]"
+        } ]
+      },
+      "objUsuario" : {
+        "@ref" : "$[0].objCursoOfertadoVerano.estudiantesInscritos[0]"
+      },
+      "periodo_academico" : "2025-1",
+      "fecha_expedicion" : 1710000000000,
+      "fecha_nacimiento" : null,
+      "numero_documento" : "123",
+      "tipoDocumento" : "TipoDocumento.CC"
+    } ]
+  },
+  "cambiarEstado sin estado" : {
+    "resultado" : null,
+    "guardados" : [ {
+      "@tipo" : "SolicitudEcaesEntity",
+      "documentos" : [ {
+        "@tipo" : "DocumentoEntity",
+        "comentario" : "legible",
+        "esValido" : true,
+        "fecha_documento" : 1720000000000,
+        "idUsuarioSubio" : 1,
+        "id_documento" : 3,
+        "nombre" : "carta.pdf",
+        "objSolicitud" : {
+          "@ref" : "$[0]"
+        },
+        "ruta_documento" : "reingreso/carta.pdf"
+      }, {
+        "@tipo" : "DocumentoEntity",
+        "comentario" : null,
+        "esValido" : false,
+        "fecha_documento" : null,
+        "idUsuarioSubio" : null,
+        "id_documento" : 4,
+        "nombre" : null,
+        "objSolicitud" : null,
+        "ruta_documento" : null
+      } ],
+      "estadosSolicitud" : [ {
+        "@tipo" : "EstadoSolicitudEntity",
+        "comentario" : null,
+        "estado_actual" : "Enviada",
+        "fecha_registro_estado" : 1710000000000,
+        "id_estado" : 1,
+        "objSolicitud" : {
+          "@ref" : "$[0]"
+        }
+      }, {
+        "@tipo" : "EstadoSolicitudEntity",
+        "comentario" : "revisar",
+        "estado_actual" : null,
+        "fecha_registro_estado" : null,
+        "id_estado" : 2,
+        "objSolicitud" : null
+      }, {
+        "@tipo" : "EstadoSolicitudEntity",
+        "comentario" : null,
+        "estado_actual" : null,
+        "fecha_registro_estado" : null,
+        "id_estado" : null,
+        "objSolicitud" : {
+          "@ref" : "$[0]"
+        }
+      } ],
+      "fecha_ceremonia" : 1700000000000,
+      "fecha_registro_solicitud" : 1710000000000,
+      "id_solicitud" : 7,
+      "nombre_solicitud" : "Solicitud de prueba",
+      "objCursoOfertadoVerano" : {
+        "@tipo" : "CursoOfertadoVeranoEntity",
+        "cupo_estimado" : 20,
+        "estadosCursoOfertados" : [ {
+          "@tipo" : "EstadoCursoOfertadoEntity",
+          "estado_actual" : "Abierto",
+          "fecha_registro_estado" : 1700000000000,
+          "id_estado" : 8,
+          "objCursoOfertadoVerano" : {
+            "@ref" : "$[0].objCursoOfertadoVerano"
+          }
+        }, {
+          "@tipo" : "EstadoCursoOfertadoEntity",
+          "estado_actual" : null,
+          "fecha_registro_estado" : null,
+          "id_estado" : 9,
+          "objCursoOfertadoVerano" : null
+        } ],
+        "estudiantesInscritos" : [ {
+          "@tipo" : "UsuarioEntity",
+          "cedula" : "123",
+          "codigo" : "104",
+          "correo" : "ana@unicauca.edu.co",
+          "cursosOfertadosInscritos" : [ {
+            "@ref" : "$[0].objCursoOfertadoVerano"
+          } ],
+          "estado_usuario" : true,
+          "id_usuario" : 1,
+          "nombre_completo" : "Ana Pérez",
+          "objPrograma" : {
+            "@tipo" : "ProgramaEntity",
+            "codigo" : "SIS",
+            "id_programa" : 1,
+            "nombre_programa" : "Ingeniería de Sistemas",
+            "usuarios" : [ {
+              "@ref" : "$[0].objCursoOfertadoVerano.estudiantesInscritos[0]"
+            } ]
+          },
+          "objRol" : {
+            "@tipo" : "RolEntity",
+            "id_rol" : 1,
+            "nombre" : "ESTUDIANTE",
+            "usuarios" : [ {
+              "@ref" : "$[0].objCursoOfertadoVerano.estudiantesInscritos[0]"
+            } ]
+          },
+          "password" : "$2a$hash",
+          "solicitudes" : [ {
+            "@ref" : "$[0]"
+          } ]
+        } ],
+        "fecha_fin" : 1720000000000,
+        "fecha_inicio" : 1700000000000,
+        "grupo" : "GrupoCursoVeranoEntity.B",
+        "id_curso" : 4,
+        "objDocente" : {
+          "@tipo" : "DocenteEntity",
+          "codigo_docente" : "D06",
+          "id_docente" : 6,
+          "nombre_docente" : "Luis"
+        },
+        "objMateria" : {
+          "@tipo" : "MateriaEntity",
+          "codigo" : "MAT1",
+          "creditos" : 4,
+          "id_materia" : 5,
+          "nombre" : "Cálculo"
+        },
+        "periodo_academico" : "2025-1",
+        "salon" : "221",
+        "solicitudes" : [ {
+          "@ref" : "$[0]"
+        } ]
+      },
+      "objUsuario" : {
+        "@ref" : "$[0].objCursoOfertadoVerano.estudiantesInscritos[0]"
+      },
+      "periodo_academico" : "2025-1",
+      "fecha_expedicion" : 1710000000000,
+      "fecha_nacimiento" : null,
+      "numero_documento" : "123",
+      "tipoDocumento" : "TipoDocumento.CC"
+    } ]
+  },
+  "listarFechasEcaes" : [ {
+    "@tipo" : "FechaEcaes",
+    "aplicacion" : null,
+    "citacion" : "2025-03-01",
+    "idFechaEcaes" : 3,
+    "inscripcion_est_by_facultad" : "2025-02-01",
+    "periodoAcademico" : "2025-1",
+    "registro_recaudo_extraordinario" : null,
+    "registro_recaudo_ordinario" : null,
+    "resultados_individuales" : null
+  }, {
+    "@tipo" : "FechaEcaes",
+    "aplicacion" : null,
+    "citacion" : null,
+    "idFechaEcaes" : null,
+    "inscripcion_est_by_facultad" : null,
+    "periodoAcademico" : null,
+    "registro_recaudo_extraordinario" : null,
+    "registro_recaudo_ordinario" : null,
+    "resultados_individuales" : null
+  } ],
+  "buscarFechasPorPeriodo" : {
+    "@optional" : {
+      "@tipo" : "FechaEcaes",
+      "aplicacion" : null,
+      "citacion" : "2025-03-01",
+      "idFechaEcaes" : 3,
+      "inscripcion_est_by_facultad" : "2025-02-01",
+      "periodoAcademico" : "2025-1",
+      "registro_recaudo_extraordinario" : null,
+      "registro_recaudo_ordinario" : null,
+      "resultados_individuales" : null
+    }
+  },
+  "publicarFechasEcaes" : {
+    "resultado" : {
+      "@tipo" : "FechaEcaes",
+      "aplicacion" : "2026-04-01",
+      "citacion" : null,
+      "idFechaEcaes" : null,
+      "inscripcion_est_by_facultad" : "2026-02-01",
+      "periodoAcademico" : "2026-1",
+      "registro_recaudo_extraordinario" : "2026-02-20",
+      "registro_recaudo_ordinario" : null,
+      "resultados_individuales" : null
+    },
+    "guardados" : [ {
+      "@tipo" : "FechaEcaesEntity",
+      "aplicacion" : "2026-04-01",
+      "citacion" : null,
+      "id_fecha_ecaes" : null,
+      "inscripcion_est_by_facultad" : "2026-02-01",
+      "periodoAcademico" : "2026-1",
+      "registro_recaudo_extraordinario" : "2026-02-20",
+      "registro_recaudo_ordinario" : null,
+      "resultados_individuales" : null
+    } ]
+  },
+  "publicarFechasEcaes vacias" : {
+    "resultado" : {
+      "@tipo" : "FechaEcaes",
+      "aplicacion" : null,
+      "citacion" : null,
+      "idFechaEcaes" : null,
+      "inscripcion_est_by_facultad" : null,
+      "periodoAcademico" : null,
+      "registro_recaudo_extraordinario" : null,
+      "registro_recaudo_ordinario" : null,
+      "resultados_individuales" : null
+    },
+    "guardados" : [ {
+      "@tipo" : "FechaEcaesEntity",
+      "aplicacion" : null,
+      "citacion" : null,
+      "id_fecha_ecaes" : null,
+      "inscripcion_est_by_facultad" : null,
+      "periodoAcademico" : null,
+      "registro_recaudo_extraordinario" : null,
+      "registro_recaudo_ordinario" : null,
+      "resultados_individuales" : null
+    } ]
+  },
+  "actualizarFechasEcaes existente" : {
+    "resultado" : {
+      "@tipo" : "FechaEcaes",
+      "aplicacion" : null,
+      "citacion" : null,
+      "idFechaEcaes" : 3,
+      "inscripcion_est_by_facultad" : null,
+      "periodoAcademico" : "2025-1",
+      "registro_recaudo_extraordinario" : null,
+      "registro_recaudo_ordinario" : "2025-02-05",
+      "resultados_individuales" : null
+    },
+    "guardados" : [ {
+      "@tipo" : "FechaEcaesEntity",
+      "aplicacion" : null,
+      "citacion" : null,
+      "id_fecha_ecaes" : 3,
+      "inscripcion_est_by_facultad" : null,
+      "periodoAcademico" : "2025-1",
+      "registro_recaudo_extraordinario" : null,
+      "registro_recaudo_ordinario" : "2025-02-05",
+      "resultados_individuales" : null
+    } ]
+  },
+  "actualizarFechasEcaes nueva" : {
+    "resultado" : {
+      "@tipo" : "FechaEcaes",
+      "aplicacion" : "2026-04-01",
+      "citacion" : null,
+      "idFechaEcaes" : null,
+      "inscripcion_est_by_facultad" : "2026-02-01",
+      "periodoAcademico" : "2026-1",
+      "registro_recaudo_extraordinario" : "2026-02-20",
+      "registro_recaudo_ordinario" : null,
+      "resultados_individuales" : null
+    },
+    "guardados" : [ {
+      "@tipo" : "FechaEcaesEntity",
+      "aplicacion" : "2026-04-01",
+      "citacion" : null,
+      "id_fecha_ecaes" : null,
+      "inscripcion_est_by_facultad" : "2026-02-01",
+      "periodoAcademico" : "2026-1",
+      "registro_recaudo_extraordinario" : "2026-02-20",
+      "registro_recaudo_ordinario" : null,
+      "resultados_individuales" : null
+    } ]
+  }
+}
