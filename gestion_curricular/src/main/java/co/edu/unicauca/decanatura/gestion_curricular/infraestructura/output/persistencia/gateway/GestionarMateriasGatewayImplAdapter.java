@@ -3,13 +3,13 @@ package co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.per
 import java.util.List;
 import java.util.Optional;
 
-import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.GestionarMateriasIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Materia;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.entidades.MateriaEntity;
+import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.mappers.CatalogosMapperPersistencia;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.repositorios.CursoOfertadoVeranoRepositoryInt;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.repositorios.MateriaRepositoryInt;
 
@@ -20,14 +20,11 @@ public class GestionarMateriasGatewayImplAdapter implements GestionarMateriasInt
 
     private final MateriaRepositoryInt materiaRepository;
     private final CursoOfertadoVeranoRepositoryInt cursoOfertadoRepository;
-    private final ModelMapper materiasMapper;
 
     public GestionarMateriasGatewayImplAdapter(MateriaRepositoryInt materiaRepository, 
-                                                CursoOfertadoVeranoRepositoryInt cursoOfertadoRepository,
-                                                ModelMapper materiasMapper) {
+                                                CursoOfertadoVeranoRepositoryInt cursoOfertadoRepository) {
         this.materiaRepository = materiaRepository;
         this.cursoOfertadoRepository = cursoOfertadoRepository;
-        this.materiasMapper = materiasMapper;
     }
     
 
@@ -36,7 +33,7 @@ public class GestionarMateriasGatewayImplAdapter implements GestionarMateriasInt
     public Materia obtenerMateriaPorId(Integer idMateria) {
         Optional<MateriaEntity> materiaEntity = materiaRepository.findById(idMateria);
         if (materiaEntity.isPresent()) {
-            return materiasMapper.map(materiaEntity.get(), Materia.class);
+            return CatalogosMapperPersistencia.aDominio(materiaEntity.get());
         }
         return null;
     }
@@ -48,7 +45,7 @@ public class GestionarMateriasGatewayImplAdapter implements GestionarMateriasInt
         List<MateriaEntity> materiasEntity = materiaRepository.findAll();
         if (materiasEntity != null) {
             materiasRetornar = materiasEntity.stream().map(materiaEntity ->{
-                return this.materiasMapper.map(materiaEntity, Materia.class);
+                return CatalogosMapperPersistencia.aDominio(materiaEntity);
             }).toList();
         }
         return materiasRetornar;

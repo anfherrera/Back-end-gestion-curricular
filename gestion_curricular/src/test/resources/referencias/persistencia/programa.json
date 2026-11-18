@@ -1,0 +1,102 @@
+{
+  "buscarPorIdPrograma 1" : {
+    "@tipo" : "Programa",
+    "codigo" : "SIS",
+    "id_programa" : 1,
+    "nombre_programa" : "Ingeniería de Sistemas"
+  },
+  "buscarPorIdPrograma 2" : {
+    "@tipo" : "Programa",
+    "codigo" : null,
+    "id_programa" : null,
+    "nombre_programa" : null
+  },
+  "buscarPorIdPrograma 3" : null,
+  "obtenerProgramaPorId 1" : {
+    "@tipo" : "Programa",
+    "codigo" : "SIS",
+    "id_programa" : 1,
+    "nombre_programa" : "Ingeniería de Sistemas"
+  },
+  "obtenerProgramaPorId 3" : null,
+  "obtenerProgramaPorCodigo" : {
+    "@tipo" : "Programa",
+    "codigo" : "SIS",
+    "id_programa" : 1,
+    "nombre_programa" : "Ingeniería de Sistemas"
+  },
+  "buscarPorNombreParcial" : [ {
+    "@tipo" : "Programa",
+    "codigo" : "SIS",
+    "id_programa" : 1,
+    "nombre_programa" : "Ingeniería de Sistemas"
+  }, {
+    "@tipo" : "Programa",
+    "codigo" : null,
+    "id_programa" : null,
+    "nombre_programa" : null
+  } ],
+  "listarProgramas" : [ {
+    "@tipo" : "Programa",
+    "codigo" : null,
+    "id_programa" : null,
+    "nombre_programa" : null
+  }, {
+    "@tipo" : "Programa",
+    "codigo" : "SIS",
+    "id_programa" : 1,
+    "nombre_programa" : "Ingeniería de Sistemas"
+  } ],
+  "guardarPrograma completo" : {
+    "resultado" : {
+      "@tipo" : "Programa",
+      "codigo" : "ELE",
+      "id_programa" : 7,
+      "nombre_programa" : "Electrónica"
+    },
+    "guardados" : [ {
+      "@tipo" : "ProgramaEntity",
+      "codigo" : "ELE",
+      "id_programa" : 7,
+      "nombre_programa" : "Electrónica",
+      "usuarios" : [ ]
+    } ]
+  },
+  "guardarPrograma nulos" : {
+    "resultado" : {
+      "@tipo" : "Programa",
+      "codigo" : null,
+      "id_programa" : null,
+      "nombre_programa" : null
+    },
+    "guardados" : [ {
+      "@tipo" : "ProgramaEntity",
+      "codigo" : null,
+      "id_programa" : null,
+      "nombre_programa" : null,
+      "usuarios" : [ ]
+    } ]
+  },
+  "actualizarPrograma" : {
+    "resultado" : {
+      "@tipo" : "Programa",
+      "codigo" : null,
+      "id_programa" : 1,
+      "nombre_programa" : "Sistemas"
+    },
+    "guardados" : [ {
+      "@tipo" : "ProgramaEntity",
+      "codigo" : null,
+      "id_programa" : 1,
+      "nombre_programa" : "Sistemas",
+      "usuarios" : [ ]
+    } ]
+  },
+  "actualizarPrograma inexistente" : {
+    "resultado" : {
+      "excepcion" : "java.lang.RuntimeException",
+      "mensaje" : "Programa no encontrado con ID: 3"
+    },
+    "guardados" : [ ]
+  }
+}

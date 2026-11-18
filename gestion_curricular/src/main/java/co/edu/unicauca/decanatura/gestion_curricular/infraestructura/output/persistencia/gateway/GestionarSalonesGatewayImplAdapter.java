@@ -4,13 +4,13 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.GestionarSalonesIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Salon;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.entidades.SalonEntity;
+import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.mappers.CatalogosMapperPersistencia;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.repositorios.SalonRepositoryInt;
 
 @Service
@@ -18,12 +18,9 @@ import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.pers
 public class GestionarSalonesGatewayImplAdapter implements GestionarSalonesIntPort {
 
     private final SalonRepositoryInt salonRepository;
-    private final ModelMapper salonMapper;
 
-    public GestionarSalonesGatewayImplAdapter(SalonRepositoryInt salonRepository, 
-                                              ModelMapper salonMapper) {
+    public GestionarSalonesGatewayImplAdapter(SalonRepositoryInt salonRepository) {
         this.salonRepository = salonRepository;
-        this.salonMapper = salonMapper;
     }
     
     @Override
@@ -31,7 +28,7 @@ public class GestionarSalonesGatewayImplAdapter implements GestionarSalonesIntPo
     public Salon obtenerSalonPorId(Integer idSalon) {
         Optional<SalonEntity> salonEntity = salonRepository.findById(idSalon);
         if (salonEntity.isPresent()) {
-            return salonMapper.map(salonEntity.get(), Salon.class);
+            return CatalogosMapperPersistencia.aDominio(salonEntity.get());
         }
         return null;
     }
@@ -41,7 +38,7 @@ public class GestionarSalonesGatewayImplAdapter implements GestionarSalonesIntPo
     public Salon obtenerSalonPorNumero(String numeroSalon) {
         Optional<SalonEntity> salonEntity = salonRepository.buscarPorNumero(numeroSalon);
         if (salonEntity.isPresent()) {
-            return salonMapper.map(salonEntity.get(), Salon.class);
+            return CatalogosMapperPersistencia.aDominio(salonEntity.get());
         }
         return null;
     }
@@ -50,7 +47,7 @@ public class GestionarSalonesGatewayImplAdapter implements GestionarSalonesIntPo
     @Transactional(readOnly = true)
     public List<Salon> listarSalonesActivos() {
         return salonRepository.listarSalonesActivos().stream()
-                .map(entity -> salonMapper.map(entity, Salon.class))
+                .map(entity -> CatalogosMapperPersistencia.aDominio(entity))
                 .collect(Collectors.toList());
     }
 

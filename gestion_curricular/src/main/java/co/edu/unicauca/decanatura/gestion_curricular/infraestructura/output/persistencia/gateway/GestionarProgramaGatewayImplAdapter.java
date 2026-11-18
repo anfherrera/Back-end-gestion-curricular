@@ -3,13 +3,13 @@ package co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.per
 import java.util.List;
 import java.util.Optional;
 
-import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.GestionarProgramaGatewayIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Programa;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.entidades.ProgramaEntity;
+import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.mappers.CatalogosMapperPersistencia;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.repositorios.ProgramaRepositoryInt;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.repositorios.UsuarioRepositoryInt;
 
@@ -19,14 +19,11 @@ public class GestionarProgramaGatewayImplAdapter implements GestionarProgramaGat
 
     private final ProgramaRepositoryInt programaRepository;
     private final UsuarioRepositoryInt usuarioRepository;
-    private final ModelMapper programaMapper;
 
     public GestionarProgramaGatewayImplAdapter(ProgramaRepositoryInt programaRepository, 
-                                                UsuarioRepositoryInt usuarioRepository,
-                                                ModelMapper programaMapper) {
+                                                UsuarioRepositoryInt usuarioRepository) {
         this.programaRepository = programaRepository;
         this.usuarioRepository = usuarioRepository;
-        this.programaMapper = programaMapper;
     }
 
     // Método original (compatibilidad)
@@ -34,7 +31,7 @@ public class GestionarProgramaGatewayImplAdapter implements GestionarProgramaGat
     @Transactional(readOnly = true)
     public Programa buscarPorIdPrograma(Integer idPrograma) {
         return programaRepository.findById(idPrograma)
-                .map(programaEntity -> programaMapper.map(programaEntity, Programa.class))
+                .map(programaEntity -> CatalogosMapperPersistencia.aDominio(programaEntity))
                 .orElse(null);
     }
     
@@ -42,9 +39,9 @@ public class GestionarProgramaGatewayImplAdapter implements GestionarProgramaGat
     @Override
     @Transactional
     public Programa guardarPrograma(Programa programa) {
-        ProgramaEntity programaEntity = programaMapper.map(programa, ProgramaEntity.class);
+        ProgramaEntity programaEntity = CatalogosMapperPersistencia.aEntidad(programa);
         ProgramaEntity savedEntity = programaRepository.save(programaEntity);
-        return programaMapper.map(savedEntity, Programa.class);
+        return CatalogosMapperPersistencia.aDominio(savedEntity);
     }
     
     @Override
@@ -53,9 +50,9 @@ public class GestionarProgramaGatewayImplAdapter implements GestionarProgramaGat
         programaRepository.findById(programa.getId_programa())
             .orElseThrow(() -> new RuntimeException("Programa no encontrado con ID: " + programa.getId_programa()));
 
-        ProgramaEntity programaEntity = programaMapper.map(programa, ProgramaEntity.class);
+        ProgramaEntity programaEntity = CatalogosMapperPersistencia.aEntidad(programa);
         ProgramaEntity savedEntity = programaRepository.save(programaEntity);
-        return programaMapper.map(savedEntity, Programa.class);
+        return CatalogosMapperPersistencia.aDominio(savedEntity);
     }
 
     @Override
@@ -75,7 +72,7 @@ public class GestionarProgramaGatewayImplAdapter implements GestionarProgramaGat
     public Programa obtenerProgramaPorId(Integer idPrograma) {
         Optional<ProgramaEntity> programaEntity = programaRepository.findById(idPrograma);
         if (programaEntity.isPresent()) {
-            return programaMapper.map(programaEntity.get(), Programa.class);
+            return CatalogosMapperPersistencia.aDominio(programaEntity.get());
         }
         return null;
     }
@@ -86,7 +83,7 @@ public class GestionarProgramaGatewayImplAdapter implements GestionarProgramaGat
         Programa programaRetornar = null;
         Optional<ProgramaEntity> programaEntity = programaRepository.buscarPorCodigo(codigo);
         if (programaEntity.isPresent()) {
-            programaRetornar = programaMapper.map(programaEntity.get(), Programa.class);
+            programaRetornar = CatalogosMapperPersistencia.aDominio(programaEntity.get());
         }
         return programaRetornar;
     }
@@ -98,7 +95,7 @@ public class GestionarProgramaGatewayImplAdapter implements GestionarProgramaGat
         List<ProgramaEntity> programasEntity = programaRepository.buscarPorNombreParcial(nombreParcial);
         if (programasEntity != null) {
             programasRetornar = programasEntity.stream().map(programaEntity -> {
-                return this.programaMapper.map(programaEntity, Programa.class);
+                return CatalogosMapperPersistencia.aDominio(programaEntity);
             }).toList();
         }
         return programasRetornar;
@@ -111,7 +108,7 @@ public class GestionarProgramaGatewayImplAdapter implements GestionarProgramaGat
         List<ProgramaEntity> programasEntity = programaRepository.findAll();
         if (programasEntity != null) {
             programasRetornar = programasEntity.stream().map(programaEntity -> {
-                return this.programaMapper.map(programaEntity, Programa.class);
+                return CatalogosMapperPersistencia.aDominio(programaEntity);
             }).toList();
         }
         return programasRetornar;
