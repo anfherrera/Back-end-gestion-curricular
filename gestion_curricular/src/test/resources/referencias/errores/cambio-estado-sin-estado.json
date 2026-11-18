@@ -1,0 +1,116 @@
+{
+  "/api/solicitudes-ecaes/actualizarEstadoSolicitud" : {
+    "sin clave" : {
+      "status" : 400,
+      "body" : {
+        "estadoActual" : "ENVIADA",
+        "codigo" : "TRANSICION_NO_PERMITIDA",
+        "error" : "No se puede pasar de ENVIADA a ENVIADA. Desde ENVIADA solo se permite: [PRE_REGISTRADO, RECHAZADA]"
+      },
+      "claves" : [ "estadoActual", "codigo", "error" ]
+    },
+    "null" : {
+      "status" : 400,
+      "body" : {
+        "estadoActual" : "ENVIADA",
+        "codigo" : "TRANSICION_NO_PERMITIDA",
+        "error" : "No se puede pasar de ENVIADA a ENVIADA. Desde ENVIADA solo se permite: [PRE_REGISTRADO, RECHAZADA]"
+      },
+      "claves" : [ "estadoActual", "codigo", "error" ]
+    },
+    "vacio" : {
+      "status" : 400,
+      "body" : {
+        "estadoActual" : "ENVIADA",
+        "codigo" : "TRANSICION_NO_PERMITIDA",
+        "error" : "No se puede pasar de ENVIADA a ENVIADA. Desde ENVIADA solo se permite: [PRE_REGISTRADO, RECHAZADA]"
+      },
+      "claves" : [ "estadoActual", "codigo", "error" ]
+    },
+    "espacios" : {
+      "status" : 400,
+      "body" : {
+        "estadoActual" : "ENVIADA",
+        "codigo" : "TRANSICION_NO_PERMITIDA",
+        "error" : "No se puede pasar de ENVIADA a ENVIADA. Desde ENVIADA solo se permite: [PRE_REGISTRADO, RECHAZADA]"
+      },
+      "claves" : [ "estadoActual", "codigo", "error" ]
+    }
+  },
+  "/api/solicitudes-homologacion/actualizarEstadoSolicitud" : {
+    "sin clave" : {
+      "status" : 400,
+      "body" : {
+        "estadoActual" : "ENVIADA",
+        "codigo" : "TRANSICION_NO_PERMITIDA",
+        "error" : "No se puede pasar de ENVIADA a ENVIADA. Desde ENVIADA solo se permite: [APROBADA_FUNCIONARIO, RECHAZADA]"
+      },
+      "claves" : [ "estadoActual", "codigo", "error" ]
+    },
+    "null" : {
+      "status" : 400,
+      "body" : {
+        "estadoActual" : "ENVIADA",
+        "codigo" : "TRANSICION_NO_PERMITIDA",
+        "error" : "No se puede pasar de ENVIADA a ENVIADA. Desde ENVIADA solo se permite: [APROBADA_FUNCIONARIO, RECHAZADA]"
+      },
+      "claves" : [ "estadoActual", "codigo", "error" ]
+    },
+    "vacio" : {
+      "status" : 400,
+      "body" : {
+        "estadoActual" : "ENVIADA",
+        "codigo" : "TRANSICION_NO_PERMITIDA",
+        "error" : "No se puede pasar de ENVIADA a ENVIADA. Desde ENVIADA solo se permite: [APROBADA_FUNCIONARIO, RECHAZADA]"
+      },
+      "claves" : [ "estadoActual", "codigo", "error" ]
+    },
+    "espacios" : {
+      "status" : 400,
+      "body" : {
+        "estadoActual" : "ENVIADA",
+        "codigo" : "TRANSICION_NO_PERMITIDA",
+        "error" : "No se puede pasar de ENVIADA a ENVIADA. Desde ENVIADA solo se permite: [APROBADA_FUNCIONARIO, RECHAZADA]"
+      },
+      "claves" : [ "estadoActual", "codigo", "error" ]
+    }
+  },
+  "/api/solicitudes-reingreso/actualizarEstadoSolicitud-Reingreso" : {
+    "sin clave" : {
+      "status" : 400,
+      "body" : {
+        "estadoActual" : "ENVIADA",
+        "codigo" : "TRANSICION_NO_PERMITIDA",
+        "error" : "No se puede pasar de ENVIADA a ENVIADA. Desde ENVIADA solo se permite: [APROBADA_FUNCIONARIO, RECHAZADA]"
+      },
+      "claves" : [ "estadoActual", "codigo", "error" ]
+    },
+    "null" : {
+      "status" : 400,
+      "body" : {
+        "estadoActual" : "ENVIADA",
+        "codigo" : "TRANSICION_NO_PERMITIDA",
+        "error" : "No se puede pasar de ENVIADA a ENVIADA. Desde ENVIADA solo se permite: [APROBADA_FUNCIONARIO, RECHAZADA]"
+      },
+      "claves" : [ "estadoActual", "codigo", "error" ]
+    },
+    "vacio" : {
+      "status" : 400,
+      "body" : {
+        "estadoActual" : "ENVIADA",
+        "codigo" : "TRANSICION_NO_PERMITIDA",
+        "error" : "No se puede pasar de ENVIADA a ENVIADA. Desde ENVIADA solo se permite: [APROBADA_FUNCIONARIO, RECHAZADA]"
+      },
+      "claves" : [ "estadoActual", "codigo", "error" ]
+    },
+    "espacios" : {
+      "status" : 400,
+      "body" : {
+        "estadoActual" : "ENVIADA",
+        "codigo" : "TRANSICION_NO_PERMITIDA",
+        "error" : "No se puede pasar de ENVIADA a ENVIADA. Desde ENVIADA solo se permite: [APROBADA_FUNCIONARIO, RECHAZADA]"
+      },
+      "claves" : [ "estadoActual", "codigo", "error" ]
+    }
+  }
+}

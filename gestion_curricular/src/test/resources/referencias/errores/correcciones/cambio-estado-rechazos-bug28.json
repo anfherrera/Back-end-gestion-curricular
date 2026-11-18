@@ -1,0 +1,5 @@
+{
+  "/~1api~1solicitudes-ecaes~1actualizarEstadoSolicitud/ENVIADA -> null como Funcionario" : { "status" : 400, "body" : { "estadoActual" : "ENVIADA", "codigo" : "ESTADO_REQUERIDO", "error" : "El nuevo estado es requerido" }, "claves" : [ "estadoActual", "codigo", "error" ] },
+  "/~1api~1solicitudes-homologacion~1actualizarEstadoSolicitud/ENVIADA -> null como Funcionario" : { "status" : 400, "body" : { "estadoActual" : "ENVIADA", "codigo" : "ESTADO_REQUERIDO", "error" : "El nuevo estado es requerido" }, "claves" : [ "estadoActual", "codigo", "error" ] },
+  "/~1api~1solicitudes-reingreso~1actualizarEstadoSolicitud-Reingreso/ENVIADA -> null como Funcionario" : { "status" : 400, "body" : { "estadoActual" : "ENVIADA", "codigo" : "ESTADO_REQUERIDO", "error" : "El nuevo estado es requerido" }, "claves" : [ "estadoActual", "codigo", "error" ] }
+}

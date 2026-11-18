@@ -22,10 +22,15 @@ public class ValidadorCambioEstado {
     private final Autorizacion autorizacion;
 
     /**
-     * @return null si el cambio está permitido; si no, 400 (paso no permitido) o 403 (rol incorrecto)
+     * @return null si el cambio está permitido; si no, 400 (sin estado nuevo o paso no permitido) o 403 (rol
+     *         incorrecto)
      */
     public ResponseEntity<RechazoCambioEstadoDTORespuesta> validar(FlujoEstadosSolicitud flujo, String estadoActual,
             String nuevoEstado) {
+        if (nuevoEstado == null || nuevoEstado.isBlank()) {
+            return error(HttpStatus.BAD_REQUEST, "El nuevo estado es requerido", "ESTADO_REQUERIDO", flujo,
+                    estadoActual);
+        }
         String rolResponsable;
         try {
             rolResponsable = flujo.validarYObtenerRolResponsable(estadoActual, nuevoEstado);

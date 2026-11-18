@@ -39,6 +39,7 @@ import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.excep
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.mappers.SolicitudMapperDominioImpl;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.validacion.ValidadorCambioEstado;
 import co.edu.unicauca.decanatura.gestion_curricular.seguridad.Autorizacion;
+import co.edu.unicauca.decanatura.gestion_curricular.soporte.Correcciones;
 
 /**
  * Fija las respuestas de los cambios de estado de ECAES, Homologación y Reingreso antes de tipar
@@ -123,7 +124,9 @@ class CambioEstadoRechazosCaracterizacionTest {
         if (Boolean.getBoolean("grabarReferencia") && Files.notExists(referencia)) {
             Files.writeString(referencia, json.writerWithDefaultPrettyPrinter().writeValueAsString(resultados));
         }
-        assertThat(resultados).isEqualTo(json.readTree(Files.readString(referencia)));
+        // BUG-28: sin nuevoEstado, 400 ESTADO_REQUERIDO en lugar de validarlo como un paso a ENVIADA
+        assertThat(resultados).isEqualTo(Correcciones.aplicar(json.readTree(Files.readString(referencia)),
+            "errores/correcciones/cambio-estado-rechazos-bug28.json"));
     }
 
     private <T extends Solicitud> T conEstado(Supplier<T> nueva) {
