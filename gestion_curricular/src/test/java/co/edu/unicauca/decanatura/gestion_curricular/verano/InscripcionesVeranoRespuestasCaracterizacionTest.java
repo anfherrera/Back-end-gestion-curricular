@@ -195,6 +195,8 @@ class InscripcionesVeranoRespuestasCaracterizacionTest {
             "verano-endpoints/correcciones/inscripciones-respuestas-bug23.json");
         // BUG-34: documentos_count siempre numérico y archivo_pago admite valores null
         esperado = Correcciones.aplicar(esperado, "verano-endpoints/correcciones/inscripciones-respuestas-bug34.json");
+        // BUG-35: los elegibles llevan su comprobante real (o null) y los incompletos aparecen con datos null
+        esperado = Correcciones.aplicar(esperado, "verano-endpoints/correcciones/inscripciones-respuestas-bug35.json");
         assertThat(resultados).isEqualTo(esperado);
     }
 
@@ -266,6 +268,7 @@ class InscripcionesVeranoRespuestasCaracterizacionTest {
         }
         SolicitudCursoVeranoInscripcion normal = inscripcion(30, "Enviada");
         normal.setCodicion_solicitud(CondicionSolicitudVerano.Primera_Vez);
+        normal.getDocumentos().add(documento(70, "comprobante.pdf", "/r/comprobante.pdf", true));
         lista.add(normal);
         lista.add(inscripcion(31, "Pago_Validado"));
         lista.add(inscripcion(32, null));

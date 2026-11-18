@@ -19,6 +19,7 @@ import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarA
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarCursoOfertadoVeranoCUIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarSolicitudCUIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarSolicitudCursoVeranoCUIntPort;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.CursoOfertadoVerano;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Documento;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Solicitud;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.SolicitudCursoVeranoInscripcion;
@@ -32,6 +33,7 @@ import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.dto.p
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.dto.respuesta.InscripcionesVeranoDTORespuesta.ArchivoPagoInfo;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.dto.respuesta.InscripcionesVeranoDTORespuesta.ArchivoSimulado;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.dto.respuesta.InscripcionesVeranoDTORespuesta.CancelacionRechazada;
+import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.dto.respuesta.InscripcionesVeranoDTORespuesta.ComprobantePago;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.dto.respuesta.InscripcionesVeranoDTORespuesta.ConfirmacionSimulada;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.dto.respuesta.InscripcionesVeranoDTORespuesta.DocumentoInfo;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.dto.respuesta.InscripcionesVeranoDTORespuesta.ErrorInscripcion;
@@ -47,7 +49,6 @@ import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.dto.r
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.dto.respuesta.InscripcionesVeranoDTORespuesta.InscripcionRechazadaPorFuncionario;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.dto.respuesta.InscripcionesVeranoDTORespuesta.InscripcionSimulada;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.dto.respuesta.InscripcionesVeranoDTORespuesta.NombreCurso;
-import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.dto.respuesta.InscripcionesVeranoDTORespuesta.PagoSupuesto;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.excepciones.ErroresCursosVerano;
 import co.edu.unicauca.decanatura.gestion_curricular.seguridad.Autorizacion;
 
@@ -218,39 +219,38 @@ public class InscripcionesVeranoRestController {
         // 2. Procesar cada inscripcion encontrada
         
         for (SolicitudCursoVeranoInscripcion inscripcion : inscripciones) {
-            try {
-                // 2.1. Verificar el estado de la inscripcion - SOLO mostrar las que NO estan aceptadas
-                String estadoActual = inscripcion.estadoActual("Inscrito"); // Estado por defecto
-                
-                // Si la inscripcion ya fue aceptada (Pago_Validado), no la mostrar en la lista
-                if (EstadoSolicitudCursoVerano.PAGO_VALIDADO.texto().equals(estadoActual)) {
-                    continue; // Saltar esta inscripcion
-                }
-                
-                // Informacion basica del estudiante (sin usuario, la inscripcion se omite)
-                Usuario usuario = inscripcion.getObjUsuario();
-                Integer idUsuario = usuario.getId_usuario();
+            // 2.1. Verificar el estado de la inscripcion - SOLO mostrar las que NO estan aceptadas
+            String estadoActual = inscripcion.estadoActual("Inscrito"); // Estado por defecto
 
-                // Informacion del curso (sin materia, la inscripcion se omite)
-                IdCurso idCursoInscrito = null;
-                NombreCurso nombreCurso = null;
-                if (inscripcion.getObjCursoOfertadoVerano() != null) {
-                    idCursoInscrito = new IdCurso(inscripcion.getObjCursoOfertadoVerano().getId_curso());
-                    nombreCurso = new NombreCurso(inscripcion.getObjCursoOfertadoVerano().getObjMateria().getNombre());
-                    // El codigo del curso no esta disponible en esta entidad
-                }
-
-                // Informacion del archivo de pago (asumir que esta validado)
-                estudiantesInscritos.add(new EstudianteElegible(idUsuario, usuario.getNombre_completo(),
-                        usuario.getCodigo(), usuario.getCorreo(), inscripcion.getId_solicitud(),
-                        inscripcion.getNombre_solicitud(), inscripcion.getFecha_registro_solicitud(),
-                        inscripcion.getCodicion_solicitud(), idCursoInscrito, nombreCurso, estadoActual, "Inscripcion",
-                        "Estudiante inscrito en el curso", true,
-                        new PagoSupuesto("validado", "Comprobante de pago validado", "/uploads/comprobantes/",
-                                inscripcion.getFecha_registro_solicitud())));
-            } catch (Exception e) {
-                log.error("Error: {}", e.getMessage(), e);
+            // Si la inscripcion ya fue aceptada (Pago_Validado), no la mostrar en la lista
+            if (EstadoSolicitudCursoVerano.PAGO_VALIDADO.texto().equals(estadoActual)) {
+                continue; // Saltar esta inscripcion
             }
+
+            // Sin usuario, los datos del estudiante salen en null (como en GET /inscripciones)
+            Usuario usuario = inscripcion.getObjUsuario();
+
+            // Informacion del curso (sin materia, nombre_curso sale en null)
+            IdCurso idCursoInscrito = null;
+            NombreCurso nombreCurso = null;
+            CursoOfertadoVerano curso = inscripcion.getObjCursoOfertadoVerano();
+            if (curso != null) {
+                idCursoInscrito = new IdCurso(curso.getId_curso());
+                nombreCurso = new NombreCurso(curso.getObjMateria() == null ? null : curso.getObjMateria().getNombre());
+                // El codigo del curso no esta disponible en esta entidad
+            }
+
+            // El comprobante es el primer documento de la inscripcion, como en GET /inscripciones; sin documentos, null
+            List<Documento> documentos = inscripcion.getDocumentos();
+            Documento comprobante = documentos == null || documentos.isEmpty() ? null : documentos.get(0);
+            estudiantesInscritos.add(new EstudianteElegible(usuario == null ? null : usuario.getId_usuario(),
+                    usuario == null ? inscripcion.getNombre_estudiante() : usuario.getNombre_completo(),
+                    usuario == null ? null : usuario.getCodigo(), usuario == null ? null : usuario.getCorreo(),
+                    inscripcion.getId_solicitud(), inscripcion.getNombre_solicitud(),
+                    inscripcion.getFecha_registro_solicitud(), inscripcion.getCodicion_solicitud(), idCursoInscrito,
+                    nombreCurso, estadoActual, "Inscripcion", "Estudiante inscrito en el curso", true,
+                    comprobante == null ? null : new ComprobantePago(comprobante.getId_documento(),
+                            comprobante.getNombre(), comprobante.getRuta_documento(), comprobante.getFecha_documento())));
         }
         
         

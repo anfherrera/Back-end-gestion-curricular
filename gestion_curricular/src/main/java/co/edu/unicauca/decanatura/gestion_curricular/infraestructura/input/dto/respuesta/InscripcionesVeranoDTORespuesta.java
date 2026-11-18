@@ -60,7 +60,7 @@ public final class InscripcionesVeranoDTORespuesta {
             @JsonProperty("tipo_solicitud") String tipoSolicitud,
             @JsonProperty("motivo_inclusion") String motivoInclusion,
             @JsonProperty("tiene_inscripcion_formal") boolean tieneInscripcionFormal,
-            PagoSupuesto archivoPago) {}
+            ComprobantePago archivoPago) {}
 
     /** Clave {@code id_curso} de {@link EstudianteElegible}. */
     public record IdCurso(@JsonProperty("id_curso") Integer idCurso) {}
@@ -68,10 +68,13 @@ public final class InscripcionesVeranoDTORespuesta {
     /** Clave {@code nombre_curso} de {@link EstudianteElegible}. */
     public record NombreCurso(@JsonProperty("nombre_curso") String nombreCurso) {}
 
-    /** {@code archivoPago} fijo de {@link EstudianteElegible}: se da por validado sin consultar documentos. */
+    /**
+     * {@code archivoPago} de {@link EstudianteElegible}: el primer documento de la inscripción ({@code url} es su
+     * ruta). Es null si la inscripción no tiene documentos.
+     */
     @JsonPropertyOrder({"id_documento", "fecha", "nombre", "url"})
-    public record PagoSupuesto(
-            @JsonProperty("id_documento") String idDocumento,
+    public record ComprobantePago(
+            @JsonProperty("id_documento") Integer idDocumento,
             String nombre,
             String url,
             Date fecha) {}
