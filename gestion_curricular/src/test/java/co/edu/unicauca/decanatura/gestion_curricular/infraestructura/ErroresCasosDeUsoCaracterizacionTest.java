@@ -939,14 +939,14 @@ class ErroresCasosDeUsoCaracterizacionTest {
     }
 
     private static GestionarSolicitudEcaesCUAdapter ecaes(GestionarPreRegistroEcaesGatewayIntPort g, GestionarUsuarioGatewayIntPort u) {
-        return new GestionarSolicitudEcaesCUAdapter(g, FORMATEADOR, mock(GestionarDocumentosGatewayIntPort.class),
+        return new GestionarSolicitudEcaesCUAdapter(g, mock(GestionarDocumentosGatewayIntPort.class),
             mock(GestionarEstadoSolicitudGatewayIntPort.class), u, mock(GestionarNotificacionCUIntPort.class),
             mock(GestionarArchivosCUIntPort.class));
     }
 
     private static GestionarSolicitudHomologacionCUAdapter homologacion(GestionarSolicitudHomologacionGatewayIntPort g,
             GestionarUsuarioGatewayIntPort u) {
-        return new GestionarSolicitudHomologacionCUAdapter(FORMATEADOR, g, u, mock(GestionarDocumentosGatewayIntPort.class),
+        return new GestionarSolicitudHomologacionCUAdapter(g, u, mock(GestionarDocumentosGatewayIntPort.class),
             mock(GestionarEstadoSolicitudGatewayIntPort.class), mock(GestionarNotificacionCUIntPort.class),
             mock(GestionarArchivosCUIntPort.class));
     }
@@ -954,13 +954,13 @@ class ErroresCasosDeUsoCaracterizacionTest {
     private static GestionarSolicitudReingresoCUAdapter reingreso(GestionarSolicitudReingresoGatewayIntPort g,
             GestionarUsuarioGatewayIntPort u) {
         return new GestionarSolicitudReingresoCUAdapter(u, mock(GestionarDocumentosGatewayIntPort.class),
-            mock(GestionarEstadoSolicitudGatewayIntPort.class), FORMATEADOR, g, mock(GestionarNotificacionCUIntPort.class),
+            mock(GestionarEstadoSolicitudGatewayIntPort.class), g, mock(GestionarNotificacionCUIntPort.class),
             mock(GestionarArchivosCUIntPort.class));
     }
 
     private static GestionarSolicitudPazYSalvoCUAdapter pazYSalvo(GestionarSolicitudPazYSalvoGatewayIntPort g) {
         return new GestionarSolicitudPazYSalvoCUAdapter(g, mock(GestionarUsuarioGatewayIntPort.class),
-            mock(GestionarDocumentosGatewayIntPort.class), mock(GestionarEstadoSolicitudGatewayIntPort.class), FORMATEADOR,
+            mock(GestionarDocumentosGatewayIntPort.class), mock(GestionarEstadoSolicitudGatewayIntPort.class),
             mock(GestionarArchivosCUIntPort.class), mock(GestionarNotificacionCUIntPort.class));
     }
 

@@ -17,6 +17,7 @@ import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarN
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarSolicitudPazYSalvoCUIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.*;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.casosDeUso.GestionarSolicitudPazYSalvoCUAdapter;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.excepciones.ReglaNegocioExcepcion;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.FiltroSolicitudes;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.FlujoEstadosSolicitud;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.SolicitudPazYSalvo;
@@ -55,9 +56,6 @@ class PazYSalvoUnidadTest {
     private GestionarEstadoSolicitudGatewayIntPort estadoSolicitudGateway;
 
     @Mock
-    private FormateadorResultadosIntPort formateadorResultados;
-
-    @Mock
     private GestionarArchivosCUIntPort gestionarArchivos;
 
     @Mock
@@ -75,7 +73,6 @@ class PazYSalvoUnidadTest {
                 usuarioGateway,
                 documentosGateway,
                 estadoSolicitudGateway,
-                formateadorResultados,
                 gestionarArchivos,
                 notificacionCU
         );
@@ -94,7 +91,8 @@ class PazYSalvoUnidadTest {
 
         // Act & Assert - Debe lanzar una excepción porque la solicitud no tiene usuario
         assertThatThrownBy(() -> solicitudPazYSalvoCU.guardar(solicitudSinUsuario))
-                .hasMessageContaining("usuario"); 
+                .isInstanceOfSatisfying(ReglaNegocioExcepcion.class,
+                        e -> assertThat(e.formatException()).contains("usuario"));
     }
 
     // ==================== PRUEBAS DE CONSULTA ====================

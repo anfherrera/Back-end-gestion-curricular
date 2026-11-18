@@ -8,12 +8,13 @@ import java.util.Optional;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarArchivosCUIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarNotificacionCUIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarSolicitudEcaesCUIntPort;
-import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.FormateadorResultadosIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.GestionarDocumentosGatewayIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.GestionarEstadoSolicitudGatewayIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.GestionarPreRegistroEcaesGatewayIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.GestionarUsuarioGatewayIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.excepciones.EntidadNoExisteException;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.excepciones.EntidadYaExisteException;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.excepciones.ReglaNegocioExcepcion;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.EstadoSolicitud;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.FechaEcaes;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.FiltroSolicitudes;
@@ -28,7 +29,6 @@ import co.edu.unicauca.decanatura.gestion_curricular.dominio.servicios.ListadorS
 public class GestionarSolicitudEcaesCUAdapter implements GestionarSolicitudEcaesCUIntPort {
 
     private final GestionarPreRegistroEcaesGatewayIntPort gestionarSolicitudEcaesGateway;
-    private final FormateadorResultadosIntPort formateadorResultados;
     private final GestionarDocumentosGatewayIntPort documentosGateway;
     private final GestionarEstadoSolicitudGatewayIntPort gestionarEstadoSolicitudGateway;
     private final GestionarUsuarioGatewayIntPort gestionarUsuarioGateway;
@@ -38,7 +38,6 @@ public class GestionarSolicitudEcaesCUAdapter implements GestionarSolicitudEcaes
 
 
     public GestionarSolicitudEcaesCUAdapter(GestionarPreRegistroEcaesGatewayIntPort gestionarSolicitudEcaesGateway,
-            FormateadorResultadosIntPort formateadorResultados,
             GestionarDocumentosGatewayIntPort documentosGateway,
             GestionarEstadoSolicitudGatewayIntPort gestionarEstadoSolicitudGateway,
             GestionarUsuarioGatewayIntPort gestionarUsuarioGateway,
@@ -46,7 +45,6 @@ public class GestionarSolicitudEcaesCUAdapter implements GestionarSolicitudEcaes
             GestionarArchivosCUIntPort gestionarArchivos
             ) {
         this.gestionarSolicitudEcaesGateway = gestionarSolicitudEcaesGateway;
-        this.formateadorResultados = formateadorResultados;
         this.documentosGateway = documentosGateway;
         this.gestionarEstadoSolicitudGateway = gestionarEstadoSolicitudGateway;
         this.gestionarUsuarioGateway = gestionarUsuarioGateway;
@@ -60,24 +58,24 @@ public class GestionarSolicitudEcaesCUAdapter implements GestionarSolicitudEcaes
         @Override
         public SolicitudEcaes guardar(SolicitudEcaes solicitud) {
             if(solicitud == null) {
-                this.formateadorResultados.retornarRespuestaErrorReglaDeNegocio("La solicitud no puede ser nula");
+                throw new ReglaNegocioExcepcion("La solicitud no puede ser nula");
             }
 
             if(solicitud.getId_solicitud()!=null){
                 Optional<SolicitudEcaes> solicitudExistente = gestionarSolicitudEcaesGateway.buscarOpcionalPorId(solicitud.getId_solicitud());
                 if (solicitudExistente.isPresent()) {
-                    this.formateadorResultados.retornarRespuestaErrorEntidadExiste("Ya existe una solicitud con el ID: "
+                    throw new EntidadYaExisteException("Ya existe una solicitud con el ID: "
                     + solicitud.getId_solicitud());
                 }
             }
 
             if(solicitud.getObjUsuario() == null || solicitud.getObjUsuario().getId_usuario() == null){
-                this.formateadorResultados.retornarRespuestaErrorEntidadExiste("El usuario no puede ser nulo o no tener ID");
+                throw new EntidadYaExisteException("El usuario no puede ser nulo o no tener ID");
             }
             Integer idUsuario = solicitud.getObjUsuario().getId_usuario();
             Optional<Usuario> usuarioOpt = gestionarUsuarioGateway.buscarUsuarioPorId(idUsuario);
             if (usuarioOpt.isEmpty()) {
-                this.formateadorResultados.retornarRespuestaErrorReglaDeNegocio("Usuario ID: " + idUsuario + " no encontrado");
+                throw new ReglaNegocioExcepcion("Usuario ID: " + idUsuario + " no encontrado");
             }
 
 
@@ -129,7 +127,7 @@ public class GestionarSolicitudEcaesCUAdapter implements GestionarSolicitudEcaes
         try {
             FlujoEstadosSolicitud.ECAES.validarYObtenerRolResponsable(estadoAnterior, nuevoEstado);
         } catch (IllegalArgumentException e) {
-            this.formateadorResultados.retornarRespuestaErrorReglaDeNegocio(e.getMessage());
+            throw new ReglaNegocioExcepcion(e.getMessage());
         }
 
         EstadoSolicitud nuevo = new EstadoSolicitud();

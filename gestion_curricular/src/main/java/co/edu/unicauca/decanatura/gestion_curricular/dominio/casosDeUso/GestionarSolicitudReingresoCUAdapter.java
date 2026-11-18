@@ -8,12 +8,13 @@ import java.util.Optional;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarArchivosCUIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarNotificacionCUIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarSolicitudReingresoCUIntPort;
-import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.FormateadorResultadosIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.GestionarDocumentosGatewayIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.GestionarEstadoSolicitudGatewayIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.GestionarSolicitudReingresoGatewayIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.GestionarUsuarioGatewayIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.excepciones.EntidadNoExisteException;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.excepciones.EntidadYaExisteException;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.excepciones.ReglaNegocioExcepcion;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.EstadoSolicitud;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.FiltroSolicitudes;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.FlujoEstadosSolicitud;
@@ -30,7 +31,6 @@ public class GestionarSolicitudReingresoCUAdapter  implements GestionarSolicitud
     private final GestionarUsuarioGatewayIntPort gestionarUsuarioGateway;
     private final GestionarDocumentosGatewayIntPort gestionarDocumentosGateway;
     private final GestionarEstadoSolicitudGatewayIntPort gestionarEstadoSolicitudGateway;
-    private final FormateadorResultadosIntPort formateadorResultados;
     private final GestionarSolicitudReingresoGatewayIntPort gestionarSolicitudReingresoGateway;
     private final GestionarNotificacionCUIntPort gestionarNotificacionCU;
     private final AsociadorDocumentosPendientes asociadorDocumentos;
@@ -39,14 +39,12 @@ public class GestionarSolicitudReingresoCUAdapter  implements GestionarSolicitud
     public GestionarSolicitudReingresoCUAdapter(GestionarUsuarioGatewayIntPort gestionarUsuarioGateway,
             GestionarDocumentosGatewayIntPort gestionarDocumentosGateway,
             GestionarEstadoSolicitudGatewayIntPort gestionarEstadoSolicitudGateway,
-            FormateadorResultadosIntPort formateadorResultados,
             GestionarSolicitudReingresoGatewayIntPort gestionarSolicitudReingresoGateway,
             GestionarNotificacionCUIntPort gestionarNotificacionCU,
             GestionarArchivosCUIntPort gestionarArchivos) {
         this.gestionarUsuarioGateway = gestionarUsuarioGateway;
         this.gestionarDocumentosGateway = gestionarDocumentosGateway;
         this.gestionarEstadoSolicitudGateway = gestionarEstadoSolicitudGateway;
-        this.formateadorResultados = formateadorResultados;
         this.gestionarSolicitudReingresoGateway = gestionarSolicitudReingresoGateway;
         this.gestionarNotificacionCU = gestionarNotificacionCU;
         this.asociadorDocumentos = new AsociadorDocumentosPendientes(gestionarDocumentosGateway, gestionarArchivos);
@@ -56,23 +54,23 @@ public class GestionarSolicitudReingresoCUAdapter  implements GestionarSolicitud
     @Override
     public SolicitudReingreso crearSolicitudReingreso(SolicitudReingreso solicitud) {
         if(solicitud == null) {
-            this.formateadorResultados.retornarRespuestaErrorReglaDeNegocio("Solicitud de homologación no puede ser nula");
+            throw new ReglaNegocioExcepcion("Solicitud de homologación no puede ser nula");
         }
         if(solicitud.getId_solicitud()!=null){
             Optional<SolicitudReingreso> solicitudExistente = gestionarSolicitudReingresoGateway.buscarPorId(solicitud.getId_solicitud());
             if (solicitudExistente.isPresent()) {
-                this.formateadorResultados.retornarRespuestaErrorEntidadExiste("Ya existe una solicitud con el ID: "
+                throw new EntidadYaExisteException("Ya existe una solicitud con el ID: "
                 + solicitud.getId_solicitud());
             }
         }
 
         if(solicitud.getObjUsuario() == null || solicitud.getObjUsuario().getId_usuario() == null){
-            this.formateadorResultados.retornarRespuestaErrorEntidadExiste("El usuario no puede ser nulo o no tener ID");
+            throw new EntidadYaExisteException("El usuario no puede ser nulo o no tener ID");
         }
         Integer idUsuario = solicitud.getObjUsuario().getId_usuario();
         Optional<Usuario> usuarioOpt = gestionarUsuarioGateway.buscarUsuarioPorId(idUsuario);
         if (usuarioOpt.isEmpty()) {
-            this.formateadorResultados.retornarRespuestaErrorReglaDeNegocio("Usuario ID: " + idUsuario + " no encontrado");
+            throw new ReglaNegocioExcepcion("Usuario ID: " + idUsuario + " no encontrado");
         }
 
         SolicitudReingreso solicitudGuardada = gestionarSolicitudReingresoGateway.crearSolicitudReingreso(solicitud);
@@ -135,7 +133,7 @@ public class GestionarSolicitudReingresoCUAdapter  implements GestionarSolicitud
         try {
             FLUJO.validarYObtenerRolResponsable(estadoAnterior, nuevoEstado);
         } catch (IllegalArgumentException e) {
-            this.formateadorResultados.retornarRespuestaErrorReglaDeNegocio(e.getMessage());
+            throw new ReglaNegocioExcepcion(e.getMessage());
         }
 
         EstadoSolicitud estado = new EstadoSolicitud();

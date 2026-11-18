@@ -56,9 +56,6 @@ class ReingresoUnidadTest {
     private GestionarEstadoSolicitudGatewayIntPort estadoSolicitudGateway;
 
     @Mock
-    private FormateadorResultadosIntPort formateadorResultados;
-
-    @Mock
     private GestionarNotificacionCUIntPort notificacionCU;
 
     @Mock
@@ -75,7 +72,6 @@ class ReingresoUnidadTest {
                 usuarioGateway,
                 documentosGateway,
                 estadoSolicitudGateway,
-                formateadorResultados,
                 solicitudGateway,
                 notificacionCU,
                 gestionarArchivos

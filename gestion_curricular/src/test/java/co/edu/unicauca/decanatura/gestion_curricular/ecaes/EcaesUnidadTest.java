@@ -58,9 +58,6 @@ class EcaesUnidadTest {
     private GestionarEstadoSolicitudGatewayIntPort estadoSolicitudGateway;
 
     @Mock
-    private FormateadorResultadosIntPort formateadorResultados;
-
-    @Mock
     private GestionarNotificacionCUIntPort notificacionCU;
 
     @Mock
@@ -75,7 +72,6 @@ class EcaesUnidadTest {
         // Crear el CU Adapter con TODAS las dependencias mockeadas
         solicitudEcaesCU = new GestionarSolicitudEcaesCUAdapter(
                 solicitudGateway,
-                formateadorResultados,
                 documentosGateway,
                 estadoSolicitudGateway,
                 usuarioGateway,

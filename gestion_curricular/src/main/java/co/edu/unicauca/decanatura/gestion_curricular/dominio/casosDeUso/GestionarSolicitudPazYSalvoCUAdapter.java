@@ -14,12 +14,12 @@ import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarA
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarNotificacionCUIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarSolicitudPazYSalvoCUIntPort.RechazoCambioEstado.Motivo;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarSolicitudPazYSalvoCUIntPort;
-import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.FormateadorResultadosIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.GestionarDocumentosGatewayIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.GestionarEstadoSolicitudGatewayIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.GestionarSolicitudPazYSalvoGatewayIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.GestionarUsuarioGatewayIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.excepciones.EntidadNoExisteException;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.excepciones.ReglaNegocioExcepcion;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.DatosDocumento;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Documento;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.DocumentosPazYSalvo;
@@ -41,7 +41,6 @@ public class GestionarSolicitudPazYSalvoCUAdapter implements GestionarSolicitudP
     private final GestionarUsuarioGatewayIntPort usuarioGateway;
     private final GestionarDocumentosGatewayIntPort documentosGateway;
     private final GestionarEstadoSolicitudGatewayIntPort estadoSolicitudGateway;
-    private final FormateadorResultadosIntPort formateadorResultados;
     private final AsociadorDocumentosPendientes asociadorDocumentos;
     private final ListadorSolicitudes<SolicitudPazYSalvo> listador;
     private final GestionarNotificacionCUIntPort gestionarNotificacionCU;
@@ -51,14 +50,12 @@ public class GestionarSolicitudPazYSalvoCUAdapter implements GestionarSolicitudP
             GestionarUsuarioGatewayIntPort usuarioGateway,
             GestionarDocumentosGatewayIntPort documentosGateway,
             GestionarEstadoSolicitudGatewayIntPort estadoSolicitudGateway,
-            FormateadorResultadosIntPort formateadorResultados,
             GestionarArchivosCUIntPort gestionarArchivos,
             GestionarNotificacionCUIntPort gestionarNotificacionCU) {
         this.solicitudGateway = solicitudGateway;
         this.usuarioGateway = usuarioGateway;
         this.documentosGateway = documentosGateway;
         this.estadoSolicitudGateway = estadoSolicitudGateway;
-        this.formateadorResultados = formateadorResultados;
         this.asociadorDocumentos = new AsociadorDocumentosPendientes(documentosGateway, gestionarArchivos);
         this.listador = new ListadorSolicitudes<>(FlujoEstadosSolicitud.TRES_APROBACIONES, solicitudGateway);
         this.gestionarNotificacionCU = gestionarNotificacionCU;
@@ -67,11 +64,11 @@ public class GestionarSolicitudPazYSalvoCUAdapter implements GestionarSolicitudP
     @Override
     public SolicitudPazYSalvo guardar(SolicitudPazYSalvo solicitud) {
         if (solicitud == null) {
-            formateadorResultados.retornarRespuestaErrorReglaDeNegocio("La solicitud no puede ser nula");
+            throw new ReglaNegocioExcepcion("La solicitud no puede ser nula");
         }
 
         if (solicitud.getObjUsuario() == null || solicitud.getObjUsuario().getId_usuario() == null) {
-            formateadorResultados.retornarRespuestaErrorReglaDeNegocio("El usuario no puede ser nulo o sin ID");
+            throw new ReglaNegocioExcepcion("El usuario no puede ser nulo o sin ID");
         }
 
         Integer idUsuario = solicitud.getObjUsuario().getId_usuario();
@@ -90,7 +87,7 @@ public class GestionarSolicitudPazYSalvoCUAdapter implements GestionarSolicitudP
         boolean tieneSolicitudActiva = listarSolicitudesPorRol("ESTUDIANTE", usuario.getId_usuario()).stream()
                 .anyMatch(s -> !TransicionEstadoPazYSalvo.esFinal(ultimoEstado(s)));
         if (tieneSolicitudActiva) {
-            formateadorResultados.retornarRespuestaErrorReglaDeNegocio(
+            throw new ReglaNegocioExcepcion(
                     "Ya tiene una solicitud de Paz y Salvo en trámite. Debe esperar a que sea aprobada o rechazada.");
         }
 
@@ -167,7 +164,7 @@ public class GestionarSolicitudPazYSalvoCUAdapter implements GestionarSolicitudP
     @Override
     public void cambiarEstadoSolicitud(Integer idSolicitud, String nuevoEstado, String comentario) {
         cambiarEstadoSolicitud(idSolicitud, nuevoEstado, comentario, rol -> true)
-                .ifPresent(rechazo -> formateadorResultados.retornarRespuestaErrorReglaDeNegocio(rechazo.mensaje()));
+                .ifPresent(rechazo -> { throw new ReglaNegocioExcepcion(rechazo.mensaje()); });
     }
 
     @Override

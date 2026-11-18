@@ -15,7 +15,6 @@ import org.junit.jupiter.api.Test;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarArchivosCUIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarNotificacionCUIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.ConsultarSolicitudesGatewayIntPort;
-import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.FormateadorResultadosIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.GestionarDocumentosGatewayIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.GestionarEstadoSolicitudGatewayIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.GestionarPreRegistroEcaesGatewayIntPort;
@@ -69,7 +68,7 @@ class ListarSolicitudesPorRolTest {
                 conEstados(new SolicitudHomologacion(), 1, ENVIADA),
                 conEstados(new SolicitudHomologacion(), 2, ENVIADA, APROBADA_FUNCIONARIO)));
         GestionarSolicitudHomologacionCUAdapter cu = new GestionarSolicitudHomologacionCUAdapter(
-                mock(FormateadorResultadosIntPort.class), gateway, mock(GestionarUsuarioGatewayIntPort.class),
+                gateway, mock(GestionarUsuarioGatewayIntPort.class),
                 mock(GestionarDocumentosGatewayIntPort.class), mock(GestionarEstadoSolicitudGatewayIntPort.class),
                 mock(GestionarNotificacionCUIntPort.class), mock(GestionarArchivosCUIntPort.class));
 
@@ -88,8 +87,7 @@ class ListarSolicitudesPorRolTest {
                 conEstados(new SolicitudReingreso(), 2, ENVIADA, APROBADA_FUNCIONARIO)));
         GestionarSolicitudReingresoCUAdapter cu = new GestionarSolicitudReingresoCUAdapter(
                 mock(GestionarUsuarioGatewayIntPort.class), mock(GestionarDocumentosGatewayIntPort.class),
-                mock(GestionarEstadoSolicitudGatewayIntPort.class), mock(FormateadorResultadosIntPort.class),
-                gateway, mock(GestionarNotificacionCUIntPort.class), mock(GestionarArchivosCUIntPort.class));
+                mock(GestionarEstadoSolicitudGatewayIntPort.class), gateway, mock(GestionarNotificacionCUIntPort.class), mock(GestionarArchivosCUIntPort.class));
 
         assertThat(cu.listarSolicitudesReingresoPorRol("FUNCIONARIO", null))
                 .extracting(Solicitud::getId_solicitud).containsExactly(1);
@@ -105,7 +103,7 @@ class ListarSolicitudesPorRolTest {
                 conEstados(new SolicitudEcaes(), 1, ENVIADA),
                 conEstados(new SolicitudEcaes(), 2, ENVIADA, EstadosSolicitud.PRE_REGISTRADO.textoGuardado())));
         GestionarSolicitudEcaesCUAdapter cu = new GestionarSolicitudEcaesCUAdapter(
-                gateway, mock(FormateadorResultadosIntPort.class), mock(GestionarDocumentosGatewayIntPort.class),
+                gateway, mock(GestionarDocumentosGatewayIntPort.class),
                 mock(GestionarEstadoSolicitudGatewayIntPort.class), mock(GestionarUsuarioGatewayIntPort.class),
                 mock(GestionarNotificacionCUIntPort.class), mock(GestionarArchivosCUIntPort.class));
 

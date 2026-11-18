@@ -8,12 +8,13 @@ import java.util.Optional;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarArchivosCUIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarNotificacionCUIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarSolicitudHomologacionCUIntPort;
-import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.FormateadorResultadosIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.GestionarDocumentosGatewayIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.GestionarEstadoSolicitudGatewayIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.GestionarSolicitudHomologacionGatewayIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.GestionarUsuarioGatewayIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.excepciones.EntidadNoExisteException;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.excepciones.EntidadYaExisteException;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.excepciones.ReglaNegocioExcepcion;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.EstadoSolicitud;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.FiltroSolicitudes;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.FlujoEstadosSolicitud;
@@ -27,7 +28,6 @@ public class GestionarSolicitudHomologacionCUAdapter implements GestionarSolicit
 
     private static final FlujoEstadosSolicitud FLUJO = FlujoEstadosSolicitud.TRES_APROBACIONES;
 
-    private final FormateadorResultadosIntPort formateadorResultados;
     private final GestionarSolicitudHomologacionGatewayIntPort gestionarSolicitudHomologacionGateway;
     private final GestionarUsuarioGatewayIntPort gestionarUsuarioGateway;
     private final GestionarDocumentosGatewayIntPort gestionarDocumentosGateway;
@@ -36,10 +36,9 @@ public class GestionarSolicitudHomologacionCUAdapter implements GestionarSolicit
     private final AsociadorDocumentosPendientes asociadorDocumentos;
     private final ListadorSolicitudes<SolicitudHomologacion> listador;
 
-    public GestionarSolicitudHomologacionCUAdapter(FormateadorResultadosIntPort formateadorResultados, GestionarSolicitudHomologacionGatewayIntPort gestionarSolicitudHomologacionGateway
+    public GestionarSolicitudHomologacionCUAdapter(GestionarSolicitudHomologacionGatewayIntPort gestionarSolicitudHomologacionGateway
     ,GestionarUsuarioGatewayIntPort gestionarUsuarioGateway, GestionarDocumentosGatewayIntPort gestionarDocumentosGateway, GestionarEstadoSolicitudGatewayIntPort gestionarEstadoSolicitudGateway,
     GestionarNotificacionCUIntPort gestionarNotificacionCU, GestionarArchivosCUIntPort gestionarArchivos) {
-        this.formateadorResultados = formateadorResultados;
         this.gestionarSolicitudHomologacionGateway = gestionarSolicitudHomologacionGateway;
         this.gestionarUsuarioGateway = gestionarUsuarioGateway;
         this.gestionarDocumentosGateway = gestionarDocumentosGateway;
@@ -51,24 +50,24 @@ public class GestionarSolicitudHomologacionCUAdapter implements GestionarSolicit
     @Override
     public SolicitudHomologacion guardar(SolicitudHomologacion solicitud) {
        if(solicitud == null) {
-            this.formateadorResultados.retornarRespuestaErrorReglaDeNegocio("Solicitud de homologación no puede ser nula");
+            throw new ReglaNegocioExcepcion("Solicitud de homologación no puede ser nula");
         }
         
         if(solicitud.getId_solicitud()!=null){
             Optional<SolicitudHomologacion> solicitudExistente = gestionarSolicitudHomologacionGateway.buscarPorId(solicitud.getId_solicitud());
             if (solicitudExistente.isPresent()) {
-                this.formateadorResultados.retornarRespuestaErrorEntidadExiste("Ya existe una solicitud con el ID: "
+                throw new EntidadYaExisteException("Ya existe una solicitud con el ID: "
                 + solicitud.getId_solicitud());
             }
         }
 
         if(solicitud.getObjUsuario() == null || solicitud.getObjUsuario().getId_usuario() == null){
-            this.formateadorResultados.retornarRespuestaErrorEntidadExiste("El usuario no puede ser nulo o no tener ID");
+            throw new EntidadYaExisteException("El usuario no puede ser nulo o no tener ID");
         }
         Integer idUsuario = solicitud.getObjUsuario().getId_usuario();
         Optional<Usuario> usuarioOpt = gestionarUsuarioGateway.buscarUsuarioPorId(idUsuario);
         if (usuarioOpt.isEmpty()) {
-            this.formateadorResultados.retornarRespuestaErrorReglaDeNegocio("Usuario ID: " + idUsuario + " no encontrado");
+            throw new ReglaNegocioExcepcion("Usuario ID: " + idUsuario + " no encontrado");
         }
 
         SolicitudHomologacion solicitudGuardada = gestionarSolicitudHomologacionGateway.guardar(solicitud);
@@ -135,7 +134,7 @@ public class GestionarSolicitudHomologacionCUAdapter implements GestionarSolicit
         try {
             FLUJO.validarYObtenerRolResponsable(estadoAnterior, nuevoEstado);
         } catch (IllegalArgumentException e) {
-            this.formateadorResultados.retornarRespuestaErrorReglaDeNegocio(e.getMessage());
+            throw new ReglaNegocioExcepcion(e.getMessage());
         }
 
         EstadoSolicitud estado = new EstadoSolicitud();

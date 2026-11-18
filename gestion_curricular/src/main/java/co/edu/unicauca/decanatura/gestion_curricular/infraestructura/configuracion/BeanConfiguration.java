@@ -134,7 +134,6 @@ public class BeanConfiguration {
             GestionarUsuarioGatewayIntPort objUsuario, 
             GestionarDocumentosGatewayIntPort objDocumentosGateway,
             GestionarEstadoSolicitudGatewayIntPort objGestionarEstadoSolicitudGateway,
-            FormateadorResultadosIntPort objFormateadorResultados,
             GestionarArchivosCUIntPort objGestionarArchivos,
             GestionarNotificacionCUIntPort objGestionarNotificacionCU) {
         return new GestionarSolicitudPazYSalvoCUAdapter(
@@ -142,7 +141,6 @@ public class BeanConfiguration {
                 objUsuario,
                 objDocumentosGateway,
                 objGestionarEstadoSolicitudGateway,
-                objFormateadorResultados,
                 objGestionarArchivos,
                 objGestionarNotificacionCU
         );
@@ -151,36 +149,36 @@ public class BeanConfiguration {
 
     @Bean
     public GestionarSolicitudEcaesCUAdapter crearGestionarSolicitudEcaesCUInt(
-            GestionarPreRegistroEcaesGatewayIntPort objGestionarSolicitudEcaesGateway,FormateadorResultadosIntPort objFormateadorResultados
-            ,GestionarDocumentosGatewayIntPort objDocumentosGateway,
+            GestionarPreRegistroEcaesGatewayIntPort objGestionarSolicitudEcaesGateway,
+            GestionarDocumentosGatewayIntPort objDocumentosGateway,
             GestionarEstadoSolicitudGatewayIntPort objGestionarEstadoSolicitudGateway,
             GestionarUsuarioGatewayIntPort objGestionarUsuarioGateway,
             GestionarNotificacionCUIntPort objGestionarNotificacionCU,
             GestionarArchivosCUIntPort gestionarArchivos
             ) {
-        return new GestionarSolicitudEcaesCUAdapter(objGestionarSolicitudEcaesGateway,objFormateadorResultados,objDocumentosGateway,objGestionarEstadoSolicitudGateway,objGestionarUsuarioGateway,objGestionarNotificacionCU,gestionarArchivos);
+        return new GestionarSolicitudEcaesCUAdapter(objGestionarSolicitudEcaesGateway,objDocumentosGateway,objGestionarEstadoSolicitudGateway,objGestionarUsuarioGateway,objGestionarNotificacionCU,gestionarArchivos);
     }
 
     @Bean
     public GestionarSolicitudHomologacionCUAdapter crearGestionarSolicitudHomologacionCUInt(
-            FormateadorResultadosIntPort formateadorResultados, GestionarSolicitudHomologacionGatewayIntPort gestionarSolicitudHomologacionGateway
+            GestionarSolicitudHomologacionGatewayIntPort gestionarSolicitudHomologacionGateway
     ,GestionarUsuarioGatewayIntPort gestionarUsuarioGateway, GestionarDocumentosGatewayIntPort gestionarDocumentosGateway,
     GestionarEstadoSolicitudGatewayIntPort gestionarEstadoSolicitudGateway,
     GestionarNotificacionCUIntPort objGestionarNotificacionCU,
     GestionarArchivosCUIntPort gestionarArchivos
     ) {
-        return new GestionarSolicitudHomologacionCUAdapter(formateadorResultados, gestionarSolicitudHomologacionGateway, gestionarUsuarioGateway, gestionarDocumentosGateway, gestionarEstadoSolicitudGateway, objGestionarNotificacionCU, gestionarArchivos);
+        return new GestionarSolicitudHomologacionCUAdapter(gestionarSolicitudHomologacionGateway, gestionarUsuarioGateway, gestionarDocumentosGateway, gestionarEstadoSolicitudGateway, objGestionarNotificacionCU, gestionarArchivos);
     }
 
     @Bean
     public GestionarSolicitudReingresoCUAdapter crearGestionarSolicitudReingresoCUInt(
         GestionarUsuarioGatewayIntPort gestionarUsuarioGateway, GestionarDocumentosGatewayIntPort gestionarDocumentosGateway,
         GestionarEstadoSolicitudGatewayIntPort gestionarEstadoSolicitudGateway,
-        FormateadorResultadosIntPort formateadorResultados,GestionarSolicitudReingresoGatewayIntPort gestionarSolicitudReingresoGateway,
+        GestionarSolicitudReingresoGatewayIntPort gestionarSolicitudReingresoGateway,
         GestionarNotificacionCUIntPort objGestionarNotificacionCU,
         GestionarArchivosCUIntPort gestionarArchivos
     ) {
-        return new GestionarSolicitudReingresoCUAdapter(gestionarUsuarioGateway, gestionarDocumentosGateway, gestionarEstadoSolicitudGateway, formateadorResultados, gestionarSolicitudReingresoGateway, objGestionarNotificacionCU, gestionarArchivos);
+        return new GestionarSolicitudReingresoCUAdapter(gestionarUsuarioGateway, gestionarDocumentosGateway, gestionarEstadoSolicitudGateway, gestionarSolicitudReingresoGateway, objGestionarNotificacionCU, gestionarArchivos);
     }
 
     @Bean
