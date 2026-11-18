@@ -61,6 +61,7 @@ import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.mappe
 import co.edu.unicauca.decanatura.gestion_curricular.seguridad.JwtUtil;
 import co.edu.unicauca.decanatura.gestion_curricular.seguridad.LoginRateLimiter;
 import co.edu.unicauca.decanatura.gestion_curricular.seguridad.SecurityAuditService;
+import co.edu.unicauca.decanatura.gestion_curricular.soporte.Correcciones;
 
 /**
  * Caracterización de los try/catch locales de Inscripciones, CursoOfertado, Preinscripciones y Usuario (ARQ-11):
@@ -175,7 +176,9 @@ class ErroresLocalesCaracterizacionTest {
             Files.createDirectories(referencia.getParent());
             Files.writeString(referencia, json.writerWithDefaultPrettyPrinter().writeValueAsString(actual));
         }
-        assertThat(actual).isEqualTo(json.readTree(Files.readString(referencia)));
+        // BUG-22: crear usuario deja pasar al manejador global los errores de dominio del caso de uso
+        assertThat(actual).isEqualTo(Correcciones.aplicar(json.readTree(Files.readString(referencia)),
+            "errores/correcciones/errores-locales-bug22.json"));
     }
 
     private static Supplier<MockHttpServletRequestBuilder> cursoNuevo(String condicion) {

@@ -65,7 +65,7 @@ public class UsuarioRestController {
     @PostMapping("/crearUsuario")
     @PreAuthorize("(hasRole('Administrador') or hasRole('Coordinador')) and @autorizacion.puedeAsignarRol(#peticion.id_rol)")
     public ResponseEntity<UsuarioDTORespuesta> crearUsuario(@RequestBody @Valid UsuarioDTOPeticion peticion) {
-        // BUG-22: cualquier error que no sea IllegalArgumentException acaba en un 500 genérico
+        // Los errores de dominio y los argumentos inválidos llegan al manejador global; el resto, 500 genérico
         return ErroresUsuario.alCrear(() -> {
             if (peticion == null) {
                 throw new IllegalArgumentException("La petición no puede ser nula");

@@ -2,12 +2,16 @@ package co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.exce
 
 import java.util.function.Supplier;
 
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.excepciones.CupoAgotadoException;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.excepciones.EntidadNoExisteException;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.excepciones.EntidadYaExisteException;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.excepciones.ReglaNegocioExcepcion;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Usuario;
 
 /**
- * Traducción histórica de errores al crear usuarios (BUG-22): solo {@link IllegalArgumentException} llega
- * como tal al manejador global (400); cualquier otro error, incluidos los de dominio, se envuelve en una
- * {@link RuntimeException} genérica y el manejador global responde 500.
+ * Traducción de errores al crear usuarios: {@link IllegalArgumentException} y las excepciones de dominio que
+ * conoce el manejador global llegan a él tal cual (400, 404 o 409). Cualquier otro error, incluidos los del
+ * mapeo de la respuesta, se envuelve en una {@link RuntimeException} genérica y el manejador global responde 500.
  */
 public final class ErroresUsuario {
     private ErroresUsuario() {}
@@ -15,7 +19,8 @@ public final class ErroresUsuario {
     public static <T> T alCrear(Supplier<T> operacion) {
         try {
             return operacion.get();
-        } catch (IllegalArgumentException e) {
+        } catch (IllegalArgumentException | EntidadYaExisteException | EntidadNoExisteException
+                | ReglaNegocioExcepcion | CupoAgotadoException e) {
             throw e;
         } catch (Exception e) {
             throw new RuntimeException("Error al crear el usuario: " + e.getMessage(), e);
