@@ -33,6 +33,7 @@ import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.SolicitudCu
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.SolicitudEcaes;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.controladores.ReportesCursosVeranoRestController;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.excepciones.RestApiExceptionHandler;
+import co.edu.unicauca.decanatura.gestion_curricular.soporte.Correcciones;
 
 /**
  * Fija {@code /api/cursos-intersemestrales/dashboard/estadisticas} y {@code /seguimiento/{idUsuario}} antes de
@@ -79,7 +80,9 @@ class SeguimientoDashboardVeranoCaracterizacionTest {
         if (Boolean.getBoolean("grabarReferencia") && Files.notExists(referencia)) {
             Files.writeString(referencia, json.writerWithDefaultPrettyPrinter().writeValueAsString(resultados));
         }
-        assertThat(resultados).isEqualTo(json.readTree(Files.readString(referencia)));
+        // BUG-31: una preinscripción con curso sin materia ya no vacía la lista del usuario 3
+        assertThat(resultados).isEqualTo(Correcciones.aplicar(json.readTree(Files.readString(referencia)),
+            "verano-endpoints/correcciones/seguimiento-dashboard-bug31.json"));
     }
 
     private void registrar(ObjectNode resultados, String nombre, MockMvc mvc, String ruta) throws Exception {

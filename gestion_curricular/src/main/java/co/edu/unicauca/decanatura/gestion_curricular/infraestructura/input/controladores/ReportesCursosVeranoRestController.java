@@ -6,6 +6,7 @@ import java.util.Date;
 import java.util.List;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -38,6 +39,7 @@ import co.edu.unicauca.decanatura.gestion_curricular.seguridad.Autorizacion;
 @RestController
 @RequestMapping("/api/cursos-intersemestrales")
 @RequiredArgsConstructor
+@Slf4j
 public class ReportesCursosVeranoRestController {
 
     private final GestionarCursoOfertadoVeranoCUIntPort cursoCU;
@@ -221,8 +223,10 @@ public class ReportesCursosVeranoRestController {
                 // Obtener el nombre del curso correctamente
                 String nombreCurso = "Curso no disponible";
                 if (preinscripcion.getObjCursoOfertadoVerano() != null) {
-                    // Para cursos ya existentes
-                    nombreCurso = preinscripcion.getObjCursoOfertadoVerano().getObjMateria().getNombre();
+                    // Para cursos ya existentes; sin materia se queda "Curso no disponible", como en las inscripciones
+                    if (preinscripcion.getObjCursoOfertadoVerano().getObjMateria() != null) {
+                        nombreCurso = preinscripcion.getObjCursoOfertadoVerano().getObjMateria().getNombre();
+                    }
                 } else {
                     // Para solicitudes de curso nuevo, obtener el nombre del campo observacion
                     if (preinscripcion.getObservacion() != null && !preinscripcion.getObservacion().isEmpty()) {
@@ -286,6 +290,7 @@ public class ReportesCursosVeranoRestController {
             
         } catch (Exception e) {
             // En caso de error, devolver lista vacia en lugar de datos simulados
+            log.error("No se pudieron obtener las preinscripciones del usuario {}", idUsuario, e);
             preinscripciones = new ArrayList<>();
         }
         
@@ -342,6 +347,7 @@ public class ReportesCursosVeranoRestController {
             
         } catch (Exception e) {
             // En caso de error, devolver lista vacia
+            log.error("No se pudieron obtener las inscripciones del usuario {}", idUsuario, e);
             inscripcionesUsuario = new ArrayList<>();
         }
         
