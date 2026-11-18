@@ -898,23 +898,23 @@ class ErroresCasosDeUsoCaracterizacionTest {
     // ---------------------------------------------------------------- montaje de los casos de uso
 
     private static GestionarDocentesCUAdapter docentes(GestionarDocenteGatewayIntPort g) {
-        return new GestionarDocentesCUAdapter(g, FORMATEADOR);
+        return new GestionarDocentesCUAdapter(g);
     }
 
     private static GestionarProgramasCUAdapter programas(GestionarProgramaGatewayIntPort g) {
-        return new GestionarProgramasCUAdapter(g, FORMATEADOR);
+        return new GestionarProgramasCUAdapter(g);
     }
 
     private static GestionarRolesCUAdapter roles(GestionarRolGatewayIntPort g) {
-        return new GestionarRolesCUAdapter(g, FORMATEADOR);
+        return new GestionarRolesCUAdapter(g);
     }
 
     private static GestionarMateriasCUAdapter materias(GestionarMateriasIntPort g) {
-        return new GestionarMateriasCUAdapter(g, FORMATEADOR);
+        return new GestionarMateriasCUAdapter(g);
     }
 
     private static GestionarSalonesCUAdapter salones(GestionarSalonesIntPort g) {
-        return new GestionarSalonesCUAdapter(g, FORMATEADOR);
+        return new GestionarSalonesCUAdapter(g);
     }
 
     private static GestionarSolicitudCUAdapter solicitud(GestionarSolicitudGatewayIntPort g) {

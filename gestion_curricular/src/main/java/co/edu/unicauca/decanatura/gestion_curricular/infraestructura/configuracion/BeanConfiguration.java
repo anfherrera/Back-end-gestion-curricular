@@ -93,15 +93,13 @@ public class BeanConfiguration {
     }
     
     @Bean 
-    public GestionarMateriasCUAdapter crearGestionarMateriasCUInt(GestionarMateriasIntPort materiasGateway,
-                                      FormateadorResultadosIntPort formateadorResultados){
-                 return new GestionarMateriasCUAdapter(materiasGateway, formateadorResultados);
+    public GestionarMateriasCUAdapter crearGestionarMateriasCUInt(GestionarMateriasIntPort materiasGateway){
+                 return new GestionarMateriasCUAdapter(materiasGateway);
     }
-    
-    @Bean 
-    public GestionarSalonesCUAdapter crearGestionarSalonesCUInt(GestionarSalonesIntPort salonesGateway,
-                                      FormateadorResultadosIntPort formateadorResultados){
-                 return new GestionarSalonesCUAdapter(salonesGateway, formateadorResultados);
+
+    @Bean
+    public GestionarSalonesCUAdapter crearGestionarSalonesCUInt(GestionarSalonesIntPort salonesGateway){
+                 return new GestionarSalonesCUAdapter(salonesGateway);
     }
     
     
@@ -201,23 +199,20 @@ public class BeanConfiguration {
 
     @Bean
     public GestionarDocentesCUAdapter crearGestionarDocentesCUInt(
-            GestionarDocenteGatewayIntPort docentesGateway,
-            FormateadorResultadosIntPort formateadorResultados) {
-        return new GestionarDocentesCUAdapter(docentesGateway, formateadorResultados);
+            GestionarDocenteGatewayIntPort docentesGateway) {
+        return new GestionarDocentesCUAdapter(docentesGateway);
     }
 
     @Bean
     public GestionarProgramasCUAdapter crearGestionarProgramasCUInt(
-            GestionarProgramaGatewayIntPort programasGateway,
-            FormateadorResultadosIntPort formateadorResultados) {
-        return new GestionarProgramasCUAdapter(programasGateway, formateadorResultados);
+            GestionarProgramaGatewayIntPort programasGateway) {
+        return new GestionarProgramasCUAdapter(programasGateway);
     }
 
     @Bean
     public GestionarRolesCUAdapter crearGestionarRolesCUInt(
-            GestionarRolGatewayIntPort rolesGateway,
-            FormateadorResultadosIntPort formateadorResultados) {
-        return new GestionarRolesCUAdapter(rolesGateway, formateadorResultados);
+            GestionarRolGatewayIntPort rolesGateway) {
+        return new GestionarRolesCUAdapter(rolesGateway);
     }
 
     @Bean

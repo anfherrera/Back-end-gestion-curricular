@@ -88,8 +88,8 @@ class CursosVeranoEndpointsCaracterizacionTest {
     @org.springframework.context.annotation.Profile("caracterizacion-verano")
     static class Configuracion {
         @Bean Datos datosVerano() { return new Datos(); }
-        @Bean @Primary GestionarSalonesCUIntPort salonesFijos(Datos d, FormateadorResultadosIntPort f) {
-            return new GestionarSalonesCUAdapter(d.salones, f);
+        @Bean @Primary GestionarSalonesCUIntPort salonesFijos(Datos d) {
+            return new GestionarSalonesCUAdapter(d.salones);
         }
         @Bean @Primary GestionarCursoOfertadoVeranoCUIntPort cursosFijos(Datos d, FormateadorResultadosIntPort f) {
             return new GestionarCursoOfertadoVeranoCUAdapter(d.cursos, mock(GestionarSolicitudGatewayIntPort.class),
