@@ -135,7 +135,10 @@ class ErroresCasosDeUsoCaracterizacionTest {
             }
             caso.set("cuerpo", nodo);
         }
-        GrafoObjetos.compararConReferencia(resultados, "errores/casos-de-uso.json");
+        // BUG-39: el salón inexistente lanza el DatosCursoInvalidosException que el controlador de cursos traduce
+        // a 400; aquí, sin controlador, llega al manejador global como error inesperado
+        GrafoObjetos.compararConReferencia(resultados, "errores/casos-de-uso.json",
+            "errores/correcciones/casos-de-uso-bug39.json");
     }
 
     private void caso(String nombre, Callable<?> llamada) {

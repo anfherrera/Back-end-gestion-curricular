@@ -285,7 +285,8 @@ public class GestionarCursoOfertadoVeranoCUAdapter implements GestionarCursoOfer
         }
         Salon salon = salonesGateway.obtenerSalonPorId(idSalon);
         if (salon == null) {
-            throw new EntidadYaExisteException("Salón no encontrado.");
+            throw new DatosCursoInvalidosException(Motivo.SALON_NO_ENCONTRADO,
+                    "El salón con ID " + idSalon + " no existe");
         }
         return salon.getNumero_salon();
     }
