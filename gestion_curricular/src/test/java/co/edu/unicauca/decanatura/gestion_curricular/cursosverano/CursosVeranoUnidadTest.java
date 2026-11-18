@@ -3,7 +3,6 @@ package co.edu.unicauca.decanatura.gestion_curricular.cursosverano;
 import static org.assertj.core.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
-import static org.mockito.Mockito.doThrow;
 
 import java.util.*;
 
@@ -18,6 +17,8 @@ import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarC
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarNotificacionCUIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.*;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.casosDeUso.GestionarCursoOfertadoVeranoCUAdapter;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.excepciones.EntidadNoExisteException;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.excepciones.EntidadYaExisteException;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.CursoOfertadoVerano;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Docente;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.EstadoCursoOfertado;
@@ -66,9 +67,6 @@ class CursosVeranoUnidadTest {
     private GestionarSalonesIntPort salonesGateway;
 
     @Mock
-    private FormateadorResultadosIntPort formateadorResultados;
-
-    @Mock
     private GestionarNotificacionCUIntPort notificacionCU;
 
     private GestionarCursoOfertadoVeranoCUIntPort cursosVeranoCU;
@@ -85,7 +83,6 @@ class CursosVeranoUnidadTest {
                 materiasGateway,
                 docenteGateway,
                 salonesGateway,
-                formateadorResultados,
                 notificacionCU
         );
 
@@ -169,12 +166,10 @@ class CursosVeranoUnidadTest {
         int idInexistente = 999;
         when(cursoVeranoGateway.obtenerCursoPorId(idInexistente))
                 .thenReturn(null);
-        doThrow(new RuntimeException("No se encuentra el curso"))
-                .when(formateadorResultados).retornarRespuestaErrorEntidadNoExiste(anyString());
 
         // Act & Assert
         assertThatThrownBy(() -> cursosVeranoCU.obtenerCursoPorId(idInexistente))
-                .isInstanceOf(RuntimeException.class)
+                .isInstanceOf(EntidadNoExisteException.class)
                 .hasMessageContaining("No se encuentra el curso");
         verify(cursoVeranoGateway, atLeastOnce()).obtenerCursoPorId(idInexistente);
     }
@@ -185,6 +180,8 @@ class CursosVeranoUnidadTest {
     @DisplayName("Test 5: Crear curso - Delega correctamente al gateway")
     void testCrearCursoDelegaCorrectamente() {
         // Arrange
+        when(materiasGateway.obtenerMateriaPorId(1)).thenReturn(cursoEjemplo.getObjMateria());
+        when(docenteGateway.buscarDocentePorId(1)).thenReturn(cursoEjemplo.getObjDocente());
         when(cursoVeranoGateway.crearCurso(any(CursoOfertadoVerano.class)))
                 .thenReturn(cursoEjemplo);
 
@@ -203,6 +200,7 @@ class CursosVeranoUnidadTest {
     void testEliminarCursoExistenteRetornaTrue() {
         // Arrange
         int idCurso = 1;
+        when(cursoVeranoGateway.obtenerCursoPorId(idCurso)).thenReturn(cursoEjemplo);
         when(cursoVeranoGateway.eliminarCurso(idCurso)).thenReturn(true);
 
         // Act
@@ -214,18 +212,17 @@ class CursosVeranoUnidadTest {
     }
 
     @Test
-    @DisplayName("Test 7: Eliminar curso inexistente - Retorna false")
-    void testEliminarCursoInexistenteRetornaFalse() {
+    @DisplayName("Test 7: Eliminar curso inexistente - Lanza excepción")
+    void testEliminarCursoInexistenteLanzaExcepcion() {
         // Arrange
         int idInexistente = 999;
-        when(cursoVeranoGateway.eliminarCurso(idInexistente)).thenReturn(false);
+        when(cursoVeranoGateway.obtenerCursoPorId(idInexistente)).thenReturn(null);
 
-        // Act
-        boolean resultado = cursosVeranoCU.eliminarCurso(idInexistente);
-
-        // Assert
-        assertThat(resultado).isFalse();
-        verify(cursoVeranoGateway, times(1)).eliminarCurso(idInexistente);
+        // Act & Assert
+        assertThatThrownBy(() -> cursosVeranoCU.eliminarCurso(idInexistente))
+                .isInstanceOf(EntidadYaExisteException.class)
+                .hasMessageContaining("No se encuentra el curso");
+        verify(cursoVeranoGateway, never()).eliminarCurso(idInexistente);
     }
 
     // ==================== PRUEBAS DE ACTUALIZACIÓN ====================
@@ -239,12 +236,9 @@ class CursosVeranoUnidadTest {
         estado.setId_estado(1);
         estado.setEstado_actual("Abierto");
         
-        doThrow(new RuntimeException("No hay id en el curso"))
-                .when(formateadorResultados).retornarRespuestaErrorEntidadExiste("No hay id en el curso");
-        
         // Act & Assert
         assertThatThrownBy(() -> cursosVeranoCU.actualizarCurso(cursoSinId, estado))
-                .isInstanceOf(RuntimeException.class)
+                .isInstanceOf(EntidadYaExisteException.class)
                 .hasMessageContaining("No hay id en el curso");
         
         // Verificar que NO se llamó al gateway porque el curso no tiene ID
@@ -310,6 +304,8 @@ class CursosVeranoUnidadTest {
     @DisplayName("Test 13: Verificar interacción con múltiples gateways en operación compleja")
     void testVerificarInteraccionMultiplesGateways() {
         // Arrange
+        when(materiasGateway.obtenerMateriaPorId(1)).thenReturn(cursoEjemplo.getObjMateria());
+        when(docenteGateway.buscarDocentePorId(1)).thenReturn(cursoEjemplo.getObjDocente());
         when(cursoVeranoGateway.crearCurso(any(CursoOfertadoVerano.class)))
                 .thenReturn(cursoEjemplo);
 

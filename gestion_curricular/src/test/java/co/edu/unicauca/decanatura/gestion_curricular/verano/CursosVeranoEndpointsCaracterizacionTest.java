@@ -91,14 +91,14 @@ class CursosVeranoEndpointsCaracterizacionTest {
         @Bean @Primary GestionarSalonesCUIntPort salonesFijos(Datos d) {
             return new GestionarSalonesCUAdapter(d.salones);
         }
-        @Bean @Primary GestionarCursoOfertadoVeranoCUIntPort cursosFijos(Datos d, FormateadorResultadosIntPort f) {
+        @Bean @Primary GestionarCursoOfertadoVeranoCUIntPort cursosFijos(Datos d) {
             return new GestionarCursoOfertadoVeranoCUAdapter(d.cursos, mock(GestionarSolicitudGatewayIntPort.class),
                     mock(GestionarUsuarioGatewayIntPort.class), mock(GestionarMateriasIntPort.class),
-                    mock(GestionarDocenteGatewayIntPort.class), d.salones, f, mock(GestionarNotificacionCUIntPort.class));
+                    mock(GestionarDocenteGatewayIntPort.class), d.salones, mock(GestionarNotificacionCUIntPort.class));
         }
-        @Bean @Primary GestionarSolicitudCursoVeranoCUIntPort solicitudesFijas(Datos d, FormateadorResultadosIntPort f) {
+        @Bean @Primary GestionarSolicitudCursoVeranoCUIntPort solicitudesFijas(Datos d) {
             return new GestionarSolicitudCursoVeranoCUAdapter(d.solicitudes, d.cursos,
-                    mock(GestionarUsuarioGatewayIntPort.class), mock(GestionarDocumentosGatewayIntPort.class), f,
+                    mock(GestionarUsuarioGatewayIntPort.class), mock(GestionarDocumentosGatewayIntPort.class),
                     mock(GestionarArchivosCUIntPort.class), mock(GestionarNotificacionCUIntPort.class));
         }
     }

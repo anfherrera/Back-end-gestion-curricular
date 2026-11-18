@@ -3,8 +3,6 @@ package co.edu.unicauca.decanatura.gestion_curricular.cursosverano;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -20,13 +18,13 @@ import org.junit.jupiter.api.Test;
 
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarArchivosCUIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarNotificacionCUIntPort;
-import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.FormateadorResultadosIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.GestionarCursoOfertadoVeranoGatewayIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.GestionarDocumentosGatewayIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.GestionarSolicitudCursoVeranoGatewayIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.GestionarUsuarioGatewayIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.casosDeUso.GestionarSolicitudCursoVeranoCUAdapter;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.excepciones.CupoAgotadoException;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.excepciones.ReglaNegocioExcepcion;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.CursoOfertadoVerano;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.EstadoCursoOfertado;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.EstadoSolicitud;
@@ -55,11 +53,8 @@ class ReglasSolicitudesCursoVeranoTest {
         solicitudes = mock(GestionarSolicitudCursoVeranoGatewayIntPort.class);
         cursos = mock(GestionarCursoOfertadoVeranoGatewayIntPort.class);
         usuarios = mock(GestionarUsuarioGatewayIntPort.class);
-        FormateadorResultadosIntPort formateador = mock(FormateadorResultadosIntPort.class);
-        doThrow(new IllegalStateException("regla")).when(formateador).retornarRespuestaErrorReglaDeNegocio(anyString());
-        doThrow(new IllegalStateException("no existe")).when(formateador).retornarRespuestaErrorEntidadExiste(anyString());
         casoDeUso = new GestionarSolicitudCursoVeranoCUAdapter(solicitudes, cursos, usuarios,
-                mock(GestionarDocumentosGatewayIntPort.class), formateador,
+                mock(GestionarDocumentosGatewayIntPort.class),
                 mock(GestionarArchivosCUIntPort.class), mock(GestionarNotificacionCUIntPort.class));
 
         Usuario usuario = new Usuario();
@@ -77,7 +72,7 @@ class ReglasSolicitudesCursoVeranoTest {
     void preinscripcionSoloEnSuFase() {
         when(cursos.obtenerCursoPorId(ID_CURSO)).thenReturn(curso("Inscripcion", 20));
         assertThatThrownBy(() -> casoDeUso.crearSolicitudCursoVeranoPreinscripcion(preinscripcionNueva()))
-                .isInstanceOf(IllegalStateException.class);
+                .isInstanceOf(ReglaNegocioExcepcion.class);
         verify(solicitudes, never()).crearSolicitudCursoVeranoPreinscripcion(any());
 
         when(cursos.obtenerCursoPorId(ID_CURSO)).thenReturn(curso("Preinscripcion", 20));
@@ -114,7 +109,7 @@ class ReglasSolicitudesCursoVeranoTest {
         when(solicitudes.buscarSolicitudesPorUsuarioYCursoPre(ID_USUARIO, ID_CURSO)).thenReturn(preinscripcion("Aprobado"));
 
         assertThatThrownBy(() -> casoDeUso.crearSolicitudCursoVeranoInscripcion(inscripcionNueva()))
-                .isInstanceOf(IllegalStateException.class);
+                .isInstanceOf(ReglaNegocioExcepcion.class);
         verify(solicitudes, never()).crearSolicitudCursoVeranoInscripcion(any());
     }
 
@@ -125,7 +120,7 @@ class ReglasSolicitudesCursoVeranoTest {
         when(solicitudes.buscarSolicitudesPorUsuarioYCursoPre(ID_USUARIO, ID_CURSO)).thenReturn(preinscripcion("Enviada"));
 
         assertThatThrownBy(() -> casoDeUso.crearSolicitudCursoVeranoInscripcion(inscripcionNueva()))
-                .isInstanceOf(IllegalStateException.class);
+                .isInstanceOf(ReglaNegocioExcepcion.class);
     }
 
     @Test
@@ -137,7 +132,7 @@ class ReglasSolicitudesCursoVeranoTest {
 
         when(solicitudes.buscarInscripcionesPorUsuarioYCurso(ID_USUARIO, ID_CURSO)).thenReturn(List.of(inscripcion("Enviada")));
         assertThatThrownBy(() -> casoDeUso.crearSolicitudCursoVeranoInscripcion(inscripcionNueva()))
-                .isInstanceOf(IllegalStateException.class);
+                .isInstanceOf(ReglaNegocioExcepcion.class);
 
         when(solicitudes.buscarInscripcionesPorUsuarioYCurso(ID_USUARIO, ID_CURSO)).thenReturn(List.of(inscripcion("Pago_Rechazado")));
         assertThat(casoDeUso.crearSolicitudCursoVeranoInscripcion(inscripcionNueva())).isNotNull();
@@ -163,7 +158,7 @@ class ReglasSolicitudesCursoVeranoTest {
         rechazada.setId_solicitud(90);
         when(solicitudes.buscarSolicitudInscripcionPorId(90)).thenReturn(rechazada);
 
-        assertThatThrownBy(() -> casoDeUso.validarPago(90, true, "ok")).isInstanceOf(IllegalStateException.class);
+        assertThatThrownBy(() -> casoDeUso.validarPago(90, true, "ok")).isInstanceOf(ReglaNegocioExcepcion.class);
         verify(solicitudes, never()).validarPago(any(), org.mockito.ArgumentMatchers.anyBoolean(), any());
     }
 

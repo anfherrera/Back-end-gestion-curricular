@@ -13,11 +13,12 @@ import java.util.Set;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarArchivosCUIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarNotificacionCUIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarSolicitudCursoVeranoCUIntPort;
-import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.FormateadorResultadosIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.GestionarCursoOfertadoVeranoGatewayIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.GestionarDocumentosGatewayIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.GestionarSolicitudCursoVeranoGatewayIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.GestionarUsuarioGatewayIntPort;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.excepciones.EntidadYaExisteException;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.excepciones.ReglaNegocioExcepcion;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.CursoOfertadoVerano;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.EstadoSolicitud;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.EstudianteCurso;
@@ -40,7 +41,6 @@ public class GestionarSolicitudCursoVeranoCUAdapter implements GestionarSolicitu
     private final GestionarCursoOfertadoVeranoGatewayIntPort cursoOfertado;
     private final GestionarUsuarioGatewayIntPort usuarioGateway;
     private final GestionarDocumentosGatewayIntPort documentosGateway;
-    private final FormateadorResultadosIntPort formateadorResultados;
     private final AsociadorDocumentosPendientes asociadorDocumentos;
     private final GestionarNotificacionCUIntPort gestionarNotificacionCU;
 
@@ -49,12 +49,10 @@ public class GestionarSolicitudCursoVeranoCUAdapter implements GestionarSolicitu
         GestionarCursoOfertadoVeranoGatewayIntPort cursoOfertado,
         GestionarUsuarioGatewayIntPort usuarioGateway,
         GestionarDocumentosGatewayIntPort documentosGateway,
-        FormateadorResultadosIntPort formateadorResultados,
         GestionarArchivosCUIntPort gestionarArchivos,
         GestionarNotificacionCUIntPort gestionarNotificacionCU
     ) {
         this.usuarioGateway = usuarioGateway;
-        this.formateadorResultados = formateadorResultados;
         this.cursoOfertado = cursoOfertado;
         this.gestionarSolicitudGateway = gestionarSolicitudGateway;
         this.documentosGateway = documentosGateway;
@@ -70,26 +68,26 @@ public class GestionarSolicitudCursoVeranoCUAdapter implements GestionarSolicitu
         Solicitud preinscripcionBuscar = null;
 
         if (solicitudCursoVerano == null) {
-            this.formateadorResultados.retornarRespuestaErrorReglaDeNegocio("La solicitud de preinscripción no puede ser nula");
+            throw new ReglaNegocioExcepcion("La solicitud de preinscripción no puede ser nula");
         }
         if (solicitudCursoVerano.getObjUsuario() == null) {
-            this.formateadorResultados.retornarRespuestaErrorReglaDeNegocio("La solicitud de preinscripción no puede ser nula");
+            throw new ReglaNegocioExcepcion("La solicitud de preinscripción no puede ser nula");
         }
         if (solicitudCursoVerano.getObjUsuario().getId_usuario() == null) {
-            this.formateadorResultados.retornarRespuestaErrorReglaDeNegocio("El usuario de la solicitud no puede ser nulo");
+            throw new ReglaNegocioExcepcion("El usuario de la solicitud no puede ser nulo");
         }
         usuarioBuscar = this.usuarioGateway.obtenerUsuarioPorId(solicitudCursoVerano.getObjUsuario().getId_usuario());
         if (usuarioBuscar == null) {
-            this.formateadorResultados.retornarRespuestaErrorEntidadExiste("Usuario no encontrado");
+            throw new EntidadYaExisteException("Usuario no encontrado");
         }
         if (solicitudCursoVerano.getDocumentos() != null && !solicitudCursoVerano.getDocumentos().isEmpty()) {
-            this.formateadorResultados.retornarRespuestaErrorReglaDeNegocio("No se debe adjuntar documentos en la solicitud de preinscripción");
+            throw new ReglaNegocioExcepcion("No se debe adjuntar documentos en la solicitud de preinscripción");
         }
         if (solicitudCursoVerano.getObjCursoOfertadoVerano() == null) {
-            this.formateadorResultados.retornarRespuestaErrorReglaDeNegocio("Debe seleccionar un curso válido");
+            throw new ReglaNegocioExcepcion("Debe seleccionar un curso válido");
         }
         if (solicitudCursoVerano.getObjCursoOfertadoVerano().getId_curso() == null) {
-            this.formateadorResultados.retornarRespuestaErrorReglaDeNegocio("Debe seleccionar un curso válido");
+            throw new ReglaNegocioExcepcion("Debe seleccionar un curso válido");
         }   
         
         // Verificar si es un curso nuevo (ID = 0) - solicitud de apertura
@@ -100,13 +98,13 @@ public class GestionarSolicitudCursoVeranoCUAdapter implements GestionarSolicitu
             // Curso existente: solo admite preinscripciones mientras está en la fase de Preinscripcion
             cursoABuscar = this.cursoOfertado.obtenerCursoPorId(solicitudCursoVerano.getObjCursoOfertadoVerano().getId_curso());
             if (cursoABuscar == null) {
-                this.formateadorResultados.retornarRespuestaErrorReglaDeNegocio("No se encontró el curso");
+                throw new ReglaNegocioExcepcion("No se encontró el curso");
             }
             exigirEstadoCurso(cursoABuscar, ESTADO_PREINSCRIPCION, "preinscripciones");
         }
 
         if (solicitudCursoVerano.getCodicion_solicitud() == null) {
-            this.formateadorResultados.retornarRespuestaErrorReglaDeNegocio("Debe seleccionar una condición de solicitud válida");
+            throw new ReglaNegocioExcepcion("Debe seleccionar una condición de solicitud válida");
         }
 
         // Para cursos nuevos (ID = 0), no necesitamos verificar preinscripciones existentes
@@ -117,7 +115,7 @@ public class GestionarSolicitudCursoVeranoCUAdapter implements GestionarSolicitu
         );
 
         if (preinscripcionBuscar != null) {
-            this.formateadorResultados.retornarRespuestaErrorReglaDeNegocio("Ya existe una solicitud de preinscripción para este curso");
+            throw new ReglaNegocioExcepcion("Ya existe una solicitud de preinscripción para este curso");
             }
         } else {
             // Para cursos nuevos, no necesitamos verificar preinscripciones existentes
@@ -146,35 +144,35 @@ public class GestionarSolicitudCursoVeranoCUAdapter implements GestionarSolicitu
         Solicitud preinscripcionBuscar = null;
 
         if (solicitudCursoVerano == null) {
-            this.formateadorResultados.retornarRespuestaErrorReglaDeNegocio("La solicitud de inscripción no puede ser nula");
+            throw new ReglaNegocioExcepcion("La solicitud de inscripción no puede ser nula");
         }
         if (solicitudCursoVerano.getObjUsuario() == null) {
-            this.formateadorResultados.retornarRespuestaErrorReglaDeNegocio("El usuario de la solicitud no puede ser nulo");
+            throw new ReglaNegocioExcepcion("El usuario de la solicitud no puede ser nulo");
         }
         if (solicitudCursoVerano.getObjUsuario().getId_usuario() == null) {
-            this.formateadorResultados.retornarRespuestaErrorReglaDeNegocio("El usuario de la solicitud no puede ser nulo");
+            throw new ReglaNegocioExcepcion("El usuario de la solicitud no puede ser nulo");
         }
         usuarioBuscar = this.usuarioGateway.obtenerUsuarioPorId(solicitudCursoVerano.getObjUsuario().getId_usuario());
         if (usuarioBuscar == null) {
-            this.formateadorResultados.retornarRespuestaErrorEntidadExiste("Usuario no encontrado");
+            throw new EntidadYaExisteException("Usuario no encontrado");
         }
         // El comprobante de pago se sube después de crear la inscripción (se asocia al final),
         // por eso no se exige aquí.
         if (solicitudCursoVerano.getObjCursoOfertadoVerano() == null) {
-            this.formateadorResultados.retornarRespuestaErrorReglaDeNegocio("Debe seleccionar un curso válido");
+            throw new ReglaNegocioExcepcion("Debe seleccionar un curso válido");
         }
         if (solicitudCursoVerano.getObjCursoOfertadoVerano().getId_curso() == null) {
-            this.formateadorResultados.retornarRespuestaErrorReglaDeNegocio("Debe seleccionar un curso válido");
+            throw new ReglaNegocioExcepcion("Debe seleccionar un curso válido");
         }
         cursoABuscar = this.cursoOfertado.obtenerCursoPorId(solicitudCursoVerano.getObjCursoOfertadoVerano().getId_curso());
         if (cursoABuscar == null) {
-            this.formateadorResultados.retornarRespuestaErrorReglaDeNegocio("No se encontró el curso");
+            throw new ReglaNegocioExcepcion("No se encontró el curso");
         }
         // Solo se admiten inscripciones mientras el curso está en la fase de Inscripcion
         exigirEstadoCurso(cursoABuscar, ESTADO_INSCRIPCION, "inscripciones");
 
         if (solicitudCursoVerano.getCodicion_solicitud() == null) {
-            this.formateadorResultados.retornarRespuestaErrorReglaDeNegocio("Debe seleccionar una condición de solicitud válida");
+            throw new ReglaNegocioExcepcion("Debe seleccionar una condición de solicitud válida");
         }
 
         // Verificar que el estudiante tenga una preinscripción aprobada
@@ -183,17 +181,17 @@ public class GestionarSolicitudCursoVeranoCUAdapter implements GestionarSolicitu
         );
 
         if (preinscripcionBuscar == null) {
-            this.formateadorResultados.retornarRespuestaErrorReglaDeNegocio("Debe tener una preinscripción aprobada para este curso");
+            throw new ReglaNegocioExcepcion("Debe tener una preinscripción aprobada para este curso");
         }
 
         // Verificar que la preinscripción esté aprobada
         if (!preinscripcionAprobada(preinscripcionBuscar)) {
-            this.formateadorResultados.retornarRespuestaErrorReglaDeNegocio("Su preinscripción no ha sido aprobada");
+            throw new ReglaNegocioExcepcion("Su preinscripción no ha sido aprobada");
         }
 
         // No puede tener otra inscripción activa (una con pago rechazado no cuenta)
         if (tieneInscripcionActiva(usuarioBuscar.getId_usuario(), cursoABuscar.getId_curso())) {
-            this.formateadorResultados.retornarRespuestaErrorReglaDeNegocio("Ya tiene una inscripción activa para este curso");
+            throw new ReglaNegocioExcepcion("Ya tiene una inscripción activa para este curso");
         }
 
         // El curso debe tener cupo (se vuelve a verificar con bloqueo al aceptar la inscripción)
@@ -220,7 +218,7 @@ public class GestionarSolicitudCursoVeranoCUAdapter implements GestionarSolicitu
     @Override
     public List<SolicitudCursoVeranoPreinscripcion> buscarSolicitudesPorUsuario(Integer idUsuario) {
         if (idUsuario == null) {
-            this.formateadorResultados.retornarRespuestaErrorReglaDeNegocio("El ID del usuario no puede ser nulo");
+            throw new ReglaNegocioExcepcion("El ID del usuario no puede ser nulo");
         }
         return this.gestionarSolicitudGateway.buscarSolicitudesPorUsuario(idUsuario);
     }
@@ -228,7 +226,7 @@ public class GestionarSolicitudCursoVeranoCUAdapter implements GestionarSolicitu
     @Override
     public SolicitudCursoVeranoPreinscripcion buscarSolicitudPorId(Integer idSolicitud) {
         if (idSolicitud == null) {
-            this.formateadorResultados.retornarRespuestaErrorReglaDeNegocio("El ID de la solicitud no puede ser nulo");
+            throw new ReglaNegocioExcepcion("El ID de la solicitud no puede ser nulo");
         }
         return this.gestionarSolicitudGateway.buscarSolicitudPorId(idSolicitud);
     }
@@ -236,7 +234,7 @@ public class GestionarSolicitudCursoVeranoCUAdapter implements GestionarSolicitu
     @Override
     public SolicitudCursoVeranoInscripcion buscarPorIdInscripcion(Integer idSolicitud) {
         if (idSolicitud == null) {
-            this.formateadorResultados.retornarRespuestaErrorReglaDeNegocio("El ID de la solicitud no puede ser nulo");
+            throw new ReglaNegocioExcepcion("El ID de la solicitud no puede ser nulo");
         }
         return this.gestionarSolicitudGateway.buscarSolicitudInscripcionPorId(idSolicitud);
     }
@@ -244,7 +242,7 @@ public class GestionarSolicitudCursoVeranoCUAdapter implements GestionarSolicitu
     @Override
     public List<SolicitudCursoVeranoPreinscripcion> buscarPreinscripcionesPorCurso(Integer idCurso) {
         if (idCurso == null) {
-            this.formateadorResultados.retornarRespuestaErrorReglaDeNegocio("El ID del curso no puede ser nulo");
+            throw new ReglaNegocioExcepcion("El ID del curso no puede ser nulo");
         }
         return this.gestionarSolicitudGateway.buscarPreinscripcionesPorCurso(idCurso);
     }
@@ -252,7 +250,7 @@ public class GestionarSolicitudCursoVeranoCUAdapter implements GestionarSolicitu
     @Override
     public List<SolicitudCursoVeranoInscripcion> buscarInscripcionesPorCurso(Integer idCurso) {
         if (idCurso == null) {
-            this.formateadorResultados.retornarRespuestaErrorReglaDeNegocio("El ID del curso no puede ser nulo");
+            throw new ReglaNegocioExcepcion("El ID del curso no puede ser nulo");
         }
         return this.gestionarSolicitudGateway.buscarInscripcionesPorCurso(idCurso);
     }
@@ -304,18 +302,18 @@ public class GestionarSolicitudCursoVeranoCUAdapter implements GestionarSolicitu
     @Override
     public SolicitudCursoVeranoPreinscripcion aprobarPreinscripcion(Integer idSolicitud, String comentarios) {
         if (idSolicitud == null) {
-            this.formateadorResultados.retornarRespuestaErrorReglaDeNegocio("El ID de la solicitud no puede ser nulo");
+            throw new ReglaNegocioExcepcion("El ID de la solicitud no puede ser nulo");
         }
         
         // Buscar la solicitud
         SolicitudCursoVeranoPreinscripcion solicitud = this.gestionarSolicitudGateway.buscarSolicitudPorId(idSolicitud);
         if (solicitud == null) {
-            this.formateadorResultados.retornarRespuestaErrorEntidadExiste("No se encontró la solicitud con ID: " + idSolicitud);
+            throw new EntidadYaExisteException("No se encontró la solicitud con ID: " + idSolicitud);
         }
         
         // Verificar que esté en estado "Enviada"
         if (!EstadoSolicitudCursoVerano.ENVIADA.texto().equals(solicitud.estadoActual())) {
-            this.formateadorResultados.retornarRespuestaErrorReglaDeNegocio("La solicitud no está en estado 'Enviada' para ser aprobada");
+            throw new ReglaNegocioExcepcion("La solicitud no está en estado 'Enviada' para ser aprobada");
         }
         
         // Aprobar la solicitud
@@ -327,22 +325,22 @@ public class GestionarSolicitudCursoVeranoCUAdapter implements GestionarSolicitu
     @Override
     public SolicitudCursoVeranoPreinscripcion rechazarPreinscripcion(Integer idSolicitud, String motivo) {
         if (idSolicitud == null) {
-            this.formateadorResultados.retornarRespuestaErrorReglaDeNegocio("El ID de la solicitud no puede ser nulo");
+            throw new ReglaNegocioExcepcion("El ID de la solicitud no puede ser nulo");
         }
         
         if (motivo == null || motivo.trim().isEmpty()) {
-            this.formateadorResultados.retornarRespuestaErrorReglaDeNegocio("Debe proporcionar un motivo para el rechazo");
+            throw new ReglaNegocioExcepcion("Debe proporcionar un motivo para el rechazo");
         }
         
         // Buscar la solicitud
         SolicitudCursoVeranoPreinscripcion solicitud = this.gestionarSolicitudGateway.buscarSolicitudPorId(idSolicitud);
         if (solicitud == null) {
-            this.formateadorResultados.retornarRespuestaErrorEntidadExiste("No se encontró la solicitud con ID: " + idSolicitud);
+            throw new EntidadYaExisteException("No se encontró la solicitud con ID: " + idSolicitud);
         }
         
         // Verificar que esté en estado "Enviada"
         if (!EstadoSolicitudCursoVerano.ENVIADA.texto().equals(solicitud.estadoActual())) {
-            this.formateadorResultados.retornarRespuestaErrorReglaDeNegocio("La solicitud no está en estado 'Enviada' para ser rechazada");
+            throw new ReglaNegocioExcepcion("La solicitud no está en estado 'Enviada' para ser rechazada");
         }
         
         // Rechazar la solicitud
@@ -354,20 +352,20 @@ public class GestionarSolicitudCursoVeranoCUAdapter implements GestionarSolicitu
     @Override
     public SolicitudCursoVeranoInscripcion validarPago(Integer idSolicitud, boolean esValido, String observaciones) {
         if (idSolicitud == null) {
-            this.formateadorResultados.retornarRespuestaErrorReglaDeNegocio("El ID de la solicitud no puede ser nulo");
+            throw new ReglaNegocioExcepcion("El ID de la solicitud no puede ser nulo");
         }
         
         // Buscar la solicitud
         SolicitudCursoVeranoInscripcion solicitud = this.gestionarSolicitudGateway.buscarSolicitudInscripcionPorId(idSolicitud);
         if (solicitud == null) {
-            this.formateadorResultados.retornarRespuestaErrorEntidadExiste("No se encontró la solicitud de inscripción con ID: " + idSolicitud);
+            throw new EntidadYaExisteException("No se encontró la solicitud de inscripción con ID: " + idSolicitud);
         }
         
         // Verificar que esté en estado "Enviada" o "Pago_Validado" usando el último estado
         String estadoActual = solicitud.estadoActual();
 
         if (estadoActual == null || (!estadoActual.equals(EstadoSolicitudCursoVerano.ENVIADA.texto()) && !estadoActual.equals(EstadoSolicitudCursoVerano.PAGO_VALIDADO.texto()))) {
-            this.formateadorResultados.retornarRespuestaErrorReglaDeNegocio("La solicitud no está en estado 'Enviada' o 'Pago_Validado' para validar el pago. Estado actual: " + estadoActual);
+            throw new ReglaNegocioExcepcion("La solicitud no está en estado 'Enviada' o 'Pago_Validado' para validar el pago. Estado actual: " + estadoActual);
         }
         
         // Regla de cupo: aceptar una inscripción nueva (Enviada) no puede superar el cupo del curso
@@ -385,18 +383,18 @@ public class GestionarSolicitudCursoVeranoCUAdapter implements GestionarSolicitu
     @Override
     public SolicitudCursoVeranoInscripcion completarInscripcion(Integer idSolicitud) {
         if (idSolicitud == null) {
-            this.formateadorResultados.retornarRespuestaErrorReglaDeNegocio("El ID de la solicitud no puede ser nulo");
+            throw new ReglaNegocioExcepcion("El ID de la solicitud no puede ser nulo");
         }
         
         // Buscar la solicitud
         SolicitudCursoVeranoInscripcion solicitud = this.gestionarSolicitudGateway.buscarSolicitudInscripcionPorId(idSolicitud);
         if (solicitud == null) {
-            this.formateadorResultados.retornarRespuestaErrorEntidadExiste("No se encontró la solicitud de inscripción con ID: " + idSolicitud);
+            throw new EntidadYaExisteException("No se encontró la solicitud de inscripción con ID: " + idSolicitud);
         }
         
         // Verificar que el pago esté validado
         if (!EstadoSolicitudCursoVerano.PAGO_VALIDADO.texto().equals(solicitud.estadoActual())) {
-            this.formateadorResultados.retornarRespuestaErrorReglaDeNegocio("El pago debe estar validado para completar la inscripción");
+            throw new ReglaNegocioExcepcion("El pago debe estar validado para completar la inscripción");
         }
         
         // Completar la inscripción
@@ -461,7 +459,7 @@ public class GestionarSolicitudCursoVeranoCUAdapter implements GestionarSolicitu
     public SolicitudCursoVeranoPreinscripcion actualizarObservacionesPreinscripcion(
             SolicitudCursoVeranoPreinscripcion preinscripcion) {
         if (preinscripcion == null || preinscripcion.getId_solicitud() == null) {
-            this.formateadorResultados.retornarRespuestaErrorReglaDeNegocio("La preinscripción a actualizar no puede ser nula");
+            throw new ReglaNegocioExcepcion("La preinscripción a actualizar no puede ser nula");
         }
         return this.gestionarSolicitudGateway.actualizarSolicitudCursoVerano(preinscripcion);
     }
@@ -475,7 +473,7 @@ public class GestionarSolicitudCursoVeranoCUAdapter implements GestionarSolicitu
                 ? null
                 : curso.getEstadosCursoOfertados().get(curso.getEstadosCursoOfertados().size() - 1).getEstado_actual();
         if (!estadoRequerido.equals(actual)) {
-            this.formateadorResultados.retornarRespuestaErrorReglaDeNegocio(
+            throw new ReglaNegocioExcepcion(
                     "El curso no está recibiendo " + queSolicitud + " (estado actual: "
                             + (actual != null ? actual : "sin estado") + ", se requiere: " + estadoRequerido + ")");
         }

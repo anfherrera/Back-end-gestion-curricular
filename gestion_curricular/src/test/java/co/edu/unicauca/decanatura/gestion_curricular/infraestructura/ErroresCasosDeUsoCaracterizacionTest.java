@@ -694,7 +694,7 @@ class ErroresCasosDeUsoCaracterizacionTest {
 
         GestionarCursoOfertadoVeranoCUAdapter cu() {
             return new GestionarCursoOfertadoVeranoCUAdapter(cursos, solicitudes, usuarios, materias, docentes, salones,
-                FORMATEADOR, mock(GestionarNotificacionCUIntPort.class));
+                mock(GestionarNotificacionCUIntPort.class));
         }
     }
 
@@ -876,7 +876,7 @@ class ErroresCasosDeUsoCaracterizacionTest {
 
         GestionarSolicitudCursoVeranoCUAdapter cu() {
             return new GestionarSolicitudCursoVeranoCUAdapter(solicitudes, cursos, usuarios,
-                mock(GestionarDocumentosGatewayIntPort.class), FORMATEADOR, mock(GestionarArchivosCUIntPort.class),
+                mock(GestionarDocumentosGatewayIntPort.class), mock(GestionarArchivosCUIntPort.class),
                 mock(GestionarNotificacionCUIntPort.class));
         }
     }

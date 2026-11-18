@@ -6,7 +6,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarArchivosCUIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarNotificacionCUIntPort;
-import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.FormateadorResultadosIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.GestionarArchivosGatewayIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.GestionarCursoOfertadoVeranoGatewayIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.GestionarDocenteGatewayIntPort;
@@ -77,10 +76,9 @@ public class BeanConfiguration {
             GestionarDocenteGatewayIntPort objGestionarDocenteGateway,
             GestionarSalonesIntPort salonesGateway,
             GestionarEstadoCursoOfertadoGatewayIntPort objGestionarEstadoCursoOfertadoGateway,
-            FormateadorResultadosIntPort objFormateadorResultados,
             GestionarNotificacionCUIntPort objGestionarNotificacionCU){
                 return new GestionarCursoOfertadoVeranoCUAdapter(objGestionarCursoOfertadoVeranoGateway, objGestionarSolicitudGateway, objGestionarUsuarioGateway,
-                 objGestionarMateriasGateway, objGestionarDocenteGateway, salonesGateway, objFormateadorResultados, objGestionarNotificacionCU);
+                 objGestionarMateriasGateway, objGestionarDocenteGateway, salonesGateway, objGestionarNotificacionCU);
             }
 
     // GestionarEstadisticasGatewayImplAdapter ya está definido como @Service, no necesita definición adicional
@@ -122,10 +120,9 @@ public class BeanConfiguration {
         GestionarCursoOfertadoVeranoGatewayIntPort objCursoOfertado,
         GestionarUsuarioGatewayIntPort objUsuario, 
         GestionarDocumentosGatewayIntPort objDocumentosGateway,
-        FormateadorResultadosIntPort objFormateadorResultados,
         GestionarArchivosCUIntPort objGestionarArchivos,
         GestionarNotificacionCUIntPort objGestionarNotificacionCU) {
-        return new GestionarSolicitudCursoVeranoCUAdapter(objGestionarSolicitudGateway, objCursoOfertado, objUsuario, objDocumentosGateway, objFormateadorResultados, objGestionarArchivos, objGestionarNotificacionCU);
+        return new GestionarSolicitudCursoVeranoCUAdapter(objGestionarSolicitudGateway, objCursoOfertado, objUsuario, objDocumentosGateway, objGestionarArchivos, objGestionarNotificacionCU);
     }
 
     @Bean

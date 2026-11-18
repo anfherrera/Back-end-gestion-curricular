@@ -6,7 +6,6 @@ import java.util.List;
 
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarCursoOfertadoVeranoCUIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarNotificacionCUIntPort;
-import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.FormateadorResultadosIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.GestionarCursoOfertadoVeranoGatewayIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.GestionarDocenteGatewayIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.GestionarMateriasIntPort;
@@ -15,6 +14,9 @@ import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.Gestionar
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.GestionarUsuarioGatewayIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.excepciones.DatosCursoInvalidosException.Motivo;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.excepciones.DatosCursoInvalidosException;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.excepciones.EntidadNoExisteException;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.excepciones.EntidadYaExisteException;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.excepciones.ReglaNegocioExcepcion;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.CursoOfertadoVerano;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Docente;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.EstadoCursoOfertado;
@@ -35,7 +37,6 @@ public class GestionarCursoOfertadoVeranoCUAdapter implements GestionarCursoOfer
     private final GestionarMateriasIntPort gestionarMateriasGateway;
     private final GestionarDocenteGatewayIntPort gestionarDocenteGateway;
     private final GestionarSalonesIntPort salonesGateway;
-    private final FormateadorResultadosIntPort formateadorResultados;
     private final GestionarNotificacionCUIntPort gestionarNotificacionCU;
 
     public GestionarCursoOfertadoVeranoCUAdapter(GestionarCursoOfertadoVeranoGatewayIntPort gestionarCursoOfertadoVeranoGateway,
@@ -44,7 +45,6 @@ public class GestionarCursoOfertadoVeranoCUAdapter implements GestionarCursoOfer
             GestionarMateriasIntPort gestionarMateriasGateway,
             GestionarDocenteGatewayIntPort gestionarDocenteGateway,
             GestionarSalonesIntPort salonesGateway,
-            FormateadorResultadosIntPort formateadorResultados,
             GestionarNotificacionCUIntPort gestionarNotificacionCU) {
         this.gestionarCursoOfertadoVeranoGateway = gestionarCursoOfertadoVeranoGateway;
         this.gestionarSolicitudGateway = gestionarSolicitudGateway;
@@ -52,7 +52,6 @@ public class GestionarCursoOfertadoVeranoCUAdapter implements GestionarCursoOfer
         this.gestionarMateriasGateway = gestionarMateriasGateway;
         this.gestionarDocenteGateway = gestionarDocenteGateway;
         this.salonesGateway = salonesGateway;
-        this.formateadorResultados = formateadorResultados;
         this.gestionarNotificacionCU = gestionarNotificacionCU;
     }
 
@@ -69,40 +68,40 @@ public class GestionarCursoOfertadoVeranoCUAdapter implements GestionarCursoOfer
         List<Usuario> usuariosRemovidos = new ArrayList<Usuario>();
         Boolean bandera = false;
         if(curso == null){
-            this.formateadorResultados.retornarRespuestaErrorEntidadExiste("No hay datos en el curso");
+            throw new EntidadYaExisteException("No hay datos en el curso");
         }
         if(curso.getId_curso() == null){
-            this.formateadorResultados.retornarRespuestaErrorEntidadExiste("No hay id en el curso");
+            throw new EntidadYaExisteException("No hay id en el curso");
         }
         idCurso = curso.getId_curso();
         cursoABuscar = gestionarCursoOfertadoVeranoGateway.obtenerCursoPorId(idCurso);
         if(cursoABuscar == null){
-            this.formateadorResultados.retornarRespuestaErrorEntidadExiste("No se encuentra el curso");
+            throw new EntidadYaExisteException("No se encuentra el curso");
         }
         if(cursoABuscar.getEstadosCursoOfertados().isEmpty()){
-                this.formateadorResultados.retornarRespuestaErrorEntidadExiste("No se puede actualizar el curso, porque no tiene estados");
+                throw new EntidadYaExisteException("No se puede actualizar el curso, porque no tiene estados");
         }
         if(estadoCurso == null){
-            this.formateadorResultados.retornarRespuestaErrorEntidadExiste("No hay datos en el estado");
+            throw new EntidadYaExisteException("No hay datos en el estado");
         }
         if(estadoCurso.getId_estado() == null){
-            this.formateadorResultados.retornarRespuestaErrorEntidadExiste("No hay id en el estado");
+            throw new EntidadYaExisteException("No hay id en el estado");
         }
         if(estadoCurso.getEstado_actual() == null){
-            this.formateadorResultados.retornarRespuestaErrorEntidadExiste("No hay datos en el estado actual");
+            throw new EntidadYaExisteException("No hay datos en el estado actual");
         }
 
         if(estadoCurso.getEstado_actual().equals("Preinscripcion")){
             if(cursoABuscar.getEstadosCursoOfertados().get(0).getEstado_actual().equals("Publicado")){
-                this.formateadorResultados.retornarRespuestaErrorEntidadExiste("No se puede actualizar el curso, porque no esta publicado");
+                throw new EntidadYaExisteException("No se puede actualizar el curso, porque no esta publicado");
             }
 
             List<Solicitud> solicitudes = this.gestionarSolicitudGateway.buscarSolicitudPorNombreCursoPre(idCurso);
             if(solicitudes.isEmpty()){
-                this.formateadorResultados.retornarRespuestaErrorEntidadExiste("No se puede publicar el curso, porque no hay solicitudes");
+                throw new EntidadYaExisteException("No se puede publicar el curso, porque no hay solicitudes");
             }
                 if(solicitudes.size()< puntoEquilibrioMinimo){
-                    this.formateadorResultados.retornarRespuestaErrorReglaDeNegocio("No se puede publicar el curso, porque no se alcanzo el cupo estimado");
+                    throw new ReglaNegocioExcepcion("No se puede publicar el curso, porque no se alcanzo el cupo estimado");
                 }
                     for (Solicitud solicitud : solicitudes) {
                         String estadoAnterior = solicitud.estadoActual("Pendiente");
@@ -116,7 +115,7 @@ public class GestionarCursoOfertadoVeranoCUAdapter implements GestionarCursoOfer
                         usuario = this.gestionarUsuarioGateway.buscarUsuarioPorSolicitud(solicitud.getId_solicitud());
                         bandera = this.gestionarCursoOfertadoVeranoGateway.asociarUsuarioCurso(usuario.getId_usuario(), idCurso);
                         if(bandera == false){
-                            this.formateadorResultados.retornarRespuestaErrorEntidadExiste("No se pudo asociar el usuario al curso");
+                            throw new EntidadYaExisteException("No se pudo asociar el usuario al curso");
                         }
                         
                         // Notificar cambio de estado - Preinscripción Aprobada
@@ -133,15 +132,15 @@ public class GestionarCursoOfertadoVeranoCUAdapter implements GestionarCursoOfer
 
         if(estadoCurso.getEstado_actual().equals("Inscripcion")){
             if(cursoABuscar.getEstadosCursoOfertados().get(0).getEstado_actual().equals("Preinscripcion")){
-                this.formateadorResultados.retornarRespuestaErrorEntidadExiste("No se puede actualizar el curso, porque no esta publicado");
+                throw new EntidadYaExisteException("No se puede actualizar el curso, porque no esta publicado");
             }
 
             List<Solicitud> solicitudes = this.gestionarSolicitudGateway.buscarSolicitudPorNombreCursoIns(idCurso);
             if(solicitudes.isEmpty()){
-                this.formateadorResultados.retornarRespuestaErrorEntidadExiste("No se puede publicar el curso, porque no hay solicitudes");
+                throw new EntidadYaExisteException("No se puede publicar el curso, porque no hay solicitudes");
             }
                 if(solicitudes.size()< cursoABuscar.getCupo_estimado()){
-                    this.formateadorResultados.retornarRespuestaErrorReglaDeNegocio("No se puede abrir el curso, porque no se alcanzo el punto de equilibrio");
+                    throw new ReglaNegocioExcepcion("No se puede abrir el curso, porque no se alcanzo el punto de equilibrio");
                 }
                 estudiantesInscritos = new ArrayList<Usuario>(cursoABuscar.getEstudiantesInscritos());
                 for (Solicitud solicitud : solicitudes) {
@@ -185,7 +184,7 @@ public class GestionarCursoOfertadoVeranoCUAdapter implements GestionarCursoOfer
         cursoActualizado = this.gestionarCursoOfertadoVeranoGateway.actualizarCurso(cursoABuscar, nuevoEstado);
 
         if(cursoActualizado == null){
-            this.formateadorResultados.retornarRespuestaErrorEntidadExiste("No se pudo actualizar el curso");
+            throw new EntidadYaExisteException("No se pudo actualizar el curso");
         }
 
         return cursoActualizado;
@@ -197,27 +196,27 @@ public class GestionarCursoOfertadoVeranoCUAdapter implements GestionarCursoOfer
         Materia materia = null;
         Docente docente = null;
         if(curso == null){
-            this.formateadorResultados.retornarRespuestaErrorEntidadExiste("No hay datos en el curso");
+            throw new EntidadYaExisteException("No hay datos en el curso");
         }
         if(curso.getObjMateria() == null){
-            this.formateadorResultados.retornarRespuestaErrorEntidadExiste("No hay datos en la materia");
+            throw new EntidadYaExisteException("No hay datos en la materia");
         }
         if(curso.getObjMateria().getId_materia() == null){
-            this.formateadorResultados.retornarRespuestaErrorEntidadExiste("No hay datos en la   materia");
+            throw new EntidadYaExisteException("No hay datos en la   materia");
         }
         materia = this.gestionarMateriasGateway.obtenerMateriaPorId(curso.getObjMateria().getId_materia());
         if(materia == null){
-            this.formateadorResultados.retornarRespuestaErrorEntidadExiste("No existe la materia con el ID: " + curso.getObjMateria().getId_materia());
+            throw new EntidadYaExisteException("No existe la materia con el ID: " + curso.getObjMateria().getId_materia());
         }
         if(curso.getObjDocente() == null){
-            this.formateadorResultados.retornarRespuestaErrorEntidadExiste("No hay datos en el docente");
+            throw new EntidadYaExisteException("No hay datos en el docente");
         }
         if(curso.getObjDocente().getId_docente() == null){
-            this.formateadorResultados.retornarRespuestaErrorEntidadExiste("No hay datos en el docente");
+            throw new EntidadYaExisteException("No hay datos en el docente");
         }
         docente = this.gestionarDocenteGateway.buscarDocentePorId(curso.getObjDocente().getId_docente());
         if(docente == null){
-            this.formateadorResultados.retornarRespuestaErrorEntidadExiste("No existe el docente con el ID: " + curso.getObjDocente().getId_docente());
+            throw new EntidadYaExisteException("No existe el docente con el ID: " + curso.getObjDocente().getId_docente());
         }            
         return guardarCurso(curso);
     }
@@ -226,9 +225,8 @@ public class GestionarCursoOfertadoVeranoCUAdapter implements GestionarCursoOfer
         for (CursoOfertadoVerano existente : listarTodos()) {
             if (curso.getObjMateria().getId_materia() == existente.getObjMateria().getId_materia()
                     && curso.getGrupo() == existente.getGrupo()) {
-                formateadorResultados.retornarRespuestaErrorEntidadExiste(
+                throw new EntidadYaExisteException(
                         "El grupo asignado ya esta en uso" + curso.getGrupo().name());
-                return null;
             }
         }
         return gestionarCursoOfertadoVeranoGateway.crearCurso(curso);
@@ -249,11 +247,11 @@ public class GestionarCursoOfertadoVeranoCUAdapter implements GestionarCursoOfer
         GrupoCursoVerano grupo = grupoInicial(datos.grupo());
         Materia materia = gestionarMateriasGateway.obtenerMateriaPorId(datos.idMateria());
         if (materia == null) {
-            formateadorResultados.retornarRespuestaErrorEntidadExiste("Materia no encontrada.");
+            throw new EntidadYaExisteException("Materia no encontrada.");
         }
         Docente docente = gestionarDocenteGateway.obtenerDocentePorId(datos.idDocente());
         if (docente == null) {
-            formateadorResultados.retornarRespuestaErrorEntidadExiste("Docente no encontrado.");
+            throw new EntidadYaExisteException("Docente no encontrado.");
         }
 
         if (existeCurso(datos.idMateria(), datos.idDocente(), datos.periodo(), grupo)) {
@@ -287,9 +285,7 @@ public class GestionarCursoOfertadoVeranoCUAdapter implements GestionarCursoOfer
         }
         Salon salon = salonesGateway.obtenerSalonPorId(idSalon);
         if (salon == null) {
-            formateadorResultados.retornarRespuestaErrorEntidadExiste("Salón no encontrado.");
-            throw new DatosCursoInvalidosException(Motivo.SALON_NO_ENCONTRADO,
-                    "El salón con ID " + idSalon + " no existe");
+            throw new EntidadYaExisteException("Salón no encontrado.");
         }
         return salon.getNumero_salon();
     }
@@ -310,7 +306,7 @@ public class GestionarCursoOfertadoVeranoCUAdapter implements GestionarCursoOfer
         CursoOfertadoVerano cursosABuscar=null;
         cursosABuscar = this.gestionarCursoOfertadoVeranoGateway.obtenerCursoPorId(idCurso);
         if(cursosABuscar == null){
-            this.formateadorResultados.retornarRespuestaErrorEntidadExiste("No se encuentra el curso");
+            throw new EntidadYaExisteException("No se encuentra el curso");
         }
         return this.gestionarCursoOfertadoVeranoGateway.eliminarCurso(idCurso);
     }
@@ -320,7 +316,7 @@ public class GestionarCursoOfertadoVeranoCUAdapter implements GestionarCursoOfer
         CursoOfertadoVerano cursosABuscar=null;
         cursosABuscar = this.gestionarCursoOfertadoVeranoGateway.obtenerCursoPorId(idCurso);
         if(cursosABuscar == null){
-            this.formateadorResultados.retornarRespuestaErrorEntidadNoExiste("No se encuentra el curso");
+            throw new EntidadNoExisteException("No se encuentra el curso");
         }
         return cursosABuscar;
     }

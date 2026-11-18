@@ -5,7 +5,6 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -21,7 +20,6 @@ import org.junit.jupiter.api.Test;
 
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarArchivosCUIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarNotificacionCUIntPort;
-import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.FormateadorResultadosIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.GestionarCursoOfertadoVeranoGatewayIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.GestionarDocumentosGatewayIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.GestionarSolicitudCursoVeranoGatewayIntPort;
@@ -36,20 +34,15 @@ import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.SolicitudCu
 class CupoCursoVeranoTest {
 
     private GestionarSolicitudCursoVeranoGatewayIntPort gateway;
-    private FormateadorResultadosIntPort formateador;
     private GestionarSolicitudCursoVeranoCUAdapter casoDeUso;
 
     @BeforeEach
     void setUp() {
         gateway = mock(GestionarSolicitudCursoVeranoGatewayIntPort.class);
-        formateador = mock(FormateadorResultadosIntPort.class);
-        doThrow(new IllegalStateException("regla de negocio"))
-                .when(formateador).retornarRespuestaErrorReglaDeNegocio(anyString());
         casoDeUso = new GestionarSolicitudCursoVeranoCUAdapter(gateway,
                 mock(GestionarCursoOfertadoVeranoGatewayIntPort.class),
                 mock(GestionarUsuarioGatewayIntPort.class),
                 mock(GestionarDocumentosGatewayIntPort.class),
-                formateador,
                 mock(GestionarArchivosCUIntPort.class),
                 mock(GestionarNotificacionCUIntPort.class));
     }
