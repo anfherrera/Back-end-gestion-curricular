@@ -191,8 +191,11 @@ class InscripcionesVeranoRespuestasCaracterizacionTest {
             Files.writeString(referencia, json.writerWithDefaultPrettyPrinter().writeValueAsString(resultados));
         }
         // BUG-23: el error inesperado al rechazar es un 500 genérico y ya no expone su mensaje
-        assertThat(resultados).isEqualTo(Correcciones.aplicar(json.readTree(Files.readString(referencia)),
-            "verano-endpoints/correcciones/inscripciones-respuestas-bug23.json"));
+        JsonNode esperado = Correcciones.aplicar(json.readTree(Files.readString(referencia)),
+            "verano-endpoints/correcciones/inscripciones-respuestas-bug23.json");
+        // BUG-34: documentos_count siempre numérico y archivo_pago admite valores null
+        esperado = Correcciones.aplicar(esperado, "verano-endpoints/correcciones/inscripciones-respuestas-bug34.json");
+        assertThat(resultados).isEqualTo(esperado);
     }
 
     /** Sustituye una fecha {@code Date} (milisegundos) de la hora actual, tras comprobar que es de esta ejecución. */

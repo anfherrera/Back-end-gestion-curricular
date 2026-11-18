@@ -31,6 +31,7 @@ import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.enums.Estad
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.RespuestasArchivo;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.dto.peticion.DecisionSolicitudDTOPeticion;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.dto.peticion.PreinscripcionCursoVeranoDTOPeticion;
+import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.dto.respuesta.InscripcionesVeranoDTORespuesta.ArchivoPagoInfo;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.dto.respuesta.InscripcionesVeranoDTORespuesta.ArchivoSimulado;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.dto.respuesta.InscripcionesVeranoDTORespuesta.CancelacionRechazada;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.dto.respuesta.InscripcionesVeranoDTORespuesta.ConfirmacionSimulada;
@@ -404,12 +405,12 @@ public class InscripcionesVeranoRestController {
             return ResponseEntity.ok(new InfoNoEncontrada(false, "Inscripcion no encontrada"));
         }
 
-        // Verificar documentos ("NULL" como texto si la lista es null)
+        // Verificar documentos (0 si la lista es null; documentos_null lo distingue)
         List<Documento> documentos = inscripcion.getDocumentos();
-        Object documentosCount = documentos != null ? documentos.size() : "NULL";
+        int documentosCount = documentos != null ? documentos.size() : 0;
 
         List<DocumentoInfo> documentosInfo = null;
-        Map<String, ?> archivoPago = null;
+        ArchivoPagoInfo archivoPago = null;
         if (documentos != null && !documentos.isEmpty()) {
             documentosInfo = new ArrayList<>();
             for (Documento doc : documentos) {
@@ -417,13 +418,10 @@ public class InscripcionesVeranoRestController {
                         doc.isEsValido()));
             }
 
-            // Agregar informacion especifica del archivo para descarga (Map.of: falla si algun valor es null)
+            // Agregar informacion especifica del archivo para descarga
             Documento primerDocumento = documentos.get(0);
-            archivoPago = Map.of(
-                "nombre_archivo", primerDocumento.getNombre(),
-                "ruta_archivo", primerDocumento.getRuta_documento(),
-                "id_documento", primerDocumento.getId_documento()
-            );
+            archivoPago = new ArchivoPagoInfo(primerDocumento.getNombre(), primerDocumento.getRuta_documento(),
+                    primerDocumento.getId_documento());
         }
 
         return ResponseEntity.ok(new InfoInscripcion(true, inscripcion.getId_solicitud(),
