@@ -33,6 +33,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarUsuarioCUIntPort;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Programa;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Rol;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Usuario;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.dto.peticion.LoginDTOPeticion;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.dto.peticion.UsuarioDTOPeticion;
@@ -83,16 +85,14 @@ public class UsuarioRestController {
             if (peticion.getId_rol() == null) {
                 throw new IllegalArgumentException("El ID del rol es obligatorio");
             }
-            co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Rol rol = 
-                new co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Rol();
+            Rol rol = new Rol();
             rol.setId_rol(peticion.getId_rol());
             usuario.setObjRol(rol);
             
             if (peticion.getId_programa() == null) {
                 throw new IllegalArgumentException("El ID del programa es obligatorio");
             }
-            co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Programa programa = 
-                new co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Programa();
+            Programa programa = new Programa();
             programa.setId_programa(peticion.getId_programa());
             usuario.setObjPrograma(programa);
             
@@ -141,13 +141,11 @@ public class UsuarioRestController {
         }
         
         // Crear objetos Rol y Programa con solo el ID
-        co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Rol rol = 
-            new co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Rol();
+        Rol rol = new Rol();
         rol.setId_rol(peticion.getId_rol());
         usuario.setObjRol(rol);
         
-        co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Programa programa = 
-            new co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Programa();
+        Programa programa = new Programa();
         programa.setId_programa(peticion.getId_programa());
         usuario.setObjPrograma(programa);
         

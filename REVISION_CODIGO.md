@@ -501,6 +501,8 @@ Rutas abreviadas: `…/` = `gestion_curricular/src/main/java/co/edu/unicauca/dec
 
 - [x] **EST-6. Hay nombres completamente calificados dentro del código**, como `co.edu.unicauca…dominio.modelos.Materia`, en lugar de usar `import`. Aparecen en Catálogos, Cursos, Inscripciones, Preinscripciones, el caso de uso de Paz y Salvo y el puerto de notificaciones. Las otras referencias de la lista histórica ya se habían retirado. Cuatro caracterizaciones antes del cambio. `clean verify` en JDK 17 y 25: 542 pruebas, 1 omitida y cero fallos.
 
+  *Revisión 18:* `UsuarioRestController` (`crearUsuario` y `actualizarUsuario`) importa `Rol` y `Programa` en lugar de escribirlos con su paquete. `ErroresLocalesCaracterizacionTest` y `AutorizacionPorRolTest` pasaron tres veces antes y tres después, y el bytecode de la clase (`javap -c -p`) es idéntico. Una búsqueda posterior encontró más nombres completamente calificados fuera de imports, Javadoc y consultas JPQL (donde `SELECT new` los exige): `BeanConfiguration`, `ReportesCursosVeranoRestController`, `SoporteCursosVerano`, `CursosOfertadosMapperDominio`, `GeneradorExcelSolicitudesVerano`, `GeneradorPdfCursosVerano`, `GeneradorReportesEstadisticas` y `GestionarSolicitudPazYSalvoGatewayImplAdapter`, y en pruebas `HomologacionUnidadTest`, `ReingresoUnidadTest`, `SoportePazYSalvo` y `AutorizacionPorRolTest`. Quedan sin tocar.
+
 - [ ] **EST-7. Las rutas REST no siguen un mismo estilo:**
   - verbos en la URL: `/crearDocente`, `/eliminarDocente/{id}`, `/buscarPorId/{id}`
   - camelCase mezclado con kebab-case: `/crearSolicitud-PazYSalvo`
