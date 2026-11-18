@@ -14,7 +14,7 @@ import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.SolicitudPa
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.enums.EstadosSolicitud;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.entidades.EstadoSolicitudEntity;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.entidades.SolicitudPazYSalvoEntity;
-import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.mappers.Mapper;
+import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.mappers.SolicitudMapperPersistencia;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.repositorios.SolicitudPazYSalvoRepositoryInt;
 
 @Service
@@ -22,16 +22,14 @@ import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.pers
 public class GestionarSolicitudPazYSalvoGatewayImplAdapter implements GestionarSolicitudPazYSalvoGatewayIntPort {
 
     private final SolicitudPazYSalvoRepositoryInt solicitudRepository;
-    private final Mapper mapper;
 
-    public GestionarSolicitudPazYSalvoGatewayImplAdapter(SolicitudPazYSalvoRepositoryInt solicitudRepository, Mapper mapper) {
+    public GestionarSolicitudPazYSalvoGatewayImplAdapter(SolicitudPazYSalvoRepositoryInt solicitudRepository) {
         this.solicitudRepository = solicitudRepository;
-        this.mapper = mapper;
     }
 
     @Override
     public SolicitudPazYSalvo guardar(SolicitudPazYSalvo solicitudPazYSalvo) {
-        SolicitudPazYSalvoEntity entity = mapper.map(solicitudPazYSalvo, SolicitudPazYSalvoEntity.class);
+        SolicitudPazYSalvoEntity entity = SolicitudMapperPersistencia.aEntidad(solicitudPazYSalvo, SolicitudPazYSalvoEntity.class);
         
         // Generar nombre descriptivo con el nombre del estudiante
         entity.setNombre_solicitud(co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.NombreSolicitud.de(
@@ -51,13 +49,13 @@ public class GestionarSolicitudPazYSalvoGatewayImplAdapter implements GestionarS
         entity.setEstadosSolicitud(estadosSolicitud);
 
         SolicitudPazYSalvoEntity savedEntity = solicitudRepository.save(entity);
-        return mapper.map(savedEntity, SolicitudPazYSalvo.class);
+        return SolicitudMapperPersistencia.aDominio(savedEntity, SolicitudPazYSalvo.class);
     }
 
     @Override
     public List<SolicitudPazYSalvo> listarSolicitudes() {
         return solicitudRepository.findAll().stream()
-                .map(entity -> mapper.map(entity, SolicitudPazYSalvo.class))
+                .map(entity -> SolicitudMapperPersistencia.aDominio(entity, SolicitudPazYSalvo.class))
                 .toList();
     }
 
@@ -75,7 +73,7 @@ public class GestionarSolicitudPazYSalvoGatewayImplAdapter implements GestionarS
 
     private List<SolicitudPazYSalvo> aDominio(List<SolicitudPazYSalvoEntity> entidades) {
         return entidades.stream()
-                .map(entity -> mapper.map(entity, SolicitudPazYSalvo.class))
+                .map(entity -> SolicitudMapperPersistencia.aDominio(entity, SolicitudPazYSalvo.class))
                 .toList();
     }
 
@@ -107,7 +105,7 @@ public class GestionarSolicitudPazYSalvoGatewayImplAdapter implements GestionarS
                             }
                         });
                     }
-                    return mapper.map(entity, SolicitudPazYSalvo.class);
+                    return SolicitudMapperPersistencia.aDominio(entity, SolicitudPazYSalvo.class);
                 });
     }
 

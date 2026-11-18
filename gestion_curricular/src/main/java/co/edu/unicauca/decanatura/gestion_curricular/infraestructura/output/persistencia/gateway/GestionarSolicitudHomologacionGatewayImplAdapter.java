@@ -12,26 +12,24 @@ import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.EstadoSolic
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.SolicitudHomologacion;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.entidades.EstadoSolicitudEntity;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.entidades.SolicitudHomologacionEntity;
-import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.mappers.Mapper;
+import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.mappers.SolicitudMapperPersistencia;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.repositorios.SolicitudHomologacionRepositoryInt;
 
 @Service
 @Transactional
 public class GestionarSolicitudHomologacionGatewayImplAdapter implements GestionarSolicitudHomologacionGatewayIntPort {
 
-    private final Mapper mapper;
     private final SolicitudHomologacionRepositoryInt solicitudHomologacionRepository;
 
-    public GestionarSolicitudHomologacionGatewayImplAdapter(Mapper mapper, SolicitudHomologacionRepositoryInt solicitudHomologacionRepository) {
-        this.mapper = mapper;
+    public GestionarSolicitudHomologacionGatewayImplAdapter(SolicitudHomologacionRepositoryInt solicitudHomologacionRepository) {
         this.solicitudHomologacionRepository = solicitudHomologacionRepository;
     }
 
     @Override
     public SolicitudHomologacion guardar(SolicitudHomologacion solicitud) {
-       SolicitudHomologacionEntity entity = mapper.map(solicitud, SolicitudHomologacionEntity.class);
+       SolicitudHomologacionEntity entity = SolicitudMapperPersistencia.aEntidad(solicitud, SolicitudHomologacionEntity.class);
        SolicitudHomologacionEntity savedEntity = solicitudHomologacionRepository.save(entity);
-       return mapper.map(savedEntity, SolicitudHomologacion.class);
+       return SolicitudMapperPersistencia.aDominio(savedEntity, SolicitudHomologacion.class);
 
     }
 
@@ -61,14 +59,14 @@ public class GestionarSolicitudHomologacionGatewayImplAdapter implements Gestion
 
     private List<SolicitudHomologacion> aDominio(List<SolicitudHomologacionEntity> entidades) {
         return entidades.stream()
-                .map(entity -> mapper.map(entity, SolicitudHomologacion.class))
+                .map(entity -> SolicitudMapperPersistencia.aDominio(entity, SolicitudHomologacion.class))
                 .toList();
     }
 
     @Override
     public Optional<SolicitudHomologacion> buscarPorId(Integer idSolicitud) {
        return solicitudHomologacionRepository.findByIdWithDocumentos(idSolicitud)
-               .map(entity -> Optional.of(mapper.map(entity, SolicitudHomologacion.class)))
+               .map(entity -> Optional.of(SolicitudMapperPersistencia.aDominio(entity, SolicitudHomologacion.class)))
                .orElse(Optional.empty());
     }
 
@@ -77,7 +75,7 @@ public class GestionarSolicitudHomologacionGatewayImplAdapter implements Gestion
        SolicitudHomologacionEntity solicitudEntity = solicitudHomologacionRepository.findById(idSolicitud)
             .orElseThrow(() -> new EntidadNoExisteException("Solicitud de Homologacion no encontrada con ID: " + idSolicitud));
 
-        EstadoSolicitudEntity nuevo= mapper.map(nuevoEstado, EstadoSolicitudEntity.class);
+        EstadoSolicitudEntity nuevo= SolicitudMapperPersistencia.aEntidad(nuevoEstado);
         nuevo.setObjSolicitud(solicitudEntity);
 
         solicitudEntity.getEstadosSolicitud().add(nuevo);

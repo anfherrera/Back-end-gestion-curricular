@@ -54,6 +54,16 @@ public final class CatalogosMapperPersistencia {
         return new Materia(entidad.getId_materia(), entidad.getCodigo(), entidad.getNombre(), entidad.getCreditos());
     }
 
+    public static MateriaEntity aEntidad(Materia materia) {
+        Origen.exigir(materia);
+        MateriaEntity entidad = new MateriaEntity();
+        entidad.setId_materia(materia.getId_materia());
+        entidad.setCodigo(materia.getCodigo());
+        entidad.setNombre(materia.getNombre());
+        entidad.setCreditos(materia.getCreditos());
+        return entidad;
+    }
+
     public static Salon aDominio(SalonEntity entidad) {
         Origen.exigir(entidad);
         return new Salon(entidad.getId_salon(), entidad.getNumero_salon(), entidad.getEdificio(), entidad.getActivo());

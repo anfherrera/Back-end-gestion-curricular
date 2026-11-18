@@ -2,7 +2,6 @@ package co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.per
 
 import java.util.List;
 
-import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -10,6 +9,7 @@ import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.Gestionar
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Documento;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.entidades.DocumentoEntity;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.entidades.SolicitudEntity;
+import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.mappers.SolicitudMapperPersistencia;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.repositorios.DocumentoRepositoryInt;
 
 @Service
@@ -37,19 +37,17 @@ public class GestionarDocumentoGatewayImplAdapter implements GestionarDocumentos
 
 
     private final DocumentoRepositoryInt documentoRepository;
-    private final ModelMapper documentoMapper;
 
-    public GestionarDocumentoGatewayImplAdapter(DocumentoRepositoryInt documentoRepository, ModelMapper documentoMapper){
+    public GestionarDocumentoGatewayImplAdapter(DocumentoRepositoryInt documentoRepository){
         this.documentoRepository = documentoRepository;
-        this.documentoMapper = documentoMapper;
     }
 
     @Override
     @Transactional
     public Documento crearDocumento(Documento documento) {
-        DocumentoEntity documentoEntity = documentoMapper.map(documento, DocumentoEntity.class);
+        DocumentoEntity documentoEntity = SolicitudMapperPersistencia.aEntidad(documento);
         DocumentoEntity saved = documentoRepository.save(documentoEntity);
-        return documentoMapper.map(saved, Documento.class);
+        return SolicitudMapperPersistencia.aDominio(saved);
     }
 
     @Override
@@ -66,18 +64,18 @@ public class GestionarDocumentoGatewayImplAdapter implements GestionarDocumentos
         existente.setEsValido(documento.isEsValido());
         existente.setComentario(documento.getComentario());
         if (documento.getObjSolicitud() != null) {
-            existente.setObjSolicitud(documentoMapper.map(documento.getObjSolicitud(), SolicitudEntity.class));
+            existente.setObjSolicitud(SolicitudMapperPersistencia.aEntidad(documento.getObjSolicitud(), SolicitudEntity.class));
         }
         // si documento.getObjSolicitud() == null, se mantiene el valor actual de existente (no se desasocia)
 
         DocumentoEntity actualizado = documentoRepository.save(existente);
-        return documentoMapper.map(actualizado, Documento.class);
+        return SolicitudMapperPersistencia.aDominio(actualizado);
     }
     @Override
     @Transactional(readOnly = true)
     public Documento buscarDocumentoId(Integer idDocumento) {
         return documentoRepository.findById(idDocumento)
-            .map(entity -> documentoMapper.map(entity, Documento.class))
+            .map(entity -> SolicitudMapperPersistencia.aDominio(entity))
             .orElse(null);
     }
 
@@ -88,7 +86,7 @@ public class GestionarDocumentoGatewayImplAdapter implements GestionarDocumentos
        }
        return documentoRepository.findByObjSolicitudIsNullAndIdUsuarioSubio(idUsuario)
             .stream()
-            .map(entity -> documentoMapper.map(entity, Documento.class))
+            .map(entity -> SolicitudMapperPersistencia.aDominio(entity))
             .toList();
     }
 }

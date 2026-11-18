@@ -12,25 +12,23 @@ import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.EstadoSolic
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.SolicitudReingreso;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.entidades.EstadoSolicitudEntity;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.entidades.SolicitudReingresoEntity;
-import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.mappers.Mapper;
+import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.mappers.SolicitudMapperPersistencia;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.repositorios.SolicitudReingresoRepositoryInt;
 
 @Service
 @Transactional
 public class GestionarSolicitudReingresoGatewayImplAdapter implements GestionarSolicitudReingresoGatewayIntPort {
-    private final Mapper mapper;
     private final SolicitudReingresoRepositoryInt solicitudReingresoRepository;
 
-    public GestionarSolicitudReingresoGatewayImplAdapter(Mapper mapper, SolicitudReingresoRepositoryInt solicitudReingresoRepository) {
-        this.mapper = mapper;
+    public GestionarSolicitudReingresoGatewayImplAdapter(SolicitudReingresoRepositoryInt solicitudReingresoRepository) {
         this.solicitudReingresoRepository = solicitudReingresoRepository;
     }
 
     @Override
     public SolicitudReingreso crearSolicitudReingreso(SolicitudReingreso solicitud) {
-        SolicitudReingresoEntity entity = mapper.map(solicitud, SolicitudReingresoEntity.class);
+        SolicitudReingresoEntity entity = SolicitudMapperPersistencia.aEntidad(solicitud, SolicitudReingresoEntity.class);
         SolicitudReingresoEntity savedEntity = solicitudReingresoRepository.save(entity);
-        return mapper.map(savedEntity, SolicitudReingreso.class);
+        return SolicitudMapperPersistencia.aDominio(savedEntity, SolicitudReingreso.class);
     }
 
     @Override
@@ -59,14 +57,14 @@ public class GestionarSolicitudReingresoGatewayImplAdapter implements GestionarS
 
     private List<SolicitudReingreso> aDominio(List<SolicitudReingresoEntity> entidades) {
         return entidades.stream()
-                .map(entity -> mapper.map(entity, SolicitudReingreso.class))
+                .map(entity -> SolicitudMapperPersistencia.aDominio(entity, SolicitudReingreso.class))
                 .toList();
     }
 
     @Override
     public Optional<SolicitudReingreso> buscarPorId(Integer id) {
         return solicitudReingresoRepository.findById(id)
-                .map(entity -> Optional.of(mapper.map(entity, SolicitudReingreso.class)))
+                .map(entity -> Optional.of(SolicitudMapperPersistencia.aDominio(entity, SolicitudReingreso.class)))
                 .orElse(Optional.empty());
     }
 
@@ -74,7 +72,7 @@ public class GestionarSolicitudReingresoGatewayImplAdapter implements GestionarS
     public void cambiarEstadoSolicitudReingreso(Integer idSolicitud, EstadoSolicitud nuevoEstado) {
       SolicitudReingresoEntity solicitudEntity = (SolicitudReingresoEntity) solicitudReingresoRepository.findById(idSolicitud)
               .orElseThrow(() -> new EntidadNoExisteException("Solicitud de Reingreso no encontrada con ID: " + idSolicitud));
-      EstadoSolicitudEntity nuevo = mapper.map(nuevoEstado, EstadoSolicitudEntity.class);
+      EstadoSolicitudEntity nuevo = SolicitudMapperPersistencia.aEntidad(nuevoEstado);
       nuevo.setObjSolicitud(solicitudEntity);
 
       solicitudEntity.getEstadosSolicitud().add(nuevo);
