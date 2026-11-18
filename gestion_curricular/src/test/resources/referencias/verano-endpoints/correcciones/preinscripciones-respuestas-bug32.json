@@ -1,0 +1,4 @@
+{
+  "/curso nuevo/body/fecha" : 1710522000000,
+  "/curso nuevo/claves" : [ ".fecha:NUMBER", ".codigo:STRING", ".estado:STRING", ".objUsuario:OBJECT", ".objUsuario.nombre_completo:STRING", ".objUsuario.id_usuario:NUMBER", ".id_solicitud:NUMBER", ".curso:STRING", ".nombreCompleto:STRING", ".condicion:STRING" ]
+}

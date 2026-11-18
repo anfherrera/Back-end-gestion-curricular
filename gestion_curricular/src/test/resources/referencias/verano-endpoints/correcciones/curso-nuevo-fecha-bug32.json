@@ -1,0 +1,37 @@
+{
+  "sin fecha" : {
+    "status" : 200,
+    "body" : {
+      "fecha" : null,
+      "codigo" : "1046",
+      "estado" : "Pendiente",
+      "objUsuario" : {
+        "nombre_completo" : "Ana Ruiz",
+        "id_usuario" : 7
+      },
+      "id_solicitud" : 50,
+      "curso" : "sin fecha",
+      "nombreCompleto" : "Ana Ruiz",
+      "condicion" : "Primera_Vez"
+    },
+    "fechaTipo" : "NULL"
+  },
+  "/spring boot/body/fecha" : "2024-03-15T17:00:00.000+00:00",
+  "spring boot sin fecha" : {
+    "status" : 200,
+    "body" : {
+      "fecha" : null,
+      "codigo" : "1046",
+      "estado" : "Pendiente",
+      "objUsuario" : {
+        "nombre_completo" : "Ana Ruiz",
+        "id_usuario" : 7
+      },
+      "id_solicitud" : 50,
+      "curso" : "sin fecha",
+      "nombreCompleto" : "Ana Ruiz",
+      "condicion" : "Primera_Vez"
+    },
+    "fechaTipo" : "NULL"
+  }
+}

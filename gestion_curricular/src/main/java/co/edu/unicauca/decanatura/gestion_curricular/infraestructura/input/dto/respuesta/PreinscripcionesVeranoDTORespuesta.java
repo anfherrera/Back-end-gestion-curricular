@@ -39,7 +39,10 @@ public final class PreinscripcionesVeranoDTORespuesta {
     /** Clave {@code cursoNombre} de {@link PreinscripcionUsuario}. */
     public record CursoNombre(String cursoNombre) {}
 
-    /** Respuesta 200 de {@code /solicitudes-curso-nuevo}; {@code fecha} es el {@code Date.toString()} guardado. */
+    /**
+     * Respuesta 200 de {@code /solicitudes-curso-nuevo}; {@code fecha} es la fecha de registro guardada, con el mismo
+     * formato JSON que las demás fechas, y null si la solicitud vuelve sin ella (BUG-32).
+     */
     @JsonPropertyOrder({"fecha", "codigo", "estado", "objUsuario", "id_solicitud", "curso", "nombreCompleto",
         "condicion"})
     public record CursoNuevoSolicitado(
@@ -48,7 +51,7 @@ public final class PreinscripcionesVeranoDTORespuesta {
             String codigo,
             String curso,
             String condicion,
-            String fecha,
+            Date fecha,
             String estado,
             UsuarioSolicitante objUsuario) {}
 

@@ -1,0 +1,41 @@
+{
+  "sin fecha" : {
+    "status" : 500,
+    "body" : {
+      "codigoError" : "GC-0001",
+      "mensaje" : "Ha ocurrido un error inesperado. Por favor, inténtelo de nuevo.",
+      "codigoHttp" : 500,
+      "url" : "http://localhost/api/cursos-intersemestrales/solicitudes-curso-nuevo",
+      "metodo" : "POST"
+    },
+    "fechaTipo" : "MISSING"
+  },
+  "spring boot" : {
+    "status" : 200,
+    "body" : {
+      "fecha" : "<Date.toString()>",
+      "codigo" : "1046",
+      "estado" : "Pendiente",
+      "objUsuario" : {
+        "nombre_completo" : "Ana Ruiz",
+        "id_usuario" : 7
+      },
+      "id_solicitud" : 50,
+      "curso" : "Cálculo",
+      "nombreCompleto" : "Ana Ruiz",
+      "condicion" : "Primera_Vez"
+    },
+    "fechaTipo" : "STRING"
+  },
+  "spring boot sin fecha" : {
+    "status" : 500,
+    "body" : {
+      "codigoError" : "GC-0001",
+      "mensaje" : "Ha ocurrido un error inesperado. Por favor, inténtelo de nuevo.",
+      "codigoHttp" : 500,
+      "url" : "http://localhost/api/cursos-intersemestrales/solicitudes-curso-nuevo",
+      "metodo" : "POST"
+    },
+    "fechaTipo" : "MISSING"
+  }
+}

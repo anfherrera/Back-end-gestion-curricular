@@ -46,6 +46,7 @@ import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.mappe
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.mappers.RolMapperDominioImpl;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.mappers.SolicitudCursoDeVeranoPreinscripcionMapperDominio;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.mappers.UsuarioMapperDominioImpl;
+import co.edu.unicauca.decanatura.gestion_curricular.soporte.Correcciones;
 
 /**
  * Fija las respuestas con mapa de {@link PreinscripcionesVeranoRestController} antes de tiparlas (ARQ-10).
@@ -102,8 +103,10 @@ class PreinscripcionesVeranoRespuestasCaracterizacionTest {
             + "\"idUsuario\":7,\"curso\":\"";
         ObjectNode creado = registrar(resultados, "curso nuevo", mvc,
             json(post(BASE + "/solicitudes-curso-nuevo"), nuevo + "Cálculo\"}"));
-        assertThat(creado.get("body").get("fecha").asText()).isEqualTo(new Date(MARZO).toString());
-        ((ObjectNode) creado.get("body")).put("fecha", "<fecha de registro>");
+        JsonNode fecha = creado.get("body").get("fecha");
+        if (fecha.isTextual() && fecha.asText().equals(new Date(MARZO).toString())) {
+            ((ObjectNode) creado.get("body")).put("fecha", "<fecha de registro>");
+        }
         registrar(resultados, "curso nuevo sin usuario", mvc, json(post(BASE + "/solicitudes-curso-nuevo"),
             "{\"nombreCompleto\":null,\"condicion\":\"Repitencia\",\"curso\":\"X\"}"));
         registrar(resultados, "curso nuevo condicion invalida", mvc, json(post(BASE + "/solicitudes-curso-nuevo"),
@@ -141,7 +144,9 @@ class PreinscripcionesVeranoRespuestasCaracterizacionTest {
         if (Boolean.getBoolean("grabarReferencia") && Files.notExists(referencia)) {
             Files.writeString(referencia, json.writerWithDefaultPrettyPrinter().writeValueAsString(resultados));
         }
-        assertThat(resultados).isEqualTo(json.readTree(Files.readString(referencia)));
+        // BUG-32: la referencia fija el Date.toString() de "curso nuevo"; la corrección, la fecha como Date
+        assertThat(resultados).isEqualTo(Correcciones.aplicar(json.readTree(Files.readString(referencia)),
+            "verano-endpoints/correcciones/preinscripciones-respuestas-bug32.json"));
     }
 
     private static RequestBuilder json(MockHttpServletRequestBuilder peticion, String contenido) {

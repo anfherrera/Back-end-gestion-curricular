@@ -190,7 +190,7 @@ public class PreinscripcionesVeranoRestController {
             // Crear respuesta JSON con la estructura esperada
             return ResponseEntity.ok(new CursoNuevoSolicitado(solicitudGuardada.getId_solicitud(),
                 peticion.getNombreCompleto(), peticion.getCodigo(), peticion.getCurso(), peticion.getCondicion(),
-                solicitudGuardada.getFecha_registro_solicitud().toString(), "Pendiente",
+                solicitudGuardada.getFecha_registro_solicitud(), "Pendiente",
                 new UsuarioSolicitante(peticion.getIdUsuario(), peticion.getNombreCompleto())));
         });
     }

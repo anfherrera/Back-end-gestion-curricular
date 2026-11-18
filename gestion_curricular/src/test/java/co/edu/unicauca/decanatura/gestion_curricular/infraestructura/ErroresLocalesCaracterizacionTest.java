@@ -183,6 +183,8 @@ class ErroresLocalesCaracterizacionTest {
         esperado = Correcciones.aplicar(esperado, "errores/correcciones/errores-locales-bug24.json");
         // BUG-23: rechazar una inscripción solo traduce los argumentos inválidos; el resto va al manejador global
         esperado = Correcciones.aplicar(esperado, "errores/correcciones/errores-locales-bug23.json");
+        // BUG-32: una solicitud de curso nuevo que vuelve sin fecha responde 200 con fecha null y no 500
+        esperado = Correcciones.aplicar(esperado, "errores/correcciones/errores-locales-bug32.json");
         assertThat(actual).isEqualTo(esperado);
     }
 
