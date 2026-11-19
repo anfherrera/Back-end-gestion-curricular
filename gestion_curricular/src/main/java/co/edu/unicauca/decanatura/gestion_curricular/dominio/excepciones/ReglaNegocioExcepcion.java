@@ -9,7 +9,7 @@ public class ReglaNegocioExcepcion extends GestionCurricularException {
   private final String reglaNegocio;
 
   public ReglaNegocioExcepcion(final String reglaNegocio) {
-    super(CodigoError.VIOLACION_REGLA_DE_NEGOCIO);
+    super(reglaNegocio, CodigoError.VIOLACION_REGLA_DE_NEGOCIO);
     this.reglaNegocio = reglaNegocio;
   }
 
