@@ -5,7 +5,7 @@ import java.util.List;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarSolicitudCUIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.GestionarSolicitudGatewayIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.GestionarUsuarioGatewayIntPort;
-import co.edu.unicauca.decanatura.gestion_curricular.dominio.excepciones.EntidadYaExisteException;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.excepciones.EntidadNoExisteException;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.excepciones.ReglaNegocioExcepcion;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Solicitud;
 
@@ -37,7 +37,7 @@ public class GestionarSolicitudCUAdapter implements GestionarSolicitudCUIntPort 
         }
         Solicitud solicitud = this.gestionarSolicitudGateway.obtenerSolicitudPorId(idSolicitud);
         if(solicitud == null) {
-            throw new EntidadYaExisteException("Solicitud no existe en el sistema");
+            throw new EntidadNoExisteException("Solicitud no existe en el sistema");
         }
         return this.gestionarSolicitudGateway.eliminarSolicitud(idSolicitud);
     }

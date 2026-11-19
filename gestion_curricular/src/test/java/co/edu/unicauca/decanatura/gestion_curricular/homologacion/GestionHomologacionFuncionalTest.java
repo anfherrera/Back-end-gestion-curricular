@@ -99,7 +99,7 @@ class GestionHomologacionFuncionalTest {
                         .content(jsonSolicitud))
                 .andExpect(result -> {
                     int s = result.getResponse().getStatus();
-                    if (s != 201 && s != 409) throw new AssertionError("Expected 201 or 409, got " + s);
+                    if (s != 201 && s != 400) throw new AssertionError("Expected 201 or 400, got " + s);
                 });
 
         // Paso 2: Verificar que la solicitud aparece en el listado
@@ -309,7 +309,7 @@ class GestionHomologacionFuncionalTest {
                         .content(jsonSolicitud))
                 .andExpect(result -> {
                     int s = result.getResponse().getStatus();
-                    if (s != 201 && s != 409) throw new AssertionError("Expected 201 or 409, got " + s);
+                    if (s != 201 && s != 400) throw new AssertionError("Expected 201 or 400, got " + s);
                 });
 
         // Paso 2: Consultar solicitudes (simulando diferentes roles)

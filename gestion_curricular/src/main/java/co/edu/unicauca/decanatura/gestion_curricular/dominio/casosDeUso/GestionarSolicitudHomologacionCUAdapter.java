@@ -62,12 +62,12 @@ public class GestionarSolicitudHomologacionCUAdapter implements GestionarSolicit
         }
 
         if(solicitud.getObjUsuario() == null || solicitud.getObjUsuario().getId_usuario() == null){
-            throw new EntidadYaExisteException("El usuario no puede ser nulo o no tener ID");
+            throw new ReglaNegocioExcepcion("El usuario no puede ser nulo o no tener ID");
         }
         Integer idUsuario = solicitud.getObjUsuario().getId_usuario();
         Optional<Usuario> usuarioOpt = gestionarUsuarioGateway.buscarUsuarioPorId(idUsuario);
         if (usuarioOpt.isEmpty()) {
-            throw new ReglaNegocioExcepcion("Usuario ID: " + idUsuario + " no encontrado");
+            throw new EntidadNoExisteException("Usuario ID: " + idUsuario + " no encontrado");
         }
 
         SolicitudHomologacion solicitudGuardada = gestionarSolicitudHomologacionGateway.guardar(solicitud);

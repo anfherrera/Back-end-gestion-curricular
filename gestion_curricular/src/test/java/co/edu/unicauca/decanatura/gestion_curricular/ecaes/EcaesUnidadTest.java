@@ -19,6 +19,7 @@ import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarN
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarSolicitudEcaesCUIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.*;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.casosDeUso.GestionarSolicitudEcaesCUAdapter;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.excepciones.ReglaNegocioExcepcion;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.FechaEcaes;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.FiltroSolicitudes;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.FlujoEstadosSolicitud;
@@ -93,7 +94,9 @@ class EcaesUnidadTest {
 
         // Act & Assert - Debe lanzar una excepción porque la solicitud no tiene usuario
         assertThatThrownBy(() -> solicitudEcaesCU.guardar(solicitudSinUsuario))
-                .hasMessageContaining("usuario"); 
+                // BUG-38: el usuario que falta es un dato no válido (400); la regla está en formatException
+                .isInstanceOfSatisfying(ReglaNegocioExcepcion.class,
+                        e -> assertThat(e.formatException()).contains("usuario"));
     }
 
     // ==================== PRUEBAS DE CONSULTA ====================

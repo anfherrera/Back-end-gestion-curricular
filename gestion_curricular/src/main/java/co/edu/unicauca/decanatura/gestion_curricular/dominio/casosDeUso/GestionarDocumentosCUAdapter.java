@@ -8,7 +8,7 @@ import java.util.function.BooleanSupplier;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarArchivosCUIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarDocumentosCUIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.GestionarDocumentosGatewayIntPort;
-import co.edu.unicauca.decanatura.gestion_curricular.dominio.excepciones.EntidadYaExisteException;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.excepciones.EntidadNoExisteException;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.excepciones.ReglaNegocioExcepcion;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.ArchivoSubido;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Documento;
@@ -94,13 +94,13 @@ public class GestionarDocumentosCUAdapter implements GestionarDocumentosCUIntPor
     @Override
     public Documento buscarDocumentoId(Integer idDocumento) {
         if(idDocumento == null) {
-            throw new EntidadYaExisteException("El ID del documento debe ser un número positivo.");
+            throw new ReglaNegocioExcepcion("El ID del documento debe ser un número positivo.");
 
         }
 
         Documento documento = gestionarDocumentosGateway.buscarDocumentoId(idDocumento);
         if (documento == null) {
-            throw new EntidadYaExisteException("No se encontró el documento con ID: " + idDocumento);
+            throw new EntidadNoExisteException("No se encontró el documento con ID: " + idDocumento);
         }
         return documento;
     }
@@ -108,15 +108,15 @@ public class GestionarDocumentosCUAdapter implements GestionarDocumentosCUIntPor
     @Override
     public void añadirComentario(Integer idDocumento, String comentario, String nombreUsuario, String rolUsuario) {
         if (idDocumento == null || comentario == null) {
-            throw new EntidadYaExisteException("El ID del documento y el comentario son obligatorios.");
+            throw new ReglaNegocioExcepcion("El ID del documento y el comentario son obligatorios.");
         }
         String textoNuevo = comentario.trim();
         if (textoNuevo.isEmpty()) {
-            throw new EntidadYaExisteException("El comentario no puede estar vacío.");
+            throw new ReglaNegocioExcepcion("El comentario no puede estar vacío.");
         }
         Documento documento = gestionarDocumentosGateway.buscarDocumentoId(idDocumento);
         if (documento == null) {
-            throw new EntidadYaExisteException("No se encontró el documento con ID: " + idDocumento);
+            throw new EntidadNoExisteException("No se encontró el documento con ID: " + idDocumento);
         }
         String actual = documento.getComentario();
         if (actual == null) {

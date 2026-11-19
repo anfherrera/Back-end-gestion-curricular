@@ -105,7 +105,7 @@ class ReingresoAceptacionTest {
                         .content(jsonSolicitud))
                 .andExpect(result -> {
                     int s = result.getResponse().getStatus();
-                    assert s == 201 || s == 409 : "Expected 201 Created or 409 Conflict (e.g. solicitud ya existe), got " + s;
+                    assert s == 201 || s == 400 : "Expected 201 Created or 400 (BUG-38: sin usuario válido), got " + s;
                 });
     }
 
@@ -156,7 +156,7 @@ class ReingresoAceptacionTest {
                         .content(jsonSolicitud))
                 .andExpect(result -> {
                     int s = result.getResponse().getStatus();
-                    assert s == 201 || s == 409 : "Expected 201 or 409, got " + s;
+                    assert s == 201 || s == 400 : "Expected 201 or 400, got " + s;
                 });
     }
 

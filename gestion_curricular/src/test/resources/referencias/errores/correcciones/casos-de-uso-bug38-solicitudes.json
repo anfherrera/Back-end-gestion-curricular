@@ -1,0 +1,134 @@
+{
+  "/documentos buscar inexistente" : {
+    "cuerpo" : {
+      "codigoError" : "GC-0003",
+      "codigoHttp" : 404,
+      "mensaje" : "Entidad no encontrada, No se encontró el documento con ID: 9",
+      "metodo" : "GET",
+      "url" : "http://localhost/caso"
+    },
+    "estado" : 404,
+    "excepcion" : "EntidadNoExisteException"
+  },
+  "/documentos buscar sin id" : {
+    "cuerpo" : {
+      "codigoError" : "GC-0004",
+      "codigoHttp" : 400,
+      "mensaje" : "GC-0004 - Violación a regla de negocio: El ID del documento debe ser un número positivo.",
+      "metodo" : "GET",
+      "url" : "http://localhost/caso"
+    },
+    "estado" : 400,
+    "excepcion" : "ReglaNegocioExcepcion"
+  },
+  "/documentos comentar inexistente" : {
+    "cuerpo" : {
+      "codigoError" : "GC-0003",
+      "codigoHttp" : 404,
+      "mensaje" : "Entidad no encontrada, No se encontró el documento con ID: 9",
+      "metodo" : "GET",
+      "url" : "http://localhost/caso"
+    },
+    "estado" : 404,
+    "excepcion" : "EntidadNoExisteException"
+  },
+  "/documentos comentar sin id" : {
+    "cuerpo" : {
+      "codigoError" : "GC-0004",
+      "codigoHttp" : 400,
+      "mensaje" : "GC-0004 - Violación a regla de negocio: El ID del documento y el comentario son obligatorios.",
+      "metodo" : "GET",
+      "url" : "http://localhost/caso"
+    },
+    "estado" : 400,
+    "excepcion" : "ReglaNegocioExcepcion"
+  },
+  "/documentos comentar vacio" : {
+    "cuerpo" : {
+      "codigoError" : "GC-0004",
+      "codigoHttp" : 400,
+      "mensaje" : "GC-0004 - Violación a regla de negocio: El comentario no puede estar vacío.",
+      "metodo" : "GET",
+      "url" : "http://localhost/caso"
+    },
+    "estado" : 400,
+    "excepcion" : "ReglaNegocioExcepcion"
+  },
+  "/ecaes guardar sin usuario" : {
+    "cuerpo" : {
+      "codigoError" : "GC-0004",
+      "codigoHttp" : 400,
+      "mensaje" : "GC-0004 - Violación a regla de negocio: El usuario no puede ser nulo o no tener ID",
+      "metodo" : "GET",
+      "url" : "http://localhost/caso"
+    },
+    "estado" : 400,
+    "excepcion" : "ReglaNegocioExcepcion"
+  },
+  "/ecaes guardar usuario inexistente" : {
+    "cuerpo" : {
+      "codigoError" : "GC-0003",
+      "codigoHttp" : 404,
+      "mensaje" : "Entidad no encontrada, Usuario ID: 5 no encontrado",
+      "metodo" : "GET",
+      "url" : "http://localhost/caso"
+    },
+    "estado" : 404,
+    "excepcion" : "EntidadNoExisteException"
+  },
+  "/homologacion guardar sin usuario" : {
+    "cuerpo" : {
+      "codigoError" : "GC-0004",
+      "codigoHttp" : 400,
+      "mensaje" : "GC-0004 - Violación a regla de negocio: El usuario no puede ser nulo o no tener ID",
+      "metodo" : "GET",
+      "url" : "http://localhost/caso"
+    },
+    "estado" : 400,
+    "excepcion" : "ReglaNegocioExcepcion"
+  },
+  "/homologacion guardar usuario inexistente" : {
+    "cuerpo" : {
+      "codigoError" : "GC-0003",
+      "codigoHttp" : 404,
+      "mensaje" : "Entidad no encontrada, Usuario ID: 5 no encontrado",
+      "metodo" : "GET",
+      "url" : "http://localhost/caso"
+    },
+    "estado" : 404,
+    "excepcion" : "EntidadNoExisteException"
+  },
+  "/reingreso crear sin usuario" : {
+    "cuerpo" : {
+      "codigoError" : "GC-0004",
+      "codigoHttp" : 400,
+      "mensaje" : "GC-0004 - Violación a regla de negocio: El usuario no puede ser nulo o no tener ID",
+      "metodo" : "GET",
+      "url" : "http://localhost/caso"
+    },
+    "estado" : 400,
+    "excepcion" : "ReglaNegocioExcepcion"
+  },
+  "/reingreso crear usuario inexistente" : {
+    "cuerpo" : {
+      "codigoError" : "GC-0003",
+      "codigoHttp" : 404,
+      "mensaje" : "Entidad no encontrada, Usuario ID: 5 no encontrado",
+      "metodo" : "GET",
+      "url" : "http://localhost/caso"
+    },
+    "estado" : 404,
+    "excepcion" : "EntidadNoExisteException"
+  },
+  "/solicitud eliminar inexistente" : {
+    "cuerpo" : {
+      "codigoError" : "GC-0003",
+      "codigoHttp" : 404,
+      "mensaje" : "Entidad no encontrada, Solicitud no existe en el sistema",
+      "metodo" : "GET",
+      "url" : "http://localhost/caso"
+    },
+    "estado" : 404,
+    "excepcion" : "EntidadNoExisteException"
+  }
+}

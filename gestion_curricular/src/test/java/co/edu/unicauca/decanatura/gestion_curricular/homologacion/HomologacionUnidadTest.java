@@ -18,6 +18,7 @@ import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarN
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarSolicitudHomologacionCUIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.*;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.casosDeUso.GestionarSolicitudHomologacionCUAdapter;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.excepciones.ReglaNegocioExcepcion;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.FiltroSolicitudes;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.FlujoEstadosSolicitud;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.SolicitudHomologacion;
@@ -92,7 +93,9 @@ class HomologacionUnidadTest {
 
         // Act & Assert - Debe lanzar una excepción porque la solicitud no tiene usuario
         assertThatThrownBy(() -> solicitudHomologacionCU.guardar(solicitudSinUsuario))
-                .hasMessageContaining("usuario"); 
+                // BUG-38: el usuario que falta es un dato no válido (400); la regla está en formatException
+                .isInstanceOfSatisfying(ReglaNegocioExcepcion.class,
+                        e -> assertThat(e.formatException()).contains("usuario"));
     }
 
     // ==================== PRUEBAS DE CONSULTA ====================
