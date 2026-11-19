@@ -6,7 +6,8 @@ import java.util.Map;
 
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarEstadisticasCUIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.GestionarEstadisticasGatewayIntPort;
-import co.edu.unicauca.decanatura.gestion_curricular.dominio.excepciones.EntidadYaExisteException;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.excepciones.EntidadNoExisteException;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.excepciones.ReglaNegocioExcepcion;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Estadistica;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.enums.PeriodoAcademicoEnum;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.servicios.estadisticas.EstadisticasCursosVerano;
@@ -32,7 +33,7 @@ public class GestionarEstadisticasCUAdapter implements GestionarEstadisticasCUIn
     @Override
     public Estadistica crearEstadistica(Estadistica estadistica) {
         if (estadistica == null) {
-            throw new EntidadYaExisteException("La estadística no puede ser nula.");
+            throw new ReglaNegocioExcepcion("La estadística no puede ser nula.");
         }
 
         return estadisticasGateway.crearEstadistica(estadistica);
@@ -41,13 +42,13 @@ public class GestionarEstadisticasCUAdapter implements GestionarEstadisticasCUIn
     @Override
     public Estadistica actualizarEstadistica(Estadistica estadistica) {
         if (estadistica == null || estadistica.getId_estadistica() == null) {
-            throw new EntidadYaExisteException("Estadística inválida para actualización.");
+            throw new ReglaNegocioExcepcion("Estadística inválida para actualización.");
         }
 
         Estadistica existente = estadisticasGateway.obtenerEstadisticaPorId(estadistica.getId_estadistica());
 
         if (existente == null) {
-            throw new EntidadYaExisteException("No se encontró la estadística a actualizar.");
+            throw new EntidadNoExisteException("No se encontró la estadística a actualizar.");
         }
 
         return estadisticasGateway.actualizarEstadistica(estadistica);
@@ -56,13 +57,13 @@ public class GestionarEstadisticasCUAdapter implements GestionarEstadisticasCUIn
     @Override
     public Boolean eliminarEstadistica(Integer idEstadistica) {
         if (idEstadistica == null) {
-            throw new EntidadYaExisteException("Debe proporcionar un ID válido.");
+            throw new ReglaNegocioExcepcion("Debe proporcionar un ID válido.");
         }
 
         Estadistica estadistica = estadisticasGateway.obtenerEstadisticaPorId(idEstadistica);
 
         if (estadistica == null) {
-            throw new EntidadYaExisteException("Estadística no encontrada para eliminar.");
+            throw new EntidadNoExisteException("Estadística no encontrada para eliminar.");
         }
 
         return estadisticasGateway.eliminarEstadistica(idEstadistica);
@@ -71,13 +72,13 @@ public class GestionarEstadisticasCUAdapter implements GestionarEstadisticasCUIn
     @Override
     public Estadistica obtenerEstadisticaPorId(Integer idEstadistica) {
         if (idEstadistica == null) {
-            throw new EntidadYaExisteException("Debe proporcionar un ID válido.");
+            throw new ReglaNegocioExcepcion("Debe proporcionar un ID válido.");
         }
 
         Estadistica estadistica = estadisticasGateway.obtenerEstadisticaPorId(idEstadistica);
 
         if (estadistica == null) {
-            throw new EntidadYaExisteException("Estadística no encontrada.");
+            throw new EntidadNoExisteException("Estadística no encontrada.");
         }
 
         return estadistica;
@@ -86,11 +87,11 @@ public class GestionarEstadisticasCUAdapter implements GestionarEstadisticasCUIn
     @Override
     public Estadistica obtenerEstadisticasSolicitudPeriodoEstadoYPrograma(Integer idEstadistica, String proceso, Date fechaInicio, Date fechaFin, String estado, Integer idPrograma) {
         if (proceso == null || proceso.isBlank()) {
-            throw new EntidadYaExisteException("El proceso no puede estar vacío.");
+            throw new ReglaNegocioExcepcion("El proceso no puede estar vacío.");
         }
 
         if (fechaInicio == null || fechaFin == null || idPrograma == null || estado == null) {
-            throw new EntidadYaExisteException("Parámetros incompletos para la consulta.");
+            throw new ReglaNegocioExcepcion("Parámetros incompletos para la consulta.");
         }
 
         return estadisticasGateway.obtenerEstadisticasSolicitudPeriodoEstadoYPrograma(idEstadistica, proceso, fechaInicio, fechaFin, estado, idPrograma);
@@ -99,7 +100,7 @@ public class GestionarEstadisticasCUAdapter implements GestionarEstadisticasCUIn
     @Override
     public List<Estadistica> obtenerEstadisticasPeriodoEstadoYPrograma(Date fechaInicio, Date fechaFin, Integer idPrograma) {
         if (fechaInicio == null || fechaFin == null || idPrograma == null) {
-            throw new EntidadYaExisteException("Parámetros incompletos para la consulta.");
+            throw new ReglaNegocioExcepcion("Parámetros incompletos para la consulta.");
         }
 
         return estadisticasGateway.obtenerEstadisticasPeriodoEstadoYPrograma(fechaInicio, fechaFin, idPrograma);
@@ -118,7 +119,7 @@ public class GestionarEstadisticasCUAdapter implements GestionarEstadisticasCUIn
     @Override
     public Map<String, Object> obtenerEstadisticasPorProceso(String tipoProceso) {
         if (tipoProceso == null || tipoProceso.isBlank()) {
-            throw new EntidadYaExisteException("El tipo de proceso no puede estar vacío.");
+            throw new ReglaNegocioExcepcion("El tipo de proceso no puede estar vacío.");
         }
 
         return generales.porProceso(tipoProceso);
@@ -127,7 +128,7 @@ public class GestionarEstadisticasCUAdapter implements GestionarEstadisticasCUIn
     @Override
     public Map<String, Object> obtenerEstadisticasPorEstado(String estado) {
         if (estado == null || estado.isBlank()) {
-            throw new EntidadYaExisteException("El estado no puede estar vacío.");
+            throw new ReglaNegocioExcepcion("El estado no puede estar vacío.");
         }
 
         return generales.porEstado(estado);
@@ -136,7 +137,7 @@ public class GestionarEstadisticasCUAdapter implements GestionarEstadisticasCUIn
     @Override
     public Map<String, Object> obtenerEstadisticasPorPrograma(Integer idPrograma) {
         if (idPrograma == null || idPrograma <= 0) {
-            throw new EntidadYaExisteException("El ID del programa debe ser válido.");
+            throw new ReglaNegocioExcepcion("El ID del programa debe ser válido.");
         }
 
         return generales.porPrograma(idPrograma);
@@ -145,11 +146,11 @@ public class GestionarEstadisticasCUAdapter implements GestionarEstadisticasCUIn
     @Override
     public Map<String, Object> obtenerEstadisticasPorPeriodo(Date fechaInicio, Date fechaFin) {
         if (fechaInicio == null || fechaFin == null) {
-            throw new EntidadYaExisteException("Las fechas de inicio y fin son requeridas.");
+            throw new ReglaNegocioExcepcion("Las fechas de inicio y fin son requeridas.");
         }
 
         if (fechaInicio.after(fechaFin)) {
-            throw new EntidadYaExisteException("La fecha de inicio no puede ser posterior a la fecha de fin.");
+            throw new ReglaNegocioExcepcion("La fecha de inicio no puede ser posterior a la fecha de fin.");
         }
 
         return generales.porPeriodo(fechaInicio, fechaFin);
@@ -158,15 +159,15 @@ public class GestionarEstadisticasCUAdapter implements GestionarEstadisticasCUIn
     @Override
     public Map<String, Object> obtenerEstadisticasPorProgramaYPeriodo(Integer idPrograma, Date fechaInicio, Date fechaFin) {
         if (idPrograma == null || idPrograma <= 0) {
-            throw new EntidadYaExisteException("El ID del programa debe ser válido.");
+            throw new ReglaNegocioExcepcion("El ID del programa debe ser válido.");
         }
 
         if (fechaInicio == null || fechaFin == null) {
-            throw new EntidadYaExisteException("Las fechas de inicio y fin son requeridas.");
+            throw new ReglaNegocioExcepcion("Las fechas de inicio y fin son requeridas.");
         }
 
         if (fechaInicio.after(fechaFin)) {
-            throw new EntidadYaExisteException("La fecha de inicio no puede ser posterior a la fecha de fin.");
+            throw new ReglaNegocioExcepcion("La fecha de inicio no puede ser posterior a la fecha de fin.");
         }
 
         return generales.porProgramaYPeriodo(idPrograma, fechaInicio, fechaFin);
@@ -175,11 +176,11 @@ public class GestionarEstadisticasCUAdapter implements GestionarEstadisticasCUIn
     @Override
     public Map<String, Object> obtenerEstadisticasPorProcesoYEstado(String tipoProceso, String estado) {
         if (tipoProceso == null || tipoProceso.isBlank()) {
-            throw new EntidadYaExisteException("El tipo de proceso no puede estar vacío.");
+            throw new ReglaNegocioExcepcion("El tipo de proceso no puede estar vacío.");
         }
 
         if (estado == null || estado.isBlank()) {
-            throw new EntidadYaExisteException("El estado no puede estar vacío.");
+            throw new ReglaNegocioExcepcion("El estado no puede estar vacío.");
         }
 
         return generales.porProcesoYEstado(tipoProceso, estado);
@@ -193,11 +194,11 @@ public class GestionarEstadisticasCUAdapter implements GestionarEstadisticasCUIn
     @Override
     public Map<String, Object> obtenerTendenciasPorPeriodo(Date fechaInicio1, Date fechaFin1, Date fechaInicio2, Date fechaFin2) {
         if (fechaInicio1 == null || fechaFin1 == null || fechaInicio2 == null || fechaFin2 == null) {
-            throw new EntidadYaExisteException("Todas las fechas son requeridas para la comparación.");
+            throw new ReglaNegocioExcepcion("Todas las fechas son requeridas para la comparación.");
         }
 
         if (fechaInicio1.after(fechaFin1) || fechaInicio2.after(fechaFin2)) {
-            throw new EntidadYaExisteException("Las fechas de inicio no pueden ser posteriores a las fechas de fin.");
+            throw new ReglaNegocioExcepcion("Las fechas de inicio no pueden ser posteriores a las fechas de fin.");
         }
 
         return generales.tendenciasPorPeriodo(fechaInicio1, fechaFin1, fechaInicio2, fechaFin2);
@@ -252,13 +253,13 @@ public class GestionarEstadisticasCUAdapter implements GestionarEstadisticasCUIn
     public List<Map<String, Object>> obtenerHistorialEstadisticas(Integer anioInicio, Integer anioFin) {
         // Validar años si se proporcionan
         if (anioInicio != null && (anioInicio < 2020 || anioInicio > 2030)) {
-            throw new EntidadYaExisteException("Año de inicio inválido. Debe estar entre 2020 y 2030.");
+            throw new ReglaNegocioExcepcion("Año de inicio inválido. Debe estar entre 2020 y 2030.");
         }
         if (anioFin != null && (anioFin < 2020 || anioFin > 2030)) {
-            throw new EntidadYaExisteException("Año de fin inválido. Debe estar entre 2020 y 2030.");
+            throw new ReglaNegocioExcepcion("Año de fin inválido. Debe estar entre 2020 y 2030.");
         }
         if (anioInicio != null && anioFin != null && anioInicio > anioFin) {
-            throw new EntidadYaExisteException("El año de inicio no puede ser mayor al año de fin.");
+            throw new ReglaNegocioExcepcion("El año de inicio no puede ser mayor al año de fin.");
         }
         return generales.historial(anioInicio, anioFin);
     }
@@ -266,7 +267,7 @@ public class GestionarEstadisticasCUAdapter implements GestionarEstadisticasCUIn
     @Override
     public Map<String, Object> obtenerEstadisticasPorPeriodoAcademico(String periodoAcademico) {
         if (periodoAcademico == null || periodoAcademico.trim().isEmpty()) {
-            throw new EntidadYaExisteException("El período académico no puede estar vacío.");
+            throw new ReglaNegocioExcepcion("El período académico no puede estar vacío.");
         }
         return generales.porPeriodoAcademico(periodoAcademico.trim());
     }
