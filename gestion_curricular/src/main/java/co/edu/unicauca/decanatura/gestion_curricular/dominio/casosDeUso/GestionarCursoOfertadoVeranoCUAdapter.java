@@ -226,7 +226,7 @@ public class GestionarCursoOfertadoVeranoCUAdapter implements GestionarCursoOfer
             if (curso.getObjMateria().getId_materia() == existente.getObjMateria().getId_materia()
                     && curso.getGrupo() == existente.getGrupo()) {
                 throw new EntidadYaExisteException(
-                        "El grupo asignado ya esta en uso" + curso.getGrupo().name());
+                        "El grupo asignado ya está en uso: " + curso.getGrupo().name());
             }
         }
         return gestionarCursoOfertadoVeranoGateway.crearCurso(curso);

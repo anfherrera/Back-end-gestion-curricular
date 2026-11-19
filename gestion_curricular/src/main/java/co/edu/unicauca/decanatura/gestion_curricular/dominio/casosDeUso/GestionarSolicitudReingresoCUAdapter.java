@@ -54,7 +54,7 @@ public class GestionarSolicitudReingresoCUAdapter  implements GestionarSolicitud
     @Override
     public SolicitudReingreso crearSolicitudReingreso(SolicitudReingreso solicitud) {
         if(solicitud == null) {
-            throw new ReglaNegocioExcepcion("Solicitud de homologación no puede ser nula");
+            throw new ReglaNegocioExcepcion("Solicitud de reingreso no puede ser nula");
         }
         if(solicitud.getId_solicitud()!=null){
             Optional<SolicitudReingreso> solicitudExistente = gestionarSolicitudReingresoGateway.buscarPorId(solicitud.getId_solicitud());

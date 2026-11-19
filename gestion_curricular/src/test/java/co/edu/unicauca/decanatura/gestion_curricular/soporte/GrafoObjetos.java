@@ -74,11 +74,15 @@ public final class GrafoObjetos {
         compararConEsperado(casos, JSON.readTree(Files.readString(referencia)), rutaReferencia);
     }
 
-    /** Compara con la referencia después de aplicarle una corrección de {@link Correcciones}. */
-    public static void compararConReferencia(JsonNode casos, String rutaReferencia, String rutaCorreccion)
-            throws Exception {
+    /** Compara con la referencia después de aplicarle, en orden, una o más correcciones de {@link Correcciones}. */
+    public static void compararConReferencia(JsonNode casos, String rutaReferencia, String rutaCorreccion,
+            String... otrasCorrecciones) throws Exception {
         JsonNode referencia = JSON.readTree(Files.readString(Path.of("src/test/resources/referencias", rutaReferencia)));
-        compararConEsperado(casos, Correcciones.aplicar(referencia, rutaCorreccion), rutaReferencia);
+        JsonNode esperado = Correcciones.aplicar(referencia, rutaCorreccion);
+        for (String otra : otrasCorrecciones) {
+            esperado = Correcciones.aplicar(esperado, otra);
+        }
+        compararConEsperado(casos, esperado, rutaReferencia);
     }
 
     private static void compararConEsperado(JsonNode casos, JsonNode esperado, String rutaReferencia)
