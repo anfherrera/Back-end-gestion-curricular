@@ -171,7 +171,7 @@ public class PreinscripcionesVeranoRestController {
             solicitudDominio.setNombre_solicitud(NombreSolicitud.de(NombreSolicitud.CURSO_VERANO, peticion.getNombreCompleto()));
             solicitudDominio.setFecha_registro_solicitud(new Date());
             
-            solicitudDominio.setPeriodo_academico(PeriodoAcademicoEnum.completarSiFalta(solicitudDominio.getPeriodo_academico()));
+            solicitudDominio.setPeriodo_academico(PeriodoAcademicoEnum.oActual(solicitudDominio.getPeriodo_academico()));
 
             // Crear un curso con ID = 0 para indicar que es un curso nuevo
             CursoOfertadoVerano cursoTemporal = new CursoOfertadoVerano();
