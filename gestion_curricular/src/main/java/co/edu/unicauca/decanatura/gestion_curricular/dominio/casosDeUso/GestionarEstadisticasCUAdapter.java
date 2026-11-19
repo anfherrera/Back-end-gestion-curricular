@@ -12,6 +12,7 @@ import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.enums.Perio
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.servicios.estadisticas.EstadisticasCursosVerano;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.servicios.estadisticas.EstadisticasDashboard;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.servicios.estadisticas.EstadisticasGenerales;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.servicios.estadisticas.TipoProcesoSolicitud;
 
 public class GestionarEstadisticasCUAdapter implements GestionarEstadisticasCUIntPort {
 
@@ -304,7 +305,9 @@ public class GestionarEstadisticasCUAdapter implements GestionarEstadisticasCUIn
             estadisticas = obtenerEstadisticasGlobales(proceso, idPrograma, fechaInicio, fechaFin);
         }
 
-        Map<String, Object> cursosVerano = proceso == null || "CURSO_VERANO".equals(proceso)
+        boolean sinProceso = proceso == null || proceso.isBlank();
+        Map<String, Object> cursosVerano = sinProceso
+                || TipoProcesoSolicitud.CURSOS_VERANO.equals(TipoProcesoSolicitud.porNombre(proceso))
                 ? obtenerEstadisticasCursosVerano(periodo, idPrograma) : null;
         return new DatosReporte(estadisticas, cursosVerano);
     }

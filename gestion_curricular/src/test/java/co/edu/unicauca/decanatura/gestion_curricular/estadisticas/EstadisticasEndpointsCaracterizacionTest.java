@@ -137,7 +137,7 @@ class EstadisticasEndpointsCaracterizacionTest {
         // Con periodo y programa
         consultar(r, "/globales", "periodoAcademico", "2025-1", "idPrograma", "1", "proceso", "Paz y Salvo");
         consultar(r, "/globales", "periodoAcademico", "2025-1", "idPrograma", "3", "proceso", "Reingreso");
-        compararConReferencia("globales", r);
+        compararConReferencia("globales", r, "estadisticas-endpoints/correcciones/globales-bug13.json");
     }
 
     // ==================== /resumen-completo ====================
@@ -154,7 +154,7 @@ class EstadisticasEndpointsCaracterizacionTest {
         }
         consultar(r, "/resumen-completo", "periodoAcademico", "2025-2", "idPrograma", "1", "proceso", "Cursos de verano");
         consultar(r, "/resumen-completo", "periodoAcademico", "2025-1", "idPrograma", "2", "proceso", "homologacion");
-        compararConReferencia("resumen-completo", r);
+        compararConReferencia("resumen-completo", r, "estadisticas-endpoints/correcciones/resumen-completo-bug13.json");
     }
 
     // ==================== /dashboard ====================
@@ -175,7 +175,7 @@ class EstadisticasEndpointsCaracterizacionTest {
         // Solo programa (con y sin proceso)
         consultar(r, "/dashboard", "idPrograma", "2");
         consultar(r, "/dashboard", "idPrograma", "2", "proceso", "Homologación");
-        compararConReferencia("dashboard", r);
+        compararConReferencia("dashboard", r, "estadisticas-endpoints/correcciones/dashboard-bug13.json");
     }
 
     // ==================== /rendimiento ====================

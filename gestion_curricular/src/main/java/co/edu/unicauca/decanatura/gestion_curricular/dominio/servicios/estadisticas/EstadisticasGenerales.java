@@ -351,7 +351,7 @@ public class EstadisticasGenerales {
         @SuppressWarnings("unchecked")
         Map<String, Object> estadisticasGlobales = (Map<String, Object>) resumen.get("estadisticasGlobales");
         if (estadisticasGlobales != null && proceso != null && !proceso.trim().isEmpty()) {
-            aplicarKpisDelProceso(estadisticasGlobales, resumen, TipoProcesoSolicitud.delFiltro(proceso));
+            aplicarKpisDelProceso(estadisticasGlobales, resumen, TipoProcesoSolicitud.porNombre(proceso));
         }
         return estadisticasGlobales != null ? estadisticasGlobales : new HashMap<>();
     }
@@ -362,7 +362,7 @@ public class EstadisticasGenerales {
      */
     public Map<String, Object> resumenCompleto(String periodoAcademico, Integer idPrograma, String proceso) {
         Map<String, Object> resumen = resumenCompleto(periodoAcademico, idPrograma);
-        String procesoNormalizado = TipoProcesoSolicitud.delFiltro(proceso);
+        String procesoNormalizado = TipoProcesoSolicitud.porNombre(proceso);
         if (procesoNormalizado == null) {
             return resumen;
         }
@@ -405,7 +405,7 @@ public class EstadisticasGenerales {
         }
 
         if (hayProceso && estadisticasGlobales != null && resumen != null) {
-            aplicarKpisDelProceso(estadisticasGlobales, resumen, TipoProcesoSolicitud.delFiltro(proceso));
+            aplicarKpisDelProceso(estadisticasGlobales, resumen, TipoProcesoSolicitud.porNombre(proceso));
         }
 
         Map<String, Object> dashboardEjecutivo = new HashMap<>();

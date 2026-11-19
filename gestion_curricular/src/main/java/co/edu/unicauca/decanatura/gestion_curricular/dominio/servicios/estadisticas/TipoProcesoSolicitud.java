@@ -54,7 +54,13 @@ public final class TipoProcesoSolicitud {
         return porNombre(solicitud.getNombre_solicitud());
     }
 
-    /** Clasificación por texto, sin tildes ni mayúsculas. Solo para solicitudes sin subtipo. */
+    /**
+     * Clasificación por texto, sin tildes ni mayúsculas: el nombre de una solicitud sin subtipo y el proceso pedido
+     * como filtro de estadísticas ("Homologación", "Curso Intersemestral", "paz_y_salvo"...). BUG-13: es la única
+     * regla; antes el filtro con periodo o programa usaba otra.
+     *
+     * @return la clave del proceso, o null si viene null, en blanco o no se reconoce
+     */
     public static String porNombre(String nombre) {
         if (nombre == null) {
             return null;
@@ -78,39 +84,5 @@ public final class TipoProcesoSolicitud {
             return CURSOS_VERANO;
         }
         return null;
-    }
-
-    /**
-     * Proceso pedido como filtro de estadísticas ("Homologación", "Curso Intersemestral", "paz_y_salvo"...),
-     * llevado a la clave con que se agrupan las estadísticas por proceso.
-     *
-     * <p>BUG-13: no es la misma regla que {@link #porNombre}: no quita tildes salvo en "homologación", exige
-     * "curso" junto a "verano" o "intersemestral", no reconoce "homolog" ni "inscripción", y si no reconoce el
-     * texto lo devuelve recortado en lugar de null. Se conservan las dos hasta decidir cuál vale.
-     *
-     * @return null si viene null o en blanco
-     */
-    public static String delFiltro(String proceso) {
-        if (proceso == null || proceso.trim().isEmpty()) {
-            return null;
-        }
-        String p = proceso.trim();
-        String n = p.toLowerCase();
-        if (n.contains("reingreso")) {
-            return REINGRESO;
-        }
-        if (n.contains("homologacion") || n.contains("homologación")) {
-            return HOMOLOGACION;
-        }
-        if (n.contains("paz") && n.contains("salvo")) {
-            return PAZ_Y_SALVO;
-        }
-        if (n.contains("ecaes")) {
-            return ECAES;
-        }
-        if (n.contains("curso") && (n.contains("verano") || n.contains("intersemestral"))) {
-            return CURSOS_VERANO;
-        }
-        return p;
     }
 }

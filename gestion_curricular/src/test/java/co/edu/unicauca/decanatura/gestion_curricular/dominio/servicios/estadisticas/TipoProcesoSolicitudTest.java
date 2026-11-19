@@ -8,18 +8,18 @@ import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.NullAndEmptySource;
 import org.junit.jupiter.params.provider.ValueSource;
 
-@DisplayName("TipoProcesoSolicitud.delFiltro (ARQ-6, salió de EstadisticasRestController)")
+@DisplayName("TipoProcesoSolicitud.porNombre como filtro de proceso (ARQ-6, BUG-13)")
 class TipoProcesoSolicitudTest {
 
     @ParameterizedTest
     @NullAndEmptySource
     @ValueSource(strings = { "  " })
     void nuloOEnBlancoEsNull(String proceso) {
-        assertThat(TipoProcesoSolicitud.delFiltro(proceso)).isNull();
+        assertThat(TipoProcesoSolicitud.porNombre(proceso)).isNull();
     }
 
     @ParameterizedTest(name = "\"{0}\" -> \"{1}\"")
-    @CsvSource(delimiter = '|', value = {
+    @CsvSource(delimiter = '|', nullValues = "null", value = {
             "Reingreso                    | Reingreso",
             "homologación                 | Homologacion",
             "HOMOLOGACION                 | Homologacion",
@@ -29,26 +29,21 @@ class TipoProcesoSolicitudTest {
             "ECAES                        | ECAES",
             "Curso Intersemestral         | Cursos de Verano",
             "CURSO_VERANO                 | Cursos de Verano",
-            "reingreso y homologacion     | Reingreso",
-            "' Desconocido '              | Desconocido" })
+            "reingreso y homologacion     | Homologacion",
+            "' Desconocido '              | null" })
     void llevaALaClaveDelProceso(String proceso, String esperado) {
-        assertThat(TipoProcesoSolicitud.delFiltro(proceso)).isEqualTo(esperado);
+        assertThat(TipoProcesoSolicitud.porNombre(proceso)).isEqualTo(esperado);
     }
 
-    /**
-     * BUG-13: el filtro y {@link TipoProcesoSolicitud#porNombre} no clasifican igual el mismo texto. Se fija lo que
-     * devuelve cada uno hoy ("null" = null).
-     */
-    @ParameterizedTest(name = "BUG-13: \"{0}\": delFiltro={1}, porNombre={2}")
+    /** BUG-13: los textos en que la regla del filtro con periodo o programa no coincidía con esta. */
+    @ParameterizedTest(name = "BUG-13: \"{0}\" -> {1}")
     @CsvSource(delimiter = '|', nullValues = "null", value = {
-            "verano                    | verano              | Cursos de Verano",
-            "intersemestral            | intersemestral      | Cursos de Verano",
-            "Inscripción               | Inscripción         | Cursos de Verano",
-            "homolog                   | homolog             | Homologacion",
-            "Desconocido               | Desconocido         | null",
-            "reingreso y homologacion  | Reingreso           | Homologacion" })
-    void bug13DelFiltroYPorNombreDifieren(String texto, String delFiltro, String porNombre) {
-        assertThat(TipoProcesoSolicitud.delFiltro(texto)).isEqualTo(delFiltro);
-        assertThat(TipoProcesoSolicitud.porNombre(texto)).isEqualTo(porNombre);
+            "verano                    | Cursos de Verano",
+            "intersemestral            | Cursos de Verano",
+            "Inscripción               | Cursos de Verano",
+            "homolog                   | Homologacion",
+            "Desconocido               | null" })
+    void bug13UnaSolaRegla(String texto, String esperado) {
+        assertThat(TipoProcesoSolicitud.porNombre(texto)).isEqualTo(esperado);
     }
 }
