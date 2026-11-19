@@ -12,6 +12,8 @@ import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Documento;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.EstadoCursoOfertado;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.EstadoSolicitud;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Notificacion;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Programa;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Rol;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Solicitud;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.SolicitudCursoVeranoInscripcion;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.SolicitudCursoVeranoPreinscripcion;
@@ -87,7 +89,7 @@ public final class SolicitudMapperPersistencia {
      * nulos; el usuario lleva sus solicitudes y sus cursos).</li>
      * <li>{@code CURSO}: el bean {@code mapperCurso} (copia los nulos; el usuario lleva sus
      * solicitudes pero no sus cursos; los estados del curso se copian sin el curso y los inscritos
-     * sin cédula, rol, programa ni listas, y una lista nula de ellos queda vacía).</li>
+     * sin cédula ni listas, pero con su rol y su programa (BUG-37), y una lista nula de ellos queda vacía).</li>
      * </ul>
      */
     private enum Variante {
@@ -340,7 +342,10 @@ public final class SolicitudMapperPersistencia {
             return estado;
         }
 
-        /** Inscrito como lo copiaba {@code mapperCurso}: sin cédula, rol, programa ni listas. */
+        /**
+         * Inscrito como lo copiaba {@code mapperCurso}, sin cédula ni listas. BUG-37: lleva su rol y su programa (sin
+         * sus usuarios), que {@code disponibleParaPrograma} necesita para filtrar los cursos por programa.
+         */
         static Usuario inscrito(UsuarioEntity entidad) {
             Usuario usuario = new Usuario();
             usuario.setId_usuario(entidad.getId_usuario());
@@ -349,6 +354,13 @@ public final class SolicitudMapperPersistencia {
             usuario.setCodigo(entidad.getCodigo());
             usuario.setEstado_usuario(entidad.isEstado_usuario());
             usuario.setPassword(entidad.getPassword());
+            if (entidad.getObjRol() != null) {
+                usuario.setObjRol(new Rol(entidad.getObjRol().getId_rol(), entidad.getObjRol().getNombre(), null));
+            }
+            if (entidad.getObjPrograma() != null) {
+                usuario.setObjPrograma(new Programa(entidad.getObjPrograma().getId_programa(),
+                        entidad.getObjPrograma().getCodigo(), entidad.getObjPrograma().getNombre_programa()));
+            }
             return usuario;
         }
 
