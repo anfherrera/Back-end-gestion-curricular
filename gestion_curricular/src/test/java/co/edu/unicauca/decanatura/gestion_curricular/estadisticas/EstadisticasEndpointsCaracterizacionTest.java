@@ -50,6 +50,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarEstadisticasCUIntPort;
+import co.edu.unicauca.decanatura.gestion_curricular.soporte.Correcciones;
 
 /**
  * Fija el código HTTP y el JSON de los endpoints de {@code EstadisticasRestController} que usan las reglas que
@@ -221,7 +222,7 @@ class EstadisticasEndpointsCaracterizacionTest {
                 consultar(r, ruta, f);
             }
         }
-        compararConReferencia("exportaciones", r);
+        compararConReferencia("exportaciones", r, "estadisticas-endpoints/correcciones/exportaciones-bug18.json");
     }
 
     // ==================== SOPORTE ====================
@@ -348,12 +349,21 @@ class EstadisticasEndpointsCaracterizacionTest {
     }
 
     private static void compararConReferencia(String nombre, Map<String, JsonNode> obtenido) throws Exception {
+        compararConReferencia(nombre, obtenido, null);
+    }
+
+    /** Como la anterior, superponiendo a la referencia la corrección {@code rutaCorreccion} si no es null. */
+    private static void compararConReferencia(String nombre, Map<String, JsonNode> obtenido, String rutaCorreccion)
+            throws Exception {
         Path archivo = CARPETA.resolve(nombre + ".json");
         if (Boolean.getBoolean("grabarReferencia")) {
             Files.createDirectories(CARPETA);
             Files.writeString(archivo, JSON.writeValueAsString(obtenido) + System.lineSeparator(), StandardCharsets.UTF_8);
         }
         JsonNode esperado = JSON.readTree(Files.readString(archivo, StandardCharsets.UTF_8));
+        if (rutaCorreccion != null) {
+            esperado = Correcciones.aplicar(esperado, rutaCorreccion);
+        }
         assertThat(JSON.valueToTree(obtenido).toString()).isEqualTo(esperado.toString());
     }
 }

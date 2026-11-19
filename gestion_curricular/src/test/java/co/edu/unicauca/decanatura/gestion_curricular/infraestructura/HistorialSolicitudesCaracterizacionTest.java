@@ -109,8 +109,8 @@ class HistorialSolicitudesCaracterizacionTest {
         if (Boolean.getBoolean("grabarReferencia") && Files.notExists(referencia)) {
             Files.writeString(referencia, json.writerWithDefaultPrettyPrinter().writeValueAsString(resultados));
         }
-        JsonNode grabada = Correcciones.aplicar(json.readTree(Files.readString(referencia)),
-            "listados/correcciones/historial-bug29.json");
+        JsonNode grabada = Correcciones.aplicar(Correcciones.aplicar(json.readTree(Files.readString(referencia)),
+            "listados/correcciones/historial-bug29.json"), "listados/correcciones/historial-bug18.json");
         assertThat(resultados).isEqualTo(grabada);
         // ObjectNode no compara el orden de las claves: se comprueba aparte
         historial.fields().forEachRemaining(caso -> assertThat(nombres(caso.getValue().get("claves")))

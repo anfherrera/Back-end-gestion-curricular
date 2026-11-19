@@ -423,7 +423,7 @@ public class EstadisticasRestController {
     private static ResponseEntity<byte[]> archivo(byte[] contenido, MediaType tipo, String nombreArchivo) {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(tipo);
-        headers.set(HttpHeaders.CONTENT_DISPOSITION, RespuestasArchivo.formulario(nombreArchivo));
+        headers.set(HttpHeaders.CONTENT_DISPOSITION, RespuestasArchivo.adjuntoEscapado(nombreArchivo));
         return new ResponseEntity<>(contenido, headers, HttpStatus.OK);
     }
 

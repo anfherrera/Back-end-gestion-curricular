@@ -30,6 +30,7 @@ import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.*;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.*;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.casosDeUso.*;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.*;
+import co.edu.unicauca.decanatura.gestion_curricular.soporte.Correcciones;
 
 /** HTTP y JSON completos antes de ARQ-6. Casos de uso reales, salidas con datos fijos.
  * No normaliza valores: los ids y las fechas de los datos son constantes.
@@ -234,7 +235,8 @@ class CursosVeranoEndpointsCaracterizacionTest {
         if (Boolean.getBoolean("grabarExportacionesVerano") && !Files.exists(archivo)) {
             Files.writeString(archivo, JSON.writerWithDefaultPrettyPrinter().writeValueAsString(respuestas));
         }
-        assertThat(respuestas).isEqualTo(JSON.readTree(Files.readString(archivo)));
+        assertThat(respuestas).isEqualTo(Correcciones.aplicar(JSON.readTree(Files.readString(archivo)),
+                "verano-endpoints/correcciones/exportaciones-bug18.json"));
     }
 
     private void comparar(String nombre, JsonNode actual) throws Exception {

@@ -96,7 +96,7 @@ public class ReportesCursosVeranoRestController {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_OCTET_STREAM);
         String nombreArchivo = "solicitudes_cursos_intersemestrales_" + new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date()) + ".xlsx";
-        headers.set(HttpHeaders.CONTENT_DISPOSITION, RespuestasArchivo.formulario(nombreArchivo));
+        headers.set(HttpHeaders.CONTENT_DISPOSITION, RespuestasArchivo.adjuntoEscapado(nombreArchivo));
         
         
         return new ResponseEntity<>(excelBytes, headers, HttpStatus.OK);

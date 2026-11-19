@@ -173,7 +173,7 @@ public class SolicitudRestController {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
         String fecha = sdf.format(new Date());
         String filename = "historial_solicitudes_" + fecha + ".pdf";
-        headers.set(HttpHeaders.CONTENT_DISPOSITION, RespuestasArchivo.formulario(filename));
+        headers.set(HttpHeaders.CONTENT_DISPOSITION, RespuestasArchivo.adjuntoEscapado(filename));
         
         return new ResponseEntity<>(pdfBytes, headers, HttpStatus.OK);
     }
