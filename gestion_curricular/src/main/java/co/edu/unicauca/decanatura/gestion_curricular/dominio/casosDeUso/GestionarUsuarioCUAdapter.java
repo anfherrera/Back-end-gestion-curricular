@@ -9,6 +9,7 @@ import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.Gestionar
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.GestionarUsuarioGatewayIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.excepciones.EntidadNoExisteException;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.excepciones.EntidadYaExisteException;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.excepciones.ReglaNegocioExcepcion;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Programa;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Rol;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Usuario;
@@ -55,17 +56,17 @@ public Usuario crearUsuario(Usuario usuario) {
     
 
     if (usuario.getObjPrograma() == null) {
-        throw new EntidadYaExisteException("El programa del usuario no puede ser nulo o su ID no puede ser nulo.");
+        throw new ReglaNegocioExcepcion("El programa del usuario no puede ser nulo o su ID no puede ser nulo.");
     }
 
     programa = this.gestionarProgramaGateway.buscarPorIdPrograma(usuario.getObjPrograma().getId_programa());
 
     if (programa == null) {
-        throw new EntidadYaExisteException("El programa enviado no existe.");
+        throw new EntidadNoExisteException("El programa enviado no existe.");
     }
     objRol = this.gestionarRolGateway.buscarRolPorId(usuario.getObjRol().getId_rol());
     if (objRol == null) {
-        throw new EntidadYaExisteException("El rol con ID: '" + usuario.getObjRol().getId_rol() + "' no existe.");
+        throw new EntidadNoExisteException("El rol con ID: '" + usuario.getObjRol().getId_rol() + "' no existe.");
     }
     String passwordCodificada = codificadorContrasena.codificar(usuario.getPassword());
     usuario.setPassword(passwordCodificada);
@@ -83,46 +84,46 @@ public Usuario crearUsuario(Usuario usuario) {
         Rol objRol = null;
         Usuario usuarioActualizado = null;
         if (usuario == null) {
-            throw new EntidadYaExisteException("El usuario no puede ser nulo.");
+            throw new ReglaNegocioExcepcion("El usuario no puede ser nulo.");
         }
 
         if(usuario.getId_usuario() == null) {
-            throw new EntidadYaExisteException("El ID del usuario no puede ser nulo.");
+            throw new ReglaNegocioExcepcion("El ID del usuario no puede ser nulo.");
 
         }
 
         Usuario existente = this.gestionarUsuarioGateway.obtenerUsuarioPorId(usuario.getId_usuario());
         if (existente == null) {
-            throw new EntidadYaExisteException("No se encontró el usuario a actualizar.");
+            throw new EntidadNoExisteException("No se encontró el usuario a actualizar.");
         }
 
         if (usuario.getObjPrograma() == null) {
-        throw new EntidadYaExisteException("El programa del usuario no puede ser nulo");
+        throw new ReglaNegocioExcepcion("El programa del usuario no puede ser nulo");
         }
 
         if(usuario.getObjPrograma().getId_programa() == null) {
-            throw new EntidadYaExisteException("El ID del programa del usuario no puede ser nulo.");
+            throw new ReglaNegocioExcepcion("El ID del programa del usuario no puede ser nulo.");
 
         }
 
         programa = this.gestionarProgramaGateway.buscarPorIdPrograma(usuario.getObjPrograma().getId_programa());
 
         if (programa == null) {
-            throw new EntidadYaExisteException("El programa enviado no existe.");
+            throw new EntidadNoExisteException("El programa enviado no existe.");
         }
 
        
         if (usuario.getObjRol() == null) {
-            throw new EntidadYaExisteException("El rol es nulo");
+            throw new ReglaNegocioExcepcion("El rol es nulo");
         }
 
         if (usuario.getObjRol().getId_rol() == null) {
-            throw new EntidadYaExisteException("El ID del rol no puede ser nulo.");
+            throw new ReglaNegocioExcepcion("El ID del rol no puede ser nulo.");
         }
 
         objRol = this.gestionarRolGateway.buscarRolPorId(usuario.getObjRol().getId_rol());
         if (objRol == null) {
-            throw new EntidadYaExisteException("El rol enviado no existe.");
+            throw new EntidadNoExisteException("El rol enviado no existe.");
         }
 
         // Validar unicidad de cédula si se proporciona y es diferente a la existente
@@ -161,12 +162,12 @@ public Usuario crearUsuario(Usuario usuario) {
     @Override
     public boolean eliminarUsuario(Integer id_usuario) {
         if (id_usuario == null) {
-            throw new EntidadYaExisteException("El ID del usuario no puede ser nulo.");
+            throw new ReglaNegocioExcepcion("El ID del usuario no puede ser nulo.");
         }
 
         Usuario existente = this.gestionarUsuarioGateway.obtenerUsuarioPorId(id_usuario);
         if (existente == null) {
-            throw new EntidadYaExisteException("No se encontró el usuario a eliminar.");
+            throw new EntidadNoExisteException("No se encontró el usuario a eliminar.");
         }
 
         return this.gestionarUsuarioGateway.eliminarUsuario(id_usuario);
@@ -175,7 +176,7 @@ public Usuario crearUsuario(Usuario usuario) {
     @Override
     public Usuario obtenerUsuarioPorId(Integer id_usuario) {
         if (id_usuario == null) {
-            throw new EntidadYaExisteException("El ID del usuario no puede ser nulo.");
+            throw new ReglaNegocioExcepcion("El ID del usuario no puede ser nulo.");
         }
 
         Usuario usuario = this.gestionarUsuarioGateway.obtenerUsuarioPorId(id_usuario);
@@ -198,12 +199,12 @@ public Usuario crearUsuario(Usuario usuario) {
     @Override
     public Usuario buscarUsuarioPorCorreo(String correo) {
         if (correo == null || correo.isBlank()) {
-            throw new EntidadYaExisteException("El correo no puede estar vacío.");
+            throw new ReglaNegocioExcepcion("El correo no puede estar vacío.");
         }
 
         Usuario usuario = this.gestionarUsuarioGateway.buscarUsuarioPorCorreo(correo);
         if (usuario == null) {
-            throw new EntidadYaExisteException("No se encontró el usuario con ese correo.");
+            throw new EntidadNoExisteException("No se encontró el usuario con ese correo.");
         }
 
         return usuario;
