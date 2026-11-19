@@ -12,6 +12,7 @@ import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.EstadoCurso
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.enums.GrupoCursoVerano;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.dto.peticion.CursosOfertadosDTOPeticion;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.dto.respuesta.CursosOfertadosDTORespuesta;
+import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.dto.respuesta.EstadoCursoOfertadoDTORespuesta;
 
 @Mapper(componentModel = "spring", uses = {
     MateriaMapperDominio.class,
@@ -91,6 +92,14 @@ public interface CursosOfertadosMapperDominio {
     @Mapping(target = "salonInfo", ignore = true) // Se asignará manualmente después del mapeo
     @Named("mapearDeCursoOfertadoARespuestaDisponible")
     CursosOfertadosDTORespuesta mapearDeCursoOfertadoARespuestaDisponible(CursoOfertadoVerano curso);
+
+    /**
+     * Estado de un curso en la respuesta, sin su curso: el curso ya es quien lo contiene. Si se mapeara, un curso
+     * cargado con el grafo completo (estado → curso → estados → ...) recursaba hasta {@code StackOverflowError}
+     * (500 al preinscribir). En la respuesta este campo siempre salio null.
+     */
+    @Mapping(target = "objCursoOfertadoVerano", ignore = true)
+    EstadoCursoOfertadoDTORespuesta mapearDeEstadoCursoOfertadoARespuesta(EstadoCursoOfertado estado);
 
     // Métodos auxiliares para mapear datos reales
     @Named("crearDescripcion")
