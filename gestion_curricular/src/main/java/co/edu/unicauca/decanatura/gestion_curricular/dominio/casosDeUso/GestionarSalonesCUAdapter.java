@@ -4,7 +4,8 @@ import java.util.List;
 
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarSalonesCUIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.GestionarSalonesIntPort;
-import co.edu.unicauca.decanatura.gestion_curricular.dominio.excepciones.EntidadYaExisteException;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.excepciones.EntidadNoExisteException;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.excepciones.ReglaNegocioExcepcion;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Salon;
 
 public class GestionarSalonesCUAdapter implements GestionarSalonesCUIntPort {
@@ -18,12 +19,12 @@ public class GestionarSalonesCUAdapter implements GestionarSalonesCUIntPort {
     @Override
     public Salon obtenerSalonPorId(Integer idSalon) {
         if (idSalon == null) {
-            throw new EntidadYaExisteException("Debe proporcionar un ID válido.");
+            throw new ReglaNegocioExcepcion("Debe proporcionar un ID válido.");
         }
 
         Salon salon = salonesGateway.obtenerSalonPorId(idSalon);
         if (salon == null) {
-            throw new EntidadYaExisteException("Salón no encontrado.");
+            throw new EntidadNoExisteException("Salón no encontrado.");
         }
 
         return salon;
@@ -32,12 +33,12 @@ public class GestionarSalonesCUAdapter implements GestionarSalonesCUIntPort {
     @Override
     public Salon obtenerSalonPorNumero(String numeroSalon) {
         if (numeroSalon == null || numeroSalon.isBlank()) {
-            throw new EntidadYaExisteException("Debe proporcionar un número de salón válido.");
+            throw new ReglaNegocioExcepcion("Debe proporcionar un número de salón válido.");
         }
 
         Salon salon = salonesGateway.obtenerSalonPorNumero(numeroSalon);
         if (salon == null) {
-            throw new EntidadYaExisteException("Salón no encontrado con ese número.");
+            throw new EntidadNoExisteException("Salón no encontrado con ese número.");
         }
 
         return salon;

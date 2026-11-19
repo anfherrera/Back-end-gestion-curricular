@@ -4,6 +4,7 @@ import java.util.List;
 
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarRolesCUIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.GestionarRolGatewayIntPort;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.excepciones.EntidadNoExisteException;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.excepciones.EntidadYaExisteException;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.excepciones.ReglaNegocioExcepcion;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Rol;
@@ -19,7 +20,7 @@ public class GestionarRolesCUAdapter implements GestionarRolesCUIntPort {
     @Override
     public Rol guardarRol(Rol rol) {
         if (rol == null) {
-            throw new EntidadYaExisteException("El rol no puede ser nulo.");
+            throw new ReglaNegocioExcepcion("El rol no puede ser nulo.");
         }
 
         rol.setId_rol(null);
@@ -34,14 +35,14 @@ public class GestionarRolesCUAdapter implements GestionarRolesCUIntPort {
     @Override
     public Rol actualizarRol(Rol rol) {
         if (rol == null) {
-            throw new EntidadYaExisteException("El rol no puede ser nulo.");
+            throw new ReglaNegocioExcepcion("El rol no puede ser nulo.");
         }
         if (rol.getId_rol() == null) {
-            throw new EntidadYaExisteException("Debe proporcionar un ID válido para actualizar.");
+            throw new ReglaNegocioExcepcion("Debe proporcionar un ID válido para actualizar.");
         }
         Rol existente = rolesGateway.obtenerRolPorId(rol.getId_rol());
         if (existente == null) {
-            throw new EntidadYaExisteException("No se encontró el rol a actualizar.");
+            throw new EntidadNoExisteException("No se encontró el rol a actualizar.");
         }
         return rolesGateway.actualizarRol(rol);
     }
@@ -49,12 +50,12 @@ public class GestionarRolesCUAdapter implements GestionarRolesCUIntPort {
     @Override
     public boolean eliminarRol(Integer idRol) {
         if (idRol == null) {
-            throw new EntidadYaExisteException("Debe proporcionar un ID válido.");
+            throw new ReglaNegocioExcepcion("Debe proporcionar un ID válido.");
         }
 
         Rol existente = rolesGateway.obtenerRolPorId(idRol);
         if (existente == null) {
-            throw new EntidadYaExisteException("No se encontró el rol a eliminar.");
+            throw new EntidadNoExisteException("No se encontró el rol a eliminar.");
         }
 
         // Verificar si el rol tiene usuarios asociados antes de eliminarlo
@@ -71,12 +72,12 @@ public class GestionarRolesCUAdapter implements GestionarRolesCUIntPort {
     @Override
     public Rol obtenerRolPorId(Integer idRol) {
         if (idRol == null) {
-            throw new EntidadYaExisteException("Debe proporcionar un ID válido.");
+            throw new ReglaNegocioExcepcion("Debe proporcionar un ID válido.");
         }
 
         Rol rol = rolesGateway.obtenerRolPorId(idRol);
         if (rol == null) {
-            throw new EntidadYaExisteException("Rol no encontrado.");
+            throw new EntidadNoExisteException("Rol no encontrado.");
         }
 
         return rol;
@@ -85,12 +86,12 @@ public class GestionarRolesCUAdapter implements GestionarRolesCUIntPort {
     @Override
     public Rol obtenerRolPorNombre(String nombre) {
         if (nombre == null || nombre.isBlank()) {
-            throw new EntidadYaExisteException("Debe proporcionar un nombre válido.");
+            throw new ReglaNegocioExcepcion("Debe proporcionar un nombre válido.");
         }
 
         Rol rol = rolesGateway.obtenerRolPorNombre(nombre);
         if (rol == null) {
-            throw new EntidadYaExisteException("Rol no encontrado con ese nombre.");
+            throw new EntidadNoExisteException("Rol no encontrado con ese nombre.");
         }
 
         return rol;
