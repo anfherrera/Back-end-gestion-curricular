@@ -17,7 +17,7 @@ import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.Gestionar
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.GestionarDocumentosGatewayIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.GestionarSolicitudCursoVeranoGatewayIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.GestionarUsuarioGatewayIntPort;
-import co.edu.unicauca.decanatura.gestion_curricular.dominio.excepciones.EntidadYaExisteException;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.excepciones.EntidadNoExisteException;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.excepciones.ReglaNegocioExcepcion;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.CursoOfertadoVerano;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.EstadoSolicitud;
@@ -78,7 +78,7 @@ public class GestionarSolicitudCursoVeranoCUAdapter implements GestionarSolicitu
         }
         usuarioBuscar = this.usuarioGateway.obtenerUsuarioPorId(solicitudCursoVerano.getObjUsuario().getId_usuario());
         if (usuarioBuscar == null) {
-            throw new EntidadYaExisteException("Usuario no encontrado");
+            throw new EntidadNoExisteException("Usuario no encontrado");
         }
         if (solicitudCursoVerano.getDocumentos() != null && !solicitudCursoVerano.getDocumentos().isEmpty()) {
             throw new ReglaNegocioExcepcion("No se debe adjuntar documentos en la solicitud de preinscripción");
@@ -154,7 +154,7 @@ public class GestionarSolicitudCursoVeranoCUAdapter implements GestionarSolicitu
         }
         usuarioBuscar = this.usuarioGateway.obtenerUsuarioPorId(solicitudCursoVerano.getObjUsuario().getId_usuario());
         if (usuarioBuscar == null) {
-            throw new EntidadYaExisteException("Usuario no encontrado");
+            throw new EntidadNoExisteException("Usuario no encontrado");
         }
         // El comprobante de pago se sube después de crear la inscripción (se asocia al final),
         // por eso no se exige aquí.
@@ -308,7 +308,7 @@ public class GestionarSolicitudCursoVeranoCUAdapter implements GestionarSolicitu
         // Buscar la solicitud
         SolicitudCursoVeranoPreinscripcion solicitud = this.gestionarSolicitudGateway.buscarSolicitudPorId(idSolicitud);
         if (solicitud == null) {
-            throw new EntidadYaExisteException("No se encontró la solicitud con ID: " + idSolicitud);
+            throw new EntidadNoExisteException("No se encontró la solicitud con ID: " + idSolicitud);
         }
         
         // Verificar que esté en estado "Enviada"
@@ -335,7 +335,7 @@ public class GestionarSolicitudCursoVeranoCUAdapter implements GestionarSolicitu
         // Buscar la solicitud
         SolicitudCursoVeranoPreinscripcion solicitud = this.gestionarSolicitudGateway.buscarSolicitudPorId(idSolicitud);
         if (solicitud == null) {
-            throw new EntidadYaExisteException("No se encontró la solicitud con ID: " + idSolicitud);
+            throw new EntidadNoExisteException("No se encontró la solicitud con ID: " + idSolicitud);
         }
         
         // Verificar que esté en estado "Enviada"
@@ -358,7 +358,7 @@ public class GestionarSolicitudCursoVeranoCUAdapter implements GestionarSolicitu
         // Buscar la solicitud
         SolicitudCursoVeranoInscripcion solicitud = this.gestionarSolicitudGateway.buscarSolicitudInscripcionPorId(idSolicitud);
         if (solicitud == null) {
-            throw new EntidadYaExisteException("No se encontró la solicitud de inscripción con ID: " + idSolicitud);
+            throw new EntidadNoExisteException("No se encontró la solicitud de inscripción con ID: " + idSolicitud);
         }
         
         // Verificar que esté en estado "Enviada" o "Pago_Validado" usando el último estado
@@ -389,7 +389,7 @@ public class GestionarSolicitudCursoVeranoCUAdapter implements GestionarSolicitu
         // Buscar la solicitud
         SolicitudCursoVeranoInscripcion solicitud = this.gestionarSolicitudGateway.buscarSolicitudInscripcionPorId(idSolicitud);
         if (solicitud == null) {
-            throw new EntidadYaExisteException("No se encontró la solicitud de inscripción con ID: " + idSolicitud);
+            throw new EntidadNoExisteException("No se encontró la solicitud de inscripción con ID: " + idSolicitud);
         }
         
         // Verificar que el pago esté validado

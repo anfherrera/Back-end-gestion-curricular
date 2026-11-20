@@ -68,37 +68,37 @@ public class GestionarCursoOfertadoVeranoCUAdapter implements GestionarCursoOfer
         List<Usuario> usuariosRemovidos = new ArrayList<Usuario>();
         Boolean bandera = false;
         if(curso == null){
-            throw new EntidadYaExisteException("No hay datos en el curso");
+            throw new ReglaNegocioExcepcion("No hay datos en el curso");
         }
         if(curso.getId_curso() == null){
-            throw new EntidadYaExisteException("No hay id en el curso");
+            throw new ReglaNegocioExcepcion("No hay id en el curso");
         }
         idCurso = curso.getId_curso();
         cursoABuscar = gestionarCursoOfertadoVeranoGateway.obtenerCursoPorId(idCurso);
         if(cursoABuscar == null){
-            throw new EntidadYaExisteException("No se encuentra el curso");
+            throw new EntidadNoExisteException("No se encuentra el curso");
         }
         if(cursoABuscar.getEstadosCursoOfertados().isEmpty()){
-                throw new EntidadYaExisteException("No se puede actualizar el curso, porque no tiene estados");
+                throw new ReglaNegocioExcepcion("No se puede actualizar el curso, porque no tiene estados");
         }
         if(estadoCurso == null){
-            throw new EntidadYaExisteException("No hay datos en el estado");
+            throw new ReglaNegocioExcepcion("No hay datos en el estado");
         }
         if(estadoCurso.getId_estado() == null){
-            throw new EntidadYaExisteException("No hay id en el estado");
+            throw new ReglaNegocioExcepcion("No hay id en el estado");
         }
         if(estadoCurso.getEstado_actual() == null){
-            throw new EntidadYaExisteException("No hay datos en el estado actual");
+            throw new ReglaNegocioExcepcion("No hay datos en el estado actual");
         }
 
         if(estadoCurso.getEstado_actual().equals("Preinscripcion")){
             if(cursoABuscar.getEstadosCursoOfertados().get(0).getEstado_actual().equals("Publicado")){
-                throw new EntidadYaExisteException("No se puede actualizar el curso, porque no esta publicado");
+                throw new ReglaNegocioExcepcion("No se puede actualizar el curso, porque no esta publicado");
             }
 
             List<Solicitud> solicitudes = this.gestionarSolicitudGateway.buscarSolicitudPorNombreCursoPre(idCurso);
             if(solicitudes.isEmpty()){
-                throw new EntidadYaExisteException("No se puede publicar el curso, porque no hay solicitudes");
+                throw new ReglaNegocioExcepcion("No se puede publicar el curso, porque no hay solicitudes");
             }
                 if(solicitudes.size()< puntoEquilibrioMinimo){
                     throw new ReglaNegocioExcepcion("No se puede publicar el curso, porque no se alcanzo el cupo estimado");
@@ -132,12 +132,12 @@ public class GestionarCursoOfertadoVeranoCUAdapter implements GestionarCursoOfer
 
         if(estadoCurso.getEstado_actual().equals("Inscripcion")){
             if(cursoABuscar.getEstadosCursoOfertados().get(0).getEstado_actual().equals("Preinscripcion")){
-                throw new EntidadYaExisteException("No se puede actualizar el curso, porque no esta publicado");
+                throw new ReglaNegocioExcepcion("No se puede actualizar el curso, porque no esta publicado");
             }
 
             List<Solicitud> solicitudes = this.gestionarSolicitudGateway.buscarSolicitudPorNombreCursoIns(idCurso);
             if(solicitudes.isEmpty()){
-                throw new EntidadYaExisteException("No se puede publicar el curso, porque no hay solicitudes");
+                throw new ReglaNegocioExcepcion("No se puede publicar el curso, porque no hay solicitudes");
             }
                 if(solicitudes.size()< cursoABuscar.getCupo_estimado()){
                     throw new ReglaNegocioExcepcion("No se puede abrir el curso, porque no se alcanzo el punto de equilibrio");
@@ -196,27 +196,27 @@ public class GestionarCursoOfertadoVeranoCUAdapter implements GestionarCursoOfer
         Materia materia = null;
         Docente docente = null;
         if(curso == null){
-            throw new EntidadYaExisteException("No hay datos en el curso");
+            throw new ReglaNegocioExcepcion("No hay datos en el curso");
         }
         if(curso.getObjMateria() == null){
-            throw new EntidadYaExisteException("No hay datos en la materia");
+            throw new ReglaNegocioExcepcion("No hay datos en la materia");
         }
         if(curso.getObjMateria().getId_materia() == null){
-            throw new EntidadYaExisteException("No hay datos en la   materia");
+            throw new ReglaNegocioExcepcion("No hay datos en la   materia");
         }
         materia = this.gestionarMateriasGateway.obtenerMateriaPorId(curso.getObjMateria().getId_materia());
         if(materia == null){
-            throw new EntidadYaExisteException("No existe la materia con el ID: " + curso.getObjMateria().getId_materia());
+            throw new EntidadNoExisteException("No existe la materia con el ID: " + curso.getObjMateria().getId_materia());
         }
         if(curso.getObjDocente() == null){
-            throw new EntidadYaExisteException("No hay datos en el docente");
+            throw new ReglaNegocioExcepcion("No hay datos en el docente");
         }
         if(curso.getObjDocente().getId_docente() == null){
-            throw new EntidadYaExisteException("No hay datos en el docente");
+            throw new ReglaNegocioExcepcion("No hay datos en el docente");
         }
         docente = this.gestionarDocenteGateway.buscarDocentePorId(curso.getObjDocente().getId_docente());
         if(docente == null){
-            throw new EntidadYaExisteException("No existe el docente con el ID: " + curso.getObjDocente().getId_docente());
+            throw new EntidadNoExisteException("No existe el docente con el ID: " + curso.getObjDocente().getId_docente());
         }            
         return guardarCurso(curso);
     }
@@ -247,11 +247,11 @@ public class GestionarCursoOfertadoVeranoCUAdapter implements GestionarCursoOfer
         GrupoCursoVerano grupo = grupoInicial(datos.grupo());
         Materia materia = gestionarMateriasGateway.obtenerMateriaPorId(datos.idMateria());
         if (materia == null) {
-            throw new EntidadYaExisteException("Materia no encontrada.");
+            throw new EntidadNoExisteException("Materia no encontrada.");
         }
         Docente docente = gestionarDocenteGateway.obtenerDocentePorId(datos.idDocente());
         if (docente == null) {
-            throw new EntidadYaExisteException("Docente no encontrado.");
+            throw new EntidadNoExisteException("Docente no encontrado.");
         }
 
         if (existeCurso(datos.idMateria(), datos.idDocente(), datos.periodo(), grupo)) {
@@ -307,7 +307,7 @@ public class GestionarCursoOfertadoVeranoCUAdapter implements GestionarCursoOfer
         CursoOfertadoVerano cursosABuscar=null;
         cursosABuscar = this.gestionarCursoOfertadoVeranoGateway.obtenerCursoPorId(idCurso);
         if(cursosABuscar == null){
-            throw new EntidadYaExisteException("No se encuentra el curso");
+            throw new EntidadNoExisteException("No se encuentra el curso");
         }
         return this.gestionarCursoOfertadoVeranoGateway.eliminarCurso(idCurso);
     }

@@ -18,7 +18,7 @@ import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarN
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.*;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.casosDeUso.GestionarCursoOfertadoVeranoCUAdapter;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.excepciones.EntidadNoExisteException;
-import co.edu.unicauca.decanatura.gestion_curricular.dominio.excepciones.EntidadYaExisteException;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.excepciones.ReglaNegocioExcepcion;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.CursoOfertadoVerano;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Docente;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.EstadoCursoOfertado;
@@ -220,7 +220,7 @@ class CursosVeranoUnidadTest {
 
         // Act & Assert
         assertThatThrownBy(() -> cursosVeranoCU.eliminarCurso(idInexistente))
-                .isInstanceOf(EntidadYaExisteException.class)
+                .isInstanceOf(EntidadNoExisteException.class)
                 .hasMessageContaining("No se encuentra el curso");
         verify(cursoVeranoGateway, never()).eliminarCurso(idInexistente);
     }
@@ -238,7 +238,7 @@ class CursosVeranoUnidadTest {
         
         // Act & Assert
         assertThatThrownBy(() -> cursosVeranoCU.actualizarCurso(cursoSinId, estado))
-                .isInstanceOf(EntidadYaExisteException.class)
+                .isInstanceOf(ReglaNegocioExcepcion.class)
                 .hasMessageContaining("No hay id en el curso");
         
         // Verificar que NO se llamó al gateway porque el curso no tiene ID

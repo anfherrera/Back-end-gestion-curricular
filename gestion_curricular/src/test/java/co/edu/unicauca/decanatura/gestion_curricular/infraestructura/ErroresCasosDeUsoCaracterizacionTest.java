@@ -138,14 +138,16 @@ class ErroresCasosDeUsoCaracterizacionTest {
         // BUG-39: el salón inexistente lanza el DatosCursoInvalidosException que el controlador de cursos traduce
         // a 400; aquí, sin controlador, llega al manejador global como error inesperado
         // BUG-38: el grupo en uso lleva separador antes del grupo y reingreso ya no dice "homologación"; en los
-        // catálogos, usuarios, estadísticas, documentos y solicitudes, lo que no se encuentra responde 404 (también el
-        // usuario de ECAES, Homologación y Reingreso, antes 400) y un dato que falta o no es válido, 400
+        // catálogos, usuarios, estadísticas, documentos, solicitudes y cursos de verano, lo que no se encuentra
+        // responde 404 (también el usuario de ECAES, Homologación, Reingreso y de la preinscripción e inscripción de
+        // verano, antes 400 o 409) y un dato que falta o no es válido, 400
         GrafoObjetos.compararConReferencia(resultados, "errores/casos-de-uso.json",
             "errores/correcciones/casos-de-uso-bug39.json", "errores/correcciones/casos-de-uso-bug38.json",
             "errores/correcciones/casos-de-uso-bug38-catalogos.json",
             "errores/correcciones/casos-de-uso-bug38-usuarios.json",
             "errores/correcciones/casos-de-uso-bug38-estadisticas.json",
-            "errores/correcciones/casos-de-uso-bug38-solicitudes.json");
+            "errores/correcciones/casos-de-uso-bug38-solicitudes.json",
+            "errores/correcciones/casos-de-uso-bug38-verano.json");
     }
 
     private void caso(String nombre, Callable<?> llamada) {
