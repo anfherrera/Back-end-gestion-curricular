@@ -204,6 +204,51 @@ class EstadisticasEndpointsCaracterizacionTest {
         compararConReferencia("periodo-normalizado", r);
     }
 
+    // ==================== Consultas por proceso, estado, programa y periodo ====================
+
+    @Test
+    @DisplayName("/filtradas, /periodo, /proceso, /estado, /programa, /tendencias e /historial con datos reales")
+    void consultas() throws Exception {
+        Map<String, JsonNode> r = new LinkedHashMap<>();
+        // /filtradas: cada rama (proceso, programa, estado, fechas, sin filtros)
+        consultar(r, "/filtradas", "nombreProceso", "Homologacion", "idPrograma", "1");
+        consultar(r, "/filtradas", "nombreProceso", "  ", "idPrograma", "2");
+        consultar(r, "/filtradas", "idPrograma", "0", "estado", "APROBADA");
+        consultar(r, "/filtradas", "estado", "Rechazada");
+        consultar(r, "/filtradas", "fechaInicio", "2025-01-01", "fechaFin", "2025-06-30");
+        consultar(r, "/filtradas", "fechaInicio", "2025-01-01");
+        consultar(r, "/filtradas");
+        // /periodo: periodo académico (válido e inválido), fechas y sin datos
+        consultar(r, "/periodo", "periodoAcademico", " 2025-1 ");
+        consultar(r, "/periodo", "periodoAcademico", "2024-2");
+        consultar(r, "/periodo", "periodoAcademico", "2025-3");
+        consultar(r, "/periodo", "fechaInicio", "2024-07-01", "fechaFin", "2025-06-30");
+        consultar(r, "/periodo");
+        for (String proceso : new String[] { "Homologacion", "Paz y Salvo", "Cursos de Verano", "Desconocido" }) {
+            consultar(r, "/proceso/" + proceso);
+        }
+        for (String estado : new String[] { "APROBADA", "Rechazada", "Aprobado", "Desconocido" }) {
+            consultar(r, "/estado/" + estado);
+        }
+        for (String programa : new String[] { "1", "2", "3", "99" }) {
+            consultar(r, "/programa/" + programa);
+        }
+        consultar(r, "/programa/2/periodo", "fechaInicio", "2024-07-01", "fechaFin", "2025-12-31");
+        consultar(r, "/programa/1/periodo", "fechaInicio", "2025-01-01", "fechaFin", "2025-06-30");
+        consultar(r, "/proceso/Cursos de Verano/estado/ENVIADA");
+        consultar(r, "/proceso/Homologacion/estado/aprobada");
+        consultar(r, "/proceso/Desconocido/estado/Rechazada");
+        // /tendencias: sin fechas devuelve las globales
+        consultar(r, "/tendencias", "fechaInicio1", "2024-07-01", "fechaFin1", "2024-12-31",
+                "fechaInicio2", "2025-01-01", "fechaFin2", "2025-06-30");
+        consultar(r, "/tendencias", "fechaInicio1", "2025-01-01", "fechaFin1", "2025-06-30",
+                "fechaInicio2", "2025-07-01", "fechaFin2", "2025-12-31");
+        consultar(r, "/tendencias");
+        consultar(r, "/historial", "anioInicio", "2024", "anioFin", "2025");
+        consultar(r, "/historial", "anioInicio", "2025", "anioFin", "2025");
+        compararConReferencia("consultas", r);
+    }
+
     // ==================== Exportaciones ====================
 
     @Test
