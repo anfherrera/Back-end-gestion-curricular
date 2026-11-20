@@ -8,7 +8,7 @@ import java.util.Map;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-@DisplayName("EstadisticasGenerales.aplicarKpisDelProceso (ARQ-6, salió de EstadisticasRestController)")
+@DisplayName("ResumenEstadisticas.aplicarKpisDelProceso (ARQ-6, salió de EstadisticasRestController)")
 class KpisDelProcesoTest {
 
     private static Map<String, Object> globales() {
@@ -35,7 +35,7 @@ class KpisDelProcesoTest {
                 "porcentajeAprobacion", 33.3, "porEstado", Map.of("ENVIADA", 2, "APROBADA", 1));
         Map<String, Object> g = globales();
 
-        EstadisticasGenerales.aplicarKpisDelProceso(g, resumenCon("Reingreso", stats), "Reingreso");
+        ResumenEstadisticas.aplicarKpisDelProceso(g, resumenCon("Reingreso", stats), "Reingreso");
 
         assertThat(g).containsEntry("totalSolicitudes", 3).containsEntry("totalAprobadas", 1)
                 .containsEntry("totalRechazadas", 1).containsEntry("totalEnProceso", 1)
@@ -48,7 +48,7 @@ class KpisDelProcesoTest {
     void loQueFaltaEnElProcesoValeCero() {
         Map<String, Object> g = globales();
 
-        EstadisticasGenerales.aplicarKpisDelProceso(g, resumenCon("ECAES", Map.of()), "ECAES");
+        ResumenEstadisticas.aplicarKpisDelProceso(g, resumenCon("ECAES", Map.of()), "ECAES");
 
         assertThat(g).containsEntry("totalSolicitudes", 0).containsEntry("totalAprobadas", 0)
                 .containsEntry("totalRechazadas", 0).containsEntry("totalEnProceso", 0)
@@ -61,13 +61,13 @@ class KpisDelProcesoTest {
         Map<String, Object> resumen = resumenCon("Reingreso", Map.of("totalSolicitudes", 3));
 
         Map<String, Object> g = globales();
-        EstadisticasGenerales.aplicarKpisDelProceso(g, resumen, null);
+        ResumenEstadisticas.aplicarKpisDelProceso(g, resumen, null);
         assertThat(g).isEqualTo(globales());
 
-        EstadisticasGenerales.aplicarKpisDelProceso(g, resumen, "Desconocido");
+        ResumenEstadisticas.aplicarKpisDelProceso(g, resumen, "Desconocido");
         assertThat(g).isEqualTo(globales());
 
-        EstadisticasGenerales.aplicarKpisDelProceso(g, new HashMap<>(), "Reingreso");
+        ResumenEstadisticas.aplicarKpisDelProceso(g, new HashMap<>(), "Reingreso");
         assertThat(g).isEqualTo(globales());
     }
 }
