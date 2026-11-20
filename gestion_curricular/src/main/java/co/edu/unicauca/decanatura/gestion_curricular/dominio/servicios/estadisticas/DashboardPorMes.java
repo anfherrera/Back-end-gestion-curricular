@@ -16,6 +16,7 @@ import java.util.Map;
 
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.GestionarEstadisticasGatewayIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Solicitud;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.estadisticas.VistaPorMes;
 
 /**
  * Vista del dashboard por mes de registro (filtrable por periodo académico y programa): conteos, eficiencia y
@@ -29,7 +30,7 @@ public class DashboardPorMes {
         this.datos = datos;
     }
 
-    public Map<String, Object> porPeriodo(String periodoAcademico, Integer idPrograma) {
+    public VistaPorMes porPeriodo(String periodoAcademico, Integer idPrograma) {
         List<Solicitud> solicitudes = solicitudes(datos, periodoAcademico, idPrograma);
 
         Map<String, ContadorSolicitudes> porMes = new HashMap<>();
@@ -48,8 +49,8 @@ public class DashboardPorMes {
             }
         }
 
-        Map<String, Object> resumenPorMes = new HashMap<>();
-        List<Map<String, Object>> mesesOrdenados = new ArrayList<>();
+        Map<String, VistaPorMes.Detalle> resumenPorMes = new HashMap<>();
+        List<VistaPorMes.Detalle> mesesOrdenados = new ArrayList<>();
         List<String> mesesConDatos = new ArrayList<>();
         String mesMasActivo = null;
         String mesMasEficiente = null;
@@ -66,19 +67,11 @@ public class DashboardPorMes {
             double eficiencia = c.eficiencia();
             double tiempoPromedio = c.tiempoPromedio();
 
-            Map<String, Object> detalleMes = new HashMap<>();
-            detalleMes.put("mes", mes);
-            detalleMes.put("total", c.total);
-            detalleMes.put("aprobadas", c.aprobadas);
-            detalleMes.put("rechazadas", c.rechazadas);
-            detalleMes.put("enviadas", c.enviadas);
-            detalleMes.put("eficiencia", redondear2(eficiencia));
-            detalleMes.put("tiempoPromedio", redondear2(tiempoPromedio));
-            detalleMes.put("porcentaje", redondear2(porcentaje(c.total, solicitudes.size())));
-            detalleMes.put("procesos", c.procesos);
-            detalleMes.put("color", PresentacionEstadisticas.colorMes(mes));
-            detalleMes.put("icono", PresentacionEstadisticas.SIN_ICONO);
-            detalleMes.put("descripcion", PresentacionEstadisticas.descripcionMes(mes));
+            VistaPorMes.Detalle detalleMes = new VistaPorMes.Detalle(mes, c.total, c.aprobadas, c.rechazadas,
+                    c.enviadas, redondear2(eficiencia), redondear2(tiempoPromedio),
+                    redondear2(porcentaje(c.total, solicitudes.size())), c.procesos,
+                    PresentacionEstadisticas.colorMes(mes), PresentacionEstadisticas.SIN_ICONO,
+                    PresentacionEstadisticas.descripcionMes(mes));
             resumenPorMes.put(mes, detalleMes);
             mesesOrdenados.add(detalleMes);
 
@@ -111,28 +104,12 @@ public class DashboardPorMes {
             }
         }
 
-        Map<String, Object> tendencias = new HashMap<>();
-        tendencias.put("mesMasActivo", mesMasActivo);
-        tendencias.put("mesMasEficiente", mesMasEficiente);
-        tendencias.put("mesMasRapido", mesMasRapido);
-        tendencias.put("maxSolicitudes", maxSolicitudes);
-        tendencias.put("eficienciaMaxima", redondear2(maxEficiencia));
-        tendencias.put("tiempoMinimo", redondear2(minTiempo));
-        tendencias.put("tendenciaGeneral", tendenciaGeneral);
-        tendencias.put("crecimientoPromedio", redondear2(crecimientoPromedio));
-        tendencias.put("mesesAnalizados", mesesConDatos.size());
-        tendencias.put("totalSolicitudes", totalSolicitudes);
-        tendencias.put("promedioMensual", mesesConDatos.size() > 0
-                ? Math.round((totalSolicitudes * 100.0) / mesesConDatos.size()) / 100.0
-                : 0);
+        VistaPorMes.Tendencias tendencias = new VistaPorMes.Tendencias(mesMasActivo, mesMasEficiente, mesMasRapido,
+                maxSolicitudes, redondear2(maxEficiencia), redondear2(minTiempo), tendenciaGeneral,
+                redondear2(crecimientoPromedio), mesesConDatos.size(), totalSolicitudes,
+                mesesConDatos.size() > 0 ? Math.round((totalSolicitudes * 100.0) / mesesConDatos.size()) / 100.0 : 0);
 
-        Map<String, Object> resultado = new HashMap<>();
-        resultado.put("porMes", resumenPorMes);
-        resultado.put("tendencias", tendencias);
-        resultado.put("todosLosMeses", Arrays.asList(MESES));
-        resultado.put("mesesOrdenados", mesesOrdenados);
-        resultado.put("fechaConsulta", new Date());
-        resultado.put("descripcion", "Estadisticas por periodo/mes con analisis de tendencias - DATOS REALES");
-        return resultado;
+        return new VistaPorMes(resumenPorMes, tendencias, Arrays.asList(MESES), mesesOrdenados, new Date(),
+                "Estadisticas por periodo/mes con analisis de tendencias - DATOS REALES");
     }
 }

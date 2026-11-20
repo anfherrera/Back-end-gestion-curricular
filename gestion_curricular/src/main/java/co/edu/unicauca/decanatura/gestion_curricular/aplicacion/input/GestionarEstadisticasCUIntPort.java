@@ -16,6 +16,11 @@ import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.estadistica
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.estadisticas.ProgramasPorProcesoYEstado;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.estadisticas.TendenciasPorPeriodo;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.estadisticas.TotalEstudiantes;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.estadisticas.VistaPorEstado;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.estadisticas.VistaPorMes;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.estadisticas.VistaPorProceso;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.estadisticas.VistaPorPrograma;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.estadisticas.VistaTendencias;
 
 public interface GestionarEstadisticasCUIntPort {
     Estadistica crearEstadistica(Estadistica estadistica);
@@ -149,9 +154,9 @@ public interface GestionarEstadisticasCUIntPort {
      * 
      * @param periodoAcademico Período académico opcional (formato: "YYYY-P", ej: "2025-2")
      * @param idPrograma ID del programa académico opcional para filtrar
-     * @return Map con estadísticas detalladas por proceso
+     * @return la vista del dashboard por proceso
      */
-    Map<String, Object> obtenerEstadisticasDetalladasPorProceso(String periodoAcademico, Integer idPrograma);
+    VistaPorProceso obtenerEstadisticasDetalladasPorProceso(String periodoAcademico, Integer idPrograma);
 
     /**
      * Obtiene estadísticas por estado de solicitudes.
@@ -159,9 +164,9 @@ public interface GestionarEstadisticasCUIntPort {
      * 
      * @param periodoAcademico Período académico opcional (formato: "YYYY-P", ej: "2025-2")
      * @param idPrograma ID del programa académico opcional para filtrar
-     * @return Map con estadísticas por estado
+     * @return la vista del dashboard por estado
      */
-    Map<String, Object> obtenerEstadisticasPorEstado(String periodoAcademico, Integer idPrograma);
+    VistaPorEstado obtenerEstadisticasPorEstado(String periodoAcademico, Integer idPrograma);
 
     /**
      * Obtiene estadísticas por período/mes.
@@ -169,9 +174,9 @@ public interface GestionarEstadisticasCUIntPort {
      * 
      * @param periodoAcademico Período académico opcional (formato: "YYYY-P", ej: "2025-2")
      * @param idPrograma ID del programa académico opcional para filtrar
-     * @return Map con estadísticas por período
+     * @return la vista del dashboard por mes de registro
      */
-    Map<String, Object> obtenerEstadisticasPorPeriodo(String periodoAcademico, Integer idPrograma);
+    VistaPorMes obtenerEstadisticasPorPeriodo(String periodoAcademico, Integer idPrograma);
 
     /**
      * Obtiene estadísticas por programa académico.
@@ -179,9 +184,9 @@ public interface GestionarEstadisticasCUIntPort {
      * 
      * @param periodoAcademico Período académico opcional (formato: "YYYY-P", ej: "2025-2")
      * @param idPrograma ID del programa académico opcional para filtrar
-     * @return Map con estadísticas por programa
+     * @return la vista del dashboard por programa
      */
-    Map<String, Object> obtenerEstadisticasPorPrograma(String periodoAcademico, Integer idPrograma);
+    VistaPorPrograma obtenerEstadisticasPorPrograma(String periodoAcademico, Integer idPrograma);
 
     /**
      * Obtiene tendencias y comparativas del sistema.
@@ -189,9 +194,9 @@ public interface GestionarEstadisticasCUIntPort {
      * 
      * @param periodoAcademico Período académico opcional (formato: "YYYY-P", ej: "2025-2")
      * @param idPrograma ID del programa académico opcional para filtrar
-     * @return Map con tendencias y comparativas
+     * @return la vista del dashboard de tendencias y comparativas
      */
-    Map<String, Object> obtenerTendenciasYComparativas(String periodoAcademico, Integer idPrograma);
+    VistaTendencias obtenerTendenciasYComparativas(String periodoAcademico, Integer idPrograma);
 
     /**
      * Obtiene estadísticas específicas para cursos de verano.

@@ -22,6 +22,7 @@ import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Programa;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Solicitud;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Usuario;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.enums.EstadosSolicitud;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.estadisticas.VistaTendencias;
 
 /**
  * Vista del dashboard de tendencias y comparativas (filtrable por periodo académico y programa): crecimiento entre
@@ -35,7 +36,7 @@ public class DashboardTendencias {
         this.datos = datos;
     }
 
-    public Map<String, Object> tendenciasYComparativas(String periodoAcademico, Integer idPrograma) {
+    public VistaTendencias tendenciasYComparativas(String periodoAcademico, Integer idPrograma) {
         List<Solicitud> solicitudes = solicitudes(datos, periodoAcademico, idPrograma);
         List<Usuario> estudiantes = datos.listarEstudiantes();
 
@@ -89,16 +90,10 @@ public class DashboardTendencias {
             tendenciaEstudiantes = "Nueva";
         }
 
-        Map<String, Object> crecimientoTemporal = new HashMap<>();
-        crecimientoTemporal.put("tendenciaSolicitudes", tendenciaSolicitudes);
-        crecimientoTemporal.put("crecimientoSolicitudes", redondear2(crecimientoSolicitudes));
-        crecimientoTemporal.put("tendenciaEstudiantes", tendenciaEstudiantes);
-        crecimientoTemporal.put("crecimientoEstudiantes", redondear2(crecimientoEstudiantes));
-        crecimientoTemporal.put("mesesAnalizados", mesesConDatos.size());
-        crecimientoTemporal.put("totalSolicitudes", solicitudes.size());
-        crecimientoTemporal.put("totalEstudiantes", estudiantes.size());
-        crecimientoTemporal.put("solicitudesPorMes", solicitudesPorMes);
-        crecimientoTemporal.put("estudiantesPorMes", estudiantesPorMes);
+        VistaTendencias.CrecimientoTemporal crecimientoTemporal = new VistaTendencias.CrecimientoTemporal(
+                tendenciaSolicitudes, redondear2(crecimientoSolicitudes), tendenciaEstudiantes,
+                redondear2(crecimientoEstudiantes), mesesConDatos.size(), solicitudes.size(), estudiantes.size(),
+                solicitudesPorMes, estudiantesPorMes);
 
         // Comparativa por proceso
         Map<String, Integer> solicitudesPorProceso = new HashMap<>();
@@ -134,13 +129,9 @@ public class DashboardTendencias {
             }
         }
 
-        Map<String, Object> comparativaProcesos = new HashMap<>();
-        comparativaProcesos.put("procesoMasDemandado", procesoMasDemandado);
-        comparativaProcesos.put("procesoMasEficiente", procesoMasEficiente);
-        comparativaProcesos.put("eficienciaMasAlta", redondear2(maxEficiencia));
-        comparativaProcesos.put("demandaMasAlta", maxDemanda);
-        comparativaProcesos.put("solicitudesPorProceso", solicitudesPorProceso);
-        comparativaProcesos.put("aprobadasPorProceso", aprobadasPorProceso);
+        VistaTendencias.ComparativaProcesos comparativaProcesos = new VistaTendencias.ComparativaProcesos(
+                procesoMasDemandado, procesoMasEficiente, redondear2(maxEficiencia), maxDemanda,
+                solicitudesPorProceso, aprobadasPorProceso);
 
         // Comparativa por programa
         List<Programa> programas = datos.listarProgramas();
@@ -179,30 +170,17 @@ public class DashboardTendencias {
             }
         }
 
-        Map<String, Object> comparativaProgramas = new HashMap<>();
-        comparativaProgramas.put("programaMasActivo", programaMasActivo);
-        comparativaProgramas.put("programaConMasEstudiantes", programaConMasEstudiantes);
-        comparativaProgramas.put("maxSolicitudes", maxSolicitudes);
-        comparativaProgramas.put("maxEstudiantes", maxEstudiantes);
-        comparativaProgramas.put("solicitudesPorPrograma", solicitudesPorPrograma);
-        comparativaProgramas.put("estudiantesPorPrograma", estudiantesPorPrograma);
+        VistaTendencias.ComparativaProgramas comparativaProgramas = new VistaTendencias.ComparativaProgramas(
+                programaMasActivo, programaConMasEstudiantes, maxSolicitudes, maxEstudiantes, solicitudesPorPrograma,
+                estudiantesPorPrograma);
 
-        Map<String, Object> resumenEstrategico = new HashMap<>();
-        resumenEstrategico.put("totalSolicitudes", solicitudes.size());
-        resumenEstrategico.put("totalEstudiantes", estudiantes.size());
-        resumenEstrategico.put("totalProgramas", programas.size());
-        resumenEstrategico.put("periodoAnalizado", "Ultimos 12 meses");
-        resumenEstrategico.put("recomendacionEstrategica", recomendacionEstrategica(tendenciaSolicitudes,
-                crecimientoSolicitudes, procesoMasDemandado, programaMasActivo, maxEficiencia, maxSolicitudes));
+        VistaTendencias.ResumenEstrategico resumenEstrategico = new VistaTendencias.ResumenEstrategico(
+                solicitudes.size(), estudiantes.size(), programas.size(), "Ultimos 12 meses",
+                recomendacionEstrategica(tendenciaSolicitudes, crecimientoSolicitudes, procesoMasDemandado,
+                        programaMasActivo, maxEficiencia, maxSolicitudes));
 
-        Map<String, Object> resultado = new HashMap<>();
-        resultado.put("crecimientoTemporal", crecimientoTemporal);
-        resultado.put("comparativaProcesos", comparativaProcesos);
-        resultado.put("comparativaProgramas", comparativaProgramas);
-        resultado.put("resumenEstrategico", resumenEstrategico);
-        resultado.put("fechaConsulta", new Date());
-        resultado.put("descripcion", "Analisis de tendencias y comparativas estrategicas - DATOS REALES");
-        return resultado;
+        return new VistaTendencias(crecimientoTemporal, comparativaProcesos, comparativaProgramas,
+                resumenEstrategico, new Date(), "Analisis de tendencias y comparativas estrategicas - DATOS REALES");
     }
 
     private static String tendencia(int anterior, int actual) {

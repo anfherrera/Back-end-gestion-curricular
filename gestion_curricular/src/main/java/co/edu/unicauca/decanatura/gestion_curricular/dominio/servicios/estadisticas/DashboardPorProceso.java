@@ -11,6 +11,7 @@ import java.util.Map;
 
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.GestionarEstadisticasGatewayIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Solicitud;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.estadisticas.VistaPorProceso;
 
 /**
  * Vista del dashboard por proceso (filtrable por periodo académico y programa): conteos, eficiencia, tiempos y
@@ -24,7 +25,7 @@ public class DashboardPorProceso {
         this.datos = datos;
     }
 
-    public Map<String, Object> detalladasPorProceso(String periodoAcademico, Integer idPrograma) {
+    public VistaPorProceso detalladasPorProceso(String periodoAcademico, Integer idPrograma) {
         Date corte = ContadorSolicitudes.corteTendencia(periodoAcademico);
         Map<String, ContadorSolicitudes> porProceso = new HashMap<>();
         for (String proceso : PROCESOS_DASHBOARD) {
@@ -41,7 +42,7 @@ public class DashboardPorProceso {
             }
         }
 
-        Map<String, Object> detalle = new HashMap<>();
+        Map<String, VistaPorProceso.Detalle> detalle = new HashMap<>();
         String procesoMasEficiente = null;
         String procesoMasRapido = null;
         String procesoMasDemandado = null;
@@ -54,22 +55,12 @@ public class DashboardPorProceso {
             double eficiencia = c.eficiencia();
             double tiempoPromedio = c.tiempoPromedio();
 
-            Map<String, Object> detalleProceso = new HashMap<>();
-            detalleProceso.put("proceso", proceso);
-            detalleProceso.put("totalSolicitudes", c.total);
-            detalleProceso.put("aprobadas", c.aprobadas);
-            detalleProceso.put("rechazadas", c.rechazadas);
-            detalleProceso.put("enviadas", c.enviadas);
-            detalleProceso.put("enProceso", c.enProceso);
-            detalleProceso.put("eficiencia", redondear2(eficiencia));
-            detalleProceso.put("tiempoPromedio", redondear2(tiempoPromedio));
-            detalleProceso.put("tiempoMinimo", redondear2(c.tiempos.stream().mapToDouble(Double::doubleValue).min().orElse(0)));
-            detalleProceso.put("tiempoMaximo", redondear2(c.tiempos.stream().mapToDouble(Double::doubleValue).max().orElse(0)));
-            detalleProceso.put("tendencia", c.tendenciaReciente(corte));
-            detalleProceso.put("descripcion", PresentacionEstadisticas.descripcionProcesoDetallada(proceso));
-            detalleProceso.put("color", PresentacionEstadisticas.colorProceso(proceso));
-            detalleProceso.put("icono", PresentacionEstadisticas.SIN_ICONO);
-            detalle.put(proceso, detalleProceso);
+            detalle.put(proceso, new VistaPorProceso.Detalle(proceso, c.total, c.aprobadas, c.rechazadas,
+                    c.enviadas, c.enProceso, redondear2(eficiencia), redondear2(tiempoPromedio),
+                    redondear2(c.tiempos.stream().mapToDouble(Double::doubleValue).min().orElse(0)),
+                    redondear2(c.tiempos.stream().mapToDouble(Double::doubleValue).max().orElse(0)),
+                    c.tendenciaReciente(corte), PresentacionEstadisticas.descripcionProcesoDetallada(proceso),
+                    PresentacionEstadisticas.colorProceso(proceso), PresentacionEstadisticas.SIN_ICONO));
 
             if (eficiencia > maxEficiencia) {
                 maxEficiencia = eficiencia;
@@ -85,20 +76,11 @@ public class DashboardPorProceso {
             }
         }
 
-        Map<String, Object> resumenComparativo = new HashMap<>();
-        resumenComparativo.put("procesoMasEficiente", procesoMasEficiente);
-        resumenComparativo.put("procesoMasRapido", procesoMasRapido);
-        resumenComparativo.put("procesoMasDemandado", procesoMasDemandado);
-        resumenComparativo.put("eficienciaMaxima", redondear2(maxEficiencia));
-        resumenComparativo.put("tiempoMinimo", redondear2(minTiempo));
-        resumenComparativo.put("demandaMaxima", maxDemanda);
-        resumenComparativo.put("totalProcesos", PROCESOS_DASHBOARD.length);
+        VistaPorProceso.ResumenComparativo resumenComparativo = new VistaPorProceso.ResumenComparativo(
+                procesoMasEficiente, procesoMasRapido, procesoMasDemandado, redondear2(maxEficiencia),
+                redondear2(minTiempo), maxDemanda, PROCESOS_DASHBOARD.length);
 
-        Map<String, Object> resultado = new HashMap<>();
-        resultado.put("estadisticasPorProceso", detalle);
-        resultado.put("resumenComparativo", resumenComparativo);
-        resultado.put("fechaConsulta", new Date());
-        resultado.put("descripcion", "Estadisticas detalladas por proceso con analisis de eficiencia y tiempo - DATOS REALES");
-        return resultado;
+        return new VistaPorProceso(detalle, resumenComparativo, new Date(),
+                "Estadisticas detalladas por proceso con analisis de eficiencia y tiempo - DATOS REALES");
     }
 }

@@ -15,6 +15,7 @@ import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.Gestionar
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Programa;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Solicitud;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Usuario;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.estadisticas.VistaPorPrograma;
 
 /**
  * Vista del dashboard por programa académico (filtrable por periodo académico y programa): solicitudes y
@@ -28,7 +29,7 @@ public class DashboardPorPrograma {
         this.datos = datos;
     }
 
-    public Map<String, Object> porPrograma(String periodoAcademico, Integer idPrograma) {
+    public VistaPorPrograma porPrograma(String periodoAcademico, Integer idPrograma) {
         Date corte = ContadorSolicitudes.corteTendencia(periodoAcademico);
         List<Programa> programas = datos.listarProgramas();
         List<Solicitud> solicitudes = solicitudes(datos, periodoAcademico, idPrograma);
@@ -62,7 +63,7 @@ public class DashboardPorPrograma {
         Map<String, Integer> solicitudesPorPrograma = new HashMap<>();
         porPrograma.forEach((nombre, c) -> solicitudesPorPrograma.put(nombre, c.total));
 
-        Map<String, Object> resumenPorPrograma = new HashMap<>();
+        Map<String, VistaPorPrograma.Detalle> resumenPorPrograma = new HashMap<>();
         String programaMasActivo = null;
         String programaConMasEstudiantes = null;
         String programaMasEficiente = null;
@@ -79,23 +80,12 @@ public class DashboardPorPrograma {
             double eficiencia = c.eficiencia();
             double tiempoPromedio = c.tiempoPromedio();
 
-            Map<String, Object> detallePrograma = new HashMap<>();
-            detallePrograma.put("nombre", nombre);
-            detallePrograma.put("codigo", programa.getCodigo());
-            detallePrograma.put("totalSolicitudes", c.total);
-            detallePrograma.put("estudiantes", numEstudiantes);
-            detallePrograma.put("aprobadas", c.aprobadas);
-            detallePrograma.put("rechazadas", c.rechazadas);
-            detallePrograma.put("enviadas", c.enviadas);
-            detallePrograma.put("eficiencia", redondear2(eficiencia));
-            detallePrograma.put("tiempoPromedio", redondear2(tiempoPromedio));
-            detallePrograma.put("tendencia", c.tendenciaReciente(corte));
-            detallePrograma.put("porcentaje", redondear2(porcentaje(c.total, solicitudes.size())));
-            detallePrograma.put("procesos", c.procesos);
-            detallePrograma.put("color", PresentacionEstadisticas.colorPrograma(nombre));
-            detallePrograma.put("icono", PresentacionEstadisticas.SIN_ICONO);
-            detallePrograma.put("descripcion", PresentacionEstadisticas.descripcionPrograma(nombre));
-            resumenPorPrograma.put(nombre, detallePrograma);
+            resumenPorPrograma.put(nombre, new VistaPorPrograma.Detalle(nombre, programa.getCodigo(), c.total,
+                    numEstudiantes, c.aprobadas, c.rechazadas, c.enviadas, redondear2(eficiencia),
+                    redondear2(tiempoPromedio), c.tendenciaReciente(corte),
+                    redondear2(porcentaje(c.total, solicitudes.size())), c.procesos,
+                    PresentacionEstadisticas.colorPrograma(nombre), PresentacionEstadisticas.SIN_ICONO,
+                    PresentacionEstadisticas.descripcionPrograma(nombre)));
 
             if (c.total > maxSolicitudes) {
                 maxSolicitudes = c.total;
@@ -115,26 +105,12 @@ public class DashboardPorPrograma {
             }
         }
 
-        Map<String, Object> analisis = new HashMap<>();
-        analisis.put("programaMasActivo", programaMasActivo);
-        analisis.put("programaConMasEstudiantes", programaConMasEstudiantes);
-        analisis.put("programaMasEficiente", programaMasEficiente);
-        analisis.put("programaMasRapido", programaMasRapido);
-        analisis.put("maxSolicitudes", maxSolicitudes);
-        analisis.put("maxEstudiantes", maxEstudiantes);
-        analisis.put("eficienciaMaxima", redondear2(maxEficiencia));
-        analisis.put("tiempoMinimo", redondear2(minTiempo));
-        analisis.put("totalProgramas", programas.size());
-        analisis.put("totalSolicitudes", solicitudes.size());
-        analisis.put("totalEstudiantes", estudiantes.size());
+        VistaPorPrograma.Analisis analisis = new VistaPorPrograma.Analisis(programaMasActivo,
+                programaConMasEstudiantes, programaMasEficiente, programaMasRapido, maxSolicitudes, maxEstudiantes,
+                redondear2(maxEficiencia), redondear2(minTiempo), programas.size(), solicitudes.size(),
+                estudiantes.size());
 
-        Map<String, Object> resultado = new HashMap<>();
-        resultado.put("porPrograma", resumenPorPrograma);
-        resultado.put("estudiantesPorPrograma", estudiantesPorPrograma);
-        resultado.put("solicitudesPorPrograma", solicitudesPorPrograma);
-        resultado.put("analisis", analisis);
-        resultado.put("fechaConsulta", new Date());
-        resultado.put("descripcion", "Estadisticas por programa academico con analisis de rendimiento - DATOS REALES");
-        return resultado;
+        return new VistaPorPrograma(resumenPorPrograma, estudiantesPorPrograma, solicitudesPorPrograma, analisis,
+                new Date(), "Estadisticas por programa academico con analisis de rendimiento - DATOS REALES");
     }
 }

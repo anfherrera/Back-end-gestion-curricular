@@ -27,6 +27,11 @@ import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.estadistica
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.estadisticas.ProcesosPorProgramaYPeriodo;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.estadisticas.ProgramasPorProcesoYEstado;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.estadisticas.TotalEstudiantes;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.estadisticas.VistaPorEstado;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.estadisticas.VistaPorMes;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.estadisticas.VistaPorProceso;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.estadisticas.VistaPorPrograma;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.estadisticas.VistaTendencias;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.RespuestasArchivo;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.dto.peticion.EstadisticaDTOPeticion;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.dto.respuesta.EstadisticaDTORespuesta;
@@ -446,11 +451,10 @@ public class EstadisticasRestController {
      * @return ResponseEntity con estadísticas detalladas por proceso
      */
     @GetMapping("/estadisticas-por-proceso")
-    public ResponseEntity<Map<String, Object>> obtenerEstadisticasDetalladasPorProceso(
+    public ResponseEntity<VistaPorProceso> obtenerEstadisticasDetalladasPorProceso(
             @RequestParam(required = false) String periodoAcademico,
             @RequestParam(required = false) Integer idPrograma) {
-        Map<String, Object> resultado = estadisticaCU.obtenerEstadisticasDetalladasPorProceso(periodoAcademico, idPrograma);
-        return ResponseEntity.ok(resultado);
+        return ResponseEntity.ok(estadisticaCU.obtenerEstadisticasDetalladasPorProceso(periodoAcademico, idPrograma));
     }
 
     /**
@@ -462,11 +466,10 @@ public class EstadisticasRestController {
      * @return ResponseEntity con estadísticas por estado
      */
     @GetMapping("/estado-solicitudes")
-    public ResponseEntity<Map<String, Object>> obtenerEstadisticasPorEstado(
+    public ResponseEntity<VistaPorEstado> obtenerEstadisticasPorEstado(
             @RequestParam(required = false) String periodoAcademico,
             @RequestParam(required = false) Integer idPrograma) {
-        Map<String, Object> resultado = estadisticaCU.obtenerEstadisticasPorEstado(periodoAcademico, idPrograma);
-        return ResponseEntity.ok(resultado);
+        return ResponseEntity.ok(estadisticaCU.obtenerEstadisticasPorEstado(periodoAcademico, idPrograma));
     }
 
     /**
@@ -478,11 +481,10 @@ public class EstadisticasRestController {
      * @return ResponseEntity con estadísticas por período
      */
     @GetMapping("/por-periodo")
-    public ResponseEntity<Map<String, Object>> obtenerEstadisticasPorPeriodo(
+    public ResponseEntity<VistaPorMes> obtenerEstadisticasPorPeriodo(
             @RequestParam(required = false) String periodoAcademico,
             @RequestParam(required = false) Integer idPrograma) {
-        Map<String, Object> resultado = estadisticaCU.obtenerEstadisticasPorPeriodo(periodoAcademico, idPrograma);
-        return ResponseEntity.ok(resultado);
+        return ResponseEntity.ok(estadisticaCU.obtenerEstadisticasPorPeriodo(periodoAcademico, idPrograma));
     }
 
     /**
@@ -494,11 +496,10 @@ public class EstadisticasRestController {
      * @return ResponseEntity con estadísticas por programa
      */
     @GetMapping("/por-programa")
-    public ResponseEntity<Map<String, Object>> obtenerEstadisticasPorPrograma(
+    public ResponseEntity<VistaPorPrograma> obtenerEstadisticasPorPrograma(
             @RequestParam(required = false) String periodoAcademico,
             @RequestParam(required = false) Integer idPrograma) {
-        Map<String, Object> resultado = estadisticaCU.obtenerEstadisticasPorPrograma(periodoAcademico, idPrograma);
-        return ResponseEntity.ok(resultado);
+        return ResponseEntity.ok(estadisticaCU.obtenerEstadisticasPorPrograma(periodoAcademico, idPrograma));
     }
 
     /**
@@ -510,11 +511,10 @@ public class EstadisticasRestController {
      * @return ResponseEntity con tendencias y comparativas
      */
     @GetMapping("/tendencias-comparativas")
-    public ResponseEntity<Map<String, Object>> obtenerTendenciasYComparativas(
+    public ResponseEntity<VistaTendencias> obtenerTendenciasYComparativas(
             @RequestParam(required = false) String periodoAcademico,
             @RequestParam(required = false) Integer idPrograma) {
-        Map<String, Object> resultado = estadisticaCU.obtenerTendenciasYComparativas(periodoAcademico, idPrograma);
-        return ResponseEntity.ok(resultado);
+        return ResponseEntity.ok(estadisticaCU.obtenerTendenciasYComparativas(periodoAcademico, idPrograma));
     }
 
     /**

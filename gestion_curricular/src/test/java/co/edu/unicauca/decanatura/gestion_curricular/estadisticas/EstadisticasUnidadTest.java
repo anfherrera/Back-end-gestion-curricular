@@ -29,6 +29,8 @@ import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Usuario;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.estadisticas.EstadisticasPorEstado;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.estadisticas.EstadisticasPorProceso;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.estadisticas.EstadisticasPorPrograma;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.estadisticas.VistaPorEstado;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.estadisticas.VistaTendencias;
 
 /**
  * ============================================================
@@ -229,7 +231,6 @@ class EstadisticasUnidadTest {
 
     @Test
     @DisplayName("Test 12: Dashboard por estado - EN_PROCESO junta funcionario y coordinador")
-    @SuppressWarnings("unchecked")
     void testDashboardPorEstadoJuntaEnProceso() {
         when(estadisticasGateway.listarSolicitudesConEstadosYUsuario()).thenReturn(List.of(
                 solicitud(new SolicitudHomologacion(), 1, estado("APROBADA_FUNCIONARIO", 1)),
@@ -237,28 +238,25 @@ class EstadisticasUnidadTest {
                 solicitud(new SolicitudEcaes(), 1, estado("RECHAZADA", 1)),
                 solicitud(new SolicitudEcaes(), 1, estado("APROBADA", 1))));
 
-        Map<String, Object> resultado = estadisticasCU.obtenerEstadisticasPorEstado(null, null);
+        VistaPorEstado resultado = estadisticasCU.obtenerEstadisticasPorEstado(null, null);
 
-        Map<String, Object> estados = (Map<String, Object>) resultado.get("estados");
-        Map<String, Object> enProceso = (Map<String, Object>) estados.get("EN_PROCESO");
-        assertThat(enProceso.get("cantidad")).isEqualTo(2);
-        assertThat(enProceso.get("porcentaje")).isEqualTo(50.0);
-        Map<String, Object> analisis = (Map<String, Object>) resultado.get("analisis");
-        assertThat(analisis.get("tasaResolucion")).isEqualTo(50.0);
+        VistaPorEstado.Detalle enProceso = resultado.estados().get("EN_PROCESO");
+        assertThat(enProceso.cantidad()).isEqualTo(2);
+        assertThat(enProceso.porcentaje()).isEqualTo(50.0);
+        assertThat(resultado.analisis().tasaResolucion()).isEqualTo(50.0);
     }
 
     @Test
     @DisplayName("Test 13: Tendencias - con un solo mes de datos la tendencia es Nueva")
-    @SuppressWarnings("unchecked")
     void testTendenciasConUnSoloMes() {
         when(estadisticasGateway.listarSolicitudesConEstadosYUsuario()).thenReturn(List.of(
                 solicitud(new SolicitudHomologacion(), 1, estado("Enviada", 3))));
 
-        Map<String, Object> resultado = estadisticasCU.obtenerTendenciasYComparativas(null, null);
+        VistaTendencias resultado = estadisticasCU.obtenerTendenciasYComparativas(null, null);
 
-        Map<String, Object> crecimiento = (Map<String, Object>) resultado.get("crecimientoTemporal");
-        assertThat(crecimiento.get("tendenciaSolicitudes")).isEqualTo("Nueva");
-        assertThat(crecimiento.get("crecimientoSolicitudes")).isEqualTo(0.0);
+        VistaTendencias.CrecimientoTemporal crecimiento = resultado.crecimientoTemporal();
+        assertThat(crecimiento.tendenciaSolicitudes()).isEqualTo("Nueva");
+        assertThat(crecimiento.crecimientoSolicitudes()).isEqualTo(0.0);
     }
 
     @Test
