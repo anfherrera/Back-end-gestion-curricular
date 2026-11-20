@@ -18,11 +18,15 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TimeZone;
+import java.util.TreeMap;
 import java.util.function.Function;
 import java.util.stream.Stream;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
@@ -127,7 +131,7 @@ class EstadisticasCaracterizacionTest {
     @MethodSource("consultas")
     @DisplayName("La respuesta no cambia")
     void respuestaFijada(String nombre, Function<GestionarEstadisticasCUIntPort, Object> consulta) throws Exception {
-        Object resultado = sinFechasDeConsulta(consulta.apply(estadisticas));
+        JsonNode resultado = normalizado(JSON.valueToTree(consulta.apply(estadisticas)));
         String obtenido = JSON.writeValueAsString(resultado).replace("\r\n", "\n");
 
         Path referencia = CARPETA.resolve(nombre + ".json");
@@ -143,13 +147,26 @@ class EstadisticasCaracterizacionTest {
         return Arguments.of(nombre, consulta);
     }
 
-    /** Quita, a cualquier profundidad, las fechas que dependen de cuándo se corre la prueba. */
-    private static Object sinFechasDeConsulta(Object valor) {
-        if (valor instanceof Map<?, ?> mapa) {
-            mapa.keySet().removeIf(FECHAS_DE_CONSULTA::contains);
-            mapa.values().forEach(EstadisticasCaracterizacionTest::sinFechasDeConsulta);
-        } else if (valor instanceof Iterable<?> lista) {
-            lista.forEach(EstadisticasCaracterizacionTest::sinFechasDeConsulta);
+    /**
+     * Ordena por nombre las claves de cada objeto y quita, a cualquier profundidad, las fechas que dependen de cuándo
+     * se corre la prueba. Así la comparación no depende de si la consulta devuelve un mapa o un record.
+     */
+    private static JsonNode normalizado(JsonNode valor) {
+        if (valor.isObject()) {
+            Map<String, JsonNode> campos = new TreeMap<>();
+            valor.fields().forEachRemaining(campo -> {
+                if (!FECHAS_DE_CONSULTA.contains(campo.getKey())) {
+                    campos.put(campo.getKey(), normalizado(campo.getValue()));
+                }
+            });
+            ObjectNode ordenado = JSON.createObjectNode();
+            ordenado.setAll(campos);
+            return ordenado;
+        }
+        if (valor.isArray()) {
+            ArrayNode lista = JSON.createArrayNode();
+            valor.forEach(elemento -> lista.add(normalizado(elemento)));
+            return lista;
         }
         return valor;
     }
