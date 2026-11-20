@@ -1,6 +1,7 @@
 package co.edu.unicauca.decanatura.gestion_curricular.dominio.servicios.estadisticas;
 
 import java.text.Normalizer;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Comparator;
 import java.util.Date;
@@ -13,6 +14,7 @@ import java.util.stream.Collectors;
 
 import lombok.extern.slf4j.Slf4j;
 
+import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.GestionarEstadisticasGatewayIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.EstadoSolicitud;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Solicitud;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.enums.EstadosSolicitud;
@@ -41,6 +43,18 @@ final class ReglasEstadisticas {
     private static final Set<String> estadosDesconocidosReportados = ConcurrentHashMap.newKeySet();
 
     private ReglasEstadisticas() {
+    }
+
+    /** Todas las solicitudes, con sus estados y su usuario; una lista vacía si el gateway devuelve null. */
+    static List<Solicitud> solicitudes(GestionarEstadisticasGatewayIntPort datos) {
+        List<Solicitud> solicitudes = datos.listarSolicitudesConEstadosYUsuario();
+        return solicitudes != null ? solicitudes : new ArrayList<>();
+    }
+
+    /** Las solicitudes del periodo académico (ya normalizado) y del programa; ver {@link #filtrarPorPeriodoYPrograma}. */
+    static List<Solicitud> solicitudes(GestionarEstadisticasGatewayIntPort datos, String periodoAcademico,
+            Integer idPrograma) {
+        return filtrarPorPeriodoYPrograma(solicitudes(datos), periodoAcademico, idPrograma);
     }
 
     static String tipoProceso(Solicitud solicitud) {
@@ -237,5 +251,10 @@ final class ReglasEstadisticas {
 
     static double redondear2(double valor) {
         return Math.round(valor * 100.0) / 100.0;
+    }
+
+    /** Porcentaje de {@code parte} sobre {@code total}; 0 si el total es 0. */
+    static double porcentaje(int parte, int total) {
+        return total > 0 ? (parte * 100.0) / total : 0.0;
     }
 }

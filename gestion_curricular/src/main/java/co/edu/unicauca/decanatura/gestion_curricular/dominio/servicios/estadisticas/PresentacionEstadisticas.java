@@ -10,6 +10,11 @@ final class PresentacionEstadisticas {
 
     static final String SIN_ICONO = "";
 
+    /** Orden en que el dashboard muestra los procesos. */
+    static final String[] PROCESOS_DASHBOARD = {
+            TipoProcesoSolicitud.HOMOLOGACION, TipoProcesoSolicitud.PAZ_Y_SALVO, TipoProcesoSolicitud.REINGRESO,
+            TipoProcesoSolicitud.CURSOS_VERANO, TipoProcesoSolicitud.ECAES };
+
     private static final Map<String, String> COLOR_MES = Map.ofEntries(
             Map.entry("Enero", "#FF6B6B"), Map.entry("Febrero", "#4ECDC4"), Map.entry("Marzo", "#45B7D1"),
             Map.entry("Abril", "#96CEB4"), Map.entry("Mayo", "#FFEAA7"), Map.entry("Junio", "#DDA0DD"),

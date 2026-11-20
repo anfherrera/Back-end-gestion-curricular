@@ -10,8 +10,12 @@ import co.edu.unicauca.decanatura.gestion_curricular.dominio.excepciones.Entidad
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.excepciones.ReglaNegocioExcepcion;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Estadistica;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.enums.PeriodoAcademicoEnum;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.servicios.estadisticas.DashboardPorEstado;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.servicios.estadisticas.DashboardPorMes;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.servicios.estadisticas.DashboardPorProceso;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.servicios.estadisticas.DashboardPorPrograma;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.servicios.estadisticas.DashboardTendencias;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.servicios.estadisticas.EstadisticasCursosVerano;
-import co.edu.unicauca.decanatura.gestion_curricular.dominio.servicios.estadisticas.EstadisticasDashboard;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.servicios.estadisticas.EstadisticasGenerales;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.servicios.estadisticas.TipoProcesoSolicitud;
 
@@ -19,14 +23,22 @@ public class GestionarEstadisticasCUAdapter implements GestionarEstadisticasCUIn
 
     private final GestionarEstadisticasGatewayIntPort estadisticasGateway;
     private final EstadisticasGenerales generales;
-    private final EstadisticasDashboard dashboard;
+    private final DashboardPorProceso dashboardPorProceso;
+    private final DashboardPorEstado dashboardPorEstado;
+    private final DashboardPorMes dashboardPorMes;
+    private final DashboardPorPrograma dashboardPorPrograma;
+    private final DashboardTendencias dashboardTendencias;
     private final EstadisticasCursosVerano cursosVerano;
 
     public GestionarEstadisticasCUAdapter(
             GestionarEstadisticasGatewayIntPort estadisticasGateway) {
         this.estadisticasGateway = estadisticasGateway;
         this.generales = new EstadisticasGenerales(estadisticasGateway);
-        this.dashboard = new EstadisticasDashboard(estadisticasGateway);
+        this.dashboardPorProceso = new DashboardPorProceso(estadisticasGateway);
+        this.dashboardPorEstado = new DashboardPorEstado(estadisticasGateway);
+        this.dashboardPorMes = new DashboardPorMes(estadisticasGateway);
+        this.dashboardPorPrograma = new DashboardPorPrograma(estadisticasGateway);
+        this.dashboardTendencias = new DashboardTendencias(estadisticasGateway);
         this.cursosVerano = new EstadisticasCursosVerano(estadisticasGateway);
     }
 
@@ -216,27 +228,27 @@ public class GestionarEstadisticasCUAdapter implements GestionarEstadisticasCUIn
 
     @Override
     public Map<String, Object> obtenerEstadisticasDetalladasPorProceso(String periodoAcademico, Integer idPrograma) {
-        return dashboard.detalladasPorProceso(PeriodoAcademicoEnum.normalizar(periodoAcademico), idPrograma);
+        return dashboardPorProceso.detalladasPorProceso(PeriodoAcademicoEnum.normalizar(periodoAcademico), idPrograma);
     }
 
     @Override
     public Map<String, Object> obtenerEstadisticasPorEstado(String periodoAcademico, Integer idPrograma) {
-        return dashboard.porEstado(PeriodoAcademicoEnum.normalizar(periodoAcademico), idPrograma);
+        return dashboardPorEstado.porEstado(PeriodoAcademicoEnum.normalizar(periodoAcademico), idPrograma);
     }
 
     @Override
     public Map<String, Object> obtenerEstadisticasPorPeriodo(String periodoAcademico, Integer idPrograma) {
-        return dashboard.porPeriodo(PeriodoAcademicoEnum.normalizar(periodoAcademico), idPrograma);
+        return dashboardPorMes.porPeriodo(PeriodoAcademicoEnum.normalizar(periodoAcademico), idPrograma);
     }
 
     @Override
     public Map<String, Object> obtenerEstadisticasPorPrograma(String periodoAcademico, Integer idPrograma) {
-        return dashboard.porPrograma(PeriodoAcademicoEnum.normalizar(periodoAcademico), idPrograma);
+        return dashboardPorPrograma.porPrograma(PeriodoAcademicoEnum.normalizar(periodoAcademico), idPrograma);
     }
 
     @Override
     public Map<String, Object> obtenerTendenciasYComparativas(String periodoAcademico, Integer idPrograma) {
-        return dashboard.tendenciasYComparativas(PeriodoAcademicoEnum.normalizar(periodoAcademico), idPrograma);
+        return dashboardTendencias.tendenciasYComparativas(PeriodoAcademicoEnum.normalizar(periodoAcademico), idPrograma);
     }
 
     @Override
