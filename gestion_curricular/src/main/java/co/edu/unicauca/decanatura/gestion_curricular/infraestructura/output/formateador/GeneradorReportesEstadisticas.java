@@ -16,6 +16,9 @@ import com.itextpdf.text.pdf.PdfWriter;
 import org.springframework.stereotype.Component;
 
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.GenerarReportesEstadisticasIntPort;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.estadisticas.Globales;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.estadisticas.GlobalesContadas;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.estadisticas.GlobalesDelProceso;
 
 /**
  * Genera los reportes PDF y Excel de estadísticas (dashboard general, cursos de verano y reporte completo)
@@ -31,7 +34,7 @@ public class GeneradorReportesEstadisticas implements GenerarReportesEstadistica
     }
 
     /** PDF del dashboard general. */
-    public byte[] pdfGeneral(Map<String, Object> estadisticas) {
+    public byte[] pdfGeneral(Globales estadisticas) {
         return generarPdf("DASHBOARD GENERAL - ESTADÍSTICAS DEL SISTEMA", document -> {
             agregarFecha(document, 15);
             agregarSeccionEstadisticasGenerales(document, estadisticas);
@@ -60,7 +63,7 @@ public class GeneradorReportesEstadisticas implements GenerarReportesEstadistica
     }
 
     /** PDF completo: estadísticas generales y, en otra página, cursos de verano (cada parte si viene). */
-    public byte[] pdfCompleto(Map<String, Object> estadisticas, Map<String, Object> datosCursosVerano,
+    public byte[] pdfCompleto(Globales estadisticas, Map<String, Object> datosCursosVerano,
             String periodoAcademico, Integer idPrograma) {
         return generarPdf("REPORTE GENERAL DE ESTADÍSTICAS", document -> {
             Font normal = new Font(Font.FontFamily.HELVETICA, 10);
@@ -89,7 +92,7 @@ public class GeneradorReportesEstadisticas implements GenerarReportesEstadistica
      * Excel con una hoja de estadísticas generales y otra de cursos de verano; cada hoja se incluye solo
      * si vienen sus datos (el dashboard general manda solo la primera, el de cursos de verano solo la segunda).
      */
-    public byte[] excel(Map<String, Object> estadisticas, Map<String, Object> datosCursosVerano,
+    public byte[] excel(Globales estadisticas, Map<String, Object> datosCursosVerano,
             String periodoAcademico, Integer idPrograma) {
         try (org.apache.poi.xssf.usermodel.XSSFWorkbook workbook = new org.apache.poi.xssf.usermodel.XSSFWorkbook();
                 ByteArrayOutputStream baos = new ByteArrayOutputStream()) {
@@ -142,11 +145,30 @@ public class GeneradorReportesEstadisticas implements GenerarReportesEstadistica
     }
 
     /** Con filtro de programa, si las estadísticas traen un único programa, ese es el filtrado. */
-    private String nombreProgramaFiltrado(Map<String, Object> estadisticas) {
-        if (estadisticas != null && estadisticas.get("porPrograma") instanceof Map<?, ?> porPrograma && porPrograma.size() == 1) {
-            return String.valueOf(porPrograma.keySet().iterator().next());
+    private String nombreProgramaFiltrado(Globales estadisticas) {
+        if (estadisticas != null && estadisticas.porPrograma().size() == 1) {
+            return estadisticas.porPrograma().keySet().iterator().next();
         }
         return null;
+    }
+
+    /** El desglose por estado; vacío en las globales de un periodo, que no lo traen. */
+    private static Map<String, Integer> porEstado(Globales estadisticas) {
+        if (estadisticas instanceof GlobalesContadas contadas) {
+            return contadas.porEstado();
+        }
+        if (estadisticas instanceof GlobalesDelProceso delProceso) {
+            return delProceso.porEstado();
+        }
+        return Map.of();
+    }
+
+    /** Agrega una fila con la etiqueta y el valor, y devuelve el número de la fila siguiente. */
+    private static int agregarFila(org.apache.poi.ss.usermodel.Sheet sheet, int rowNum, String etiqueta, String valor) {
+        org.apache.poi.ss.usermodel.Row row = sheet.createRow(rowNum);
+        row.createCell(0).setCellValue(etiqueta);
+        row.createCell(1).setCellValue(valor);
+        return rowNum + 1;
     }
 
     /**
@@ -181,7 +203,7 @@ public class GeneradorReportesEstadisticas implements GenerarReportesEstadistica
     /**
      * Agrega la sección de estadísticas generales al PDF.
      */
-    private void agregarSeccionEstadisticasGenerales(com.itextpdf.text.Document document, Map<String, Object> estadisticas) throws Exception {
+    private void agregarSeccionEstadisticasGenerales(com.itextpdf.text.Document document, Globales estadisticas) throws Exception {
         // Título de sección
         com.itextpdf.text.Font sectionFont = new com.itextpdf.text.Font(com.itextpdf.text.Font.FontFamily.HELVETICA, 14, com.itextpdf.text.Font.BOLD);
         com.itextpdf.text.Paragraph sectionTitle = new com.itextpdf.text.Paragraph("1. ESTADÍSTICAS GENERALES", sectionFont);
@@ -193,58 +215,37 @@ public class GeneradorReportesEstadisticas implements GenerarReportesEstadistica
         com.itextpdf.text.Font boldFont = new com.itextpdf.text.Font(com.itextpdf.text.Font.FontFamily.HELVETICA, 10, com.itextpdf.text.Font.BOLD);
         
         // Resumen general
-        Object totalSolicitudes = estadisticas.get("totalSolicitudes");
-        Object totalAprobadas = estadisticas.get("totalAprobadas");
-        Object totalRechazadas = estadisticas.get("totalRechazadas");
-        Object totalEnProceso = estadisticas.get("totalEnProceso");
-        Object porcentajeAprobacion = estadisticas.get("porcentajeAprobacion");
-        
-        if (totalSolicitudes != null) {
-            document.add(new com.itextpdf.text.Paragraph("Total de Solicitudes: " + totalSolicitudes, boldFont));
-        }
-        
-        if (totalAprobadas != null || totalRechazadas != null || totalEnProceso != null) {
-            document.add(new com.itextpdf.text.Paragraph("\nResumen de Estados:", boldFont));
-            if (totalAprobadas != null) {
-                document.add(new com.itextpdf.text.Paragraph("  • Total Aprobadas: " + totalAprobadas, normalFont));
-            }
-            if (totalRechazadas != null) {
-                document.add(new com.itextpdf.text.Paragraph("  • Total Rechazadas: " + totalRechazadas, normalFont));
-            }
-            if (totalEnProceso != null) {
-                document.add(new com.itextpdf.text.Paragraph("  • Total en Proceso: " + totalEnProceso, normalFont));
-            }
-            if (porcentajeAprobacion != null) {
-                document.add(new com.itextpdf.text.Paragraph("  • Porcentaje de Aprobación: " + porcentajeAprobacion + "%", normalFont));
-            }
-        }
-        
+        document.add(new com.itextpdf.text.Paragraph("Total de Solicitudes: " + estadisticas.totalSolicitudes(), boldFont));
+
+        document.add(new com.itextpdf.text.Paragraph("\nResumen de Estados:", boldFont));
+        document.add(new com.itextpdf.text.Paragraph("  • Total Aprobadas: " + estadisticas.totalAprobadas(), normalFont));
+        document.add(new com.itextpdf.text.Paragraph("  • Total Rechazadas: " + estadisticas.totalRechazadas(), normalFont));
+        document.add(new com.itextpdf.text.Paragraph("  • Total en Proceso: " + estadisticas.totalEnProceso(), normalFont));
+        document.add(new com.itextpdf.text.Paragraph("  • Porcentaje de Aprobación: " + estadisticas.porcentajeAprobacion() + "%", normalFont));
+
         // Por estado (detallado)
-        @SuppressWarnings("unchecked")
-        Map<String, Object> porEstado = (Map<String, Object>) estadisticas.get("porEstado");
-        if (porEstado != null && !porEstado.isEmpty()) {
+        Map<String, Integer> porEstado = porEstado(estadisticas);
+        if (!porEstado.isEmpty()) {
             document.add(new com.itextpdf.text.Paragraph("\nEstadísticas por Estado:", boldFont));
-            for (Map.Entry<String, Object> entry : porEstado.entrySet()) {
+            for (Map.Entry<String, Integer> entry : porEstado.entrySet()) {
                 document.add(new com.itextpdf.text.Paragraph("  • " + entry.getKey() + ": " + entry.getValue(), normalFont));
             }
         }
-        
+
         // Por tipo de proceso
-        @SuppressWarnings("unchecked")
-        Map<String, Object> porTipoProceso = (Map<String, Object>) estadisticas.get("porTipoProceso");
-        if (porTipoProceso != null && !porTipoProceso.isEmpty()) {
+        Map<String, ?> porTipoProceso = estadisticas.porTipoProceso();
+        if (!porTipoProceso.isEmpty()) {
             document.add(new com.itextpdf.text.Paragraph("\nEstadísticas por Tipo de Proceso:", boldFont));
-            for (Map.Entry<String, Object> entry : porTipoProceso.entrySet()) {
+            for (Map.Entry<String, ?> entry : porTipoProceso.entrySet()) {
                 document.add(new com.itextpdf.text.Paragraph("  • " + entry.getKey() + ": " + entry.getValue(), normalFont));
             }
         }
-        
+
         // Por programa
-        @SuppressWarnings("unchecked")
-        Map<String, Object> porPrograma = (Map<String, Object>) estadisticas.get("porPrograma");
-        if (porPrograma != null && !porPrograma.isEmpty()) {
+        Map<String, Integer> porPrograma = estadisticas.porPrograma();
+        if (!porPrograma.isEmpty()) {
             document.add(new com.itextpdf.text.Paragraph("\nEstadísticas por Programa:", boldFont));
-            for (Map.Entry<String, Object> entry : porPrograma.entrySet()) {
+            for (Map.Entry<String, Integer> entry : porPrograma.entrySet()) {
                 document.add(new com.itextpdf.text.Paragraph("  • " + entry.getKey() + ": " + entry.getValue(), normalFont));
             }
         }
@@ -325,7 +326,7 @@ public class GeneradorReportesEstadisticas implements GenerarReportesEstadistica
         }
     }
 
-    private void crearHojaEstadisticasGenerales(org.apache.poi.xssf.usermodel.XSSFWorkbook workbook, Map<String, Object> estadisticas, String periodoAcademico, Integer idPrograma) {
+    private void crearHojaEstadisticasGenerales(org.apache.poi.xssf.usermodel.XSSFWorkbook workbook, Globales estadisticas, String periodoAcademico, Integer idPrograma) {
             org.apache.poi.ss.usermodel.Sheet sheet = workbook.createSheet("Estadísticas Generales");
             
             // Estilos
@@ -372,17 +373,9 @@ public class GeneradorReportesEstadisticas implements GenerarReportesEstadistica
         }
         
         if (idPrograma != null) {
-            // Intentar obtener el nombre del programa desde las estadísticas
-            String nombrePrograma = null;
-            try {
-                @SuppressWarnings("unchecked")
-                Map<String, Object> porPrograma = (Map<String, Object>) estadisticas.get("porPrograma");
-                if (porPrograma != null && porPrograma.size() == 1) {
-                    nombrePrograma = porPrograma.keySet().iterator().next();
-                }
-            } catch (Exception e) {
-            }
-            
+            // Con un único programa en las estadísticas, ese es el filtrado
+            String nombrePrograma = nombreProgramaFiltrado(estadisticas);
+
             org.apache.poi.ss.usermodel.Row programaRow = sheet.createRow(rowNum++);
             String textoPrograma = nombrePrograma != null ? 
                 "Programa filtrado: " + nombrePrograma : 
@@ -394,99 +387,64 @@ public class GeneradorReportesEstadisticas implements GenerarReportesEstadistica
         rowNum++; // Espacio
         
         // Total de solicitudes
-        Object totalSolicitudes = estadisticas.get("totalSolicitudes");
-        if (totalSolicitudes != null) {
-            org.apache.poi.ss.usermodel.Row row = sheet.createRow(rowNum++);
-            row.createCell(0).setCellValue("Total de Solicitudes");
-            row.createCell(1).setCellValue(totalSolicitudes.toString());
-        }
-        
+        org.apache.poi.ss.usermodel.Row totalRow = sheet.createRow(rowNum++);
+        totalRow.createCell(0).setCellValue("Total de Solicitudes");
+        totalRow.createCell(1).setCellValue(String.valueOf(estadisticas.totalSolicitudes()));
+
         // Resumen de estados
-        Object totalAprobadas = estadisticas.get("totalAprobadas");
-        Object totalRechazadas = estadisticas.get("totalRechazadas");
-        Object totalEnProceso = estadisticas.get("totalEnProceso");
-        Object totalEnviadas = estadisticas.get("totalEnviadas");
-        Object porcentajeAprobacion = estadisticas.get("porcentajeAprobacion");
-        
-        if (totalAprobadas != null || totalRechazadas != null || totalEnProceso != null || totalEnviadas != null) {
-            rowNum++; // Espacio
-            org.apache.poi.ss.usermodel.Row headerRow = sheet.createRow(rowNum++);
-            org.apache.poi.ss.usermodel.Cell headerCell = headerRow.createCell(0);
-            headerCell.setCellValue("RESUMEN DE ESTADOS");
-            headerCell.setCellStyle(headerStyle);
-            
-            if (totalAprobadas != null) {
-                org.apache.poi.ss.usermodel.Row row = sheet.createRow(rowNum++);
-                row.createCell(0).setCellValue("Total Aprobadas");
-                row.createCell(1).setCellValue(totalAprobadas.toString());
-            }
-            if (totalRechazadas != null) {
-                org.apache.poi.ss.usermodel.Row row = sheet.createRow(rowNum++);
-                row.createCell(0).setCellValue("Total Rechazadas");
-                row.createCell(1).setCellValue(totalRechazadas.toString());
-            }
-            if (totalEnProceso != null) {
-                org.apache.poi.ss.usermodel.Row row = sheet.createRow(rowNum++);
-                row.createCell(0).setCellValue("Total en Proceso");
-                row.createCell(1).setCellValue(totalEnProceso.toString());
-            }
-            if (totalEnviadas != null) {
-                org.apache.poi.ss.usermodel.Row row = sheet.createRow(rowNum++);
-                row.createCell(0).setCellValue("Total Enviadas");
-                row.createCell(1).setCellValue(totalEnviadas.toString());
-            }
-            if (porcentajeAprobacion != null) {
-                org.apache.poi.ss.usermodel.Row row = sheet.createRow(rowNum++);
-                row.createCell(0).setCellValue("Porcentaje de Aprobación");
-                row.createCell(1).setCellValue(porcentajeAprobacion.toString() + "%");
-            }
-        }
-        
+        rowNum++; // Espacio
+        org.apache.poi.ss.usermodel.Row resumenRow = sheet.createRow(rowNum++);
+        org.apache.poi.ss.usermodel.Cell resumenCell = resumenRow.createCell(0);
+        resumenCell.setCellValue("RESUMEN DE ESTADOS");
+        resumenCell.setCellStyle(headerStyle);
+        rowNum = agregarFila(sheet, rowNum, "Total Aprobadas", String.valueOf(estadisticas.totalAprobadas()));
+        rowNum = agregarFila(sheet, rowNum, "Total Rechazadas", String.valueOf(estadisticas.totalRechazadas()));
+        rowNum = agregarFila(sheet, rowNum, "Total en Proceso", String.valueOf(estadisticas.totalEnProceso()));
+        rowNum = agregarFila(sheet, rowNum, "Total Enviadas", String.valueOf(estadisticas.totalEnviadas()));
+        rowNum = agregarFila(sheet, rowNum, "Porcentaje de Aprobación", estadisticas.porcentajeAprobacion() + "%");
+
         // Por tipo de proceso
-        @SuppressWarnings("unchecked")
-        Map<String, Object> porTipoProceso = (Map<String, Object>) estadisticas.get("porTipoProceso");
-        if (porTipoProceso != null && !porTipoProceso.isEmpty()) {
+        Map<String, ?> porTipoProceso = estadisticas.porTipoProceso();
+        if (!porTipoProceso.isEmpty()) {
             rowNum++; // Espacio
             org.apache.poi.ss.usermodel.Row headerRow = sheet.createRow(rowNum++);
             org.apache.poi.ss.usermodel.Cell headerCell = headerRow.createCell(0);
             headerCell.setCellValue("ESTADÍSTICAS POR TIPO DE PROCESO");
             headerCell.setCellStyle(headerStyle);
-            
-            for (Map.Entry<String, Object> entry : porTipoProceso.entrySet()) {
+
+            for (Map.Entry<String, ?> entry : porTipoProceso.entrySet()) {
                 org.apache.poi.ss.usermodel.Row row = sheet.createRow(rowNum++);
                 row.createCell(0).setCellValue(entry.getKey());
                 row.createCell(1).setCellValue(entry.getValue().toString());
             }
-            }
-            
+        }
+
         // Por estado
-            @SuppressWarnings("unchecked")
-        Map<String, Object> porEstado = (Map<String, Object>) estadisticas.get("porEstado");
-        if (porEstado != null && !porEstado.isEmpty()) {
+        Map<String, Integer> porEstado = porEstado(estadisticas);
+        if (!porEstado.isEmpty()) {
             rowNum++; // Espacio
             org.apache.poi.ss.usermodel.Row headerRow = sheet.createRow(rowNum++);
             org.apache.poi.ss.usermodel.Cell headerCell = headerRow.createCell(0);
             headerCell.setCellValue("ESTADÍSTICAS POR ESTADO");
             headerCell.setCellStyle(headerStyle);
-            
-            for (Map.Entry<String, Object> entry : porEstado.entrySet()) {
+
+            for (Map.Entry<String, Integer> entry : porEstado.entrySet()) {
                     org.apache.poi.ss.usermodel.Row row = sheet.createRow(rowNum++);
                     row.createCell(0).setCellValue(entry.getKey());
                     row.createCell(1).setCellValue(entry.getValue().toString());
             }
         }
-        
+
         // Por programa
-        @SuppressWarnings("unchecked")
-        Map<String, Object> porPrograma = (Map<String, Object>) estadisticas.get("porPrograma");
-        if (porPrograma != null && !porPrograma.isEmpty()) {
+        Map<String, Integer> porPrograma = estadisticas.porPrograma();
+        if (!porPrograma.isEmpty()) {
             rowNum++; // Espacio
             org.apache.poi.ss.usermodel.Row headerRow = sheet.createRow(rowNum++);
             org.apache.poi.ss.usermodel.Cell headerCell = headerRow.createCell(0);
             headerCell.setCellValue("ESTADÍSTICAS POR PROGRAMA");
             headerCell.setCellStyle(headerStyle);
-            
-            for (Map.Entry<String, Object> entry : porPrograma.entrySet()) {
+
+            for (Map.Entry<String, Integer> entry : porPrograma.entrySet()) {
                 org.apache.poi.ss.usermodel.Row row = sheet.createRow(rowNum++);
                 row.createCell(0).setCellValue(entry.getKey());
                 row.createCell(1).setCellValue(entry.getValue().toString());

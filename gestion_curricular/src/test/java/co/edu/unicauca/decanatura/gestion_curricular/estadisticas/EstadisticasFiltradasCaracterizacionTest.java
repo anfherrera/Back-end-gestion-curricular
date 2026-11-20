@@ -31,6 +31,7 @@ import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.estadistica
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.estadisticas.EstadisticasPorProceso;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.estadisticas.EstadisticasPorPrograma;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.estadisticas.EstadisticasPorSemestre;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.estadisticas.GlobalesContadas;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.controladores.EstadisticasRestController;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.excepciones.RestApiExceptionHandler;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.mappers.EstadisticaMapperDominio;
@@ -41,8 +42,9 @@ import co.edu.unicauca.decanatura.gestion_curricular.soporte.Correcciones;
  * del caso de uso son fijas; {@code claves} lista cada clave con su ruta y tipo JSON en orden de escritura.
  *
  * <p>Las referencias se grabaron cuando el caso de uso devolvía mapas que mezclaban tipos. Desde ARQ-13 las consultas
- * por proceso, programa, estado y periodo devuelven records, que no admiten esas entradas (desglose anidado, totales
- * ausentes, claves extra): las correcciones {@code *-arq13.json} recogen solo lo que cambia por el nuevo fixture.
+ * por proceso, programa, estado y periodo, y las globales, devuelven records, que no admiten esas entradas (desglose
+ * anidado, totales ausentes, claves extra): las correcciones {@code *-arq13.json} recogen solo lo que cambia por el
+ * nuevo fixture.
  * Con datos reales lo fija {@code EstadisticasEndpointsCaracterizacionTest#consultas}.
  */
 class EstadisticasFiltradasCaracterizacionTest {
@@ -114,7 +116,8 @@ class EstadisticasFiltradasCaracterizacionTest {
             3, 0, 0, 0, 0, 0.0, null, null, null, null, i.getArgument(0), null));
         when(cu.obtenerEstadisticasPorPeriodo(any(Date.class), any(Date.class))).thenAnswer(i -> new EstadisticasPorPeriodo(
             conteo(5, 5, 100.0), new Date(MARZO), i.getArgument(0), i.getArgument(1)));
-        when(cu.obtenerEstadisticasGlobales()).thenAnswer(i -> completo("globales", 0, 0, 0.0));
+        when(cu.obtenerEstadisticasGlobales()).thenAnswer(i -> new GlobalesContadas(
+            0, 0, 1, 2, 0, 0.0, porEstado(), porTipoProceso(), porPrograma(), new Date(MARZO)));
         when(cu.obtenerEstadisticasPorPeriodoAcademico(anyString())).thenAnswer(i -> new EstadisticasPorSemestre(
             1, 1, 1, 2, 0, 1.0, porEstado(), porTipoProceso(), porPrograma(), new Date(MARZO), null, null, 2024, 1,
             i.getArgument(0), "porSemestre", "academico"));
@@ -176,28 +179,5 @@ class EstadisticasFiltradasCaracterizacionTest {
         Map<String, Integer> porPrograma = new HashMap<>();
         porPrograma.put("Sistemas", 4);
         return porPrograma;
-    }
-
-    /** Mapa como los del dominio: {@code HashMap} con totales numéricos, porcentaje y desgloses anidados. */
-    private static Map<String, Object> completo(String origen, Number total, Number aprobadas, double porcentaje) {
-        Map<String, Object> mapa = new HashMap<>();
-        mapa.put("fechaConsulta", new Date(MARZO));
-        mapa.put("totalSolicitudes", total);
-        mapa.put("totalAprobadas", aprobadas);
-        mapa.put("totalRechazadas", 1);
-        mapa.put("totalEnProceso", 2L);
-        mapa.put("porcentajeAprobacion", porcentaje);
-        Map<String, Object> porTipo = new HashMap<>();
-        porTipo.put("Reingreso", Map.of("total", 3));
-        mapa.put("porTipoProceso", porTipo);
-        Map<String, Integer> porPrograma = new HashMap<>();
-        porPrograma.put("Sistemas", 4);
-        mapa.put("porPrograma", porPrograma);
-        Map<String, Integer> porEstado = new HashMap<>();
-        porEstado.put("APROBADA", 2);
-        porEstado.put("RECHAZADA", 1);
-        mapa.put("porEstado", porEstado);
-        mapa.put("origen", origen);
-        return mapa;
     }
 }

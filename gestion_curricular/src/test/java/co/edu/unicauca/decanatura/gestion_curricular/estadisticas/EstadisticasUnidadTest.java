@@ -29,6 +29,8 @@ import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Usuario;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.estadisticas.EstadisticasPorEstado;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.estadisticas.EstadisticasPorProceso;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.estadisticas.EstadisticasPorPrograma;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.estadisticas.GlobalesContadas;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.estadisticas.ResumenCompleto;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.estadisticas.VistaPorEstado;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.estadisticas.VistaTendencias;
 
@@ -149,11 +151,11 @@ class EstadisticasUnidadTest {
         when(estadisticasGateway.contarSolicitudesPorEstado("ENVIADA")).thenReturn(4);
         when(estadisticasGateway.contarSolicitudesPorEstado("PRE_REGISTRADO")).thenReturn(2);
 
-        Map<String, Object> resultado = estadisticasCU.obtenerEstadisticasGlobales();
+        GlobalesContadas resultado = estadisticasCU.obtenerEstadisticasGlobales();
 
-        assertThat(resultado.get("totalSolicitudes")).isEqualTo(10);
-        assertThat(resultado.get("totalEnviadas")).isEqualTo(6);
-        assertThat(resultado.get("porcentajeAprobacion")).isEqualTo(30.0);
+        assertThat(resultado.totalSolicitudes()).isEqualTo(10);
+        assertThat(resultado.totalEnviadas()).isEqualTo(6);
+        assertThat(resultado.porcentajeAprobacion()).isEqualTo(30.0);
         verify(estadisticasGateway, never()).contarTotalSolicitudes();
     }
 
@@ -162,10 +164,10 @@ class EstadisticasUnidadTest {
     void testGlobalesSinEstadosUsanElTotal() {
         when(estadisticasGateway.contarTotalSolicitudes()).thenReturn(7);
 
-        Map<String, Object> resultado = estadisticasCU.obtenerEstadisticasGlobales();
+        GlobalesContadas resultado = estadisticasCU.obtenerEstadisticasGlobales();
 
-        assertThat(resultado.get("totalSolicitudes")).isEqualTo(7);
-        assertThat(resultado.get("porcentajeAprobacion")).isEqualTo(0.0);
+        assertThat(resultado.totalSolicitudes()).isEqualTo(7);
+        assertThat(resultado.porcentajeAprobacion()).isEqualTo(0.0);
     }
 
     @Test
@@ -280,16 +282,14 @@ class EstadisticasUnidadTest {
 
     @Test
     @DisplayName("Test 15: Resumen por periodo - sin periodo guardado, se deduce de la fecha de registro")
-    @SuppressWarnings("unchecked")
     void testResumenDeducePeriodoDeLaFecha() {
         when(estadisticasGateway.listarSolicitudesConEstadosYUsuario()).thenReturn(List.of(
                 solicitud(new SolicitudHomologacion(), 1, estado("Enviada", 3)),   // marzo: 2025-1
                 solicitud(new SolicitudHomologacion(), 1, estado("Enviada", 9)))); // septiembre: 2025-2
 
-        Map<String, Object> resultado = estadisticasCU.obtenerResumenCompleto("2025-1", null);
+        ResumenCompleto resultado = estadisticasCU.obtenerResumenCompleto("2025-1", null);
 
-        Map<String, Object> globales = (Map<String, Object>) resultado.get("estadisticasGlobales");
-        assertThat(globales.get("totalSolicitudes")).isEqualTo(1);
+        assertThat(resultado.estadisticasGlobales().totalSolicitudes()).isEqualTo(1);
     }
 
     // ==================== DATOS ====================

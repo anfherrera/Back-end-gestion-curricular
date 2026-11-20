@@ -3,7 +3,6 @@ package co.edu.unicauca.decanatura.gestion_curricular.dominio.servicios.estadist
 import static co.edu.unicauca.decanatura.gestion_curricular.dominio.servicios.estadisticas.ReglasEstadisticas.eficienciaAprobacion;
 import static co.edu.unicauca.decanatura.gestion_curricular.dominio.servicios.estadisticas.ReglasEstadisticas.enRango;
 import static co.edu.unicauca.decanatura.gestion_curricular.dominio.servicios.estadisticas.ReglasEstadisticas.idPrograma;
-import static co.edu.unicauca.decanatura.gestion_curricular.dominio.servicios.estadisticas.ReglasEstadisticas.normalizarEstadistica;
 import static co.edu.unicauca.decanatura.gestion_curricular.dominio.servicios.estadisticas.ReglasEstadisticas.solicitudes;
 import static co.edu.unicauca.decanatura.gestion_curricular.dominio.servicios.estadisticas.ReglasEstadisticas.tasaProcesamiento;
 import static co.edu.unicauca.decanatura.gestion_curricular.dominio.servicios.estadisticas.ReglasEstadisticas.tipoProceso;
@@ -16,6 +15,7 @@ import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.Gestionar
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Programa;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Solicitud;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.enums.EstadosSolicitud;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.estadisticas.GlobalesContadas;
 
 /**
  * Estadísticas globales: los totales por estado los cuenta la base de datos (con filtros de proceso, programa y
@@ -29,7 +29,7 @@ public class EstadisticasGlobales {
         this.datos = datos;
     }
 
-    public Map<String, Object> globales(String proceso, Integer idPrograma, Date fechaInicio, Date fechaFin) {
+    public GlobalesContadas globales(String proceso, Integer idPrograma, Date fechaInicio, Date fechaFin) {
         int totalSolicitudes;
         int totalAprobadas;
         int totalRechazadas;
@@ -62,15 +62,7 @@ public class EstadisticasGlobales {
             }
         }
 
-        Map<String, Object> estadisticas = new HashMap<>();
-        estadisticas.put("totalSolicitudes", totalSolicitudes);
-        estadisticas.put("totalAprobadas", totalAprobadas);
-        estadisticas.put("totalRechazadas", totalRechazadas);
-        estadisticas.put("totalEnviadas", totalEnviadas);
-        // En Proceso = solo las aprobadas por funcionario y coordinador (no incluye enviadas)
-        estadisticas.put("totalEnProceso", enProcesoFuncionario + enProcesoCoordinador);
         double porcentajeAprobacion = totalSolicitudes > 0 ? (double) totalAprobadas / totalSolicitudes * 100 : 0.0;
-        estadisticas.put("porcentajeAprobacion", Math.round(porcentajeAprobacion * 10.0) / 10.0);
 
         // Por tipo de proceso (agrupadas por tipo, no por persona)
         String procesoBuscado = proceso != null ? TipoProcesoSolicitud.porNombre(proceso) : null;
@@ -94,7 +86,6 @@ public class EstadisticasGlobales {
                 porTipoProceso.merge(tipo, 1, Integer::sum);
             }
         }
-        estadisticas.put("porTipoProceso", porTipoProceso);
 
         Map<String, Integer> porPrograma = new HashMap<>();
         for (Programa programa : datos.listarProgramas()) {
@@ -103,7 +94,6 @@ public class EstadisticasGlobales {
                         datos.contarSolicitudesPorProgramaConFiltros(programa.getId_programa(), proceso, fechaInicio, fechaFin));
             }
         }
-        estadisticas.put("porPrograma", porPrograma);
 
         Map<String, Integer> porEstado = new HashMap<>();
         porEstado.put(EstadosSolicitud.APROBADA.name(), totalAprobadas);
@@ -111,17 +101,19 @@ public class EstadisticasGlobales {
         porEstado.put(EstadosSolicitud.APROBADA_FUNCIONARIO.name(), enProcesoFuncionario);
         porEstado.put(EstadosSolicitud.APROBADA_COORDINADOR.name(), enProcesoCoordinador);
         porEstado.put(EstadosSolicitud.ENVIADA.name(), totalEnviadas);
-        estadisticas.put("porEstado", porEstado);
-        estadisticas.put("fechaConsulta", new Date());
-        return normalizarEstadistica(estadisticas);
+
+        // En Proceso = solo las aprobadas por funcionario y coordinador (no incluye enviadas)
+        return new GlobalesContadas(totalSolicitudes, totalAprobadas, totalRechazadas,
+                enProcesoFuncionario + enProcesoCoordinador, totalEnviadas,
+                Math.round(porcentajeAprobacion * 10.0) / 10.0, porEstado, porTipoProceso, porPrograma, new Date());
     }
 
     /** Estadísticas globales sin filtros, con la tasa de procesamiento y la eficiencia de aprobación. */
     public Map<String, Object> rendimiento() {
-        Map<String, Object> globales = globales(null, null, null, null);
-        Integer total = (Integer) globales.get("totalSolicitudes");
-        Integer aprobadas = (Integer) globales.get("totalAprobadas");
-        Integer rechazadas = (Integer) globales.get("totalRechazadas");
+        GlobalesContadas globales = globales(null, null, null, null);
+        int total = globales.totalSolicitudes();
+        int aprobadas = globales.totalAprobadas();
+        int rechazadas = globales.totalRechazadas();
         return Map.of(
                 "estadisticasGlobales", globales,
                 "indicadoresRendimiento", Map.of(

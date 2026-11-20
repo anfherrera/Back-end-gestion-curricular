@@ -5,9 +5,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Comparator;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
@@ -214,20 +212,6 @@ final class ReglasEstadisticas {
                 }
                 return EstadosSolicitud.ENVIADA.name();
         }
-    }
-
-    /** Completa con ceros y mapas vacíos los campos que el frontend espera siempre. */
-    static Map<String, Object> normalizarEstadistica(Map<String, Object> estadistica) {
-        estadistica.putIfAbsent("totalSolicitudes", 0);
-        estadistica.putIfAbsent("totalAprobadas", 0);
-        estadistica.putIfAbsent("totalRechazadas", 0);
-        estadistica.putIfAbsent("totalEnProceso", 0);
-        estadistica.putIfAbsent("porcentajeAprobacion", 0.0);
-        estadistica.putIfAbsent("porTipoProceso", new HashMap<>());
-        estadistica.putIfAbsent("porPrograma", new HashMap<>());
-        estadistica.putIfAbsent("porEstado", new HashMap<>());
-        estadistica.putIfAbsent("fechaConsulta", new Date());
-        return estadistica;
     }
 
     /** Porcentaje de solicitudes decididas (aprobadas + rechazadas) sobre el total, sin redondear; 0 si no hay solicitudes. */

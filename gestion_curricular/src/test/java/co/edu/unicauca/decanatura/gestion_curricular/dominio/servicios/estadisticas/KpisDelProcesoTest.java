@@ -2,72 +2,54 @@ package co.edu.unicauca.decanatura.gestion_curricular.dominio.servicios.estadist
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import java.util.HashMap;
+import java.util.Date;
 import java.util.Map;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-@DisplayName("ResumenEstadisticas.aplicarKpisDelProceso (ARQ-6, salió de EstadisticasRestController)")
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.estadisticas.Globales;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.estadisticas.GlobalesDelPeriodo;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.estadisticas.GlobalesDelProceso;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.estadisticas.ResumenCompleto;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.estadisticas.ResumenDelProceso;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.estadisticas.ResumenSinFiltros;
+
+@DisplayName("ResumenEstadisticas.conKpisDelProceso (ARQ-6, salió de EstadisticasRestController)")
 class KpisDelProcesoTest {
 
-    private static Map<String, Object> globales() {
-        Map<String, Object> g = new HashMap<>();
-        g.put("totalSolicitudes", 14);
-        g.put("totalAprobadas", 4);
-        g.put("totalEnviadas", 5);
-        g.put("porTipoProceso", Map.of("Reingreso", 2, "ECAES", 2));
-        return g;
+    private static final Date FECHA = new Date(0);
+
+    private static GlobalesDelPeriodo globales() {
+        return new GlobalesDelPeriodo(14, 4, 0, 0, 5, 28.57, Map.of("Reingreso", 2, "ECAES", 2),
+                Map.of("Sistemas", 14), FECHA);
     }
 
-    private static Map<String, Object> resumenCon(String proceso, Map<String, Object> stats) {
-        Map<String, Object> porTipo = new HashMap<>();
-        porTipo.put(proceso, stats);
-        Map<String, Object> resumen = new HashMap<>();
-        resumen.put("porTipoProceso", porTipo);
-        return resumen;
+    private static ResumenDelProceso reingreso() {
+        return new ResumenDelProceso("Reingreso", 3, 1, 1, 1, 33.3,
+                Map.of("ENVIADA", 2, "APROBADA", 1, "RECHAZADA", 1, "APROBADA_FUNCIONARIO", 1, "APROBADA_COORDINADOR", 0),
+                Map.of(), Map.of(), "Reingreso", new Date(1));
+    }
+
+    private static ResumenCompleto resumenCon(ResumenDelProceso proceso) {
+        return new ResumenSinFiltros(globales(), Map.of(proceso.tipoProceso(), proceso), Map.of(), 1, FECHA);
     }
 
     @Test
     void reemplazaLosKpiPorLosDelProceso() {
-        Map<String, Object> stats = Map.of(
-                "totalSolicitudes", 3, "totalAprobadas", 1, "totalRechazadas", 1, "totalEnProceso", 1,
-                "porcentajeAprobacion", 33.3, "porEstado", Map.of("ENVIADA", 2, "APROBADA", 1));
-        Map<String, Object> g = globales();
+        ResumenDelProceso stats = reingreso();
 
-        ResumenEstadisticas.aplicarKpisDelProceso(g, resumenCon("Reingreso", stats), "Reingreso");
+        Globales g = ResumenEstadisticas.conKpisDelProceso(globales(), resumenCon(stats), "Reingreso");
 
-        assertThat(g).containsEntry("totalSolicitudes", 3).containsEntry("totalAprobadas", 1)
-                .containsEntry("totalRechazadas", 1).containsEntry("totalEnProceso", 1)
-                .containsEntry("totalEnviadas", 2).containsEntry("porcentajeAprobacion", 33.3)
-                .containsEntry("porEstado", stats.get("porEstado"))
-                .containsEntry("porTipoProceso", Map.of("Reingreso", stats));
-    }
-
-    @Test
-    void loQueFaltaEnElProcesoValeCero() {
-        Map<String, Object> g = globales();
-
-        ResumenEstadisticas.aplicarKpisDelProceso(g, resumenCon("ECAES", Map.of()), "ECAES");
-
-        assertThat(g).containsEntry("totalSolicitudes", 0).containsEntry("totalAprobadas", 0)
-                .containsEntry("totalRechazadas", 0).containsEntry("totalEnProceso", 0)
-                .containsEntry("totalEnviadas", 0).containsEntry("porcentajeAprobacion", 0.0)
-                .containsEntry("porEstado", Map.of());
+        assertThat(g).isEqualTo(new GlobalesDelProceso(3, 1, 1, 1, 2, 33.3, stats.porEstado(),
+                Map.of("Reingreso", stats), Map.of("Sistemas", 14), FECHA));
     }
 
     @Test
     void sinProcesoOSiNoEstaEnElResumenNoCambiaNada() {
-        Map<String, Object> resumen = resumenCon("Reingreso", Map.of("totalSolicitudes", 3));
+        ResumenCompleto resumen = resumenCon(reingreso());
 
-        Map<String, Object> g = globales();
-        ResumenEstadisticas.aplicarKpisDelProceso(g, resumen, null);
-        assertThat(g).isEqualTo(globales());
-
-        ResumenEstadisticas.aplicarKpisDelProceso(g, resumen, "Desconocido");
-        assertThat(g).isEqualTo(globales());
-
-        ResumenEstadisticas.aplicarKpisDelProceso(g, new HashMap<>(), "Reingreso");
-        assertThat(g).isEqualTo(globales());
+        assertThat(ResumenEstadisticas.conKpisDelProceso(globales(), resumen, null)).isEqualTo(globales());
+        assertThat(ResumenEstadisticas.conKpisDelProceso(globales(), resumen, "Desconocido")).isEqualTo(globales());
     }
 }

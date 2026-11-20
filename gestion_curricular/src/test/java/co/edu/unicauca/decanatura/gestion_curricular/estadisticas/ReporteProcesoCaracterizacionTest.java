@@ -49,7 +49,7 @@ class ReporteProcesoCaracterizacionTest {
                 DatosReporte datos = estadisticas.prepararReporte(proceso, null, periodo, null, null);
                 ObjectNode caso = casos.putObject("periodo=[" + periodo + "] proceso=[" + proceso + "]");
                 caso.put("incluyeCursosVerano", datos.cursosVerano() != null);
-                caso.set("porTipoProceso", GrafoObjetos.volcar(datos.estadisticas().get("porTipoProceso")));
+                caso.set("porTipoProceso", GrafoObjetos.volcar(datos.estadisticas().porTipoProceso()));
             }
         }
         GrafoObjetos.compararConReferencia(casos, "estadisticas/reporte-proceso.json",

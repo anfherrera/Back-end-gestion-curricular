@@ -17,8 +17,11 @@ import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.estadistica
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.estadisticas.EstadisticasPorProceso;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.estadisticas.EstadisticasPorPrograma;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.estadisticas.EstudiantesPorPrograma;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.estadisticas.Globales;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.estadisticas.GlobalesContadas;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.estadisticas.ProcesosPorProgramaYPeriodo;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.estadisticas.ProgramasPorProcesoYEstado;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.estadisticas.ResumenCompleto;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.estadisticas.TendenciasPorPeriodo;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.estadisticas.TotalEstudiantes;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.estadisticas.VistaPorEstado;
@@ -147,12 +150,12 @@ public class GestionarEstadisticasCUAdapter implements GestionarEstadisticasCUIn
     }
 
     @Override
-    public Map<String, Object> obtenerEstadisticasGlobales() {
+    public GlobalesContadas obtenerEstadisticasGlobales() {
         return globales.globales(null, null, null, null);
     }
 
     @Override
-    public Map<String, Object> obtenerEstadisticasGlobales(String proceso, Integer idPrograma, Date fechaInicio, Date fechaFin) {
+    public GlobalesContadas obtenerEstadisticasGlobales(String proceso, Integer idPrograma, Date fechaInicio, Date fechaFin) {
         return globales.globales(proceso, idPrograma, fechaInicio, fechaFin);
     }
 
@@ -227,7 +230,7 @@ public class GestionarEstadisticasCUAdapter implements GestionarEstadisticasCUIn
     }
 
     @Override
-    public Map<String, Object> obtenerResumenCompleto(String periodoAcademico, Integer idPrograma) {
+    public ResumenCompleto obtenerResumenCompleto(String periodoAcademico, Integer idPrograma) {
         return resumen.resumenCompleto(PeriodoAcademicoEnum.normalizar(periodoAcademico), idPrograma);
     }
 
@@ -313,7 +316,7 @@ public class GestionarEstadisticasCUAdapter implements GestionarEstadisticasCUIn
     }
 
     @Override
-    public Map<String, Object> obtenerEstadisticasGlobales(String proceso, Integer idPrograma, String periodoAcademico,
+    public Globales obtenerEstadisticasGlobales(String proceso, Integer idPrograma, String periodoAcademico,
             Date fechaInicio, Date fechaFin) {
         if (periodoAcademico != null && !periodoAcademico.trim().isEmpty()) {
             return resumen.globalesDelPeriodo(PeriodoAcademicoEnum.normalizar(periodoAcademico), idPrograma, proceso);
@@ -322,7 +325,7 @@ public class GestionarEstadisticasCUAdapter implements GestionarEstadisticasCUIn
     }
 
     @Override
-    public Map<String, Object> obtenerResumenCompleto(String periodoAcademico, Integer idPrograma, String proceso) {
+    public ResumenCompleto obtenerResumenCompleto(String periodoAcademico, Integer idPrograma, String proceso) {
         return resumen.resumenCompleto(PeriodoAcademicoEnum.normalizar(periodoAcademico), idPrograma, proceso);
     }
 
@@ -339,12 +342,9 @@ public class GestionarEstadisticasCUAdapter implements GestionarEstadisticasCUIn
     @Override
     public DatosReporte prepararReporte(String proceso, Integer idPrograma, String periodoAcademico, Date fechaInicio, Date fechaFin) {
         String periodo = PeriodoAcademicoEnum.normalizar(periodoAcademico);
-        @SuppressWarnings("unchecked")
-        Map<String, Object> estadisticas = periodo == null ? null
-                : (Map<String, Object>) obtenerResumenCompleto(periodo, idPrograma).get("estadisticasGlobales");
-        if (estadisticas == null) {
-            estadisticas = obtenerEstadisticasGlobales(proceso, idPrograma, fechaInicio, fechaFin);
-        }
+        Globales estadisticas = periodo == null
+                ? obtenerEstadisticasGlobales(proceso, idPrograma, fechaInicio, fechaFin)
+                : obtenerResumenCompleto(periodo, idPrograma).estadisticasGlobales();
 
         boolean sinProceso = proceso == null || proceso.isBlank();
         Map<String, Object> cursosVerano = sinProceso

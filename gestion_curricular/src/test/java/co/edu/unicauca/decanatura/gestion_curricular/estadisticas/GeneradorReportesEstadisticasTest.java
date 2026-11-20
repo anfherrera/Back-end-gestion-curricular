@@ -3,12 +3,14 @@ package co.edu.unicauca.decanatura.gestion_curricular.estadisticas;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.nio.charset.StandardCharsets;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.estadisticas.GlobalesContadas;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.formateador.GeneradorReportesEstadisticas;
 
 @DisplayName("Reportes de estadísticas: cada variante produce un documento válido")
@@ -16,12 +18,10 @@ class GeneradorReportesEstadisticasTest {
 
     private final GeneradorReportesEstadisticas generador = new GeneradorReportesEstadisticas();
 
-    private final Map<String, Object> estadisticas = Map.of(
-            "totalSolicitudes", 10, "totalAprobadas", 6, "totalRechazadas", 2, "totalEnProceso", 2,
-            "porcentajeAprobacion", 60.0,
-            "porTipoProceso", Map.of("Paz y Salvo", 4, "Reingreso", 6),
-            "porEstado", Map.of("APROBADA", 6, "RECHAZADA", 2, "ENVIADA", 2),
-            "porPrograma", Map.of("Ingeniería de Sistemas", 10));
+    private final GlobalesContadas estadisticas = new GlobalesContadas(10, 6, 2, 2, 0, 60.0,
+            Map.of("APROBADA", 6, "RECHAZADA", 2, "ENVIADA", 2),
+            Map.of("Paz y Salvo", 4, "Reingreso", 6),
+            Map.of("Ingeniería de Sistemas", 10), new Date());
 
     private final Map<String, Object> cursosVerano = Map.of(
             "resumen", Map.of("totalSolicitudes", 5, "materiasUnicas", 2, "programasParticipantes", 1, "tasaAprobacion", 40.0),

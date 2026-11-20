@@ -4,7 +4,6 @@ import static co.edu.unicauca.decanatura.gestion_curricular.dominio.servicios.es
 import static co.edu.unicauca.decanatura.gestion_curricular.dominio.servicios.estadisticas.ReglasEstadisticas.PROCESOS;
 import static co.edu.unicauca.decanatura.gestion_curricular.dominio.servicios.estadisticas.ReglasEstadisticas.estadoActual;
 import static co.edu.unicauca.decanatura.gestion_curricular.dominio.servicios.estadisticas.ReglasEstadisticas.nombrePrograma;
-import static co.edu.unicauca.decanatura.gestion_curricular.dominio.servicios.estadisticas.ReglasEstadisticas.normalizarEstadistica;
 import static co.edu.unicauca.decanatura.gestion_curricular.dominio.servicios.estadisticas.ReglasEstadisticas.solicitudes;
 import static co.edu.unicauca.decanatura.gestion_curricular.dominio.servicios.estadisticas.ReglasEstadisticas.tipoProceso;
 
@@ -17,6 +16,15 @@ import java.util.stream.Collectors;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.GestionarEstadisticasGatewayIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Solicitud;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.enums.EstadosSolicitud;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.estadisticas.Globales;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.estadisticas.GlobalesContadas;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.estadisticas.GlobalesDelPeriodo;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.estadisticas.GlobalesDelProceso;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.estadisticas.ResumenCompleto;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.estadisticas.ResumenDelEstado;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.estadisticas.ResumenDelProceso;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.estadisticas.ResumenFiltrado;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.estadisticas.ResumenSinFiltros;
 
 /**
  * Resumen completo (filtrable por periodo académico, programa y proceso) con las estadísticas globales y las de
@@ -32,82 +40,70 @@ public class ResumenEstadisticas {
         this.globales = new EstadisticasGlobales(datos);
     }
 
-    public Map<String, Object> resumenCompleto(String periodoAcademico, Integer idPrograma) {
+    public ResumenCompleto resumenCompleto(String periodoAcademico, Integer idPrograma) {
         List<Solicitud> filtradas = solicitudes(datos, periodoAcademico, idPrograma);
 
-        Map<String, Object> resumen = new HashMap<>();
-        resumen.put("estadisticasGlobales", globalesDe(filtradas));
+        GlobalesDelPeriodo estadisticasGlobales = globalesDe(filtradas);
 
-        Map<String, Object> porProceso = new HashMap<>();
+        Map<String, ResumenDelProceso> porProceso = new HashMap<>();
         for (String proceso : PROCESOS) {
             porProceso.put(proceso, resumenDelProceso(filtradas, proceso));
         }
-        resumen.put("porTipoProceso", porProceso);
 
-        Map<String, Object> porEstado = new HashMap<>();
+        Map<String, ResumenDelEstado> porEstado = new HashMap<>();
         for (String estado : ESTADOS) {
             porEstado.put(estado, resumenDelEstado(filtradas, estado));
         }
-        resumen.put("porEstado", porEstado);
 
-        resumen.put("totalProgramas", datos.listarNombresProgramas().size());
-        resumen.put("fechaGeneracion", new Date());
+        int totalProgramas = datos.listarNombresProgramas().size();
+        Date fechaGeneracion = new Date();
 
-        if (periodoAcademico != null || idPrograma != null) {
-            Map<String, Object> filtrosAplicados = new HashMap<>();
-            if (periodoAcademico != null) {
-                filtrosAplicados.put("periodoAcademico", periodoAcademico);
-            }
-            if (idPrograma != null) {
-                filtrosAplicados.put("idPrograma", idPrograma);
-            }
-            resumen.put("filtrosAplicados", filtrosAplicados);
+        if (periodoAcademico == null && idPrograma == null) {
+            return new ResumenSinFiltros(estadisticasGlobales, porProceso, porEstado, totalProgramas, fechaGeneracion);
         }
-        return resumen;
+        Map<String, Object> filtrosAplicados = new HashMap<>();
+        if (periodoAcademico != null) {
+            filtrosAplicados.put("periodoAcademico", periodoAcademico);
+        }
+        if (idPrograma != null) {
+            filtrosAplicados.put("idPrograma", idPrograma);
+        }
+        return new ResumenFiltrado(estadisticasGlobales, porProceso, porEstado, totalProgramas, fechaGeneracion,
+                filtrosAplicados);
     }
 
     /**
      * Las estadísticas globales del resumen del periodo (ya normalizado) y programa. Si se pide un proceso, los
-     * KPI son los de ese proceso (ver {@link #aplicarKpisDelProceso}).
+     * KPI son los de ese proceso (ver {@link #conKpisDelProceso}).
      */
-    public Map<String, Object> globalesDelPeriodo(String periodoAcademico, Integer idPrograma, String proceso) {
-        Map<String, Object> resumen = resumenCompleto(periodoAcademico, idPrograma);
-        @SuppressWarnings("unchecked")
-        Map<String, Object> estadisticasGlobales = (Map<String, Object>) resumen.get("estadisticasGlobales");
-        if (estadisticasGlobales != null && proceso != null && !proceso.trim().isEmpty()) {
-            aplicarKpisDelProceso(estadisticasGlobales, resumen, TipoProcesoSolicitud.porNombre(proceso));
+    public Globales globalesDelPeriodo(String periodoAcademico, Integer idPrograma, String proceso) {
+        ResumenCompleto resumen = resumenCompleto(periodoAcademico, idPrograma);
+        if (proceso != null && !proceso.trim().isEmpty()) {
+            return conKpisDelProceso(resumen.estadisticasGlobales(), resumen, TipoProcesoSolicitud.porNombre(proceso));
         }
-        return estadisticasGlobales != null ? estadisticasGlobales : new HashMap<>();
+        return resumen.estadisticasGlobales();
     }
 
     /**
      * El resumen completo del periodo (ya normalizado) y programa. Si se pide un proceso, los KPI globales son
      * los de ese proceso, porTipoProceso se reduce a él y se anota en filtrosAplicados.
      */
-    public Map<String, Object> resumenCompleto(String periodoAcademico, Integer idPrograma, String proceso) {
-        Map<String, Object> resumen = resumenCompleto(periodoAcademico, idPrograma);
+    public ResumenCompleto resumenCompleto(String periodoAcademico, Integer idPrograma, String proceso) {
+        ResumenCompleto resumen = resumenCompleto(periodoAcademico, idPrograma);
         String procesoNormalizado = TipoProcesoSolicitud.porNombre(proceso);
         if (procesoNormalizado == null) {
             return resumen;
         }
-        @SuppressWarnings("unchecked")
-        Map<String, Object> estadisticasGlobales = (Map<String, Object>) resumen.get("estadisticasGlobales");
-        if (estadisticasGlobales != null) {
-            aplicarKpisDelProceso(estadisticasGlobales, resumen, procesoNormalizado);
-        }
-        if (resumen.get("porTipoProceso") instanceof Map<?, ?> porTipoProceso && porTipoProceso.containsKey(procesoNormalizado)) {
-            resumen.put("porTipoProceso", Map.of(procesoNormalizado, porTipoProceso.get(procesoNormalizado)));
-        }
-        if (resumen.get("filtrosAplicados") instanceof Map) {
-            @SuppressWarnings("unchecked")
-            Map<String, Object> filtrosAplicados = (Map<String, Object>) resumen.get("filtrosAplicados");
-            filtrosAplicados.put("proceso", procesoNormalizado);
-        } else {
-            Map<String, Object> filtros = new HashMap<>();
-            filtros.put("proceso", procesoNormalizado);
-            resumen.put("filtrosAplicados", filtros);
-        }
-        return resumen;
+        Globales estadisticasGlobales = conKpisDelProceso(resumen.estadisticasGlobales(), resumen, procesoNormalizado);
+        Map<String, ResumenDelProceso> porTipoProceso = resumen.porTipoProceso().containsKey(procesoNormalizado)
+                ? Map.of(procesoNormalizado, resumen.porTipoProceso().get(procesoNormalizado))
+                : resumen.porTipoProceso();
+        Map<String, Object> filtrosAplicados = resumen instanceof ResumenFiltrado filtrado
+                ? new HashMap<>(filtrado.filtrosAplicados())
+                : new HashMap<>();
+        filtrosAplicados.put("proceso", procesoNormalizado);
+        return new ResumenFiltrado(estadisticasGlobales, porTipoProceso, resumen.porEstado(), resumen.totalProgramas(),
+                resumen.fechaGeneracion(), filtrosAplicados);
     }
 
     /**
@@ -117,25 +113,20 @@ public class ResumenEstadisticas {
     public Map<String, Object> dashboardEjecutivo(String periodoAcademico, Integer idPrograma, String proceso) {
         boolean hayProceso = proceso != null && !proceso.trim().isEmpty();
 
-        Map<String, Object> estadisticasGlobales;
-        Map<String, Object> resumen = null;
+        Globales estadisticasGlobales;
         if (periodoAcademico != null || idPrograma != null) {
-            resumen = resumenCompleto(periodoAcademico, idPrograma);
-            @SuppressWarnings("unchecked")
-            Map<String, Object> globalesDelResumen = (Map<String, Object>) resumen.get("estadisticasGlobales");
-            estadisticasGlobales = globalesDelResumen;
+            ResumenCompleto resumen = resumenCompleto(periodoAcademico, idPrograma);
+            estadisticasGlobales = hayProceso
+                    ? conKpisDelProceso(resumen.estadisticasGlobales(), resumen, TipoProcesoSolicitud.porNombre(proceso))
+                    : resumen.estadisticasGlobales();
         } else {
             estadisticasGlobales = globales.globales(proceso, idPrograma, null, null);
         }
 
-        if (hayProceso && estadisticasGlobales != null && resumen != null) {
-            aplicarKpisDelProceso(estadisticasGlobales, resumen, TipoProcesoSolicitud.porNombre(proceso));
-        }
-
         Map<String, Object> dashboardEjecutivo = new HashMap<>();
         dashboardEjecutivo.put("resumenGlobal", estadisticasGlobales);
-        dashboardEjecutivo.put("topProcesos", estadisticasGlobales != null ? estadisticasGlobales.get("porTipoProceso") : new HashMap<>());
-        dashboardEjecutivo.put("resumenEstados", estadisticasGlobales != null ? estadisticasGlobales.get("porEstado") : new HashMap<>());
+        dashboardEjecutivo.put("topProcesos", estadisticasGlobales.porTipoProceso());
+        dashboardEjecutivo.put("resumenEstados", porEstado(estadisticasGlobales));
         dashboardEjecutivo.put("fechaGeneracion", new Date());
 
         if (periodoAcademico != null || idPrograma != null || hayProceso) {
@@ -154,36 +145,39 @@ public class ResumenEstadisticas {
         return dashboardEjecutivo;
     }
 
-    /**
-     * Reemplaza los KPI globales por los del proceso (clave de {@link TipoProcesoSolicitud}), tomados de
-     * resumen.porTipoProceso, que tiene las estadísticas completas de cada proceso (estadisticasGlobales.porTipoProceso
-     * solo tiene conteos). No hace nada si el proceso es null o no está en el resumen.
-     */
-    static void aplicarKpisDelProceso(Map<String, Object> estadisticasGlobales, Map<String, Object> resumen, String proceso) {
-        if (proceso == null) {
-            return;
+    /** El desglose por estado de las globales; null en las del periodo, que no lo traen. */
+    private static Map<String, Integer> porEstado(Globales estadisticasGlobales) {
+        if (estadisticasGlobales instanceof GlobalesContadas contadas) {
+            return contadas.porEstado();
         }
-        Object porTipoProceso = resumen.get("porTipoProceso");
-        if (!(porTipoProceso instanceof Map<?, ?> porTipo) || !(porTipo.get(proceso) instanceof Map<?, ?> datosProceso)) {
-            return;
+        if (estadisticasGlobales instanceof GlobalesDelProceso delProceso) {
+            return delProceso.porEstado();
         }
-        @SuppressWarnings("unchecked")
-        Map<String, Object> statsProceso = (Map<String, Object>) datosProceso;
-        estadisticasGlobales.put("totalSolicitudes", statsProceso.getOrDefault("totalSolicitudes", 0));
-        estadisticasGlobales.put("totalAprobadas", statsProceso.getOrDefault("totalAprobadas", 0));
-        estadisticasGlobales.put("totalRechazadas", statsProceso.getOrDefault("totalRechazadas", 0));
-        estadisticasGlobales.put("totalEnProceso", statsProceso.getOrDefault("totalEnProceso", 0));
-        int totalEnviadas = 0;
-        if (statsProceso.get("porEstado") instanceof Map<?, ?> porEstado && porEstado.get(EstadosSolicitud.ENVIADA.name()) instanceof Number env) {
-            totalEnviadas = env.intValue();
-        }
-        estadisticasGlobales.put("totalEnviadas", totalEnviadas);
-        estadisticasGlobales.put("porcentajeAprobacion", statsProceso.getOrDefault("porcentajeAprobacion", 0.0));
-        estadisticasGlobales.put("porEstado", statsProceso.getOrDefault("porEstado", new HashMap<>()));
-        estadisticasGlobales.put("porTipoProceso", Map.of(proceso, statsProceso));
+        return null;
     }
 
-    private static Map<String, Object> globalesDe(List<Solicitud> solicitudes) {
+    /**
+     * Las globales con los KPI del proceso (clave de {@link TipoProcesoSolicitud}), tomados de
+     * resumen.porTipoProceso, que tiene las estadísticas completas de cada proceso (las globales solo tienen
+     * conteos). porPrograma y fechaConsulta siguen siendo los de las globales. Si el proceso es null o no está en el
+     * resumen, devuelve las globales sin cambios.
+     */
+    static Globales conKpisDelProceso(Globales estadisticasGlobales, ResumenCompleto resumen, String proceso) {
+        if (proceso == null) {
+            return estadisticasGlobales;
+        }
+        ResumenDelProceso delProceso = resumen.porTipoProceso().get(proceso);
+        if (delProceso == null) {
+            return estadisticasGlobales;
+        }
+        return new GlobalesDelProceso(delProceso.totalSolicitudes(), delProceso.totalAprobadas(),
+                delProceso.totalRechazadas(), delProceso.totalEnProceso(),
+                delProceso.porEstado().get(EstadosSolicitud.ENVIADA.name()), delProceso.porcentajeAprobacion(),
+                delProceso.porEstado(), Map.of(proceso, delProceso), estadisticasGlobales.porPrograma(),
+                estadisticasGlobales.fechaConsulta());
+    }
+
+    private static GlobalesDelPeriodo globalesDe(List<Solicitud> solicitudes) {
         int totalAprobadas = 0;
         int totalRechazadas = 0;
         int totalEnProceso = 0;
@@ -210,21 +204,11 @@ public class ResumenEstadisticas {
 
         int total = solicitudes.size();
         double porcentajeAprobacion = total > 0 ? (totalAprobadas * 100.0) / total : 0.0;
-
-        Map<String, Object> estadisticas = new HashMap<>();
-        estadisticas.put("totalSolicitudes", total);
-        estadisticas.put("totalAprobadas", totalAprobadas);
-        estadisticas.put("totalRechazadas", totalRechazadas);
-        estadisticas.put("totalEnProceso", totalEnProceso);
-        estadisticas.put("totalEnviadas", totalEnviadas);
-        estadisticas.put("porcentajeAprobacion", Math.round(porcentajeAprobacion * 100.0) / 100.0);
-        estadisticas.put("porTipoProceso", porTipoProceso);
-        estadisticas.put("porPrograma", porPrograma);
-        estadisticas.put("fechaConsulta", new Date());
-        return estadisticas;
+        return new GlobalesDelPeriodo(total, totalAprobadas, totalRechazadas, totalEnProceso, totalEnviadas,
+                Math.round(porcentajeAprobacion * 100.0) / 100.0, porTipoProceso, porPrograma, new Date());
     }
 
-    private static Map<String, Object> resumenDelProceso(List<Solicitud> solicitudes, String tipoProceso) {
+    private static ResumenDelProceso resumenDelProceso(List<Solicitud> solicitudes, String tipoProceso) {
         List<Solicitud> delProceso = solicitudes.stream()
                 .filter(s -> tipoProceso.equals(tipoProceso(s)))
                 .collect(Collectors.toList());
@@ -237,23 +221,14 @@ public class ResumenEstadisticas {
         int total = delProceso.size();
         int totalAprobadas = porEstado.get(EstadosSolicitud.APROBADA.name());
         double porcentajeAprobacion = total > 0 ? (totalAprobadas * 100.0) / total : 0.0;
-
-        Map<String, Object> estadisticas = new HashMap<>();
-        estadisticas.put("tipoProceso", tipoProceso);
-        estadisticas.put("totalSolicitudes", total);
-        estadisticas.put("totalAprobadas", totalAprobadas);
-        estadisticas.put("totalRechazadas", porEstado.get(EstadosSolicitud.RECHAZADA.name()));
-        estadisticas.put("totalEnProceso", porEstado.get(EstadosSolicitud.APROBADA_FUNCIONARIO.name()) + porEstado.get(EstadosSolicitud.APROBADA_COORDINADOR.name()));
-        estadisticas.put("porcentajeAprobacion", Math.round(porcentajeAprobacion * 10.0) / 10.0);
-        estadisticas.put("porEstado", porEstado);
-        estadisticas.put("porTipoProceso", new HashMap<>());
-        estadisticas.put("porPrograma", new HashMap<>());
-        estadisticas.put("descripcion", PresentacionEstadisticas.descripcionProceso(tipoProceso));
-        estadisticas.put("fechaConsulta", new Date());
-        return normalizarEstadistica(estadisticas);
+        return new ResumenDelProceso(tipoProceso, total, totalAprobadas,
+                porEstado.get(EstadosSolicitud.RECHAZADA.name()),
+                porEstado.get(EstadosSolicitud.APROBADA_FUNCIONARIO.name()) + porEstado.get(EstadosSolicitud.APROBADA_COORDINADOR.name()),
+                Math.round(porcentajeAprobacion * 10.0) / 10.0, porEstado, new HashMap<>(), new HashMap<>(),
+                PresentacionEstadisticas.descripcionProceso(tipoProceso), new Date());
     }
 
-    private static Map<String, Object> resumenDelEstado(List<Solicitud> solicitudes, String estado) {
+    private static ResumenDelEstado resumenDelEstado(List<Solicitud> solicitudes, String estado) {
         List<Solicitud> conEstado = solicitudes.stream()
                 .filter(s -> estado.equals(estadoActual(s)))
                 .collect(Collectors.toList());
@@ -273,19 +248,12 @@ public class ResumenEstadisticas {
 
         int total = conEstado.size();
         boolean enProceso = estado.equals(EstadosSolicitud.APROBADA_FUNCIONARIO.name()) || estado.equals(EstadosSolicitud.APROBADA_COORDINADOR.name());
-
-        Map<String, Object> estadisticas = new HashMap<>();
-        estadisticas.put("estado", estado);
-        estadisticas.put("totalSolicitudes", total);
-        estadisticas.put("totalAprobadas", estado.equals(EstadosSolicitud.APROBADA.name()) ? total : 0);
-        estadisticas.put("totalRechazadas", estado.equals(EstadosSolicitud.RECHAZADA.name()) ? total : 0);
-        estadisticas.put("totalEnProceso", enProceso ? total : 0);
-        estadisticas.put("porcentajeAprobacion", estado.equals(EstadosSolicitud.APROBADA.name()) ? 100.0 : 0.0);
-        estadisticas.put("porTipoProceso", porTipoProceso);
-        estadisticas.put("porPrograma", porPrograma);
-        estadisticas.put("porEstado", new HashMap<>());
-        estadisticas.put("descripcionEstado", PresentacionEstadisticas.descripcionEstado(estado));
-        estadisticas.put("fechaConsulta", new Date());
-        return normalizarEstadistica(estadisticas);
+        return new ResumenDelEstado(estado, total,
+                estado.equals(EstadosSolicitud.APROBADA.name()) ? total : 0,
+                estado.equals(EstadosSolicitud.RECHAZADA.name()) ? total : 0,
+                enProceso ? total : 0,
+                estado.equals(EstadosSolicitud.APROBADA.name()) ? 100.0 : 0.0,
+                porTipoProceso, porPrograma, new HashMap<>(), PresentacionEstadisticas.descripcionEstado(estado),
+                new Date());
     }
 }

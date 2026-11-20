@@ -12,8 +12,11 @@ import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.estadistica
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.estadisticas.EstadisticasPorProceso;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.estadisticas.EstadisticasPorPrograma;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.estadisticas.EstudiantesPorPrograma;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.estadisticas.Globales;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.estadisticas.GlobalesContadas;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.estadisticas.ProcesosPorProgramaYPeriodo;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.estadisticas.ProgramasPorProcesoYEstado;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.estadisticas.ResumenCompleto;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.estadisticas.TendenciasPorPeriodo;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.estadisticas.TotalEstudiantes;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.estadisticas.VistaPorEstado;
@@ -34,9 +37,9 @@ public interface GestionarEstadisticasCUIntPort {
      * Obtiene estadísticas globales del sistema combinando todos los procesos.
      * Utiliza SolicitudRepositoryInt para obtener conteos totales.
      * 
-     * @return Map con estadísticas globales del sistema
+     * @return las estadísticas globales que cuenta la base de datos
      */
-    Map<String, Object> obtenerEstadisticasGlobales();
+    GlobalesContadas obtenerEstadisticasGlobales();
 
     /**
      * Obtiene estadísticas globales del sistema combinando todos los procesos con filtros.
@@ -46,9 +49,9 @@ public interface GestionarEstadisticasCUIntPort {
      * @param idPrograma ID del programa (opcional)
      * @param fechaInicio Fecha de inicio (opcional)
      * @param fechaFin Fecha de fin (opcional)
-     * @return Map con estadísticas globales del sistema
+     * @return las estadísticas globales que cuenta la base de datos
      */
-    Map<String, Object> obtenerEstadisticasGlobales(String proceso, Integer idPrograma, Date fechaInicio, Date fechaFin);
+    GlobalesContadas obtenerEstadisticasGlobales(String proceso, Integer idPrograma, Date fechaInicio, Date fechaFin);
 
     /**
      * Obtiene estadísticas específicas por tipo de proceso.
@@ -114,9 +117,9 @@ public interface GestionarEstadisticasCUIntPort {
      * 
      * @param periodoAcademico Período académico opcional (formato: "YYYY-P", ej: "2025-2")
      * @param idPrograma ID del programa académico opcional para filtrar
-     * @return Map con resumen completo de estadísticas
+     * @return el resumen completo
      */
-    Map<String, Object> obtenerResumenCompleto(String periodoAcademico, Integer idPrograma);
+    ResumenCompleto obtenerResumenCompleto(String periodoAcademico, Integer idPrograma);
 
     /**
      * Obtiene estadísticas de tendencias por período (comparación entre períodos).
@@ -240,14 +243,14 @@ public interface GestionarEstadisticasCUIntPort {
      * {@code PeriodoAcademicoEnum.normalizar}) salen del resumen completo de ese período y programa, y si además
      * hay proceso, con los KPI de ese proceso; sin período, del conteo por proceso, programa y fechas.
      */
-    Map<String, Object> obtenerEstadisticasGlobales(String proceso, Integer idPrograma, String periodoAcademico,
+    Globales obtenerEstadisticasGlobales(String proceso, Integer idPrograma, String periodoAcademico,
             Date fechaInicio, Date fechaFin);
 
     /**
      * Resumen completo del período (en forma legible o "YYYY-P") y programa; con proceso, los KPI globales y
      * porTipoProceso se reducen a ese proceso y se anota en filtrosAplicados.
      */
-    Map<String, Object> obtenerResumenCompleto(String periodoAcademico, Integer idPrograma, String proceso);
+    ResumenCompleto obtenerResumenCompleto(String periodoAcademico, Integer idPrograma, String proceso);
 
     /** Dashboard ejecutivo: resumen global, procesos, estados y filtros aplicados. */
     Map<String, Object> obtenerDashboardEjecutivo(String periodoAcademico, Integer idPrograma, String proceso);
@@ -258,7 +261,7 @@ public interface GestionarEstadisticasCUIntPort {
      */
     Map<String, Object> obtenerEstadisticasRendimiento();
 
-    record DatosReporte(Map<String, Object> estadisticas, Map<String, Object> cursosVerano) {
+    record DatosReporte(Globales estadisticas, Map<String, Object> cursosVerano) {
     }
 
     DatosReporte prepararReporte(String proceso, Integer idPrograma, String periodo, Date fechaInicio, Date fechaFin);

@@ -24,8 +24,10 @@ import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.estadistica
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.estadisticas.EstadisticasPorProceso;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.estadisticas.EstadisticasPorPrograma;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.estadisticas.EstudiantesPorPrograma;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.estadisticas.Globales;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.estadisticas.ProcesosPorProgramaYPeriodo;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.estadisticas.ProgramasPorProcesoYEstado;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.estadisticas.ResumenCompleto;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.estadisticas.TotalEstudiantes;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.estadisticas.VistaPorEstado;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.estadisticas.VistaPorMes;
@@ -139,7 +141,7 @@ public class EstadisticasRestController {
      * - Combinados: GET /api/estadisticas/globales?proceso=Paz%20y%20Salvo&idPrograma=1&fechaInicio=2025-07-01&fechaFin=2025-09-30
      */
     @GetMapping("/globales")
-    public ResponseEntity<Map<String, Object>> obtenerEstadisticasGlobales(
+    public ResponseEntity<Globales> obtenerEstadisticasGlobales(
             @RequestParam(required = false) String proceso,
             @RequestParam(required = false) Integer idPrograma,
             @RequestParam(required = false) String periodoAcademico,
@@ -284,7 +286,7 @@ public class EstadisticasRestController {
      * @return ResponseEntity con resumen completo de estadísticas
      */
     @GetMapping("/resumen-completo")
-    public ResponseEntity<Map<String, Object>> obtenerResumenCompleto(
+    public ResponseEntity<ResumenCompleto> obtenerResumenCompleto(
             @RequestParam(required = false) String periodoAcademico,
             @RequestParam(required = false) Integer idPrograma,
             @RequestParam(required = false) String proceso) {
