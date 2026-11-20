@@ -6,13 +6,11 @@ import static co.edu.unicauca.decanatura.gestion_curricular.dominio.servicios.es
 import static co.edu.unicauca.decanatura.gestion_curricular.dominio.servicios.estadisticas.ReglasEstadisticas.estadoActual;
 import static co.edu.unicauca.decanatura.gestion_curricular.dominio.servicios.estadisticas.ReglasEstadisticas.idPrograma;
 import static co.edu.unicauca.decanatura.gestion_curricular.dominio.servicios.estadisticas.ReglasEstadisticas.nombrePrograma;
-import static co.edu.unicauca.decanatura.gestion_curricular.dominio.servicios.estadisticas.ReglasEstadisticas.normalizarEstadistica;
 import static co.edu.unicauca.decanatura.gestion_curricular.dominio.servicios.estadisticas.ReglasEstadisticas.normalizarEstado;
 import static co.edu.unicauca.decanatura.gestion_curricular.dominio.servicios.estadisticas.ReglasEstadisticas.solicitudes;
 import static co.edu.unicauca.decanatura.gestion_curricular.dominio.servicios.estadisticas.ReglasEstadisticas.tipoProceso;
 
 import java.util.Date;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -21,9 +19,18 @@ import java.util.stream.Collectors;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.GestionarEstadisticasGatewayIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Solicitud;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.enums.EstadosSolicitud;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.estadisticas.ConteoSolicitudes;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.estadisticas.EstadisticasPorEstado;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.estadisticas.EstadisticasPorPeriodo;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.estadisticas.EstadisticasPorProceso;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.estadisticas.EstadisticasPorPrograma;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.estadisticas.ProcesosPorProgramaYPeriodo;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.estadisticas.ProgramasPorProcesoYEstado;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.estadisticas.TendenciasPorPeriodo;
 
 /**
  * Conteos de solicitudes por proceso, estado, programa y periodo de fechas, y la comparación entre dos periodos.
+ * Los argumentos llegan ya validados por el caso de uso (no nulos ni vacíos).
  */
 public class ConsultasEstadisticas {
 
@@ -34,7 +41,7 @@ public class ConsultasEstadisticas {
     }
 
     /** Total, por estado, por tipo de proceso y por programa, aprobadas, rechazadas, en proceso y porcentaje. */
-    private Map<String, Object> agregar(List<Solicitud> solicitudes) {
+    private ConteoSolicitudes agregar(List<Solicitud> solicitudes) {
         Map<String, Integer> porEstado = new LinkedHashMap<>();
         for (String e : ESTADOS) porEstado.put(e, 0);
         Map<String, Integer> porTipoProceso = new LinkedHashMap<>();
@@ -54,100 +61,64 @@ public class ConsultasEstadisticas {
 
         int total = solicitudes.size();
         int aprobadas = porEstado.getOrDefault(EstadosSolicitud.APROBADA.name(), 0);
-
-        Map<String, Object> r = new HashMap<>();
-        r.put("totalSolicitudes", total);
-        r.put("totalAprobadas", aprobadas);
-        r.put("totalRechazadas", porEstado.getOrDefault(EstadosSolicitud.RECHAZADA.name(), 0));
-        r.put("totalEnProceso", porEstado.getOrDefault(EstadosSolicitud.APROBADA_FUNCIONARIO.name(), 0)
-                + porEstado.getOrDefault(EstadosSolicitud.APROBADA_COORDINADOR.name(), 0));
-        r.put("totalEnviadas", porEstado.getOrDefault(EstadosSolicitud.ENVIADA.name(), 0));
-        r.put("porcentajeAprobacion", total > 0 ? Math.round(aprobadas * 1000.0 / total) / 10.0 : 0.0);
-        r.put("porEstado", porEstado);
-        r.put("porTipoProceso", porTipoProceso);
-        r.put("porPrograma", porPrograma);
-        r.put("fechaConsulta", new Date());
-        return r;
+        return new ConteoSolicitudes(total, aprobadas,
+                porEstado.getOrDefault(EstadosSolicitud.RECHAZADA.name(), 0),
+                porEstado.getOrDefault(EstadosSolicitud.APROBADA_FUNCIONARIO.name(), 0)
+                        + porEstado.getOrDefault(EstadosSolicitud.APROBADA_COORDINADOR.name(), 0),
+                porEstado.getOrDefault(EstadosSolicitud.ENVIADA.name(), 0),
+                total > 0 ? Math.round(aprobadas * 1000.0 / total) / 10.0 : 0.0,
+                porEstado, porTipoProceso, porPrograma);
     }
 
-    public Map<String, Object> porProceso(String tipoProceso) {
-        if (tipoProceso == null || tipoProceso.trim().isEmpty()) {
-            return normalizarEstadistica(new HashMap<>());
-        }
+    public EstadisticasPorProceso porProceso(String tipoProceso) {
         String proceso = TipoProcesoSolicitud.porNombre(tipoProceso);
         List<Solicitud> delProceso = solicitudes(datos).stream()
                 .filter(s -> proceso != null && proceso.equals(tipoProceso(s)))
                 .collect(Collectors.toList());
 
-        Map<String, Object> estadisticas = agregar(delProceso);
-        estadisticas.put("tipoProceso", tipoProceso);
-        estadisticas.put("porTipoProceso", new HashMap<>()); // Vacío para proceso específico
-        estadisticas.put("porPrograma", new HashMap<>());    // Vacío para proceso específico
-        estadisticas.put("descripcion", PresentacionEstadisticas.descripcionProceso(tipoProceso));
-        return normalizarEstadistica(estadisticas);
+        return new EstadisticasPorProceso(agregar(delProceso).sinPorTipoProcesoNiPorPrograma(), new Date(),
+                tipoProceso, PresentacionEstadisticas.descripcionProceso(tipoProceso));
     }
 
-    public Map<String, Object> porEstado(String estado) {
-        if (estado == null || estado.trim().isEmpty()) {
-            return normalizarEstadistica(new HashMap<>());
-        }
+    public EstadisticasPorEstado porEstado(String estado) {
         String estadoNormalizado = normalizarEstado(estado);
         List<Solicitud> conEstado = solicitudes(datos).stream()
                 .filter(s -> estadoNormalizado.equals(estadoActual(s)))
                 .collect(Collectors.toList());
 
-        Map<String, Object> estadisticas = agregar(conEstado);
-        estadisticas.put("estado", estado);
-        estadisticas.put("porEstado", new HashMap<>()); // Vacío para estado específico
-        estadisticas.put("porcentajeAprobacion", EstadosSolicitud.APROBADA.name().equals(estadoNormalizado) && !conEstado.isEmpty() ? 100.0 : 0.0);
-        estadisticas.put("descripcionEstado", PresentacionEstadisticas.descripcionEstado(estado));
-        return normalizarEstadistica(estadisticas);
+        double porcentaje = EstadosSolicitud.APROBADA.name().equals(estadoNormalizado) && !conEstado.isEmpty()
+                ? 100.0 : 0.0;
+        return new EstadisticasPorEstado(agregar(conEstado).sinPorEstado().conPorcentajeAprobacion(porcentaje),
+                new Date(), estado, PresentacionEstadisticas.descripcionEstado(estado));
     }
 
-    public Map<String, Object> porPrograma(Integer idPrograma) {
-        if (idPrograma == null || idPrograma < 1) {
-            return normalizarEstadistica(new HashMap<>());
-        }
+    public EstadisticasPorPrograma porPrograma(Integer idPrograma) {
         List<Solicitud> delPrograma = solicitudes(datos).stream()
                 .filter(s -> idPrograma.equals(idPrograma(s)))
                 .collect(Collectors.toList());
 
-        Map<String, Object> estadisticas = agregar(delPrograma);
-        estadisticas.put("idPrograma", idPrograma);
-        estadisticas.put("porPrograma", new HashMap<>()); // Vacío para programa específico
-        return normalizarEstadistica(estadisticas);
+        return new EstadisticasPorPrograma(agregar(delPrograma).sinPorPrograma(), new Date(), idPrograma);
     }
 
-    public Map<String, Object> porPeriodo(Date fechaInicio, Date fechaFin) {
-        if (fechaInicio == null || fechaFin == null) {
-            return normalizarEstadistica(new HashMap<>());
-        }
+    public EstadisticasPorPeriodo porPeriodo(Date fechaInicio, Date fechaFin) {
         List<Solicitud> enPeriodo = solicitudes(datos).stream()
                 .filter(s -> enRango(s, fechaInicio, fechaFin))
                 .collect(Collectors.toList());
 
-        Map<String, Object> estadisticas = agregar(enPeriodo);
-        estadisticas.put("fechaInicio", fechaInicio);
-        estadisticas.put("fechaFin", fechaFin);
-        return normalizarEstadistica(estadisticas);
+        return new EstadisticasPorPeriodo(agregar(enPeriodo), new Date(), fechaInicio, fechaFin);
     }
 
-    public Map<String, Object> porProgramaYPeriodo(Integer idPrograma, Date fechaInicio, Date fechaFin) {
+    public ProcesosPorProgramaYPeriodo porProgramaYPeriodo(Integer idPrograma, Date fechaInicio, Date fechaFin) {
         List<Solicitud> filtradas = solicitudes(datos).stream()
                 .filter(s -> idPrograma == null || idPrograma.equals(idPrograma(s)))
                 .filter(s -> enRango(s, fechaInicio, fechaFin))
                 .collect(Collectors.toList());
 
-        Map<String, Object> estadisticas = new HashMap<>();
-        estadisticas.put("idPrograma", idPrograma);
-        estadisticas.put("fechaInicio", fechaInicio);
-        estadisticas.put("fechaFin", fechaFin);
-        estadisticas.put("porTipoProceso", agregar(filtradas).get("porTipoProceso"));
-        estadisticas.put("fechaConsulta", new Date());
-        return estadisticas;
+        return new ProcesosPorProgramaYPeriodo(idPrograma, fechaInicio, fechaFin, agregar(filtradas).porTipoProceso(),
+                new Date());
     }
 
-    public Map<String, Object> porProcesoYEstado(String tipoProceso, String estado) {
+    public ProgramasPorProcesoYEstado porProcesoYEstado(String tipoProceso, String estado) {
         String proceso = TipoProcesoSolicitud.porNombre(tipoProceso);
         String estadoNormalizado = estado != null ? normalizarEstado(estado) : null;
         List<Solicitud> filtradas = solicitudes(datos).stream()
@@ -155,28 +126,19 @@ public class ConsultasEstadisticas {
                 .filter(s -> estadoNormalizado == null || estadoNormalizado.equals(estadoActual(s)))
                 .collect(Collectors.toList());
 
-        Map<String, Object> estadisticas = new HashMap<>();
-        estadisticas.put("tipoProceso", tipoProceso);
-        estadisticas.put("estado", estado);
-        estadisticas.put("porPrograma", agregar(filtradas).get("porPrograma"));
-        estadisticas.put("fechaConsulta", new Date());
-        return estadisticas;
+        return new ProgramasPorProcesoYEstado(tipoProceso, estado, agregar(filtradas).porPrograma(), new Date());
     }
 
-    public Map<String, Object> tendenciasPorPeriodo(Date fechaInicio1, Date fechaFin1, Date fechaInicio2, Date fechaFin2) {
-        Map<String, Object> periodo1 = porPeriodo(fechaInicio1, fechaFin1);
-        Map<String, Object> periodo2 = porPeriodo(fechaInicio2, fechaFin2);
+    public TendenciasPorPeriodo tendenciasPorPeriodo(Date fechaInicio1, Date fechaFin1, Date fechaInicio2,
+            Date fechaFin2) {
+        EstadisticasPorPeriodo periodo1 = porPeriodo(fechaInicio1, fechaFin1);
+        EstadisticasPorPeriodo periodo2 = porPeriodo(fechaInicio2, fechaFin2);
 
-        int total1 = ((Number) periodo1.get("totalSolicitudes")).intValue();
-        int total2 = ((Number) periodo2.get("totalSolicitudes")).intValue();
+        int total1 = periodo1.totalSolicitudes();
+        int total2 = periodo2.totalSolicitudes();
         double variacion = total1 > 0 ? ((double) (total2 - total1) / total1) * 100 : 0.0;
 
-        Map<String, Object> tendencias = new HashMap<>();
-        tendencias.put("periodo1", periodo1);
-        tendencias.put("periodo2", periodo2);
-        tendencias.put("variacionPorcentual", variacion);
-        tendencias.put("tendencia", variacion > 0 ? "CRECIENTE" : variacion < 0 ? "DECRECIENTE" : "ESTABLE");
-        tendencias.put("fechaConsulta", new Date());
-        return tendencias;
+        return new TendenciasPorPeriodo(periodo1, periodo2, variacion,
+                variacion > 0 ? "CRECIENTE" : variacion < 0 ? "DECRECIENTE" : "ESTABLE", new Date());
     }
 }

@@ -25,14 +25,25 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GenerarReportesEstadisticasCUIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarEstadisticasCUIntPort;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.estadisticas.ConteoSolicitudes;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.estadisticas.EstadisticasPorEstado;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.estadisticas.EstadisticasPorPeriodo;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.estadisticas.EstadisticasPorProceso;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.estadisticas.EstadisticasPorPrograma;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.estadisticas.EstadisticasPorSemestre;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.controladores.EstadisticasRestController;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.excepciones.RestApiExceptionHandler;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.mappers.EstadisticaMapperDominio;
+import co.edu.unicauca.decanatura.gestion_curricular.soporte.Correcciones;
 
 /**
- * Fija {@code /api/estadisticas/filtradas} y el 400 de {@code /periodo} antes de tiparlos (ARQ-10). Los mapas del
- * caso de uso son fijos y mezclan tipos; {@code claves} lista cada clave con su ruta y tipo JSON en orden de
- * escritura.
+ * Fija {@code /api/estadisticas/filtradas} y el 400 de {@code /periodo} antes de tiparlos (ARQ-10). Las respuestas
+ * del caso de uso son fijas; {@code claves} lista cada clave con su ruta y tipo JSON en orden de escritura.
+ *
+ * <p>Las referencias se grabaron cuando el caso de uso devolvía mapas que mezclaban tipos. Desde ARQ-13 las consultas
+ * por proceso, programa, estado y periodo devuelven records, que no admiten esas entradas (desglose anidado, totales
+ * ausentes, claves extra): las correcciones {@code *-arq13.json} recogen solo lo que cambia por el nuevo fixture.
+ * Con datos reales lo fija {@code EstadisticasEndpointsCaracterizacionTest#consultas}.
  */
 class EstadisticasFiltradasCaracterizacionTest {
     private static final long MARZO = 1710522000000L;
@@ -62,7 +73,8 @@ class EstadisticasFiltradasCaracterizacionTest {
         if (Boolean.getBoolean("grabarReferencia") && Files.notExists(referencia)) {
             Files.writeString(referencia, json.writerWithDefaultPrettyPrinter().writeValueAsString(resultados));
         }
-        assertThat(resultados).isEqualTo(json.readTree(Files.readString(referencia)));
+        assertThat(resultados).isEqualTo(Correcciones.aplicar(json.readTree(Files.readString(referencia)),
+            "estadisticas-endpoints/correcciones/filtradas-periodo-blancos-arq13.json"));
     }
 
     @Test
@@ -87,24 +99,25 @@ class EstadisticasFiltradasCaracterizacionTest {
         if (Boolean.getBoolean("grabarReferencia") && Files.notExists(referencia)) {
             Files.writeString(referencia, json.writerWithDefaultPrettyPrinter().writeValueAsString(resultados));
         }
-        assertThat(resultados).isEqualTo(json.readTree(Files.readString(referencia)));
+        assertThat(resultados).isEqualTo(Correcciones.aplicar(json.readTree(Files.readString(referencia)),
+            "estadisticas-endpoints/correcciones/filtradas-periodo-arq13.json"));
     }
 
     private MockMvc montar() {
         var cu = mock(GestionarEstadisticasCUIntPort.class);
-        when(cu.obtenerEstadisticasPorProceso(anyString())).thenAnswer(i -> completo("proceso", 10, 4L, 66.7));
-        when(cu.obtenerEstadisticasPorPrograma(anyInt())).thenAnswer(i -> completo("programa", 8, 2, 25.0));
-        when(cu.obtenerEstadisticasPorEstado(anyString())).thenAnswer(i -> {
-            Map<String, Object> incompleto = new HashMap<>();
-            incompleto.put("totalSolicitudes", 3);
-            incompleto.put("porEstado", null);
-            incompleto.put("extra", "no se copia");
-            return incompleto;
-        });
-        when(cu.obtenerEstadisticasPorPeriodo(any(Date.class), any(Date.class)))
-            .thenAnswer(i -> completo("periodo", 5, 5L, 100.0));
+        when(cu.obtenerEstadisticasPorProceso(anyString())).thenAnswer(i -> new EstadisticasPorProceso(
+            conteo(10, 4, 66.7), new Date(MARZO), i.getArgument(0), "proceso"));
+        when(cu.obtenerEstadisticasPorPrograma(anyInt())).thenAnswer(i -> new EstadisticasPorPrograma(
+            conteo(8, 2, 25.0), new Date(MARZO), i.getArgument(0)));
+        // Casi vacío: solo el total, sin desgloses ni fecha
+        when(cu.obtenerEstadisticasPorEstado(anyString())).thenAnswer(i -> new EstadisticasPorEstado(
+            3, 0, 0, 0, 0, 0.0, null, null, null, null, i.getArgument(0), null));
+        when(cu.obtenerEstadisticasPorPeriodo(any(Date.class), any(Date.class))).thenAnswer(i -> new EstadisticasPorPeriodo(
+            conteo(5, 5, 100.0), new Date(MARZO), i.getArgument(0), i.getArgument(1)));
         when(cu.obtenerEstadisticasGlobales()).thenAnswer(i -> completo("globales", 0, 0, 0.0));
-        when(cu.obtenerEstadisticasPorPeriodoAcademico(anyString())).thenAnswer(i -> completo("academico", 1, 1, 1.0));
+        when(cu.obtenerEstadisticasPorPeriodoAcademico(anyString())).thenAnswer(i -> new EstadisticasPorSemestre(
+            1, 1, 1, 2, 0, 1.0, porEstado(), porTipoProceso(), porPrograma(), new Date(MARZO), null, null, 2024, 1,
+            i.getArgument(0), "porSemestre", "academico"));
         return MockMvcBuilders.standaloneSetup(new EstadisticasRestController(cu,
                 mock(EstadisticaMapperDominio.class), mock(GenerarReportesEstadisticasCUIntPort.class)))
             .setControllerAdvice(new RestApiExceptionHandler()).build();
@@ -138,6 +151,31 @@ class EstadisticasFiltradasCaracterizacionTest {
                 recorrer(nodo.get(i), ruta + "[" + i + "]", claves);
             }
         }
+    }
+
+    /** Conteo con 1 rechazada, 2 en proceso y los desgloses fijos de abajo. */
+    private static ConteoSolicitudes conteo(int total, int aprobadas, double porcentaje) {
+        return new ConteoSolicitudes(total, aprobadas, 1, 2, 0, porcentaje, porEstado(), porTipoProceso(),
+            porPrograma());
+    }
+
+    private static Map<String, Integer> porEstado() {
+        Map<String, Integer> porEstado = new HashMap<>();
+        porEstado.put("APROBADA", 2);
+        porEstado.put("RECHAZADA", 1);
+        return porEstado;
+    }
+
+    private static Map<String, Integer> porTipoProceso() {
+        Map<String, Integer> porTipo = new HashMap<>();
+        porTipo.put("Reingreso", 3);
+        return porTipo;
+    }
+
+    private static Map<String, Integer> porPrograma() {
+        Map<String, Integer> porPrograma = new HashMap<>();
+        porPrograma.put("Sistemas", 4);
+        return porPrograma;
     }
 
     /** Mapa como los del dominio: {@code HashMap} con totales numéricos, porcentaje y desgloses anidados. */

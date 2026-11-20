@@ -26,6 +26,9 @@ import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.SolicitudHo
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.SolicitudPazYSalvo;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.SolicitudReingreso;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Usuario;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.estadisticas.EstadisticasPorEstado;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.estadisticas.EstadisticasPorProceso;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.estadisticas.EstadisticasPorPrograma;
 
 /**
  * ============================================================
@@ -171,12 +174,12 @@ class EstadisticasUnidadTest {
                 solicitud(new SolicitudHomologacion(), 1, estado("RECHAZADA", 3)),
                 solicitud(new SolicitudReingreso(), 1, estado("APROBADA", 3))));
 
-        Map<String, Object> resultado = estadisticasCU.obtenerEstadisticasPorProceso("Homologacion");
+        EstadisticasPorProceso resultado = estadisticasCU.obtenerEstadisticasPorProceso("Homologacion");
 
-        assertThat(resultado.get("totalSolicitudes")).isEqualTo(2);
-        assertThat(resultado.get("totalAprobadas")).isEqualTo(1);
-        assertThat(resultado.get("totalRechazadas")).isEqualTo(1);
-        assertThat(resultado.get("porcentajeAprobacion")).isEqualTo(50.0);
+        assertThat(resultado.totalSolicitudes()).isEqualTo(2);
+        assertThat(resultado.totalAprobadas()).isEqualTo(1);
+        assertThat(resultado.totalRechazadas()).isEqualTo(1);
+        assertThat(resultado.porcentajeAprobacion()).isEqualTo(50.0);
     }
 
     @Test
@@ -187,10 +190,10 @@ class EstadisticasUnidadTest {
                 solicitud(new SolicitudCursoVeranoInscripcion(), 1, estado("Inscripcion_Completada", 1)),
                 solicitud(new SolicitudEcaes(), 1, estado("Enviada", 1))));
 
-        Map<String, Object> resultado = estadisticasCU.obtenerEstadisticasPorEstado("aprobada");
+        EstadisticasPorEstado resultado = estadisticasCU.obtenerEstadisticasPorEstado("aprobada");
 
-        assertThat(resultado.get("totalSolicitudes")).isEqualTo(2);
-        assertThat(resultado.get("porcentajeAprobacion")).isEqualTo(100.0);
+        assertThat(resultado.totalSolicitudes()).isEqualTo(2);
+        assertThat(resultado.porcentajeAprobacion()).isEqualTo(100.0);
     }
 
     @Test
@@ -201,10 +204,10 @@ class EstadisticasUnidadTest {
                 solicitud(new SolicitudHomologacion(), 2, estado("APROBADA", 1)),
                 solicitud(new SolicitudReingreso(), 2, estado("Enviada", 1))));
 
-        Map<String, Object> resultado = estadisticasCU.obtenerEstadisticasPorPrograma(2);
+        EstadisticasPorPrograma resultado = estadisticasCU.obtenerEstadisticasPorPrograma(2);
 
-        assertThat(resultado.get("totalSolicitudes")).isEqualTo(2);
-        assertThat(resultado.get("totalEnviadas")).isEqualTo(1);
+        assertThat(resultado.totalSolicitudes()).isEqualTo(2);
+        assertThat(resultado.totalEnviadas()).isEqualTo(1);
     }
 
     @Test

@@ -10,7 +10,16 @@ import co.edu.unicauca.decanatura.gestion_curricular.dominio.excepciones.Entidad
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.excepciones.ReglaNegocioExcepcion;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Estadistica;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.enums.PeriodoAcademicoEnum;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.estadisticas.EntradaHistorial;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.estadisticas.EstadisticasPeriodoAcademico;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.estadisticas.EstadisticasPorEstado;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.estadisticas.EstadisticasPorPeriodo;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.estadisticas.EstadisticasPorProceso;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.estadisticas.EstadisticasPorPrograma;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.estadisticas.EstudiantesPorPrograma;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.estadisticas.ProcesosPorProgramaYPeriodo;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.estadisticas.ProgramasPorProcesoYEstado;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.estadisticas.TendenciasPorPeriodo;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.estadisticas.TotalEstudiantes;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.servicios.estadisticas.ConsultasEstadisticas;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.servicios.estadisticas.DashboardPorEstado;
@@ -143,7 +152,7 @@ public class GestionarEstadisticasCUAdapter implements GestionarEstadisticasCUIn
     }
 
     @Override
-    public Map<String, Object> obtenerEstadisticasPorProceso(String tipoProceso) {
+    public EstadisticasPorProceso obtenerEstadisticasPorProceso(String tipoProceso) {
         if (tipoProceso == null || tipoProceso.isBlank()) {
             throw new ReglaNegocioExcepcion("El tipo de proceso no puede estar vacío.");
         }
@@ -152,7 +161,7 @@ public class GestionarEstadisticasCUAdapter implements GestionarEstadisticasCUIn
     }
 
     @Override
-    public Map<String, Object> obtenerEstadisticasPorEstado(String estado) {
+    public EstadisticasPorEstado obtenerEstadisticasPorEstado(String estado) {
         if (estado == null || estado.isBlank()) {
             throw new ReglaNegocioExcepcion("El estado no puede estar vacío.");
         }
@@ -161,7 +170,7 @@ public class GestionarEstadisticasCUAdapter implements GestionarEstadisticasCUIn
     }
 
     @Override
-    public Map<String, Object> obtenerEstadisticasPorPrograma(Integer idPrograma) {
+    public EstadisticasPorPrograma obtenerEstadisticasPorPrograma(Integer idPrograma) {
         if (idPrograma == null || idPrograma <= 0) {
             throw new ReglaNegocioExcepcion("El ID del programa debe ser válido.");
         }
@@ -170,7 +179,7 @@ public class GestionarEstadisticasCUAdapter implements GestionarEstadisticasCUIn
     }
 
     @Override
-    public Map<String, Object> obtenerEstadisticasPorPeriodo(Date fechaInicio, Date fechaFin) {
+    public EstadisticasPorPeriodo obtenerEstadisticasPorPeriodo(Date fechaInicio, Date fechaFin) {
         if (fechaInicio == null || fechaFin == null) {
             throw new ReglaNegocioExcepcion("Las fechas de inicio y fin son requeridas.");
         }
@@ -183,7 +192,7 @@ public class GestionarEstadisticasCUAdapter implements GestionarEstadisticasCUIn
     }
 
     @Override
-    public Map<String, Object> obtenerEstadisticasPorProgramaYPeriodo(Integer idPrograma, Date fechaInicio, Date fechaFin) {
+    public ProcesosPorProgramaYPeriodo obtenerEstadisticasPorProgramaYPeriodo(Integer idPrograma, Date fechaInicio, Date fechaFin) {
         if (idPrograma == null || idPrograma <= 0) {
             throw new ReglaNegocioExcepcion("El ID del programa debe ser válido.");
         }
@@ -200,7 +209,7 @@ public class GestionarEstadisticasCUAdapter implements GestionarEstadisticasCUIn
     }
 
     @Override
-    public Map<String, Object> obtenerEstadisticasPorProcesoYEstado(String tipoProceso, String estado) {
+    public ProgramasPorProcesoYEstado obtenerEstadisticasPorProcesoYEstado(String tipoProceso, String estado) {
         if (tipoProceso == null || tipoProceso.isBlank()) {
             throw new ReglaNegocioExcepcion("El tipo de proceso no puede estar vacío.");
         }
@@ -218,7 +227,7 @@ public class GestionarEstadisticasCUAdapter implements GestionarEstadisticasCUIn
     }
 
     @Override
-    public Map<String, Object> obtenerTendenciasPorPeriodo(Date fechaInicio1, Date fechaFin1, Date fechaInicio2, Date fechaFin2) {
+    public TendenciasPorPeriodo obtenerTendenciasPorPeriodo(Date fechaInicio1, Date fechaFin1, Date fechaInicio2, Date fechaFin2) {
         if (fechaInicio1 == null || fechaFin1 == null || fechaInicio2 == null || fechaFin2 == null) {
             throw new ReglaNegocioExcepcion("Todas las fechas son requeridas para la comparación.");
         }
@@ -276,7 +285,7 @@ public class GestionarEstadisticasCUAdapter implements GestionarEstadisticasCUIn
     }
 
     @Override
-    public List<Map<String, Object>> obtenerHistorialEstadisticas(Integer anioInicio, Integer anioFin) {
+    public List<EntradaHistorial> obtenerHistorialEstadisticas(Integer anioInicio, Integer anioFin) {
         // Validar años si se proporcionan
         if (anioInicio != null && (anioInicio < 2020 || anioInicio > 2030)) {
             throw new ReglaNegocioExcepcion("Año de inicio inválido. Debe estar entre 2020 y 2030.");
@@ -291,7 +300,7 @@ public class GestionarEstadisticasCUAdapter implements GestionarEstadisticasCUIn
     }
 
     @Override
-    public Map<String, Object> obtenerEstadisticasPorPeriodoAcademico(String periodoAcademico) {
+    public EstadisticasPeriodoAcademico obtenerEstadisticasPorPeriodoAcademico(String periodoAcademico) {
         if (periodoAcademico == null || periodoAcademico.trim().isEmpty()) {
             throw new ReglaNegocioExcepcion("El período académico no puede estar vacío.");
         }

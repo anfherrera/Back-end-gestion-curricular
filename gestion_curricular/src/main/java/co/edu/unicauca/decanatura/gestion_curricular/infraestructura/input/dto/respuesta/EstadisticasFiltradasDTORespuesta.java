@@ -4,6 +4,8 @@ import java.util.Map;
 
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.estadisticas.ResumenSolicitudes;
+
 /**
  * Respuestas que arma EstadisticasRestController (el resto de sus endpoints devuelve tal cual los mapas del caso de
  * uso; ver ARQ-13). El orden de las claves es el que producía el {@code HashMap} anterior.
@@ -28,7 +30,15 @@ public final class EstadisticasFiltradasDTORespuesta {
             Object porPrograma,
             Object porEstado) {
 
-        /** Copia las nueve claves del mapa del caso de uso. */
+        /** Copia los nueve campos de las estadísticas de una consulta por proceso, programa, estado o periodo. */
+        public static Filtradas de(ResumenSolicitudes estadisticas) {
+            return new Filtradas(estadisticas.fechaConsulta(), estadisticas.totalSolicitudes(),
+                estadisticas.totalAprobadas(), estadisticas.totalRechazadas(), estadisticas.totalEnProceso(),
+                estadisticas.porcentajeAprobacion(), estadisticas.porTipoProceso(), estadisticas.porPrograma(),
+                estadisticas.porEstado());
+        }
+
+        /** Copia las nueve claves del mapa de las estadísticas globales (sin filtros). */
         public static Filtradas de(Map<String, ?> estadisticas) {
             return new Filtradas(estadisticas.get("fechaConsulta"), estadisticas.get("totalSolicitudes"),
                 estadisticas.get("totalAprobadas"), estadisticas.get("totalRechazadas"),

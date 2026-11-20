@@ -19,7 +19,13 @@ import org.springframework.web.bind.annotation.*;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GenerarReportesEstadisticasCUIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarEstadisticasCUIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Estadistica;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.estadisticas.EntradaHistorial;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.estadisticas.EstadisticasPorEstado;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.estadisticas.EstadisticasPorProceso;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.estadisticas.EstadisticasPorPrograma;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.estadisticas.EstudiantesPorPrograma;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.estadisticas.ProcesosPorProgramaYPeriodo;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.estadisticas.ProgramasPorProcesoYEstado;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.estadisticas.TotalEstudiantes;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.RespuestasArchivo;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.dto.peticion.EstadisticaDTOPeticion;
@@ -157,28 +163,20 @@ public class EstadisticasRestController {
             @RequestParam(name = "fechaFin", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") Date fechaFin) {
         
         
-        Map<String, Object> estadisticas;
-        
-        // Determinar qué tipo de consulta realizar basado en los parámetros
+        // Un solo filtro, en este orden de prioridad: proceso, programa, estado, periodo; sin ninguno, las globales
+        Filtradas filtradas;
         if (nombreProceso != null && !nombreProceso.trim().isEmpty()) {
-            // Consulta por proceso específico
-            estadisticas = estadisticaCU.obtenerEstadisticasPorProceso(nombreProceso);
+            filtradas = Filtradas.de(estadisticaCU.obtenerEstadisticasPorProceso(nombreProceso));
         } else if (idPrograma != null && idPrograma > 0) {
-            // Consulta por programa específico
-            estadisticas = estadisticaCU.obtenerEstadisticasPorPrograma(idPrograma);
+            filtradas = Filtradas.de(estadisticaCU.obtenerEstadisticasPorPrograma(idPrograma));
         } else if (estado != null && !estado.trim().isEmpty()) {
-            // Consulta por estado específico
-            estadisticas = estadisticaCU.obtenerEstadisticasPorEstado(estado);
+            filtradas = Filtradas.de(estadisticaCU.obtenerEstadisticasPorEstado(estado));
         } else if (fechaInicio != null && fechaFin != null) {
-            // Consulta por período específico
-            estadisticas = estadisticaCU.obtenerEstadisticasPorPeriodo(fechaInicio, fechaFin);
+            filtradas = Filtradas.de(estadisticaCU.obtenerEstadisticasPorPeriodo(fechaInicio, fechaFin));
         } else {
-            // Consulta global (sin filtros)
-            estadisticas = estadisticaCU.obtenerEstadisticasGlobales();
+            filtradas = Filtradas.de(estadisticaCU.obtenerEstadisticasGlobales());
         }
-        
-        // Asegurar que la estructura JSON tenga el formato solicitado
-        return ResponseEntity.ok(Filtradas.de(estadisticas));
+        return ResponseEntity.ok(filtradas);
     }
 
     /**
@@ -188,10 +186,9 @@ public class EstadisticasRestController {
      * @return ResponseEntity con estadísticas del proceso específico
      */
     @GetMapping("/proceso/{tipoProceso}")
-    public ResponseEntity<Map<String, Object>> obtenerEstadisticasPorProceso(
+    public ResponseEntity<EstadisticasPorProceso> obtenerEstadisticasPorProceso(
             @PathVariable String tipoProceso) {
-        Map<String, Object> estadisticas = estadisticaCU.obtenerEstadisticasPorProceso(tipoProceso);
-        return ResponseEntity.ok(estadisticas);
+        return ResponseEntity.ok(estadisticaCU.obtenerEstadisticasPorProceso(tipoProceso));
     }
 
     /**
@@ -201,10 +198,9 @@ public class EstadisticasRestController {
      * @return ResponseEntity con estadísticas por estado
      */
     @GetMapping("/estado/{estado}")
-    public ResponseEntity<Map<String, Object>> obtenerEstadisticasPorEstado(
+    public ResponseEntity<EstadisticasPorEstado> obtenerEstadisticasPorEstado(
             @PathVariable String estado) {
-        Map<String, Object> estadisticas = estadisticaCU.obtenerEstadisticasPorEstado(estado);
-        return ResponseEntity.ok(estadisticas);
+        return ResponseEntity.ok(estadisticaCU.obtenerEstadisticasPorEstado(estado));
     }
 
     /**
@@ -214,10 +210,9 @@ public class EstadisticasRestController {
      * @return ResponseEntity con estadísticas del programa
      */
     @GetMapping("/programa/{idPrograma}")
-    public ResponseEntity<Map<String, Object>> obtenerEstadisticasPorPrograma(
+    public ResponseEntity<EstadisticasPorPrograma> obtenerEstadisticasPorPrograma(
             @Min(value = 1) @PathVariable Integer idPrograma) {
-        Map<String, Object> estadisticas = estadisticaCU.obtenerEstadisticasPorPrograma(idPrograma);
-        return ResponseEntity.ok(estadisticas);
+        return ResponseEntity.ok(estadisticaCU.obtenerEstadisticasPorPrograma(idPrograma));
     }
 
     /**
@@ -234,23 +229,15 @@ public class EstadisticasRestController {
             @RequestParam(name = "periodoAcademico", required = false) String periodoAcademico,
             @RequestParam(name = "fechaInicio", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") Date fechaInicio,
             @RequestParam(name = "fechaFin", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") Date fechaFin) {
-        Map<String, Object> estadisticas;
-        
-        // Si se proporciona período académico, usarlo
+        // Primero el período académico; si no viene, el par de fechas
         if (periodoAcademico != null && !periodoAcademico.trim().isEmpty()) {
-            estadisticas = estadisticaCU.obtenerEstadisticasPorPeriodoAcademico(periodoAcademico.trim());
-        } 
-        // Si se proporcionan fechas, usarlas
-        else if (fechaInicio != null && fechaFin != null) {
-            estadisticas = estadisticaCU.obtenerEstadisticasPorPeriodo(fechaInicio, fechaFin);
-        } 
-        // Si no se proporciona nada, retornar error
-        else {
-            return ResponseEntity.badRequest().body(new ErrorPeriodo(
-                    "Debe proporcionar 'periodoAcademico' (ej: '2024-2') o 'fechaInicio' y 'fechaFin'"));
+            return ResponseEntity.ok(estadisticaCU.obtenerEstadisticasPorPeriodoAcademico(periodoAcademico.trim()));
         }
-        
-        return ResponseEntity.ok(estadisticas);
+        if (fechaInicio != null && fechaFin != null) {
+            return ResponseEntity.ok(estadisticaCU.obtenerEstadisticasPorPeriodo(fechaInicio, fechaFin));
+        }
+        return ResponseEntity.badRequest().body(new ErrorPeriodo(
+                "Debe proporcionar 'periodoAcademico' (ej: '2024-2') o 'fechaInicio' y 'fechaFin'"));
     }
 
     /**
@@ -262,12 +249,11 @@ public class EstadisticasRestController {
      * @return ResponseEntity con estadísticas combinadas
      */
     @GetMapping("/programa/{idPrograma}/periodo")
-    public ResponseEntity<Map<String, Object>> obtenerEstadisticasPorProgramaYPeriodo(
+    public ResponseEntity<ProcesosPorProgramaYPeriodo> obtenerEstadisticasPorProgramaYPeriodo(
             @Min(value = 1) @PathVariable Integer idPrograma,
             @RequestParam(name = "fechaInicio", required = true) @DateTimeFormat(pattern = "yyyy-MM-dd") Date fechaInicio,
             @RequestParam(name = "fechaFin", required = true) @DateTimeFormat(pattern = "yyyy-MM-dd") Date fechaFin) {
-        Map<String, Object> estadisticas = estadisticaCU.obtenerEstadisticasPorProgramaYPeriodo(idPrograma, fechaInicio, fechaFin);
-        return ResponseEntity.ok(estadisticas);
+        return ResponseEntity.ok(estadisticaCU.obtenerEstadisticasPorProgramaYPeriodo(idPrograma, fechaInicio, fechaFin));
     }
 
     /**
@@ -278,11 +264,10 @@ public class EstadisticasRestController {
      * @return ResponseEntity con estadísticas detalladas
      */
     @GetMapping("/proceso/{tipoProceso}/estado/{estado}")
-    public ResponseEntity<Map<String, Object>> obtenerEstadisticasPorProcesoYEstado(
+    public ResponseEntity<ProgramasPorProcesoYEstado> obtenerEstadisticasPorProcesoYEstado(
             @PathVariable String tipoProceso,
             @PathVariable String estado) {
-        Map<String, Object> estadisticas = estadisticaCU.obtenerEstadisticasPorProcesoYEstado(tipoProceso, estado);
-        return ResponseEntity.ok(estadisticas);
+        return ResponseEntity.ok(estadisticaCU.obtenerEstadisticasPorProcesoYEstado(tipoProceso, estado));
     }
 
     /**
@@ -311,18 +296,17 @@ public class EstadisticasRestController {
      * @return ResponseEntity con comparación de tendencias
      */
     @GetMapping("/tendencias")
-    public ResponseEntity<Map<String, Object>> obtenerTendenciasPorPeriodo(
+    public ResponseEntity<?> obtenerTendenciasPorPeriodo(
             @RequestParam(name = "fechaInicio1", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") Date fechaInicio1,
             @RequestParam(name = "fechaFin1", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") Date fechaFin1,
             @RequestParam(name = "fechaInicio2", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") Date fechaInicio2,
             @RequestParam(name = "fechaFin2", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") Date fechaFin2) {
         // Si no se proporcionan parámetros, devolver estadísticas globales como tendencias
         if (fechaInicio1 == null || fechaFin1 == null || fechaInicio2 == null || fechaFin2 == null) {
-            Map<String, Object> estadisticas = estadisticaCU.obtenerEstadisticasGlobales();
-            return ResponseEntity.ok(estadisticas);
+            return ResponseEntity.ok(estadisticaCU.obtenerEstadisticasGlobales());
         }
-        Map<String, Object> tendencias = estadisticaCU.obtenerTendenciasPorPeriodo(fechaInicio1, fechaFin1, fechaInicio2, fechaFin2);
-        return ResponseEntity.ok(tendencias);
+        return ResponseEntity.ok(
+                estadisticaCU.obtenerTendenciasPorPeriodo(fechaInicio1, fechaFin1, fechaInicio2, fechaFin2));
     }
 
     /**
@@ -577,11 +561,10 @@ public class EstadisticasRestController {
      * @return ResponseEntity con lista de estadísticas por período
      */
     @GetMapping("/historial")
-    public ResponseEntity<List<Map<String, Object>>> obtenerHistorialEstadisticas(
+    public ResponseEntity<List<EntradaHistorial>> obtenerHistorialEstadisticas(
             @RequestParam(name = "anioInicio", required = false) Integer anioInicio,
             @RequestParam(name = "anioFin", required = false) Integer anioFin) {
-        List<Map<String, Object>> historial = estadisticaCU.obtenerHistorialEstadisticas(anioInicio, anioFin);
-        return ResponseEntity.ok(historial);
+        return ResponseEntity.ok(estadisticaCU.obtenerHistorialEstadisticas(anioInicio, anioFin));
     }
 
 }

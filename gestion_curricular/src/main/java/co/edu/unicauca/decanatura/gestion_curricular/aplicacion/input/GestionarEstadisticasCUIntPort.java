@@ -5,7 +5,16 @@ import java.util.List;
 import java.util.Map;
 
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Estadistica;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.estadisticas.EntradaHistorial;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.estadisticas.EstadisticasPeriodoAcademico;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.estadisticas.EstadisticasPorEstado;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.estadisticas.EstadisticasPorPeriodo;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.estadisticas.EstadisticasPorProceso;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.estadisticas.EstadisticasPorPrograma;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.estadisticas.EstudiantesPorPrograma;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.estadisticas.ProcesosPorProgramaYPeriodo;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.estadisticas.ProgramasPorProcesoYEstado;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.estadisticas.TendenciasPorPeriodo;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.estadisticas.TotalEstudiantes;
 
 public interface GestionarEstadisticasCUIntPort {
@@ -41,27 +50,27 @@ public interface GestionarEstadisticasCUIntPort {
      * Utiliza SolicitudRepositoryInt para filtrar por tipo de solicitud.
      * 
      * @param tipoProceso Tipo de proceso (REINGRESO, HOMOLOGACION, ECAES, CURSO_VERANO, PAZ_SALVO)
-     * @return Map con estadísticas del proceso específico
+     * @return estadísticas del proceso específico
      */
-    Map<String, Object> obtenerEstadisticasPorProceso(String tipoProceso);
+    EstadisticasPorProceso obtenerEstadisticasPorProceso(String tipoProceso);
 
     /**
      * Obtiene estadísticas por estado de solicitud en todos los procesos.
      * Utiliza SolicitudRepositoryInt para contar por estado.
      * 
      * @param estado Estado de la solicitud (EN_PROCESO, APROBADA, RECHAZADA, etc.)
-     * @return Map con estadísticas por estado
+     * @return estadísticas por estado
      */
-    Map<String, Object> obtenerEstadisticasPorEstado(String estado);
+    EstadisticasPorEstado obtenerEstadisticasPorEstado(String estado);
 
     /**
      * Obtiene estadísticas por programa académico.
      * Utiliza SolicitudRepositoryInt y ProgramaRepositoryInt para filtrar por programa.
      * 
      * @param idPrograma ID del programa académico
-     * @return Map con estadísticas del programa
+     * @return estadísticas del programa
      */
-    Map<String, Object> obtenerEstadisticasPorPrograma(Integer idPrograma);
+    EstadisticasPorPrograma obtenerEstadisticasPorPrograma(Integer idPrograma);
 
     /**
      * Obtiene estadísticas por período académico.
@@ -69,9 +78,9 @@ public interface GestionarEstadisticasCUIntPort {
      * 
      * @param fechaInicio Fecha de inicio del período
      * @param fechaFin Fecha de fin del período
-     * @return Map con estadísticas del período
+     * @return estadísticas del período
      */
-    Map<String, Object> obtenerEstadisticasPorPeriodo(Date fechaInicio, Date fechaFin);
+    EstadisticasPorPeriodo obtenerEstadisticasPorPeriodo(Date fechaInicio, Date fechaFin);
 
     /**
      * Obtiene estadísticas combinadas por programa y período académico.
@@ -80,9 +89,9 @@ public interface GestionarEstadisticasCUIntPort {
      * @param idPrograma ID del programa académico
      * @param fechaInicio Fecha de inicio del período
      * @param fechaFin Fecha de fin del período
-     * @return Map con estadísticas combinadas
+     * @return estadísticas combinadas
      */
-    Map<String, Object> obtenerEstadisticasPorProgramaYPeriodo(Integer idPrograma, Date fechaInicio, Date fechaFin);
+    ProcesosPorProgramaYPeriodo obtenerEstadisticasPorProgramaYPeriodo(Integer idPrograma, Date fechaInicio, Date fechaFin);
 
     /**
      * Obtiene estadísticas detalladas por proceso y estado.
@@ -90,9 +99,9 @@ public interface GestionarEstadisticasCUIntPort {
      * 
      * @param tipoProceso Tipo de proceso
      * @param estado Estado de la solicitud
-     * @return Map con estadísticas detalladas
+     * @return estadísticas detalladas
      */
-    Map<String, Object> obtenerEstadisticasPorProcesoYEstado(String tipoProceso, String estado);
+    ProgramasPorProcesoYEstado obtenerEstadisticasPorProcesoYEstado(String tipoProceso, String estado);
 
     /**
      * Obtiene un resumen completo de todas las estadísticas del sistema.
@@ -112,9 +121,9 @@ public interface GestionarEstadisticasCUIntPort {
      * @param fechaFin1 Fecha de fin del primer período
      * @param fechaInicio2 Fecha de inicio del segundo período
      * @param fechaFin2 Fecha de fin del segundo período
-     * @return Map con comparación de tendencias
+     * @return comparación de tendencias
      */
-    Map<String, Object> obtenerTendenciasPorPeriodo(Date fechaInicio1, Date fechaFin1, Date fechaInicio2, Date fechaFin2);
+    TendenciasPorPeriodo obtenerTendenciasPorPeriodo(Date fechaInicio1, Date fechaFin1, Date fechaInicio2, Date fechaFin2);
 
     /**
      * Obtiene el número total de estudiantes en el sistema.
@@ -210,15 +219,15 @@ public interface GestionarEstadisticasCUIntPort {
      * @param anioFin Año de fin (opcional)
      * @return Lista de estadísticas por período ordenadas cronológicamente
      */
-    List<Map<String, Object>> obtenerHistorialEstadisticas(Integer anioInicio, Integer anioFin);
+    List<EntradaHistorial> obtenerHistorialEstadisticas(Integer anioInicio, Integer anioFin);
 
     /**
      * Obtiene estadísticas por período académico usando formato YYYY-P.
      * 
      * @param periodoAcademico Período en formato "YYYY-P" (ej: "2024-2")
-     * @return Map con estadísticas del período
+     * @return estadísticas del período
      */
-    Map<String, Object> obtenerEstadisticasPorPeriodoAcademico(String periodoAcademico);
+    EstadisticasPeriodoAcademico obtenerEstadisticasPorPeriodoAcademico(String periodoAcademico);
 
 
     /**
