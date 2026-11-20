@@ -124,7 +124,8 @@ class EstadisticasCaracterizacionTest {
                 caso("tendencias-temporales-cursos-verano", g -> g.obtenerTendenciasTemporalesCursosVerano(null, null)),
                 caso("historial", g -> g.obtenerHistorialEstadisticas(2024, 2025)),
                 caso("por-periodo-academico", g -> g.obtenerEstadisticasPorPeriodoAcademico("2025-1")),
-                caso("por-periodo-academico-invalido", g -> g.obtenerEstadisticasPorPeriodoAcademico("2025-3")));
+                caso("por-periodo-academico-invalido", g -> g.obtenerEstadisticasPorPeriodoAcademico("2025-3")),
+                caso("por-periodo-academico-con-ceros", g -> g.obtenerEstadisticasPorPeriodoAcademico("0025-1")));
     }
 
     @ParameterizedTest(name = "{0}")
