@@ -10,6 +10,8 @@ import co.edu.unicauca.decanatura.gestion_curricular.dominio.excepciones.Entidad
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.excepciones.ReglaNegocioExcepcion;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Estadistica;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.enums.PeriodoAcademicoEnum;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.estadisticas.EstudiantesPorPrograma;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.estadisticas.TotalEstudiantes;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.servicios.estadisticas.ConsultasEstadisticas;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.servicios.estadisticas.DashboardPorEstado;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.servicios.estadisticas.DashboardPorMes;
@@ -229,12 +231,12 @@ public class GestionarEstadisticasCUAdapter implements GestionarEstadisticasCUIn
     }
 
     @Override
-    public Map<String, Object> obtenerNumeroTotalEstudiantes() {
+    public TotalEstudiantes obtenerNumeroTotalEstudiantes() {
         return estudiantes.numeroTotalEstudiantes();
     }
 
     @Override
-    public Map<String, Object> obtenerEstudiantesPorPrograma(String periodoAcademico, Integer idPrograma) {
+    public EstudiantesPorPrograma obtenerEstudiantesPorPrograma(String periodoAcademico, Integer idPrograma) {
         return estudiantes.estudiantesPorPrograma(idPrograma);
     }
 

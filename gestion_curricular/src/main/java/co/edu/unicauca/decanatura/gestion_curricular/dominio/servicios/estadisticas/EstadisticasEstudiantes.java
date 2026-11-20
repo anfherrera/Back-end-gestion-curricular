@@ -8,6 +8,8 @@ import java.util.stream.Collectors;
 
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.GestionarEstadisticasGatewayIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Usuario;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.estadisticas.EstudiantesPorPrograma;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.estadisticas.TotalEstudiantes;
 
 /** Número de estudiantes registrados y su distribución por programa académico. */
 public class EstadisticasEstudiantes {
@@ -18,15 +20,12 @@ public class EstadisticasEstudiantes {
         this.datos = datos;
     }
 
-    public Map<String, Object> numeroTotalEstudiantes() {
-        Map<String, Object> resultado = new HashMap<>();
-        resultado.put("totalEstudiantes", (long) datos.listarEstudiantes().size());
-        resultado.put("fechaConsulta", new Date());
-        resultado.put("descripcion", "Total de estudiantes registrados en el sistema");
-        return resultado;
+    public TotalEstudiantes numeroTotalEstudiantes() {
+        return new TotalEstudiantes(datos.listarEstudiantes().size(), new Date(),
+                "Total de estudiantes registrados en el sistema");
     }
 
-    public Map<String, Object> estudiantesPorPrograma(Integer idPrograma) {
+    public EstudiantesPorPrograma estudiantesPorPrograma(Integer idPrograma) {
         List<Usuario> estudiantes = datos.listarEstudiantes();
         if (idPrograma != null) {
             estudiantes = estudiantes.stream()
@@ -41,11 +40,7 @@ public class EstadisticasEstudiantes {
             }
         }
 
-        Map<String, Object> resultado = new HashMap<>();
-        resultado.put("estudiantesPorPrograma", porPrograma);
-        resultado.put("totalEstudiantes", estudiantes.size());
-        resultado.put("fechaConsulta", new Date());
-        resultado.put("descripcion", "Distribucion de estudiantes por programa academico");
-        return resultado;
+        return new EstudiantesPorPrograma(porPrograma, estudiantes.size(), new Date(),
+                "Distribucion de estudiantes por programa academico");
     }
 }

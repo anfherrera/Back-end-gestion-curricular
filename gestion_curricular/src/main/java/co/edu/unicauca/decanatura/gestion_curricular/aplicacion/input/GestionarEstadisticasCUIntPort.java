@@ -5,6 +5,8 @@ import java.util.List;
 import java.util.Map;
 
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Estadistica;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.estadisticas.EstudiantesPorPrograma;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.estadisticas.TotalEstudiantes;
 
 public interface GestionarEstadisticasCUIntPort {
     Estadistica crearEstadistica(Estadistica estadistica);
@@ -118,9 +120,9 @@ public interface GestionarEstadisticasCUIntPort {
      * Obtiene el número total de estudiantes en el sistema.
      * Utiliza UsuarioRepositoryInt para contar usuarios con rol de estudiante.
      * 
-     * @return Map con el conteo total de estudiantes
+     * @return el conteo total de estudiantes
      */
-    Map<String, Object> obtenerNumeroTotalEstudiantes();
+    TotalEstudiantes obtenerNumeroTotalEstudiantes();
 
     /**
      * Obtiene la distribución de estudiantes por programa académico.
@@ -128,9 +130,9 @@ public interface GestionarEstadisticasCUIntPort {
      * 
      * @param periodoAcademico Período académico opcional (formato: "YYYY-P", ej: "2025-2")
      * @param idPrograma ID del programa académico opcional para filtrar
-     * @return Map con la distribución de estudiantes por programa
+     * @return la distribución de estudiantes por programa
      */
-    Map<String, Object> obtenerEstudiantesPorPrograma(String periodoAcademico, Integer idPrograma);
+    EstudiantesPorPrograma obtenerEstudiantesPorPrograma(String periodoAcademico, Integer idPrograma);
 
     /**
      * Obtiene estadísticas detalladas por tipo de proceso.

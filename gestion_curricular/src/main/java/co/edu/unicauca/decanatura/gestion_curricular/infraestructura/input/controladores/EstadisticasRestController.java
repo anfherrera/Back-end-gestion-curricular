@@ -19,6 +19,8 @@ import org.springframework.web.bind.annotation.*;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GenerarReportesEstadisticasCUIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarEstadisticasCUIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Estadistica;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.estadisticas.EstudiantesPorPrograma;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.estadisticas.TotalEstudiantes;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.RespuestasArchivo;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.dto.peticion.EstadisticaDTOPeticion;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.dto.respuesta.EstadisticaDTORespuesta;
@@ -433,11 +435,8 @@ public class EstadisticasRestController {
      * @return ResponseEntity con el conteo total de estudiantes
      */
     @GetMapping("/total-estudiantes")
-    public ResponseEntity<Map<String, Object>> obtenerNumeroTotalEstudiantes() {
-        
-        Map<String, Object> resultado = estadisticaCU.obtenerNumeroTotalEstudiantes();
-        
-        return ResponseEntity.ok(resultado);
+    public ResponseEntity<TotalEstudiantes> obtenerNumeroTotalEstudiantes() {
+        return ResponseEntity.ok(estadisticaCU.obtenerNumeroTotalEstudiantes());
     }
 
     /**
@@ -448,11 +447,10 @@ public class EstadisticasRestController {
      * @return ResponseEntity con la distribución de estudiantes por programa
      */
     @GetMapping("/estudiantes-por-programa")
-    public ResponseEntity<Map<String, Object>> obtenerEstudiantesPorPrograma(
+    public ResponseEntity<EstudiantesPorPrograma> obtenerEstudiantesPorPrograma(
             @RequestParam(required = false) String periodoAcademico,
             @RequestParam(required = false) Integer idPrograma) {
-        Map<String, Object> resultado = estadisticaCU.obtenerEstudiantesPorPrograma(periodoAcademico, idPrograma);
-        return ResponseEntity.ok(resultado);
+        return ResponseEntity.ok(estadisticaCU.obtenerEstudiantesPorPrograma(periodoAcademico, idPrograma));
     }
 
     /**
