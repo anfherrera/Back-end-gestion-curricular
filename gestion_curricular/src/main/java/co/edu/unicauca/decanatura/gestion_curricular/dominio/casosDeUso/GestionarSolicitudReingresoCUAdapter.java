@@ -111,10 +111,6 @@ public class GestionarSolicitudReingresoCUAdapter  implements GestionarSolicitud
 
     @Override
     public List<SolicitudReingreso> listarSolicitudesReingresoPorRol(String rol, Integer idUsuario) {
-        // BUG-9: este listado nunca incluyó a la secretaría (paz y salvo sí); se conserva hasta decidirlo
-        if ("SECRETARIA".equals(rol)) {
-            return List.of();
-        }
         return listador.listarPorRol(rol, idUsuario);
     }
 

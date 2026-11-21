@@ -48,6 +48,7 @@ import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.pers
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.repositorios.RolRepositoryInt;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.repositorios.SolicitudRepositoryInt;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.repositorios.UsuarioRepositoryInt;
+import co.edu.unicauca.decanatura.gestion_curricular.soporte.Correcciones;
 
 /**
  * Fija qué solicitudes devuelve cada endpoint {@code /listar…} de homologación, reingreso, paz y salvo
@@ -173,7 +174,8 @@ class ListadosPorRolCaracterizacionTest {
         Map<String, List<String>> r = new LinkedHashMap<>();
         consultar(r, "H", STAFF_SIN_PROGRAMA, base);
         listadosTresAprobaciones(r, "H", base, base + "/porRol");
-        compararConReferencia("homologacion", r);
+        // BUG-9: porRol?rol=SECRETARIA devuelve las pendientes de la secretaría
+        compararConReferencia("homologacion", r, "listados/correcciones/homologacion-bug9.json");
     }
 
     // ==================== REINGRESO ====================
@@ -185,7 +187,8 @@ class ListadosPorRolCaracterizacionTest {
         Map<String, List<String>> r = new LinkedHashMap<>();
         consultar(r, "R", STAFF_SIN_PROGRAMA, "/api/solicitudes-reingreso/listarSolicitudes-Reingreso");
         listadosTresAprobaciones(r, "R", base, base + "/porUser");
-        compararConReferencia("reingreso", r);
+        // BUG-9: porUser?rol=SECRETARIA devuelve las pendientes de la secretaría
+        compararConReferencia("reingreso", r, "listados/correcciones/reingreso-bug9.json");
     }
 
     /** Endpoints comunes a homologación y reingreso. */
@@ -293,13 +296,19 @@ class ListadosPorRolCaracterizacionTest {
         resultados.put(clave, vistas);
     }
 
-    private void compararConReferencia(String nombre, Map<String, List<String>> obtenido) throws Exception {
+    /** Compara con la referencia {@code nombre}, superponiendo en orden las correcciones indicadas. */
+    private void compararConReferencia(String nombre, Map<String, List<String>> obtenido, String... rutasCorreccion)
+            throws Exception {
         Path archivo = CARPETA.resolve(nombre + ".json");
         if (Boolean.getBoolean("grabarReferencia")) {
             Files.createDirectories(CARPETA);
             Files.writeString(archivo, JSON.writeValueAsString(obtenido) + System.lineSeparator(), StandardCharsets.UTF_8);
         }
-        Map<String, List<String>> esperado = JSON.readValue(Files.readString(archivo, StandardCharsets.UTF_8),
+        JsonNode referencia = JSON.readTree(Files.readString(archivo, StandardCharsets.UTF_8));
+        for (String rutaCorreccion : rutasCorreccion) {
+            referencia = Correcciones.aplicar(referencia, rutaCorreccion);
+        }
+        Map<String, List<String>> esperado = JSON.convertValue(referencia,
                 new TypeReference<LinkedHashMap<String, List<String>>>() { });
         assertThat(obtenido).isEqualTo(esperado);
     }

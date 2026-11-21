@@ -14,8 +14,8 @@ public interface GestionarSolicitudHomologacionCUIntPort {
     List<SolicitudHomologacion> listar(FiltroSolicitudes filtro);
 
     /**
-     * Listado "por rol" con el rol en mayúsculas (ESTUDIANTE, FUNCIONARIO, COORDINADOR), sin programa ni
-     * período. Cualquier otro rol, incluido SECRETARIA, devuelve una lista vacía (BUG-9).
+     * Listado "por rol" con el rol en mayúsculas (ESTUDIANTE, FUNCIONARIO, COORDINADOR, SECRETARIA), sin programa
+     * ni período. Cualquier otro rol devuelve una lista vacía.
      */
     List<SolicitudHomologacion> listarSolicitudesPorRol(String rol, Integer idUsuario);
 
