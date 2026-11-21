@@ -22,6 +22,7 @@ import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBo
 
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarArchivosCUIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarDocumentosCUIntPort;
+import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarSolicitudCUIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarSolicitudCursoVeranoCUIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarSolicitudPazYSalvoCUIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Documento;
@@ -43,8 +44,15 @@ public class ArchivosRestController {
     private final GestionarDocumentosCUIntPort documentosCU;
     private final GestionarSolicitudPazYSalvoCUIntPort solicitudPazYSalvoCU;
     private final GestionarSolicitudCursoVeranoCUIntPort solicitudCursoVeranoCU;
+    private final GestionarSolicitudCUIntPort solicitudCU;
     private final Autorizacion autorizacion;
 
+    /**
+     * Sube un PDF y lo registra. Si trae el id de una solicitud ({@code inscripcionId}, {@code solicitudId} o
+     * {@code idSolicitud}, en ese orden), el id se recorta y debe ser el de una solicitud existente (BUG-20):
+     * 400 si no es un número y 404 si no existe. Una inscripción de verano se organiza en su carpeta; cualquier
+     * otra solicitud (por ejemplo, un reingreso que sube la secretaría) se asocia tal cual.
+     */
     @PostMapping("/subir/pdf")
     public ResponseEntity<?> subirPDF(
         @RequestParam(name = "file", required = true) MultipartFile file,
@@ -52,25 +60,20 @@ public class ArchivosRestController {
         @RequestParam(name = "solicitudId", required = false) String solicitudId,
         @RequestParam(name = "idSolicitud", required = false) String idSolicitudAlias,
         @RequestParam(name = "tipoSolicitud", required = false) String tipoSolicitud) {
-        
-        String solicitudIdUnificado = null;
-        if (inscripcionId != null && !inscripcionId.trim().isEmpty()) {
-            solicitudIdUnificado = inscripcionId;
-        } else if (solicitudId != null && !solicitudId.trim().isEmpty()) {
-            solicitudIdUnificado = solicitudId;
-        } else if (idSolicitudAlias != null && !idSolicitudAlias.trim().isEmpty()) {
-            solicitudIdUnificado = idSolicitudAlias;
-        }
 
-        // Solo el staff o el dueño pueden adjuntar archivos a una solicitud existente
-        if (solicitudIdUnificado != null && !autorizacion.esStaff()) {
-            Integer idSolicitudDestino;
+        String inscripcionIdTexto = conTexto(inscripcionId);
+        String solicitudIdTexto = inscripcionIdTexto != null ? inscripcionIdTexto
+            : conTexto(solicitudId) != null ? conTexto(solicitudId) : conTexto(idSolicitudAlias);
+
+        Integer idSolicitudDestino = null;
+        if (solicitudIdTexto != null) {
             try {
-                idSolicitudDestino = Integer.parseInt(solicitudIdUnificado.trim());
+                idSolicitudDestino = Integer.parseInt(solicitudIdTexto);
             } catch (NumberFormatException e) {
                 return ResponseEntity.badRequest().body(new PdfSubidoDTORespuesta.Error("ID de solicitud inválido"));
             }
-            if (!autorizacion.esDuenoSolicitud(idSolicitudDestino)) {
+            // Solo el staff o el dueño pueden adjuntar archivos a una solicitud existente
+            if (!autorizacion.esStaff() && !autorizacion.esDuenoSolicitud(idSolicitudDestino)) {
                 return ResponseEntity.status(HttpStatus.FORBIDDEN)
                     .body(new PdfSubidoDTORespuesta.Error("No puede adjuntar archivos a una solicitud que no es suya"));
             }
@@ -83,113 +86,62 @@ public class ArchivosRestController {
         if (rechazo != null) {
             return ResponseEntity.status(rechazo.estado()).body(new PdfSubidoDTORespuesta.Error(rechazo.mensaje()));
         }
-        
-        String nombreArchivo;
-        // Generar nombre usando el nombre original del archivo + nombre del estudiante
-        String nombreUnico = nombreOriginal;
-        if (inscripcionId != null && !inscripcionId.trim().isEmpty()) {
+
+        // La solicitud de destino: una inscripción de verano o, si no lo es, cualquier otra solicitud
+        SolicitudCursoVeranoInscripcion inscripcion = null;
+        Solicitud destino = null;
+        if (idSolicitudDestino != null) {
             try {
-                SolicitudCursoVeranoInscripcion inscripcion = solicitudCursoVeranoCU.buscarPorIdInscripcion(Integer.parseInt(inscripcionId));
-                
-                if (inscripcion != null && inscripcion.getObjUsuario() != null) {
-                    // Obtener el nombre del estudiante
-                    String nombreEstudiante = inscripcion.getObjUsuario().getNombre_completo();
-                    if (nombreEstudiante != null && !nombreEstudiante.trim().isEmpty()) {
-                        // Limpiar el nombre del estudiante para usar en archivo
-                        String nombreLimpio = nombreEstudiante.replaceAll("[^a-zA-Z0-9]", "_");
-                        
-                        // Extraer solo el nombre del archivo sin extensión
-                        String nombreSinExtension = nombreOriginal.substring(0, nombreOriginal.lastIndexOf('.'));
-                        String extension = nombreOriginal.substring(nombreOriginal.lastIndexOf('.'));
-                        
-                        // Crear nombre: nombreOriginal_nombreEstudiante_inscripcionId.extension
-                        nombreUnico = nombreSinExtension + "_" + nombreLimpio + "_" + inscripcionId + extension;
-                    } else {
-                        // Si no se puede obtener el nombre del estudiante, usar solo el ID
-                        String nombreSinExtension = nombreOriginal.substring(0, nombreOriginal.lastIndexOf('.'));
-                        String extension = nombreOriginal.substring(nombreOriginal.lastIndexOf('.'));
-                        nombreUnico = nombreSinExtension + "_" + inscripcionId + extension;
-                    }
-                } else {
-                    // Si no se encuentra la inscripción, usar solo el ID
-                    String nombreSinExtension = nombreOriginal.substring(0, nombreOriginal.lastIndexOf('.'));
-                    String extension = nombreOriginal.substring(nombreOriginal.lastIndexOf('.'));
-                    nombreUnico = nombreSinExtension + "_" + inscripcionId + extension;
-                }
+                inscripcion = solicitudCursoVeranoCU.buscarPorIdInscripcion(idSolicitudDestino);
             } catch (Exception e) {
-                // En caso de error, usar solo el ID
-                String nombreSinExtension = nombreOriginal.substring(0, nombreOriginal.lastIndexOf('.'));
-                String extension = nombreOriginal.substring(nombreOriginal.lastIndexOf('.'));
-                nombreUnico = nombreSinExtension + "_" + inscripcionId + extension;
+                log.warn("No se pudo consultar la inscripción {}", idSolicitudDestino, e);
+            }
+            destino = inscripcion != null ? inscripcion : solicitudCU.obtenerSolicitudPorId(idSolicitudDestino);
+            if (destino == null) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(new PdfSubidoDTORespuesta.Error("Solicitud no encontrada"));
             }
         }
-        
-        // Guardar archivo organizado si se proporciona tipoSolicitud e ID
-        if (tipoSolicitud != null && !tipoSolicitud.trim().isEmpty() && 
-            solicitudIdUnificado != null && !solicitudIdUnificado.trim().isEmpty()) {
+
+        // Con inscripcionId, el nombre lleva el del estudiante (si lo hay) y el id
+        String nombreUnico = nombreOriginal;
+        if (inscripcionIdTexto != null) {
+            String nombreSinExtension = nombreOriginal.substring(0, nombreOriginal.lastIndexOf('.'));
+            String extension = nombreOriginal.substring(nombreOriginal.lastIndexOf('.'));
+            String nombreEstudiante = inscripcion != null && inscripcion.getObjUsuario() != null
+                ? inscripcion.getObjUsuario().getNombre_completo() : null;
+            nombreUnico = nombreEstudiante != null && !nombreEstudiante.trim().isEmpty()
+                ? nombreSinExtension + "_" + nombreEstudiante.replaceAll("[^a-zA-Z0-9]", "_") + "_"
+                    + inscripcionIdTexto + extension
+                : nombreSinExtension + "_" + inscripcionIdTexto + extension;
+        }
+
+        // Carpeta: la de tipoSolicitud si viene con id; sin tipo, la de la inscripción de verano; si no, la raíz
+        String nombreArchivo;
+        if (conTexto(tipoSolicitud) != null && idSolicitudDestino != null) {
+            nombreArchivo = this.gestionarArchivos.saveFile(ArchivoMultipart.de(file), nombreUnico, "pdf", conTexto(tipoSolicitud),
+                idSolicitudDestino);
+        } else if (inscripcionIdTexto != null && inscripcion != null) {
             try {
-                Integer idSolicitudInt = Integer.parseInt(solicitudIdUnificado);
-                nombreArchivo = this.gestionarArchivos.saveFile(ArchivoMultipart.de(file), nombreUnico, "pdf", tipoSolicitud, idSolicitudInt);
-            } catch (NumberFormatException e) {
-                // Si no se puede parsear el ID, usar método alternativo
-                nombreArchivo = this.gestionarArchivos.saveFile(ArchivoMultipart.de(file), nombreUnico, "pdf");
-            }
-        } else if (inscripcionId != null && !inscripcionId.trim().isEmpty()) {
-            // Si hay inscripcionId pero no tipoSolicitud, inferir que es curso-verano y usar organización
-            try {
-                Integer idInscripcionInt = Integer.parseInt(inscripcionId);
-                // Verificar que la inscripción existe antes de organizar
-                try {
-                    SolicitudCursoVeranoInscripcion inscripcion = solicitudCursoVeranoCU.buscarPorIdInscripcion(idInscripcionInt);
-                    if (inscripcion != null) {
-                        nombreArchivo = this.gestionarArchivos.saveFile(ArchivoMultipart.de(file), nombreUnico, "pdf", "curso-verano", inscripcion.getId_solicitud());
-                    } else {
-                        // Inscripción no existe aún, guardar en raíz (se moverá después)
-                        nombreArchivo = this.gestionarArchivos.saveFile(ArchivoMultipart.de(file), nombreUnico, "pdf");
-                    }
-                } catch (Exception e) {
-                    // Inscripción no existe o error, guardar en raíz (se moverá después)
-                    nombreArchivo = this.gestionarArchivos.saveFile(ArchivoMultipart.de(file), nombreUnico, "pdf");
-                }
-            } catch (NumberFormatException e) {
+                nombreArchivo = this.gestionarArchivos.saveFile(ArchivoMultipart.de(file), nombreUnico, "pdf",
+                    "curso-verano", inscripcion.getId_solicitud());
+            } catch (Exception e) {
+                // Si falla la carpeta de la inscripción, se reintenta en la raíz
                 nombreArchivo = this.gestionarArchivos.saveFile(ArchivoMultipart.de(file), nombreUnico, "pdf");
             }
         } else {
-            // Si no hay tipoSolicitud ni inscripcionId, guardar en raíz (retrocompatibilidad)
             nombreArchivo = this.gestionarArchivos.saveFile(ArchivoMultipart.de(file), nombreUnico, "pdf");
         }
-        
+
         boolean documentoGuardadoEnBD = false;
         try {
             // Si no trae solicitud, se asociará a la próxima solicitud que cree este mismo usuario
             Integer idUsuarioSubio = autorizacion.idUsuarioActual();
-            // BUG-20: sin inscripción con ese id, se asocia a la solicitud con el mismo id, sea cual sea
-            Solicitud destino = null;
-            if (solicitudIdUnificado != null && !solicitudIdUnificado.trim().isEmpty()) {
-                Integer solicitudIdParsed = null;
-                try {
-                    solicitudIdParsed = Integer.parseInt(solicitudIdUnificado);
-                } catch (NumberFormatException e) {
-                }
-
-                if (solicitudIdParsed != null) {
-                    try {
-                        destino = solicitudCursoVeranoCU.buscarPorIdInscripcion(solicitudIdParsed);
-                    } catch (Exception e) {
-                    }
-                    if (destino == null) {
-                        destino = new Solicitud();
-                        destino.setId_solicitud(solicitudIdParsed);
-                    }
-                }
-            }
-
             documentoGuardadoEnBD = documentosCU.registrarArchivoGuardado(nombreArchivo, destino, idUsuarioSubio) != null;
         } catch (Exception e) {
             log.error("Error al guardar documento en BD: {}", nombreArchivo, e);
         }
-        
-        // 6. Crear respuesta en el formato requerido
+
         return ResponseEntity.ok(new PdfSubidoDTORespuesta(
             System.currentTimeMillis(),
             nombreOriginal,
@@ -198,14 +150,14 @@ public class ArchivosRestController {
             file.getContentType(),
             new Date(),
             documentoGuardadoEnBD,
-            conTexto(inscripcionId),
-            conTexto(solicitudIdUnificado),
+            inscripcionIdTexto,
+            solicitudIdTexto,
             conTexto(tipoSolicitud)));
     }
 
-    /** El valor tal cual si tiene texto; si no, null para omitir la clave en la respuesta. */
+    /** El valor recortado si tiene texto; si no, null (y la clave se omite en la respuesta). */
     private static String conTexto(String valor) {
-        return valor != null && !valor.trim().isEmpty() ? valor : null;
+        return valor != null && !valor.trim().isEmpty() ? valor.trim() : null;
     }
 
     @GetMapping("/descargar/pdf")

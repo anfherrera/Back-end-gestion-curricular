@@ -31,6 +31,7 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarArchivosCUIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarDocumentosCUIntPort;
+import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarSolicitudCUIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarSolicitudCursoVeranoCUIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarSolicitudPazYSalvoCUIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Documento;
@@ -60,7 +61,8 @@ class SubirPdfFechaCaracterizacionTest {
             @Override public Integer idUsuarioActual() { return 31; }
         };
         var controlador = new ArchivosRestController(archivos, documentos,
-            mock(GestionarSolicitudPazYSalvoCUIntPort.class), mock(GestionarSolicitudCursoVeranoCUIntPort.class), auth);
+            mock(GestionarSolicitudPazYSalvoCUIntPort.class), mock(GestionarSolicitudCursoVeranoCUIntPort.class),
+            mock(GestionarSolicitudCUIntPort.class), auth);
         MockMvc porDefecto = MockMvcBuilders.standaloneSetup(controlador)
             .setControllerAdvice(new RestApiExceptionHandler()).build();
         MockMvc deSpringBoot = MockMvcBuilders.standaloneSetup(controlador)

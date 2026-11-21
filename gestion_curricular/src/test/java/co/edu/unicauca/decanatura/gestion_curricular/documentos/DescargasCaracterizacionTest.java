@@ -40,7 +40,7 @@ class DescargasCaracterizacionTest {
             @Override public Optional<String> rutaArchivoVisible(String nombre) { return Optional.of("carpeta/" + nombre); }
         };
         var mvc = MockMvcBuilders.standaloneSetup(
-            new ArchivosRestController(archivos, mock(GestionarDocumentosCUIntPort.class), mock(GestionarSolicitudPazYSalvoCUIntPort.class), verano, auth),
+            new ArchivosRestController(archivos, mock(GestionarDocumentosCUIntPort.class), mock(GestionarSolicitudPazYSalvoCUIntPort.class), verano, mock(GestionarSolicitudCUIntPort.class), auth),
             new SolicitudHomologacionRestController(homo, mock(SolicitudHomologacionMapperDominio.class), mock(SolicitudMapperDominio.class), archivos, mock(GestionarDocumentosCUIntPort.class), auth, null),
             new SolicitudReingresoRestController(mock(SolicitudReingresoMapperDominio.class), reingreso, mock(SolicitudMapperDominio.class), archivos, auth, null),
             new InscripcionesVeranoRestController(mock(GestionarCursoOfertadoVeranoCUIntPort.class), verano, archivos, mock(GestionarSolicitudCUIntPort.class)))

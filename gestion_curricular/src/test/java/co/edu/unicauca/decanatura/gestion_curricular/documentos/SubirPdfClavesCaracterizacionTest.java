@@ -24,9 +24,11 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarArchivosCUIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarDocumentosCUIntPort;
+import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarSolicitudCUIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarSolicitudCursoVeranoCUIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarSolicitudPazYSalvoCUIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Documento;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Solicitud;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.controladores.ArchivosRestController;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.excepciones.RestApiExceptionHandler;
 import co.edu.unicauca.decanatura.gestion_curricular.seguridad.Autorizacion;
@@ -71,13 +73,20 @@ class SubirPdfClavesCaracterizacionTest {
         when(documentos.registrarArchivoGuardado(any(), any(), any())).thenReturn(new Documento());
         var verano = mock(GestionarSolicitudCursoVeranoCUIntPort.class);
         when(verano.buscarPorIdInscripcion(anyInt())).thenReturn(null);
+        // BUG-20: toda solicitud pedida existe, como la Solicitud con solo el id que se asociaba antes
+        var solicitudes = mock(GestionarSolicitudCUIntPort.class);
+        when(solicitudes.obtenerSolicitudPorId(anyInt())).thenAnswer(i -> {
+            var s = new Solicitud();
+            s.setId_solicitud(i.getArgument(0));
+            return s;
+        });
         var auth = new Autorizacion(null, null, null, null) {
             @Override public boolean esStaff() { return staff; }
             @Override public boolean esDuenoSolicitud(Integer id) { return dueno; }
             @Override public Integer idUsuarioActual() { return 31; }
         };
         var mvc = MockMvcBuilders.standaloneSetup(new ArchivosRestController(archivos, documentos,
-            mock(GestionarSolicitudPazYSalvoCUIntPort.class), verano, auth))
+            mock(GestionarSolicitudPazYSalvoCUIntPort.class), verano, solicitudes, auth))
             .setControllerAdvice(new RestApiExceptionHandler()).build();
 
         byte[] contenido = "noPdf".equals(archivo)

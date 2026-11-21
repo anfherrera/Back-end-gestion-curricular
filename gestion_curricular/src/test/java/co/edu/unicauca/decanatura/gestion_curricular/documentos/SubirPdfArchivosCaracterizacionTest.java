@@ -22,16 +22,19 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarArchivosCUIntPort;
+import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarSolicitudCUIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarSolicitudCursoVeranoCUIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarSolicitudPazYSalvoCUIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.GestionarDocumentosGatewayIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.casosDeUso.GestionarDocumentosCUAdapter;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Documento;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Solicitud;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.SolicitudCursoVeranoInscripcion;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Usuario;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.controladores.ArchivosRestController;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.excepciones.RestApiExceptionHandler;
 import co.edu.unicauca.decanatura.gestion_curricular.seguridad.Autorizacion;
+import co.edu.unicauca.decanatura.gestion_curricular.soporte.Correcciones;
 
 /**
  * Caracterización de {@code POST /api/archivos/subir/pdf} antes de llevar su registro al caso de uso (DUP-5).
@@ -100,7 +103,9 @@ class SubirPdfArchivosCaracterizacionTest {
             assertThat(Files.exists(referencia)).isFalse();
             Files.writeString(referencia, json.writerWithDefaultPrettyPrinter().writeValueAsString(actual));
         }
-        assertThat(actual).isEqualTo(json.readTree(Files.readString(referencia)));
+        // BUG-20: el id se recorta y debe ser de una solicitud existente; se asocia al destino real
+        assertThat(actual).isEqualTo(Correcciones.aplicar(json.readTree(Files.readString(referencia)),
+            "documentos/correcciones/subir-pdf-archivos-bug20.json"));
     }
 
     private JsonNode ejecutar(Caso c, ObjectMapper json) throws Exception {
@@ -153,8 +158,19 @@ class SubirPdfArchivosCaracterizacionTest {
             }
         };
 
+        // BUG-20: las solicitudes 5, 11 y 12 existen (de otro tipo); la 10 no existe
+        var solicitudes = mock(GestionarSolicitudCUIntPort.class);
+        when(solicitudes.obtenerSolicitudPorId(anyInt())).thenAnswer(i -> {
+            int id = i.getArgument(0);
+            eventos.add("solicitud(" + id + ")");
+            if (id != 5 && id != 11 && id != 12) return null;
+            var s = new Solicitud();
+            s.setId_solicitud(id);
+            return s;
+        });
+
         var controlador = new ArchivosRestController(archivos, documentos,
-            mock(GestionarSolicitudPazYSalvoCUIntPort.class), verano, auth);
+            mock(GestionarSolicitudPazYSalvoCUIntPort.class), verano, solicitudes, auth);
         MockMvc mvc = MockMvcBuilders.standaloneSetup(controlador)
             .setControllerAdvice(new RestApiExceptionHandler()).build();
 
