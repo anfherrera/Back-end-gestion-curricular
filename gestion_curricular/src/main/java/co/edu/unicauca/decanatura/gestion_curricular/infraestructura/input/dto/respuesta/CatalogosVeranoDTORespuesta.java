@@ -1,5 +1,7 @@
 package co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.dto.respuesta;
 
+import java.util.List;
+
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
@@ -44,10 +46,14 @@ public final class CatalogosVeranoDTORespuesta {
             @JsonProperty("codigo_usuario") String codigoUsuario,
             @JsonProperty("nombre_usuario") String nombreUsuario) {}
 
-    /** Respuesta de {@code /permisos-estado/{estado}/{rol}}; {@code error} se omite cuando la operación está permitida. */
-    @JsonPropertyOrder({"permitido", "error", "message"})
+    /**
+     * Respuesta de {@code /permisos-estado/{estado}/{rol}}: las operaciones del rol en ese estado (BUG-15);
+     * {@code error} se omite cuando hay alguna.
+     */
+    @JsonPropertyOrder({"permitido", "error", "message", "operaciones"})
     public record Permisos(
             boolean permitido,
             @JsonInclude(JsonInclude.Include.NON_NULL) String error,
-            String message) {}
+            String message,
+            List<String> operaciones) {}
 }

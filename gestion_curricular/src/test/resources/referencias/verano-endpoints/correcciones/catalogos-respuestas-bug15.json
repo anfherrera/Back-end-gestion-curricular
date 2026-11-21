@@ -1,0 +1,80 @@
+{
+  "/permisos Borrador ESTUDIANTE/body": {
+    "error": "Sin permisos",
+    "message": "Este rol no tiene permisos para realizar operaciones en el estado: Borrador",
+    "operaciones": [],
+    "permitido": false
+  },
+  "/permisos Borrador ESTUDIANTE/claves": [
+    ".permitido:BOOLEAN",
+    ".error:STRING",
+    ".message:STRING",
+    ".operaciones:ARRAY"
+  ],
+  "/permisos Borrador FUNCIONARIO/body": {
+    "message": "Operaciones permitidas para el rol FUNCIONARIO en el estado Borrador",
+    "operaciones": [
+      "ver",
+      "editar_completo",
+      "eliminar",
+      "cambiar_estado"
+    ],
+    "permitido": true
+  },
+  "/permisos Borrador FUNCIONARIO/claves": [
+    ".permitido:BOOLEAN",
+    ".message:STRING",
+    ".operaciones:ARRAY"
+  ],
+  "/permisos Cerrado ESTUDIANTE/body": {
+    "message": "Operaciones permitidas para el rol ESTUDIANTE en el estado Cerrado",
+    "operaciones": [
+      "ver",
+      "consultar"
+    ],
+    "permitido": true
+  },
+  "/permisos Cerrado ESTUDIANTE/claves": [
+    ".permitido:BOOLEAN",
+    ".message:STRING",
+    ".operaciones:ARRAY"
+  ],
+  "/permisos Desconocido FUNCIONARIO/body": {
+    "error": "Estado desconocido",
+    "message": "No se pueden determinar permisos para el estado: Desconocido",
+    "operaciones": [],
+    "permitido": false
+  },
+  "/permisos Desconocido FUNCIONARIO/claves": [
+    ".permitido:BOOLEAN",
+    ".error:STRING",
+    ".message:STRING",
+    ".operaciones:ARRAY"
+  ],
+  "/permisos Inscripcion COORDINADOR/body": {
+    "message": "Operaciones permitidas para el rol COORDINADOR en el estado Inscripcion",
+    "operaciones": [
+      "ver",
+      "gestionar_inscripciones",
+      "cambiar_estado"
+    ],
+    "permitido": true
+  },
+  "/permisos Inscripcion COORDINADOR/claves": [
+    ".permitido:BOOLEAN",
+    ".message:STRING",
+    ".operaciones:ARRAY"
+  ],
+  "/permisos Publicado ADMIN/body": {
+    "error": "Rol no valido",
+    "message": "No se encontraron permisos para el rol: ADMIN",
+    "operaciones": [],
+    "permitido": false
+  },
+  "/permisos Publicado ADMIN/claves": [
+    ".permitido:BOOLEAN",
+    ".error:STRING",
+    ".message:STRING",
+    ".operaciones:ARRAY"
+  ]
+}

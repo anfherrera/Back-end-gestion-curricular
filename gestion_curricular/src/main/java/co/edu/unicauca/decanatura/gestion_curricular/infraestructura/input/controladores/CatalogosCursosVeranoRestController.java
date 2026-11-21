@@ -77,15 +77,16 @@ public class CatalogosCursosVeranoRestController {
     
     
     /**
-     * Endpoint para obtener informacion de permisos por estado
+     * Operaciones que un rol puede hacer sobre un curso en un estado.
      * GET /api/cursos-intersemestrales/permisos-estado/{estado}/{rol}
      */
     @GetMapping("/permisos-estado/{estado}/{rol}")
     public ResponseEntity<Permisos> obtenerPermisosPorEstado(
             @PathVariable String estado,
             @PathVariable String rol) {
-        PermisosCursoVerano.Resultado permisos = PermisosCursoVerano.validar(estado, rol, "consultar_permisos");
-        return ResponseEntity.ok(new Permisos(permisos.permitido(), permisos.error(), permisos.message()));
+        PermisosCursoVerano.Consulta permisos = PermisosCursoVerano.consultar(estado, rol);
+        return ResponseEntity.ok(new Permisos(permisos.permitido(), permisos.error(), permisos.message(),
+                permisos.operaciones()));
     }
 
     // ==================== ENDPOINTS PARA MATERIAS Y DOCENTES ====================

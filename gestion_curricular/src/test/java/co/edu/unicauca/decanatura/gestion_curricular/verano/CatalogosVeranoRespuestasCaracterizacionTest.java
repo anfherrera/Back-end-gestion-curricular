@@ -26,6 +26,7 @@ import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Materia;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Salon;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.controladores.CatalogosCursosVeranoRestController;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.excepciones.RestApiExceptionHandler;
+import co.edu.unicauca.decanatura.gestion_curricular.soporte.Correcciones;
 
 /**
  * Fija los catálogos de {@link CatalogosCursosVeranoRestController} antes de tiparlos (ARQ-10): materias, salones,
@@ -90,7 +91,9 @@ class CatalogosVeranoRespuestasCaracterizacionTest {
         if (Boolean.getBoolean("grabarReferencia") && Files.notExists(referencia)) {
             Files.writeString(referencia, json.writerWithDefaultPrettyPrinter().writeValueAsString(resultados));
         }
-        assertThat(resultados).isEqualTo(json.readTree(Files.readString(referencia)));
+        // BUG-15: la consulta de permisos devuelve las operaciones del rol
+        assertThat(resultados).isEqualTo(Correcciones.aplicar(json.readTree(Files.readString(referencia)),
+            "verano-endpoints/correcciones/catalogos-respuestas-bug15.json"));
     }
 
     private void registrar(ObjectNode resultados, String nombre, MockMvc mvc, String ruta) throws Exception {

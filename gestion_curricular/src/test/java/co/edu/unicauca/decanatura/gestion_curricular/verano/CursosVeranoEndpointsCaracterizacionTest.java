@@ -155,7 +155,8 @@ class CursosVeranoEndpointsCaracterizacionTest {
                 consultar(respuestas, estado + "/" + rol, get(BASE + "/permisos-estado/{estado}/{rol}", estado, rol));
             }
         }
-        comparar("permisos", respuestas);
+        // BUG-15: la consulta devuelve las operaciones del rol y permitido true si tiene alguna
+        comparar("permisos", respuestas, "verano-endpoints/correcciones/permisos-bug15.json");
     }
 
     private void consultar(ObjectNode r, String clave, MockHttpServletRequestBuilder peticion) throws Exception {

@@ -1,0 +1,256 @@
+{
+  "/Abierto~1ADMINISTRADOR/json": {
+    "error": "Rol no valido",
+    "message": "No se encontraron permisos para el rol: ADMINISTRADOR",
+    "operaciones": [],
+    "permitido": false
+  },
+  "/Abierto~1COORDINADOR/json": {
+    "message": "Operaciones permitidas para el rol COORDINADOR en el estado Abierto",
+    "operaciones": [
+      "ver",
+      "editar_parcial",
+      "cambiar_estado"
+    ],
+    "permitido": true
+  },
+  "/Abierto~1ESTUDIANTE/json": {
+    "error": "Sin permisos",
+    "message": "Este rol no tiene permisos para realizar operaciones en el estado: Abierto",
+    "operaciones": [],
+    "permitido": false
+  },
+  "/Abierto~1FUNCIONARIO/json": {
+    "message": "Operaciones permitidas para el rol FUNCIONARIO en el estado Abierto",
+    "operaciones": [
+      "ver",
+      "editar_parcial",
+      "cambiar_estado"
+    ],
+    "permitido": true
+  },
+  "/Abierto~1funcionario/json": {
+    "error": "Rol no valido",
+    "message": "No se encontraron permisos para el rol: funcionario",
+    "operaciones": [],
+    "permitido": false
+  },
+  "/Borrador~1ADMINISTRADOR/json": {
+    "error": "Rol no valido",
+    "message": "No se encontraron permisos para el rol: ADMINISTRADOR",
+    "operaciones": [],
+    "permitido": false
+  },
+  "/Borrador~1COORDINADOR/json": {
+    "message": "Operaciones permitidas para el rol COORDINADOR en el estado Borrador",
+    "operaciones": [
+      "ver",
+      "editar_completo",
+      "eliminar",
+      "cambiar_estado"
+    ],
+    "permitido": true
+  },
+  "/Borrador~1ESTUDIANTE/json": {
+    "error": "Sin permisos",
+    "message": "Este rol no tiene permisos para realizar operaciones en el estado: Borrador",
+    "operaciones": [],
+    "permitido": false
+  },
+  "/Borrador~1FUNCIONARIO/json": {
+    "message": "Operaciones permitidas para el rol FUNCIONARIO en el estado Borrador",
+    "operaciones": [
+      "ver",
+      "editar_completo",
+      "eliminar",
+      "cambiar_estado"
+    ],
+    "permitido": true
+  },
+  "/Borrador~1funcionario/json": {
+    "error": "Rol no valido",
+    "message": "No se encontraron permisos para el rol: funcionario",
+    "operaciones": [],
+    "permitido": false
+  },
+  "/Cerrado~1ADMINISTRADOR/json": {
+    "error": "Rol no valido",
+    "message": "No se encontraron permisos para el rol: ADMINISTRADOR",
+    "operaciones": [],
+    "permitido": false
+  },
+  "/Cerrado~1COORDINADOR/json": {
+    "message": "Operaciones permitidas para el rol COORDINADOR en el estado Cerrado",
+    "operaciones": [
+      "ver",
+      "consultar"
+    ],
+    "permitido": true
+  },
+  "/Cerrado~1ESTUDIANTE/json": {
+    "message": "Operaciones permitidas para el rol ESTUDIANTE en el estado Cerrado",
+    "operaciones": [
+      "ver",
+      "consultar"
+    ],
+    "permitido": true
+  },
+  "/Cerrado~1FUNCIONARIO/json": {
+    "message": "Operaciones permitidas para el rol FUNCIONARIO en el estado Cerrado",
+    "operaciones": [
+      "ver",
+      "consultar"
+    ],
+    "permitido": true
+  },
+  "/Cerrado~1funcionario/json": {
+    "error": "Rol no valido",
+    "message": "No se encontraron permisos para el rol: funcionario",
+    "operaciones": [],
+    "permitido": false
+  },
+  "/Inscripcion~1ADMINISTRADOR/json": {
+    "error": "Rol no valido",
+    "message": "No se encontraron permisos para el rol: ADMINISTRADOR",
+    "operaciones": [],
+    "permitido": false
+  },
+  "/Inscripcion~1COORDINADOR/json": {
+    "message": "Operaciones permitidas para el rol COORDINADOR en el estado Inscripcion",
+    "operaciones": [
+      "ver",
+      "gestionar_inscripciones",
+      "cambiar_estado"
+    ],
+    "permitido": true
+  },
+  "/Inscripcion~1ESTUDIANTE/json": {
+    "message": "Operaciones permitidas para el rol ESTUDIANTE en el estado Inscripcion",
+    "operaciones": [
+      "ver",
+      "inscribirse"
+    ],
+    "permitido": true
+  },
+  "/Inscripcion~1FUNCIONARIO/json": {
+    "message": "Operaciones permitidas para el rol FUNCIONARIO en el estado Inscripcion",
+    "operaciones": [
+      "ver",
+      "gestionar_inscripciones",
+      "cambiar_estado"
+    ],
+    "permitido": true
+  },
+  "/Inscripcion~1funcionario/json": {
+    "error": "Rol no valido",
+    "message": "No se encontraron permisos para el rol: funcionario",
+    "operaciones": [],
+    "permitido": false
+  },
+  "/Preinscripcion~1ADMINISTRADOR/json": {
+    "error": "Rol no valido",
+    "message": "No se encontraron permisos para el rol: ADMINISTRADOR",
+    "operaciones": [],
+    "permitido": false
+  },
+  "/Preinscripcion~1COORDINADOR/json": {
+    "message": "Operaciones permitidas para el rol COORDINADOR en el estado Preinscripcion",
+    "operaciones": [
+      "ver",
+      "gestionar_preinscripciones",
+      "cambiar_estado"
+    ],
+    "permitido": true
+  },
+  "/Preinscripcion~1ESTUDIANTE/json": {
+    "message": "Operaciones permitidas para el rol ESTUDIANTE en el estado Preinscripcion",
+    "operaciones": [
+      "ver",
+      "preinscribirse"
+    ],
+    "permitido": true
+  },
+  "/Preinscripcion~1FUNCIONARIO/json": {
+    "message": "Operaciones permitidas para el rol FUNCIONARIO en el estado Preinscripcion",
+    "operaciones": [
+      "ver",
+      "gestionar_preinscripciones",
+      "cambiar_estado"
+    ],
+    "permitido": true
+  },
+  "/Preinscripcion~1funcionario/json": {
+    "error": "Rol no valido",
+    "message": "No se encontraron permisos para el rol: funcionario",
+    "operaciones": [],
+    "permitido": false
+  },
+  "/Publicado~1ADMINISTRADOR/json": {
+    "error": "Rol no valido",
+    "message": "No se encontraron permisos para el rol: ADMINISTRADOR",
+    "operaciones": [],
+    "permitido": false
+  },
+  "/Publicado~1COORDINADOR/json": {
+    "message": "Operaciones permitidas para el rol COORDINADOR en el estado Publicado",
+    "operaciones": [
+      "ver",
+      "gestionar_solicitudes",
+      "cambiar_estado"
+    ],
+    "permitido": true
+  },
+  "/Publicado~1ESTUDIANTE/json": {
+    "message": "Operaciones permitidas para el rol ESTUDIANTE en el estado Publicado",
+    "operaciones": [
+      "ver",
+      "solicitar_curso_nuevo"
+    ],
+    "permitido": true
+  },
+  "/Publicado~1FUNCIONARIO/json": {
+    "message": "Operaciones permitidas para el rol FUNCIONARIO en el estado Publicado",
+    "operaciones": [
+      "ver",
+      "gestionar_solicitudes",
+      "cambiar_estado"
+    ],
+    "permitido": true
+  },
+  "/Publicado~1funcionario/json": {
+    "error": "Rol no valido",
+    "message": "No se encontraron permisos para el rol: funcionario",
+    "operaciones": [],
+    "permitido": false
+  },
+  "/desconocido~1ADMINISTRADOR/json": {
+    "error": "Estado desconocido",
+    "message": "No se pueden determinar permisos para el estado: desconocido",
+    "operaciones": [],
+    "permitido": false
+  },
+  "/desconocido~1COORDINADOR/json": {
+    "error": "Estado desconocido",
+    "message": "No se pueden determinar permisos para el estado: desconocido",
+    "operaciones": [],
+    "permitido": false
+  },
+  "/desconocido~1ESTUDIANTE/json": {
+    "error": "Estado desconocido",
+    "message": "No se pueden determinar permisos para el estado: desconocido",
+    "operaciones": [],
+    "permitido": false
+  },
+  "/desconocido~1FUNCIONARIO/json": {
+    "error": "Estado desconocido",
+    "message": "No se pueden determinar permisos para el estado: desconocido",
+    "operaciones": [],
+    "permitido": false
+  },
+  "/desconocido~1funcionario/json": {
+    "error": "Estado desconocido",
+    "message": "No se pueden determinar permisos para el estado: desconocido",
+    "operaciones": [],
+    "permitido": false
+  }
+}
