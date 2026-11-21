@@ -17,6 +17,13 @@ import java.util.Map;
 import lombok.extern.slf4j.Slf4j;
 
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.DatoDemandaCursoVerano;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.estadisticas.AlertaCursosVerano;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.estadisticas.DemandaCursoVerano;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.estadisticas.DemandaProyectada;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.estadisticas.PrediccionesCalculadas;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.estadisticas.PrediccionesCursosVerano;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.estadisticas.PrediccionesDeRespaldo;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.estadisticas.RecomendacionCursosVerano;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.servicios.ProyeccionDemandaCursosVerano.Estimacion;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.servicios.ProyeccionDemandaCursosVerano.VentanaPeriodo;
 
@@ -31,15 +38,14 @@ import co.edu.unicauca.decanatura.gestion_curricular.dominio.servicios.Proyeccio
 public class PrediccionDemandaCursosVerano {
 
     /**
-     * Genera predicciones de demanda para cursos de verano basadas en datos historicos
+     * Genera predicciones de demanda para cursos de verano basadas en datos historicos. Si el cálculo falla,
+     * devuelve la predicción de respaldo.
      */
-    public Map<String, Object> generar(
+    public PrediccionesCursosVerano generar(
             List<DatoDemandaCursoVerano> solicitudesCursosVerano,
             Map<String, Integer> demandaPorMes,
-            List<Map<String, Object>> topMaterias,
-            List<Map<String, Object>> analisisPorPrograma) {
-
-        Map<String, Object> predicciones = new HashMap<>();
+            List<DemandaCursoVerano> topMaterias,
+            List<DemandaCursoVerano> analisisPorPrograma) {
 
         try {
             // 1. PREDICCION DE DEMANDA TOTAL PARA EL PROXIMO PERIODO
@@ -50,20 +56,20 @@ public class PrediccionDemandaCursosVerano {
             int demandaEstimadaProximoPeriodo = calcularDemandaEstimada(demandaActual, demandaPorMes, ventana);
 
             // 2. PREDICCIONES POR MATERIA CON REGRESION LINEAL
-            List<Map<String, Object>> materiasConTendenciaCreciente = new ArrayList<>();
-            List<Map<String, Object>> materiasConTendenciaDecreciente = new ArrayList<>();
-            List<Map<String, Object>> materiasEstables = new ArrayList<>();
+            List<DemandaProyectada> materiasConTendenciaCreciente = new ArrayList<>();
+            List<DemandaProyectada> materiasConTendenciaDecreciente = new ArrayList<>();
+            List<DemandaProyectada> materiasEstables = new ArrayList<>();
 
-            for (Map<String, Object> materia : topMaterias) {
-                String nombreMateria = (String) materia.get("nombre");
-                int solicitudesActuales = ((Number) materia.get("solicitudes")).intValue();
+            for (DemandaCursoVerano materia : topMaterias) {
+                String nombreMateria = materia.nombre();
+                int solicitudesActuales = materia.solicitudes();
 
                 // Se utiliza regresion lineal para estimar la demanda por materia
                 // (la materia de la solicitud es la del curso solicitado)
                 Estimacion estimacion = estimar(solicitudesCursosVerano,
                     s -> s.materia() != null && s.materia().equalsIgnoreCase(nombreMateria),
                     solicitudesActuales, ventana, 0.05);
-                Map<String, Object> prediccionMateria = prediccion(nombreMateria, solicitudesActuales, estimacion);
+                DemandaProyectada prediccionMateria = prediccion(nombreMateria, solicitudesActuales, estimacion);
 
                 if ("CRECIENTE".equals(estimacion.tendencia())) {
                     materiasConTendenciaCreciente.add(prediccionMateria);
@@ -75,20 +81,20 @@ public class PrediccionDemandaCursosVerano {
             }
 
             // 3. PREDICCIONES POR PROGRAMA CON REGRESION LINEAL
-            List<Map<String, Object>> programasConTendenciaCreciente = new ArrayList<>();
-            List<Map<String, Object>> programasConTendenciaDecreciente = new ArrayList<>();
-            List<Map<String, Object>> programasEstables = new ArrayList<>();
-            List<Map<String, Object>> todasLasPrediccionesPorPrograma = new ArrayList<>(); // Lista completa para frontend
+            List<DemandaProyectada> programasConTendenciaCreciente = new ArrayList<>();
+            List<DemandaProyectada> programasConTendenciaDecreciente = new ArrayList<>();
+            List<DemandaProyectada> programasEstables = new ArrayList<>();
+            List<DemandaProyectada> todasLasPrediccionesPorPrograma = new ArrayList<>(); // Lista completa para frontend
 
-            for (Map<String, Object> programa : analisisPorPrograma) {
-                String nombrePrograma = (String) programa.get("nombre");
-                int solicitudesActuales = ((Number) programa.get("solicitudes")).intValue();
+            for (DemandaCursoVerano programa : analisisPorPrograma) {
+                String nombrePrograma = programa.nombre();
+                int solicitudesActuales = programa.solicitudes();
 
                 // Se aplica regresion lineal para estimar la demanda por programa
                 Estimacion estimacion = estimar(solicitudesCursosVerano,
                     s -> s.programa() != null && s.programa().equalsIgnoreCase(nombrePrograma),
                     solicitudesActuales, ventana, 0.08);
-                Map<String, Object> prediccionPrograma = prediccion(nombrePrograma, solicitudesActuales, estimacion);
+                DemandaProyectada prediccionPrograma = prediccion(nombrePrograma, solicitudesActuales, estimacion);
 
                 // Clasificamos la prediccion segun la tendencia detectada
                 if ("CRECIENTE".equals(estimacion.tendencia())) {
@@ -104,57 +110,40 @@ public class PrediccionDemandaCursosVerano {
             }
 
             // 4. PREDICCIONES TEMPORALES
-            Map<String, Object> prediccionesTemporales = new HashMap<>();
             String mesPico = encontrarMesPico(demandaPorMes);
             int demandaEstimadaMesPico = calcularDemandaEstimadaMes(demandaPorMes.get(mesPico));
-
-            prediccionesTemporales.put("mesPico", mesPico);
-            prediccionesTemporales.put("demandaActualMesPico", demandaPorMes.get(mesPico));
-            prediccionesTemporales.put("demandaEstimadaMesPico", demandaEstimadaMesPico);
-            prediccionesTemporales.put("mesesRecomendados", Arrays.asList("Julio", "Agosto", "Septiembre"));
+            PrediccionesCalculadas.PrediccionTemporal prediccionesTemporales =
+                    new PrediccionesCalculadas.PrediccionTemporal(mesPico, demandaPorMes.get(mesPico),
+                            demandaEstimadaMesPico, Arrays.asList("Julio", "Agosto", "Septiembre"));
 
             // 5. RECOMENDACIONES FUTURAS ACCIONABLES Y DETALLADAS
-            List<Map<String, Object>> recomendacionesFuturas = RecomendacionesDemandaCursosVerano.generar(
+            List<RecomendacionCursosVerano> recomendacionesFuturas = RecomendacionesDemandaCursosVerano.generar(
                     materiasConTendenciaCreciente, programasConTendenciaCreciente, demandaPorMes, mesPico,
                     demandaEstimadaMesPico);
 
             // ALERTAS CRITICAS (Situaciones que requieren atencion inmediata)
-            List<Map<String, Object>> alertasCriticas = AlertasDemandaCursosVerano.generar(
+            List<AlertaCursosVerano> alertasCriticas = AlertasDemandaCursosVerano.generar(
                     materiasConTendenciaCreciente, programasConTendenciaCreciente);
 
-            // Construir resultado de predicciones con estructura mejorada
-            predicciones.put("demandaEstimadaProximoPeriodo", demandaEstimadaProximoPeriodo);
-            predicciones.put("materiasConTendenciaCreciente", materiasConTendenciaCreciente);
-            predicciones.put("materiasConTendenciaDecreciente", materiasConTendenciaDecreciente);
-            predicciones.put("materiasEstables", materiasEstables);
-            predicciones.put("programasConTendenciaCreciente", programasConTendenciaCreciente);
-            predicciones.put("programasConTendenciaDecreciente", programasConTendenciaDecreciente);
-            predicciones.put("programasEstables", programasEstables); // Agregado
-            predicciones.put("todasLasPrediccionesPorPrograma", todasLasPrediccionesPorPrograma); // Lista completa
-            predicciones.put("prediccionesTemporales", prediccionesTemporales);
-            predicciones.put("recomendaciones", recomendacionesFuturas); // Recomendaciones (para acceso interno)
-            predicciones.put("alertasCriticas", alertasCriticas);
-            predicciones.put("confiabilidad", "MEDIA");
-            predicciones.put("fechaPrediccion", new Date()); // Fecha de prediccion
-
             // Estadisticas de las recomendaciones
-            Map<String, Object> estadisticasRecomendaciones = new HashMap<>();
             long recsAlta = recomendacionesFuturas.stream()
-                .filter(r -> "ALTA".equals(r.get("prioridad")))
+                .filter(r -> "ALTA".equals(r.prioridad()))
                 .count();
             long recsMedia = recomendacionesFuturas.stream()
-                .filter(r -> "MEDIA".equals(r.get("prioridad")))
+                .filter(r -> "MEDIA".equals(r.prioridad()))
                 .count();
             long recsBaja = recomendacionesFuturas.stream()
-                .filter(r -> "BAJA".equals(r.get("prioridad")))
+                .filter(r -> "BAJA".equals(r.prioridad()))
                 .count();
+            PrediccionesCalculadas.EstadisticasRecomendaciones estadisticasRecomendaciones =
+                    new PrediccionesCalculadas.EstadisticasRecomendaciones(recomendacionesFuturas.size(),
+                            recsAlta, recsMedia, recsBaja, alertasCriticas.size());
 
-            estadisticasRecomendaciones.put("totalRecomendaciones", recomendacionesFuturas.size());
-            estadisticasRecomendaciones.put("prioridadAlta", recsAlta);
-            estadisticasRecomendaciones.put("prioridadMedia", recsMedia);
-            estadisticasRecomendaciones.put("prioridadBaja", recsBaja);
-            estadisticasRecomendaciones.put("alertasCriticas", alertasCriticas.size());
-            predicciones.put("estadisticasRecomendaciones", estadisticasRecomendaciones);
+            return new PrediccionesCalculadas(demandaEstimadaProximoPeriodo,
+                    materiasConTendenciaCreciente, materiasConTendenciaDecreciente, materiasEstables,
+                    programasConTendenciaCreciente, programasConTendenciaDecreciente, programasEstables,
+                    todasLasPrediccionesPorPrograma, prediccionesTemporales, recomendacionesFuturas, alertasCriticas,
+                    "MEDIA", new Date(), estadisticasRecomendaciones);
 
         } catch (Exception e) {
             log.error("Predicciones - ERROR CRITICO generando predicciones ");
@@ -165,33 +154,18 @@ public class PrediccionDemandaCursosVerano {
             log.error("==========================================");
 
             // Retornar predicciones basicas en caso de error
-            predicciones.put("demandaEstimadaProximoPeriodo", solicitudesCursosVerano.size());
-            predicciones.put("materiasConTendenciaCreciente", new ArrayList<>());
-            predicciones.put("materiasConTendenciaDecreciente", new ArrayList<>());
-            predicciones.put("materiasEstables", new ArrayList<>());
-            predicciones.put("programasConTendenciaCreciente", new ArrayList<>());
-            predicciones.put("programasConTendenciaDecreciente", new ArrayList<>());
-            predicciones.put("prediccionesTemporales", new HashMap<>());
-            // ELIMINADO: recomendacionesFuturas (duplicado)
-            predicciones.put("confiabilidad", "BAJA");
+            return new PrediccionesDeRespaldo(solicitudesCursosVerano.size(), new ArrayList<>(), new ArrayList<>(),
+                    new ArrayList<>(), new ArrayList<>(), new ArrayList<>(), new HashMap<>(), "BAJA");
         }
-
-        return predicciones;
     }
 
     /**
      * Predicción de una materia o un programa. No expone campos técnicos (pendiente, rSquared, modeloUtilizado)
      * porque no aportan al usuario final.
      */
-    private static Map<String, Object> prediccion(String nombre, int demandaActual, Estimacion estimacion) {
+    private static DemandaProyectada prediccion(String nombre, int demandaActual, Estimacion estimacion) {
         int demandaEstimada = estimacion.demandaEstimada();
-        Map<String, Object> prediccion = new HashMap<>();
-        prediccion.put("nombre", nombre);
-        prediccion.put("demandaActual", demandaActual);
-        prediccion.put("demandaEstimada", demandaEstimada);
-        prediccion.put("tendencia", estimacion.tendencia());
-        prediccion.put("variacion", demandaEstimada - demandaActual);
-        prediccion.put("porcentajeVariacion", porcentajeVariacion(demandaActual, demandaEstimada));
-        return prediccion;
+        return new DemandaProyectada(nombre, demandaActual, demandaEstimada, estimacion.tendencia(),
+                demandaEstimada - demandaActual, porcentajeVariacion(demandaActual, demandaEstimada));
     }
 }

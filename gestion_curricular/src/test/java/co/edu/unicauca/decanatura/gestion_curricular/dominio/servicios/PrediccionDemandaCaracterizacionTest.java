@@ -16,6 +16,8 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.DatoDemandaCursoVerano;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.estadisticas.DemandaCursoVerano;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.estadisticas.PrediccionesCursosVerano;
 import co.edu.unicauca.decanatura.gestion_curricular.soporte.GrafoObjetos;
 
 /**
@@ -92,7 +94,7 @@ class PrediccionDemandaCaracterizacionTest {
     }
 
     /** Como lo arma EstadisticasCursosVerano: demanda de los doce meses y conteos por materia y por programa. */
-    private Map<String, Object> generar(List<DatoDemandaCursoVerano> datos) {
+    private PrediccionesCursosVerano generar(List<DatoDemandaCursoVerano> datos) {
         Map<String, Integer> demandaPorMes = new LinkedHashMap<>();
         for (String mes : MESES) {
             demandaPorMes.put(mes, 0);
@@ -115,9 +117,10 @@ class PrediccionDemandaCaracterizacionTest {
         return prediccion.generar(datos, demandaPorMes, conteos(porMateria), conteos(porPrograma));
     }
 
-    private static List<Map<String, Object>> conteos(Map<String, Integer> porNombre) {
-        List<Map<String, Object>> lista = new ArrayList<>();
-        porNombre.forEach((nombre, solicitudes) -> lista.add(Map.of("nombre", nombre, "solicitudes", solicitudes)));
+    /** La predicción no usa el porcentaje: va en 0. */
+    private static List<DemandaCursoVerano> conteos(Map<String, Integer> porNombre) {
+        List<DemandaCursoVerano> lista = new ArrayList<>();
+        porNombre.forEach((nombre, solicitudes) -> lista.add(new DemandaCursoVerano(nombre, solicitudes, 0.0)));
         return lista;
     }
 }

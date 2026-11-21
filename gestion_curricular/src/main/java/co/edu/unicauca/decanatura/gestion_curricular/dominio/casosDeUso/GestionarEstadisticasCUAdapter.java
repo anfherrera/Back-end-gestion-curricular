@@ -10,6 +10,7 @@ import co.edu.unicauca.decanatura.gestion_curricular.dominio.excepciones.Entidad
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.excepciones.ReglaNegocioExcepcion;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Estadistica;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.enums.PeriodoAcademicoEnum;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.estadisticas.AnalisisCursosVerano;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.estadisticas.EntradaHistorial;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.estadisticas.EstadisticasPeriodoAcademico;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.estadisticas.EstadisticasPorEstado;
@@ -23,6 +24,7 @@ import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.estadistica
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.estadisticas.ProgramasPorProcesoYEstado;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.estadisticas.ResumenCompleto;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.estadisticas.TendenciasPorPeriodo;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.estadisticas.TendenciasCursosVerano;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.estadisticas.TotalEstudiantes;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.estadisticas.VistaPorEstado;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.estadisticas.VistaPorMes;
@@ -283,12 +285,12 @@ public class GestionarEstadisticasCUAdapter implements GestionarEstadisticasCUIn
     }
 
     @Override
-    public Map<String, Object> obtenerEstadisticasCursosVerano(String periodoAcademico, Integer idPrograma) {
+    public AnalisisCursosVerano obtenerEstadisticasCursosVerano(String periodoAcademico, Integer idPrograma) {
         return cursosVerano.estadisticas(periodoAcademico, idPrograma);
     }
 
     @Override
-    public Map<String, Object> obtenerTendenciasTemporalesCursosVerano(String periodoAcademico, Integer idPrograma) {
+    public TendenciasCursosVerano obtenerTendenciasTemporalesCursosVerano(String periodoAcademico, Integer idPrograma) {
         return cursosVerano.tendenciasTemporales(periodoAcademico, idPrograma);
     }
 
@@ -347,7 +349,7 @@ public class GestionarEstadisticasCUAdapter implements GestionarEstadisticasCUIn
                 : obtenerResumenCompleto(periodo, idPrograma).estadisticasGlobales();
 
         boolean sinProceso = proceso == null || proceso.isBlank();
-        Map<String, Object> cursosVerano = sinProceso
+        AnalisisCursosVerano cursosVerano = sinProceso
                 || TipoProcesoSolicitud.CURSOS_VERANO.equals(TipoProcesoSolicitud.porNombre(proceso))
                 ? obtenerEstadisticasCursosVerano(periodo, idPrograma) : null;
         return new DatosReporte(estadisticas, cursosVerano);

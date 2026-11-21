@@ -6,6 +6,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Objects;
 
 import com.itextpdf.text.Document;
 import com.itextpdf.text.Element;
@@ -16,9 +17,13 @@ import com.itextpdf.text.pdf.PdfWriter;
 import org.springframework.stereotype.Component;
 
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.GenerarReportesEstadisticasIntPort;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.estadisticas.AnalisisCursosVerano;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.estadisticas.DemandaCursoVerano;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.estadisticas.Globales;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.estadisticas.GlobalesContadas;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.estadisticas.GlobalesDelProceso;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.estadisticas.PrediccionesCursosVerano;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.estadisticas.RecomendacionCursosVerano;
 
 /**
  * Genera los reportes PDF y Excel de estadísticas (dashboard general, cursos de verano y reporte completo)
@@ -42,7 +47,7 @@ public class GeneradorReportesEstadisticas implements GenerarReportesEstadistica
     }
 
     /** PDF del dashboard de cursos de verano, con los filtros aplicados si los hay. */
-    public byte[] pdfCursosVerano(Map<String, Object> datosCursosVerano, String periodoAcademico, Integer idPrograma) {
+    public byte[] pdfCursosVerano(AnalisisCursosVerano datosCursosVerano, String periodoAcademico, Integer idPrograma) {
         return generarPdf("DASHBOARD CURSOS DE VERANO - ANÁLISIS DE DEMANDA", document -> {
             agregarFecha(document, 15);
             if (periodoAcademico != null || idPrograma != null) {
@@ -63,7 +68,7 @@ public class GeneradorReportesEstadisticas implements GenerarReportesEstadistica
     }
 
     /** PDF completo: estadísticas generales y, en otra página, cursos de verano (cada parte si viene). */
-    public byte[] pdfCompleto(Globales estadisticas, Map<String, Object> datosCursosVerano,
+    public byte[] pdfCompleto(Globales estadisticas, AnalisisCursosVerano datosCursosVerano,
             String periodoAcademico, Integer idPrograma) {
         return generarPdf("REPORTE GENERAL DE ESTADÍSTICAS", document -> {
             Font normal = new Font(Font.FontFamily.HELVETICA, 10);
@@ -92,7 +97,7 @@ public class GeneradorReportesEstadisticas implements GenerarReportesEstadistica
      * Excel con una hoja de estadísticas generales y otra de cursos de verano; cada hoja se incluye solo
      * si vienen sus datos (el dashboard general manda solo la primera, el de cursos de verano solo la segunda).
      */
-    public byte[] excel(Globales estadisticas, Map<String, Object> datosCursosVerano,
+    public byte[] excel(Globales estadisticas, AnalisisCursosVerano datosCursosVerano,
             String periodoAcademico, Integer idPrograma) {
         try (org.apache.poi.xssf.usermodel.XSSFWorkbook workbook = new org.apache.poi.xssf.usermodel.XSSFWorkbook();
                 ByteArrayOutputStream baos = new ByteArrayOutputStream()) {
@@ -254,7 +259,7 @@ public class GeneradorReportesEstadisticas implements GenerarReportesEstadistica
     /**
      * Agrega la sección de cursos de verano al PDF.
      */
-    private void agregarSeccionCursosVerano(com.itextpdf.text.Document document, Map<String, Object> datosCursosVerano) throws Exception {
+    private void agregarSeccionCursosVerano(com.itextpdf.text.Document document, AnalisisCursosVerano datosCursosVerano) throws Exception {
         // Título de sección
         com.itextpdf.text.Font sectionFont = new com.itextpdf.text.Font(com.itextpdf.text.Font.FontFamily.HELVETICA, 14, com.itextpdf.text.Font.BOLD);
         com.itextpdf.text.Paragraph sectionTitle = new com.itextpdf.text.Paragraph("2. ESTADÍSTICAS DE CURSOS DE VERANO", sectionFont);
@@ -264,64 +269,51 @@ public class GeneradorReportesEstadisticas implements GenerarReportesEstadistica
         com.itextpdf.text.Font normalFont = new com.itextpdf.text.Font(com.itextpdf.text.Font.FontFamily.HELVETICA, 10);
         
         // Resumen
-        @SuppressWarnings("unchecked")
-        Map<String, Object> resumen = (Map<String, Object>) datosCursosVerano.get("resumen");
+        AnalisisCursosVerano.Resumen resumen = datosCursosVerano.resumen();
         if (resumen != null) {
             document.add(new com.itextpdf.text.Paragraph("Resumen General:", normalFont));
-            document.add(new com.itextpdf.text.Paragraph("  • Total Solicitudes: " + resumen.get("totalSolicitudes"), normalFont));
-            document.add(new com.itextpdf.text.Paragraph("  • Materias Únicas: " + resumen.get("materiasUnicas"), normalFont));
-            document.add(new com.itextpdf.text.Paragraph("  • Programas Participantes: " + resumen.get("programasParticipantes"), normalFont));
-            document.add(new com.itextpdf.text.Paragraph("  • Tasa de Aprobación: " + resumen.get("tasaAprobacion") + "%", normalFont));
+            document.add(new com.itextpdf.text.Paragraph("  • Total Solicitudes: " + resumen.totalSolicitudes(), normalFont));
+            document.add(new com.itextpdf.text.Paragraph("  • Materias Únicas: " + resumen.materiasUnicas(), normalFont));
+            document.add(new com.itextpdf.text.Paragraph("  • Programas Participantes: " + resumen.programasParticipantes(), normalFont));
+            document.add(new com.itextpdf.text.Paragraph("  • Tasa de Aprobación: " + resumen.tasaAprobacion() + "%", normalFont));
         }
-        
+
         // Top materias
-        @SuppressWarnings("unchecked")
-        List<Map<String, Object>> topMaterias = (List<Map<String, Object>>) datosCursosVerano.get("topMaterias");
+        List<DemandaCursoVerano> topMaterias = datosCursosVerano.topMaterias();
         if (topMaterias != null && !topMaterias.isEmpty()) {
             document.add(new com.itextpdf.text.Paragraph("\nTop Materias por Demanda:", normalFont));
-            for (Map<String, Object> materia : topMaterias) {
-                document.add(new com.itextpdf.text.Paragraph("  • " + materia.get("nombre") + ": " + 
-                    materia.get("solicitudes") + " solicitudes (" + materia.get("porcentaje") + "%)", normalFont));
+            for (DemandaCursoVerano materia : topMaterias) {
+                document.add(new com.itextpdf.text.Paragraph("  • " + materia.nombre() + ": " +
+                    materia.solicitudes() + " solicitudes (" + materia.porcentaje() + "%)", normalFont));
             }
         }
-        
+
         // Análisis por programa
-        @SuppressWarnings("unchecked")
-        List<Map<String, Object>> analisisPorPrograma = (List<Map<String, Object>>) datosCursosVerano.get("analisisPorPrograma");
+        List<DemandaCursoVerano> analisisPorPrograma = datosCursosVerano.analisisPorPrograma();
         if (analisisPorPrograma != null && !analisisPorPrograma.isEmpty()) {
             document.add(new com.itextpdf.text.Paragraph("\nAnálisis por Programa:", normalFont));
-            for (Map<String, Object> programa : analisisPorPrograma) {
-                document.add(new com.itextpdf.text.Paragraph("  • " + programa.get("nombre") + ": " + 
-                    programa.get("solicitudes") + " solicitudes (" + programa.get("porcentaje") + "%)", normalFont));
+            for (DemandaCursoVerano programa : analisisPorPrograma) {
+                document.add(new com.itextpdf.text.Paragraph("  • " + programa.nombre() + ": " +
+                    programa.solicitudes() + " solicitudes (" + programa.porcentaje() + "%)", normalFont));
             }
         }
-        
-        // Predicciones
-        @SuppressWarnings("unchecked")
-        Map<String, Object> predicciones = (Map<String, Object>) datosCursosVerano.get("predicciones");
+
+        // Predicciones (las dos formas traen la demanda estimada y la confiabilidad)
+        PrediccionesCursosVerano predicciones = datosCursosVerano.predicciones();
         if (predicciones != null) {
             document.add(new com.itextpdf.text.Paragraph("\nPredicciones:", normalFont));
-            Object demandaEstimada = predicciones.get("demandaEstimadaProximoPeriodo");
-            if (demandaEstimada != null) {
-                document.add(new com.itextpdf.text.Paragraph("  • Demanda Estimada Próximo Período: " + demandaEstimada, normalFont));
-            }
-            Object confiabilidad = predicciones.get("confiabilidad");
-            if (confiabilidad != null) {
-                document.add(new com.itextpdf.text.Paragraph("  • Confiabilidad: " + confiabilidad, normalFont));
-            }
-            Object metodologia = predicciones.get("metodologia");
-            if (metodologia != null && !"null".equals(String.valueOf(metodologia))) {
-                document.add(new com.itextpdf.text.Paragraph("  • Metodología: " + metodologia, normalFont));
+            document.add(new com.itextpdf.text.Paragraph("  • Demanda Estimada Próximo Período: " + predicciones.demandaEstimadaProximoPeriodo(), normalFont));
+            if (predicciones.confiabilidad() != null) {
+                document.add(new com.itextpdf.text.Paragraph("  • Confiabilidad: " + predicciones.confiabilidad(), normalFont));
             }
         }
-        
+
         // Recomendaciones
-        @SuppressWarnings("unchecked")
-        List<Map<String, Object>> recomendaciones = (List<Map<String, Object>>) datosCursosVerano.get("recomendaciones");
+        List<RecomendacionCursosVerano> recomendaciones = datosCursosVerano.recomendaciones();
         if (recomendaciones != null && !recomendaciones.isEmpty()) {
             document.add(new com.itextpdf.text.Paragraph("\nRecomendaciones:", normalFont));
-            for (Map<String, Object> rec : recomendaciones) {
-                document.add(new com.itextpdf.text.Paragraph("  • " + rec.get("titulo") + ": " + rec.get("descripcion"), normalFont));
+            for (RecomendacionCursosVerano rec : recomendaciones) {
+                document.add(new com.itextpdf.text.Paragraph("  • " + rec.titulo() + ": " + rec.descripcion(), normalFont));
             }
         }
     }
@@ -459,7 +451,7 @@ public class GeneradorReportesEstadisticas implements GenerarReportesEstadistica
     /**
      * Crea la hoja de cursos de verano en el Excel.
      */
-    private void crearHojaCursosVerano(org.apache.poi.xssf.usermodel.XSSFWorkbook workbook, Map<String, Object> datosCursosVerano, String periodoAcademico, Integer idPrograma) {
+    private void crearHojaCursosVerano(org.apache.poi.xssf.usermodel.XSSFWorkbook workbook, AnalisisCursosVerano datosCursosVerano, String periodoAcademico, Integer idPrograma) {
         org.apache.poi.ss.usermodel.Sheet sheet = workbook.createSheet("Cursos de Verano");
         
         // Estilos
@@ -517,54 +509,44 @@ public class GeneradorReportesEstadisticas implements GenerarReportesEstadistica
         rowNum++; // Espacio
         
         // Resumen
-            @SuppressWarnings("unchecked")
-        Map<String, Object> resumen = (Map<String, Object>) datosCursosVerano.get("resumen");
+        AnalisisCursosVerano.Resumen resumen = datosCursosVerano.resumen();
         if (resumen != null) {
             org.apache.poi.ss.usermodel.Row headerRow = sheet.createRow(rowNum++);
             org.apache.poi.ss.usermodel.Cell headerCell = headerRow.createCell(0);
             headerCell.setCellValue("RESUMEN GENERAL");
             headerCell.setCellStyle(headerStyle);
-            
-            for (Map.Entry<String, Object> entry : resumen.entrySet()) {
-                    org.apache.poi.ss.usermodel.Row row = sheet.createRow(rowNum++);
-                    row.createCell(0).setCellValue(entry.getKey());
-                    row.createCell(1).setCellValue(entry.getValue().toString());
-                }
+
+            rowNum = filaResumen(sheet, rowNum, "totalSolicitudes", String.valueOf(resumen.totalSolicitudes()));
+            rowNum = filaResumen(sheet, rowNum, "materiasUnicas", String.valueOf(resumen.materiasUnicas()));
+            rowNum = filaResumen(sheet, rowNum, "programasParticipantes", String.valueOf(resumen.programasParticipantes()));
+            rowNum = filaResumen(sheet, rowNum, "tasaAprobacion", String.valueOf(resumen.tasaAprobacion()));
             rowNum++; // Espacio
         }
-        
+
         // Top materias
-        @SuppressWarnings("unchecked")
-        List<Map<String, Object>> topMaterias = (List<Map<String, Object>>) datosCursosVerano.get("topMaterias");
+        List<DemandaCursoVerano> topMaterias = datosCursosVerano.topMaterias();
         if (topMaterias != null && !topMaterias.isEmpty()) {
             org.apache.poi.ss.usermodel.Row headerRow = sheet.createRow(rowNum++);
             org.apache.poi.ss.usermodel.Cell headerCell = headerRow.createCell(0);
             headerCell.setCellValue("TOP MATERIAS POR DEMANDA");
             headerCell.setCellStyle(headerStyle);
-            
-            for (Map<String, Object> materia : topMaterias) {
-                org.apache.poi.ss.usermodel.Row row = sheet.createRow(rowNum++);
-                row.createCell(0).setCellValue(materia.get("nombre").toString());
-                row.createCell(1).setCellValue(materia.get("solicitudes").toString());
-                row.createCell(2).setCellValue(materia.get("porcentaje").toString() + "%");
+
+            for (DemandaCursoVerano materia : topMaterias) {
+                rowNum = filaDemanda(sheet, rowNum, materia);
             }
             rowNum++; // Espacio
         }
-        
+
         // Análisis por programa
-        @SuppressWarnings("unchecked")
-        List<Map<String, Object>> analisisPorPrograma = (List<Map<String, Object>>) datosCursosVerano.get("analisisPorPrograma");
+        List<DemandaCursoVerano> analisisPorPrograma = datosCursosVerano.analisisPorPrograma();
         if (analisisPorPrograma != null && !analisisPorPrograma.isEmpty()) {
             org.apache.poi.ss.usermodel.Row headerRow = sheet.createRow(rowNum++);
             org.apache.poi.ss.usermodel.Cell headerCell = headerRow.createCell(0);
             headerCell.setCellValue("ANÁLISIS POR PROGRAMA");
             headerCell.setCellStyle(headerStyle);
-            
-            for (Map<String, Object> programa : analisisPorPrograma) {
-                org.apache.poi.ss.usermodel.Row row = sheet.createRow(rowNum++);
-                row.createCell(0).setCellValue(programa.get("nombre").toString());
-                row.createCell(1).setCellValue(programa.get("solicitudes").toString());
-                row.createCell(2).setCellValue(programa.get("porcentaje").toString() + "%");
+
+            for (DemandaCursoVerano programa : analisisPorPrograma) {
+                rowNum = filaDemanda(sheet, rowNum, programa);
             }
             }
             
@@ -572,6 +554,26 @@ public class GeneradorReportesEstadisticas implements GenerarReportesEstadistica
             sheet.autoSizeColumn(0);
             sheet.autoSizeColumn(1);
         sheet.autoSizeColumn(2);
+    }
+
+    /** Fila del resumen de cursos de verano: el nombre del campo y su valor. Devuelve la siguiente fila. */
+    private static int filaResumen(org.apache.poi.ss.usermodel.Sheet sheet, int rowNum, String campo, String valor) {
+        org.apache.poi.ss.usermodel.Row row = sheet.createRow(rowNum);
+        row.createCell(0).setCellValue(campo);
+        row.createCell(1).setCellValue(valor);
+        return rowNum + 1;
+    }
+
+    /**
+     * Fila de una materia o un programa: nombre, solicitudes y porcentaje. Una materia sin nombre hace fallar el
+     * Excel, como antes de tipar estos datos. Devuelve la siguiente fila.
+     */
+    private static int filaDemanda(org.apache.poi.ss.usermodel.Sheet sheet, int rowNum, DemandaCursoVerano demanda) {
+        org.apache.poi.ss.usermodel.Row row = sheet.createRow(rowNum);
+        row.createCell(0).setCellValue(Objects.requireNonNull(demanda.nombre()));
+        row.createCell(1).setCellValue(String.valueOf(demanda.solicitudes()));
+        row.createCell(2).setCellValue(demanda.porcentaje() + "%");
+        return rowNum + 1;
     }
 
 }

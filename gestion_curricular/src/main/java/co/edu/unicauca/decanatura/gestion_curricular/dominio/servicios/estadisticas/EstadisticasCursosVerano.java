@@ -19,6 +19,13 @@ import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.Gestionar
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.DatoDemandaCursoVerano;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Solicitud;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.enums.EstadosSolicitud;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.estadisticas.AnalisisCursosVerano;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.estadisticas.DemandaCursoVerano;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.estadisticas.DemandaMensualCursosVerano;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.estadisticas.PrediccionesCalculadas;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.estadisticas.PrediccionesCursosVerano;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.estadisticas.RecomendacionCursosVerano;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.estadisticas.TendenciasCursosVerano;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.servicios.PrediccionDemandaCursosVerano;
 
 /** Demanda de cursos de verano por materia, programa y mes, con predicciones y recomendaciones. */
@@ -63,35 +70,27 @@ public class EstadisticasCursosVerano {
     }
 
     /** Los 12 meses, aunque tengan 0 solicitudes, para que el frontend muestre la tendencia completa. */
-    private static List<Map<String, Object>> tendenciasTemporales(Map<String, Integer> demandaPorMes, int total) {
-        List<Map<String, Object>> tendencias = new ArrayList<>();
+    private static List<DemandaMensualCursosVerano> tendenciasTemporales(Map<String, Integer> demandaPorMes, int total) {
+        List<DemandaMensualCursosVerano> tendencias = new ArrayList<>();
         for (String mes : MESES) {
             int solicitudes = demandaPorMes.get(mes);
-            Map<String, Object> tendencia = new HashMap<>();
-            tendencia.put("mes", mes);
-            tendencia.put("solicitudes", solicitudes);
-            tendencia.put("porcentaje", total > 0 ? redondear2((solicitudes * 100.0) / total) : 0.0);
-            tendencias.add(tendencia);
+            tendencias.add(new DemandaMensualCursosVerano(mes, solicitudes,
+                    total > 0 ? redondear2((solicitudes * 100.0) / total) : 0.0));
         }
         return tendencias;
     }
 
     /** Nombre, solicitudes y porcentaje del total, de mayor a menor demanda. */
-    private static List<Map<String, Object>> ranking(Map<String, Integer> demanda, int total, long limite) {
+    private static List<DemandaCursoVerano> ranking(Map<String, Integer> demanda, int total, long limite) {
         return demanda.entrySet().stream()
                 .sorted(Map.Entry.<String, Integer>comparingByValue().reversed())
                 .limit(limite)
-                .map(entry -> {
-                    Map<String, Object> fila = new HashMap<>();
-                    fila.put("nombre", entry.getKey());
-                    fila.put("solicitudes", entry.getValue());
-                    fila.put("porcentaje", redondear2((entry.getValue() * 100.0) / total));
-                    return fila;
-                })
+                .map(entry -> new DemandaCursoVerano(entry.getKey(), entry.getValue(),
+                        redondear2((entry.getValue() * 100.0) / total)))
                 .collect(Collectors.toList());
     }
 
-    public Map<String, Object> estadisticas(String periodoAcademico, Integer idPrograma) {
+    public AnalisisCursosVerano estadisticas(String periodoAcademico, Integer idPrograma) {
         List<Solicitud> solicitudes = solicitudesCursosVerano(periodoAcademico, idPrograma);
         int total = solicitudes.size();
 
@@ -110,19 +109,19 @@ public class EstadisticasCursosVerano {
         }
         Map<String, Integer> demandaPorMes = demandaPorMes(solicitudes);
 
-        List<Map<String, Object>> topMaterias = ranking(demandaPorMateria, total, 10);
-        List<Map<String, Object>> analisisPorPrograma = ranking(demandaPorPrograma, total, Long.MAX_VALUE);
+        List<DemandaCursoVerano> topMaterias = ranking(demandaPorMateria, total, 10);
+        List<DemandaCursoVerano> analisisPorPrograma = ranking(demandaPorPrograma, total, Long.MAX_VALUE);
 
         // Tasa de aprobación: solo las completamente aprobadas, no las en proceso
         int aprobadas = porEstado.getOrDefault(EstadosSolicitud.APROBADA.name(), 0);
         double tasaAprobacion = total > 0 ? (aprobadas * 100.0) / total : 0.0;
 
-        Map<String, Object> predicciones = prediccionDemanda.generar(
+        PrediccionesCursosVerano predicciones = prediccionDemanda.generar(
                 solicitudes.stream().map(EstadisticasCursosVerano::datoDemanda).toList(),
                 demandaPorMes, topMaterias, analisisPorPrograma);
-        @SuppressWarnings("unchecked")
-        List<Map<String, Object>> recomendaciones =
-                (List<Map<String, Object>>) predicciones.getOrDefault("recomendaciones", new ArrayList<>());
+        // La predicción de respaldo no trae recomendaciones
+        List<RecomendacionCursosVerano> recomendaciones = predicciones instanceof PrediccionesCalculadas calculadas
+                ? calculadas.recomendaciones() : new ArrayList<>();
 
         // Estados con la misma forma que /estado-solicitudes; "EN_PROCESO" junta funcionario y coordinador
         int enProceso = porEstado.getOrDefault(EstadosSolicitud.APROBADA_FUNCIONARIO.name(), 0) + porEstado.getOrDefault(EstadosSolicitud.APROBADA_COORDINADOR.name(), 0);
@@ -132,44 +131,24 @@ public class EstadisticasCursosVerano {
         estadosSolicitudes.put("EN_PROCESO", enProceso);
         estadosSolicitudes.put(EstadosSolicitud.RECHAZADA.name(), porEstado.getOrDefault(EstadosSolicitud.RECHAZADA.name(), 0));
 
-        Map<String, Object> estadosEstructurados = new HashMap<>();
-        estadosSolicitudes.forEach((estado, cantidad) -> {
-            Map<String, Object> detalle = new HashMap<>();
-            detalle.put("estado", estado);
-            detalle.put("cantidad", cantidad);
-            detalle.put("porcentaje", redondear2(total > 0 ? (cantidad * 100.0) / total : 0.0));
-            estadosEstructurados.put(estado, detalle);
-        });
+        Map<String, AnalisisCursosVerano.DetalleEstado> estadosEstructurados = new HashMap<>();
+        estadosSolicitudes.forEach((estado, cantidad) -> estadosEstructurados.put(estado,
+                new AnalisisCursosVerano.DetalleEstado(estado, cantidad,
+                        redondear2(total > 0 ? (cantidad * 100.0) / total : 0.0))));
 
-        Map<String, Object> resultado = new HashMap<>();
-        resultado.put("todosLosMeses", Arrays.asList(MESES));
-        resultado.put("fechaConsulta", new Date());
-        resultado.put("descripcion", "Estadisticas detalladas de cursos de verano - Analisis de demanda y recomendaciones");
-        resultado.put("resumen", Map.of(
-                "totalSolicitudes", total,
-                "materiasUnicas", demandaPorMateria.size(),
-                "programasParticipantes", demandaPorPrograma.size(),
-                "tasaAprobacion", redondear2(tasaAprobacion)));
-        resultado.put("estadosSolicitudes", estadosSolicitudes);
-        resultado.put("estadosSolicitudesEstructurados", estadosEstructurados);
-        resultado.put("topMaterias", topMaterias);
-        resultado.put("analisisPorPrograma", analisisPorPrograma);
-        resultado.put("tendenciasTemporales", tendenciasTemporales(demandaPorMes, total));
-        resultado.put("recomendaciones", recomendaciones);
-        resultado.put("predicciones", predicciones);
-        return resultado;
+        AnalisisCursosVerano.Resumen resumen = new AnalisisCursosVerano.Resumen(total, demandaPorMateria.size(),
+                demandaPorPrograma.size(), redondear2(tasaAprobacion));
+        return new AnalisisCursosVerano(Arrays.asList(MESES), new Date(),
+                "Estadisticas detalladas de cursos de verano - Analisis de demanda y recomendaciones", resumen,
+                estadosSolicitudes, estadosEstructurados, topMaterias, analisisPorPrograma,
+                tendenciasTemporales(demandaPorMes, total), recomendaciones, predicciones);
     }
 
-    public Map<String, Object> tendenciasTemporales(String periodoAcademico, Integer idPrograma) {
+    public TendenciasCursosVerano tendenciasTemporales(String periodoAcademico, Integer idPrograma) {
         List<Solicitud> solicitudes = solicitudesCursosVerano(periodoAcademico, idPrograma);
-
-        Map<String, Object> resultado = new HashMap<>();
-        resultado.put("todosLosMeses", Arrays.asList(MESES));
-        resultado.put("tendenciasTemporales", tendenciasTemporales(demandaPorMes(solicitudes), solicitudes.size()));
-        resultado.put("totalSolicitudes", solicitudes.size());
-        resultado.put("fechaConsulta", new Date());
-        resultado.put("descripcion", "Tendencias temporales optimizadas para cursos de verano");
-        return resultado;
+        return new TendenciasCursosVerano(Arrays.asList(MESES),
+                tendenciasTemporales(demandaPorMes(solicitudes), solicitudes.size()), solicitudes.size(), new Date(),
+                "Tendencias temporales optimizadas para cursos de verano");
     }
 
     /** Datos de la solicitud que usa la predicción de demanda. */

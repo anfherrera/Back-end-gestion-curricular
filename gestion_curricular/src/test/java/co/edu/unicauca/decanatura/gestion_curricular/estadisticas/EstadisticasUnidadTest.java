@@ -26,6 +26,7 @@ import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.SolicitudHo
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.SolicitudPazYSalvo;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.SolicitudReingreso;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Usuario;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.estadisticas.AnalisisCursosVerano;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.estadisticas.EstadisticasPorEstado;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.estadisticas.EstadisticasPorProceso;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.estadisticas.EstadisticasPorPrograma;
@@ -263,21 +264,19 @@ class EstadisticasUnidadTest {
 
     @Test
     @DisplayName("Test 14: Cursos de verano - pago validado está en proceso y no cuenta como aprobada")
-    @SuppressWarnings("unchecked")
     void testCursosVeranoPagoValidadoEnProceso() {
         when(estadisticasGateway.listarSolicitudesConEstadosYUsuario()).thenReturn(List.of(
                 solicitud(new SolicitudCursoVeranoInscripcion(), 1, estado("Pago_Validado", 7)),
                 solicitud(new SolicitudCursoVeranoInscripcion(), 1, estado("Inscripcion_Completada", 7)),
                 solicitud(new SolicitudHomologacion(), 1, estado("APROBADA", 7))));
 
-        Map<String, Object> resultado = estadisticasCU.obtenerEstadisticasCursosVerano(null, null);
+        AnalisisCursosVerano resultado = estadisticasCU.obtenerEstadisticasCursosVerano(null, null);
 
-        Map<String, Integer> estados = (Map<String, Integer>) resultado.get("estadosSolicitudes");
+        Map<String, Integer> estados = resultado.estadosSolicitudes();
         assertThat(estados.get("EN_PROCESO")).isEqualTo(1);
         assertThat(estados.get("APROBADA")).isEqualTo(1);
-        Map<String, Object> resumen = (Map<String, Object>) resultado.get("resumen");
-        assertThat(resumen.get("totalSolicitudes")).isEqualTo(2);
-        assertThat(resumen.get("tasaAprobacion")).isEqualTo(50.0);
+        assertThat(resultado.resumen().totalSolicitudes()).isEqualTo(2);
+        assertThat(resultado.resumen().tasaAprobacion()).isEqualTo(50.0);
     }
 
     @Test

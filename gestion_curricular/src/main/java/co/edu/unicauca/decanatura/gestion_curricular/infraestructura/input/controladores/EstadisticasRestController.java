@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.*;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GenerarReportesEstadisticasCUIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarEstadisticasCUIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Estadistica;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.estadisticas.AnalisisCursosVerano;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.estadisticas.EntradaHistorial;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.estadisticas.EstadisticasPorEstado;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.estadisticas.EstadisticasPorProceso;
@@ -28,6 +29,7 @@ import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.estadistica
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.estadisticas.ProcesosPorProgramaYPeriodo;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.estadisticas.ProgramasPorProcesoYEstado;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.estadisticas.ResumenCompleto;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.estadisticas.TendenciasCursosVerano;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.estadisticas.TotalEstudiantes;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.estadisticas.VistaPorEstado;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.estadisticas.VistaPorMes;
@@ -528,11 +530,11 @@ public class EstadisticasRestController {
      * @return ResponseEntity con estadísticas detalladas de cursos de verano
      */
     @GetMapping("/cursos-verano")
-    public ResponseEntity<Map<String, Object>> obtenerEstadisticasCursosVerano(
+    public ResponseEntity<AnalisisCursosVerano> obtenerEstadisticasCursosVerano(
             @RequestParam(required = false) String periodoAcademico,
             @RequestParam(required = false) Integer idPrograma) {
         
-        Map<String, Object> resultado = estadisticaCU.obtenerEstadisticasCursosVerano(periodoAcademico, idPrograma);
+        AnalisisCursosVerano resultado = estadisticaCU.obtenerEstadisticasCursosVerano(periodoAcademico, idPrograma);
         
         return ResponseEntity.ok(resultado);
     }
@@ -545,12 +547,12 @@ public class EstadisticasRestController {
      * @return ResponseEntity con tendencias temporales
      */
     @GetMapping("/cursos-verano/tendencias-temporales")
-    public ResponseEntity<Map<String, Object>> obtenerTendenciasTemporalesCursosVerano(
+    public ResponseEntity<TendenciasCursosVerano> obtenerTendenciasTemporalesCursosVerano(
             @RequestParam(required = false) String periodoAcademico,
             @RequestParam(required = false) Integer idPrograma) {
         
         // Obtener solo las tendencias temporales de manera optimizada
-        Map<String, Object> tendencias = estadisticaCU.obtenerTendenciasTemporalesCursosVerano(periodoAcademico, idPrograma);
+        TendenciasCursosVerano tendencias = estadisticaCU.obtenerTendenciasTemporalesCursosVerano(periodoAcademico, idPrograma);
         
         return ResponseEntity.ok(tendencias);
     }

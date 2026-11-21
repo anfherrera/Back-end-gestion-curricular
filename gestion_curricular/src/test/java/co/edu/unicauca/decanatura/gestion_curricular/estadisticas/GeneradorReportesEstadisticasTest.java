@@ -10,6 +10,8 @@ import java.util.Map;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.estadisticas.AnalisisCursosVerano;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.estadisticas.DemandaCursoVerano;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.estadisticas.GlobalesContadas;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.formateador.GeneradorReportesEstadisticas;
 
@@ -23,11 +25,12 @@ class GeneradorReportesEstadisticasTest {
             Map.of("Paz y Salvo", 4, "Reingreso", 6),
             Map.of("Ingeniería de Sistemas", 10), new Date());
 
-    private final Map<String, Object> cursosVerano = Map.of(
-            "resumen", Map.of("totalSolicitudes", 5, "materiasUnicas", 2, "programasParticipantes", 1, "tasaAprobacion", 40.0),
-            "topMaterias", List.of(Map.of("nombre", "Cálculo I", "solicitudes", 3, "porcentaje", 60.0)),
-            "analisisPorPrograma", List.of(Map.of("nombre", "Ingeniería de Sistemas", "solicitudes", 5, "porcentaje", 100.0)),
-            "recomendaciones", List.of());
+    /** Resumen, una materia, un programa, sin recomendaciones y sin predicciones. */
+    private final AnalisisCursosVerano cursosVerano = new AnalisisCursosVerano(null, null, null,
+            new AnalisisCursosVerano.Resumen(5, 2, 1, 40.0), null, null,
+            List.of(new DemandaCursoVerano("Cálculo I", 3, 60.0)),
+            List.of(new DemandaCursoVerano("Ingeniería de Sistemas", 5, 100.0)),
+            null, List.of(), null);
 
     @Test
     void pdfs() {

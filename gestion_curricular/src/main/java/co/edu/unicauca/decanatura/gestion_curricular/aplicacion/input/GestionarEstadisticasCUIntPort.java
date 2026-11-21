@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Estadistica;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.estadisticas.AnalisisCursosVerano;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.estadisticas.EntradaHistorial;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.estadisticas.EstadisticasPeriodoAcademico;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.estadisticas.EstadisticasPorEstado;
@@ -18,6 +19,7 @@ import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.estadistica
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.estadisticas.ProgramasPorProcesoYEstado;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.estadisticas.ResumenCompleto;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.estadisticas.TendenciasPorPeriodo;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.estadisticas.TendenciasCursosVerano;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.estadisticas.TotalEstudiantes;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.estadisticas.VistaPorEstado;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.estadisticas.VistaPorMes;
@@ -207,18 +209,18 @@ public interface GestionarEstadisticasCUIntPort {
      * 
      * @param periodoAcademico Período académico opcional (formato: "YYYY-P", ej: "2025-2")
      * @param idPrograma ID del programa académico opcional para filtrar
-     * @return Map con estadísticas detalladas de cursos de verano
+     * @return el análisis de demanda, la predicción y las recomendaciones
      */
-    Map<String, Object> obtenerEstadisticasCursosVerano(String periodoAcademico, Integer idPrograma);
+    AnalisisCursosVerano obtenerEstadisticasCursosVerano(String periodoAcademico, Integer idPrograma);
 
     /**
      * Obtiene solo las tendencias temporales de cursos de verano de manera optimizada.
      * 
      * @param periodoAcademico Período académico opcional (formato: "YYYY-P", ej: "2025-2")
      * @param idPrograma ID del programa académico opcional para filtrar
-     * @return Map con tendencias temporales
+     * @return la demanda de cada uno de los doce meses
      */
-    Map<String, Object> obtenerTendenciasTemporalesCursosVerano(String periodoAcademico, Integer idPrograma);
+    TendenciasCursosVerano obtenerTendenciasTemporalesCursosVerano(String periodoAcademico, Integer idPrograma);
 
     /**
      * Obtiene historial de estadísticas por períodos académicos.
@@ -261,7 +263,7 @@ public interface GestionarEstadisticasCUIntPort {
      */
     Map<String, Object> obtenerEstadisticasRendimiento();
 
-    record DatosReporte(Globales estadisticas, Map<String, Object> cursosVerano) {
+    record DatosReporte(Globales estadisticas, AnalisisCursosVerano cursosVerano) {
     }
 
     DatosReporte prepararReporte(String proceso, Integer idPrograma, String periodo, Date fechaInicio, Date fechaFin);
