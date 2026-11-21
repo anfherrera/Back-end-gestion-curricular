@@ -68,7 +68,7 @@ class EstadisticasIntegracionTest {
     @Test
     @DisplayName("Test 2: Obtener estadísticas por proceso retorna 200 OK")
     void testObtenerEstadisticasPorProcesoRetorna200() throws Exception {
-        mockMvc.perform(get("/api/estadisticas/proceso/PAZ_SALVO"))
+        mockMvc.perform(get("/api/estadisticas/estadisticas-por-proceso"))
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON));
     }
@@ -76,7 +76,7 @@ class EstadisticasIntegracionTest {
     @Test
     @DisplayName("Test 3: Obtener estadísticas por estado retorna 200 OK")
     void testObtenerEstadisticasPorEstadoRetorna200() throws Exception {
-        mockMvc.perform(get("/api/estadisticas/estado/APROBADA"))
+        mockMvc.perform(get("/api/estadisticas/estado-solicitudes"))
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON));
     }
@@ -84,7 +84,7 @@ class EstadisticasIntegracionTest {
     @Test
     @DisplayName("Test 4: Obtener estadísticas por programa retorna 200 OK")
     void testObtenerEstadisticasPorProgramaRetorna200() throws Exception {
-        mockMvc.perform(get("/api/estadisticas/programa/1"))
+        mockMvc.perform(get("/api/estadisticas/por-programa"))
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON));
     }

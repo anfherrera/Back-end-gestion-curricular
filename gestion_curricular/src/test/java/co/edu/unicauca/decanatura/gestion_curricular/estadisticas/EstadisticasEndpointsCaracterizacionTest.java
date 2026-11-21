@@ -246,8 +246,10 @@ class EstadisticasEndpointsCaracterizacionTest {
         consultar(r, "/tendencias");
         consultar(r, "/historial", "anioInicio", "2024", "anioFin", "2025");
         consultar(r, "/historial", "anioInicio", "2025", "anioFin", "2025");
-        // BUG-43: consultas.json fija el 200 con {error} de /periodo?periodoAcademico=2025-3; la corrección, el 400
-        compararConReferencia("consultas", r, "estadisticas-endpoints/correcciones/consultas-bug43.json");
+        // BUG-43: consultas.json fija el 200 con {error} de /periodo?periodoAcademico=2025-3; la corrección, el 400.
+        // DUP-8: /periodo, /proceso/{tipo}, /estado/{estado} y /programa/{id} se retiran y responden 404.
+        compararConReferencia("consultas", r, "estadisticas-endpoints/correcciones/consultas-bug43.json",
+                "estadisticas-endpoints/correcciones/consultas-dup8.json");
     }
 
     // ==================== Exportaciones ====================
@@ -394,20 +396,16 @@ class EstadisticasEndpointsCaracterizacionTest {
         return i < 0 ? texto : texto.substring(0, i) + FECHA_GENERACION + " <ahora>";
     }
 
-    private static void compararConReferencia(String nombre, Map<String, JsonNode> obtenido) throws Exception {
-        compararConReferencia(nombre, obtenido, null);
-    }
-
-    /** Como la anterior, superponiendo a la referencia la corrección {@code rutaCorreccion} si no es null. */
-    private static void compararConReferencia(String nombre, Map<String, JsonNode> obtenido, String rutaCorreccion)
-            throws Exception {
+    /** Compara con la referencia {@code nombre}, superponiendo en orden las correcciones indicadas. */
+    private static void compararConReferencia(String nombre, Map<String, JsonNode> obtenido,
+            String... rutasCorreccion) throws Exception {
         Path archivo = CARPETA.resolve(nombre + ".json");
         if (Boolean.getBoolean("grabarReferencia")) {
             Files.createDirectories(CARPETA);
             Files.writeString(archivo, JSON.writeValueAsString(obtenido) + System.lineSeparator(), StandardCharsets.UTF_8);
         }
         JsonNode esperado = JSON.readTree(Files.readString(archivo, StandardCharsets.UTF_8));
-        if (rutaCorreccion != null) {
+        for (String rutaCorreccion : rutasCorreccion) {
             esperado = Correcciones.aplicar(esperado, rutaCorreccion);
         }
         assertThat(JSON.valueToTree(obtenido).toString()).isEqualTo(esperado.toString());

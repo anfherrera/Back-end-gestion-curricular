@@ -39,7 +39,4 @@ public final class EstadisticasFiltradasDTORespuesta {
                 estadisticas.porEstado());
         }
     }
-
-    /** Rechazo 400 de {@code /periodo} sin período ni par de fechas. */
-    public record ErrorPeriodo(String error) {}
 }

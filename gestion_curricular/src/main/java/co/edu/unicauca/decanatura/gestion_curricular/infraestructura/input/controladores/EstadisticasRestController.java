@@ -21,9 +21,6 @@ import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Estadistica
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.estadisticas.AnalisisCursosVerano;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.estadisticas.DashboardEjecutivo;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.estadisticas.EntradaHistorial;
-import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.estadisticas.EstadisticasPorEstado;
-import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.estadisticas.EstadisticasPorProceso;
-import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.estadisticas.EstadisticasPorPrograma;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.estadisticas.EstudiantesPorPrograma;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.estadisticas.Globales;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.estadisticas.ProcesosPorProgramaYPeriodo;
@@ -40,7 +37,6 @@ import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.estadistica
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.RespuestasArchivo;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.dto.peticion.EstadisticaDTOPeticion;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.dto.respuesta.EstadisticaDTORespuesta;
-import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.dto.respuesta.EstadisticasFiltradasDTORespuesta.ErrorPeriodo;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.dto.respuesta.EstadisticasFiltradasDTORespuesta.Filtradas;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.mappers.EstadisticaMapperDominio;
 
@@ -187,67 +183,6 @@ public class EstadisticasRestController {
             filtradas = Filtradas.de(estadisticaCU.obtenerEstadisticasGlobales());
         }
         return ResponseEntity.ok(filtradas);
-    }
-
-    /**
-     * Obtiene estadísticas específicas por tipo de proceso.
-     * 
-     * @param tipoProceso Tipo de proceso (REINGRESO, HOMOLOGACION, ECAES, CURSO_VERANO, PAZ_SALVO)
-     * @return ResponseEntity con estadísticas del proceso específico
-     */
-    @GetMapping("/proceso/{tipoProceso}")
-    public ResponseEntity<EstadisticasPorProceso> obtenerEstadisticasPorProceso(
-            @PathVariable String tipoProceso) {
-        return ResponseEntity.ok(estadisticaCU.obtenerEstadisticasPorProceso(tipoProceso));
-    }
-
-    /**
-     * Obtiene estadísticas por estado de solicitud en todos los procesos.
-     * 
-     * @param estado Estado de la solicitud (EN_PROCESO, APROBADA, RECHAZADA, etc.)
-     * @return ResponseEntity con estadísticas por estado
-     */
-    @GetMapping("/estado/{estado}")
-    public ResponseEntity<EstadisticasPorEstado> obtenerEstadisticasPorEstado(
-            @PathVariable String estado) {
-        return ResponseEntity.ok(estadisticaCU.obtenerEstadisticasPorEstado(estado));
-    }
-
-    /**
-     * Obtiene estadísticas por programa académico.
-     * 
-     * @param idPrograma ID del programa académico
-     * @return ResponseEntity con estadísticas del programa
-     */
-    @GetMapping("/programa/{idPrograma}")
-    public ResponseEntity<EstadisticasPorPrograma> obtenerEstadisticasPorPrograma(
-            @Min(value = 1) @PathVariable Integer idPrograma) {
-        return ResponseEntity.ok(estadisticaCU.obtenerEstadisticasPorPrograma(idPrograma));
-    }
-
-    /**
-     * Obtiene estadísticas por período académico.
-     * Ahora acepta tanto fechas como formato de período académico (YYYY-P).
-     * 
-     * @param periodoAcademico Período en formato "YYYY-P" (opcional, ej: "2024-2")
-     * @param fechaInicio Fecha de inicio del período (opcional si se proporciona periodoAcademico)
-     * @param fechaFin Fecha de fin del período (opcional si se proporciona periodoAcademico)
-     * @return ResponseEntity con estadísticas del período
-     */
-    @GetMapping("/periodo")
-    public ResponseEntity<?> obtenerEstadisticasPorPeriodo(
-            @RequestParam(name = "periodoAcademico", required = false) String periodoAcademico,
-            @RequestParam(name = "fechaInicio", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") Date fechaInicio,
-            @RequestParam(name = "fechaFin", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") Date fechaFin) {
-        // Primero el período académico; si no viene, el par de fechas
-        if (periodoAcademico != null && !periodoAcademico.trim().isEmpty()) {
-            return ResponseEntity.ok(estadisticaCU.obtenerEstadisticasPorPeriodoAcademico(periodoAcademico.trim()));
-        }
-        if (fechaInicio != null && fechaFin != null) {
-            return ResponseEntity.ok(estadisticaCU.obtenerEstadisticasPorPeriodo(fechaInicio, fechaFin));
-        }
-        return ResponseEntity.badRequest().body(new ErrorPeriodo(
-                "Debe proporcionar 'periodoAcademico' (ej: '2024-2') o 'fechaInicio' y 'fechaFin'"));
     }
 
     /**

@@ -79,7 +79,7 @@ class GestionEstadisticasFuncionalTest {
          * RESULTADO ESPERADO: Estadísticas detalladas de un proceso específico
          */
         
-        mockMvc.perform(get("/api/estadisticas/proceso/PAZ_Y_SALVO"))
+        mockMvc.perform(get("/api/estadisticas/estadisticas-por-proceso"))
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON));
     }
@@ -100,7 +100,7 @@ class GestionEstadisticasFuncionalTest {
          * RESULTADO ESPERADO: Estadísticas por estado de solicitud
          */
         
-        mockMvc.perform(get("/api/estadisticas/estado/PENDIENTE"))
+        mockMvc.perform(get("/api/estadisticas/estado-solicitudes"))
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON));
     }
@@ -121,7 +121,7 @@ class GestionEstadisticasFuncionalTest {
          * RESULTADO ESPERADO: Estadísticas comparativas por programa
          */
         
-        mockMvc.perform(get("/api/estadisticas/programa/1"))
+        mockMvc.perform(get("/api/estadisticas/por-programa"))
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON));
     }
@@ -277,11 +277,11 @@ class GestionEstadisticasFuncionalTest {
                 .andExpect(status().isOk());
 
         // Paso 2: Estadísticas del programa
-        mockMvc.perform(get("/api/estadisticas/programa/1"))
+        mockMvc.perform(get("/api/estadisticas/por-programa"))
                 .andExpect(status().isOk());
 
         // Paso 3: Analizar proceso específico
-        mockMvc.perform(get("/api/estadisticas/proceso/PAZ_Y_SALVO"))
+        mockMvc.perform(get("/api/estadisticas/estadisticas-por-proceso"))
                 .andExpect(status().isOk());
 
         // Paso 4: Ver tendencias

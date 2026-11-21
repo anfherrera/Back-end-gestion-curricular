@@ -30,7 +30,6 @@ import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.estadistica
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.estadisticas.EstadisticasPorPeriodo;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.estadisticas.EstadisticasPorProceso;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.estadisticas.EstadisticasPorPrograma;
-import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.estadisticas.EstadisticasPorSemestre;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.estadisticas.GlobalesContadas;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.controladores.EstadisticasRestController;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.excepciones.RestApiExceptionHandler;
@@ -44,7 +43,7 @@ import co.edu.unicauca.decanatura.gestion_curricular.soporte.Correcciones;
  * <p>Las referencias se grabaron cuando el caso de uso devolvía mapas que mezclaban tipos. Desde ARQ-13 las consultas
  * por proceso, programa, estado y periodo, y las globales, devuelven records, que no admiten esas entradas (desglose
  * anidado, totales ausentes, claves extra): las correcciones {@code *-arq13.json} recogen solo lo que cambia por el
- * nuevo fixture.
+ * nuevo fixture. Desde DUP-8 {@code /periodo} ya no existe: las correcciones {@code *-dup8.json} fijan su 404.
  * Con datos reales lo fija {@code EstadisticasEndpointsCaracterizacionTest#consultas}.
  */
 class EstadisticasFiltradasCaracterizacionTest {
@@ -75,8 +74,11 @@ class EstadisticasFiltradasCaracterizacionTest {
         if (Boolean.getBoolean("grabarReferencia") && Files.notExists(referencia)) {
             Files.writeString(referencia, json.writerWithDefaultPrettyPrinter().writeValueAsString(resultados));
         }
-        assertThat(resultados).isEqualTo(Correcciones.aplicar(json.readTree(Files.readString(referencia)),
-            "estadisticas-endpoints/correcciones/filtradas-periodo-blancos-arq13.json"));
+        // DUP-8: /periodo se retira y responde 404
+        assertThat(resultados).isEqualTo(Correcciones.aplicar(Correcciones.aplicar(
+            json.readTree(Files.readString(referencia)),
+            "estadisticas-endpoints/correcciones/filtradas-periodo-blancos-arq13.json"),
+            "estadisticas-endpoints/correcciones/filtradas-periodo-blancos-dup8.json"));
     }
 
     @Test
@@ -101,8 +103,11 @@ class EstadisticasFiltradasCaracterizacionTest {
         if (Boolean.getBoolean("grabarReferencia") && Files.notExists(referencia)) {
             Files.writeString(referencia, json.writerWithDefaultPrettyPrinter().writeValueAsString(resultados));
         }
-        assertThat(resultados).isEqualTo(Correcciones.aplicar(json.readTree(Files.readString(referencia)),
-            "estadisticas-endpoints/correcciones/filtradas-periodo-arq13.json"));
+        // DUP-8: /periodo se retira y responde 404
+        assertThat(resultados).isEqualTo(Correcciones.aplicar(Correcciones.aplicar(
+            json.readTree(Files.readString(referencia)),
+            "estadisticas-endpoints/correcciones/filtradas-periodo-arq13.json"),
+            "estadisticas-endpoints/correcciones/filtradas-periodo-dup8.json"));
     }
 
     private MockMvc montar() {
@@ -118,9 +123,6 @@ class EstadisticasFiltradasCaracterizacionTest {
             conteo(5, 5, 100.0), new Date(MARZO), i.getArgument(0), i.getArgument(1)));
         when(cu.obtenerEstadisticasGlobales()).thenAnswer(i -> new GlobalesContadas(
             0, 0, 1, 2, 0, 0.0, porEstado(), porTipoProceso(), porPrograma(), new Date(MARZO)));
-        when(cu.obtenerEstadisticasPorPeriodoAcademico(anyString())).thenAnswer(i -> new EstadisticasPorSemestre(
-            1, 1, 1, 2, 0, 1.0, porEstado(), porTipoProceso(), porPrograma(), new Date(MARZO), null, null, 2024, 1,
-            i.getArgument(0), "porSemestre", "academico"));
         return MockMvcBuilders.standaloneSetup(new EstadisticasRestController(cu,
                 mock(EstadisticaMapperDominio.class), mock(GenerarReportesEstadisticasCUIntPort.class)))
             .setControllerAdvice(new RestApiExceptionHandler()).build();
