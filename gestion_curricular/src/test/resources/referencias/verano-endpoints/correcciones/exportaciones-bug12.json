@@ -1,0 +1,33 @@
+{
+  "/false2025 - Primer Semestre~1cursos-verano~1todos~1export~1pdf/paginas": [
+    "GESTIÓN DE CURSOS INTERSEMESTRALES\n \nFecha de generación: <ahora>\nPeríodo Académico: 2025 - Primer Semestre\nTotal de cursos: 0\n \nNo hay cursos disponibles con los filtros aplicados.\n "
+  ],
+  "/false2025 - Primer Semestre~1solicitudes~1export~1excel/hojas/Solicitudes Cursos Intersemestr": [
+    [
+      "SOLICITUDES DE CURSOS INTERSEMESTRALES DE VERANO"
+    ],
+    [
+      "Fecha de generacion: <ahora>"
+    ],
+    [
+      "Filtros aplicados: Período Académico: 2025 - Primer Semestre"
+    ],
+    [
+      "Total de solicitudes: 0"
+    ],
+    [
+      "Nombre Completo",
+      "Codigo",
+      "ID Curso",
+      "ID Materia",
+      "Codigo Materia",
+      "Grupo",
+      "Curso",
+      "Condicion",
+      "Motivo de la Solicitud",
+      "Estado",
+      "Fecha",
+      "Tipo"
+    ]
+  ]
+}

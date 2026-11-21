@@ -221,10 +221,11 @@ public enum PeriodoAcademicoEnum {
     /**
      * Lleva a "YYYY-P" un período escrito de forma legible ("2025-2", "Segundo Período 2025", "2025 II"...).
      * Si ya tiene ese formato se devuelve recortado; si no tiene un año de cuatro cifras, se devuelve recortado
-     * tal cual. No valida que el período exista.
+     * tal cual.
      *
-     * <p>BUG-12: el período es 2 si el texto contiene "segundo", "ii" o el dígito 2 en cualquier parte, incluido
-     * el año, así que "2025 - Primer Semestre" y "2025-3" dan "2025-2". Se conserva hasta decidir la corrección.
+     * <p>El período se busca en el texto sin el año (BUG-12): es 2 si contiene "segundo", "ii" o el dígito 2, y
+     * si no, 1. Si sin el año solo queda otro número de período ("2025-3"), se devuelve recortado tal cual en
+     * lugar de inventar uno.
      *
      * @return null si viene null o en blanco
      */
@@ -240,8 +241,11 @@ public enum PeriodoAcademicoEnum {
         if (!anio.find()) {
             return limpio;
         }
-        String texto = limpio.toLowerCase();
-        boolean segundo = texto.contains("segundo") || texto.contains("2") || texto.contains("ii");
+        String resto = (limpio.substring(0, anio.start()) + " " + limpio.substring(anio.end())).toLowerCase();
+        boolean segundo = resto.contains("segundo") || resto.contains("2") || resto.contains("ii");
+        if (!segundo && !resto.contains("1") && resto.matches(".*\\d.*")) {
+            return limpio;
+        }
         return anio.group(1) + "-" + (segundo ? 2 : 1);
     }
 

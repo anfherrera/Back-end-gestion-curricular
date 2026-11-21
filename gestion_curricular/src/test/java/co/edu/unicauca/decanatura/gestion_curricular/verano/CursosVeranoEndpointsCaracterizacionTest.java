@@ -130,7 +130,8 @@ class CursosVeranoEndpointsCaracterizacionTest {
             if (periodos[i] != null) peticion.param("periodoAcademico", periodos[i]);
             consultar(respuestas, "caso-" + i, peticion);
         }
-        comparar("periodos-listado", respuestas);
+        // BUG-12: el año ya no cuenta como indicador del período
+        comparar("periodos-listado", respuestas, "verano-endpoints/correcciones/periodos-listado-bug12.json");
     }
 
     @Test void periodosDelReporte() throws Exception {
@@ -143,7 +144,8 @@ class CursosVeranoEndpointsCaracterizacionTest {
             if (periodos[i] != null) peticion.param("periodoAcademico", periodos[i]);
             consultar(respuestas, "caso-" + i, peticion);
         }
-        comparar("periodos-reporte", respuestas);
+        // BUG-12: el año ya no cuenta como indicador del período
+        comparar("periodos-reporte", respuestas, "verano-endpoints/correcciones/periodos-reporte-bug12.json");
     }
 
     @Test void permisosPorEstado() throws Exception {
@@ -235,16 +237,24 @@ class CursosVeranoEndpointsCaracterizacionTest {
         if (Boolean.getBoolean("grabarExportacionesVerano") && !Files.exists(archivo)) {
             Files.writeString(archivo, JSON.writerWithDefaultPrettyPrinter().writeValueAsString(respuestas));
         }
-        assertThat(respuestas).isEqualTo(Correcciones.aplicar(JSON.readTree(Files.readString(archivo)),
-                "verano-endpoints/correcciones/exportaciones-bug18.json"));
+        // BUG-12: el año ya no cuenta como indicador del período
+        assertThat(respuestas).isEqualTo(Correcciones.aplicar(Correcciones.aplicar(
+                JSON.readTree(Files.readString(archivo)),
+                "verano-endpoints/correcciones/exportaciones-bug18.json"),
+                "verano-endpoints/correcciones/exportaciones-bug12.json"));
     }
 
-    private void comparar(String nombre, JsonNode actual) throws Exception {
+    /** Compara con la referencia {@code nombre}, superponiendo en orden las correcciones indicadas. */
+    private void comparar(String nombre, JsonNode actual, String... rutasCorreccion) throws Exception {
         Path archivo = REFERENCIAS.resolve(nombre + ".json");
         if (Boolean.getBoolean("grabarReferencia")) {
             Files.createDirectories(REFERENCIAS);
             Files.writeString(archivo, JSON.writerWithDefaultPrettyPrinter().writeValueAsString(actual) + "\n");
         }
-        assertThat(actual).isEqualTo(JSON.readTree(Files.readString(archivo)));
+        JsonNode esperado = JSON.readTree(Files.readString(archivo));
+        for (String rutaCorreccion : rutasCorreccion) {
+            esperado = Correcciones.aplicar(esperado, rutaCorreccion);
+        }
+        assertThat(actual).isEqualTo(esperado);
     }
 }

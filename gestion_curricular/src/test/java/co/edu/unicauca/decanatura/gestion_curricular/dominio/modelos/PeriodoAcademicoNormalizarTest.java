@@ -34,14 +34,18 @@ class PeriodoAcademicoNormalizarTest {
         assertThat(PeriodoAcademicoEnum.normalizar(periodo)).isEqualTo(esperado);
     }
 
-    /** BUG-12: el dígito 2 del año cuenta como "segundo período". Se fija el comportamiento actual. */
+    /** BUG-12: el dígito 2 del año ya no cuenta como "segundo período"; un período inexistente queda tal cual. */
     @ParameterizedTest(name = "BUG-12: \"{0}\" -> \"{1}\"")
     @CsvSource(delimiter = '|', value = {
-            "2025 - Primer Semestre  | 2025-2",
-            "Primer semestre 2024    | 2024-2",
-            "2025-3                  | 2025-2",
-            "2031-1er                | 2031-2" })
-    void bug12ElDosDelAnioDaSegundoPeriodo(String periodo, String esperado) {
+            "2025 - Primer Semestre  | 2025-1",
+            "Primer semestre 2024    | 2024-1",
+            "2025-3                  | 2025-3",
+            "' 2025-3 '              | 2025-3",
+            "2031-1er                | 2031-1",
+            "2022 Segundo Semestre   | 2022-2",
+            "I-2022                  | 2022-1",
+            "2022 - II               | 2022-2" })
+    void bug12ElAnioNoCuentaParaElPeriodo(String periodo, String esperado) {
         assertThat(PeriodoAcademicoEnum.normalizar(periodo)).isEqualTo(esperado);
     }
 }

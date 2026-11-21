@@ -137,7 +137,9 @@ class EstadisticasEndpointsCaracterizacionTest {
         // Con periodo y programa
         consultar(r, "/globales", "periodoAcademico", "2025-1", "idPrograma", "1", "proceso", "Paz y Salvo");
         consultar(r, "/globales", "periodoAcademico", "2025-1", "idPrograma", "3", "proceso", "Reingreso");
-        compararConReferencia("globales", r, "estadisticas-endpoints/correcciones/globales-bug13.json");
+        // BUG-12: el año ya no cuenta como indicador del período
+        compararConReferencia("globales", r, "estadisticas-endpoints/correcciones/globales-bug13.json",
+                "estadisticas-endpoints/correcciones/globales-bug12.json");
     }
 
     // ==================== /resumen-completo ====================
@@ -154,7 +156,9 @@ class EstadisticasEndpointsCaracterizacionTest {
         }
         consultar(r, "/resumen-completo", "periodoAcademico", "2025-2", "idPrograma", "1", "proceso", "Cursos de verano");
         consultar(r, "/resumen-completo", "periodoAcademico", "2025-1", "idPrograma", "2", "proceso", "homologacion");
-        compararConReferencia("resumen-completo", r, "estadisticas-endpoints/correcciones/resumen-completo-bug13.json");
+        // BUG-12: el año ya no cuenta como indicador del período
+        compararConReferencia("resumen-completo", r, "estadisticas-endpoints/correcciones/resumen-completo-bug13.json",
+                "estadisticas-endpoints/correcciones/resumen-completo-bug12.json");
     }
 
     // ==================== /dashboard ====================
@@ -175,7 +179,9 @@ class EstadisticasEndpointsCaracterizacionTest {
         // Solo programa (con y sin proceso)
         consultar(r, "/dashboard", "idPrograma", "2");
         consultar(r, "/dashboard", "idPrograma", "2", "proceso", "Homologación");
-        compararConReferencia("dashboard", r, "estadisticas-endpoints/correcciones/dashboard-bug13.json");
+        // BUG-12: el año ya no cuenta como indicador del período
+        compararConReferencia("dashboard", r, "estadisticas-endpoints/correcciones/dashboard-bug13.json",
+                "estadisticas-endpoints/correcciones/dashboard-bug12.json");
     }
 
     // ==================== /rendimiento ====================
@@ -201,7 +207,8 @@ class EstadisticasEndpointsCaracterizacionTest {
             }
             consultar(r, ruta, "periodoAcademico", "2025-2", "idPrograma", "2");
         }
-        compararConReferencia("periodo-normalizado", r);
+        // BUG-12: el año ya no cuenta como indicador del período
+        compararConReferencia("periodo-normalizado", r, "estadisticas-endpoints/correcciones/periodo-normalizado-bug12.json");
     }
 
     // ==================== Consultas por proceso, estado, programa y periodo ====================
@@ -270,7 +277,9 @@ class EstadisticasEndpointsCaracterizacionTest {
                 consultar(r, ruta, f);
             }
         }
-        compararConReferencia("exportaciones", r, "estadisticas-endpoints/correcciones/exportaciones-bug18.json");
+        // BUG-12: el año ya no cuenta como indicador del período
+        compararConReferencia("exportaciones", r, "estadisticas-endpoints/correcciones/exportaciones-bug18.json",
+                "estadisticas-endpoints/correcciones/exportaciones-bug12.json");
     }
 
     // ==================== SOPORTE ====================
