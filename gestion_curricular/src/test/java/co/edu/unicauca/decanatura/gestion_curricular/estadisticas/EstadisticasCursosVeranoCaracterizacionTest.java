@@ -23,6 +23,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
+import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarEstadisticasCUIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.casosDeUso.GestionarEstadisticasCUAdapter;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.entidades.CursoOfertadoVeranoEntity;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.entidades.EstadoSolicitudEntity;
@@ -50,6 +51,8 @@ class EstadisticasCursosVeranoCaracterizacionTest {
 
     private static final Path REFERENCIA =
             Path.of("src/test/resources/referencias/estadisticas-cursos-verano.json");
+    private static final Path REFERENCIA_RAMAS =
+            Path.of("src/test/resources/referencias/estadisticas/cursos-verano-ramas.json");
     private static final Set<String> FECHAS_DE_CONSULTA = Set.of("fechaConsulta", "fechaPrediccion");
     private static final ObjectMapper JSON = new ObjectMapper()
             .enable(SerializationFeature.INDENT_OUTPUT)
@@ -58,13 +61,7 @@ class EstadisticasCursosVeranoCaracterizacionTest {
     @Test
     @DisplayName("La respuesta (resumen, tendencias, predicciones y recomendaciones) no cambia")
     void respuestaFijada() throws Exception {
-        SolicitudRepositoryInt solicitudRepository = mock(SolicitudRepositoryInt.class);
-        FilasEstadisticas.simular(solicitudRepository, datos());
-        GestionarEstadisticasGatewayImplAdapter gateway = new GestionarEstadisticasGatewayImplAdapter(
-                mock(EstadisticaRepositoryInt.class), mock(ProgramaRepositoryInt.class), solicitudRepository,
-                mock(UsuarioRepositoryInt.class));
-
-        Object resultado = new GestionarEstadisticasCUAdapter(gateway).obtenerEstadisticasCursosVerano(null, null);
+        Object resultado = casoDeUso(datos()).obtenerEstadisticasCursosVerano(null, null);
         String obtenido = JSON.writeValueAsString(normalizado(JSON.valueToTree(resultado))).replace("\r\n", "\n");
 
         if (Boolean.getBoolean("grabarReferencia")) {
@@ -73,6 +70,44 @@ class EstadisticasCursosVeranoCaracterizacionTest {
         }
         String esperado = Files.readString(REFERENCIA, StandardCharsets.UTF_8).replace("\r\n", "\n");
         assertThat(obtenido).isEqualTo(esperado);
+    }
+
+    /**
+     * Ramas que no recorre el conjunto fijo: un periodo sin solicitudes (porcentajes en 0.0 y listas vacías) y una
+     * materia sin nombre, con la que falla el cálculo de la predicción y responde la de respaldo (confiabilidad BAJA,
+     * sin recomendaciones). Se graba con {@code -DgrabarReferencia=true} solo si la referencia no existe.
+     */
+    @Test
+    @DisplayName("Sin solicitudes y con la predicción de respaldo, la respuesta no cambia")
+    void ramasFijadas() throws Exception {
+        GestionarEstadisticasCUIntPort conDatos = casoDeUso(datos());
+        ProgramaEntity sistemas = programa(1, "Ingeniería de Sistemas");
+        GestionarEstadisticasCUIntPort sinNombre = casoDeUso(List.of(
+                solicitud(200, sistemas, curso(13, null), 6, "Enviada", "Curso de verano - Estudiante 200"),
+                solicitud(201, sistemas, curso(10, "Cálculo I"), 6, "APROBADA", "Curso de verano - Estudiante 201")));
+
+        ObjectNode casos = JSON.createObjectNode();
+        casos.set("sin solicitudes", normalizado(JSON.valueToTree(conDatos.obtenerEstadisticasCursosVerano("2030-1", null))));
+        casos.set("tendencias sin solicitudes",
+                normalizado(JSON.valueToTree(conDatos.obtenerTendenciasTemporalesCursosVerano("2030-1", null))));
+        casos.set("materia sin nombre", normalizado(JSON.valueToTree(sinNombre.obtenerEstadisticasCursosVerano(null, null))));
+        String obtenido = JSON.writeValueAsString(casos).replace("\r\n", "\n");
+
+        if (Boolean.getBoolean("grabarReferencia") && Files.notExists(REFERENCIA_RAMAS)) {
+            Files.writeString(REFERENCIA_RAMAS, obtenido, StandardCharsets.UTF_8);
+        }
+        String esperado = Files.readString(REFERENCIA_RAMAS, StandardCharsets.UTF_8).replace("\r\n", "\n");
+        assertThat(obtenido).isEqualTo(esperado);
+    }
+
+    /** Caso de uso real sobre las solicitudes dadas, con el gateway y repositorios simulados. */
+    private static GestionarEstadisticasCUIntPort casoDeUso(List<SolicitudEntity> solicitudes) {
+        SolicitudRepositoryInt solicitudRepository = mock(SolicitudRepositoryInt.class);
+        FilasEstadisticas.simular(solicitudRepository, solicitudes);
+        GestionarEstadisticasGatewayImplAdapter gateway = new GestionarEstadisticasGatewayImplAdapter(
+                mock(EstadisticaRepositoryInt.class), mock(ProgramaRepositoryInt.class), solicitudRepository,
+                mock(UsuarioRepositoryInt.class));
+        return new GestionarEstadisticasCUAdapter(gateway);
     }
 
     /**
