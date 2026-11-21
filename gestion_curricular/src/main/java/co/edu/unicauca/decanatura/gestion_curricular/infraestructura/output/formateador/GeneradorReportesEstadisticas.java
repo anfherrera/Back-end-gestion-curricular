@@ -6,7 +6,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.Objects;
 
 import com.itextpdf.text.Document;
 import com.itextpdf.text.Element;
@@ -283,7 +282,7 @@ public class GeneradorReportesEstadisticas implements GenerarReportesEstadistica
         if (topMaterias != null && !topMaterias.isEmpty()) {
             document.add(new com.itextpdf.text.Paragraph("\nTop Materias por Demanda:", normalFont));
             for (DemandaCursoVerano materia : topMaterias) {
-                document.add(new com.itextpdf.text.Paragraph("  • " + materia.nombre() + ": " +
+                document.add(new com.itextpdf.text.Paragraph("  • " + nombreEnPdf(materia) + ": " +
                     materia.solicitudes() + " solicitudes (" + materia.porcentaje() + "%)", normalFont));
             }
         }
@@ -293,7 +292,7 @@ public class GeneradorReportesEstadisticas implements GenerarReportesEstadistica
         if (analisisPorPrograma != null && !analisisPorPrograma.isEmpty()) {
             document.add(new com.itextpdf.text.Paragraph("\nAnálisis por Programa:", normalFont));
             for (DemandaCursoVerano programa : analisisPorPrograma) {
-                document.add(new com.itextpdf.text.Paragraph("  • " + programa.nombre() + ": " +
+                document.add(new com.itextpdf.text.Paragraph("  • " + nombreEnPdf(programa) + ": " +
                     programa.solicitudes() + " solicitudes (" + programa.porcentaje() + "%)", normalFont));
             }
         }
@@ -556,6 +555,11 @@ public class GeneradorReportesEstadisticas implements GenerarReportesEstadistica
         sheet.autoSizeColumn(2);
     }
 
+    /** Nombre de una materia o un programa en el PDF; "Sin nombre" si no lo tiene. */
+    private static String nombreEnPdf(DemandaCursoVerano demanda) {
+        return demanda.nombre() != null ? demanda.nombre() : "Sin nombre";
+    }
+
     /** Fila del resumen de cursos de verano: el nombre del campo y su valor. Devuelve la siguiente fila. */
     private static int filaResumen(org.apache.poi.ss.usermodel.Sheet sheet, int rowNum, String campo, String valor) {
         org.apache.poi.ss.usermodel.Row row = sheet.createRow(rowNum);
@@ -565,12 +569,12 @@ public class GeneradorReportesEstadisticas implements GenerarReportesEstadistica
     }
 
     /**
-     * Fila de una materia o un programa: nombre, solicitudes y porcentaje. Una materia sin nombre hace fallar el
-     * Excel, como antes de tipar estos datos. Devuelve la siguiente fila.
+     * Fila de una materia o un programa: nombre, solicitudes y porcentaje. Sin nombre, la celda queda en blanco
+     * (POI convierte en blanca la celda que recibe un texto null). Devuelve la siguiente fila.
      */
     private static int filaDemanda(org.apache.poi.ss.usermodel.Sheet sheet, int rowNum, DemandaCursoVerano demanda) {
         org.apache.poi.ss.usermodel.Row row = sheet.createRow(rowNum);
-        row.createCell(0).setCellValue(Objects.requireNonNull(demanda.nombre()));
+        row.createCell(0).setCellValue(demanda.nombre());
         row.createCell(1).setCellValue(String.valueOf(demanda.solicitudes()));
         row.createCell(2).setCellValue(demanda.porcentaje() + "%");
         return rowNum + 1;
