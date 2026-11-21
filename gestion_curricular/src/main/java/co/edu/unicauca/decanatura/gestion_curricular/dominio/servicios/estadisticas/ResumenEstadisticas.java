@@ -16,6 +16,9 @@ import java.util.stream.Collectors;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.GestionarEstadisticasGatewayIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Solicitud;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.enums.EstadosSolicitud;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.estadisticas.DashboardEjecutivo;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.estadisticas.DashboardEjecutivoFiltrado;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.estadisticas.DashboardEjecutivoSinFiltros;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.estadisticas.Globales;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.estadisticas.GlobalesContadas;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.estadisticas.GlobalesDelPeriodo;
@@ -110,8 +113,14 @@ public class ResumenEstadisticas {
      * Dashboard ejecutivo. Con periodo (ya normalizado) o programa sale del resumen completo y, si además se pide
      * un proceso, con los KPI de ese proceso; si no, de las estadísticas globales con el proceso tal cual.
      */
-    public Map<String, Object> dashboardEjecutivo(String periodoAcademico, Integer idPrograma, String proceso) {
+    public DashboardEjecutivo dashboardEjecutivo(String periodoAcademico, Integer idPrograma, String proceso) {
         boolean hayProceso = proceso != null && !proceso.trim().isEmpty();
+        if (periodoAcademico == null && idPrograma == null && !hayProceso) {
+            // El proceso en blanco llega tal cual a las globales, como antes
+            GlobalesContadas contadas = globales.globales(proceso, null, null, null);
+            return new DashboardEjecutivoSinFiltros(contadas, contadas.porTipoProceso(), contadas.porEstado(),
+                    new Date());
+        }
 
         Globales estadisticasGlobales;
         if (periodoAcademico != null || idPrograma != null) {
@@ -123,26 +132,18 @@ public class ResumenEstadisticas {
             estadisticasGlobales = globales.globales(proceso, idPrograma, null, null);
         }
 
-        Map<String, Object> dashboardEjecutivo = new HashMap<>();
-        dashboardEjecutivo.put("resumenGlobal", estadisticasGlobales);
-        dashboardEjecutivo.put("topProcesos", estadisticasGlobales.porTipoProceso());
-        dashboardEjecutivo.put("resumenEstados", porEstado(estadisticasGlobales));
-        dashboardEjecutivo.put("fechaGeneracion", new Date());
-
-        if (periodoAcademico != null || idPrograma != null || hayProceso) {
-            Map<String, Object> filtrosAplicados = new HashMap<>();
-            if (periodoAcademico != null) {
-                filtrosAplicados.put("periodoAcademico", periodoAcademico);
-            }
-            if (idPrograma != null) {
-                filtrosAplicados.put("idPrograma", idPrograma);
-            }
-            if (hayProceso) {
-                filtrosAplicados.put("proceso", proceso); // el texto recibido, sin normalizar
-            }
-            dashboardEjecutivo.put("filtrosAplicados", filtrosAplicados);
+        Map<String, Object> filtrosAplicados = new HashMap<>();
+        if (periodoAcademico != null) {
+            filtrosAplicados.put("periodoAcademico", periodoAcademico);
         }
-        return dashboardEjecutivo;
+        if (idPrograma != null) {
+            filtrosAplicados.put("idPrograma", idPrograma);
+        }
+        if (hayProceso) {
+            filtrosAplicados.put("proceso", proceso); // el texto recibido, sin normalizar
+        }
+        return new DashboardEjecutivoFiltrado(estadisticasGlobales, estadisticasGlobales.porTipoProceso(),
+                porEstado(estadisticasGlobales), new Date(), filtrosAplicados);
     }
 
     /** El desglose por estado de las globales; null en las del periodo, que no lo traen. */

@@ -2,7 +2,6 @@ package co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.cont
 
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 import jakarta.validation.Valid;
@@ -20,6 +19,7 @@ import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GenerarRep
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarEstadisticasCUIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Estadistica;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.estadisticas.AnalisisCursosVerano;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.estadisticas.DashboardEjecutivo;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.estadisticas.EntradaHistorial;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.estadisticas.EstadisticasPorEstado;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.estadisticas.EstadisticasPorProceso;
@@ -29,6 +29,7 @@ import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.estadistica
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.estadisticas.ProcesosPorProgramaYPeriodo;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.estadisticas.ProgramasPorProcesoYEstado;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.estadisticas.ResumenCompleto;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.estadisticas.Rendimiento;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.estadisticas.TendenciasCursosVerano;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.estadisticas.TotalEstudiantes;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.estadisticas.VistaPorEstado;
@@ -325,7 +326,7 @@ public class EstadisticasRestController {
      * @return ResponseEntity con dashboard ejecutivo
      */
     @GetMapping("/dashboard")
-    public ResponseEntity<Map<String, Object>> obtenerDashboardEjecutivo(
+    public ResponseEntity<DashboardEjecutivo> obtenerDashboardEjecutivo(
             @RequestParam(required = false) String periodoAcademico,
             @RequestParam(required = false) Integer idPrograma,
             @RequestParam(required = false) String proceso) {
@@ -339,7 +340,7 @@ public class EstadisticasRestController {
      * @return ResponseEntity con estadísticas de rendimiento
      */
     @GetMapping("/rendimiento")
-    public ResponseEntity<Map<String, Object>> obtenerEstadisticasRendimiento() {
+    public ResponseEntity<Rendimiento> obtenerEstadisticasRendimiento() {
         return ResponseEntity.ok(estadisticaCU.obtenerEstadisticasRendimiento());
     }
 

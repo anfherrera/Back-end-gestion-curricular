@@ -2,10 +2,10 @@ package co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input;
 
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
 
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Estadistica;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.estadisticas.AnalisisCursosVerano;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.estadisticas.DashboardEjecutivo;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.estadisticas.EntradaHistorial;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.estadisticas.EstadisticasPeriodoAcademico;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.estadisticas.EstadisticasPorEstado;
@@ -18,6 +18,7 @@ import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.estadistica
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.estadisticas.ProcesosPorProgramaYPeriodo;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.estadisticas.ProgramasPorProcesoYEstado;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.estadisticas.ResumenCompleto;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.estadisticas.Rendimiento;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.estadisticas.TendenciasPorPeriodo;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.estadisticas.TendenciasCursosVerano;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.estadisticas.TotalEstudiantes;
@@ -255,13 +256,13 @@ public interface GestionarEstadisticasCUIntPort {
     ResumenCompleto obtenerResumenCompleto(String periodoAcademico, Integer idPrograma, String proceso);
 
     /** Dashboard ejecutivo: resumen global, procesos, estados y filtros aplicados. */
-    Map<String, Object> obtenerDashboardEjecutivo(String periodoAcademico, Integer idPrograma, String proceso);
+    DashboardEjecutivo obtenerDashboardEjecutivo(String periodoAcademico, Integer idPrograma, String proceso);
 
     /**
      * Estadísticas globales con los indicadores de rendimiento: tasa de procesamiento (decididas sobre el total)
      * y eficiencia de aprobación (aprobadas sobre las decididas).
      */
-    Map<String, Object> obtenerEstadisticasRendimiento();
+    Rendimiento obtenerEstadisticasRendimiento();
 
     record DatosReporte(Globales estadisticas, AnalisisCursosVerano cursosVerano) {
     }

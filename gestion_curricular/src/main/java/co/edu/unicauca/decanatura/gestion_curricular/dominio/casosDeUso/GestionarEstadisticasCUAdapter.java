@@ -2,7 +2,6 @@ package co.edu.unicauca.decanatura.gestion_curricular.dominio.casosDeUso;
 
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
 
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarEstadisticasCUIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.GestionarEstadisticasGatewayIntPort;
@@ -11,6 +10,7 @@ import co.edu.unicauca.decanatura.gestion_curricular.dominio.excepciones.ReglaNe
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Estadistica;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.enums.PeriodoAcademicoEnum;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.estadisticas.AnalisisCursosVerano;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.estadisticas.DashboardEjecutivo;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.estadisticas.EntradaHistorial;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.estadisticas.EstadisticasPeriodoAcademico;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.estadisticas.EstadisticasPorEstado;
@@ -23,6 +23,7 @@ import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.estadistica
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.estadisticas.ProcesosPorProgramaYPeriodo;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.estadisticas.ProgramasPorProcesoYEstado;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.estadisticas.ResumenCompleto;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.estadisticas.Rendimiento;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.estadisticas.TendenciasPorPeriodo;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.estadisticas.TendenciasCursosVerano;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.estadisticas.TotalEstudiantes;
@@ -332,12 +333,12 @@ public class GestionarEstadisticasCUAdapter implements GestionarEstadisticasCUIn
     }
 
     @Override
-    public Map<String, Object> obtenerDashboardEjecutivo(String periodoAcademico, Integer idPrograma, String proceso) {
+    public DashboardEjecutivo obtenerDashboardEjecutivo(String periodoAcademico, Integer idPrograma, String proceso) {
         return resumen.dashboardEjecutivo(PeriodoAcademicoEnum.normalizar(periodoAcademico), idPrograma, proceso);
     }
 
     @Override
-    public Map<String, Object> obtenerEstadisticasRendimiento() {
+    public Rendimiento obtenerEstadisticasRendimiento() {
         return globales.rendimiento();
     }
 

@@ -16,6 +16,7 @@ import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Programa;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Solicitud;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.enums.EstadosSolicitud;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.estadisticas.GlobalesContadas;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.estadisticas.Rendimiento;
 
 /**
  * Estadísticas globales: los totales por estado los cuenta la base de datos (con filtros de proceso, programa y
@@ -109,17 +110,14 @@ public class EstadisticasGlobales {
     }
 
     /** Estadísticas globales sin filtros, con la tasa de procesamiento y la eficiencia de aprobación. */
-    public Map<String, Object> rendimiento() {
+    public Rendimiento rendimiento() {
         GlobalesContadas globales = globales(null, null, null, null);
         int total = globales.totalSolicitudes();
         int aprobadas = globales.totalAprobadas();
         int rechazadas = globales.totalRechazadas();
-        return Map.of(
-                "estadisticasGlobales", globales,
-                "indicadoresRendimiento", Map.of(
-                        "tasaProcesamiento", tasaProcesamiento(total, aprobadas, rechazadas),
-                        "eficienciaAprobacion", eficienciaAprobacion(aprobadas, rechazadas),
-                        "tiempoPromedioProcesamiento", "N/A"),
-                "fechaConsulta", new Date());
+        return new Rendimiento(globales,
+                new Rendimiento.Indicadores(tasaProcesamiento(total, aprobadas, rechazadas),
+                        eficienciaAprobacion(aprobadas, rechazadas), "N/A"),
+                new Date());
     }
 }
