@@ -19,7 +19,8 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
  * de la referencia original o, si empieza por {@code /}, un JSON Pointer (RFC 6901) a una entrada anidada; en
  * él, {@code /} dentro de un nombre se escribe {@code ~1}. {@link #aplicar} las superpone y comprueba que cada
  * entrada exista en la original y que su valor sea distinto, para que la corrección no pueda añadir casos ni
- * quedar obsoleta sin que la prueba falle.
+ * quedar obsoleta sin que la prueba falle. La clave vacía (el JSON Pointer de la raíz) sustituye la referencia
+ * entera; entonces debe ser la única entrada, y su valor, un objeto distinto de la referencia.
  */
 public final class Correcciones {
 
@@ -32,6 +33,12 @@ public final class Correcciones {
     public static ObjectNode aplicar(JsonNode referencia, String rutaCorreccion) throws Exception {
         JsonNode correccion = JSON.readTree(Files.readString(Path.of("src/test/resources/referencias", rutaCorreccion)));
         assertThat(correccion.size()).as(rutaCorreccion).isPositive();
+        if (correccion.has("")) {
+            assertThat(correccion.size()).as("%s: la raíz debe ser la única entrada", rutaCorreccion).isOne();
+            assertThat(correccion.get("").isObject()).as("%s: la raíz debe ser un objeto", rutaCorreccion).isTrue();
+            assertThat(correccion.get("")).as("%s: raíz", rutaCorreccion).isNotEqualTo(referencia);
+            return ((ObjectNode) correccion.get("")).deepCopy();
+        }
         ObjectNode resultado = ((ObjectNode) referencia).deepCopy();
         Iterator<Map.Entry<String, JsonNode>> entradas = correccion.fields();
         while (entradas.hasNext()) {

@@ -18,7 +18,7 @@ public record EstadisticasPorSemestre(int totalSolicitudes, int totalAprobadas, 
         int totalEnProceso, int totalEnviadas, double porcentajeAprobacion, Map<String, Integer> porEstado,
         Map<String, Integer> porTipoProceso, Map<String, Integer> porPrograma, Date fechaConsulta,
         Date fechaInicio, Date fechaFin, int anio, int semestre, String periodoAcademico, String tipoConsulta,
-        String descripcion) implements ResumenSolicitudes, EstadisticasPeriodoAcademico {
+        String descripcion) implements ResumenSolicitudes {
 
     public EstadisticasPorSemestre(EstadisticasPorPeriodo periodo, int anio, int semestre, String periodoAcademico,
             String tipoConsulta, String descripcion) {

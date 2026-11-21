@@ -36,6 +36,7 @@ import org.junit.jupiter.params.provider.MethodSource;
 
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarEstadisticasCUIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.casosDeUso.GestionarEstadisticasCUAdapter;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.excepciones.GestionCurricularException;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.entidades.CursoOfertadoVeranoEntity;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.entidades.EstadoSolicitudEntity;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.entidades.MateriaEntity;
@@ -53,6 +54,7 @@ import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.pers
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.repositorios.ProgramaRepositoryInt;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.repositorios.SolicitudRepositoryInt;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.repositorios.UsuarioRepositoryInt;
+import co.edu.unicauca.decanatura.gestion_curricular.soporte.Correcciones;
 
 /**
  * Fija la respuesta de cada consulta de estadísticas para un conjunto de datos fijo. Pasa por el caso de uso
@@ -71,6 +73,10 @@ class EstadisticasCaracterizacionTest {
 
     private static final Path CARPETA = Path.of("src/test/resources/referencias/estadisticas");
     private static final Set<String> FECHAS_DE_CONSULTA = Set.of("fechaConsulta", "fechaGeneracion", "fechaPrediccion");
+    /** Correcciones que se superponen a la referencia de un caso (ver {@link Correcciones}). */
+    private static final Map<String, String> CORRECCIONES = Map.of(
+            // BUG-43: la referencia fija el aviso {error}; la corrección, la ReglaNegocioExcepcion
+            "por-periodo-academico-invalido", "estadisticas/correcciones/por-periodo-academico-invalido-bug43.json");
     private static final ObjectMapper JSON = new ObjectMapper()
             .enable(SerializationFeature.INDENT_OUTPUT)
             .enable(SerializationFeature.ORDER_MAP_ENTRIES_BY_KEYS);
@@ -132,7 +138,16 @@ class EstadisticasCaracterizacionTest {
     @MethodSource("consultas")
     @DisplayName("La respuesta no cambia")
     void respuestaFijada(String nombre, Function<GestionarEstadisticasCUIntPort, Object> consulta) throws Exception {
-        JsonNode resultado = normalizado(JSON.valueToTree(consulta.apply(estadisticas)));
+        JsonNode resultado;
+        try {
+            resultado = normalizado(JSON.valueToTree(consulta.apply(estadisticas)));
+        } catch (GestionCurricularException e) {
+            // Una consulta que falla se fija con la clase y el mensaje de la excepción
+            ObjectNode error = JSON.createObjectNode();
+            error.put("excepcion", e.getClass().getSimpleName());
+            error.put("mensaje", e.getMessage());
+            resultado = error;
+        }
         String obtenido = JSON.writeValueAsString(resultado).replace("\r\n", "\n");
 
         Path referencia = CARPETA.resolve(nombre + ".json");
@@ -141,6 +156,11 @@ class EstadisticasCaracterizacionTest {
             Files.writeString(referencia, obtenido, StandardCharsets.UTF_8);
         }
         String esperado = Files.readString(referencia, StandardCharsets.UTF_8).replace("\r\n", "\n");
+        String correccion = CORRECCIONES.get(nombre);
+        if (correccion != null) {
+            esperado = JSON.writeValueAsString(Correcciones.aplicar(JSON.readTree(esperado), correccion))
+                    .replace("\r\n", "\n");
+        }
         assertThat(obtenido).isEqualTo(esperado);
     }
 

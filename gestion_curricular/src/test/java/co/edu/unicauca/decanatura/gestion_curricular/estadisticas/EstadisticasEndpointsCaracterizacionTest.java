@@ -246,7 +246,8 @@ class EstadisticasEndpointsCaracterizacionTest {
         consultar(r, "/tendencias");
         consultar(r, "/historial", "anioInicio", "2024", "anioFin", "2025");
         consultar(r, "/historial", "anioInicio", "2025", "anioFin", "2025");
-        compararConReferencia("consultas", r);
+        // BUG-43: consultas.json fija el 200 con {error} de /periodo?periodoAcademico=2025-3; la corrección, el 400
+        compararConReferencia("consultas", r, "estadisticas-endpoints/correcciones/consultas-bug43.json");
     }
 
     // ==================== Exportaciones ====================

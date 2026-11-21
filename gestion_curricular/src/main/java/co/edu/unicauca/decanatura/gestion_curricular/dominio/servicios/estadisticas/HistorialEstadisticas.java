@@ -8,10 +8,9 @@ import java.util.Comparator;
 import java.util.List;
 
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.GestionarEstadisticasGatewayIntPort;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.excepciones.ReglaNegocioExcepcion;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.estadisticas.EntradaHistorial;
-import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.estadisticas.EstadisticasPeriodoAcademico;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.estadisticas.EstadisticasPorSemestre;
-import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.estadisticas.PeriodoAcademicoInvalido;
 
 /**
  * Estadísticas por semestre (1: enero-junio, 2: julio-diciembre): el historial de varios años y un periodo
@@ -45,10 +44,13 @@ public class HistorialEstadisticas {
         return historial;
     }
 
-    /** @param periodoAcademico con formato YYYY-1 o YYYY-2 */
-    public EstadisticasPeriodoAcademico porPeriodoAcademico(String periodoAcademico) {
+    /**
+     * @param periodoAcademico con formato YYYY-1 o YYYY-2
+     * @throws ReglaNegocioExcepcion si el periodo no tiene ese formato
+     */
+    public EstadisticasPorSemestre porPeriodoAcademico(String periodoAcademico) {
         if (periodoAcademico == null || !periodoAcademico.matches("^\\d{4}-[12]$")) {
-            return new PeriodoAcademicoInvalido("Formato de período académico inválido. Use formato: YYYY-P (ej: 2024-2)");
+            throw new ReglaNegocioExcepcion("Formato de período académico inválido. Use formato: YYYY-P (ej: 2024-2)");
         }
         String[] partes = periodoAcademico.split("-");
         return porSemestre(Integer.parseInt(partes[0]), Integer.parseInt(partes[1]), periodoAcademico);
