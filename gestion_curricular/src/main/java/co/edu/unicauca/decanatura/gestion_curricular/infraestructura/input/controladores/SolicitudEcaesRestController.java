@@ -103,7 +103,7 @@ public class SolicitudEcaesRestController {
 
         String periodo = PeriodoDeConsulta.oActual(periodoAcademico);
         if ("COORDINADOR".equalsIgnoreCase(rol)) {
-            // En el flujo ECAES el coordinador no decide ningún paso: la lista sale vacía (BUG-10)
+            // El coordinador no participa en el flujo ECAES: la lista sale vacía (BUG-10, por decisión del usuario)
             return responder(solicitudEcaesCU.listar(FiltroSolicitudes.pendientesDe(
                     FlujoEstadosSolicitud.COORDINADOR, autorizacion.idProgramaCoordinadorActual(), periodo)));
         }
