@@ -81,8 +81,11 @@ class SeguimientoDashboardVeranoCaracterizacionTest {
             Files.writeString(referencia, json.writerWithDefaultPrettyPrinter().writeValueAsString(resultados));
         }
         // BUG-31: una preinscripción con curso sin materia ya no vacía la lista del usuario 3
-        assertThat(resultados).isEqualTo(Correcciones.aplicar(json.readTree(Files.readString(referencia)),
-            "verano-endpoints/correcciones/seguimiento-dashboard-bug31.json"));
+        // BUG-8: una preinscripción rechazada con curso ofrece "revisar_motivo_rechazo"
+        assertThat(resultados).isEqualTo(Correcciones.aplicar(Correcciones.aplicar(
+            json.readTree(Files.readString(referencia)),
+            "verano-endpoints/correcciones/seguimiento-dashboard-bug31.json"),
+            "verano-endpoints/correcciones/seguimiento-dashboard-bug8.json"));
     }
 
     private void registrar(ObjectNode resultados, String nombre, MockMvc mvc, String ruta) throws Exception {

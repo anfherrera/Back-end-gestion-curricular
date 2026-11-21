@@ -265,7 +265,7 @@ public class ReportesCursosVeranoRestController {
                         }
                     } else if (EstadoSolicitudCursoVerano.ENVIADA.texto().equals(estadoPreinscripcion)) {
                         accionesDisponibles.add("esperando_aprobacion");
-                    } else if ("Rechazada".equals(estadoPreinscripcion)) { // BUG-8: se guarda "Rechazado", nunca coincide
+                    } else if (EstadoSolicitudCursoVerano.RECHAZADO.texto().equals(estadoPreinscripcion)) {
                         accionesDisponibles.add("revisar_motivo_rechazo");
                     }
                 } else {
