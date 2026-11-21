@@ -31,19 +31,31 @@ class PrediccionDemandaCaracterizacionTest {
             "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre" };
 
     private static final ObjectMapper JSON = new ObjectMapper();
+    private static final long MARGEN_AHORA_MS = 120_000L;
 
     private final PrediccionDemandaCursosVerano prediccion = new PrediccionDemandaCursosVerano();
 
     @Test
     void prediccionesRecomendacionesYAlertas() throws Exception {
         ObjectNode casos = JsonNodeFactory.instance.objectNode();
-        casos.set("vacio", GrafoObjetos.resultado(
-                () -> prediccion.generar(List.of(), new HashMap<>(), List.of(), List.of())));
-        casos.set("un mes", GrafoObjetos.resultado(() -> generar(unMes())));
-        casos.set("tres meses", GrafoObjetos.resultado(() -> generar(tresMeses())));
-        // Los contadores de prioridad son long: se vuelcan como LongNode y al leer la referencia salen como IntNode
-        JsonNode comoTexto = JSON.readTree(JSON.writeValueAsString(casos));
-        GrafoObjetos.compararConReferencia(comoTexto, "estadisticas/prediccion-demanda.json");
+        casos.set("vacio", arbol(prediccion.generar(List.of(), new HashMap<>(), List.of(), List.of())));
+        casos.set("un mes", arbol(generar(unMes())));
+        casos.set("tres meses", arbol(generar(tresMeses())));
+        GrafoObjetos.compararConReferencia(casos, "estadisticas/prediccion-demanda.json");
+    }
+
+    /**
+     * Árbol JSON de la predicción, como lo dejaba GrafoObjetos sobre mapas: los contadores de prioridad (long) se
+     * releen como int y la fecha de la predicción, si es de ahora, se escribe "&lt;ahora&gt;". Así la comparación no
+     * depende de si la predicción es un mapa o un record.
+     */
+    private static JsonNode arbol(Object resultado) throws Exception {
+        ObjectNode arbol = (ObjectNode) JSON.readTree(JSON.writeValueAsString(resultado));
+        JsonNode fecha = arbol.get("fechaPrediccion");
+        if (fecha != null && fecha.isNumber() && Math.abs(fecha.asLong() - System.currentTimeMillis()) < MARGEN_AHORA_MS) {
+            arbol.put("fechaPrediccion", "<ahora>");
+        }
+        return arbol;
     }
 
     /** Una materia con una solicitud y un programa con doce, todas en julio. */

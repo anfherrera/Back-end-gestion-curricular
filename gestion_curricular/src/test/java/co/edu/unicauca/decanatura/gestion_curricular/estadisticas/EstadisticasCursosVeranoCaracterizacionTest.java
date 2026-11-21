@@ -12,9 +12,14 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.TreeMap;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
@@ -35,6 +40,7 @@ import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.pers
 /**
  * Fija la respuesta completa de las estadísticas de cursos de verano (incluidas las predicciones)
  * para un conjunto de datos fijo. Sirve para reorganizar el código sin cambiar lo que ve el usuario.
+ * Compara el árbol JSON con las claves ordenadas y sin las fechas de la consulta (fechaConsulta y fechaPrediccion).
  *
  * Para regrabar la referencia tras un cambio intencional:
  * {@code mvnw test -Dtest=EstadisticasCursosVeranoCaracterizacionTest -DgrabarReferencia=true}
@@ -44,6 +50,10 @@ class EstadisticasCursosVeranoCaracterizacionTest {
 
     private static final Path REFERENCIA =
             Path.of("src/test/resources/referencias/estadisticas-cursos-verano.json");
+    private static final Set<String> FECHAS_DE_CONSULTA = Set.of("fechaConsulta", "fechaPrediccion");
+    private static final ObjectMapper JSON = new ObjectMapper()
+            .enable(SerializationFeature.INDENT_OUTPUT)
+            .enable(SerializationFeature.ORDER_MAP_ENTRIES_BY_KEYS);
 
     @Test
     @DisplayName("La respuesta (resumen, tendencias, predicciones y recomendaciones) no cambia")
@@ -54,15 +64,8 @@ class EstadisticasCursosVeranoCaracterizacionTest {
                 mock(EstadisticaRepositoryInt.class), mock(ProgramaRepositoryInt.class), solicitudRepository,
                 mock(UsuarioRepositoryInt.class));
 
-        Map<String, Object> resultado = new GestionarEstadisticasCUAdapter(gateway)
-                .obtenerEstadisticasCursosVerano(null, null);
-        resultado.remove("fechaConsulta");
-        ((Map<?, ?>) resultado.get("predicciones")).remove("fechaPrediccion");
-
-        ObjectMapper json = new ObjectMapper()
-                .enable(SerializationFeature.INDENT_OUTPUT)
-                .enable(SerializationFeature.ORDER_MAP_ENTRIES_BY_KEYS);
-        String obtenido = json.writeValueAsString(resultado).replace("\r\n", "\n");
+        Object resultado = new GestionarEstadisticasCUAdapter(gateway).obtenerEstadisticasCursosVerano(null, null);
+        String obtenido = JSON.writeValueAsString(normalizado(JSON.valueToTree(resultado))).replace("\r\n", "\n");
 
         if (Boolean.getBoolean("grabarReferencia")) {
             Files.createDirectories(REFERENCIA.getParent());
@@ -70,6 +73,30 @@ class EstadisticasCursosVeranoCaracterizacionTest {
         }
         String esperado = Files.readString(REFERENCIA, StandardCharsets.UTF_8).replace("\r\n", "\n");
         assertThat(obtenido).isEqualTo(esperado);
+    }
+
+    /**
+     * Ordena por nombre las claves de cada objeto y quita, a cualquier profundidad, las fechas que dependen de cuándo
+     * se corre la prueba. Así la comparación no depende de si la consulta devuelve un mapa o un record.
+     */
+    private static JsonNode normalizado(JsonNode valor) {
+        if (valor.isObject()) {
+            Map<String, JsonNode> campos = new TreeMap<>();
+            valor.fields().forEachRemaining(campo -> {
+                if (!FECHAS_DE_CONSULTA.contains(campo.getKey())) {
+                    campos.put(campo.getKey(), normalizado(campo.getValue()));
+                }
+            });
+            ObjectNode ordenado = JSON.createObjectNode();
+            ordenado.setAll(campos);
+            return ordenado;
+        }
+        if (valor.isArray()) {
+            ArrayNode lista = JSON.createArrayNode();
+            valor.forEach(elemento -> lista.add(normalizado(elemento)));
+            return lista;
+        }
+        return valor;
     }
 
     /**
