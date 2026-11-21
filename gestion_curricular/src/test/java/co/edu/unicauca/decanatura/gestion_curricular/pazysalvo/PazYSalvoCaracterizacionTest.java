@@ -365,6 +365,16 @@ class PazYSalvoCaracterizacionTest {
         if (valor.isTextual() && valor.asText().equals(periodoActual)) {
             return TextNode.valueOf("<periodoActual>");
         }
+        // La URL de un error termina con el id de la solicitud, que depende del orden de las pruebas
+        if (c.equals("url") && valor.isTextual()) {
+            for (Map.Entry<String, Integer> s : conjunto.entrySet()) {
+                String sufijo = "/" + s.getValue();
+                if (valor.asText().endsWith(sufijo)) {
+                    String texto = valor.asText();
+                    return TextNode.valueOf(texto.substring(0, texto.length() - sufijo.length()) + "/{" + s.getKey() + "}");
+                }
+            }
+        }
         if (valor.isTextual()) {
             String texto = valor.asText();
             for (Map.Entry<Integer, String> n : nombres.entrySet()) {
