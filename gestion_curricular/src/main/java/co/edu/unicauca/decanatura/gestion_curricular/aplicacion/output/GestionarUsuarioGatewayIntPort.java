@@ -17,21 +17,15 @@ public interface GestionarUsuarioGatewayIntPort {
 
     Optional<Usuario> buscarUsuarioPorId(Integer idUsuario);
 
-    Usuario buscarUsuarioPorCodigo(String codigo);
-
     Usuario buscarUsuarioPorCorreo(String correo);
 
     Usuario buscarUsuarioPorCedula(String cedula);
 
-    Usuario buscarUsuarioPorNombre(String nombre);
-
-    Usuario buscarSolicitudesUsuarioPorCodigo(String codigo);
-
     List<Usuario> buscarUsuariosPorRol(Integer idRol);
-
-    List<Usuario> buscarUsuariosPorPrograma(Integer idPrograma);
 
     List<Usuario> listarUsuarios();
 
     Usuario buscarUsuarioPorSolicitud(Integer idSolicitud);
+
+    Usuario buscarUsuarioPorCodigo(String codigo);
 }

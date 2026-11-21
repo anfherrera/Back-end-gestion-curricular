@@ -1,5 +1,10 @@
 package co.edu.unicauca.decanatura.gestion_curricular.seguridad;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.DisplayName;
@@ -12,11 +17,6 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
-
 /**
  * ============================================================
  * PRUEBAS FUNCIONALES - SEGURIDAD
@@ -27,8 +27,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  * - Filtrado por rol/estado en listados (solo "Enviada" para funcionario,
  *   solo "APROBADA_FUNCIONARIO" para coordinador)
  *
- * Requiere perfil "test" y datos de prueba (import.sql).
- * Usuario admin en import.sql: admin@unicauca.edu.co / password123 (BCrypt).
+ * Requiere perfil "test" y datos de prueba (test-data.sql).
+ * Usuario admin en test-data.sql: admin@unicauca.edu.co / password123 (BCrypt).
  *
  * @author Daniel
  */
@@ -64,7 +64,7 @@ class SeguridadFuncionalTest {
     @Test
     @DisplayName("Seguridad Funcional 2: Login con contraseña incorrecta retorna 401")
     void testLoginContrasenaIncorrectaRetorna401() throws Exception {
-        // Usuario existente en import.sql (admin tiene BCrypt)
+        // Usuario existente en test-data.sql (admin tiene BCrypt)
         String json = """
             {"correo": "admin@unicauca.edu.co", "password": "clave_incorrecta"}
             """;
@@ -81,7 +81,7 @@ class SeguridadFuncionalTest {
     @Test
     @DisplayName("Seguridad Funcional 3: Login con credenciales correctas retorna 200 y token")
     void testLoginCredencialesCorrectasRetorna200YToken() throws Exception {
-        // Admin en import.sql: password123 (hash BCrypt); DataInitializer asegura que coincida
+        // Admin en test-data.sql: password123 (hash BCrypt)
         String json = """
             {"correo": "admin@unicauca.edu.co", "password": "password123"}
             """;

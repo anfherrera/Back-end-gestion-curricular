@@ -1,0 +1,59 @@
+{
+  "documento" : {
+    "status" : 200,
+    "contentType" : "application/octet-stream",
+    "contentDisposition" : "attachment; filename=\"OFICIO_Ana_P_rez_004.docx\"",
+    "body" : "BAI="
+  },
+  "plantillas" : {
+    "status" : 200,
+    "contentType" : "application/json",
+    "contentDisposition" : null,
+    "body" : [ {
+      "id" : "oficio",
+      "nombre" : "Oficio",
+      "descripcion" : "Plantilla",
+      "camposRequeridos" : [ "id" ],
+      "camposOpcionales" : [ ]
+    } ]
+  },
+  "crear" : {
+    "status" : 200,
+    "contentType" : "application/json",
+    "contentDisposition" : null,
+    "body" : {
+      "descripcion" : null,
+      "objDocente" : null,
+      "cupo_maximo" : null,
+      "estado" : null,
+      "fecha_inicio" : "<fecha>",
+      "periodo" : "2025-2",
+      "codigo_curso" : null,
+      "cupo_estimado" : null,
+      "id_curso" : 71,
+      "message" : "Curso creado exitosamente en la base de datos",
+      "nombre_curso" : "Materia",
+      "espacio_asignado" : null,
+      "objMateria" : null,
+      "fecha_fin" : "<fecha>",
+      "cupo_disponible" : null
+    }
+  },
+  "actualizar" : {
+    "status" : 200,
+    "contentType" : "application/json",
+    "contentDisposition" : null,
+    "body" : {
+      "id_salon" : null,
+      "nombre_curso" : "Curso",
+      "espacio_asignado" : null,
+      "debug_info" : "Cambios aplicados y guardados en BD",
+      "estado" : "Actualizado",
+      "codigo_curso" : "N/A",
+      "cupo_estimado" : 19,
+      "id_curso" : 71,
+      "message" : "Curso actualizado exitosamente",
+      "salon" : null
+    }
+  }
+}

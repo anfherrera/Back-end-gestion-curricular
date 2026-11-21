@@ -1,17 +1,17 @@
 package co.edu.unicauca.decanatura.gestion_curricular.estadisticas;
 
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
-import org.springframework.test.context.ActiveProfiles;
 import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
-
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 /**
  * ============================================================
@@ -253,47 +253,7 @@ class GestionEstadisticasFuncionalTest {
 
     // ==================== FLUJO 11: FILTRADO DINÁMICO ====================
 
-    @Test
-    @DisplayName("Funcional 11: Flujo de análisis personalizado - Usuario aplica múltiples filtros")
-    void testFlujoFiltraoDinamico() throws Exception {
-        /*
-         * FLUJO DE NEGOCIO:
-         * 1. Usuario necesita análisis muy específico
-         * 2. Usuario aplica filtros dinámicos (proceso, fecha, programa, estado)
-         * 3. Sistema genera estadísticas personalizadas
-         * 4. Usuario obtiene respuestas a preguntas específicas
-         * 
-         * ACTORES: Cualquier usuario autorizado
-         * RESULTADO ESPERADO: Estadísticas filtradas según criterios
-         */
-        
-        mockMvc.perform(get("/api/estadisticas/filtros-dinamicos")
-                        .param("proceso", "PAZ_Y_SALVO")
-                        .param("estado", "APROBADO"))
-                .andExpect(status().isOk())
-                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON));
-    }
-
     // ==================== FLUJO 12: ESTADÍSTICAS CONSOLIDADAS ====================
-
-    @Test
-    @DisplayName("Funcional 12: Flujo de reporte ejecutivo - Rector solicita informe consolidado")
-    void testFlujoReporteConsolidado() throws Exception {
-        /*
-         * FLUJO DE NEGOCIO:
-         * 1. Rector necesita informe para junta directiva
-         * 2. Rector solicita estadísticas consolidadas de todo el sistema
-         * 3. Sistema genera reporte completo con todas las métricas
-         * 4. Rector presenta resultados en junta directiva
-         * 
-         * ACTORES: Rector, Vicerrectores
-         * RESULTADO ESPERADO: Reporte consolidado institucional
-         */
-        
-        mockMvc.perform(get("/api/estadisticas/consolidado"))
-                .andExpect(status().isOk())
-                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON));
-    }
 
     // ==================== FLUJO 13: FLUJO COMPLETO DE ANÁLISIS ====================
 

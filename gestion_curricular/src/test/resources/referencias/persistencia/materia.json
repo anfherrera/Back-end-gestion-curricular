@@ -1,0 +1,30 @@
+{
+  "obtenerMateriaPorId 1" : {
+    "@tipo" : "Materia",
+    "codigo" : "MAT1",
+    "creditos" : 4,
+    "id_materia" : 1,
+    "nombre" : "Cálculo"
+  },
+  "obtenerMateriaPorId 2" : {
+    "@tipo" : "Materia",
+    "codigo" : null,
+    "creditos" : null,
+    "id_materia" : null,
+    "nombre" : null
+  },
+  "obtenerMateriaPorId 3" : null,
+  "listarMaterias" : [ {
+    "@tipo" : "Materia",
+    "codigo" : "MAT1",
+    "creditos" : 4,
+    "id_materia" : 1,
+    "nombre" : "Cálculo"
+  }, {
+    "@tipo" : "Materia",
+    "codigo" : null,
+    "creditos" : null,
+    "id_materia" : null,
+    "nombre" : null
+  } ]
+}

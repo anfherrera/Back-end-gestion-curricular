@@ -1,0 +1,346 @@
+{
+  "/api/solicitudes-ecaes/actualizarEstadoSolicitud" : {
+    "ENVIADA -> APROBADA_FUNCIONARIO como Funcionario" : {
+      "status" : 400,
+      "body" : {
+        "estadoActual" : "ENVIADA",
+        "codigo" : "TRANSICION_NO_PERMITIDA",
+        "error" : "Estado no válido: 'APROBADA_FUNCIONARIO'. Estados permitidos: [ENVIADA, PRE_REGISTRADO, RECHAZADA]"
+      },
+      "claves" : [ "estadoActual", "codigo", "error" ]
+    },
+    "Enviada -> aprobada funcionario como Funcionario" : {
+      "status" : 400,
+      "body" : {
+        "estadoActual" : "ENVIADA",
+        "codigo" : "TRANSICION_NO_PERMITIDA",
+        "error" : "Estado no válido: 'aprobada funcionario'. Estados permitidos: [ENVIADA, PRE_REGISTRADO, RECHAZADA]"
+      },
+      "claves" : [ "estadoActual", "codigo", "error" ]
+    },
+    "ENVIADA -> APROBADA_FUNCIONARIO como Coordinador" : {
+      "status" : 400,
+      "body" : {
+        "estadoActual" : "ENVIADA",
+        "codigo" : "TRANSICION_NO_PERMITIDA",
+        "error" : "Estado no válido: 'APROBADA_FUNCIONARIO'. Estados permitidos: [ENVIADA, PRE_REGISTRADO, RECHAZADA]"
+      },
+      "claves" : [ "estadoActual", "codigo", "error" ]
+    },
+    "ENVIADA -> APROBADA_FUNCIONARIO como Administrador" : {
+      "status" : 400,
+      "body" : {
+        "estadoActual" : "ENVIADA",
+        "codigo" : "TRANSICION_NO_PERMITIDA",
+        "error" : "Estado no válido: 'APROBADA_FUNCIONARIO'. Estados permitidos: [ENVIADA, PRE_REGISTRADO, RECHAZADA]"
+      },
+      "claves" : [ "estadoActual", "codigo", "error" ]
+    },
+    "ENVIADA -> APROBADA como Funcionario" : {
+      "status" : 400,
+      "body" : {
+        "estadoActual" : "ENVIADA",
+        "codigo" : "TRANSICION_NO_PERMITIDA",
+        "error" : "Estado no válido: 'APROBADA'. Estados permitidos: [ENVIADA, PRE_REGISTRADO, RECHAZADA]"
+      },
+      "claves" : [ "estadoActual", "codigo", "error" ]
+    },
+    "ENVIADA -> PRE_REGISTRADO como Funcionario" : {
+      "status" : 204,
+      "body" : null,
+      "claves" : [ ]
+    },
+    "ENVIADA -> PRE_REGISTRADO como Coordinador" : {
+      "status" : 403,
+      "body" : {
+        "estadoActual" : "ENVIADA",
+        "codigo" : "ROL_NO_AUTORIZADO",
+        "error" : "Este paso le corresponde al rol Funcionario"
+      },
+      "claves" : [ "estadoActual", "codigo", "error" ]
+    },
+    "aprobada_funcionario -> APROBADA_COORDINADOR como Funcionario" : {
+      "status" : 400,
+      "body" : {
+        "estadoActual" : null,
+        "codigo" : "TRANSICION_NO_PERMITIDA",
+        "error" : "El estado actual de la solicitud no es válido: aprobada_funcionario"
+      },
+      "claves" : [ "estadoActual", "codigo", "error" ]
+    },
+    "APROBADA -> RECHAZADA como Administrador" : {
+      "status" : 400,
+      "body" : {
+        "estadoActual" : null,
+        "codigo" : "TRANSICION_NO_PERMITIDA",
+        "error" : "El estado actual de la solicitud no es válido: APROBADA"
+      },
+      "claves" : [ "estadoActual", "codigo", "error" ]
+    },
+    "PRE_REGISTRADO -> RECHAZADA como Funcionario" : {
+      "status" : 400,
+      "body" : {
+        "estadoActual" : "PRE_REGISTRADO",
+        "codigo" : "TRANSICION_NO_PERMITIDA",
+        "error" : "La solicitud ya está en estado final (PRE_REGISTRADO) y no puede cambiar a RECHAZADA"
+      },
+      "claves" : [ "estadoActual", "codigo", "error" ]
+    },
+    "ENVIADA -> XYZ como Funcionario" : {
+      "status" : 400,
+      "body" : {
+        "estadoActual" : "ENVIADA",
+        "codigo" : "TRANSICION_NO_PERMITIDA",
+        "error" : "Estado no válido: 'XYZ'. Estados permitidos: [ENVIADA, PRE_REGISTRADO, RECHAZADA]"
+      },
+      "claves" : [ "estadoActual", "codigo", "error" ]
+    },
+    "ENVIADA -> null como Funcionario" : {
+      "status" : 400,
+      "body" : {
+        "estadoActual" : "ENVIADA",
+        "codigo" : "TRANSICION_NO_PERMITIDA",
+        "error" : "No se puede pasar de ENVIADA a ENVIADA. Desde ENVIADA solo se permite: [PRE_REGISTRADO, RECHAZADA]"
+      },
+      "claves" : [ "estadoActual", "codigo", "error" ]
+    },
+    "null -> RECHAZADA como Funcionario" : {
+      "status" : 204,
+      "body" : null,
+      "claves" : [ ]
+    },
+    "Desconocido -> RECHAZADA como Funcionario" : {
+      "status" : 400,
+      "body" : {
+        "estadoActual" : null,
+        "codigo" : "TRANSICION_NO_PERMITIDA",
+        "error" : "El estado actual de la solicitud no es válido: Desconocido"
+      },
+      "claves" : [ "estadoActual", "codigo", "error" ]
+    }
+  },
+  "/api/solicitudes-homologacion/actualizarEstadoSolicitud" : {
+    "ENVIADA -> APROBADA_FUNCIONARIO como Funcionario" : {
+      "status" : 204,
+      "body" : null,
+      "claves" : [ ]
+    },
+    "Enviada -> aprobada funcionario como Funcionario" : {
+      "status" : 204,
+      "body" : null,
+      "claves" : [ ]
+    },
+    "ENVIADA -> APROBADA_FUNCIONARIO como Coordinador" : {
+      "status" : 403,
+      "body" : {
+        "estadoActual" : "ENVIADA",
+        "codigo" : "ROL_NO_AUTORIZADO",
+        "error" : "Este paso le corresponde al rol Funcionario"
+      },
+      "claves" : [ "estadoActual", "codigo", "error" ]
+    },
+    "ENVIADA -> APROBADA_FUNCIONARIO como Administrador" : {
+      "status" : 204,
+      "body" : null,
+      "claves" : [ ]
+    },
+    "ENVIADA -> APROBADA como Funcionario" : {
+      "status" : 400,
+      "body" : {
+        "estadoActual" : "ENVIADA",
+        "codigo" : "TRANSICION_NO_PERMITIDA",
+        "error" : "No se puede pasar de ENVIADA a APROBADA. Desde ENVIADA solo se permite: [APROBADA_FUNCIONARIO, RECHAZADA]"
+      },
+      "claves" : [ "estadoActual", "codigo", "error" ]
+    },
+    "ENVIADA -> PRE_REGISTRADO como Funcionario" : {
+      "status" : 400,
+      "body" : {
+        "estadoActual" : "ENVIADA",
+        "codigo" : "TRANSICION_NO_PERMITIDA",
+        "error" : "Estado no válido: 'PRE_REGISTRADO'. Estados permitidos: [APROBADA, APROBADA_COORDINADOR, APROBADA_FUNCIONARIO, ENVIADA, RECHAZADA]"
+      },
+      "claves" : [ "estadoActual", "codigo", "error" ]
+    },
+    "ENVIADA -> PRE_REGISTRADO como Coordinador" : {
+      "status" : 400,
+      "body" : {
+        "estadoActual" : "ENVIADA",
+        "codigo" : "TRANSICION_NO_PERMITIDA",
+        "error" : "Estado no válido: 'PRE_REGISTRADO'. Estados permitidos: [APROBADA, APROBADA_COORDINADOR, APROBADA_FUNCIONARIO, ENVIADA, RECHAZADA]"
+      },
+      "claves" : [ "estadoActual", "codigo", "error" ]
+    },
+    "aprobada_funcionario -> APROBADA_COORDINADOR como Funcionario" : {
+      "status" : 403,
+      "body" : {
+        "estadoActual" : "APROBADA_FUNCIONARIO",
+        "codigo" : "ROL_NO_AUTORIZADO",
+        "error" : "Este paso le corresponde al rol Coordinador"
+      },
+      "claves" : [ "estadoActual", "codigo", "error" ]
+    },
+    "APROBADA -> RECHAZADA como Administrador" : {
+      "status" : 400,
+      "body" : {
+        "estadoActual" : "APROBADA",
+        "codigo" : "TRANSICION_NO_PERMITIDA",
+        "error" : "La solicitud ya está en estado final (APROBADA) y no puede cambiar a RECHAZADA"
+      },
+      "claves" : [ "estadoActual", "codigo", "error" ]
+    },
+    "PRE_REGISTRADO -> RECHAZADA como Funcionario" : {
+      "status" : 400,
+      "body" : {
+        "estadoActual" : null,
+        "codigo" : "TRANSICION_NO_PERMITIDA",
+        "error" : "El estado actual de la solicitud no es válido: PRE_REGISTRADO"
+      },
+      "claves" : [ "estadoActual", "codigo", "error" ]
+    },
+    "ENVIADA -> XYZ como Funcionario" : {
+      "status" : 400,
+      "body" : {
+        "estadoActual" : "ENVIADA",
+        "codigo" : "TRANSICION_NO_PERMITIDA",
+        "error" : "Estado no válido: 'XYZ'. Estados permitidos: [APROBADA, APROBADA_COORDINADOR, APROBADA_FUNCIONARIO, ENVIADA, RECHAZADA]"
+      },
+      "claves" : [ "estadoActual", "codigo", "error" ]
+    },
+    "ENVIADA -> null como Funcionario" : {
+      "status" : 400,
+      "body" : {
+        "estadoActual" : "ENVIADA",
+        "codigo" : "TRANSICION_NO_PERMITIDA",
+        "error" : "No se puede pasar de ENVIADA a ENVIADA. Desde ENVIADA solo se permite: [APROBADA_FUNCIONARIO, RECHAZADA]"
+      },
+      "claves" : [ "estadoActual", "codigo", "error" ]
+    },
+    "null -> RECHAZADA como Funcionario" : {
+      "status" : 204,
+      "body" : null,
+      "claves" : [ ]
+    },
+    "Desconocido -> RECHAZADA como Funcionario" : {
+      "status" : 400,
+      "body" : {
+        "estadoActual" : null,
+        "codigo" : "TRANSICION_NO_PERMITIDA",
+        "error" : "El estado actual de la solicitud no es válido: Desconocido"
+      },
+      "claves" : [ "estadoActual", "codigo", "error" ]
+    }
+  },
+  "/api/solicitudes-reingreso/actualizarEstadoSolicitud-Reingreso" : {
+    "ENVIADA -> APROBADA_FUNCIONARIO como Funcionario" : {
+      "status" : 204,
+      "body" : null,
+      "claves" : [ ]
+    },
+    "Enviada -> aprobada funcionario como Funcionario" : {
+      "status" : 204,
+      "body" : null,
+      "claves" : [ ]
+    },
+    "ENVIADA -> APROBADA_FUNCIONARIO como Coordinador" : {
+      "status" : 403,
+      "body" : {
+        "estadoActual" : "ENVIADA",
+        "codigo" : "ROL_NO_AUTORIZADO",
+        "error" : "Este paso le corresponde al rol Funcionario"
+      },
+      "claves" : [ "estadoActual", "codigo", "error" ]
+    },
+    "ENVIADA -> APROBADA_FUNCIONARIO como Administrador" : {
+      "status" : 204,
+      "body" : null,
+      "claves" : [ ]
+    },
+    "ENVIADA -> APROBADA como Funcionario" : {
+      "status" : 400,
+      "body" : {
+        "estadoActual" : "ENVIADA",
+        "codigo" : "TRANSICION_NO_PERMITIDA",
+        "error" : "No se puede pasar de ENVIADA a APROBADA. Desde ENVIADA solo se permite: [APROBADA_FUNCIONARIO, RECHAZADA]"
+      },
+      "claves" : [ "estadoActual", "codigo", "error" ]
+    },
+    "ENVIADA -> PRE_REGISTRADO como Funcionario" : {
+      "status" : 400,
+      "body" : {
+        "estadoActual" : "ENVIADA",
+        "codigo" : "TRANSICION_NO_PERMITIDA",
+        "error" : "Estado no válido: 'PRE_REGISTRADO'. Estados permitidos: [APROBADA, APROBADA_COORDINADOR, APROBADA_FUNCIONARIO, ENVIADA, RECHAZADA]"
+      },
+      "claves" : [ "estadoActual", "codigo", "error" ]
+    },
+    "ENVIADA -> PRE_REGISTRADO como Coordinador" : {
+      "status" : 400,
+      "body" : {
+        "estadoActual" : "ENVIADA",
+        "codigo" : "TRANSICION_NO_PERMITIDA",
+        "error" : "Estado no válido: 'PRE_REGISTRADO'. Estados permitidos: [APROBADA, APROBADA_COORDINADOR, APROBADA_FUNCIONARIO, ENVIADA, RECHAZADA]"
+      },
+      "claves" : [ "estadoActual", "codigo", "error" ]
+    },
+    "aprobada_funcionario -> APROBADA_COORDINADOR como Funcionario" : {
+      "status" : 403,
+      "body" : {
+        "estadoActual" : "APROBADA_FUNCIONARIO",
+        "codigo" : "ROL_NO_AUTORIZADO",
+        "error" : "Este paso le corresponde al rol Coordinador"
+      },
+      "claves" : [ "estadoActual", "codigo", "error" ]
+    },
+    "APROBADA -> RECHAZADA como Administrador" : {
+      "status" : 400,
+      "body" : {
+        "estadoActual" : "APROBADA",
+        "codigo" : "TRANSICION_NO_PERMITIDA",
+        "error" : "La solicitud ya está en estado final (APROBADA) y no puede cambiar a RECHAZADA"
+      },
+      "claves" : [ "estadoActual", "codigo", "error" ]
+    },
+    "PRE_REGISTRADO -> RECHAZADA como Funcionario" : {
+      "status" : 400,
+      "body" : {
+        "estadoActual" : null,
+        "codigo" : "TRANSICION_NO_PERMITIDA",
+        "error" : "El estado actual de la solicitud no es válido: PRE_REGISTRADO"
+      },
+      "claves" : [ "estadoActual", "codigo", "error" ]
+    },
+    "ENVIADA -> XYZ como Funcionario" : {
+      "status" : 400,
+      "body" : {
+        "estadoActual" : "ENVIADA",
+        "codigo" : "TRANSICION_NO_PERMITIDA",
+        "error" : "Estado no válido: 'XYZ'. Estados permitidos: [APROBADA, APROBADA_COORDINADOR, APROBADA_FUNCIONARIO, ENVIADA, RECHAZADA]"
+      },
+      "claves" : [ "estadoActual", "codigo", "error" ]
+    },
+    "ENVIADA -> null como Funcionario" : {
+      "status" : 400,
+      "body" : {
+        "estadoActual" : "ENVIADA",
+        "codigo" : "TRANSICION_NO_PERMITIDA",
+        "error" : "No se puede pasar de ENVIADA a ENVIADA. Desde ENVIADA solo se permite: [APROBADA_FUNCIONARIO, RECHAZADA]"
+      },
+      "claves" : [ "estadoActual", "codigo", "error" ]
+    },
+    "null -> RECHAZADA como Funcionario" : {
+      "status" : 204,
+      "body" : null,
+      "claves" : [ ]
+    },
+    "Desconocido -> RECHAZADA como Funcionario" : {
+      "status" : 400,
+      "body" : {
+        "estadoActual" : null,
+        "codigo" : "TRANSICION_NO_PERMITIDA",
+        "error" : "El estado actual de la solicitud no es válido: Desconocido"
+      },
+      "claves" : [ "estadoActual", "codigo", "error" ]
+    }
+  }
+}

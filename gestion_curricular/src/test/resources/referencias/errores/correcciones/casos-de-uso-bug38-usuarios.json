@@ -1,0 +1,189 @@
+{
+  "/usuarios actualizar inexistente" : {
+    "cuerpo" : {
+      "codigoError" : "GC-0003",
+      "codigoHttp" : 404,
+      "mensaje" : "Entidad no encontrada, No se encontró el usuario a actualizar.",
+      "metodo" : "GET",
+      "url" : "http://localhost/caso"
+    },
+    "estado" : 404,
+    "excepcion" : "EntidadNoExisteException"
+  },
+  "/usuarios actualizar nulo" : {
+    "cuerpo" : {
+      "codigoError" : "GC-0004",
+      "codigoHttp" : 400,
+      "mensaje" : "GC-0004 - Violación a regla de negocio: El usuario no puede ser nulo.",
+      "metodo" : "GET",
+      "url" : "http://localhost/caso"
+    },
+    "estado" : 400,
+    "excepcion" : "ReglaNegocioExcepcion"
+  },
+  "/usuarios actualizar programa inexistente" : {
+    "cuerpo" : {
+      "codigoError" : "GC-0003",
+      "codigoHttp" : 404,
+      "mensaje" : "Entidad no encontrada, El programa enviado no existe.",
+      "metodo" : "GET",
+      "url" : "http://localhost/caso"
+    },
+    "estado" : 404,
+    "excepcion" : "EntidadNoExisteException"
+  },
+  "/usuarios actualizar programa sin id" : {
+    "cuerpo" : {
+      "codigoError" : "GC-0004",
+      "codigoHttp" : 400,
+      "mensaje" : "GC-0004 - Violación a regla de negocio: El ID del programa del usuario no puede ser nulo.",
+      "metodo" : "GET",
+      "url" : "http://localhost/caso"
+    },
+    "estado" : 400,
+    "excepcion" : "ReglaNegocioExcepcion"
+  },
+  "/usuarios actualizar rol inexistente" : {
+    "cuerpo" : {
+      "codigoError" : "GC-0003",
+      "codigoHttp" : 404,
+      "mensaje" : "Entidad no encontrada, El rol enviado no existe.",
+      "metodo" : "GET",
+      "url" : "http://localhost/caso"
+    },
+    "estado" : 404,
+    "excepcion" : "EntidadNoExisteException"
+  },
+  "/usuarios actualizar rol sin id" : {
+    "cuerpo" : {
+      "codigoError" : "GC-0004",
+      "codigoHttp" : 400,
+      "mensaje" : "GC-0004 - Violación a regla de negocio: El ID del rol no puede ser nulo.",
+      "metodo" : "GET",
+      "url" : "http://localhost/caso"
+    },
+    "estado" : 400,
+    "excepcion" : "ReglaNegocioExcepcion"
+  },
+  "/usuarios actualizar sin id" : {
+    "cuerpo" : {
+      "codigoError" : "GC-0004",
+      "codigoHttp" : 400,
+      "mensaje" : "GC-0004 - Violación a regla de negocio: El ID del usuario no puede ser nulo.",
+      "metodo" : "GET",
+      "url" : "http://localhost/caso"
+    },
+    "estado" : 400,
+    "excepcion" : "ReglaNegocioExcepcion"
+  },
+  "/usuarios actualizar sin programa" : {
+    "cuerpo" : {
+      "codigoError" : "GC-0004",
+      "codigoHttp" : 400,
+      "mensaje" : "GC-0004 - Violación a regla de negocio: El programa del usuario no puede ser nulo",
+      "metodo" : "GET",
+      "url" : "http://localhost/caso"
+    },
+    "estado" : 400,
+    "excepcion" : "ReglaNegocioExcepcion"
+  },
+  "/usuarios actualizar sin rol" : {
+    "cuerpo" : {
+      "codigoError" : "GC-0004",
+      "codigoHttp" : 400,
+      "mensaje" : "GC-0004 - Violación a regla de negocio: El rol es nulo",
+      "metodo" : "GET",
+      "url" : "http://localhost/caso"
+    },
+    "estado" : 400,
+    "excepcion" : "ReglaNegocioExcepcion"
+  },
+  "/usuarios crear programa inexistente" : {
+    "cuerpo" : {
+      "codigoError" : "GC-0003",
+      "codigoHttp" : 404,
+      "mensaje" : "Entidad no encontrada, El programa enviado no existe.",
+      "metodo" : "GET",
+      "url" : "http://localhost/caso"
+    },
+    "estado" : 404,
+    "excepcion" : "EntidadNoExisteException"
+  },
+  "/usuarios crear rol inexistente" : {
+    "cuerpo" : {
+      "codigoError" : "GC-0003",
+      "codigoHttp" : 404,
+      "mensaje" : "Entidad no encontrada, El rol con ID: '3' no existe.",
+      "metodo" : "GET",
+      "url" : "http://localhost/caso"
+    },
+    "estado" : 404,
+    "excepcion" : "EntidadNoExisteException"
+  },
+  "/usuarios crear sin programa" : {
+    "cuerpo" : {
+      "codigoError" : "GC-0004",
+      "codigoHttp" : 400,
+      "mensaje" : "GC-0004 - Violación a regla de negocio: El programa del usuario no puede ser nulo o su ID no puede ser nulo.",
+      "metodo" : "GET",
+      "url" : "http://localhost/caso"
+    },
+    "estado" : 400,
+    "excepcion" : "ReglaNegocioExcepcion"
+  },
+  "/usuarios eliminar inexistente" : {
+    "cuerpo" : {
+      "codigoError" : "GC-0003",
+      "codigoHttp" : 404,
+      "mensaje" : "Entidad no encontrada, No se encontró el usuario a eliminar.",
+      "metodo" : "GET",
+      "url" : "http://localhost/caso"
+    },
+    "estado" : 404,
+    "excepcion" : "EntidadNoExisteException"
+  },
+  "/usuarios eliminar sin id" : {
+    "cuerpo" : {
+      "codigoError" : "GC-0004",
+      "codigoHttp" : 400,
+      "mensaje" : "GC-0004 - Violación a regla de negocio: El ID del usuario no puede ser nulo.",
+      "metodo" : "GET",
+      "url" : "http://localhost/caso"
+    },
+    "estado" : 400,
+    "excepcion" : "ReglaNegocioExcepcion"
+  },
+  "/usuarios obtener sin id" : {
+    "cuerpo" : {
+      "codigoError" : "GC-0004",
+      "codigoHttp" : 400,
+      "mensaje" : "GC-0004 - Violación a regla de negocio: El ID del usuario no puede ser nulo.",
+      "metodo" : "GET",
+      "url" : "http://localhost/caso"
+    },
+    "estado" : 400,
+    "excepcion" : "ReglaNegocioExcepcion"
+  },
+  "/usuarios por correo blanco" : {
+    "cuerpo" : {
+      "codigoError" : "GC-0004",
+      "codigoHttp" : 400,
+      "mensaje" : "GC-0004 - Violación a regla de negocio: El correo no puede estar vacío.",
+      "metodo" : "GET",
+      "url" : "http://localhost/caso"
+    },
+    "estado" : 400,
+    "excepcion" : "ReglaNegocioExcepcion"
+  },
+  "/usuarios por correo inexistente" : {
+    "cuerpo" : {
+      "codigoError" : "GC-0003",
+      "codigoHttp" : 404,
+      "mensaje" : "Entidad no encontrada, No se encontró el usuario con ese correo.",
+      "metodo" : "GET",
+      "url" : "http://localhost/caso"
+    },
+    "estado" : 404,
+    "excepcion" : "EntidadNoExisteException"
+  }
+}

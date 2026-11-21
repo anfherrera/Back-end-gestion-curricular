@@ -4,7 +4,6 @@ package co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.per
 import java.util.ArrayList;
 import java.util.List;
 
-import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.entidades.Enums.GrupoCursoVeranoEntity;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -23,6 +22,8 @@ import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+
+import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.entidades.enums.GrupoCursoVeranoEntity;
 
 @Entity
 @Table(name = "Cursos_ofertados")

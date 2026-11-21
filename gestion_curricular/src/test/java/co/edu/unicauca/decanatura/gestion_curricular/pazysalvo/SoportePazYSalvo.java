@@ -5,12 +5,14 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.repositorios.SolicitudRepositoryInt;
+import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.repositorios.UsuarioRepositoryInt;
 
 /**
  * Utilidades para las pruebas de Paz y Salvo. Todo se hace a través de la API para respetar
@@ -37,10 +39,10 @@ final class SoportePazYSalvo {
 
     /** Cambia el estado con el token indicado y devuelve el código HTTP. */
     static int cambiarEstado(MockMvc mockMvc, String token, int idSolicitud, String nuevoEstado) throws Exception {
-        return mockMvc.perform(put(BASE + "/cambiarEstadoSolicitud/" + idSolicitud)
+        return mockMvc.perform(put(BASE + "/actualizarEstadoSolicitud")
                         .header("Authorization", token)
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content("{\"nuevoEstado\": \"" + nuevoEstado + "\"}"))
+                        .content("{\"idSolicitud\": " + idSolicitud + ", \"nuevoEstado\": \"" + nuevoEstado + "\"}"))
                 .andReturn().getResponse().getStatus();
     }
 
@@ -69,8 +71,28 @@ final class SoportePazYSalvo {
     }
 
     /** Id del usuario autenticado según el correo. */
-    static int idUsuario(co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.repositorios.UsuarioRepositoryInt repo,
+    static int idUsuario(UsuarioRepositoryInt repo,
                          String correo) {
         return repo.buscarPorCorreo(correo).orElseThrow().getId_usuario();
+    }
+
+    /**
+     * Un id que no pertenece al estudiante: ni es su id de usuario ni el de una solicitud suya.
+     * El endpoint /listarSolicitud-PazYSalvo/{id} interpreta el número como id de solicitud o de
+     * usuario, y las demás pruebas crean solicitudes a nombre del estudiante, así que el id del
+     * coordinador podría coincidir con una solicitud propia del estudiante.
+     */
+    static int idAjeno(SolicitudRepositoryInt solicitudes, int idEstudiante, int candidato) {
+        int id = candidato;
+        while (id == idEstudiante || esSolicitudDe(solicitudes, id, idEstudiante)) {
+            id++;
+        }
+        return id;
+    }
+
+    private static boolean esSolicitudDe(SolicitudRepositoryInt solicitudes, int idSolicitud, int idUsuario) {
+        return solicitudes.findById(idSolicitud)
+                .map(s -> s.getObjUsuario() != null && s.getObjUsuario().getId_usuario() == idUsuario)
+                .orElse(false);
     }
 }

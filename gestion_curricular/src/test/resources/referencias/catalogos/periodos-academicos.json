@@ -1,0 +1,198 @@
+{
+  "todos" : {
+    "status" : 200,
+    "body" : {
+      "data" : [ "2020-1", "2020-2", "2021-1", "2021-2", "2022-1", "2022-2", "2023-1", "2023-2", "2024-1", "2024-2", "2025-1", "2025-2", "2026-1", "2026-2", "2027-1", "2027-2", "2028-1", "2028-2", "2029-1", "2029-2", "2030-1", "2030-2" ],
+      "success" : true,
+      "message" : "Períodos académicos obtenidos exitosamente"
+    },
+    "claves" : [ "data", "success", "message" ]
+  },
+  "futuros" : {
+    "status" : 200,
+    "body" : {
+      "data" : "<periodos-futuros>",
+      "success" : true,
+      "message" : "Períodos académicos futuros obtenidos exitosamente"
+    },
+    "claves" : [ "data", "success", "message" ]
+  },
+  "recientes" : {
+    "status" : 200,
+    "body" : {
+      "data" : "<periodos-recientes>",
+      "success" : true,
+      "message" : "Períodos académicos recientes obtenidos exitosamente"
+    },
+    "claves" : [ "data", "success", "message" ]
+  },
+  "actual" : {
+    "status" : 200,
+    "body" : {
+      "data" : "<periodo-actual>",
+      "success" : true,
+      "message" : "Período actual obtenido exitosamente"
+    },
+    "claves" : [ "data", "success", "message" ]
+  },
+  "ultimo" : {
+    "status" : 200,
+    "body" : {
+      "data" : "<periodo-actual>",
+      "success" : true,
+      "message" : "Último período académico obtenido exitosamente"
+    },
+    "claves" : [ "data", "success", "message", "data.descripcion", "data.numeroPeriodo", "data.valor", "data.año" ]
+  },
+  "2020-1" : {
+    "validar" : {
+      "status" : 200,
+      "body" : {
+        "data" : true,
+        "success" : true,
+        "message" : "Período válido"
+      },
+      "claves" : [ "data", "success", "message" ]
+    },
+    "info" : {
+      "status" : 200,
+      "body" : {
+        "data" : {
+          "descripcion" : "Primer Período 2020",
+          "numeroPeriodo" : 1,
+          "valor" : "2020-1",
+          "año" : 2020
+        },
+        "success" : true,
+        "message" : "Información del período obtenida exitosamente"
+      },
+      "claves" : [ "data", "success", "message", "data.descripcion", "data.numeroPeriodo", "data.valor", "data.año" ]
+    }
+  },
+  "2025-2" : {
+    "validar" : {
+      "status" : 200,
+      "body" : {
+        "data" : true,
+        "success" : true,
+        "message" : "Período válido"
+      },
+      "claves" : [ "data", "success", "message" ]
+    },
+    "info" : {
+      "status" : 200,
+      "body" : {
+        "data" : {
+          "descripcion" : "Segundo Período 2025",
+          "numeroPeriodo" : 2,
+          "valor" : "2025-2",
+          "año" : 2025
+        },
+        "success" : true,
+        "message" : "Información del período obtenida exitosamente"
+      },
+      "claves" : [ "data", "success", "message", "data.descripcion", "data.numeroPeriodo", "data.valor", "data.año" ]
+    }
+  },
+  "2030-2" : {
+    "validar" : {
+      "status" : 200,
+      "body" : {
+        "data" : true,
+        "success" : true,
+        "message" : "Período válido"
+      },
+      "claves" : [ "data", "success", "message" ]
+    },
+    "info" : {
+      "status" : 200,
+      "body" : {
+        "data" : {
+          "descripcion" : "Segundo Período 2030",
+          "numeroPeriodo" : 2,
+          "valor" : "2030-2",
+          "año" : 2030
+        },
+        "success" : true,
+        "message" : "Información del período obtenida exitosamente"
+      },
+      "claves" : [ "data", "success", "message", "data.descripcion", "data.numeroPeriodo", "data.valor", "data.año" ]
+    }
+  },
+  " 2025-1 " : {
+    "validar" : {
+      "status" : 200,
+      "body" : {
+        "data" : false,
+        "success" : true,
+        "message" : "Período no válido"
+      },
+      "claves" : [ "data", "success", "message" ]
+    },
+    "info" : {
+      "status" : 400,
+      "body" : {
+        "success" : false,
+        "message" : "Período académico no válido:  2025-1 "
+      },
+      "claves" : [ "success", "message" ]
+    }
+  },
+  "2025-3" : {
+    "validar" : {
+      "status" : 200,
+      "body" : {
+        "data" : false,
+        "success" : true,
+        "message" : "Período no válido"
+      },
+      "claves" : [ "data", "success", "message" ]
+    },
+    "info" : {
+      "status" : 400,
+      "body" : {
+        "success" : false,
+        "message" : "Período académico no válido: 2025-3"
+      },
+      "claves" : [ "success", "message" ]
+    }
+  },
+  "abc" : {
+    "validar" : {
+      "status" : 200,
+      "body" : {
+        "data" : false,
+        "success" : true,
+        "message" : "Período no válido"
+      },
+      "claves" : [ "data", "success", "message" ]
+    },
+    "info" : {
+      "status" : 400,
+      "body" : {
+        "success" : false,
+        "message" : "Período académico no válido: abc"
+      },
+      "claves" : [ "success", "message" ]
+    }
+  },
+  "2019-1" : {
+    "validar" : {
+      "status" : 200,
+      "body" : {
+        "data" : false,
+        "success" : true,
+        "message" : "Período no válido"
+      },
+      "claves" : [ "data", "success", "message" ]
+    },
+    "info" : {
+      "status" : 400,
+      "body" : {
+        "success" : false,
+        "message" : "Período académico no válido: 2019-1"
+      },
+      "claves" : [ "success", "message" ]
+    }
+  }
+}

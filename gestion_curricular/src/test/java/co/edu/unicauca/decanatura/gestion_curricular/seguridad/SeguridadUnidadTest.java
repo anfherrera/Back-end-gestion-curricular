@@ -1,10 +1,10 @@
 package co.edu.unicauca.decanatura.gestion_curricular.seguridad;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-
-import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Pruebas unitarias de seguridad: codificación y verificación de contraseñas con BCrypt.

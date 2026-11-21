@@ -1,0 +1,672 @@
+{
+  "guardar simple" : {
+    "resultado" : {
+      "@tipo" : "EstadoSolicitud",
+      "comentario" : "bien",
+      "estado_actual" : "APROBADA",
+      "fecha_registro_estado" : 1720000000000,
+      "id_estado" : null,
+      "objSolicitud" : null
+    },
+    "guardados" : [ {
+      "@tipo" : "EstadoSolicitudEntity",
+      "comentario" : "bien",
+      "estado_actual" : "APROBADA",
+      "fecha_registro_estado" : 1720000000000,
+      "id_estado" : null,
+      "objSolicitud" : null
+    } ]
+  },
+  "guardar con solicitud" : {
+    "resultado" : {
+      "@tipo" : "EstadoSolicitud",
+      "comentario" : "falta",
+      "estado_actual" : "RECHAZADA",
+      "fecha_registro_estado" : 1720000000000,
+      "id_estado" : null,
+      "objSolicitud" : {
+        "@tipo" : "Solicitud",
+        "documentos" : [ {
+          "@tipo" : "Documento",
+          "comentario" : "legible",
+          "esValido" : true,
+          "fecha_documento" : 1720000000000,
+          "idUsuarioSubio" : 1,
+          "id_documento" : 3,
+          "nombre" : "carta.pdf",
+          "objSolicitud" : {
+            "@tipo" : "Solicitud",
+            "documentos" : [ {
+              "@ref" : "$.objSolicitud.documentos[0]"
+            }, {
+              "@tipo" : "Documento",
+              "comentario" : null,
+              "esValido" : false,
+              "fecha_documento" : null,
+              "idUsuarioSubio" : null,
+              "id_documento" : 4,
+              "nombre" : null,
+              "objSolicitud" : null,
+              "ruta_documento" : null
+            } ],
+            "estadosSolicitud" : [ {
+              "@tipo" : "EstadoSolicitud",
+              "comentario" : null,
+              "estado_actual" : "Enviada",
+              "fecha_registro_estado" : 1710000000000,
+              "id_estado" : 1,
+              "objSolicitud" : {
+                "@tipo" : "Solicitud",
+                "documentos" : [ {
+                  "@ref" : "$.objSolicitud.documentos[0]"
+                }, {
+                  "@ref" : "$.objSolicitud.documentos[0].objSolicitud.documentos[1]"
+                } ],
+                "estadosSolicitud" : [ {
+                  "@ref" : "$.objSolicitud.documentos[0].objSolicitud.estadosSolicitud[0]"
+                }, {
+                  "@tipo" : "EstadoSolicitud",
+                  "comentario" : "revisar",
+                  "estado_actual" : "Enviado",
+                  "fecha_registro_estado" : null,
+                  "id_estado" : 2,
+                  "objSolicitud" : null
+                } ],
+                "fecha_ceremonia" : 1700000000000,
+                "fecha_registro_solicitud" : 1710000000000,
+                "id_solicitud" : 7,
+                "nombre_solicitud" : "Solicitud de prueba",
+                "objCursoOfertadoVerano" : {
+                  "@tipo" : "CursoOfertadoVerano",
+                  "cupo_estimado" : 20,
+                  "estadosCursoOfertados" : [ {
+                    "@tipo" : "EstadoCursoOfertado",
+                    "estado_actual" : "Abierto",
+                    "fecha_registro_estado" : 1700000000000,
+                    "id_estado" : 8,
+                    "objCursoOfertadoVerano" : {
+                      "@tipo" : "CursoOfertadoVerano",
+                      "cupo_estimado" : 20,
+                      "estadosCursoOfertados" : [ {
+                        "@ref" : "$.objSolicitud.documentos[0].objSolicitud.estadosSolicitud[0].objSolicitud.objCursoOfertadoVerano.estadosCursoOfertados[0]"
+                      }, {
+                        "@tipo" : "EstadoCursoOfertado",
+                        "estado_actual" : "Abierto",
+                        "fecha_registro_estado" : null,
+                        "id_estado" : 9,
+                        "objCursoOfertadoVerano" : null
+                      } ],
+                      "estudiantesInscritos" : [ {
+                        "@tipo" : "Usuario",
+                        "cedula" : "123",
+                        "codigo" : "104",
+                        "correo" : "ana@unicauca.edu.co",
+                        "cursosOfertadosInscritos" : [ ],
+                        "estado_usuario" : true,
+                        "id_usuario" : 1,
+                        "nombre_completo" : "Ana Pérez",
+                        "objPrograma" : {
+                          "@tipo" : "Programa",
+                          "codigo" : "SIS",
+                          "id_programa" : 1,
+                          "nombre_programa" : "Ingeniería de Sistemas"
+                        },
+                        "objRol" : {
+                          "@tipo" : "Rol",
+                          "id_rol" : 1,
+                          "nombre" : "ESTUDIANTE",
+                          "usuarios" : [ {
+                            "@ref" : "$.objSolicitud.documentos[0].objSolicitud.estadosSolicitud[0].objSolicitud.objCursoOfertadoVerano.estadosCursoOfertados[0].objCursoOfertadoVerano.estudiantesInscritos[0]"
+                          } ]
+                        },
+                        "password" : "$2a$hash",
+                        "solicitudes" : [ ]
+                      } ],
+                      "fecha_fin" : 1720000000000,
+                      "fecha_inicio" : 1700000000000,
+                      "grupo" : "GrupoCursoVerano.B",
+                      "id_curso" : 4,
+                      "objDocente" : {
+                        "@tipo" : "Docente",
+                        "codigo_docente" : "D06",
+                        "id_docente" : 6,
+                        "nombre_docente" : "Luis"
+                      },
+                      "objMateria" : {
+                        "@tipo" : "Materia",
+                        "codigo" : "MAT1",
+                        "creditos" : 4,
+                        "id_materia" : 5,
+                        "nombre" : "Cálculo"
+                      },
+                      "periodo_academico" : "2025-1",
+                      "salon" : "221",
+                      "solicitudes" : [ {
+                        "@tipo" : "Solicitud",
+                        "documentos" : [ {
+                          "@ref" : "$.objSolicitud.documentos[0]"
+                        }, {
+                          "@ref" : "$.objSolicitud.documentos[0].objSolicitud.documentos[1]"
+                        } ],
+                        "estadosSolicitud" : [ {
+                          "@ref" : "$.objSolicitud.documentos[0].objSolicitud.estadosSolicitud[0]"
+                        }, {
+                          "@ref" : "$.objSolicitud.documentos[0].objSolicitud.estadosSolicitud[0].objSolicitud.estadosSolicitud[1]"
+                        } ],
+                        "fecha_ceremonia" : 1700000000000,
+                        "fecha_registro_solicitud" : 1710000000000,
+                        "id_solicitud" : 7,
+                        "nombre_solicitud" : "Solicitud de prueba",
+                        "objCursoOfertadoVerano" : {
+                          "@tipo" : "CursoOfertadoVerano",
+                          "cupo_estimado" : 20,
+                          "estadosCursoOfertados" : [ {
+                            "@ref" : "$.objSolicitud.documentos[0].objSolicitud.estadosSolicitud[0].objSolicitud.objCursoOfertadoVerano.estadosCursoOfertados[0]"
+                          }, {
+                            "@ref" : "$.objSolicitud.documentos[0].objSolicitud.estadosSolicitud[0].objSolicitud.objCursoOfertadoVerano.estadosCursoOfertados[0].objCursoOfertadoVerano.estadosCursoOfertados[1]"
+                          } ],
+                          "estudiantesInscritos" : [ {
+                            "@ref" : "$.objSolicitud.documentos[0].objSolicitud.estadosSolicitud[0].objSolicitud.objCursoOfertadoVerano.estadosCursoOfertados[0].objCursoOfertadoVerano.estudiantesInscritos[0]"
+                          } ],
+                          "fecha_fin" : 1720000000000,
+                          "fecha_inicio" : 1700000000000,
+                          "grupo" : "GrupoCursoVerano.B",
+                          "id_curso" : 4,
+                          "objDocente" : {
+                            "@tipo" : "Docente",
+                            "codigo_docente" : "D06",
+                            "id_docente" : 6,
+                            "nombre_docente" : "Luis"
+                          },
+                          "objMateria" : {
+                            "@tipo" : "Materia",
+                            "codigo" : "MAT1",
+                            "creditos" : 4,
+                            "id_materia" : 5,
+                            "nombre" : "Cálculo"
+                          },
+                          "periodo_academico" : "2025-1",
+                          "salon" : "221",
+                          "solicitudes" : [ {
+                            "@ref" : "$.objSolicitud.documentos[0].objSolicitud.estadosSolicitud[0].objSolicitud.objCursoOfertadoVerano.estadosCursoOfertados[0].objCursoOfertadoVerano.solicitudes[0]"
+                          } ]
+                        },
+                        "objUsuario" : {
+                          "@ref" : "$.objSolicitud.documentos[0].objSolicitud.estadosSolicitud[0].objSolicitud.objCursoOfertadoVerano.estadosCursoOfertados[0].objCursoOfertadoVerano.estudiantesInscritos[0]"
+                        },
+                        "periodo_academico" : "2025-1"
+                      } ]
+                    }
+                  }, {
+                    "@ref" : "$.objSolicitud.documentos[0].objSolicitud.estadosSolicitud[0].objSolicitud.objCursoOfertadoVerano.estadosCursoOfertados[0].objCursoOfertadoVerano.estadosCursoOfertados[1]"
+                  } ],
+                  "estudiantesInscritos" : [ {
+                    "@ref" : "$.objSolicitud.documentos[0].objSolicitud.estadosSolicitud[0].objSolicitud.objCursoOfertadoVerano.estadosCursoOfertados[0].objCursoOfertadoVerano.estudiantesInscritos[0]"
+                  } ],
+                  "fecha_fin" : 1720000000000,
+                  "fecha_inicio" : 1700000000000,
+                  "grupo" : "GrupoCursoVerano.B",
+                  "id_curso" : 4,
+                  "objDocente" : {
+                    "@tipo" : "Docente",
+                    "codigo_docente" : "D06",
+                    "id_docente" : 6,
+                    "nombre_docente" : "Luis"
+                  },
+                  "objMateria" : {
+                    "@tipo" : "Materia",
+                    "codigo" : "MAT1",
+                    "creditos" : 4,
+                    "id_materia" : 5,
+                    "nombre" : "Cálculo"
+                  },
+                  "periodo_academico" : "2025-1",
+                  "salon" : "221",
+                  "solicitudes" : [ {
+                    "@ref" : "$.objSolicitud.documentos[0].objSolicitud.estadosSolicitud[0].objSolicitud.objCursoOfertadoVerano.estadosCursoOfertados[0].objCursoOfertadoVerano.solicitudes[0]"
+                  } ]
+                },
+                "objUsuario" : {
+                  "@ref" : "$.objSolicitud.documentos[0].objSolicitud.estadosSolicitud[0].objSolicitud.objCursoOfertadoVerano.estadosCursoOfertados[0].objCursoOfertadoVerano.estudiantesInscritos[0]"
+                },
+                "periodo_academico" : "2025-1"
+              }
+            }, {
+              "@ref" : "$.objSolicitud.documentos[0].objSolicitud.estadosSolicitud[0].objSolicitud.estadosSolicitud[1]"
+            } ],
+            "fecha_ceremonia" : 1700000000000,
+            "fecha_registro_solicitud" : 1710000000000,
+            "id_solicitud" : 7,
+            "nombre_solicitud" : "Solicitud de prueba",
+            "objCursoOfertadoVerano" : {
+              "@tipo" : "CursoOfertadoVerano",
+              "cupo_estimado" : 20,
+              "estadosCursoOfertados" : [ {
+                "@ref" : "$.objSolicitud.documentos[0].objSolicitud.estadosSolicitud[0].objSolicitud.objCursoOfertadoVerano.estadosCursoOfertados[0]"
+              }, {
+                "@ref" : "$.objSolicitud.documentos[0].objSolicitud.estadosSolicitud[0].objSolicitud.objCursoOfertadoVerano.estadosCursoOfertados[0].objCursoOfertadoVerano.estadosCursoOfertados[1]"
+              } ],
+              "estudiantesInscritos" : [ {
+                "@ref" : "$.objSolicitud.documentos[0].objSolicitud.estadosSolicitud[0].objSolicitud.objCursoOfertadoVerano.estadosCursoOfertados[0].objCursoOfertadoVerano.estudiantesInscritos[0]"
+              } ],
+              "fecha_fin" : 1720000000000,
+              "fecha_inicio" : 1700000000000,
+              "grupo" : "GrupoCursoVerano.B",
+              "id_curso" : 4,
+              "objDocente" : {
+                "@tipo" : "Docente",
+                "codigo_docente" : "D06",
+                "id_docente" : 6,
+                "nombre_docente" : "Luis"
+              },
+              "objMateria" : {
+                "@tipo" : "Materia",
+                "codigo" : "MAT1",
+                "creditos" : 4,
+                "id_materia" : 5,
+                "nombre" : "Cálculo"
+              },
+              "periodo_academico" : "2025-1",
+              "salon" : "221",
+              "solicitudes" : [ {
+                "@ref" : "$.objSolicitud.documentos[0].objSolicitud.estadosSolicitud[0].objSolicitud.objCursoOfertadoVerano.estadosCursoOfertados[0].objCursoOfertadoVerano.solicitudes[0]"
+              } ]
+            },
+            "objUsuario" : {
+              "@ref" : "$.objSolicitud.documentos[0].objSolicitud.estadosSolicitud[0].objSolicitud.objCursoOfertadoVerano.estadosCursoOfertados[0].objCursoOfertadoVerano.estudiantesInscritos[0]"
+            },
+            "periodo_academico" : "2025-1"
+          },
+          "ruta_documento" : "reingreso/carta.pdf"
+        }, {
+          "@ref" : "$.objSolicitud.documentos[0].objSolicitud.documentos[1]"
+        } ],
+        "estadosSolicitud" : [ {
+          "@ref" : "$.objSolicitud.documentos[0].objSolicitud.estadosSolicitud[0]"
+        }, {
+          "@ref" : "$.objSolicitud.documentos[0].objSolicitud.estadosSolicitud[0].objSolicitud.estadosSolicitud[1]"
+        } ],
+        "fecha_ceremonia" : 1700000000000,
+        "fecha_registro_solicitud" : 1710000000000,
+        "id_solicitud" : 7,
+        "nombre_solicitud" : "Solicitud de prueba",
+        "objCursoOfertadoVerano" : {
+          "@tipo" : "CursoOfertadoVerano",
+          "cupo_estimado" : 20,
+          "estadosCursoOfertados" : [ {
+            "@ref" : "$.objSolicitud.documentos[0].objSolicitud.estadosSolicitud[0].objSolicitud.objCursoOfertadoVerano.estadosCursoOfertados[0]"
+          }, {
+            "@ref" : "$.objSolicitud.documentos[0].objSolicitud.estadosSolicitud[0].objSolicitud.objCursoOfertadoVerano.estadosCursoOfertados[0].objCursoOfertadoVerano.estadosCursoOfertados[1]"
+          } ],
+          "estudiantesInscritos" : [ {
+            "@ref" : "$.objSolicitud.documentos[0].objSolicitud.estadosSolicitud[0].objSolicitud.objCursoOfertadoVerano.estadosCursoOfertados[0].objCursoOfertadoVerano.estudiantesInscritos[0]"
+          } ],
+          "fecha_fin" : 1720000000000,
+          "fecha_inicio" : 1700000000000,
+          "grupo" : "GrupoCursoVerano.B",
+          "id_curso" : 4,
+          "objDocente" : {
+            "@tipo" : "Docente",
+            "codigo_docente" : "D06",
+            "id_docente" : 6,
+            "nombre_docente" : "Luis"
+          },
+          "objMateria" : {
+            "@tipo" : "Materia",
+            "codigo" : "MAT1",
+            "creditos" : 4,
+            "id_materia" : 5,
+            "nombre" : "Cálculo"
+          },
+          "periodo_academico" : "2025-1",
+          "salon" : "221",
+          "solicitudes" : [ {
+            "@ref" : "$.objSolicitud.documentos[0].objSolicitud.estadosSolicitud[0].objSolicitud.objCursoOfertadoVerano.estadosCursoOfertados[0].objCursoOfertadoVerano.solicitudes[0]"
+          } ]
+        },
+        "objUsuario" : {
+          "@ref" : "$.objSolicitud.documentos[0].objSolicitud.estadosSolicitud[0].objSolicitud.objCursoOfertadoVerano.estadosCursoOfertados[0].objCursoOfertadoVerano.estudiantesInscritos[0]"
+        },
+        "periodo_academico" : "2025-1"
+      }
+    },
+    "guardados" : [ {
+      "@tipo" : "EstadoSolicitudEntity",
+      "comentario" : "falta",
+      "estado_actual" : "RECHAZADA",
+      "fecha_registro_estado" : 1720000000000,
+      "id_estado" : null,
+      "objSolicitud" : {
+        "@tipo" : "SolicitudEntity",
+        "documentos" : [ {
+          "@tipo" : "DocumentoEntity",
+          "comentario" : "legible",
+          "esValido" : true,
+          "fecha_documento" : 1720000000000,
+          "idUsuarioSubio" : 1,
+          "id_documento" : 3,
+          "nombre" : "carta.pdf",
+          "objSolicitud" : {
+            "@tipo" : "SolicitudEntity",
+            "documentos" : [ {
+              "@ref" : "$[0].objSolicitud.documentos[0]"
+            }, {
+              "@tipo" : "DocumentoEntity",
+              "comentario" : null,
+              "esValido" : false,
+              "fecha_documento" : null,
+              "idUsuarioSubio" : null,
+              "id_documento" : 4,
+              "nombre" : null,
+              "objSolicitud" : null,
+              "ruta_documento" : null
+            } ],
+            "estadosSolicitud" : [ {
+              "@tipo" : "EstadoSolicitudEntity",
+              "comentario" : null,
+              "estado_actual" : "Enviada",
+              "fecha_registro_estado" : 1710000000000,
+              "id_estado" : 1,
+              "objSolicitud" : {
+                "@tipo" : "SolicitudEntity",
+                "documentos" : [ {
+                  "@ref" : "$[0].objSolicitud.documentos[0]"
+                }, {
+                  "@ref" : "$[0].objSolicitud.documentos[0].objSolicitud.documentos[1]"
+                } ],
+                "estadosSolicitud" : [ {
+                  "@ref" : "$[0].objSolicitud.documentos[0].objSolicitud.estadosSolicitud[0]"
+                }, {
+                  "@tipo" : "EstadoSolicitudEntity",
+                  "comentario" : "revisar",
+                  "estado_actual" : "Enviado",
+                  "fecha_registro_estado" : null,
+                  "id_estado" : 2,
+                  "objSolicitud" : null
+                } ],
+                "fecha_ceremonia" : 1700000000000,
+                "fecha_registro_solicitud" : 1710000000000,
+                "id_solicitud" : 7,
+                "nombre_solicitud" : "Solicitud de prueba",
+                "objCursoOfertadoVerano" : {
+                  "@tipo" : "CursoOfertadoVeranoEntity",
+                  "cupo_estimado" : 20,
+                  "estadosCursoOfertados" : [ {
+                    "@tipo" : "EstadoCursoOfertadoEntity",
+                    "estado_actual" : "Abierto",
+                    "fecha_registro_estado" : 1700000000000,
+                    "id_estado" : 8,
+                    "objCursoOfertadoVerano" : {
+                      "@tipo" : "CursoOfertadoVeranoEntity",
+                      "cupo_estimado" : 20,
+                      "estadosCursoOfertados" : [ {
+                        "@ref" : "$[0].objSolicitud.documentos[0].objSolicitud.estadosSolicitud[0].objSolicitud.objCursoOfertadoVerano.estadosCursoOfertados[0]"
+                      }, {
+                        "@tipo" : "EstadoCursoOfertadoEntity",
+                        "estado_actual" : "Abierto",
+                        "fecha_registro_estado" : null,
+                        "id_estado" : 9,
+                        "objCursoOfertadoVerano" : null
+                      } ],
+                      "estudiantesInscritos" : [ {
+                        "@tipo" : "UsuarioEntity",
+                        "cedula" : "123",
+                        "codigo" : "104",
+                        "correo" : "ana@unicauca.edu.co",
+                        "cursosOfertadosInscritos" : [ ],
+                        "estado_usuario" : true,
+                        "id_usuario" : 1,
+                        "nombre_completo" : "Ana Pérez",
+                        "objPrograma" : {
+                          "@tipo" : "ProgramaEntity",
+                          "codigo" : "SIS",
+                          "id_programa" : 1,
+                          "nombre_programa" : "Ingeniería de Sistemas",
+                          "usuarios" : [ ]
+                        },
+                        "objRol" : {
+                          "@tipo" : "RolEntity",
+                          "id_rol" : 1,
+                          "nombre" : "ESTUDIANTE",
+                          "usuarios" : [ {
+                            "@ref" : "$[0].objSolicitud.documentos[0].objSolicitud.estadosSolicitud[0].objSolicitud.objCursoOfertadoVerano.estadosCursoOfertados[0].objCursoOfertadoVerano.estudiantesInscritos[0]"
+                          } ]
+                        },
+                        "password" : "$2a$hash",
+                        "solicitudes" : [ ]
+                      } ],
+                      "fecha_fin" : 1720000000000,
+                      "fecha_inicio" : 1700000000000,
+                      "grupo" : "GrupoCursoVeranoEntity.B",
+                      "id_curso" : 4,
+                      "objDocente" : {
+                        "@tipo" : "DocenteEntity",
+                        "codigo_docente" : "D06",
+                        "id_docente" : 6,
+                        "nombre_docente" : "Luis"
+                      },
+                      "objMateria" : {
+                        "@tipo" : "MateriaEntity",
+                        "codigo" : "MAT1",
+                        "creditos" : 4,
+                        "id_materia" : 5,
+                        "nombre" : "Cálculo"
+                      },
+                      "periodo_academico" : "2025-1",
+                      "salon" : "221",
+                      "solicitudes" : [ {
+                        "@tipo" : "SolicitudEntity",
+                        "documentos" : [ {
+                          "@ref" : "$[0].objSolicitud.documentos[0]"
+                        }, {
+                          "@ref" : "$[0].objSolicitud.documentos[0].objSolicitud.documentos[1]"
+                        } ],
+                        "estadosSolicitud" : [ {
+                          "@ref" : "$[0].objSolicitud.documentos[0].objSolicitud.estadosSolicitud[0]"
+                        }, {
+                          "@ref" : "$[0].objSolicitud.documentos[0].objSolicitud.estadosSolicitud[0].objSolicitud.estadosSolicitud[1]"
+                        } ],
+                        "fecha_ceremonia" : 1700000000000,
+                        "fecha_registro_solicitud" : 1710000000000,
+                        "id_solicitud" : 7,
+                        "nombre_solicitud" : "Solicitud de prueba",
+                        "objCursoOfertadoVerano" : {
+                          "@tipo" : "CursoOfertadoVeranoEntity",
+                          "cupo_estimado" : 20,
+                          "estadosCursoOfertados" : [ {
+                            "@ref" : "$[0].objSolicitud.documentos[0].objSolicitud.estadosSolicitud[0].objSolicitud.objCursoOfertadoVerano.estadosCursoOfertados[0]"
+                          }, {
+                            "@ref" : "$[0].objSolicitud.documentos[0].objSolicitud.estadosSolicitud[0].objSolicitud.objCursoOfertadoVerano.estadosCursoOfertados[0].objCursoOfertadoVerano.estadosCursoOfertados[1]"
+                          } ],
+                          "estudiantesInscritos" : [ {
+                            "@ref" : "$[0].objSolicitud.documentos[0].objSolicitud.estadosSolicitud[0].objSolicitud.objCursoOfertadoVerano.estadosCursoOfertados[0].objCursoOfertadoVerano.estudiantesInscritos[0]"
+                          } ],
+                          "fecha_fin" : 1720000000000,
+                          "fecha_inicio" : 1700000000000,
+                          "grupo" : "GrupoCursoVeranoEntity.B",
+                          "id_curso" : 4,
+                          "objDocente" : {
+                            "@tipo" : "DocenteEntity",
+                            "codigo_docente" : "D06",
+                            "id_docente" : 6,
+                            "nombre_docente" : "Luis"
+                          },
+                          "objMateria" : {
+                            "@tipo" : "MateriaEntity",
+                            "codigo" : "MAT1",
+                            "creditos" : 4,
+                            "id_materia" : 5,
+                            "nombre" : "Cálculo"
+                          },
+                          "periodo_academico" : "2025-1",
+                          "salon" : "221",
+                          "solicitudes" : [ {
+                            "@ref" : "$[0].objSolicitud.documentos[0].objSolicitud.estadosSolicitud[0].objSolicitud.objCursoOfertadoVerano.estadosCursoOfertados[0].objCursoOfertadoVerano.solicitudes[0]"
+                          } ]
+                        },
+                        "objUsuario" : {
+                          "@ref" : "$[0].objSolicitud.documentos[0].objSolicitud.estadosSolicitud[0].objSolicitud.objCursoOfertadoVerano.estadosCursoOfertados[0].objCursoOfertadoVerano.estudiantesInscritos[0]"
+                        },
+                        "periodo_academico" : "2025-1"
+                      } ]
+                    }
+                  }, {
+                    "@ref" : "$[0].objSolicitud.documentos[0].objSolicitud.estadosSolicitud[0].objSolicitud.objCursoOfertadoVerano.estadosCursoOfertados[0].objCursoOfertadoVerano.estadosCursoOfertados[1]"
+                  } ],
+                  "estudiantesInscritos" : [ {
+                    "@ref" : "$[0].objSolicitud.documentos[0].objSolicitud.estadosSolicitud[0].objSolicitud.objCursoOfertadoVerano.estadosCursoOfertados[0].objCursoOfertadoVerano.estudiantesInscritos[0]"
+                  } ],
+                  "fecha_fin" : 1720000000000,
+                  "fecha_inicio" : 1700000000000,
+                  "grupo" : "GrupoCursoVeranoEntity.B",
+                  "id_curso" : 4,
+                  "objDocente" : {
+                    "@tipo" : "DocenteEntity",
+                    "codigo_docente" : "D06",
+                    "id_docente" : 6,
+                    "nombre_docente" : "Luis"
+                  },
+                  "objMateria" : {
+                    "@tipo" : "MateriaEntity",
+                    "codigo" : "MAT1",
+                    "creditos" : 4,
+                    "id_materia" : 5,
+                    "nombre" : "Cálculo"
+                  },
+                  "periodo_academico" : "2025-1",
+                  "salon" : "221",
+                  "solicitudes" : [ {
+                    "@ref" : "$[0].objSolicitud.documentos[0].objSolicitud.estadosSolicitud[0].objSolicitud.objCursoOfertadoVerano.estadosCursoOfertados[0].objCursoOfertadoVerano.solicitudes[0]"
+                  } ]
+                },
+                "objUsuario" : {
+                  "@ref" : "$[0].objSolicitud.documentos[0].objSolicitud.estadosSolicitud[0].objSolicitud.objCursoOfertadoVerano.estadosCursoOfertados[0].objCursoOfertadoVerano.estudiantesInscritos[0]"
+                },
+                "periodo_academico" : "2025-1"
+              }
+            }, {
+              "@ref" : "$[0].objSolicitud.documentos[0].objSolicitud.estadosSolicitud[0].objSolicitud.estadosSolicitud[1]"
+            } ],
+            "fecha_ceremonia" : 1700000000000,
+            "fecha_registro_solicitud" : 1710000000000,
+            "id_solicitud" : 7,
+            "nombre_solicitud" : "Solicitud de prueba",
+            "objCursoOfertadoVerano" : {
+              "@tipo" : "CursoOfertadoVeranoEntity",
+              "cupo_estimado" : 20,
+              "estadosCursoOfertados" : [ {
+                "@ref" : "$[0].objSolicitud.documentos[0].objSolicitud.estadosSolicitud[0].objSolicitud.objCursoOfertadoVerano.estadosCursoOfertados[0]"
+              }, {
+                "@ref" : "$[0].objSolicitud.documentos[0].objSolicitud.estadosSolicitud[0].objSolicitud.objCursoOfertadoVerano.estadosCursoOfertados[0].objCursoOfertadoVerano.estadosCursoOfertados[1]"
+              } ],
+              "estudiantesInscritos" : [ {
+                "@ref" : "$[0].objSolicitud.documentos[0].objSolicitud.estadosSolicitud[0].objSolicitud.objCursoOfertadoVerano.estadosCursoOfertados[0].objCursoOfertadoVerano.estudiantesInscritos[0]"
+              } ],
+              "fecha_fin" : 1720000000000,
+              "fecha_inicio" : 1700000000000,
+              "grupo" : "GrupoCursoVeranoEntity.B",
+              "id_curso" : 4,
+              "objDocente" : {
+                "@tipo" : "DocenteEntity",
+                "codigo_docente" : "D06",
+                "id_docente" : 6,
+                "nombre_docente" : "Luis"
+              },
+              "objMateria" : {
+                "@tipo" : "MateriaEntity",
+                "codigo" : "MAT1",
+                "creditos" : 4,
+                "id_materia" : 5,
+                "nombre" : "Cálculo"
+              },
+              "periodo_academico" : "2025-1",
+              "salon" : "221",
+              "solicitudes" : [ {
+                "@ref" : "$[0].objSolicitud.documentos[0].objSolicitud.estadosSolicitud[0].objSolicitud.objCursoOfertadoVerano.estadosCursoOfertados[0].objCursoOfertadoVerano.solicitudes[0]"
+              } ]
+            },
+            "objUsuario" : {
+              "@ref" : "$[0].objSolicitud.documentos[0].objSolicitud.estadosSolicitud[0].objSolicitud.objCursoOfertadoVerano.estadosCursoOfertados[0].objCursoOfertadoVerano.estudiantesInscritos[0]"
+            },
+            "periodo_academico" : "2025-1"
+          },
+          "ruta_documento" : "reingreso/carta.pdf"
+        }, {
+          "@ref" : "$[0].objSolicitud.documentos[0].objSolicitud.documentos[1]"
+        } ],
+        "estadosSolicitud" : [ {
+          "@ref" : "$[0].objSolicitud.documentos[0].objSolicitud.estadosSolicitud[0]"
+        }, {
+          "@ref" : "$[0].objSolicitud.documentos[0].objSolicitud.estadosSolicitud[0].objSolicitud.estadosSolicitud[1]"
+        } ],
+        "fecha_ceremonia" : 1700000000000,
+        "fecha_registro_solicitud" : 1710000000000,
+        "id_solicitud" : 7,
+        "nombre_solicitud" : "Solicitud de prueba",
+        "objCursoOfertadoVerano" : {
+          "@tipo" : "CursoOfertadoVeranoEntity",
+          "cupo_estimado" : 20,
+          "estadosCursoOfertados" : [ {
+            "@ref" : "$[0].objSolicitud.documentos[0].objSolicitud.estadosSolicitud[0].objSolicitud.objCursoOfertadoVerano.estadosCursoOfertados[0]"
+          }, {
+            "@ref" : "$[0].objSolicitud.documentos[0].objSolicitud.estadosSolicitud[0].objSolicitud.objCursoOfertadoVerano.estadosCursoOfertados[0].objCursoOfertadoVerano.estadosCursoOfertados[1]"
+          } ],
+          "estudiantesInscritos" : [ {
+            "@ref" : "$[0].objSolicitud.documentos[0].objSolicitud.estadosSolicitud[0].objSolicitud.objCursoOfertadoVerano.estadosCursoOfertados[0].objCursoOfertadoVerano.estudiantesInscritos[0]"
+          } ],
+          "fecha_fin" : 1720000000000,
+          "fecha_inicio" : 1700000000000,
+          "grupo" : "GrupoCursoVeranoEntity.B",
+          "id_curso" : 4,
+          "objDocente" : {
+            "@tipo" : "DocenteEntity",
+            "codigo_docente" : "D06",
+            "id_docente" : 6,
+            "nombre_docente" : "Luis"
+          },
+          "objMateria" : {
+            "@tipo" : "MateriaEntity",
+            "codigo" : "MAT1",
+            "creditos" : 4,
+            "id_materia" : 5,
+            "nombre" : "Cálculo"
+          },
+          "periodo_academico" : "2025-1",
+          "salon" : "221",
+          "solicitudes" : [ {
+            "@ref" : "$[0].objSolicitud.documentos[0].objSolicitud.estadosSolicitud[0].objSolicitud.objCursoOfertadoVerano.estadosCursoOfertados[0].objCursoOfertadoVerano.solicitudes[0]"
+          } ]
+        },
+        "objUsuario" : {
+          "@ref" : "$[0].objSolicitud.documentos[0].objSolicitud.estadosSolicitud[0].objSolicitud.objCursoOfertadoVerano.estadosCursoOfertados[0].objCursoOfertadoVerano.estudiantesInscritos[0]"
+        },
+        "periodo_academico" : "2025-1"
+      }
+    } ]
+  },
+  "guardar sin estado" : {
+    "resultado" : {
+      "@tipo" : "EstadoSolicitud",
+      "comentario" : null,
+      "estado_actual" : "Enviado",
+      "fecha_registro_estado" : null,
+      "id_estado" : null,
+      "objSolicitud" : null
+    },
+    "guardados" : [ {
+      "@tipo" : "EstadoSolicitudEntity",
+      "comentario" : null,
+      "estado_actual" : "Enviado",
+      "fecha_registro_estado" : null,
+      "id_estado" : null,
+      "objSolicitud" : null
+    } ]
+  },
+  "guardar nulo" : {
+    "resultado" : {
+      "excepcion" : "java.lang.IllegalArgumentException",
+      "mensaje" : "source cannot be null"
+    },
+    "guardados" : [ ]
+  }
+}

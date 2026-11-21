@@ -1,5 +1,8 @@
 package co.edu.unicauca.decanatura.gestion_curricular.homologacion;
 
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,9 +12,6 @@ import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
-
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 /**
  * ============================================================
@@ -30,7 +30,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest
 @AutoConfigureMockMvc(addFilters = false)
 @ActiveProfiles("test")
-@WithMockUser(roles = { "SECRETARIA", "FUNCIONARIO", "COORDINADOR", "ESTUDIANTE" })
+@WithMockUser(username = "juan.perez@unicauca.edu.co", roles = { "Secretario", "Funcionario", "Coordinador", "Estudiante" })
 @DisplayName("Pruebas de Integración - REST API Homologación")
 class HomologacionIntegracionTest {
 

@@ -1,0 +1,118 @@
+{
+  "obtenerEstadisticaPorId 1" : {
+    "@tipo" : "Estadistica",
+    "id_estadistica" : 1,
+    "nombre" : "Resumen",
+    "nombres_procesos" : [ "Homologación" ],
+    "nombres_programas" : [ "Sistemas" ],
+    "periodos_academico" : [ 1700000000000 ],
+    "total_aprobadas" : 6,
+    "total_rechazadas" : 2,
+    "total_solicitudes" : 10
+  },
+  "obtenerEstadisticaPorId 2" : {
+    "@tipo" : "Estadistica",
+    "id_estadistica" : 2,
+    "nombre" : null,
+    "nombres_procesos" : [ ],
+    "nombres_programas" : [ ],
+    "periodos_academico" : [ ],
+    "total_aprobadas" : null,
+    "total_rechazadas" : null,
+    "total_solicitudes" : null
+  },
+  "obtenerEstadisticaPorId 9" : {
+    "excepcion" : "java.lang.IllegalArgumentException",
+    "mensaje" : "Estadistica no encontrada"
+  },
+  "obtenerEstadisticasSolicitudPeriodoEstadoYPrograma 2" : {
+    "@tipo" : "Estadistica",
+    "id_estadistica" : 2,
+    "nombre" : null,
+    "nombres_procesos" : [ ],
+    "nombres_programas" : [ ],
+    "periodos_academico" : [ ],
+    "total_aprobadas" : null,
+    "total_rechazadas" : null,
+    "total_solicitudes" : 3
+  },
+  "crearEstadistica con listas" : {
+    "resultado" : {
+      "@tipo" : "Estadistica",
+      "id_estadistica" : 5,
+      "nombre" : "Nueva",
+      "nombres_procesos" : [ "Reingreso" ],
+      "nombres_programas" : [ "Sistemas", "Electrónica" ],
+      "periodos_academico" : [ ],
+      "total_aprobadas" : 1,
+      "total_rechazadas" : 1,
+      "total_solicitudes" : 4
+    },
+    "guardados" : [ {
+      "@tipo" : "EstadisticaEntity",
+      "id_estadistica" : 5,
+      "nombre" : "Nueva",
+      "nombres_procesos" : [ "Reingreso" ],
+      "nombres_programas" : [ "Sistemas", "Electrónica" ],
+      "periodos_academico" : [ ],
+      "total_aprobadas" : 1,
+      "total_rechazadas" : 1,
+      "total_solicitudes" : 4
+    } ]
+  },
+  "crearEstadistica nulos" : {
+    "resultado" : {
+      "@tipo" : "Estadistica",
+      "id_estadistica" : null,
+      "nombre" : null,
+      "nombres_procesos" : [ "Reingreso" ],
+      "nombres_programas" : [ "Sistemas", "Electrónica" ],
+      "periodos_academico" : [ ],
+      "total_aprobadas" : 1,
+      "total_rechazadas" : 1,
+      "total_solicitudes" : 4
+    },
+    "guardados" : [ {
+      "@tipo" : "EstadisticaEntity",
+      "id_estadistica" : null,
+      "nombre" : null,
+      "nombres_procesos" : [ "Reingreso" ],
+      "nombres_programas" : [ "Sistemas", "Electrónica" ],
+      "periodos_academico" : [ ],
+      "total_aprobadas" : 1,
+      "total_rechazadas" : 1,
+      "total_solicitudes" : 4
+    } ]
+  },
+  "actualizarEstadistica" : {
+    "resultado" : {
+      "@tipo" : "Estadistica",
+      "id_estadistica" : 1,
+      "nombre" : "Otra",
+      "nombres_procesos" : [ "Reingreso" ],
+      "nombres_programas" : [ "Sistemas", "Electrónica" ],
+      "periodos_academico" : [ ],
+      "total_aprobadas" : 1,
+      "total_rechazadas" : 1,
+      "total_solicitudes" : 4
+    },
+    "guardados" : [ {
+      "@tipo" : "EstadisticaEntity",
+      "id_estadistica" : 1,
+      "nombre" : "Otra",
+      "nombres_procesos" : [ "Reingreso" ],
+      "nombres_programas" : [ "Sistemas", "Electrónica" ],
+      "periodos_academico" : [ ],
+      "total_aprobadas" : 1,
+      "total_rechazadas" : 1,
+      "total_solicitudes" : 4
+    } ]
+  },
+  "actualizarEstadistica inexistente" : {
+    "resultado" : {
+      "excepcion" : "java.lang.RuntimeException",
+      "mensaje" : "Estadistica no encontrada con ID: 9"
+    },
+    "guardados" : [ ]
+  }
+}

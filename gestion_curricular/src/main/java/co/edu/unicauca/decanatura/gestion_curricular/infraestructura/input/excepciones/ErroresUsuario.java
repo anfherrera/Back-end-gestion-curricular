@@ -1,0 +1,43 @@
+package co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.excepciones;
+
+import java.util.function.Supplier;
+
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.excepciones.CupoAgotadoException;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.excepciones.EntidadNoExisteException;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.excepciones.EntidadYaExisteException;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.excepciones.ReglaNegocioExcepcion;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Usuario;
+
+/**
+ * Traducción de errores al crear usuarios: {@link IllegalArgumentException} y las excepciones de dominio que
+ * conoce el manejador global llegan a él tal cual (400, 404 o 409). Cualquier otro error, incluidos los del
+ * mapeo de la respuesta, se envuelve en una {@link RuntimeException} genérica y el manejador global responde 500.
+ */
+public final class ErroresUsuario {
+    private ErroresUsuario() {}
+
+    public static <T> T alCrear(Supplier<T> operacion) {
+        try {
+            return operacion.get();
+        } catch (IllegalArgumentException | EntidadYaExisteException | EntidadNoExisteException
+                | ReglaNegocioExcepcion | CupoAgotadoException e) {
+            throw e;
+        } catch (Exception e) {
+            throw new RuntimeException("Error al crear el usuario: " + e.getMessage(), e);
+        }
+    }
+
+    /** Errores del mapeo de la respuesta, incluido {@link IllegalArgumentException}, como error genérico. */
+    public static <T> T alMapearCreado(Supplier<T> mapeo, Usuario usuarioCreado) {
+        try {
+            return mapeo.get();
+        } catch (Exception e) {
+            if (e.getMessage() != null && e.getMessage().contains("source cannot be null")) {
+                throw new RuntimeException("Error al mapear usuario a DTO: "
+                        + "Rol: " + (usuarioCreado.getObjRol() != null ? "presente" : "null")
+                        + ", Programa: " + (usuarioCreado.getObjPrograma() != null ? "presente" : "null"), e);
+            }
+            throw new RuntimeException("Error al mapear el usuario creado a DTO de respuesta: " + e.getMessage(), e);
+        }
+    }
+}

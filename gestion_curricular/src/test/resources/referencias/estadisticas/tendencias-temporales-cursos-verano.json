@@ -1,0 +1,54 @@
+{
+  "descripcion" : "Tendencias temporales optimizadas para cursos de verano",
+  "tendenciasTemporales" : [ {
+    "mes" : "Enero",
+    "porcentaje" : 0.0,
+    "solicitudes" : 0
+  }, {
+    "mes" : "Febrero",
+    "porcentaje" : 0.0,
+    "solicitudes" : 0
+  }, {
+    "mes" : "Marzo",
+    "porcentaje" : 0.0,
+    "solicitudes" : 0
+  }, {
+    "mes" : "Abril",
+    "porcentaje" : 0.0,
+    "solicitudes" : 0
+  }, {
+    "mes" : "Mayo",
+    "porcentaje" : 0.0,
+    "solicitudes" : 0
+  }, {
+    "mes" : "Junio",
+    "porcentaje" : 40.0,
+    "solicitudes" : 2
+  }, {
+    "mes" : "Julio",
+    "porcentaje" : 60.0,
+    "solicitudes" : 3
+  }, {
+    "mes" : "Agosto",
+    "porcentaje" : 0.0,
+    "solicitudes" : 0
+  }, {
+    "mes" : "Septiembre",
+    "porcentaje" : 0.0,
+    "solicitudes" : 0
+  }, {
+    "mes" : "Octubre",
+    "porcentaje" : 0.0,
+    "solicitudes" : 0
+  }, {
+    "mes" : "Noviembre",
+    "porcentaje" : 0.0,
+    "solicitudes" : 0
+  }, {
+    "mes" : "Diciembre",
+    "porcentaje" : 0.0,
+    "solicitudes" : 0
+  } ],
+  "todosLosMeses" : [ "Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre" ],
+  "totalSolicitudes" : 5
+}

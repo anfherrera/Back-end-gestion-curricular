@@ -1,0 +1,44 @@
+{
+  "obtenerSalonPorId 1" : {
+    "@tipo" : "Salon",
+    "activo" : true,
+    "edificio" : "FIET",
+    "id_salon" : 1,
+    "numero_salon" : "221"
+  },
+  "obtenerSalonPorId 2" : {
+    "@tipo" : "Salon",
+    "activo" : false,
+    "edificio" : null,
+    "id_salon" : 2,
+    "numero_salon" : null
+  },
+  "obtenerSalonPorId 3" : null,
+  "obtenerSalonPorNumero 221" : {
+    "@tipo" : "Salon",
+    "activo" : true,
+    "edificio" : "FIET",
+    "id_salon" : 1,
+    "numero_salon" : "221"
+  },
+  "obtenerSalonPorNumero 000" : {
+    "@tipo" : "Salon",
+    "activo" : null,
+    "edificio" : null,
+    "id_salon" : null,
+    "numero_salon" : null
+  },
+  "listarSalonesActivos" : [ {
+    "@tipo" : "Salon",
+    "activo" : true,
+    "edificio" : "FIET",
+    "id_salon" : 1,
+    "numero_salon" : "221"
+  }, {
+    "@tipo" : "Salon",
+    "activo" : null,
+    "edificio" : null,
+    "id_salon" : null,
+    "numero_salon" : null
+  } ]
+}

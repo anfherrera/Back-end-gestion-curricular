@@ -1,0 +1,7 @@
+{
+  "listarPorFiltros idPrograma=null" : [ 4 ],
+  "listarPorFiltros idPrograma=1" : [ ],
+  "listarPorFiltros idPrograma=2" : [ ],
+  "inscrito rol" : null,
+  "inscrito programa" : null
+}

@@ -1,0 +1,96 @@
+{
+  "/api/archivos/descargar/pdf oficio.pdf" : {
+    "body" : "JVBERi1jb250ZW5pZG8gZmlqbw==",
+    "status" : 200,
+    "headers" : {
+      "Cache-Control" : [ "private, max-age=3600" ],
+      "Content-Disposition" : [ "attachment; filename=\"oficio.pdf\"; filename*=UTF-8''oficio.pdf" ],
+      "Content-Length" : [ "19" ],
+      "Content-Type" : [ "application/pdf" ]
+    }
+  },
+  "/api/archivos/descargar/pdf/inscripcion/7 oficio.pdf" : {
+    "body" : "JVBERi1jb250ZW5pZG8gZmlqbw==",
+    "status" : 200,
+    "headers" : {
+      "Cache-Control" : [ "private, max-age=3600" ],
+      "Content-Disposition" : [ "attachment; filename=\"oficio.pdf\"" ],
+      "Content-Length" : [ "19" ],
+      "Content-Type" : [ "application/pdf" ]
+    }
+  },
+  "/api/cursos-intersemestrales/inscripciones/7/comprobante oficio.pdf" : {
+    "body" : "JVBERi1jb250ZW5pZG8gZmlqbw==",
+    "status" : 200,
+    "headers" : {
+      "Content-Disposition" : [ "attachment; filename=\"oficio.pdf\"" ],
+      "Content-Length" : [ "19" ],
+      "Content-Type" : [ "application/pdf" ]
+    }
+  },
+  "/api/solicitudes-homologacion/descargarOficio/7 oficio.pdf" : {
+    "body" : "JVBERi1jb250ZW5pZG8gZmlqbw==",
+    "status" : 200,
+    "headers" : {
+      "Content-Disposition" : [ "attachment; filename=\"oficio.pdf\"" ],
+      "Content-Length" : [ "19" ],
+      "Content-Type" : [ "application/pdf" ]
+    }
+  },
+  "/api/solicitudes-reingreso/descargarOficio/7 oficio.pdf" : {
+    "body" : "JVBERi1jb250ZW5pZG8gZmlqbw==",
+    "status" : 200,
+    "headers" : {
+      "Content-Disposition" : [ "attachment; filename=\"oficio.pdf\"" ],
+      "Content-Length" : [ "19" ],
+      "Content-Type" : [ "application/pdf" ]
+    }
+  },
+  "/api/archivos/descargar/pdf oficio á +\".pdf" : {
+    "body" : "JVBERi1jb250ZW5pZG8gZmlqbw==",
+    "status" : 200,
+    "headers" : {
+      "Cache-Control" : [ "private, max-age=3600" ],
+      "Content-Disposition" : [ "attachment; filename=\"oficio á +\".pdf\"; filename*=UTF-8''oficio%20%C3%A1%20%2B%22.pdf" ],
+      "Content-Length" : [ "19" ],
+      "Content-Type" : [ "application/pdf" ]
+    }
+  },
+  "/api/archivos/descargar/pdf/inscripcion/7 oficio á +\".pdf" : {
+    "body" : "JVBERi1jb250ZW5pZG8gZmlqbw==",
+    "status" : 200,
+    "headers" : {
+      "Cache-Control" : [ "private, max-age=3600" ],
+      "Content-Disposition" : [ "attachment; filename=\"oficio á +\".pdf\"" ],
+      "Content-Length" : [ "19" ],
+      "Content-Type" : [ "application/pdf" ]
+    }
+  },
+  "/api/cursos-intersemestrales/inscripciones/7/comprobante oficio á +\".pdf" : {
+    "body" : "JVBERi1jb250ZW5pZG8gZmlqbw==",
+    "status" : 200,
+    "headers" : {
+      "Content-Disposition" : [ "attachment; filename=\"oficio á +\".pdf\"" ],
+      "Content-Length" : [ "19" ],
+      "Content-Type" : [ "application/pdf" ]
+    }
+  },
+  "/api/solicitudes-homologacion/descargarOficio/7 oficio á +\".pdf" : {
+    "body" : "JVBERi1jb250ZW5pZG8gZmlqbw==",
+    "status" : 200,
+    "headers" : {
+      "Content-Disposition" : [ "attachment; filename=\"oficio á +\".pdf\"" ],
+      "Content-Length" : [ "19" ],
+      "Content-Type" : [ "application/pdf" ]
+    }
+  },
+  "/api/solicitudes-reingreso/descargarOficio/7 oficio á +\".pdf" : {
+    "body" : "JVBERi1jb250ZW5pZG8gZmlqbw==",
+    "status" : 200,
+    "headers" : {
+      "Content-Disposition" : [ "attachment; filename=\"oficio á +\".pdf\"" ],
+      "Content-Length" : [ "19" ],
+      "Content-Type" : [ "application/pdf" ]
+    }
+  }
+}

@@ -1,0 +1,86 @@
+{
+  "sin id" : {
+    "status" : 400,
+    "body" : {
+      "error" : "El ID de la solicitud es requerido"
+    },
+    "claves" : {
+      "error" : "STRING"
+    }
+  },
+  "sin estado" : {
+    "status" : 400,
+    "body" : {
+      "error" : "El nuevo estado es requerido"
+    },
+    "claves" : {
+      "error" : "STRING"
+    }
+  },
+  "estado en blanco" : {
+    "status" : 400,
+    "body" : {
+      "error" : "El nuevo estado es requerido"
+    },
+    "claves" : {
+      "error" : "STRING"
+    }
+  },
+  "permitido" : {
+    "status" : 204,
+    "body" : null,
+    "claves" : { }
+  },
+  "transicion no permitida" : {
+    "status" : 400,
+    "body" : {
+      "estadoActual" : "ENVIADA",
+      "codigo" : "TRANSICION_NO_PERMITIDA",
+      "error" : "No se puede pasar"
+    },
+    "claves" : {
+      "estadoActual" : "STRING",
+      "codigo" : "STRING",
+      "error" : "STRING"
+    }
+  },
+  "rol no autorizado" : {
+    "status" : 403,
+    "body" : {
+      "estadoActual" : "APROBADA_FUNCIONARIO",
+      "codigo" : "ROL_NO_AUTORIZADO",
+      "error" : "Solo el Coordinador"
+    },
+    "claves" : {
+      "estadoActual" : "STRING",
+      "codigo" : "STRING",
+      "error" : "STRING"
+    }
+  },
+  "rechazo sin estado actual" : {
+    "status" : 400,
+    "body" : {
+      "estadoActual" : null,
+      "codigo" : "TRANSICION_NO_PERMITIDA",
+      "error" : "Estado desconocido"
+    },
+    "claves" : {
+      "estadoActual" : "NULL",
+      "codigo" : "STRING",
+      "error" : "STRING"
+    }
+  },
+  "rechazo sin mensaje" : {
+    "status" : 403,
+    "body" : {
+      "estadoActual" : "ENVIADA",
+      "codigo" : "ROL_NO_AUTORIZADO",
+      "error" : null
+    },
+    "claves" : {
+      "estadoActual" : "STRING",
+      "codigo" : "STRING",
+      "error" : "NULL"
+    }
+  }
+}

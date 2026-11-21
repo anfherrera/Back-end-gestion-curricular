@@ -1,0 +1,372 @@
+{
+  "vacio" : {
+    "programasConTendenciaCreciente" : [ ],
+    "prediccionesTemporales" : { },
+    "programasConTendenciaDecreciente" : [ ],
+    "demandaEstimadaProximoPeriodo" : 0,
+    "materiasConTendenciaDecreciente" : [ ],
+    "confiabilidad" : "BAJA",
+    "materiasConTendenciaCreciente" : [ ],
+    "materiasEstables" : [ ]
+  },
+  "un mes" : {
+    "programasConTendenciaCreciente" : [ {
+      "variacion" : 1,
+      "demandaActual" : 1,
+      "tendencia" : "CRECIENTE",
+      "demandaEstimada" : 2,
+      "porcentajeVariacion" : 100,
+      "nombre" : "Ingenieria Civil"
+    }, {
+      "variacion" : 1,
+      "demandaActual" : 11,
+      "tendencia" : "CRECIENTE",
+      "demandaEstimada" : 12,
+      "porcentajeVariacion" : 9,
+      "nombre" : "Ingenieria Electronica"
+    } ],
+    "recomendaciones" : [ {
+      "descripcion" : "La materia Algebra presenta una tendencia de crecimiento del 100%, pasando de 1 a 2 estudiantes proyectados. Se recomienda ampliar la oferta para garantizar cobertura completa.",
+      "tipo" : "OFERTA_MATERIA",
+      "justificacion" : "Con base en las tendencias observadas en periodos anteriores, se estima un incremento de 1 estudiante (100% de crecimiento).",
+      "demandaActual" : 1,
+      "crecimiento" : 1,
+      "categoria" : "CURSOS_VERANO",
+      "titulo" : "Ampliar oferta de Algebra",
+      "prioridad" : "ALTA",
+      "impacto" : {
+        "tasaCoberturaObjetivo" : "100%",
+        "estudiantesBeneficiados" : 1,
+        "estudiantesAtendidos" : 2
+      },
+      "demandaProyectada" : 2,
+      "porcentajeCrecimiento" : 100,
+      "acciones" : [ "Contratar 1 docente especializado", "Reservar 1 aula o laboratorio", "URGENTE: Iniciar gestion con 2 meses de anticipacion", "Publicar oferta academica con suficiente antelacion" ],
+      "materia" : "Algebra",
+      "id" : "MAT_ALGEBRA",
+      "recursos" : {
+        "aulas" : 1,
+        "gruposActuales" : 1,
+        "capacidadPorGrupo" : 20,
+        "docentes" : 1,
+        "gruposRecomendados" : 1,
+        "laboratorios" : 0
+      }
+    }, {
+      "descripcion" : "La materia Dibujo presenta una tendencia de crecimiento del 9%, pasando de 11 a 12 estudiantes proyectados. Se recomienda ampliar la oferta para garantizar cobertura completa.",
+      "tipo" : "OFERTA_MATERIA",
+      "justificacion" : "Con base en las tendencias observadas en periodos anteriores, se estima un incremento de 1 estudiante (9% de crecimiento).",
+      "demandaActual" : 11,
+      "crecimiento" : 1,
+      "categoria" : "CURSOS_VERANO",
+      "titulo" : "Ampliar oferta de Dibujo",
+      "prioridad" : "BAJA",
+      "impacto" : {
+        "tasaCoberturaObjetivo" : "100%",
+        "estudiantesBeneficiados" : 1,
+        "estudiantesAtendidos" : 12
+      },
+      "demandaProyectada" : 12,
+      "porcentajeCrecimiento" : 9,
+      "acciones" : [ "Contratar 1 docente especializado", "Reservar 1 aula o laboratorio", "Publicar oferta academica con suficiente antelacion" ],
+      "materia" : "Dibujo",
+      "id" : "MAT_DIBUJO",
+      "recursos" : {
+        "aulas" : 1,
+        "gruposActuales" : 1,
+        "capacidadPorGrupo" : 20,
+        "docentes" : 1,
+        "gruposRecomendados" : 1,
+        "laboratorios" : 0
+      }
+    }, {
+      "descripcion" : "Ingenieria Civil muestra un crecimiento significativo del 100% en la demanda de cursos de verano. Se proyectan 2 solicitudes para el proximo periodo, con un incremento de 1 estudiante. Es prioritario garantizar oferta academica suficiente para este programa.",
+      "tipo" : "ENFOQUE_PROGRAMA",
+      "justificacion" : "El analisis de tendencias historicas indica un crecimiento sostenido de 1 solicitud. Representa una oportunidad para mejorar los indicadores academicos del programa.",
+      "categoria" : "ESTRATEGIA_ACADEMICA",
+      "titulo" : "Priorizar oferta para Ingenieria Civil",
+      "programa" : "Ingenieria Civil",
+      "incremento" : 1,
+      "prioridad" : "ALTA",
+      "solicitudesProyectadas" : 2,
+      "solicitudesActuales" : 1,
+      "acciones" : [ "Ampliar oferta de cursos de verano en 1 cupo", "Identificar materias criticas del programa con mayor demanda", "Coordinar con director(a) de programa para validar necesidades", "Evaluar disponibilidad de docentes del programa", "CRITICO: Programa de alta demanda requiere atencion inmediata" ],
+      "porcentajeIncremento" : 100,
+      "id" : "PROG_INGENIERIA_CIVIL",
+      "beneficios" : [ "Reduccion de desercion por perdida de materias", "Mejora en tiempos de graduacion", "Mayor satisfaccion estudiantil", "Optimizacion de trayectorias academicas" ]
+    }, {
+      "descripcion" : "Ingenieria Electronica muestra un crecimiento significativo del 9% en la demanda de cursos de verano. Se proyectan 12 solicitudes para el proximo periodo, con un incremento de 1 estudiante. Es prioritario garantizar oferta academica suficiente para este programa.",
+      "tipo" : "ENFOQUE_PROGRAMA",
+      "justificacion" : "El analisis de tendencias historicas indica un crecimiento sostenido de 1 solicitud. Representa una oportunidad para mejorar los indicadores academicos del programa.",
+      "categoria" : "ESTRATEGIA_ACADEMICA",
+      "titulo" : "Priorizar oferta para Ingenieria Electronica",
+      "programa" : "Ingenieria Electronica",
+      "incremento" : 1,
+      "prioridad" : "BAJA",
+      "solicitudesProyectadas" : 12,
+      "solicitudesActuales" : 11,
+      "acciones" : [ "Ampliar oferta de cursos de verano en 1 cupo", "Identificar materias criticas del programa con mayor demanda", "Coordinar con director(a) de programa para validar necesidades", "Evaluar disponibilidad de docentes del programa" ],
+      "porcentajeIncremento" : 9,
+      "id" : "PROG_INGENIERIA_ELECTRONICA",
+      "beneficios" : [ "Reduccion de desercion por perdida de materias", "Mejora en tiempos de graduacion", "Mayor satisfaccion estudiantil", "Optimizacion de trayectorias academicas" ]
+    }, {
+      "descripcion" : "Julio es el mes pico de demanda para cursos de verano. Se proyecta un incremento del 17%, pasando de 12 a 14 solicitudes. Es fundamental anticipar la planificacion academica y logistica.",
+      "tipo" : "PLANIFICACION_TEMPORAL",
+      "justificacion" : "Analisis historico indica que Julio concentra el mayor volumen de solicitudes. Planificacion anticipada garantiza mejor experiencia estudiantil.",
+      "categoria" : "CALENDARIO_ACADEMICO",
+      "titulo" : "Preparar oferta anticipada para Julio",
+      "prioridad" : "MEDIA",
+      "solicitudesProyectadas" : 14,
+      "solicitudesActuales" : 12,
+      "porcentajeCrecimiento" : 17,
+      "acciones" : [ "Publicar calendario de cursos de verano 8 semanas antes de Julio", "Preparar capacidad para 14 estudiantes", "Coordinar disponibilidad de docentes con 6 semanas de anticipacion", "Reservar aulas y laboratorios con 4 semanas de anticipacion" ],
+      "incrementoEsperado" : 2,
+      "id" : "TEMPORAL_JULIO",
+      "mesPico" : "Julio"
+    } ],
+    "materiasConTendenciaDecreciente" : [ ],
+    "materiasConTendenciaCreciente" : [ {
+      "variacion" : 1,
+      "demandaActual" : 1,
+      "tendencia" : "CRECIENTE",
+      "demandaEstimada" : 2,
+      "porcentajeVariacion" : 100,
+      "nombre" : "Algebra"
+    }, {
+      "variacion" : 1,
+      "demandaActual" : 11,
+      "tendencia" : "CRECIENTE",
+      "demandaEstimada" : 12,
+      "porcentajeVariacion" : 9,
+      "nombre" : "Dibujo"
+    } ],
+    "prediccionesTemporales" : {
+      "demandaEstimadaMesPico" : 14,
+      "mesesRecomendados" : [ "Julio", "Agosto", "Septiembre" ],
+      "mesPico" : "Julio",
+      "demandaActualMesPico" : 12
+    },
+    "fechaPrediccion" : "<ahora>",
+    "programasConTendenciaDecreciente" : [ ],
+    "demandaEstimadaProximoPeriodo" : 14,
+    "confiabilidad" : "MEDIA",
+    "todasLasPrediccionesPorPrograma" : [ {
+      "variacion" : 1,
+      "demandaActual" : 1,
+      "tendencia" : "CRECIENTE",
+      "demandaEstimada" : 2,
+      "porcentajeVariacion" : 100,
+      "nombre" : "Ingenieria Civil"
+    }, {
+      "variacion" : 1,
+      "demandaActual" : 11,
+      "tendencia" : "CRECIENTE",
+      "demandaEstimada" : 12,
+      "porcentajeVariacion" : 9,
+      "nombre" : "Ingenieria Electronica"
+    } ],
+    "programasEstables" : [ ],
+    "materiasEstables" : [ ],
+    "alertasCriticas" : [ {
+      "descripcion" : "ATENCION: La materia Algebra presenta un crecimiento proyectado del 100%, significativamente superior al promedio. Se requiere accion inmediata para garantizar cobertura.",
+      "tipo" : "ALERTA_CAPACIDAD",
+      "acciones" : [ " ACCION INMEDIATA REQUERIDA", "Convocar reunion urgente con coordinacion academica", "Evaluar contratar docentes adicionales con caracter urgente", "Verificar disponibilidad de espacios fisicos alternativos", "Considerar modalidad virtual/hibrida si no hay capacidad presencial" ],
+      "crecimientoProyectado" : "100%",
+      "categoria" : "URGENTE",
+      "titulo" : " ALERTA: Crecimiento excepcional en Algebra",
+      "materia" : "Algebra",
+      "id" : "ALERTA_CRITICA_ALGEBRA",
+      "prioridad" : "CRITICA"
+    }, {
+      "demandaProyectada" : 12,
+      "descripcion" : "Ingenieria Electronica concentra una demanda proyectada de 12 solicitudes, requiere estrategia especifica.",
+      "tipo" : "ALERTA_PROGRAMA",
+      "acciones" : [ "Coordinar con director(a) de programa", "Identificar materias criticas especificas del programa", "Evaluar docentes especializados del programa", "Planificar oferta diversificada para atender necesidades del programa" ],
+      "categoria" : "IMPORTANTE",
+      "titulo" : " Demanda concentrada en Ingenieria Electronica",
+      "programa" : "Ingenieria Electronica",
+      "id" : "ALERTA_PROGRAMA_INGENIERIA_ELECTRONICA",
+      "prioridad" : "ALTA"
+    } ],
+    "estadisticasRecomendaciones" : {
+      "prioridadBaja" : 2,
+      "totalRecomendaciones" : 5,
+      "prioridadMedia" : 1,
+      "prioridadAlta" : 2,
+      "alertasCriticas" : 2
+    }
+  },
+  "tres meses" : {
+    "programasConTendenciaCreciente" : [ {
+      "variacion" : 15,
+      "demandaActual" : 15,
+      "tendencia" : "CRECIENTE",
+      "demandaEstimada" : 30,
+      "porcentajeVariacion" : 100,
+      "nombre" : "Ingenieria de Sistemas"
+    } ],
+    "recomendaciones" : [ {
+      "descripcion" : "La materia Programacion I presenta una tendencia de crecimiento del 100%, pasando de 15 a 30 estudiantes proyectados. Se recomienda ampliar la oferta para garantizar cobertura completa.",
+      "tipo" : "OFERTA_MATERIA",
+      "justificacion" : "Con base en las tendencias observadas en periodos anteriores, se estima un incremento de 15 estudiantes (100% de crecimiento).",
+      "demandaActual" : 15,
+      "crecimiento" : 15,
+      "categoria" : "CURSOS_VERANO",
+      "titulo" : "Ampliar oferta de Programacion I",
+      "prioridad" : "ALTA",
+      "impacto" : {
+        "tasaCoberturaObjetivo" : "100%",
+        "estudiantesBeneficiados" : 15,
+        "estudiantesAtendidos" : 30
+      },
+      "demandaProyectada" : 30,
+      "porcentajeCrecimiento" : 100,
+      "acciones" : [ "Abrir 1 grupo adicional de 20 estudiantes", "Contratar 2 docentes especializados", "Reservar 2 aulas o laboratorios", "URGENTE: Iniciar gestion con 2 meses de anticipacion", "Publicar oferta academica con suficiente antelacion" ],
+      "materia" : "Programacion I",
+      "id" : "MAT_PROGRAMACION_I",
+      "recursos" : {
+        "aulas" : 2,
+        "gruposActuales" : 1,
+        "capacidadPorGrupo" : 20,
+        "docentes" : 2,
+        "gruposRecomendados" : 2,
+        "laboratorios" : 2
+      }
+    }, {
+      "descripcion" : "Ingenieria de Sistemas muestra un crecimiento significativo del 100% en la demanda de cursos de verano. Se proyectan 30 solicitudes para el proximo periodo, con un incremento de 15 estudiantes. Es prioritario garantizar oferta academica suficiente para este programa.",
+      "tipo" : "ENFOQUE_PROGRAMA",
+      "justificacion" : "El analisis de tendencias historicas indica un crecimiento sostenido de 15 solicitudes. Representa una oportunidad para mejorar los indicadores academicos del programa.",
+      "categoria" : "ESTRATEGIA_ACADEMICA",
+      "titulo" : "Priorizar oferta para Ingenieria de Sistemas",
+      "programa" : "Ingenieria de Sistemas",
+      "incremento" : 15,
+      "prioridad" : "ALTA",
+      "solicitudesProyectadas" : 30,
+      "solicitudesActuales" : 15,
+      "acciones" : [ "Ampliar oferta de cursos de verano en 15 cupos", "Identificar materias criticas del programa con mayor demanda", "Coordinar con director(a) de programa para validar necesidades", "Evaluar disponibilidad de docentes del programa", "CRITICO: Programa de alta demanda requiere atencion inmediata" ],
+      "porcentajeIncremento" : 100,
+      "id" : "PROG_INGENIERIA_DE_SISTEMAS",
+      "beneficios" : [ "Reduccion de desercion por perdida de materias", "Mejora en tiempos de graduacion", "Mayor satisfaccion estudiantil", "Optimizacion de trayectorias academicas" ]
+    }, {
+      "descripcion" : "Agosto es el mes pico de demanda para cursos de verano. Se proyecta un incremento del 15%, pasando de 13 a 15 solicitudes. Es fundamental anticipar la planificacion academica y logistica.",
+      "tipo" : "PLANIFICACION_TEMPORAL",
+      "justificacion" : "Analisis historico indica que Agosto concentra el mayor volumen de solicitudes. Planificacion anticipada garantiza mejor experiencia estudiantil.",
+      "categoria" : "CALENDARIO_ACADEMICO",
+      "titulo" : "Preparar oferta anticipada para Agosto",
+      "prioridad" : "MEDIA",
+      "solicitudesProyectadas" : 15,
+      "solicitudesActuales" : 13,
+      "porcentajeCrecimiento" : 15,
+      "acciones" : [ "Publicar calendario de cursos de verano 8 semanas antes de Agosto", "Preparar capacidad para 15 estudiantes", "Coordinar disponibilidad de docentes con 6 semanas de anticipacion", "Reservar aulas y laboratorios con 4 semanas de anticipacion" ],
+      "incrementoEsperado" : 2,
+      "id" : "TEMPORAL_AGOSTO",
+      "mesPico" : "Agosto"
+    } ],
+    "materiasConTendenciaDecreciente" : [ {
+      "variacion" : -2,
+      "demandaActual" : 10,
+      "tendencia" : "DECRECIENTE",
+      "demandaEstimada" : 8,
+      "porcentajeVariacion" : -20,
+      "nombre" : "Base de Datos"
+    } ],
+    "materiasConTendenciaCreciente" : [ {
+      "variacion" : 15,
+      "demandaActual" : 15,
+      "tendencia" : "CRECIENTE",
+      "demandaEstimada" : 30,
+      "porcentajeVariacion" : 100,
+      "nombre" : "Programacion I"
+    } ],
+    "prediccionesTemporales" : {
+      "demandaEstimadaMesPico" : 15,
+      "mesesRecomendados" : [ "Julio", "Agosto", "Septiembre" ],
+      "mesPico" : "Agosto",
+      "demandaActualMesPico" : 13
+    },
+    "fechaPrediccion" : "<ahora>",
+    "programasConTendenciaDecreciente" : [ {
+      "variacion" : -4,
+      "demandaActual" : 19,
+      "tendencia" : "DECRECIENTE",
+      "demandaEstimada" : 15,
+      "porcentajeVariacion" : -21,
+      "nombre" : "Ingenieria Electronica"
+    } ],
+    "demandaEstimadaProximoPeriodo" : 44,
+    "confiabilidad" : "MEDIA",
+    "todasLasPrediccionesPorPrograma" : [ {
+      "variacion" : 15,
+      "demandaActual" : 15,
+      "tendencia" : "CRECIENTE",
+      "demandaEstimada" : 30,
+      "porcentajeVariacion" : 100,
+      "nombre" : "Ingenieria de Sistemas"
+    }, {
+      "variacion" : -4,
+      "demandaActual" : 19,
+      "tendencia" : "DECRECIENTE",
+      "demandaEstimada" : 15,
+      "porcentajeVariacion" : -21,
+      "nombre" : "Ingenieria Electronica"
+    }, {
+      "variacion" : 0,
+      "demandaActual" : 1,
+      "tendencia" : "ESTABLE",
+      "demandaEstimada" : 1,
+      "porcentajeVariacion" : 0,
+      "nombre" : "Ingenieria Civil"
+    } ],
+    "programasEstables" : [ {
+      "variacion" : 0,
+      "demandaActual" : 1,
+      "tendencia" : "ESTABLE",
+      "demandaEstimada" : 1,
+      "porcentajeVariacion" : 0,
+      "nombre" : "Ingenieria Civil"
+    } ],
+    "materiasEstables" : [ {
+      "variacion" : 0,
+      "demandaActual" : 9,
+      "tendencia" : "ESTABLE",
+      "demandaEstimada" : 9,
+      "porcentajeVariacion" : 0,
+      "nombre" : "Calculo"
+    }, {
+      "variacion" : 0,
+      "demandaActual" : 1,
+      "tendencia" : "ESTABLE",
+      "demandaEstimada" : 1,
+      "porcentajeVariacion" : 0,
+      "nombre" : "Fisica"
+    } ],
+    "alertasCriticas" : [ {
+      "descripcion" : "ATENCION: La materia Programacion I presenta un crecimiento proyectado del 100%, significativamente superior al promedio. Se requiere accion inmediata para garantizar cobertura.",
+      "tipo" : "ALERTA_CAPACIDAD",
+      "acciones" : [ " ACCION INMEDIATA REQUERIDA", "Convocar reunion urgente con coordinacion academica", "Evaluar contratar docentes adicionales con caracter urgente", "Verificar disponibilidad de espacios fisicos alternativos", "Considerar modalidad virtual/hibrida si no hay capacidad presencial" ],
+      "crecimientoProyectado" : "100%",
+      "categoria" : "URGENTE",
+      "titulo" : " ALERTA: Crecimiento excepcional en Programacion I",
+      "materia" : "Programacion I",
+      "id" : "ALERTA_CRITICA_PROGRAMACION_I",
+      "prioridad" : "CRITICA"
+    }, {
+      "demandaProyectada" : 30,
+      "descripcion" : "Ingenieria de Sistemas concentra una demanda proyectada de 30 solicitudes, requiere estrategia especifica.",
+      "tipo" : "ALERTA_PROGRAMA",
+      "acciones" : [ "Coordinar con director(a) de programa", "Identificar materias criticas especificas del programa", "Evaluar docentes especializados del programa", "Planificar oferta diversificada para atender necesidades del programa" ],
+      "categoria" : "IMPORTANTE",
+      "titulo" : " Demanda concentrada en Ingenieria de Sistemas",
+      "programa" : "Ingenieria de Sistemas",
+      "id" : "ALERTA_PROGRAMA_INGENIERIA_DE_SISTEMAS",
+      "prioridad" : "ALTA"
+    } ],
+    "estadisticasRecomendaciones" : {
+      "prioridadBaja" : 0,
+      "totalRecomendaciones" : 3,
+      "prioridadMedia" : 1,
+      "prioridadAlta" : 2,
+      "alertasCriticas" : 2
+    }
+  }
+}

@@ -1,0 +1,12 @@
+{
+  "por defecto" : {
+    "status" : 200,
+    "fechaTipo" : "STRING",
+    "fechaSubida" : "<Date.toString() de ahora>"
+  },
+  "spring boot" : {
+    "status" : 200,
+    "fechaTipo" : "STRING",
+    "fechaSubida" : "<Date.toString() de ahora>"
+  }
+}

@@ -1,0 +1,24 @@
+{
+  "crear salon inexistente" : {
+    "status" : 409,
+    "body" : {
+      "codigoError" : "GC-0002",
+      "mensaje" : "ERROR ENTIDAD YA EXISTE, Salón no encontrado.",
+      "codigoHttp" : 409,
+      "url" : "http://localhost/api/cursos-intersemestrales/cursos-verano",
+      "metodo" : "POST"
+    },
+    "claves" : [ "codigoError:STRING", "codigoHttp:NUMBER", "mensaje:STRING", "metodo:STRING", "url:STRING" ]
+  },
+  "editar salon inexistente" : {
+    "status" : 409,
+    "body" : {
+      "codigoError" : "GC-0002",
+      "mensaje" : "ERROR ENTIDAD YA EXISTE, Salón no encontrado.",
+      "codigoHttp" : 409,
+      "url" : "http://localhost/api/cursos-intersemestrales/cursos-verano/1",
+      "metodo" : "PUT"
+    },
+    "claves" : [ "codigoError:STRING", "codigoHttp:NUMBER", "mensaje:STRING", "metodo:STRING", "url:STRING" ]
+  }
+}

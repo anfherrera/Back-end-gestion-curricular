@@ -1,11 +1,11 @@
 package co.edu.unicauca.decanatura.gestion_curricular.homologacion;
 
-import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarSolicitudHomologacionCUIntPort;
-import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarNotificacionCUIntPort;
-import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarArchivosCUIntPort;
-import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.*;
-import co.edu.unicauca.decanatura.gestion_curricular.dominio.casosDeUso.GestionarSolicitudHomologacionCUAdapter;
-import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.SolicitudHomologacion;
+import static org.assertj.core.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.Mockito.*;
+
+import java.util.*;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -13,11 +13,16 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.util.*;
-
-import static org.assertj.core.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.*;
+import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarArchivosCUIntPort;
+import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarNotificacionCUIntPort;
+import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarSolicitudHomologacionCUIntPort;
+import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.*;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.casosDeUso.GestionarSolicitudHomologacionCUAdapter;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.excepciones.ReglaNegocioExcepcion;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.FiltroSolicitudes;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.FlujoEstadosSolicitud;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.SolicitudHomologacion;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Usuario;
 
 /**
  * ============================================================
@@ -53,9 +58,6 @@ class HomologacionUnidadTest {
     private GestionarEstadoSolicitudGatewayIntPort estadoSolicitudGateway;
 
     @Mock
-    private FormateadorResultadosIntPort formateadorResultados;
-
-    @Mock
     private GestionarNotificacionCUIntPort notificacionCU;
 
     @Mock
@@ -69,7 +71,6 @@ class HomologacionUnidadTest {
     void setUp() {
         // Crear el CU Adapter con TODAS las dependencias mockeadas
         solicitudHomologacionCU = new GestionarSolicitudHomologacionCUAdapter(
-                formateadorResultados,
                 solicitudGateway,
                 usuarioGateway,
                 documentosGateway,
@@ -92,7 +93,9 @@ class HomologacionUnidadTest {
 
         // Act & Assert - Debe lanzar una excepción porque la solicitud no tiene usuario
         assertThatThrownBy(() -> solicitudHomologacionCU.guardar(solicitudSinUsuario))
-                .hasMessageContaining("usuario"); 
+                // BUG-38: el usuario que falta es un dato no válido (400); la regla está en formatException
+                .isInstanceOfSatisfying(ReglaNegocioExcepcion.class,
+                        e -> assertThat(e.formatException()).contains("usuario"));
     }
 
     // ==================== PRUEBAS DE CONSULTA ====================
@@ -163,77 +166,69 @@ class HomologacionUnidadTest {
     // ==================== PRUEBAS DE FILTRADO POR ROL ====================
 
     @Test
-    @DisplayName("Test 6: Listar solicitudes para Funcionario - Delega correctamente")
+    @DisplayName("Test 6: Listar solicitudes para Funcionario - Pide al gateway las de último estado Enviada")
     void testListarSolicitudesParaFuncionarioDelegaCorrectamente() {
         // Arrange
         List<SolicitudHomologacion> listaEsperada = Arrays.asList(solicitudEjemplo);
-        when(solicitudGateway.listarSolicitudesToFuncionario())
+        when(solicitudGateway.listarPorUltimoEstado("Enviada", null, null))
                 .thenReturn(listaEsperada);
 
         // Act
-        List<SolicitudHomologacion> resultado = solicitudHomologacionCU.listarSolicitudesToFuncionario();
+        List<SolicitudHomologacion> resultado = solicitudHomologacionCU.listar(
+                FiltroSolicitudes.pendientesDe(FlujoEstadosSolicitud.FUNCIONARIO, null, null));
 
         // Assert
         assertThat(resultado).isNotNull();
         assertThat(resultado).hasSize(1);
-        verify(solicitudGateway, times(1)).listarSolicitudesToFuncionario();
+        verify(solicitudGateway, times(1)).listarPorUltimoEstado("Enviada", null, null);
     }
 
     @Test
-    @DisplayName("Test 7: Listar solicitudes para Coordinador - Delega correctamente")
+    @DisplayName("Test 7: Listar solicitudes para Coordinador - Pide las de último estado APROBADA_FUNCIONARIO")
     void testListarSolicitudesParaCoordinadorDelegaCorrectamente() {
         // Arrange
         List<SolicitudHomologacion> listaEsperada = Arrays.asList(solicitudEjemplo);
-        when(solicitudGateway.listarSolicitudesToCoordinador())
+        when(solicitudGateway.listarPorUltimoEstado("APROBADA_FUNCIONARIO", 1, "2025-2"))
                 .thenReturn(listaEsperada);
 
         // Act
-        List<SolicitudHomologacion> resultado = solicitudHomologacionCU.listarSolicitudesToCoordinador();
+        List<SolicitudHomologacion> resultado = solicitudHomologacionCU.listar(
+                FiltroSolicitudes.pendientesDe(FlujoEstadosSolicitud.COORDINADOR, 1, "2025-2"));
 
         // Assert
         assertThat(resultado).isNotNull();
-        verify(solicitudGateway, times(1)).listarSolicitudesToCoordinador();
+        verify(solicitudGateway, times(1)).listarPorUltimoEstado("APROBADA_FUNCIONARIO", 1, "2025-2");
     }
 
     @Test
-    @DisplayName("Test 8: Listar solicitudes para Secretaria - Delega correctamente")
+    @DisplayName("Test 8: Listar solicitudes para Secretaria - Pide las de último estado APROBADA_COORDINADOR")
     void testListarSolicitudesParaSecretariaDelegaCorrectamente() {
         // Arrange
         List<SolicitudHomologacion> listaEsperada = Arrays.asList(solicitudEjemplo);
-        when(solicitudGateway.listarSolicitudesToSecretaria())
+        when(solicitudGateway.listarPorUltimoEstado("APROBADA_COORDINADOR", null, null))
                 .thenReturn(listaEsperada);
 
         // Act
-        List<SolicitudHomologacion> resultado = solicitudHomologacionCU.listarSolicitudesToSecretaria();
+        List<SolicitudHomologacion> resultado = solicitudHomologacionCU.listar(
+                FiltroSolicitudes.pendientesDe(FlujoEstadosSolicitud.SECRETARIO, null, null));
 
         // Assert
         assertThat(resultado).isNotNull();
-        verify(solicitudGateway, times(1)).listarSolicitudesToSecretaria();
+        verify(solicitudGateway, times(1)).listarPorUltimoEstado("APROBADA_COORDINADOR", null, null);
     }
 
     // ==================== PRUEBAS DE FILTRADO POR ROL Y USUARIO ====================
 
     @Test
-    @DisplayName("Test 9: Listar solicitudes por rol ESTUDIANTE - Filtra correctamente")
+    @DisplayName("Test 9: Listar solicitudes por rol ESTUDIANTE - Pide al gateway las del usuario")
     void testListarSolicitudesPorRolEstudiante() {
         // Arrange
         SolicitudHomologacion solicitud1 = new SolicitudHomologacion();
-        SolicitudHomologacion solicitud2 = new SolicitudHomologacion();
-        
-        // Necesitamos mockear usuarios para las solicitudes
-        co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Usuario usuario1 = 
-            new co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Usuario();
+        Usuario usuario1 = new Usuario();
         usuario1.setId_usuario(1);
-        
-        co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Usuario usuario2 = 
-            new co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Usuario();
-        usuario2.setId_usuario(2);
-        
         solicitud1.setObjUsuario(usuario1);
-        solicitud2.setObjUsuario(usuario2);
-        
-        List<SolicitudHomologacion> todasLasSolicitudes = Arrays.asList(solicitud1, solicitud2);
-        when(solicitudGateway.listarSolicitudes()).thenReturn(todasLasSolicitudes);
+        // El filtro por usuario lo hace la base de datos
+        when(solicitudGateway.listarPorUsuario(1, null)).thenReturn(List.of(solicitud1));
 
         // Act
         List<SolicitudHomologacion> resultado = solicitudHomologacionCU.listarSolicitudesPorRol("ESTUDIANTE", 1);

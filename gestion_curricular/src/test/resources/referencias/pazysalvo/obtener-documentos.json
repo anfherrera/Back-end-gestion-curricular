@@ -1,0 +1,675 @@
+{
+  "GET /obtenerDocumentos/{completa-con-guion}" : {
+    "estado" : 200,
+    "cuerpo" : [ {
+      "comentario" : null,
+      "esValido" : true,
+      "fecha" : "2025-01-01T00:00:00.000+00:00",
+      "id" : "<id>",
+      "nombre" : "Formato PM-FO-4-FOR-27.pdf",
+      "nombreArchivo" : "Formato PM-FO-4-FOR-27.pdf",
+      "ruta" : "pazysalvo/caract/Formato PM-FO-4-FOR-27.pdf",
+      "tipo" : "Formato PM-FO-4-FOR-27"
+    }, {
+      "comentario" : null,
+      "esValido" : true,
+      "fecha" : "2025-01-01T00:00:00.000+00:00",
+      "id" : "<id>",
+      "nombre" : "autorizacion_publicar.pdf",
+      "nombreArchivo" : "autorizacion_publicar.pdf",
+      "ruta" : "pazysalvo/caract/autorizacion_publicar.pdf",
+      "tipo" : "Autorización de Publicación"
+    }, {
+      "comentario" : null,
+      "esValido" : true,
+      "fecha" : "2025-01-01T00:00:00.000+00:00",
+      "id" : "<id>",
+      "nombre" : "hoja_vida_academica.pdf",
+      "nombreArchivo" : "hoja_vida_academica.pdf",
+      "ruta" : "pazysalvo/caract/hoja_vida_academica.pdf",
+      "tipo" : "Hoja de Vida Académica"
+    }, {
+      "comentario" : null,
+      "esValido" : true,
+      "fecha" : "2025-01-01T00:00:00.000+00:00",
+      "id" : "<id>",
+      "nombre" : "comprobante_pago.pdf",
+      "nombreArchivo" : "comprobante_pago.pdf",
+      "ruta" : "pazysalvo/caract/comprobante_pago.pdf",
+      "tipo" : "Comprobante de Pago"
+    }, {
+      "comentario" : null,
+      "esValido" : true,
+      "fecha" : "2025-01-01T00:00:00.000+00:00",
+      "id" : "<id>",
+      "nombre" : "documento_trabajo_grado.pdf",
+      "nombreArchivo" : "documento_trabajo_grado.pdf",
+      "ruta" : "pazysalvo/caract/documento_trabajo_grado.pdf",
+      "tipo" : "Documento de Trabajo de Grado"
+    }, {
+      "comentario" : null,
+      "esValido" : true,
+      "fecha" : "2025-01-01T00:00:00.000+00:00",
+      "id" : "<id>",
+      "nombre" : "oficio_123.pdf",
+      "nombreArchivo" : "oficio_123.pdf",
+      "ruta" : "pazysalvo/caract/oficio_123.pdf",
+      "tipo" : "Oficio/Resolución"
+    }, {
+      "comentario" : null,
+      "esValido" : true,
+      "fecha" : "2025-01-01T00:00:00.000+00:00",
+      "id" : "<id>",
+      "nombre" : "resolucion_final.docx",
+      "nombreArchivo" : "resolucion_final.docx",
+      "ruta" : "pazysalvo/caract/resolucion_final.docx",
+      "tipo" : "Oficio/Resolución"
+    } ]
+  },
+  "GET /obtenerDocumentos/{variantes-de-nombre}" : {
+    "estado" : 200,
+    "cuerpo" : [ {
+      "comentario" : null,
+      "esValido" : true,
+      "fecha" : "2025-01-01T00:00:00.000+00:00",
+      "id" : "<id>",
+      "nombre" : "formato_pm_fo_4_for_27.pdf",
+      "nombreArchivo" : "formato_pm_fo_4_for_27.pdf",
+      "ruta" : "pazysalvo/caract/formato_pm_fo_4_for_27.pdf",
+      "tipo" : "Formato PM-FO-4-FOR-27"
+    }, {
+      "comentario" : null,
+      "esValido" : true,
+      "fecha" : "2025-01-01T00:00:00.000+00:00",
+      "id" : "<id>",
+      "nombre" : "pm_fo_4_for_27.pdf",
+      "nombreArchivo" : "pm_fo_4_for_27.pdf",
+      "ruta" : "pazysalvo/caract/pm_fo_4_for_27.pdf",
+      "tipo" : "Formato PM-FO-4-FOR-27"
+    }, {
+      "comentario" : null,
+      "esValido" : true,
+      "fecha" : "2025-01-01T00:00:00.000+00:00",
+      "id" : "<id>",
+      "nombre" : "FORMATO-PM-FO-4-FOR-27.PDF",
+      "nombreArchivo" : "FORMATO-PM-FO-4-FOR-27.PDF",
+      "ruta" : "pazysalvo/caract/FORMATO-PM-FO-4-FOR-27.PDF",
+      "tipo" : "Formato PM-FO-4-FOR-27"
+    }, {
+      "comentario" : null,
+      "esValido" : true,
+      "fecha" : "2025-01-01T00:00:00.000+00:00",
+      "id" : "<id>",
+      "nombre" : "Resultado_Saber_Pro.pdf",
+      "nombreArchivo" : "Resultado_Saber_Pro.pdf",
+      "ruta" : "pazysalvo/caract/Resultado_Saber_Pro.pdf",
+      "tipo" : "Resultado Saber Pro"
+    }, {
+      "comentario" : null,
+      "esValido" : true,
+      "fecha" : "2025-01-01T00:00:00.000+00:00",
+      "id" : "<id>",
+      "nombre" : "saber pro.pdf",
+      "nombreArchivo" : "saber pro.pdf",
+      "ruta" : "pazysalvo/caract/saber pro.pdf",
+      "tipo" : "Resultado Saber Pro"
+    }, {
+      "comentario" : null,
+      "esValido" : true,
+      "fecha" : "2025-01-01T00:00:00.000+00:00",
+      "id" : "<id>",
+      "nombre" : "hoja de vida.pdf",
+      "nombreArchivo" : "hoja de vida.pdf",
+      "ruta" : "pazysalvo/caract/hoja de vida.pdf",
+      "tipo" : "Hoja de Vida Académica"
+    }, {
+      "comentario" : null,
+      "esValido" : true,
+      "fecha" : "2025-01-01T00:00:00.000+00:00",
+      "id" : "<id>",
+      "nombre" : "trabajo de grado final.pdf",
+      "nombreArchivo" : "trabajo de grado final.pdf",
+      "ruta" : "pazysalvo/caract/trabajo de grado final.pdf",
+      "tipo" : "Documento de Trabajo de Grado"
+    }, {
+      "comentario" : null,
+      "esValido" : true,
+      "fecha" : "2025-01-01T00:00:00.000+00:00",
+      "id" : "<id>",
+      "nombre" : "comprobante.pdf",
+      "nombreArchivo" : "comprobante.pdf",
+      "ruta" : "pazysalvo/caract/comprobante.pdf",
+      "tipo" : "Comprobante de Pago"
+    }, {
+      "comentario" : null,
+      "esValido" : true,
+      "fecha" : "2025-01-01T00:00:00.000+00:00",
+      "id" : "<id>",
+      "nombre" : "aprobacion_documento_trabajo_grado.pdf",
+      "nombreArchivo" : "aprobacion_documento_trabajo_grado.pdf",
+      "ruta" : "pazysalvo/caract/aprobacion_documento_trabajo_grado.pdf",
+      "tipo" : "Oficio/Resolución"
+    }, {
+      "comentario" : null,
+      "esValido" : true,
+      "fecha" : "2025-01-01T00:00:00.000+00:00",
+      "id" : "<id>",
+      "nombre" : "paz_y_salvo_firmado.PDF",
+      "nombreArchivo" : "paz_y_salvo_firmado.PDF",
+      "ruta" : "pazysalvo/caract/paz_y_salvo_firmado.PDF",
+      "tipo" : "Oficio/Resolución"
+    }, {
+      "comentario" : null,
+      "esValido" : true,
+      "fecha" : "2025-01-01T00:00:00.000+00:00",
+      "id" : "<id>",
+      "nombre" : "Autorizacion para publicar.pdf",
+      "nombreArchivo" : "Autorizacion para publicar.pdf",
+      "ruta" : "pazysalvo/caract/Autorizacion para publicar.pdf",
+      "tipo" : "Autorización de Publicación"
+    }, {
+      "comentario" : null,
+      "esValido" : true,
+      "fecha" : "2025-01-01T00:00:00.000+00:00",
+      "id" : "<id>",
+      "nombre" : "carta.pdf",
+      "nombreArchivo" : "carta.pdf",
+      "ruta" : "pazysalvo/caract/carta.pdf",
+      "tipo" : "Documento del Estudiante"
+    } ]
+  },
+  "GET /obtenerDocumentos/{formato-con-guion-bajo}" : {
+    "estado" : 200,
+    "cuerpo" : [ {
+      "comentario" : null,
+      "esValido" : true,
+      "fecha" : "2025-01-01T00:00:00.000+00:00",
+      "id" : "<id>",
+      "nombre" : "formato_pm_fo_4_for_27.pdf",
+      "nombreArchivo" : "formato_pm_fo_4_for_27.pdf",
+      "ruta" : "pazysalvo/caract/formato_pm_fo_4_for_27.pdf",
+      "tipo" : "Formato PM-FO-4-FOR-27"
+    }, {
+      "comentario" : null,
+      "esValido" : true,
+      "fecha" : "2025-01-01T00:00:00.000+00:00",
+      "id" : "<id>",
+      "nombre" : "autorizacion_publicar.pdf",
+      "nombreArchivo" : "autorizacion_publicar.pdf",
+      "ruta" : "pazysalvo/caract/autorizacion_publicar.pdf",
+      "tipo" : "Autorización de Publicación"
+    }, {
+      "comentario" : null,
+      "esValido" : true,
+      "fecha" : "2025-01-01T00:00:00.000+00:00",
+      "id" : "<id>",
+      "nombre" : "hoja_vida_academica.pdf",
+      "nombreArchivo" : "hoja_vida_academica.pdf",
+      "ruta" : "pazysalvo/caract/hoja_vida_academica.pdf",
+      "tipo" : "Hoja de Vida Académica"
+    }, {
+      "comentario" : null,
+      "esValido" : true,
+      "fecha" : "2025-01-01T00:00:00.000+00:00",
+      "id" : "<id>",
+      "nombre" : "comprobante_pago.pdf",
+      "nombreArchivo" : "comprobante_pago.pdf",
+      "ruta" : "pazysalvo/caract/comprobante_pago.pdf",
+      "tipo" : "Comprobante de Pago"
+    }, {
+      "comentario" : null,
+      "esValido" : true,
+      "fecha" : "2025-01-01T00:00:00.000+00:00",
+      "id" : "<id>",
+      "nombre" : "documento_trabajo_grado.pdf",
+      "nombreArchivo" : "documento_trabajo_grado.pdf",
+      "ruta" : "pazysalvo/caract/documento_trabajo_grado.pdf",
+      "tipo" : "Documento de Trabajo de Grado"
+    } ]
+  },
+  "GET /obtenerDocumentos/{sin-documentos}" : {
+    "estado" : 200,
+    "cuerpo" : [ ]
+  },
+  "GET /obtenerDocumentos/{nombre-nulo}" : {
+    "estado" : 200,
+    "cuerpo" : [ {
+      "comentario" : null,
+      "esValido" : true,
+      "fecha" : "2025-01-01T00:00:00.000+00:00",
+      "id" : "<id>",
+      "nombre" : "salvoconducto.txt",
+      "nombreArchivo" : "salvoconducto.txt",
+      "ruta" : "pazysalvo/caract/salvoconducto.txt",
+      "tipo" : "Oficio/Resolución"
+    } ]
+  },
+  "GET /obtenerDocumentos/{rechazos-ultimo-sin-comentario}" : {
+    "estado" : 200,
+    "cuerpo" : [ {
+      "comentario" : "  revisar firma  ",
+      "esValido" : true,
+      "fecha" : "2025-01-01T00:00:00.000+00:00",
+      "id" : "<id>",
+      "nombre" : "hoja_vida_academica.pdf",
+      "nombreArchivo" : "hoja_vida_academica.pdf",
+      "ruta" : "pazysalvo/caract/hoja_vida_academica.pdf",
+      "tipo" : "Hoja de Vida Académica"
+    }, {
+      "comentario" : "   ",
+      "esValido" : true,
+      "fecha" : "2025-01-01T00:00:00.000+00:00",
+      "id" : "<id>",
+      "nombre" : "comprobante_pago.pdf",
+      "nombreArchivo" : "comprobante_pago.pdf",
+      "ruta" : "pazysalvo/caract/comprobante_pago.pdf",
+      "tipo" : "Comprobante de Pago"
+    }, {
+      "comentario" : "sin sello",
+      "esValido" : true,
+      "fecha" : "2025-01-01T00:00:00.000+00:00",
+      "id" : "<id>",
+      "nombre" : "oficio.pdf",
+      "nombreArchivo" : "oficio.pdf",
+      "ruta" : "pazysalvo/caract/oficio.pdf",
+      "tipo" : "Oficio/Resolución"
+    } ]
+  },
+  "GET /obtenerDocumentos/{rechazos-con-comentario}" : {
+    "estado" : 200,
+    "cuerpo" : [ ]
+  },
+  "GET /obtenerDocumentos/{sin-comentarios}" : {
+    "estado" : 200,
+    "cuerpo" : [ {
+      "comentario" : null,
+      "esValido" : true,
+      "fecha" : "2025-01-01T00:00:00.000+00:00",
+      "id" : "<id>",
+      "nombre" : "formato.pdf",
+      "nombreArchivo" : "formato.pdf",
+      "ruta" : "pazysalvo/caract/formato.pdf",
+      "tipo" : "Documento del Estudiante"
+    } ]
+  },
+  "GET /obtenerDocumentos/{inexistente}" : {
+    "estado" : 404,
+    "cuerpo" : {
+      "codigoError" : "GC-0003",
+      "codigoHttp" : 404,
+      "mensaje" : "Entidad no encontrada, Solicitud de Paz y Salvo no encontrada con ID: 2000000000",
+      "metodo" : "GET",
+      "url" : "http://localhost/api/solicitudes-pazysalvo/obtenerDocumentos/2000000000"
+    }
+  },
+  "GET /obtenerDocumentos/coordinador/{completa-con-guion}" : {
+    "estado" : 200,
+    "cuerpo" : [ {
+      "comentario" : null,
+      "esValido" : true,
+      "fecha" : "2025-01-01T00:00:00.000+00:00",
+      "id" : "<id>",
+      "nombre" : "Formato PM-FO-4-FOR-27.pdf",
+      "nombreArchivo" : "Formato PM-FO-4-FOR-27.pdf",
+      "ruta" : "pazysalvo/caract/Formato PM-FO-4-FOR-27.pdf",
+      "tipo" : "Formato PM-FO-4-FOR-27"
+    }, {
+      "comentario" : null,
+      "esValido" : true,
+      "fecha" : "2025-01-01T00:00:00.000+00:00",
+      "id" : "<id>",
+      "nombre" : "autorizacion_publicar.pdf",
+      "nombreArchivo" : "autorizacion_publicar.pdf",
+      "ruta" : "pazysalvo/caract/autorizacion_publicar.pdf",
+      "tipo" : "Autorización de Publicación"
+    }, {
+      "comentario" : null,
+      "esValido" : true,
+      "fecha" : "2025-01-01T00:00:00.000+00:00",
+      "id" : "<id>",
+      "nombre" : "hoja_vida_academica.pdf",
+      "nombreArchivo" : "hoja_vida_academica.pdf",
+      "ruta" : "pazysalvo/caract/hoja_vida_academica.pdf",
+      "tipo" : "Hoja de Vida Académica"
+    }, {
+      "comentario" : null,
+      "esValido" : true,
+      "fecha" : "2025-01-01T00:00:00.000+00:00",
+      "id" : "<id>",
+      "nombre" : "comprobante_pago.pdf",
+      "nombreArchivo" : "comprobante_pago.pdf",
+      "ruta" : "pazysalvo/caract/comprobante_pago.pdf",
+      "tipo" : "Comprobante de Pago"
+    }, {
+      "comentario" : null,
+      "esValido" : true,
+      "fecha" : "2025-01-01T00:00:00.000+00:00",
+      "id" : "<id>",
+      "nombre" : "documento_trabajo_grado.pdf",
+      "nombreArchivo" : "documento_trabajo_grado.pdf",
+      "ruta" : "pazysalvo/caract/documento_trabajo_grado.pdf",
+      "tipo" : "Documento de Trabajo de Grado"
+    }, {
+      "comentario" : null,
+      "esValido" : true,
+      "fecha" : "2025-01-01T00:00:00.000+00:00",
+      "id" : "<id>",
+      "nombre" : "oficio_123.pdf",
+      "nombreArchivo" : "oficio_123.pdf",
+      "ruta" : "pazysalvo/caract/oficio_123.pdf",
+      "tipo" : "Oficio/Resolución"
+    }, {
+      "comentario" : null,
+      "esValido" : true,
+      "fecha" : "2025-01-01T00:00:00.000+00:00",
+      "id" : "<id>",
+      "nombre" : "resolucion_final.docx",
+      "nombreArchivo" : "resolucion_final.docx",
+      "ruta" : "pazysalvo/caract/resolucion_final.docx",
+      "tipo" : "Oficio/Resolución"
+    } ]
+  },
+  "GET /obtenerDocumentos/coordinador/{variantes-de-nombre}" : {
+    "estado" : 200,
+    "cuerpo" : [ {
+      "comentario" : null,
+      "esValido" : true,
+      "fecha" : "2025-01-01T00:00:00.000+00:00",
+      "id" : "<id>",
+      "nombre" : "formato_pm_fo_4_for_27.pdf",
+      "nombreArchivo" : "formato_pm_fo_4_for_27.pdf",
+      "ruta" : "pazysalvo/caract/formato_pm_fo_4_for_27.pdf",
+      "tipo" : "Formato PM-FO-4-FOR-27"
+    }, {
+      "comentario" : null,
+      "esValido" : true,
+      "fecha" : "2025-01-01T00:00:00.000+00:00",
+      "id" : "<id>",
+      "nombre" : "pm_fo_4_for_27.pdf",
+      "nombreArchivo" : "pm_fo_4_for_27.pdf",
+      "ruta" : "pazysalvo/caract/pm_fo_4_for_27.pdf",
+      "tipo" : "Formato PM-FO-4-FOR-27"
+    }, {
+      "comentario" : null,
+      "esValido" : true,
+      "fecha" : "2025-01-01T00:00:00.000+00:00",
+      "id" : "<id>",
+      "nombre" : "FORMATO-PM-FO-4-FOR-27.PDF",
+      "nombreArchivo" : "FORMATO-PM-FO-4-FOR-27.PDF",
+      "ruta" : "pazysalvo/caract/FORMATO-PM-FO-4-FOR-27.PDF",
+      "tipo" : "Formato PM-FO-4-FOR-27"
+    }, {
+      "comentario" : null,
+      "esValido" : true,
+      "fecha" : "2025-01-01T00:00:00.000+00:00",
+      "id" : "<id>",
+      "nombre" : "Resultado_Saber_Pro.pdf",
+      "nombreArchivo" : "Resultado_Saber_Pro.pdf",
+      "ruta" : "pazysalvo/caract/Resultado_Saber_Pro.pdf",
+      "tipo" : "Resultado Saber Pro"
+    }, {
+      "comentario" : null,
+      "esValido" : true,
+      "fecha" : "2025-01-01T00:00:00.000+00:00",
+      "id" : "<id>",
+      "nombre" : "saber pro.pdf",
+      "nombreArchivo" : "saber pro.pdf",
+      "ruta" : "pazysalvo/caract/saber pro.pdf",
+      "tipo" : "Resultado Saber Pro"
+    }, {
+      "comentario" : null,
+      "esValido" : true,
+      "fecha" : "2025-01-01T00:00:00.000+00:00",
+      "id" : "<id>",
+      "nombre" : "hoja de vida.pdf",
+      "nombreArchivo" : "hoja de vida.pdf",
+      "ruta" : "pazysalvo/caract/hoja de vida.pdf",
+      "tipo" : "Hoja de Vida Académica"
+    }, {
+      "comentario" : null,
+      "esValido" : true,
+      "fecha" : "2025-01-01T00:00:00.000+00:00",
+      "id" : "<id>",
+      "nombre" : "trabajo de grado final.pdf",
+      "nombreArchivo" : "trabajo de grado final.pdf",
+      "ruta" : "pazysalvo/caract/trabajo de grado final.pdf",
+      "tipo" : "Documento de Trabajo de Grado"
+    }, {
+      "comentario" : null,
+      "esValido" : true,
+      "fecha" : "2025-01-01T00:00:00.000+00:00",
+      "id" : "<id>",
+      "nombre" : "comprobante.pdf",
+      "nombreArchivo" : "comprobante.pdf",
+      "ruta" : "pazysalvo/caract/comprobante.pdf",
+      "tipo" : "Comprobante de Pago"
+    }, {
+      "comentario" : null,
+      "esValido" : true,
+      "fecha" : "2025-01-01T00:00:00.000+00:00",
+      "id" : "<id>",
+      "nombre" : "aprobacion_documento_trabajo_grado.pdf",
+      "nombreArchivo" : "aprobacion_documento_trabajo_grado.pdf",
+      "ruta" : "pazysalvo/caract/aprobacion_documento_trabajo_grado.pdf",
+      "tipo" : "Oficio/Resolución"
+    }, {
+      "comentario" : null,
+      "esValido" : true,
+      "fecha" : "2025-01-01T00:00:00.000+00:00",
+      "id" : "<id>",
+      "nombre" : "paz_y_salvo_firmado.PDF",
+      "nombreArchivo" : "paz_y_salvo_firmado.PDF",
+      "ruta" : "pazysalvo/caract/paz_y_salvo_firmado.PDF",
+      "tipo" : "Oficio/Resolución"
+    }, {
+      "comentario" : null,
+      "esValido" : true,
+      "fecha" : "2025-01-01T00:00:00.000+00:00",
+      "id" : "<id>",
+      "nombre" : "Autorizacion para publicar.pdf",
+      "nombreArchivo" : "Autorizacion para publicar.pdf",
+      "ruta" : "pazysalvo/caract/Autorizacion para publicar.pdf",
+      "tipo" : "Autorización de Publicación"
+    }, {
+      "comentario" : null,
+      "esValido" : true,
+      "fecha" : "2025-01-01T00:00:00.000+00:00",
+      "id" : "<id>",
+      "nombre" : "carta.pdf",
+      "nombreArchivo" : "carta.pdf",
+      "ruta" : "pazysalvo/caract/carta.pdf",
+      "tipo" : "Documento del Estudiante"
+    } ]
+  },
+  "GET /obtenerDocumentos/coordinador/{formato-con-guion-bajo}" : {
+    "estado" : 200,
+    "cuerpo" : [ {
+      "comentario" : null,
+      "esValido" : true,
+      "fecha" : "2025-01-01T00:00:00.000+00:00",
+      "id" : "<id>",
+      "nombre" : "formato_pm_fo_4_for_27.pdf",
+      "nombreArchivo" : "formato_pm_fo_4_for_27.pdf",
+      "ruta" : "pazysalvo/caract/formato_pm_fo_4_for_27.pdf",
+      "tipo" : "Formato PM-FO-4-FOR-27"
+    }, {
+      "comentario" : null,
+      "esValido" : true,
+      "fecha" : "2025-01-01T00:00:00.000+00:00",
+      "id" : "<id>",
+      "nombre" : "autorizacion_publicar.pdf",
+      "nombreArchivo" : "autorizacion_publicar.pdf",
+      "ruta" : "pazysalvo/caract/autorizacion_publicar.pdf",
+      "tipo" : "Autorización de Publicación"
+    }, {
+      "comentario" : null,
+      "esValido" : true,
+      "fecha" : "2025-01-01T00:00:00.000+00:00",
+      "id" : "<id>",
+      "nombre" : "hoja_vida_academica.pdf",
+      "nombreArchivo" : "hoja_vida_academica.pdf",
+      "ruta" : "pazysalvo/caract/hoja_vida_academica.pdf",
+      "tipo" : "Hoja de Vida Académica"
+    }, {
+      "comentario" : null,
+      "esValido" : true,
+      "fecha" : "2025-01-01T00:00:00.000+00:00",
+      "id" : "<id>",
+      "nombre" : "comprobante_pago.pdf",
+      "nombreArchivo" : "comprobante_pago.pdf",
+      "ruta" : "pazysalvo/caract/comprobante_pago.pdf",
+      "tipo" : "Comprobante de Pago"
+    }, {
+      "comentario" : null,
+      "esValido" : true,
+      "fecha" : "2025-01-01T00:00:00.000+00:00",
+      "id" : "<id>",
+      "nombre" : "documento_trabajo_grado.pdf",
+      "nombreArchivo" : "documento_trabajo_grado.pdf",
+      "ruta" : "pazysalvo/caract/documento_trabajo_grado.pdf",
+      "tipo" : "Documento de Trabajo de Grado"
+    } ]
+  },
+  "GET /obtenerDocumentos/coordinador/{sin-documentos}" : {
+    "estado" : 200,
+    "cuerpo" : [ ]
+  },
+  "GET /obtenerDocumentos/coordinador/{nombre-nulo}" : {
+    "estado" : 200,
+    "cuerpo" : [ {
+      "comentario" : null,
+      "esValido" : true,
+      "fecha" : "2025-01-01T00:00:00.000+00:00",
+      "id" : "<id>",
+      "nombre" : "salvoconducto.txt",
+      "nombreArchivo" : "salvoconducto.txt",
+      "ruta" : "pazysalvo/caract/salvoconducto.txt",
+      "tipo" : "Oficio/Resolución"
+    } ]
+  },
+  "GET /obtenerDocumentos/coordinador/{rechazos-ultimo-sin-comentario}" : {
+    "estado" : 200,
+    "cuerpo" : [ {
+      "comentario" : "  revisar firma  ",
+      "esValido" : true,
+      "fecha" : "2025-01-01T00:00:00.000+00:00",
+      "id" : "<id>",
+      "nombre" : "hoja_vida_academica.pdf",
+      "nombreArchivo" : "hoja_vida_academica.pdf",
+      "ruta" : "pazysalvo/caract/hoja_vida_academica.pdf",
+      "tipo" : "Hoja de Vida Académica"
+    }, {
+      "comentario" : "   ",
+      "esValido" : true,
+      "fecha" : "2025-01-01T00:00:00.000+00:00",
+      "id" : "<id>",
+      "nombre" : "comprobante_pago.pdf",
+      "nombreArchivo" : "comprobante_pago.pdf",
+      "ruta" : "pazysalvo/caract/comprobante_pago.pdf",
+      "tipo" : "Comprobante de Pago"
+    }, {
+      "comentario" : "sin sello",
+      "esValido" : true,
+      "fecha" : "2025-01-01T00:00:00.000+00:00",
+      "id" : "<id>",
+      "nombre" : "oficio.pdf",
+      "nombreArchivo" : "oficio.pdf",
+      "ruta" : "pazysalvo/caract/oficio.pdf",
+      "tipo" : "Oficio/Resolución"
+    } ]
+  },
+  "GET /obtenerDocumentos/coordinador/{rechazos-con-comentario}" : {
+    "estado" : 200,
+    "cuerpo" : [ ]
+  },
+  "GET /obtenerDocumentos/coordinador/{sin-comentarios}" : {
+    "estado" : 200,
+    "cuerpo" : [ {
+      "comentario" : null,
+      "esValido" : true,
+      "fecha" : "2025-01-01T00:00:00.000+00:00",
+      "id" : "<id>",
+      "nombre" : "formato.pdf",
+      "nombreArchivo" : "formato.pdf",
+      "ruta" : "pazysalvo/caract/formato.pdf",
+      "tipo" : "Documento del Estudiante"
+    } ]
+  },
+  "GET /obtenerDocumentos/coordinador/{inexistente}" : {
+    "estado" : 404,
+    "cuerpo" : {
+      "codigoError" : "GC-0003",
+      "codigoHttp" : 404,
+      "mensaje" : "Entidad no encontrada, Solicitud de Paz y Salvo no encontrada con ID: 2000000000",
+      "metodo" : "GET",
+      "url" : "http://localhost/api/solicitudes-pazysalvo/obtenerDocumentos/coordinador/2000000000"
+    }
+  },
+  "GET /obtenerDocumentos/{completa-con-guion} [dueno]" : {
+    "estado" : 200,
+    "cuerpo" : [ {
+      "comentario" : null,
+      "esValido" : true,
+      "fecha" : "2025-01-01T00:00:00.000+00:00",
+      "id" : "<id>",
+      "nombre" : "Formato PM-FO-4-FOR-27.pdf",
+      "nombreArchivo" : "Formato PM-FO-4-FOR-27.pdf",
+      "ruta" : "pazysalvo/caract/Formato PM-FO-4-FOR-27.pdf",
+      "tipo" : "Formato PM-FO-4-FOR-27"
+    }, {
+      "comentario" : null,
+      "esValido" : true,
+      "fecha" : "2025-01-01T00:00:00.000+00:00",
+      "id" : "<id>",
+      "nombre" : "autorizacion_publicar.pdf",
+      "nombreArchivo" : "autorizacion_publicar.pdf",
+      "ruta" : "pazysalvo/caract/autorizacion_publicar.pdf",
+      "tipo" : "Autorización de Publicación"
+    }, {
+      "comentario" : null,
+      "esValido" : true,
+      "fecha" : "2025-01-01T00:00:00.000+00:00",
+      "id" : "<id>",
+      "nombre" : "hoja_vida_academica.pdf",
+      "nombreArchivo" : "hoja_vida_academica.pdf",
+      "ruta" : "pazysalvo/caract/hoja_vida_academica.pdf",
+      "tipo" : "Hoja de Vida Académica"
+    }, {
+      "comentario" : null,
+      "esValido" : true,
+      "fecha" : "2025-01-01T00:00:00.000+00:00",
+      "id" : "<id>",
+      "nombre" : "comprobante_pago.pdf",
+      "nombreArchivo" : "comprobante_pago.pdf",
+      "ruta" : "pazysalvo/caract/comprobante_pago.pdf",
+      "tipo" : "Comprobante de Pago"
+    }, {
+      "comentario" : null,
+      "esValido" : true,
+      "fecha" : "2025-01-01T00:00:00.000+00:00",
+      "id" : "<id>",
+      "nombre" : "documento_trabajo_grado.pdf",
+      "nombreArchivo" : "documento_trabajo_grado.pdf",
+      "ruta" : "pazysalvo/caract/documento_trabajo_grado.pdf",
+      "tipo" : "Documento de Trabajo de Grado"
+    }, {
+      "comentario" : null,
+      "esValido" : true,
+      "fecha" : "2025-01-01T00:00:00.000+00:00",
+      "id" : "<id>",
+      "nombre" : "oficio_123.pdf",
+      "nombreArchivo" : "oficio_123.pdf",
+      "ruta" : "pazysalvo/caract/oficio_123.pdf",
+      "tipo" : "Oficio/Resolución"
+    }, {
+      "comentario" : null,
+      "esValido" : true,
+      "fecha" : "2025-01-01T00:00:00.000+00:00",
+      "id" : "<id>",
+      "nombre" : "resolucion_final.docx",
+      "nombreArchivo" : "resolucion_final.docx",
+      "ruta" : "pazysalvo/caract/resolucion_final.docx",
+      "tipo" : "Oficio/Resolución"
+    } ]
+  }
+}

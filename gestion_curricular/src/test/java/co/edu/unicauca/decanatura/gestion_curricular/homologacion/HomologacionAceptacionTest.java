@@ -1,5 +1,8 @@
 package co.edu.unicauca.decanatura.gestion_curricular.homologacion;
 
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,8 +13,9 @@ import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.repositorios.SolicitudRepositoryInt;
+import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.repositorios.UsuarioRepositoryInt;
+import co.edu.unicauca.decanatura.gestion_curricular.soporte.SolicitudesDePrueba;
 
 /**
  * ============================================================
@@ -43,9 +47,23 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest
 @AutoConfigureMockMvc(addFilters = false)
 @ActiveProfiles("test")
-@WithMockUser(roles = { "SECRETARIA", "FUNCIONARIO", "COORDINADOR", "ESTUDIANTE" })
+@WithMockUser(username = "juan.perez@unicauca.edu.co", roles = { "Secretario", "Funcionario", "Coordinador", "Estudiante" })
 @DisplayName("Pruebas de Aceptación - Homologación")
 class HomologacionAceptacionTest {
+
+    @Autowired
+    private SolicitudRepositoryInt solicitudRepository;
+
+    @Autowired
+    private UsuarioRepositoryInt usuarioRepository;
+
+    private SolicitudesDePrueba solicitudes() {
+        return new SolicitudesDePrueba(solicitudRepository, usuarioRepository);
+    }
+
+    private static String cambioEstado(int idSolicitud, String nuevoEstado) {
+        return "{\"idSolicitud\": %d, \"nuevoEstado\": \"%s\"}".formatted(idSolicitud, nuevoEstado);
+    }
 
     @Autowired
     private MockMvc mockMvc;
@@ -88,7 +106,7 @@ class HomologacionAceptacionTest {
                         .content(jsonSolicitud))
                 .andExpect(result -> {
                     int s = result.getResponse().getStatus();
-                    if (s != 201 && s != 409) throw new AssertionError("Expected 201 or 409, got " + s);
+                    if (s != 201 && s != 400) throw new AssertionError("Expected 201 or 400, got " + s);
                 });
     }
 
@@ -145,7 +163,7 @@ class HomologacionAceptacionTest {
                         .content(jsonSolicitud))
                 .andExpect(result -> {
                     int s = result.getResponse().getStatus();
-                    if (s != 201 && s != 409) throw new AssertionError("Expected 201 or 409, got " + s);
+                    if (s != 201 && s != 400) throw new AssertionError("Expected 201 or 400, got " + s);
                 });
     }
 
@@ -221,12 +239,7 @@ class HomologacionAceptacionTest {
          *       AND la solicitud debe quedar disponible para el coordinador
          */
         
-        String jsonCambioEstado = """
-            {
-                "idSolicitud": 2,
-                "nuevoEstado": "APROBADA_FUNCIONARIO"
-            }
-            """;
+        String jsonCambioEstado = cambioEstado(solicitudes().homologacion("Enviada"), "APROBADA_FUNCIONARIO");
 
         // Puede ser 204 (éxito) o 404 (si la solicitud no existe)
         mockMvc.perform(put("/api/solicitudes-homologacion/actualizarEstadoSolicitud")
@@ -363,12 +376,7 @@ class HomologacionAceptacionTest {
          *       AND la solicitud debe quedar disponible para secretaria
          */
         
-        String jsonAprobacion = """
-            {
-                "idSolicitud": 1,
-                "nuevoEstado": "APROBADA_COORDINADOR"
-            }
-            """;
+        String jsonAprobacion = cambioEstado(solicitudes().homologacion("APROBADA_FUNCIONARIO"), "APROBADA_COORDINADOR");
 
         // Puede ser 204 (éxito) o 404 (si la solicitud no existe o no está en estado adecuado)
         mockMvc.perform(put("/api/solicitudes-homologacion/actualizarEstadoSolicitud")

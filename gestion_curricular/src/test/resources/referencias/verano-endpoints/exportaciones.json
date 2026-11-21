@@ -1,0 +1,147 @@
+{
+  "estudiantes" : {
+    "http" : 200,
+    "json" : {
+      "id_curso" : 71,
+      "nombre_curso" : "Materia de prueba",
+      "codigo_curso" : "MAT-71",
+      "cupo_estimado" : 20,
+      "total_estudiantes" : 1,
+      "total_preinscritos" : 1,
+      "total_inscritos" : 0,
+      "estudiantes" : [ {
+        "id_usuario" : 81,
+        "nombre_completo" : "Ana Pérez",
+        "codigo" : "1046",
+        "correo" : "ana@unicauca.edu.co",
+        "estado_preinscripcion" : "Enviada",
+        "estado_inscripcion" : "Sin inscripción",
+        "id_solicitud_inscripcion" : null,
+        "tipo" : "Preinscrito",
+        "fecha_preinscripcion" : "2025-07-01T12:00:00.000+00:00",
+        "id_solicitud_preinscripcion" : 91,
+        "tiene_inscripcion" : false
+      } ]
+    }
+  },
+  "falsetodos/cursos-verano/todos/export/pdf" : {
+    "http" : 200,
+    "tipo" : "application/pdf",
+    "disposicion" : "form-data; name=\"attachment\"; filename=\"cursos_verano_<hoy>.pdf\"",
+    "paginas" : [ "GESTIÓN DE CURSOS INTERSEMESTRALES\n \nFecha de generación: <ahora>\nPeríodo Académico: Todos (Período actual: <actual>)\nTotal de cursos: 1\n \nCódigo Nombre Período Grupo Docente Fecha Inicio Fecha Fin Cupo Salón Estado\nMAT-71 Materia de prueba 2025-2 A - 01/07/2025 12/08/2025 20 221 Abierto" ]
+  },
+  "falsetodos/cursos-verano/71/estudiantes/export/pdf" : {
+    "http" : 200,
+    "tipo" : "application/pdf",
+    "disposicion" : "form-data; name=\"attachment\"; filename=\"estudiantes_MAT-71_<hoy>.pdf\"",
+    "paginas" : [ "ESTUDIANTES DEL CURSO: Materia de prueba (MAT-71)\n \nFecha de generación: <ahora>\nCupo Estimado: 20\nTotal Estudiantes: 1\nPreinscritos: 1\nInscritos: 0\n \n# Nombre Completo Código Programa Tipo Estado Preinscripción Estado Inscripción Correo\n1 Ana Pérez 1046 - Preinscrito Enviada Sin inscripción ana@unicauca.edu.co" ]
+  },
+  "falsetodos/solicitudes/export/excel" : {
+    "http" : 200,
+    "tipo" : "application/octet-stream",
+    "disposicion" : "form-data; name=\"attachment\"; filename=\"solicitudes_cursos_intersemestrales_<ahora>.xlsx\"",
+    "hojas" : {
+      "Solicitudes Cursos Intersemestr" : [ [ "SOLICITUDES DE CURSOS INTERSEMESTRALES DE VERANO" ], [ "Fecha de generacion: <ahora>" ], [ "Filtros aplicados: Período Académico: Todos (Período actual: <actual>)" ], [ "Total de solicitudes: 1" ], [ "Nombre Completo", "Codigo", "ID Curso", "ID Materia", "Codigo Materia", "Grupo", "Curso", "Condicion", "Motivo de la Solicitud", "Estado", "Fecha", "Tipo" ], [ "Ana Pérez", "1046", "71", "", "MAT-71", "", "Materia de prueba", "PRIMERA VEZ", "Motivo de prueba", "Enviada", "01/07/2025 07:00", "Preinscripcion" ] ]
+    }
+  },
+  "false2025-2/cursos-verano/todos/export/pdf" : {
+    "http" : 200,
+    "tipo" : "application/pdf",
+    "disposicion" : "form-data; name=\"attachment\"; filename=\"cursos_verano_<hoy>.pdf\"",
+    "paginas" : [ "GESTIÓN DE CURSOS INTERSEMESTRALES\n \nFecha de generación: <ahora>\nPeríodo Académico: 2025-2\nTotal de cursos: 1\n \nCódigo Nombre Período Grupo Docente Fecha Inicio Fecha Fin Cupo Salón Estado\nMAT-71 Materia de prueba 2025-2 A - 01/07/2025 12/08/2025 20 221 Abierto" ]
+  },
+  "false2025-2/cursos-verano/71/estudiantes/export/pdf" : {
+    "http" : 200,
+    "tipo" : "application/pdf",
+    "disposicion" : "form-data; name=\"attachment\"; filename=\"estudiantes_MAT-71_<hoy>.pdf\"",
+    "paginas" : [ "ESTUDIANTES DEL CURSO: Materia de prueba (MAT-71)\n \nFecha de generación: <ahora>\nCupo Estimado: 20\nTotal Estudiantes: 1\nPreinscritos: 1\nInscritos: 0\n \n# Nombre Completo Código Programa Tipo Estado Preinscripción Estado Inscripción Correo\n1 Ana Pérez 1046 - Preinscrito Enviada Sin inscripción ana@unicauca.edu.co" ]
+  },
+  "false2025-2/solicitudes/export/excel" : {
+    "http" : 200,
+    "tipo" : "application/octet-stream",
+    "disposicion" : "form-data; name=\"attachment\"; filename=\"solicitudes_cursos_intersemestrales_<ahora>.xlsx\"",
+    "hojas" : {
+      "Solicitudes Cursos Intersemestr" : [ [ "SOLICITUDES DE CURSOS INTERSEMESTRALES DE VERANO" ], [ "Fecha de generacion: <ahora>" ], [ "Filtros aplicados: Período Académico: 2025-2" ], [ "Total de solicitudes: 1" ], [ "Nombre Completo", "Codigo", "ID Curso", "ID Materia", "Codigo Materia", "Grupo", "Curso", "Condicion", "Motivo de la Solicitud", "Estado", "Fecha", "Tipo" ], [ "Ana Pérez", "1046", "71", "", "MAT-71", "", "Materia de prueba", "PRIMERA VEZ", "Motivo de prueba", "Enviada", "01/07/2025 07:00", "Preinscripcion" ] ]
+    }
+  },
+  "false2025 - Primer Semestre/cursos-verano/todos/export/pdf" : {
+    "http" : 200,
+    "tipo" : "application/pdf",
+    "disposicion" : "form-data; name=\"attachment\"; filename=\"cursos_verano_<hoy>.pdf\"",
+    "paginas" : [ "GESTIÓN DE CURSOS INTERSEMESTRALES\n \nFecha de generación: <ahora>\nPeríodo Académico: 2025 - Primer Semestre\nTotal de cursos: 1\n \nCódigo Nombre Período Grupo Docente Fecha Inicio Fecha Fin Cupo Salón Estado\nMAT-71 Materia de prueba 2025-2 A - 01/07/2025 12/08/2025 20 221 Abierto" ]
+  },
+  "false2025 - Primer Semestre/cursos-verano/71/estudiantes/export/pdf" : {
+    "http" : 200,
+    "tipo" : "application/pdf",
+    "disposicion" : "form-data; name=\"attachment\"; filename=\"estudiantes_MAT-71_<hoy>.pdf\"",
+    "paginas" : [ "ESTUDIANTES DEL CURSO: Materia de prueba (MAT-71)\n \nFecha de generación: <ahora>\nCupo Estimado: 20\nTotal Estudiantes: 1\nPreinscritos: 1\nInscritos: 0\n \n# Nombre Completo Código Programa Tipo Estado Preinscripción Estado Inscripción Correo\n1 Ana Pérez 1046 - Preinscrito Enviada Sin inscripción ana@unicauca.edu.co" ]
+  },
+  "false2025 - Primer Semestre/solicitudes/export/excel" : {
+    "http" : 200,
+    "tipo" : "application/octet-stream",
+    "disposicion" : "form-data; name=\"attachment\"; filename=\"solicitudes_cursos_intersemestrales_<ahora>.xlsx\"",
+    "hojas" : {
+      "Solicitudes Cursos Intersemestr" : [ [ "SOLICITUDES DE CURSOS INTERSEMESTRALES DE VERANO" ], [ "Fecha de generacion: <ahora>" ], [ "Filtros aplicados: Período Académico: 2025 - Primer Semestre" ], [ "Total de solicitudes: 1" ], [ "Nombre Completo", "Codigo", "ID Curso", "ID Materia", "Codigo Materia", "Grupo", "Curso", "Condicion", "Motivo de la Solicitud", "Estado", "Fecha", "Tipo" ], [ "Ana Pérez", "1046", "71", "", "MAT-71", "", "Materia de prueba", "PRIMERA VEZ", "Motivo de prueba", "Enviada", "01/07/2025 07:00", "Preinscripcion" ] ]
+    }
+  },
+  "truetodos/cursos-verano/todos/export/pdf" : {
+    "http" : 200,
+    "tipo" : "application/pdf",
+    "disposicion" : "form-data; name=\"attachment\"; filename=\"cursos_verano_<hoy>.pdf\"",
+    "paginas" : [ "GESTIÓN DE CURSOS INTERSEMESTRALES\n \nFecha de generación: <ahora>\nPeríodo Académico: Todos (Período actual: <actual>)\nTotal de cursos: 0\n \nNo hay cursos disponibles con los filtros aplicados.\n " ]
+  },
+  "truetodos/cursos-verano/71/estudiantes/export/pdf" : {
+    "http" : 200,
+    "tipo" : "application/pdf",
+    "disposicion" : "form-data; name=\"attachment\"; filename=\"estudiantes_MAT-71_<hoy>.pdf\"",
+    "paginas" : [ "ESTUDIANTES DEL CURSO: Materia de prueba (MAT-71)\n \nFecha de generación: <ahora>\nCupo Estimado: 20\nTotal Estudiantes: 0\nPreinscritos: 0\nInscritos: 0\n \nNo hay estudiantes registrados en este curso.\n " ]
+  },
+  "truetodos/solicitudes/export/excel" : {
+    "http" : 200,
+    "tipo" : "application/octet-stream",
+    "disposicion" : "form-data; name=\"attachment\"; filename=\"solicitudes_cursos_intersemestrales_<ahora>.xlsx\"",
+    "hojas" : {
+      "Solicitudes Cursos Intersemestr" : [ [ "SOLICITUDES DE CURSOS INTERSEMESTRALES DE VERANO" ], [ "Fecha de generacion: <ahora>" ], [ "Filtros aplicados: Período Académico: Todos (Período actual: <actual>)" ], [ "Total de solicitudes: 0" ], [ "Nombre Completo", "Codigo", "ID Curso", "ID Materia", "Codigo Materia", "Grupo", "Curso", "Condicion", "Motivo de la Solicitud", "Estado", "Fecha", "Tipo" ] ]
+    }
+  },
+  "true2025-2/cursos-verano/todos/export/pdf" : {
+    "http" : 200,
+    "tipo" : "application/pdf",
+    "disposicion" : "form-data; name=\"attachment\"; filename=\"cursos_verano_<hoy>.pdf\"",
+    "paginas" : [ "GESTIÓN DE CURSOS INTERSEMESTRALES\n \nFecha de generación: <ahora>\nPeríodo Académico: 2025-2\nTotal de cursos: 0\n \nNo hay cursos disponibles con los filtros aplicados.\n " ]
+  },
+  "true2025-2/cursos-verano/71/estudiantes/export/pdf" : {
+    "http" : 200,
+    "tipo" : "application/pdf",
+    "disposicion" : "form-data; name=\"attachment\"; filename=\"estudiantes_MAT-71_<hoy>.pdf\"",
+    "paginas" : [ "ESTUDIANTES DEL CURSO: Materia de prueba (MAT-71)\n \nFecha de generación: <ahora>\nCupo Estimado: 20\nTotal Estudiantes: 0\nPreinscritos: 0\nInscritos: 0\n \nNo hay estudiantes registrados en este curso.\n " ]
+  },
+  "true2025-2/solicitudes/export/excel" : {
+    "http" : 200,
+    "tipo" : "application/octet-stream",
+    "disposicion" : "form-data; name=\"attachment\"; filename=\"solicitudes_cursos_intersemestrales_<ahora>.xlsx\"",
+    "hojas" : {
+      "Solicitudes Cursos Intersemestr" : [ [ "SOLICITUDES DE CURSOS INTERSEMESTRALES DE VERANO" ], [ "Fecha de generacion: <ahora>" ], [ "Filtros aplicados: Período Académico: 2025-2" ], [ "Total de solicitudes: 0" ], [ "Nombre Completo", "Codigo", "ID Curso", "ID Materia", "Codigo Materia", "Grupo", "Curso", "Condicion", "Motivo de la Solicitud", "Estado", "Fecha", "Tipo" ] ]
+    }
+  },
+  "true2025 - Primer Semestre/cursos-verano/todos/export/pdf" : {
+    "http" : 200,
+    "tipo" : "application/pdf",
+    "disposicion" : "form-data; name=\"attachment\"; filename=\"cursos_verano_<hoy>.pdf\"",
+    "paginas" : [ "GESTIÓN DE CURSOS INTERSEMESTRALES\n \nFecha de generación: <ahora>\nPeríodo Académico: 2025 - Primer Semestre\nTotal de cursos: 0\n \nNo hay cursos disponibles con los filtros aplicados.\n " ]
+  },
+  "true2025 - Primer Semestre/cursos-verano/71/estudiantes/export/pdf" : {
+    "http" : 200,
+    "tipo" : "application/pdf",
+    "disposicion" : "form-data; name=\"attachment\"; filename=\"estudiantes_MAT-71_<hoy>.pdf\"",
+    "paginas" : [ "ESTUDIANTES DEL CURSO: Materia de prueba (MAT-71)\n \nFecha de generación: <ahora>\nCupo Estimado: 20\nTotal Estudiantes: 0\nPreinscritos: 0\nInscritos: 0\n \nNo hay estudiantes registrados en este curso.\n " ]
+  },
+  "true2025 - Primer Semestre/solicitudes/export/excel" : {
+    "http" : 200,
+    "tipo" : "application/octet-stream",
+    "disposicion" : "form-data; name=\"attachment\"; filename=\"solicitudes_cursos_intersemestrales_<ahora>.xlsx\"",
+    "hojas" : {
+      "Solicitudes Cursos Intersemestr" : [ [ "SOLICITUDES DE CURSOS INTERSEMESTRALES DE VERANO" ], [ "Fecha de generacion: <ahora>" ], [ "Filtros aplicados: Período Académico: 2025 - Primer Semestre" ], [ "Total de solicitudes: 0" ], [ "Nombre Completo", "Codigo", "ID Curso", "ID Materia", "Codigo Materia", "Grupo", "Curso", "Condicion", "Motivo de la Solicitud", "Estado", "Fecha", "Tipo" ] ]
+    }
+  }
+}

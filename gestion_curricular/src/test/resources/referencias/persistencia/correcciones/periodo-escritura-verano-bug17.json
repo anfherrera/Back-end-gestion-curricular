@@ -1,0 +1,11 @@
+{
+  "/preinscripcion curso 0 solicitud [ 2025-2 ]/solicitud" : "2025-2",
+  "/preinscripcion curso 5 solicitud [ 2025-2 ]/solicitud" : "2025-2",
+  "/inscripcion curso 5 solicitud [ 2025-2 ]/solicitud" : "2025-2",
+  "/preinscripcion curso nuevo [ 2025-2 ]/solicitud" : "2025-2",
+  "/preinscripcion curso nuevo [ 2025-2 ]/curso" : "2025-2",
+  "/inscripcion curso nuevo [ 2025-2 ]/solicitud" : "2025-2",
+  "/inscripcion curso nuevo [ 2025-2 ]/curso" : "2025-2",
+  "/preinscripcion curso 5 solicitud [   ]/solicitud" : null,
+  "/inscripcion curso 5 solicitud [   ]/solicitud" : null
+}

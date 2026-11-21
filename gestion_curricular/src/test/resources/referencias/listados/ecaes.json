@@ -1,0 +1,15 @@
+{
+  "GET /api/solicitudes-ecaes/listarSolicitudes-Ecaes [staff.sin.programa]" : [ "A/actual: Enviada", "A/actual: Enviada>APROBADA_FUNCIONARIO", "A/actual: Enviada>APROBADA_FUNCIONARIO>APROBADA_COORDINADOR", "A/actual: Enviada>APROBADA_FUNCIONARIO>APROBADA_COORDINADOR>APROBADA", "A/actual: Enviada>RECHAZADA", "A/actual: Enviada>APROBADA_FUNCIONARIO>RECHAZADA", "A/actual: Enviada>PRE_REGISTRADO", "A/actual: ENVIADA", "B/actual: Enviada", "B/actual: Enviada>APROBADA_FUNCIONARIO", "B/actual: Enviada>APROBADA_FUNCIONARIO>APROBADA_COORDINADOR", "A/2090-1: Enviada", "A/2090-1: Enviada>APROBADA_FUNCIONARIO", "A/2090-1: Enviada>APROBADA_FUNCIONARIO>APROBADA_COORDINADOR", "A/2090-1: Enviada>APROBADA_FUNCIONARIO>APROBADA_COORDINADOR>APROBADA", "B/2090-1: Enviada>APROBADA_FUNCIONARIO", "B/2090-1: Enviada>APROBADA_FUNCIONARIO>APROBADA_COORDINADOR" ],
+  "GET /api/solicitudes-ecaes/listarSolicitudes-Ecaes/Funcionario [staff.sin.programa]" : [ "A/actual: Enviada", "B/actual: Enviada" ],
+  "GET /api/solicitudes-ecaes/listarSolicitudes-Ecaes/Funcionario?periodoAcademico=2090-1 [staff.sin.programa]" : [ "A/2090-1: Enviada" ],
+  "GET /api/solicitudes-ecaes/listarSolicitud-ecaes/porRol?rol=FUNCIONARIO [staff.sin.programa]" : [ "A/actual: Enviada", "B/actual: Enviada", "A/2090-1: Enviada" ],
+  "GET /api/solicitudes-ecaes/listarSolicitud-ecaes/porRol?rol=COORDINADOR [staff.sin.programa]" : [ ],
+  "GET /api/solicitudes-ecaes/listarSolicitud-ecaes/porRol?rol=SECRETARIA [staff.sin.programa]" : [ ],
+  "GET /api/solicitudes-ecaes/listarSolicitud-ecaes/porRol?rol=otro [staff.sin.programa]" : [ ],
+  "GET /api/solicitudes-ecaes/listarSolicitud-ecaes/porRol?rol=COORDINADOR [coord.listados]" : [ ],
+  "GET /api/solicitudes-ecaes/listarSolicitud-ecaes/porRol?rol=ESTUDIANTE&idUsuario={estudianteA} [staff.sin.programa]" : [ "A/actual: Enviada", "A/actual: Enviada>APROBADA_FUNCIONARIO", "A/actual: Enviada>APROBADA_FUNCIONARIO>APROBADA_COORDINADOR", "A/actual: Enviada>APROBADA_FUNCIONARIO>APROBADA_COORDINADOR>APROBADA", "A/actual: Enviada>RECHAZADA", "A/actual: Enviada>APROBADA_FUNCIONARIO>RECHAZADA", "A/actual: Enviada>PRE_REGISTRADO", "A/actual: ENVIADA" ],
+  "GET /api/solicitudes-ecaes/listarSolicitud-ecaes/porRol?rol=ESTUDIANTE&idUsuario={estudianteA}&periodoAcademico=2090-1 [staff.sin.programa]" : [ "A/2090-1: Enviada", "A/2090-1: Enviada>APROBADA_FUNCIONARIO", "A/2090-1: Enviada>APROBADA_FUNCIONARIO>APROBADA_COORDINADOR", "A/2090-1: Enviada>APROBADA_FUNCIONARIO>APROBADA_COORDINADOR>APROBADA" ],
+  "GET /api/solicitudes-ecaes/listarSolicitud-ecaes/porRol?rol=FUNCIONARIO [est.b.listados]" : [ "B/actual: Enviada", "B/actual: Enviada>APROBADA_FUNCIONARIO", "B/actual: Enviada>APROBADA_FUNCIONARIO>APROBADA_COORDINADOR" ],
+  "GET /api/solicitudes-ecaes/listarSolicitud-ecaes/porRol?rol=FUNCIONARIO&periodoAcademico=2090-1 [est.b.listados]" : [ "B/2090-1: Enviada>APROBADA_FUNCIONARIO", "B/2090-1: Enviada>APROBADA_FUNCIONARIO>APROBADA_COORDINADOR" ],
+  "GET /api/solicitudes-ecaes/listarSolicitud-ecaes/porRol?rol=coordinador&periodoAcademico=2090-1 [coord.listados]" : [ ]
+}

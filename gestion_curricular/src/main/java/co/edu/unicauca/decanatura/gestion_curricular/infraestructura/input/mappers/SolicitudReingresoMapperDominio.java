@@ -6,8 +6,8 @@ import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.SolicitudReingreso;
-import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.DTOPeticion.SolicitudReingresoDTOPeticion;
-import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.DTORespuesta.SolicitudReingresoDTORespuesta;
+import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.dto.peticion.SolicitudReingresoDTOPeticion;
+import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.dto.respuesta.SolicitudReingresoDTORespuesta;
 
 @Mapper(
     componentModel = "spring",
@@ -26,13 +26,12 @@ public interface SolicitudReingresoMapperDominio {
     @Mapping(target = "objUsuario.objPrograma", ignore = true) // Propiedad no mapeada en Usuario
     @Mapping(target = "objUsuario.solicitudes", ignore = true) // Propiedad no mapeada en Usuario
     @Mapping(target = "objUsuario.cursosOfertadosInscritos", ignore = true) // Propiedad no mapeada en Usuario
-    SolicitudReingreso mappearDeSolicitudReingresoDTOPeticionASolicitudReingreso(SolicitudReingresoDTOPeticion peticion);
+    SolicitudReingreso mapearDeSolicitudReingresoDTOPeticionASolicitudReingreso(SolicitudReingresoDTOPeticion peticion);
 
     @Mapping(target = "categoria", ignore = true)
     @Mapping(target = "tipo_solicitud", ignore = true)
-    SolicitudReingresoDTORespuesta mappearDeSolicitudReingresoASolicitudReingresoDTORespuesta(SolicitudReingreso solicitud);
+    SolicitudReingresoDTORespuesta mapearDeSolicitudReingresoASolicitudReingresoDTORespuesta(SolicitudReingreso solicitud);
 
-    List<SolicitudReingresoDTORespuesta> mappearDeListaSolicitudReingresoASolicitudReingresoDTORespuesta(List<SolicitudReingreso> solicitudes);
+    List<SolicitudReingresoDTORespuesta> mapearDeListaSolicitudReingresoASolicitudReingresoDTORespuesta(List<SolicitudReingreso> solicitudes);
 
-    List<SolicitudReingreso> mappearDeListaSolicitudReingresoDTOPeticionASolicitudReingreso(List<SolicitudReingresoDTOPeticion> solicitudesDTO);
 }

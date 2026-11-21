@@ -1,0 +1,12 @@
+{
+  "/periodo=[null] proceso=[]/incluyeCursosVerano" : true,
+  "/periodo=[null] proceso=[  ]/incluyeCursosVerano" : true,
+  "/periodo=[null] proceso=[Cursos de Verano]/incluyeCursosVerano" : true,
+  "/periodo=[null] proceso=[Curso Intersemestral]/incluyeCursosVerano" : true,
+  "/periodo=[null] proceso=[verano]/incluyeCursosVerano" : true,
+  "/periodo=[2025-2] proceso=[]/incluyeCursosVerano" : true,
+  "/periodo=[2025-2] proceso=[  ]/incluyeCursosVerano" : true,
+  "/periodo=[2025-2] proceso=[Cursos de Verano]/incluyeCursosVerano" : true,
+  "/periodo=[2025-2] proceso=[Curso Intersemestral]/incluyeCursosVerano" : true,
+  "/periodo=[2025-2] proceso=[verano]/incluyeCursosVerano" : true
+}

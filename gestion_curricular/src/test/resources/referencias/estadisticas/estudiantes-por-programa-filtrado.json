@@ -1,0 +1,7 @@
+{
+  "descripcion" : "Distribucion de estudiantes por programa academico",
+  "estudiantesPorPrograma" : {
+    "Ingeniería Electrónica" : 2
+  },
+  "totalEstudiantes" : 2
+}

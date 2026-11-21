@@ -1,0 +1,62 @@
+{
+  "preinscripcion curso 0 solicitud [ 2025-2 ]" : {
+    "solicitud" : " 2025-2 ",
+    "curso" : "<sin curso>"
+  },
+  "preinscripcion curso 5 solicitud [ 2025-2 ]" : {
+    "solicitud" : " 2025-2 ",
+    "curso" : null
+  },
+  "inscripcion curso 5 solicitud [ 2025-2 ]" : {
+    "solicitud" : " 2025-2 ",
+    "curso" : null
+  },
+  "preinscripcion curso nuevo [ 2025-2 ]" : {
+    "solicitud" : " 2025-2 ",
+    "curso" : " 2025-2 "
+  },
+  "inscripcion curso nuevo [ 2025-2 ]" : {
+    "solicitud" : " 2025-2 ",
+    "curso" : " 2025-2 "
+  },
+  "preinscripcion curso 0 solicitud [   ]" : {
+    "solicitud" : "<actual>",
+    "curso" : "<sin curso>"
+  },
+  "preinscripcion curso 5 solicitud [   ]" : {
+    "solicitud" : "   ",
+    "curso" : null
+  },
+  "inscripcion curso 5 solicitud [   ]" : {
+    "solicitud" : "   ",
+    "curso" : null
+  },
+  "preinscripcion curso nuevo [   ]" : {
+    "solicitud" : "<actual>",
+    "curso" : "<actual>"
+  },
+  "inscripcion curso nuevo [   ]" : {
+    "solicitud" : "2025-1",
+    "curso" : null
+  },
+  "preinscripcion curso 0 solicitud null" : {
+    "solicitud" : "<actual>",
+    "curso" : "<sin curso>"
+  },
+  "preinscripcion curso 5 solicitud null" : {
+    "solicitud" : null,
+    "curso" : null
+  },
+  "inscripcion curso 5 solicitud null" : {
+    "solicitud" : null,
+    "curso" : null
+  },
+  "preinscripcion curso nuevo null" : {
+    "solicitud" : "<actual>",
+    "curso" : "<actual>"
+  },
+  "inscripcion curso nuevo null" : {
+    "solicitud" : "2025-1",
+    "curso" : null
+  }
+}

@@ -3,180 +3,71 @@ package co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.per
 import java.util.List;
 import java.util.Optional;
 
+import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.GestionarSolicitudHomologacionGatewayIntPort;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.excepciones.EntidadNoExisteException;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.EstadoSolicitud;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.SolicitudHomologacion;
-import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.controladorExcepciones.excepcionesPropias.EntidadNoExisteException;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.entidades.EstadoSolicitudEntity;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.entidades.SolicitudHomologacionEntity;
-import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.mappers.Mapper;
+import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.mappers.SolicitudMapperPersistencia;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.repositorios.SolicitudHomologacionRepositoryInt;
-import jakarta.transaction.Transactional;
 
 @Service
 @Transactional
 public class GestionarSolicitudHomologacionGatewayImplAdapter implements GestionarSolicitudHomologacionGatewayIntPort {
 
-    private final Mapper mapper;
     private final SolicitudHomologacionRepositoryInt solicitudHomologacionRepository;
 
-    public GestionarSolicitudHomologacionGatewayImplAdapter(Mapper mapper, SolicitudHomologacionRepositoryInt solicitudHomologacionRepository) {
-        this.mapper = mapper;
+    public GestionarSolicitudHomologacionGatewayImplAdapter(SolicitudHomologacionRepositoryInt solicitudHomologacionRepository) {
         this.solicitudHomologacionRepository = solicitudHomologacionRepository;
     }
 
     @Override
     public SolicitudHomologacion guardar(SolicitudHomologacion solicitud) {
-       SolicitudHomologacionEntity entity = mapper.map(solicitud, SolicitudHomologacionEntity.class);
+       SolicitudHomologacionEntity entity = SolicitudMapperPersistencia.aEntidad(solicitud, SolicitudHomologacionEntity.class);
        SolicitudHomologacionEntity savedEntity = solicitudHomologacionRepository.save(entity);
-       return mapper.map(savedEntity, SolicitudHomologacion.class);
-    
+       return SolicitudMapperPersistencia.aDominio(savedEntity, SolicitudHomologacion.class);
+
     }
 
     @Override
     public List<SolicitudHomologacion> listarSolicitudes() {
-       return  solicitudHomologacionRepository.findAll().stream()
-               .map(entity -> mapper.map(entity, SolicitudHomologacion.class))
-               .toList();
+       return aDominio(solicitudHomologacionRepository.findAll());
     }
 
     @Override
-    public List<SolicitudHomologacion> listarSolicitudesToFuncionario() {
-        return  solicitudHomologacionRepository.findByUltimoEstado("Enviada").stream()
-               .map(entity -> mapper.map(entity, SolicitudHomologacion.class))
-               .toList();
+    public List<SolicitudHomologacion> listarPorUsuario(Integer idUsuario, String periodo) {
+        return aDominio(solicitudHomologacionRepository.findByUsuarioYPeriodo(idUsuario, periodo));
     }
 
     @Override
-    public List<SolicitudHomologacion> listarSolicitudesToCoordinador() {
-       return  solicitudHomologacionRepository.findByUltimoEstado("APROBADA_FUNCIONARIO").stream()
-               .map(entity -> mapper.map(entity, SolicitudHomologacion.class))
-               .toList();
+    public List<SolicitudHomologacion> listarPorUltimoEstado(String estado, Integer idPrograma, String periodo) {
+        return aDominio(idPrograma == null
+                ? solicitudHomologacionRepository.findByUltimoEstadoAndPeriodoAcademico(estado, periodo)
+                : solicitudHomologacionRepository.findByUltimoEstadoAndProgramaAndPeriodoAcademico(estado, idPrograma, periodo));
     }
 
     @Override
-    public List<SolicitudHomologacion> listarSolicitudesToCoordinadorPorPrograma(Integer idPrograma) {
-        if (idPrograma == null) {
-            return listarSolicitudesToCoordinador();
-        }
-        return solicitudHomologacionRepository.findByUltimoEstadoAndPrograma("APROBADA_FUNCIONARIO", idPrograma)
-                .stream()
-                .map(entity -> mapper.map(entity, SolicitudHomologacion.class))
+    public List<SolicitudHomologacion> listarPorEstadoEnHistorial(String estado, Integer idPrograma, String periodo) {
+        return aDominio(idPrograma == null
+                ? solicitudHomologacionRepository.findByEstadoEnHistorialAndPeriodoAcademico(estado, periodo)
+                : solicitudHomologacionRepository.findByEstadoEnHistorialAndProgramaAndPeriodoAcademico(estado, idPrograma, periodo));
+    }
+
+    private List<SolicitudHomologacion> aDominio(List<SolicitudHomologacionEntity> entidades) {
+        return entidades.stream()
+                .map(entity -> SolicitudMapperPersistencia.aDominio(entity, SolicitudHomologacion.class))
                 .toList();
-    }
-
-    @Override
-    public List<SolicitudHomologacion> listarSolicitudesToSecretaria() {
-       return  solicitudHomologacionRepository.findByUltimoEstado("APROBADA_COORDINADOR").stream()
-               .map(entity -> mapper.map(entity, SolicitudHomologacion.class))
-               .toList();
-    }
-
-    @Override
-    public List<SolicitudHomologacion> listarSolicitudesAprobadasToSecretaria() {
-        // Buscar en historial completo, no solo último estado
-        return solicitudHomologacionRepository.findByEstadoEnHistorialAndPeriodoAcademico("APROBADA", null).stream()
-               .map(entity -> mapper.map(entity, SolicitudHomologacion.class))
-               .toList();
     }
 
     @Override
     public Optional<SolicitudHomologacion> buscarPorId(Integer idSolicitud) {
        return solicitudHomologacionRepository.findByIdWithDocumentos(idSolicitud)
-               .map(entity -> Optional.of(mapper.map(entity, SolicitudHomologacion.class)))
+               .map(entity -> Optional.of(SolicitudMapperPersistencia.aDominio(entity, SolicitudHomologacion.class)))
                .orElse(Optional.empty());
-    }
-
-    @Override
-    public List<SolicitudHomologacion> listarSolicitudesToFuncionarioPorPeriodo(String periodoAcademico) {
-        return solicitudHomologacionRepository.findByUltimoEstadoAndPeriodoAcademico("Enviada", periodoAcademico).stream()
-                .map(entity -> mapper.map(entity, SolicitudHomologacion.class))
-                .toList();
-    }
-
-    @Override
-    public List<SolicitudHomologacion> listarSolicitudesToCoordinadorPorProgramaYPeriodo(Integer idPrograma, String periodoAcademico) {
-        if (idPrograma == null) {
-            return listarSolicitudesToCoordinador();
-        }
-        return solicitudHomologacionRepository.findByUltimoEstadoAndProgramaAndPeriodoAcademico("APROBADA_FUNCIONARIO", idPrograma, periodoAcademico).stream()
-                .map(entity -> mapper.map(entity, SolicitudHomologacion.class))
-                .toList();
-    }
-
-    @Override
-    public List<SolicitudHomologacion> listarSolicitudesToSecretariaPorPeriodo(String periodoAcademico) {
-        return solicitudHomologacionRepository.findByUltimoEstadoAndPeriodoAcademico("APROBADA_COORDINADOR", periodoAcademico).stream()
-                .map(entity -> mapper.map(entity, SolicitudHomologacion.class))
-                .toList();
-    }
-
-    @Override
-    public List<SolicitudHomologacion> listarSolicitudesAprobadasToSecretariaPorPeriodo(String periodoAcademico) {
-        // Buscar en historial completo, no solo último estado
-        return solicitudHomologacionRepository.findByEstadoEnHistorialAndPeriodoAcademico("APROBADA", periodoAcademico).stream()
-                .map(entity -> mapper.map(entity, SolicitudHomologacion.class))
-                .toList();
-    }
-
-    @Override
-    public List<SolicitudHomologacion> listarSolicitudesPorUsuarioYPeriodo(Integer idUsuario, String periodoAcademico) {
-        // Para estudiantes, buscamos todas las solicitudes del usuario (sin filtro de estado)
-        // pero filtramos por período académico
-        return solicitudHomologacionRepository.findAll().stream()
-                .filter(entity -> entity.getObjUsuario() != null && 
-                                 entity.getObjUsuario().getId_usuario().equals(idUsuario) &&
-                                 (periodoAcademico == null || periodoAcademico.equals(entity.getPeriodo_academico())))
-                .map(entity -> mapper.map(entity, SolicitudHomologacion.class))
-                .toList();
-    }
-
-    @Override
-    public List<SolicitudHomologacion> listarSolicitudesAprobadasToFuncionario() {
-        // Solicitudes que el funcionario ya procesó (aprobó) - buscar en historial completo
-        return solicitudHomologacionRepository.findByEstadoEnHistorialAndPeriodoAcademico("APROBADA_FUNCIONARIO", null).stream()
-                .map(entity -> mapper.map(entity, SolicitudHomologacion.class))
-                .toList();
-    }
-
-    @Override
-    public List<SolicitudHomologacion> listarSolicitudesAprobadasToFuncionarioPorPeriodo(String periodoAcademico) {
-        // Buscar en historial completo, no solo último estado
-        return solicitudHomologacionRepository.findByEstadoEnHistorialAndPeriodoAcademico("APROBADA_FUNCIONARIO", periodoAcademico).stream()
-                .map(entity -> mapper.map(entity, SolicitudHomologacion.class))
-                .toList();
-    }
-
-    @Override
-    public List<SolicitudHomologacion> listarSolicitudesAprobadasToCoordinador() {
-        // Solicitudes que el coordinador ya procesó (aprobó) - buscar en historial completo
-        return solicitudHomologacionRepository.findByEstadoEnHistorialAndPeriodoAcademico("APROBADA_COORDINADOR", null).stream()
-                .map(entity -> mapper.map(entity, SolicitudHomologacion.class))
-                .toList();
-    }
-
-    @Override
-    public List<SolicitudHomologacion> listarSolicitudesAprobadasToCoordinadorPorPrograma(Integer idPrograma) {
-        if (idPrograma == null) {
-            return listarSolicitudesAprobadasToCoordinador();
-        }
-        // Buscar en historial completo, no solo último estado
-        return solicitudHomologacionRepository.findByEstadoEnHistorialAndProgramaAndPeriodoAcademico("APROBADA_COORDINADOR", idPrograma, null).stream()
-                .map(entity -> mapper.map(entity, SolicitudHomologacion.class))
-                .toList();
-    }
-
-    @Override
-    public List<SolicitudHomologacion> listarSolicitudesAprobadasToCoordinadorPorProgramaYPeriodo(Integer idPrograma, String periodoAcademico) {
-        if (idPrograma == null) {
-            return listarSolicitudesAprobadasToCoordinador();
-        }
-        // Buscar en historial completo, no solo último estado
-        return solicitudHomologacionRepository.findByEstadoEnHistorialAndProgramaAndPeriodoAcademico("APROBADA_COORDINADOR", idPrograma, periodoAcademico).stream()
-                .map(entity -> mapper.map(entity, SolicitudHomologacion.class))
-                .toList();
     }
 
     @Override
@@ -184,15 +75,11 @@ public class GestionarSolicitudHomologacionGatewayImplAdapter implements Gestion
        SolicitudHomologacionEntity solicitudEntity = solicitudHomologacionRepository.findById(idSolicitud)
             .orElseThrow(() -> new EntidadNoExisteException("Solicitud de Homologacion no encontrada con ID: " + idSolicitud));
 
-        EstadoSolicitudEntity nuevo= mapper.map(nuevoEstado, EstadoSolicitudEntity.class);
-        nuevo.setObjSolicitud(solicitudEntity); 
+        EstadoSolicitudEntity nuevo= SolicitudMapperPersistencia.aEntidad(nuevoEstado);
+        nuevo.setObjSolicitud(solicitudEntity);
 
         solicitudEntity.getEstadosSolicitud().add(nuevo);
         solicitudHomologacionRepository.save(solicitudEntity);
 
     }
-
-    
-
-
 }

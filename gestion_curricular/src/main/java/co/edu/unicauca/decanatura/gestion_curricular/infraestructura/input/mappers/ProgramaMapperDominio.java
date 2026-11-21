@@ -1,22 +1,18 @@
 package co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.mappers;
 
 import org.mapstruct.Mapper;
-import java.util.List;
 
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Programa;
-import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.DTORespuesta.ProgramaDTORespuesta;
-import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.DTOPeticion.ProgramaDTOPeticion;
+import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.dto.peticion.ProgramaDTOPeticion;
+import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.dto.respuesta.ProgramaDTORespuesta;
 
 @Mapper(componentModel = "spring", nullValuePropertyMappingStrategy = org.mapstruct.NullValuePropertyMappingStrategy.IGNORE)
 public interface ProgramaMapperDominio {
 
     // Dominio -> DTO de respuesta
-    ProgramaDTORespuesta mappearDeProgramaAProgramaDTORespuesta(Programa programa);
-
-    List<ProgramaDTORespuesta> mappearDeProgramasAProgramasDTORespuesta(List<Programa> programas);
+    ProgramaDTORespuesta mapearDeProgramaAProgramaDTORespuesta(Programa programa);
 
     // DTO de petición -> Dominio
-    Programa mappearDeProgramaDTOPeticionAPrograma(ProgramaDTOPeticion peticion);
+    Programa mapearDeProgramaDTOPeticionAPrograma(ProgramaDTOPeticion peticion);
 
-    List<Programa> mappearDeProgramaDTOPeticionAProgramas(List<ProgramaDTOPeticion> peticiones);
 }

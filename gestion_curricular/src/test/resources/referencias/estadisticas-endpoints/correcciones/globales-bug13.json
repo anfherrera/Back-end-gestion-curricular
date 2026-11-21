@@ -1,0 +1,85 @@
+{
+  "/GET ~1globales?periodoAcademico=[2025-2]&proceso=[verano]/cuerpo" : {
+    "fechaConsulta" : "<ahora>",
+    "porEstado" : {
+      "APROBADA" : 2,
+      "APROBADA_COORDINADOR" : 0,
+      "APROBADA_FUNCIONARIO" : 0,
+      "ENVIADA" : 1,
+      "RECHAZADA" : 2
+    },
+    "porPrograma" : {
+      "Ingeniería Electrónica" : 3,
+      "Ingeniería de Sistemas" : 3
+    },
+    "porTipoProceso" : {
+      "Cursos de Verano" : {
+        "descripcion" : "Proceso academico",
+        "fechaConsulta" : "<ahora>",
+        "porEstado" : {
+          "APROBADA" : 2,
+          "APROBADA_COORDINADOR" : 0,
+          "APROBADA_FUNCIONARIO" : 0,
+          "ENVIADA" : 1,
+          "RECHAZADA" : 2
+        },
+        "porPrograma" : { },
+        "porTipoProceso" : { },
+        "porcentajeAprobacion" : 40.0,
+        "tipoProceso" : "Cursos de Verano",
+        "totalAprobadas" : 2,
+        "totalEnProceso" : 0,
+        "totalRechazadas" : 2,
+        "totalSolicitudes" : 5
+      }
+    },
+    "porcentajeAprobacion" : 40.0,
+    "totalAprobadas" : 2,
+    "totalEnProceso" : 0,
+    "totalEnviadas" : 1,
+    "totalRechazadas" : 2,
+    "totalSolicitudes" : 5
+  }
+,
+  "/GET ~1globales?periodoAcademico=[2025-2]&proceso=[homolog]/cuerpo" : {
+    "fechaConsulta" : "<ahora>",
+    "porEstado" : {
+      "APROBADA" : 0,
+      "APROBADA_COORDINADOR" : 0,
+      "APROBADA_FUNCIONARIO" : 0,
+      "ENVIADA" : 0,
+      "RECHAZADA" : 0
+    },
+    "porPrograma" : {
+      "Ingeniería Electrónica" : 3,
+      "Ingeniería de Sistemas" : 3
+    },
+    "porTipoProceso" : {
+      "Homologacion" : {
+        "descripcion" : "Solicitudes de homologacion de materias",
+        "fechaConsulta" : "<ahora>",
+        "porEstado" : {
+          "APROBADA" : 0,
+          "APROBADA_COORDINADOR" : 0,
+          "APROBADA_FUNCIONARIO" : 0,
+          "ENVIADA" : 0,
+          "RECHAZADA" : 0
+        },
+        "porPrograma" : { },
+        "porTipoProceso" : { },
+        "porcentajeAprobacion" : 0.0,
+        "tipoProceso" : "Homologacion",
+        "totalAprobadas" : 0,
+        "totalEnProceso" : 0,
+        "totalRechazadas" : 0,
+        "totalSolicitudes" : 0
+      }
+    },
+    "porcentajeAprobacion" : 0.0,
+    "totalAprobadas" : 0,
+    "totalEnProceso" : 0,
+    "totalEnviadas" : 0,
+    "totalRechazadas" : 0,
+    "totalSolicitudes" : 0
+  }
+}

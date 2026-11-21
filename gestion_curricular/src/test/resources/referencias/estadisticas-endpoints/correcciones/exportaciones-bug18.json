@@ -1,0 +1,14 @@
+{
+  "/GET ~1export~1pdf/contentDisposition" : "attachment; filename=\"estadisticas_generales.pdf\"",
+  "/GET ~1export~1pdf?periodoAcademico=[2025-1]/contentDisposition" : "attachment; filename=\"estadisticas_generales.pdf\"",
+  "/GET ~1export~1pdf?periodoAcademico=[2025 - Primer Semestre]/contentDisposition" : "attachment; filename=\"estadisticas_generales.pdf\"",
+  "/GET ~1export~1pdf?periodoAcademico=[  ]/contentDisposition" : "attachment; filename=\"estadisticas_generales.pdf\"",
+  "/GET ~1export~1pdf?periodoAcademico=[2025-2]&idPrograma=[1]&proceso=[CURSO_VERANO]/contentDisposition" : "attachment; filename=\"estadisticas_generales.pdf\"",
+  "/GET ~1export~1pdf?proceso=[Homologacion]&idPrograma=[1]/contentDisposition" : "attachment; filename=\"estadisticas_generales.pdf\"",
+  "/GET ~1export~1excel/contentDisposition" : "attachment; filename=\"estadisticas_generales.xlsx\"",
+  "/GET ~1export~1excel?periodoAcademico=[2025-1]/contentDisposition" : "attachment; filename=\"estadisticas_generales.xlsx\"",
+  "/GET ~1export~1excel?periodoAcademico=[2025 - Primer Semestre]/contentDisposition" : "attachment; filename=\"estadisticas_generales.xlsx\"",
+  "/GET ~1export~1excel?periodoAcademico=[  ]/contentDisposition" : "attachment; filename=\"estadisticas_generales.xlsx\"",
+  "/GET ~1export~1excel?periodoAcademico=[2025-2]&idPrograma=[1]&proceso=[CURSO_VERANO]/contentDisposition" : "attachment; filename=\"estadisticas_generales.xlsx\"",
+  "/GET ~1export~1excel?proceso=[Homologacion]&idPrograma=[1]/contentDisposition" : "attachment; filename=\"estadisticas_generales.xlsx\""
+}

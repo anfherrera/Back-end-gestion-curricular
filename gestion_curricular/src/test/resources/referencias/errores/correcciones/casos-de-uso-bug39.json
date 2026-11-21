@@ -1,0 +1,24 @@
+{
+  "curso crear datos salon inexistente" : {
+    "estado" : 500,
+    "excepcion" : "DatosCursoInvalidosException",
+    "cuerpo" : {
+      "codigoError" : "GC-0001",
+      "mensaje" : "Ha ocurrido un error inesperado. Por favor, inténtelo de nuevo.",
+      "codigoHttp" : 500,
+      "url" : "http://localhost/caso",
+      "metodo" : "GET"
+    }
+  },
+  "curso resolver salon inexistente" : {
+    "estado" : 500,
+    "excepcion" : "DatosCursoInvalidosException",
+    "cuerpo" : {
+      "codigoError" : "GC-0001",
+      "mensaje" : "Ha ocurrido un error inesperado. Por favor, inténtelo de nuevo.",
+      "codigoHttp" : 500,
+      "url" : "http://localhost/caso",
+      "metodo" : "GET"
+    }
+  }
+}

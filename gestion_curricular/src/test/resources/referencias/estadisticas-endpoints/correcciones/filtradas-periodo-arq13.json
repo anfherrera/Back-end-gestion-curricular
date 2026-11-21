@@ -1,0 +1,326 @@
+{
+  "/estado/body" : {
+    "fechaConsulta" : null,
+    "porEstado" : null,
+    "porPrograma" : null,
+    "porTipoProceso" : null,
+    "porcentajeAprobacion" : 0.0,
+    "totalAprobadas" : 0,
+    "totalEnProceso" : 0,
+    "totalRechazadas" : 0,
+    "totalSolicitudes" : 3
+  },
+  "/estado/claves" : [
+    ".fechaConsulta:NULL",
+    ".porTipoProceso:NULL",
+    ".totalEnProceso:NUMBER",
+    ".totalSolicitudes:NUMBER",
+    ".totalRechazadas:NUMBER",
+    ".porcentajeAprobacion:NUMBER",
+    ".porEstado:NULL",
+    ".porPrograma:NULL",
+    ".totalAprobadas:NUMBER"
+  ],
+  "/fechas/body" : {
+    "fechaConsulta" : 1710522000000,
+    "porEstado" : {
+      "APROBADA" : 2,
+      "RECHAZADA" : 1
+    },
+    "porPrograma" : {
+      "Sistemas" : 4
+    },
+    "porTipoProceso" : {
+      "Reingreso" : 3
+    },
+    "porcentajeAprobacion" : 100.0,
+    "totalAprobadas" : 5,
+    "totalEnProceso" : 2,
+    "totalRechazadas" : 1,
+    "totalSolicitudes" : 5
+  },
+  "/fechas/claves" : [
+    ".fechaConsulta:NUMBER",
+    ".porTipoProceso:OBJECT",
+    ".porTipoProceso.Reingreso:NUMBER",
+    ".totalEnProceso:NUMBER",
+    ".totalSolicitudes:NUMBER",
+    ".totalRechazadas:NUMBER",
+    ".porcentajeAprobacion:NUMBER",
+    ".porEstado:OBJECT",
+    ".porEstado.RECHAZADA:NUMBER",
+    ".porEstado.APROBADA:NUMBER",
+    ".porPrograma:OBJECT",
+    ".porPrograma.Sistemas:NUMBER",
+    ".totalAprobadas:NUMBER"
+  ],
+  "/periodo academico/body" : {
+    "anio" : 2024,
+    "descripcion" : "academico",
+    "fechaConsulta" : 1710522000000,
+    "fechaFin" : null,
+    "fechaInicio" : null,
+    "periodoAcademico" : "%202024-1%20",
+    "porEstado" : {
+      "APROBADA" : 2,
+      "RECHAZADA" : 1
+    },
+    "porPrograma" : {
+      "Sistemas" : 4
+    },
+    "porTipoProceso" : {
+      "Reingreso" : 3
+    },
+    "porcentajeAprobacion" : 1.0,
+    "semestre" : 1,
+    "tipoConsulta" : "porSemestre",
+    "totalAprobadas" : 1,
+    "totalEnProceso" : 2,
+    "totalEnviadas" : 0,
+    "totalRechazadas" : 1,
+    "totalSolicitudes" : 1
+  },
+  "/periodo academico/claves" : [
+    ".totalSolicitudes:NUMBER",
+    ".totalAprobadas:NUMBER",
+    ".totalRechazadas:NUMBER",
+    ".totalEnProceso:NUMBER",
+    ".totalEnviadas:NUMBER",
+    ".porcentajeAprobacion:NUMBER",
+    ".porEstado:OBJECT",
+    ".porEstado.RECHAZADA:NUMBER",
+    ".porEstado.APROBADA:NUMBER",
+    ".porTipoProceso:OBJECT",
+    ".porTipoProceso.Reingreso:NUMBER",
+    ".porPrograma:OBJECT",
+    ".porPrograma.Sistemas:NUMBER",
+    ".fechaConsulta:NUMBER",
+    ".fechaInicio:NULL",
+    ".fechaFin:NULL",
+    ".anio:NUMBER",
+    ".semestre:NUMBER",
+    ".periodoAcademico:STRING",
+    ".tipoConsulta:STRING",
+    ".descripcion:STRING"
+  ],
+  "/periodo fechas/body" : {
+    "fechaConsulta" : 1710522000000,
+    "fechaFin" : 1719723600000,
+    "fechaInicio" : 1704085200000,
+    "porEstado" : {
+      "APROBADA" : 2,
+      "RECHAZADA" : 1
+    },
+    "porPrograma" : {
+      "Sistemas" : 4
+    },
+    "porTipoProceso" : {
+      "Reingreso" : 3
+    },
+    "porcentajeAprobacion" : 100.0,
+    "totalAprobadas" : 5,
+    "totalEnProceso" : 2,
+    "totalEnviadas" : 0,
+    "totalRechazadas" : 1,
+    "totalSolicitudes" : 5
+  },
+  "/periodo fechas/claves" : [
+    ".totalSolicitudes:NUMBER",
+    ".totalAprobadas:NUMBER",
+    ".totalRechazadas:NUMBER",
+    ".totalEnProceso:NUMBER",
+    ".totalEnviadas:NUMBER",
+    ".porcentajeAprobacion:NUMBER",
+    ".porEstado:OBJECT",
+    ".porEstado.RECHAZADA:NUMBER",
+    ".porEstado.APROBADA:NUMBER",
+    ".porTipoProceso:OBJECT",
+    ".porTipoProceso.Reingreso:NUMBER",
+    ".porPrograma:OBJECT",
+    ".porPrograma.Sistemas:NUMBER",
+    ".fechaConsulta:NUMBER",
+    ".fechaInicio:NUMBER",
+    ".fechaFin:NUMBER"
+  ],
+  "/periodo sin datos/body" : {
+    "anio" : 2024,
+    "descripcion" : "academico",
+    "fechaConsulta" : 1710522000000,
+    "fechaFin" : null,
+    "fechaInicio" : null,
+    "periodoAcademico" : "%20",
+    "porEstado" : {
+      "APROBADA" : 2,
+      "RECHAZADA" : 1
+    },
+    "porPrograma" : {
+      "Sistemas" : 4
+    },
+    "porTipoProceso" : {
+      "Reingreso" : 3
+    },
+    "porcentajeAprobacion" : 1.0,
+    "semestre" : 1,
+    "tipoConsulta" : "porSemestre",
+    "totalAprobadas" : 1,
+    "totalEnProceso" : 2,
+    "totalEnviadas" : 0,
+    "totalRechazadas" : 1,
+    "totalSolicitudes" : 1
+  },
+  "/periodo sin datos/claves" : [
+    ".totalSolicitudes:NUMBER",
+    ".totalAprobadas:NUMBER",
+    ".totalRechazadas:NUMBER",
+    ".totalEnProceso:NUMBER",
+    ".totalEnviadas:NUMBER",
+    ".porcentajeAprobacion:NUMBER",
+    ".porEstado:OBJECT",
+    ".porEstado.RECHAZADA:NUMBER",
+    ".porEstado.APROBADA:NUMBER",
+    ".porTipoProceso:OBJECT",
+    ".porTipoProceso.Reingreso:NUMBER",
+    ".porPrograma:OBJECT",
+    ".porPrograma.Sistemas:NUMBER",
+    ".fechaConsulta:NUMBER",
+    ".fechaInicio:NULL",
+    ".fechaFin:NULL",
+    ".anio:NUMBER",
+    ".semestre:NUMBER",
+    ".periodoAcademico:STRING",
+    ".tipoConsulta:STRING",
+    ".descripcion:STRING"
+  ],
+  "/proceso en blanco/body" : {
+    "fechaConsulta" : 1710522000000,
+    "porEstado" : {
+      "APROBADA" : 2,
+      "RECHAZADA" : 1
+    },
+    "porPrograma" : {
+      "Sistemas" : 4
+    },
+    "porTipoProceso" : {
+      "Reingreso" : 3
+    },
+    "porcentajeAprobacion" : 66.7,
+    "totalAprobadas" : 4,
+    "totalEnProceso" : 2,
+    "totalRechazadas" : 1,
+    "totalSolicitudes" : 10
+  },
+  "/proceso en blanco/claves" : [
+    ".fechaConsulta:NUMBER",
+    ".porTipoProceso:OBJECT",
+    ".porTipoProceso.Reingreso:NUMBER",
+    ".totalEnProceso:NUMBER",
+    ".totalSolicitudes:NUMBER",
+    ".totalRechazadas:NUMBER",
+    ".porcentajeAprobacion:NUMBER",
+    ".porEstado:OBJECT",
+    ".porEstado.RECHAZADA:NUMBER",
+    ".porEstado.APROBADA:NUMBER",
+    ".porPrograma:OBJECT",
+    ".porPrograma.Sistemas:NUMBER",
+    ".totalAprobadas:NUMBER"
+  ],
+  "/proceso/body" : {
+    "fechaConsulta" : 1710522000000,
+    "porEstado" : {
+      "APROBADA" : 2,
+      "RECHAZADA" : 1
+    },
+    "porPrograma" : {
+      "Sistemas" : 4
+    },
+    "porTipoProceso" : {
+      "Reingreso" : 3
+    },
+    "porcentajeAprobacion" : 66.7,
+    "totalAprobadas" : 4,
+    "totalEnProceso" : 2,
+    "totalRechazadas" : 1,
+    "totalSolicitudes" : 10
+  },
+  "/proceso/claves" : [
+    ".fechaConsulta:NUMBER",
+    ".porTipoProceso:OBJECT",
+    ".porTipoProceso.Reingreso:NUMBER",
+    ".totalEnProceso:NUMBER",
+    ".totalSolicitudes:NUMBER",
+    ".totalRechazadas:NUMBER",
+    ".porcentajeAprobacion:NUMBER",
+    ".porEstado:OBJECT",
+    ".porEstado.RECHAZADA:NUMBER",
+    ".porEstado.APROBADA:NUMBER",
+    ".porPrograma:OBJECT",
+    ".porPrograma.Sistemas:NUMBER",
+    ".totalAprobadas:NUMBER"
+  ],
+  "/sin filtros/body" : {
+    "fechaConsulta" : 1710522000000,
+    "porEstado" : {
+      "APROBADA" : 2,
+      "RECHAZADA" : 1
+    },
+    "porPrograma" : {
+      "Sistemas" : 4
+    },
+    "porTipoProceso" : {
+      "Reingreso" : 3
+    },
+    "porcentajeAprobacion" : 0.0,
+    "totalAprobadas" : 0,
+    "totalEnProceso" : 2,
+    "totalRechazadas" : 1,
+    "totalSolicitudes" : 0
+  },
+  "/sin filtros/claves" : [
+    ".fechaConsulta:NUMBER",
+    ".porTipoProceso:OBJECT",
+    ".porTipoProceso.Reingreso:NUMBER",
+    ".totalEnProceso:NUMBER",
+    ".totalSolicitudes:NUMBER",
+    ".totalRechazadas:NUMBER",
+    ".porcentajeAprobacion:NUMBER",
+    ".porEstado:OBJECT",
+    ".porEstado.RECHAZADA:NUMBER",
+    ".porEstado.APROBADA:NUMBER",
+    ".porPrograma:OBJECT",
+    ".porPrograma.Sistemas:NUMBER",
+    ".totalAprobadas:NUMBER"
+  ],
+  "/solo inicio/body" : {
+    "fechaConsulta" : 1710522000000,
+    "porEstado" : {
+      "APROBADA" : 2,
+      "RECHAZADA" : 1
+    },
+    "porPrograma" : {
+      "Sistemas" : 4
+    },
+    "porTipoProceso" : {
+      "Reingreso" : 3
+    },
+    "porcentajeAprobacion" : 0.0,
+    "totalAprobadas" : 0,
+    "totalEnProceso" : 2,
+    "totalRechazadas" : 1,
+    "totalSolicitudes" : 0
+  },
+  "/solo inicio/claves" : [
+    ".fechaConsulta:NUMBER",
+    ".porTipoProceso:OBJECT",
+    ".porTipoProceso.Reingreso:NUMBER",
+    ".totalEnProceso:NUMBER",
+    ".totalSolicitudes:NUMBER",
+    ".totalRechazadas:NUMBER",
+    ".porcentajeAprobacion:NUMBER",
+    ".porEstado:OBJECT",
+    ".porEstado.RECHAZADA:NUMBER",
+    ".porEstado.APROBADA:NUMBER",
+    ".porPrograma:OBJECT",
+    ".porPrograma.Sistemas:NUMBER",
+    ".totalAprobadas:NUMBER"
+  ]
+}

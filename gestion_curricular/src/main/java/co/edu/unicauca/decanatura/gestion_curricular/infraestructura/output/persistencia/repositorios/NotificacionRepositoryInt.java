@@ -1,13 +1,13 @@
 package co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.repositorios;
 
-import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.entidades.NotificacionEntity;
+import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
-import java.util.List;
+import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.entidades.NotificacionEntity;
 
 public interface NotificacionRepositoryInt extends JpaRepository<NotificacionEntity, Integer> {
 
@@ -49,9 +49,5 @@ public interface NotificacionRepositoryInt extends JpaRepository<NotificacionEnt
     @Query("UPDATE NotificacionEntity n SET n.leida = true WHERE n.id_notificacion = :idNotificacion")
     void marcarComoLeida(@Param("idNotificacion") Integer idNotificacion);
 
-    // Eliminar notificaciones antiguas (más de X días)
-    @Modifying
-    @Query("DELETE FROM NotificacionEntity n WHERE n.fechaCreacion < :fechaLimite AND n.leida = true")
-    void eliminarAntiguas(@Param("fechaLimite") java.util.Date fechaLimite);
 }
 

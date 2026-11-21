@@ -1,0 +1,12 @@
+{
+  "fechaFin" : 1767193200000,
+  "fechaInicio" : 1719846000000,
+  "idPrograma" : 2,
+  "porTipoProceso" : {
+    "Cursos de Verano" : 2,
+    "ECAES" : 1,
+    "Homologacion" : 1,
+    "Paz y Salvo" : 1,
+    "Reingreso" : 0
+  }
+}

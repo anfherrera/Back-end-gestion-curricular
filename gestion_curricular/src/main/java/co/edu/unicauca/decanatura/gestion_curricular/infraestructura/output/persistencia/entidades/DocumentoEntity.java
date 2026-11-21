@@ -40,6 +40,10 @@ public class DocumentoEntity {
     @Column(length = 2000)
     private String comentario; // comentario de funcionario o coordinador
 
+    /** Usuario que subió el archivo; evita que un documento sin solicitud termine en la solicitud de otro estudiante. */
+    @Column(name = "idUsuarioSubio", nullable = true)
+    private Integer idUsuarioSubio;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "idSolicitud")
     private SolicitudEntity objSolicitud;

@@ -1,13 +1,11 @@
 package co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.mappers;
 
-import java.util.List;
 
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Documento;
-import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.DTORespuesta.DocumentosDTORespuesta;
-import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.DTOPeticion.DocumentosDTOPeticion;
+import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.dto.respuesta.DocumentosDTORespuesta;
 
 @Mapper(componentModel = "spring")
 public interface DocumentosMapperDominio {
@@ -19,20 +17,6 @@ public interface DocumentosMapperDominio {
     @Mapping(source = "fecha_documento",                target = "fecha_documento")
     @Mapping(source = "esValido",                       target = "esValido")
     @Mapping(source = "comentario",                     target = "comentario")
-    DocumentosDTORespuesta mappearDeDocumentoADTORespuesta(Documento documento);
+    DocumentosDTORespuesta mapearDeDocumentoADTORespuesta(Documento documento);
 
-    List<DocumentosDTORespuesta> mappearListaDeDocumentoADTORespuesta(List<Documento> documentos);
-
-    /* ======== DTO de petición  →  Dominio ======== */
-    @Mapping(source = "id_documento",                   target = "id_documento")
-    @Mapping(source = "nombre",                         target = "nombre")
-    @Mapping(source = "ruta_documento",                 target = "ruta_documento")
-    @Mapping(source = "fecha_documento",                target = "fecha_documento")
-    @Mapping(source = "esValido",                       target = "esValido")
-    @Mapping(source = "comentario",                     target = "comentario")
-    @Mapping(target = "objSolicitud", ignore = true) // Ignoramos el usuario, si no es necesario
-    /* -------------  */
-    Documento mappearDeDTOPeticionADocumento(DocumentosDTOPeticion peticion);
-
-    List<Documento> mappearListaDeDTOPeticionADocumento(List<DocumentosDTOPeticion> peticiones);
 }

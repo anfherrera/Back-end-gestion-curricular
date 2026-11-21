@@ -17,6 +17,8 @@ public class Documento {
     private Date fecha_documento;
     private boolean esValido;
     private String comentario; // observacion
+    /** Usuario que subió el archivo. Mientras el documento no tenga solicitud, solo se asocia a solicitudes de este usuario. */
+    private Integer idUsuarioSubio;
 
     private Solicitud objSolicitud;
     

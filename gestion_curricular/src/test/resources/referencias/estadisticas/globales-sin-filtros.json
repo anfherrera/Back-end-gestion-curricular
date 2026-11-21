@@ -1,0 +1,27 @@
+{
+  "porEstado" : {
+    "APROBADA" : 4,
+    "APROBADA_COORDINADOR" : 1,
+    "APROBADA_FUNCIONARIO" : 0,
+    "ENVIADA" : 5,
+    "RECHAZADA" : 4
+  },
+  "porPrograma" : {
+    "Ingeniería Civil" : 0,
+    "Ingeniería Electrónica" : 5,
+    "Ingeniería de Sistemas" : 8
+  },
+  "porTipoProceso" : {
+    "Cursos de Verano" : 5,
+    "ECAES" : 2,
+    "Homologacion" : 3,
+    "Paz y Salvo" : 2,
+    "Reingreso" : 2
+  },
+  "porcentajeAprobacion" : 28.6,
+  "totalAprobadas" : 4,
+  "totalEnProceso" : 1,
+  "totalEnviadas" : 5,
+  "totalRechazadas" : 4,
+  "totalSolicitudes" : 14
+}

@@ -1,0 +1,302 @@
+{
+  "catalogo" : {
+    "body" : {
+      "data" : [ {
+        "codigo" : "CC",
+        "descripcion" : "Cédula de Ciudadanía"
+      }, {
+        "codigo" : "TI",
+        "descripcion" : "Tarjeta de Identidad"
+      }, {
+        "codigo" : "CE",
+        "descripcion" : "Cédula de Extranjería"
+      }, {
+        "codigo" : "PA",
+        "descripcion" : "Pasaporte"
+      }, {
+        "codigo" : "RC",
+        "descripcion" : "Registro Civil"
+      }, {
+        "codigo" : "NIT",
+        "descripcion" : "Número de Identificación Tributaria"
+      }, {
+        "codigo" : "NUIP",
+        "descripcion" : "Número Único de Identificación Personal"
+      } ],
+      "success" : true,
+      "message" : "Tipos de documento obtenidos exitosamente"
+    },
+    "status" : 200
+  },
+  "CC" : {
+    "validar" : {
+      "body" : {
+        "data" : true,
+        "success" : true,
+        "message" : "Tipo de documento válido"
+      },
+      "status" : 200
+    },
+    "info" : {
+      "body" : {
+        "data" : {
+          "descripcion" : "Cédula de Ciudadanía",
+          "codigo" : "CC"
+        },
+        "success" : true,
+        "message" : "Información del tipo de documento obtenida exitosamente"
+      },
+      "status" : 200
+    },
+    "crearEcaes" : {
+      "body" : {
+        "codigoError" : "GC-0001",
+        "mensaje" : "Ha ocurrido un error inesperado. Por favor, inténtelo de nuevo.",
+        "codigoHttp" : 500,
+        "url" : "http://localhost/api/solicitudes-ecaes/crearSolicitud-Ecaes",
+        "metodo" : "POST"
+      },
+      "status" : 500
+    }
+  },
+  "TI" : {
+    "validar" : {
+      "body" : {
+        "data" : true,
+        "success" : true,
+        "message" : "Tipo de documento válido"
+      },
+      "status" : 200
+    },
+    "info" : {
+      "body" : {
+        "data" : {
+          "descripcion" : "Tarjeta de Identidad",
+          "codigo" : "TI"
+        },
+        "success" : true,
+        "message" : "Información del tipo de documento obtenida exitosamente"
+      },
+      "status" : 200
+    },
+    "crearEcaes" : {
+      "body" : {
+        "codigoError" : "GC-0004",
+        "mensaje" : "No enum constant co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Enums.TipoDocumento.TI",
+        "codigoHttp" : 400,
+        "url" : "http://localhost/api/solicitudes-ecaes/crearSolicitud-Ecaes",
+        "metodo" : "POST"
+      },
+      "status" : 400
+    }
+  },
+  "CE" : {
+    "validar" : {
+      "body" : {
+        "data" : true,
+        "success" : true,
+        "message" : "Tipo de documento válido"
+      },
+      "status" : 200
+    },
+    "info" : {
+      "body" : {
+        "data" : {
+          "descripcion" : "Cédula de Extranjería",
+          "codigo" : "CE"
+        },
+        "success" : true,
+        "message" : "Información del tipo de documento obtenida exitosamente"
+      },
+      "status" : 200
+    },
+    "crearEcaes" : {
+      "body" : {
+        "codigoError" : "GC-0001",
+        "mensaje" : "Ha ocurrido un error inesperado. Por favor, inténtelo de nuevo.",
+        "codigoHttp" : 500,
+        "url" : "http://localhost/api/solicitudes-ecaes/crearSolicitud-Ecaes",
+        "metodo" : "POST"
+      },
+      "status" : 500
+    }
+  },
+  "PA" : {
+    "validar" : {
+      "body" : {
+        "data" : true,
+        "success" : true,
+        "message" : "Tipo de documento válido"
+      },
+      "status" : 200
+    },
+    "info" : {
+      "body" : {
+        "data" : {
+          "descripcion" : "Pasaporte",
+          "codigo" : "PA"
+        },
+        "success" : true,
+        "message" : "Información del tipo de documento obtenida exitosamente"
+      },
+      "status" : 200
+    },
+    "crearEcaes" : {
+      "body" : {
+        "codigoError" : "GC-0004",
+        "mensaje" : "No enum constant co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Enums.TipoDocumento.PA",
+        "codigoHttp" : 400,
+        "url" : "http://localhost/api/solicitudes-ecaes/crearSolicitud-Ecaes",
+        "metodo" : "POST"
+      },
+      "status" : 400
+    }
+  },
+  "RC" : {
+    "validar" : {
+      "body" : {
+        "data" : true,
+        "success" : true,
+        "message" : "Tipo de documento válido"
+      },
+      "status" : 200
+    },
+    "info" : {
+      "body" : {
+        "data" : {
+          "descripcion" : "Registro Civil",
+          "codigo" : "RC"
+        },
+        "success" : true,
+        "message" : "Información del tipo de documento obtenida exitosamente"
+      },
+      "status" : 200
+    },
+    "crearEcaes" : {
+      "body" : {
+        "codigoError" : "GC-0004",
+        "mensaje" : "No enum constant co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Enums.TipoDocumento.RC",
+        "codigoHttp" : 400,
+        "url" : "http://localhost/api/solicitudes-ecaes/crearSolicitud-Ecaes",
+        "metodo" : "POST"
+      },
+      "status" : 400
+    }
+  },
+  "NIT" : {
+    "validar" : {
+      "body" : {
+        "data" : true,
+        "success" : true,
+        "message" : "Tipo de documento válido"
+      },
+      "status" : 200
+    },
+    "info" : {
+      "body" : {
+        "data" : {
+          "descripcion" : "Número de Identificación Tributaria",
+          "codigo" : "NIT"
+        },
+        "success" : true,
+        "message" : "Información del tipo de documento obtenida exitosamente"
+      },
+      "status" : 200
+    },
+    "crearEcaes" : {
+      "body" : {
+        "codigoError" : "GC-0004",
+        "mensaje" : "No enum constant co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Enums.TipoDocumento.NIT",
+        "codigoHttp" : 400,
+        "url" : "http://localhost/api/solicitudes-ecaes/crearSolicitud-Ecaes",
+        "metodo" : "POST"
+      },
+      "status" : 400
+    }
+  },
+  "NUIP" : {
+    "validar" : {
+      "body" : {
+        "data" : true,
+        "success" : true,
+        "message" : "Tipo de documento válido"
+      },
+      "status" : 200
+    },
+    "info" : {
+      "body" : {
+        "data" : {
+          "descripcion" : "Número Único de Identificación Personal",
+          "codigo" : "NUIP"
+        },
+        "success" : true,
+        "message" : "Información del tipo de documento obtenida exitosamente"
+      },
+      "status" : 200
+    },
+    "crearEcaes" : {
+      "body" : {
+        "codigoError" : "GC-0004",
+        "mensaje" : "No enum constant co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Enums.TipoDocumento.NUIP",
+        "codigoHttp" : 400,
+        "url" : "http://localhost/api/solicitudes-ecaes/crearSolicitud-Ecaes",
+        "metodo" : "POST"
+      },
+      "status" : 400
+    }
+  },
+  "cc" : {
+    "validar" : {
+      "body" : {
+        "data" : false,
+        "success" : true,
+        "message" : "Tipo de documento no válido"
+      },
+      "status" : 200
+    },
+    "info" : {
+      "body" : {
+        "success" : false,
+        "message" : "Tipo de documento no válido: cc"
+      },
+      "status" : 400
+    },
+    "crearEcaes" : {
+      "body" : {
+        "codigoError" : "GC-0004",
+        "mensaje" : "No enum constant co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Enums.TipoDocumento.cc",
+        "codigoHttp" : 400,
+        "url" : "http://localhost/api/solicitudes-ecaes/crearSolicitud-Ecaes",
+        "metodo" : "POST"
+      },
+      "status" : 400
+    }
+  },
+  "XX" : {
+    "validar" : {
+      "body" : {
+        "data" : false,
+        "success" : true,
+        "message" : "Tipo de documento no válido"
+      },
+      "status" : 200
+    },
+    "info" : {
+      "body" : {
+        "success" : false,
+        "message" : "Tipo de documento no válido: XX"
+      },
+      "status" : 400
+    },
+    "crearEcaes" : {
+      "body" : {
+        "codigoError" : "GC-0004",
+        "mensaje" : "No enum constant co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Enums.TipoDocumento.XX",
+        "codigoHttp" : 400,
+        "url" : "http://localhost/api/solicitudes-ecaes/crearSolicitud-Ecaes",
+        "metodo" : "POST"
+      },
+      "status" : 400
+    }
+  }
+}

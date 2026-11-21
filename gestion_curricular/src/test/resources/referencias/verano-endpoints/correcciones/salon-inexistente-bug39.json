@@ -1,0 +1,18 @@
+{
+  "crear salon inexistente" : {
+    "status" : 400,
+    "body" : {
+      "error" : "Salón no encontrado",
+      "message" : "El salón con ID 6 no existe"
+    },
+    "claves" : [ "error:STRING", "message:STRING" ]
+  },
+  "editar salon inexistente" : {
+    "status" : 400,
+    "body" : {
+      "error" : "Salón no encontrado",
+      "message" : "El salón con ID 6 no existe"
+    },
+    "claves" : [ "error:STRING", "message:STRING" ]
+  }
+}

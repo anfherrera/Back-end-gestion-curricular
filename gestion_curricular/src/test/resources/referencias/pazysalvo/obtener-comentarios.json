@@ -1,0 +1,72 @@
+{
+  "GET /obtenerComentarios/{completa-con-guion}" : {
+    "estado" : 200,
+    "cuerpo" : {
+      "mensaje" : "No hay comentarios para esta solicitud"
+    }
+  },
+  "GET /obtenerComentarios/{variantes-de-nombre}" : {
+    "estado" : 200,
+    "cuerpo" : {
+      "mensaje" : "No hay comentarios para esta solicitud"
+    }
+  },
+  "GET /obtenerComentarios/{formato-con-guion-bajo}" : {
+    "estado" : 200,
+    "cuerpo" : {
+      "mensaje" : "No hay comentarios para esta solicitud"
+    }
+  },
+  "GET /obtenerComentarios/{sin-documentos}" : {
+    "estado" : 200,
+    "cuerpo" : {
+      "mensaje" : "No hay comentarios para esta solicitud"
+    }
+  },
+  "GET /obtenerComentarios/{nombre-nulo}" : {
+    "estado" : 200,
+    "cuerpo" : {
+      "documentosConComentarios" : [ {
+        "comentario" : "comentario de un documento sin nombre",
+        "id" : "<id>",
+        "nombre" : null
+      } ]
+    }
+  },
+  "GET /obtenerComentarios/{rechazos-ultimo-sin-comentario}" : {
+    "estado" : 200,
+    "cuerpo" : {
+      "documentosConComentarios" : [ {
+        "comentario" : "revisar firma",
+        "id" : "<id>",
+        "nombre" : "hoja_vida_academica.pdf"
+      }, {
+        "comentario" : "sin sello",
+        "id" : "<id>",
+        "nombre" : "oficio.pdf"
+      } ]
+    }
+  },
+  "GET /obtenerComentarios/{rechazos-con-comentario}" : {
+    "estado" : 200,
+    "cuerpo" : {
+      "comentarioRechazo" : "el más reciente"
+    }
+  },
+  "GET /obtenerComentarios/{sin-comentarios}" : {
+    "estado" : 200,
+    "cuerpo" : {
+      "mensaje" : "No hay comentarios para esta solicitud"
+    }
+  },
+  "GET /obtenerComentarios/{inexistente}" : {
+    "estado" : 404,
+    "cuerpo" : {
+      "codigoError" : "GC-0003",
+      "codigoHttp" : 404,
+      "mensaje" : "Entidad no encontrada, Solicitud de Paz y Salvo no encontrada con ID: 2000000000",
+      "metodo" : "GET",
+      "url" : "http://localhost/api/solicitudes-pazysalvo/obtenerComentarios/2000000000"
+    }
+  }
+}

@@ -1,0 +1,23 @@
+{
+  "descripcionEstado" : "Solicitudes aprobadas y procesadas",
+  "estado" : "APROBADA",
+  "porEstado" : { },
+  "porPrograma" : {
+    "Ingeniería Civil" : 0,
+    "Ingeniería Electrónica" : 1,
+    "Ingeniería de Sistemas" : 4
+  },
+  "porTipoProceso" : {
+    "Cursos de Verano" : 2,
+    "ECAES" : 1,
+    "Homologacion" : 1,
+    "Paz y Salvo" : 1,
+    "Reingreso" : 0
+  },
+  "porcentajeAprobacion" : 100.0,
+  "totalAprobadas" : 5,
+  "totalEnProceso" : 0,
+  "totalEnviadas" : 0,
+  "totalRechazadas" : 0,
+  "totalSolicitudes" : 5
+}

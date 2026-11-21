@@ -8,9 +8,9 @@ import org.mapstruct.ReportingPolicy;
 
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.CambioEstadoSolicitud;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Solicitud;
-import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.DTORespuesta.SolicitudDTORespuesta;
-import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.DTOPeticion.CambioEstadoSolicitudDTOPeticion;
-import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.DTOPeticion.SolicitudDTOPeticion;
+import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.dto.peticion.CambioEstadoSolicitudDTOPeticion;
+import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.dto.peticion.SolicitudDTOPeticion;
+import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.dto.respuesta.SolicitudDTORespuesta;
 
 @Mapper(
     componentModel = "spring",
@@ -32,21 +32,16 @@ public interface SolicitudMapperDominio {
     @Mapping(source = "estadosSolicitud", target = "estadosSolicitud")
     @Mapping(source = "objUsuario", target = "objUsuario")
     @Mapping(source = "documentos", target = "documentos")
-    SolicitudDTORespuesta mappearDeSolicitudARespuesta(Solicitud solicitud);
+    SolicitudDTORespuesta mapearDeSolicitudARespuesta(Solicitud solicitud);
 
-    List<SolicitudDTORespuesta> mappearListaDeSolicitudesARespuesta(List<Solicitud> solicitudes);
+    List<SolicitudDTORespuesta> mapearListaDeSolicitudesARespuesta(List<Solicitud> solicitudes);
 
     // DTO Petición → Modelo
     @Mapping(target = "estadosSolicitud", ignore = true) // No viene en el DTO de petición
     @Mapping(target = "objCursoOfertadoVerano", ignore = true) 
     @Mapping(target = "documentos", ignore = true)
-    Solicitud mappearDeSolicitudDTOPeticionASolicitud(SolicitudDTOPeticion peticion);
+    Solicitud mapearDeSolicitudDTOPeticionASolicitud(SolicitudDTOPeticion peticion);
 
-    List<Solicitud> mappearListaDeSolicitudDTOPeticionAListaSolicitud(List<SolicitudDTOPeticion> peticiones);
-
-    //Cambio para la actualizacion del estado de la solicitud
-    CambioEstadoSolicitudDTOPeticion mappearDeCambioEstadoSolicitudACambioEstadoSolicitudDTOPeticion(CambioEstadoSolicitud solicitudPeticion);
-
-    CambioEstadoSolicitud mappearDeCambioEstadoSolicitudDTOPeticionACambioEstadoSolicitud(CambioEstadoSolicitudDTOPeticion solicitudPeticion);
+    CambioEstadoSolicitud mapearDeCambioEstadoSolicitudDTOPeticionACambioEstadoSolicitud(CambioEstadoSolicitudDTOPeticion solicitudPeticion);
 
 }

@@ -1,0 +1,5 @@
+{
+  "/por defecto/fechaTipo" : "NUMBER",
+  "/por defecto/fechaSubida" : "<milisegundos de ahora>",
+  "/spring boot/fechaSubida" : "<ISO 8601 UTC de ahora>"
+}

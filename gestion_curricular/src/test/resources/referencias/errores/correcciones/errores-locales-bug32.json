@@ -1,0 +1,19 @@
+{
+  "cursoNuevo sin fecha" : {
+    "status" : 200,
+    "body" : {
+      "fecha" : null,
+      "codigo" : "104512",
+      "estado" : "Pendiente",
+      "objUsuario" : {
+        "nombre_completo" : "Ana Ruiz",
+        "id_usuario" : 5
+      },
+      "id_solicitud" : null,
+      "curso" : "Calculo",
+      "nombreCompleto" : "Ana Ruiz",
+      "condicion" : "Primera_Vez"
+    },
+    "llamadas" : [ "crearSolicitudCursoVeranoPreinscripcion" ]
+  }
+}

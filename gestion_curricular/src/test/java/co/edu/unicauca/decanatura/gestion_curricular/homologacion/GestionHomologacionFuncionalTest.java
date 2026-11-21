@@ -1,5 +1,8 @@
 package co.edu.unicauca.decanatura.gestion_curricular.homologacion;
 
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,8 +13,9 @@ import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.repositorios.SolicitudRepositoryInt;
+import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.repositorios.UsuarioRepositoryInt;
+import co.edu.unicauca.decanatura.gestion_curricular.soporte.SolicitudesDePrueba;
 
 /**
  * ============================================================
@@ -38,12 +42,26 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest
 @AutoConfigureMockMvc(addFilters = false)
 @ActiveProfiles("test")
-@WithMockUser(roles = { "SECRETARIA", "FUNCIONARIO", "COORDINADOR", "ESTUDIANTE" })
+@WithMockUser(username = "juan.perez@unicauca.edu.co", roles = { "Secretario", "Funcionario", "Coordinador", "Estudiante" })
 @DisplayName("Pruebas Funcionales - Gestión de Homologación")
 class GestionHomologacionFuncionalTest {
 
     @Autowired
     private MockMvc mockMvc;
+
+    @Autowired
+    private SolicitudRepositoryInt solicitudRepository;
+
+    @Autowired
+    private UsuarioRepositoryInt usuarioRepository;
+
+    private SolicitudesDePrueba solicitudes() {
+        return new SolicitudesDePrueba(solicitudRepository, usuarioRepository);
+    }
+
+    private static String cambioEstado(int idSolicitud, String nuevoEstado) {
+        return "{\"idSolicitud\": %d, \"nuevoEstado\": \"%s\"}".formatted(idSolicitud, nuevoEstado);
+    }
 
     // ==================== FLUJO 1: SOLICITUD COMPLETA DE HOMOLOGACIÓN ====================
 
@@ -81,7 +99,7 @@ class GestionHomologacionFuncionalTest {
                         .content(jsonSolicitud))
                 .andExpect(result -> {
                     int s = result.getResponse().getStatus();
-                    if (s != 201 && s != 409) throw new AssertionError("Expected 201 or 409, got " + s);
+                    if (s != 201 && s != 400) throw new AssertionError("Expected 201 or 400, got " + s);
                 });
 
         // Paso 2: Verificar que la solicitud aparece en el listado
@@ -106,32 +124,27 @@ class GestionHomologacionFuncionalTest {
          * RESULTADO ESPERADO: Solicitud validada y lista para coordinador
          */
         
+        int id = solicitudes().homologacion("Enviada");
+
         // Paso 1: Funcionario consulta sus solicitudes
         mockMvc.perform(get("/api/solicitudes-homologacion/listarSolicitud-Homologacion/Funcionario"))
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON));
 
         // Paso 2: Funcionario consulta solicitud específica
-        mockMvc.perform(get("/api/solicitudes-homologacion/listarSolicitud-Homologacion/1"))
+        mockMvc.perform(get("/api/solicitudes-homologacion/listarSolicitud-Homologacion/" + id))
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON));
 
         // Paso 3: Funcionario valida documentos requeridos
-        mockMvc.perform(get("/api/solicitudes-homologacion/validarDocumentosRequeridos/1"))
+        mockMvc.perform(get("/api/solicitudes-homologacion/validarDocumentosRequeridos/" + id))
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON));
 
         // Paso 4: Funcionario aprueba la solicitud
-        String jsonAprobacion = """
-            {
-                "idSolicitud": 1,
-                "nuevoEstado": "APROBADA_FUNCIONARIO"
-            }
-            """;
-        
         mockMvc.perform(put("/api/solicitudes-homologacion/actualizarEstadoSolicitud")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(jsonAprobacion))
+                        .content(cambioEstado(id, "APROBADA_FUNCIONARIO")))
                 .andExpect(status().isNoContent());
     }
 
@@ -151,27 +164,22 @@ class GestionHomologacionFuncionalTest {
          * RESULTADO ESPERADO: Solicitud evaluada y lista para secretaria
          */
         
+        int id = solicitudes().homologacion("APROBADA_FUNCIONARIO");
+
         // Paso 1: Coordinador consulta solicitudes asignadas
         mockMvc.perform(get("/api/solicitudes-homologacion/listarSolicitud-Homologacion/Coordinador"))
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON));
 
         // Paso 2: Coordinador consulta solicitud específica
-        mockMvc.perform(get("/api/solicitudes-homologacion/listarSolicitud-Homologacion/1"))
+        mockMvc.perform(get("/api/solicitudes-homologacion/listarSolicitud-Homologacion/" + id))
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON));
 
         // Paso 3: Coordinador aprueba la solicitud
-        String jsonAprobacion = """
-            {
-                "idSolicitud": 1,
-                "nuevoEstado": "APROBADA_COORDINADOR"
-            }
-            """;
-        
         mockMvc.perform(put("/api/solicitudes-homologacion/actualizarEstadoSolicitud")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(jsonAprobacion))
+                        .content(cambioEstado(id, "APROBADA_COORDINADOR")))
                 .andExpect(status().isNoContent());
     }
 
@@ -301,41 +309,28 @@ class GestionHomologacionFuncionalTest {
                         .content(jsonSolicitud))
                 .andExpect(result -> {
                     int s = result.getResponse().getStatus();
-                    if (s != 201 && s != 409) throw new AssertionError("Expected 201 or 409, got " + s);
+                    if (s != 201 && s != 400) throw new AssertionError("Expected 201 or 400, got " + s);
                 });
 
         // Paso 2: Consultar solicitudes (simulando diferentes roles)
         mockMvc.perform(get("/api/solicitudes-homologacion/listarSolicitud-Homologacion"))
                 .andExpect(status().isOk());
 
-        // Paso 3: Funcionario aprueba solicitud (usando ID 1 que puede existir en BD)
-        String jsonAprobacionFuncionario = """
-            {
-                "idSolicitud": 1,
-                "nuevoEstado": "APROBADA_FUNCIONARIO"
-            }
-            """;
-        
+        // Paso 3: Funcionario aprueba una solicitud recién enviada
+        int id = solicitudes().homologacion("Enviada");
         mockMvc.perform(put("/api/solicitudes-homologacion/actualizarEstadoSolicitud")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(jsonAprobacionFuncionario))
+                        .content(cambioEstado(id, "APROBADA_FUNCIONARIO")))
                 .andExpect(status().isNoContent());
 
         // Paso 4: Coordinador aprueba solicitud
-        String jsonAprobacionCoordinador = """
-            {
-                "idSolicitud": 1,
-                "nuevoEstado": "APROBADA_COORDINADOR"
-            }
-            """;
-        
         mockMvc.perform(put("/api/solicitudes-homologacion/actualizarEstadoSolicitud")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(jsonAprobacionCoordinador))
+                        .content(cambioEstado(id, "APROBADA_COORDINADOR")))
                 .andExpect(status().isNoContent());
 
         // Paso 5: Secretaria consulta oficios disponibles
-        mockMvc.perform(get("/api/solicitudes-homologacion/obtenerOficios/1"))
+        mockMvc.perform(get("/api/solicitudes-homologacion/obtenerOficios/" + id))
                 .andExpect(status().isOk());
     }
 

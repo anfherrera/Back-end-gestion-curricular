@@ -1,0 +1,10 @@
+{
+  "cursoNuevo condicion null" : {
+    "status" : 400,
+    "body" : {
+      "tipo" : "VALIDATION_ERROR",
+      "error" : "Error de validacion: La condicion es obligatoria. Valores validos: [Primera_Vez, Habilitación, Repeteción]"
+    },
+    "llamadas" : [ ]
+  }
+}

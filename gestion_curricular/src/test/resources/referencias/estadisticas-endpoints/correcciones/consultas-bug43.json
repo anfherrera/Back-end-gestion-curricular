@@ -1,0 +1,12 @@
+{
+  "GET /periodo?periodoAcademico=[2025-3]" : {
+    "estado" : 400,
+    "cuerpo" : {
+      "codigoError" : "GC-0004",
+      "codigoHttp" : 400,
+      "mensaje" : "GC-0004 - Violación a regla de negocio: Formato de período académico inválido. Use formato: YYYY-P (ej: 2024-2)",
+      "metodo" : "GET",
+      "url" : "http://localhost/api/estadisticas/periodo"
+    }
+  }
+}

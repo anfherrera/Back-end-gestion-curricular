@@ -4,14 +4,16 @@ import java.util.List;
 
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
+import org.mapstruct.Named;
 import org.mapstruct.ReportingPolicy;
 
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.FechaEcaes;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.SolicitudEcaes;
-import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.DTOPeticion.FechasEcaesDTOPeticion;
-import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.DTOPeticion.SolicitudEcaesDTOPeticion;
-import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.DTORespuesta.FechaEcaesDTORespuesta;
-import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.DTORespuesta.SolicitudEcaesDTORespuesta;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.enums.TipoDocumento;
+import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.dto.peticion.FechasEcaesDTOPeticion;
+import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.dto.peticion.SolicitudEcaesDTOPeticion;
+import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.dto.respuesta.FechaEcaesDTORespuesta;
+import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.dto.respuesta.SolicitudEcaesDTORespuesta;
 
 @Mapper(
     componentModel = "spring",
@@ -27,9 +29,22 @@ public interface SolicitudEcaesMapperDominio {
     @Mapping(target = "estadosSolicitud", ignore = true) // Lo controlas desde el caso de uso
     @Mapping(target = "documentos", ignore = true)
     @Mapping(target = "objCursoOfertadoVerano", ignore = true) // Propiedad no mapeada
-    SolicitudEcaes mappearDeSolicitudEcaesDTOPeticionASolicitudEcaes(SolicitudEcaesDTOPeticion peticion);
+    @Mapping(target = "tipoDocumento", qualifiedByName = "tipoDocumentoEcaes")
+    SolicitudEcaes mapearDeSolicitudEcaesDTOPeticionASolicitudEcaes(SolicitudEcaesDTOPeticion peticion);
 
-    List<SolicitudEcaes> mappearListaDeSolicitudEcaesDTOPeticionAListaDeSolicitudEcaes(List<SolicitudEcaesDTOPeticion> solicitudes);
+    @Named("tipoDocumentoEcaes")
+    default TipoDocumento tipoDocumentoEcaes(String codigo) {
+        if (codigo == null) {
+            return null;
+        }
+        if (codigo.equals("CC") || codigo.equals("CE")) {
+            return TipoDocumento.valueOf(codigo);
+        }
+
+        // Mensaje propio sin el nombre de la clase del enum (BUG-26).
+        throw new IllegalArgumentException("Tipo de documento no admitido en ECAES: " + codigo
+            + ". Valores admitidos: [CC, CE]");
+    }
 
     // Dominio → DTO Respuesta
     @Mapping(source = "id_solicitud", target = "id_solicitud")
@@ -40,18 +55,18 @@ public interface SolicitudEcaesMapperDominio {
     @Mapping(source = "estadosSolicitud", target = "estadosSolicitud")
     @Mapping(source = "objUsuario", target = "objUsuario")
     @Mapping(source = "documentos", target = "documentos")
-    SolicitudEcaesDTORespuesta mappearDeSolicitudEcaesARespuesta(SolicitudEcaes solicitudEcaes);
+    SolicitudEcaesDTORespuesta mapearDeSolicitudEcaesARespuesta(SolicitudEcaes solicitudEcaes);
 
-    List<SolicitudEcaesDTORespuesta> mappearListaDeSolicitudEcaesARespuesta(List<SolicitudEcaes> solicitudes);
+    List<SolicitudEcaesDTORespuesta> mapearListaDeSolicitudEcaesARespuesta(List<SolicitudEcaes> solicitudes);
 
     //DTO de peticion  → fechas ecaes dominio    
-    FechaEcaes mappearDeFechasEcaesDTOPeticionAFechaEcaes(FechasEcaesDTOPeticion fechasEcaes);
+    FechaEcaes mapearDeFechasEcaesDTOPeticionAFechaEcaes(FechasEcaesDTOPeticion fechasEcaes);
 
     // Fechas ecaes dominio → DTO respuesta
-    FechaEcaesDTORespuesta mappearDeFechaEcaesAFechaEcaesDTORespuesta(FechaEcaes fechaEcaes);    
+    FechaEcaesDTORespuesta mapearDeFechaEcaesAFechaEcaesDTORespuesta(FechaEcaes fechaEcaes);
 
     // Lista de fechas ecaes dominio → Lista de DTO respuesta
-    List<FechaEcaesDTORespuesta> mappearListaDeFechaEcaesAFechaEcaesDTORespuesta(List<FechaEcaes> fechasEcaes); 
+    List<FechaEcaesDTORespuesta> mapearListaDeFechaEcaesAFechaEcaesDTORespuesta(List<FechaEcaes> fechasEcaes);
     
    
 }

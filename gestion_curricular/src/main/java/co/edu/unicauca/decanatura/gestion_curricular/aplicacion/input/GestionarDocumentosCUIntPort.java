@@ -1,10 +1,40 @@
 package co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input;
 
+import java.util.function.BooleanSupplier;
+
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.ArchivoSubido;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Documento;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Solicitud;
 
 public interface GestionarDocumentosCUIntPort {
 
     Documento buscarDocumentoId(Integer idDocumento);
+
+    /** Registra un documento ya guardado en disco (con o sin solicitud asociada). */
+    Documento registrarDocumento(Documento documento);
+
+    /** Guarda un PDF sin solicitud y registra su autor y nombre original. */
+    Documento subirDocumento(ArchivoSubido archivo, Integer idUsuario);
+
+    /** Guarda y registra un PDF; conserva la política de nombre de cada operación. */
+    Documento adjuntarASolicitud(ArchivoSubido archivo, Solicitud solicitud, String carpeta,
+            String comentario, boolean usarNombreGuardado);
+
+    /** Resultado de {@link #guardarYAdjuntarSiExiste}: {@code documento} es lo que devolvió el registro. */
+    record AdjuntoCondicional(boolean solicitudExiste, Documento documento) {}
+
+    /**
+     * Comprueba primero la solicitud: si no existe, no guarda ni registra nada. Si existe, guarda el archivo
+     * con su tipo y nombre original y lo registra. Lo usa el oficio Word de Paz y Salvo.
+     */
+    AdjuntoCondicional guardarYAdjuntarSiExiste(ArchivoSubido archivo, String tipoArchivo, String carpeta,
+            Integer idSolicitud, BooleanSupplier solicitudExiste);
+
+    /**
+     * Registra un archivo que ya está en {@code ruta}: el nombre es el último segmento de la ruta.
+     * {@code solicitud} e {@code idUsuario} pueden ser null.
+     */
+    Documento registrarArchivoGuardado(String ruta, Solicitud solicitud, Integer idUsuario);
 
     /**
      * Añade un comentario al documento concatenándolo al existente (no reemplaza).
@@ -19,4 +49,5 @@ public interface GestionarDocumentosCUIntPort {
     default void añadirComentario(Integer idDocumento, String comentario) {
         añadirComentario(idDocumento, comentario, null, null);
     }
+
 }

@@ -1,0 +1,103 @@
+{
+  "crear #0" : {
+    "status" : 409,
+    "body" : {
+      "error" : "GC-0004 - Violación a regla de negocio: regla",
+      "codigo" : "REGLA_NEGOCIO"
+    }
+  },
+  "estado #0" : {
+    "status" : 400,
+    "body" : {
+      "codigoError" : "GC-0004",
+      "mensaje" : "GC-0004 - Violación a regla de negocio: regla",
+      "codigoHttp" : 400,
+      "url" : "http://localhost/api/solicitudes-pazysalvo/actualizarEstadoSolicitud",
+      "metodo" : "PUT"
+    }
+  },
+  "crear #1" : {
+    "status" : 400,
+    "body" : {
+      "error" : "Formato de solicitud inválido: argumento"
+    }
+  },
+  "estado #1" : {
+    "status" : 400,
+    "body" : {
+      "error" : "argumento"
+    }
+  },
+  "crear #2" : {
+    "status" : 400,
+    "body" : {
+      "error" : "inexistente"
+    }
+  },
+  "estado #2" : {
+    "status" : 404,
+    "body" : null
+  },
+  "crear #3" : {
+    "status" : 400,
+    "body" : {
+      "error" : "consulta"
+    }
+  },
+  "estado #3" : {
+    "status" : 500,
+    "body" : {
+      "codigoError" : "GC-0001",
+      "mensaje" : "Ha ocurrido un error inesperado. Por favor, inténtelo de nuevo.",
+      "codigoHttp" : 500,
+      "url" : "http://localhost/api/solicitudes-pazysalvo/actualizarEstadoSolicitud",
+      "metodo" : "PUT"
+    }
+  },
+  "crear #4" : {
+    "status" : 400,
+    "body" : {
+      "error" : "denegado"
+    }
+  },
+  "estado #4" : {
+    "status" : 403,
+    "body" : {
+      "codigoError" : "GC-0403",
+      "mensaje" : "Acceso denegado: no tiene permisos para este recurso",
+      "codigoHttp" : 403,
+      "url" : "http://localhost/api/solicitudes-pazysalvo/actualizarEstadoSolicitud",
+      "metodo" : "PUT"
+    }
+  },
+  "binding " : {
+    "status" : 400,
+    "body" : {
+      "codigoError" : "GC-0400",
+      "mensaje" : "La petición no tiene el formato esperado: revise los parámetros y el cuerpo enviados",
+      "codigoHttp" : 400,
+      "url" : "http://localhost/api/solicitudes-pazysalvo/crearSolicitud-PazYSalvo",
+      "metodo" : "POST"
+    }
+  },
+  "binding null" : {
+    "status" : 400,
+    "body" : {
+      "codigoError" : "GC-0400",
+      "mensaje" : "La petición no tiene el formato esperado: revise los parámetros y el cuerpo enviados",
+      "codigoHttp" : 400,
+      "url" : "http://localhost/api/solicitudes-pazysalvo/crearSolicitud-PazYSalvo",
+      "metodo" : "POST"
+    }
+  },
+  "binding {" : {
+    "status" : 400,
+    "body" : {
+      "codigoError" : "GC-0400",
+      "mensaje" : "La petición no tiene el formato esperado: revise los parámetros y el cuerpo enviados",
+      "codigoHttp" : 400,
+      "url" : "http://localhost/api/solicitudes-pazysalvo/crearSolicitud-PazYSalvo",
+      "metodo" : "POST"
+    }
+  }
+}

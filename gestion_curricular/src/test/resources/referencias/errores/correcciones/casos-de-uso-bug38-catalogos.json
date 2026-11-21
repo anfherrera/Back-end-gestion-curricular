@@ -1,0 +1,420 @@
+{
+  "/docentes actualizar inexistente" : {
+    "cuerpo" : {
+      "codigoError" : "GC-0003",
+      "codigoHttp" : 404,
+      "mensaje" : "Entidad no encontrada, No se encontró el docente a actualizar.",
+      "metodo" : "GET",
+      "url" : "http://localhost/caso"
+    },
+    "estado" : 404,
+    "excepcion" : "EntidadNoExisteException"
+  },
+  "/docentes actualizar nulo" : {
+    "cuerpo" : {
+      "codigoError" : "GC-0004",
+      "codigoHttp" : 400,
+      "mensaje" : "GC-0004 - Violación a regla de negocio: El docente no puede ser nulo.",
+      "metodo" : "GET",
+      "url" : "http://localhost/caso"
+    },
+    "estado" : 400,
+    "excepcion" : "ReglaNegocioExcepcion"
+  },
+  "/docentes actualizar sin id" : {
+    "cuerpo" : {
+      "codigoError" : "GC-0004",
+      "codigoHttp" : 400,
+      "mensaje" : "GC-0004 - Violación a regla de negocio: Debe proporcionar un ID válido para actualizar.",
+      "metodo" : "GET",
+      "url" : "http://localhost/caso"
+    },
+    "estado" : 400,
+    "excepcion" : "ReglaNegocioExcepcion"
+  },
+  "/docentes eliminar inexistente" : {
+    "cuerpo" : {
+      "codigoError" : "GC-0003",
+      "codigoHttp" : 404,
+      "mensaje" : "Entidad no encontrada, No se encontró el docente a eliminar.",
+      "metodo" : "GET",
+      "url" : "http://localhost/caso"
+    },
+    "estado" : 404,
+    "excepcion" : "EntidadNoExisteException"
+  },
+  "/docentes eliminar sin id" : {
+    "cuerpo" : {
+      "codigoError" : "GC-0004",
+      "codigoHttp" : 400,
+      "mensaje" : "GC-0004 - Violación a regla de negocio: Debe proporcionar un ID válido.",
+      "metodo" : "GET",
+      "url" : "http://localhost/caso"
+    },
+    "estado" : 400,
+    "excepcion" : "ReglaNegocioExcepcion"
+  },
+  "/docentes guardar nulo" : {
+    "cuerpo" : {
+      "codigoError" : "GC-0004",
+      "codigoHttp" : 400,
+      "mensaje" : "GC-0004 - Violación a regla de negocio: El docente no puede ser nulo.",
+      "metodo" : "GET",
+      "url" : "http://localhost/caso"
+    },
+    "estado" : 400,
+    "excepcion" : "ReglaNegocioExcepcion"
+  },
+  "/docentes nombre parcial blanco" : {
+    "cuerpo" : {
+      "codigoError" : "GC-0004",
+      "codigoHttp" : 400,
+      "mensaje" : "GC-0004 - Violación a regla de negocio: Debe proporcionar un nombre parcial.",
+      "metodo" : "GET",
+      "url" : "http://localhost/caso"
+    },
+    "estado" : 400,
+    "excepcion" : "ReglaNegocioExcepcion"
+  },
+  "/docentes obtener inexistente" : {
+    "cuerpo" : {
+      "codigoError" : "GC-0003",
+      "codigoHttp" : 404,
+      "mensaje" : "Entidad no encontrada, Docente no encontrado.",
+      "metodo" : "GET",
+      "url" : "http://localhost/caso"
+    },
+    "estado" : 404,
+    "excepcion" : "EntidadNoExisteException"
+  },
+  "/docentes obtener sin id" : {
+    "cuerpo" : {
+      "codigoError" : "GC-0004",
+      "codigoHttp" : 400,
+      "mensaje" : "GC-0004 - Violación a regla de negocio: Debe proporcionar un ID válido.",
+      "metodo" : "GET",
+      "url" : "http://localhost/caso"
+    },
+    "estado" : 400,
+    "excepcion" : "ReglaNegocioExcepcion"
+  },
+  "/docentes por codigo blanco" : {
+    "cuerpo" : {
+      "codigoError" : "GC-0004",
+      "codigoHttp" : 400,
+      "mensaje" : "GC-0004 - Violación a regla de negocio: Debe proporcionar un código válido.",
+      "metodo" : "GET",
+      "url" : "http://localhost/caso"
+    },
+    "estado" : 400,
+    "excepcion" : "ReglaNegocioExcepcion"
+  },
+  "/docentes por codigo inexistente" : {
+    "cuerpo" : {
+      "codigoError" : "GC-0003",
+      "codigoHttp" : 404,
+      "mensaje" : "Entidad no encontrada, Docente no encontrado con ese código.",
+      "metodo" : "GET",
+      "url" : "http://localhost/caso"
+    },
+    "estado" : 404,
+    "excepcion" : "EntidadNoExisteException"
+  },
+  "/materias obtener inexistente" : {
+    "cuerpo" : {
+      "codigoError" : "GC-0003",
+      "codigoHttp" : 404,
+      "mensaje" : "Entidad no encontrada, Materia no encontrada.",
+      "metodo" : "GET",
+      "url" : "http://localhost/caso"
+    },
+    "estado" : 404,
+    "excepcion" : "EntidadNoExisteException"
+  },
+  "/materias obtener sin id" : {
+    "cuerpo" : {
+      "codigoError" : "GC-0004",
+      "codigoHttp" : 400,
+      "mensaje" : "GC-0004 - Violación a regla de negocio: Debe proporcionar un ID válido.",
+      "metodo" : "GET",
+      "url" : "http://localhost/caso"
+    },
+    "estado" : 400,
+    "excepcion" : "ReglaNegocioExcepcion"
+  },
+  "/programas actualizar inexistente" : {
+    "cuerpo" : {
+      "codigoError" : "GC-0003",
+      "codigoHttp" : 404,
+      "mensaje" : "Entidad no encontrada, No se encontró el programa a actualizar.",
+      "metodo" : "GET",
+      "url" : "http://localhost/caso"
+    },
+    "estado" : 404,
+    "excepcion" : "EntidadNoExisteException"
+  },
+  "/programas actualizar nulo" : {
+    "cuerpo" : {
+      "codigoError" : "GC-0004",
+      "codigoHttp" : 400,
+      "mensaje" : "GC-0004 - Violación a regla de negocio: El programa no puede ser nulo.",
+      "metodo" : "GET",
+      "url" : "http://localhost/caso"
+    },
+    "estado" : 400,
+    "excepcion" : "ReglaNegocioExcepcion"
+  },
+  "/programas actualizar sin id" : {
+    "cuerpo" : {
+      "codigoError" : "GC-0004",
+      "codigoHttp" : 400,
+      "mensaje" : "GC-0004 - Violación a regla de negocio: Debe proporcionar un ID válido para actualizar.",
+      "metodo" : "GET",
+      "url" : "http://localhost/caso"
+    },
+    "estado" : 400,
+    "excepcion" : "ReglaNegocioExcepcion"
+  },
+  "/programas eliminar inexistente" : {
+    "cuerpo" : {
+      "codigoError" : "GC-0003",
+      "codigoHttp" : 404,
+      "mensaje" : "Entidad no encontrada, No se encontró el programa a eliminar.",
+      "metodo" : "GET",
+      "url" : "http://localhost/caso"
+    },
+    "estado" : 404,
+    "excepcion" : "EntidadNoExisteException"
+  },
+  "/programas eliminar sin id" : {
+    "cuerpo" : {
+      "codigoError" : "GC-0004",
+      "codigoHttp" : 400,
+      "mensaje" : "GC-0004 - Violación a regla de negocio: Debe proporcionar un ID válido.",
+      "metodo" : "GET",
+      "url" : "http://localhost/caso"
+    },
+    "estado" : 400,
+    "excepcion" : "ReglaNegocioExcepcion"
+  },
+  "/programas guardar nulo" : {
+    "cuerpo" : {
+      "codigoError" : "GC-0004",
+      "codigoHttp" : 400,
+      "mensaje" : "GC-0004 - Violación a regla de negocio: El programa no puede ser nulo.",
+      "metodo" : "GET",
+      "url" : "http://localhost/caso"
+    },
+    "estado" : 400,
+    "excepcion" : "ReglaNegocioExcepcion"
+  },
+  "/programas nombre parcial blanco" : {
+    "cuerpo" : {
+      "codigoError" : "GC-0004",
+      "codigoHttp" : 400,
+      "mensaje" : "GC-0004 - Violación a regla de negocio: Debe proporcionar un nombre parcial.",
+      "metodo" : "GET",
+      "url" : "http://localhost/caso"
+    },
+    "estado" : 400,
+    "excepcion" : "ReglaNegocioExcepcion"
+  },
+  "/programas obtener inexistente" : {
+    "cuerpo" : {
+      "codigoError" : "GC-0003",
+      "codigoHttp" : 404,
+      "mensaje" : "Entidad no encontrada, Programa no encontrado.",
+      "metodo" : "GET",
+      "url" : "http://localhost/caso"
+    },
+    "estado" : 404,
+    "excepcion" : "EntidadNoExisteException"
+  },
+  "/programas obtener sin id" : {
+    "cuerpo" : {
+      "codigoError" : "GC-0004",
+      "codigoHttp" : 400,
+      "mensaje" : "GC-0004 - Violación a regla de negocio: Debe proporcionar un ID válido.",
+      "metodo" : "GET",
+      "url" : "http://localhost/caso"
+    },
+    "estado" : 400,
+    "excepcion" : "ReglaNegocioExcepcion"
+  },
+  "/programas por codigo blanco" : {
+    "cuerpo" : {
+      "codigoError" : "GC-0004",
+      "codigoHttp" : 400,
+      "mensaje" : "GC-0004 - Violación a regla de negocio: Debe proporcionar un código válido.",
+      "metodo" : "GET",
+      "url" : "http://localhost/caso"
+    },
+    "estado" : 400,
+    "excepcion" : "ReglaNegocioExcepcion"
+  },
+  "/programas por codigo inexistente" : {
+    "cuerpo" : {
+      "codigoError" : "GC-0003",
+      "codigoHttp" : 404,
+      "mensaje" : "Entidad no encontrada, Programa no encontrado con ese código.",
+      "metodo" : "GET",
+      "url" : "http://localhost/caso"
+    },
+    "estado" : 404,
+    "excepcion" : "EntidadNoExisteException"
+  },
+  "/roles actualizar inexistente" : {
+    "cuerpo" : {
+      "codigoError" : "GC-0003",
+      "codigoHttp" : 404,
+      "mensaje" : "Entidad no encontrada, No se encontró el rol a actualizar.",
+      "metodo" : "GET",
+      "url" : "http://localhost/caso"
+    },
+    "estado" : 404,
+    "excepcion" : "EntidadNoExisteException"
+  },
+  "/roles actualizar nulo" : {
+    "cuerpo" : {
+      "codigoError" : "GC-0004",
+      "codigoHttp" : 400,
+      "mensaje" : "GC-0004 - Violación a regla de negocio: El rol no puede ser nulo.",
+      "metodo" : "GET",
+      "url" : "http://localhost/caso"
+    },
+    "estado" : 400,
+    "excepcion" : "ReglaNegocioExcepcion"
+  },
+  "/roles actualizar sin id" : {
+    "cuerpo" : {
+      "codigoError" : "GC-0004",
+      "codigoHttp" : 400,
+      "mensaje" : "GC-0004 - Violación a regla de negocio: Debe proporcionar un ID válido para actualizar.",
+      "metodo" : "GET",
+      "url" : "http://localhost/caso"
+    },
+    "estado" : 400,
+    "excepcion" : "ReglaNegocioExcepcion"
+  },
+  "/roles eliminar inexistente" : {
+    "cuerpo" : {
+      "codigoError" : "GC-0003",
+      "codigoHttp" : 404,
+      "mensaje" : "Entidad no encontrada, No se encontró el rol a eliminar.",
+      "metodo" : "GET",
+      "url" : "http://localhost/caso"
+    },
+    "estado" : 404,
+    "excepcion" : "EntidadNoExisteException"
+  },
+  "/roles eliminar sin id" : {
+    "cuerpo" : {
+      "codigoError" : "GC-0004",
+      "codigoHttp" : 400,
+      "mensaje" : "GC-0004 - Violación a regla de negocio: Debe proporcionar un ID válido.",
+      "metodo" : "GET",
+      "url" : "http://localhost/caso"
+    },
+    "estado" : 400,
+    "excepcion" : "ReglaNegocioExcepcion"
+  },
+  "/roles guardar nulo" : {
+    "cuerpo" : {
+      "codigoError" : "GC-0004",
+      "codigoHttp" : 400,
+      "mensaje" : "GC-0004 - Violación a regla de negocio: El rol no puede ser nulo.",
+      "metodo" : "GET",
+      "url" : "http://localhost/caso"
+    },
+    "estado" : 400,
+    "excepcion" : "ReglaNegocioExcepcion"
+  },
+  "/roles obtener inexistente" : {
+    "cuerpo" : {
+      "codigoError" : "GC-0003",
+      "codigoHttp" : 404,
+      "mensaje" : "Entidad no encontrada, Rol no encontrado.",
+      "metodo" : "GET",
+      "url" : "http://localhost/caso"
+    },
+    "estado" : 404,
+    "excepcion" : "EntidadNoExisteException"
+  },
+  "/roles obtener sin id" : {
+    "cuerpo" : {
+      "codigoError" : "GC-0004",
+      "codigoHttp" : 400,
+      "mensaje" : "GC-0004 - Violación a regla de negocio: Debe proporcionar un ID válido.",
+      "metodo" : "GET",
+      "url" : "http://localhost/caso"
+    },
+    "estado" : 400,
+    "excepcion" : "ReglaNegocioExcepcion"
+  },
+  "/roles por nombre blanco" : {
+    "cuerpo" : {
+      "codigoError" : "GC-0004",
+      "codigoHttp" : 400,
+      "mensaje" : "GC-0004 - Violación a regla de negocio: Debe proporcionar un nombre válido.",
+      "metodo" : "GET",
+      "url" : "http://localhost/caso"
+    },
+    "estado" : 400,
+    "excepcion" : "ReglaNegocioExcepcion"
+  },
+  "/roles por nombre inexistente" : {
+    "cuerpo" : {
+      "codigoError" : "GC-0003",
+      "codigoHttp" : 404,
+      "mensaje" : "Entidad no encontrada, Rol no encontrado con ese nombre.",
+      "metodo" : "GET",
+      "url" : "http://localhost/caso"
+    },
+    "estado" : 404,
+    "excepcion" : "EntidadNoExisteException"
+  },
+  "/salones obtener inexistente" : {
+    "cuerpo" : {
+      "codigoError" : "GC-0003",
+      "codigoHttp" : 404,
+      "mensaje" : "Entidad no encontrada, Salón no encontrado.",
+      "metodo" : "GET",
+      "url" : "http://localhost/caso"
+    },
+    "estado" : 404,
+    "excepcion" : "EntidadNoExisteException"
+  },
+  "/salones obtener sin id" : {
+    "cuerpo" : {
+      "codigoError" : "GC-0004",
+      "codigoHttp" : 400,
+      "mensaje" : "GC-0004 - Violación a regla de negocio: Debe proporcionar un ID válido.",
+      "metodo" : "GET",
+      "url" : "http://localhost/caso"
+    },
+    "estado" : 400,
+    "excepcion" : "ReglaNegocioExcepcion"
+  },
+  "/salones por numero blanco" : {
+    "cuerpo" : {
+      "codigoError" : "GC-0004",
+      "codigoHttp" : 400,
+      "mensaje" : "GC-0004 - Violación a regla de negocio: Debe proporcionar un número de salón válido.",
+      "metodo" : "GET",
+      "url" : "http://localhost/caso"
+    },
+    "estado" : 400,
+    "excepcion" : "ReglaNegocioExcepcion"
+  },
+  "/salones por numero inexistente" : {
+    "cuerpo" : {
+      "codigoError" : "GC-0003",
+      "codigoHttp" : 404,
+      "mensaje" : "Entidad no encontrada, Salón no encontrado con ese número.",
+      "metodo" : "GET",
+      "url" : "http://localhost/caso"
+    },
+    "estado" : 404,
+    "excepcion" : "EntidadNoExisteException"
+  }
+}

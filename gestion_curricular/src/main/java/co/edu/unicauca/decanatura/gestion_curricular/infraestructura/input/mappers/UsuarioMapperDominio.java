@@ -1,12 +1,11 @@
 package co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.mappers;
 
-import java.util.List;
 
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Usuario;
-import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.DTORespuesta.UsuarioDTORespuesta;
+import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.dto.respuesta.UsuarioDTORespuesta;
 
 
 @Mapper(componentModel = "spring", uses = {ProgramaMapperDominio.class,
@@ -22,7 +21,6 @@ public interface UsuarioMapperDominio {
     @Mapping(source = "correo", target = "correo")
     @Mapping(source = "estado_usuario", target = "estado_usuario")
     @Mapping(source = "objPrograma", target = "objPrograma", nullValuePropertyMappingStrategy = org.mapstruct.NullValuePropertyMappingStrategy.IGNORE)
-    UsuarioDTORespuesta mappearDeUsuarioAUsuarioDTORespuesta(Usuario usuario);
+    UsuarioDTORespuesta mapearDeUsuarioAUsuarioDTORespuesta(Usuario usuario);
 
-    List<UsuarioDTORespuesta> mappearListaDeUsuarioAUsuarioDTORespuesta(List<Usuario> usuarios);
 }

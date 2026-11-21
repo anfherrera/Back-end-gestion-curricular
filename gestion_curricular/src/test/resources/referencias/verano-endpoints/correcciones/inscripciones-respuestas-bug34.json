@@ -1,0 +1,39 @@
+{
+  "info 10" : {
+    "status" : 200,
+    "body" : {
+      "encontrada" : true,
+      "documentos_null" : true,
+      "fecha_registro" : 1710522000000,
+      "id_solicitud" : 10,
+      "documentos_count" : 0,
+      "documentos_empty" : false,
+      "nombre_solicitud" : "Inscripción 10"
+    },
+    "claves" : [ ".encontrada:BOOLEAN", ".documentos_null:BOOLEAN", ".fecha_registro:NUMBER", ".id_solicitud:NUMBER", ".documentos_count:NUMBER", ".documentos_empty:BOOLEAN", ".nombre_solicitud:STRING" ]
+  },
+  "info 11" : {
+    "status" : 200,
+    "body" : {
+      "encontrada" : true,
+      "documentos_null" : false,
+      "documentos" : [ {
+        "ruta" : null,
+        "es_valido" : true,
+        "id" : 90,
+        "nombre" : "pago.pdf"
+      } ],
+      "archivo_pago" : {
+        "nombre_archivo" : "pago.pdf",
+        "ruta_archivo" : null,
+        "id_documento" : 90
+      },
+      "fecha_registro" : null,
+      "id_solicitud" : 11,
+      "documentos_count" : 1,
+      "documentos_empty" : false,
+      "nombre_solicitud" : "Inscripción 11"
+    },
+    "claves" : [ ".encontrada:BOOLEAN", ".documentos_null:BOOLEAN", ".documentos:ARRAY", ".documentos[0].ruta:NULL", ".documentos[0].es_valido:BOOLEAN", ".documentos[0].id:NUMBER", ".documentos[0].nombre:STRING", ".archivo_pago:OBJECT", ".archivo_pago.id_documento:NUMBER", ".archivo_pago.nombre_archivo:STRING", ".archivo_pago.ruta_archivo:NULL", ".fecha_registro:NULL", ".id_solicitud:NUMBER", ".documentos_count:NUMBER", ".documentos_empty:BOOLEAN", ".nombre_solicitud:STRING" ]
+  }
+}

@@ -4,7 +4,6 @@ package co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.per
 import java.util.ArrayList;
 import java.util.List;
 
-
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;

@@ -1,0 +1,9 @@
+{
+  "estado" : "ENVIADA",
+  "porPrograma" : {
+    "Ingeniería Civil" : 0,
+    "Ingeniería Electrónica" : 0,
+    "Ingeniería de Sistemas" : 1
+  },
+  "tipoProceso" : "Cursos de Verano"
+}

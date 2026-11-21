@@ -1,0 +1,40 @@
+{
+  "CC" : {
+    "status" : 201,
+    "body" : {
+      "id_solicitud" : null,
+      "nombre_solicitud" : "Solicitud ECAES",
+      "periodo_academico" : "2020-1",
+      "fecha_ceremonia" : null,
+      "fecha_registro_solicitud" : "<fecha>",
+      "estadosSolicitud" : [ ],
+      "objUsuario" : null,
+      "documentos" : [ ],
+      "categoria" : null,
+      "tipo_solicitud" : null,
+      "tipoDocumento" : "CC",
+      "numero_documento" : "12345",
+      "fecha_expedicion" : "<fecha>",
+      "fecha_nacimiento" : "<fecha>"
+    }
+  },
+  "CE" : {
+    "status" : 201,
+    "body" : {
+      "id_solicitud" : null,
+      "nombre_solicitud" : "Solicitud ECAES",
+      "periodo_academico" : "2020-1",
+      "fecha_ceremonia" : null,
+      "fecha_registro_solicitud" : "<fecha>",
+      "estadosSolicitud" : [ ],
+      "objUsuario" : null,
+      "documentos" : [ ],
+      "categoria" : null,
+      "tipo_solicitud" : null,
+      "tipoDocumento" : "CE",
+      "numero_documento" : "12345",
+      "fecha_expedicion" : "<fecha>",
+      "fecha_nacimiento" : "<fecha>"
+    }
+  }
+}

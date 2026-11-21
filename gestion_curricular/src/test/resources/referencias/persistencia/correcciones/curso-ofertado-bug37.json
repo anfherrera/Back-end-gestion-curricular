@@ -1,0 +1,62 @@
+{
+  "/crearCurso/resultado/estudiantesInscritos/0/objRol" : {
+    "@tipo" : "Rol",
+    "id_rol" : 1,
+    "nombre" : "ESTUDIANTE",
+    "usuarios" : null
+  },
+  "/crearCurso/resultado/estudiantesInscritos/0/objPrograma" : {
+    "@tipo" : "Programa",
+    "codigo" : "SIS",
+    "id_programa" : 1,
+    "nombre_programa" : "Ingeniería de Sistemas"
+  },
+  "/guardarCambiosCurso/resultado/estudiantesInscritos/0/objRol" : {
+    "@tipo" : "Rol",
+    "id_rol" : 1,
+    "nombre" : "ESTUDIANTE",
+    "usuarios" : null
+  },
+  "/guardarCambiosCurso/resultado/estudiantesInscritos/0/objPrograma" : {
+    "@tipo" : "Programa",
+    "codigo" : "SIS",
+    "id_programa" : 1,
+    "nombre_programa" : "Ingeniería de Sistemas"
+  },
+  "/listarPorPeriodo/0/estudiantesInscritos/0/objRol" : {
+    "@tipo" : "Rol",
+    "id_rol" : 1,
+    "nombre" : "ESTUDIANTE",
+    "usuarios" : null
+  },
+  "/listarPorPeriodo/0/estudiantesInscritos/0/objPrograma" : {
+    "@tipo" : "Programa",
+    "codigo" : "SIS",
+    "id_programa" : 1,
+    "nombre_programa" : "Ingeniería de Sistemas"
+  },
+  "/listarTodos/0/estudiantesInscritos/0/objRol" : {
+    "@tipo" : "Rol",
+    "id_rol" : 1,
+    "nombre" : "ESTUDIANTE",
+    "usuarios" : null
+  },
+  "/listarTodos/0/estudiantesInscritos/0/objPrograma" : {
+    "@tipo" : "Programa",
+    "codigo" : "SIS",
+    "id_programa" : 1,
+    "nombre_programa" : "Ingeniería de Sistemas"
+  },
+  "/obtenerCursoPorId 4/estudiantesInscritos/0/objRol" : {
+    "@tipo" : "Rol",
+    "id_rol" : 1,
+    "nombre" : "ESTUDIANTE",
+    "usuarios" : null
+  },
+  "/obtenerCursoPorId 4/estudiantesInscritos/0/objPrograma" : {
+    "@tipo" : "Programa",
+    "codigo" : "SIS",
+    "id_programa" : 1,
+    "nombre_programa" : "Ingeniería de Sistemas"
+  }
+}
