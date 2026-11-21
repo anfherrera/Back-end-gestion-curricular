@@ -1,0 +1,102 @@
+{
+  "GET /obtenerDocumentos/{completa-con-guion}": {
+    "estado": 404,
+    "cuerpo": {
+      "codigoError": "GC-0404",
+      "codigoHttp": 404,
+      "mensaje": "El recurso solicitado no existe",
+      "metodo": "GET",
+      "url": "http://localhost/api/solicitudes-pazysalvo/obtenerDocumentos/38"
+    }
+  },
+  "GET /obtenerDocumentos/{variantes-de-nombre}": {
+    "estado": 404,
+    "cuerpo": {
+      "codigoError": "GC-0404",
+      "codigoHttp": 404,
+      "mensaje": "El recurso solicitado no existe",
+      "metodo": "GET",
+      "url": "http://localhost/api/solicitudes-pazysalvo/obtenerDocumentos/39"
+    }
+  },
+  "GET /obtenerDocumentos/{formato-con-guion-bajo}": {
+    "estado": 404,
+    "cuerpo": {
+      "codigoError": "GC-0404",
+      "codigoHttp": 404,
+      "mensaje": "El recurso solicitado no existe",
+      "metodo": "GET",
+      "url": "http://localhost/api/solicitudes-pazysalvo/obtenerDocumentos/40"
+    }
+  },
+  "GET /obtenerDocumentos/{sin-documentos}": {
+    "estado": 404,
+    "cuerpo": {
+      "codigoError": "GC-0404",
+      "codigoHttp": 404,
+      "mensaje": "El recurso solicitado no existe",
+      "metodo": "GET",
+      "url": "http://localhost/api/solicitudes-pazysalvo/obtenerDocumentos/41"
+    }
+  },
+  "GET /obtenerDocumentos/{nombre-nulo}": {
+    "estado": 404,
+    "cuerpo": {
+      "codigoError": "GC-0404",
+      "codigoHttp": 404,
+      "mensaje": "El recurso solicitado no existe",
+      "metodo": "GET",
+      "url": "http://localhost/api/solicitudes-pazysalvo/obtenerDocumentos/42"
+    }
+  },
+  "GET /obtenerDocumentos/{rechazos-ultimo-sin-comentario}": {
+    "estado": 404,
+    "cuerpo": {
+      "codigoError": "GC-0404",
+      "codigoHttp": 404,
+      "mensaje": "El recurso solicitado no existe",
+      "metodo": "GET",
+      "url": "http://localhost/api/solicitudes-pazysalvo/obtenerDocumentos/43"
+    }
+  },
+  "GET /obtenerDocumentos/{rechazos-con-comentario}": {
+    "estado": 404,
+    "cuerpo": {
+      "codigoError": "GC-0404",
+      "codigoHttp": 404,
+      "mensaje": "El recurso solicitado no existe",
+      "metodo": "GET",
+      "url": "http://localhost/api/solicitudes-pazysalvo/obtenerDocumentos/44"
+    }
+  },
+  "GET /obtenerDocumentos/{sin-comentarios}": {
+    "estado": 404,
+    "cuerpo": {
+      "codigoError": "GC-0404",
+      "codigoHttp": 404,
+      "mensaje": "El recurso solicitado no existe",
+      "metodo": "GET",
+      "url": "http://localhost/api/solicitudes-pazysalvo/obtenerDocumentos/45"
+    }
+  },
+  "GET /obtenerDocumentos/{inexistente}": {
+    "estado": 404,
+    "cuerpo": {
+      "codigoError": "GC-0404",
+      "codigoHttp": 404,
+      "mensaje": "El recurso solicitado no existe",
+      "metodo": "GET",
+      "url": "http://localhost/api/solicitudes-pazysalvo/obtenerDocumentos/2000000000"
+    }
+  },
+  "GET /obtenerDocumentos/{completa-con-guion} [dueno]": {
+    "estado": 404,
+    "cuerpo": {
+      "codigoError": "GC-0404",
+      "codigoHttp": 404,
+      "mensaje": "El recurso solicitado no existe",
+      "metodo": "GET",
+      "url": "http://localhost/api/solicitudes-pazysalvo/obtenerDocumentos/38"
+    }
+  }
+}

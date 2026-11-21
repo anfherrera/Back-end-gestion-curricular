@@ -561,20 +561,12 @@ public class SolicitudPazYSalvoRestController {
     }
     
 
-    /** Todos los documentos de la solicitud (los del estudiante y los oficios), con su tipo. */
-    @PreAuthorize("@autorizacion.esStaff() or @autorizacion.esDuenoSolicitud(#idSolicitud)")
-    @GetMapping("/obtenerDocumentos/{idSolicitud}")
-    public ResponseEntity<List<DocumentoConTipo>> obtenerDocumentosPazSalvo(@PathVariable Integer idSolicitud) {
-        return documentosConTipo(idSolicitud);
-    }
-
-    /** Igual que /obtenerDocumentos/{id}, solo para el personal (es la que usa la bandeja del coordinador). */
+    /**
+     * Todos los documentos de la solicitud (los del estudiante y los oficios), con su tipo. Solo para el personal
+     * (es la que usa la bandeja del coordinador).
+     */
     @GetMapping("/obtenerDocumentos/coordinador/{idSolicitud}")
     public ResponseEntity<List<DocumentoConTipo>> obtenerDocumentosPazSalvoCoordinador(@PathVariable Integer idSolicitud) {
-        return documentosConTipo(idSolicitud);
-    }
-
-    private ResponseEntity<List<DocumentoConTipo>> documentosConTipo(Integer idSolicitud) {
         List<DocumentoConTipo> documentos = new ArrayList<>();
         for (var conTipo : solicitudPazYSalvoCU.documentosConTipo(idSolicitud)) {
             Documento documento = conTipo.documento();

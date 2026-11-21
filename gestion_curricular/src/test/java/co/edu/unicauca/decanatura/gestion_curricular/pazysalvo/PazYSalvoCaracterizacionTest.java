@@ -56,6 +56,7 @@ import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.pers
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.repositorios.RolRepositoryInt;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.repositorios.SolicitudRepositoryInt;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.repositorios.UsuarioRepositoryInt;
+import co.edu.unicauca.decanatura.gestion_curricular.soporte.Correcciones;
 
 /**
  * Fija el código HTTP y el JSON de los endpoints de Paz y Salvo que se vacían en ARQ-6:
@@ -227,7 +228,8 @@ class PazYSalvoCaracterizacionTest {
         UsuarioEntity dueno = estudiantes.get("dueno");
         r.put("GET /obtenerDocumentos/{completa-con-guion} [dueno]",
                 pedir(get(BASE + "/obtenerDocumentos/" + conjunto.get("completa-con-guion")), dueno.getCorreo(), "Estudiante"));
-        compararConReferencia("obtener-documentos", r);
+        // DUP-9: /obtenerDocumentos/{id} se retira; solo queda la del coordinador
+        compararConReferencia("obtener-documentos", r, "pazysalvo/correcciones/obtener-documentos-dup9.json");
     }
 
     @Test
@@ -393,13 +395,18 @@ class PazYSalvoCaracterizacionTest {
         return instante != null && Math.abs(instante.toEpochMilli() - System.currentTimeMillis()) < 48 * 3_600_000L;
     }
 
-    private void compararConReferencia(String nombre, Map<String, JsonNode> obtenido) throws Exception {
+    /** Compara con la referencia {@code nombre}, superponiendo en orden las correcciones indicadas. */
+    private void compararConReferencia(String nombre, Map<String, JsonNode> obtenido, String... rutasCorreccion)
+            throws Exception {
         Path archivo = CARPETA.resolve(nombre + ".json");
         if (Boolean.getBoolean("grabarReferencia")) {
             Files.createDirectories(CARPETA);
             Files.writeString(archivo, JSON.writeValueAsString(obtenido) + System.lineSeparator(), StandardCharsets.UTF_8);
         }
         JsonNode esperado = JSON.readTree(Files.readString(archivo, StandardCharsets.UTF_8));
+        for (String rutaCorreccion : rutasCorreccion) {
+            esperado = Correcciones.aplicar(esperado, rutaCorreccion);
+        }
         assertThat(JSON.valueToTree(obtenido).toString()).isEqualTo(esperado.toString());
     }
 
