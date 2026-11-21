@@ -293,7 +293,8 @@ class PazYSalvoCaracterizacionTest {
         crear(r, "admin dto, con período y nombre", null, "{\"objUsuario\": {\"id_usuario\": " + id("crea6")
                 + ", \"nombre_completo\": \"Nombre enviado\"}, \"nombre_solicitud\": \"X\","
                 + " \"fecha_registro_solicitud\": \"2025-03-01\", \"periodo_academico\": \"2024-1\"}");
-        compararConReferencia("crear-solicitud", r);
+        // BUG-11: la fecha y el nombre enviados ya no se validan ni se exigen; los pone el gateway
+        compararConReferencia("crear-solicitud", r, "pazysalvo/correcciones/crear-solicitud-bug11.json");
     }
 
     private void crear(Map<String, JsonNode> r, String caso, String estudiante, String cuerpo) throws Exception {

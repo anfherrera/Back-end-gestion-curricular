@@ -1,7 +1,5 @@
 package co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.controladores;
 
-import java.time.LocalDate;
-import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
@@ -137,22 +135,7 @@ public class SolicitudPazYSalvoRestController {
         usuario.setId_usuario(Integer.valueOf(peticion.getIdUsuario().trim()));
         SolicitudPazYSalvo solicitud = new SolicitudPazYSalvo();
         solicitud.setObjUsuario(usuario);
-
-        String fechaSolicitud = peticion.getFechaSolicitud();
-        if (fechaSolicitud != null) {
-            if (!fechaSolicitud.isBlank()) {
-                try {
-                    LocalDate fecha = LocalDate.parse(fechaSolicitud);
-                    solicitud.setFecha_registro_solicitud(java.sql.Date.valueOf(fecha));
-                } catch (DateTimeParseException e) {
-                    throw new IllegalArgumentException("fecha_solicitud con formato inválido (yyyy-MM-dd)");
-                }
-            }
-        }
-
-        if (solicitud.getFecha_registro_solicitud() == null) {
-            solicitud.setFecha_registro_solicitud(new Date());
-        }
+        // La fecha de registro y el nombre los pone el gateway al guardar (BUG-11)
 
         // Período académico: si viene, debe ser válido (si no viene, el caso de uso pone el actual)
         if (peticion.getPeriodoAcademico() != null) {
@@ -213,14 +196,7 @@ public class SolicitudPazYSalvoRestController {
             }
         }
 
-        if (dtoPeticion.getNombre_solicitud() == null || dtoPeticion.getNombre_solicitud().isBlank()) {
-            return "El nombre de la solicitud es obligatorio";
-        }
-
-        if (dtoPeticion.getFecha_registro_solicitud() == null) {
-            return "La fecha de la solicitud es obligatoria";
-        }
-
+        // El nombre y la fecha de registro no se piden: los pone el gateway al guardar (BUG-11)
         return null;
     }
 

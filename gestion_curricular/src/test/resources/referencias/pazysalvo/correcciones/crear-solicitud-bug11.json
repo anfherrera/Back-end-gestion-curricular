@@ -1,0 +1,91 @@
+{
+  "/POST [admin dto, sin fecha] {\"objUsuario\": {\"id_usuario\": {crea5}}, \"nombre_solicitud\": \"X\"}/cuerpo": {
+    "codigo": "REGLA_NEGOCIO",
+    "error": "GC-0004 - Violación a regla de negocio: Ya tiene una solicitud de Paz y Salvo en trámite. Debe esperar a que sea aprobada o rechazada."
+  },
+  "/POST [admin dto, sin fecha] {\"objUsuario\": {\"id_usuario\": {crea5}}, \"nombre_solicitud\": \"X\"}/estado": 409,
+  "/POST [admin dto, sin nombre] {\"objUsuario\": {\"id_usuario\": {crea5}}, \"fecha_registro_solicitud\": \"2025-03-01\"}/cuerpo": {
+    "categoria": null,
+    "documentos": [],
+    "estadosSolicitud": [
+      {
+        "comentario": null,
+        "estado_actual": "Enviada",
+        "fecha_registro_estado": "<hoy>",
+        "id_estado": "<id>",
+        "objSolicitud": null
+      }
+    ],
+    "fecha_ceremonia": null,
+    "fecha_registro_solicitud": "<hoy>",
+    "id_solicitud": "<id>",
+    "nombre_solicitud": "Solicitud Paz y Salvo - Estudiante crea5",
+    "objUsuario": {
+      "cedula": "PYSCARcrea5",
+      "codigo": "PYSCAR-crea5",
+      "correo": "crea5.pys.caract@example.test",
+      "estado_usuario": true,
+      "id_usuario": "{crea5}",
+      "nombre_completo": "Estudiante crea5",
+      "objPrograma": {
+        "codigo": "PYS-CAR",
+        "id_programa": "<id>",
+        "nombre_programa": "Programa de caracterización paz y salvo"
+      },
+      "rol": {
+        "id_rol": "<id>",
+        "nombre": "Estudiante"
+      }
+    },
+    "periodo_academico": "<periodoActual>",
+    "tipo_solicitud": null
+  },
+  "/POST [admin dto, sin nombre] {\"objUsuario\": {\"id_usuario\": {crea5}}, \"fecha_registro_solicitud\": \"2025-03-01\"}/estado": 201,
+  "/POST [admin dto, sin período] {\"objUsuario\": {\"id_usuario\": {crea5}}, \"nombre_solicitud\": \"X\", \"fecha_registro_solicitud\": \"2025-03-01\", \"periodo_academico\": \"  \"}/cuerpo": {
+    "codigo": "REGLA_NEGOCIO",
+    "error": "GC-0004 - Violación a regla de negocio: Ya tiene una solicitud de Paz y Salvo en trámite. Debe esperar a que sea aprobada o rechazada."
+  },
+  "/POST [admin dto, sin período] {\"objUsuario\": {\"id_usuario\": {crea5}}, \"nombre_solicitud\": \"X\", \"fecha_registro_solicitud\": \"2025-03-01\", \"periodo_academico\": \"  \"}/estado": 409,
+  "/POST [estudiante, fecha en blanco y sin período] {\"fecha_solicitud\": \" \"}/cuerpo": {
+    "codigo": "REGLA_NEGOCIO",
+    "error": "GC-0004 - Violación a regla de negocio: Ya tiene una solicitud de Paz y Salvo en trámite. Debe esperar a que sea aprobada o rechazada."
+  },
+  "/POST [estudiante, fecha en blanco y sin período] {\"fecha_solicitud\": \" \"}/estado": 409,
+  "/POST [estudiante, fecha inválida] {\"fecha_solicitud\": \"15~101~12025\"}/cuerpo": {
+    "categoria": null,
+    "documentos": [],
+    "estadosSolicitud": [
+      {
+        "comentario": null,
+        "estado_actual": "Enviada",
+        "fecha_registro_estado": "<hoy>",
+        "id_estado": "<id>",
+        "objSolicitud": null
+      }
+    ],
+    "fecha_ceremonia": null,
+    "fecha_registro_solicitud": "<hoy>",
+    "id_solicitud": "<id>",
+    "nombre_solicitud": "Solicitud Paz y Salvo - Estudiante crea3",
+    "objUsuario": {
+      "cedula": "PYSCARcrea3",
+      "codigo": "PYSCAR-crea3",
+      "correo": "crea3.pys.caract@example.test",
+      "estado_usuario": true,
+      "id_usuario": "{crea3}",
+      "nombre_completo": "Estudiante crea3",
+      "objPrograma": {
+        "codigo": "PYS-CAR",
+        "id_programa": "<id>",
+        "nombre_programa": "Programa de caracterización paz y salvo"
+      },
+      "rol": {
+        "id_rol": "<id>",
+        "nombre": "Estudiante"
+      }
+    },
+    "periodo_academico": "<periodoActual>",
+    "tipo_solicitud": null
+  },
+  "/POST [estudiante, fecha inválida] {\"fecha_solicitud\": \"15~101~12025\"}/estado": 201
+}

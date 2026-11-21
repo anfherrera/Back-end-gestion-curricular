@@ -104,8 +104,11 @@ class CrearPazYSalvoCuerpoCaracterizacionTest {
             assertThat(Files.exists(REFERENCIA)).isFalse();
             Files.writeString(REFERENCIA, json.writerWithDefaultPrettyPrinter().writeValueAsString(actual));
         }
-        assertThat(actual).isEqualTo(Correcciones.aplicar(json.readTree(Files.readString(REFERENCIA)),
-                "pazysalvo/correcciones/crear-cuerpo-bug26.json"));
+        // BUG-11: la fecha y el nombre enviados ya no se validan ni se exigen; los pone el gateway
+        assertThat(actual).isEqualTo(Correcciones.aplicar(Correcciones.aplicar(
+                json.readTree(Files.readString(REFERENCIA)),
+                "pazysalvo/correcciones/crear-cuerpo-bug26.json"),
+                "pazysalvo/correcciones/crear-cuerpo-bug11.json"));
     }
 
     private JsonNode pedir(MockMvc mvc, String cuerpo) throws Exception {
