@@ -23,6 +23,7 @@ import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.SolicitudCu
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.controladores.CursoOfertadoRestController;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.excepciones.RestApiExceptionHandler;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.mappers.*;
+import co.edu.unicauca.decanatura.gestion_curricular.soporte.Correcciones;
 
 /** Fija cómo {@code validar-pago} interpreta el cuerpo (ARQ-9), incluidos los tipos que hoy rechaza. */
 class ValidarPagoCaracterizacionTest {
@@ -69,6 +70,8 @@ class ValidarPagoCaracterizacionTest {
             assertThat(Files.exists(referencia)).isFalse();
             Files.writeString(referencia, json.writerWithDefaultPrettyPrinter().writeValueAsString(actual));
         }
-        assertThat(actual).isEqualTo(json.readTree(Files.readString(referencia)));
+        // BUG-19: un tipo incorrecto responde 400 GC-0400 en lugar de 500, sin llamar al caso de uso
+        assertThat(actual).isEqualTo(Correcciones.aplicar(json.readTree(Files.readString(referencia)),
+                "verano-endpoints/correcciones/validar-pago-bug19.json"));
     }
 }

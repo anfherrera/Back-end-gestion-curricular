@@ -6,18 +6,29 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 
 /**
  * Cuerpo de {@code validar-pago}: {@code esValido} (obligatorio) y {@code observaciones}.
- * Los valores se leen sin coerción, como antes: un tipo distinto de booleano o de texto lanza
- * {@link ClassCastException} al leer el campo (respuesta 500, BUG-19), no al deserializar el cuerpo.
+ * Los valores no se convierten (BUG-19): si {@code esValido} no es un booleano JSON u {@code observaciones} no es
+ * texto, el cuerpo no se puede leer y la respuesta es el 400 {@code GC-0400} de cualquier cuerpo mal formado.
+ * Un {@code esValido} ausente o null sigue llegando como null al controlador.
  */
 public final class ValidacionPagoDTOPeticion {
-    private final Map<String, Object> campos;
+    private final Boolean esValido;
+    private final String observaciones;
 
     @JsonCreator(mode = JsonCreator.Mode.DELEGATING)
     public ValidacionPagoDTOPeticion(Map<String, Object> campos) {
-        this.campos = campos;
+        this.esValido = leer(campos, "esValido", Boolean.class);
+        this.observaciones = leer(campos, "observaciones", String.class);
     }
 
-    public Boolean getEsValido() { return (Boolean) campos.get("esValido"); }
+    private static <T> T leer(Map<String, Object> campos, String nombre, Class<T> tipo) {
+        Object valor = campos.get(nombre);
+        if (valor != null && !tipo.isInstance(valor)) {
+            throw new IllegalArgumentException("'" + nombre + "' debe ser de tipo " + tipo.getSimpleName());
+        }
+        return tipo.cast(valor);
+    }
 
-    public String getObservaciones() { return (String) campos.get("observaciones"); }
+    public Boolean getEsValido() { return esValido; }
+
+    public String getObservaciones() { return observaciones; }
 }

@@ -1,0 +1,22 @@
+{
+  "/{\"esValido\":\"true\"}/body/codigoError": "GC-0400",
+  "/{\"esValido\":\"true\"}/body/codigoHttp": 400,
+  "/{\"esValido\":\"true\"}/body/mensaje": "La petición no tiene el formato esperado: revise los parámetros y el cuerpo enviados",
+  "/{\"esValido\":\"true\"}/status": 400,
+  "/{\"esValido\":1}/body/codigoError": "GC-0400",
+  "/{\"esValido\":1}/body/codigoHttp": 400,
+  "/{\"esValido\":1}/body/mensaje": "La petición no tiene el formato esperado: revise los parámetros y el cuerpo enviados",
+  "/{\"esValido\":1}/status": 400,
+  "/{\"esValido\":true,\"observaciones\":45}/body/codigoError": "GC-0400",
+  "/{\"esValido\":true,\"observaciones\":45}/body/codigoHttp": 400,
+  "/{\"esValido\":true,\"observaciones\":45}/body/mensaje": "La petición no tiene el formato esperado: revise los parámetros y el cuerpo enviados",
+  "/{\"esValido\":true,\"observaciones\":45}/status": 400,
+  "/{\"esValido\":true,\"observaciones\":{\"a\":1}}/body/codigoError": "GC-0400",
+  "/{\"esValido\":true,\"observaciones\":{\"a\":1}}/body/codigoHttp": 400,
+  "/{\"esValido\":true,\"observaciones\":{\"a\":1}}/body/mensaje": "La petición no tiene el formato esperado: revise los parámetros y el cuerpo enviados",
+  "/{\"esValido\":true,\"observaciones\":{\"a\":1}}/status": 400,
+  "/{\"esValido\":{\"a\":1}}/body/codigoError": "GC-0400",
+  "/{\"esValido\":{\"a\":1}}/body/codigoHttp": 400,
+  "/{\"esValido\":{\"a\":1}}/body/mensaje": "La petición no tiene el formato esperado: revise los parámetros y el cuerpo enviados",
+  "/{\"esValido\":{\"a\":1}}/status": 400
+}
