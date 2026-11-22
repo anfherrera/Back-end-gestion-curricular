@@ -12,9 +12,9 @@ import java.util.Map;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.MediaType;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.*;
+import co.edu.unicauca.decanatura.gestion_curricular.soporte.SoporteMvc;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.SolicitudCursoVeranoPreinscripcion;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.controladores.*;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.excepciones.RestApiExceptionHandler;
@@ -29,7 +29,7 @@ class DecisionesVeranoCaracterizacionTest {
         when(cu.aprobarPreinscripcion(anyInt(), nullable(String.class))).thenReturn(pre);
         when(cu.rechazarPreinscripcion(anyInt(), nullable(String.class))).thenReturn(pre);
         var curso = mock(GestionarCursoOfertadoVeranoCUIntPort.class);
-        var mvc = MockMvcBuilders.standaloneSetup(
+        var mvc = SoporteMvc.standaloneSetup(
                 new CursoOfertadoRestController(curso, cu, mock(CursosOfertadosMapperDominio.class), mock(EstadoCursoOfertadoMapper.class)),
                 new PreinscripcionesVeranoRestController(cu, mock(CursosOfertadosMapperDominio.class), mock(SolicitudCursoDeVeranoPreinscripcionMapperDominio.class)),
                 new InscripcionesVeranoRestController(curso, cu, mock(GestionarArchivosCUIntPort.class), mock(GestionarSolicitudCUIntPort.class)))

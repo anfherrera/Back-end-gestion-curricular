@@ -52,7 +52,7 @@ public class CatalogosCursosVeranoRestController {
         List<MateriaDisponible> materiasDisponibles = new ArrayList<>();
 
         for (Materia materia : materias) {
-            materiasDisponibles.add(new MateriaDisponible(materia.getId_materia(), materia.getCodigo(),
+            materiasDisponibles.add(new MateriaDisponible(materia.getIdMateria(), materia.getCodigo(),
                 materia.getNombre(), materia.getCreditos(),
                 materia.getNombre() + " (" + materia.getCodigo() + ") - " + materia.getCreditos() + " creditos"));
         }
@@ -104,7 +104,7 @@ public class CatalogosCursosVeranoRestController {
         List<MateriaCatalogo> materias = new ArrayList<>();
 
         for (Materia materia : materiasReales) {
-            materias.add(new MateriaCatalogo(materia.getId_materia(), materia.getNombre(), materia.getCodigo(),
+            materias.add(new MateriaCatalogo(materia.getIdMateria(), materia.getNombre(), materia.getCodigo(),
                 materia.getCreditos()));
         }
         
@@ -130,7 +130,7 @@ public class CatalogosCursosVeranoRestController {
 
             // Agregar materias reales
             for (Materia materia : materiasReales) {
-                materiasFiltro.add(new MateriaFiltro(materia.getId_materia(), materia.getNombre(),
+                materiasFiltro.add(new MateriaFiltro(materia.getIdMateria(), materia.getNombre(),
                     materia.getCodigo()));
             }
 
@@ -163,11 +163,11 @@ public class CatalogosCursosVeranoRestController {
 
         for (Salon salon : salonesReales) {
             // Agregar descripción completa para el frontend
-            String descripcion = salon.getNumero_salon();
+            String descripcion = salon.getNumeroSalon();
             if (salon.getEdificio() != null && !salon.getEdificio().trim().isEmpty()) {
                 descripcion += " - " + salon.getEdificio();
             }
-            salones.add(new SalonInfo(salon.getId_salon(), salon.getNumero_salon(),
+            salones.add(new SalonInfo(salon.getIdSalon(), salon.getNumeroSalon(),
                 salon.getEdificio() != null ? salon.getEdificio() : "Sin especificar",
                 salon.getActivo() != null ? salon.getActivo() : true, descripcion));
         }
@@ -204,9 +204,9 @@ public class CatalogosCursosVeranoRestController {
         // Campo crítico: id_docente (NO id_usuario); las claves de usuario se mantienen por compatibilidad
         // con el frontend y usan id_docente como id_usuario
         List<DocenteCatalogo> docentes = docentesDominio.stream()
-            .map(docente -> new DocenteCatalogo(docente.getId_docente(), docente.getCodigo_docente(),
-                docente.getNombre_docente(), docente.getId_docente(), docente.getCodigo_docente(),
-                docente.getNombre_docente()))
+            .map(docente -> new DocenteCatalogo(docente.getIdDocente(), docente.getCodigoDocente(),
+                docente.getNombreDocente(), docente.getIdDocente(), docente.getCodigoDocente(),
+                docente.getNombreDocente()))
             .collect(Collectors.toList());
 
         return ResponseEntity.ok(docentes);

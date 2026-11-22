@@ -27,9 +27,10 @@ import org.springframework.http.converter.json.MappingJackson2HttpMessageConvert
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
+import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.configuracion.NombresJsonDominio;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarArchivosCUIntPort;
+import co.edu.unicauca.decanatura.gestion_curricular.soporte.SoporteMvc;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarDocumentosCUIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarSolicitudCUIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarSolicitudCursoVeranoCUIntPort;
@@ -63,9 +64,9 @@ class SubirPdfFechaCaracterizacionTest {
         var controlador = new ArchivosRestController(archivos, documentos,
             mock(GestionarSolicitudPazYSalvoCUIntPort.class), mock(GestionarSolicitudCursoVeranoCUIntPort.class),
             mock(GestionarSolicitudCUIntPort.class), auth);
-        MockMvc porDefecto = MockMvcBuilders.standaloneSetup(controlador)
+        MockMvc porDefecto = SoporteMvc.standaloneSetup(controlador)
             .setControllerAdvice(new RestApiExceptionHandler()).build();
-        MockMvc deSpringBoot = MockMvcBuilders.standaloneSetup(controlador)
+        MockMvc deSpringBoot = SoporteMvc.standaloneSetup(controlador)
             .setControllerAdvice(new RestApiExceptionHandler())
             .setMessageConverters(new MappingJackson2HttpMessageConverter(mapperDeSpringBoot())).build();
 
@@ -124,7 +125,9 @@ class SubirPdfFechaCaracterizacionTest {
 
     private static ObjectMapper mapperDeSpringBoot() {
         AtomicReference<ObjectMapper> mapper = new AtomicReference<>();
+        // Como en la aplicación, con el módulo de nombres históricos del dominio (OPC-2)
         new ApplicationContextRunner().withConfiguration(AutoConfigurations.of(JacksonAutoConfiguration.class))
+            .withBean(com.fasterxml.jackson.databind.Module.class, NombresJsonDominio::modulo)
             .run(contexto -> mapper.set(contexto.getBean(ObjectMapper.class)));
         return mapper.get();
     }

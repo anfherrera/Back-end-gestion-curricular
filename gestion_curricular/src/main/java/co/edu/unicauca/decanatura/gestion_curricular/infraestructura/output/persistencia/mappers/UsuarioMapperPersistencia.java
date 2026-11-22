@@ -55,7 +55,7 @@ public final class UsuarioMapperPersistencia {
     public static Rol aDominio(RolEntity entidad) {
         Origen.exigir(entidad);
         Rol rol = new Rol();
-        rol.setId_rol(entidad.getId_rol());
+        rol.setIdRol(entidad.getId_rol());
         rol.setNombre(entidad.getNombre());
         if (entidad.getUsuarios() != null) {
             List<Usuario> usuarios = new ArrayList<>();
@@ -83,9 +83,9 @@ public final class UsuarioMapperPersistencia {
         entidad.setEstado_usuario(usuario.isEstado_usuario());
         Rol rol = usuario.getObjRol();
         if (rol != null) {
-            if (rol.getId_rol() != null) {
+            if (rol.getIdRol() != null) {
                 RolEntity copia = new RolEntity();
-                copia.setId_rol(rol.getId_rol());
+                copia.setId_rol(rol.getIdRol());
                 copia.setNombre(rol.getNombre());
                 entidad.setObjRol(copia);
             } else {
@@ -95,9 +95,9 @@ public final class UsuarioMapperPersistencia {
         Programa programa = usuario.getObjPrograma();
         if (programa != null) {
             ProgramaEntity copia = new ProgramaEntity();
-            copia.setId_programa(programa.getId_programa());
+            copia.setId_programa(programa.getIdPrograma());
             copia.setCodigo(programa.getCodigo());
-            copia.setNombre_programa(programa.getNombre_programa());
+            copia.setNombre_programa(programa.getNombrePrograma());
             entidad.setObjPrograma(copia);
         }
         return entidad;
@@ -111,7 +111,7 @@ public final class UsuarioMapperPersistencia {
         }
         RolEntity entidad = new RolEntity();
         mapeados.put(rol, entidad);
-        entidad.setId_rol(rol.getId_rol());
+        entidad.setId_rol(rol.getIdRol());
         entidad.setNombre(rol.getNombre());
         if (rol.getUsuarios() != null) {
             List<UsuarioEntity> usuarios = new ArrayList<>();

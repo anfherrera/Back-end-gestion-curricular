@@ -14,9 +14,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.junit.jupiter.api.Test;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.enums.PeriodoAcademicoEnum;
+import co.edu.unicauca.decanatura.gestion_curricular.soporte.SoporteMvc;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.controladores.PeriodoAcademicoController;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.controladores.TipoDocumentoController;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.excepciones.RestApiExceptionHandler;
@@ -29,7 +29,7 @@ import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.excep
  */
 class CatalogosEnvueltosCaracterizacionTest {
     private final ObjectMapper json = new ObjectMapper();
-    private final MockMvc mvc = MockMvcBuilders
+    private final MockMvc mvc = SoporteMvc
         .standaloneSetup(new PeriodoAcademicoController(), new TipoDocumentoController())
         .setControllerAdvice(new RestApiExceptionHandler()).build();
 

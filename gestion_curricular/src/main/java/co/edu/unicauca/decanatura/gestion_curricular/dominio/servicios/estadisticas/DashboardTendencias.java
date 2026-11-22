@@ -138,8 +138,8 @@ public class DashboardTendencias {
         Map<String, Integer> solicitudesPorPrograma = new HashMap<>();
         Map<String, Integer> estudiantesPorPrograma = new HashMap<>();
         for (Programa programa : programas) {
-            solicitudesPorPrograma.put(programa.getNombre_programa(), 0);
-            estudiantesPorPrograma.put(programa.getNombre_programa(), 0);
+            solicitudesPorPrograma.put(programa.getNombrePrograma(), 0);
+            estudiantesPorPrograma.put(programa.getNombrePrograma(), 0);
         }
         for (Solicitud solicitud : solicitudes) {
             String programa = nombrePrograma(solicitud);
@@ -149,7 +149,7 @@ public class DashboardTendencias {
         }
         for (Usuario estudiante : estudiantes) {
             if (estudiante.getObjPrograma() != null) {
-                estudiantesPorPrograma.merge(estudiante.getObjPrograma().getNombre_programa(), 1, Integer::sum);
+                estudiantesPorPrograma.merge(estudiante.getObjPrograma().getNombrePrograma(), 1, Integer::sum);
             }
         }
 

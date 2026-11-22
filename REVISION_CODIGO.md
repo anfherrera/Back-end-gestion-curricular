@@ -648,6 +648,23 @@ Rutas abreviadas: `…/` = `gestion_curricular/src/main/java/co/edu/unicauca/dec
 
 - [ ] **OPC-1. Los modelos de dominio no tienen comportamiento.** Usan `@Data` con setters públicos y casi no tienen métodos; 23 de 28 no tienen ninguno. Mover reglas a los modelos (`solicitud.estadoActual()`, `curso.tieneCupo(ocupados)`, `solicitud.rechazar(comentario)`) completa lo que empiezan DUP-3 y DUP-2.
 - [ ] **OPC-2. 56 campos del dominio usan snake_case** (`id_usuario`, `nombre_completo`), lo que genera getters como `getId_usuario()`. Cambiarlos afecta al JSON salvo que se use `@JsonProperty` en los DTOs. ⚠️ **frontend**
+
+  *Avance revisión 25:* el usuario eligió renombrar sin cambiar el JSON, por grupos de modelos y con un commit por grupo. En total son 57 campos en 22 modelos. Método de cada grupo:
+  - Se renombra el campo y se corrigen las llamadas a partir de los errores del compilador, por línea y columna. Los DTO y las entidades conservan los mismos nombres snake_case, así que no sirve un reemplazo de texto.
+  - Donde MapStruct emparejaba por nombre, se agrega un `@Mapping`. El código que genera se compara con el anterior, después de traducir los nombres nuevos a los viejos: no puede perder ninguna asignación.
+  - Hay respuestas que serializan modelos del dominio tal cual (`objMateria`, `objUsuario`, solicitudes y estados dentro de las respuestas de verano), y el dominio no puede importar Jackson. Por eso [NombresJsonDominio](gestion_curricular/src/main/java/co/edu/unicauca/decanatura/gestion_curricular/infraestructura/configuracion/NombresJsonDominio.java) es un `Module` de Jackson que Spring Boot registra. Tiene la tabla clase → campo nuevo → nombre histórico, y un `AnnotationIntrospector` que devuelve ese nombre al serializar y al leer. También fija el orden de las propiedades (el de los campos, de la superclase a la subclase), porque Jackson pasaría al final las que tienen un nombre explícito.
+  - Las pruebas usan la misma tabla. `GrafoObjetos` (las caracterizaciones de persistencia) escribe y ordena los campos por su nombre histórico. `soporte/SoporteMvc.standaloneSetup` sustituye a `MockMvcBuilders.standaloneSetup` en las 33 pruebas sin Spring Boot: son los mismos convertidores por defecto, más el módulo. Las tres pruebas con su propio `ObjectMapper` lo registran en él.
+  - Ninguna referencia ni corrección cambia. Cada grupo pasa `clean verify` en JDK 25 y 17.
+
+  Grupos:
+  - [x] **1. Catálogos:** `Rol.idRol`, `Programa.idPrograma` y `nombrePrograma`, `Materia.idMateria`, `Docente.idDocente`, `codigoDocente` y `nombreDocente`, `Salon.idSalon` y `numeroSalon`, `Notificacion.idNotificacion`. Hay `@Mapping` nuevos en `DocenteMapperDominio`, `ProgramaMapperDominio` y `RolMapperDominio`. Los dos mapeos de Materia que MapStruct generaba dentro de `CursosOfertadosMapperDominio` se declaran allí con su `@Mapping`; no se crea un mapper aparte porque varias pruebas montan a mano los mappers generados. 596 pruebas, 1 omitida, 0 fallos.
+  - [ ] 2. `Usuario`: `id_usuario`, `nombre_completo`, `estado_usuario`.
+  - [ ] 3. `Solicitud`, `EstadoSolicitud`, `Documento`.
+  - [ ] 4. `SolicitudEcaes`, `FechaEcaes`, `SolicitudHomologacion`, `SolicitudPazYSalvo`.
+  - [ ] 5. Verano: `CursoOfertadoVerano`, `EstadoCursoOfertado` y las tres solicitudes de verano. `codicion_solicitud` pasa a `condicionSolicitud`; el JSON conserva la errata.
+  - [ ] 6. `Estadistica`.
+
+- [ ] **BUG-46. Algunas respuestas devuelven el `Usuario` del dominio completo, con `password`.** Encontrado en OPC-2 (revisión 25). `UsuarioMapperPersistencia` copia el hash de la contraseña al dominio. Las respuestas que serializan modelos del dominio tal cual llevan `objUsuario` con `password`, `cedula` y `objRol`. Por ejemplo, `crearInscripcion` de cursos de verano, según `ErroresLocalesCaracterizacionTest`; las caracterizaciones usan usuarios sin contraseña, así que ahí sale `null`. Sin corregir: quitar el campo cambia el JSON. Hay que decidir entre no cargar el hash en el dominio salvo para el login, o responder con un DTO. ⚠️ **seguridad**
 - [x] **OPC-3. Dividir los servicios de estadísticas grandes.** `EstadisticasDashboard` (762 líneas), `EstadisticasGenerales` (529) y `PrediccionDemandaCursosVerano` (582) podrían separarse en clases más pequeñas por responsabilidad.
 
   *Cierre revisión 21:* se dividen las tres clases por responsabilidad, en tres commits, sin cambiar ningún resultado ni ninguna referencia. Los cuerpos de los métodos se mueven tal cual; solo cambia cómo se llama a lo compartido. De las clases resultantes, la mayor es `ResumenEstadisticas`, con 291 líneas; las demás tienen entre 51 y 258.

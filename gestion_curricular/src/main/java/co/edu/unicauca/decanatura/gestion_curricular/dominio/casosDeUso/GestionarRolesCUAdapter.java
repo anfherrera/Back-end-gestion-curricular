@@ -23,7 +23,7 @@ public class GestionarRolesCUAdapter implements GestionarRolesCUIntPort {
             throw new ReglaNegocioExcepcion("El rol no puede ser nulo.");
         }
 
-        rol.setId_rol(null);
+        rol.setIdRol(null);
 
         if (rolesGateway.existeRolPorNombre(rol.getNombre())) {
             throw new EntidadYaExisteException("Ya existe un rol con este nombre.");
@@ -37,10 +37,10 @@ public class GestionarRolesCUAdapter implements GestionarRolesCUIntPort {
         if (rol == null) {
             throw new ReglaNegocioExcepcion("El rol no puede ser nulo.");
         }
-        if (rol.getId_rol() == null) {
+        if (rol.getIdRol() == null) {
             throw new ReglaNegocioExcepcion("Debe proporcionar un ID válido para actualizar.");
         }
-        Rol existente = rolesGateway.obtenerRolPorId(rol.getId_rol());
+        Rol existente = rolesGateway.obtenerRolPorId(rol.getIdRol());
         if (existente == null) {
             throw new EntidadNoExisteException("No se encontró el rol a actualizar.");
         }

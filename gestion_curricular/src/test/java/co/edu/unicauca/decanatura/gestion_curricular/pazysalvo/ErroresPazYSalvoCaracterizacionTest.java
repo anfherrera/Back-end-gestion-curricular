@@ -14,9 +14,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.MediaType;
 import org.springframework.security.access.AccessDeniedException;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.*;
+import co.edu.unicauca.decanatura.gestion_curricular.soporte.SoporteMvc;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.excepciones.*;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.controladores.SolicitudPazYSalvoRestController;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.excepciones.RestApiExceptionHandler;
@@ -34,7 +34,7 @@ class ErroresPazYSalvoCaracterizacionTest {
         var controller = new SolicitudPazYSalvoRestController(cu, mock(SolicitudPazYSalvoMapperDominio.class),
                 mock(GestionarArchivosCUIntPort.class), mock(GestionarDocumentosCUIntPort.class),
                 mock(DocumentosMapperDominio.class), mock(GenerarDocumentosCUIntPort.class), json, autorizacion);
-        var mvc = MockMvcBuilders.standaloneSetup(controller).setControllerAdvice(new RestApiExceptionHandler()).build();
+        var mvc = SoporteMvc.standaloneSetup(controller).setControllerAdvice(new RestApiExceptionHandler()).build();
         RuntimeException[] errores = {new ReglaNegocioExcepcion("regla"), new IllegalArgumentException("argumento"),
             new EntidadNoExisteException("inexistente"), new RuntimeException("consulta"),
             new AccessDeniedException("denegado")};

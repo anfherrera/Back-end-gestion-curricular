@@ -18,7 +18,7 @@ import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.dto.r
 public interface NotificacionMapperDominio {
 
     // Modelo → DTO Respuesta
-    @Mapping(source = "id_notificacion", target = "id_notificacion")
+    @Mapping(source = "idNotificacion", target = "id_notificacion")
     @Mapping(source = "tipoSolicitud", target = "tipoSolicitud")
     @Mapping(source = "tipoNotificacion", target = "tipoNotificacion")
     @Mapping(source = "titulo", target = "titulo")
@@ -39,7 +39,7 @@ public interface NotificacionMapperDominio {
     NotificacionDTORespuesta mapearDeNotificacionARespuesta(Notificacion notificacion);
 
     // DTO Petición → Modelo (parcial, ya que necesita resolverse las relaciones)
-    @Mapping(target = "id_notificacion", ignore = true) // Se genera automáticamente
+    @Mapping(target = "idNotificacion", ignore = true) // Se genera automáticamente
     @Mapping(target = "fechaCreacion", ignore = true) // Se establece en el servicio
     @Mapping(target = "objUsuario", ignore = true) // Se debe resolver del ID
     @Mapping(target = "objSolicitud", ignore = true) // Se debe resolver del ID

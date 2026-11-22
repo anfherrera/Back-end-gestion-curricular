@@ -59,14 +59,14 @@ public Usuario crearUsuario(Usuario usuario) {
         throw new ReglaNegocioExcepcion("El programa del usuario no puede ser nulo o su ID no puede ser nulo.");
     }
 
-    programa = this.gestionarProgramaGateway.buscarPorIdPrograma(usuario.getObjPrograma().getId_programa());
+    programa = this.gestionarProgramaGateway.buscarPorIdPrograma(usuario.getObjPrograma().getIdPrograma());
 
     if (programa == null) {
         throw new EntidadNoExisteException("El programa enviado no existe.");
     }
-    objRol = this.gestionarRolGateway.buscarRolPorId(usuario.getObjRol().getId_rol());
+    objRol = this.gestionarRolGateway.buscarRolPorId(usuario.getObjRol().getIdRol());
     if (objRol == null) {
-        throw new EntidadNoExisteException("El rol con ID: '" + usuario.getObjRol().getId_rol() + "' no existe.");
+        throw new EntidadNoExisteException("El rol con ID: '" + usuario.getObjRol().getIdRol() + "' no existe.");
     }
     String passwordCodificada = codificadorContrasena.codificar(usuario.getPassword());
     usuario.setPassword(passwordCodificada);
@@ -101,12 +101,12 @@ public Usuario crearUsuario(Usuario usuario) {
         throw new ReglaNegocioExcepcion("El programa del usuario no puede ser nulo");
         }
 
-        if(usuario.getObjPrograma().getId_programa() == null) {
+        if(usuario.getObjPrograma().getIdPrograma() == null) {
             throw new ReglaNegocioExcepcion("El ID del programa del usuario no puede ser nulo.");
 
         }
 
-        programa = this.gestionarProgramaGateway.buscarPorIdPrograma(usuario.getObjPrograma().getId_programa());
+        programa = this.gestionarProgramaGateway.buscarPorIdPrograma(usuario.getObjPrograma().getIdPrograma());
 
         if (programa == null) {
             throw new EntidadNoExisteException("El programa enviado no existe.");
@@ -117,11 +117,11 @@ public Usuario crearUsuario(Usuario usuario) {
             throw new ReglaNegocioExcepcion("El rol es nulo");
         }
 
-        if (usuario.getObjRol().getId_rol() == null) {
+        if (usuario.getObjRol().getIdRol() == null) {
             throw new ReglaNegocioExcepcion("El ID del rol no puede ser nulo.");
         }
 
-        objRol = this.gestionarRolGateway.buscarRolPorId(usuario.getObjRol().getId_rol());
+        objRol = this.gestionarRolGateway.buscarRolPorId(usuario.getObjRol().getIdRol());
         if (objRol == null) {
             throw new EntidadNoExisteException("El rol enviado no existe.");
         }

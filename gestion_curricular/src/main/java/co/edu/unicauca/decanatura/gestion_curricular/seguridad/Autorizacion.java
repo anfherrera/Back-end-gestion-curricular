@@ -184,7 +184,7 @@ public class Autorizacion {
                 || usuario.getObjPrograma() == null) {
             return null;
         }
-        return usuario.getObjPrograma().getId_programa();
+        return usuario.getObjPrograma().getIdPrograma();
     }
 
     /** Id del usuario autenticado o null si no hay sesión. */

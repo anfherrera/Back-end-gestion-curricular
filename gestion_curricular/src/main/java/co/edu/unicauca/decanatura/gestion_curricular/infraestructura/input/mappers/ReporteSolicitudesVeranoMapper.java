@@ -70,7 +70,7 @@ public final class ReporteSolicitudesVeranoMapper {
 
                         if (preinscripcion.getObjCursoOfertadoVerano().getObjMateria() != null) {
                             nombreCurso = preinscripcion.getObjCursoOfertadoVerano().getObjMateria().getNombre();
-                            idMateriaSolicitud = preinscripcion.getObjCursoOfertadoVerano().getObjMateria().getId_materia();
+                            idMateriaSolicitud = preinscripcion.getObjCursoOfertadoVerano().getObjMateria().getIdMateria();
                             codigoMateria = preinscripcion.getObjCursoOfertadoVerano().getObjMateria().getCodigo();
                         }
                     } else if (preinscripcion.getObservacion() != null && !preinscripcion.getObservacion().isEmpty()) {
@@ -102,7 +102,7 @@ public final class ReporteSolicitudesVeranoMapper {
 
                         if (inscripcion.getObjCursoOfertadoVerano().getObjMateria() != null) {
                             nombreCurso = inscripcion.getObjCursoOfertadoVerano().getObjMateria().getNombre();
-                            idMateriaSolicitud = inscripcion.getObjCursoOfertadoVerano().getObjMateria().getId_materia();
+                            idMateriaSolicitud = inscripcion.getObjCursoOfertadoVerano().getObjMateria().getIdMateria();
                             codigoMateria = inscripcion.getObjCursoOfertadoVerano().getObjMateria().getCodigo();
                         }
                     }

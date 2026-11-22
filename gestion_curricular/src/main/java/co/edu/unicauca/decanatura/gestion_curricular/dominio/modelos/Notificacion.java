@@ -11,7 +11,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class Notificacion {
 
-    private Integer id_notificacion;
+    private Integer idNotificacion;
     private String tipoSolicitud; // ECAES, REINGRESO, HOMOLOGACION, PAZ_Y_SALVO, CURSO_VERANO_PREINSCRIPCION, CURSO_VERANO_INSCRIPCION
     private String tipoNotificacion; // APROBADA, RECHAZADA, ENVIADA, CAMBIO_ESTADO, NUEVA_SOLICITUD, etc.
     private String titulo;

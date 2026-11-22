@@ -16,9 +16,9 @@ import org.junit.jupiter.api.Test;
 import org.mapstruct.factory.Mappers;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GenerarReportesEstadisticasCUIntPort;
+import co.edu.unicauca.decanatura.gestion_curricular.soporte.SoporteMvc;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarEstadisticasCUIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.controladores.EstadisticasRestController;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.mappers.EstadisticaMapperDominio;
@@ -29,7 +29,7 @@ class EstadisticasEscrituraCaracterizacionTest {
         var cu = mock(GestionarEstadisticasCUIntPort.class);
         when(cu.crearEstadistica(any())).thenAnswer(i -> i.getArgument(0));
         when(cu.actualizarEstadistica(any())).thenAnswer(i -> i.getArgument(0));
-        var mvc = MockMvcBuilders.standaloneSetup(new EstadisticasRestController(cu,
+        var mvc = SoporteMvc.standaloneSetup(new EstadisticasRestController(cu,
                 Mappers.getMapper(EstadisticaMapperDominio.class),
                 mock(GenerarReportesEstadisticasCUIntPort.class))).build();
         var json = new ObjectMapper();

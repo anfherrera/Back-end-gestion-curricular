@@ -90,9 +90,9 @@ public class EstadisticasGlobales {
 
         Map<String, Integer> porPrograma = new HashMap<>();
         for (Programa programa : datos.listarProgramas()) {
-            if (programa != null && programa.getId_programa() != null && programa.getNombre_programa() != null) {
-                porPrograma.put(programa.getNombre_programa(),
-                        datos.contarSolicitudesPorProgramaConFiltros(programa.getId_programa(), proceso, fechaInicio, fechaFin));
+            if (programa != null && programa.getIdPrograma() != null && programa.getNombrePrograma() != null) {
+                porPrograma.put(programa.getNombrePrograma(),
+                        datos.contarSolicitudesPorProgramaConFiltros(programa.getIdPrograma(), proceso, fechaInicio, fechaFin));
             }
         }
 

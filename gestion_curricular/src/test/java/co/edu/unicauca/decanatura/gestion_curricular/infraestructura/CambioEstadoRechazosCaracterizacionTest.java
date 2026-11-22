@@ -22,9 +22,9 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarSolicitudEcaesCUIntPort;
+import co.edu.unicauca.decanatura.gestion_curricular.soporte.SoporteMvc;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarSolicitudHomologacionCUIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarSolicitudReingresoCUIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.EstadoSolicitud;
@@ -69,7 +69,7 @@ class CambioEstadoRechazosCaracterizacionTest {
         var reingreso = mock(GestionarSolicitudReingresoCUIntPort.class);
         when(reingreso.obtenerSolicitudReingresoPorId(anyInt())).thenAnswer(i -> conEstado(SolicitudReingreso::new));
 
-        MockMvc mvc = MockMvcBuilders.standaloneSetup(
+        MockMvc mvc = SoporteMvc.standaloneSetup(
                 new SolicitudEcaesRestController(ecaes, null, mapper, auth, validador),
                 new SolicitudHomologacionRestController(homologacion, null, mapper, null, null, auth, validador),
                 new SolicitudReingresoRestController(null, reingreso, mapper, null, auth, validador))

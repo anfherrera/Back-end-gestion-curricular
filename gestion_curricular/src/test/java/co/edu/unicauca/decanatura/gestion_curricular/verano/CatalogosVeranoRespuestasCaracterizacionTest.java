@@ -16,9 +16,9 @@ import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.junit.jupiter.api.Test;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarDocentesCUIntPort;
+import co.edu.unicauca.decanatura.gestion_curricular.soporte.SoporteMvc;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarMateriasCUIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarSalonesCUIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Docente;
@@ -42,20 +42,20 @@ class CatalogosVeranoRespuestasCaracterizacionTest {
         var materias = mock(GestionarMateriasCUIntPort.class);
         var docentes = mock(GestionarDocentesCUIntPort.class);
         var salones = mock(GestionarSalonesCUIntPort.class);
-        MockMvc mvc = MockMvcBuilders.standaloneSetup(new CatalogosCursosVeranoRestController(materias, docentes,
+        MockMvc mvc = SoporteMvc.standaloneSetup(new CatalogosCursosVeranoRestController(materias, docentes,
                 salones))
             .setControllerAdvice(new RestApiExceptionHandler()).build();
         ObjectNode resultados = json.createObjectNode();
 
         Materia sinDatos = new Materia();
-        sinDatos.setId_materia(3);
+        sinDatos.setIdMateria(3);
         when(materias.listarMaterias()).thenReturn(List.of(materia(1, "MAT1", "Cálculo", 4),
             materia(2, "FIS2", "Física", 3), sinDatos));
         when(salones.listarSalonesActivos()).thenReturn(List.of(new Salon(1, "305", "FIET", true),
             new Salon(2, "aula b", null, null), new Salon(3, "221", "  ", false), new Salon(4, null, "Ing", true),
             new Salon(5, "Aula A", "Salud", null)));
         Docente sinNombre = new Docente();
-        sinNombre.setId_docente(9);
+        sinNombre.setIdDocente(9);
         when(docentes.listarDocentes()).thenReturn(List.of(docente(1, "D01", "Ana"), sinNombre));
         for (String ruta : new String[] {"/materias-disponibles", "/materias", "/materias-filtro", "/salones",
             "/docentes"}) {
@@ -123,7 +123,7 @@ class CatalogosVeranoRespuestasCaracterizacionTest {
 
     private static Materia materia(int id, String codigo, String nombre, int creditos) {
         Materia materia = new Materia();
-        materia.setId_materia(id);
+        materia.setIdMateria(id);
         materia.setCodigo(codigo);
         materia.setNombre(nombre);
         materia.setCreditos(creditos);
@@ -132,9 +132,9 @@ class CatalogosVeranoRespuestasCaracterizacionTest {
 
     private static Docente docente(int id, String codigo, String nombre) {
         Docente docente = new Docente();
-        docente.setId_docente(id);
-        docente.setCodigo_docente(codigo);
-        docente.setNombre_docente(nombre);
+        docente.setIdDocente(id);
+        docente.setCodigoDocente(codigo);
+        docente.setNombreDocente(nombre);
         return docente;
     }
 }

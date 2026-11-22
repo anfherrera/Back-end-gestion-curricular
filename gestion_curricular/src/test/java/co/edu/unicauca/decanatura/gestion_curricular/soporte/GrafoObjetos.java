@@ -25,6 +25,8 @@ import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
+import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.configuracion.NombresJsonDominio;
+
 /**
  * Vuelca un grafo de objetos del proyecto (modelos de dominio y entidades) a JSON para las
  * caracterizaciones de los mapeos de persistencia (DUP-10).
@@ -157,12 +159,18 @@ public final class GrafoObjetos {
         for (Field campo : campos(valor.getClass())) {
             try {
                 campo.setAccessible(true);
-                objeto.set(campo.getName(), nodo(campo.get(valor), ruta + "." + campo.getName()));
+                String nombre = historico(campo);
+                objeto.set(nombre, nodo(campo.get(valor), ruta + "." + nombre));
             } catch (IllegalAccessException e) {
                 throw new IllegalStateException(e);
             }
         }
         return objeto;
+    }
+
+    /** El nombre del campo antes de OPC-2, para que las referencias no cambien. */
+    private static String historico(Field campo) {
+        return NombresJsonDominio.nombre(campo.getDeclaringClass(), campo.getName());
     }
 
     private static List<Field> campos(Class<?> clase) {
@@ -178,7 +186,7 @@ public final class GrafoObjetos {
                     propios.add(campo);
                 }
             }
-            propios.sort(Comparator.comparing(Field::getName));
+            propios.sort(Comparator.comparing(GrafoObjetos::historico));
             campos.addAll(propios);
         }
         return campos;

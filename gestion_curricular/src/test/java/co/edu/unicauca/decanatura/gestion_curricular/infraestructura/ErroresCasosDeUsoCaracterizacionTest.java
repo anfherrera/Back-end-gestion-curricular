@@ -22,12 +22,12 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.junit.jupiter.api.Test;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarArchivosCUIntPort;
+import co.edu.unicauca.decanatura.gestion_curricular.soporte.SoporteMvc;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarCursoOfertadoVeranoCUIntPort.DatosCreacion;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarNotificacionCUIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.GestionarArchivosGatewayIntPort;
@@ -120,7 +120,7 @@ class ErroresCasosDeUsoCaracterizacionTest {
         cursosOfertados();
         solicitudesCursoVerano();
 
-        MockMvc mvc = MockMvcBuilders.standaloneSetup(new Disparador())
+        MockMvc mvc = SoporteMvc.standaloneSetup(new Disparador())
             .setControllerAdvice(new RestApiExceptionHandler()).build();
         ObjectNode resultados = json.createObjectNode();
         for (String nombre : casos.keySet()) {
@@ -167,7 +167,7 @@ class ErroresCasosDeUsoCaracterizacionTest {
         caso("docentes actualizar sin id", () -> docentes(mock(GestionarDocenteGatewayIntPort.class)).actualizarDocente(new Docente()));
         caso("docentes actualizar inexistente", () -> {
             var docente = new Docente();
-            docente.setId_docente(4);
+            docente.setIdDocente(4);
             return docentes(mock(GestionarDocenteGatewayIntPort.class)).actualizarDocente(docente);
         });
         caso("docentes eliminar sin id", () -> docentes(mock(GestionarDocenteGatewayIntPort.class)).eliminarDocente(null));
@@ -194,7 +194,7 @@ class ErroresCasosDeUsoCaracterizacionTest {
         caso("programas actualizar sin id", () -> programas(mock(GestionarProgramaGatewayIntPort.class)).actualizarPrograma(new Programa()));
         caso("programas actualizar inexistente", () -> {
             var programa = new Programa();
-            programa.setId_programa(2);
+            programa.setIdPrograma(2);
             return programas(mock(GestionarProgramaGatewayIntPort.class)).actualizarPrograma(programa);
         });
         caso("programas eliminar sin id", () -> programas(mock(GestionarProgramaGatewayIntPort.class)).eliminarPrograma(null));
@@ -221,7 +221,7 @@ class ErroresCasosDeUsoCaracterizacionTest {
         caso("roles actualizar sin id", () -> roles(mock(GestionarRolGatewayIntPort.class)).actualizarRol(new Rol()));
         caso("roles actualizar inexistente", () -> {
             var rol = new Rol();
-            rol.setId_rol(3);
+            rol.setIdRol(3);
             return roles(mock(GestionarRolGatewayIntPort.class)).actualizarRol(rol);
         });
         caso("roles eliminar sin id", () -> roles(mock(GestionarRolGatewayIntPort.class)).eliminarRol(null));
@@ -444,9 +444,9 @@ class ErroresCasosDeUsoCaracterizacionTest {
 
     private static Usuario usuario(Integer id, Integer idPrograma, Integer idRol) {
         var programa = new Programa();
-        programa.setId_programa(idPrograma);
+        programa.setIdPrograma(idPrograma);
         var rol = new Rol();
-        rol.setId_rol(idRol);
+        rol.setIdRol(idRol);
         var usuario = new Usuario();
         usuario.setId_usuario(id);
         usuario.setCodigo("104");
@@ -714,9 +714,9 @@ class ErroresCasosDeUsoCaracterizacionTest {
 
     private static CursoOfertadoVerano cursoNuevo(Integer idMateria, Integer idDocente) {
         var materia = new Materia();
-        materia.setId_materia(idMateria);
+        materia.setIdMateria(idMateria);
         var docente = new Docente();
-        docente.setId_docente(idDocente);
+        docente.setIdDocente(idDocente);
         var curso = new CursoOfertadoVerano();
         curso.setObjMateria(materia);
         curso.setObjDocente(docente);

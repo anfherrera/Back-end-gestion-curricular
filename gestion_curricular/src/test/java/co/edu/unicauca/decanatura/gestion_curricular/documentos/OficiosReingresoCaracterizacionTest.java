@@ -21,9 +21,9 @@ import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpHeaders;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarArchivosCUIntPort;
+import co.edu.unicauca.decanatura.gestion_curricular.soporte.SoporteMvc;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarSolicitudReingresoCUIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Documento;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.SolicitudReingreso;
@@ -61,7 +61,7 @@ class OficiosReingresoCaracterizacionTest {
             solicitud.setDocumentos(new ArrayList<>(casos.get(id)));
             return solicitud;
         });
-        MockMvc mvc = MockMvcBuilders.standaloneSetup(new SolicitudReingresoRestController(
+        MockMvc mvc = SoporteMvc.standaloneSetup(new SolicitudReingresoRestController(
             null, reingreso, null, archivos, new Autorizacion(null, null, null, null), null)).build();
 
         ObjectNode resultados = json.createObjectNode();

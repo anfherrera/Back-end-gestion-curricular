@@ -23,7 +23,7 @@ public class GestionarProgramasCUAdapter implements GestionarProgramasCUIntPort 
             throw new ReglaNegocioExcepcion("El programa no puede ser nulo.");
         }
 
-        programa.setId_programa(null);
+        programa.setIdPrograma(null);
 
         if (programasGateway.existeProgramaPorCodigo(programa.getCodigo())) {
             throw new EntidadYaExisteException("Ya existe un programa con este código.");
@@ -37,10 +37,10 @@ public class GestionarProgramasCUAdapter implements GestionarProgramasCUIntPort 
         if (programa == null) {
             throw new ReglaNegocioExcepcion("El programa no puede ser nulo.");
         }
-        if (programa.getId_programa() == null) {
+        if (programa.getIdPrograma() == null) {
             throw new ReglaNegocioExcepcion("Debe proporcionar un ID válido para actualizar.");
         }
-        Programa existente = programasGateway.obtenerProgramaPorId(programa.getId_programa());
+        Programa existente = programasGateway.obtenerProgramaPorId(programa.getIdPrograma());
         if (existente == null) {
             throw new EntidadNoExisteException("No se encontró el programa a actualizar.");
         }

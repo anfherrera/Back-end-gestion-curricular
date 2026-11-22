@@ -23,9 +23,9 @@ public class GestionarDocentesCUAdapter implements GestionarDocentesCUIntPort {
             throw new ReglaNegocioExcepcion("El docente no puede ser nulo.");
         }
 
-        docente.setId_docente(null);
+        docente.setIdDocente(null);
 
-        if (docentesGateway.existeDocentePorCodigo(docente.getCodigo_docente())) {
+        if (docentesGateway.existeDocentePorCodigo(docente.getCodigoDocente())) {
             throw new EntidadYaExisteException("Ya existe un docente con este código.");
         }
 
@@ -37,10 +37,10 @@ public class GestionarDocentesCUAdapter implements GestionarDocentesCUIntPort {
         if (docente == null) {
             throw new ReglaNegocioExcepcion("El docente no puede ser nulo.");
         }
-        if (docente.getId_docente() == null) {
+        if (docente.getIdDocente() == null) {
             throw new ReglaNegocioExcepcion("Debe proporcionar un ID válido para actualizar.");
         }
-        Docente existente = docentesGateway.obtenerDocentePorId(docente.getId_docente());
+        Docente existente = docentesGateway.obtenerDocentePorId(docente.getIdDocente());
         if (existente == null) {
             throw new EntidadNoExisteException("No se encontró el docente a actualizar.");
         }

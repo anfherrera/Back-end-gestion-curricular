@@ -57,7 +57,7 @@ public class GestionarSalonesCUAdapter implements GestionarSalonesCUIntPort {
                 return obtenerSalonPorNumero(numero);
             } catch (Exception e) {
                 return listarSalonesActivos().stream()
-                        .filter(s -> s.getNumero_salon() != null && s.getNumero_salon().equals(numero))
+                        .filter(s -> s.getNumeroSalon() != null && s.getNumeroSalon().equals(numero))
                         .findFirst().orElse(null);
             }
         } catch (Exception e) {

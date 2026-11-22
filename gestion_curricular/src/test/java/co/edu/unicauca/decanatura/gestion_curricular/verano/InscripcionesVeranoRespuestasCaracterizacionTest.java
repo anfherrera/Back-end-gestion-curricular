@@ -33,9 +33,9 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.RequestBuilder;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarArchivosCUIntPort;
+import co.edu.unicauca.decanatura.gestion_curricular.soporte.SoporteMvc;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarCursoOfertadoVeranoCUIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarSolicitudCUIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarSolicitudCursoVeranoCUIntPort;
@@ -131,7 +131,7 @@ class InscripcionesVeranoRespuestasCaracterizacionTest {
                 default -> 1;
             };
         });
-        MockMvc mvc = MockMvcBuilders.standaloneSetup(new InscripcionesVeranoRestController(cursos, cu,
+        MockMvc mvc = SoporteMvc.standaloneSetup(new InscripcionesVeranoRestController(cursos, cu,
                 mock(GestionarArchivosCUIntPort.class), general))
             .setControllerAdvice(new RestApiExceptionHandler()).build();
         ObjectNode resultados = json.createObjectNode();

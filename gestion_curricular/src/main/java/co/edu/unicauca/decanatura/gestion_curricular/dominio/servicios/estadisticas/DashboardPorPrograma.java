@@ -38,12 +38,12 @@ public class DashboardPorPrograma {
         Map<String, Integer> estudiantesPorPrograma = new HashMap<>();
         Map<String, ContadorSolicitudes> porPrograma = new HashMap<>();
         for (Programa programa : programas) {
-            estudiantesPorPrograma.put(programa.getNombre_programa(), 0);
-            porPrograma.put(programa.getNombre_programa(), new ContadorSolicitudes());
+            estudiantesPorPrograma.put(programa.getNombrePrograma(), 0);
+            porPrograma.put(programa.getNombrePrograma(), new ContadorSolicitudes());
         }
         for (Usuario estudiante : estudiantes) {
             if (estudiante.getObjPrograma() != null) {
-                estudiantesPorPrograma.merge(estudiante.getObjPrograma().getNombre_programa(), 1, Integer::sum);
+                estudiantesPorPrograma.merge(estudiante.getObjPrograma().getNombrePrograma(), 1, Integer::sum);
             }
         }
         for (Solicitud solicitud : solicitudes) {
@@ -74,7 +74,7 @@ public class DashboardPorPrograma {
         double minTiempo = Double.MAX_VALUE;
 
         for (Programa programa : programas) {
-            String nombre = programa.getNombre_programa();
+            String nombre = programa.getNombrePrograma();
             ContadorSolicitudes c = porPrograma.get(nombre);
             int numEstudiantes = estudiantesPorPrograma.getOrDefault(nombre, 0);
             double eficiencia = c.eficiencia();

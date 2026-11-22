@@ -384,7 +384,7 @@ public final class SolicitudMapperPersistencia {
 
         Notificacion notificacion(NotificacionEntity entidad) {
             Notificacion notificacion = new Notificacion();
-            notificacion.setId_notificacion(entidad.getId_notificacion());
+            notificacion.setIdNotificacion(entidad.getId_notificacion());
             notificacion.setTipoSolicitud(entidad.getTipoSolicitud());
             notificacion.setTipoNotificacion(entidad.getTipoNotificacion());
             notificacion.setTitulo(entidad.getTitulo());

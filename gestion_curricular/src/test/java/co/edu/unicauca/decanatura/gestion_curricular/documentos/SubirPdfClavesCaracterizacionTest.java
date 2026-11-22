@@ -20,9 +20,9 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 import org.springframework.mock.web.MockMultipartFile;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarArchivosCUIntPort;
+import co.edu.unicauca.decanatura.gestion_curricular.soporte.SoporteMvc;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarDocumentosCUIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarSolicitudCUIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarSolicitudCursoVeranoCUIntPort;
@@ -85,7 +85,7 @@ class SubirPdfClavesCaracterizacionTest {
             @Override public boolean esDuenoSolicitud(Integer id) { return dueno; }
             @Override public Integer idUsuarioActual() { return 31; }
         };
-        var mvc = MockMvcBuilders.standaloneSetup(new ArchivosRestController(archivos, documentos,
+        var mvc = SoporteMvc.standaloneSetup(new ArchivosRestController(archivos, documentos,
             mock(GestionarSolicitudPazYSalvoCUIntPort.class), verano, solicitudes, auth))
             .setControllerAdvice(new RestApiExceptionHandler()).build();
 

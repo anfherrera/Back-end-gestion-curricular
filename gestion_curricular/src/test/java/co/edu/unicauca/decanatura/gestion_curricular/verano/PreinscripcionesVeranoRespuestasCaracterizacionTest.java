@@ -26,9 +26,9 @@ import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.RequestBuilder;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarSolicitudCursoVeranoCUIntPort;
+import co.edu.unicauca.decanatura.gestion_curricular.soporte.SoporteMvc;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.CursoOfertadoVerano;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Docente;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.EstadoCursoOfertado;
@@ -89,7 +89,7 @@ class PreinscripcionesVeranoRespuestasCaracterizacionTest {
             .thenAnswer(i -> preinscripcion(i.getArgument(0), "Aprobado", null, null, null));
         when(cu.rechazarPreinscripcion(anyInt(), nullable(String.class)))
             .thenAnswer(i -> preinscripcion(i.getArgument(0), "Rechazado", null, null, null));
-        MockMvc mvc = MockMvcBuilders.standaloneSetup(new PreinscripcionesVeranoRestController(cu, mapper(),
+        MockMvc mvc = SoporteMvc.standaloneSetup(new PreinscripcionesVeranoRestController(cu, mapper(),
                 mock(SolicitudCursoDeVeranoPreinscripcionMapperDominio.class)))
             .setControllerAdvice(new RestApiExceptionHandler()).build();
         ObjectNode resultados = json.createObjectNode();
@@ -254,7 +254,7 @@ class PreinscripcionesVeranoRespuestasCaracterizacionTest {
         usuario.setCodigo("1046");
         if (conRol) {
             Rol rol = new Rol();
-            rol.setId_rol(2);
+            rol.setIdRol(2);
             rol.setNombre("Estudiante");
             usuario.setObjRol(rol);
         }
@@ -265,14 +265,14 @@ class PreinscripcionesVeranoRespuestasCaracterizacionTest {
         CursoOfertadoVerano curso = new CursoOfertadoVerano();
         curso.setId_curso(id);
         Materia materia = new Materia();
-        materia.setId_materia(100 + id);
+        materia.setIdMateria(100 + id);
         materia.setCodigo("MAT" + id);
         materia.setNombre(nombreMateria);
         materia.setCreditos(3);
         curso.setObjMateria(materia);
         Docente docente = new Docente();
-        docente.setId_docente(200 + id);
-        docente.setNombre_docente("Docente " + id);
+        docente.setIdDocente(200 + id);
+        docente.setNombreDocente("Docente " + id);
         curso.setObjDocente(docente);
         curso.setCupo_estimado(20);
         curso.setSalon("221");

@@ -29,14 +29,14 @@ public class EstadisticasEstudiantes {
         List<Usuario> estudiantes = datos.listarEstudiantes();
         if (idPrograma != null) {
             estudiantes = estudiantes.stream()
-                    .filter(e -> e.getObjPrograma() != null && e.getObjPrograma().getId_programa().equals(idPrograma))
+                    .filter(e -> e.getObjPrograma() != null && e.getObjPrograma().getIdPrograma().equals(idPrograma))
                     .collect(Collectors.toList());
         }
 
         Map<String, Integer> porPrograma = new HashMap<>();
         for (Usuario estudiante : estudiantes) {
             if (estudiante.getObjPrograma() != null) {
-                porPrograma.merge(estudiante.getObjPrograma().getNombre_programa(), 1, Integer::sum);
+                porPrograma.merge(estudiante.getObjPrograma().getNombrePrograma(), 1, Integer::sum);
             }
         }
 

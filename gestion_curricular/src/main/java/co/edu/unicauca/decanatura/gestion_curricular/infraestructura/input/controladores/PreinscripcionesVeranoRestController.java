@@ -299,7 +299,7 @@ public class PreinscripcionesVeranoRestController {
                 Usuario usuario = preinscripcion.getObjUsuario();
                 // Informacion del rol
                 RolEstudiante rol = usuario.getObjRol() == null ? null
-                    : new RolEstudiante(usuario.getObjRol().getId_rol(), usuario.getObjRol().getNombre());
+                    : new RolEstudiante(usuario.getObjRol().getIdRol(), usuario.getObjRol().getNombre());
                 estudiante = new Estudiante(usuario.getId_usuario(), usuario.getNombre_completo(), usuario.getCorreo(),
                     usuario.getCodigo(), preinscripcion.getCodigo_estudiante(), rol);
             }

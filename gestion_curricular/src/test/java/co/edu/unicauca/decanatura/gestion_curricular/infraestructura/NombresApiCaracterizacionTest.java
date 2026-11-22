@@ -20,9 +20,9 @@ import org.junit.jupiter.api.Test;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.RequestBuilder;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GenerarDocumentosCUIntPort;
+import co.edu.unicauca.decanatura.gestion_curricular.soporte.SoporteMvc;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarCursoOfertadoVeranoCUIntPort.DatosCreacion;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarCursoOfertadoVeranoCUIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarSalonesCUIntPort;
@@ -55,7 +55,7 @@ class NombresApiCaracterizacionTest {
         when(cursos.crearCurso(any(DatosCreacion.class))).thenReturn(curso);
         when(cursos.modificarCurso(71, 19, null, null)).thenReturn(curso);
         when(mapper.mapearDeCursoOfertadoARespuesta(curso)).thenReturn(dto);
-        var mvc = MockMvcBuilders.standaloneSetup(new GeneradorDocumentosRestController(documentos),
+        var mvc = SoporteMvc.standaloneSetup(new GeneradorDocumentosRestController(documentos),
                 new CursosVeranoRestController(cursos, null, mapper, mock(GestionarSalonesCUIntPort.class), null))
                 .setControllerAdvice(new RestApiExceptionHandler()).build();
 

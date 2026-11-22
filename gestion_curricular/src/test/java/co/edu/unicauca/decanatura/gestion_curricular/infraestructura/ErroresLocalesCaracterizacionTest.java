@@ -29,9 +29,9 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarArchivosCUIntPort;
+import co.edu.unicauca.decanatura.gestion_curricular.soporte.SoporteMvc;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarCursoOfertadoVeranoCUIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarSolicitudCUIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarSolicitudCursoVeranoCUIntPort;
@@ -200,7 +200,7 @@ class ErroresLocalesCaracterizacionTest {
         configurarBase(m);
         configurar.accept(m);
 
-        MockMvc mvc = MockMvcBuilders.standaloneSetup(
+        MockMvc mvc = SoporteMvc.standaloneSetup(
                 new CursoOfertadoRestController(m.curso(), m.solicitud(), mock(CursosOfertadosMapperDominio.class), mock(EstadoCursoOfertadoMapper.class)),
                 new PreinscripcionesVeranoRestController(m.solicitud(), mock(CursosOfertadosMapperDominio.class),
                     mock(SolicitudCursoDeVeranoPreinscripcionMapperDominio.class)),

@@ -19,9 +19,9 @@ import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.junit.jupiter.api.Test;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarCursoOfertadoVeranoCUIntPort;
+import co.edu.unicauca.decanatura.gestion_curricular.soporte.SoporteMvc;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarSolicitudCursoVeranoCUIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.CursoOfertadoVerano;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.EstadoCursoOfertado;
@@ -54,7 +54,7 @@ class SeguimientoDashboardVeranoCaracterizacionTest {
         var solicitudes = mock(GestionarSolicitudCursoVeranoCUIntPort.class);
         when(solicitudes.buscarSolicitudesPorUsuario(any())).thenAnswer(i -> preinscripciones(i.getArgument(0)));
         when(solicitudes.buscarInscripcionesPorUsuario(any())).thenAnswer(i -> inscripciones(i.getArgument(0)));
-        MockMvc mvc = MockMvcBuilders.standaloneSetup(new ReportesCursosVeranoRestController(cursos, solicitudes, null))
+        MockMvc mvc = SoporteMvc.standaloneSetup(new ReportesCursosVeranoRestController(cursos, solicitudes, null))
             .setControllerAdvice(new RestApiExceptionHandler()).build();
 
         ObjectNode resultados = json.createObjectNode();
@@ -192,7 +192,7 @@ class SeguimientoDashboardVeranoCaracterizacionTest {
         CursoOfertadoVerano curso = new CursoOfertadoVerano();
         curso.setId_curso(id);
         Materia materia = new Materia();
-        materia.setId_materia(100 + id);
+        materia.setIdMateria(100 + id);
         materia.setNombre("Materia " + id);
         curso.setObjMateria(materia);
         List<EstadoCursoOfertado> estados = new ArrayList<>();

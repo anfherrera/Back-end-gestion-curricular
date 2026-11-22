@@ -16,9 +16,9 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.junit.jupiter.api.Test;
 import org.mapstruct.factory.Mappers;
 import org.springframework.mock.web.MockMultipartFile;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.*;
+import co.edu.unicauca.decanatura.gestion_curricular.soporte.SoporteMvc;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.*;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.casosDeUso.GestionarDocumentosCUAdapter;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.*;
@@ -43,7 +43,7 @@ class RegistroDocumentosCaracterizacionTest {
             documentos, Mappers.getMapper(DocumentosMapperDominio.class), mock(GenerarDocumentosCUIntPort.class), json, auth);
         var homo = new SolicitudHomologacionRestController(homoCU, mock(SolicitudHomologacionMapperDominio.class),
             mock(SolicitudMapperDominio.class), archivos, documentos, auth, null);
-        var mvc = MockMvcBuilders.standaloneSetup(paz, homo).setControllerAdvice(new RestApiExceptionHandler()).build();
+        var mvc = SoporteMvc.standaloneSetup(paz, homo).setControllerAdvice(new RestApiExceptionHandler()).build();
         String[] rutas = {"/api/solicitudes-pazysalvo/subir-documento",
             "/api/solicitudes-pazysalvo/subir-oficio-pdf/7",
             "/api/solicitudes-pazysalvo/guardarOficio",

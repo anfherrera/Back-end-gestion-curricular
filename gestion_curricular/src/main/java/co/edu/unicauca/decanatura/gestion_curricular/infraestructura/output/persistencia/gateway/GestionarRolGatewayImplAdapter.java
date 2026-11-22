@@ -45,8 +45,8 @@ public class GestionarRolGatewayImplAdapter implements GestionarRolGatewayIntPor
     @Override
     @Transactional
     public Rol actualizarRol(Rol rol) {
-        objrolRepository.findById(rol.getId_rol())
-            .orElseThrow(() -> new RuntimeException("Rol no encontrado con ID: " + rol.getId_rol()));
+        objrolRepository.findById(rol.getIdRol())
+            .orElseThrow(() -> new RuntimeException("Rol no encontrado con ID: " + rol.getIdRol()));
 
         RolEntity rolEntity = UsuarioMapperPersistencia.aEntidad(rol);
         RolEntity savedEntity = objrolRepository.save(rolEntity);

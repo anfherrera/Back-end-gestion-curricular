@@ -11,11 +11,12 @@ import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.dto.r
 public interface RolMapperDominio {
 
     // Dominio -> DTO de respuesta
-    @Mapping(target = "id_rol", source = "id_rol")
+    @Mapping(target = "id_rol", source = "idRol")
     @Mapping(target = "nombre", source = "nombre")
     RolDTORespuesta mapearDeRolARolDTORespuesta(Rol rol);
 
     // DTO de petición -> Dominio
+    @Mapping(target = "idRol", source = "id_rol")
     @Mapping(target = "usuarios", ignore = true)
     Rol mapearDeRolDTOPeticionARol(RolDTOPeticion peticion);
 

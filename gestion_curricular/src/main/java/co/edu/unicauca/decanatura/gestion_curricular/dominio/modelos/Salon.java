@@ -8,8 +8,8 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class Salon {
-    private Integer id_salon;
-    private String numero_salon; // Número del salón (ej: "221", "222", etc.)
+    private Integer idSalon;
+    private String numeroSalon; // Número del salón (ej: "221", "222", etc.)
     private String edificio; // Edificio donde está el salón (ej: "FIET")
     private Boolean activo; // Indica si el salón está disponible para uso
 }

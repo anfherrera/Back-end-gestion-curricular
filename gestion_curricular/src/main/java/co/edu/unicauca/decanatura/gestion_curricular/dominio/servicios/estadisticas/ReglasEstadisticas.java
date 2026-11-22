@@ -63,14 +63,14 @@ final class ReglasEstadisticas {
         if (solicitud.getObjUsuario() == null || solicitud.getObjUsuario().getObjPrograma() == null) {
             return null;
         }
-        return solicitud.getObjUsuario().getObjPrograma().getNombre_programa();
+        return solicitud.getObjUsuario().getObjPrograma().getNombrePrograma();
     }
 
     static Integer idPrograma(Solicitud solicitud) {
         if (solicitud.getObjUsuario() == null || solicitud.getObjUsuario().getObjPrograma() == null) {
             return null;
         }
-        return solicitud.getObjUsuario().getObjPrograma().getId_programa();
+        return solicitud.getObjUsuario().getObjPrograma().getIdPrograma();
     }
 
     static boolean enRango(Solicitud solicitud, Date inicio, Date fin) {

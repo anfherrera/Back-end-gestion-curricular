@@ -159,10 +159,10 @@ public class GestionarNotificacionCUAdapter implements GestionarNotificacionCUIn
     private void notificarAlRol(Solicitud solicitud, String tipoSolicitud, String estadoActual, String nombreRol) {
         try {
             Rol rol = gestionarRolGateway.obtenerRolPorNombre(nombreRol);
-            if (rol == null || rol.getId_rol() == null) {
+            if (rol == null || rol.getIdRol() == null) {
                 return;
             }
-            for (Usuario destinatario : gestionarUsuarioGateway.buscarUsuariosPorRol(rol.getId_rol())) {
+            for (Usuario destinatario : gestionarUsuarioGateway.buscarUsuariosPorRol(rol.getIdRol())) {
                 crearNotificacionParaFuncionario(solicitud, tipoSolicitud, estadoActual, destinatario, nombreRol);
             }
         } catch (RuntimeException e) {

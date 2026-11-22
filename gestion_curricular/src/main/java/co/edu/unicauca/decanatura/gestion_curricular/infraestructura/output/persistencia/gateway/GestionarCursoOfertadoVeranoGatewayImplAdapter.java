@@ -60,10 +60,10 @@ public class GestionarCursoOfertadoVeranoGatewayImplAdapter implements Gestionar
         cursoEntity.setGrupo(grupoEntity);
         
         // Obtener y asignar materia existente de la base de datos
-        if (curso.getObjMateria() != null && curso.getObjMateria().getId_materia() != null) {
+        if (curso.getObjMateria() != null && curso.getObjMateria().getIdMateria() != null) {
             // Obtener la materia desde la base de datos (forzar nueva consulta)
-            MateriaEntity materiaEntity = materiaRepository.findById(curso.getObjMateria().getId_materia())
-                .orElseThrow(() -> new RuntimeException("Materia no encontrada con ID: " + curso.getObjMateria().getId_materia()));
+            MateriaEntity materiaEntity = materiaRepository.findById(curso.getObjMateria().getIdMateria())
+                .orElseThrow(() -> new RuntimeException("Materia no encontrada con ID: " + curso.getObjMateria().getIdMateria()));
             
             // Asignar la materia al curso
             cursoEntity.setObjMateria(materiaEntity);
@@ -72,10 +72,10 @@ public class GestionarCursoOfertadoVeranoGatewayImplAdapter implements Gestionar
         }
         
         // Obtener y asignar docente existente de la base de datos
-        if (curso.getObjDocente() != null && curso.getObjDocente().getId_docente() != null) {
+        if (curso.getObjDocente() != null && curso.getObjDocente().getIdDocente() != null) {
             // Obtener el docente desde la base de datos (forzar nueva consulta)
-            DocenteEntity docenteEntity = docenteRepository.findById(curso.getObjDocente().getId_docente())
-                .orElseThrow(() -> new RuntimeException("Docente no encontrado con ID: " + curso.getObjDocente().getId_docente()));
+            DocenteEntity docenteEntity = docenteRepository.findById(curso.getObjDocente().getIdDocente())
+                .orElseThrow(() -> new RuntimeException("Docente no encontrado con ID: " + curso.getObjDocente().getIdDocente()));
             
             // Asignar el docente al curso
             cursoEntity.setObjDocente(docenteEntity);

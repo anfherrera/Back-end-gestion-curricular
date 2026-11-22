@@ -12,9 +12,9 @@ import java.util.*;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.*;
+import co.edu.unicauca.decanatura.gestion_curricular.soporte.SoporteMvc;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.*;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.controladores.*;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.mappers.*;
@@ -39,7 +39,7 @@ class DescargasCaracterizacionTest {
         var auth = new Autorizacion(null, null, null, null) {
             @Override public Optional<String> rutaArchivoVisible(String nombre) { return Optional.of("carpeta/" + nombre); }
         };
-        var mvc = MockMvcBuilders.standaloneSetup(
+        var mvc = SoporteMvc.standaloneSetup(
             new ArchivosRestController(archivos, mock(GestionarDocumentosCUIntPort.class), mock(GestionarSolicitudPazYSalvoCUIntPort.class), verano, mock(GestionarSolicitudCUIntPort.class), auth),
             new SolicitudHomologacionRestController(homo, mock(SolicitudHomologacionMapperDominio.class), mock(SolicitudMapperDominio.class), archivos, mock(GestionarDocumentosCUIntPort.class), auth, null),
             new SolicitudReingresoRestController(mock(SolicitudReingresoMapperDominio.class), reingreso, mock(SolicitudMapperDominio.class), archivos, auth, null),

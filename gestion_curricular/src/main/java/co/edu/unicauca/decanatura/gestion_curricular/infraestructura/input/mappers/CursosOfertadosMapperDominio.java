@@ -8,11 +8,14 @@ import org.mapstruct.Mapping;
 import org.mapstruct.Named;
 
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.CursoOfertadoVerano;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Materia;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.EstadoCursoOfertado;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.enums.GrupoCursoVerano;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.dto.peticion.CursosOfertadosDTOPeticion;
+import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.dto.peticion.MateriaDTOPeticion;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.dto.respuesta.CursosOfertadosDTORespuesta;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.dto.respuesta.EstadoCursoOfertadoDTORespuesta;
+import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.dto.respuesta.MateriaDTORespuesta;
 
 @Mapper(componentModel = "spring", uses = {
     MateriaMapperDominio.class,
@@ -224,4 +227,11 @@ public interface CursosOfertadosMapperDominio {
         }
         return grupo.toString();
     }
+
+    // OPC-2: el JSON conserva id_materia; el dominio usa idMateria
+    @Mapping(target = "idMateria", source = "id_materia")
+    Materia materiaDTOPeticionToMateria(MateriaDTOPeticion materiaDTOPeticion);
+
+    @Mapping(target = "id_materia", source = "idMateria")
+    MateriaDTORespuesta materiaToMateriaDTORespuesta(Materia materia);
 }

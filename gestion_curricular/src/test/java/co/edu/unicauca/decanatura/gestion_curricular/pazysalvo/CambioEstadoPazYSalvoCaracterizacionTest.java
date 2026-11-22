@@ -22,9 +22,9 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GenerarDocumentosCUIntPort;
+import co.edu.unicauca.decanatura.gestion_curricular.soporte.SoporteMvc;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarArchivosCUIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarDocumentosCUIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarSolicitudPazYSalvoCUIntPort;
@@ -54,7 +54,7 @@ class CambioEstadoPazYSalvoCaracterizacionTest {
         var controller = new SolicitudPazYSalvoRestController(cu, mock(SolicitudPazYSalvoMapperDominio.class),
                 mock(GestionarArchivosCUIntPort.class), mock(GestionarDocumentosCUIntPort.class),
                 mock(DocumentosMapperDominio.class), mock(GenerarDocumentosCUIntPort.class), json, autorizacion);
-        MockMvc mvc = MockMvcBuilders.standaloneSetup(controller)
+        MockMvc mvc = SoporteMvc.standaloneSetup(controller)
             .setControllerAdvice(new RestApiExceptionHandler()).build();
 
         // nombre, cuerpo de la petición, rechazo que devuelve el caso de uso (null = permitido)

@@ -26,9 +26,9 @@ import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.RequestBuilder;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarDocumentosCUIntPort;
+import co.edu.unicauca.decanatura.gestion_curricular.soporte.SoporteMvc;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarSolicitudHomologacionCUIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarSolicitudReingresoCUIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Documento;
@@ -70,7 +70,7 @@ class DocumentosSolicitudClavesCaracterizacionTest {
             return guardado;
         });
         var auth = new Autorizacion(null, null, null, null);
-        MockMvc mvc = MockMvcBuilders.standaloneSetup(
+        MockMvc mvc = SoporteMvc.standaloneSetup(
                 new SolicitudHomologacionRestController(homologacion, null, null, null, documentos, auth, null),
                 new SolicitudReingresoRestController(null, reingreso, null, null, auth, null))
             .setControllerAdvice(new RestApiExceptionHandler()).build();

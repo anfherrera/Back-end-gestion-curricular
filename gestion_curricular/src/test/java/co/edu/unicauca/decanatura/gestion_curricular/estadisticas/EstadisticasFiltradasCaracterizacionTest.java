@@ -21,9 +21,9 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.junit.jupiter.api.Test;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.RequestBuilder;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GenerarReportesEstadisticasCUIntPort;
+import co.edu.unicauca.decanatura.gestion_curricular.soporte.SoporteMvc;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarEstadisticasCUIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.estadisticas.ConteoSolicitudes;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.estadisticas.EstadisticasPorEstado;
@@ -123,7 +123,7 @@ class EstadisticasFiltradasCaracterizacionTest {
             conteo(5, 5, 100.0), new Date(MARZO), i.getArgument(0), i.getArgument(1)));
         when(cu.obtenerEstadisticasGlobales()).thenAnswer(i -> new GlobalesContadas(
             0, 0, 1, 2, 0, 0.0, porEstado(), porTipoProceso(), porPrograma(), new Date(MARZO)));
-        return MockMvcBuilders.standaloneSetup(new EstadisticasRestController(cu,
+        return SoporteMvc.standaloneSetup(new EstadisticasRestController(cu,
                 mock(EstadisticaMapperDominio.class), mock(GenerarReportesEstadisticasCUIntPort.class)))
             .setControllerAdvice(new RestApiExceptionHandler()).build();
     }

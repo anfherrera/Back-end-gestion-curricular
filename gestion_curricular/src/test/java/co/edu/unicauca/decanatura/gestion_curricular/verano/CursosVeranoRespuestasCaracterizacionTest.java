@@ -30,9 +30,9 @@ import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.RequestBuilder;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarCursoOfertadoVeranoCUIntPort;
+import co.edu.unicauca.decanatura.gestion_curricular.soporte.SoporteMvc;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarCursoOfertadoVeranoCUIntPort.DatosCreacion;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarSalonesCUIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarSolicitudCursoVeranoCUIntPort;
@@ -134,7 +134,7 @@ class CursosVeranoRespuestasCaracterizacionTest {
                 return curso;
             });
 
-        MockMvc mvc = MockMvcBuilders.standaloneSetup(new CursosVeranoRestController(cursos, solicitudes, mapper(),
+        MockMvc mvc = SoporteMvc.standaloneSetup(new CursosVeranoRestController(cursos, solicitudes, mapper(),
                 salones, null))
             .setControllerAdvice(new RestApiExceptionHandler()).build();
 
@@ -252,15 +252,15 @@ class CursosVeranoRespuestasCaracterizacionTest {
         CursoOfertadoVerano curso = new CursoOfertadoVerano();
         curso.setId_curso(id);
         Materia materia = new Materia();
-        materia.setId_materia(100 + id);
+        materia.setIdMateria(100 + id);
         materia.setCodigo("MAT" + id);
         materia.setNombre("Materia " + id);
         materia.setCreditos(3);
         curso.setObjMateria(materia);
         Docente docente = new Docente();
-        docente.setId_docente(200 + id);
-        docente.setCodigo_docente("D" + id);
-        docente.setNombre_docente("Docente " + id);
+        docente.setIdDocente(200 + id);
+        docente.setCodigoDocente("D" + id);
+        docente.setNombreDocente("Docente " + id);
         curso.setObjDocente(docente);
         curso.setCupo_estimado(20 + id);
         curso.setSalon(salon);

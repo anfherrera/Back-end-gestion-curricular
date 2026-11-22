@@ -22,9 +22,10 @@ import org.springframework.http.MediaType;
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
+import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.configuracion.NombresJsonDominio;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.*;
+import co.edu.unicauca.decanatura.gestion_curricular.soporte.SoporteMvc;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.SolicitudPazYSalvo;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.controladores.SolicitudPazYSalvoRestController;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.dto.peticion.SolicitudPazYSalvoDTOPeticion;
@@ -43,7 +44,8 @@ class CrearPazYSalvoCuerpoCaracterizacionTest {
     private static final String RUTA = "/api/solicitudes-pazysalvo/crearSolicitud-PazYSalvo";
     private static final Path REFERENCIA = Path.of("src/test/resources/referencias/pazysalvo/crear-cuerpo.json");
 
-    private final ObjectMapper json = Jackson2ObjectMapperBuilder.json().build();
+    private final ObjectMapper json = Jackson2ObjectMapperBuilder.json()
+            .modulesToInstall(NombresJsonDominio.modulo()).build();
     private final List<JsonNode> capturas = new ArrayList<>();
 
     @Test
@@ -145,7 +147,7 @@ class CrearPazYSalvoCuerpoCaracterizacionTest {
         var controller = new SolicitudPazYSalvoRestController(cu, mapper, mock(GestionarArchivosCUIntPort.class),
                 mock(GestionarDocumentosCUIntPort.class), mock(DocumentosMapperDominio.class),
                 mock(GenerarDocumentosCUIntPort.class), json, autorizacion);
-        return MockMvcBuilders.standaloneSetup(controller)
+        return SoporteMvc.standaloneSetup(controller)
                 .setMessageConverters(new MappingJackson2HttpMessageConverter(json))
                 .setControllerAdvice(new RestApiExceptionHandler()).build();
     }

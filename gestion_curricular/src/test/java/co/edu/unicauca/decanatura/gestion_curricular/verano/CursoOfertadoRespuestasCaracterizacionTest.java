@@ -25,9 +25,9 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.RequestBuilder;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarCursoOfertadoVeranoCUIntPort;
+import co.edu.unicauca.decanatura.gestion_curricular.soporte.SoporteMvc;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarSolicitudCursoVeranoCUIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.excepciones.CupoAgotadoException;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.CursoOfertadoVerano;
@@ -72,7 +72,7 @@ class CursoOfertadoRespuestasCaracterizacionTest {
         });
         when(cu.completarInscripcion(anyInt()))
             .thenAnswer(i -> segun(i.getArgument(0), () -> inscripcion(i.getArgument(0))));
-        MockMvc mvc = MockMvcBuilders.standaloneSetup(new CursoOfertadoRestController(cursos, cu,
+        MockMvc mvc = SoporteMvc.standaloneSetup(new CursoOfertadoRestController(cursos, cu,
                 mock(CursosOfertadosMapperDominio.class), mock(EstadoCursoOfertadoMapper.class)))
             .setControllerAdvice(new RestApiExceptionHandler()).build();
 
@@ -197,7 +197,7 @@ class CursoOfertadoRespuestasCaracterizacionTest {
         CursoOfertadoVerano curso = new CursoOfertadoVerano();
         curso.setId_curso(5);
         Materia materia = new Materia();
-        materia.setId_materia(105);
+        materia.setIdMateria(105);
         materia.setNombre("Materia 5");
         curso.setObjMateria(materia);
         solicitud.setObjCursoOfertadoVerano(curso);

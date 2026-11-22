@@ -25,9 +25,9 @@ import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarSolicitudCUIntPort;
+import co.edu.unicauca.decanatura.gestion_curricular.soporte.SoporteMvc;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.EstadoSolicitud;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Programa;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Solicitud;
@@ -161,7 +161,7 @@ class HistorialSolicitudesCaracterizacionTest {
         when(cu.buscarHistorial(any(), any(), any())).thenAnswer(i -> solicitudes());
         when(cu.contarHistorial()).thenReturn(25L);
         when(cu.contarSolicitudesProcesadas()).thenReturn(10L);
-        return MockMvcBuilders.standaloneSetup(new SolicitudRestController(cu, mapper()))
+        return SoporteMvc.standaloneSetup(new SolicitudRestController(cu, mapper()))
             .setControllerAdvice(new RestApiExceptionHandler()).build();
     }
 
@@ -199,8 +199,8 @@ class HistorialSolicitudesCaracterizacionTest {
         usuario.setId_usuario(7);
         usuario.setNombre_completo("María Fernanda Ortiz Castellanos");
         Programa programa = new Programa();
-        programa.setId_programa(2);
-        programa.setNombre_programa("Ingeniería Electrónica y Telecomunicaciones");
+        programa.setIdPrograma(2);
+        programa.setNombrePrograma("Ingeniería Electrónica y Telecomunicaciones");
         usuario.setObjPrograma(programa);
         paz.setObjUsuario(usuario);
         paz.getEstadosSolicitud().add(estado("ENVIADA", MARZO));

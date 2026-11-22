@@ -47,8 +47,8 @@ public class GestionarProgramaGatewayImplAdapter implements GestionarProgramaGat
     @Override
     @Transactional
     public Programa actualizarPrograma(Programa programa) {
-        programaRepository.findById(programa.getId_programa())
-            .orElseThrow(() -> new RuntimeException("Programa no encontrado con ID: " + programa.getId_programa()));
+        programaRepository.findById(programa.getIdPrograma())
+            .orElseThrow(() -> new RuntimeException("Programa no encontrado con ID: " + programa.getIdPrograma()));
 
         ProgramaEntity programaEntity = CatalogosMapperPersistencia.aEntidad(programa);
         ProgramaEntity savedEntity = programaRepository.save(programaEntity);

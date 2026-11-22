@@ -15,9 +15,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.*;
+import co.edu.unicauca.decanatura.gestion_curricular.soporte.SoporteMvc;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.excepciones.CupoAgotadoException;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.SolicitudCursoVeranoInscripcion;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.controladores.CursoOfertadoRestController;
@@ -43,7 +43,7 @@ class ValidarPagoCaracterizacionTest {
             }
             return inscripcion;
         });
-        MockMvc mvc = MockMvcBuilders.standaloneSetup(new CursoOfertadoRestController(
+        MockMvc mvc = SoporteMvc.standaloneSetup(new CursoOfertadoRestController(
                 mock(GestionarCursoOfertadoVeranoCUIntPort.class), cu,
                 mock(CursosOfertadosMapperDominio.class), mock(EstadoCursoOfertadoMapper.class)))
                 .setControllerAdvice(new RestApiExceptionHandler()).build();

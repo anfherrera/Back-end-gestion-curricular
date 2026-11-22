@@ -19,9 +19,9 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.junit.jupiter.api.Test;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarArchivosCUIntPort;
+import co.edu.unicauca.decanatura.gestion_curricular.soporte.SoporteMvc;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarSolicitudCUIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarSolicitudCursoVeranoCUIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarSolicitudPazYSalvoCUIntPort;
@@ -171,7 +171,7 @@ class SubirPdfArchivosCaracterizacionTest {
 
         var controlador = new ArchivosRestController(archivos, documentos,
             mock(GestionarSolicitudPazYSalvoCUIntPort.class), verano, solicitudes, auth);
-        MockMvc mvc = MockMvcBuilders.standaloneSetup(controlador)
+        MockMvc mvc = SoporteMvc.standaloneSetup(controlador)
             .setControllerAdvice(new RestApiExceptionHandler()).build();
 
         byte[] contenido = switch (c.archivo()) {

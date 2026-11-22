@@ -11,9 +11,9 @@ import java.util.*;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.*;
+import co.edu.unicauca.decanatura.gestion_curricular.soporte.SoporteMvc;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Documento;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.controladores.DocumentoRestController;
 
@@ -24,7 +24,7 @@ class DescargaDocumentoPorIdCaracterizacionTest {
         var archivos = mock(GestionarArchivosCUIntPort.class);
         when(archivos.getFileByPath(anyString())).thenReturn(contenido);
         var documentos = mock(GestionarDocumentosCUIntPort.class);
-        var mvc = MockMvcBuilders.standaloneSetup(new DocumentoRestController(documentos, null, archivos, null)).build();
+        var mvc = SoporteMvc.standaloneSetup(new DocumentoRestController(documentos, null, archivos, null)).build();
         Map<String, Object> resultados = new LinkedHashMap<>();
         for (String nombre : new String[]{"oficio.pdf", "oficio á +\".pdf", "oficio.docx", null}) {
             var documento = new Documento();

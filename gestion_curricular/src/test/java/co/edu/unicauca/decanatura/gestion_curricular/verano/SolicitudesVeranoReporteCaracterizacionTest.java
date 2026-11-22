@@ -26,9 +26,9 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.junit.jupiter.api.Test;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarCursoOfertadoVeranoCUIntPort;
+import co.edu.unicauca.decanatura.gestion_curricular.soporte.SoporteMvc;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarSolicitudCursoVeranoCUIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.CursoOfertadoVerano;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.EstadoSolicitud;
@@ -61,7 +61,7 @@ class SolicitudesVeranoReporteCaracterizacionTest {
         var cursos = mock(GestionarCursoOfertadoVeranoCUIntPort.class);
         var solicitudes = mock(GestionarSolicitudCursoVeranoCUIntPort.class);
         when(solicitudes.listarSolicitudesParaReporte(any(), any(), any(), any(), any())).thenAnswer(i -> datos());
-        MockMvc mvc = MockMvcBuilders.standaloneSetup(new ReportesCursosVeranoRestController(cursos, solicitudes, null))
+        MockMvc mvc = SoporteMvc.standaloneSetup(new ReportesCursosVeranoRestController(cursos, solicitudes, null))
             .setControllerAdvice(new RestApiExceptionHandler()).build();
         ObjectNode resultados = json.createObjectNode();
 
@@ -198,7 +198,7 @@ class SolicitudesVeranoReporteCaracterizacionTest {
         curso.setGrupo(grupo);
         if (conMateria) {
             Materia materia = new Materia();
-            materia.setId_materia(100 + id);
+            materia.setIdMateria(100 + id);
             materia.setCodigo("MAT" + id);
             materia.setNombre("Materia " + id);
             curso.setObjMateria(materia);

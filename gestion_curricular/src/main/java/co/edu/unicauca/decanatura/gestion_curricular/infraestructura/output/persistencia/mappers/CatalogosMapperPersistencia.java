@@ -31,9 +31,9 @@ public final class CatalogosMapperPersistencia {
     public static ProgramaEntity aEntidad(Programa programa) {
         Origen.exigir(programa);
         ProgramaEntity entidad = new ProgramaEntity();
-        entidad.setId_programa(programa.getId_programa());
+        entidad.setId_programa(programa.getIdPrograma());
         entidad.setCodigo(programa.getCodigo());
-        entidad.setNombre_programa(programa.getNombre_programa());
+        entidad.setNombre_programa(programa.getNombrePrograma());
         return entidad;
     }
 
@@ -45,9 +45,9 @@ public final class CatalogosMapperPersistencia {
     public static DocenteEntity aEntidad(Docente docente) {
         Origen.exigir(docente);
         DocenteEntity entidad = new DocenteEntity();
-        entidad.setId_docente(docente.getId_docente());
-        entidad.setCodigo_docente(docente.getCodigo_docente());
-        entidad.setNombre_docente(docente.getNombre_docente());
+        entidad.setId_docente(docente.getIdDocente());
+        entidad.setCodigo_docente(docente.getCodigoDocente());
+        entidad.setNombre_docente(docente.getNombreDocente());
         return entidad;
     }
 
@@ -59,7 +59,7 @@ public final class CatalogosMapperPersistencia {
     public static MateriaEntity aEntidad(Materia materia) {
         Origen.exigir(materia);
         MateriaEntity entidad = new MateriaEntity();
-        entidad.setId_materia(materia.getId_materia());
+        entidad.setId_materia(materia.getIdMateria());
         entidad.setCodigo(materia.getCodigo());
         entidad.setNombre(materia.getNombre());
         entidad.setCreditos(materia.getCreditos());

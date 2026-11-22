@@ -41,13 +41,13 @@ public class GestionarUsuarioGatewayImplAdapter implements GestionarUsuarioGatew
         if (usuario.getObjRol() == null) {
             throw new IllegalArgumentException("El rol del usuario no puede ser nulo");
         }
-        if (usuario.getObjRol().getId_rol() == null) {
+        if (usuario.getObjRol().getIdRol() == null) {
             throw new IllegalArgumentException("El ID del rol no puede ser nulo");
         }
         if (usuario.getObjPrograma() == null) {
             throw new IllegalArgumentException("El programa del usuario no puede ser nulo");
         }
-        if (usuario.getObjPrograma().getId_programa() == null) {
+        if (usuario.getObjPrograma().getIdPrograma() == null) {
             throw new IllegalArgumentException("El ID del programa no puede ser nulo");
         }
         UsuarioEntity entity;
@@ -56,8 +56,8 @@ public class GestionarUsuarioGatewayImplAdapter implements GestionarUsuarioGatew
         } catch (IllegalArgumentException e) {
             if (e.getMessage() != null && e.getMessage().contains("source cannot be null")) {
                 throw new IllegalArgumentException("Error al mapear usuario: el objeto usuario o alguna de sus propiedades es nula. " +
-                    "Rol ID: " + (usuario.getObjRol() != null ? usuario.getObjRol().getId_rol() : "null") + 
-                    ", Programa ID: " + (usuario.getObjPrograma() != null ? usuario.getObjPrograma().getId_programa() : "null"), e);
+                    "Rol ID: " + (usuario.getObjRol() != null ? usuario.getObjRol().getIdRol() : "null") + 
+                    ", Programa ID: " + (usuario.getObjPrograma() != null ? usuario.getObjPrograma().getIdPrograma() : "null"), e);
             }
             throw e;
         }

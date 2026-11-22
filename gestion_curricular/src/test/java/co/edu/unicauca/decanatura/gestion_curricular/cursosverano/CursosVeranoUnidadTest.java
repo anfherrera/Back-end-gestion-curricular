@@ -93,13 +93,13 @@ class CursosVeranoUnidadTest {
         cursoEjemplo.setSalon("A-101");
         
         Materia materia = new Materia();
-        materia.setId_materia(1);
+        materia.setIdMateria(1);
         materia.setNombre("Cálculo I");
         cursoEjemplo.setObjMateria(materia);
         
         Docente docente = new Docente();
-        docente.setId_docente(1);
-        docente.setNombre_docente("Juan Pérez");
+        docente.setIdDocente(1);
+        docente.setNombreDocente("Juan Pérez");
         cursoEjemplo.setObjDocente(docente);
     }
 
@@ -322,7 +322,7 @@ class CursosVeranoUnidadTest {
     @Test
     void listarPorFiltrosConservaCursosSinSolicitudesYRespetaElUltimoEstado() {
         Programa programa = new Programa();
-        programa.setId_programa(7);
+        programa.setIdPrograma(7);
         Usuario estudiante = new Usuario();
         estudiante.setObjPrograma(programa);
         Solicitud solicitud = new Solicitud();

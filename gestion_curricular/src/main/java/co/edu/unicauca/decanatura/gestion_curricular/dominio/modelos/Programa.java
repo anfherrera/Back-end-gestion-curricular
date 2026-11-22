@@ -8,7 +8,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class Programa {
-    private Integer id_programa;
+    private Integer idPrograma;
     private String codigo;
-    private String nombre_programa;
+    private String nombrePrograma;
 }

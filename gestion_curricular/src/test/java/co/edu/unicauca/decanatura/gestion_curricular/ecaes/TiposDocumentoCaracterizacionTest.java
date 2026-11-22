@@ -19,9 +19,9 @@ import org.springframework.http.MediaType;
 import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.RequestBuilder;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarSolicitudEcaesCUIntPort;
+import co.edu.unicauca.decanatura.gestion_curricular.soporte.SoporteMvc;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.controladores.SolicitudEcaesRestController;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.controladores.TipoDocumentoController;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.excepciones.RestApiExceptionHandler;
@@ -46,7 +46,7 @@ class TiposDocumentoCaracterizacionTest {
         };
         var mapper = new SolicitudEcaesMapperDominioImpl();
         ReflectionTestUtils.setField(mapper, "usuarioMapperDominio", mock(UsuarioMapperDominio.class));
-        var mvc = MockMvcBuilders.standaloneSetup(new TipoDocumentoController(),
+        var mvc = SoporteMvc.standaloneSetup(new TipoDocumentoController(),
             new SolicitudEcaesRestController(casoDeUso, mapper, null, autorizacion, null))
             .setControllerAdvice(new RestApiExceptionHandler()).build();
 

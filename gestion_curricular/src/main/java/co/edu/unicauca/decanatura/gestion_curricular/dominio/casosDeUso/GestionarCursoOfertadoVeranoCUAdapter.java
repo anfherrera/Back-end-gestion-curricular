@@ -201,29 +201,29 @@ public class GestionarCursoOfertadoVeranoCUAdapter implements GestionarCursoOfer
         if(curso.getObjMateria() == null){
             throw new ReglaNegocioExcepcion("No hay datos en la materia");
         }
-        if(curso.getObjMateria().getId_materia() == null){
+        if(curso.getObjMateria().getIdMateria() == null){
             throw new ReglaNegocioExcepcion("No hay datos en la   materia");
         }
-        materia = this.gestionarMateriasGateway.obtenerMateriaPorId(curso.getObjMateria().getId_materia());
+        materia = this.gestionarMateriasGateway.obtenerMateriaPorId(curso.getObjMateria().getIdMateria());
         if(materia == null){
-            throw new EntidadNoExisteException("No existe la materia con el ID: " + curso.getObjMateria().getId_materia());
+            throw new EntidadNoExisteException("No existe la materia con el ID: " + curso.getObjMateria().getIdMateria());
         }
         if(curso.getObjDocente() == null){
             throw new ReglaNegocioExcepcion("No hay datos en el docente");
         }
-        if(curso.getObjDocente().getId_docente() == null){
+        if(curso.getObjDocente().getIdDocente() == null){
             throw new ReglaNegocioExcepcion("No hay datos en el docente");
         }
-        docente = this.gestionarDocenteGateway.buscarDocentePorId(curso.getObjDocente().getId_docente());
+        docente = this.gestionarDocenteGateway.buscarDocentePorId(curso.getObjDocente().getIdDocente());
         if(docente == null){
-            throw new EntidadNoExisteException("No existe el docente con el ID: " + curso.getObjDocente().getId_docente());
+            throw new EntidadNoExisteException("No existe el docente con el ID: " + curso.getObjDocente().getIdDocente());
         }            
         return guardarCurso(curso);
     }
 
     private CursoOfertadoVerano guardarCurso(CursoOfertadoVerano curso) {
         for (CursoOfertadoVerano existente : listarTodos()) {
-            if (curso.getObjMateria().getId_materia() == existente.getObjMateria().getId_materia()
+            if (curso.getObjMateria().getIdMateria() == existente.getObjMateria().getIdMateria()
                     && curso.getGrupo() == existente.getGrupo()) {
                 throw new EntidadYaExisteException(
                         "El grupo asignado ya está en uso: " + curso.getGrupo().name());
@@ -288,7 +288,7 @@ public class GestionarCursoOfertadoVeranoCUAdapter implements GestionarCursoOfer
             throw new DatosCursoInvalidosException(Motivo.SALON_NO_ENCONTRADO,
                     "El salón con ID " + idSalon + " no existe");
         }
-        return salon.getNumero_salon();
+        return salon.getNumeroSalon();
     }
 
     private GrupoCursoVerano grupoInicial(String grupo) {
@@ -381,7 +381,7 @@ public class GestionarCursoOfertadoVeranoCUAdapter implements GestionarCursoOfer
 
     private boolean perteneceAlPrograma(Usuario usuario, Integer idPrograma) {
         return usuario != null && usuario.getObjPrograma() != null
-                && idPrograma.equals(usuario.getObjPrograma().getId_programa());
+                && idPrograma.equals(usuario.getObjPrograma().getIdPrograma());
     }
 
     private boolean esVisibleParaEstudiantes(CursoOfertadoVerano curso) {

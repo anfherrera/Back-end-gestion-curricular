@@ -8,7 +8,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class Materia {
-    private Integer id_materia;
+    private Integer idMateria;
     private String codigo;
     private String nombre; 
     private Integer creditos;

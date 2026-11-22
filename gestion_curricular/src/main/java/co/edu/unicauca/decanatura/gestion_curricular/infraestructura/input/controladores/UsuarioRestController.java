@@ -86,14 +86,14 @@ public class UsuarioRestController {
                 throw new IllegalArgumentException("El ID del rol es obligatorio");
             }
             Rol rol = new Rol();
-            rol.setId_rol(peticion.getId_rol());
+            rol.setIdRol(peticion.getId_rol());
             usuario.setObjRol(rol);
             
             if (peticion.getId_programa() == null) {
                 throw new IllegalArgumentException("El ID del programa es obligatorio");
             }
             Programa programa = new Programa();
-            programa.setId_programa(peticion.getId_programa());
+            programa.setIdPrograma(peticion.getId_programa());
             usuario.setObjPrograma(programa);
             
             Usuario usuarioCreado = usuarioCUIntPort.crearUsuario(usuario);
@@ -142,11 +142,11 @@ public class UsuarioRestController {
         
         // Crear objetos Rol y Programa con solo el ID
         Rol rol = new Rol();
-        rol.setId_rol(peticion.getId_rol());
+        rol.setIdRol(peticion.getId_rol());
         usuario.setObjRol(rol);
         
         Programa programa = new Programa();
-        programa.setId_programa(peticion.getId_programa());
+        programa.setIdPrograma(peticion.getId_programa());
         usuario.setObjPrograma(programa);
         
         Usuario usuarioActualizado = usuarioCUIntPort.actualizarUsuario(usuario);

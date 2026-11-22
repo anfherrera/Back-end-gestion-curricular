@@ -102,7 +102,7 @@ public class GestionarNotificacionGatewayImplAdapter implements GestionarNotific
         List<Notificacion> result = entities.stream()
                 .map(entity -> {
                     Notificacion notificacion = new Notificacion();
-                    notificacion.setId_notificacion(entity.getId_notificacion());
+                    notificacion.setIdNotificacion(entity.getId_notificacion());
                     notificacion.setTipoSolicitud(entity.getTipoSolicitud());
                     notificacion.setTipoNotificacion(entity.getTipoNotificacion());
                     notificacion.setTitulo(entity.getTitulo());
@@ -140,7 +140,7 @@ public class GestionarNotificacionGatewayImplAdapter implements GestionarNotific
         List<Notificacion> result = entities.stream()
                 .map(entity -> {
                     Notificacion notificacion = new Notificacion();
-                    notificacion.setId_notificacion(entity.getId_notificacion());
+                    notificacion.setIdNotificacion(entity.getId_notificacion());
                     notificacion.setTipoSolicitud(entity.getTipoSolicitud());
                     notificacion.setTipoNotificacion(entity.getTipoNotificacion());
                     notificacion.setTitulo(entity.getTitulo());

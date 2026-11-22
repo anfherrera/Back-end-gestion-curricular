@@ -47,8 +47,8 @@ public class GestionarDocenteGatewayImplAdapter implements GestionarDocenteGatew
     @Override
     @Transactional
     public Docente actualizarDocente(Docente docente) {
-        docenteRepository.findById(docente.getId_docente())
-            .orElseThrow(() -> new RuntimeException("Docente no encontrado con ID: " + docente.getId_docente()));
+        docenteRepository.findById(docente.getIdDocente())
+            .orElseThrow(() -> new RuntimeException("Docente no encontrado con ID: " + docente.getIdDocente()));
 
         DocenteEntity docenteEntity = CatalogosMapperPersistencia.aEntidad(docente);
         DocenteEntity savedEntity = docenteRepository.save(docenteEntity);

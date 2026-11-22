@@ -18,9 +18,9 @@ import org.junit.jupiter.api.Test;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarNotificacionCUIntPort;
+import co.edu.unicauca.decanatura.gestion_curricular.soporte.SoporteMvc;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarSalonesCUIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarSolicitudCursoVeranoCUIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.GestionarCursoOfertadoVeranoGatewayIntPort;
@@ -50,7 +50,7 @@ class SalonInexistenteCursoVeranoCaracterizacionTest {
             mock(GestionarSolicitudGatewayIntPort.class), mock(GestionarUsuarioGatewayIntPort.class),
             mock(GestionarMateriasIntPort.class), mock(GestionarDocenteGatewayIntPort.class),
             mock(GestionarSalonesIntPort.class), mock(GestionarNotificacionCUIntPort.class));
-        MockMvc mvc = MockMvcBuilders.standaloneSetup(new CursosVeranoRestController(casoDeUso,
+        MockMvc mvc = SoporteMvc.standaloneSetup(new CursosVeranoRestController(casoDeUso,
                 mock(GestionarSolicitudCursoVeranoCUIntPort.class), null, mock(GestionarSalonesCUIntPort.class), null))
             .setControllerAdvice(new RestApiExceptionHandler()).build();
 

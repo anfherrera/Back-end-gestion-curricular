@@ -256,7 +256,7 @@ public class GestionarSolicitudPazYSalvoCUAdapter implements GestionarSolicitudP
         return Optional.of(new DatosDocumento(solicitud.getObjUsuario().getNombre_completo(),
                 usuario.getNombre_completo(), usuario.getCodigo(),
                 usuario.getObjPrograma() == null ? "Ingeniería Electrónica y Telecomunicaciones"
-                        : usuario.getObjPrograma().getNombre_programa(),
+                        : usuario.getObjPrograma().getNombrePrograma(),
                 fecha, primeroConTexto(cedula, usuario.getCedula(), "No especificada", false),
                 primeroConTexto(titulo, solicitud.getTitulo_trabajo_grado(), "Trabajo de grado", true),
                 primeroConTexto(director, solicitud.getDirector_trabajo_grado(), "Director asignado", true)));

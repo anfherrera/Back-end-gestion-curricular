@@ -133,7 +133,7 @@ public class CursosVeranoRestController {
                 .map(dto -> {
                     Salon salon = salonCU.resolverSalonDeCurso(dto.getSalon());
                     dto.setSalonInfo(salonInfo(salon));
-                    dto.setId_salon(salon == null ? null : salon.getId_salon());
+                    dto.setId_salon(salon == null ? null : salon.getIdSalon());
                     return dto;
                 })
                 .collect(Collectors.toList());
@@ -144,8 +144,8 @@ public class CursosVeranoRestController {
         if (salon == null) {
             return null;
         }
-        return new SalonInfo(salon.getId_salon(), salon.getNumero_salon(), salon.getEdificio(), salon.getActivo(),
-                salon.getNumero_salon() + (salon.getEdificio() != null ? " - " + salon.getEdificio() : ""));
+        return new SalonInfo(salon.getIdSalon(), salon.getNumeroSalon(), salon.getEdificio(), salon.getActivo(),
+                salon.getNumeroSalon() + (salon.getEdificio() != null ? " - " + salon.getEdificio() : ""));
     }
 
     /**
@@ -402,7 +402,7 @@ public class CursosVeranoRestController {
                 cursoActualizado.getObjMateria() != null ? cursoActualizado.getObjMateria().getNombre() : "Curso",
                 cursoActualizado.getObjMateria() != null ? cursoActualizado.getObjMateria().getCodigo() : "N/A",
                 cursoActualizado.getCupo_estimado(), cursoActualizado.getSalon(), salonInfo(salon),
-                salon == null ? null : salon.getId_salon(),
+                salon == null ? null : salon.getIdSalon(),
                 dto.getEstado() != null ? dto.getEstado() : "Actualizado", "Curso actualizado exitosamente",
                 "Cambios aplicados y guardados en BD"));
     }
@@ -478,7 +478,7 @@ public class CursosVeranoRestController {
                 cursoDTO.getNombre_curso(), cursoDTO.getCodigo_curso(), cursoDTO.getDescripcion(),
                 cursoDTO.getFecha_inicio(), cursoDTO.getFecha_fin(), cursoDTO.getCupo_maximo(),
                 cursoDTO.getCupo_disponible(), cursoDTO.getCupo_estimado(), cursoDTO.getEspacio_asignado(),
-                cursoDTO.getEstado(), salonInfo(salon), salon == null ? null : salon.getId_salon(), solicitudes,
+                cursoDTO.getEstado(), salonInfo(salon), salon == null ? null : salon.getIdSalon(), solicitudes,
                 cursoDTO.getObjMateria(), cursoDTO.getObjDocente()));
     }
 
@@ -506,7 +506,7 @@ public class CursosVeranoRestController {
         // Filtrar cursos por materia
         List<CursosOfertadosDTORespuesta> respuesta = cursos.stream()
                 .filter(curso -> curso.getObjMateria() != null && 
-                               curso.getObjMateria().getId_materia().equals(idMateria))
+                               curso.getObjMateria().getIdMateria().equals(idMateria))
                 .map(cursoMapper::mapearDeCursoOfertadoARespuestaDisponible)
                 .map(cursoMapper::postMapCurso) // Asignar idCurso
                 .collect(Collectors.toList());
