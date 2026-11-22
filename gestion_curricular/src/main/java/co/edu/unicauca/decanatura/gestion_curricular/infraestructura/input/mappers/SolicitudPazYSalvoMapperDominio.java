@@ -1,5 +1,9 @@
 package co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.mappers;
 
+import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.dto.peticion.UsuarioDTOPeticion;
+
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Usuario;
+
 import java.util.List;
 
 import org.mapstruct.Mapper;
@@ -40,4 +44,9 @@ public interface SolicitudPazYSalvoMapperDominio {
     @Mapping(target = "fecha_ceremonia", ignore = true) // Se asigna desde el caso de uso si es necesario
     SolicitudPazYSalvo mapearDeSolicitudDTOPeticionASolicitud(SolicitudPazYSalvoDTOPeticion peticion);
 
+    // OPC-2: el JSON conserva id_usuario, nombre_completo y estado_usuario
+    @Mapping(target = "idUsuario", source = "id_usuario")
+    @Mapping(target = "nombreCompleto", source = "nombre_completo")
+    @Mapping(target = "estadoUsuario", source = "estado_usuario")
+    Usuario usuarioDTOPeticionToUsuario(UsuarioDTOPeticion usuarioDTOPeticion);
 }

@@ -44,7 +44,7 @@ public final class ReporteSolicitudesVeranoMapper {
                 String nombreCompleto;
                 String codigo;
                 if (solicitud.getObjUsuario() != null) {
-                    nombreCompleto = solicitud.getObjUsuario().getNombre_completo();
+                    nombreCompleto = solicitud.getObjUsuario().getNombreCompleto();
                     codigo = solicitud.getObjUsuario().getCodigo();
                 } else {
                     nombreCompleto = "Usuario no disponible";

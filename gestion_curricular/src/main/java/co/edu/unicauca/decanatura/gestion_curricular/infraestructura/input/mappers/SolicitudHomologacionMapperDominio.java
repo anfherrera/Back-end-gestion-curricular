@@ -28,6 +28,10 @@ public interface SolicitudHomologacionMapperDominio {
     @Mapping(target = "objUsuario.objPrograma", ignore = true) // Propiedad no mapeada en Usuario
     @Mapping(target = "objUsuario.solicitudes", ignore = true) // Propiedad no mapeada en Usuario
     @Mapping(target = "objUsuario.cursosOfertadosInscritos", ignore = true) // Propiedad no mapeada en Usuario
+    // OPC-2: el JSON conserva id_usuario, nombre_completo y estado_usuario
+    @Mapping(target = "objUsuario.idUsuario", source = "objUsuario.id_usuario")
+    @Mapping(target = "objUsuario.nombreCompleto", source = "objUsuario.nombre_completo")
+    @Mapping(target = "objUsuario.estadoUsuario", source = "objUsuario.estado_usuario")
     SolicitudHomologacion mapearDeSolicitudHomologacionDTOPeticionASolicitudHomologacion(SolicitudHomologacionDTOPeticion peticion);
 
     // Dominio → DTO Respuesta
@@ -36,5 +40,4 @@ public interface SolicitudHomologacionMapperDominio {
     SolicitudHomologacionDTORespuesta mapearDeSolicitudHomologacionASolicitudHomologacionDTORespuesta(SolicitudHomologacion solicitudHomologacion);
 
     List<SolicitudHomologacionDTORespuesta> mapearListaDeSolicitudHomologacionARespuesta(List<SolicitudHomologacion> solicitudes);
-
 }

@@ -109,7 +109,7 @@ public class ArchivosRestController {
             String nombreSinExtension = nombreOriginal.substring(0, nombreOriginal.lastIndexOf('.'));
             String extension = nombreOriginal.substring(nombreOriginal.lastIndexOf('.'));
             String nombreEstudiante = inscripcion != null && inscripcion.getObjUsuario() != null
-                ? inscripcion.getObjUsuario().getNombre_completo() : null;
+                ? inscripcion.getObjUsuario().getNombreCompleto() : null;
             nombreUnico = nombreEstudiante != null && !nombreEstudiante.trim().isEmpty()
                 ? nombreSinExtension + "_" + nombreEstudiante.replaceAll("[^a-zA-Z0-9]", "_") + "_"
                     + inscripcionIdTexto + extension

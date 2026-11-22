@@ -60,9 +60,9 @@ public class GestionarNotificacionGatewayImplAdapter implements GestionarNotific
             entity.setUrlAccion(notificacion.getUrlAccion());
             
             // Mapear relaciones - cargar entidades desde la base de datos
-            if (notificacion.getObjUsuario() != null && notificacion.getObjUsuario().getId_usuario() != null) {
-                UsuarioEntity usuarioEntity = usuarioRepository.findById(notificacion.getObjUsuario().getId_usuario())
-                        .orElseThrow(() -> new RuntimeException("Usuario no encontrado con ID: " + notificacion.getObjUsuario().getId_usuario()));
+            if (notificacion.getObjUsuario() != null && notificacion.getObjUsuario().getIdUsuario() != null) {
+                UsuarioEntity usuarioEntity = usuarioRepository.findById(notificacion.getObjUsuario().getIdUsuario())
+                        .orElseThrow(() -> new RuntimeException("Usuario no encontrado con ID: " + notificacion.getObjUsuario().getIdUsuario()));
                 entity.setObjUsuario(usuarioEntity);
             }
             

@@ -73,10 +73,10 @@ public class GestionarSolicitudCursoVeranoCUAdapter implements GestionarSolicitu
         if (solicitudCursoVerano.getObjUsuario() == null) {
             throw new ReglaNegocioExcepcion("La solicitud de preinscripción no puede ser nula");
         }
-        if (solicitudCursoVerano.getObjUsuario().getId_usuario() == null) {
+        if (solicitudCursoVerano.getObjUsuario().getIdUsuario() == null) {
             throw new ReglaNegocioExcepcion("El usuario de la solicitud no puede ser nulo");
         }
-        usuarioBuscar = this.usuarioGateway.obtenerUsuarioPorId(solicitudCursoVerano.getObjUsuario().getId_usuario());
+        usuarioBuscar = this.usuarioGateway.obtenerUsuarioPorId(solicitudCursoVerano.getObjUsuario().getIdUsuario());
         if (usuarioBuscar == null) {
             throw new EntidadNoExisteException("Usuario no encontrado");
         }
@@ -111,7 +111,7 @@ public class GestionarSolicitudCursoVeranoCUAdapter implements GestionarSolicitu
         // ya que es una solicitud de apertura de curso
         if (solicitudCursoVerano.getObjCursoOfertadoVerano().getId_curso() != 0) {
         preinscripcionBuscar = this.gestionarSolicitudGateway.buscarSolicitudesPorUsuarioYCursoPre(
-            usuarioBuscar.getId_usuario(), cursoABuscar.getId_curso()
+            usuarioBuscar.getIdUsuario(), cursoABuscar.getId_curso()
         );
 
         if (preinscripcionBuscar != null) {
@@ -149,10 +149,10 @@ public class GestionarSolicitudCursoVeranoCUAdapter implements GestionarSolicitu
         if (solicitudCursoVerano.getObjUsuario() == null) {
             throw new ReglaNegocioExcepcion("El usuario de la solicitud no puede ser nulo");
         }
-        if (solicitudCursoVerano.getObjUsuario().getId_usuario() == null) {
+        if (solicitudCursoVerano.getObjUsuario().getIdUsuario() == null) {
             throw new ReglaNegocioExcepcion("El usuario de la solicitud no puede ser nulo");
         }
-        usuarioBuscar = this.usuarioGateway.obtenerUsuarioPorId(solicitudCursoVerano.getObjUsuario().getId_usuario());
+        usuarioBuscar = this.usuarioGateway.obtenerUsuarioPorId(solicitudCursoVerano.getObjUsuario().getIdUsuario());
         if (usuarioBuscar == null) {
             throw new EntidadNoExisteException("Usuario no encontrado");
         }
@@ -177,7 +177,7 @@ public class GestionarSolicitudCursoVeranoCUAdapter implements GestionarSolicitu
 
         // Verificar que el estudiante tenga una preinscripción aprobada
         preinscripcionBuscar = this.gestionarSolicitudGateway.buscarSolicitudesPorUsuarioYCursoPre(
-            usuarioBuscar.getId_usuario(), cursoABuscar.getId_curso()
+            usuarioBuscar.getIdUsuario(), cursoABuscar.getId_curso()
         );
 
         if (preinscripcionBuscar == null) {
@@ -190,7 +190,7 @@ public class GestionarSolicitudCursoVeranoCUAdapter implements GestionarSolicitu
         }
 
         // No puede tener otra inscripción activa (una con pago rechazado no cuenta)
-        if (tieneInscripcionActiva(usuarioBuscar.getId_usuario(), cursoABuscar.getId_curso())) {
+        if (tieneInscripcionActiva(usuarioBuscar.getIdUsuario(), cursoABuscar.getId_curso())) {
             throw new ReglaNegocioExcepcion("Ya tiene una inscripción activa para este curso");
         }
 
@@ -204,7 +204,7 @@ public class GestionarSolicitudCursoVeranoCUAdapter implements GestionarSolicitu
         solicitudGuardada = this.gestionarSolicitudGateway.crearSolicitudCursoVeranoInscripcion(solicitudCursoVerano);
 
         // Mover a la carpeta de la solicitud y asociar los documentos que este estudiante subió antes de enviarla
-        asociadorDocumentos.asociar(solicitudGuardada, usuarioBuscar.getId_usuario(), "curso-verano");
+        asociadorDocumentos.asociar(solicitudGuardada, usuarioBuscar.getIdUsuario(), "curso-verano");
 
         // Crear notificación automática para el estudiante
         try {
@@ -262,7 +262,7 @@ public class GestionarSolicitudCursoVeranoCUAdapter implements GestionarSolicitu
         Map<Integer, SolicitudCursoVeranoInscripcion> primeraInscripcionPorUsuario = new HashMap<>();
         for (var inscripcion : inscripciones) {
             if (inscripcion.getObjUsuario() != null) {
-                primeraInscripcionPorUsuario.putIfAbsent(inscripcion.getObjUsuario().getId_usuario(), inscripcion);
+                primeraInscripcionPorUsuario.putIfAbsent(inscripcion.getObjUsuario().getIdUsuario(), inscripcion);
             }
         }
 
@@ -274,8 +274,8 @@ public class GestionarSolicitudCursoVeranoCUAdapter implements GestionarSolicitu
                 continue;
             }
 
-            usuariosPreinscritos.add(usuario.getId_usuario());
-            var inscripcion = primeraInscripcionPorUsuario.get(usuario.getId_usuario());
+            usuariosPreinscritos.add(usuario.getIdUsuario());
+            var inscripcion = primeraInscripcionPorUsuario.get(usuario.getIdUsuario());
             String estadoInscripcion = inscripcion == null ? null : inscripcion.estadoActual();
             estudiantes.add(new EstudianteCurso(usuario, preinscripcion, inscripcion, estadoOEnviada(preinscripcion),
                     Objects.toString(estadoInscripcion, "Sin inscripción")));
@@ -284,12 +284,12 @@ public class GestionarSolicitudCursoVeranoCUAdapter implements GestionarSolicitu
 
         for (var inscripcion : inscripciones) {
             Usuario usuario = inscripcion.getObjUsuario();
-            if (usuario != null && !usuariosPreinscritos.contains(usuario.getId_usuario())) {
+            if (usuario != null && !usuariosPreinscritos.contains(usuario.getIdUsuario())) {
                 estudiantes.add(new EstudianteCurso(usuario, null, inscripcion, null, estadoOEnviada(inscripcion)));
             }
         }
 
-        estudiantes.sort(Comparator.comparing(estudiante -> Objects.toString(estudiante.usuario().getNombre_completo(), ""),
+        estudiantes.sort(Comparator.comparing(estudiante -> Objects.toString(estudiante.usuario().getNombreCompleto(), ""),
                 String.CASE_INSENSITIVE_ORDER));
         int totalInscritos = (int) estudiantes.stream().filter(EstudianteCurso::inscrito).count();
         return new ListadoEstudiantes(estudiantes, totalPreinscritos, totalInscritos);
@@ -508,7 +508,7 @@ public class GestionarSolicitudCursoVeranoCUAdapter implements GestionarSolicitu
         }
 
         return buscarSolicitudesPorUsuario(idUsuario).stream()
-                .filter(s -> s.getObjUsuario() != null && Objects.equals(idUsuario, s.getObjUsuario().getId_usuario()))
+                .filter(s -> s.getObjUsuario() != null && Objects.equals(idUsuario, s.getObjUsuario().getIdUsuario()))
                 .filter(s -> s.getObjCursoOfertadoVerano() != null
                         && Objects.equals(idCurso, s.getObjCursoOfertadoVerano().getId_curso()))
                 .filter(GestionarSolicitudCursoVeranoCUAdapter::preinscripcionAprobada)

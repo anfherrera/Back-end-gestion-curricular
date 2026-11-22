@@ -67,24 +67,24 @@ public class GestionarSolicitudPazYSalvoCUAdapter implements GestionarSolicitudP
             throw new ReglaNegocioExcepcion("La solicitud no puede ser nula");
         }
 
-        if (solicitud.getObjUsuario() == null || solicitud.getObjUsuario().getId_usuario() == null) {
+        if (solicitud.getObjUsuario() == null || solicitud.getObjUsuario().getIdUsuario() == null) {
             throw new ReglaNegocioExcepcion("El usuario no puede ser nulo o sin ID");
         }
 
-        Integer idUsuario = solicitud.getObjUsuario().getId_usuario();
+        Integer idUsuario = solicitud.getObjUsuario().getIdUsuario();
         Usuario usuario = usuarioGateway.obtenerUsuarioPorId(idUsuario);
         if (usuario == null) {
             throw new EntidadNoExisteException("Usuario no encontrado con ID: " + idUsuario);
         }
         // Si la solicitud solo trae el id del usuario (sin nombre), se completa con el de la base de datos;
         // el gateway arma el nombre de la solicitud con él
-        String nombre = solicitud.getObjUsuario().getNombre_completo();
+        String nombre = solicitud.getObjUsuario().getNombreCompleto();
         if (nombre == null || nombre.trim().isEmpty()) {
             solicitud.setObjUsuario(usuario);
         }
 
         // Un estudiante solo puede tener una solicitud de Paz y Salvo en trámite a la vez
-        boolean tieneSolicitudActiva = listarSolicitudesPorRol("ESTUDIANTE", usuario.getId_usuario()).stream()
+        boolean tieneSolicitudActiva = listarSolicitudesPorRol("ESTUDIANTE", usuario.getIdUsuario()).stream()
                 .anyMatch(s -> !TransicionEstadoPazYSalvo.esFinal(ultimoEstado(s)));
         if (tieneSolicitudActiva) {
             throw new ReglaNegocioExcepcion(
@@ -103,7 +103,7 @@ public class GestionarSolicitudPazYSalvoCUAdapter implements GestionarSolicitudP
         SolicitudPazYSalvo solicitudGuardada = solicitudGateway.guardar(solicitud);
 
         // Mover a la carpeta de la solicitud y asociar los documentos que este estudiante subió antes de enviarla
-        asociadorDocumentos.asociar(solicitudGuardada, usuario.getId_usuario(), "pazysalvo");
+        asociadorDocumentos.asociar(solicitudGuardada, usuario.getIdUsuario(), "pazysalvo");
 
         // Estado inicial "Enviada": el gateway ya lo crea al guardar; solo se agrega si falta,
         // para no dejar dos estados iniciales.
@@ -242,10 +242,10 @@ public class GestionarSolicitudPazYSalvoCUAdapter implements GestionarSolicitudP
     public Optional<DatosDocumento> prepararDocumento(Integer id, String cedula, String titulo, String director,
                                                       boolean fechaLocal) {
         SolicitudPazYSalvo solicitud = buscarPorId(id);
-        if (solicitud.getObjUsuario() == null || solicitud.getObjUsuario().getId_usuario() == null) {
+        if (solicitud.getObjUsuario() == null || solicitud.getObjUsuario().getIdUsuario() == null) {
             return Optional.empty();
         }
-        Usuario usuario = usuarioGateway.obtenerUsuarioPorId(solicitud.getObjUsuario().getId_usuario());
+        Usuario usuario = usuarioGateway.obtenerUsuarioPorId(solicitud.getObjUsuario().getIdUsuario());
         if (usuario == null) {
             return Optional.empty();
         }
@@ -253,8 +253,8 @@ public class GestionarSolicitudPazYSalvoCUAdapter implements GestionarSolicitudP
         Object fecha = fechaLocal
                 ? (registro == null ? LocalDate.now() : registro.toInstant().atZone(ZoneId.systemDefault()).toLocalDate())
                 : registro;
-        return Optional.of(new DatosDocumento(solicitud.getObjUsuario().getNombre_completo(),
-                usuario.getNombre_completo(), usuario.getCodigo(),
+        return Optional.of(new DatosDocumento(solicitud.getObjUsuario().getNombreCompleto(),
+                usuario.getNombreCompleto(), usuario.getCodigo(),
                 usuario.getObjPrograma() == null ? "Ingeniería Electrónica y Telecomunicaciones"
                         : usuario.getObjPrograma().getNombrePrograma(),
                 fecha, primeroConTexto(cedula, usuario.getCedula(), "No especificada", false),

@@ -186,7 +186,7 @@ class SolicitudesVeranoReporteCaracterizacionTest {
             solicitud.getEstadosSolicitud().add(registro);
         }
         Usuario usuario = new Usuario();
-        usuario.setNombre_completo("Estudiante " + id);
+        usuario.setNombreCompleto("Estudiante " + id);
         usuario.setCodigo("1046" + id);
         solicitud.setObjUsuario(usuario);
         return solicitud;

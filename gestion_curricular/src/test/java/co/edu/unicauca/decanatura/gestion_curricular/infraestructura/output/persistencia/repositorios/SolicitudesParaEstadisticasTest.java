@@ -106,7 +106,7 @@ class SolicitudesParaEstadisticasTest {
         Solicitud h = porId.get(idHomologacion);
         assertThat(h).isInstanceOf(SolicitudHomologacion.class);
         assertThat(h.getPeriodo_academico()).isEqualTo("2025-1");
-        assertThat(h.getObjUsuario().getNombre_completo()).isEqualTo("Ana Prueba");
+        assertThat(h.getObjUsuario().getNombreCompleto()).isEqualTo("Ana Prueba");
         assertThat(h.getObjUsuario().getObjPrograma().getNombrePrograma()).isEqualTo("Programa prueba estadisticas");
         assertThat(h.getObjCursoOfertadoVerano()).isNull();
         assertThat(h.getEstadosSolicitud()).extracting(EstadoSolicitud::getEstado_actual).containsExactly("Enviada", "APROBADA");

@@ -145,9 +145,9 @@ public class InscripcionesVeranoRestController {
             String estado = inscripcion.estadoActual();
             var curso = inscripcion.getObjCursoOfertadoVerano();
             Usuario usuario = inscripcion.getObjUsuario();
-            Integer idUsuario = usuario == null ? null : usuario.getId_usuario();
+            Integer idUsuario = usuario == null ? null : usuario.getIdUsuario();
             var estudiante = new EstudianteInscripcion(idUsuario,
-                    usuario == null ? inscripcion.getNombre_estudiante() : usuario.getNombre_completo(),
+                    usuario == null ? inscripcion.getNombre_estudiante() : usuario.getNombreCompleto(),
                     usuario == null ? null : usuario.getCorreo(), usuario == null ? null : usuario.getCodigo());
 
             var documentos = inscripcion.getDocumentos();
@@ -239,8 +239,8 @@ public class InscripcionesVeranoRestController {
             // El comprobante es el primer documento de la inscripcion, como en GET /inscripciones; sin documentos, null
             List<Documento> documentos = inscripcion.getDocumentos();
             Documento comprobante = documentos == null || documentos.isEmpty() ? null : documentos.get(0);
-            estudiantesInscritos.add(new EstudianteElegible(usuario == null ? null : usuario.getId_usuario(),
-                    usuario == null ? inscripcion.getNombre_estudiante() : usuario.getNombre_completo(),
+            estudiantesInscritos.add(new EstudianteElegible(usuario == null ? null : usuario.getIdUsuario(),
+                    usuario == null ? inscripcion.getNombre_estudiante() : usuario.getNombreCompleto(),
                     usuario == null ? null : usuario.getCodigo(), usuario == null ? null : usuario.getCorreo(),
                     inscripcion.getId_solicitud(), inscripcion.getNombre_solicitud(),
                     inscripcion.getFecha_registro_solicitud(), inscripcion.getCodicion_solicitud(), idCursoInscrito,
@@ -297,7 +297,7 @@ public class InscripcionesVeranoRestController {
         // 3. Insertar en tabla cursosestudiantes (relacion Many-to-Many)
         try {
             Integer idCurso = inscripcion.getObjCursoOfertadoVerano().getId_curso();
-            Integer idEstudiante = inscripcion.getObjUsuario().getId_usuario();
+            Integer idEstudiante = inscripcion.getObjUsuario().getIdUsuario();
             if (!cursoCU.asociarEstudiante(idCurso, idEstudiante)) {
                 log.warn("No se pudo asociar el estudiante {} al curso {}", idEstudiante, idCurso);
             }
@@ -308,7 +308,7 @@ public class InscripcionesVeranoRestController {
 
         // 4. Preparar respuesta
         return ResponseEntity.ok(new InscripcionAceptada(true, "Inscripcion aceptada exitosamente",
-                inscripcionAceptada.getId_solicitud(), inscripcion.getObjUsuario().getNombre_completo(),
+                inscripcionAceptada.getId_solicitud(), inscripcion.getObjUsuario().getNombreCompleto(),
                 inscripcion.getObjCursoOfertadoVerano().getObjMateria().getNombre(), new Date(), observaciones));
     }
 
@@ -359,7 +359,7 @@ public class InscripcionesVeranoRestController {
 
         // 4. Preparar respuesta
         return ResponseEntity.ok(new InscripcionRechazadaPorFuncionario(true, "Inscripcion rechazada exitosamente",
-                inscripcionRechazada.getId_solicitud(), inscripcion.getObjUsuario().getNombre_completo(),
+                inscripcionRechazada.getId_solicitud(), inscripcion.getObjUsuario().getNombreCompleto(),
                 inscripcion.getObjCursoOfertadoVerano().getObjMateria().getNombre(), new Date(), motivo, nuevoEstado));
     }
 

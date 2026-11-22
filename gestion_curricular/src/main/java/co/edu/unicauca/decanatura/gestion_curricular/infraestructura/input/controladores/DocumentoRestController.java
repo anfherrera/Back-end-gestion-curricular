@@ -51,7 +51,7 @@ public class DocumentoRestController {
     @PreAuthorize("hasAnyRole(" + Autorizacion.ROLES_STAFF + ")")
     public ResponseEntity<Void> agregarComentario(@RequestBody ComentarioDocumentoDTOPeticion peticion) {
         Usuario usuario = autorizacion.usuarioActual();
-        String nombreUsuario = usuario != null ? usuario.getNombre_completo() : null;
+        String nombreUsuario = usuario != null ? usuario.getNombreCompleto() : null;
         String rolUsuario = usuario != null && usuario.getObjRol() != null ? usuario.getObjRol().getNombre() : null;
         Integer idDocumento = peticion.getIdDocumento();
         String comentarioNuevo = peticion.getComentario();

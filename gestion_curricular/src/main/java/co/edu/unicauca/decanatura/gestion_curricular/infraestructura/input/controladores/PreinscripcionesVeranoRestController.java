@@ -100,7 +100,7 @@ public class PreinscripcionesVeranoRestController {
             if (comentarioEstado != null && comentarioEstado.trim().isEmpty()) {
                 comentarioEstado = null;
             }
-            Integer estudianteId = preinscripcion.getObjUsuario().getId_usuario();
+            Integer estudianteId = preinscripcion.getObjUsuario().getIdUsuario();
 
             // Informacion del curso
             CursoId cursoId = null;
@@ -180,7 +180,7 @@ public class PreinscripcionesVeranoRestController {
             
             Usuario usuarioTemporal =
                 new Usuario();
-            usuarioTemporal.setId_usuario(peticion.getIdUsuario());
+            usuarioTemporal.setIdUsuario(peticion.getIdUsuario());
             solicitudDominio.setObjUsuario(usuarioTemporal);
 
             // Llamar al caso de uso
@@ -236,7 +236,7 @@ public class PreinscripcionesVeranoRestController {
         // Crear usuario
         Usuario usuario =
             new Usuario();
-        usuario.setId_usuario(peticion.getIdUsuario());
+        usuario.setIdUsuario(peticion.getIdUsuario());
         solicitudDominio.setObjUsuario(usuario);
 
         
@@ -300,7 +300,7 @@ public class PreinscripcionesVeranoRestController {
                 // Informacion del rol
                 RolEstudiante rol = usuario.getObjRol() == null ? null
                     : new RolEstudiante(usuario.getObjRol().getIdRol(), usuario.getObjRol().getNombre());
-                estudiante = new Estudiante(usuario.getId_usuario(), usuario.getNombre_completo(), usuario.getCorreo(),
+                estudiante = new Estudiante(usuario.getIdUsuario(), usuario.getNombreCompleto(), usuario.getCorreo(),
                     usuario.getCodigo(), preinscripcion.getCodigo_estudiante(), rol);
             }
 

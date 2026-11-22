@@ -64,10 +64,10 @@ public class GestionarSolicitudReingresoCUAdapter  implements GestionarSolicitud
             }
         }
 
-        if(solicitud.getObjUsuario() == null || solicitud.getObjUsuario().getId_usuario() == null){
+        if(solicitud.getObjUsuario() == null || solicitud.getObjUsuario().getIdUsuario() == null){
             throw new ReglaNegocioExcepcion("El usuario no puede ser nulo o no tener ID");
         }
-        Integer idUsuario = solicitud.getObjUsuario().getId_usuario();
+        Integer idUsuario = solicitud.getObjUsuario().getIdUsuario();
         Optional<Usuario> usuarioOpt = gestionarUsuarioGateway.buscarUsuarioPorId(idUsuario);
         if (usuarioOpt.isEmpty()) {
             throw new EntidadNoExisteException("Usuario ID: " + idUsuario + " no encontrado");

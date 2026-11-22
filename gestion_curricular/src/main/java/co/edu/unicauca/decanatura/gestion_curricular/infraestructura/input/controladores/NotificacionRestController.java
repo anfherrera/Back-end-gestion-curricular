@@ -192,7 +192,7 @@ public class NotificacionRestController {
         
         // Validar permisos: estudiantes solo pueden ver notificaciones de sus propias solicitudes
         if (!notificaciones.isEmpty()) {
-            Integer idUsuarioNotificacion = notificaciones.get(0).getObjUsuario().getId_usuario();
+            Integer idUsuarioNotificacion = notificaciones.get(0).getObjUsuario().getIdUsuario();
             if (!tienePermisoParaVerNotificaciones(idUsuarioNotificacion)) {
                 return new ResponseEntity<>(HttpStatus.FORBIDDEN);
             }
@@ -216,7 +216,7 @@ public class NotificacionRestController {
         }
         
         // Validar permisos: estudiantes solo pueden ver sus propias notificaciones
-        if (!tienePermisoParaVerNotificaciones(notificacion.getObjUsuario().getId_usuario())) {
+        if (!tienePermisoParaVerNotificaciones(notificacion.getObjUsuario().getIdUsuario())) {
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);
         }
         
@@ -235,7 +235,7 @@ public class NotificacionRestController {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
         
-        if (!tienePermisoParaVerNotificaciones(notificacion.getObjUsuario().getId_usuario())) {
+        if (!tienePermisoParaVerNotificaciones(notificacion.getObjUsuario().getIdUsuario())) {
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);
         }
         

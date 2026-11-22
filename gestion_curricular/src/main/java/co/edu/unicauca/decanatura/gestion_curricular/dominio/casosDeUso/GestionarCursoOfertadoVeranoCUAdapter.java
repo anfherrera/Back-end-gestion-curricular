@@ -113,7 +113,7 @@ public class GestionarCursoOfertadoVeranoCUAdapter implements GestionarCursoOfer
                         estadoSolicitud.setEstado_actual(EstadoSolicitudCursoVerano.APROBADO.texto());
                         solicitud = this.gestionarSolicitudGateway.actualizarSolicitud(solicitud, estadoSolicitud);
                         usuario = this.gestionarUsuarioGateway.buscarUsuarioPorSolicitud(solicitud.getId_solicitud());
-                        bandera = this.gestionarCursoOfertadoVeranoGateway.asociarUsuarioCurso(usuario.getId_usuario(), idCurso);
+                        bandera = this.gestionarCursoOfertadoVeranoGateway.asociarUsuarioCurso(usuario.getIdUsuario(), idCurso);
                         if(bandera == false){
                             throw new EntidadYaExisteException("No se pudo asociar el usuario al curso");
                         }
@@ -155,7 +155,7 @@ public class GestionarCursoOfertadoVeranoCUAdapter implements GestionarCursoOfer
                     usuario = this.gestionarUsuarioGateway.buscarUsuarioPorSolicitud(solicitud.getId_solicitud());
                     if(solicitudes.size() < cursoABuscar.getEstudiantesInscritos().size()){
                         for (Usuario usuarioViejo : estudiantesInscritos) {
-                            if (usuarioViejo.getId_usuario().equals(usuario.getId_usuario())) {
+                            if (usuarioViejo.getIdUsuario().equals(usuario.getIdUsuario())) {
                                 usuariosRemovidos.add(usuarioViejo);
                             }
                         }

@@ -26,6 +26,10 @@ public interface SolicitudReingresoMapperDominio {
     @Mapping(target = "objUsuario.objPrograma", ignore = true) // Propiedad no mapeada en Usuario
     @Mapping(target = "objUsuario.solicitudes", ignore = true) // Propiedad no mapeada en Usuario
     @Mapping(target = "objUsuario.cursosOfertadosInscritos", ignore = true) // Propiedad no mapeada en Usuario
+    // OPC-2: el JSON conserva id_usuario, nombre_completo y estado_usuario
+    @Mapping(target = "objUsuario.idUsuario", source = "objUsuario.id_usuario")
+    @Mapping(target = "objUsuario.nombreCompleto", source = "objUsuario.nombre_completo")
+    @Mapping(target = "objUsuario.estadoUsuario", source = "objUsuario.estado_usuario")
     SolicitudReingreso mapearDeSolicitudReingresoDTOPeticionASolicitudReingreso(SolicitudReingresoDTOPeticion peticion);
 
     @Mapping(target = "categoria", ignore = true)
@@ -33,5 +37,4 @@ public interface SolicitudReingresoMapperDominio {
     SolicitudReingresoDTORespuesta mapearDeSolicitudReingresoASolicitudReingresoDTORespuesta(SolicitudReingreso solicitud);
 
     List<SolicitudReingresoDTORespuesta> mapearDeListaSolicitudReingresoASolicitudReingresoDTORespuesta(List<SolicitudReingreso> solicitudes);
-
 }

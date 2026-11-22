@@ -74,12 +74,12 @@ public class UsuarioRestController {
             }
             
             Usuario usuario = new Usuario();
-            usuario.setNombre_completo(peticion.getNombre_completo());
+            usuario.setNombreCompleto(peticion.getNombre_completo());
             usuario.setCodigo(peticion.getCodigo());
             usuario.setCedula(peticion.getCedula());
             usuario.setCorreo(peticion.getCorreo());
             usuario.setPassword(peticion.getPassword());
-            usuario.setEstado_usuario(peticion.isEstado_usuario());
+            usuario.setEstadoUsuario(peticion.isEstado_usuario());
             
             // Crear objetos Rol y Programa con solo el ID
             if (peticion.getId_rol() == null) {
@@ -128,12 +128,12 @@ public class UsuarioRestController {
             + " and @autorizacion.puedeModificarUsuario(#peticion.id_usuario)")
     public ResponseEntity<UsuarioDTORespuesta> actualizarrUsuario(@RequestBody @Valid UsuarioDTOPeticion peticion) {
         Usuario usuario = new Usuario();
-        usuario.setId_usuario(peticion.getId_usuario());
-        usuario.setNombre_completo(peticion.getNombre_completo());
+        usuario.setIdUsuario(peticion.getId_usuario());
+        usuario.setNombreCompleto(peticion.getNombre_completo());
         usuario.setCodigo(peticion.getCodigo());
         usuario.setCedula(peticion.getCedula());
         usuario.setCorreo(peticion.getCorreo());
-        usuario.setEstado_usuario(peticion.isEstado_usuario());
+        usuario.setEstadoUsuario(peticion.isEstado_usuario());
         
         // Solo actualizar password si se proporciona
         if (peticion.getPassword() != null && !peticion.getPassword().trim().isEmpty()) {
@@ -211,7 +211,7 @@ public class UsuarioRestController {
         }
         
         // Cambiar el estado (toggle)
-        usuario.setEstado_usuario(!usuario.isEstado_usuario());
+        usuario.setEstadoUsuario(!usuario.isEstadoUsuario());
         
         Usuario usuarioActualizado = usuarioCUIntPort.actualizarUsuario(usuario);
         return new ResponseEntity<>(

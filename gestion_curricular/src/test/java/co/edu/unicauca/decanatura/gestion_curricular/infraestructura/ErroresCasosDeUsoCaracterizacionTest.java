@@ -448,7 +448,7 @@ class ErroresCasosDeUsoCaracterizacionTest {
         var rol = new Rol();
         rol.setIdRol(idRol);
         var usuario = new Usuario();
-        usuario.setId_usuario(id);
+        usuario.setIdUsuario(id);
         usuario.setCodigo("104");
         usuario.setCedula("123");
         usuario.setCorreo("ana@unicauca.edu.co");
@@ -584,7 +584,7 @@ class ErroresCasosDeUsoCaracterizacionTest {
         solicitud.setId_solicitud(id);
         if (idUsuario != null) {
             var usuario = new Usuario();
-            usuario.setId_usuario(idUsuario);
+            usuario.setIdUsuario(idUsuario);
             solicitud.setObjUsuario(usuario);
         }
         return solicitud;

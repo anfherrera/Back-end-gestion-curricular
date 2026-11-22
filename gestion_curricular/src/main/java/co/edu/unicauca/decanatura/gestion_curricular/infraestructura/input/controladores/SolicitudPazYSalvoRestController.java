@@ -130,7 +130,7 @@ public class SolicitudPazYSalvoRestController {
     private SolicitudPazYSalvo construirSolicitudBasica(CrearSolicitudPazYSalvoDTOPeticion peticion) {
         // Solo el id: el caso de uso comprueba que exista y carga el usuario completo
         Usuario usuario = new Usuario();
-        usuario.setId_usuario(Integer.valueOf(peticion.getIdUsuario().trim()));
+        usuario.setIdUsuario(Integer.valueOf(peticion.getIdUsuario().trim()));
         SolicitudPazYSalvo solicitud = new SolicitudPazYSalvo();
         solicitud.setObjUsuario(usuario);
         // La fecha de registro y el nombre los pone el gateway al guardar (BUG-11)

@@ -73,7 +73,7 @@ public Usuario crearUsuario(Usuario usuario) {
     objRol.getUsuarios().add(usuario);
     usuario.setObjRol(objRol);
     usuario.setObjPrograma(programa);
-    usuario.setId_usuario(null);
+    usuario.setIdUsuario(null);
 
     return this.gestionarUsuarioGateway.crearUsuario(usuario);
 }
@@ -87,12 +87,12 @@ public Usuario crearUsuario(Usuario usuario) {
             throw new ReglaNegocioExcepcion("El usuario no puede ser nulo.");
         }
 
-        if(usuario.getId_usuario() == null) {
+        if(usuario.getIdUsuario() == null) {
             throw new ReglaNegocioExcepcion("El ID del usuario no puede ser nulo.");
 
         }
 
-        Usuario existente = this.gestionarUsuarioGateway.obtenerUsuarioPorId(usuario.getId_usuario());
+        Usuario existente = this.gestionarUsuarioGateway.obtenerUsuarioPorId(usuario.getIdUsuario());
         if (existente == null) {
             throw new EntidadNoExisteException("No se encontró el usuario a actualizar.");
         }
@@ -129,7 +129,7 @@ public Usuario crearUsuario(Usuario usuario) {
         // Validar unicidad de cédula si se proporciona y es diferente a la existente
         if (usuario.getCedula() != null && !usuario.getCedula().trim().isEmpty()) {
             Usuario usuarioExistenteCedula = gestionarUsuarioGateway.buscarUsuarioPorCedula(usuario.getCedula());
-            if (usuarioExistenteCedula != null && !usuarioExistenteCedula.getId_usuario().equals(usuario.getId_usuario())) {
+            if (usuarioExistenteCedula != null && !usuarioExistenteCedula.getIdUsuario().equals(usuario.getIdUsuario())) {
                 throw new EntidadYaExisteException("Ya existe otro usuario con esa cédula.");
             }
         }

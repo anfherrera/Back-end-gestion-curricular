@@ -225,7 +225,7 @@ class ReingresoUnidadTest {
         // Arrange
         SolicitudReingreso solicitud1 = new SolicitudReingreso();
         Usuario usuario1 = new Usuario();
-        usuario1.setId_usuario(1);
+        usuario1.setIdUsuario(1);
         solicitud1.setObjUsuario(usuario1);
         // El filtro por usuario lo hace la base de datos
         when(solicitudGateway.listarPorUsuario(1, null)).thenReturn(List.of(solicitud1));
@@ -236,7 +236,7 @@ class ReingresoUnidadTest {
         // Assert
         assertThat(resultado).isNotNull();
         assertThat(resultado).hasSize(1);
-        assertThat(resultado.get(0).getObjUsuario().getId_usuario()).isEqualTo(1);
+        assertThat(resultado.get(0).getObjUsuario().getIdUsuario()).isEqualTo(1);
     }
 
     // ==================== PRUEBAS DE MANEJO DE EXCEPCIONES ====================

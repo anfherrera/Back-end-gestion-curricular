@@ -105,8 +105,8 @@ public class GestionarUsuarioGatewayImplAdapter implements GestionarUsuarioGatew
     @Override
     @Transactional
     public Usuario actualizarUsuario(Usuario usuario) {
-        usuarioRepository.findById(usuario.getId_usuario())
-                .orElseThrow(() -> new RuntimeException("Usuario no encontrado con ID: " + usuario.getId_usuario()));
+        usuarioRepository.findById(usuario.getIdUsuario())
+                .orElseThrow(() -> new RuntimeException("Usuario no encontrado con ID: " + usuario.getIdUsuario()));
 
         UsuarioEntity entity = UsuarioMapperPersistencia.aEntidad(usuario);
         UsuarioEntity updated = usuarioRepository.save(entity);

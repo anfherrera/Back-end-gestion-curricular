@@ -71,10 +71,10 @@ public class DataInitializer implements CommandLineRunner {
         Usuario admin = new Usuario();
         admin.setCodigo("ADMIN001");
         admin.setCedula(cedulaAdministrador);
-        admin.setNombre_completo("Administrador del Sistema");
+        admin.setNombreCompleto("Administrador del Sistema");
         admin.setCorreo(CORREO_ADMINISTRADOR);
         admin.setPassword(passwordAdministrador); // el caso de uso la guarda con BCrypt
-        admin.setEstado_usuario(true);
+        admin.setEstadoUsuario(true);
         admin.setObjRol(rolAdmin);
         admin.setObjPrograma(programa);
 

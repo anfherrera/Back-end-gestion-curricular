@@ -296,7 +296,7 @@ class EstadisticasUnidadTest {
     /** Solicitud de un estudiante del programa indicado; su fecha de registro es la del primer estado. */
     private static Solicitud solicitud(Solicitud solicitud, int idPrograma, EstadoSolicitud... estados) {
         Usuario usuario = new Usuario();
-        usuario.setId_usuario(idPrograma * 100);
+        usuario.setIdUsuario(idPrograma * 100);
         usuario.setObjPrograma(new Programa(idPrograma, "P" + idPrograma, "Programa " + idPrograma));
         solicitud.setObjUsuario(usuario);
         solicitud.setEstadosSolicitud(new ArrayList<>(Arrays.asList(estados)));

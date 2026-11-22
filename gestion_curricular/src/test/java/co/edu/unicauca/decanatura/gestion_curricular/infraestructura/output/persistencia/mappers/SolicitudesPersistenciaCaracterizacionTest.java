@@ -286,7 +286,7 @@ class SolicitudesPersistenciaCaracterizacionTest {
 
     private static Usuario usuarioConId(int id) {
         Usuario usuario = new Usuario();
-        usuario.setId_usuario(id);
+        usuario.setIdUsuario(id);
         return usuario;
     }
 

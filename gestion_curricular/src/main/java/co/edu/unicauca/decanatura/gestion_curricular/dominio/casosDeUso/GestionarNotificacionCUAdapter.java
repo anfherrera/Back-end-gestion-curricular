@@ -36,7 +36,7 @@ public class GestionarNotificacionCUAdapter implements GestionarNotificacionCUIn
         if (notificacion == null) {
             throw new IllegalArgumentException("La notificación no puede ser nula.");
         }
-        if (notificacion.getObjUsuario() == null || notificacion.getObjUsuario().getId_usuario() == null) {
+        if (notificacion.getObjUsuario() == null || notificacion.getObjUsuario().getIdUsuario() == null) {
             throw new IllegalArgumentException("La notificación debe tener un usuario asociado.");
         }
         if (notificacion.getFechaCreacion() == null) {
@@ -125,7 +125,7 @@ public class GestionarNotificacionCUAdapter implements GestionarNotificacionCUIn
                 return;
             }
             
-            if (solicitud.getObjUsuario() == null || solicitud.getObjUsuario().getId_usuario() == null) {
+            if (solicitud.getObjUsuario() == null || solicitud.getObjUsuario().getIdUsuario() == null) {
                 log.error("Error: Usuario es nulo o sin ID al intentar crear notificación. Solicitud ID: {}", solicitud.getId_solicitud());
                 return;
             }
@@ -179,8 +179,8 @@ public class GestionarNotificacionCUAdapter implements GestionarNotificacionCUIn
             notificacion.setTipoSolicitud(tipoSolicitud);
             notificacion.setTipoNotificacion("NUEVA_SOLICITUD");
             
-            String nombreEstudiante = solicitud.getObjUsuario() != null && solicitud.getObjUsuario().getNombre_completo() != null
-                    ? solicitud.getObjUsuario().getNombre_completo()
+            String nombreEstudiante = solicitud.getObjUsuario() != null && solicitud.getObjUsuario().getNombreCompleto() != null
+                    ? solicitud.getObjUsuario().getNombreCompleto()
                     : "Estudiante";
             
             // Personalizar título y mensaje según el rol
@@ -221,7 +221,7 @@ public class GestionarNotificacionCUAdapter implements GestionarNotificacionCUIn
 
             crearNotificacion(notificacion);
         } catch (Exception e) {
-            log.error("Error al crear notificación para {} ID {}: {}", tipoRol, funcionario.getId_usuario(), e.getMessage(), e);
+            log.error("Error al crear notificación para {} ID {}: {}", tipoRol, funcionario.getIdUsuario(), e.getMessage(), e);
         }
     }
 

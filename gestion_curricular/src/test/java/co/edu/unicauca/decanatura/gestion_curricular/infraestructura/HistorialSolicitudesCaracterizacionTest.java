@@ -196,8 +196,8 @@ class HistorialSolicitudesCaracterizacionTest {
         Solicitud paz = solicitud(SolicitudPazYSalvo::new, 1, "Solicitud de Paz y Salvo");
         paz.setPeriodo_academico("2024-1");
         Usuario usuario = new Usuario();
-        usuario.setId_usuario(7);
-        usuario.setNombre_completo("María Fernanda Ortiz Castellanos");
+        usuario.setIdUsuario(7);
+        usuario.setNombreCompleto("María Fernanda Ortiz Castellanos");
         Programa programa = new Programa();
         programa.setIdPrograma(2);
         programa.setNombrePrograma("Ingeniería Electrónica y Telecomunicaciones");
@@ -221,7 +221,7 @@ class HistorialSolicitudesCaracterizacionTest {
         Solicitud usuarioSinPrograma = solicitud(Solicitud::new, 13,
             "Solicitud con un nombre bastante largo que supera los cuarenta caracteres raro");
         Usuario sinPrograma = new Usuario();
-        sinPrograma.setNombre_completo("Ana");
+        sinPrograma.setNombreCompleto("Ana");
         usuarioSinPrograma.setObjUsuario(sinPrograma);
         lista.add(usuarioSinPrograma);
         return lista;

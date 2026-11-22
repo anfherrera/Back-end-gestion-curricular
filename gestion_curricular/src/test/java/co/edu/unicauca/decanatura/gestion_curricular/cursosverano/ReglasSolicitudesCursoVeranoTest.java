@@ -58,7 +58,7 @@ class ReglasSolicitudesCursoVeranoTest {
                 mock(GestionarArchivosCUIntPort.class), mock(GestionarNotificacionCUIntPort.class));
 
         Usuario usuario = new Usuario();
-        usuario.setId_usuario(ID_USUARIO);
+        usuario.setIdUsuario(ID_USUARIO);
         usuario.setSolicitudes(new ArrayList<>());
         when(usuarios.obtenerUsuarioPorId(ID_USUARIO)).thenReturn(usuario);
         when(solicitudes.buscarInscripcionesPorUsuarioYCurso(ID_USUARIO, ID_CURSO)).thenReturn(List.of());
@@ -176,7 +176,7 @@ class ReglasSolicitudesCursoVeranoTest {
 
     private static Usuario usuarioRef() {
         Usuario u = new Usuario();
-        u.setId_usuario(ID_USUARIO);
+        u.setIdUsuario(ID_USUARIO);
         return u;
     }
 

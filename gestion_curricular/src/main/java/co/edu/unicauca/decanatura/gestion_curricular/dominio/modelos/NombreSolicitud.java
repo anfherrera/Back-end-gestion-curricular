@@ -27,6 +27,6 @@ public final class NombreSolicitud {
 
     /** Nombre del usuario, o null si no hay usuario. */
     public static String nombreDe(Usuario usuario) {
-        return usuario != null ? usuario.getNombre_completo() : null;
+        return usuario != null ? usuario.getNombreCompleto() : null;
     }
 }

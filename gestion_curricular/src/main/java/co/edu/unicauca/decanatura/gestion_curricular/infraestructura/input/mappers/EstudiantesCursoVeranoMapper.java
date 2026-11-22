@@ -23,7 +23,7 @@ public final class EstudiantesCursoVeranoMapper {
         var programa = usuario.getObjPrograma();
         var condicion = preinscripcion != null ? preinscripcion.getCodicion_solicitud() : inscripcion.getCodicion_solicitud();
 
-        return new Estudiante(usuario.getId_usuario(), usuario.getNombre_completo(), usuario.getCodigo(), usuario.getCorreo(),
+        return new Estudiante(usuario.getIdUsuario(), usuario.getNombreCompleto(), usuario.getCodigo(), usuario.getCorreo(),
                 estudiante.estadoPreinscripcion(), estudiante.estadoInscripcion(),
                 inscripcion == null ? null : inscripcion.getId_solicitud(), estudiante.inscrito() ? "Inscrito" : "Preinscrito",
                 condicion == null ? null : condicion.toString(),

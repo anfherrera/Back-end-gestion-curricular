@@ -248,8 +248,8 @@ class PreinscripcionesVeranoRespuestasCaracterizacionTest {
 
     private static Usuario usuario(boolean conRol) {
         Usuario usuario = new Usuario();
-        usuario.setId_usuario(7);
-        usuario.setNombre_completo("Ana Ruiz");
+        usuario.setIdUsuario(7);
+        usuario.setNombreCompleto("Ana Ruiz");
         usuario.setCorreo("ana@unicauca.edu.co");
         usuario.setCodigo("1046");
         if (conRol) {

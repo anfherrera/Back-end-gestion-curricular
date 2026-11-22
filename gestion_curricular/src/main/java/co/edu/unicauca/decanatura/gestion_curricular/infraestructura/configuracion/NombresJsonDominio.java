@@ -25,6 +25,7 @@ import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Notificacio
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Programa;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Rol;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Salon;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Usuario;
 
 /**
  * Nombres JSON históricos de los campos del dominio renombrados a camelCase (OPC-2).
@@ -53,6 +54,9 @@ public class NombresJsonDominio {
         historico(Salon.class, "idSalon", "id_salon");
         historico(Salon.class, "numeroSalon", "numero_salon");
         historico(Notificacion.class, "idNotificacion", "id_notificacion");
+        historico(Usuario.class, "idUsuario", "id_usuario");
+        historico(Usuario.class, "nombreCompleto", "nombre_completo");
+        historico(Usuario.class, "estadoUsuario", "estado_usuario");
     }
 
     private static void historico(Class<?> clase, String campo, String nombre) {

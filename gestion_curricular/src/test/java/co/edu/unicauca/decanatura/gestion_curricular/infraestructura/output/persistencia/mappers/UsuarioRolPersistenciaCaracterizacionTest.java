@@ -103,7 +103,7 @@ class UsuarioRolPersistenciaCaracterizacionTest {
         casos.set("crearUsuario relaciones parciales", guardado(() -> gateway.crearUsuario(sinNombreRol)));
         casos.set("actualizarUsuario completo", guardado(() -> gateway.actualizarUsuario(usuarioCompleto(1))));
         Usuario sinRelacionesDominio = new Usuario();
-        sinRelacionesDominio.setId_usuario(2);
+        sinRelacionesDominio.setIdUsuario(2);
         sinRelacionesDominio.setSolicitudes(null);
         sinRelacionesDominio.setCursosOfertadosInscritos(null);
         sinRelacionesDominio.setObjRol(new Rol(null, "SIN_ID", null));
@@ -195,13 +195,13 @@ class UsuarioRolPersistenciaCaracterizacionTest {
 
     private static Usuario usuarioCompleto(Integer id) {
         Usuario usuario = new Usuario();
-        usuario.setId_usuario(id);
-        usuario.setNombre_completo("Ana Pérez");
+        usuario.setIdUsuario(id);
+        usuario.setNombreCompleto("Ana Pérez");
         usuario.setCodigo("104");
         usuario.setCedula(" 123 ");
         usuario.setCorreo("ana@unicauca.edu.co");
         usuario.setPassword("$2a$hash");
-        usuario.setEstado_usuario(true);
+        usuario.setEstadoUsuario(true);
         Rol rol = new Rol(1, "ESTUDIANTE", null);
         usuario.setObjRol(rol);
         usuario.setObjPrograma(new Programa(1, "SIS", "Ingeniería de Sistemas"));

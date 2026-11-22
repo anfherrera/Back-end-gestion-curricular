@@ -176,8 +176,8 @@ class CursosVeranoEndpointsCaracterizacionTest {
         materia.setNombre("Materia de prueba");
         curso.setObjMateria(materia);
         Usuario usuario = new Usuario();
-        usuario.setId_usuario(81);
-        usuario.setNombre_completo("Ana Pérez");
+        usuario.setIdUsuario(81);
+        usuario.setNombreCompleto("Ana Pérez");
         usuario.setCodigo("1046");
         usuario.setCorreo("ana@unicauca.edu.co");
         SolicitudCursoVeranoPreinscripcion pre = new SolicitudCursoVeranoPreinscripcion();

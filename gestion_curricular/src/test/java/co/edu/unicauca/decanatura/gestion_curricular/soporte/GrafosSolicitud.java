@@ -182,13 +182,13 @@ public final class GrafosSolicitud {
     public static Usuario usuario() {
         Rol rol = new Rol(1, "ESTUDIANTE", new ArrayList<>());
         Usuario usuario = new Usuario();
-        usuario.setId_usuario(1);
-        usuario.setNombre_completo("Ana Pérez");
+        usuario.setIdUsuario(1);
+        usuario.setNombreCompleto("Ana Pérez");
         usuario.setCodigo("104");
         usuario.setCedula("123");
         usuario.setCorreo("ana@unicauca.edu.co");
         usuario.setPassword("$2a$hash");
-        usuario.setEstado_usuario(true);
+        usuario.setEstadoUsuario(true);
         usuario.setObjRol(rol);
         usuario.setObjPrograma(new Programa(1, "SIS", "Ingeniería de Sistemas"));
         rol.getUsuarios().add(usuario);

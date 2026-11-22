@@ -28,13 +28,13 @@ public final class UsuarioMapperPersistencia {
     public static Usuario aDominio(UsuarioEntity entidad) {
         Origen.exigir(entidad);
         Usuario usuario = new Usuario();
-        usuario.setId_usuario(entidad.getId_usuario());
-        usuario.setNombre_completo(entidad.getNombre_completo());
+        usuario.setIdUsuario(entidad.getId_usuario());
+        usuario.setNombreCompleto(entidad.getNombre_completo());
         usuario.setCodigo(entidad.getCodigo());
         usuario.setCedula(entidad.getCedula());
         usuario.setCorreo(entidad.getCorreo());
         usuario.setPassword(entidad.getPassword());
-        usuario.setEstado_usuario(entidad.isEstado_usuario());
+        usuario.setEstadoUsuario(entidad.isEstado_usuario());
         RolEntity rol = entidad.getObjRol();
         if (rol != null) {
             usuario.setObjRol(new Rol(rol.getId_rol(), rol.getNombre(), null));
@@ -74,13 +74,13 @@ public final class UsuarioMapperPersistencia {
 
     private static UsuarioEntity aEntidad(Usuario usuario, Map<Object, Object> mapeados) {
         UsuarioEntity entidad = new UsuarioEntity();
-        entidad.setId_usuario(usuario.getId_usuario());
-        entidad.setNombre_completo(usuario.getNombre_completo());
+        entidad.setId_usuario(usuario.getIdUsuario());
+        entidad.setNombre_completo(usuario.getNombreCompleto());
         entidad.setCodigo(usuario.getCodigo());
         entidad.setCedula(usuario.getCedula());
         entidad.setCorreo(usuario.getCorreo());
         entidad.setPassword(usuario.getPassword());
-        entidad.setEstado_usuario(usuario.isEstado_usuario());
+        entidad.setEstado_usuario(usuario.isEstadoUsuario());
         Rol rol = usuario.getObjRol();
         if (rol != null) {
             if (rol.getIdRol() != null) {

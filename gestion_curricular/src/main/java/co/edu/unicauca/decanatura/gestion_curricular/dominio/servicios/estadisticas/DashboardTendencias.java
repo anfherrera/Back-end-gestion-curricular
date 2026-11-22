@@ -52,9 +52,9 @@ public class DashboardTendencias {
             String mes = mesDeRegistro(solicitud);
             if (mes != null) {
                 solicitudesPorMes.merge(mes, 1, Integer::sum);
-                if (solicitud.getObjUsuario() != null && solicitud.getObjUsuario().getId_usuario() != null) {
+                if (solicitud.getObjUsuario() != null && solicitud.getObjUsuario().getIdUsuario() != null) {
                     estudiantesActivosPorMes.computeIfAbsent(mes, k -> new HashSet<>())
-                            .add(solicitud.getObjUsuario().getId_usuario());
+                            .add(solicitud.getObjUsuario().getIdUsuario());
                 }
             }
         }

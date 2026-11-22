@@ -20,6 +20,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.web.servlet.MockMvc;
 
+import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.configuracion.NombresJsonDominio;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarArchivosCUIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.soporte.SoporteMvc;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarSolicitudCUIntPort;
@@ -91,7 +92,8 @@ class SubirPdfArchivosCaracterizacionTest {
             new Caso("guardado falla", p("inscripcionId", "7"), true, true, "ok", "pdf", true)
         );
 
-        ObjectMapper json = new ObjectMapper();
+        // Vuelca objetos del dominio: con sus nombres JSON históricos (OPC-2)
+        ObjectMapper json = new ObjectMapper().registerModule(NombresJsonDominio.modulo());
         Map<String, Object> resultados = new LinkedHashMap<>();
         for (Caso c : casos) {
             resultados.put(c.nombre(), ejecutar(c, json));
@@ -199,8 +201,8 @@ class SubirPdfArchivosCaracterizacionTest {
 
     private static SolicitudCursoVeranoInscripcion inscripcion(int idSolicitud, String nombre) {
         var usuario = new Usuario();
-        usuario.setId_usuario(40);
-        usuario.setNombre_completo(nombre);
+        usuario.setIdUsuario(40);
+        usuario.setNombreCompleto(nombre);
         var s = new SolicitudCursoVeranoInscripcion();
         s.setId_solicitud(idSolicitud);
         s.setObjUsuario(usuario);

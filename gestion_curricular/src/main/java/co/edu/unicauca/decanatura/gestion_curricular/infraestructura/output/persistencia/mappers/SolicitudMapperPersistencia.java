@@ -348,11 +348,11 @@ public final class SolicitudMapperPersistencia {
          */
         static Usuario inscrito(UsuarioEntity entidad) {
             Usuario usuario = new Usuario();
-            usuario.setId_usuario(entidad.getId_usuario());
-            usuario.setNombre_completo(entidad.getNombre_completo());
+            usuario.setIdUsuario(entidad.getId_usuario());
+            usuario.setNombreCompleto(entidad.getNombre_completo());
             usuario.setCorreo(entidad.getCorreo());
             usuario.setCodigo(entidad.getCodigo());
-            usuario.setEstado_usuario(entidad.isEstado_usuario());
+            usuario.setEstadoUsuario(entidad.isEstado_usuario());
             usuario.setPassword(entidad.getPassword());
             if (entidad.getObjRol() != null) {
                 usuario.setObjRol(new Rol(entidad.getObjRol().getId_rol(), entidad.getObjRol().getNombre(), null));
@@ -604,11 +604,11 @@ public final class SolicitudMapperPersistencia {
         /** Inscrito como lo copiaba {@code mapperCurso}: sin cédula, rol, programa ni listas. */
         static UsuarioEntity inscrito(Usuario usuario) {
             UsuarioEntity entidad = new UsuarioEntity();
-            entidad.setId_usuario(usuario.getId_usuario());
-            entidad.setNombre_completo(usuario.getNombre_completo());
+            entidad.setId_usuario(usuario.getIdUsuario());
+            entidad.setNombre_completo(usuario.getNombreCompleto());
             entidad.setCorreo(usuario.getCorreo());
             entidad.setCodigo(usuario.getCodigo());
-            entidad.setEstado_usuario(usuario.isEstado_usuario());
+            entidad.setEstado_usuario(usuario.isEstadoUsuario());
             entidad.setPassword(usuario.getPassword());
             return entidad;
         }

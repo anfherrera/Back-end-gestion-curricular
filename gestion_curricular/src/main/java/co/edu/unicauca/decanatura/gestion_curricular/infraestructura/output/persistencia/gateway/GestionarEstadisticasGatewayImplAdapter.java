@@ -255,8 +255,8 @@ public class GestionarEstadisticasGatewayImplAdapter implements GestionarEstadis
 
         if (fila.idUsuario() != null) {
             Usuario usuario = new Usuario();
-            usuario.setId_usuario(fila.idUsuario());
-            usuario.setNombre_completo(fila.nombreUsuario());
+            usuario.setIdUsuario(fila.idUsuario());
+            usuario.setNombreCompleto(fila.nombreUsuario());
             if (fila.idPrograma() != null) {
                 usuario.setObjPrograma(new Programa(fila.idPrograma(), fila.codigoPrograma(), fila.nombrePrograma()));
             }
@@ -276,8 +276,8 @@ public class GestionarEstadisticasGatewayImplAdapter implements GestionarEstadis
 
     private static Usuario aDominio(UsuarioEntity entidad) {
         Usuario usuario = new Usuario();
-        usuario.setId_usuario(entidad.getId_usuario());
-        usuario.setNombre_completo(entidad.getNombre_completo());
+        usuario.setIdUsuario(entidad.getId_usuario());
+        usuario.setNombreCompleto(entidad.getNombre_completo());
         if (entidad.getObjPrograma() != null) {
             usuario.setObjPrograma(aDominio(entidad.getObjPrograma()));
         }

@@ -190,7 +190,7 @@ public class Autorizacion {
     /** Id del usuario autenticado o null si no hay sesión. */
     public Integer idUsuarioActual() {
         Usuario usuario = usuarioActual();
-        return usuario != null ? usuario.getId_usuario() : null;
+        return usuario != null ? usuario.getIdUsuario() : null;
     }
 
     private Authentication autenticacion() {

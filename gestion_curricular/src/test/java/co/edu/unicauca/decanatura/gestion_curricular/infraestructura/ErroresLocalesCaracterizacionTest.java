@@ -265,15 +265,15 @@ class ErroresLocalesCaracterizacionTest {
         when(m.usuario().crearUsuario(any())).thenAnswer(i -> {
             Usuario u = i.getArgument(0);
             if (u == null) return null;
-            u.setId_usuario(21);
+            u.setIdUsuario(21);
             return u;
         });
         when(m.usuarioMapper().mapearDeUsuarioAUsuarioDTORespuesta(any())).thenAnswer(i -> {
             Usuario u = i.getArgument(0);
             if (u == null) return null;
             var dto = new UsuarioDTORespuesta();
-            dto.setId_usuario(u.getId_usuario());
-            dto.setNombre_completo(u.getNombre_completo());
+            dto.setId_usuario(u.getIdUsuario());
+            dto.setNombre_completo(u.getNombreCompleto());
             return dto;
         });
     }
@@ -289,8 +289,8 @@ class ErroresLocalesCaracterizacionTest {
 
     private static Usuario usuario() {
         var usuario = new Usuario();
-        usuario.setId_usuario(5);
-        usuario.setNombre_completo("Ana Ruiz");
+        usuario.setIdUsuario(5);
+        usuario.setNombreCompleto("Ana Ruiz");
         usuario.setObjRol(new Rol());
         usuario.setObjPrograma(new Programa());
         return usuario;
