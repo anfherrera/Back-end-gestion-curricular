@@ -1,0 +1,11 @@
+{
+  "/CC/crearEcaes/body/url": "http://localhost/api/solicitudes-ecaes",
+  "/TI/crearEcaes/body/url": "http://localhost/api/solicitudes-ecaes",
+  "/CE/crearEcaes/body/url": "http://localhost/api/solicitudes-ecaes",
+  "/PA/crearEcaes/body/url": "http://localhost/api/solicitudes-ecaes",
+  "/RC/crearEcaes/body/url": "http://localhost/api/solicitudes-ecaes",
+  "/NIT/crearEcaes/body/url": "http://localhost/api/solicitudes-ecaes",
+  "/NUIP/crearEcaes/body/url": "http://localhost/api/solicitudes-ecaes",
+  "/cc/crearEcaes/body/url": "http://localhost/api/solicitudes-ecaes",
+  "/XX/crearEcaes/body/url": "http://localhost/api/solicitudes-ecaes"
+}

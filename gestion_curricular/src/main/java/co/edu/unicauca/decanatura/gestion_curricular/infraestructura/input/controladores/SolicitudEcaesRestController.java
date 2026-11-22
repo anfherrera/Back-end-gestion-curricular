@@ -49,7 +49,7 @@ public class SolicitudEcaesRestController {
     private final ValidadorCambioEstado validadorCambioEstado;
 
     @PreAuthorize("hasAnyRole('Estudiante', 'Administrador')")
-    @PostMapping("/crearSolicitud-Ecaes")
+    @PostMapping
     public ResponseEntity<SolicitudEcaesDTORespuesta> crearSolicitud(@Valid @RequestBody SolicitudEcaesDTOPeticion peticion) {
         // El solicitante sale del token, no de lo que envía el cliente
         peticion.getObjUsuario().setId_usuario(autorizacion.idSolicitante(peticion.getObjUsuario().getId_usuario()));
@@ -60,16 +60,29 @@ public class SolicitudEcaesRestController {
         return respuesta;
     }
 
-    @GetMapping("/listarSolicitudes-Ecaes")
+    /** Sin filtros: todas las solicitudes (solo staff). */
+    @GetMapping(params = {"!rol", "!bandeja"})
     public ResponseEntity<List<SolicitudEcaesDTORespuesta>> listarSolicitudes() {
         List<SolicitudEcaes> solicitudes = solicitudEcaesCU.listarSolicitudes();
         List<SolicitudEcaesDTORespuesta> respuesta = solicitudMapperDominio.mapearListaDeSolicitudEcaesARespuesta(solicitudes);
         return ResponseEntity.ok(respuesta);
     }
 
-    @GetMapping("/listarSolicitudes-Ecaes/Funcionario")
+    /**
+     * Bandeja de pendientes del funcionario, en el período pedido o en el actual. Sigue la forma de Paz y Salvo
+     * (BUG-45): por ahora solo admite {@code rol=funcionario&bandeja=pendientes}.
+     */
+    @GetMapping(params = {"rol", "bandeja"})
     public ResponseEntity<List<SolicitudEcaesDTORespuesta>> listarSolicitudesToFuncionario(
+            @RequestParam String rol,
+            @RequestParam String bandeja,
             @RequestParam(required = false) String periodoAcademico) {
+        if (!"pendientes".equals(bandeja)) {
+            throw new IllegalArgumentException("Bandeja no válida: use pendientes");
+        }
+        if (!"funcionario".equals(rol)) {
+            throw new IllegalArgumentException("Rol no válido para la bandeja de pendientes: use funcionario");
+        }
         return responder(solicitudEcaesCU.listar(FiltroSolicitudes.pendientesDe(
                 FlujoEstadosSolicitud.FUNCIONARIO, null, PeriodoDeConsulta.oActual(periodoAcademico))));
     }
@@ -77,8 +90,14 @@ public class SolicitudEcaesRestController {
     private ResponseEntity<List<SolicitudEcaesDTORespuesta>> responder(List<SolicitudEcaes> solicitudes) {
         return ResponseEntity.ok(solicitudMapperDominio.mapearListaDeSolicitudEcaesARespuesta(solicitudes));
     }
+    /** Lo que no atiende ningún listado (por ejemplo, {@code bandeja} sin {@code rol}). Sin esto Spring daría 500. */
+    @GetMapping
+    public ResponseEntity<List<SolicitudEcaesDTORespuesta>> listarSinFiltroValido() {
+        throw new IllegalArgumentException("Filtro no válido: use rol, o rol=funcionario&bandeja=pendientes");
+    }
+
     @PreAuthorize("@autorizacion.esStaff() or @autorizacion.esDuenoSolicitud(#id)")
-    @GetMapping("/buscarSolicitud-Ecaes/{id}")
+    @GetMapping("/{id:\\d+}")
     public ResponseEntity<SolicitudEcaesDTORespuesta> obtenerPorId(@PathVariable Integer id) {
         SolicitudEcaes solicitud = solicitudEcaesCU.buscarPorId(id);
         SolicitudEcaesDTORespuesta respuesta = solicitudMapperDominio.mapearDeSolicitudEcaesARespuesta(solicitud);
@@ -86,7 +105,7 @@ public class SolicitudEcaesRestController {
     }
 
     @PreAuthorize("isAuthenticated()")
-    @GetMapping("/listarSolicitud-ecaes/porRol")
+    @GetMapping(params = {"rol", "!bandeja"})
     public ResponseEntity<List<SolicitudEcaesDTORespuesta>> listarSolicitudPorRol(
             @RequestParam String rol,
             @RequestParam(required = false) Integer idUsuario,
@@ -113,7 +132,7 @@ public class SolicitudEcaesRestController {
         return responder(solicitudEcaesCU.listarSolicitudesPorRol(rol, idUsuario));
     }
 
-    @PostMapping("/publicarFechasEcaes")
+    @PostMapping("/fechas")
     public ResponseEntity<FechaEcaesDTORespuesta> publicarFechasEcaes(@RequestBody FechasEcaesDTOPeticion fechasEcaes) {
         FechaEcaes fechaEcaes = solicitudMapperDominio.mapearDeFechasEcaesDTOPeticionAFechaEcaes(fechasEcaes);
         FechaEcaes fechaPublicada = solicitudEcaesCU.publicarFechasEcaes(fechaEcaes);
@@ -122,16 +141,18 @@ public class SolicitudEcaesRestController {
     }
 
     @PreAuthorize("isAuthenticated()")
-    @GetMapping("/listarFechasEcaes")
+    @GetMapping("/fechas")
     public ResponseEntity<List<FechaEcaesDTORespuesta>> listarFechasEcaes() {
         List<FechaEcaes> fechas = solicitudEcaesCU.listarFechasEcaes();
         List<FechaEcaesDTORespuesta> respuesta = solicitudMapperDominio.mapearListaDeFechaEcaesAFechaEcaesDTORespuesta(fechas);
         return ResponseEntity.ok(respuesta);
     }
 
-    
-    @PutMapping("/actualizarEstadoSolicitud")
-    public ResponseEntity<RechazoCambioEstadoDTORespuesta> actualizarEstadoSolicitud(@RequestBody CambioEstadoSolicitudDTOPeticion solicitudPeticion) {
+    /** La solicitud es la de la ruta: un {@code idSolicitud} en el cuerpo se ignora. */
+    @PutMapping("/{id:\\d+}/estado")
+    public ResponseEntity<RechazoCambioEstadoDTORespuesta> actualizarEstadoSolicitud(
+            @PathVariable Integer id, @RequestBody CambioEstadoSolicitudDTOPeticion solicitudPeticion) {
+        solicitudPeticion.setIdSolicitud(id);
         CambioEstadoSolicitud solicitud = solicitudMapper.mapearDeCambioEstadoSolicitudDTOPeticionACambioEstadoSolicitud(solicitudPeticion);
         // Solo el Funcionario (o el Administrador) pre-registra o rechaza
         String estadoActual = FlujoEstadosSolicitud.ultimoEstado(
@@ -146,7 +167,7 @@ public class SolicitudEcaesRestController {
     }
 
     @PreAuthorize("isAuthenticated()")
-    @GetMapping("/buscarFechasPorPeriodo/{periodoAcademico}")
+    @GetMapping("/fechas/{periodoAcademico:\\d{4}-\\d+}")
     public ResponseEntity<FechaEcaesDTORespuesta> buscarFechasPorPeriodo(@PathVariable String periodoAcademico) {
         Optional<FechaEcaes> fechas = solicitudEcaesCU.buscarFechasPorPeriodo(periodoAcademico);
         if (fechas.isPresent()) {
@@ -157,8 +178,11 @@ public class SolicitudEcaesRestController {
         }
     }
 
-    @PutMapping("/actualizarFechasEcaes")
-    public ResponseEntity<FechaEcaesDTORespuesta> actualizarFechasEcaes(@RequestBody FechasEcaesDTOPeticion fechasEcaes) {
+    /** Actualiza (o crea) las fechas del período de la ruta: un {@code periodoAcademico} en el cuerpo se ignora. */
+    @PutMapping("/fechas/{periodoAcademico:\\d{4}-\\d+}")
+    public ResponseEntity<FechaEcaesDTORespuesta> actualizarFechasEcaes(
+            @PathVariable String periodoAcademico, @RequestBody FechasEcaesDTOPeticion fechasEcaes) {
+        fechasEcaes.setPeriodoAcademico(periodoAcademico);
         FechaEcaes fechaEcaes = solicitudMapperDominio.mapearDeFechasEcaesDTOPeticionAFechaEcaes(fechasEcaes);
         FechaEcaes fechaActualizada = solicitudEcaesCU.actualizarFechasEcaes(fechaEcaes);
         FechaEcaesDTORespuesta respuesta = solicitudMapperDominio.mapearDeFechaEcaesAFechaEcaesDTORespuesta(fechaActualizada);

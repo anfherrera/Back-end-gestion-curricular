@@ -292,13 +292,21 @@ class ListadosPorRolCaracterizacionTest {
     @DisplayName("ECAES")
     void ecaes() throws Exception {
         String base = "/api/solicitudes-ecaes";
+        String bandeja = "?rol=funcionario&bandeja=pendientes";
+        Map<String, List<String>> nuevas = new LinkedHashMap<>();
+        consultar(nuevas, "E", STAFF_SIN_PROGRAMA, base);
+        consultar(nuevas, "E", STAFF_SIN_PROGRAMA, base + bandeja);
+        consultar(nuevas, "E", STAFF_SIN_PROGRAMA, base + bandeja + "&periodoAcademico=" + OTRO_PERIODO);
+        porRol(nuevas, "E", base);
+        consultar(nuevas, "E", COORDINADOR_A, base + "?rol=coordinador&periodoAcademico=" + OTRO_PERIODO);
+
+        // EST-7, paso 6: se piden las rutas nuevas y se conservan las claves de la referencia, que llevan las viejas
         Map<String, List<String>> r = new LinkedHashMap<>();
-        consultar(r, "E", STAFF_SIN_PROGRAMA, base + "/listarSolicitudes-Ecaes");
-        consultar(r, "E", STAFF_SIN_PROGRAMA, base + "/listarSolicitudes-Ecaes/Funcionario");
-        consultar(r, "E", STAFF_SIN_PROGRAMA, base + "/listarSolicitudes-Ecaes/Funcionario?periodoAcademico=" + OTRO_PERIODO);
-        String porRol = base + "/listarSolicitud-ecaes/porRol";
-        porRol(r, "E", porRol);
-        consultar(r, "E", COORDINADOR_A, porRol + "?rol=coordinador&periodoAcademico=" + OTRO_PERIODO);
+        nuevas.forEach((clave, vistas) -> r.put(clave
+                .replace(base + bandeja + "&", base + "/listarSolicitudes-Ecaes/Funcionario?")
+                .replace(base + bandeja + " ", base + "/listarSolicitudes-Ecaes/Funcionario ")
+                .replace(base + "?", base + "/listarSolicitud-ecaes/porRol?")
+                .replace(base + " ", base + "/listarSolicitudes-Ecaes "), vistas));
         compararConReferencia("ecaes", r);
     }
 

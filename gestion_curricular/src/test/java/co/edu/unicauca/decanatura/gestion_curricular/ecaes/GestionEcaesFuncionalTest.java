@@ -92,7 +92,7 @@ class GestionEcaesFuncionalTest {
             }
             """;
 
-        mockMvc.perform(post("/api/solicitudes-ecaes/publicarFechasEcaes")
+        mockMvc.perform(post("/api/solicitudes-ecaes/fechas")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(jsonFechas))
                 .andExpect(result -> {
@@ -101,7 +101,7 @@ class GestionEcaesFuncionalTest {
                 });
 
         // Paso 2: Verificar que las fechas aparecen en el listado
-        mockMvc.perform(get("/api/solicitudes-ecaes/listarFechasEcaes"))
+        mockMvc.perform(get("/api/solicitudes-ecaes/fechas"))
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON));
     }
@@ -122,12 +122,12 @@ class GestionEcaesFuncionalTest {
          */
         
         // Paso 1: Estudiante consulta todas las fechas
-        mockMvc.perform(get("/api/solicitudes-ecaes/listarFechasEcaes"))
+        mockMvc.perform(get("/api/solicitudes-ecaes/fechas"))
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON));
 
         // Paso 2: Estudiante consulta fechas por período (puede dar 200, 404 o 500 si hay múltiples registros)
-        mockMvc.perform(get("/api/solicitudes-ecaes/buscarFechasPorPeriodo/2025-2"))
+        mockMvc.perform(get("/api/solicitudes-ecaes/fechas/2025-2"))
                 .andExpect(result -> {
                     int status = result.getResponse().getStatus();
                     if (status != 200 && status != 404 && status != 500)
@@ -170,7 +170,7 @@ class GestionEcaesFuncionalTest {
             """;
 
         // Paso 1: Crear solicitud (201 o 409 si ya existe)
-        mockMvc.perform(post("/api/solicitudes-ecaes/crearSolicitud-Ecaes")
+        mockMvc.perform(post("/api/solicitudes-ecaes")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(jsonSolicitud))
                 .andExpect(result -> {
@@ -179,7 +179,7 @@ class GestionEcaesFuncionalTest {
                 });
 
         // Paso 2: Verificar que la solicitud aparece en el listado
-        mockMvc.perform(get("/api/solicitudes-ecaes/listarSolicitudes-Ecaes"))
+        mockMvc.perform(get("/api/solicitudes-ecaes"))
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON));
     }
@@ -200,12 +200,12 @@ class GestionEcaesFuncionalTest {
          */
         
         // Paso 1: Secretario consulta sus solicitudes
-        mockMvc.perform(get("/api/solicitudes-ecaes/listarSolicitudes-Ecaes/Funcionario"))
+        mockMvc.perform(get("/api/solicitudes-ecaes").param("rol", "funcionario").param("bandeja", "pendientes"))
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON));
 
         // Paso 2: Secretario consulta solicitud específica (usando ID 5 que existe en BD de test)
-        mockMvc.perform(get("/api/solicitudes-ecaes/buscarSolicitud-Ecaes/5"))
+        mockMvc.perform(get("/api/solicitudes-ecaes/5"))
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON));
     }
@@ -228,19 +228,20 @@ class GestionEcaesFuncionalTest {
          */
         
         // Paso 1: Secretario consulta solicitudes asignadas
-        mockMvc.perform(get("/api/solicitudes-ecaes/listarSolicitudes-Ecaes/Funcionario"))
+        mockMvc.perform(get("/api/solicitudes-ecaes").param("rol", "funcionario").param("bandeja", "pendientes"))
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON));
 
         // Paso 2: Secretario consulta solicitud específica
-        mockMvc.perform(get("/api/solicitudes-ecaes/buscarSolicitud-Ecaes/6"))
+        mockMvc.perform(get("/api/solicitudes-ecaes/6"))
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON));
 
         // Paso 3: Secretario cambia estado a "preRegistrado" (usando ID 6 que existe en BD de test)
-        String jsonCambioEstado = cambioEstado(solicitudes().ecaes("Enviada"), "preRegistrado");
-        
-        mockMvc.perform(put("/api/solicitudes-ecaes/actualizarEstadoSolicitud")
+        int idSolicitud = solicitudes().ecaes("Enviada");
+        String jsonCambioEstado = cambioEstado(idSolicitud, "preRegistrado");
+
+        mockMvc.perform(put("/api/solicitudes-ecaes/" + idSolicitud + "/estado")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(jsonCambioEstado))
                 .andExpect(result -> {
@@ -267,7 +268,7 @@ class GestionEcaesFuncionalTest {
          */
         
         // Estudiante con ID 1 consulta sus solicitudes
-        mockMvc.perform(get("/api/solicitudes-ecaes/listarSolicitud-ecaes/porRol")
+        mockMvc.perform(get("/api/solicitudes-ecaes")
                         .param("rol", "ESTUDIANTE")
                         .param("idUsuario", "1"))
                 .andExpect(status().isOk())
@@ -305,7 +306,7 @@ class GestionEcaesFuncionalTest {
             }
             """;
         
-        mockMvc.perform(post("/api/solicitudes-ecaes/publicarFechasEcaes")
+        mockMvc.perform(post("/api/solicitudes-ecaes/fechas")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(jsonFechas))
                 .andExpect(result -> {
@@ -314,7 +315,7 @@ class GestionEcaesFuncionalTest {
                 });
 
         // Paso 2: Estudiante consulta fechas
-        mockMvc.perform(get("/api/solicitudes-ecaes/listarFechasEcaes"))
+        mockMvc.perform(get("/api/solicitudes-ecaes/fechas"))
                 .andExpect(status().isOk());
 
         // Paso 3: Estudiante crea solicitud
@@ -337,7 +338,7 @@ class GestionEcaesFuncionalTest {
             }
             """;
         
-        mockMvc.perform(post("/api/solicitudes-ecaes/crearSolicitud-Ecaes")
+        mockMvc.perform(post("/api/solicitudes-ecaes")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(jsonSolicitud))
                 .andExpect(result -> {
@@ -346,13 +347,14 @@ class GestionEcaesFuncionalTest {
                 });
 
         // Paso 4: Secretario consulta solicitudes
-        mockMvc.perform(get("/api/solicitudes-ecaes/listarSolicitudes-Ecaes/Funcionario"))
+        mockMvc.perform(get("/api/solicitudes-ecaes").param("rol", "funcionario").param("bandeja", "pendientes"))
                 .andExpect(status().isOk());
 
         // Paso 5: Secretario realiza preRegistro (usando ID 5 que existe en BD de test)
-        String jsonPreRegistro = cambioEstado(solicitudes().ecaes("Enviada"), "preRegistrado");
-        
-        mockMvc.perform(put("/api/solicitudes-ecaes/actualizarEstadoSolicitud")
+        int idPreRegistro = solicitudes().ecaes("Enviada");
+        String jsonPreRegistro = cambioEstado(idPreRegistro, "preRegistrado");
+
+        mockMvc.perform(put("/api/solicitudes-ecaes/" + idPreRegistro + "/estado")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(jsonPreRegistro))
                 .andExpect(result -> {
@@ -362,7 +364,7 @@ class GestionEcaesFuncionalTest {
                 });
 
         // Paso 6: Estudiante verifica estado
-        mockMvc.perform(get("/api/solicitudes-ecaes/listarSolicitud-ecaes/porRol")
+        mockMvc.perform(get("/api/solicitudes-ecaes")
                         .param("rol", "ESTUDIANTE")
                         .param("idUsuario", "1"))
                 .andExpect(status().isOk());
@@ -396,7 +398,7 @@ class GestionEcaesFuncionalTest {
             }
             """;
 
-        mockMvc.perform(put("/api/solicitudes-ecaes/actualizarFechasEcaes")
+        mockMvc.perform(put("/api/solicitudes-ecaes/fechas/2025-1")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(jsonFechasActualizadas))
                 .andExpect(result -> {
@@ -429,7 +431,7 @@ class GestionEcaesFuncionalTest {
             }
             """;
 
-        mockMvc.perform(post("/api/solicitudes-ecaes/crearSolicitud-Ecaes")
+        mockMvc.perform(post("/api/solicitudes-ecaes")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(jsonInvalido))
                 .andExpect(status().is4xxClientError());
@@ -455,7 +457,7 @@ class GestionEcaesFuncionalTest {
             }
             """;
 
-        mockMvc.perform(put("/api/solicitudes-ecaes/actualizarEstadoSolicitud")
+        mockMvc.perform(put("/api/solicitudes-ecaes/999/estado")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(jsonCambioEstado))
                 .andExpect(result -> {

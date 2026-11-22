@@ -108,7 +108,7 @@ class SeguridadFuncionalTest {
     void testListadoFuncionarioEcaesSoloEnviada() throws Exception {
         String token = obtenerTokenAdmin();
 
-        String response = mockMvc.perform(get("/api/solicitudes-ecaes/listarSolicitudes-Ecaes/Funcionario")
+        String response = mockMvc.perform(get("/api/solicitudes-ecaes").param("rol", "funcionario").param("bandeja", "pendientes")
                         .header("Authorization", "Bearer " + token)
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
@@ -135,7 +135,7 @@ class SeguridadFuncionalTest {
     void testListadoCoordinadorEcaesSoloAprobadaFuncionario() throws Exception {
         String token = obtenerTokenAdmin();
         // Coordinador obtiene idPrograma del usuario autenticado; admin es Administrador, puede retornar vacío o según implementación
-        String response = mockMvc.perform(get("/api/solicitudes-ecaes/listarSolicitud-ecaes/porRol")
+        String response = mockMvc.perform(get("/api/solicitudes-ecaes")
                         .param("rol", "COORDINADOR")
                         .param("periodoAcademico", "2025-2")
                         .header("Authorization", "Bearer " + token)

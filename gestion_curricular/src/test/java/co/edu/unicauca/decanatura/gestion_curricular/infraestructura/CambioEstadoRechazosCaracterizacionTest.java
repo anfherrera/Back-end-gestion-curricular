@@ -92,15 +92,17 @@ class CambioEstadoRechazosCaracterizacionTest {
             {null, "RECHAZADA", "Funcionario"},
             {"Desconocido", "RECHAZADA", "Funcionario"},
         };
-        String[] rutas = {
-            "/api/solicitudes-ecaes/actualizarEstadoSolicitud",
-            "/api/solicitudes-homologacion/actualizarEstadoSolicitud",
-            "/api/solicitudes-reingreso/actualizarEstadoSolicitud-Reingreso",
+        // {clave de la referencia, ruta que se pide}: ECAES pasó a PUT /{id}/estado (EST-7, paso 6)
+        String[][] rutas = {
+            {"/api/solicitudes-ecaes/actualizarEstadoSolicitud", "/api/solicitudes-ecaes/3/estado"},
+            {"/api/solicitudes-homologacion/actualizarEstadoSolicitud", "/api/solicitudes-homologacion/actualizarEstadoSolicitud"},
+            {"/api/solicitudes-reingreso/actualizarEstadoSolicitud-Reingreso", "/api/solicitudes-reingreso/actualizarEstadoSolicitud-Reingreso"},
         };
 
         ObjectNode resultados = json.createObjectNode();
-        for (String ruta : rutas) {
-            ObjectNode porRuta = resultados.putObject(ruta);
+        for (String[] claveYRuta : rutas) {
+            String ruta = claveYRuta[1];
+            ObjectNode porRuta = resultados.putObject(claveYRuta[0]);
             for (String[] caso : casos) {
                 estadoActual = caso[0];
                 roles = Set.of(caso[2]);

@@ -133,7 +133,7 @@ class AutorizacionPorRolTest {
         mockMvc.perform(put("/api/solicitudes-homologacion/actualizarEstadoSolicitud").header("Authorization", tokenA)
                         .contentType(MediaType.APPLICATION_JSON).content(cambio))
                 .andExpect(status().isForbidden());
-        mockMvc.perform(put("/api/solicitudes-ecaes/actualizarEstadoSolicitud").header("Authorization", tokenA)
+        mockMvc.perform(put("/api/solicitudes-ecaes/1/estado").header("Authorization", tokenA)
                         .contentType(MediaType.APPLICATION_JSON).content(cambio))
                 .andExpect(status().isForbidden());
     }

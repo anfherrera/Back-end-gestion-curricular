@@ -61,7 +61,9 @@ class TiposDocumentoCaracterizacionTest {
 
         // EST-7 (paso 2): rutas nuevas; /validar se retiró (404)
         comparar("tipos-documento.json", resultados, "ecaes/correcciones/tipos-documento-bug26.json",
-                "ecaes/correcciones/tipos-documento-est7.json");
+                "ecaes/correcciones/tipos-documento-est7.json",
+                // EST-7, paso 6: se crea por POST /api/solicitudes-ecaes; solo cambia la url de los errores
+                "ecaes/correcciones/tipos-documento-est7-paso6.json");
 
         // Completa el mapper para fijar también las respuestas de creación exitosas.
         ReflectionTestUtils.setField(mapper, "estadoSolicitudMapperDominio", mock(EstadoSolicitudMapperDominio.class));
@@ -89,7 +91,7 @@ class TiposDocumentoCaracterizacionTest {
 
 
     private RequestBuilder crearEcaes(String codigo) {
-        return post("/api/solicitudes-ecaes/crearSolicitud-Ecaes")
+        return post("/api/solicitudes-ecaes")
         .contentType(MediaType.APPLICATION_JSON)
         .content("""
             {

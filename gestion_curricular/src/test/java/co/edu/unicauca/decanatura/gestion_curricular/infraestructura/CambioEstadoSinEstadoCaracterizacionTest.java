@@ -65,10 +65,11 @@ class CambioEstadoSinEstadoCaracterizacionTest {
                 new SolicitudReingresoRestController(null, reingreso, mapper, null, auth, validador))
             .setControllerAdvice(new RestApiExceptionHandler()).build();
 
-        String[] rutas = {
-            "/api/solicitudes-ecaes/actualizarEstadoSolicitud",
-            "/api/solicitudes-homologacion/actualizarEstadoSolicitud",
-            "/api/solicitudes-reingreso/actualizarEstadoSolicitud-Reingreso",
+        // {clave de la referencia, ruta que se pide}: ECAES pasó a PUT /{id}/estado (EST-7, paso 6)
+        String[][] rutas = {
+            {"/api/solicitudes-ecaes/actualizarEstadoSolicitud", "/api/solicitudes-ecaes/3/estado"},
+            {"/api/solicitudes-homologacion/actualizarEstadoSolicitud", "/api/solicitudes-homologacion/actualizarEstadoSolicitud"},
+            {"/api/solicitudes-reingreso/actualizarEstadoSolicitud-Reingreso", "/api/solicitudes-reingreso/actualizarEstadoSolicitud-Reingreso"},
         };
         String[][] cuerpos = {
             {"sin clave", "{\"idSolicitud\":3}"},
@@ -77,8 +78,9 @@ class CambioEstadoSinEstadoCaracterizacionTest {
             {"espacios", "{\"idSolicitud\":3,\"nuevoEstado\":\"   \"}"},
         };
         ObjectNode resultados = json.createObjectNode();
-        for (String ruta : rutas) {
-            ObjectNode porRuta = resultados.putObject(ruta);
+        for (String[] claveYRuta : rutas) {
+            String ruta = claveYRuta[1];
+            ObjectNode porRuta = resultados.putObject(claveYRuta[0]);
             for (String[] cuerpo : cuerpos) {
                 var respuesta = mvc.perform(put(ruta).contentType(MediaType.APPLICATION_JSON).content(cuerpo[1]))
                     .andReturn().getResponse();
