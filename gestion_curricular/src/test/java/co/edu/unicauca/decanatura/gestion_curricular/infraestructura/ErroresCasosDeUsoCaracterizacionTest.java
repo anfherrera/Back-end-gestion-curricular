@@ -467,7 +467,7 @@ class ErroresCasosDeUsoCaracterizacionTest {
             () -> estadisticas(mock(GestionarEstadisticasGatewayIntPort.class)).actualizarEstadistica(new Estadistica()));
         caso("estadisticas actualizar inexistente", () -> {
             var e = new Estadistica();
-            e.setId_estadistica(7);
+            e.setIdEstadistica(7);
             return estadisticas(mock(GestionarEstadisticasGatewayIntPort.class)).actualizarEstadistica(e);
         });
         caso("estadisticas eliminar sin id", () -> estadisticas(mock(GestionarEstadisticasGatewayIntPort.class)).eliminarEstadistica(null));

@@ -111,7 +111,7 @@ class EstadisticasUnidadTest {
     @DisplayName("Test 3: Actualizar estadística - Delega correctamente")
     void testActualizarEstadisticaDelegaCorrectamente() {
         // Arrange
-        estadisticaEjemplo.setId_estadistica(1);
+        estadisticaEjemplo.setIdEstadistica(1);
         when(estadisticasGateway.obtenerEstadisticaPorId(1)).thenReturn(estadisticaEjemplo);
         when(estadisticasGateway.actualizarEstadistica(any(Estadistica.class)))
                 .thenReturn(estadisticaEjemplo);

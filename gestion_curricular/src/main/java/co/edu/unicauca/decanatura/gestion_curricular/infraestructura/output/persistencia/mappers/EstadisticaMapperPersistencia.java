@@ -18,19 +18,19 @@ public final class EstadisticaMapperPersistencia {
     public static Estadistica aDominio(EstadisticaEntity entidad) {
         Origen.exigir(entidad);
         Estadistica estadistica = new Estadistica();
-        estadistica.setId_estadistica(entidad.getId_estadistica());
+        estadistica.setIdEstadistica(entidad.getId_estadistica());
         estadistica.setNombre(entidad.getNombre());
-        estadistica.setTotal_solicitudes(entidad.getTotal_solicitudes());
-        estadistica.setTotal_aprobadas(entidad.getTotal_aprobadas());
-        estadistica.setTotal_rechazadas(entidad.getTotal_rechazadas());
+        estadistica.setTotalSolicitudes(entidad.getTotal_solicitudes());
+        estadistica.setTotalAprobadas(entidad.getTotal_aprobadas());
+        estadistica.setTotalRechazadas(entidad.getTotal_rechazadas());
         if (entidad.getPeriodos_academico() != null) {
-            estadistica.setPeriodos_academico(new ArrayList<>(entidad.getPeriodos_academico()));
+            estadistica.setPeriodosAcademico(new ArrayList<>(entidad.getPeriodos_academico()));
         }
         if (entidad.getNombres_procesos() != null) {
-            estadistica.setNombres_procesos(new ArrayList<>(entidad.getNombres_procesos()));
+            estadistica.setNombresProcesos(new ArrayList<>(entidad.getNombres_procesos()));
         }
         if (entidad.getNombres_programas() != null) {
-            estadistica.setNombres_programas(new ArrayList<>(entidad.getNombres_programas()));
+            estadistica.setNombresProgramas(new ArrayList<>(entidad.getNombres_programas()));
         }
         return estadistica;
     }
@@ -38,19 +38,19 @@ public final class EstadisticaMapperPersistencia {
     public static EstadisticaEntity aEntidad(Estadistica estadistica) {
         Origen.exigir(estadistica);
         EstadisticaEntity entidad = new EstadisticaEntity();
-        entidad.setId_estadistica(estadistica.getId_estadistica());
+        entidad.setId_estadistica(estadistica.getIdEstadistica());
         entidad.setNombre(estadistica.getNombre());
-        entidad.setTotal_solicitudes(estadistica.getTotal_solicitudes());
-        entidad.setTotal_aprobadas(estadistica.getTotal_aprobadas());
-        entidad.setTotal_rechazadas(estadistica.getTotal_rechazadas());
-        if (estadistica.getPeriodos_academico() != null) {
-            entidad.setPeriodos_academico(new ArrayList<>(estadistica.getPeriodos_academico()));
+        entidad.setTotal_solicitudes(estadistica.getTotalSolicitudes());
+        entidad.setTotal_aprobadas(estadistica.getTotalAprobadas());
+        entidad.setTotal_rechazadas(estadistica.getTotalRechazadas());
+        if (estadistica.getPeriodosAcademico() != null) {
+            entidad.setPeriodos_academico(new ArrayList<>(estadistica.getPeriodosAcademico()));
         }
-        if (estadistica.getNombres_procesos() != null) {
-            entidad.setNombres_procesos(new ArrayList<>(estadistica.getNombres_procesos()));
+        if (estadistica.getNombresProcesos() != null) {
+            entidad.setNombres_procesos(new ArrayList<>(estadistica.getNombresProcesos()));
         }
-        if (estadistica.getNombres_programas() != null) {
-            entidad.setNombres_programas(new ArrayList<>(estadistica.getNombres_programas()));
+        if (estadistica.getNombresProgramas() != null) {
+            entidad.setNombres_programas(new ArrayList<>(estadistica.getNombresProgramas()));
         }
         return entidad;
     }

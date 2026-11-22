@@ -87,11 +87,11 @@ public class GestionarEstadisticasCUAdapter implements GestionarEstadisticasCUIn
 
     @Override
     public Estadistica actualizarEstadistica(Estadistica estadistica) {
-        if (estadistica == null || estadistica.getId_estadistica() == null) {
+        if (estadistica == null || estadistica.getIdEstadistica() == null) {
             throw new ReglaNegocioExcepcion("Estadística inválida para actualización.");
         }
 
-        Estadistica existente = estadisticasGateway.obtenerEstadisticaPorId(estadistica.getId_estadistica());
+        Estadistica existente = estadisticasGateway.obtenerEstadisticaPorId(estadistica.getIdEstadistica());
 
         if (existente == null) {
             throw new EntidadNoExisteException("No se encontró la estadística a actualizar.");

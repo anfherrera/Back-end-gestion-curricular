@@ -10,21 +10,21 @@ import lombok.Data;
 @Data
 @AllArgsConstructor
 public class Estadistica {
-    private Integer id_estadistica;
+    private Integer idEstadistica;
     private String nombre;
-    private Integer total_solicitudes;
-    private Integer total_aprobadas;
-    private Integer total_rechazadas;
+    private Integer totalSolicitudes;
+    private Integer totalAprobadas;
+    private Integer totalRechazadas;
 
-    private List<Date> periodos_academico; //Solo usar año con uno 1 y 2 correspondientes a los 6 meses
-    private List<String> nombres_procesos;
-    private List<String> nombres_programas;
+    private List<Date> periodosAcademico; //Solo usar año con uno 1 y 2 correspondientes a los 6 meses
+    private List<String> nombresProcesos;
+    private List<String> nombresProgramas;
 
 
         public Estadistica() {
-        this.periodos_academico = new ArrayList<Date>();
-        this.nombres_procesos = new ArrayList<String>();
-        this.nombres_programas = new ArrayList<String>();   
+        this.periodosAcademico = new ArrayList<Date>();
+        this.nombresProcesos = new ArrayList<String>();
+        this.nombresProgramas = new ArrayList<String>();   
     }
 }
 
