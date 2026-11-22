@@ -28,7 +28,6 @@ import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.pers
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.entidades.UsuarioEntity;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.repositorios.ProgramaRepositoryInt;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.repositorios.RolRepositoryInt;
-import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.repositorios.SolicitudRepositoryInt;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.repositorios.UsuarioRepositoryInt;
 
 /**
@@ -68,9 +67,6 @@ class PazYSalvoAceptacionTest {
 
     @Autowired
     private UsuarioRepositoryInt usuarioRepository;
-
-    @Autowired
-    private SolicitudRepositoryInt solicitudRepository;
 
     @Autowired
     private RolRepositoryInt rolRepository;
@@ -332,15 +328,14 @@ class PazYSalvoAceptacionTest {
         
         // El estudiante autenticado ve sus propias solicitudes
         int idEstudiante = SoportePazYSalvo.idUsuario(usuarioRepository, ESTUDIANTE_EMAIL);
-        mockMvc.perform(get("/api/solicitudes-pazysalvo/listarSolicitud-PazYSalvo/" + idEstudiante)
+        mockMvc.perform(get("/api/solicitudes-pazysalvo/usuarios/" + idEstudiante + "/solicitudes")
                         .header("Authorization", tokenEstudiante))
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON));
 
         // AND no puede ver las de otro usuario
-        int idCoordinador = SoportePazYSalvo.idAjeno(solicitudRepository, idEstudiante,
-                SoportePazYSalvo.idUsuario(usuarioRepository, COORDINADOR_EMAIL));
-        mockMvc.perform(get("/api/solicitudes-pazysalvo/listarSolicitud-PazYSalvo/" + idCoordinador)
+        int idCoordinador = SoportePazYSalvo.idUsuario(usuarioRepository, COORDINADOR_EMAIL);
+        mockMvc.perform(get("/api/solicitudes-pazysalvo/usuarios/" + idCoordinador + "/solicitudes")
                         .header("Authorization", tokenEstudiante))
                 .andExpect(status().isForbidden());
     }

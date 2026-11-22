@@ -1,7 +1,6 @@
 package co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.controladores;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -30,7 +29,6 @@ import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarA
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarDocumentosCUIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarSolicitudPazYSalvoCUIntPort.RechazoCambioEstado.Motivo;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarSolicitudPazYSalvoCUIntPort;
-import co.edu.unicauca.decanatura.gestion_curricular.dominio.excepciones.EntidadNoExisteException;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Documento;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.FiltroSolicitudes;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.FlujoEstadosSolicitud;
@@ -167,18 +165,6 @@ public class SolicitudPazYSalvoRestController {
         return solicitud;
     }
 
-    private boolean esIdentificadorNumerico(String valor) {
-        if (valor == null) {
-            return false;
-        }
-        try {
-            Integer.parseInt(valor.trim());
-            return true;
-        } catch (NumberFormatException e) {
-            return false;
-        }
-    }
-
     private String validarSolicitudDto(SolicitudPazYSalvoDTOPeticion dtoPeticion) {
         if (dtoPeticion == null) {
             return "Los datos de la solicitud son requeridos";
@@ -202,24 +188,6 @@ public class SolicitudPazYSalvoRestController {
 
     private ResponseEntity<Map<String, String>> respuestaBadRequest(String mensaje) {
         return ResponseEntity.badRequest().body(Map.of("error", mensaje));
-    }
-
-    private List<SolicitudPazYSalvo> obtenerSolicitudesPorRol(String rol) {
-        String rolNormalizado = rol != null ? rol.trim().toLowerCase() : "";
-
-        switch (rolNormalizado) {
-            case "coordinador":
-                return solicitudPazYSalvoCU.listar(FiltroSolicitudes.pendientesDe(FlujoEstadosSolicitud.COORDINADOR, null, null));
-            case "funcionario":
-                return solicitudPazYSalvoCU.listar(FiltroSolicitudes.pendientesDe(FlujoEstadosSolicitud.FUNCIONARIO, null, null));
-            case "secretaria":
-                return solicitudPazYSalvoCU.listar(FiltroSolicitudes.pendientesDe(FlujoEstadosSolicitud.SECRETARIO, null, null));
-            case "":
-                return solicitudPazYSalvoCU.listarSolicitudes();
-            default:
-                List<SolicitudPazYSalvo> solicitudes = solicitudPazYSalvoCU.listarSolicitudesPorRol(rol, null);
-                return solicitudes != null ? solicitudes : Collections.emptyList();
-        }
     }
 
     @GetMapping("/listarSolicitud-PazYSalvo")
@@ -283,42 +251,32 @@ public class SolicitudPazYSalvoRestController {
         return ResponseEntity.ok(respuesta);
     }
 
+    // BUG-4: /listarSolicitud-PazYSalvo/{id} se separa en estas dos rutas (convención EST-7).
+    // Los nombres de rol ya no se aceptan ahí: las bandejas son /Funcionario, /Coordinador,
+    // /Secretaria y /porRol.
+
+    /** Una solicitud: el staff ve cualquiera y el estudiante solo las suyas. */
     @PreAuthorize("isAuthenticated()")
-    @GetMapping("/listarSolicitud-PazYSalvo/{id}")
-    public ResponseEntity<?> listarPazYSalvoByIdOrRole(
-            @PathVariable String id,
-            @RequestParam(required = false) String periodoAcademico) {
-        boolean esStaff = autorizacion.esStaff();
-        if (!esStaff && !esIdentificadorNumerico(id)) {
-            // Listar por rol (coordinador, funcionario, secretaria) es solo para staff
+    @GetMapping("/{idSolicitud:\\d+}")
+    public ResponseEntity<?> obtenerSolicitud(@PathVariable Integer idSolicitud) {
+        if (!autorizacion.esStaff() && !autorizacion.esDuenoSolicitud(idSolicitud)) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body(Map.of("error", "Acceso denegado"));
         }
-        if (esIdentificadorNumerico(id)) {
-            Integer idNumero = Integer.valueOf(id);
-            if (!esStaff
-                    && !autorizacion.esDuenoSolicitud(idNumero)
-                    && !autorizacion.esUsuarioActual(idNumero)) {
-                return ResponseEntity.status(HttpStatus.FORBIDDEN).body(Map.of("error", "Acceso denegado"));
-            }
-            try {
-                SolicitudPazYSalvo solicitud = solicitudPazYSalvoCU.buscarPorId(idNumero);
-                if (!esStaff && !autorizacion.esDuenoSolicitud(idNumero)) {
-                    // El id corresponde a una solicitud ajena; para el estudiante se interpreta como su id de usuario
-                    throw new EntidadNoExisteException("Solicitud no encontrada");
-                }
-                SolicitudPazYSalvoDTORespuesta respuesta = solicitudMapperDominio.mapearDeSolicitudARespuesta(solicitud);
-                return ResponseEntity.ok(respuesta);
-            } catch (EntidadNoExisteException ex) {
-                // El id es de un usuario: sus solicitudes del período pedido o del actual
-                return responder(solicitudPazYSalvoCU.listar(
-                        FiltroSolicitudes.deEstudiante(idNumero, PeriodoDeConsulta.oActual(periodoAcademico))));
-            }
-        }
+        SolicitudPazYSalvo solicitud = solicitudPazYSalvoCU.buscarPorId(idSolicitud);
+        return ResponseEntity.ok(solicitudMapperDominio.mapearDeSolicitudARespuesta(solicitud));
+    }
 
-        List<SolicitudPazYSalvo> solicitudes = obtenerSolicitudesPorRol(id);
-        List<SolicitudPazYSalvoDTORespuesta> respuesta = solicitudMapperDominio
-                .mapearListaDeSolicitudesARespuesta(solicitudes);
-        return ResponseEntity.ok(respuesta);
+    /** Las solicitudes de un usuario en el período pedido o en el actual: el staff o el propio usuario. */
+    @PreAuthorize("isAuthenticated()")
+    @GetMapping("/usuarios/{idUsuario:\\d+}/solicitudes")
+    public ResponseEntity<?> listarSolicitudesDeUsuario(
+            @PathVariable Integer idUsuario,
+            @RequestParam(required = false) String periodoAcademico) {
+        if (!autorizacion.esStaff() && !autorizacion.esUsuarioActual(idUsuario)) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(Map.of("error", "Acceso denegado"));
+        }
+        return responder(solicitudPazYSalvoCU.listar(
+                FiltroSolicitudes.deEstudiante(idUsuario, PeriodoDeConsulta.oActual(periodoAcademico))));
     }
 
     @PreAuthorize("hasAnyRole('Funcionario', 'Coordinador', 'Secretario', 'Administrador')")

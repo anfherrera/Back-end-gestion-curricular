@@ -249,7 +249,8 @@ class ListadosPorRolCaracterizacionTest {
         for (String rol : List.of("coordinador", "Funcionario", "SECRETARIA", "ESTUDIANTE", "otro")) {
             consultar(r, "P", COORDINADOR_A, base + "/" + rol);
         }
-        compararConReferencia("pazysalvo", r);
+        // BUG-4: /{id} ya no existe; /Funcionario sigue siendo su propia ruta
+        compararConReferencia("pazysalvo", r, "listados/correcciones/pazysalvo-bug4.json");
     }
 
     // ==================== ECAES ====================
@@ -283,7 +284,12 @@ class ListadosPorRolCaracterizacionTest {
         MvcResult resultado = mockMvc.perform(get(ruta)).andReturn();
         String clave = "GET " + ruta.replace(String.valueOf(estudianteA.getId_usuario()), "{estudianteA}")
                 + " [" + usuario.split("@")[0] + "]";
-        assertThat(resultado.getResponse().getStatus()).as(clave).isEqualTo(200);
+        int estado = resultado.getResponse().getStatus();
+        if (estado != 200) {
+            // Una ruta retirada: la referencia la fija una corrección con el código HTTP
+            resultados.put(clave, List.of("HTTP " + estado));
+            return;
+        }
 
         JsonNode cuerpo = JSON.readTree(resultado.getResponse().getContentAsString(StandardCharsets.UTF_8));
         List<String> vistas = new ArrayList<>();

@@ -11,7 +11,6 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 
-import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.repositorios.SolicitudRepositoryInt;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.repositorios.UsuarioRepositoryInt;
 
 /**
@@ -74,25 +73,5 @@ final class SoportePazYSalvo {
     static int idUsuario(UsuarioRepositoryInt repo,
                          String correo) {
         return repo.buscarPorCorreo(correo).orElseThrow().getId_usuario();
-    }
-
-    /**
-     * Un id que no pertenece al estudiante: ni es su id de usuario ni el de una solicitud suya.
-     * El endpoint /listarSolicitud-PazYSalvo/{id} interpreta el número como id de solicitud o de
-     * usuario, y las demás pruebas crean solicitudes a nombre del estudiante, así que el id del
-     * coordinador podría coincidir con una solicitud propia del estudiante.
-     */
-    static int idAjeno(SolicitudRepositoryInt solicitudes, int idEstudiante, int candidato) {
-        int id = candidato;
-        while (id == idEstudiante || esSolicitudDe(solicitudes, id, idEstudiante)) {
-            id++;
-        }
-        return id;
-    }
-
-    private static boolean esSolicitudDe(SolicitudRepositoryInt solicitudes, int idSolicitud, int idUsuario) {
-        return solicitudes.findById(idSolicitud)
-                .map(s -> s.getObjUsuario() != null && s.getObjUsuario().getId_usuario() == idUsuario)
-                .orElse(false);
     }
 }

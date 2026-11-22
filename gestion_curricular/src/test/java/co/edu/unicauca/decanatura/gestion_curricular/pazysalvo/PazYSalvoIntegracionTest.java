@@ -242,21 +242,23 @@ class PazYSalvoIntegracionTest {
     // ==================== PRUEBAS DE BÚSQUEDA ====================
 
     @Test
-    @DisplayName("Test 8: Buscar solicitud por ID - Valida endpoint")
+    @DisplayName("Test 8: Buscar solicitud por ID - la ruta vieja ya no existe")
     void testBuscarSolicitudPorId() throws Exception {
-        // Simplemente validamos que el endpoint existe
+        // BUG-4: /listarSolicitud-PazYSalvo/{id} se separó en /{idSolicitud} y /usuarios/{idUsuario}/solicitudes
         mockMvc.perform(get("/api/solicitudes-pazysalvo/listarSolicitud-PazYSalvo/1")
-                        .header("Authorization", tokenFuncionario));
-                // Puede ser 200 OK o 404 NOT FOUND dependiendo de si existe el ID
+                        .header("Authorization", tokenFuncionario))
+                .andExpect(status().isNotFound());
+        mockMvc.perform(get("/api/solicitudes-pazysalvo/listarSolicitud-PazYSalvo/coordinador")
+                        .header("Authorization", tokenFuncionario))
+                .andExpect(status().isNotFound());
     }
 
     @Test
     @DisplayName("Test 9: Buscar solicitud por ID muy grande")
     void testBuscarSolicitudPorIdGrande() throws Exception {
-        // Validamos comportamiento con ID inexistente
-        mockMvc.perform(get("/api/solicitudes-pazysalvo/listarSolicitud-PazYSalvo/999999")
-                        .header("Authorization", tokenFuncionario));
-                // Puede dar 404 o 500 dependiendo de la implementación
+        mockMvc.perform(get("/api/solicitudes-pazysalvo/999999999")
+                        .header("Authorization", tokenFuncionario))
+                .andExpect(status().isNotFound());
     }
 
     // ==================== PRUEBAS DE VALIDACIÓN ====================

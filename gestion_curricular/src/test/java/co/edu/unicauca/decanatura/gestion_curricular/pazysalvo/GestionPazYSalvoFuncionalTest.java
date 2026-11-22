@@ -22,7 +22,6 @@ import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.pers
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.entidades.UsuarioEntity;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.repositorios.ProgramaRepositoryInt;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.repositorios.RolRepositoryInt;
-import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.repositorios.SolicitudRepositoryInt;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.repositorios.UsuarioRepositoryInt;
 
 /**
@@ -60,9 +59,6 @@ class GestionPazYSalvoFuncionalTest {
 
     @Autowired
     private UsuarioRepositoryInt usuarioRepository;
-
-    @Autowired
-    private SolicitudRepositoryInt solicitudRepository;
 
     @Autowired
     private RolRepositoryInt rolRepository;
@@ -370,17 +366,31 @@ class GestionPazYSalvoFuncionalTest {
         
         // El estudiante autenticado consulta sus propias solicitudes
         int idEstudiante = SoportePazYSalvo.idUsuario(usuarioRepository, ESTUDIANTE_EMAIL);
-        mockMvc.perform(get("/api/solicitudes-pazysalvo/listarSolicitud-PazYSalvo/" + idEstudiante)
+        mockMvc.perform(get("/api/solicitudes-pazysalvo/usuarios/" + idEstudiante + "/solicitudes")
                         .header("Authorization", tokenEstudiante))
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON));
 
         // Y no puede consultar las de otro usuario
-        int idCoordinador = SoportePazYSalvo.idAjeno(solicitudRepository, idEstudiante,
-                SoportePazYSalvo.idUsuario(usuarioRepository, COORDINADOR_EMAIL));
-        mockMvc.perform(get("/api/solicitudes-pazysalvo/listarSolicitud-PazYSalvo/" + idCoordinador)
+        int idCoordinador = SoportePazYSalvo.idUsuario(usuarioRepository, COORDINADOR_EMAIL);
+        mockMvc.perform(get("/api/solicitudes-pazysalvo/usuarios/" + idCoordinador + "/solicitudes")
                         .header("Authorization", tokenEstudiante))
                 .andExpect(status().isForbidden());
+
+        // Ve el detalle de una solicitud suya; la de otro usuario, no (BUG-4)
+        int idSolicitud = SoportePazYSalvo.crearSolicitud(mockMvc, objectMapper, tokenEstudiante);
+        mockMvc.perform(get("/api/solicitudes-pazysalvo/" + idSolicitud)
+                        .header("Authorization", tokenEstudiante))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id_solicitud").value(idSolicitud));
+        mockMvc.perform(get("/api/solicitudes-pazysalvo/" + Integer.MAX_VALUE)
+                        .header("Authorization", tokenEstudiante))
+                .andExpect(status().isForbidden());
+
+        // La ruta que mezclaba solicitud, usuario y rol ya no existe (BUG-4)
+        mockMvc.perform(get("/api/solicitudes-pazysalvo/listarSolicitud-PazYSalvo/" + idEstudiante)
+                        .header("Authorization", tokenEstudiante))
+                .andExpect(status().isNotFound());
     }
 
     @Test
