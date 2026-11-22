@@ -18,6 +18,21 @@ Quedan abiertos, y no los toques sin preguntar:
 - BUG-49: la página "Detalle de solicitud" llama a `GET /api/solicitudes/{id}/historial`, que no existe. Falta decidir si se crea la ruta o si la página usa `GET /api/solicitudes/{id}`.
 - `GET /api/archivos/inscripciones/{id}` duplica `/api/cursos-intersemestrales/inscripciones/{id}/comprobante`; se revisa en el paso 8.
 
+## Orden recomendado para esta sesión
+
+1. **BUG-49 y BUG-48 primero**, porque el usuario sí los nota: son páginas del frontend que llaman a rutas que no existen. Antes de tocar nada, investiga quién usa cada página (rol y menú) y qué datos necesita. Luego pregunta al usuario con opciones y una recomendada:
+   - **BUG-49** ("Detalle de solicitud", `GET /api/solicitudes/{id}/historial`): crear la ruta, con el detalle y los estados de la solicitud, o hacer que la página use `GET /api/solicitudes/{id}`. Ojo: `SolicitudRestController` es solo para staff. Si un estudiante abre esa página, la opción de reutilizar no le sirve.
+   - **BUG-48** ("Configurar período", `/api/periodos-academicos/admin/periodo-activo`): crear la función (período activo guardado en la base o modo automático, `GET|PUT /api/periodos-academicos/activo`) o quitar la página y su entrada del menú. Si no hay nada que lo pida, recomienda quitarla, porque el backend ya calcula el período por la fecha.
+   - Cada uno lleva su caracterización previa si cambia una respuesta del backend, un commit por repositorio y `clean verify` en JDK 25 y 17, más `ng test`.
+2. **Después, el paso 6 de EST-7 (ECAES)**, con el método de abajo.
+3. **Método más ligero donde el riesgo es bajo.** El método completo (cada caso con varios roles, llamadas grabadas y la comparación par a par con el script) se mantiene en los controladores con seguridad por dueño o lógica delicada: el paso 7 (Reingreso, Homologación y Paz y Salvo) y las partes de ECAES con `@PreAuthorize` por dueño. En las consultas sencillas sin autorización propia (catálogos, fechas, listados de staff) basta con lo siguiente:
+   - Una sola caracterización por controlador, con un caso válido y uno de error por operación, y un solo rol.
+   - Pasarla tres veces antes del cambio y sacar la corrección con el script.
+   - No duplicar casos de seguridad que ya fija `AutorizacionPorRolTest`.
+   - Si dos pasos pequeños comparten consumidores en el frontend, pueden ir en un mismo commit; dilo en la nota.
+4. **No subas nada sin que el usuario lo pida.** El paso 5 está en un commit pero sin subir.
+5. **EST-7 es una mejora de estilo y las rutas viejas funcionan.** Si el usuario tiene poco tiempo, puede dejar la migración a medias: cada paso es completo por sí solo, y lo pendiente ya está planificado en `REVISION_CODIGO.md` como trabajo futuro. Al terminar cada paso, di cuántas rutas quedan (hechas: 61 de unas 206 tras el paso 5).
+
 ## Lo que falta de EST-7
 
 - **Paso 6, `SolicitudEcaesRestController`** (10 rutas): `/crearSolicitud-Ecaes`, `/listarSolicitudes-Ecaes…` y `/listarSolicitud-ecaes/porRol` → `POST /`, `GET /?rol=`. Las fechas (`/publicarFechasEcaes`, `/listarFechasEcaes`, `/buscarFechasPorPeriodo/{p}`, `/actualizarFechasEcaes`) → `/fechas` y `/fechas/{periodo}`. `/actualizarEstadoSolicitud` → `PUT /{id}/estado`. Ya hay caracterizaciones de ECAES (`ecaes/…`, por ejemplo `TiposDocumentoCaracterizacionTest`) y el frontend usa `pruebas-ecaes.service.ts`. Antes de tocarlo, pregunta lo que cambie el contrato más allá de la ruta. Por ejemplo: si `actualizarEstadoSolicitud` lleva el id en el cuerpo, en `PUT /{id}/estado` manda el de la ruta, y el `@PreAuthorize` debe mirar `#id`.
