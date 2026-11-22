@@ -47,9 +47,9 @@ public class DocumentoRestController {
     }
 
     /** Solo funcionarios, coordinadores y demás staff comentan documentos de una solicitud. */
-    @PutMapping("/añadirComentario")
+    @PutMapping("/agregarComentario")
     @PreAuthorize("hasAnyRole(" + Autorizacion.ROLES_STAFF + ")")
-    public ResponseEntity<Void> añadirComentario(@RequestBody ComentarioDocumentoDTOPeticion peticion) {
+    public ResponseEntity<Void> agregarComentario(@RequestBody ComentarioDocumentoDTOPeticion peticion) {
         Usuario usuario = autorizacion.usuarioActual();
         String nombreUsuario = usuario != null ? usuario.getNombre_completo() : null;
         String rolUsuario = usuario != null && usuario.getObjRol() != null ? usuario.getObjRol().getNombre() : null;

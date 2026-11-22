@@ -1,0 +1,61 @@
+{
+  "comenta" : {
+    "http" : 201,
+    "json" : null,
+    "guardado" : "previo\n[<fecha>] hola"
+  },
+  "sin-comentario-previo" : {
+    "http" : 201,
+    "json" : null,
+    "guardado" : "[<fecha>] hola"
+  },
+  "sin-id" : {
+    "http" : 400,
+    "json" : {
+      "codigoError" : "GC-0004",
+      "mensaje" : "GC-0004 - Violación a regla de negocio: El ID del documento y el comentario son obligatorios.",
+      "codigoHttp" : 400,
+      "url" : "http://localhost/api/documentos/a%C3%B1adirComentario",
+      "metodo" : "PUT"
+    },
+    "guardado" : null
+  },
+  "comentario-blanco" : {
+    "http" : 400,
+    "json" : {
+      "codigoError" : "GC-0004",
+      "mensaje" : "GC-0004 - Violación a regla de negocio: El comentario no puede estar vacío.",
+      "codigoHttp" : 400,
+      "url" : "http://localhost/api/documentos/a%C3%B1adirComentario",
+      "metodo" : "PUT"
+    },
+    "guardado" : null
+  },
+  "inexistente" : {
+    "http" : 404,
+    "json" : {
+      "codigoError" : "GC-0003",
+      "mensaje" : "Entidad no encontrada, No se encontró el documento con ID: 8",
+      "codigoHttp" : 404,
+      "url" : "http://localhost/api/documentos/a%C3%B1adirComentario",
+      "metodo" : "PUT"
+    },
+    "guardado" : null
+  },
+  "estudiante" : {
+    "http" : 403,
+    "json" : {
+      "codigoError" : "GC-0403",
+      "mensaje" : "Acceso denegado: no tiene permisos para este recurso",
+      "codigoHttp" : 403,
+      "url" : "http://localhost/api/documentos/a%C3%B1adirComentario",
+      "metodo" : "PUT"
+    },
+    "guardado" : null
+  },
+  "ruta-con-enie" : {
+    "http" : 201,
+    "json" : null,
+    "guardado" : "previo\n[<fecha>] hola"
+  }
+}
