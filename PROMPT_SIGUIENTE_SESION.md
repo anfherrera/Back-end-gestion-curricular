@@ -1,97 +1,105 @@
-Sigue la revisión 26 de `REVISION_CODIGO.md` en el backend (`D:\Cursos\Trabajo de grado\Back-end-gestion-curricular`, rama `seguridad-y-arquitectura`). El frontend está en `D:\Cursos\Trabajo de grado\Front-end-gestion-curricular`, rama `revision-25-backend` (no `main`): ahí van todos los commits del frontend de las revisiones 25 y 26, y puedes cambiar ese código cuando haga falta. Lee primero la cabecera de `REVISION_CODIGO.md`, la fila 26 del registro y la entrada EST-7 (convención de rutas, plan de migración y "Migración hecha").
+Sigue la revisión 26 de `REVISION_CODIGO.md` en el backend (`D:\Cursos\Trabajo de grado\Back-end-gestion-curricular`, rama `seguridad-y-arquitectura`). El frontend está en `D:\Cursos\Trabajo de grado\Front-end-gestion-curricular`, rama `revision-25-backend` (no `main`), y puedes cambiarlo cuando haga falta. Lee primero la cabecera de `REVISION_CODIGO.md`, la fila 26 del registro y la entrada EST-7, sobre todo la convención, el plan y "Migración hecha". Respóndeme siempre en español.
 
 ## De dónde partimos
 
-En la revisión 26 se cerraron BUG-46 y BUG-45, y se hicieron los pasos 1 a 5 de la migración de rutas de EST-7:
-1. Roles, programas, docentes y usuarios.
-2. Períodos académicos y tipos de documento.
-3. Documentos, generador (`/api/documentos-generados`) y archivos (`POST /api/archivos`, `GET /api/archivos?nombre=`, `GET /api/archivos/inscripciones/{id}`).
-4. Notificaciones: todo bajo `/api/notificaciones` con `?usuario=`, y `PUT /{id}/leida` y `PUT /leidas?usuario=` sin cuerpo.
-5. Solicitudes: `GET /`, `GET ?nombre=`, `GET|DELETE /{id}` y `GET /historial?formato=pdf`.
+- Cerrados en la revisión 26: BUG-46, BUG-45, BUG-49 y BUG-48.
+  - BUG-49: "Detalle de solicitud" usa `GET /api/solicitudes/{id}` y se enlaza desde el historial para funcionario, coordinador y decano.
+  - BUG-48: se quitó la página "Configurar período".
+- EST-7: pasos 1 a 6 hechos, con 71 de unas 206 rutas. El paso 6 fue ECAES.
+- Último `clean verify`, en JDK 25 y 17: 609 pruebas, 1 omitida y 0 fallos (120 XML de surefire). Frontend: 766 pruebas sin fallos.
+- Los dos repositorios están subidos hasta el paso 6.
+- Hay cosas sin commit en el backend:
+  - `gestion_curricular/src/test/java/.../infraestructura/RutasPazYSalvoCaracterizacionTest.java`, nueva. Es la caracterización previa del paso 7a, todavía con la comparación sin corrección (`compararConReferencia(casos, "rutas/pazysalvo.json")`).
+  - `PROMPT_SIGUIENTE_SESION.md` (este archivo).
+  - La referencia `rutas/pazysalvo.json` **no está en el repositorio**: solo se grabó una vez en una copia del scratchpad, que puede haberse borrado. Como todavía no es una referencia del repositorio, grabarla es grabarla por primera vez, no regrabarla. Hay que hacerlo contra el código actual, que aún no está migrado.
 
-El último `clean verify`, tras el paso 5, dio en JDK 25 y 17 608 pruebas, 1 omitida y 0 fallos (119 XML de surefire); el frontend, 773 pruebas sin fallos. Los pasos 1 a 4 están subidos. El paso 5 está en un commit en cada repositorio, pero sin subir: compruébalo con `git status -sb` y súbelo si el usuario lo pide.
+Quedan abiertos, y no los toques sin preguntar: BUG-47 (mensaje de validación no determinista) y OPC-1 (opcional).
 
-Quedan abiertos, y no los toques sin preguntar:
-- OPC-1, que es opcional.
-- BUG-47: el mensaje de un 400 de validación no es determinista cuando un campo viola dos restricciones. Falta elegir la política.
-- BUG-48: la página "Configurar período" llama a `/api/periodos-academicos/admin/periodo-activo`, que no existe. Falta decidir si se crea la función o se quita la página.
-- BUG-49: la página "Detalle de solicitud" llama a `GET /api/solicitudes/{id}/historial`, que no existe. Falta decidir si se crea la ruta o si la página usa `GET /api/solicitudes/{id}`.
-- `GET /api/archivos/inscripciones/{id}` duplica `/api/cursos-intersemestrales/inscripciones/{id}/comprobante`; se revisa en el paso 8.
+## Posible BUG nuevo (investigar y anotar, sin corregir)
 
-## Orden recomendado para esta sesión
+En la referencia de Paz y Salvo, `POST /crearSolicitud-PazYSalvo` como estudiante 5 responde 201 con cualquiera de estos dos cuerpos:
+- `{"idUsuario":"6","tituloTrabajoGrado":"Tesis"}`: el caso de uso recibe `usuario 5, periodo null, titulo null`. El usuario forzado a 5 es lo esperado, pero el título se pierde.
+- `{"idUsuario":"5","periodoAcademico":"2024-9"}`: un período inválido no da 400.
 
-1. **BUG-49 y BUG-48 primero**, porque el usuario sí los nota: son páginas del frontend que llaman a rutas que no existen. Antes de tocar nada, investiga quién usa cada página (rol y menú) y qué datos necesita. Luego pregunta al usuario con opciones y una recomendada:
-   - **BUG-49** ("Detalle de solicitud", `GET /api/solicitudes/{id}/historial`): crear la ruta, con el detalle y los estados de la solicitud, o hacer que la página use `GET /api/solicitudes/{id}`. Ojo: `SolicitudRestController` es solo para staff. Si un estudiante abre esa página, la opción de reutilizar no le sirve.
-   - **BUG-48** ("Configurar período", `/api/periodos-academicos/admin/periodo-activo`): crear la función (período activo guardado en la base o modo automático, `GET|PUT /api/periodos-academicos/activo`) o quitar la página y su entrada del menú. Si no hay nada que lo pida, recomienda quitarla, porque el backend ya calcula el período por la fecha.
-   - Cada uno lleva su caracterización previa si cambia una respuesta del backend, un commit por repositorio y `clean verify` en JDK 25 y 17, más `ng test`.
-2. **Después, el paso 6 de EST-7 (ECAES)**, con el método de abajo.
-3. **Método más ligero donde el riesgo es bajo.** El método completo (cada caso con varios roles, llamadas grabadas y la comparación par a par con el script) se mantiene en los controladores con seguridad por dueño o lógica delicada: el paso 7 (Reingreso, Homologación y Paz y Salvo) y las partes de ECAES con `@PreAuthorize` por dueño. En las consultas sencillas sin autorización propia (catálogos, fechas, listados de staff) basta con lo siguiente:
-   - Una sola caracterización por controlador, con un caso válido y uno de error por operación, y un solo rol.
-   - Pasarla tres veces antes del cambio y sacar la corrección con el script.
-   - No duplicar casos de seguridad que ya fija `AutorizacionPorRolTest`.
-   - Si dos pasos pequeños comparten consumidores en el frontend, pueden ir en un mismo commit; dilo en la nota.
-4. **No subas nada sin que el usuario lo pida.** El paso 5 está en un commit pero sin subir.
-5. **EST-7 es una mejora de estilo y las rutas viejas funcionan.** Si el usuario tiene poco tiempo, puede dejar la migración a medias: cada paso es completo por sí solo, y lo pendiente ya está planificado en `REVISION_CODIGO.md` como trabajo futuro. Al terminar cada paso, di cuántas rutas quedan (hechas: 61 de unas 206 tras el paso 5).
+Parece que `peticion.asignarUsuario(...)` (`CrearSolicitudPazYSalvoDTOPeticion`) descarta los demás campos cuando quien crea no es staff. Compruébalo y, si se confirma, anótalo como BUG-50.
 
-## Lo que falta de EST-7
+## Paso 7: decisiones ya tomadas por el usuario
 
-- **Paso 6, `SolicitudEcaesRestController`** (10 rutas): `/crearSolicitud-Ecaes`, `/listarSolicitudes-Ecaes…` y `/listarSolicitud-ecaes/porRol` → `POST /`, `GET /?rol=`. Las fechas (`/publicarFechasEcaes`, `/listarFechasEcaes`, `/buscarFechasPorPeriodo/{p}`, `/actualizarFechasEcaes`) → `/fechas` y `/fechas/{periodo}`. `/actualizarEstadoSolicitud` → `PUT /{id}/estado`. Ya hay caracterizaciones de ECAES (`ecaes/…`, por ejemplo `TiposDocumentoCaracterizacionTest`) y el frontend usa `pruebas-ecaes.service.ts`. Antes de tocarlo, pregunta lo que cambie el contrato más allá de la ruta. Por ejemplo: si `actualizarEstadoSolicitud` lleva el id en el cuerpo, en `PUT /{id}/estado` manda el de la ruta, y el `@PreAuthorize` debe mirar `#id`.
-- **Paso 7, Reingreso, Homologación y Paz y Salvo juntos** (50 rutas), porque el frontend los usa a través de `SolicitudesBaseService`.
-- **Paso 8, cursos de verano** (seis controladores). Antes hay que pedir al usuario que decida el prefijo único.
-- **Paso 9, estadísticas** (30 rutas y reglas de `SeguridadConfig`).
+Se reparte en dos commits por repositorio: **7a, Paz y Salvo** (21 rutas; su servicio del frontend es independiente) y **7b, Reingreso y Homologación** (29 rutas; comparten `SolicitudesAprobacionService`).
 
-## Cómo se migra un controlador
+**Forma común de los tres controladores**, la de ECAES y BUG-45, conservando la conducta de cada ruta (períodos por defecto, programa del coordinador y regla para quien no es staff):
+```
+POST /                          crear
+GET  /?rol=…&idUsuario=&periodoAcademico=      porRol (y porUser de Reingreso)
+GET  /?rol=funcionario|coordinador|secretaria&bandeja=pendientes   /Funcionario, /Coordinador, /Secretaria
+GET  /?rol=…&bandeja=procesadas                /{Rol}/Aprobadas (Paz y Salvo ya lo tiene)
+PUT  /{id}/estado               id de la ruta; idSolicitud del cuerpo se ignora
+GET  /{id}/oficios              obtenerOficios
+GET  /{id}/oficios/archivo      descargarOficio
+Homologación: POST /{id}/resoluciones   (antes /{idSolicitud}/subir-resolucion)
+```
 
-1. **Busca todos los consumidores de las rutas:** el servicio del frontend, `api-endpoints.ts`, specs, Cypress (`cy.intercept`), pruebas del backend, `SeguridadConfig` y `OpenAPIConfig`. Busca también comprobaciones de URL con `includes(...)` en los interceptores. Si aparece una ruta del frontend que el backend no tiene, anótala como BUG nuevo sin corregirla, como BUG-48 y BUG-49.
-2. **Pregunta al usuario** lo que la convención no resuelva sola: un prefijo que ya es de otro controlador, un cuerpo nuevo obligatorio, quitar rutas o unir respuestas distintas. Usa opciones con una recomendada.
-3. **Crea una caracterización `Rutas<Recurso>CaracterizacionTest`** que pida cada operación por la ruta vieja y por la nueva. Guarda `status`, `tipo`, `cuerpo` y las llamadas del caso de uso que cambian datos, con la clave "MÉTODO ruta cuerpo [quién]".
-   - Ejemplos standalone: `RutasDocumentosArchivosCaracterizacionTest` (con descargas asíncronas) y `RutasSolicitudesCaracterizacionTest` (texto de un PDF).
-   - Si la autorización vive en el código o en `@PreAuthorize` por método, usa un `@SpringBootTest` con seguridad real, como `RutasNotificacionesCaracterizacionTest`. Ahí se simulan `GestionarUsuarioGatewayIntPort` y, además, `UserDetailsService`, porque el adaptador del gateway es también el `UserDetailsService`. Si se simula un caso de uso de usuarios, el contexto no arranca.
-   - Grábala contra el código anterior en una copia, con `-DgrabarReferencia=true`, y pásala tres veces más sin grabar.
-   - Usa cuerpos inválidos que violen una sola restricción, por BUG-47. Sustituye por marcadores los datos que dependen de la fecha o del reloj.
-4. **Migra el controlador.**
-   - El id va restringido a dígitos: `/{id:\\d+}`, con dos barras en Java. Perl y sed pierden las barras con facilidad. Escribe esa línea con Edit y compruébala con `grep`.
-   - Para que un `GET /` atienda varios filtros sin perder el `@PreAuthorize` ni el mensaje de `@Min` de cada operación, separa los métodos con condiciones `params` en `@GetMapping` (`params = {"usuario", "leida=false", "!urgente"}`). Añade un `@GetMapping` sin condiciones que lance `IllegalArgumentException` (400) para lo que nada atienda; sin él, Spring respondería 500.
-   - El mensaje de un 400 de `@Min` lleva el nombre del método Java y del parámetro. Consérvalos con `@RequestParam(name = "nuevo") Integer nombreViejo`.
-   - Si la ruta vieja ignoraba los parámetros desconocidos, no conviertas un valor desconocido en 400: el paso 5 dejó que solo `formato=pdf` cambie la respuesta.
-5. **Deriva la corrección `rutas/correcciones/<recurso>-est7.json`** con `herramientas/derivar-est7.js`:
-   ```
-   node herramientas/derivar-est7.js <referencia vieja> <salida nueva> <pares.json> <corrección>
-   ```
-   - La salida nueva se graba en otra copia, sin la referencia y con la comparación sin corrección.
-   - Los pares son `{"clave nueva": "clave vieja"}`; hay ejemplos en `herramientas/pares-*.json`.
-   - El script falla si un par responde distinto (sin contar la `url` de los errores) o si una ruta vieja no da 404. También lista para revisión los cambios fuera de los pares. La comparación ignora el orden de las claves y la corrección sale en orden de `TreeMap`.
-6. **Pasa a las rutas nuevas las pruebas existentes** que usen las viejas, sin regrabar sus referencias.
-   - Si solo cambia la `url` de un error, añade una corrección `-est7` encadenada.
-   - Si la clave de la referencia lleva la ruta, conserva la clave y pide la ruta nueva. `DescargasCaracterizacionTest` lo hace así, porque una corrección no puede renombrar claves.
-   - Si el paso cambia una regla de seguridad, añade un caso en `AutorizacionPorRolTest` y comprueba que falla al quitar la regla.
-7. **En el frontend**, cambia el servicio y escribe o ajusta su spec, que debe fijar la URL exacta y el método de cada llamada.
-8. **Añade el punto a "Migración hecha"** en la entrada EST-7 y verifica:
+**Rutas propias de Paz y Salvo:**
+```
+POST /documentos                subir-documento (sin asociar)
+GET  /documentos?nombre=        descargar-documento?filename=
+GET  /{id}/documentos           obtenerDocumentos/coordinador/{id}
+GET  /{id}/comentarios          obtenerComentarios/{id}
+POST /{id}/oficios              subir-oficio-pdf/{id}
+POST /{id}/documento-generado   generar-documento/{id} (los mismos parámetros)
+```
+`GET /{idSolicitud}` y `GET /usuarios/{idUsuario}/solicitudes` ya cumplen la convención y no cambian.
+
+**Se retiran 11 rutas sin uso**, que pasan a 404 y cuyo código de controlador se borra:
+- Reingreso: el listado completo `/listarSolicitudes-Reingreso`, `GET /listarSolicitud-Reingreo/{id}` y `/validarDocumentosRequeridos/{id}`.
+- Homologación: el listado completo `/listarSolicitud-Homologacion`, `GET /listarSolicitud-Homologacion/{id}` y `/validarDocumentosRequeridos/{id}`.
+- Paz y Salvo: el listado completo `/listarSolicitud-PazYSalvo`, `/validarDocumentosRequeridos/{id}`, `/generarDocumentoPazYSalvo/{id}/pdf` y `/docx`, y `/guardarOficio`.
+- En el frontend se borran también `listarSolicitudes()` de Reingreso y Homologación, y `generarOficio()` de `SolicitudesAprobacionService`, que nadie llama y apunta a una ruta inexistente.
+- Los métodos del caso de uso que queden sin uso (por ejemplo, `revisarDocumentosRequeridos`) se anotan como código muerto, sin borrarlos en este paso.
+
+## Cómo seguir con 7a (Paz y Salvo)
+
+1. Graba `rutas/pazysalvo.json` en una copia del scratchpad, con el código actual y `-DgrabarReferencia=true`. Revisa el resumen y pásala tres veces más sin grabar.
+2. Antes del cambio, pasa una vez contra el código actual las pruebas que usan rutas de Paz y Salvo:
+   - `PazYSalvoAceptacionTest`, `PazYSalvoIntegracionTest`, `GestionPazYSalvoFuncionalTest`, `PazYSalvoCaracterizacionTest` y `SoportePazYSalvo`.
+   - `CrearPazYSalvoCuerpoCaracterizacionTest`, `ErroresPazYSalvoCaracterizacionTest` y `CambioEstadoPazYSalvoCaracterizacionTest`.
+   - `ListadosPorRolCaracterizacionTest`, `GeneracionDocumentosCaracterizacionTest` y `RegistroDocumentosCaracterizacionTest`.
+   - `CambioEstadoRechazos…` y `CambioEstadoSinEstado…` no tocan Paz y Salvo.
+3. Migra el controlador.
+   - Separa los `GET` de la raíz con condiciones `params`: `{"rol","!bandeja"}` para porRol, `{"rol","bandeja"}` para pendientes o procesadas, y uno sin condiciones para lo demás.
+   - Ese último debe lanzar `new MissingServletRequestParameterException("rol", "String")`, para que `GET /` y `?bandeja=…` respondan el mismo 400 GC-0400 que hoy.
+   - Hoy, `?rol=funcionario` sin `bandeja` da 400. Con la migración pasa a ser porRol, y es un cambio esperado.
+   - Las pendientes del funcionario no filtran por período (`null`). Las del coordinador y la secretaría usan `oActual`, y el coordinador sin programa ve todas.
+   - Escribe con Edit cada `/{id:\\d+}` y compruébalo con `grep`.
+4. Deriva `rutas/correcciones/pazysalvo-est7.json` con `node herramientas/derivar-est7.js` y un `herramientas/pares-pazysalvo.json`.
+   - Las rutas retiradas no entran en los pares.
+   - El script exige que cada ruta vieja de un par dé 404 GC-0404. Las retiradas también deben dar 404, pero eso se revisa en la lista "FUERA DE LOS PARES".
+   - Después cambia la prueba a `compararConReferencia(casos, "rutas/pazysalvo.json", "rutas/correcciones/pazysalvo-est7.json")`.
+5. Pasa a las rutas nuevas las pruebas existentes, sin regrabar.
+   - Si una prueba usa una ruta retirada, borra ese caso o fija el 404 con una corrección `-est7` encadenada, según sea prueba funcional o caracterización con referencia.
+   - Si la clave lleva la ruta, conserva la clave y pide la nueva, como en el paso 6 con `ListadosPorRol` y `CambioEstado…`.
+   - Si solo cambia la `url` de los errores, usa una corrección con JSON Pointer, como `tipos-documento-est7-paso6.json`.
+6. En el frontend:
+   - `paz-salvo.service.ts`: sobrescribe `cambiarEstado` como en `pruebas-ecaes.service.ts`.
+   - `document-generator.service.ts`, que llama a `generar-documento`.
+   - Los specs, con la URL y el método exactos.
+   - Los `cy.intercept` de Paz y Salvo.
+   - Comprueba también los interceptores con `includes(...)`.
+7. Actualiza "Migración hecha" en EST-7 y la fila 26. Después:
    - `clean verify` en JDK 25 y 17, en dos copias a la vez.
-   - `npx ng test --watch=false` en el frontend.
-   - Después completa la fila 26 del registro.
-9. **Haz un commit por paso en cada repositorio**, con el mensaje en ASCII y el ID (`EST-7, paso N`), y sube los dos repositorios cuando el usuario lo pida.
+   - `npx ng test --watch=false`, más prettier, lint y `tsc` de los archivos tocados.
+   - Un commit por repositorio, en ASCII y con el ID (`EST-7, paso 7a`).
+   - Al terminar, di cuántas rutas quedan.
+
+Después sigue el 7b con el mismo método. Su caracterización es `RutasReingresoHomologacionCaracterizacionTest`, también un `@SpringBootTest` con varios roles, porque tiene seguridad por dueño.
 
 ## Reglas que siguen vigentes
 
-- Antes de cambiar algo, pasa una vez la caracterización que lo cubre. Si nada lo cubre, crea una y grábala contra el código anterior.
-- Nunca se regraba una referencia. Un cambio de respuesta se fija con una corrección `correcciones/<ref>-<punto>.json`, con claves de primer nivel o JSON Pointer; el padre debe ser un objeto. Las correcciones se encadenan en orden.
-- `ListadosPorRolCaracterizacionTest` regraba todas sus referencias si se pasa `-DgrabarReferencia=true`. Para grabar un método nuevo, ejecuta solo ese método (`-Dtest='Clase#metodo'`).
-- Mockito no puede simular clases concretas en JDK 25 (`JwtUtil`, `SecurityAuditService`, `LoginRateLimiter`, adaptadores). Usa instancias reales, interfaces o una subclase anónima de `Autorizacion`.
-- Si renombras o agregas un campo en un modelo del dominio, revisa `infraestructura/configuracion/NombresJsonDominio` (OPC-2).
-- Si el usuario tiene la aplicación abierta (`spring-boot:run` o VS Code), no toques `gestion_curricular/target`. Compila siempre en una copia del scratchpad: `tar -c --exclude=gestion_curricular/target gestion_curricular | tar -x -C <scratchpad>/<dir>` y luego `./mvnw -o -q clean verify`. JDK 17 está en `C:\Program Files\Java\jdk-17`.
-- No hay Python: usa Edit, sed, perl o Node. La copia de trabajo mezcla LF y CRLF. Revisa siempre el `git diff` después de perl; una sustitución puede tocar más líneas de las previstas, como pasó en el paso 5 con `new HttpParams()`.
-- Pregunta antes de lo que cambie un contrato más allá de la ruta.
-- Las respuestas al usuario van en español.
-
-## Para probar a mano
-
-- Backend: `SPRING_DATASOURCE_PASSWORD=root JAVA_HOME="C:/Program Files/Java/jdk-17" ./mvnw -o spring-boot:run` en `gestion_curricular` (puerto 5000; MySQL `bdcurricular` con usuario y contraseña `root`).
-- Frontend: `npx ng serve` (http://localhost:4200).
-- Usuarios de prueba, todos con la contraseña `password123` y el dominio `@unicauca.edu.co`:
-  - `admin@`
-  - `josefina@` (coordinadora)
-  - `juanp@` (funcionario)
-  - `maria@` (secretaria)
-  - `decano@`
-  - `dcisneros@` y `pepa@` (estudiantes)
+- Nunca regrabes una referencia que ya está en el repositorio: usa correcciones `-est7` encadenadas. `ListadosPorRolCaracterizacionTest` regraba todas sus referencias con `-DgrabarReferencia=true`.
+- Compila siempre en una copia del scratchpad (`tar -c --exclude=gestion_curricular/target gestion_curricular | tar -x -C <dir>` y `./mvnw -o -q …`), nunca en `gestion_curricular/target`. JDK 17 está en `C:\Program Files\Java\jdk-17`.
+- No hay Python: usa Edit, perl o Node. Revisa el `git diff` después de cada sustitución; la copia de trabajo mezcla LF y CRLF.
+- Pregunta antes de cambiar un contrato más allá de lo decidido arriba.
+- No subas nada hasta que el usuario lo pida.
+- Una caracterización con seguridad real es un `@SpringBootTest` que simula `GestionarUsuarioGatewayIntPort`, `UserDetailsService` y `GestionarSolicitudGatewayIntPort` (`idDuenoDeSolicitud`). Usa como modelo `RutasEcaesCaracterizacionTest` o `RutasPazYSalvoCaracterizacionTest`.
+- Mockito no puede simular clases concretas en JDK 25: usa interfaces o instancias reales.
+- EST-7 es una mejora de estilo, así que se puede dejar a medias: cada paso es completo por sí solo. Después del paso 7 quedan el 8 (cursos de verano; antes hay que pedir al usuario el prefijo único) y el 9 (estadísticas).
