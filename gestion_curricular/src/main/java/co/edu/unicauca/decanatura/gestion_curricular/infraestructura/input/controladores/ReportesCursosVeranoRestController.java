@@ -136,7 +136,7 @@ public class ReportesCursosVeranoRestController {
             if (curso.getEstadosCursoOfertados() != null && !curso.getEstadosCursoOfertados().isEmpty()) {
                 String estadoActual = curso.getEstadosCursoOfertados()
                     .get(curso.getEstadosCursoOfertados().size() - 1)
-                    .getEstado_actual();
+                    .getEstadoActual();
                 
                 // Cursos activos: Publicado, Preinscripcion, Inscripcion
                 if ("Publicado".equals(estadoActual) || 
@@ -251,7 +251,7 @@ public class ReportesCursosVeranoRestController {
                     // Para cursos existentes, obtener el estado del curso
                     CursoOfertadoVerano curso = preinscripcion.getObjCursoOfertadoVerano();
                     if (curso.getEstadosCursoOfertados() != null && !curso.getEstadosCursoOfertados().isEmpty()) {
-                        estadoCurso = curso.getEstadosCursoOfertados().get(curso.getEstadosCursoOfertados().size() - 1).getEstado_actual();
+                        estadoCurso = curso.getEstadosCursoOfertados().get(curso.getEstadosCursoOfertados().size() - 1).getEstadoActual();
                     }
                     
                     // Determinar acciones disponibles basado en el estado de la preinscripcion y del curso
@@ -283,7 +283,7 @@ public class ReportesCursosVeranoRestController {
                         preinscripcion.getFechaRegistroSolicitud(), preinscripcion.estadoActual("Enviado"),
                         tipoSolicitud, nombreCurso, idUsuario,
                         preinscripcion.getObjCursoOfertadoVerano() != null
-                                ? preinscripcion.getObjCursoOfertadoVerano().getId_curso() : null,
+                                ? preinscripcion.getObjCursoOfertadoVerano().getIdCurso() : null,
                         estadoCurso, accionesDisponibles));
             }
             
@@ -311,7 +311,7 @@ public class ReportesCursosVeranoRestController {
                 if (inscripcion.getObjCursoOfertadoVerano() != null && 
                     inscripcion.getObjCursoOfertadoVerano().getObjMateria() != null) {
                     nombreCurso = inscripcion.getObjCursoOfertadoVerano().getObjMateria().getNombre();
-                    cursoId = inscripcion.getObjCursoOfertadoVerano().getId_curso();
+                    cursoId = inscripcion.getObjCursoOfertadoVerano().getIdCurso();
                 }
                 // Mapear estadoCurso basado en el estado de la inscripcion
                 String estadoCurso = "PENDIENTE";

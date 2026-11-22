@@ -86,32 +86,32 @@ public class GestionarSolicitudCursoVeranoCUAdapter implements GestionarSolicitu
         if (solicitudCursoVerano.getObjCursoOfertadoVerano() == null) {
             throw new ReglaNegocioExcepcion("Debe seleccionar un curso válido");
         }
-        if (solicitudCursoVerano.getObjCursoOfertadoVerano().getId_curso() == null) {
+        if (solicitudCursoVerano.getObjCursoOfertadoVerano().getIdCurso() == null) {
             throw new ReglaNegocioExcepcion("Debe seleccionar un curso válido");
         }   
         
         // Verificar si es un curso nuevo (ID = 0) - solicitud de apertura
-        if (solicitudCursoVerano.getObjCursoOfertadoVerano().getId_curso() == 0) {
+        if (solicitudCursoVerano.getObjCursoOfertadoVerano().getIdCurso() == 0) {
             // Para cursos nuevos, no necesitamos validar que exista en la base de datos
             // Solo procedemos a crear la solicitud
         } else {
             // Curso existente: solo admite preinscripciones mientras está en la fase de Preinscripcion
-            cursoABuscar = this.cursoOfertado.obtenerCursoPorId(solicitudCursoVerano.getObjCursoOfertadoVerano().getId_curso());
+            cursoABuscar = this.cursoOfertado.obtenerCursoPorId(solicitudCursoVerano.getObjCursoOfertadoVerano().getIdCurso());
             if (cursoABuscar == null) {
                 throw new ReglaNegocioExcepcion("No se encontró el curso");
             }
             exigirEstadoCurso(cursoABuscar, ESTADO_PREINSCRIPCION, "preinscripciones");
         }
 
-        if (solicitudCursoVerano.getCodicion_solicitud() == null) {
+        if (solicitudCursoVerano.getCondicionSolicitud() == null) {
             throw new ReglaNegocioExcepcion("Debe seleccionar una condición de solicitud válida");
         }
 
         // Para cursos nuevos (ID = 0), no necesitamos verificar preinscripciones existentes
         // ya que es una solicitud de apertura de curso
-        if (solicitudCursoVerano.getObjCursoOfertadoVerano().getId_curso() != 0) {
+        if (solicitudCursoVerano.getObjCursoOfertadoVerano().getIdCurso() != 0) {
         preinscripcionBuscar = this.gestionarSolicitudGateway.buscarSolicitudesPorUsuarioYCursoPre(
-            usuarioBuscar.getIdUsuario(), cursoABuscar.getId_curso()
+            usuarioBuscar.getIdUsuario(), cursoABuscar.getIdCurso()
         );
 
         if (preinscripcionBuscar != null) {
@@ -161,23 +161,23 @@ public class GestionarSolicitudCursoVeranoCUAdapter implements GestionarSolicitu
         if (solicitudCursoVerano.getObjCursoOfertadoVerano() == null) {
             throw new ReglaNegocioExcepcion("Debe seleccionar un curso válido");
         }
-        if (solicitudCursoVerano.getObjCursoOfertadoVerano().getId_curso() == null) {
+        if (solicitudCursoVerano.getObjCursoOfertadoVerano().getIdCurso() == null) {
             throw new ReglaNegocioExcepcion("Debe seleccionar un curso válido");
         }
-        cursoABuscar = this.cursoOfertado.obtenerCursoPorId(solicitudCursoVerano.getObjCursoOfertadoVerano().getId_curso());
+        cursoABuscar = this.cursoOfertado.obtenerCursoPorId(solicitudCursoVerano.getObjCursoOfertadoVerano().getIdCurso());
         if (cursoABuscar == null) {
             throw new ReglaNegocioExcepcion("No se encontró el curso");
         }
         // Solo se admiten inscripciones mientras el curso está en la fase de Inscripcion
         exigirEstadoCurso(cursoABuscar, ESTADO_INSCRIPCION, "inscripciones");
 
-        if (solicitudCursoVerano.getCodicion_solicitud() == null) {
+        if (solicitudCursoVerano.getCondicionSolicitud() == null) {
             throw new ReglaNegocioExcepcion("Debe seleccionar una condición de solicitud válida");
         }
 
         // Verificar que el estudiante tenga una preinscripción aprobada
         preinscripcionBuscar = this.gestionarSolicitudGateway.buscarSolicitudesPorUsuarioYCursoPre(
-            usuarioBuscar.getIdUsuario(), cursoABuscar.getId_curso()
+            usuarioBuscar.getIdUsuario(), cursoABuscar.getIdCurso()
         );
 
         if (preinscripcionBuscar == null) {
@@ -190,7 +190,7 @@ public class GestionarSolicitudCursoVeranoCUAdapter implements GestionarSolicitu
         }
 
         // No puede tener otra inscripción activa (una con pago rechazado no cuenta)
-        if (tieneInscripcionActiva(usuarioBuscar.getIdUsuario(), cursoABuscar.getId_curso())) {
+        if (tieneInscripcionActiva(usuarioBuscar.getIdUsuario(), cursoABuscar.getIdCurso())) {
             throw new ReglaNegocioExcepcion("Ya tiene una inscripción activa para este curso");
         }
 
@@ -441,11 +441,11 @@ public class GestionarSolicitudCursoVeranoCUAdapter implements GestionarSolicitu
 
     @Override
     public void verificarCupoDisponible(CursoOfertadoVerano curso) {
-        if (curso == null || curso.getId_curso() == null) {
+        if (curso == null || curso.getIdCurso() == null) {
             return;
         }
-        ReglasCupo.exigirCupoLibre(curso.getCupo_estimado(),
-                () -> this.gestionarSolicitudGateway.contarInscripcionesAceptadasPorCurso(curso.getId_curso()));
+        ReglasCupo.exigirCupoLibre(curso.getCupoEstimado(),
+                () -> this.gestionarSolicitudGateway.contarInscripcionesAceptadasPorCurso(curso.getIdCurso()));
     }
 
     @Override
@@ -471,7 +471,7 @@ public class GestionarSolicitudCursoVeranoCUAdapter implements GestionarSolicitu
     private void exigirEstadoCurso(CursoOfertadoVerano curso, String estadoRequerido, String queSolicitud) {
         String actual = curso.getEstadosCursoOfertados() == null || curso.getEstadosCursoOfertados().isEmpty()
                 ? null
-                : curso.getEstadosCursoOfertados().get(curso.getEstadosCursoOfertados().size() - 1).getEstado_actual();
+                : curso.getEstadosCursoOfertados().get(curso.getEstadosCursoOfertados().size() - 1).getEstadoActual();
         if (!estadoRequerido.equals(actual)) {
             throw new ReglaNegocioExcepcion(
                     "El curso no está recibiendo " + queSolicitud + " (estado actual: "
@@ -492,7 +492,7 @@ public class GestionarSolicitudCursoVeranoCUAdapter implements GestionarSolicitu
     private static boolean coincidePeriodo(Solicitud solicitud, String periodo) {
         CursoOfertadoVerano curso = solicitud.getObjCursoOfertadoVerano();
         return periodo == null || periodo.equals(solicitud.getPeriodoAcademico())
-                || (curso != null && periodo.equals(curso.getPeriodo_academico()));
+                || (curso != null && periodo.equals(curso.getPeriodoAcademico()));
     }
 
     private static boolean coincideFecha(Date fecha, Date inicio, Date fin) {
@@ -510,7 +510,7 @@ public class GestionarSolicitudCursoVeranoCUAdapter implements GestionarSolicitu
         return buscarSolicitudesPorUsuario(idUsuario).stream()
                 .filter(s -> s.getObjUsuario() != null && Objects.equals(idUsuario, s.getObjUsuario().getIdUsuario()))
                 .filter(s -> s.getObjCursoOfertadoVerano() != null
-                        && Objects.equals(idCurso, s.getObjCursoOfertadoVerano().getId_curso()))
+                        && Objects.equals(idCurso, s.getObjCursoOfertadoVerano().getIdCurso()))
                 .filter(GestionarSolicitudCursoVeranoCUAdapter::preinscripcionAprobada)
                 .findFirst().orElse(null);
     }

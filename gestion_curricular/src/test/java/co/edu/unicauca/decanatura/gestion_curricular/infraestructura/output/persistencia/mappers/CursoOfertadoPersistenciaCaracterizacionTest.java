@@ -82,7 +82,7 @@ class CursoOfertadoPersistenciaCaracterizacionTest {
         casos.set("guardarCambiosCurso", guardado(() -> gateway.guardarCambiosCurso(4, 30, "222", "Publicado")));
         casos.set("guardarCambiosCurso inexistente", guardado(() -> gateway.guardarCambiosCurso(9, 30, null, null)));
         CursoOfertadoVerano nuevo = GrafosSolicitud.curso(GrafosSolicitud.usuario());
-        nuevo.setId_curso(null);
+        nuevo.setIdCurso(null);
         casos.set("crearCurso", guardado(() -> gateway.crearCurso(nuevo)));
         CursoOfertadoVerano sinGrupo = GrafosSolicitud.curso(null);
         sinGrupo.setGrupo(null);
@@ -92,7 +92,7 @@ class CursoOfertadoPersistenciaCaracterizacionTest {
         casos.set("actualizarCurso completo", guardado(() -> gateway.actualizarCurso(conSolicitudes,
                 new EstadoCursoOfertado(null, "Preinscripcion", GrafosSolicitud.FECHA_3, conSolicitudes))));
         CursoOfertadoVerano conNulos = new CursoOfertadoVerano();
-        conNulos.setId_curso(5);
+        conNulos.setIdCurso(5);
         conNulos.setEstadosCursoOfertados(null);
         conNulos.setEstudiantesInscritos(null);
         conNulos.setSolicitudes(null);

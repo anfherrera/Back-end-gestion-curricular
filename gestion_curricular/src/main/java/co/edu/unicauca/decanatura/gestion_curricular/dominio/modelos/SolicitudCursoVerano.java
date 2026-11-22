@@ -13,9 +13,9 @@ import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.enums.Condi
 @EqualsAndHashCode(callSuper = true)
 public class SolicitudCursoVerano extends Solicitud {
 
-    private String nombre_estudiante;
+    private String nombreEstudiante;
     private CursoOfertadoVerano objCursoOfertado;
-    private CondicionSolicitudVerano codicion_solicitud;
+    private CondicionSolicitudVerano condicionSolicitud;
     private String observacion;
 
 }

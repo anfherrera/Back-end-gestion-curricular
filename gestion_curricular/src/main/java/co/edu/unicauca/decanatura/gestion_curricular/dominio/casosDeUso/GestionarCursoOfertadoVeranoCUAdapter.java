@@ -70,10 +70,10 @@ public class GestionarCursoOfertadoVeranoCUAdapter implements GestionarCursoOfer
         if(curso == null){
             throw new ReglaNegocioExcepcion("No hay datos en el curso");
         }
-        if(curso.getId_curso() == null){
+        if(curso.getIdCurso() == null){
             throw new ReglaNegocioExcepcion("No hay id en el curso");
         }
-        idCurso = curso.getId_curso();
+        idCurso = curso.getIdCurso();
         cursoABuscar = gestionarCursoOfertadoVeranoGateway.obtenerCursoPorId(idCurso);
         if(cursoABuscar == null){
             throw new EntidadNoExisteException("No se encuentra el curso");
@@ -84,15 +84,15 @@ public class GestionarCursoOfertadoVeranoCUAdapter implements GestionarCursoOfer
         if(estadoCurso == null){
             throw new ReglaNegocioExcepcion("No hay datos en el estado");
         }
-        if(estadoCurso.getId_estado() == null){
+        if(estadoCurso.getIdEstado() == null){
             throw new ReglaNegocioExcepcion("No hay id en el estado");
         }
-        if(estadoCurso.getEstado_actual() == null){
+        if(estadoCurso.getEstadoActual() == null){
             throw new ReglaNegocioExcepcion("No hay datos en el estado actual");
         }
 
-        if(estadoCurso.getEstado_actual().equals("Preinscripcion")){
-            if(cursoABuscar.getEstadosCursoOfertados().get(0).getEstado_actual().equals("Publicado")){
+        if(estadoCurso.getEstadoActual().equals("Preinscripcion")){
+            if(cursoABuscar.getEstadosCursoOfertados().get(0).getEstadoActual().equals("Publicado")){
                 throw new ReglaNegocioExcepcion("No se puede actualizar el curso, porque no esta publicado");
             }
 
@@ -130,8 +130,8 @@ public class GestionarCursoOfertadoVeranoCUAdapter implements GestionarCursoOfer
 
         }
 
-        if(estadoCurso.getEstado_actual().equals("Inscripcion")){
-            if(cursoABuscar.getEstadosCursoOfertados().get(0).getEstado_actual().equals("Preinscripcion")){
+        if(estadoCurso.getEstadoActual().equals("Inscripcion")){
+            if(cursoABuscar.getEstadosCursoOfertados().get(0).getEstadoActual().equals("Preinscripcion")){
                 throw new ReglaNegocioExcepcion("No se puede actualizar el curso, porque no esta publicado");
             }
 
@@ -139,7 +139,7 @@ public class GestionarCursoOfertadoVeranoCUAdapter implements GestionarCursoOfer
             if(solicitudes.isEmpty()){
                 throw new ReglaNegocioExcepcion("No se puede publicar el curso, porque no hay solicitudes");
             }
-                if(solicitudes.size()< cursoABuscar.getCupo_estimado()){
+                if(solicitudes.size()< cursoABuscar.getCupoEstimado()){
                     throw new ReglaNegocioExcepcion("No se puede abrir el curso, porque no se alcanzo el punto de equilibrio");
                 }
                 estudiantesInscritos = new ArrayList<Usuario>(cursoABuscar.getEstudiantesInscritos());
@@ -178,8 +178,8 @@ public class GestionarCursoOfertadoVeranoCUAdapter implements GestionarCursoOfer
         }
 
         nuevoEstado = new EstadoCursoOfertado();
-        nuevoEstado.setFecha_registro_estado(new Date());
-        nuevoEstado.setEstado_actual(estadoCurso.getEstado_actual());
+        nuevoEstado.setFechaRegistroEstado(new Date());
+        nuevoEstado.setEstadoActual(estadoCurso.getEstadoActual());
 
         cursoActualizado = this.gestionarCursoOfertadoVeranoGateway.actualizarCurso(cursoABuscar, nuevoEstado);
 
@@ -261,19 +261,19 @@ public class GestionarCursoOfertadoVeranoCUAdapter implements GestionarCursoOfer
         }
 
         CursoOfertadoVerano curso = new CursoOfertadoVerano();
-        curso.setCupo_estimado(datos.cupoEstimado());
+        curso.setCupoEstimado(datos.cupoEstimado());
         curso.setSalon(salon);
         curso.setGrupo(grupo);
         curso.setFecha_inicio(datos.fechaInicio());
         curso.setFecha_fin(datos.fechaFin());
-        curso.setPeriodo_academico(datos.periodo());
+        curso.setPeriodoAcademico(datos.periodo());
         curso.setObjMateria(materia);
         curso.setObjDocente(docente);
 
         String estado = datos.estado() == null ? "" : datos.estado().trim();
         EstadoCursoOfertado estadoInicial = new EstadoCursoOfertado();
-        estadoInicial.setEstado_actual(TransicionEstadoCurso.esEstadoValido(estado) ? estado : "Abierto");
-        estadoInicial.setFecha_registro_estado(datos.fechaInicio());
+        estadoInicial.setEstadoActual(TransicionEstadoCurso.esEstadoValido(estado) ? estado : "Abierto");
+        estadoInicial.setFechaRegistroEstado(datos.fechaInicio());
         curso.getEstadosCursoOfertados().add(estadoInicial);
         return guardarCurso(curso);
     }
@@ -336,7 +336,7 @@ public class GestionarCursoOfertadoVeranoCUAdapter implements GestionarCursoOfer
         if (nuevoEstado != null) {
             // La completitud se evalúa con los datos nuevos (cupo y salón ya aplicados)
             if (cupoEstimado != null) {
-                curso.setCupo_estimado(cupoEstimado);
+                curso.setCupoEstimado(cupoEstimado);
             }
             if (salon != null) {
                 curso.setSalon(salon);
@@ -361,7 +361,7 @@ public class GestionarCursoOfertadoVeranoCUAdapter implements GestionarCursoOfer
         List<CursoOfertadoVerano> cursos = periodo == null ? listarTodos()
                 : gestionarCursoOfertadoVeranoGateway.listarPorPeriodo(periodo);
         return cursos.stream()
-                .filter(curso -> periodo == null || periodo.equals(curso.getPeriodo_academico()))
+                .filter(curso -> periodo == null || periodo.equals(curso.getPeriodoAcademico()))
                 .filter(curso -> !soloVisibles || esVisibleParaEstudiantes(curso))
                 .filter(curso -> idPrograma == null || disponibleParaPrograma(curso, idPrograma))
                 .toList();
@@ -389,7 +389,7 @@ public class GestionarCursoOfertadoVeranoCUAdapter implements GestionarCursoOfer
         if (estados == null || estados.isEmpty()) {
             return false;
         }
-        String estado = estados.get(estados.size() - 1).getEstado_actual();
+        String estado = estados.get(estados.size() - 1).getEstadoActual();
         return "Publicado".equals(estado) || "Preinscripcion".equals(estado) || "Inscripcion".equals(estado);
     }
 

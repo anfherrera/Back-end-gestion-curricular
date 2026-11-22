@@ -171,15 +171,15 @@ class CursoOfertadoRespuestasCaracterizacionTest {
 
     private static SolicitudCursoVeranoPreinscripcion preinscripcion(int id) {
         SolicitudCursoVeranoPreinscripcion preinscripcion = solicitud(SolicitudCursoVeranoPreinscripcion::new, id);
-        preinscripcion.setNombre_estudiante("Estudiante " + id);
-        preinscripcion.setCodigo_estudiante("1046" + id);
+        preinscripcion.setNombreEstudiante("Estudiante " + id);
+        preinscripcion.setCodigoEstudiante("1046" + id);
         preinscripcion.setObservacion(id % 2 == 0 ? "observacion" : null);
         return preinscripcion;
     }
 
     private static SolicitudCursoVeranoInscripcion inscripcion(int id) {
         SolicitudCursoVeranoInscripcion inscripcion = solicitud(SolicitudCursoVeranoInscripcion::new, id);
-        inscripcion.setNombre_estudiante("Estudiante " + id);
+        inscripcion.setNombreEstudiante("Estudiante " + id);
         return inscripcion;
     }
 
@@ -195,7 +195,7 @@ class CursoOfertadoRespuestasCaracterizacionTest {
         estado.setFechaRegistroEstado(new Date(MARZO));
         solicitud.getEstadosSolicitud().add(estado);
         CursoOfertadoVerano curso = new CursoOfertadoVerano();
-        curso.setId_curso(5);
+        curso.setIdCurso(5);
         Materia materia = new Materia();
         materia.setIdMateria(105);
         materia.setNombre("Materia 5");

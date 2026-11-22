@@ -33,7 +33,7 @@ public interface NotificacionMapperDominio {
     @Mapping(source = "objUsuario.correo", target = "emailUsuario")
     @Mapping(source = "objSolicitud.idSolicitud", target = "idSolicitud")
     @Mapping(source = "objSolicitud.nombreSolicitud", target = "nombreSolicitud")
-    @Mapping(source = "objCurso.id_curso", target = "idCurso")
+    @Mapping(source = "objCurso.idCurso", target = "idCurso")
     @Mapping(expression = "java(notificacion.getObjCurso() != null && notificacion.getObjCurso().getObjMateria() != null ? notificacion.getObjCurso().getObjMateria().getNombre() : null)", target = "nombreMateria")
     @Mapping(expression = "java(notificacion.getObjCurso() != null && notificacion.getObjCurso().getObjMateria() != null ? notificacion.getObjCurso().getObjMateria().getCodigo() + \" - \" + notificacion.getObjCurso().getObjMateria().getNombre() : null)", target = "nombreCurso")
     NotificacionDTORespuesta mapearDeNotificacionARespuesta(Notificacion notificacion);

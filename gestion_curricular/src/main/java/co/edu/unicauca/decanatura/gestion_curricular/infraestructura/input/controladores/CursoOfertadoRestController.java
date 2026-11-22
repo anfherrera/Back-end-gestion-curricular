@@ -81,7 +81,7 @@ public class CursoOfertadoRestController {
                     if (curso.getEstadosCursoOfertados() == null || curso.getEstadosCursoOfertados().isEmpty()) {
                         return false;
                     }
-                    String estadoActual = curso.getEstadosCursoOfertados().get(curso.getEstadosCursoOfertados().size() - 1).getEstado_actual();
+                    String estadoActual = curso.getEstadosCursoOfertados().get(curso.getEstadosCursoOfertados().size() - 1).getEstadoActual();
                     // Solo estados visibles para estudiantes: Publicado, Preinscripcion, Inscripcion
                     return "Publicado".equals(estadoActual) || 
                            "Preinscripcion".equals(estadoActual) ||

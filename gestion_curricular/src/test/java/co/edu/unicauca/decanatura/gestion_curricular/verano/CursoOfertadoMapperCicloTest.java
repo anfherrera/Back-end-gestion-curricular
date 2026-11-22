@@ -31,10 +31,10 @@ class CursoOfertadoMapperCicloTest {
         ReflectionTestUtils.setField(mapper, "usuarioMapperDominio", mock(UsuarioMapperDominio.class));
 
         CursoOfertadoVerano curso = new CursoOfertadoVerano();
-        curso.setId_curso(7);
+        curso.setIdCurso(7);
         EstadoCursoOfertado estado = new EstadoCursoOfertado();
-        estado.setId_estado(3);
-        estado.setEstado_actual("Preinscripcion");
+        estado.setIdEstado(3);
+        estado.setEstadoActual("Preinscripcion");
         estado.setObjCursoOfertadoVerano(curso);
         curso.setEstadosCursoOfertados(new ArrayList<>(List.of(estado)));
 

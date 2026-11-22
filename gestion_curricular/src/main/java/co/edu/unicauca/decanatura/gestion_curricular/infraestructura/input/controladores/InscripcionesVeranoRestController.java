@@ -97,8 +97,8 @@ public class InscripcionesVeranoRestController {
         nuevaInscripcion.setObjCursoOfertadoVerano(preinscripcionAprobada.getObjCursoOfertadoVerano());
         
         // Campos obligatorios que faltaban
-        nuevaInscripcion.setNombre_estudiante("Estudiante"); // Valor por defecto
-        nuevaInscripcion.setCodicion_solicitud(CondicionSolicitudVerano.Primera_Vez); // Valor por defecto
+        nuevaInscripcion.setNombreEstudiante("Estudiante"); // Valor por defecto
+        nuevaInscripcion.setCondicionSolicitud(CondicionSolicitudVerano.Primera_Vez); // Valor por defecto
         
         // 3. Guardar la inscripcion en la base de datos
         SolicitudCursoVeranoInscripcion inscripcionGuardada = solicitudCU.crearSolicitudCursoVeranoInscripcion(nuevaInscripcion);
@@ -147,7 +147,7 @@ public class InscripcionesVeranoRestController {
             Usuario usuario = inscripcion.getObjUsuario();
             Integer idUsuario = usuario == null ? null : usuario.getIdUsuario();
             var estudiante = new EstudianteInscripcion(idUsuario,
-                    usuario == null ? inscripcion.getNombre_estudiante() : usuario.getNombreCompleto(),
+                    usuario == null ? inscripcion.getNombreEstudiante() : usuario.getNombreCompleto(),
                     usuario == null ? null : usuario.getCorreo(), usuario == null ? null : usuario.getCodigo());
 
             var documentos = inscripcion.getDocumentos();
@@ -156,7 +156,7 @@ public class InscripcionesVeranoRestController {
                     comprobante == null ? "Sin comprobante" : comprobante.getNombre(), null,
                     comprobante == null ? null : comprobante.getFechaDocumento());
             inscripciones.add(new InscripcionListado(inscripcion.getIdSolicitud(), inscripcion.getFechaRegistroSolicitud(),
-                    estado, curso == null ? null : curso.getId_curso(), idUsuario, estudiante, archivoPago));
+                    estado, curso == null ? null : curso.getIdCurso(), idUsuario, estudiante, archivoPago));
         }
         return ResponseEntity.ok(inscripciones);
     }
@@ -231,7 +231,7 @@ public class InscripcionesVeranoRestController {
             NombreCurso nombreCurso = null;
             CursoOfertadoVerano curso = inscripcion.getObjCursoOfertadoVerano();
             if (curso != null) {
-                idCursoInscrito = new IdCurso(curso.getId_curso());
+                idCursoInscrito = new IdCurso(curso.getIdCurso());
                 nombreCurso = new NombreCurso(curso.getObjMateria() == null ? null : curso.getObjMateria().getNombre());
                 // El codigo del curso no esta disponible en esta entidad
             }
@@ -240,10 +240,10 @@ public class InscripcionesVeranoRestController {
             List<Documento> documentos = inscripcion.getDocumentos();
             Documento comprobante = documentos == null || documentos.isEmpty() ? null : documentos.get(0);
             estudiantesInscritos.add(new EstudianteElegible(usuario == null ? null : usuario.getIdUsuario(),
-                    usuario == null ? inscripcion.getNombre_estudiante() : usuario.getNombreCompleto(),
+                    usuario == null ? inscripcion.getNombreEstudiante() : usuario.getNombreCompleto(),
                     usuario == null ? null : usuario.getCodigo(), usuario == null ? null : usuario.getCorreo(),
                     inscripcion.getIdSolicitud(), inscripcion.getNombreSolicitud(),
-                    inscripcion.getFechaRegistroSolicitud(), inscripcion.getCodicion_solicitud(), idCursoInscrito,
+                    inscripcion.getFechaRegistroSolicitud(), inscripcion.getCondicionSolicitud(), idCursoInscrito,
                     nombreCurso, estadoActual, "Inscripcion", "Estudiante inscrito en el curso", true,
                     comprobante == null ? null : new ComprobantePago(comprobante.getIdDocumento(),
                             comprobante.getNombre(), comprobante.getRutaDocumento(), comprobante.getFechaDocumento())));
@@ -296,7 +296,7 @@ public class InscripcionesVeranoRestController {
 
         // 3. Insertar en tabla cursosestudiantes (relacion Many-to-Many)
         try {
-            Integer idCurso = inscripcion.getObjCursoOfertadoVerano().getId_curso();
+            Integer idCurso = inscripcion.getObjCursoOfertadoVerano().getIdCurso();
             Integer idEstudiante = inscripcion.getObjUsuario().getIdUsuario();
             if (!cursoCU.asociarEstudiante(idCurso, idEstudiante)) {
                 log.warn("No se pudo asociar el estudiante {} al curso {}", idEstudiante, idCurso);

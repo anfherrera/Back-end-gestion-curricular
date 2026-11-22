@@ -19,8 +19,10 @@ import com.fasterxml.jackson.databind.module.SimpleModule;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.CursoOfertadoVerano;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Docente;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Documento;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.EstadoCursoOfertado;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.EstadoSolicitud;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.FechaEcaes;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Materia;
@@ -29,6 +31,9 @@ import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Programa;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Rol;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Salon;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Solicitud;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.SolicitudCursoVerano;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.SolicitudCursoVeranoInscripcion;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.SolicitudCursoVeranoPreinscripcion;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.SolicitudEcaes;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.SolicitudHomologacion;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.SolicitudPazYSalvo;
@@ -88,6 +93,19 @@ public class NombresJsonDominio {
         historico(SolicitudHomologacion.class, "programaDestino", "programa_destino");
         historico(SolicitudPazYSalvo.class, "tituloTrabajoGrado", "titulo_trabajo_grado");
         historico(SolicitudPazYSalvo.class, "directorTrabajoGrado", "director_trabajo_grado");
+        historico(CursoOfertadoVerano.class, "idCurso", "id_curso");
+        historico(CursoOfertadoVerano.class, "cupoEstimado", "cupo_estimado");
+        historico(CursoOfertadoVerano.class, "periodoAcademico", "periodo_academico");
+        historico(EstadoCursoOfertado.class, "idEstado", "id_estado");
+        historico(EstadoCursoOfertado.class, "estadoActual", "estado_actual");
+        historico(EstadoCursoOfertado.class, "fechaRegistroEstado", "fecha_registro_estado");
+        historico(SolicitudCursoVerano.class, "nombreEstudiante", "nombre_estudiante");
+        historico(SolicitudCursoVerano.class, "condicionSolicitud", "codicion_solicitud");
+        historico(SolicitudCursoVeranoInscripcion.class, "nombreEstudiante", "nombre_estudiante");
+        historico(SolicitudCursoVeranoInscripcion.class, "condicionSolicitud", "codicion_solicitud");
+        historico(SolicitudCursoVeranoPreinscripcion.class, "nombreEstudiante", "nombre_estudiante");
+        historico(SolicitudCursoVeranoPreinscripcion.class, "codigoEstudiante", "codigo_estudiante");
+        historico(SolicitudCursoVeranoPreinscripcion.class, "condicionSolicitud", "codicion_solicitud");
     }
 
     private static void historico(Class<?> clase, String campo, String nombre) {

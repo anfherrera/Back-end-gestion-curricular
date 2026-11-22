@@ -151,7 +151,7 @@ class SolicitudesVeranoReporteCaracterizacionTest {
         SolicitudCursoVeranoPreinscripcion completa = solicitud(SolicitudCursoVeranoPreinscripcion::new, 1,
             "Preinscripción", "Aprobado");
         completa.setObservacion("Quiero ver la materia");
-        completa.setCodicion_solicitud(CondicionSolicitudVerano.Habilitación);
+        completa.setCondicionSolicitud(CondicionSolicitudVerano.Habilitación);
         completa.setObjCursoOfertadoVerano(curso(1, GrupoCursoVerano.A, true));
         lista.add(completa);
         SolicitudCursoVeranoPreinscripcion nueva = solicitud(SolicitudCursoVeranoPreinscripcion::new, 2, null, null);
@@ -166,7 +166,7 @@ class SolicitudesVeranoReporteCaracterizacionTest {
         lista.add(new SolicitudEcaes());
         SolicitudCursoVeranoInscripcion inscripcion = solicitud(SolicitudCursoVeranoInscripcion::new, 4,
             "Inscripción", "Pago_Validado");
-        inscripcion.setCodicion_solicitud(CondicionSolicitudVerano.Primera_Vez);
+        inscripcion.setCondicionSolicitud(CondicionSolicitudVerano.Primera_Vez);
         inscripcion.setObjCursoOfertadoVerano(curso(1, GrupoCursoVerano.B, true));
         lista.add(inscripcion);
         SolicitudCursoVeranoInscripcion sinCurso = solicitud(SolicitudCursoVeranoInscripcion::new, 5, "  ", null);
@@ -194,7 +194,7 @@ class SolicitudesVeranoReporteCaracterizacionTest {
 
     private static CursoOfertadoVerano curso(int id, GrupoCursoVerano grupo, boolean conMateria) {
         CursoOfertadoVerano curso = new CursoOfertadoVerano();
-        curso.setId_curso(id);
+        curso.setIdCurso(id);
         curso.setGrupo(grupo);
         if (conMateria) {
             Materia materia = new Materia();

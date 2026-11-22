@@ -151,15 +151,15 @@ class SolicitudesVeranoPersistenciaCaracterizacionTest {
         casos.set("crearPreinscripcion curso existente", guardado(
                 () -> gateway.crearSolicitudCursoVeranoPreinscripcion(preinscripcion(cursoConId(4)))));
         CursoOfertadoVerano apertura = GrafosSolicitud.curso(null);
-        apertura.setId_curso(0);
+        apertura.setIdCurso(0);
         casos.set("crearPreinscripcion apertura", guardado(
                 () -> gateway.crearSolicitudCursoVeranoPreinscripcion(preinscripcion(apertura))));
         CursoOfertadoVerano nuevo = GrafosSolicitud.curso(null);
-        nuevo.setId_curso(99);
+        nuevo.setIdCurso(99);
         casos.set("crearPreinscripcion curso nuevo", guardado(
                 () -> gateway.crearSolicitudCursoVeranoPreinscripcion(preinscripcion(nuevo))));
         CursoOfertadoVerano sinGrupo = GrafosSolicitud.curso(null);
-        sinGrupo.setId_curso(98);
+        sinGrupo.setIdCurso(98);
         sinGrupo.setGrupo(null);
         casos.set("crearPreinscripcion curso nuevo sin grupo", guardado(
                 () -> gateway.crearSolicitudCursoVeranoPreinscripcion(preinscripcion(sinGrupo))));
@@ -168,7 +168,7 @@ class SolicitudesVeranoPersistenciaCaracterizacionTest {
         casos.set("crearInscripcion curso existente", guardado(
                 () -> gateway.crearSolicitudCursoVeranoInscripcion(inscripcion(cursoConId(4)))));
         CursoOfertadoVerano nuevoInscripcion = GrafosSolicitud.curso(null);
-        nuevoInscripcion.setId_curso(97);
+        nuevoInscripcion.setIdCurso(97);
         casos.set("crearInscripcion curso nuevo", guardado(
                 () -> gateway.crearSolicitudCursoVeranoInscripcion(inscripcion(nuevoInscripcion))));
         casos.set("crearInscripcion sin curso", guardado(
@@ -231,9 +231,9 @@ class SolicitudesVeranoPersistenciaCaracterizacionTest {
         Solicitud solicitud = switch (tipo) {
             case 1 -> {
                 SolicitudCursoVeranoPreinscripcion s = new SolicitudCursoVeranoPreinscripcion();
-                s.setNombre_estudiante("Ana");
-                s.setCodigo_estudiante("104");
-                s.setCodicion_solicitud(CondicionSolicitudVerano.Repeteción);
+                s.setNombreEstudiante("Ana");
+                s.setCodigoEstudiante("104");
+                s.setCondicionSolicitud(CondicionSolicitudVerano.Repeteción);
                 yield s;
             }
             case 2 -> {
@@ -267,9 +267,9 @@ class SolicitudesVeranoPersistenciaCaracterizacionTest {
     private static SolicitudCursoVeranoPreinscripcion preinscripcion(CursoOfertadoVerano curso) {
         SolicitudCursoVeranoPreinscripcion solicitud = GrafosSolicitud.completar(new SolicitudCursoVeranoPreinscripcion());
         solicitud.setIdSolicitud(null);
-        solicitud.setNombre_estudiante("Ana");
-        solicitud.setCodigo_estudiante("104");
-        solicitud.setCodicion_solicitud(CondicionSolicitudVerano.Primera_Vez);
+        solicitud.setNombreEstudiante("Ana");
+        solicitud.setCodigoEstudiante("104");
+        solicitud.setCondicionSolicitud(CondicionSolicitudVerano.Primera_Vez);
         solicitud.setObservacion("quiero el curso");
         solicitud.setObjCursoOfertadoVerano(curso);
         return solicitud;
@@ -278,15 +278,15 @@ class SolicitudesVeranoPersistenciaCaracterizacionTest {
     private static SolicitudCursoVeranoInscripcion inscripcion(CursoOfertadoVerano curso) {
         SolicitudCursoVeranoInscripcion solicitud = GrafosSolicitud.completar(new SolicitudCursoVeranoInscripcion());
         solicitud.setIdSolicitud(null);
-        solicitud.setNombre_estudiante("Ana");
-        solicitud.setCodicion_solicitud(CondicionSolicitudVerano.Habilitación);
+        solicitud.setNombreEstudiante("Ana");
+        solicitud.setCondicionSolicitud(CondicionSolicitudVerano.Habilitación);
         solicitud.setObjCursoOfertadoVerano(curso);
         return solicitud;
     }
 
     private static CursoOfertadoVerano cursoConId(int id) {
         CursoOfertadoVerano curso = new CursoOfertadoVerano();
-        curso.setId_curso(id);
+        curso.setIdCurso(id);
         return curso;
     }
 

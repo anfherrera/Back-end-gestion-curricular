@@ -165,7 +165,7 @@ public class CursosVeranoRestController {
                     if (curso.getEstadosCursoOfertados() == null || curso.getEstadosCursoOfertados().isEmpty()) {
                         return false;
                     }
-                    String estadoActual = curso.getEstadosCursoOfertados().get(curso.getEstadosCursoOfertados().size() - 1).getEstado_actual();
+                    String estadoActual = curso.getEstadosCursoOfertados().get(curso.getEstadosCursoOfertados().size() - 1).getEstadoActual();
                     return "Preinscripcion".equals(estadoActual);
                 })
                 .collect(Collectors.toList());
@@ -175,8 +175,8 @@ public class CursosVeranoRestController {
         if (periodoAcademico != null && !periodoAcademico.trim().isEmpty() && !periodoAcademico.trim().equalsIgnoreCase("todos")) {
             String periodoFiltro = periodoAcademico.trim();
             cursosPreinscripcion = cursosPreinscripcion.stream()
-                    .filter(curso -> curso.getPeriodo_academico() != null 
-                            && curso.getPeriodo_academico().equals(periodoFiltro))
+                    .filter(curso -> curso.getPeriodoAcademico() != null 
+                            && curso.getPeriodoAcademico().equals(periodoFiltro))
                     .collect(Collectors.toList());
         } else {
         }
@@ -206,7 +206,7 @@ public class CursosVeranoRestController {
                     if (curso.getEstadosCursoOfertados() == null || curso.getEstadosCursoOfertados().isEmpty()) {
                         return false;
                     }
-                    String estadoActual = curso.getEstadosCursoOfertados().get(curso.getEstadosCursoOfertados().size() - 1).getEstado_actual();
+                    String estadoActual = curso.getEstadosCursoOfertados().get(curso.getEstadosCursoOfertados().size() - 1).getEstadoActual();
                     return "Inscripcion".equals(estadoActual);
                 })
                 .collect(Collectors.toList());
@@ -216,8 +216,8 @@ public class CursosVeranoRestController {
         if (periodoAcademico != null && !periodoAcademico.trim().isEmpty() && !periodoAcademico.trim().equalsIgnoreCase("todos")) {
             String periodoFiltro = periodoAcademico.trim();
             cursosInscripcion = cursosInscripcion.stream()
-                    .filter(curso -> curso.getPeriodo_academico() != null 
-                            && curso.getPeriodo_academico().equals(periodoFiltro))
+                    .filter(curso -> curso.getPeriodoAcademico() != null 
+                            && curso.getPeriodoAcademico().equals(periodoFiltro))
                     .collect(Collectors.toList());
         } else {
         }
@@ -299,7 +299,7 @@ public class CursosVeranoRestController {
         
         // Crear respuesta con datos reales del curso creado
         // Usar las fechas y período académico proporcionados por el usuario en lugar de los calculados
-        return ResponseEntity.ok(new CursoCreado(cursoCreado.getId_curso(), cursoDTO.getNombre_curso(),
+        return ResponseEntity.ok(new CursoCreado(cursoCreado.getIdCurso(), cursoDTO.getNombre_curso(),
                 cursoDTO.getCodigo_curso(), cursoDTO.getDescripcion(), dto.getFecha_inicio(), dto.getFecha_fin(),
                 periodo, cursoDTO.getCupo_maximo(), cursoDTO.getCupo_disponible(), cursoDTO.getCupo_estimado(),
                 cursoDTO.getEspacio_asignado(), cursoDTO.getEstado(), cursoDTO.getObjMateria(),
@@ -398,10 +398,10 @@ public class CursosVeranoRestController {
 
         // Crear respuesta con los datos actualizados
         Salon salon = salonCU.resolverSalonDeCurso(cursoActualizado.getSalon());
-        return ResponseEntity.ok(new CursoActualizado(cursoActualizado.getId_curso(),
+        return ResponseEntity.ok(new CursoActualizado(cursoActualizado.getIdCurso(),
                 cursoActualizado.getObjMateria() != null ? cursoActualizado.getObjMateria().getNombre() : "Curso",
                 cursoActualizado.getObjMateria() != null ? cursoActualizado.getObjMateria().getCodigo() : "N/A",
-                cursoActualizado.getCupo_estimado(), cursoActualizado.getSalon(), salonInfo(salon),
+                cursoActualizado.getCupoEstimado(), cursoActualizado.getSalon(), salonInfo(salon),
                 salon == null ? null : salon.getIdSalon(),
                 dto.getEstado() != null ? dto.getEstado() : "Actualizado", "Curso actualizado exitosamente",
                 "Cambios aplicados y guardados en BD"));

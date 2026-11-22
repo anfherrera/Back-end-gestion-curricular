@@ -103,16 +103,16 @@ class PeriodoEscrituraVeranoCaracterizacionTest {
 
     private static CursoOfertadoVerano curso(int id, String periodo) {
         CursoOfertadoVerano curso = GrafosSolicitud.curso(null);
-        curso.setId_curso(id);
-        curso.setPeriodo_academico(periodo);
+        curso.setIdCurso(id);
+        curso.setPeriodoAcademico(periodo);
         return curso;
     }
 
     private static SolicitudCursoVeranoPreinscripcion preinscripcion(CursoOfertadoVerano curso) {
         SolicitudCursoVeranoPreinscripcion solicitud = GrafosSolicitud.completar(new SolicitudCursoVeranoPreinscripcion());
         solicitud.setIdSolicitud(null);
-        solicitud.setNombre_estudiante("Ana");
-        solicitud.setCodicion_solicitud(CondicionSolicitudVerano.Primera_Vez);
+        solicitud.setNombreEstudiante("Ana");
+        solicitud.setCondicionSolicitud(CondicionSolicitudVerano.Primera_Vez);
         solicitud.setObjCursoOfertadoVerano(curso);
         return solicitud;
     }
@@ -120,8 +120,8 @@ class PeriodoEscrituraVeranoCaracterizacionTest {
     private static SolicitudCursoVeranoInscripcion inscripcion(CursoOfertadoVerano curso) {
         SolicitudCursoVeranoInscripcion solicitud = GrafosSolicitud.completar(new SolicitudCursoVeranoInscripcion());
         solicitud.setIdSolicitud(null);
-        solicitud.setNombre_estudiante("Ana");
-        solicitud.setCodicion_solicitud(CondicionSolicitudVerano.Habilitación);
+        solicitud.setNombreEstudiante("Ana");
+        solicitud.setCondicionSolicitud(CondicionSolicitudVerano.Habilitación);
         solicitud.setObjCursoOfertadoVerano(curso);
         return solicitud;
     }

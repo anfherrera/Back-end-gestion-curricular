@@ -64,7 +64,7 @@ public final class ReporteSolicitudesVeranoMapper {
                     SolicitudCursoVeranoPreinscripcion preinscripcion = (SolicitudCursoVeranoPreinscripcion) solicitud;
 
                     if (preinscripcion.getObjCursoOfertadoVerano() != null) {
-                        idCursoSolicitud = preinscripcion.getObjCursoOfertadoVerano().getId_curso();
+                        idCursoSolicitud = preinscripcion.getObjCursoOfertadoVerano().getIdCurso();
                         grupoCurso = preinscripcion.getObjCursoOfertadoVerano().getGrupo() != null ?
                             preinscripcion.getObjCursoOfertadoVerano().getGrupo().toString() : null;
 
@@ -88,15 +88,15 @@ public final class ReporteSolicitudesVeranoMapper {
 
                     // Condicion academica del estudiante (Primera Vez, Repitencia, Habilitacion, etc.)
                     condicion = "PRIMERA_VEZ";
-                    if (preinscripcion.getCodicion_solicitud() != null) {
-                        condicion = preinscripcion.getCodicion_solicitud().toString();
+                    if (preinscripcion.getCondicionSolicitud() != null) {
+                        condicion = preinscripcion.getCondicionSolicitud().toString();
                     }
 
                 } else {
                     SolicitudCursoVeranoInscripcion inscripcion = (SolicitudCursoVeranoInscripcion) solicitud;
 
                     if (inscripcion.getObjCursoOfertadoVerano() != null) {
-                        idCursoSolicitud = inscripcion.getObjCursoOfertadoVerano().getId_curso();
+                        idCursoSolicitud = inscripcion.getObjCursoOfertadoVerano().getIdCurso();
                         grupoCurso = inscripcion.getObjCursoOfertadoVerano().getGrupo() != null ?
                             inscripcion.getObjCursoOfertadoVerano().getGrupo().toString() : null;
 
@@ -108,8 +108,8 @@ public final class ReporteSolicitudesVeranoMapper {
                     }
 
                     // Condicion de la inscripcion
-                    if (inscripcion.getCodicion_solicitud() != null) {
-                        condicion = inscripcion.getCodicion_solicitud().toString();
+                    if (inscripcion.getCondicionSolicitud() != null) {
+                        condicion = inscripcion.getCondicionSolicitud().toString();
                     }
 
                     // Estado de la inscripcion

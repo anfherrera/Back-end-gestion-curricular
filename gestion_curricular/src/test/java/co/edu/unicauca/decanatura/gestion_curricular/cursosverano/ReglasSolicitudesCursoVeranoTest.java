@@ -166,10 +166,10 @@ class ReglasSolicitudesCursoVeranoTest {
 
     private static CursoOfertadoVerano curso(String estado, int cupo) {
         EstadoCursoOfertado e = new EstadoCursoOfertado();
-        e.setEstado_actual(estado);
+        e.setEstadoActual(estado);
         CursoOfertadoVerano c = new CursoOfertadoVerano();
-        c.setId_curso(ID_CURSO);
-        c.setCupo_estimado(cupo);
+        c.setIdCurso(ID_CURSO);
+        c.setCupoEstimado(cupo);
         c.setEstadosCursoOfertados(new ArrayList<>(List.of(e)));
         return c;
     }
@@ -182,7 +182,7 @@ class ReglasSolicitudesCursoVeranoTest {
 
     private static CursoOfertadoVerano cursoRef() {
         CursoOfertadoVerano c = new CursoOfertadoVerano();
-        c.setId_curso(ID_CURSO);
+        c.setIdCurso(ID_CURSO);
         return c;
     }
 
@@ -197,7 +197,7 @@ class ReglasSolicitudesCursoVeranoTest {
         SolicitudCursoVeranoPreinscripcion p = new SolicitudCursoVeranoPreinscripcion();
         p.setObjUsuario(usuarioRef());
         p.setObjCursoOfertadoVerano(cursoRef());
-        p.setCodicion_solicitud(CondicionSolicitudVerano.Primera_Vez);
+        p.setCondicionSolicitud(CondicionSolicitudVerano.Primera_Vez);
         p.setDocumentos(new ArrayList<>());
         return p;
     }
@@ -212,7 +212,7 @@ class ReglasSolicitudesCursoVeranoTest {
         SolicitudCursoVeranoInscripcion i = new SolicitudCursoVeranoInscripcion();
         i.setObjUsuario(usuarioRef());
         i.setObjCursoOfertadoVerano(cursoRef());
-        i.setCodicion_solicitud(CondicionSolicitudVerano.Primera_Vez);
+        i.setCondicionSolicitud(CondicionSolicitudVerano.Primera_Vez);
         i.setDocumentos(new ArrayList<>());
         return i;
     }

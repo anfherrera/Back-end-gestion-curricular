@@ -197,15 +197,15 @@ public final class GrafosSolicitud {
 
     public static CursoOfertadoVerano curso(Usuario inscrito) {
         CursoOfertadoVerano curso = new CursoOfertadoVerano();
-        curso.setId_curso(4);
+        curso.setIdCurso(4);
         curso.setObjMateria(new Materia(5, "MAT1", "Cálculo", 4));
         curso.setObjDocente(new Docente(6, "D06", "Luis"));
         curso.setGrupo(GrupoCursoVerano.B);
-        curso.setCupo_estimado(20);
+        curso.setCupoEstimado(20);
         curso.setSalon("221");
         curso.setFecha_inicio(FECHA_1);
         curso.setFecha_fin(FECHA_3);
-        curso.setPeriodo_academico("2025-1");
+        curso.setPeriodoAcademico("2025-1");
         EstadoCursoOfertado abierto = new EstadoCursoOfertado(8, "Abierto", FECHA_1, curso);
         EstadoCursoOfertado sinEstado = new EstadoCursoOfertado(9, null, null, null);
         curso.getEstadosCursoOfertados().add(abierto);

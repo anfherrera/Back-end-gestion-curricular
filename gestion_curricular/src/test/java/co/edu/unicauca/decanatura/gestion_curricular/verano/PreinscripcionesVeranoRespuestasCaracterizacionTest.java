@@ -201,7 +201,7 @@ class PreinscripcionesVeranoRespuestasCaracterizacionTest {
                 lista.add(preinscripcion(12, null, null, sinMateria, usuario(true)));
                 lista.add(preinscripcion(13, "Enviada", null, null, usuario(true)));
                 CursoOfertadoVerano sinId = curso(4, "Física");
-                sinId.setId_curso(null);
+                sinId.setIdCurso(null);
                 lista.add(preinscripcion(14, "Otro", "nota", sinId, usuario(true)));
             }
             case 3 -> lista.add(preinscripcion(15, "Aprobado", null, curso(1, "Cálculo"), null));
@@ -218,8 +218,8 @@ class PreinscripcionesVeranoRespuestasCaracterizacionTest {
                 SolicitudCursoVeranoPreinscripcion completa = preinscripcion(20, "Aprobado", null,
                     curso(1, "Cálculo"), usuario(true));
                 completa.setObservacion("observada");
-                completa.setCodigo_estudiante("1046");
-                completa.setCodicion_solicitud(CondicionSolicitudVerano.Primera_Vez);
+                completa.setCodigoEstudiante("1046");
+                completa.setCondicionSolicitud(CondicionSolicitudVerano.Primera_Vez);
                 lista.add(completa);
                 lista.add(preinscripcion(21, null, null, null, usuario(false)));
                 lista.add(preinscripcion(22, "Rechazado", null, curso(2, null), null));
@@ -263,7 +263,7 @@ class PreinscripcionesVeranoRespuestasCaracterizacionTest {
 
     private static CursoOfertadoVerano curso(int id, String nombreMateria) {
         CursoOfertadoVerano curso = new CursoOfertadoVerano();
-        curso.setId_curso(id);
+        curso.setIdCurso(id);
         Materia materia = new Materia();
         materia.setIdMateria(100 + id);
         materia.setCodigo("MAT" + id);
@@ -274,14 +274,14 @@ class PreinscripcionesVeranoRespuestasCaracterizacionTest {
         docente.setIdDocente(200 + id);
         docente.setNombreDocente("Docente " + id);
         curso.setObjDocente(docente);
-        curso.setCupo_estimado(20);
+        curso.setCupoEstimado(20);
         curso.setSalon("221");
-        curso.setPeriodo_academico("2024-1");
+        curso.setPeriodoAcademico("2024-1");
         curso.setFecha_inicio(new Date(MARZO));
         curso.setFecha_fin(new Date(MARZO + 86_400_000L * 40));
         EstadoCursoOfertado estado = new EstadoCursoOfertado();
-        estado.setEstado_actual("Preinscripcion");
-        estado.setFecha_registro_estado(new Date(MARZO));
+        estado.setEstadoActual("Preinscripcion");
+        estado.setFechaRegistroEstado(new Date(MARZO));
         curso.getEstadosCursoOfertados().add(estado);
         return curso;
     }

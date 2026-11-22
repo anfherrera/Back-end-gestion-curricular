@@ -46,7 +46,7 @@ public final class TransicionEstadoCurso {
         if (estados == null || estados.isEmpty()) {
             return SIN_ESTADO;
         }
-        return estados.get(estados.size() - 1).getEstado_actual();
+        return estados.get(estados.size() - 1).getEstadoActual();
     }
 
     /**
@@ -91,8 +91,8 @@ public final class TransicionEstadoCurso {
     public static boolean estaCompleto(CursoOfertadoVerano curso) {
         return curso.getObjMateria() != null
                 && curso.getObjDocente() != null
-                && curso.getCupo_estimado() != null
-                && curso.getCupo_estimado() > 0
+                && curso.getCupoEstimado() != null
+                && curso.getCupoEstimado() > 0
                 && curso.getSalon() != null
                 && !curso.getSalon().trim().isEmpty();
     }

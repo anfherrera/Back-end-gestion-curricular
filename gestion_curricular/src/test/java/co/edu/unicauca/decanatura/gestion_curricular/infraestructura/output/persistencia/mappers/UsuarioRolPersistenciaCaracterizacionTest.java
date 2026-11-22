@@ -210,7 +210,7 @@ class UsuarioRolPersistenciaCaracterizacionTest {
         solicitud.setObjUsuario(usuario);
         usuario.getSolicitudes().add(solicitud);
         CursoOfertadoVerano curso = new CursoOfertadoVerano();
-        curso.setId_curso(3);
+        curso.setIdCurso(3);
         curso.getEstudiantesInscritos().add(usuario);
         usuario.getCursosOfertadosInscritos().add(curso);
         return usuario;

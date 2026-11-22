@@ -76,7 +76,7 @@ public class GestionarSolicitudCursoVeranoGatewayImplAdapter implements Gestiona
         // Generar nombre descriptivo con el nombre del estudiante
         solicitudCursoVeranoEntity.setNombre_solicitud(NombreSolicitud.de(NombreSolicitud.CURSO_VERANO,
                 NombreSolicitud.nombreDe(solicitudCursoVerano.getObjUsuario()),
-                solicitudCursoVerano.getNombre_estudiante()));
+                solicitudCursoVerano.getNombreEstudiante()));
         solicitudCursoVeranoEntity.setFecha_registro_solicitud(new Date());
         EstadoSolicitudEntity estadoSolicitudEntity = null;
 
@@ -93,7 +93,7 @@ public class GestionarSolicitudCursoVeranoGatewayImplAdapter implements Gestiona
         CursoOfertadoVeranoEntity cursoOfertadoVeranoEntity = null;
 
         if(cursoOfertado != null) {
-            Integer idCurso = cursoOfertado.getId_curso();
+            Integer idCurso = cursoOfertado.getIdCurso();
             
             // Si el ID es 0 o null, es un curso nuevo (solicitud de apertura)
             if(idCurso == null || idCurso == 0) {
@@ -113,13 +113,13 @@ public class GestionarSolicitudCursoVeranoGatewayImplAdapter implements Gestiona
                 cursoOfertadoVeranoEntity = new CursoOfertadoVeranoEntity();
                 GrupoCursoVeranoEntity  grupoEntity = SolicitudMapperPersistencia.aEntidad(cursoOfertado.getGrupo());
                 cursoOfertadoVeranoEntity.setGrupo(grupoEntity);
-                cursoOfertadoVeranoEntity.setCupo_estimado(cursoOfertado.getCupo_estimado());
+                cursoOfertadoVeranoEntity.setCupo_estimado(cursoOfertado.getCupoEstimado());
                 cursoOfertadoVeranoEntity.setSalon(cursoOfertado.getSalon());
                 MateriaEntity materiaEntity = CatalogosMapperPersistencia.aEntidad(cursoOfertado.getObjMateria());
                 DocenteEntity docenteEntity = CatalogosMapperPersistencia.aEntidad(cursoOfertado.getObjDocente());
                 cursoOfertadoVeranoEntity.setObjMateria(materiaEntity);
                 cursoOfertadoVeranoEntity.setObjDocente(docenteEntity);
-                String periodoValor = PeriodoAcademicoEnum.oActual(cursoOfertado.getPeriodo_academico());
+                String periodoValor = PeriodoAcademicoEnum.oActual(cursoOfertado.getPeriodoAcademico());
                 if (periodoValor != null) {
                     cursoOfertadoVeranoEntity.setPeriodo_academico(periodoValor);
                     solicitudCursoVeranoEntity.setPeriodo_academico(periodoValor);
@@ -160,8 +160,8 @@ public class GestionarSolicitudCursoVeranoGatewayImplAdapter implements Gestiona
         solicitudCursoVeranoEntity.setEstadosSolicitud(estadosSolcitud);
         CursoOfertadoVerano cursoOfertado = solicitudCursoVerano.getObjCursoOfertadoVerano();
         CursoOfertadoVeranoEntity cursoOfertadoVeranoEntity = null;
-        if(cursoOfertado != null && cursoOfertado.getId_curso() != null) {
-            Integer idCurso = cursoOfertado.getId_curso();
+        if(cursoOfertado != null && cursoOfertado.getIdCurso() != null) {
+            Integer idCurso = cursoOfertado.getIdCurso();
             if(cursoOfertadoVeranoRepository.existsById(idCurso)){
                 cursoOfertadoVeranoEntity = cursoOfertadoVeranoRepository.findById(idCurso)
                         .orElseThrow(() -> new IllegalArgumentException("Curso ofertado no encontrado con ID: " + idCurso));
@@ -173,14 +173,14 @@ public class GestionarSolicitudCursoVeranoGatewayImplAdapter implements Gestiona
                 cursoOfertadoVeranoEntity = new CursoOfertadoVeranoEntity();
                 GrupoCursoVeranoEntity  grupoEntity = SolicitudMapperPersistencia.aEntidad(cursoOfertado.getGrupo());
                 cursoOfertadoVeranoEntity.setGrupo(grupoEntity);
-                cursoOfertadoVeranoEntity.setCupo_estimado(cursoOfertado.getCupo_estimado());
+                cursoOfertadoVeranoEntity.setCupo_estimado(cursoOfertado.getCupoEstimado());
                 cursoOfertadoVeranoEntity.setSalon(cursoOfertado.getSalon());
                 MateriaEntity materiaEntity = CatalogosMapperPersistencia.aEntidad(cursoOfertado.getObjMateria());
                 DocenteEntity docenteEntity = CatalogosMapperPersistencia.aEntidad(cursoOfertado.getObjDocente());
                 cursoOfertadoVeranoEntity.setObjMateria(materiaEntity);
                 cursoOfertadoVeranoEntity.setObjDocente(docenteEntity);
                 // Si el curso tiene período académico en el dominio, asignarlo también a la solicitud
-                String periodoCurso = PeriodoAcademicoEnum.recortado(cursoOfertado.getPeriodo_academico());
+                String periodoCurso = PeriodoAcademicoEnum.recortado(cursoOfertado.getPeriodoAcademico());
                 if (periodoCurso != null) {
                     cursoOfertadoVeranoEntity.setPeriodo_academico(periodoCurso);
                     solicitudCursoVeranoEntity.setPeriodo_academico(periodoCurso);

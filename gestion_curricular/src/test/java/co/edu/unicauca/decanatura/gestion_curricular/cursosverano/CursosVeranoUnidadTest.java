@@ -88,8 +88,8 @@ class CursosVeranoUnidadTest {
 
         // Crear curso de ejemplo
         cursoEjemplo = new CursoOfertadoVerano();
-        cursoEjemplo.setId_curso(1);
-        cursoEjemplo.setCupo_estimado(30);
+        cursoEjemplo.setIdCurso(1);
+        cursoEjemplo.setCupoEstimado(30);
         cursoEjemplo.setSalon("A-101");
         
         Materia materia = new Materia();
@@ -154,7 +154,7 @@ class CursosVeranoUnidadTest {
 
         // Assert
         assertThat(resultado).isNotNull();
-        assertThat(resultado.getId_curso()).isEqualTo(1);
+        assertThat(resultado.getIdCurso()).isEqualTo(1);
         // El adapter llama al gateway 1 vez
         verify(cursoVeranoGateway, times(1)).obtenerCursoPorId(idBuscado);
     }
@@ -233,8 +233,8 @@ class CursosVeranoUnidadTest {
         // Arrange - Curso sin ID
         CursoOfertadoVerano cursoSinId = new CursoOfertadoVerano();
         EstadoCursoOfertado estado = new EstadoCursoOfertado();
-        estado.setId_estado(1);
-        estado.setEstado_actual("Abierto");
+        estado.setIdEstado(1);
+        estado.setEstadoActual("Abierto");
         
         // Act & Assert
         assertThatThrownBy(() -> cursosVeranoCU.actualizarCurso(cursoSinId, estado))
@@ -353,10 +353,10 @@ class CursosVeranoUnidadTest {
 
     private CursoOfertadoVerano cursoEnPeriodo(String periodo, String... estados) {
         CursoOfertadoVerano curso = new CursoOfertadoVerano();
-        curso.setPeriodo_academico(periodo);
+        curso.setPeriodoAcademico(periodo);
         curso.setEstadosCursoOfertados(Arrays.stream(estados).map(nombre -> {
             EstadoCursoOfertado estado = new EstadoCursoOfertado();
-            estado.setEstado_actual(nombre);
+            estado.setEstadoActual(nombre);
             return estado;
         }).toList());
         return curso;

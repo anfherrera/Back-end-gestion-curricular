@@ -55,10 +55,10 @@ class CursosVeranoEndpointsCaracterizacionTest {
         void preparar(String numero, String modo) {
             reset(cursos, salones, solicitudes);
             CursoOfertadoVerano curso = new CursoOfertadoVerano();
-            curso.setId_curso(71);
+            curso.setIdCurso(71);
             curso.setSalon(numero);
-            curso.setCupo_estimado(20);
-            curso.setPeriodo_academico("2025-2");
+            curso.setCupoEstimado(20);
+            curso.setPeriodoAcademico("2025-2");
             curso.setFecha_inicio(Date.from(Instant.parse("2025-07-01T12:00:00Z")));
             when(cursos.listarTodos()).thenReturn(List.of(curso));
             when(cursos.listarPorPeriodo(anyString())).thenReturn(List.of(curso));

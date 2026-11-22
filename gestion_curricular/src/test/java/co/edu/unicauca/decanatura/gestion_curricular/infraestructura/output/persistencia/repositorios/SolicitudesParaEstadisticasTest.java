@@ -113,7 +113,7 @@ class SolicitudesParaEstadisticasTest {
 
         Solicitud c = porId.get(idCurso);
         assertThat(c).isInstanceOf(SolicitudCursoVeranoPreinscripcion.class);
-        assertThat(c.getObjCursoOfertadoVerano().getPeriodo_academico()).isEqualTo("2025-2");
+        assertThat(c.getObjCursoOfertadoVerano().getPeriodoAcademico()).isEqualTo("2025-2");
         assertThat(c.getObjCursoOfertadoVerano().getObjMateria().getNombre()).isEqualTo("Cálculo prueba");
         assertThat(c.getEstadosSolicitud()).hasSize(1);
     }

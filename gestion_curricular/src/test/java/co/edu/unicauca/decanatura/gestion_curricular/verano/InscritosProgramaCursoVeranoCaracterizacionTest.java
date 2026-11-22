@@ -53,7 +53,7 @@ class InscritosProgramaCursoVeranoCaracterizacionTest {
         for (Integer idPrograma : new Integer[] { null, 1, 2 }) {
             ArrayNode ids = casos.putArray("listarPorFiltros idPrograma=" + idPrograma);
             for (CursoOfertadoVerano curso : casoDeUso.listarPorFiltros(null, idPrograma, false)) {
-                ids.add(curso.getId_curso());
+                ids.add(curso.getIdCurso());
             }
         }
         CursoOfertadoVerano curso = gateway.listarTodos().get(0);

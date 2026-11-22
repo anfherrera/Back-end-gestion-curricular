@@ -82,14 +82,14 @@ class InscripcionesVeranoRespuestasCaracterizacionTest {
         when(cu.tieneInscripcionActiva(anyInt(), anyInt())).thenAnswer(i -> (int) i.getArgument(1) == 2);
         doAnswer(i -> {
             CursoOfertadoVerano curso = i.getArgument(0);
-            if (curso.getId_curso() == 3) {
+            if (curso.getIdCurso() == 3) {
                 throw new CupoAgotadoException(3, 3);
             }
             return null;
         }).when(cu).verificarCupoDisponible(any());
         when(cu.crearSolicitudCursoVeranoInscripcion(any())).thenAnswer(i -> {
             SolicitudCursoVeranoInscripcion nueva = i.getArgument(0);
-            if (nueva.getObjCursoOfertadoVerano().getId_curso() == 4) {
+            if (nueva.getObjCursoOfertadoVerano().getIdCurso() == 4) {
                 return null;
             }
             SolicitudCursoVeranoInscripcion guardada = inscripcion(60, "Enviada");
@@ -269,7 +269,7 @@ class InscripcionesVeranoRespuestasCaracterizacionTest {
             return lista;
         }
         SolicitudCursoVeranoInscripcion normal = inscripcion(30, "Enviada");
-        normal.setCodicion_solicitud(CondicionSolicitudVerano.Primera_Vez);
+        normal.setCondicionSolicitud(CondicionSolicitudVerano.Primera_Vez);
         normal.getDocumentos().add(documento(70, "comprobante.pdf", "/r/comprobante.pdf", true));
         lista.add(normal);
         lista.add(inscripcion(31, "Pago_Validado"));
@@ -359,7 +359,7 @@ class InscripcionesVeranoRespuestasCaracterizacionTest {
 
     private static CursoOfertadoVerano curso(Integer id, String nombreMateria) {
         CursoOfertadoVerano curso = new CursoOfertadoVerano();
-        curso.setId_curso(id);
+        curso.setIdCurso(id);
         Materia materia = new Materia();
         materia.setNombre(nombreMateria);
         curso.setObjMateria(materia);

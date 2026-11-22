@@ -48,8 +48,8 @@ class NombresApiCaracterizacionTest {
         var cursos = mock(GestionarCursoOfertadoVeranoCUIntPort.class);
         var mapper = mock(CursosOfertadosMapperDominio.class);
         var curso = new CursoOfertadoVerano();
-        curso.setId_curso(71);
-        curso.setCupo_estimado(19);
+        curso.setIdCurso(71);
+        curso.setCupoEstimado(19);
         var dto = new CursosOfertadosDTORespuesta();
         dto.setNombre_curso("Materia");
         when(cursos.crearCurso(any(DatosCreacion.class))).thenReturn(curso);

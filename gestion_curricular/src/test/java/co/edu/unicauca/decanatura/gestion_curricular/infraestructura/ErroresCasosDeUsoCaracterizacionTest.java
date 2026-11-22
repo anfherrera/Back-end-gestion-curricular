@@ -694,7 +694,7 @@ class ErroresCasosDeUsoCaracterizacionTest {
 
         Curso conCurso(String primerEstado) {
             var curso = cursoConId(3);
-            curso.setCupo_estimado(5);
+            curso.setCupoEstimado(5);
             curso.getEstadosCursoOfertados().add(estadoCurso(1, primerEstado));
             when(cursos.obtenerCursoPorId(3)).thenReturn(curso);
             return this;
@@ -708,7 +708,7 @@ class ErroresCasosDeUsoCaracterizacionTest {
 
     private static CursoOfertadoVerano cursoConId(Integer id) {
         var curso = new CursoOfertadoVerano();
-        curso.setId_curso(id);
+        curso.setIdCurso(id);
         return curso;
     }
 
@@ -726,8 +726,8 @@ class ErroresCasosDeUsoCaracterizacionTest {
 
     private static EstadoCursoOfertado estadoCurso(Integer id, String estado) {
         var e = new EstadoCursoOfertado();
-        e.setId_estado(id);
-        e.setEstado_actual(estado);
+        e.setIdEstado(id);
+        e.setEstadoActual(estado);
         return e;
     }
 
@@ -767,7 +767,7 @@ class ErroresCasosDeUsoCaracterizacionTest {
             () -> new Verano().conUsuario().conCurso(null).cu().crearSolicitudCursoVeranoPreinscripcion(preinscripcion(3)));
         caso("preinscripcion sin condicion", () -> {
             var s = preinscripcion(0);
-            s.setCodicion_solicitud(null);
+            s.setCondicionSolicitud(null);
             return new Verano().conUsuario().cu().crearSolicitudCursoVeranoPreinscripcion(s);
         });
         caso("preinscripcion repetida", () -> {
@@ -796,7 +796,7 @@ class ErroresCasosDeUsoCaracterizacionTest {
             () -> new Verano().conUsuario().conCurso("Preinscripcion").cu().crearSolicitudCursoVeranoInscripcion(inscripcion(3)));
         caso("inscripcion sin condicion", () -> {
             var s = inscripcion(3);
-            s.setCodicion_solicitud(null);
+            s.setCondicionSolicitud(null);
             return new Verano().conUsuario().conCurso("Inscripcion").cu().crearSolicitudCursoVeranoInscripcion(s);
         });
         caso("inscripcion sin preinscripcion",
@@ -873,7 +873,7 @@ class ErroresCasosDeUsoCaracterizacionTest {
 
         Verano conCurso(String ultimoEstado) {
             var curso = cursoConId(3);
-            curso.setCupo_estimado(5);
+            curso.setCupoEstimado(5);
             if (ultimoEstado != null) {
                 curso.getEstadosCursoOfertados().add(estadoCurso(1, "Abierto"));
                 curso.getEstadosCursoOfertados().add(estadoCurso(2, ultimoEstado));
@@ -892,14 +892,14 @@ class ErroresCasosDeUsoCaracterizacionTest {
     private static SolicitudCursoVeranoPreinscripcion preinscripcion(Integer idCurso) {
         var s = conUsuario(new SolicitudCursoVeranoPreinscripcion(), null, 5);
         s.setObjCursoOfertadoVerano(cursoConId(idCurso));
-        s.setCodicion_solicitud(CondicionSolicitudVerano.Primera_Vez);
+        s.setCondicionSolicitud(CondicionSolicitudVerano.Primera_Vez);
         return s;
     }
 
     private static SolicitudCursoVeranoInscripcion inscripcion(Integer idCurso) {
         var s = conUsuario(new SolicitudCursoVeranoInscripcion(), null, 5);
         s.setObjCursoOfertadoVerano(cursoConId(idCurso));
-        s.setCodicion_solicitud(CondicionSolicitudVerano.Primera_Vez);
+        s.setCondicionSolicitud(CondicionSolicitudVerano.Primera_Vez);
         return s;
     }
 

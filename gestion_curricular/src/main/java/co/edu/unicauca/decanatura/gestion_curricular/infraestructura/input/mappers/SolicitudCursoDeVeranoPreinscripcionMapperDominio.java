@@ -26,8 +26,8 @@ public interface SolicitudCursoDeVeranoPreinscripcionMapperDominio {
     @Mapping(target = "estadosSolicitud", source = "estadosSolicitud")
     @Mapping(target = "objUsuario", source = "objUsuario")
     @Mapping(target = "objCursoOfertado", source = "objCursoOfertadoVerano")
-    @Mapping(target = "codicion_solicitud", source = "codicion_solicitud")
-    @Mapping(target = "nombre_estudiante", source = "nombre_estudiante")
+    @Mapping(target = "codicion_solicitud", source = "condicionSolicitud")
+    @Mapping(target = "nombre_estudiante", source = "nombreEstudiante")
     @Mapping(target = "observacion", source = "observacion")
     // OPC-2: el DTO conserva el nombre snake_case
     @Mapping(target = "id_solicitud", source = "idSolicitud")

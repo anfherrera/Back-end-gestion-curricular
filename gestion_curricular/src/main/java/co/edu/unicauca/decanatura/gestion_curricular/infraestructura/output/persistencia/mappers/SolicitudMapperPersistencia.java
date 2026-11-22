@@ -298,7 +298,7 @@ public final class SolicitudMapperPersistencia {
             }
             CursoOfertadoVerano curso = new CursoOfertadoVerano();
             mapeados.put(entidad, curso);
-            curso.setId_curso(entidad.getId_curso());
+            curso.setIdCurso(entidad.getId_curso());
             if (copiaNulos || entidad.getObjMateria() != null) {
                 curso.setObjMateria(entidad.getObjMateria() == null ? null : CatalogosMapperPersistencia.aDominio(entidad.getObjMateria()));
             }
@@ -308,11 +308,11 @@ public final class SolicitudMapperPersistencia {
             if (copiaNulos || entidad.getGrupo() != null) {
                 curso.setGrupo(entidad.getGrupo() == null ? null : GrupoCursoVerano.valueOf(entidad.getGrupo().name()));
             }
-            curso.setCupo_estimado(entidad.getCupo_estimado());
+            curso.setCupoEstimado(entidad.getCupo_estimado());
             curso.setSalon(entidad.getSalon());
             curso.setFecha_inicio(entidad.getFecha_inicio());
             curso.setFecha_fin(entidad.getFecha_fin());
-            curso.setPeriodo_academico(entidad.getPeriodo_academico());
+            curso.setPeriodoAcademico(entidad.getPeriodo_academico());
             if (variante.cursoManual) {
                 curso.setEstadosCursoOfertados(entidad.getEstadosCursoOfertados() == null ? new ArrayList<>()
                         : lista(entidad.getEstadosCursoOfertados(), AlDominio::estadoCursoSinCurso));
@@ -335,9 +335,9 @@ public final class SolicitudMapperPersistencia {
         /** Estado de curso como lo copiaba {@code mapperCurso}: sin curso y con el estado tal cual. */
         static EstadoCursoOfertado estadoCursoSinCurso(EstadoCursoOfertadoEntity entidad) {
             EstadoCursoOfertado estado = new EstadoCursoOfertado();
-            estado.setId_estado(entidad.getId_estado());
-            estado.setEstado_actual(entidad.getEstado_actual());
-            estado.setFecha_registro_estado(entidad.getFecha_registro_estado());
+            estado.setIdEstado(entidad.getId_estado());
+            estado.setEstadoActual(entidad.getEstado_actual());
+            estado.setFechaRegistroEstado(entidad.getFecha_registro_estado());
             estado.setObjCursoOfertadoVerano(null);
             return estado;
         }
@@ -371,11 +371,11 @@ public final class SolicitudMapperPersistencia {
             }
             EstadoCursoOfertado estado = new EstadoCursoOfertado();
             mapeados.put(entidad, estado);
-            estado.setId_estado(entidad.getId_estado());
+            estado.setIdEstado(entidad.getId_estado());
             if (copiaNulos || entidad.getEstado_actual() != null) {
-                estado.setEstado_actual(entidad.getEstado_actual() == null ? null : entidad.getEstado_actual());
+                estado.setEstadoActual(entidad.getEstado_actual() == null ? null : entidad.getEstado_actual());
             }
-            estado.setFecha_registro_estado(entidad.getFecha_registro_estado());
+            estado.setFechaRegistroEstado(entidad.getFecha_registro_estado());
             if (copiaNulos || entidad.getObjCursoOfertadoVerano() != null) {
                 estado.setObjCursoOfertadoVerano(entidad.getObjCursoOfertadoVerano() == null ? null : curso(entidad.getObjCursoOfertadoVerano()));
             }
@@ -441,13 +441,13 @@ public final class SolicitudMapperPersistencia {
             CondicionSolicitudVerano condicionDominio = condicion == null ? null
                     : CondicionSolicitudVerano.valueOf(condicion.name());
             if (destino instanceof SolicitudCursoVeranoPreinscripcion d) {
-                d.setNombre_estudiante(nombre);
-                d.setCodicion_solicitud(condicionDominio);
+                d.setNombreEstudiante(nombre);
+                d.setCondicionSolicitud(condicionDominio);
                 d.setObservacion(observacion);
             }
             if (destino instanceof SolicitudCursoVeranoInscripcion d) {
-                d.setNombre_estudiante(nombre);
-                d.setCodicion_solicitud(condicionDominio);
+                d.setNombreEstudiante(nombre);
+                d.setCondicionSolicitud(condicionDominio);
                 d.setObservacion(observacion);
             }
         }
@@ -557,7 +557,7 @@ public final class SolicitudMapperPersistencia {
             }
             CursoOfertadoVeranoEntity entidad = new CursoOfertadoVeranoEntity();
             mapeados.put(curso, entidad);
-            entidad.setId_curso(curso.getId_curso());
+            entidad.setId_curso(curso.getIdCurso());
             if (copiaNulos || curso.getObjMateria() != null) {
                 entidad.setObjMateria(curso.getObjMateria() == null ? null : CatalogosMapperPersistencia.aEntidad(curso.getObjMateria()));
             }
@@ -567,11 +567,11 @@ public final class SolicitudMapperPersistencia {
             if (copiaNulos || curso.getGrupo() != null) {
                 entidad.setGrupo(curso.getGrupo() == null ? null : GrupoCursoVeranoEntity.valueOf(curso.getGrupo().name()));
             }
-            entidad.setCupo_estimado(curso.getCupo_estimado());
+            entidad.setCupo_estimado(curso.getCupoEstimado());
             entidad.setSalon(curso.getSalon());
             entidad.setFecha_inicio(curso.getFecha_inicio());
             entidad.setFecha_fin(curso.getFecha_fin());
-            entidad.setPeriodo_academico(curso.getPeriodo_academico());
+            entidad.setPeriodo_academico(curso.getPeriodoAcademico());
             if (variante.cursoManual) {
                 entidad.setEstadosCursoOfertados(curso.getEstadosCursoOfertados() == null ? new ArrayList<>()
                         : lista(curso.getEstadosCursoOfertados(), AlaEntidad::estadoCursoSinCurso));
@@ -594,9 +594,9 @@ public final class SolicitudMapperPersistencia {
         /** Estado de curso como lo copiaba {@code mapperCurso}: sin curso y con el estado tal cual. */
         static EstadoCursoOfertadoEntity estadoCursoSinCurso(EstadoCursoOfertado estado) {
             EstadoCursoOfertadoEntity entidad = new EstadoCursoOfertadoEntity();
-            entidad.setId_estado(estado.getId_estado());
-            entidad.setEstado_actual(estado.getEstado_actual());
-            entidad.setFecha_registro_estado(estado.getFecha_registro_estado());
+            entidad.setId_estado(estado.getIdEstado());
+            entidad.setEstado_actual(estado.getEstadoActual());
+            entidad.setFecha_registro_estado(estado.getFechaRegistroEstado());
             entidad.setObjCursoOfertadoVerano(null);
             return entidad;
         }
@@ -620,11 +620,11 @@ public final class SolicitudMapperPersistencia {
             }
             EstadoCursoOfertadoEntity entidad = new EstadoCursoOfertadoEntity();
             mapeados.put(estado, entidad);
-            entidad.setId_estado(estado.getId_estado());
-            if (copiaNulos || estado.getEstado_actual() != null) {
-                entidad.setEstado_actual(estado.getEstado_actual() == null ? null : estado.getEstado_actual());
+            entidad.setId_estado(estado.getIdEstado());
+            if (copiaNulos || estado.getEstadoActual() != null) {
+                entidad.setEstado_actual(estado.getEstadoActual() == null ? null : estado.getEstadoActual());
             }
-            entidad.setFecha_registro_estado(estado.getFecha_registro_estado());
+            entidad.setFecha_registro_estado(estado.getFechaRegistroEstado());
             if (copiaNulos || estado.getObjCursoOfertadoVerano() != null) {
                 entidad.setObjCursoOfertadoVerano(estado.getObjCursoOfertadoVerano() == null ? null : curso(estado.getObjCursoOfertadoVerano()));
             }
@@ -650,10 +650,10 @@ public final class SolicitudMapperPersistencia {
                 d.setFecha_nacimiento(o.getFechaNacimiento());
             }
             if (origen instanceof SolicitudCursoVeranoPreinscripcion o) {
-                verano(o.getNombre_estudiante(), o.getCodicion_solicitud(), o.getObservacion(), destino);
+                verano(o.getNombreEstudiante(), o.getCondicionSolicitud(), o.getObservacion(), destino);
             }
             if (origen instanceof SolicitudCursoVeranoInscripcion o) {
-                verano(o.getNombre_estudiante(), o.getCodicion_solicitud(), o.getObservacion(), destino);
+                verano(o.getNombreEstudiante(), o.getCondicionSolicitud(), o.getObservacion(), destino);
             }
         }
 

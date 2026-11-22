@@ -8,13 +8,13 @@ import lombok.Data;
 @AllArgsConstructor
 
 public class EstadoCursoOfertado {
-    private Integer id_estado;
-    private String estado_actual;
-    private Date fecha_registro_estado; // Fecha en que se registró este estado (cuando cambió de estado)
+    private Integer idEstado;
+    private String estadoActual;
+    private Date fechaRegistroEstado; // Fecha en que se registró este estado (cuando cambió de estado)
 
     private CursoOfertadoVerano objCursoOfertadoVerano;
 
     public EstadoCursoOfertado(){
-        this.estado_actual = "Abierto";
+        this.estadoActual = "Abierto";
     }
 }

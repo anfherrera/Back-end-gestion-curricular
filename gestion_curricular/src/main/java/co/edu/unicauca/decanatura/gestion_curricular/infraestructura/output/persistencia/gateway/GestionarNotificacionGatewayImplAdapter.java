@@ -72,8 +72,8 @@ public class GestionarNotificacionGatewayImplAdapter implements GestionarNotific
                 entity.setObjSolicitud(solicitudEntity);
             }
             
-            if (notificacion.getObjCurso() != null && notificacion.getObjCurso().getId_curso() != null) {
-                CursoOfertadoVeranoEntity cursoEntity = cursoRepository.findById(notificacion.getObjCurso().getId_curso())
+            if (notificacion.getObjCurso() != null && notificacion.getObjCurso().getIdCurso() != null) {
+                CursoOfertadoVeranoEntity cursoEntity = cursoRepository.findById(notificacion.getObjCurso().getIdCurso())
                         .orElse(null); // Puede ser null si el curso no existe
                 entity.setObjCurso(cursoEntity);
             }

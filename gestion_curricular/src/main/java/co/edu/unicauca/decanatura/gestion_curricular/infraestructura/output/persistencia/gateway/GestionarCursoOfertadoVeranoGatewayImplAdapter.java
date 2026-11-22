@@ -49,11 +49,11 @@ public class GestionarCursoOfertadoVeranoGatewayImplAdapter implements Gestionar
     public CursoOfertadoVerano crearCurso(CursoOfertadoVerano curso) {
         // Crear entidad del curso (nueva instancia para evitar reutilización)
         CursoOfertadoVeranoEntity cursoEntity = new CursoOfertadoVeranoEntity();
-        cursoEntity.setCupo_estimado(curso.getCupo_estimado());
+        cursoEntity.setCupo_estimado(curso.getCupoEstimado());
         cursoEntity.setSalon(curso.getSalon());
         cursoEntity.setFecha_inicio(curso.getFecha_inicio()); // Guardar fecha de inicio directamente en el curso
         cursoEntity.setFecha_fin(curso.getFecha_fin()); // Guardar fecha de fin directamente en el curso
-        cursoEntity.setPeriodo_academico(curso.getPeriodo_academico()); // Guardar período académico directamente en el curso
+        cursoEntity.setPeriodo_academico(curso.getPeriodoAcademico()); // Guardar período académico directamente en el curso
         
         // Mapear grupo
         GrupoCursoVeranoEntity grupoEntity = SolicitudMapperPersistencia.aEntidad(curso.getGrupo());
@@ -89,9 +89,9 @@ public class GestionarCursoOfertadoVeranoGatewayImplAdapter implements Gestionar
             // Usar el estado que viene del modelo
             for (EstadoCursoOfertado estadoCurso : curso.getEstadosCursoOfertados()) {
                 EstadoCursoOfertadoEntity estadoCursoEntity = new EstadoCursoOfertadoEntity();
-                estadoCursoEntity.setEstado_actual(estadoCurso.getEstado_actual());
-                estadoCursoEntity.setFecha_registro_estado(estadoCurso.getFecha_registro_estado() != null ? 
-                    estadoCurso.getFecha_registro_estado() : new Date());
+                estadoCursoEntity.setEstado_actual(estadoCurso.getEstadoActual());
+                estadoCursoEntity.setFecha_registro_estado(estadoCurso.getFechaRegistroEstado() != null ? 
+                    estadoCurso.getFechaRegistroEstado() : new Date());
                 // fecha_fin y periodo_academico ahora están solo en el curso, no en estados
                 estadoCursoEntity.setObjCursoOfertadoVerano(cursoEntity);
                 estadosCursoEntity.add(estadoCursoEntity);
@@ -127,8 +127,8 @@ public class GestionarCursoOfertadoVeranoGatewayImplAdapter implements Gestionar
     @Override
     @Transactional
     public CursoOfertadoVerano actualizarCurso(CursoOfertadoVerano curso, EstadoCursoOfertado estadoCurso) {
-        cursoRepository.findById(curso.getId_curso())
-            .orElseThrow(() -> new RuntimeException("Curso no encontrado con ID: " + curso.getId_curso()));
+        cursoRepository.findById(curso.getIdCurso())
+            .orElseThrow(() -> new RuntimeException("Curso no encontrado con ID: " + curso.getIdCurso()));
             
 
         CursoOfertadoVeranoEntity cursoEntity = SolicitudMapperPersistencia.aEntidadCurso(curso);

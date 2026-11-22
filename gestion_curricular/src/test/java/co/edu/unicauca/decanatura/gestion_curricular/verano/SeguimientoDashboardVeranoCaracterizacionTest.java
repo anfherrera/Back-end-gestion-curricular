@@ -190,7 +190,7 @@ class SeguimientoDashboardVeranoCaracterizacionTest {
 
     private static CursoOfertadoVerano curso(int id, String estado) {
         CursoOfertadoVerano curso = new CursoOfertadoVerano();
-        curso.setId_curso(id);
+        curso.setIdCurso(id);
         Materia materia = new Materia();
         materia.setIdMateria(100 + id);
         materia.setNombre("Materia " + id);
@@ -198,10 +198,10 @@ class SeguimientoDashboardVeranoCaracterizacionTest {
         List<EstadoCursoOfertado> estados = new ArrayList<>();
         if (estado != null) {
             EstadoCursoOfertado registro = new EstadoCursoOfertado();
-            registro.setEstado_actual("Borrador");
+            registro.setEstadoActual("Borrador");
             estados.add(registro);
             EstadoCursoOfertado ultimo = new EstadoCursoOfertado();
-            ultimo.setEstado_actual(estado);
+            ultimo.setEstadoActual(estado);
             estados.add(ultimo);
         }
         curso.setEstadosCursoOfertados(estados);

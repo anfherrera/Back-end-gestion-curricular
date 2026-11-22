@@ -11,8 +11,8 @@ public final class EstudiantesCursoVeranoMapper {
     private EstudiantesCursoVeranoMapper() {}
     public static EstudiantesCursoVeranoDTORespuesta mapear(CursoOfertadoVerano curso, ListadoEstudiantes listado) {
         var materia = curso.getObjMateria();
-        return new EstudiantesCursoVeranoDTORespuesta(curso.getId_curso(), materia == null ? "N/A" : materia.getNombre(),
-                materia == null ? "N/A" : materia.getCodigo(), curso.getCupo_estimado(), listado.estudiantes().size(),
+        return new EstudiantesCursoVeranoDTORespuesta(curso.getIdCurso(), materia == null ? "N/A" : materia.getNombre(),
+                materia == null ? "N/A" : materia.getCodigo(), curso.getCupoEstimado(), listado.estudiantes().size(),
                 listado.totalPreinscritos(), listado.totalInscritos(),
                 listado.estudiantes().stream().map(EstudiantesCursoVeranoMapper::mapearEstudiante).toList());
     }
@@ -21,7 +21,7 @@ public final class EstudiantesCursoVeranoMapper {
         var preinscripcion = estudiante.preinscripcion();
         var inscripcion = estudiante.inscripcion();
         var programa = usuario.getObjPrograma();
-        var condicion = preinscripcion != null ? preinscripcion.getCodicion_solicitud() : inscripcion.getCodicion_solicitud();
+        var condicion = preinscripcion != null ? preinscripcion.getCondicionSolicitud() : inscripcion.getCondicionSolicitud();
 
         return new Estudiante(usuario.getIdUsuario(), usuario.getNombreCompleto(), usuario.getCodigo(), usuario.getCorreo(),
                 estudiante.estadoPreinscripcion(), estudiante.estadoInscripcion(),

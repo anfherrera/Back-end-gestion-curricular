@@ -41,7 +41,7 @@ class MigracionesMySqlTest {
                     .allSatisfy(solicitud -> {
                         assertThat(solicitud).isInstanceOfAny(
                                 SolicitudCursoVeranoPreinscripcion.class, SolicitudCursoVeranoInscripcion.class);
-                        assertThat(solicitud.getObjCursoOfertadoVerano().getId_curso()).isEqualTo(1);
+                        assertThat(solicitud.getObjCursoOfertadoVerano().getIdCurso()).isEqualTo(1);
                     });
         }
 

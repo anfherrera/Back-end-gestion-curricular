@@ -250,7 +250,7 @@ class CursosVeranoRespuestasCaracterizacionTest {
 
     private static CursoOfertadoVerano curso(int id, String salon) {
         CursoOfertadoVerano curso = new CursoOfertadoVerano();
-        curso.setId_curso(id);
+        curso.setIdCurso(id);
         Materia materia = new Materia();
         materia.setIdMateria(100 + id);
         materia.setCodigo("MAT" + id);
@@ -262,15 +262,15 @@ class CursosVeranoRespuestasCaracterizacionTest {
         docente.setCodigoDocente("D" + id);
         docente.setNombreDocente("Docente " + id);
         curso.setObjDocente(docente);
-        curso.setCupo_estimado(20 + id);
+        curso.setCupoEstimado(20 + id);
         curso.setSalon(salon);
-        curso.setPeriodo_academico("2024-1");
+        curso.setPeriodoAcademico("2024-1");
         curso.setFecha_inicio(new Date(MARZO));
         curso.setFecha_fin(new Date(MARZO + 86_400_000L * 40));
         EstadoCursoOfertado estado = new EstadoCursoOfertado();
-        estado.setId_estado(id);
-        estado.setEstado_actual("Publicado");
-        estado.setFecha_registro_estado(new Date(MARZO));
+        estado.setIdEstado(id);
+        estado.setEstadoActual("Publicado");
+        estado.setFechaRegistroEstado(new Date(MARZO));
         curso.setEstadosCursoOfertados(new ArrayList<>(Arrays.asList(estado)));
         return curso;
     }

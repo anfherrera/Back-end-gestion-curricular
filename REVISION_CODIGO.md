@@ -672,7 +672,12 @@ Rutas abreviadas: `…/` = `gestion_curricular/src/main/java/co/edu/unicauca/dec
     - `SolicitudPazYSalvo`: `tituloTrabajoGrado` y `directorTrabajoGrado`.
 
     `SolicitudEcaesMapperDominio` y `SolicitudHomologacionMapperDominio` reciben los `@Mapping` que se infería por nombre, en las dos direcciones. Después, la comparación del código generado no encuentra diferencias en sus 63 métodos. 596 pruebas, 1 omitida, 0 fallos.
-  - [ ] 5. Verano: `CursoOfertadoVerano`, `EstadoCursoOfertado` y las tres solicitudes de verano. `codicion_solicitud` pasa a `condicionSolicitud`; el JSON conserva la errata.
+  - [x] **5. Verano:**
+    - `CursoOfertadoVerano`: `idCurso`, `cupoEstimado` y `periodoAcademico`.
+    - `EstadoCursoOfertado`: `idEstado`, `estadoActual` y `fechaRegistroEstado`.
+    - Las tres solicitudes de verano: `nombreEstudiante`, `condicionSolicitud` y, en la preinscripción, `codigoEstudiante`. `codicion_solicitud` se corrige a `condicionSolicitud` en el dominio; el JSON conserva la errata.
+
+    `CursosOfertadosMapperDominio` recibe los `@Mapping` de `id_curso` en la petición y del estado del curso en la respuesta. Después, la comparación del código generado no encuentra asignaciones perdidas. La tabla del módulo distingue los dos `id_estado` por la clase que declara el campo. 596 pruebas, 1 omitida, 0 fallos.
   - [ ] 6. `Estadistica`.
 
 - [ ] **BUG-46. Algunas respuestas devuelven el `Usuario` del dominio completo, con `password`.** Encontrado en OPC-2 (revisión 25). `UsuarioMapperPersistencia` copia el hash de la contraseña al dominio. Las respuestas que serializan modelos del dominio tal cual llevan `objUsuario` con `password`, `cedula` y `objRol`. Por ejemplo, `crearInscripcion` de cursos de verano, según `ErroresLocalesCaracterizacionTest`; las caracterizaciones usan usuarios sin contraseña, así que ahí sale `null`. Sin corregir: quitar el campo cambia el JSON. Hay que decidir entre no cargar el hash en el dominio salvo para el login, o responder con un DTO. ⚠️ **seguridad**

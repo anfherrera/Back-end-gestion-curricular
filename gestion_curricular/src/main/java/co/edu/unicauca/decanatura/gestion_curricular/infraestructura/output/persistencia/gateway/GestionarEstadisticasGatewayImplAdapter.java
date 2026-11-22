@@ -264,8 +264,8 @@ public class GestionarEstadisticasGatewayImplAdapter implements GestionarEstadis
         }
         if (fila.idCurso() != null) {
             CursoOfertadoVerano curso = new CursoOfertadoVerano();
-            curso.setId_curso(fila.idCurso());
-            curso.setPeriodo_academico(fila.periodoCurso());
+            curso.setIdCurso(fila.idCurso());
+            curso.setPeriodoAcademico(fila.periodoCurso());
             if (fila.idMateria() != null) {
                 curso.setObjMateria(new Materia(fila.idMateria(), fila.codigoMateria(), fila.nombreMateria(), null));
             }

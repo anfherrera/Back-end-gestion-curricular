@@ -49,7 +49,7 @@ public class EstadisticasCursosVerano {
                 .filter(s -> TipoProcesoSolicitud.CURSOS_VERANO.equals(tipoProceso(s)))
                 .filter(s -> periodo == null || periodo.equals(s.getPeriodoAcademico())
                         || (s.getObjCursoOfertadoVerano() != null
-                                && periodo.equals(s.getObjCursoOfertadoVerano().getPeriodo_academico())))
+                                && periodo.equals(s.getObjCursoOfertadoVerano().getPeriodoAcademico())))
                 .filter(s -> idPrograma == null || (s.getObjUsuario() != null && s.getObjUsuario().getObjPrograma() != null
                         && s.getObjUsuario().getObjPrograma().getIdPrograma().equals(idPrograma)))
                 .collect(Collectors.toList());

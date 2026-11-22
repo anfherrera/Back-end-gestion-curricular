@@ -282,7 +282,7 @@ class ErroresLocalesCaracterizacionTest {
         var materia = new Materia();
         materia.setNombre("Calculo");
         var curso = new CursoOfertadoVerano();
-        curso.setId_curso(3);
+        curso.setIdCurso(3);
         curso.setObjMateria(materia);
         return curso;
     }

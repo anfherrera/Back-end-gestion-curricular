@@ -29,28 +29,30 @@ public interface CursosOfertadosMapperDominio {
     @Mapping(source = "objMateria", target = "objMateria")
     @Mapping(source = "objDocente", target = "objDocente")
     @Mapping(source = "grupo", target = "grupo")
-    @Mapping(source = "cupo_estimado", target = "cupo_estimado")
+    @Mapping(source = "cupo_estimado", target = "cupoEstimado")
     @Mapping(source = "salon", target = "salon")
     @Mapping(target = "estadosCursoOfertados", ignore = true)
     @Mapping(target = "estudiantesInscritos", ignore = true)
     @Mapping(target = "solicitudes" , ignore = true)
     @Mapping(target = "fecha_inicio", ignore = true) // Se asigna manualmente en el controlador
     @Mapping(target = "fecha_fin", ignore = true) // Se asigna manualmente en el controlador
-    @Mapping(target = "periodo_academico", ignore = true) // Se asigna manualmente en el controlador
+    @Mapping(target = "periodoAcademico", ignore = true) // Se asigna manualmente en el controlador
+    // OPC-2: el DTO conserva el nombre snake_case
+    @Mapping(target = "idCurso", source = "id_curso")
     CursoOfertadoVerano mapearDeDTOPeticionACursoOfertado(CursosOfertadosDTOPeticion peticion);
 
     // Dominio → DTO Respuesta
-    @Mapping(source = "id_curso", target = "id_curso")
+    @Mapping(source = "idCurso", target = "id_curso")
     @Mapping(target = "idCurso", ignore = true) // Se asignará en post-mapping
     @Mapping(source = "objMateria.codigo", target = "codigo_curso")
     @Mapping(source = "objMateria.nombre", target = "nombre_curso")
     @Mapping(source = "objMateria", target = "objMateria")
     @Mapping(source = "objDocente", target = "objDocente")
     @Mapping(source = "grupo", target = "grupo", qualifiedByName = "convertirGrupoAString")
-    @Mapping(source = "cupo_estimado", target = "cupo_estimado")
+    @Mapping(source = "cupoEstimado", target = "cupo_estimado")
     @Mapping(source = "salon", target = "salon")
     @Mapping(source = "salon", target = "espacio_asignado")
-    @Mapping(source = "cupo_estimado", target = "cupo_maximo")
+    @Mapping(source = "cupoEstimado", target = "cupo_maximo")
     @Mapping(source = ".", target = "cupo_disponible", qualifiedByName = "calcularCupoDisponible")
     @Mapping(source = "estadosCursoOfertados", target = "estadosCursoOfertados")
     @Mapping(source = "estudiantesInscritos", target = "estudiantesInscritos")
@@ -72,17 +74,17 @@ public interface CursosOfertadosMapperDominio {
     }
     
     // Mapper específico para cursos disponibles (estado "Disponible")
-    @Mapping(source = "id_curso", target = "id_curso")
+    @Mapping(source = "idCurso", target = "id_curso")
     @Mapping(target = "idCurso", ignore = true) // Se asignará en post-mapping
     @Mapping(source = "objMateria.codigo", target = "codigo_curso")
     @Mapping(source = "objMateria.nombre", target = "nombre_curso")
     @Mapping(source = "objMateria", target = "objMateria")
     @Mapping(source = "objDocente", target = "objDocente")
     @Mapping(source = "grupo", target = "grupo", qualifiedByName = "convertirGrupoAString")
-    @Mapping(source = "cupo_estimado", target = "cupo_estimado")
+    @Mapping(source = "cupoEstimado", target = "cupo_estimado")
     @Mapping(source = "salon", target = "salon")
     @Mapping(source = "salon", target = "espacio_asignado")
-    @Mapping(source = "cupo_estimado", target = "cupo_maximo")
+    @Mapping(source = "cupoEstimado", target = "cupo_maximo")
     @Mapping(source = ".", target = "cupo_disponible", qualifiedByName = "calcularCupoDisponible")
     @Mapping(source = "estadosCursoOfertados", target = "estadosCursoOfertados")
     @Mapping(source = "estudiantesInscritos", target = "estudiantesInscritos")
@@ -102,6 +104,10 @@ public interface CursosOfertadosMapperDominio {
      * (500 al preinscribir). En la respuesta este campo siempre salio null.
      */
     @Mapping(target = "objCursoOfertadoVerano", ignore = true)
+    // OPC-2: el DTO conserva el nombre snake_case
+    @Mapping(target = "id_estado", source = "idEstado")
+    @Mapping(target = "estado_actual", source = "estadoActual")
+    @Mapping(target = "fecha_registro_estado", source = "fechaRegistroEstado")
     EstadoCursoOfertadoDTORespuesta mapearDeEstadoCursoOfertadoARespuesta(EstadoCursoOfertado estado);
 
     // Métodos auxiliares para mapear datos reales
@@ -119,7 +125,7 @@ public interface CursosOfertadosMapperDominio {
             return "Abierto";
         }
         // Obtener el estado más reciente
-        return estados.get(estados.size() - 1).getEstado_actual();
+        return estados.get(estados.size() - 1).getEstadoActual();
     }
     
     @Named("obtenerFechaInicio")
@@ -128,7 +134,7 @@ public interface CursosOfertadosMapperDominio {
             return "2024-06-01T08:00:00Z";
         }
         // Obtener la fecha del estado más reciente
-        java.util.Date fecha = estados.get(estados.size() - 1).getFecha_registro_estado();
+        java.util.Date fecha = estados.get(estados.size() - 1).getFechaRegistroEstado();
         if (fecha == null) {
             return "2024-06-01T08:00:00Z";
         }
@@ -143,7 +149,7 @@ public interface CursosOfertadosMapperDominio {
             return 0;
         }
         
-        Integer cupoMaximo = curso.getCupo_estimado();
+        Integer cupoMaximo = curso.getCupoEstimado();
         if (cupoMaximo == null) {
             return 0;
         }
@@ -199,8 +205,8 @@ public interface CursosOfertadosMapperDominio {
     @Named("calcularPeriodoDesdeCurso")
     default String calcularPeriodoDesdeCurso(CursoOfertadoVerano curso) {
         // Si hay período académico guardado, usarlo
-        if (curso.getPeriodo_academico() != null && !curso.getPeriodo_academico().trim().isEmpty()) {
-            return curso.getPeriodo_academico().trim();
+        if (curso.getPeriodoAcademico() != null && !curso.getPeriodoAcademico().trim().isEmpty()) {
+            return curso.getPeriodoAcademico().trim();
         }
         // Si no hay período pero hay fecha_inicio, calcular desde la fecha
         if (curso.getFecha_inicio() != null) {

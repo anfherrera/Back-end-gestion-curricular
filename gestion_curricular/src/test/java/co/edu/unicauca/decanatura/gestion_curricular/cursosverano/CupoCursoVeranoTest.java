@@ -49,8 +49,8 @@ class CupoCursoVeranoTest {
 
     private SolicitudCursoVeranoInscripcion inscripcionEnviada(int idCurso, int cupo) {
         CursoOfertadoVerano curso = new CursoOfertadoVerano();
-        curso.setId_curso(idCurso);
-        curso.setCupo_estimado(cupo);
+        curso.setIdCurso(idCurso);
+        curso.setCupoEstimado(cupo);
 
         EstadoSolicitud enviada = new EstadoSolicitud();
         enviada.setEstadoActual("Enviada");
@@ -109,7 +109,7 @@ class CupoCursoVeranoTest {
 
         assertThrows(CupoAgotadoException.class, () -> casoDeUso.verificarCupoDisponible(curso));
         casoDeUso.verificarCupoDisponible(null);
-        curso.setId_curso(null);
+        curso.setIdCurso(null);
         casoDeUso.verificarCupoDisponible(curso);
     }
 

@@ -106,7 +106,7 @@ public class PreinscripcionesVeranoRestController {
             CursoId cursoId = null;
             CursoNombre cursoNombre = null;
             if (preinscripcion.getObjCursoOfertadoVerano() != null) {
-                cursoId = new CursoId(preinscripcion.getObjCursoOfertadoVerano().getId_curso());
+                cursoId = new CursoId(preinscripcion.getObjCursoOfertadoVerano().getIdCurso());
                 if (preinscripcion.getObjCursoOfertadoVerano().getObjMateria() != null) {
                     cursoNombre = new CursoNombre(preinscripcion.getObjCursoOfertadoVerano().getObjMateria().getNombre());
                 }
@@ -152,8 +152,8 @@ public class PreinscripcionesVeranoRestController {
 
             // Mapear el DTO a nuestro modelo de dominio
             SolicitudCursoVeranoPreinscripcion solicitudDominio = new SolicitudCursoVeranoPreinscripcion();
-            solicitudDominio.setNombre_estudiante(peticion.getNombreCompleto());
-            solicitudDominio.setCodigo_estudiante(peticion.getCodigo());
+            solicitudDominio.setNombreEstudiante(peticion.getNombreCompleto());
+            solicitudDominio.setCodigoEstudiante(peticion.getCodigo());
             
             // Mapear la condicion con validacion; sin condición, el mismo 400 que con una inválida
             if (peticion.getCondicion() == null) {
@@ -161,7 +161,7 @@ public class PreinscripcionesVeranoRestController {
                         + Arrays.toString(CondicionSolicitudVerano.values()));
             }
             try {
-                solicitudDominio.setCodicion_solicitud(CondicionSolicitudVerano.valueOf(peticion.getCondicion()));
+                solicitudDominio.setCondicionSolicitud(CondicionSolicitudVerano.valueOf(peticion.getCondicion()));
             } catch (IllegalArgumentException e) {
                 throw new IllegalArgumentException("Condicion invalida: " + peticion.getCondicion() + ". Valores validos: " + Arrays.toString(CondicionSolicitudVerano.values()));
             }
@@ -175,7 +175,7 @@ public class PreinscripcionesVeranoRestController {
 
             // Crear un curso con ID = 0 para indicar que es un curso nuevo
             CursoOfertadoVerano cursoTemporal = new CursoOfertadoVerano();
-            cursoTemporal.setId_curso(0); // ID = 0 indica curso nuevo
+            cursoTemporal.setIdCurso(0); // ID = 0 indica curso nuevo
             solicitudDominio.setObjCursoOfertadoVerano(cursoTemporal);
             
             Usuario usuarioTemporal =
@@ -211,25 +211,25 @@ public class PreinscripcionesVeranoRestController {
         
         // Mapear el DTO a nuestro modelo de dominio
         SolicitudCursoVeranoPreinscripcion solicitudDominio = new SolicitudCursoVeranoPreinscripcion();
-        solicitudDominio.setNombre_estudiante("Estudiante"); // Valor por defecto
-        solicitudDominio.setCodigo_estudiante("EST001"); // Valor por defecto
+        solicitudDominio.setNombreEstudiante("Estudiante"); // Valor por defecto
+        solicitudDominio.setCodigoEstudiante("EST001"); // Valor por defecto
         solicitudDominio.setObservacion(peticion.getNombreSolicitud() != null ? peticion.getNombreSolicitud() : "Preinscripcion curso de verano");
         
         // Usar la condicion del frontend o valor por defecto
         if (peticion.getCondicion() != null && !peticion.getCondicion().trim().isEmpty()) {
             try {
-                solicitudDominio.setCodicion_solicitud(CondicionSolicitudVerano.valueOf(peticion.getCondicion()));
+                solicitudDominio.setCondicionSolicitud(CondicionSolicitudVerano.valueOf(peticion.getCondicion()));
             } catch (IllegalArgumentException e) {
-                solicitudDominio.setCodicion_solicitud(CondicionSolicitudVerano.Primera_Vez);
+                solicitudDominio.setCondicionSolicitud(CondicionSolicitudVerano.Primera_Vez);
             }
         } else {
-            solicitudDominio.setCodicion_solicitud(CondicionSolicitudVerano.Primera_Vez);
+            solicitudDominio.setCondicionSolicitud(CondicionSolicitudVerano.Primera_Vez);
         }
         
         
         // Crear curso con el ID real
         CursoOfertadoVerano curso = new CursoOfertadoVerano();
-        curso.setId_curso(peticion.getIdCurso());
+        curso.setIdCurso(peticion.getIdCurso());
         solicitudDominio.setObjCursoOfertadoVerano(curso);
         
         
@@ -301,7 +301,7 @@ public class PreinscripcionesVeranoRestController {
                 RolEstudiante rol = usuario.getObjRol() == null ? null
                     : new RolEstudiante(usuario.getObjRol().getIdRol(), usuario.getObjRol().getNombre());
                 estudiante = new Estudiante(usuario.getIdUsuario(), usuario.getNombreCompleto(), usuario.getCorreo(),
-                    usuario.getCodigo(), preinscripcion.getCodigo_estudiante(), rol);
+                    usuario.getCodigo(), preinscripcion.getCodigoEstudiante(), rol);
             }
 
             // Informacion del curso usando el mapper existente
@@ -319,8 +319,8 @@ public class PreinscripcionesVeranoRestController {
             preinscripciones.add(new PreinscripcionCurso(preinscripcion.getIdSolicitud(),
                 preinscripcion.getIdSolicitud(), preinscripcion.getFechaRegistroSolicitud(), estado,
                 preinscripcion.getObservacion() != null ? preinscripcion.getObservacion() : "",
-                preinscripcion.getCodicion_solicitud() != null
-                    ? preinscripcion.getCodicion_solicitud().toString() : "Primera_Vez",
+                preinscripcion.getCondicionSolicitud() != null
+                    ? preinscripcion.getCondicionSolicitud().toString() : "Primera_Vez",
                 estudiante, curso));
         }
         

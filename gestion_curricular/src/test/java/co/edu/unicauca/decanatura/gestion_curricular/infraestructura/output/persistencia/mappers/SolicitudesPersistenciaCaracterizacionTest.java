@@ -292,7 +292,7 @@ class SolicitudesPersistenciaCaracterizacionTest {
 
     private static CursoOfertadoVerano cursoConId(int id) {
         CursoOfertadoVerano curso = new CursoOfertadoVerano();
-        curso.setId_curso(id);
+        curso.setIdCurso(id);
         return curso;
     }
 

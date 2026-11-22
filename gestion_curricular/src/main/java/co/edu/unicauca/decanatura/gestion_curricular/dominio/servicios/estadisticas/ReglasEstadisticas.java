@@ -121,7 +121,7 @@ final class ReglasEstadisticas {
             return true;
         }
         if (solicitud.getObjCursoOfertadoVerano() != null) {
-            String periodoCurso = solicitud.getObjCursoOfertadoVerano().getPeriodo_academico();
+            String periodoCurso = solicitud.getObjCursoOfertadoVerano().getPeriodoAcademico();
             if (periodoCurso != null && periodoCurso.trim().equals(periodo)) {
                 return true;
             }

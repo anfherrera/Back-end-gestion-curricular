@@ -24,7 +24,7 @@ class TransicionEstadoCursoTest {
         List<EstadoCursoOfertado> lista = new ArrayList<>();
         for (String e : estados) {
             EstadoCursoOfertado estado = new EstadoCursoOfertado();
-            estado.setEstado_actual(e);
+            estado.setEstadoActual(e);
             lista.add(estado);
         }
         curso.setEstadosCursoOfertados(lista);
@@ -35,7 +35,7 @@ class TransicionEstadoCursoTest {
         CursoOfertadoVerano curso = curso(estados);
         curso.setObjMateria(new Materia());
         curso.setObjDocente(new Docente());
-        curso.setCupo_estimado(20);
+        curso.setCupoEstimado(20);
         curso.setSalon("101");
         return curso;
     }
