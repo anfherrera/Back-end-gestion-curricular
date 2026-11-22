@@ -196,7 +196,7 @@ class RutasCatalogosCaracterizacionTest {
         caso(casos, mvc, HttpMethod.GET, b + "?codigo=X", null);
         caso(casos, mvc, HttpMethod.GET, b + "?nombre=Ana&codigo=D001", null);
         caso(casos, mvc, HttpMethod.GET, b, null);
-        GrafoObjetos.compararConReferencia(casos, "rutas/docentes.json");
+        GrafoObjetos.compararConReferencia(casos, "rutas/docentes.json", "rutas/correcciones/docentes-est7.json");
     }
 
     private static MockMvc mvc(Object controlador) {

@@ -1,0 +1,298 @@
+{
+  "DELETE /api/docentes/1": {
+    "status": 200,
+    "tipo": "application/json",
+    "cuerpo": true
+  },
+  "DELETE /api/docentes/9": {
+    "status": 404,
+    "tipo": "application/json",
+    "cuerpo": false
+  },
+  "DELETE /api/docentes/eliminarDocente/1": {
+    "status": 404,
+    "tipo": "application/json",
+    "cuerpo": {
+      "codigoError": "GC-0404",
+      "mensaje": "El recurso solicitado no existe",
+      "codigoHttp": 404,
+      "url": "http://localhost/api/docentes/eliminarDocente/1",
+      "metodo": "DELETE"
+    }
+  },
+  "DELETE /api/docentes/eliminarDocente/9": {
+    "status": 404,
+    "tipo": "application/json",
+    "cuerpo": {
+      "codigoError": "GC-0404",
+      "mensaje": "El recurso solicitado no existe",
+      "codigoHttp": 404,
+      "url": "http://localhost/api/docentes/eliminarDocente/9",
+      "metodo": "DELETE"
+    }
+  },
+  "GET /api/docentes": {
+    "status": 200,
+    "tipo": "application/json",
+    "cuerpo": [
+      {
+        "id_docente": 1,
+        "codigo_docente": "D001",
+        "nombre_docente": "Ana Docente"
+      },
+      {
+        "id_docente": 2,
+        "codigo_docente": "D002",
+        "nombre_docente": "Luis Docente"
+      }
+    ]
+  },
+  "GET /api/docentes/1": {
+    "status": 200,
+    "tipo": "application/json",
+    "cuerpo": {
+      "id_docente": 1,
+      "codigo_docente": "D001",
+      "nombre_docente": "Ana Docente"
+    }
+  },
+  "GET /api/docentes/9": {
+    "status": 404,
+    "tipo": null,
+    "cuerpo": null
+  },
+  "GET /api/docentes/buscarDocentePorId/1": {
+    "status": 404,
+    "tipo": "application/json",
+    "cuerpo": {
+      "codigoError": "GC-0404",
+      "mensaje": "El recurso solicitado no existe",
+      "codigoHttp": 404,
+      "url": "http://localhost/api/docentes/buscarDocentePorId/1",
+      "metodo": "GET"
+    }
+  },
+  "GET /api/docentes/buscarDocentePorId/9": {
+    "status": 404,
+    "tipo": "application/json",
+    "cuerpo": {
+      "codigoError": "GC-0404",
+      "mensaje": "El recurso solicitado no existe",
+      "codigoHttp": 404,
+      "url": "http://localhost/api/docentes/buscarDocentePorId/9",
+      "metodo": "GET"
+    }
+  },
+  "GET /api/docentes/buscarDocentePorId/abc": {
+    "status": 404,
+    "tipo": "application/json",
+    "cuerpo": {
+      "codigoError": "GC-0404",
+      "mensaje": "El recurso solicitado no existe",
+      "codigoHttp": 404,
+      "url": "http://localhost/api/docentes/buscarDocentePorId/abc",
+      "metodo": "GET"
+    }
+  },
+  "GET /api/docentes/buscarPorCodigo?codigo=D001": {
+    "status": 404,
+    "tipo": "application/json",
+    "cuerpo": {
+      "codigoError": "GC-0404",
+      "mensaje": "El recurso solicitado no existe",
+      "codigoHttp": 404,
+      "url": "http://localhost/api/docentes/buscarPorCodigo",
+      "metodo": "GET"
+    }
+  },
+  "GET /api/docentes/buscarPorCodigo?codigo=X": {
+    "status": 404,
+    "tipo": "application/json",
+    "cuerpo": {
+      "codigoError": "GC-0404",
+      "mensaje": "El recurso solicitado no existe",
+      "codigoHttp": 404,
+      "url": "http://localhost/api/docentes/buscarPorCodigo",
+      "metodo": "GET"
+    }
+  },
+  "GET /api/docentes/buscarPorNombre?nombre=Ana": {
+    "status": 404,
+    "tipo": "application/json",
+    "cuerpo": {
+      "codigoError": "GC-0404",
+      "mensaje": "El recurso solicitado no existe",
+      "codigoHttp": 404,
+      "url": "http://localhost/api/docentes/buscarPorNombre",
+      "metodo": "GET"
+    }
+  },
+  "GET /api/docentes/buscarPorNombre?nombre=X": {
+    "status": 404,
+    "tipo": "application/json",
+    "cuerpo": {
+      "codigoError": "GC-0404",
+      "mensaje": "El recurso solicitado no existe",
+      "codigoHttp": 404,
+      "url": "http://localhost/api/docentes/buscarPorNombre",
+      "metodo": "GET"
+    }
+  },
+  "GET /api/docentes/listarDocentes": {
+    "status": 404,
+    "tipo": "application/json",
+    "cuerpo": {
+      "codigoError": "GC-0404",
+      "mensaje": "El recurso solicitado no existe",
+      "codigoHttp": 404,
+      "url": "http://localhost/api/docentes/listarDocentes",
+      "metodo": "GET"
+    }
+  },
+  "GET /api/docentes?codigo=D001": {
+    "status": 200,
+    "tipo": "application/json",
+    "cuerpo": {
+      "id_docente": 1,
+      "codigo_docente": "D001",
+      "nombre_docente": "Ana Docente"
+    }
+  },
+  "GET /api/docentes?codigo=X": {
+    "status": 404,
+    "tipo": null,
+    "cuerpo": null
+  },
+  "GET /api/docentes?nombre=Ana": {
+    "status": 200,
+    "tipo": "application/json",
+    "cuerpo": [
+      {
+        "id_docente": 1,
+        "codigo_docente": "D001",
+        "nombre_docente": "Ana Docente"
+      }
+    ]
+  },
+  "GET /api/docentes?nombre=Ana&codigo=D001": {
+    "status": 400,
+    "tipo": "application/json",
+    "cuerpo": {
+      "codigoError": "GC-0004",
+      "mensaje": "Use nombre o codigo, no los dos",
+      "codigoHttp": 400,
+      "url": "http://localhost/api/docentes",
+      "metodo": "GET"
+    }
+  },
+  "GET /api/docentes?nombre=X": {
+    "status": 200,
+    "tipo": "application/json",
+    "cuerpo": []
+  },
+  "POST /api/docentes {\"codigo_docente\":\"AB\",\"nombre_docente\":\"Docente nuevo\"}": {
+    "status": 400,
+    "tipo": "application/json",
+    "cuerpo": {
+      "codigo_docente": "El código del docente debe tener entre 3 y 15 caracteres"
+    }
+  },
+  "POST /api/docentes {\"codigo_docente\":\"D009\",\"nombre_docente\":\"Docente nuevo\"}": {
+    "status": 201,
+    "tipo": "application/json",
+    "cuerpo": {
+      "id_docente": 7,
+      "codigo_docente": "D009",
+      "nombre_docente": "Docente nuevo"
+    }
+  },
+  "POST /api/docentes {\"codigo_docente\":\"D009\"}": {
+    "status": 400,
+    "tipo": "application/json",
+    "cuerpo": {
+      "nombre_docente": "El nombre del docente no puede estar vacío"
+    }
+  },
+  "POST /api/docentes/crearDocente {\"codigo_docente\":\"AB\",\"nombre_docente\":\"Docente nuevo\"}": {
+    "status": 404,
+    "tipo": "application/json",
+    "cuerpo": {
+      "codigoError": "GC-0404",
+      "mensaje": "El recurso solicitado no existe",
+      "codigoHttp": 404,
+      "url": "http://localhost/api/docentes/crearDocente",
+      "metodo": "POST"
+    }
+  },
+  "POST /api/docentes/crearDocente {\"codigo_docente\":\"D009\",\"nombre_docente\":\"Docente nuevo\"}": {
+    "status": 404,
+    "tipo": "application/json",
+    "cuerpo": {
+      "codigoError": "GC-0404",
+      "mensaje": "El recurso solicitado no existe",
+      "codigoHttp": 404,
+      "url": "http://localhost/api/docentes/crearDocente",
+      "metodo": "POST"
+    }
+  },
+  "POST /api/docentes/crearDocente {\"codigo_docente\":\"D009\"}": {
+    "status": 404,
+    "tipo": "application/json",
+    "cuerpo": {
+      "codigoError": "GC-0404",
+      "mensaje": "El recurso solicitado no existe",
+      "codigoHttp": 404,
+      "url": "http://localhost/api/docentes/crearDocente",
+      "metodo": "POST"
+    }
+  },
+  "PUT /api/docentes/3 {\"codigo_docente\":\"D009\",\"nombre_docente\":\"Docente nuevo\"}": {
+    "status": 202,
+    "tipo": "application/json",
+    "cuerpo": {
+      "id_docente": 3,
+      "codigo_docente": "D009",
+      "nombre_docente": "Docente nuevo"
+    }
+  },
+  "PUT /api/docentes/3 {\"id_docente\":3,\"codigo_docente\":\"D009\",\"nombre_docente\":\"Docente nuevo\"}": {
+    "status": 202,
+    "tipo": "application/json",
+    "cuerpo": {
+      "id_docente": 3,
+      "codigo_docente": "D009",
+      "nombre_docente": "Docente nuevo"
+    }
+  },
+  "PUT /api/docentes/3 {\"id_docente\":5,\"codigo_docente\":\"D009\",\"nombre_docente\":\"Docente nuevo\"}": {
+    "status": 202,
+    "tipo": "application/json",
+    "cuerpo": {
+      "id_docente": 3,
+      "codigo_docente": "D009",
+      "nombre_docente": "Docente nuevo"
+    }
+  },
+  "PUT /api/docentes/actualizarDocente {\"codigo_docente\":\"D009\",\"nombre_docente\":\"Docente nuevo\"}": {
+    "status": 404,
+    "tipo": "application/json",
+    "cuerpo": {
+      "codigoError": "GC-0404",
+      "mensaje": "El recurso solicitado no existe",
+      "codigoHttp": 404,
+      "url": "http://localhost/api/docentes/actualizarDocente",
+      "metodo": "PUT"
+    }
+  },
+  "PUT /api/docentes/actualizarDocente {\"id_docente\":3,\"codigo_docente\":\"D009\",\"nombre_docente\":\"Docente nuevo\"}": {
+    "status": 404,
+    "tipo": "application/json",
+    "cuerpo": {
+      "codigoError": "GC-0404",
+      "mensaje": "El recurso solicitado no existe",
+      "codigoHttp": 404,
+      "url": "http://localhost/api/docentes/actualizarDocente",
+      "metodo": "PUT"
+    }
+  }
+}
