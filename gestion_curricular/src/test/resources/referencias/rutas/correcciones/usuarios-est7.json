@@ -1,0 +1,345 @@
+{
+  "DELETE /api/usuarios/1": {
+    "status": 200,
+    "tipo": null,
+    "cuerpo": null
+  },
+  "DELETE /api/usuarios/9": {
+    "status": 404,
+    "tipo": null,
+    "cuerpo": null
+  },
+  "DELETE /api/usuarios/eliminarUsuario/1": {
+    "status": 404,
+    "tipo": "application/json",
+    "cuerpo": {
+      "codigoError": "GC-0404",
+      "mensaje": "El recurso solicitado no existe",
+      "codigoHttp": 404,
+      "url": "http://localhost/api/usuarios/eliminarUsuario/1",
+      "metodo": "DELETE"
+    }
+  },
+  "DELETE /api/usuarios/eliminarUsuario/9": {
+    "status": 404,
+    "tipo": "application/json",
+    "cuerpo": {
+      "codigoError": "GC-0404",
+      "mensaje": "El recurso solicitado no existe",
+      "codigoHttp": 404,
+      "url": "http://localhost/api/usuarios/eliminarUsuario/9",
+      "metodo": "DELETE"
+    }
+  },
+  "GET /api/usuarios": {
+    "status": 200,
+    "tipo": "application/json",
+    "cuerpo": [
+      {
+        "id_usuario": 1,
+        "nombre_completo": "Usuario 1",
+        "rol": {
+          "id_rol": 2,
+          "nombre": "Estudiante"
+        },
+        "codigo": "C1",
+        "cedula": "100001",
+        "correo": "u1@unicauca.edu.co",
+        "estado_usuario": true,
+        "objPrograma": {
+          "id_programa": 1,
+          "codigo": "SIS",
+          "nombre_programa": "Ingeniería de Sistemas"
+        }
+      },
+      {
+        "id_usuario": 2,
+        "nombre_completo": "Usuario 2",
+        "rol": {
+          "id_rol": 2,
+          "nombre": "Estudiante"
+        },
+        "codigo": "C2",
+        "cedula": "100002",
+        "correo": "u2@unicauca.edu.co",
+        "estado_usuario": true,
+        "objPrograma": {
+          "id_programa": 1,
+          "codigo": "SIS",
+          "nombre_programa": "Ingeniería de Sistemas"
+        }
+      }
+    ]
+  },
+  "GET /api/usuarios/1": {
+    "status": 200,
+    "tipo": "application/json",
+    "cuerpo": {
+      "id_usuario": 1,
+      "nombre_completo": "Usuario 1",
+      "rol": {
+        "id_rol": 2,
+        "nombre": "Estudiante"
+      },
+      "codigo": "C1",
+      "cedula": "100001",
+      "correo": "u1@unicauca.edu.co",
+      "estado_usuario": true,
+      "objPrograma": {
+        "id_programa": 1,
+        "codigo": "SIS",
+        "nombre_programa": "Ingeniería de Sistemas"
+      }
+    }
+  },
+  "GET /api/usuarios/9": {
+    "status": 404,
+    "tipo": null,
+    "cuerpo": null
+  },
+  "GET /api/usuarios/buscarUsuarioPorId/1": {
+    "status": 404,
+    "tipo": "application/json",
+    "cuerpo": {
+      "codigoError": "GC-0404",
+      "mensaje": "El recurso solicitado no existe",
+      "codigoHttp": 404,
+      "url": "http://localhost/api/usuarios/buscarUsuarioPorId/1",
+      "metodo": "GET"
+    }
+  },
+  "GET /api/usuarios/buscarUsuarioPorId/9": {
+    "status": 404,
+    "tipo": "application/json",
+    "cuerpo": {
+      "codigoError": "GC-0404",
+      "mensaje": "El recurso solicitado no existe",
+      "codigoHttp": 404,
+      "url": "http://localhost/api/usuarios/buscarUsuarioPorId/9",
+      "metodo": "GET"
+    }
+  },
+  "GET /api/usuarios/buscarUsuarioPorId/abc": {
+    "status": 404,
+    "tipo": "application/json",
+    "cuerpo": {
+      "codigoError": "GC-0404",
+      "mensaje": "El recurso solicitado no existe",
+      "codigoHttp": 404,
+      "url": "http://localhost/api/usuarios/buscarUsuarioPorId/abc",
+      "metodo": "GET"
+    }
+  },
+  "GET /api/usuarios/listarUsuarios": {
+    "status": 404,
+    "tipo": "application/json",
+    "cuerpo": {
+      "codigoError": "GC-0404",
+      "mensaje": "El recurso solicitado no existe",
+      "codigoHttp": 404,
+      "url": "http://localhost/api/usuarios/listarUsuarios",
+      "metodo": "GET"
+    }
+  },
+  "POST /api/usuarios {\"nombre_completo\":\"Ana Ruiz\",\"id_rol\":2,\"codigo\":\"1045\",\"cedula\":\"123456\",\"correo\":\"ana@unicauca.edu.co\",\"password\":\"clave\",\"estado_usuario\":true,\"id_programa\":1}": {
+    "status": 201,
+    "tipo": "application/json",
+    "cuerpo": {
+      "id_usuario": 21,
+      "nombre_completo": "Ana Ruiz",
+      "rol": {
+        "id_rol": 2,
+        "nombre": "Estudiante"
+      },
+      "codigo": "1045",
+      "cedula": "123456",
+      "correo": "ana@unicauca.edu.co",
+      "estado_usuario": true,
+      "objPrograma": {
+        "id_programa": 1,
+        "codigo": "SIS",
+        "nombre_programa": "Ingeniería de Sistemas"
+      }
+    }
+  },
+  "POST /api/usuarios {\"nombre_completo\":\"Ana Ruiz\",\"id_rol\":2,\"codigo\":\"1045\",\"correo\":\"ana@gmail.com\",\"id_programa\":1}": {
+    "status": 400,
+    "tipo": "application/json",
+    "cuerpo": {
+      "correo": "El correo debe ser @unicauca.edu.co"
+    }
+  },
+  "POST /api/usuarios/crearUsuario {\"nombre_completo\":\"Ana Ruiz\",\"id_rol\":2,\"codigo\":\"1045\",\"cedula\":\"123456\",\"correo\":\"ana@unicauca.edu.co\",\"password\":\"clave\",\"estado_usuario\":true,\"id_programa\":1}": {
+    "status": 404,
+    "tipo": "application/json",
+    "cuerpo": {
+      "codigoError": "GC-0404",
+      "mensaje": "El recurso solicitado no existe",
+      "codigoHttp": 404,
+      "url": "http://localhost/api/usuarios/crearUsuario",
+      "metodo": "POST"
+    }
+  },
+  "POST /api/usuarios/crearUsuario {\"nombre_completo\":\"Ana Ruiz\",\"id_rol\":2,\"codigo\":\"1045\",\"correo\":\"ana@gmail.com\",\"id_programa\":1}": {
+    "status": 404,
+    "tipo": "application/json",
+    "cuerpo": {
+      "codigoError": "GC-0404",
+      "mensaje": "El recurso solicitado no existe",
+      "codigoHttp": 404,
+      "url": "http://localhost/api/usuarios/crearUsuario",
+      "metodo": "POST"
+    }
+  },
+  "PUT /api/usuarios/1/estado": {
+    "status": 200,
+    "tipo": "application/json",
+    "cuerpo": {
+      "id_usuario": 1,
+      "nombre_completo": "Usuario 1",
+      "rol": {
+        "id_rol": 2,
+        "nombre": "Estudiante"
+      },
+      "codigo": "C1",
+      "cedula": "100001",
+      "correo": "u1@unicauca.edu.co",
+      "estado_usuario": false,
+      "objPrograma": {
+        "id_programa": 1,
+        "codigo": "SIS",
+        "nombre_programa": "Ingeniería de Sistemas"
+      }
+    }
+  },
+  "PUT /api/usuarios/3 {\"id_usuario\":3,\"nombre_completo\":\"Ana Ruiz\",\"id_rol\":2,\"codigo\":\"1045\",\"cedula\":\"123456\",\"correo\":\"ana@unicauca.edu.co\",\"password\":\"clave\",\"estado_usuario\":true,\"id_programa\":1}": {
+    "status": 202,
+    "tipo": "application/json",
+    "cuerpo": {
+      "id_usuario": 3,
+      "nombre_completo": "Ana Ruiz",
+      "rol": {
+        "id_rol": 2,
+        "nombre": null
+      },
+      "codigo": "1045",
+      "cedula": "123456",
+      "correo": "ana@unicauca.edu.co",
+      "estado_usuario": true,
+      "objPrograma": {
+        "id_programa": 1,
+        "codigo": null,
+        "nombre_programa": null
+      }
+    }
+  },
+  "PUT /api/usuarios/3 {\"id_usuario\":3,\"nombre_completo\":\"Ana Ruiz\",\"id_rol\":2,\"codigo\":\"1045\",\"correo\":\"ana@gmail.com\",\"id_programa\":1}": {
+    "status": 400,
+    "tipo": "application/json",
+    "cuerpo": {
+      "correo": "El correo debe ser @unicauca.edu.co"
+    }
+  },
+  "PUT /api/usuarios/3 {\"id_usuario\":5,\"nombre_completo\":\"Ana Ruiz\",\"id_rol\":2,\"codigo\":\"1045\",\"cedula\":\"123456\",\"correo\":\"ana@unicauca.edu.co\",\"password\":\"clave\",\"estado_usuario\":true,\"id_programa\":1}": {
+    "status": 202,
+    "tipo": "application/json",
+    "cuerpo": {
+      "id_usuario": 3,
+      "nombre_completo": "Ana Ruiz",
+      "rol": {
+        "id_rol": 2,
+        "nombre": null
+      },
+      "codigo": "1045",
+      "cedula": "123456",
+      "correo": "ana@unicauca.edu.co",
+      "estado_usuario": true,
+      "objPrograma": {
+        "id_programa": 1,
+        "codigo": null,
+        "nombre_programa": null
+      }
+    }
+  },
+  "PUT /api/usuarios/3 {\"nombre_completo\":\"Ana Ruiz\",\"id_rol\":2,\"codigo\":\"1045\",\"cedula\":\"123456\",\"correo\":\"ana@unicauca.edu.co\",\"password\":\"clave\",\"estado_usuario\":true,\"id_programa\":1}": {
+    "status": 202,
+    "tipo": "application/json",
+    "cuerpo": {
+      "id_usuario": 3,
+      "nombre_completo": "Ana Ruiz",
+      "rol": {
+        "id_rol": 2,
+        "nombre": null
+      },
+      "codigo": "1045",
+      "cedula": "123456",
+      "correo": "ana@unicauca.edu.co",
+      "estado_usuario": true,
+      "objPrograma": {
+        "id_programa": 1,
+        "codigo": null,
+        "nombre_programa": null
+      }
+    }
+  },
+  "PUT /api/usuarios/9/estado": {
+    "status": 404,
+    "tipo": null,
+    "cuerpo": null
+  },
+  "PUT /api/usuarios/actualizarUsuario {\"id_usuario\":3,\"nombre_completo\":\"Ana Ruiz\",\"id_rol\":2,\"codigo\":\"1045\",\"cedula\":\"123456\",\"correo\":\"ana@unicauca.edu.co\",\"password\":\"clave\",\"estado_usuario\":true,\"id_programa\":1}": {
+    "status": 404,
+    "tipo": "application/json",
+    "cuerpo": {
+      "codigoError": "GC-0404",
+      "mensaje": "El recurso solicitado no existe",
+      "codigoHttp": 404,
+      "url": "http://localhost/api/usuarios/actualizarUsuario",
+      "metodo": "PUT"
+    }
+  },
+  "PUT /api/usuarios/actualizarUsuario {\"id_usuario\":3,\"nombre_completo\":\"Ana Ruiz\",\"id_rol\":2,\"codigo\":\"1045\",\"correo\":\"ana@gmail.com\",\"id_programa\":1}": {
+    "status": 404,
+    "tipo": "application/json",
+    "cuerpo": {
+      "codigoError": "GC-0404",
+      "mensaje": "El recurso solicitado no existe",
+      "codigoHttp": 404,
+      "url": "http://localhost/api/usuarios/actualizarUsuario",
+      "metodo": "PUT"
+    }
+  },
+  "PUT /api/usuarios/actualizarUsuario {\"nombre_completo\":\"Ana Ruiz\",\"id_rol\":2,\"codigo\":\"1045\",\"cedula\":\"123456\",\"correo\":\"ana@unicauca.edu.co\",\"password\":\"clave\",\"estado_usuario\":true,\"id_programa\":1}": {
+    "status": 404,
+    "tipo": "application/json",
+    "cuerpo": {
+      "codigoError": "GC-0404",
+      "mensaje": "El recurso solicitado no existe",
+      "codigoHttp": 404,
+      "url": "http://localhost/api/usuarios/actualizarUsuario",
+      "metodo": "PUT"
+    }
+  },
+  "PUT /api/usuarios/cambiarEstado/1": {
+    "status": 404,
+    "tipo": "application/json",
+    "cuerpo": {
+      "codigoError": "GC-0404",
+      "mensaje": "El recurso solicitado no existe",
+      "codigoHttp": 404,
+      "url": "http://localhost/api/usuarios/cambiarEstado/1",
+      "metodo": "PUT"
+    }
+  },
+  "PUT /api/usuarios/cambiarEstado/9": {
+    "status": 404,
+    "tipo": "application/json",
+    "cuerpo": {
+      "codigoError": "GC-0404",
+      "mensaje": "El recurso solicitado no existe",
+      "codigoHttp": 404,
+      "url": "http://localhost/api/usuarios/cambiarEstado/9",
+      "metodo": "PUT"
+    }
+  }
+}

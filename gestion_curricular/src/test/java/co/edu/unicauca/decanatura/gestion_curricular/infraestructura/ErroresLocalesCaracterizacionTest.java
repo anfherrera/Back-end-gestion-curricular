@@ -149,7 +149,7 @@ class ErroresLocalesCaracterizacionTest {
         }
 
         // Usuario: crear
-        Supplier<MockHttpServletRequestBuilder> crearUsuario = () -> post("/api/usuarios/crearUsuario")
+        Supplier<MockHttpServletRequestBuilder> crearUsuario = () -> post("/api/usuarios")
             .contentType(MediaType.APPLICATION_JSON)
             .content("{\"nombre_completo\":\"Ana Ruiz\",\"id_rol\":2,\"codigo\":\"1045\",\"cedula\":\"123456\","
                 + "\"correo\":\"ana@unicauca.edu.co\",\"password\":\"x\",\"estado_usuario\":true,\"id_programa\":1}");
@@ -185,6 +185,8 @@ class ErroresLocalesCaracterizacionTest {
         esperado = Correcciones.aplicar(esperado, "errores/correcciones/errores-locales-bug23.json");
         // BUG-32: una solicitud de curso nuevo que vuelve sin fecha responde 200 con fecha null y no 500
         esperado = Correcciones.aplicar(esperado, "errores/correcciones/errores-locales-bug32.json");
+        // EST-7: crear usuario es POST /api/usuarios; solo cambia la url de los errores
+        esperado = Correcciones.aplicar(esperado, "errores/correcciones/errores-locales-est7.json");
         assertThat(actual).isEqualTo(esperado);
     }
 

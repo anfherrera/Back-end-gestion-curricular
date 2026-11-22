@@ -54,7 +54,7 @@ class ManejadorErroresTest {
     @WithMockUser(roles = "Estudiante")
     @DisplayName("Sin permisos: 403 con mensaje")
     void sinPermisos() throws Exception {
-        mockMvc.perform(get("/api/usuarios/listarUsuarios"))
+        mockMvc.perform(get("/api/usuarios"))
                 .andExpect(status().isForbidden())
                 .andExpect(jsonPath("$.codigoError").value("GC-0403"));
     }

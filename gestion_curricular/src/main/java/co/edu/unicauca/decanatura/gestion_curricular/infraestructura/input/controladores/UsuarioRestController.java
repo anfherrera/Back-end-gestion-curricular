@@ -64,7 +64,11 @@ public class UsuarioRestController {
     private final LoginRateLimiter loginRateLimiter;
 
 
-    @PostMapping("/crearUsuario")
+    /**
+     * Rutas según la convención de EST-7: {@code POST /}, {@code GET /}, {@code GET|PUT|DELETE /{id}} y
+     * {@code PUT /{id}/estado}. {@code POST /login} se conserva (decisión del usuario, revisión 26).
+     */
+    @PostMapping
     @PreAuthorize("(hasRole('Administrador') or hasRole('Coordinador')) and @autorizacion.puedeAsignarRol(#peticion.id_rol)")
     public ResponseEntity<UsuarioDTORespuesta> crearUsuario(@RequestBody @Valid UsuarioDTOPeticion peticion) {
         // Los errores de dominio y los argumentos inválidos llegan al manejador global; el resto, 500 genérico
@@ -122,11 +126,17 @@ public class UsuarioRestController {
         });
     }
     
-    @PutMapping("/actualizarUsuario")
+    /**
+     * El id de la ruta manda sobre el del cuerpo. La autorización comprueba ese mismo id ({@code #id}): si mirara
+     * el del cuerpo, se podría pedir permiso para un usuario y modificar otro.
+     */
+    @PutMapping("/{id:\\d+}")
     @PreAuthorize("(hasRole('Administrador') or hasRole('Coordinador'))"
             + " and @autorizacion.puedeAsignarRol(#peticion.id_rol)"
-            + " and @autorizacion.puedeModificarUsuario(#peticion.id_usuario)")
-    public ResponseEntity<UsuarioDTORespuesta> actualizarrUsuario(@RequestBody @Valid UsuarioDTOPeticion peticion) {
+            + " and @autorizacion.puedeModificarUsuario(#id)")
+    public ResponseEntity<UsuarioDTORespuesta> actualizarrUsuario(@PathVariable Integer id,
+            @RequestBody @Valid UsuarioDTOPeticion peticion) {
+        peticion.setId_usuario(id);
         Usuario usuario = new Usuario();
         usuario.setIdUsuario(peticion.getId_usuario());
         usuario.setNombreCompleto(peticion.getNombre_completo());
@@ -156,7 +166,7 @@ public class UsuarioRestController {
         );
     }
 
-    @GetMapping("/buscarUsuarioPorId/{id}")
+    @GetMapping("/{id:\\d+}")
     @PreAuthorize("hasAnyRole(" + Autorizacion.ROLES_STAFF + ") or @autorizacion.esUsuarioActual(#id)")
     public ResponseEntity<UsuarioDTORespuesta> buscarUsuarioPorId(@Min(value = 1) @PathVariable Integer id) {
         Usuario usuario = usuarioCUIntPort.obtenerUsuarioPorId(id);
@@ -166,7 +176,7 @@ public class UsuarioRestController {
         return new ResponseEntity<>(usuarioMapperDominio.mapearDeUsuarioAUsuarioDTORespuesta(usuario), HttpStatus.OK);
     }
 
-    @DeleteMapping("/eliminarUsuario/{id}")
+    @DeleteMapping("/{id:\\d+}")
     @PreAuthorize("hasRole('Administrador')")
     public ResponseEntity<Boolean> eliminarUsuario(@Min(value = 1) @PathVariable Integer id) {
         boolean respuesta = usuarioCUIntPort.eliminarUsuario(id);
@@ -180,7 +190,7 @@ public class UsuarioRestController {
         return objRespuesta;
     }
 
-    @GetMapping("/listarUsuarios")
+    @GetMapping
     @PreAuthorize("hasRole('Administrador') or hasRole('Coordinador')")
     public ResponseEntity<List<UsuarioDTORespuesta>> obtenerUsuarios() {
         List<Usuario> usuarios = usuarioCUIntPort.listarUsuarios();
@@ -192,7 +202,7 @@ public class UsuarioRestController {
     
     @Operation(
         summary = "Cambiar estado de un usuario",
-        description = "Activa o desactiva un usuario. Si está activo lo desactiva y viceversa."
+        description = "Activa o desactiva un usuario. Si está activo lo desactiva y viceversa (sin cuerpo)."
     )
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = "Estado cambiado exitosamente",
@@ -200,7 +210,7 @@ public class UsuarioRestController {
         @ApiResponse(responseCode = "404", description = "Usuario no encontrado",
             content = @Content)
     })
-    @PutMapping("/cambiarEstado/{id}")
+    @PutMapping("/{id:\\d+}/estado")
     @PreAuthorize("hasRole('Administrador')")
     public ResponseEntity<UsuarioDTORespuesta> cambiarEstadoUsuario(
             @Parameter(description = "ID del usuario", required = true)

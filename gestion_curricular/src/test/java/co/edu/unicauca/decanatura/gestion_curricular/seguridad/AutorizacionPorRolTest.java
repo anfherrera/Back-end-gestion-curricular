@@ -100,18 +100,18 @@ class AutorizacionPorRolTest {
     @Test
     @DisplayName("Estudiante no puede listar usuarios ni activar/desactivar cuentas")
     void estudianteNoAdministraUsuarios() throws Exception {
-        mockMvc.perform(get("/api/usuarios/listarUsuarios").header("Authorization", tokenA))
+        mockMvc.perform(get("/api/usuarios").header("Authorization", tokenA))
                 .andExpect(status().isForbidden());
-        mockMvc.perform(put("/api/usuarios/cambiarEstado/" + idB).header("Authorization", tokenA))
+        mockMvc.perform(put("/api/usuarios/" + idB + "/estado").header("Authorization", tokenA))
                 .andExpect(status().isForbidden());
     }
 
     @Test
     @DisplayName("Estudiante ve sus datos de usuario pero no los de otro")
     void estudianteSoloVeSuUsuario() throws Exception {
-        mockMvc.perform(get("/api/usuarios/buscarUsuarioPorId/" + idA).header("Authorization", tokenA))
+        mockMvc.perform(get("/api/usuarios/" + idA).header("Authorization", tokenA))
                 .andExpect(status().isOk());
-        mockMvc.perform(get("/api/usuarios/buscarUsuarioPorId/" + idB).header("Authorization", tokenA))
+        mockMvc.perform(get("/api/usuarios/" + idB).header("Authorization", tokenA))
                 .andExpect(status().isForbidden());
     }
 
@@ -156,21 +156,26 @@ class AutorizacionPorRolTest {
         int idRolAdmin = rolRepository.buscarPorNombre("Administrador").orElseThrow().getId_rol();
         int idRolEstudiante = rolRepository.buscarPorNombre("Estudiante").orElseThrow().getId_rol();
 
-        mockMvc.perform(post("/api/usuarios/crearUsuario").header("Authorization", tokenCoordinador)
+        mockMvc.perform(post("/api/usuarios").header("Authorization", tokenCoordinador)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(peticionUsuario(null, "seg.nuevo.admin@unicauca.edu.co", "SEG-NA", idRolAdmin)))
                 .andExpect(status().isForbidden());
 
-        mockMvc.perform(post("/api/usuarios/crearUsuario").header("Authorization", tokenCoordinador)
+        mockMvc.perform(post("/api/usuarios").header("Authorization", tokenCoordinador)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(peticionUsuario(null, "seg.nuevo.est@unicauca.edu.co", "SEG-NE", idRolEstudiante)))
                 .andExpect(status().isCreated());
 
         // Modificar al administrador existente (aunque sea para dejarlo como estudiante) tampoco
         int idAdmin = usuarioRepository.buscarPorCorreo("admin@unicauca.edu.co").orElseThrow().getId_usuario();
-        mockMvc.perform(put("/api/usuarios/actualizarUsuario").header("Authorization", tokenCoordinador)
+        mockMvc.perform(put("/api/usuarios/" + idAdmin).header("Authorization", tokenCoordinador)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(peticionUsuario(idAdmin, "admin@unicauca.edu.co", "ADM001", idRolEstudiante)))
+                .andExpect(status().isForbidden());
+        // EST-7: la autorización mira el id de la ruta; poner en el cuerpo el de un estudiante no sirve
+        mockMvc.perform(put("/api/usuarios/" + idAdmin).header("Authorization", tokenCoordinador)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(peticionUsuario(idA, "admin@unicauca.edu.co", "ADM001", idRolEstudiante)))
                 .andExpect(status().isForbidden());
     }
 
