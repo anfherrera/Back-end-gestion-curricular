@@ -26,13 +26,15 @@ import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.dto.r
 public interface SolicitudPazYSalvoMapperDominio {
 
     // Modelo → DTO Respuesta
-    @Mapping(source = "id_solicitud", target = "id_solicitud")
-    @Mapping(source = "nombre_solicitud", target = "nombre_solicitud")
-    @Mapping(source = "periodo_academico", target = "periodo_academico")
-    @Mapping(source = "fecha_registro_solicitud", target = "fecha_registro_solicitud")
+    @Mapping(source = "idSolicitud", target = "id_solicitud")
+    @Mapping(source = "nombreSolicitud", target = "nombre_solicitud")
+    @Mapping(source = "periodoAcademico", target = "periodo_academico")
+    @Mapping(source = "fechaRegistroSolicitud", target = "fecha_registro_solicitud")
     @Mapping(source = "estadosSolicitud", target = "estadosSolicitud") // CORREGIDO
     @Mapping(source = "objUsuario", target = "objUsuario")
     @Mapping(source = "documentos", target = "documentos") 
+    // OPC-2: el DTO conserva el nombre snake_case
+    @Mapping(target = "fecha_ceremonia", source = "fechaCeremonia")
     SolicitudPazYSalvoDTORespuesta mapearDeSolicitudARespuesta(SolicitudPazYSalvo solicitud);
 
     List<SolicitudPazYSalvoDTORespuesta> mapearListaDeSolicitudesARespuesta(List<SolicitudPazYSalvo> solicitudes);
@@ -41,7 +43,12 @@ public interface SolicitudPazYSalvoMapperDominio {
     @Mapping(target = "estadosSolicitud", ignore = true) 
     @Mapping(target = "objCursoOfertadoVerano", ignore = true) 
     @Mapping(target = "documentos", ignore = true)
-    @Mapping(target = "fecha_ceremonia", ignore = true) // Se asigna desde el caso de uso si es necesario
+    @Mapping(target = "fechaCeremonia", ignore = true) // Se asigna desde el caso de uso si es necesario
+    // OPC-2: el DTO conserva el nombre snake_case
+    @Mapping(target = "idSolicitud", source = "id_solicitud")
+    @Mapping(target = "nombreSolicitud", source = "nombre_solicitud")
+    @Mapping(target = "periodoAcademico", source = "periodo_academico")
+    @Mapping(target = "fechaRegistroSolicitud", source = "fecha_registro_solicitud")
     SolicitudPazYSalvo mapearDeSolicitudDTOPeticionASolicitud(SolicitudPazYSalvoDTOPeticion peticion);
 
     // OPC-2: el JSON conserva id_usuario, nombre_completo y estado_usuario

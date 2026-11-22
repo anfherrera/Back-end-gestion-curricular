@@ -53,14 +53,14 @@ public class GestionarDocumentoGatewayImplAdapter implements GestionarDocumentos
     @Override
     @Transactional
     public Documento actualizarDocumento(Documento documento) {
-        DocumentoEntity existente = documentoRepository.findById(documento.getId_documento())
-            .orElseThrow(() -> new RuntimeException("Documento no encontrado con ID: " + documento.getId_documento()));
+        DocumentoEntity existente = documentoRepository.findById(documento.getIdDocumento())
+            .orElseThrow(() -> new RuntimeException("Documento no encontrado con ID: " + documento.getIdDocumento()));
 
         // Actualizar solo campos editables; no sobrescribir objSolicitud cuando viene null en el dominio
         // (p. ej. tras buscarDocumentoId sin cargar la relación), para no perder la asociación.
         existente.setNombre(documento.getNombre());
-        existente.setRuta_documento(documento.getRuta_documento());
-        existente.setFecha_documento(documento.getFecha_documento());
+        existente.setRuta_documento(documento.getRutaDocumento());
+        existente.setFecha_documento(documento.getFechaDocumento());
         existente.setEsValido(documento.isEsValido());
         existente.setComentario(documento.getComentario());
         if (documento.getObjSolicitud() != null) {

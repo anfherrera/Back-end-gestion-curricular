@@ -65,7 +65,7 @@ class DocumentosSolicitudClavesCaracterizacionTest {
         var documentos = mock(GestionarDocumentosCUIntPort.class);
         when(documentos.adjuntarASolicitud(any(), any(), anyString(), anyString(), anyBoolean())).thenAnswer(i -> {
             Documento guardado = new Documento();
-            guardado.setId_documento(55);
+            guardado.setIdDocumento(55);
             guardado.setNombre("resolucion_guardada.pdf");
             return guardado;
         });
@@ -142,7 +142,7 @@ class DocumentosSolicitudClavesCaracterizacionTest {
             return null;
         }
         T solicitud = nueva.get();
-        solicitud.setId_solicitud(id);
+        solicitud.setIdSolicitud(id);
         solicitud.setDocumentos(switch (id) {
             case SIN_DOCUMENTOS -> null;
             case VACIA -> new ArrayList<>();
@@ -170,7 +170,7 @@ class DocumentosSolicitudClavesCaracterizacionTest {
     private static Documento documento(String nombre, String ruta, String comentario) {
         Documento documento = new Documento();
         documento.setNombre(nombre);
-        documento.setRuta_documento(ruta);
+        documento.setRutaDocumento(ruta);
         documento.setComentario(comentario);
         return documento;
     }

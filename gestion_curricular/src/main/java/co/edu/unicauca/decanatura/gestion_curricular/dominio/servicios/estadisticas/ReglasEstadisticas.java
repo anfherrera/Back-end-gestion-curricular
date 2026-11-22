@@ -74,7 +74,7 @@ final class ReglasEstadisticas {
     }
 
     static boolean enRango(Solicitud solicitud, Date inicio, Date fin) {
-        Date fecha = solicitud.getFecha_registro_solicitud();
+        Date fecha = solicitud.getFechaRegistroSolicitud();
         return fecha != null
                 && (inicio == null || !fecha.before(inicio))
                 && (fin == null || !fecha.after(fin));
@@ -82,7 +82,7 @@ final class ReglasEstadisticas {
 
     /** Nombre del mes (Enero..Diciembre) en que se registró la solicitud, o null si no tiene fecha. */
     static String mesDeRegistro(Solicitud solicitud) {
-        Date fecha = solicitud.getFecha_registro_solicitud();
+        Date fecha = solicitud.getFechaRegistroSolicitud();
         if (fecha == null) {
             return null;
         }
@@ -117,7 +117,7 @@ final class ReglasEstadisticas {
     }
 
     private static boolean esDelPeriodo(Solicitud solicitud, String periodo) {
-        if (solicitud.getPeriodo_academico() != null && solicitud.getPeriodo_academico().trim().equals(periodo)) {
+        if (solicitud.getPeriodoAcademico() != null && solicitud.getPeriodoAcademico().trim().equals(periodo)) {
             return true;
         }
         if (solicitud.getObjCursoOfertadoVerano() != null) {
@@ -126,7 +126,7 @@ final class ReglasEstadisticas {
                 return true;
             }
         }
-        return periodo.equals(inferirPeriodoDesdeFecha(solicitud.getFecha_registro_solicitud()));
+        return periodo.equals(inferirPeriodoDesdeFecha(solicitud.getFechaRegistroSolicitud()));
     }
 
     /** Estado más reciente de la solicitud, normalizado a uno de {@link #ESTADOS}. */
@@ -136,10 +136,10 @@ final class ReglasEstadisticas {
         }
         return solicitud.getEstadosSolicitud().stream()
                 // Ignora estados sin texto (p. ej. el registro inicial vacío) y tolera fechas nulas
-                .filter(e -> e.getEstado_actual() != null && !e.getEstado_actual().isBlank())
-                .max(Comparator.comparing(EstadoSolicitud::getFecha_registro_estado,
+                .filter(e -> e.getEstadoActual() != null && !e.getEstadoActual().isBlank())
+                .max(Comparator.comparing(EstadoSolicitud::getFechaRegistroEstado,
                         Comparator.nullsFirst(Comparator.naturalOrder())))
-                .map(EstadoSolicitud::getEstado_actual)
+                .map(EstadoSolicitud::getEstadoActual)
                 .map(ReglasEstadisticas::normalizarEstado)
                 .orElse(EstadosSolicitud.ENVIADA.name());
     }
@@ -147,17 +147,17 @@ final class ReglasEstadisticas {
     /** Fecha del último cambio de estado (o la de registro si no tiene estados). */
     static Date fechaActualizacion(Solicitud solicitud) {
         if (solicitud.getEstadosSolicitud() == null || solicitud.getEstadosSolicitud().isEmpty()) {
-            return solicitud.getFecha_registro_solicitud();
+            return solicitud.getFechaRegistroSolicitud();
         }
         return solicitud.getEstadosSolicitud().stream()
-                .map(EstadoSolicitud::getFecha_registro_estado)
+                .map(EstadoSolicitud::getFechaRegistroEstado)
                 .max(Date::compareTo)
-                .orElse(solicitud.getFecha_registro_solicitud());
+                .orElse(solicitud.getFechaRegistroSolicitud());
     }
 
     /** Días entre el registro y la última actualización, o null si falta alguna de las dos fechas. */
     static Double diasDeProcesamiento(Solicitud solicitud) {
-        Date creacion = solicitud.getFecha_registro_solicitud();
+        Date creacion = solicitud.getFechaRegistroSolicitud();
         Date actualizacion = fechaActualizacion(solicitud);
         if (creacion == null || actualizacion == null) {
             return null;

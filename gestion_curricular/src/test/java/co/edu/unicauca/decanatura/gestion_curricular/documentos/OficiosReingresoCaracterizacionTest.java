@@ -57,7 +57,7 @@ class OficiosReingresoCaracterizacionTest {
         when(reingreso.obtenerSolicitudReingresoPorId(anyInt())).thenAnswer(i -> {
             int id = i.getArgument(0);
             SolicitudReingreso solicitud = new SolicitudReingreso();
-            solicitud.setId_solicitud(id);
+            solicitud.setIdSolicitud(id);
             solicitud.setDocumentos(new ArrayList<>(casos.get(id)));
             return solicitud;
         });
@@ -93,7 +93,7 @@ class OficiosReingresoCaracterizacionTest {
     private static Documento documento(String nombre, String ruta) {
         Documento documento = new Documento();
         documento.setNombre(nombre);
-        documento.setRuta_documento(ruta);
+        documento.setRutaDocumento(ruta);
         return documento;
     }
 }

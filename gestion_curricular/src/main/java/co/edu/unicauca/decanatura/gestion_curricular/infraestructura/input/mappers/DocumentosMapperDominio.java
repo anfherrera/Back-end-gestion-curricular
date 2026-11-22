@@ -11,10 +11,10 @@ import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.dto.r
 public interface DocumentosMapperDominio {
 
     /* ======== Dominio  →  DTO de respuesta ======== */
-    @Mapping(source = "id_documento",                   target = "id_documento")
+    @Mapping(source = "idDocumento",                   target = "id_documento")
     @Mapping(source = "nombre",                         target = "nombre")
-    @Mapping(source = "ruta_documento",                 target = "ruta_documento")
-    @Mapping(source = "fecha_documento",                target = "fecha_documento")
+    @Mapping(source = "rutaDocumento",                 target = "ruta_documento")
+    @Mapping(source = "fechaDocumento",                target = "fecha_documento")
     @Mapping(source = "esValido",                       target = "esValido")
     @Mapping(source = "comentario",                     target = "comentario")
     DocumentosDTORespuesta mapearDeDocumentoADTORespuesta(Documento documento);

@@ -53,8 +53,8 @@ class GeneracionDocumentosCaracterizacionTest {
         hom.setPrograma_destino("Destino de la solicitud");
         SolicitudReingreso rein = new SolicitudReingreso();
         rein.setObjUsuario(usuario);
-        rein.setPeriodo_academico(" 2025-2 ");
-        rein.setFecha_registro_solicitud(Date.from(Instant.parse("2025-02-03T12:00:00Z")));
+        rein.setPeriodoAcademico(" 2025-2 ");
+        rein.setFechaRegistroSolicitud(Date.from(Instant.parse("2025-02-03T12:00:00Z")));
         when(homologacion.buscarPorId(71)).thenReturn(hom);
         when(reingreso.obtenerSolicitudReingresoPorId(71)).thenReturn(rein);
         when(homologacion.buscarPorId(73)).thenThrow(new IllegalStateException("consulta fallida"));

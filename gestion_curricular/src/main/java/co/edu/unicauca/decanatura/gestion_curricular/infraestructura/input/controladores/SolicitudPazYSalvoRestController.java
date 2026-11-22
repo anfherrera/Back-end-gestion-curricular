@@ -140,7 +140,7 @@ public class SolicitudPazYSalvoRestController {
             String periodoAcademico = peticion.getPeriodoAcademico().trim();
             if (!periodoAcademico.isBlank()) {
                 if (PeriodoAcademicoEnum.esValido(periodoAcademico)) {
-                    solicitud.setPeriodo_academico(periodoAcademico);
+                    solicitud.setPeriodoAcademico(periodoAcademico);
                 } else {
                     throw new IllegalArgumentException("Período académico inválido. Use formato: YYYY-P (ej: 2024-2)");
                 }
@@ -393,7 +393,7 @@ public class SolicitudPazYSalvoRestController {
         Documento documentoGuardado = documentosCU.subirDocumento(ArchivoMultipart.de(file), autorizacion.idUsuarioActual());
 
         return ResponseEntity.ok(new DocumentoSubido(true, "Documento subido exitosamente (sin asociar)",
-                documentoGuardado.getId_documento(), nombreOriginal, documentoGuardado.getFecha_documento()));
+                documentoGuardado.getIdDocumento(), nombreOriginal, documentoGuardado.getFechaDocumento()));
     }
 
     record DocumentoSubido(boolean success, String message, Integer documento_id, String nombre, Date fecha) {
@@ -434,8 +434,8 @@ public class SolicitudPazYSalvoRestController {
                     String nombreDoc = doc.getNombre();
                     if (nombreDoc != null && nombreDoc.equals(filename)) {
                         // Usar la ruta completa si está disponible
-                        if (doc.getRuta_documento() != null && !doc.getRuta_documento().isEmpty()) {
-                            rutaArchivo = doc.getRuta_documento();
+                        if (doc.getRutaDocumento() != null && !doc.getRutaDocumento().isEmpty()) {
+                            rutaArchivo = doc.getRutaDocumento();
                         }
                         encontrado = true;
                         break;
@@ -482,7 +482,7 @@ public class SolicitudPazYSalvoRestController {
             try {
                 // Usar getFile que maneja tanto rutas simples como rutas con subcarpetas
                 byte[] archivo = gestionarArchivos.getFile(
-                    documento.getRuta_documento() != null ? documento.getRuta_documento() : documento.getNombre()
+                    documento.getRutaDocumento() != null ? documento.getRutaDocumento() : documento.getNombre()
                 );
 
                 return descargaPdfConNombreUtf8(archivo, documento.getNombre());
@@ -504,8 +504,8 @@ public class SolicitudPazYSalvoRestController {
         List<DocumentoConTipo> documentos = new ArrayList<>();
         for (var conTipo : solicitudPazYSalvoCU.documentosConTipo(idSolicitud)) {
             Documento documento = conTipo.documento();
-            documentos.add(new DocumentoConTipo(documento.getId_documento(), documento.getNombre(),
-                    documento.getNombre(), documento.getRuta_documento(), documento.getFecha_documento(),
+            documentos.add(new DocumentoConTipo(documento.getIdDocumento(), documento.getNombre(),
+                    documento.getNombre(), documento.getRutaDocumento(), documento.getFechaDocumento(),
                     documento.isEsValido(), documento.getComentario(), conTipo.tipo()));
         }
         return ResponseEntity.ok(documentos);
@@ -539,7 +539,7 @@ public class SolicitudPazYSalvoRestController {
     public ResponseEntity<List<Oficio>> obtenerOficiosPazSalvo(@PathVariable Integer idSolicitud) {
         List<Oficio> oficios = new ArrayList<>();
         for (Documento documento : solicitudPazYSalvoCU.oficios(idSolicitud)) {
-            oficios.add(new Oficio(idSolicitud, documento.getNombre(), documento.getNombre(), documento.getRuta_documento()));
+            oficios.add(new Oficio(idSolicitud, documento.getNombre(), documento.getNombre(), documento.getRutaDocumento()));
         }
         return ResponseEntity.ok(oficios);
     }
@@ -614,7 +614,7 @@ public ResponseEntity<DocumentosDTORespuesta> guardarOficioPazSalvo(
         }
 
         Solicitud objSolicitud = new Solicitud();
-        objSolicitud.setId_solicitud(idSolicitud);
+        objSolicitud.setIdSolicitud(idSolicitud);
         Documento documentoGuardado = documentosCU.adjuntarASolicitud(
                 ArchivoMultipart.de(file), objSolicitud, "pazysalvo", null, false);
         return new ResponseEntity<>(

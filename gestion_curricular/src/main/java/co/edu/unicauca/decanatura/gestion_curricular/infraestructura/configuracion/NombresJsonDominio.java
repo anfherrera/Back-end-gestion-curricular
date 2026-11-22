@@ -20,11 +20,14 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Docente;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Documento;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.EstadoSolicitud;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Materia;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Notificacion;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Programa;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Rol;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Salon;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Solicitud;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Usuario;
 
 /**
@@ -57,6 +60,17 @@ public class NombresJsonDominio {
         historico(Usuario.class, "idUsuario", "id_usuario");
         historico(Usuario.class, "nombreCompleto", "nombre_completo");
         historico(Usuario.class, "estadoUsuario", "estado_usuario");
+        historico(Solicitud.class, "idSolicitud", "id_solicitud");
+        historico(Solicitud.class, "nombreSolicitud", "nombre_solicitud");
+        historico(Solicitud.class, "periodoAcademico", "periodo_academico");
+        historico(Solicitud.class, "fechaCeremonia", "fecha_ceremonia");
+        historico(Solicitud.class, "fechaRegistroSolicitud", "fecha_registro_solicitud");
+        historico(EstadoSolicitud.class, "idEstado", "id_estado");
+        historico(EstadoSolicitud.class, "estadoActual", "estado_actual");
+        historico(EstadoSolicitud.class, "fechaRegistroEstado", "fecha_registro_estado");
+        historico(Documento.class, "idDocumento", "id_documento");
+        historico(Documento.class, "rutaDocumento", "ruta_documento");
+        historico(Documento.class, "fechaDocumento", "fecha_documento");
     }
 
     private static void historico(Class<?> clase, String campo, String nombre) {

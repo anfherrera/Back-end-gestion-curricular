@@ -53,8 +53,8 @@ public class DashboardPorPrograma {
                 if (proceso != null) {
                     c.procesos.merge(proceso, 1, Integer::sum);
                 }
-                if (solicitud.getFecha_registro_solicitud() != null) {
-                    c.fechas.add(solicitud.getFecha_registro_solicitud());
+                if (solicitud.getFechaRegistroSolicitud() != null) {
+                    c.fechas.add(solicitud.getFechaRegistroSolicitud());
                 }
                 c.contar(solicitud, false);
             }

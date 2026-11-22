@@ -206,7 +206,7 @@ class UsuarioRolPersistenciaCaracterizacionTest {
         usuario.setObjRol(rol);
         usuario.setObjPrograma(new Programa(1, "SIS", "Ingeniería de Sistemas"));
         SolicitudReingreso solicitud = new SolicitudReingreso();
-        solicitud.setId_solicitud(7);
+        solicitud.setIdSolicitud(7);
         solicitud.setObjUsuario(usuario);
         usuario.getSolicitudes().add(solicitud);
         CursoOfertadoVerano curso = new CursoOfertadoVerano();

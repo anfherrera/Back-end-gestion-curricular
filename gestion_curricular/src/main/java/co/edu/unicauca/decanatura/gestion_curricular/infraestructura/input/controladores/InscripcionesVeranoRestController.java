@@ -90,8 +90,8 @@ public class InscripcionesVeranoRestController {
         // 2. Crear la inscripcion usando el modelo de dominio
         
         SolicitudCursoVeranoInscripcion nuevaInscripcion = new SolicitudCursoVeranoInscripcion();
-        nuevaInscripcion.setNombre_solicitud(peticion.getNombreSolicitud());
-        nuevaInscripcion.setFecha_registro_solicitud(new Date());
+        nuevaInscripcion.setNombreSolicitud(peticion.getNombreSolicitud());
+        nuevaInscripcion.setFechaRegistroSolicitud(new Date());
         nuevaInscripcion.setObservacion("Inscripcion creada desde preinscripcion aprobada");
         nuevaInscripcion.setObjUsuario(preinscripcionAprobada.getObjUsuario());
         nuevaInscripcion.setObjCursoOfertadoVerano(preinscripcionAprobada.getObjCursoOfertadoVerano());
@@ -103,7 +103,7 @@ public class InscripcionesVeranoRestController {
         // 3. Guardar la inscripcion en la base de datos
         SolicitudCursoVeranoInscripcion inscripcionGuardada = solicitudCU.crearSolicitudCursoVeranoInscripcion(nuevaInscripcion);
         
-        if (inscripcionGuardada == null || inscripcionGuardada.getId_solicitud() == null) {
+        if (inscripcionGuardada == null || inscripcionGuardada.getIdSolicitud() == null) {
             return ResponseEntity.internalServerError().body(
                     new ErrorInscripcion("Error al guardar la inscripcion en la base de datos"));
         }
@@ -121,8 +121,8 @@ public class InscripcionesVeranoRestController {
         }
         
         return ResponseEntity.ok(new InscripcionCreada(true, "Inscripcion creada exitosamente",
-                inscripcionGuardada.getId_solicitud(), peticion.getIdUsuario(), peticion.getIdCurso(),
-                peticion.getNombreSolicitud(), inscripcionGuardada.getFecha_registro_solicitud(), "Inscrito"));
+                inscripcionGuardada.getIdSolicitud(), peticion.getIdUsuario(), peticion.getIdCurso(),
+                peticion.getNombreSolicitud(), inscripcionGuardada.getFechaRegistroSolicitud(), "Inscrito"));
     }
 
     record InscripcionCreada(boolean success, String message, Integer id_solicitud, Integer id_usuario,
@@ -152,10 +152,10 @@ public class InscripcionesVeranoRestController {
 
             var documentos = inscripcion.getDocumentos();
             Documento comprobante = documentos == null || documentos.isEmpty() ? null : documentos.get(0);
-            var archivoPago = new ArchivoPago(comprobante == null ? null : comprobante.getId_documento(),
+            var archivoPago = new ArchivoPago(comprobante == null ? null : comprobante.getIdDocumento(),
                     comprobante == null ? "Sin comprobante" : comprobante.getNombre(), null,
-                    comprobante == null ? null : comprobante.getFecha_documento());
-            inscripciones.add(new InscripcionListado(inscripcion.getId_solicitud(), inscripcion.getFecha_registro_solicitud(),
+                    comprobante == null ? null : comprobante.getFechaDocumento());
+            inscripciones.add(new InscripcionListado(inscripcion.getIdSolicitud(), inscripcion.getFechaRegistroSolicitud(),
                     estado, curso == null ? null : curso.getId_curso(), idUsuario, estudiante, archivoPago));
         }
         return ResponseEntity.ok(inscripciones);
@@ -242,11 +242,11 @@ public class InscripcionesVeranoRestController {
             estudiantesInscritos.add(new EstudianteElegible(usuario == null ? null : usuario.getIdUsuario(),
                     usuario == null ? inscripcion.getNombre_estudiante() : usuario.getNombreCompleto(),
                     usuario == null ? null : usuario.getCodigo(), usuario == null ? null : usuario.getCorreo(),
-                    inscripcion.getId_solicitud(), inscripcion.getNombre_solicitud(),
-                    inscripcion.getFecha_registro_solicitud(), inscripcion.getCodicion_solicitud(), idCursoInscrito,
+                    inscripcion.getIdSolicitud(), inscripcion.getNombreSolicitud(),
+                    inscripcion.getFechaRegistroSolicitud(), inscripcion.getCodicion_solicitud(), idCursoInscrito,
                     nombreCurso, estadoActual, "Inscripcion", "Estudiante inscrito en el curso", true,
-                    comprobante == null ? null : new ComprobantePago(comprobante.getId_documento(),
-                            comprobante.getNombre(), comprobante.getRuta_documento(), comprobante.getFecha_documento())));
+                    comprobante == null ? null : new ComprobantePago(comprobante.getIdDocumento(),
+                            comprobante.getNombre(), comprobante.getRutaDocumento(), comprobante.getFechaDocumento())));
         }
         
         
@@ -285,7 +285,7 @@ public class InscripcionesVeranoRestController {
 
         // 3. Validar pago de la inscripcion (marcar como aceptada)
         SolicitudCursoVeranoInscripcion inscripcionAceptada = solicitudCU.validarPago(
-            inscripcion.getId_solicitud(),
+            inscripcion.getIdSolicitud(),
             true,
             observaciones
         );
@@ -308,7 +308,7 @@ public class InscripcionesVeranoRestController {
 
         // 4. Preparar respuesta
         return ResponseEntity.ok(new InscripcionAceptada(true, "Inscripcion aceptada exitosamente",
-                inscripcionAceptada.getId_solicitud(), inscripcion.getObjUsuario().getNombreCompleto(),
+                inscripcionAceptada.getIdSolicitud(), inscripcion.getObjUsuario().getNombreCompleto(),
                 inscripcion.getObjCursoOfertadoVerano().getObjMateria().getNombre(), new Date(), observaciones));
     }
 
@@ -348,7 +348,7 @@ public class InscripcionesVeranoRestController {
         // 3. Marcar como rechazada usando el caso de uso
         String observacionRechazo = "Inscripcion rechazada: " + motivo;
         SolicitudCursoVeranoInscripcion inscripcionRechazada = ErroresCursosVerano.alRechazarInscripcion(
-                () -> solicitudCU.validarPago(inscripcion.getId_solicitud(), false, observacionRechazo));
+                () -> solicitudCU.validarPago(inscripcion.getIdSolicitud(), false, observacionRechazo));
         
         if (inscripcionRechazada == null) {
             return ResponseEntity.internalServerError().body(
@@ -359,7 +359,7 @@ public class InscripcionesVeranoRestController {
 
         // 4. Preparar respuesta
         return ResponseEntity.ok(new InscripcionRechazadaPorFuncionario(true, "Inscripcion rechazada exitosamente",
-                inscripcionRechazada.getId_solicitud(), inscripcion.getObjUsuario().getNombreCompleto(),
+                inscripcionRechazada.getIdSolicitud(), inscripcion.getObjUsuario().getNombreCompleto(),
                 inscripcion.getObjCursoOfertadoVerano().getObjMateria().getNombre(), new Date(), motivo, nuevoEstado));
     }
 
@@ -404,18 +404,18 @@ public class InscripcionesVeranoRestController {
         if (documentos != null && !documentos.isEmpty()) {
             documentosInfo = new ArrayList<>();
             for (Documento doc : documentos) {
-                documentosInfo.add(new DocumentoInfo(doc.getId_documento(), doc.getNombre(), doc.getRuta_documento(),
+                documentosInfo.add(new DocumentoInfo(doc.getIdDocumento(), doc.getNombre(), doc.getRutaDocumento(),
                         doc.isEsValido()));
             }
 
             // Agregar informacion especifica del archivo para descarga
             Documento primerDocumento = documentos.get(0);
-            archivoPago = new ArchivoPagoInfo(primerDocumento.getNombre(), primerDocumento.getRuta_documento(),
-                    primerDocumento.getId_documento());
+            archivoPago = new ArchivoPagoInfo(primerDocumento.getNombre(), primerDocumento.getRutaDocumento(),
+                    primerDocumento.getIdDocumento());
         }
 
-        return ResponseEntity.ok(new InfoInscripcion(true, inscripcion.getId_solicitud(),
-                inscripcion.getNombre_solicitud(), inscripcion.getFecha_registro_solicitud(), documentosCount,
+        return ResponseEntity.ok(new InfoInscripcion(true, inscripcion.getIdSolicitud(),
+                inscripcion.getNombreSolicitud(), inscripcion.getFechaRegistroSolicitud(), documentosCount,
                 documentos == null, documentos != null && documentos.isEmpty(), documentosInfo, archivoPago));
     }
 
@@ -473,7 +473,7 @@ public class InscripcionesVeranoRestController {
             if (documento.getNombre() != null && documento.getNombre().toLowerCase().endsWith(".pdf")) {
                 try {
                     // Lógica adaptativa: usar ruta completa si está organizada, sino usar nombre
-                    String rutaDocumento = documento.getRuta_documento() != null ? documento.getRuta_documento() : documento.getNombre();
+                    String rutaDocumento = documento.getRutaDocumento() != null ? documento.getRutaDocumento() : documento.getNombre();
                     byte[] archivo;
                     
                     try {
@@ -486,7 +486,7 @@ public class InscripcionesVeranoRestController {
                         }
                     } catch (Exception e) {
                         // Si falla con la ruta, intentar con el nombre como fallback
-                        if (documento.getRuta_documento() != null && !documento.getRuta_documento().equals(documento.getNombre())) {
+                        if (documento.getRutaDocumento() != null && !documento.getRutaDocumento().equals(documento.getNombre())) {
                             archivo = gestionarArchivos.getFile(documento.getNombre());
                         } else {
                             throw e; // Re-lanzar si no hay alternativa

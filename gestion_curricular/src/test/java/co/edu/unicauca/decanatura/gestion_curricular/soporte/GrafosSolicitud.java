@@ -149,11 +149,11 @@ public final class GrafosSolicitud {
     }
 
     public static <T extends Solicitud> T completar(T solicitud) {
-        solicitud.setId_solicitud(7);
-        solicitud.setNombre_solicitud("Solicitud de prueba");
-        solicitud.setPeriodo_academico("2025-1");
-        solicitud.setFecha_ceremonia(FECHA_1);
-        solicitud.setFecha_registro_solicitud(FECHA_2);
+        solicitud.setIdSolicitud(7);
+        solicitud.setNombreSolicitud("Solicitud de prueba");
+        solicitud.setPeriodoAcademico("2025-1");
+        solicitud.setFechaCeremonia(FECHA_1);
+        solicitud.setFechaRegistroSolicitud(FECHA_2);
 
         EstadoSolicitud enviada = new EstadoSolicitud(1, "Enviada", FECHA_2, null, solicitud);
         EstadoSolicitud sinEstado = new EstadoSolicitud(2, null, null, "revisar", null);
@@ -168,7 +168,7 @@ public final class GrafosSolicitud {
         Documento documento = new Documento(3, "carta.pdf", "reingreso/carta.pdf", FECHA_3, true, "legible", 1,
                 solicitud);
         Documento suelto = new Documento();
-        suelto.setId_documento(4);
+        suelto.setIdDocumento(4);
         solicitud.setDocumentos(new ArrayList<>());
         solicitud.getDocumentos().add(documento);
         solicitud.getDocumentos().add(suelto);

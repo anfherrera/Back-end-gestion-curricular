@@ -29,7 +29,7 @@ class DescargaDocumentoPorIdCaracterizacionTest {
         for (String nombre : new String[]{"oficio.pdf", "oficio á +\".pdf", "oficio.docx", null}) {
             var documento = new Documento();
             documento.setNombre(nombre);
-            documento.setRuta_documento("carpeta/archivo");
+            documento.setRutaDocumento("carpeta/archivo");
             when(documentos.buscarDocumentoId(7)).thenReturn(documento);
             var respuesta = mvc.perform(get("/api/documentos/7/descargar")).andReturn().getResponse();
             assertThat(respuesta.getStatus()).isEqualTo(200);

@@ -107,12 +107,12 @@ public class GestionarCursoOfertadoVeranoCUAdapter implements GestionarCursoOfer
                         String estadoAnterior = solicitud.estadoActual("Pendiente");
                         
                         estadoSolicitud = new EstadoSolicitud();
-                        estadoSolicitud.setFecha_registro_estado(new Date());
+                        estadoSolicitud.setFechaRegistroEstado(new Date());
                         // Nota: La lógica de aprobación/rechazo basada en esSeleccionado fue eliminada
                         // Todas las solicitudes se aprueban por defecto
-                        estadoSolicitud.setEstado_actual(EstadoSolicitudCursoVerano.APROBADO.texto());
+                        estadoSolicitud.setEstadoActual(EstadoSolicitudCursoVerano.APROBADO.texto());
                         solicitud = this.gestionarSolicitudGateway.actualizarSolicitud(solicitud, estadoSolicitud);
-                        usuario = this.gestionarUsuarioGateway.buscarUsuarioPorSolicitud(solicitud.getId_solicitud());
+                        usuario = this.gestionarUsuarioGateway.buscarUsuarioPorSolicitud(solicitud.getIdSolicitud());
                         bandera = this.gestionarCursoOfertadoVeranoGateway.asociarUsuarioCurso(usuario.getIdUsuario(), idCurso);
                         if(bandera == false){
                             throw new EntidadYaExisteException("No se pudo asociar el usuario al curso");
@@ -147,12 +147,12 @@ public class GestionarCursoOfertadoVeranoCUAdapter implements GestionarCursoOfer
                     String estadoAnterior = solicitud.estadoActual("Pendiente");
                     
                     estadoSolicitud = new EstadoSolicitud();
-                    estadoSolicitud.setFecha_registro_estado(new Date());
+                    estadoSolicitud.setFechaRegistroEstado(new Date());
                     // Nota: La lógica de aprobación/rechazo basada en esSeleccionado fue eliminada
                     // Todas las solicitudes se aprueban por defecto
-                    estadoSolicitud.setEstado_actual(EstadoSolicitudCursoVerano.APROBADO.texto());
+                    estadoSolicitud.setEstadoActual(EstadoSolicitudCursoVerano.APROBADO.texto());
                     solicitud = this.gestionarSolicitudGateway.actualizarSolicitud(solicitud, estadoSolicitud);
-                    usuario = this.gestionarUsuarioGateway.buscarUsuarioPorSolicitud(solicitud.getId_solicitud());
+                    usuario = this.gestionarUsuarioGateway.buscarUsuarioPorSolicitud(solicitud.getIdSolicitud());
                     if(solicitudes.size() < cursoABuscar.getEstudiantesInscritos().size()){
                         for (Usuario usuarioViejo : estudiantesInscritos) {
                             if (usuarioViejo.getIdUsuario().equals(usuario.getIdUsuario())) {

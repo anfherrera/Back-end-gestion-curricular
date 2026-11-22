@@ -213,11 +213,11 @@ public final class SolicitudMapperPersistencia {
             }
             D solicitud = tipo.cast(crear(DOMINIO, tipo).get());
             mapeados.put(entidad, solicitud);
-            solicitud.setId_solicitud(entidad.getId_solicitud());
-            solicitud.setNombre_solicitud(entidad.getNombre_solicitud());
-            solicitud.setPeriodo_academico(entidad.getPeriodo_academico());
-            solicitud.setFecha_ceremonia(entidad.getFecha_ceremonia());
-            solicitud.setFecha_registro_solicitud(entidad.getFecha_registro_solicitud());
+            solicitud.setIdSolicitud(entidad.getId_solicitud());
+            solicitud.setNombreSolicitud(entidad.getNombre_solicitud());
+            solicitud.setPeriodoAcademico(entidad.getPeriodo_academico());
+            solicitud.setFechaCeremonia(entidad.getFecha_ceremonia());
+            solicitud.setFechaRegistroSolicitud(entidad.getFecha_registro_solicitud());
             camposPropios(entidad, solicitud);
             if (copiaNulos || entidad.getEstadosSolicitud() != null) {
                 solicitud.setEstadosSolicitud(entidad.getEstadosSolicitud() == null ? null : lista(entidad.getEstadosSolicitud(), this::estado));
@@ -241,11 +241,11 @@ public final class SolicitudMapperPersistencia {
             }
             EstadoSolicitud estado = new EstadoSolicitud();
             mapeados.put(entidad, estado);
-            estado.setId_estado(entidad.getId_estado());
+            estado.setIdEstado(entidad.getId_estado());
             if (copiaNulos || entidad.getEstado_actual() != null) {
-                estado.setEstado_actual(entidad.getEstado_actual() == null ? null : entidad.getEstado_actual());
+                estado.setEstadoActual(entidad.getEstado_actual() == null ? null : entidad.getEstado_actual());
             }
-            estado.setFecha_registro_estado(entidad.getFecha_registro_estado());
+            estado.setFechaRegistroEstado(entidad.getFecha_registro_estado());
             estado.setComentario(entidad.getComentario());
             if (copiaNulos || entidad.getObjSolicitud() != null) {
                 estado.setObjSolicitud(entidad.getObjSolicitud() == null ? null : solicitud(entidad.getObjSolicitud(), Solicitud.class));
@@ -260,10 +260,10 @@ public final class SolicitudMapperPersistencia {
             }
             Documento documento = new Documento();
             mapeados.put(entidad, documento);
-            documento.setId_documento(entidad.getId_documento());
+            documento.setIdDocumento(entidad.getId_documento());
             documento.setNombre(entidad.getNombre());
-            documento.setRuta_documento(entidad.getRuta_documento());
-            documento.setFecha_documento(entidad.getFecha_documento());
+            documento.setRutaDocumento(entidad.getRuta_documento());
+            documento.setFechaDocumento(entidad.getFecha_documento());
             documento.setEsValido(entidad.isEsValido());
             documento.setComentario(entidad.getComentario());
             documento.setIdUsuarioSubio(entidad.getIdUsuarioSubio());
@@ -472,11 +472,11 @@ public final class SolicitudMapperPersistencia {
             }
             E entidad = tipo.cast(crear(ENTIDAD, tipo).get());
             mapeados.put(solicitud, entidad);
-            entidad.setId_solicitud(solicitud.getId_solicitud());
-            entidad.setNombre_solicitud(solicitud.getNombre_solicitud());
-            entidad.setPeriodo_academico(solicitud.getPeriodo_academico());
-            entidad.setFecha_ceremonia(solicitud.getFecha_ceremonia());
-            entidad.setFecha_registro_solicitud(solicitud.getFecha_registro_solicitud());
+            entidad.setId_solicitud(solicitud.getIdSolicitud());
+            entidad.setNombre_solicitud(solicitud.getNombreSolicitud());
+            entidad.setPeriodo_academico(solicitud.getPeriodoAcademico());
+            entidad.setFecha_ceremonia(solicitud.getFechaCeremonia());
+            entidad.setFecha_registro_solicitud(solicitud.getFechaRegistroSolicitud());
             camposPropios(solicitud, entidad);
             if (copiaNulos || solicitud.getEstadosSolicitud() != null) {
                 entidad.setEstadosSolicitud(solicitud.getEstadosSolicitud() == null ? null : lista(solicitud.getEstadosSolicitud(), this::estado));
@@ -500,11 +500,11 @@ public final class SolicitudMapperPersistencia {
             }
             EstadoSolicitudEntity entidad = new EstadoSolicitudEntity();
             mapeados.put(estado, entidad);
-            entidad.setId_estado(estado.getId_estado());
-            if (copiaNulos || estado.getEstado_actual() != null) {
-                entidad.setEstado_actual(estado.getEstado_actual() == null ? null : estado.getEstado_actual());
+            entidad.setId_estado(estado.getIdEstado());
+            if (copiaNulos || estado.getEstadoActual() != null) {
+                entidad.setEstado_actual(estado.getEstadoActual() == null ? null : estado.getEstadoActual());
             }
-            entidad.setFecha_registro_estado(estado.getFecha_registro_estado());
+            entidad.setFecha_registro_estado(estado.getFechaRegistroEstado());
             entidad.setComentario(estado.getComentario());
             if (copiaNulos || estado.getObjSolicitud() != null) {
                 entidad.setObjSolicitud(estado.getObjSolicitud() == null ? null : solicitud(estado.getObjSolicitud(), SolicitudEntity.class));
@@ -519,10 +519,10 @@ public final class SolicitudMapperPersistencia {
             }
             DocumentoEntity entidad = new DocumentoEntity();
             mapeados.put(documento, entidad);
-            entidad.setId_documento(documento.getId_documento());
+            entidad.setId_documento(documento.getIdDocumento());
             entidad.setNombre(documento.getNombre());
-            entidad.setRuta_documento(documento.getRuta_documento());
-            entidad.setFecha_documento(documento.getFecha_documento());
+            entidad.setRuta_documento(documento.getRutaDocumento());
+            entidad.setFecha_documento(documento.getFechaDocumento());
             entidad.setEsValido(documento.isEsValido());
             entidad.setComentario(documento.getComentario());
             entidad.setIdUsuarioSubio(documento.getIdUsuarioSubio());

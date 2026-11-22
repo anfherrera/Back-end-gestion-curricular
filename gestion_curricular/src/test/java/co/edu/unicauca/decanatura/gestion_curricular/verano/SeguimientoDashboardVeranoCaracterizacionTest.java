@@ -175,13 +175,13 @@ class SeguimientoDashboardVeranoCaracterizacionTest {
 
     private static <T extends Solicitud> T solicitud(Supplier<T> nueva, int id, String nombre, String estado) {
         T solicitud = nueva.get();
-        solicitud.setId_solicitud(id);
-        solicitud.setNombre_solicitud(nombre);
-        solicitud.setFecha_registro_solicitud(id % 2 == 0 ? new Date(MARZO) : null);
+        solicitud.setIdSolicitud(id);
+        solicitud.setNombreSolicitud(nombre);
+        solicitud.setFechaRegistroSolicitud(id % 2 == 0 ? new Date(MARZO) : null);
         List<EstadoSolicitud> estados = new ArrayList<>();
         if (estado != null) {
             EstadoSolicitud registro = new EstadoSolicitud();
-            registro.setEstado_actual(estado);
+            registro.setEstadoActual(estado);
             estados.add(registro);
         }
         solicitud.setEstadosSolicitud(estados);

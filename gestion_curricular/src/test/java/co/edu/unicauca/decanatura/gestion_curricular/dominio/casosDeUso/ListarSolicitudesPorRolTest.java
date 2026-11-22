@@ -36,11 +36,11 @@ import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.enums.Estad
 class ListarSolicitudesPorRolTest {
 
     private static <T extends Solicitud> T conEstados(T solicitud, int id, String... estados) {
-        solicitud.setId_solicitud(id);
+        solicitud.setIdSolicitud(id);
         for (String texto : estados) {
             EstadoSolicitud e = new EstadoSolicitud();
-            e.setEstado_actual(texto);
-            e.setFecha_registro_estado(new Date());
+            e.setEstadoActual(texto);
+            e.setFechaRegistroEstado(new Date());
             solicitud.getEstadosSolicitud().add(e);
         }
         return solicitud;
@@ -73,9 +73,9 @@ class ListarSolicitudesPorRolTest {
                 mock(GestionarNotificacionCUIntPort.class), mock(GestionarArchivosCUIntPort.class));
 
         assertThat(cu.listarSolicitudesPorRol("FUNCIONARIO", null))
-                .extracting(Solicitud::getId_solicitud).containsExactly(1);
+                .extracting(Solicitud::getIdSolicitud).containsExactly(1);
         assertThat(cu.listarSolicitudesPorRol("COORDINADOR", null))
-                .extracting(Solicitud::getId_solicitud).containsExactly(2);
+                .extracting(Solicitud::getIdSolicitud).containsExactly(2);
     }
 
     @Test
@@ -90,9 +90,9 @@ class ListarSolicitudesPorRolTest {
                 mock(GestionarEstadoSolicitudGatewayIntPort.class), gateway, mock(GestionarNotificacionCUIntPort.class), mock(GestionarArchivosCUIntPort.class));
 
         assertThat(cu.listarSolicitudesReingresoPorRol("FUNCIONARIO", null))
-                .extracting(Solicitud::getId_solicitud).containsExactly(1);
+                .extracting(Solicitud::getIdSolicitud).containsExactly(1);
         assertThat(cu.listarSolicitudesReingresoPorRol("COORDINADOR", null))
-                .extracting(Solicitud::getId_solicitud).containsExactly(2);
+                .extracting(Solicitud::getIdSolicitud).containsExactly(2);
     }
 
     @Test
@@ -108,6 +108,6 @@ class ListarSolicitudesPorRolTest {
                 mock(GestionarNotificacionCUIntPort.class), mock(GestionarArchivosCUIntPort.class));
 
         assertThat(cu.listarSolicitudesPorRol("FUNCIONARIO", null))
-                .extracting(Solicitud::getId_solicitud).containsExactly(1);
+                .extracting(Solicitud::getIdSolicitud).containsExactly(1);
     }
 }

@@ -66,8 +66,8 @@ public class GestionarNotificacionGatewayImplAdapter implements GestionarNotific
                 entity.setObjUsuario(usuarioEntity);
             }
             
-            if (notificacion.getObjSolicitud() != null && notificacion.getObjSolicitud().getId_solicitud() != null) {
-                SolicitudEntity solicitudEntity = solicitudRepository.findById(notificacion.getObjSolicitud().getId_solicitud())
+            if (notificacion.getObjSolicitud() != null && notificacion.getObjSolicitud().getIdSolicitud() != null) {
+                SolicitudEntity solicitudEntity = solicitudRepository.findById(notificacion.getObjSolicitud().getIdSolicitud())
                         .orElse(null); // Puede ser null si la solicitud no existe
                 entity.setObjSolicitud(solicitudEntity);
             }

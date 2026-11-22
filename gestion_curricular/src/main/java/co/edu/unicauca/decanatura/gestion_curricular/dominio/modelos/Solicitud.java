@@ -12,11 +12,11 @@ import lombok.Data;
 public class Solicitud {
 
     
-    private Integer id_solicitud;
-    private String nombre_solicitud;
-    private String periodo_academico; // Período académico de la solicitud (ej: "2024-2")
-    private Date fecha_ceremonia; // Fecha de la ceremonia de graduación (para filtrar por ceremonias: marzo, junio, diciembre, etc.)
-    private Date fecha_registro_solicitud;
+    private Integer idSolicitud;
+    private String nombreSolicitud;
+    private String periodoAcademico; // Período académico de la solicitud (ej: "2024-2")
+    private Date fechaCeremonia; // Fecha de la ceremonia de graduación (para filtrar por ceremonias: marzo, junio, diciembre, etc.)
+    private Date fechaRegistroSolicitud;
 
     private List<EstadoSolicitud> estadosSolicitud;
 
@@ -50,7 +50,7 @@ public class Solicitud {
     /** Como {@link #estadoActual()}, pero devuelve {@code siNoHayEstados} cuando el historial está vacío. */
     public String estadoActual(String siNoHayEstados) {
         EstadoSolicitud ultimo = ultimoRegistroEstado();
-        return ultimo == null ? siNoHayEstados : ultimo.getEstado_actual();
+        return ultimo == null ? siNoHayEstados : ultimo.getEstadoActual();
     }
 
 }

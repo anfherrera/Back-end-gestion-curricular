@@ -126,7 +126,7 @@ public class GestionarNotificacionCUAdapter implements GestionarNotificacionCUIn
             }
             
             if (solicitud.getObjUsuario() == null || solicitud.getObjUsuario().getIdUsuario() == null) {
-                log.error("Error: Usuario es nulo o sin ID al intentar crear notificación. Solicitud ID: {}", solicitud.getId_solicitud());
+                log.error("Error: Usuario es nulo o sin ID al intentar crear notificación. Solicitud ID: {}", solicitud.getIdSolicitud());
                 return;
             }
 
@@ -144,7 +144,7 @@ public class GestionarNotificacionCUAdapter implements GestionarNotificacionCUIn
             notificacion.setObjSolicitud(solicitud);
             notificacion.setObjCurso(solicitud.getObjCursoOfertadoVerano());
             notificacion.setAccion("Ver solicitud");
-            notificacion.setUrlAccion("/solicitudes/" + solicitud.getId_solicitud());
+            notificacion.setUrlAccion("/solicitudes/" + solicitud.getIdSolicitud());
 
             // Notificar al estudiante
             crearNotificacion(notificacion);
@@ -217,7 +217,7 @@ public class GestionarNotificacionCUAdapter implements GestionarNotificacionCUIn
             notificacion.setObjSolicitud(solicitud);
             notificacion.setObjCurso(solicitud.getObjCursoOfertadoVerano());
             notificacion.setAccion("Revisar solicitud");
-            notificacion.setUrlAccion("/solicitudes/" + solicitud.getId_solicitud());
+            notificacion.setUrlAccion("/solicitudes/" + solicitud.getIdSolicitud());
 
             crearNotificacion(notificacion);
         } catch (Exception e) {
@@ -256,7 +256,7 @@ public class GestionarNotificacionCUAdapter implements GestionarNotificacionCUIn
         notificacion.setObjSolicitud(solicitud);
         notificacion.setObjCurso(solicitud.getObjCursoOfertadoVerano());
         notificacion.setAccion("Ver solicitud");
-        notificacion.setUrlAccion("/solicitudes/" + solicitud.getId_solicitud());
+        notificacion.setUrlAccion("/solicitudes/" + solicitud.getIdSolicitud());
 
         // Notificar al estudiante
         crearNotificacion(notificacion);

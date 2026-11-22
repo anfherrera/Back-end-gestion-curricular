@@ -128,8 +128,8 @@ public class GestionarSolicitudPazYSalvoGatewayImplAdapter implements GestionarS
 
         // Crear el nuevo estado
         EstadoSolicitudEntity nuevo = new EstadoSolicitudEntity();
-        nuevo.setEstado_actual(nuevoEstado.getEstado_actual());
-        nuevo.setFecha_registro_estado(nuevoEstado.getFecha_registro_estado() != null ? nuevoEstado.getFecha_registro_estado() : new java.util.Date());
+        nuevo.setEstado_actual(nuevoEstado.getEstadoActual());
+        nuevo.setFecha_registro_estado(nuevoEstado.getFechaRegistroEstado() != null ? nuevoEstado.getFechaRegistroEstado() : new java.util.Date());
         nuevo.setObjSolicitud(solicitudEntity);
         
         // Establecer el comentario si se proporciona

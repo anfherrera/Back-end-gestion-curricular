@@ -25,7 +25,7 @@ class DecisionesVeranoCaracterizacionTest {
     void cuerposDeDecisionConservanCoercionesYValidaciones() throws Exception {
         var cu = mock(GestionarSolicitudCursoVeranoCUIntPort.class);
         var pre = new SolicitudCursoVeranoPreinscripcion();
-        pre.setId_solicitud(7);
+        pre.setIdSolicitud(7);
         when(cu.aprobarPreinscripcion(anyInt(), nullable(String.class))).thenReturn(pre);
         when(cu.rechazarPreinscripcion(anyInt(), nullable(String.class))).thenReturn(pre);
         var curso = mock(GestionarCursoOfertadoVeranoCUIntPort.class);

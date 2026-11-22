@@ -69,11 +69,11 @@ class ComentarioDocumentoCaracterizacionTest {
     private void caso(ObjectNode r, String clave, String ruta, String cuerpo, String... roles) throws Exception {
         reset(documentos);
         Documento conComentario = new Documento();
-        conComentario.setId_documento(9);
+        conComentario.setIdDocumento(9);
         conComentario.setComentario("previo");
         when(documentos.buscarDocumentoId(9)).thenReturn(conComentario);
         Documento sinComentario = new Documento();
-        sinComentario.setId_documento(10);
+        sinComentario.setIdDocumento(10);
         when(documentos.buscarDocumentoId(10)).thenReturn(sinComentario);
         SecurityContextHolder.getContext().setAuthentication(new UsernamePasswordAuthenticationToken(
                 "sin.usuario@example.test", "x",

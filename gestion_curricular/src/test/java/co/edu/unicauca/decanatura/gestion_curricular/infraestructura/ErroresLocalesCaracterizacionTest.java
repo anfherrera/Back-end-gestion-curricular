@@ -242,7 +242,7 @@ class ErroresLocalesCaracterizacionTest {
     private static void configurarBase(Mocks m) {
         var cu = m.solicitud();
         var pre = new SolicitudCursoVeranoPreinscripcion();
-        pre.setId_solicitud(4);
+        pre.setIdSolicitud(4);
         pre.setObjCursoOfertadoVerano(curso());
         pre.setObjUsuario(usuario());
         when(cu.buscarPreinscripcionAprobada(5, 3)).thenReturn(pre);
@@ -250,7 +250,7 @@ class ErroresLocalesCaracterizacionTest {
         when(cu.crearSolicitudCursoVeranoInscripcion(any())).thenAnswer(i -> {
             SolicitudCursoVeranoInscripcion s = i.getArgument(0);
             if (s == null) return null;
-            s.setId_solicitud(9);
+            s.setIdSolicitud(9);
             return s;
         });
         when(cu.buscarPorIdInscripcion(7)).thenAnswer(i -> inscripcion(true));
@@ -258,7 +258,7 @@ class ErroresLocalesCaracterizacionTest {
         when(cu.crearSolicitudCursoVeranoPreinscripcion(any())).thenAnswer(i -> {
             SolicitudCursoVeranoPreinscripcion s = i.getArgument(0);
             if (s == null) return null;
-            s.setId_solicitud(12);
+            s.setIdSolicitud(12);
             return s;
         });
         when(m.curso().asociarEstudiante(anyInt(), anyInt())).thenReturn(true);
@@ -298,14 +298,14 @@ class ErroresLocalesCaracterizacionTest {
 
     private static SolicitudCursoVeranoInscripcion inscripcion(boolean conCurso) {
         var s = new SolicitudCursoVeranoInscripcion();
-        s.setId_solicitud(7);
+        s.setIdSolicitud(7);
         s.setObjUsuario(usuario());
         if (conCurso) s.setObjCursoOfertadoVerano(curso());
         var estado = new EstadoSolicitud();
-        estado.setEstado_actual("Enviada");
-        estado.setFecha_registro_estado(new Date(0));
+        estado.setEstadoActual("Enviada");
+        estado.setFechaRegistroEstado(new Date(0));
         s.setEstadosSolicitud(new ArrayList<>(List.of(estado)));
-        s.setFecha_registro_solicitud(new Date(0));
+        s.setFechaRegistroSolicitud(new Date(0));
         return s;
     }
 

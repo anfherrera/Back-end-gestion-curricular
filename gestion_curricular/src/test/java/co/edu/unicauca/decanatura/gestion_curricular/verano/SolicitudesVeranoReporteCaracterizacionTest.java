@@ -177,12 +177,12 @@ class SolicitudesVeranoReporteCaracterizacionTest {
 
     private static <T extends Solicitud> T solicitud(Supplier<T> nueva, int id, String nombre, String estado) {
         T solicitud = nueva.get();
-        solicitud.setId_solicitud(id);
-        solicitud.setNombre_solicitud(nombre);
-        solicitud.setFecha_registro_solicitud(id % 2 == 0 ? null : new Date(MARZO + id * 60_000L));
+        solicitud.setIdSolicitud(id);
+        solicitud.setNombreSolicitud(nombre);
+        solicitud.setFechaRegistroSolicitud(id % 2 == 0 ? null : new Date(MARZO + id * 60_000L));
         if (estado != null) {
             EstadoSolicitud registro = new EstadoSolicitud();
-            registro.setEstado_actual(estado);
+            registro.setEstadoActual(estado);
             solicitud.getEstadosSolicitud().add(registro);
         }
         Usuario usuario = new Usuario();

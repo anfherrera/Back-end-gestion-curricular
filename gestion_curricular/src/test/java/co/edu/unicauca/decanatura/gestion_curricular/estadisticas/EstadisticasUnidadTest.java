@@ -300,18 +300,18 @@ class EstadisticasUnidadTest {
         usuario.setObjPrograma(new Programa(idPrograma, "P" + idPrograma, "Programa " + idPrograma));
         solicitud.setObjUsuario(usuario);
         solicitud.setEstadosSolicitud(new ArrayList<>(Arrays.asList(estados)));
-        solicitud.setFecha_registro_solicitud(estados[0].getFecha_registro_estado());
+        solicitud.setFechaRegistroSolicitud(estados[0].getFechaRegistroEstado());
         return solicitud;
     }
 
     /** Estado registrado el día 10 del mes indicado de 2025. */
     private static EstadoSolicitud estado(String nombre, int mes) {
         EstadoSolicitud estado = new EstadoSolicitud();
-        estado.setEstado_actual(nombre);
+        estado.setEstadoActual(nombre);
         Calendar c = Calendar.getInstance();
         c.clear();
         c.set(2025, mes - 1, 10, 10, 0);
-        estado.setFecha_registro_estado(c.getTime());
+        estado.setFechaRegistroEstado(c.getTime());
         return estado;
     }
 }

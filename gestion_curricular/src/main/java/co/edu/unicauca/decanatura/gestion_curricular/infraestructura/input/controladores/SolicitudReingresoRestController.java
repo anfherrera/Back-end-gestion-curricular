@@ -234,7 +234,7 @@ public class SolicitudReingresoRestController {
                         log.debug("Probando oficio/resolución de reingreso: {}", documento.getNombre());
                         
                         // Lógica adaptativa: usar ruta completa si está organizada, sino usar nombre
-                        String rutaDocumento = documento.getRuta_documento() != null ? documento.getRuta_documento() : documento.getNombre();
+                        String rutaDocumento = documento.getRutaDocumento() != null ? documento.getRutaDocumento() : documento.getNombre();
                         byte[] archivo;
                         
                         if (rutaDocumento != null && rutaDocumento.contains("/")) {
@@ -301,7 +301,7 @@ public class SolicitudReingresoRestController {
                 
                 if (esOficioReingreso(nombreArchivo)) {
                     oficios.add(new Oficio(idSolicitud, documento.getNombre(), documento.getNombre(),
-                            documento.getRuta_documento()));
+                            documento.getRutaDocumento()));
                     log.debug("Agregando oficio/resolución de reingreso: {}", documento.getNombre());
                 } else {
                     log.debug("Saltando archivo del estudiante: {}", documento.getNombre());

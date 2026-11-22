@@ -77,7 +77,7 @@ class SubirPdfClavesCaracterizacionTest {
         var solicitudes = mock(GestionarSolicitudCUIntPort.class);
         when(solicitudes.obtenerSolicitudPorId(anyInt())).thenAnswer(i -> {
             var s = new Solicitud();
-            s.setId_solicitud(i.getArgument(0));
+            s.setIdSolicitud(i.getArgument(0));
             return s;
         });
         var auth = new Autorizacion(null, null, null, null) {

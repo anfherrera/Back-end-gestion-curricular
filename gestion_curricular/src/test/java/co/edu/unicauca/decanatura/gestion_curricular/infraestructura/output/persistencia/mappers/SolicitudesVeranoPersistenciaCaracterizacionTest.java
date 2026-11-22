@@ -144,7 +144,7 @@ class SolicitudesVeranoPersistenciaCaracterizacionTest {
         casos.set("validarPago rechazado", guardado(() -> gateway.validarPago(2, false, " ilegible ")));
         casos.set("completarInscripcion", guardado(() -> gateway.completarInscripcion(2)));
         SolicitudCursoVeranoPreinscripcion cambio = new SolicitudCursoVeranoPreinscripcion();
-        cambio.setId_solicitud(1);
+        cambio.setIdSolicitud(1);
         cambio.setObservacion("nueva observación");
         casos.set("actualizarSolicitudCursoVerano", guardado(() -> gateway.actualizarSolicitudCursoVerano(cambio)));
 
@@ -260,13 +260,13 @@ class SolicitudesVeranoPersistenciaCaracterizacionTest {
             }
         };
         GrafosSolicitud.completar(solicitud);
-        solicitud.setId_solicitud(tipo);
+        solicitud.setIdSolicitud(tipo);
         return solicitud;
     }
 
     private static SolicitudCursoVeranoPreinscripcion preinscripcion(CursoOfertadoVerano curso) {
         SolicitudCursoVeranoPreinscripcion solicitud = GrafosSolicitud.completar(new SolicitudCursoVeranoPreinscripcion());
-        solicitud.setId_solicitud(null);
+        solicitud.setIdSolicitud(null);
         solicitud.setNombre_estudiante("Ana");
         solicitud.setCodigo_estudiante("104");
         solicitud.setCodicion_solicitud(CondicionSolicitudVerano.Primera_Vez);
@@ -277,7 +277,7 @@ class SolicitudesVeranoPersistenciaCaracterizacionTest {
 
     private static SolicitudCursoVeranoInscripcion inscripcion(CursoOfertadoVerano curso) {
         SolicitudCursoVeranoInscripcion solicitud = GrafosSolicitud.completar(new SolicitudCursoVeranoInscripcion());
-        solicitud.setId_solicitud(null);
+        solicitud.setIdSolicitud(null);
         solicitud.setNombre_estudiante("Ana");
         solicitud.setCodicion_solicitud(CondicionSolicitudVerano.Habilitación);
         solicitud.setObjCursoOfertadoVerano(curso);

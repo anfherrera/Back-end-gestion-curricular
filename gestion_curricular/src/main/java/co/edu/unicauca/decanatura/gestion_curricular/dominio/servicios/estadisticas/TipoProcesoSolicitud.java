@@ -51,7 +51,7 @@ public final class TipoProcesoSolicitud {
             return ECAES;
         }
         // Solicitud genérica sin subtipo: último recurso, por el nombre
-        return porNombre(solicitud.getNombre_solicitud());
+        return porNombre(solicitud.getNombreSolicitud());
     }
 
     /**

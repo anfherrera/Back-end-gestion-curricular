@@ -35,13 +35,13 @@ class AsociadorDocumentosPendientesTest {
         archivos = mock(GestionarArchivosCUIntPort.class);
         asociador = new AsociadorDocumentosPendientes(documentos, archivos);
         solicitud = new Solicitud();
-        solicitud.setId_solicitud(10);
+        solicitud.setIdSolicitud(10);
     }
 
     private static Documento documento(String nombre, String ruta) {
         Documento d = new Documento();
         d.setNombre(nombre);
-        d.setRuta_documento(ruta);
+        d.setRutaDocumento(ruta);
         return d;
     }
 
@@ -57,7 +57,7 @@ class AsociadorDocumentosPendientesTest {
 
         assertThat(asociados).isEqualTo(1);
         assertThat(enRaiz.getObjSolicitud()).isSameAs(solicitud);
-        assertThat(enRaiz.getRuta_documento()).isEqualTo("homologacion/solicitud_10/a.pdf");
+        assertThat(enRaiz.getRutaDocumento()).isEqualTo("homologacion/solicitud_10/a.pdf");
         verify(documentos).actualizarDocumento(enRaiz);
     }
 
@@ -95,7 +95,7 @@ class AsociadorDocumentosPendientesTest {
         asociador.asociar(solicitud, 7, "pazysalvo");
 
         assertThat(enRaiz.getObjSolicitud()).isSameAs(solicitud);
-        assertThat(enRaiz.getRuta_documento()).isEqualTo("c.pdf");
+        assertThat(enRaiz.getRutaDocumento()).isEqualTo("c.pdf");
         verify(documentos).actualizarDocumento(enRaiz);
     }
 }

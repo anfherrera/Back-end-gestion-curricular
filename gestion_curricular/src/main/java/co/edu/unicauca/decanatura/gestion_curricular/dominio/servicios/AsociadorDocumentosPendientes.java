@@ -38,7 +38,7 @@ public class AsociadorDocumentosPendientes {
     public int asociar(Solicitud solicitud, Integer idUsuario, String carpeta) {
         List<Documento> pendientes = documentosGateway.buscarDocumentosSinSolicitud(idUsuario);
         for (Documento documento : pendientes) {
-            moverACarpetaDeLaSolicitud(documento, carpeta, solicitud.getId_solicitud());
+            moverACarpetaDeLaSolicitud(documento, carpeta, solicitud.getIdSolicitud());
             // Se asocia siempre, aunque no se haya podido mover el archivo
             documento.setObjSolicitud(solicitud);
             documentosGateway.actualizarDocumento(documento);
@@ -47,14 +47,14 @@ public class AsociadorDocumentosPendientes {
     }
 
     private void moverACarpetaDeLaSolicitud(Documento documento, String carpeta, Integer idSolicitud) {
-        String rutaActual = documento.getRuta_documento() != null ? documento.getRuta_documento() : documento.getNombre();
+        String rutaActual = documento.getRutaDocumento() != null ? documento.getRutaDocumento() : documento.getNombre();
         if (rutaActual == null || rutaActual.contains("/")) {
             return; // Ya está organizado
         }
         try {
             String nuevaRuta = archivos.moverArchivoAOrganizado(rutaActual, documento.getNombre(), carpeta, idSolicitud);
             if (nuevaRuta != null) {
-                documento.setRuta_documento(nuevaRuta);
+                documento.setRutaDocumento(nuevaRuta);
             }
         } catch (Exception e) {
             log.warn("No se pudo mover el documento {} a la carpeta de la solicitud {}; se asocia con su ruta actual. Error: {}",

@@ -35,8 +35,8 @@ public class DashboardPorProceso {
             String proceso = tipoProceso(solicitud);
             if (proceso != null) {
                 ContadorSolicitudes c = porProceso.get(proceso);
-                if (solicitud.getFecha_registro_solicitud() != null) {
-                    c.fechas.add(solicitud.getFecha_registro_solicitud());
+                if (solicitud.getFechaRegistroSolicitud() != null) {
+                    c.fechas.add(solicitud.getFechaRegistroSolicitud());
                 }
                 c.contar(solicitud, true);
             }

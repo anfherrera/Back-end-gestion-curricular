@@ -105,7 +105,7 @@ class InscripcionesVeranoRespuestasCaracterizacionTest {
         when(cu.buscarPorIdInscripcion(anyInt())).thenAnswer(i -> porId(i.getArgument(0)));
         doAnswer(i -> {
             SolicitudCursoVeranoInscripcion inscripcion = i.getArgument(0);
-            if (inscripcion.getId_solicitud() == 4) {
+            if (inscripcion.getIdSolicitud() == 4) {
                 throw new CupoAgotadoException(5, 5);
             }
             return null;
@@ -325,22 +325,22 @@ class InscripcionesVeranoRespuestasCaracterizacionTest {
 
     private static Documento documento(int id, String nombre, String ruta, boolean valido) {
         Documento documento = new Documento();
-        documento.setId_documento(id);
+        documento.setIdDocumento(id);
         documento.setNombre(nombre);
-        documento.setRuta_documento(ruta);
+        documento.setRutaDocumento(ruta);
         documento.setEsValido(valido);
-        documento.setFecha_documento(new Date(MARZO));
+        documento.setFechaDocumento(new Date(MARZO));
         return documento;
     }
 
     private static SolicitudCursoVeranoInscripcion inscripcion(int id, String estado) {
         SolicitudCursoVeranoInscripcion inscripcion = new SolicitudCursoVeranoInscripcion();
-        inscripcion.setId_solicitud(id);
-        inscripcion.setNombre_solicitud("Inscripción " + id);
-        inscripcion.setFecha_registro_solicitud(id % 2 == 0 ? new Date(MARZO) : null);
+        inscripcion.setIdSolicitud(id);
+        inscripcion.setNombreSolicitud("Inscripción " + id);
+        inscripcion.setFechaRegistroSolicitud(id % 2 == 0 ? new Date(MARZO) : null);
         if (estado != null) {
             EstadoSolicitud registro = new EstadoSolicitud();
-            registro.setEstado_actual(estado);
+            registro.setEstadoActual(estado);
             inscripcion.getEstadosSolicitud().add(registro);
         }
         inscripcion.setObjUsuario(usuario());

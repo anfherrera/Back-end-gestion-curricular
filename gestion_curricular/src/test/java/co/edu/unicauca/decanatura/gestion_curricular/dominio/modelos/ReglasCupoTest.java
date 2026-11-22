@@ -23,8 +23,8 @@ class ReglasCupoTest {
         SolicitudCursoVeranoInscripcion s = new SolicitudCursoVeranoInscripcion();
         for (String texto : estados) {
             EstadoSolicitud e = new EstadoSolicitud();
-            e.setEstado_actual(texto);
-            e.setFecha_registro_estado(new Date());
+            e.setEstadoActual(texto);
+            e.setFechaRegistroEstado(new Date());
             s.getEstadosSolicitud().add(e);
         }
         return s;

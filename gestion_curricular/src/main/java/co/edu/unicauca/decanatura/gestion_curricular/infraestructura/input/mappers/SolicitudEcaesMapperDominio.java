@@ -34,6 +34,12 @@ public interface SolicitudEcaesMapperDominio {
     @Mapping(target = "documentos", ignore = true)
     @Mapping(target = "objCursoOfertadoVerano", ignore = true) // Propiedad no mapeada
     @Mapping(target = "tipoDocumento", qualifiedByName = "tipoDocumentoEcaes")
+    // OPC-2: el DTO conserva el nombre snake_case
+    @Mapping(target = "idSolicitud", source = "id_solicitud")
+    @Mapping(target = "nombreSolicitud", source = "nombre_solicitud")
+    @Mapping(target = "periodoAcademico", source = "periodo_academico")
+    @Mapping(target = "fechaCeremonia", source = "fecha_ceremonia")
+    @Mapping(target = "fechaRegistroSolicitud", source = "fecha_registro_solicitud")
     SolicitudEcaes mapearDeSolicitudEcaesDTOPeticionASolicitudEcaes(SolicitudEcaesDTOPeticion peticion);
 
     @Named("tipoDocumentoEcaes")
@@ -51,11 +57,11 @@ public interface SolicitudEcaesMapperDominio {
     }
 
     // Dominio → DTO Respuesta
-    @Mapping(source = "id_solicitud", target = "id_solicitud")
-    @Mapping(source = "nombre_solicitud", target = "nombre_solicitud")
-    @Mapping(source = "periodo_academico", target = "periodo_academico")
-    @Mapping(source = "fecha_ceremonia", target = "fecha_ceremonia")
-    @Mapping(source = "fecha_registro_solicitud", target = "fecha_registro_solicitud")
+    @Mapping(source = "idSolicitud", target = "id_solicitud")
+    @Mapping(source = "nombreSolicitud", target = "nombre_solicitud")
+    @Mapping(source = "periodoAcademico", target = "periodo_academico")
+    @Mapping(source = "fechaCeremonia", target = "fecha_ceremonia")
+    @Mapping(source = "fechaRegistroSolicitud", target = "fecha_registro_solicitud")
     @Mapping(source = "estadosSolicitud", target = "estadosSolicitud")
     @Mapping(source = "objUsuario", target = "objUsuario")
     @Mapping(source = "documentos", target = "documentos")

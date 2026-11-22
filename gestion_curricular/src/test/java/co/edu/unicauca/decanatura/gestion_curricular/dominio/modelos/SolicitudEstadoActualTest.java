@@ -16,8 +16,8 @@ class SolicitudEstadoActualTest {
 
     private static EstadoSolicitud estado(String texto) {
         EstadoSolicitud e = new EstadoSolicitud();
-        e.setEstado_actual(texto);
-        e.setFecha_registro_estado(new Date());
+        e.setEstadoActual(texto);
+        e.setFechaRegistroEstado(new Date());
         return e;
     }
 

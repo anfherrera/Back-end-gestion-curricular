@@ -209,8 +209,8 @@ public class ReportesCursosVeranoRestController {
                     }
                 }
                 
-                if (!esSolicitudCursoNuevo && preinscripcion.getNombre_solicitud() != null) {
-                    String nombre = preinscripcion.getNombre_solicitud().toLowerCase();
+                if (!esSolicitudCursoNuevo && preinscripcion.getNombreSolicitud() != null) {
+                    String nombre = preinscripcion.getNombreSolicitud().toLowerCase();
                     if (nombre.contains("solicitud de apertura") || nombre.contains("curso:")) {
                         esSolicitudCursoNuevo = true;
                     }
@@ -237,10 +237,10 @@ public class ReportesCursosVeranoRestController {
                         } else {
                             nombreCurso = observacion;
                         }
-                    } else if (preinscripcion.getNombre_solicitud() != null && 
-                              preinscripcion.getNombre_solicitud().contains(":")) {
+                    } else if (preinscripcion.getNombreSolicitud() != null && 
+                              preinscripcion.getNombreSolicitud().contains(":")) {
                         // Fallback: extraer del nombre de la solicitud
-                        nombreCurso = preinscripcion.getNombre_solicitud().split(":")[1].trim();
+                        nombreCurso = preinscripcion.getNombreSolicitud().split(":")[1].trim();
                     }
                 }
                 // Agregar informacion del estado del curso y acciones disponibles
@@ -279,8 +279,8 @@ public class ReportesCursosVeranoRestController {
                     }
                 }
                 
-                preinscripciones.add(new ActividadPreinscripcion(preinscripcion.getId_solicitud(),
-                        preinscripcion.getFecha_registro_solicitud(), preinscripcion.estadoActual("Enviado"),
+                preinscripciones.add(new ActividadPreinscripcion(preinscripcion.getIdSolicitud(),
+                        preinscripcion.getFechaRegistroSolicitud(), preinscripcion.estadoActual("Enviado"),
                         tipoSolicitud, nombreCurso, idUsuario,
                         preinscripcion.getObjCursoOfertadoVerano() != null
                                 ? preinscripcion.getObjCursoOfertadoVerano().getId_curso() : null,
@@ -338,9 +338,9 @@ public class ReportesCursosVeranoRestController {
                     accionesDisponibles.add("pago_rechazado");
                 }
                 
-                inscripcionesUsuario.add(new ActividadInscripcion(inscripcion.getId_solicitud(),
-                        inscripcion.getFecha_registro_solicitud(), estadoInscripcion, "Inscripcion",
-                        inscripcion.getNombre_solicitud(), nombreCurso, cursoId, idUsuario, estadoCurso,
+                inscripcionesUsuario.add(new ActividadInscripcion(inscripcion.getIdSolicitud(),
+                        inscripcion.getFechaRegistroSolicitud(), estadoInscripcion, "Inscripcion",
+                        inscripcion.getNombreSolicitud(), nombreCurso, cursoId, idUsuario, estadoCurso,
                         accionesDisponibles));
             }
             

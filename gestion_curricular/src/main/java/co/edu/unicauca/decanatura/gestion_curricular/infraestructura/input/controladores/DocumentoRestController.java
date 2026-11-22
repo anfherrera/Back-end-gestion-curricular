@@ -72,8 +72,8 @@ public class DocumentoRestController {
             log.warn("Descarga documento: documento no encontrado, id={}", id);
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
-        String ruta = documento.getRuta_documento() != null && !documento.getRuta_documento().trim().isEmpty()
-                ? documento.getRuta_documento()
+        String ruta = documento.getRutaDocumento() != null && !documento.getRutaDocumento().trim().isEmpty()
+                ? documento.getRutaDocumento()
                 : documento.getNombre();
         if (ruta == null || ruta.trim().isEmpty()) {
             log.warn("Descarga documento: documento sin ruta ni nombre, id={}", id);

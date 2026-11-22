@@ -41,7 +41,7 @@ public class GestionarDocumentosCUAdapter implements GestionarDocumentosCUIntPor
     public Documento adjuntarASolicitud(ArchivoSubido archivo, Solicitud solicitud, String carpeta,
             String comentario, boolean usarNombreGuardado) {
         String nombre = archivo.nombreOriginal();
-        String ruta = archivos.saveFile(archivo, nombre, "pdf", carpeta, solicitud.getId_solicitud());
+        String ruta = archivos.saveFile(archivo, nombre, "pdf", carpeta, solicitud.getIdSolicitud());
         if (usarNombreGuardado) {
             nombre = nombreDeRuta(ruta);
         }
@@ -57,7 +57,7 @@ public class GestionarDocumentosCUAdapter implements GestionarDocumentosCUIntPor
         String nombre = archivo.nombreOriginal();
         String ruta = archivos.saveFile(archivo, nombre, tipoArchivo, carpeta, idSolicitud);
         Solicitud solicitud = new Solicitud();
-        solicitud.setId_solicitud(idSolicitud);
+        solicitud.setIdSolicitud(idSolicitud);
         return new AdjuntoCondicional(true, registrarGuardado(nombre, ruta, solicitud, null, null));
     }
 
@@ -74,8 +74,8 @@ public class GestionarDocumentosCUAdapter implements GestionarDocumentosCUIntPor
             Integer idUsuario, String comentario) {
         Documento documento = new Documento();
         documento.setNombre(nombre);
-        documento.setRuta_documento(ruta);
-        documento.setFecha_documento(new Date());
+        documento.setRutaDocumento(ruta);
+        documento.setFechaDocumento(new Date());
         documento.setEsValido(true);
         documento.setObjSolicitud(solicitud);
         documento.setIdUsuarioSubio(idUsuario);

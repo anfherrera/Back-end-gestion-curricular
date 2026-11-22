@@ -8,15 +8,15 @@ import lombok.Data;
 @Data
 @AllArgsConstructor
 public class EstadoSolicitud {
-    private Integer id_estado;
-    private String estado_actual;
-    private Date fecha_registro_estado;
+    private Integer idEstado;
+    private String estadoActual;
+    private Date fechaRegistroEstado;
     private String comentario;
 
     private Solicitud objSolicitud;
 
     public EstadoSolicitud(){
-        this.estado_actual = "Enviado";
+        this.estadoActual = "Enviado";
     }
     
 }

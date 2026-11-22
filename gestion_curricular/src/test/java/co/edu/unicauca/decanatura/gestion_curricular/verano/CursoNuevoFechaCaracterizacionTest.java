@@ -51,9 +51,9 @@ class CursoNuevoFechaCaracterizacionTest {
         when(cu.crearSolicitudCursoVeranoPreinscripcion(any())).thenAnswer(i -> {
             SolicitudCursoVeranoPreinscripcion recibida = i.getArgument(0);
             SolicitudCursoVeranoPreinscripcion guardada = new SolicitudCursoVeranoPreinscripcion();
-            guardada.setId_solicitud(50);
+            guardada.setIdSolicitud(50);
             if (!recibida.getObservacion().endsWith("sin fecha")) {
-                guardada.setFecha_registro_solicitud(new Date(MARZO));
+                guardada.setFechaRegistroSolicitud(new Date(MARZO));
             }
             return guardada;
         });

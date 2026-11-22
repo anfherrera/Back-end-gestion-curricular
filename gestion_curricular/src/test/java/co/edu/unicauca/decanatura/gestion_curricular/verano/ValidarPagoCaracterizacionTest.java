@@ -34,7 +34,7 @@ class ValidarPagoCaracterizacionTest {
         var cu = mock(GestionarSolicitudCursoVeranoCUIntPort.class);
         List<Object> llamadas = new ArrayList<>();
         var inscripcion = new SolicitudCursoVeranoInscripcion();
-        inscripcion.setId_solicitud(7);
+        inscripcion.setIdSolicitud(7);
         when(cu.validarPago(anyInt(), anyBoolean(), nullable(String.class))).thenAnswer(i -> {
             Object[] argumentos = i.getArguments();
             llamadas.add(java.util.Arrays.asList(argumentos));

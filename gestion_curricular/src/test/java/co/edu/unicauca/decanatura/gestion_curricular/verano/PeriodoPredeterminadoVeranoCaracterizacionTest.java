@@ -30,8 +30,8 @@ class PeriodoPredeterminadoVeranoCaracterizacionTest {
         when(cu.crearSolicitudCursoVeranoPreinscripcion(any())).thenAnswer(i -> {
             SolicitudCursoVeranoPreinscripcion solicitud = i.getArgument(0);
             var actual = PeriodoAcademicoEnum.getPeriodoActual();
-            assertThat(solicitud.getPeriodo_academico()).isEqualTo(actual == null ? null : actual.getValor());
-            solicitud.setId_solicitud(7);
+            assertThat(solicitud.getPeriodoAcademico()).isEqualTo(actual == null ? null : actual.getValor());
+            solicitud.setIdSolicitud(7);
             return solicitud;
         });
         var mvc = SoporteMvc.standaloneSetup(new PreinscripcionesVeranoRestController(cu,

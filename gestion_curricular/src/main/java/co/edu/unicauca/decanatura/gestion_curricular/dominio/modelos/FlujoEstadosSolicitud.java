@@ -164,7 +164,7 @@ public final class FlujoEstadosSolicitud {
             return null;
         }
         for (int i = estados.size() - 1; i >= 0; i--) {
-            String estado = estados.get(i).getEstado_actual();
+            String estado = estados.get(i).getEstadoActual();
             if (estado != null && !estado.isBlank()) {
                 return estado;
             }

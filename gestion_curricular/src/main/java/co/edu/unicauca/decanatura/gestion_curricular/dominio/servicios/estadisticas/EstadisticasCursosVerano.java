@@ -47,7 +47,7 @@ public class EstadisticasCursosVerano {
         List<Solicitud> todas = datos.listarSolicitudesConEstadosYUsuario();
         return (todas != null ? todas : new ArrayList<Solicitud>()).stream()
                 .filter(s -> TipoProcesoSolicitud.CURSOS_VERANO.equals(tipoProceso(s)))
-                .filter(s -> periodo == null || periodo.equals(s.getPeriodo_academico())
+                .filter(s -> periodo == null || periodo.equals(s.getPeriodoAcademico())
                         || (s.getObjCursoOfertadoVerano() != null
                                 && periodo.equals(s.getObjCursoOfertadoVerano().getPeriodo_academico())))
                 .filter(s -> idPrograma == null || (s.getObjUsuario() != null && s.getObjUsuario().getObjPrograma() != null
@@ -157,6 +157,6 @@ public class EstadisticasCursosVerano {
                 && solicitud.getObjCursoOfertadoVerano().getObjMateria() != null
                 ? solicitud.getObjCursoOfertadoVerano().getObjMateria().getNombre()
                 : null;
-        return new DatoDemandaCursoVerano(materia, nombrePrograma(solicitud), solicitud.getFecha_registro_solicitud());
+        return new DatoDemandaCursoVerano(materia, nombrePrograma(solicitud), solicitud.getFechaRegistroSolicitud());
     }
 }

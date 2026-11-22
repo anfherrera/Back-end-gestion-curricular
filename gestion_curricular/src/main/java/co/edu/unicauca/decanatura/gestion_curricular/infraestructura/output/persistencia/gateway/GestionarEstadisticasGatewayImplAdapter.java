@@ -169,8 +169,8 @@ public class GestionarEstadisticasGatewayImplAdapter implements GestionarEstadis
         Map<Integer, List<EstadoSolicitud>> estadosPorSolicitud = new HashMap<>();
         for (FilaEstadoEstadistica fila : solicitudRepository.buscarEstadosParaEstadisticas()) {
             EstadoSolicitud estado = new EstadoSolicitud();
-            estado.setEstado_actual(fila.estado());
-            estado.setFecha_registro_estado(fila.fecha());
+            estado.setEstadoActual(fila.estado());
+            estado.setFechaRegistroEstado(fila.fecha());
             estadosPorSolicitud.computeIfAbsent(fila.idSolicitud(), id -> new ArrayList<>()).add(estado);
         }
         return solicitudRepository.buscarSolicitudesParaEstadisticas().stream()
@@ -247,10 +247,10 @@ public class GestionarEstadisticasGatewayImplAdapter implements GestionarEstadis
 
     private static Solicitud aDominio(FilaSolicitudEstadistica fila, List<EstadoSolicitud> estados) {
         Solicitud solicitud = SUBTIPOS.getOrDefault(fila.tipo(), Solicitud::new).get();
-        solicitud.setId_solicitud(fila.idSolicitud());
-        solicitud.setNombre_solicitud(fila.nombre());
-        solicitud.setPeriodo_academico(fila.periodoAcademico());
-        solicitud.setFecha_registro_solicitud(fila.fechaRegistro());
+        solicitud.setIdSolicitud(fila.idSolicitud());
+        solicitud.setNombreSolicitud(fila.nombre());
+        solicitud.setPeriodoAcademico(fila.periodoAcademico());
+        solicitud.setFechaRegistroSolicitud(fila.fechaRegistro());
         solicitud.setEstadosSolicitud(estados);
 
         if (fila.idUsuario() != null) {

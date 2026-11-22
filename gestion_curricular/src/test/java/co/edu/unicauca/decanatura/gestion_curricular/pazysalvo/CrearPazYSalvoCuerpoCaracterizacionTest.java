@@ -155,11 +155,11 @@ class CrearPazYSalvoCuerpoCaracterizacionTest {
     private JsonNode describir(SolicitudPazYSalvo s) {
         ObjectNode nodo = json.createObjectNode();
         nodo.put("guardar.idUsuario", s.getObjUsuario() != null ? s.getObjUsuario().getIdUsuario() : null);
-        nodo.put("guardar.fecha", fecha(s.getFecha_registro_solicitud()));
-        nodo.put("guardar.periodo", s.getPeriodo_academico());
+        nodo.put("guardar.fecha", fecha(s.getFechaRegistroSolicitud()));
+        nodo.put("guardar.periodo", s.getPeriodoAcademico());
         nodo.put("guardar.titulo", s.getTitulo_trabajo_grado());
         nodo.put("guardar.director", s.getDirector_trabajo_grado());
-        nodo.put("guardar.nombre", s.getNombre_solicitud());
+        nodo.put("guardar.nombre", s.getNombreSolicitud());
         return nodo;
     }
 

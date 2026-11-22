@@ -124,7 +124,7 @@ public class ArchivosRestController {
         } else if (inscripcionIdTexto != null && inscripcion != null) {
             try {
                 nombreArchivo = this.gestionarArchivos.saveFile(ArchivoMultipart.de(file), nombreUnico, "pdf",
-                    "curso-verano", inscripcion.getId_solicitud());
+                    "curso-verano", inscripcion.getIdSolicitud());
             } catch (Exception e) {
                 // Si falla la carpeta de la inscripción, se reintenta en la raíz
                 nombreArchivo = this.gestionarArchivos.saveFile(ArchivoMultipart.de(file), nombreUnico, "pdf");
@@ -257,7 +257,7 @@ public class ArchivosRestController {
             if (documento.getNombre() != null && documento.getNombre().toLowerCase().endsWith(".pdf")) {
                 try {
                     // Lógica adaptativa: usar ruta completa si está organizada, sino usar nombre
-                    String rutaDocumento = documento.getRuta_documento() != null ? documento.getRuta_documento() : documento.getNombre();
+                    String rutaDocumento = documento.getRutaDocumento() != null ? documento.getRutaDocumento() : documento.getNombre();
                     Path filePathTemp;
                     
                     try {
@@ -270,7 +270,7 @@ public class ArchivosRestController {
                         }
                     } catch (Exception e) {
                         // Si falla con la ruta, intentar con el nombre como fallback
-                        if (documento.getRuta_documento() != null && !documento.getRuta_documento().equals(documento.getNombre())) {
+                        if (documento.getRutaDocumento() != null && !documento.getRutaDocumento().equals(documento.getNombre())) {
                             filePathTemp = gestionarArchivos.getFileAsPath(documento.getNombre());
                         } else {
                             throw e; // Re-lanzar si no hay alternativa

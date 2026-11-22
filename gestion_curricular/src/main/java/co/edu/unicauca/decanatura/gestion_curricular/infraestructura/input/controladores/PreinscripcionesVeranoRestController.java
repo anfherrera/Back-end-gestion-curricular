@@ -123,8 +123,8 @@ public class PreinscripcionesVeranoRestController {
                 accionesDisponibles.add("esperando_respuesta");
             }
             
-            preinscripciones.add(new PreinscripcionUsuario(preinscripcion.getId_solicitud(),
-                preinscripcion.getFecha_registro_solicitud(), estadoActual, comentarioEstado, "Preinscripcion",
+            preinscripciones.add(new PreinscripcionUsuario(preinscripcion.getIdSolicitud(),
+                preinscripcion.getFechaRegistroSolicitud(), estadoActual, comentarioEstado, "Preinscripcion",
                 estudianteId, cursoId, cursoNombre, accionesDisponibles));
         }
 
@@ -168,10 +168,10 @@ public class PreinscripcionesVeranoRestController {
             
             solicitudDominio.setObservacion("Solicitud de apertura de curso: " + peticion.getCurso());
             
-            solicitudDominio.setNombre_solicitud(NombreSolicitud.de(NombreSolicitud.CURSO_VERANO, peticion.getNombreCompleto()));
-            solicitudDominio.setFecha_registro_solicitud(new Date());
+            solicitudDominio.setNombreSolicitud(NombreSolicitud.de(NombreSolicitud.CURSO_VERANO, peticion.getNombreCompleto()));
+            solicitudDominio.setFechaRegistroSolicitud(new Date());
             
-            solicitudDominio.setPeriodo_academico(PeriodoAcademicoEnum.oActual(solicitudDominio.getPeriodo_academico()));
+            solicitudDominio.setPeriodoAcademico(PeriodoAcademicoEnum.oActual(solicitudDominio.getPeriodoAcademico()));
 
             // Crear un curso con ID = 0 para indicar que es un curso nuevo
             CursoOfertadoVerano cursoTemporal = new CursoOfertadoVerano();
@@ -188,9 +188,9 @@ public class PreinscripcionesVeranoRestController {
             
 
             // Crear respuesta JSON con la estructura esperada
-            return ResponseEntity.ok(new CursoNuevoSolicitado(solicitudGuardada.getId_solicitud(),
+            return ResponseEntity.ok(new CursoNuevoSolicitado(solicitudGuardada.getIdSolicitud(),
                 peticion.getNombreCompleto(), peticion.getCodigo(), peticion.getCurso(), peticion.getCondicion(),
-                solicitudGuardada.getFecha_registro_solicitud(), "Pendiente",
+                solicitudGuardada.getFechaRegistroSolicitud(), "Pendiente",
                 new UsuarioSolicitante(peticion.getIdUsuario(), peticion.getNombreCompleto())));
         });
     }
@@ -252,8 +252,8 @@ public class PreinscripcionesVeranoRestController {
         // Llamar al gateway directamente para guardar en la base de datos
         SolicitudCursoVeranoPreinscripcion solicitudGuardada = solicitudCU.crearSolicitudCursoVeranoPreinscripcion(solicitudDominio);
 
-        var respuesta = new PreinscripcionCreada(solicitudGuardada.getId_solicitud(), peticion.getIdUsuario(),
-                peticion.getIdCurso(), peticion.getNombreSolicitud(), solicitudGuardada.getFecha_registro_solicitud(),
+        var respuesta = new PreinscripcionCreada(solicitudGuardada.getIdSolicitud(), peticion.getIdUsuario(),
+                peticion.getIdCurso(), peticion.getNombreSolicitud(), solicitudGuardada.getFechaRegistroSolicitud(),
                 "Pendiente", "Preinscripcion creada exitosamente");
         return ResponseEntity.status(201).body(respuesta);
     }
@@ -316,8 +316,8 @@ public class PreinscripcionesVeranoRestController {
             }
 
             // id_solicitud repite id_preinscripcion para compatibilidad con el frontend
-            preinscripciones.add(new PreinscripcionCurso(preinscripcion.getId_solicitud(),
-                preinscripcion.getId_solicitud(), preinscripcion.getFecha_registro_solicitud(), estado,
+            preinscripciones.add(new PreinscripcionCurso(preinscripcion.getIdSolicitud(),
+                preinscripcion.getIdSolicitud(), preinscripcion.getFechaRegistroSolicitud(), estado,
                 preinscripcion.getObservacion() != null ? preinscripcion.getObservacion() : "",
                 preinscripcion.getCodicion_solicitud() != null
                     ? preinscripcion.getCodicion_solicitud().toString() : "Primera_Vez",
@@ -354,7 +354,7 @@ public class PreinscripcionesVeranoRestController {
         SolicitudCursoVeranoPreinscripcion solicitudActualizada = solicitudCU.actualizarObservacionesPreinscripcion(solicitud);
 
         return ResponseEntity.ok(new ObservacionesActualizadas("Observaciones actualizadas exitosamente", true,
-            new Observaciones(solicitudActualizada.getId_solicitud(), solicitudActualizada.getObservacion(),
+            new Observaciones(solicitudActualizada.getIdSolicitud(), solicitudActualizada.getObservacion(),
                 solicitudActualizada.estadoActual("Pendiente"))));
     }
 
@@ -375,7 +375,7 @@ public class PreinscripcionesVeranoRestController {
         SolicitudCursoVeranoPreinscripcion solicitudAprobada = solicitudCU.aprobarPreinscripcion(idSolicitud, comentarios);
 
         return ResponseEntity.ok(new Aprobacion(true, "Preinscripcion aprobada exitosamente",
-            solicitudAprobada.getId_solicitud()));
+            solicitudAprobada.getIdSolicitud()));
     }
 
     /**
@@ -395,7 +395,7 @@ public class PreinscripcionesVeranoRestController {
         
         SolicitudCursoVeranoPreinscripcion solicitudRechazada = solicitudCU.rechazarPreinscripcion(idSolicitud, motivo);
         
-        return ResponseEntity.ok(new Rechazo(true, "Preinscripcion rechazada", solicitudRechazada.getId_solicitud(),
+        return ResponseEntity.ok(new Rechazo(true, "Preinscripcion rechazada", solicitudRechazada.getIdSolicitud(),
             motivo));
     }
 }

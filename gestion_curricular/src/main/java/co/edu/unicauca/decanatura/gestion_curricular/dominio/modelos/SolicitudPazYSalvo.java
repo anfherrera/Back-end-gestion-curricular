@@ -32,9 +32,9 @@ public class SolicitudPazYSalvo extends Solicitud {
             return Optional.empty();
         }
         return getEstadosSolicitud().stream()
-                .filter(e -> EstadosSolicitud.RECHAZADA.name().equalsIgnoreCase(e.getEstado_actual())
-                        || "RECHAZADO".equalsIgnoreCase(e.getEstado_actual()))
-                .sorted((a, b) -> b.getFecha_registro_estado().compareTo(a.getFecha_registro_estado()))
+                .filter(e -> EstadosSolicitud.RECHAZADA.name().equalsIgnoreCase(e.getEstadoActual())
+                        || "RECHAZADO".equalsIgnoreCase(e.getEstadoActual()))
+                .sorted((a, b) -> b.getFechaRegistroEstado().compareTo(a.getFechaRegistroEstado()))
                 .findFirst()
                 .map(EstadoSolicitud::getComentario)
                 .map(String::trim)

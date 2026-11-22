@@ -194,7 +194,7 @@ class HistorialSolicitudesCaracterizacionTest {
     private static List<Solicitud> solicitudes() {
         List<Solicitud> lista = new ArrayList<>();
         Solicitud paz = solicitud(SolicitudPazYSalvo::new, 1, "Solicitud de Paz y Salvo");
-        paz.setPeriodo_academico("2024-1");
+        paz.setPeriodoAcademico("2024-1");
         Usuario usuario = new Usuario();
         usuario.setIdUsuario(7);
         usuario.setNombreCompleto("María Fernanda Ortiz Castellanos");
@@ -229,16 +229,16 @@ class HistorialSolicitudesCaracterizacionTest {
 
     private static <T extends Solicitud> T solicitud(Supplier<T> nueva, int id, String nombre) {
         T solicitud = nueva.get();
-        solicitud.setId_solicitud(id);
-        solicitud.setNombre_solicitud(nombre);
-        solicitud.setFecha_registro_solicitud(id % 2 == 0 ? null : new Date(MARZO));
+        solicitud.setIdSolicitud(id);
+        solicitud.setNombreSolicitud(nombre);
+        solicitud.setFechaRegistroSolicitud(id % 2 == 0 ? null : new Date(MARZO));
         return solicitud;
     }
 
     private static EstadoSolicitud estado(String nombre, Long fecha) {
         EstadoSolicitud estado = new EstadoSolicitud();
-        estado.setEstado_actual(nombre);
-        estado.setFecha_registro_estado(fecha == null ? null : new Date(fecha));
+        estado.setEstadoActual(nombre);
+        estado.setFechaRegistroEstado(fecha == null ? null : new Date(fecha));
         return estado;
     }
 

@@ -581,7 +581,7 @@ class ErroresCasosDeUsoCaracterizacionTest {
     }
 
     private static <T extends Solicitud> T conUsuario(T solicitud, Integer id, Integer idUsuario) {
-        solicitud.setId_solicitud(id);
+        solicitud.setIdSolicitud(id);
         if (idUsuario != null) {
             var usuario = new Usuario();
             usuario.setIdUsuario(idUsuario);
@@ -592,8 +592,8 @@ class ErroresCasosDeUsoCaracterizacionTest {
 
     private static <T extends Solicitud> T conEstado(T solicitud, String estado) {
         var registro = new EstadoSolicitud();
-        registro.setEstado_actual(estado);
-        registro.setFecha_registro_estado(new Date(0));
+        registro.setEstadoActual(estado);
+        registro.setFechaRegistroEstado(new Date(0));
         solicitud.setEstadosSolicitud(new ArrayList<>(List.of(registro)));
         return solicitud;
     }

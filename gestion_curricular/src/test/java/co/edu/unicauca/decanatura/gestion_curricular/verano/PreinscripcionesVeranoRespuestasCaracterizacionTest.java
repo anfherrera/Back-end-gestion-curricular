@@ -74,8 +74,8 @@ class PreinscripcionesVeranoRespuestasCaracterizacionTest {
                 throw new IllegalStateException("consulta");
             }
             SolicitudCursoVeranoPreinscripcion guardada = new SolicitudCursoVeranoPreinscripcion();
-            guardada.setId_solicitud(50);
-            guardada.setFecha_registro_solicitud(new Date(MARZO));
+            guardada.setIdSolicitud(50);
+            guardada.setFechaRegistroSolicitud(new Date(MARZO));
             return guardada;
         });
         when(cu.buscarPreinscripcionPorUsuarioYCurso(anyInt(), anyInt()))
@@ -233,11 +233,11 @@ class PreinscripcionesVeranoRespuestasCaracterizacionTest {
     private static SolicitudCursoVeranoPreinscripcion preinscripcion(int id, String estado, String comentario,
             CursoOfertadoVerano curso, Usuario usuario) {
         SolicitudCursoVeranoPreinscripcion preinscripcion = new SolicitudCursoVeranoPreinscripcion();
-        preinscripcion.setId_solicitud(id);
-        preinscripcion.setFecha_registro_solicitud(id % 2 == 0 ? new Date(MARZO) : null);
+        preinscripcion.setIdSolicitud(id);
+        preinscripcion.setFechaRegistroSolicitud(id % 2 == 0 ? new Date(MARZO) : null);
         if (estado != null) {
             EstadoSolicitud registro = new EstadoSolicitud();
-            registro.setEstado_actual(estado);
+            registro.setEstadoActual(estado);
             registro.setComentario(comentario);
             preinscripcion.getEstadosSolicitud().add(registro);
         }

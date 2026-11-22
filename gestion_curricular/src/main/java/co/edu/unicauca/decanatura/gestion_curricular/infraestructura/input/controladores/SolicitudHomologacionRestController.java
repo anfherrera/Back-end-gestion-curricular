@@ -233,8 +233,8 @@ public class SolicitudHomologacionRestController {
                 if (documentoSeleccionado == null) {
                     documentoSeleccionado = d;
                 } else {
-                    Date fSel = documentoSeleccionado.getFecha_documento();
-                    Date fNew = d.getFecha_documento();
+                    Date fSel = documentoSeleccionado.getFechaDocumento();
+                    Date fNew = d.getFechaDocumento();
                     if (fSel == null && fNew != null) {
                         documentoSeleccionado = d;
                     } else if (fSel != null && fNew != null && fNew.after(fSel)) {
@@ -260,8 +260,8 @@ public class SolicitudHomologacionRestController {
 
         try {
             String nombreDescarga = documentoSeleccionado.getNombre();
-            String rutaDocumento = documentoSeleccionado.getRuta_documento() != null
-                    ? documentoSeleccionado.getRuta_documento()
+            String rutaDocumento = documentoSeleccionado.getRutaDocumento() != null
+                    ? documentoSeleccionado.getRutaDocumento()
                     : nombreDescarga;
             byte[] archivo;
             if (rutaDocumento != null && rutaDocumento.contains("/")) {
@@ -307,7 +307,7 @@ public class SolicitudHomologacionRestController {
                     && documento.getComentario().contains(MARCADOR_OFICIO_HOMOLOGACION);
             if (esMarcado || esDocumentoOficioHomologacion(documento)) {
                 oficios.add(new Oficio(idSolicitud, documento.getNombre(), documento.getNombre(),
-                        documento.getRuta_documento()));
+                        documento.getRutaDocumento()));
             }
         }
         
@@ -396,7 +396,7 @@ public class SolicitudHomologacionRestController {
         Documento guardado = documentosCU.adjuntarASolicitud(ArchivoMultipart.de(file), solicitud,
                 "homologacion", MARCADOR_OFICIO_HOMOLOGACION + " Archivo subido por secretaría", true);
         return ResponseEntity.ok(new ResolucionSubida(true, "Resolución subida correctamente",
-                guardado.getId_documento(), guardado.getNombre(), idSolicitud));
+                guardado.getIdDocumento(), guardado.getNombre(), idSolicitud));
     }
 
 }

@@ -17,6 +17,7 @@ import org.junit.jupiter.api.Test;
 import org.mapstruct.factory.Mappers;
 import org.springframework.mock.web.MockMultipartFile;
 
+import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.configuracion.NombresJsonDominio;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.*;
 import co.edu.unicauca.decanatura.gestion_curricular.soporte.SoporteMvc;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.*;
@@ -38,7 +39,8 @@ class RegistroDocumentosCaracterizacionTest {
         var auth = new Autorizacion(null, null, null, null) {
             @Override public Integer idUsuarioActual() { return 31; }
         };
-        var json = new ObjectMapper();
+        // Vuelca objetos del dominio: con sus nombres JSON históricos (OPC-2)
+        var json = new ObjectMapper().registerModule(NombresJsonDominio.modulo());
         var paz = new SolicitudPazYSalvoRestController(pazCU, mock(SolicitudPazYSalvoMapperDominio.class), archivos,
             documentos, Mappers.getMapper(DocumentosMapperDominio.class), mock(GenerarDocumentosCUIntPort.class), json, auth);
         var homo = new SolicitudHomologacionRestController(homoCU, mock(SolicitudHomologacionMapperDominio.class),
@@ -57,8 +59,8 @@ class RegistroDocumentosCaracterizacionTest {
                 when(archivos.saveFile(any(), anyString(), anyString())).thenAnswer(i -> {eventos.add("archivo"); return "servidor/guardado.pdf";});
                 when(archivos.saveFile(any(), anyString(), anyString(), anyString(), anyInt())).thenAnswer(i -> {eventos.add("archivo"); return "servidor/guardado.pdf";});
                 when(pazCU.buscarPorId(7)).thenAnswer(i -> {eventos.add("solicitud"); return existe ? new SolicitudPazYSalvo() : null;});
-                when(homoCU.buscarPorId(7)).thenAnswer(i -> {eventos.add("solicitud"); var s = new SolicitudHomologacion(); s.setId_solicitud(7); return existe ? s : null;});
-                when(gateway.crearDocumento(any())).thenAnswer(i -> {eventos.add("registro"); Documento d=i.getArgument(0); d.setId_documento(11); guardados.add(d); return d;});
+                when(homoCU.buscarPorId(7)).thenAnswer(i -> {eventos.add("solicitud"); var s = new SolicitudHomologacion(); s.setIdSolicitud(7); return existe ? s : null;});
+                when(gateway.crearDocumento(any())).thenAnswer(i -> {eventos.add("registro"); Documento d=i.getArgument(0); d.setIdDocumento(11); guardados.add(d); return d;});
                 boolean word = ruta.endsWith("guardarOficio");
                 var request = multipart(ruta).file(new MockMultipartFile("file", word ? "original.docx" : "original.pdf", "application/octet-stream", "%PDF-archivo".getBytes(java.nio.charset.StandardCharsets.UTF_8)));
                 if (word) request.param("idSolicitud", "7").param("tipoDocumento", "oficio").param("numeroDocumento", "1").param("fechaDocumento", "2025-01-01");

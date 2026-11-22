@@ -65,12 +65,12 @@ class PeriodoEscrituraVeranoCaracterizacionTest {
             // El período va en la solicitud: apertura (id 0) y curso existente sin período (id 5)
             for (int idCurso : new int[] { 0, 5 }) {
                 SolicitudCursoVeranoPreinscripcion pre = preinscripcion(curso(idCurso, "2025-1"));
-                pre.setPeriodo_academico(periodo);
+                pre.setPeriodoAcademico(periodo);
                 gateway.crearSolicitudCursoVeranoPreinscripcion(pre);
                 registrar(casos, "preinscripcion curso " + idCurso + " solicitud " + clave);
             }
             SolicitudCursoVeranoInscripcion enCurso = inscripcion(curso(5, "2025-1"));
-            enCurso.setPeriodo_academico(periodo);
+            enCurso.setPeriodoAcademico(periodo);
             gateway.crearSolicitudCursoVeranoInscripcion(enCurso);
             registrar(casos, "inscripcion curso 5 solicitud " + clave);
             // El período va en un curso que todavía no existe
@@ -110,7 +110,7 @@ class PeriodoEscrituraVeranoCaracterizacionTest {
 
     private static SolicitudCursoVeranoPreinscripcion preinscripcion(CursoOfertadoVerano curso) {
         SolicitudCursoVeranoPreinscripcion solicitud = GrafosSolicitud.completar(new SolicitudCursoVeranoPreinscripcion());
-        solicitud.setId_solicitud(null);
+        solicitud.setIdSolicitud(null);
         solicitud.setNombre_estudiante("Ana");
         solicitud.setCodicion_solicitud(CondicionSolicitudVerano.Primera_Vez);
         solicitud.setObjCursoOfertadoVerano(curso);
@@ -119,7 +119,7 @@ class PeriodoEscrituraVeranoCaracterizacionTest {
 
     private static SolicitudCursoVeranoInscripcion inscripcion(CursoOfertadoVerano curso) {
         SolicitudCursoVeranoInscripcion solicitud = GrafosSolicitud.completar(new SolicitudCursoVeranoInscripcion());
-        solicitud.setId_solicitud(null);
+        solicitud.setIdSolicitud(null);
         solicitud.setNombre_estudiante("Ana");
         solicitud.setCodicion_solicitud(CondicionSolicitudVerano.Habilitación);
         solicitud.setObjCursoOfertadoVerano(curso);

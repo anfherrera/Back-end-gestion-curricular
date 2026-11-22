@@ -135,7 +135,7 @@ class SubirPdfArchivosCaracterizacionTest {
             return switch (id) {
                 case 7 -> inscripcion(70, "José Pérez-Ñ");
                 case 8 -> inscripcion(80, "   ");
-                case 9 -> { var s = new SolicitudCursoVeranoInscripcion(); s.setId_solicitud(90); yield s; }
+                case 9 -> { var s = new SolicitudCursoVeranoInscripcion(); s.setIdSolicitud(90); yield s; }
                 case 11 -> throw new IllegalStateException("fallo consulta");
                 default -> null;
             };
@@ -146,7 +146,7 @@ class SubirPdfArchivosCaracterizacionTest {
             guardados.add(d);
             if ("error".equals(c.registro())) throw new IllegalStateException("fallo BD");
             if ("null".equals(c.registro())) return null;
-            d.setId_documento(11);
+            d.setIdDocumento(11);
             return d;
         });
 
@@ -167,7 +167,7 @@ class SubirPdfArchivosCaracterizacionTest {
             eventos.add("solicitud(" + id + ")");
             if (id != 5 && id != 11 && id != 12) return null;
             var s = new Solicitud();
-            s.setId_solicitud(id);
+            s.setIdSolicitud(id);
             return s;
         });
 
@@ -204,7 +204,7 @@ class SubirPdfArchivosCaracterizacionTest {
         usuario.setIdUsuario(40);
         usuario.setNombreCompleto(nombre);
         var s = new SolicitudCursoVeranoInscripcion();
-        s.setId_solicitud(idSolicitud);
+        s.setIdSolicitud(idSolicitud);
         s.setObjUsuario(usuario);
         return s;
     }

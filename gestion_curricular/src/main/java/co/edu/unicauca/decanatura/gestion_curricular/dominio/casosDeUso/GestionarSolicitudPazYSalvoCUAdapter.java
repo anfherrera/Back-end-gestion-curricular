@@ -92,10 +92,10 @@ public class GestionarSolicitudPazYSalvoCUAdapter implements GestionarSolicitudP
         }
 
         // Sin período académico: el actual. Uno con texto se guarda tal cual llegó.
-        if (solicitud.getPeriodo_academico() == null || solicitud.getPeriodo_academico().trim().isEmpty()) {
+        if (solicitud.getPeriodoAcademico() == null || solicitud.getPeriodoAcademico().trim().isEmpty()) {
             String periodoActual = PeriodoAcademicoEnum.oActual(null);
             if (periodoActual != null) {
-                solicitud.setPeriodo_academico(periodoActual);
+                solicitud.setPeriodoAcademico(periodoActual);
             }
         }
 
@@ -109,11 +109,11 @@ public class GestionarSolicitudPazYSalvoCUAdapter implements GestionarSolicitudP
         // para no dejar dos estados iniciales.
         boolean yaTieneEstadoInicial = solicitudGuardada.getEstadosSolicitud() != null
                 && solicitudGuardada.getEstadosSolicitud().stream()
-                        .anyMatch(e -> e.getEstado_actual() != null && !e.getEstado_actual().isBlank());
+                        .anyMatch(e -> e.getEstadoActual() != null && !e.getEstadoActual().isBlank());
         if (!yaTieneEstadoInicial) {
             EstadoSolicitud estadoInicial = new EstadoSolicitud();
-            estadoInicial.setEstado_actual(EstadosSolicitud.ENVIADA.textoGuardado());
-            estadoInicial.setFecha_registro_estado(new Date());
+            estadoInicial.setEstadoActual(EstadosSolicitud.ENVIADA.textoGuardado());
+            estadoInicial.setFechaRegistroEstado(new Date());
             estadoInicial.setObjSolicitud(solicitudGuardada);
 
             if (solicitudGuardada.getEstadosSolicitud() == null) {
@@ -187,8 +187,8 @@ public class GestionarSolicitudPazYSalvoCUAdapter implements GestionarSolicitudP
         }
 
         EstadoSolicitud estado = new EstadoSolicitud();
-        estado.setEstado_actual(TransicionEstadoPazYSalvo.normalizar(nuevoEstado));
-        estado.setFecha_registro_estado(new Date());
+        estado.setEstadoActual(TransicionEstadoPazYSalvo.normalizar(nuevoEstado));
+        estado.setFechaRegistroEstado(new Date());
         // Establecer el comentario si se proporciona
         if (comentario != null && !comentario.trim().isEmpty()) {
             estado.setComentario(comentario.trim());
@@ -233,7 +233,7 @@ public class GestionarSolicitudPazYSalvoCUAdapter implements GestionarSolicitudP
         List<ComentarioDocumento> documentos = solicitud.getDocumentos() == null ? List.of()
                 : solicitud.getDocumentos().stream()
                         .filter(d -> d.getComentario() != null && !d.getComentario().trim().isEmpty())
-                        .map(d -> new ComentarioDocumento(d.getId_documento(), d.getNombre(), d.getComentario().trim()))
+                        .map(d -> new ComentarioDocumento(d.getIdDocumento(), d.getNombre(), d.getComentario().trim()))
                         .toList();
         return new ComentariosSolicitud(solicitud.ultimoComentarioDeRechazo().orElse(null), documentos);
     }
@@ -249,7 +249,7 @@ public class GestionarSolicitudPazYSalvoCUAdapter implements GestionarSolicitudP
         if (usuario == null) {
             return Optional.empty();
         }
-        Date registro = solicitud.getFecha_registro_solicitud();
+        Date registro = solicitud.getFechaRegistroSolicitud();
         Object fecha = fechaLocal
                 ? (registro == null ? LocalDate.now() : registro.toInstant().atZone(ZoneId.systemDefault()).toLocalDate())
                 : registro;

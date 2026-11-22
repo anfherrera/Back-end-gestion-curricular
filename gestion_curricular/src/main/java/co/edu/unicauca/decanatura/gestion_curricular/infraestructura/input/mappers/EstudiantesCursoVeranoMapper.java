@@ -25,11 +25,11 @@ public final class EstudiantesCursoVeranoMapper {
 
         return new Estudiante(usuario.getIdUsuario(), usuario.getNombreCompleto(), usuario.getCodigo(), usuario.getCorreo(),
                 estudiante.estadoPreinscripcion(), estudiante.estadoInscripcion(),
-                inscripcion == null ? null : inscripcion.getId_solicitud(), estudiante.inscrito() ? "Inscrito" : "Preinscrito",
+                inscripcion == null ? null : inscripcion.getIdSolicitud(), estudiante.inscrito() ? "Inscrito" : "Preinscrito",
                 condicion == null ? null : condicion.toString(),
                 programa == null ? null : new Programa(programa.getIdPrograma(), programa.getNombrePrograma()),
-                preinscripcion == null ? null : new Preinscripcion(preinscripcion.getFecha_registro_solicitud(),
-                        preinscripcion.getId_solicitud(), inscripcion != null),
-                preinscripcion == null ? new InscripcionSinPreinscripcion(inscripcion.getFecha_registro_solicitud(), false) : null);
+                preinscripcion == null ? null : new Preinscripcion(preinscripcion.getFechaRegistroSolicitud(),
+                        preinscripcion.getIdSolicitud(), inscripcion != null),
+                preinscripcion == null ? new InscripcionSinPreinscripcion(inscripcion.getFechaRegistroSolicitud(), false) : null);
     }
 }

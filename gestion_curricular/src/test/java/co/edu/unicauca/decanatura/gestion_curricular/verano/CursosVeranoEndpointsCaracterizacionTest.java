@@ -65,10 +65,10 @@ class CursosVeranoEndpointsCaracterizacionTest {
             when(cursos.obtenerCursoPorId(71)).thenReturn(curso);
             when(cursos.guardarCambiosCurso(eq(71), any(), any(), any())).thenReturn(curso);
             SolicitudCursoVeranoPreinscripcion solicitud = new SolicitudCursoVeranoPreinscripcion();
-            solicitud.setId_solicitud(91);
-            solicitud.setNombre_solicitud("Curso de prueba");
-            solicitud.setFecha_registro_solicitud(curso.getFecha_inicio());
-            solicitud.setPeriodo_academico("2025-2");
+            solicitud.setIdSolicitud(91);
+            solicitud.setNombreSolicitud("Curso de prueba");
+            solicitud.setFechaRegistroSolicitud(curso.getFecha_inicio());
+            solicitud.setPeriodoAcademico("2025-2");
             when(solicitudes.listarSolicitudesDeVerano(null)).thenReturn(List.of(solicitud));
             Salon salon = new Salon(81, "221", "FIET", true);
             when(salones.listarSalonesActivos()).thenReturn(List.of(salon));
@@ -181,10 +181,10 @@ class CursosVeranoEndpointsCaracterizacionTest {
         usuario.setCodigo("1046");
         usuario.setCorreo("ana@unicauca.edu.co");
         SolicitudCursoVeranoPreinscripcion pre = new SolicitudCursoVeranoPreinscripcion();
-        pre.setId_solicitud(91);
+        pre.setIdSolicitud(91);
         pre.setObjUsuario(usuario);
         pre.setObjCursoOfertadoVerano(curso);
-        pre.setFecha_registro_solicitud(curso.getFecha_inicio());
+        pre.setFechaRegistroSolicitud(curso.getFecha_inicio());
         pre.setObservacion("Motivo de prueba");
         when(datos.solicitudes.buscarPreinscripcionesPorCurso(71)).thenReturn(List.of(pre));
         when(datos.solicitudes.listarSolicitudesDeVerano(null)).thenReturn(List.of(pre));

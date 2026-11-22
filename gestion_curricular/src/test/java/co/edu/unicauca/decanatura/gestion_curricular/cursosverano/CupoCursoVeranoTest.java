@@ -53,13 +53,13 @@ class CupoCursoVeranoTest {
         curso.setCupo_estimado(cupo);
 
         EstadoSolicitud enviada = new EstadoSolicitud();
-        enviada.setEstado_actual("Enviada");
-        enviada.setFecha_registro_estado(new Date());
+        enviada.setEstadoActual("Enviada");
+        enviada.setFechaRegistroEstado(new Date());
         List<EstadoSolicitud> estados = new ArrayList<>();
         estados.add(enviada);
 
         SolicitudCursoVeranoInscripcion inscripcion = new SolicitudCursoVeranoInscripcion();
-        inscripcion.setId_solicitud(50);
+        inscripcion.setIdSolicitud(50);
         inscripcion.setObjCursoOfertadoVerano(curso);
         inscripcion.setEstadosSolicitud(estados);
         return inscripcion;
@@ -122,8 +122,8 @@ class CupoCursoVeranoTest {
         assertThrows(CupoAgotadoException.class, () -> casoDeUso.verificarCupoParaAceptar(inscripcion));
 
         EstadoSolicitud validado = new EstadoSolicitud();
-        validado.setEstado_actual("Pago_Validado");
-        validado.setFecha_registro_estado(new Date());
+        validado.setEstadoActual("Pago_Validado");
+        validado.setFechaRegistroEstado(new Date());
         inscripcion.getEstadosSolicitud().add(validado);
         casoDeUso.verificarCupoParaAceptar(inscripcion);
     }

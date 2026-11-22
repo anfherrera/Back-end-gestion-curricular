@@ -458,7 +458,7 @@ public class GestionarSolicitudCursoVeranoCUAdapter implements GestionarSolicitu
     @Override
     public SolicitudCursoVeranoPreinscripcion actualizarObservacionesPreinscripcion(
             SolicitudCursoVeranoPreinscripcion preinscripcion) {
-        if (preinscripcion == null || preinscripcion.getId_solicitud() == null) {
+        if (preinscripcion == null || preinscripcion.getIdSolicitud() == null) {
             throw new ReglaNegocioExcepcion("La preinscripción a actualizar no puede ser nula");
         }
         return this.gestionarSolicitudGateway.actualizarSolicitudCursoVerano(preinscripcion);
@@ -485,13 +485,13 @@ public class GestionarSolicitudCursoVeranoCUAdapter implements GestionarSolicitu
         return gestionarSolicitudGateway.listarSolicitudesDeVerano(idCurso).stream()
                 .filter(s -> estadoFiltro == null || estadoFiltro.equalsIgnoreCase(s.estadoActual()))
                 .filter(s -> coincidePeriodo(s, periodo))
-                .filter(s -> coincideFecha(s.getFecha_registro_solicitud(), inicio, finInclusivo))
+                .filter(s -> coincideFecha(s.getFechaRegistroSolicitud(), inicio, finInclusivo))
                 .toList();
     }
 
     private static boolean coincidePeriodo(Solicitud solicitud, String periodo) {
         CursoOfertadoVerano curso = solicitud.getObjCursoOfertadoVerano();
-        return periodo == null || periodo.equals(solicitud.getPeriodo_academico())
+        return periodo == null || periodo.equals(solicitud.getPeriodoAcademico())
                 || (curso != null && periodo.equals(curso.getPeriodo_academico()));
     }
 

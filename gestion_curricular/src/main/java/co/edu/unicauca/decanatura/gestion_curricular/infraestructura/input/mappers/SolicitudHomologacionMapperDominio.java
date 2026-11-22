@@ -32,11 +32,23 @@ public interface SolicitudHomologacionMapperDominio {
     @Mapping(target = "objUsuario.idUsuario", source = "objUsuario.id_usuario")
     @Mapping(target = "objUsuario.nombreCompleto", source = "objUsuario.nombre_completo")
     @Mapping(target = "objUsuario.estadoUsuario", source = "objUsuario.estado_usuario")
+    // OPC-2: el DTO conserva el nombre snake_case
+    @Mapping(target = "idSolicitud", source = "id_solicitud")
+    @Mapping(target = "nombreSolicitud", source = "nombre_solicitud")
+    @Mapping(target = "periodoAcademico", source = "periodo_academico")
+    @Mapping(target = "fechaCeremonia", source = "fecha_ceremonia")
+    @Mapping(target = "fechaRegistroSolicitud", source = "fecha_registro_solicitud")
     SolicitudHomologacion mapearDeSolicitudHomologacionDTOPeticionASolicitudHomologacion(SolicitudHomologacionDTOPeticion peticion);
 
     // Dominio → DTO Respuesta
     @Mapping(target = "categoria", ignore = true)
     @Mapping(target = "tipo_solicitud", ignore = true)
+    // OPC-2: el DTO conserva el nombre snake_case
+    @Mapping(target = "id_solicitud", source = "idSolicitud")
+    @Mapping(target = "nombre_solicitud", source = "nombreSolicitud")
+    @Mapping(target = "periodo_academico", source = "periodoAcademico")
+    @Mapping(target = "fecha_ceremonia", source = "fechaCeremonia")
+    @Mapping(target = "fecha_registro_solicitud", source = "fechaRegistroSolicitud")
     SolicitudHomologacionDTORespuesta mapearDeSolicitudHomologacionASolicitudHomologacionDTORespuesta(SolicitudHomologacion solicitudHomologacion);
 
     List<SolicitudHomologacionDTORespuesta> mapearListaDeSolicitudHomologacionARespuesta(List<SolicitudHomologacion> solicitudes);

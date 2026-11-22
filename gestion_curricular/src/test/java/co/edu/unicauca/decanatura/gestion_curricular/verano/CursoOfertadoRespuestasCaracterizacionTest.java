@@ -185,14 +185,14 @@ class CursoOfertadoRespuestasCaracterizacionTest {
 
     private static <T extends Solicitud> T solicitud(Supplier<T> nueva, int id) {
         T solicitud = nueva.get();
-        solicitud.setId_solicitud(id);
-        solicitud.setNombre_solicitud("Solicitud " + id);
-        solicitud.setPeriodo_academico("2024-1");
-        solicitud.setFecha_registro_solicitud(new Date(MARZO));
+        solicitud.setIdSolicitud(id);
+        solicitud.setNombreSolicitud("Solicitud " + id);
+        solicitud.setPeriodoAcademico("2024-1");
+        solicitud.setFechaRegistroSolicitud(new Date(MARZO));
         EstadoSolicitud estado = new EstadoSolicitud();
-        estado.setId_estado(id);
-        estado.setEstado_actual("Enviada");
-        estado.setFecha_registro_estado(new Date(MARZO));
+        estado.setIdEstado(id);
+        estado.setEstadoActual("Enviada");
+        estado.setFechaRegistroEstado(new Date(MARZO));
         solicitud.getEstadosSolicitud().add(estado);
         CursoOfertadoVerano curso = new CursoOfertadoVerano();
         curso.setId_curso(5);

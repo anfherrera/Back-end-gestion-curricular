@@ -61,11 +61,11 @@ public class GestionarSolicitudEcaesCUAdapter implements GestionarSolicitudEcaes
                 throw new ReglaNegocioExcepcion("La solicitud no puede ser nula");
             }
 
-            if(solicitud.getId_solicitud()!=null){
-                Optional<SolicitudEcaes> solicitudExistente = gestionarSolicitudEcaesGateway.buscarOpcionalPorId(solicitud.getId_solicitud());
+            if(solicitud.getIdSolicitud()!=null){
+                Optional<SolicitudEcaes> solicitudExistente = gestionarSolicitudEcaesGateway.buscarOpcionalPorId(solicitud.getIdSolicitud());
                 if (solicitudExistente.isPresent()) {
                     throw new EntidadYaExisteException("Ya existe una solicitud con el ID: "
-                    + solicitud.getId_solicitud());
+                    + solicitud.getIdSolicitud());
                 }
             }
 
@@ -82,8 +82,8 @@ public class GestionarSolicitudEcaesCUAdapter implements GestionarSolicitudEcaes
             SolicitudEcaes solicitudGuardada = this.gestionarSolicitudEcaesGateway.guardar(solicitud);
 
             EstadoSolicitud estadoInicial = new EstadoSolicitud();
-            estadoInicial.setEstado_actual(EstadosSolicitud.ENVIADA.textoGuardado());//Se pone por defecto el estado de Enviada
-            estadoInicial.setFecha_registro_estado(new Date());
+            estadoInicial.setEstadoActual(EstadosSolicitud.ENVIADA.textoGuardado());//Se pone por defecto el estado de Enviada
+            estadoInicial.setFechaRegistroEstado(new Date());
             estadoInicial.setObjSolicitud(solicitudGuardada); // establecer vínculo
             
             if(solicitudGuardada.getEstadosSolicitud() == null) {
@@ -131,8 +131,8 @@ public class GestionarSolicitudEcaesCUAdapter implements GestionarSolicitudEcaes
         }
 
         EstadoSolicitud nuevo = new EstadoSolicitud();
-        nuevo.setEstado_actual(FlujoEstadosSolicitud.ECAES.normalizar(nuevoEstado));
-        nuevo.setFecha_registro_estado(new Date());
+        nuevo.setEstadoActual(FlujoEstadosSolicitud.ECAES.normalizar(nuevoEstado));
+        nuevo.setFechaRegistroEstado(new Date());
 
         gestionarSolicitudEcaesGateway.cambiarEstadoSolicitudEcaes(idSolicitud, nuevo);
         

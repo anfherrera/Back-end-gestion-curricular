@@ -155,7 +155,7 @@ class ReglasSolicitudesCursoVeranoTest {
     @DisplayName("Aceptar: no se puede aceptar una inscripción con el pago rechazado")
     void noAceptarRechazada() {
         SolicitudCursoVeranoInscripcion rechazada = inscripcion("Pago_Rechazado");
-        rechazada.setId_solicitud(90);
+        rechazada.setIdSolicitud(90);
         when(solicitudes.buscarSolicitudInscripcionPorId(90)).thenReturn(rechazada);
 
         assertThatThrownBy(() -> casoDeUso.validarPago(90, true, "ok")).isInstanceOf(ReglaNegocioExcepcion.class);
@@ -188,8 +188,8 @@ class ReglasSolicitudesCursoVeranoTest {
 
     private static List<EstadoSolicitud> estados(String estado) {
         EstadoSolicitud e = new EstadoSolicitud();
-        e.setEstado_actual(estado);
-        e.setFecha_registro_estado(new Date());
+        e.setEstadoActual(estado);
+        e.setFechaRegistroEstado(new Date());
         return new ArrayList<>(List.of(e));
     }
 

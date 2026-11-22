@@ -101,7 +101,7 @@ public class GestionarSolicitudCursoVeranoGatewayImplAdapter implements Gestiona
                 // Solo guardamos la solicitud con la información del curso solicitado
                 cursoOfertadoVeranoEntity = null;
                 solicitudCursoVeranoEntity.setPeriodo_academico(
-                        PeriodoAcademicoEnum.oActual(solicitudCursoVerano.getPeriodo_academico()));
+                        PeriodoAcademicoEnum.oActual(solicitudCursoVerano.getPeriodoAcademico()));
             } else if(cursoOfertadoVeranoRepository.existsById(idCurso)){
                 cursoOfertadoVeranoEntity = cursoOfertadoVeranoRepository.findById(idCurso)
                         .orElseThrow(() -> new IllegalArgumentException("Curso ofertado no encontrado con ID: " + idCurso));
@@ -426,12 +426,12 @@ public class GestionarSolicitudCursoVeranoGatewayImplAdapter implements Gestiona
     @Override
     @Transactional
     public SolicitudCursoVeranoPreinscripcion actualizarSolicitudCursoVerano(SolicitudCursoVeranoPreinscripcion solicitud) {
-        if (solicitud == null || solicitud.getId_solicitud() == null) {
+        if (solicitud == null || solicitud.getIdSolicitud() == null) {
             return null;
         }
         
         // Buscar la entidad existente
-        SolicitudEntity solicitudEntity = solicitudRepository.findById(solicitud.getId_solicitud())
+        SolicitudEntity solicitudEntity = solicitudRepository.findById(solicitud.getIdSolicitud())
             .filter(entity -> entity instanceof SolicitudCursoVeranoPreinscripcionEntity)
             .orElse(null);
         

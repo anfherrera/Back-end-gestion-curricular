@@ -69,7 +69,7 @@ public class EstadisticasGlobales {
         String procesoBuscado = proceso != null ? TipoProcesoSolicitud.porNombre(proceso) : null;
         Map<String, Integer> porTipoProceso = new HashMap<>();
         for (Solicitud solicitud : solicitudes(datos)) {
-            if (solicitud.getNombre_solicitud() == null) {
+            if (solicitud.getNombreSolicitud() == null) {
                 continue;
             }
             String tipo = tipoProceso(solicitud);

@@ -50,7 +50,7 @@ class DescargasCaracterizacionTest {
         for (String nombre : new String[]{"oficio.pdf", "oficio á +\".pdf"}) {
             var documento = new Documento();
             documento.setNombre(nombre);
-            documento.setRuta_documento("carpeta/" + nombre);
+            documento.setRutaDocumento("carpeta/" + nombre);
             documento.setComentario("[OFICIO_HOMOLOGACION]");
             var inscripcion = new SolicitudCursoVeranoInscripcion();
             inscripcion.setDocumentos(List.of(documento));

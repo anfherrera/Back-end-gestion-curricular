@@ -106,7 +106,7 @@ class CambioEstadoSinEstadoCaracterizacionTest {
         T solicitud = nueva.get();
         List<EstadoSolicitud> estados = new ArrayList<>();
         var estado = new EstadoSolicitud();
-        estado.setEstado_actual("ENVIADA");
+        estado.setEstadoActual("ENVIADA");
         estados.add(estado);
         solicitud.setEstadosSolicitud(estados);
         return solicitud;

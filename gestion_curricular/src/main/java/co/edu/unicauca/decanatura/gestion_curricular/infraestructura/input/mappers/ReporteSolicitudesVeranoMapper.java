@@ -28,15 +28,15 @@ public final class ReporteSolicitudesVeranoMapper {
                     SolicitudCursoVeranoPreinscripcion preinscripcion = (SolicitudCursoVeranoPreinscripcion) solicitud;
                     if (preinscripcion.getObservacion() != null && !preinscripcion.getObservacion().trim().isEmpty()) {
                         motivoSolicitud = preinscripcion.getObservacion();
-                    } else if (preinscripcion.getNombre_solicitud() != null && !preinscripcion.getNombre_solicitud().trim().isEmpty()) {
-                        motivoSolicitud = preinscripcion.getNombre_solicitud();
+                    } else if (preinscripcion.getNombreSolicitud() != null && !preinscripcion.getNombreSolicitud().trim().isEmpty()) {
+                        motivoSolicitud = preinscripcion.getNombreSolicitud();
                     }
                 } else if (solicitud instanceof SolicitudCursoVeranoInscripcion) {
                     SolicitudCursoVeranoInscripcion inscripcion = (SolicitudCursoVeranoInscripcion) solicitud;
                     if (inscripcion.getObservacion() != null && !inscripcion.getObservacion().trim().isEmpty()) {
                         motivoSolicitud = inscripcion.getObservacion();
-                    } else if (inscripcion.getNombre_solicitud() != null && !inscripcion.getNombre_solicitud().trim().isEmpty()) {
-                        motivoSolicitud = inscripcion.getNombre_solicitud();
+                    } else if (inscripcion.getNombreSolicitud() != null && !inscripcion.getNombreSolicitud().trim().isEmpty()) {
+                        motivoSolicitud = inscripcion.getNombreSolicitud();
                     }
                 }
 
@@ -123,8 +123,8 @@ public final class ReporteSolicitudesVeranoMapper {
                     }
                 }
 
-                solicitudesFormateadas.add(new SolicitudReporte(solicitud.getId_solicitud(),
-                    solicitud.getFecha_registro_solicitud(), tipo, motivoSolicitud, nombreCompleto, codigo, estado,
+                solicitudesFormateadas.add(new SolicitudReporte(solicitud.getIdSolicitud(),
+                    solicitud.getFechaRegistroSolicitud(), tipo, motivoSolicitud, nombreCompleto, codigo, estado,
                     condicion, nombreCurso, idMateriaSolicitud, idCursoSolicitud, codigoMateria, grupoCurso));
             }
         }

@@ -56,11 +56,11 @@ public class GestionarSolicitudReingresoCUAdapter  implements GestionarSolicitud
         if(solicitud == null) {
             throw new ReglaNegocioExcepcion("Solicitud de reingreso no puede ser nula");
         }
-        if(solicitud.getId_solicitud()!=null){
-            Optional<SolicitudReingreso> solicitudExistente = gestionarSolicitudReingresoGateway.buscarPorId(solicitud.getId_solicitud());
+        if(solicitud.getIdSolicitud()!=null){
+            Optional<SolicitudReingreso> solicitudExistente = gestionarSolicitudReingresoGateway.buscarPorId(solicitud.getIdSolicitud());
             if (solicitudExistente.isPresent()) {
                 throw new EntidadYaExisteException("Ya existe una solicitud con el ID: "
-                + solicitud.getId_solicitud());
+                + solicitud.getIdSolicitud());
             }
         }
 
@@ -79,8 +79,8 @@ public class GestionarSolicitudReingresoCUAdapter  implements GestionarSolicitud
         asociadorDocumentos.asociar(solicitudGuardada, idUsuario, "reingreso");
 
         EstadoSolicitud estadoInicial = new EstadoSolicitud();
-        estadoInicial.setEstado_actual(EstadosSolicitud.ENVIADA.textoGuardado());//Se pone por defecto el estado de Enviada
-        estadoInicial.setFecha_registro_estado(new Date());
+        estadoInicial.setEstadoActual(EstadosSolicitud.ENVIADA.textoGuardado());//Se pone por defecto el estado de Enviada
+        estadoInicial.setFechaRegistroEstado(new Date());
         estadoInicial.setObjSolicitud(solicitudGuardada); // establecer vínculo
             
         if(solicitudGuardada.getEstadosSolicitud() == null) {
@@ -133,8 +133,8 @@ public class GestionarSolicitudReingresoCUAdapter  implements GestionarSolicitud
         }
 
         EstadoSolicitud estado = new EstadoSolicitud();
-        estado.setEstado_actual(FLUJO.normalizar(nuevoEstado));
-        estado.setFecha_registro_estado(new Date());
+        estado.setEstadoActual(FLUJO.normalizar(nuevoEstado));
+        estado.setFechaRegistroEstado(new Date());
         gestionarSolicitudReingresoGateway.cambiarEstadoSolicitudReingreso(idSolicitud, estado);
         
         // Crear notificación automática del cambio de estado

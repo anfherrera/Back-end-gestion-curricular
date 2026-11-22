@@ -641,8 +641,8 @@ public class ServicioGeneracionDocumentos implements GenerarDocumentosIntPort {
 
             // PERIODO_ACADEMICO: desde la tabla solicitudes (campo periodo_academico de la solicitud de reingreso)
             String periodoAcademico = "";
-            if (solicitudReingreso != null && solicitudReingreso.getPeriodo_academico() != null && !solicitudReingreso.getPeriodo_academico().trim().isEmpty()) {
-                periodoAcademico = solicitudReingreso.getPeriodo_academico().trim();
+            if (solicitudReingreso != null && solicitudReingreso.getPeriodoAcademico() != null && !solicitudReingreso.getPeriodoAcademico().trim().isEmpty()) {
+                periodoAcademico = solicitudReingreso.getPeriodoAcademico().trim();
             } else {
                 Object periodoObj = datosSolicitud.get("periodoAcademico");
                 if (periodoObj != null && !periodoObj.toString().trim().isEmpty()) {
@@ -655,9 +655,9 @@ public class ServicioGeneracionDocumentos implements GenerarDocumentosIntPort {
             String fechaSolicitud = "";
             LocalDate fechaRegistroLocal = null;
             
-            if (solicitudReingreso != null && solicitudReingreso.getFecha_registro_solicitud() != null) {
+            if (solicitudReingreso != null && solicitudReingreso.getFechaRegistroSolicitud() != null) {
                 // Convertir java.util.Date a LocalDate
-                java.util.Date fechaRegistro = solicitudReingreso.getFecha_registro_solicitud();
+                java.util.Date fechaRegistro = solicitudReingreso.getFechaRegistroSolicitud();
                 fechaRegistroLocal = fechaRegistro.toInstant()
                     .atZone(java.time.ZoneId.systemDefault())
                     .toLocalDate();
