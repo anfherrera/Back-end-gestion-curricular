@@ -7,7 +7,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -16,6 +15,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.test.web.servlet.MockMvc;
 
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.enums.PeriodoAcademicoEnum;
+import co.edu.unicauca.decanatura.gestion_curricular.soporte.Correcciones;
 import co.edu.unicauca.decanatura.gestion_curricular.soporte.SoporteMvc;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.controladores.PeriodoAcademicoController;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.controladores.TipoDocumentoController;
@@ -38,45 +38,46 @@ class CatalogosEnvueltosCaracterizacionTest {
         var actual = PeriodoAcademicoEnum.getPeriodoActual();
         assertThat(actual).as("la prueba supone una fecha dentro del catálogo").isNotNull();
 
+        // EST-7 (paso 2): cada clave se pide ahora por su ruta nueva; /validar y /ultimo se retiraron (404)
+        int año = java.time.Year.now().getValue();
         var resultados = json.createObjectNode();
-        resultados.set("todos", respuesta("/api/periodos-academicos/todos"));
-        resultados.set("futuros", conDatoNormalizado(respuesta("/api/periodos-academicos/futuros"),
+        resultados.set("todos", respuesta("/api/periodos-academicos"));
+        resultados.set("futuros", conDatoNormalizado(respuesta("/api/periodos-academicos?desde={a}", año),
             json.valueToTree(PeriodoAcademicoEnum.getPeriodosFuturos()), "<periodos-futuros>"));
-        resultados.set("recientes", conDatoNormalizado(respuesta("/api/periodos-academicos/recientes"),
+        resultados.set("recientes", conDatoNormalizado(
+            respuesta("/api/periodos-academicos?desde={a}", Math.max(2020, año - 4)),
             json.valueToTree(PeriodoAcademicoEnum.getPeriodosRecientes()), "<periodos-recientes>"));
         resultados.set("actual", conDatoNormalizado(respuesta("/api/periodos-academicos/actual"),
             json.valueToTree(actual.getValor()), "<periodo-actual>"));
-        resultados.set("ultimo", conDatoNormalizado(respuesta("/api/periodos-academicos/ultimo"),
-            json.valueToTree(Map.of("valor", actual.getValor(), "año", actual.getAño(),
-                "numeroPeriodo", actual.getNumeroPeriodo(), "descripcion", actual.getDescripcion())),
-            "<periodo-actual>"));
+        resultados.set("ultimo", respuesta("/api/periodos-academicos/ultimo"));
         for (String periodo : new String[]{"2020-1", "2025-2", "2030-2", " 2025-1 ", "2025-3", "abc", "2019-1"}) {
             var caso = resultados.putObject(periodo);
             caso.set("validar", respuesta("/api/periodos-academicos/validar/{p}", periodo));
-            caso.set("info", respuesta("/api/periodos-academicos/info/{p}", periodo));
+            caso.set("info", respuesta("/api/periodos-academicos/{p}", periodo));
         }
-        comparar("periodos-academicos.json", resultados);
+        comparar("periodos-academicos.json", resultados, "catalogos/correcciones/periodos-academicos-est7.json");
     }
 
     @Test
     void conservaLasRespuestasDelCatalogoDeTiposDeDocumento() throws Exception {
         var resultados = json.createObjectNode();
-        resultados.set("todos", respuesta("/api/tipos-documento/todos"));
+        resultados.set("todos", respuesta("/api/tipos-documento"));
         for (String codigo : new String[]{"CC", "NUIP", "cc", "XX"}) {
             var caso = resultados.putObject(codigo);
             caso.set("validar", respuesta("/api/tipos-documento/validar/{c}", codigo));
-            caso.set("info", respuesta("/api/tipos-documento/info/{c}", codigo));
+            caso.set("info", respuesta("/api/tipos-documento/{c}", codigo));
         }
-        comparar("tipos-documento.json", resultados);
+        comparar("tipos-documento.json", resultados, "catalogos/correcciones/tipos-documento-est7.json");
     }
 
-    private void comparar(String archivo, ObjectNode resultados) throws Exception {
+    private void comparar(String archivo, ObjectNode resultados, String correccion) throws Exception {
         var referencia = Path.of("src/test/resources/referencias/catalogos", archivo);
         if (Boolean.getBoolean("grabarReferencia") && Files.notExists(referencia)) {
             Files.createDirectories(referencia.getParent());
             Files.writeString(referencia, json.writerWithDefaultPrettyPrinter().writeValueAsString(resultados));
         }
-        assertThat(resultados).isEqualTo(json.readTree(Files.readString(referencia)));
+        assertThat(resultados).isEqualTo(
+            Correcciones.aplicar(json.readTree(Files.readString(referencia)), correccion));
     }
 
     private ObjectNode conDatoNormalizado(ObjectNode resultado, JsonNode esperado, String marcador) {

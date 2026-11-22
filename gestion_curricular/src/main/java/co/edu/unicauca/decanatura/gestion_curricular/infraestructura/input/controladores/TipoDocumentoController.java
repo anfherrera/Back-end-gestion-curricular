@@ -23,33 +23,21 @@ public class TipoDocumentoController {
      *
      * @return Lista de todos los tipos de documento
      */
-    @GetMapping("/todos")
+    @GetMapping
     public ResponseEntity<ResultadoDTORespuesta<TipoDocumento.TipoDocumentoInfo[]>> obtenerTodosLosTipos() {
         return ResponseEntity.ok(ResultadoDTORespuesta.exito(
             TipoDocumento.getTodosLosTipos(), "Tipos de documento obtenidos exitosamente"));
     }
 
     /**
-     * Valida si un código de tipo de documento es válido
-     *
-     * @param codigo El código a validar
-     * @return true si es válido, false en caso contrario
-     */
-    @GetMapping("/validar/{codigo}")
-    public ResponseEntity<ResultadoDTORespuesta<Boolean>> validarTipoDocumento(@PathVariable String codigo) {
-        boolean esValido = TipoDocumento.esValido(codigo);
-        return ResponseEntity.ok(ResultadoDTORespuesta.exito(esValido, esValido ?
-            "Tipo de documento válido" :
-            "Tipo de documento no válido"));
-    }
-
-    /**
-     * Obtiene información detallada de un tipo de documento
+     * Obtiene información detallada de un tipo de documento; 400 si el código no existe. Rutas según la
+     * convención de EST-7 (paso 2): {@code GET /} y {@code GET /{codigo}}; {@code /validar} se retiró (nadie lo usaba).
+     * El código tiene de 2 a 4 letras, así que {@code /todos} no se toma por un código.
      *
      * @param codigo El código del tipo de documento
      * @return Información detallada del tipo de documento
      */
-    @GetMapping("/info/{codigo}")
+    @GetMapping("/{codigo:[A-Za-z]{2,4}}")
     public ResponseEntity<?> obtenerInformacionTipoDocumento(@PathVariable String codigo) {
         if (!TipoDocumento.esValido(codigo)) {
             return ResponseEntity.badRequest().body(new Fallo("Tipo de documento no válido: " + codigo));

@@ -1,0 +1,163 @@
+{
+  "GET /api/tipos-documento/todos" : {
+    "status" : 200,
+    "tipo" : "application/json",
+    "cuerpo" : {
+      "data" : [ {
+        "codigo" : "CC",
+        "descripcion" : "Cédula de Ciudadanía"
+      }, {
+        "codigo" : "TI",
+        "descripcion" : "Tarjeta de Identidad"
+      }, {
+        "codigo" : "CE",
+        "descripcion" : "Cédula de Extranjería"
+      }, {
+        "codigo" : "PA",
+        "descripcion" : "Pasaporte"
+      }, {
+        "codigo" : "RC",
+        "descripcion" : "Registro Civil"
+      }, {
+        "codigo" : "NIT",
+        "descripcion" : "Número de Identificación Tributaria"
+      }, {
+        "codigo" : "NUIP",
+        "descripcion" : "Número Único de Identificación Personal"
+      } ],
+      "success" : true,
+      "message" : "Tipos de documento obtenidos exitosamente"
+    }
+  },
+  "GET /api/tipos-documento/validar/CC" : {
+    "status" : 200,
+    "tipo" : "application/json",
+    "cuerpo" : {
+      "data" : true,
+      "success" : true,
+      "message" : "Tipo de documento válido"
+    }
+  },
+  "GET /api/tipos-documento/info/CC" : {
+    "status" : 200,
+    "tipo" : "application/json",
+    "cuerpo" : {
+      "data" : {
+        "descripcion" : "Cédula de Ciudadanía",
+        "codigo" : "CC"
+      },
+      "success" : true,
+      "message" : "Información del tipo de documento obtenida exitosamente"
+    }
+  },
+  "GET /api/tipos-documento/validar/NUIP" : {
+    "status" : 200,
+    "tipo" : "application/json",
+    "cuerpo" : {
+      "data" : true,
+      "success" : true,
+      "message" : "Tipo de documento válido"
+    }
+  },
+  "GET /api/tipos-documento/info/NUIP" : {
+    "status" : 200,
+    "tipo" : "application/json",
+    "cuerpo" : {
+      "data" : {
+        "descripcion" : "Número Único de Identificación Personal",
+        "codigo" : "NUIP"
+      },
+      "success" : true,
+      "message" : "Información del tipo de documento obtenida exitosamente"
+    }
+  },
+  "GET /api/tipos-documento/validar/cc" : {
+    "status" : 200,
+    "tipo" : "application/json",
+    "cuerpo" : {
+      "data" : false,
+      "success" : true,
+      "message" : "Tipo de documento no válido"
+    }
+  },
+  "GET /api/tipos-documento/info/cc" : {
+    "status" : 400,
+    "tipo" : "application/json",
+    "cuerpo" : {
+      "success" : false,
+      "message" : "Tipo de documento no válido: cc"
+    }
+  },
+  "GET /api/tipos-documento/validar/XX" : {
+    "status" : 200,
+    "tipo" : "application/json",
+    "cuerpo" : {
+      "data" : false,
+      "success" : true,
+      "message" : "Tipo de documento no válido"
+    }
+  },
+  "GET /api/tipos-documento/info/XX" : {
+    "status" : 400,
+    "tipo" : "application/json",
+    "cuerpo" : {
+      "success" : false,
+      "message" : "Tipo de documento no válido: XX"
+    }
+  },
+  "GET /api/tipos-documento" : {
+    "status" : 404,
+    "tipo" : "application/json",
+    "cuerpo" : {
+      "codigoError" : "GC-0404",
+      "mensaje" : "El recurso solicitado no existe",
+      "codigoHttp" : 404,
+      "url" : "http://localhost/api/tipos-documento",
+      "metodo" : "GET"
+    }
+  },
+  "GET /api/tipos-documento/CC" : {
+    "status" : 404,
+    "tipo" : "application/json",
+    "cuerpo" : {
+      "codigoError" : "GC-0404",
+      "mensaje" : "El recurso solicitado no existe",
+      "codigoHttp" : 404,
+      "url" : "http://localhost/api/tipos-documento/CC",
+      "metodo" : "GET"
+    }
+  },
+  "GET /api/tipos-documento/NUIP" : {
+    "status" : 404,
+    "tipo" : "application/json",
+    "cuerpo" : {
+      "codigoError" : "GC-0404",
+      "mensaje" : "El recurso solicitado no existe",
+      "codigoHttp" : 404,
+      "url" : "http://localhost/api/tipos-documento/NUIP",
+      "metodo" : "GET"
+    }
+  },
+  "GET /api/tipos-documento/cc" : {
+    "status" : 404,
+    "tipo" : "application/json",
+    "cuerpo" : {
+      "codigoError" : "GC-0404",
+      "mensaje" : "El recurso solicitado no existe",
+      "codigoHttp" : 404,
+      "url" : "http://localhost/api/tipos-documento/cc",
+      "metodo" : "GET"
+    }
+  },
+  "GET /api/tipos-documento/XX" : {
+    "status" : 404,
+    "tipo" : "application/json",
+    "cuerpo" : {
+      "codigoError" : "GC-0404",
+      "mensaje" : "El recurso solicitado no existe",
+      "codigoHttp" : 404,
+      "url" : "http://localhost/api/tipos-documento/XX",
+      "metodo" : "GET"
+    }
+  }
+}

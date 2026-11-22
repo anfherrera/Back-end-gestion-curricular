@@ -1,0 +1,92 @@
+{
+  "/CC/validar": {
+    "status": 404,
+    "body": {
+      "codigoError": "GC-0404",
+      "mensaje": "El recurso solicitado no existe",
+      "codigoHttp": 404,
+      "url": "http://localhost/api/tipos-documento/validar/CC",
+      "metodo": "GET"
+    }
+  },
+  "/CE/validar": {
+    "status": 404,
+    "body": {
+      "codigoError": "GC-0404",
+      "mensaje": "El recurso solicitado no existe",
+      "codigoHttp": 404,
+      "url": "http://localhost/api/tipos-documento/validar/CE",
+      "metodo": "GET"
+    }
+  },
+  "/NIT/validar": {
+    "status": 404,
+    "body": {
+      "codigoError": "GC-0404",
+      "mensaje": "El recurso solicitado no existe",
+      "codigoHttp": 404,
+      "url": "http://localhost/api/tipos-documento/validar/NIT",
+      "metodo": "GET"
+    }
+  },
+  "/NUIP/validar": {
+    "status": 404,
+    "body": {
+      "codigoError": "GC-0404",
+      "mensaje": "El recurso solicitado no existe",
+      "codigoHttp": 404,
+      "url": "http://localhost/api/tipos-documento/validar/NUIP",
+      "metodo": "GET"
+    }
+  },
+  "/PA/validar": {
+    "status": 404,
+    "body": {
+      "codigoError": "GC-0404",
+      "mensaje": "El recurso solicitado no existe",
+      "codigoHttp": 404,
+      "url": "http://localhost/api/tipos-documento/validar/PA",
+      "metodo": "GET"
+    }
+  },
+  "/RC/validar": {
+    "status": 404,
+    "body": {
+      "codigoError": "GC-0404",
+      "mensaje": "El recurso solicitado no existe",
+      "codigoHttp": 404,
+      "url": "http://localhost/api/tipos-documento/validar/RC",
+      "metodo": "GET"
+    }
+  },
+  "/TI/validar": {
+    "status": 404,
+    "body": {
+      "codigoError": "GC-0404",
+      "mensaje": "El recurso solicitado no existe",
+      "codigoHttp": 404,
+      "url": "http://localhost/api/tipos-documento/validar/TI",
+      "metodo": "GET"
+    }
+  },
+  "/XX/validar": {
+    "status": 404,
+    "body": {
+      "codigoError": "GC-0404",
+      "mensaje": "El recurso solicitado no existe",
+      "codigoHttp": 404,
+      "url": "http://localhost/api/tipos-documento/validar/XX",
+      "metodo": "GET"
+    }
+  },
+  "/cc/validar": {
+    "status": 404,
+    "body": {
+      "codigoError": "GC-0404",
+      "mensaje": "El recurso solicitado no existe",
+      "codigoHttp": 404,
+      "url": "http://localhost/api/tipos-documento/validar/cc",
+      "metodo": "GET"
+    }
+  }
+}

@@ -51,15 +51,17 @@ class TiposDocumentoCaracterizacionTest {
             .setControllerAdvice(new RestApiExceptionHandler()).build();
 
         var resultados = json.createObjectNode();
-        resultados.set("catalogo", respuesta(mvc, get("/api/tipos-documento/todos")));
+        resultados.set("catalogo", respuesta(mvc, get("/api/tipos-documento")));
         for (String codigo : new String[]{"CC", "TI", "CE", "PA", "RC", "NIT", "NUIP", "cc", "XX"}) {
             var caso = resultados.putObject(codigo);
             caso.set("validar", respuesta(mvc, get("/api/tipos-documento/validar/{codigo}", codigo)));
-            caso.set("info", respuesta(mvc, get("/api/tipos-documento/info/{codigo}", codigo)));
+            caso.set("info", respuesta(mvc, get("/api/tipos-documento/{codigo}", codigo)));
             caso.set("crearEcaes", respuesta(mvc, crearEcaes(codigo)));
         }
 
-        comparar("tipos-documento.json", resultados, "ecaes/correcciones/tipos-documento-bug26.json");
+        // EST-7 (paso 2): rutas nuevas; /validar se retiró (404)
+        comparar("tipos-documento.json", resultados, "ecaes/correcciones/tipos-documento-bug26.json",
+                "ecaes/correcciones/tipos-documento-est7.json");
 
         // Completa el mapper para fijar también las respuestas de creación exitosas.
         ReflectionTestUtils.setField(mapper, "estadoSolicitudMapperDominio", mock(EstadoSolicitudMapperDominio.class));

@@ -1,0 +1,198 @@
+{
+  "/ 2025-1 /info": {
+    "status": 404,
+    "body": {
+      "codigoError": "GC-0404",
+      "mensaje": "El recurso solicitado no existe",
+      "codigoHttp": 404,
+      "url": "http://localhost/api/periodos-academicos/%202025-1%20",
+      "metodo": "GET"
+    },
+    "claves": [
+      "codigoError",
+      "mensaje",
+      "codigoHttp",
+      "url",
+      "metodo"
+    ]
+  },
+  "/ 2025-1 /validar": {
+    "status": 404,
+    "body": {
+      "codigoError": "GC-0404",
+      "mensaje": "El recurso solicitado no existe",
+      "codigoHttp": 404,
+      "url": "http://localhost/api/periodos-academicos/validar/%202025-1%20",
+      "metodo": "GET"
+    },
+    "claves": [
+      "codigoError",
+      "mensaje",
+      "codigoHttp",
+      "url",
+      "metodo"
+    ]
+  },
+  "/2019-1/validar": {
+    "status": 404,
+    "body": {
+      "codigoError": "GC-0404",
+      "mensaje": "El recurso solicitado no existe",
+      "codigoHttp": 404,
+      "url": "http://localhost/api/periodos-academicos/validar/2019-1",
+      "metodo": "GET"
+    },
+    "claves": [
+      "codigoError",
+      "mensaje",
+      "codigoHttp",
+      "url",
+      "metodo"
+    ]
+  },
+  "/2020-1/validar": {
+    "status": 404,
+    "body": {
+      "codigoError": "GC-0404",
+      "mensaje": "El recurso solicitado no existe",
+      "codigoHttp": 404,
+      "url": "http://localhost/api/periodos-academicos/validar/2020-1",
+      "metodo": "GET"
+    },
+    "claves": [
+      "codigoError",
+      "mensaje",
+      "codigoHttp",
+      "url",
+      "metodo"
+    ]
+  },
+  "/2025-2/validar": {
+    "status": 404,
+    "body": {
+      "codigoError": "GC-0404",
+      "mensaje": "El recurso solicitado no existe",
+      "codigoHttp": 404,
+      "url": "http://localhost/api/periodos-academicos/validar/2025-2",
+      "metodo": "GET"
+    },
+    "claves": [
+      "codigoError",
+      "mensaje",
+      "codigoHttp",
+      "url",
+      "metodo"
+    ]
+  },
+  "/2025-3/validar": {
+    "status": 404,
+    "body": {
+      "codigoError": "GC-0404",
+      "mensaje": "El recurso solicitado no existe",
+      "codigoHttp": 404,
+      "url": "http://localhost/api/periodos-academicos/validar/2025-3",
+      "metodo": "GET"
+    },
+    "claves": [
+      "codigoError",
+      "mensaje",
+      "codigoHttp",
+      "url",
+      "metodo"
+    ]
+  },
+  "/2030-2/validar": {
+    "status": 404,
+    "body": {
+      "codigoError": "GC-0404",
+      "mensaje": "El recurso solicitado no existe",
+      "codigoHttp": 404,
+      "url": "http://localhost/api/periodos-academicos/validar/2030-2",
+      "metodo": "GET"
+    },
+    "claves": [
+      "codigoError",
+      "mensaje",
+      "codigoHttp",
+      "url",
+      "metodo"
+    ]
+  },
+  "/abc/info": {
+    "status": 404,
+    "body": {
+      "codigoError": "GC-0404",
+      "mensaje": "El recurso solicitado no existe",
+      "codigoHttp": 404,
+      "url": "http://localhost/api/periodos-academicos/abc",
+      "metodo": "GET"
+    },
+    "claves": [
+      "codigoError",
+      "mensaje",
+      "codigoHttp",
+      "url",
+      "metodo"
+    ]
+  },
+  "/abc/validar": {
+    "status": 404,
+    "body": {
+      "codigoError": "GC-0404",
+      "mensaje": "El recurso solicitado no existe",
+      "codigoHttp": 404,
+      "url": "http://localhost/api/periodos-academicos/validar/abc",
+      "metodo": "GET"
+    },
+    "claves": [
+      "codigoError",
+      "mensaje",
+      "codigoHttp",
+      "url",
+      "metodo"
+    ]
+  },
+  "futuros": {
+    "status": 200,
+    "body": {
+      "data": "<periodos-futuros>",
+      "success": true,
+      "message": "Períodos académicos obtenidos exitosamente"
+    },
+    "claves": [
+      "data",
+      "success",
+      "message"
+    ]
+  },
+  "recientes": {
+    "status": 200,
+    "body": {
+      "data": "<periodos-recientes>",
+      "success": true,
+      "message": "Períodos académicos obtenidos exitosamente"
+    },
+    "claves": [
+      "data",
+      "success",
+      "message"
+    ]
+  },
+  "ultimo": {
+    "status": 404,
+    "body": {
+      "codigoError": "GC-0404",
+      "mensaje": "El recurso solicitado no existe",
+      "codigoHttp": 404,
+      "url": "http://localhost/api/periodos-academicos/ultimo",
+      "metodo": "GET"
+    },
+    "claves": [
+      "codigoError",
+      "mensaje",
+      "codigoHttp",
+      "url",
+      "metodo"
+    ]
+  }
+}

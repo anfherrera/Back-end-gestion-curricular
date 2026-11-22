@@ -149,22 +149,22 @@ public enum PeriodoAcademicoEnum {
      * @return Array con los períodos futuros
      */
     public static String[] getPeriodosFuturos() {
-        int añoActual = java.time.Year.now().getValue();
-        return java.util.Arrays.stream(values())
-                .filter(periodo -> periodo.getAño() >= añoActual)
-                .map(PeriodoAcademicoEnum::getValor)
-                .toArray(String[]::new);
+        return desde(java.time.Year.now().getValue());
     }
-    
+
     /**
      * Obtiene los períodos académicos recientes (últimos 5 años)
      * @return Array con los períodos recientes
      */
     public static String[] getPeriodosRecientes() {
         int añoActual = java.time.Year.now().getValue();
-        int añoInicio = Math.max(2020, añoActual - 4);
+        return desde(Math.max(2020, añoActual - 4));
+    }
+
+    /** Los períodos del año {@code año} en adelante, en el orden del catálogo (EST-7: {@code GET /?desde=}). */
+    public static String[] desde(int año) {
         return java.util.Arrays.stream(values())
-                .filter(periodo -> periodo.getAño() >= añoInicio)
+                .filter(periodo -> periodo.getAño() >= año)
                 .map(PeriodoAcademicoEnum::getValor)
                 .toArray(String[]::new);
     }
