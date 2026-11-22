@@ -141,7 +141,7 @@ class AutorizacionPorRolTest {
     @Test
     @DisplayName("Estudiante no puede eliminar solicitudes ni ver el historial general")
     void estudianteNoUsaSolicitudesGenerales() throws Exception {
-        mockMvc.perform(delete("/api/solicitudes/eliminar/1").header("Authorization", tokenA))
+        mockMvc.perform(delete("/api/solicitudes/1").header("Authorization", tokenA))
                 .andExpect(status().isForbidden());
         mockMvc.perform(get("/api/solicitudes/historial").header("Authorization", tokenA))
                 .andExpect(status().isForbidden());

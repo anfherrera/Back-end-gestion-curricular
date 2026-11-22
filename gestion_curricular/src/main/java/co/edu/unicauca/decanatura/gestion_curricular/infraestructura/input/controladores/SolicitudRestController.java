@@ -49,7 +49,7 @@ public class SolicitudRestController {
 
     
 
-    @GetMapping("/buscarPorId/{id}")
+    @GetMapping("/{id:\\d+}")
     public ResponseEntity<SolicitudDTORespuesta> buscarSolicitudPorId(@Min(value = 1) @PathVariable Integer id) {
         Solicitud solicitud = solicitudCU.obtenerSolicitudPorId(id);
         if (solicitud == null) {
@@ -61,15 +61,21 @@ public class SolicitudRestController {
         );
     }
 
-    @DeleteMapping("/eliminar/{id}")
+    @DeleteMapping("/{id:\\d+}")
     @PreAuthorize("hasRole('Administrador')")
     public ResponseEntity<Boolean> eliminarSolicitud(@Min(value = 1) @PathVariable Integer id) {
         boolean eliminada = solicitudCU.eliminarSolicitud(id);
         return new ResponseEntity<>(eliminada ? HttpStatus.OK : HttpStatus.NOT_FOUND);
     }
 
-    @GetMapping("/listar")
-    public ResponseEntity<List<SolicitudDTORespuesta>> listarSolicitudes() {
+    /** Sin parámetros, todas las solicitudes; con {@code nombre}, las que lo contienen. Las dos son listas. */
+    @GetMapping
+    public ResponseEntity<List<SolicitudDTORespuesta>> listarOBuscar(
+            @RequestParam(name = "nombre", required = false) String nombre) {
+        return nombre != null ? obtenerPorNombre(nombre) : listarSolicitudes();
+    }
+
+    private ResponseEntity<List<SolicitudDTORespuesta>> listarSolicitudes() {
         List<Solicitud> solicitudes = solicitudCU.listarSolicitudes();
         List<SolicitudDTORespuesta> respuesta = solicitudes.stream()
                 .map(mapper::mapearDeSolicitudARespuesta)
@@ -77,8 +83,7 @@ public class SolicitudRestController {
         return ResponseEntity.ok(respuesta);
     }
 
-    @GetMapping("/buscarPorNombre")
-    public ResponseEntity<List<SolicitudDTORespuesta>> obtenerPorNombre(@RequestParam(name = "nombre", required = true) String nombre) {
+    private ResponseEntity<List<SolicitudDTORespuesta>> obtenerPorNombre(String nombre) {
         List<Solicitud> solicitudes = solicitudCU.obtenerSolicitudesPorNombre(nombre);
         List<SolicitudDTORespuesta> respuesta = solicitudes.stream()
                 .map(mapper::mapearDeSolicitudARespuesta)
@@ -132,7 +137,7 @@ public class SolicitudRestController {
 
     /**
      * Exporta el historial completo de solicitudes a PDF con filtros opcionales
-     * GET /api/solicitudes/historial/export/pdf
+     * GET /api/solicitudes/historial?formato=pdf
      * 
      * @param periodoAcademico Período académico (opcional, formato: "YYYY-P")
      * @param tipoSolicitud Tipo de solicitud (opcional)
@@ -140,7 +145,7 @@ public class SolicitudRestController {
      * @param idUsuario ID del usuario (opcional)
      * @return Archivo PDF con el historial
      */
-    @GetMapping("/historial/export/pdf")
+    @GetMapping(value = "/historial", params = "formato=pdf")
     @Transactional(readOnly = true)
     public ResponseEntity<byte[]> exportarHistorialPDF(
             @RequestParam(required = false) String periodoAcademico,

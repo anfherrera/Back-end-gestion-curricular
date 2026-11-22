@@ -1,0 +1,545 @@
+{
+  "DELETE /api/solicitudes/0": {
+    "status": 404,
+    "tipo": null,
+    "cuerpo": null,
+    "llamadas": [
+      {
+        "eliminarSolicitud": 0
+      }
+    ]
+  },
+  "DELETE /api/solicitudes/1": {
+    "status": 200,
+    "tipo": null,
+    "cuerpo": null,
+    "llamadas": [
+      {
+        "eliminarSolicitud": 1
+      }
+    ]
+  },
+  "DELETE /api/solicitudes/99": {
+    "status": 404,
+    "tipo": null,
+    "cuerpo": null,
+    "llamadas": [
+      {
+        "eliminarSolicitud": 99
+      }
+    ]
+  },
+  "DELETE /api/solicitudes/eliminar/0": {
+    "status": 404,
+    "tipo": "application/json",
+    "cuerpo": {
+      "codigoError": "GC-0404",
+      "mensaje": "El recurso solicitado no existe",
+      "codigoHttp": 404,
+      "url": "http://localhost/api/solicitudes/eliminar/0",
+      "metodo": "DELETE"
+    },
+    "llamadas": []
+  },
+  "DELETE /api/solicitudes/eliminar/1": {
+    "status": 404,
+    "tipo": "application/json",
+    "cuerpo": {
+      "codigoError": "GC-0404",
+      "mensaje": "El recurso solicitado no existe",
+      "codigoHttp": 404,
+      "url": "http://localhost/api/solicitudes/eliminar/1",
+      "metodo": "DELETE"
+    },
+    "llamadas": []
+  },
+  "DELETE /api/solicitudes/eliminar/99": {
+    "status": 404,
+    "tipo": "application/json",
+    "cuerpo": {
+      "codigoError": "GC-0404",
+      "mensaje": "El recurso solicitado no existe",
+      "codigoHttp": 404,
+      "url": "http://localhost/api/solicitudes/eliminar/99",
+      "metodo": "DELETE"
+    },
+    "llamadas": []
+  },
+  "DELETE /api/solicitudes/eliminar/abc": {
+    "status": 404,
+    "tipo": "application/json",
+    "cuerpo": {
+      "codigoError": "GC-0404",
+      "mensaje": "El recurso solicitado no existe",
+      "codigoHttp": 404,
+      "url": "http://localhost/api/solicitudes/eliminar/abc",
+      "metodo": "DELETE"
+    },
+    "llamadas": []
+  },
+  "GET /api/solicitudes": {
+    "status": 200,
+    "tipo": "application/json",
+    "cuerpo": [
+      {
+        "id_solicitud": 1,
+        "nombre_solicitud": "Solicitud de Paz y Salvo",
+        "periodo_academico": "2024-1",
+        "fecha_ceremonia": null,
+        "fecha_registro_solicitud": 1710522000000,
+        "estadosSolicitud": [
+          {
+            "id_estado": null,
+            "estado_actual": "ENVIADA",
+            "fecha_registro_estado": 1710522000000,
+            "comentario": null,
+            "objSolicitud": null
+          },
+          {
+            "id_estado": null,
+            "estado_actual": "APROBADA",
+            "fecha_registro_estado": 1710608400000,
+            "comentario": null,
+            "objSolicitud": null
+          },
+          {
+            "id_estado": null,
+            "estado_actual": "SIN_FECHA",
+            "fecha_registro_estado": null,
+            "comentario": null,
+            "objSolicitud": null
+          }
+        ],
+        "objUsuario": {
+          "id_usuario": 7,
+          "nombre_completo": "María Fernanda Ortiz Castellanos",
+          "rol": null,
+          "codigo": null,
+          "cedula": null,
+          "correo": null,
+          "estado_usuario": false,
+          "objPrograma": {
+            "id_programa": 2,
+            "codigo": null,
+            "nombre_programa": "Ingeniería Electrónica y Telecomunicaciones"
+          }
+        },
+        "documentos": [],
+        "categoria": null,
+        "tipo_solicitud": null
+      },
+      {
+        "id_solicitud": 2,
+        "nombre_solicitud": "Solicitud de Reingreso",
+        "periodo_academico": null,
+        "fecha_ceremonia": null,
+        "fecha_registro_solicitud": null,
+        "estadosSolicitud": [],
+        "objUsuario": null,
+        "documentos": [],
+        "categoria": null,
+        "tipo_solicitud": null
+      },
+      {
+        "id_solicitud": 3,
+        "nombre_solicitud": null,
+        "periodo_academico": null,
+        "fecha_ceremonia": null,
+        "fecha_registro_solicitud": 1710522000000,
+        "estadosSolicitud": [],
+        "objUsuario": null,
+        "documentos": [],
+        "categoria": null,
+        "tipo_solicitud": null
+      },
+      {
+        "id_solicitud": 4,
+        "nombre_solicitud": "Inscripción ECAES",
+        "periodo_academico": null,
+        "fecha_ceremonia": null,
+        "fecha_registro_solicitud": null,
+        "estadosSolicitud": [],
+        "objUsuario": null,
+        "documentos": [],
+        "categoria": null,
+        "tipo_solicitud": null
+      },
+      {
+        "id_solicitud": 5,
+        "nombre_solicitud": "Preinscripción curso de verano",
+        "periodo_academico": null,
+        "fecha_ceremonia": null,
+        "fecha_registro_solicitud": 1710522000000,
+        "estadosSolicitud": [],
+        "objUsuario": null,
+        "documentos": [],
+        "categoria": null,
+        "tipo_solicitud": null
+      },
+      {
+        "id_solicitud": 6,
+        "nombre_solicitud": "Inscripción curso verano",
+        "periodo_academico": null,
+        "fecha_ceremonia": null,
+        "fecha_registro_solicitud": null,
+        "estadosSolicitud": [],
+        "objUsuario": null,
+        "documentos": [],
+        "categoria": null,
+        "tipo_solicitud": null
+      },
+      {
+        "id_solicitud": 7,
+        "nombre_solicitud": "Curso nuevo",
+        "periodo_academico": null,
+        "fecha_ceremonia": null,
+        "fecha_registro_solicitud": 1710522000000,
+        "estadosSolicitud": [],
+        "objUsuario": null,
+        "documentos": [],
+        "categoria": null,
+        "tipo_solicitud": null
+      },
+      {
+        "id_solicitud": 8,
+        "nombre_solicitud": "Curso intersemestral de verano",
+        "periodo_academico": null,
+        "fecha_ceremonia": null,
+        "fecha_registro_solicitud": null,
+        "estadosSolicitud": [],
+        "objUsuario": null,
+        "documentos": [],
+        "categoria": null,
+        "tipo_solicitud": null
+      },
+      {
+        "id_solicitud": 9,
+        "nombre_solicitud": "Otra paz y salvo",
+        "periodo_academico": null,
+        "fecha_ceremonia": null,
+        "fecha_registro_solicitud": 1710522000000,
+        "estadosSolicitud": [],
+        "objUsuario": null,
+        "documentos": [],
+        "categoria": null,
+        "tipo_solicitud": null
+      },
+      {
+        "id_solicitud": 10,
+        "nombre_solicitud": "Reingreso extemporáneo",
+        "periodo_academico": null,
+        "fecha_ceremonia": null,
+        "fecha_registro_solicitud": null,
+        "estadosSolicitud": [],
+        "objUsuario": null,
+        "documentos": [],
+        "categoria": null,
+        "tipo_solicitud": null
+      },
+      {
+        "id_solicitud": 11,
+        "nombre_solicitud": "Homologación externa",
+        "periodo_academico": null,
+        "fecha_ceremonia": null,
+        "fecha_registro_solicitud": 1710522000000,
+        "estadosSolicitud": [],
+        "objUsuario": null,
+        "documentos": [],
+        "categoria": null,
+        "tipo_solicitud": null
+      },
+      {
+        "id_solicitud": 12,
+        "nombre_solicitud": "Prueba ecaes",
+        "periodo_academico": null,
+        "fecha_ceremonia": null,
+        "fecha_registro_solicitud": null,
+        "estadosSolicitud": [],
+        "objUsuario": null,
+        "documentos": [],
+        "categoria": null,
+        "tipo_solicitud": null
+      },
+      {
+        "id_solicitud": 13,
+        "nombre_solicitud": "Solicitud con un nombre bastante largo que supera los cuarenta caracteres raro",
+        "periodo_academico": null,
+        "fecha_ceremonia": null,
+        "fecha_registro_solicitud": 1710522000000,
+        "estadosSolicitud": [],
+        "objUsuario": {
+          "id_usuario": null,
+          "nombre_completo": "Ana",
+          "rol": null,
+          "codigo": null,
+          "cedula": null,
+          "correo": null,
+          "estado_usuario": false,
+          "objPrograma": null
+        },
+        "documentos": [],
+        "categoria": null,
+        "tipo_solicitud": null
+      }
+    ],
+    "llamadas": []
+  },
+  "GET /api/solicitudes/0": {
+    "status": 404,
+    "tipo": null,
+    "cuerpo": null,
+    "llamadas": []
+  },
+  "GET /api/solicitudes/1": {
+    "status": 200,
+    "tipo": "application/json",
+    "cuerpo": {
+      "id_solicitud": 1,
+      "nombre_solicitud": "Solicitud de Paz y Salvo",
+      "periodo_academico": "2024-1",
+      "fecha_ceremonia": null,
+      "fecha_registro_solicitud": 1710522000000,
+      "estadosSolicitud": [
+        {
+          "id_estado": null,
+          "estado_actual": "ENVIADA",
+          "fecha_registro_estado": 1710522000000,
+          "comentario": null,
+          "objSolicitud": null
+        },
+        {
+          "id_estado": null,
+          "estado_actual": "APROBADA",
+          "fecha_registro_estado": 1710608400000,
+          "comentario": null,
+          "objSolicitud": null
+        },
+        {
+          "id_estado": null,
+          "estado_actual": "SIN_FECHA",
+          "fecha_registro_estado": null,
+          "comentario": null,
+          "objSolicitud": null
+        }
+      ],
+      "objUsuario": {
+        "id_usuario": 7,
+        "nombre_completo": "María Fernanda Ortiz Castellanos",
+        "rol": null,
+        "codigo": null,
+        "cedula": null,
+        "correo": null,
+        "estado_usuario": false,
+        "objPrograma": {
+          "id_programa": 2,
+          "codigo": null,
+          "nombre_programa": "Ingeniería Electrónica y Telecomunicaciones"
+        }
+      },
+      "documentos": [],
+      "categoria": null,
+      "tipo_solicitud": null
+    },
+    "llamadas": []
+  },
+  "GET /api/solicitudes/99": {
+    "status": 404,
+    "tipo": null,
+    "cuerpo": null,
+    "llamadas": []
+  },
+  "GET /api/solicitudes/buscarPorId/0": {
+    "status": 404,
+    "tipo": "application/json",
+    "cuerpo": {
+      "codigoError": "GC-0404",
+      "mensaje": "El recurso solicitado no existe",
+      "codigoHttp": 404,
+      "url": "http://localhost/api/solicitudes/buscarPorId/0",
+      "metodo": "GET"
+    },
+    "llamadas": []
+  },
+  "GET /api/solicitudes/buscarPorId/1": {
+    "status": 404,
+    "tipo": "application/json",
+    "cuerpo": {
+      "codigoError": "GC-0404",
+      "mensaje": "El recurso solicitado no existe",
+      "codigoHttp": 404,
+      "url": "http://localhost/api/solicitudes/buscarPorId/1",
+      "metodo": "GET"
+    },
+    "llamadas": []
+  },
+  "GET /api/solicitudes/buscarPorId/99": {
+    "status": 404,
+    "tipo": "application/json",
+    "cuerpo": {
+      "codigoError": "GC-0404",
+      "mensaje": "El recurso solicitado no existe",
+      "codigoHttp": 404,
+      "url": "http://localhost/api/solicitudes/buscarPorId/99",
+      "metodo": "GET"
+    },
+    "llamadas": []
+  },
+  "GET /api/solicitudes/buscarPorId/abc": {
+    "status": 404,
+    "tipo": "application/json",
+    "cuerpo": {
+      "codigoError": "GC-0404",
+      "mensaje": "El recurso solicitado no existe",
+      "codigoHttp": 404,
+      "url": "http://localhost/api/solicitudes/buscarPorId/abc",
+      "metodo": "GET"
+    },
+    "llamadas": []
+  },
+  "GET /api/solicitudes/buscarPorNombre": {
+    "status": 404,
+    "tipo": "application/json",
+    "cuerpo": {
+      "codigoError": "GC-0404",
+      "mensaje": "El recurso solicitado no existe",
+      "codigoHttp": 404,
+      "url": "http://localhost/api/solicitudes/buscarPorNombre",
+      "metodo": "GET"
+    },
+    "llamadas": []
+  },
+  "GET /api/solicitudes/buscarPorNombre?nombre=Paz": {
+    "status": 404,
+    "tipo": "application/json",
+    "cuerpo": {
+      "codigoError": "GC-0404",
+      "mensaje": "El recurso solicitado no existe",
+      "codigoHttp": 404,
+      "url": "http://localhost/api/solicitudes/buscarPorNombre",
+      "metodo": "GET"
+    },
+    "llamadas": []
+  },
+  "GET /api/solicitudes/buscarPorNombre?nombre=nada": {
+    "status": 404,
+    "tipo": "application/json",
+    "cuerpo": {
+      "codigoError": "GC-0404",
+      "mensaje": "El recurso solicitado no existe",
+      "codigoHttp": 404,
+      "url": "http://localhost/api/solicitudes/buscarPorNombre",
+      "metodo": "GET"
+    },
+    "llamadas": []
+  },
+  "GET /api/solicitudes/historial/export/pdf": {
+    "status": 404,
+    "tipo": "application/json",
+    "cuerpo": {
+      "codigoError": "GC-0404",
+      "mensaje": "El recurso solicitado no existe",
+      "codigoHttp": 404,
+      "url": "http://localhost/api/solicitudes/historial/export/pdf",
+      "metodo": "GET"
+    },
+    "llamadas": []
+  },
+  "GET /api/solicitudes/historial/export/pdf?periodoAcademico=2024-1&tipoSolicitud=Paz y Salvo&estadoActual=APROBADA": {
+    "status": 404,
+    "tipo": "application/json",
+    "cuerpo": {
+      "codigoError": "GC-0404",
+      "mensaje": "El recurso solicitado no existe",
+      "codigoHttp": 404,
+      "url": "http://localhost/api/solicitudes/historial/export/pdf",
+      "metodo": "GET"
+    },
+    "llamadas": []
+  },
+  "GET /api/solicitudes/historial?formato=pdf": {
+    "status": 200,
+    "tipo": "application/pdf",
+    "disposicion": "attachment; filename=\"historial_solicitudes_<HOY>.pdf\"",
+    "cuerpo": "HISTORIAL COMPLETO DE SOLICITUDES\n \nFecha de generación: <HOY>\nPeríodo Académico: Todos (Período actual: <ACTUAL>)\nTipo de Solicitud: Todos los tipos\nEstado: Todos los estados\n \nTotal Filtrado: 13 solicitudes\nTotal Sistema: 25 solicitudes\nProcesadas: 10 solicitudes\nNo Procesadas: 15 solicitudes\n \nID Solicitud Estudiante Programa Período Estado Fecha\n1 Solicitud de Paz y Salvo María Fernanda Ortiz C... Ingeniería Electrónica y Te... 2024-1 APROBADA 15/03/2024\n2 Solicitud de Reingreso N/A N/A N/A Sin estado N/A\n3 N/A N/A N/A N/A Sin estado 15/03/2024\n4 Inscripción ECAES N/A N/A N/A Sin estado N/A\n5 Preinscripción curso de verano N/A N/A N/A Sin estado 15/03/2024\n6 Inscripción curso verano N/A N/A N/A Sin estado N/A\n7 Curso nuevo N/A N/A N/A Sin estado 15/03/2024\n8 Curso intersemestral de verano N/A N/A N/A Sin estado N/A\n9 Otra paz y salvo N/A N/A N/A Sin estado 15/03/2024\n10 Reingreso extemporáneo N/A N/A N/A Sin estado N/A\n11 Homologación externa N/A N/A N/A Sin estado 15/03/2024\n12 Prueba ecaes N/A N/A N/A Sin estado N/A\n13 Solicitud con un nombre bastante larg... Ana N/A N/A Sin estado 15/03/2024\n",
+    "llamadas": []
+  },
+  "GET /api/solicitudes/historial?formato=pdf&periodoAcademico=2024-1&tipoSolicitud=Paz y Salvo&estadoActual=APROBADA": {
+    "status": 200,
+    "tipo": "application/pdf",
+    "disposicion": "attachment; filename=\"historial_solicitudes_<HOY>.pdf\"",
+    "cuerpo": "HISTORIAL COMPLETO DE SOLICITUDES\n \nFecha de generación: <HOY>\nPeríodo Académico: 2024-1\nTipo de Solicitud: Paz%20y%20Salvo\nEstado: APROBADA\n \nTotal Filtrado: 2 solicitudes\nTotal Sistema: 25 solicitudes\nProcesadas: 10 solicitudes\nNo Procesadas: 15 solicitudes\n \nID Solicitud Estudiante Programa Período Estado Fecha\n1 Solicitud de Paz y Salvo María Fernanda Ortiz C... Ingeniería Electrónica y Te... 2024-1 APROBADA 15/03/2024\n9 Otra paz y salvo N/A N/A N/A Sin estado 15/03/2024\n",
+    "llamadas": []
+  },
+  "GET /api/solicitudes/listar": {
+    "status": 404,
+    "tipo": "application/json",
+    "cuerpo": {
+      "codigoError": "GC-0404",
+      "mensaje": "El recurso solicitado no existe",
+      "codigoHttp": 404,
+      "url": "http://localhost/api/solicitudes/listar",
+      "metodo": "GET"
+    },
+    "llamadas": []
+  },
+  "GET /api/solicitudes?nombre=Paz": {
+    "status": 200,
+    "tipo": "application/json",
+    "cuerpo": [
+      {
+        "id_solicitud": 1,
+        "nombre_solicitud": "Solicitud de Paz y Salvo",
+        "periodo_academico": "2024-1",
+        "fecha_ceremonia": null,
+        "fecha_registro_solicitud": 1710522000000,
+        "estadosSolicitud": [
+          {
+            "id_estado": null,
+            "estado_actual": "ENVIADA",
+            "fecha_registro_estado": 1710522000000,
+            "comentario": null,
+            "objSolicitud": null
+          },
+          {
+            "id_estado": null,
+            "estado_actual": "APROBADA",
+            "fecha_registro_estado": 1710608400000,
+            "comentario": null,
+            "objSolicitud": null
+          },
+          {
+            "id_estado": null,
+            "estado_actual": "SIN_FECHA",
+            "fecha_registro_estado": null,
+            "comentario": null,
+            "objSolicitud": null
+          }
+        ],
+        "objUsuario": {
+          "id_usuario": 7,
+          "nombre_completo": "María Fernanda Ortiz Castellanos",
+          "rol": null,
+          "codigo": null,
+          "cedula": null,
+          "correo": null,
+          "estado_usuario": false,
+          "objPrograma": {
+            "id_programa": 2,
+            "codigo": null,
+            "nombre_programa": "Ingeniería Electrónica y Telecomunicaciones"
+          }
+        },
+        "documentos": [],
+        "categoria": null,
+        "tipo_solicitud": null
+      }
+    ],
+    "llamadas": []
+  },
+  "GET /api/solicitudes?nombre=nada": {
+    "status": 200,
+    "tipo": "application/json",
+    "cuerpo": [],
+    "llamadas": []
+  }
+}

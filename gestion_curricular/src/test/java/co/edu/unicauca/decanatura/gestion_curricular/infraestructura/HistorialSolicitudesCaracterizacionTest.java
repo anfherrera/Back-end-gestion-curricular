@@ -90,7 +90,7 @@ class HistorialSolicitudesCaracterizacionTest {
             {null, "ninguno", null},
         };
         for (String[] filtro : filtros) {
-            MockHttpServletRequestBuilder peticion = get("/api/solicitudes/historial/export/pdf");
+            MockHttpServletRequestBuilder peticion = get("/api/solicitudes/historial").param("formato", "pdf");
             if (filtro[0] != null) peticion.param("periodoAcademico", filtro[0]);
             if (filtro[1] != null) peticion.param("tipoSolicitud", filtro[1]);
             if (filtro[2] != null) peticion.param("estadoActual", filtro[2]);
@@ -141,7 +141,7 @@ class HistorialSolicitudesCaracterizacionTest {
 
         ObjectNode pdf = resultados.putObject("pdf");
         for (String tipo : new String[] {"Homologación", "Curso de verano", "Otro"}) {
-            MockHttpServletResponse respuesta = mvc.perform(get("/api/solicitudes/historial/export/pdf")
+            MockHttpServletResponse respuesta = mvc.perform(get("/api/solicitudes/historial").param("formato", "pdf")
                 .param("tipoSolicitud", tipo)).andReturn().getResponse();
             ObjectNode resultado = pdf.putObject(tipo);
             resultado.put("status", respuesta.getStatus());
@@ -180,7 +180,8 @@ class HistorialSolicitudesCaracterizacionTest {
         return resultado;
     }
 
-    private static SolicitudMapperDominioImpl mapper() {
+    /** Mapper real de solicitudes, con sus dependencias; también lo usa RutasSolicitudesCaracterizacionTest. */
+    static SolicitudMapperDominioImpl mapper() {
         var usuarios = new UsuarioMapperDominioImpl();
         ReflectionTestUtils.setField(usuarios, "programaMapperDominio", new ProgramaMapperDominioImpl());
         ReflectionTestUtils.setField(usuarios, "rolMapperDominio", new RolMapperDominioImpl());
@@ -191,7 +192,7 @@ class HistorialSolicitudesCaracterizacionTest {
         return mapper;
     }
 
-    private static List<Solicitud> solicitudes() {
+    static List<Solicitud> solicitudes() {
         List<Solicitud> lista = new ArrayList<>();
         Solicitud paz = solicitud(SolicitudPazYSalvo::new, 1, "Solicitud de Paz y Salvo");
         paz.setPeriodoAcademico("2024-1");
