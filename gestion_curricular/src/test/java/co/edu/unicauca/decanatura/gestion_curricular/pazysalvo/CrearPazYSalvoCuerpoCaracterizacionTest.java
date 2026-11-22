@@ -157,8 +157,8 @@ class CrearPazYSalvoCuerpoCaracterizacionTest {
         nodo.put("guardar.idUsuario", s.getObjUsuario() != null ? s.getObjUsuario().getIdUsuario() : null);
         nodo.put("guardar.fecha", fecha(s.getFechaRegistroSolicitud()));
         nodo.put("guardar.periodo", s.getPeriodoAcademico());
-        nodo.put("guardar.titulo", s.getTitulo_trabajo_grado());
-        nodo.put("guardar.director", s.getDirector_trabajo_grado());
+        nodo.put("guardar.titulo", s.getTituloTrabajoGrado());
+        nodo.put("guardar.director", s.getDirectorTrabajoGrado());
         nodo.put("guardar.nombre", s.getNombreSolicitud());
         return nodo;
     }

@@ -172,7 +172,7 @@ class EcaesUnidadTest {
         // Arrange
         FechaEcaes fechaEcaes = new FechaEcaes();
         fechaEcaes.setPeriodoAcademico("2025-1");
-        fechaEcaes.setInscripcion_est_by_facultad(LocalDate.of(2025, 2, 1));
+        fechaEcaes.setInscripcionEstByFacultad(LocalDate.of(2025, 2, 1));
         fechaEcaes.setAplicacion(LocalDate.of(2025, 3, 10));
         
         when(solicitudGateway.publicarFechasEcaes(fechaEcaes)).thenReturn(fechaEcaes);

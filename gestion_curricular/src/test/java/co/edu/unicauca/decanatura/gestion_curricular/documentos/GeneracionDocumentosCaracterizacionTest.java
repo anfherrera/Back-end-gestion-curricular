@@ -49,8 +49,8 @@ class GeneracionDocumentosCaracterizacionTest {
         usuario.setCedula("123456789");
         SolicitudHomologacion hom = new SolicitudHomologacion();
         hom.setObjUsuario(usuario);
-        hom.setPrograma_origen("Origen de la solicitud");
-        hom.setPrograma_destino("Destino de la solicitud");
+        hom.setProgramaOrigen("Origen de la solicitud");
+        hom.setProgramaDestino("Destino de la solicitud");
         SolicitudReingreso rein = new SolicitudReingreso();
         rein.setObjUsuario(usuario);
         rein.setPeriodoAcademico(" 2025-2 ");

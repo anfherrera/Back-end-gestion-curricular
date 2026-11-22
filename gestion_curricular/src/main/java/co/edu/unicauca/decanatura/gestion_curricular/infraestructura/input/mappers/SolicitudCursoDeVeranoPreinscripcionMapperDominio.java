@@ -37,7 +37,6 @@ public interface SolicitudCursoDeVeranoPreinscripcionMapperDominio {
     @Mapping(target = "fecha_registro_solicitud", source = "fechaRegistroSolicitud")
     SolicitudCursoVeranoPreinscripcionDTORespuesta mapearDeSolicitudCursoVeranoPreinscripcionARespuesta(
         SolicitudCursoVeranoPreinscripcion solicitud);
-
     // OPC-2: el DTO conserva id_documento, ruta_documento y fecha_documento
     @Mapping(target = "id_documento", source = "idDocumento")
     @Mapping(target = "ruta_documento", source = "rutaDocumento")

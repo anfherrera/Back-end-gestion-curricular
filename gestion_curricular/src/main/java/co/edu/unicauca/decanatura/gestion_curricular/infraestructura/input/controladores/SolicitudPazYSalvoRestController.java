@@ -151,14 +151,14 @@ public class SolicitudPazYSalvoRestController {
         if (peticion.getTituloTrabajoGrado() != null) {
             String titulo = peticion.getTituloTrabajoGrado().trim();
             if (!titulo.isEmpty()) {
-                solicitud.setTitulo_trabajo_grado(titulo);
+                solicitud.setTituloTrabajoGrado(titulo);
             }
         }
 
         if (peticion.getDirectorTrabajoGrado() != null) {
             String director = peticion.getDirectorTrabajoGrado().trim();
             if (!director.isEmpty()) {
-                solicitud.setDirector_trabajo_grado(director);
+                solicitud.setDirectorTrabajoGrado(director);
             }
         }
 

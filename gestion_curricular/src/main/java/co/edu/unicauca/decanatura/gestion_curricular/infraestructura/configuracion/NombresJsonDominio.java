@@ -22,12 +22,16 @@ import org.springframework.context.annotation.Configuration;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Docente;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Documento;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.EstadoSolicitud;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.FechaEcaes;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Materia;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Notificacion;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Programa;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Rol;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Salon;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Solicitud;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.SolicitudEcaes;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.SolicitudHomologacion;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.SolicitudPazYSalvo;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Usuario;
 
 /**
@@ -71,6 +75,19 @@ public class NombresJsonDominio {
         historico(Documento.class, "idDocumento", "id_documento");
         historico(Documento.class, "rutaDocumento", "ruta_documento");
         historico(Documento.class, "fechaDocumento", "fecha_documento");
+        historico(SolicitudEcaes.class, "numeroDocumento", "numero_documento");
+        historico(SolicitudEcaes.class, "fechaExpedicion", "fecha_expedicion");
+        historico(SolicitudEcaes.class, "fechaNacimiento", "fecha_nacimiento");
+        historico(FechaEcaes.class, "inscripcionEstByFacultad", "inscripcion_est_by_facultad");
+        historico(FechaEcaes.class, "registroRecaudoOrdinario", "registro_recaudo_ordinario");
+        historico(FechaEcaes.class, "registroRecaudoExtraordinario", "registro_recaudo_extraordinario");
+        historico(FechaEcaes.class, "resultadosIndividuales", "resultados_individuales");
+        historico(SolicitudHomologacion.class, "rutaPmFo4For27", "ruta_PM_FO_4_FOR_27");
+        historico(SolicitudHomologacion.class, "rutaContenidoProgramatico", "ruta_contenido_programatico");
+        historico(SolicitudHomologacion.class, "programaOrigen", "programa_origen");
+        historico(SolicitudHomologacion.class, "programaDestino", "programa_destino");
+        historico(SolicitudPazYSalvo.class, "tituloTrabajoGrado", "titulo_trabajo_grado");
+        historico(SolicitudPazYSalvo.class, "directorTrabajoGrado", "director_trabajo_grado");
     }
 
     private static void historico(Class<?> clase, String campo, String nombre) {

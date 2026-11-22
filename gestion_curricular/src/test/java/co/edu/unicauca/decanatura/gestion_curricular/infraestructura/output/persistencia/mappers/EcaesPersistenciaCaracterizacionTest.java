@@ -71,8 +71,8 @@ class EcaesPersistenciaCaracterizacionTest {
         casos.set("buscarOpcionalPorId 9", GrafoObjetos.resultado(() -> gateway.buscarOpcionalPorId(9)));
         SolicitudEcaes nueva = GrafosSolicitud.completar(new SolicitudEcaes());
         nueva.setTipoDocumento(TipoDocumento.CE);
-        nueva.setNumero_documento("987");
-        nueva.setFecha_nacimiento(GrafosSolicitud.FECHA_1);
+        nueva.setNumeroDocumento("987");
+        nueva.setFechaNacimiento(GrafosSolicitud.FECHA_1);
         casos.set("guardar completa", guardado(() -> gateway.guardar(nueva)));
         SolicitudEcaes sinListas = new SolicitudEcaes();
         sinListas.setEstadosSolicitud(null);

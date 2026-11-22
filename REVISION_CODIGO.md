@@ -665,7 +665,13 @@ Rutas abreviadas: `…/` = `gestion_curricular/src/main/java/co/edu/unicauca/dec
     - `Documento`: `idDocumento`, `rutaDocumento` y `fechaDocumento`.
 
     Seis mappers de solicitudes emparejaban por nombre los cinco campos de `Solicitud` en las dos direcciones. Los `@Mapping` nuevos se dedujeron de las asignaciones que el código generado dejó de tener, poniendo el nombre nuevo en el lado del dominio. Después de agregarlos, la comparación ya no encuentra asignaciones perdidas. `SolicitudCursoDeVeranoPreinscripcionMapperDominio` declara el mapeo de `Documento`, que antes generaba por su cuenta. Diez referencias a método (`EstadoSolicitud::getEstado_actual` y otras) se renombraron. `RegistroDocumentosCaracterizacionTest`, que también vuelca objetos del dominio con su propio `ObjectMapper`, registra el módulo. 596 pruebas, 1 omitida, 0 fallos.
-  - [ ] 4. `SolicitudEcaes`, `FechaEcaes`, `SolicitudHomologacion`, `SolicitudPazYSalvo`.
+  - [x] **4. `SolicitudEcaes`, `FechaEcaes`, `SolicitudHomologacion` y `SolicitudPazYSalvo`:**
+    - `SolicitudEcaes`: `numeroDocumento`, `fechaExpedicion` y `fechaNacimiento`.
+    - `FechaEcaes`: `inscripcionEstByFacultad`, `registroRecaudoOrdinario`, `registroRecaudoExtraordinario` y `resultadosIndividuales`.
+    - `SolicitudHomologacion`: `rutaPmFo4For27`, `rutaContenidoProgramatico`, `programaOrigen` y `programaDestino`.
+    - `SolicitudPazYSalvo`: `tituloTrabajoGrado` y `directorTrabajoGrado`.
+
+    `SolicitudEcaesMapperDominio` y `SolicitudHomologacionMapperDominio` reciben los `@Mapping` que se infería por nombre, en las dos direcciones. Después, la comparación del código generado no encuentra diferencias en sus 63 métodos. 596 pruebas, 1 omitida, 0 fallos.
   - [ ] 5. Verano: `CursoOfertadoVerano`, `EstadoCursoOfertado` y las tres solicitudes de verano. `codicion_solicitud` pasa a `condicionSolicitud`; el JSON conserva la errata.
   - [ ] 6. `Estadistica`.
 

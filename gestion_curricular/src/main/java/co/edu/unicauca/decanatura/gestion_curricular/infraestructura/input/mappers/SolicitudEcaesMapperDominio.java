@@ -40,6 +40,10 @@ public interface SolicitudEcaesMapperDominio {
     @Mapping(target = "periodoAcademico", source = "periodo_academico")
     @Mapping(target = "fechaCeremonia", source = "fecha_ceremonia")
     @Mapping(target = "fechaRegistroSolicitud", source = "fecha_registro_solicitud")
+    // OPC-2: el DTO conserva el nombre snake_case
+    @Mapping(target = "numeroDocumento", source = "numero_documento")
+    @Mapping(target = "fechaExpedicion", source = "fecha_expedicion")
+    @Mapping(target = "fechaNacimiento", source = "fecha_nacimiento")
     SolicitudEcaes mapearDeSolicitudEcaesDTOPeticionASolicitudEcaes(SolicitudEcaesDTOPeticion peticion);
 
     @Named("tipoDocumentoEcaes")
@@ -65,14 +69,28 @@ public interface SolicitudEcaesMapperDominio {
     @Mapping(source = "estadosSolicitud", target = "estadosSolicitud")
     @Mapping(source = "objUsuario", target = "objUsuario")
     @Mapping(source = "documentos", target = "documentos")
+    // OPC-2: el DTO conserva el nombre snake_case
+    @Mapping(target = "numero_documento", source = "numeroDocumento")
+    @Mapping(target = "fecha_expedicion", source = "fechaExpedicion")
+    @Mapping(target = "fecha_nacimiento", source = "fechaNacimiento")
     SolicitudEcaesDTORespuesta mapearDeSolicitudEcaesARespuesta(SolicitudEcaes solicitudEcaes);
 
     List<SolicitudEcaesDTORespuesta> mapearListaDeSolicitudEcaesARespuesta(List<SolicitudEcaes> solicitudes);
 
     //DTO de peticion  → fechas ecaes dominio    
+    // OPC-2: el DTO conserva el nombre snake_case
+    @Mapping(target = "inscripcionEstByFacultad", source = "inscripcion_est_by_facultad")
+    @Mapping(target = "registroRecaudoOrdinario", source = "registro_recaudo_ordinario")
+    @Mapping(target = "registroRecaudoExtraordinario", source = "registro_recaudo_extraordinario")
+    @Mapping(target = "resultadosIndividuales", source = "resultados_individuales")
     FechaEcaes mapearDeFechasEcaesDTOPeticionAFechaEcaes(FechasEcaesDTOPeticion fechasEcaes);
 
     // Fechas ecaes dominio → DTO respuesta
+    // OPC-2: el DTO conserva el nombre snake_case
+    @Mapping(target = "inscripcion_est_by_facultad", source = "inscripcionEstByFacultad")
+    @Mapping(target = "registro_recaudo_ordinario", source = "registroRecaudoOrdinario")
+    @Mapping(target = "registro_recaudo_extraordinario", source = "registroRecaudoExtraordinario")
+    @Mapping(target = "resultados_individuales", source = "resultadosIndividuales")
     FechaEcaesDTORespuesta mapearDeFechaEcaesAFechaEcaesDTORespuesta(FechaEcaes fechaEcaes);
 
     // Lista de fechas ecaes dominio → Lista de DTO respuesta

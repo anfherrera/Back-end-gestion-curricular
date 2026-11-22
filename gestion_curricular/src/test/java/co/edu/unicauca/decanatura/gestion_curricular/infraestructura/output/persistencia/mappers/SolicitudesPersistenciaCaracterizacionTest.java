@@ -110,10 +110,10 @@ class SolicitudesPersistenciaCaracterizacionTest {
         casos.set("listarSolicitudes", GrafoObjetos.resultado(gateway::listarSolicitudes));
         casos.set("buscarPorId 7", GrafoObjetos.resultado(() -> gateway.buscarPorId(7)));
         SolicitudHomologacion nueva = GrafosSolicitud.completar(new SolicitudHomologacion());
-        nueva.setPrograma_origen("Electrónica");
-        nueva.setPrograma_destino("Sistemas");
-        nueva.setRuta_PM_FO_4_FOR_27("h/form.pdf");
-        nueva.setRuta_contenido_programatico(null);
+        nueva.setProgramaOrigen("Electrónica");
+        nueva.setProgramaDestino("Sistemas");
+        nueva.setRutaPmFo4For27("h/form.pdf");
+        nueva.setRutaContenidoProgramatico(null);
         casos.set("guardar completa", guardado(() -> gateway.guardar(nueva)));
         casos.set("guardar vacia", guardado(() -> gateway.guardar(vaciaDominio(new SolicitudHomologacion()))));
         casos.set("cambiarEstado simple", guardado(() -> {
@@ -146,7 +146,7 @@ class SolicitudesPersistenciaCaracterizacionTest {
         casos.set("buscarPorId 7", GrafoObjetos.resultado(() -> gateway.buscarPorId(7)));
         casos.set("buscarPorId 8", GrafoObjetos.resultado(() -> gateway.buscarPorId(8)));
         SolicitudPazYSalvo nueva = GrafosSolicitud.completar(new SolicitudPazYSalvo());
-        nueva.setTitulo_trabajo_grado("Tesis nueva");
+        nueva.setTituloTrabajoGrado("Tesis nueva");
         casos.set("guardar completa", guardado(() -> gateway.guardar(nueva)));
         casos.set("guardar vacia", guardado(() -> gateway.guardar(vaciaDominio(new SolicitudPazYSalvo()))));
         ProyeccionValores.compararConReferencia(casos, "persistencia/pazysalvo.json");

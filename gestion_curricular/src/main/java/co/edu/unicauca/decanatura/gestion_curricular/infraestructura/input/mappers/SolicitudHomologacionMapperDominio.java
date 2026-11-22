@@ -22,8 +22,8 @@ public interface SolicitudHomologacionMapperDominio {
     @Mapping(target = "documentos", ignore = true)
     @Mapping(target = "estadosSolicitud", ignore = true)
     @Mapping(target = "objCursoOfertadoVerano", ignore = true) // Propiedad no mapeada
-    @Mapping(target = "ruta_PM_FO_4_FOR_27", ignore = true) // Propiedad no mapeada
-    @Mapping(target = "ruta_contenido_programatico", ignore = true) // Propiedad no mapeada
+    @Mapping(target = "rutaPmFo4For27", ignore = true) // Propiedad no mapeada
+    @Mapping(target = "rutaContenidoProgramatico", ignore = true) // Propiedad no mapeada
     @Mapping(target = "objUsuario.objRol", ignore = true) // Propiedad no mapeada en Usuario
     @Mapping(target = "objUsuario.objPrograma", ignore = true) // Propiedad no mapeada en Usuario
     @Mapping(target = "objUsuario.solicitudes", ignore = true) // Propiedad no mapeada en Usuario
@@ -38,6 +38,9 @@ public interface SolicitudHomologacionMapperDominio {
     @Mapping(target = "periodoAcademico", source = "periodo_academico")
     @Mapping(target = "fechaCeremonia", source = "fecha_ceremonia")
     @Mapping(target = "fechaRegistroSolicitud", source = "fecha_registro_solicitud")
+    // OPC-2: el DTO conserva el nombre snake_case
+    @Mapping(target = "programaOrigen", source = "programa_origen")
+    @Mapping(target = "programaDestino", source = "programa_destino")
     SolicitudHomologacion mapearDeSolicitudHomologacionDTOPeticionASolicitudHomologacion(SolicitudHomologacionDTOPeticion peticion);
 
     // Dominio → DTO Respuesta
@@ -49,6 +52,9 @@ public interface SolicitudHomologacionMapperDominio {
     @Mapping(target = "periodo_academico", source = "periodoAcademico")
     @Mapping(target = "fecha_ceremonia", source = "fechaCeremonia")
     @Mapping(target = "fecha_registro_solicitud", source = "fechaRegistroSolicitud")
+    // OPC-2: el DTO conserva el nombre snake_case
+    @Mapping(target = "programa_origen", source = "programaOrigen")
+    @Mapping(target = "programa_destino", source = "programaDestino")
     SolicitudHomologacionDTORespuesta mapearDeSolicitudHomologacionASolicitudHomologacionDTORespuesta(SolicitudHomologacion solicitudHomologacion);
 
     List<SolicitudHomologacionDTORespuesta> mapearListaDeSolicitudHomologacionARespuesta(List<SolicitudHomologacion> solicitudes);

@@ -509,11 +509,11 @@ public class ServicioGeneracionDocumentos implements GenerarDocumentosIntPort {
             String programaDestino = "------";
             
             if (solicitudHomologacion != null) {
-                if (solicitudHomologacion.getPrograma_origen() != null && !solicitudHomologacion.getPrograma_origen().trim().isEmpty()) {
-                    programaOrigen = solicitudHomologacion.getPrograma_origen();
+                if (solicitudHomologacion.getProgramaOrigen() != null && !solicitudHomologacion.getProgramaOrigen().trim().isEmpty()) {
+                    programaOrigen = solicitudHomologacion.getProgramaOrigen();
                 }
-                if (solicitudHomologacion.getPrograma_destino() != null && !solicitudHomologacion.getPrograma_destino().trim().isEmpty()) {
-                    programaDestino = solicitudHomologacion.getPrograma_destino();
+                if (solicitudHomologacion.getProgramaDestino() != null && !solicitudHomologacion.getProgramaDestino().trim().isEmpty()) {
+                    programaDestino = solicitudHomologacion.getProgramaDestino();
                 }
             }
             

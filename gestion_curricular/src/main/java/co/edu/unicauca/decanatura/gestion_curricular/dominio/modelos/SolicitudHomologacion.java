@@ -11,8 +11,8 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @EqualsAndHashCode(callSuper = true)
 public class SolicitudHomologacion extends Solicitud {
-    private String ruta_PM_FO_4_FOR_27;
-    private String ruta_contenido_programatico;
-    private String programa_origen;
-    private String programa_destino;
+    private String rutaPmFo4For27;
+    private String rutaContenidoProgramatico;
+    private String programaOrigen;
+    private String programaDestino;
 }

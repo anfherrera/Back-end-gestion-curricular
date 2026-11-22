@@ -122,12 +122,12 @@ public class GestionarPreRegistroEcaesGatewayImplAdapter implements GestionarPre
         if (entidadExistente.isPresent()) {
             // Actualizar la entidad existente
             FechaEcaesEntity entity = entidadExistente.get();
-            entity.setInscripcion_est_by_facultad(fechasEcaes.getInscripcion_est_by_facultad());
-            entity.setRegistro_recaudo_ordinario(fechasEcaes.getRegistro_recaudo_ordinario());
-            entity.setRegistro_recaudo_extraordinario(fechasEcaes.getRegistro_recaudo_extraordinario());
+            entity.setInscripcion_est_by_facultad(fechasEcaes.getInscripcionEstByFacultad());
+            entity.setRegistro_recaudo_ordinario(fechasEcaes.getRegistroRecaudoOrdinario());
+            entity.setRegistro_recaudo_extraordinario(fechasEcaes.getRegistroRecaudoExtraordinario());
             entity.setCitacion(fechasEcaes.getCitacion());
             entity.setAplicacion(fechasEcaes.getAplicacion());
-            entity.setResultados_individuales(fechasEcaes.getResultados_individuales());
+            entity.setResultados_individuales(fechasEcaes.getResultadosIndividuales());
             
             FechaEcaesEntity saved = fechaEcaesRepository.save(entity);
             return CatalogosMapperPersistencia.aDominio(saved);

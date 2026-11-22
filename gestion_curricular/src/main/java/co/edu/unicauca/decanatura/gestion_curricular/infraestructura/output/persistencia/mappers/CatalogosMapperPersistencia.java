@@ -79,12 +79,12 @@ public final class CatalogosMapperPersistencia {
         FechaEcaesEntity entidad = new FechaEcaesEntity();
         entidad.setId_fecha_ecaes(fechas.getIdFechaEcaes());
         entidad.setPeriodoAcademico(fechas.getPeriodoAcademico());
-        entidad.setInscripcion_est_by_facultad(fechas.getInscripcion_est_by_facultad());
-        entidad.setRegistro_recaudo_ordinario(fechas.getRegistro_recaudo_ordinario());
-        entidad.setRegistro_recaudo_extraordinario(fechas.getRegistro_recaudo_extraordinario());
+        entidad.setInscripcion_est_by_facultad(fechas.getInscripcionEstByFacultad());
+        entidad.setRegistro_recaudo_ordinario(fechas.getRegistroRecaudoOrdinario());
+        entidad.setRegistro_recaudo_extraordinario(fechas.getRegistroRecaudoExtraordinario());
         entidad.setCitacion(fechas.getCitacion());
         entidad.setAplicacion(fechas.getAplicacion());
-        entidad.setResultados_individuales(fechas.getResultados_individuales());
+        entidad.setResultados_individuales(fechas.getResultadosIndividuales());
         return entidad;
     }
 

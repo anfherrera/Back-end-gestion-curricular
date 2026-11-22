@@ -413,20 +413,20 @@ public final class SolicitudMapperPersistencia {
         /** Copia los campos de la subclase cuando origen y destino los tienen. */
         private static void camposPropios(SolicitudEntity origen, Solicitud destino) {
             if (origen instanceof SolicitudHomologacionEntity o && destino instanceof SolicitudHomologacion d) {
-                d.setRuta_PM_FO_4_FOR_27(o.getRuta_PM_FO_4_FOR_27());
-                d.setRuta_contenido_programatico(o.getRuta_contenido_programatico());
-                d.setPrograma_origen(o.getPrograma_origen());
-                d.setPrograma_destino(o.getPrograma_destino());
+                d.setRutaPmFo4For27(o.getRuta_PM_FO_4_FOR_27());
+                d.setRutaContenidoProgramatico(o.getRuta_contenido_programatico());
+                d.setProgramaOrigen(o.getPrograma_origen());
+                d.setProgramaDestino(o.getPrograma_destino());
             }
             if (origen instanceof SolicitudPazYSalvoEntity o && destino instanceof SolicitudPazYSalvo d) {
-                d.setTitulo_trabajo_grado(o.getTitulo_trabajo_grado());
-                d.setDirector_trabajo_grado(o.getDirector_trabajo_grado());
+                d.setTituloTrabajoGrado(o.getTitulo_trabajo_grado());
+                d.setDirectorTrabajoGrado(o.getDirector_trabajo_grado());
             }
             if (origen instanceof SolicitudEcaesEntity o && destino instanceof SolicitudEcaes d) {
                 d.setTipoDocumento(o.getTipoDocumento());
-                d.setNumero_documento(o.getNumero_documento());
-                d.setFecha_expedicion(o.getFecha_expedicion());
-                d.setFecha_nacimiento(o.getFecha_nacimiento());
+                d.setNumeroDocumento(o.getNumero_documento());
+                d.setFechaExpedicion(o.getFecha_expedicion());
+                d.setFechaNacimiento(o.getFecha_nacimiento());
             }
             if (origen instanceof SolicitudCursoVeranoPreinscripcionEntity o) {
                 verano(o.getNombre_estudiante(), o.getCodicion_solicitud(), o.getObservacion(), destino);
@@ -634,20 +634,20 @@ public final class SolicitudMapperPersistencia {
         /** Copia los campos de la subclase cuando origen y destino los tienen. */
         private static void camposPropios(Solicitud origen, SolicitudEntity destino) {
             if (origen instanceof SolicitudHomologacion o && destino instanceof SolicitudHomologacionEntity d) {
-                d.setRuta_PM_FO_4_FOR_27(o.getRuta_PM_FO_4_FOR_27());
-                d.setRuta_contenido_programatico(o.getRuta_contenido_programatico());
-                d.setPrograma_origen(o.getPrograma_origen());
-                d.setPrograma_destino(o.getPrograma_destino());
+                d.setRuta_PM_FO_4_FOR_27(o.getRutaPmFo4For27());
+                d.setRuta_contenido_programatico(o.getRutaContenidoProgramatico());
+                d.setPrograma_origen(o.getProgramaOrigen());
+                d.setPrograma_destino(o.getProgramaDestino());
             }
             if (origen instanceof SolicitudPazYSalvo o && destino instanceof SolicitudPazYSalvoEntity d) {
-                d.setTitulo_trabajo_grado(o.getTitulo_trabajo_grado());
-                d.setDirector_trabajo_grado(o.getDirector_trabajo_grado());
+                d.setTitulo_trabajo_grado(o.getTituloTrabajoGrado());
+                d.setDirector_trabajo_grado(o.getDirectorTrabajoGrado());
             }
             if (origen instanceof SolicitudEcaes o && destino instanceof SolicitudEcaesEntity d) {
                 d.setTipoDocumento(o.getTipoDocumento());
-                d.setNumero_documento(o.getNumero_documento());
-                d.setFecha_expedicion(o.getFecha_expedicion());
-                d.setFecha_nacimiento(o.getFecha_nacimiento());
+                d.setNumero_documento(o.getNumeroDocumento());
+                d.setFecha_expedicion(o.getFechaExpedicion());
+                d.setFecha_nacimiento(o.getFechaNacimiento());
             }
             if (origen instanceof SolicitudCursoVeranoPreinscripcion o) {
                 verano(o.getNombre_estudiante(), o.getCodicion_solicitud(), o.getObservacion(), destino);

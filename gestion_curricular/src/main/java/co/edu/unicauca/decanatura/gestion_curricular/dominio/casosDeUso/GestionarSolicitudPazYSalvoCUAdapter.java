@@ -258,8 +258,8 @@ public class GestionarSolicitudPazYSalvoCUAdapter implements GestionarSolicitudP
                 usuario.getObjPrograma() == null ? "Ingeniería Electrónica y Telecomunicaciones"
                         : usuario.getObjPrograma().getNombrePrograma(),
                 fecha, primeroConTexto(cedula, usuario.getCedula(), "No especificada", false),
-                primeroConTexto(titulo, solicitud.getTitulo_trabajo_grado(), "Trabajo de grado", true),
-                primeroConTexto(director, solicitud.getDirector_trabajo_grado(), "Director asignado", true)));
+                primeroConTexto(titulo, solicitud.getTituloTrabajoGrado(), "Trabajo de grado", true),
+                primeroConTexto(director, solicitud.getDirectorTrabajoGrado(), "Director asignado", true)));
     }
 
     private static String primeroConTexto(String enviado, String guardado, String porDefecto, boolean recortar) {

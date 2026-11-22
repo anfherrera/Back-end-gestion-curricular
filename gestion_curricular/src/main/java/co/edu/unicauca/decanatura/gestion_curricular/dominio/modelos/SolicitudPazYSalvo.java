@@ -12,8 +12,8 @@ import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.enums.Estad
 @Data
 @EqualsAndHashCode(callSuper = true)
 public class SolicitudPazYSalvo extends Solicitud {
-    private String titulo_trabajo_grado;
-    private String director_trabajo_grado;
+    private String tituloTrabajoGrado;
+    private String directorTrabajoGrado;
     
     public SolicitudPazYSalvo(){
         super();

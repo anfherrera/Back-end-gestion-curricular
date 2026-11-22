@@ -244,18 +244,18 @@ class SolicitudesVeranoPersistenciaCaracterizacionTest {
             case 3 -> {
                 SolicitudEcaes s = new SolicitudEcaes();
                 s.setTipoDocumento(TipoDocumento.CE);
-                s.setFecha_nacimiento(GrafosSolicitud.FECHA_2);
+                s.setFechaNacimiento(GrafosSolicitud.FECHA_2);
                 yield s;
             }
             case 4 -> new SolicitudReingreso();
             case 5 -> {
                 SolicitudHomologacion s = new SolicitudHomologacion();
-                s.setPrograma_destino("Sistemas");
+                s.setProgramaDestino("Sistemas");
                 yield s;
             }
             default -> {
                 SolicitudPazYSalvo s = new SolicitudPazYSalvo();
-                s.setDirector_trabajo_grado("Director");
+                s.setDirectorTrabajoGrado("Director");
                 yield s;
             }
         };
