@@ -81,14 +81,19 @@ class AutorizacionPorRolTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("{\"codigo\":\"X1\",\"nombre_programa\":\"Programa falso\"}"))
                 .andExpect(status().isForbidden());
-        mockMvc.perform(delete("/api/roles/eliminarRol/1").header("Authorization", tokenA))
+        // EST-7: rutas sin verbo; la regla "/api/roles/**" de SeguridadConfig cubre también la raíz
+        mockMvc.perform(delete("/api/roles/1").header("Authorization", tokenA))
+                .andExpect(status().isForbidden());
+        mockMvc.perform(post("/api/roles").header("Authorization", tokenA)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"nombre\":\"Rol falso\"}"))
                 .andExpect(status().isForbidden());
     }
 
     @Test
     @DisplayName("Estudiante sí puede consultar catálogos")
     void estudianteConsultaCatalogos() throws Exception {
-        mockMvc.perform(get("/api/roles/listarRoles").header("Authorization", tokenA))
+        mockMvc.perform(get("/api/roles").header("Authorization", tokenA))
                 .andExpect(status().isOk());
     }
 

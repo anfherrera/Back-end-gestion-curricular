@@ -26,7 +26,8 @@ public class RolRestController {
     private final GestionarRolesCUIntPort rolCUIntPort;
     private final RolMapperDominio rolMapperDominio;
 
-    @PostMapping("/crearRol")
+    /** Rutas según la convención de EST-7: {@code POST /}, {@code GET /}, {@code GET /?nombre=}, {@code GET|PUT|DELETE /{id}}. */
+    @PostMapping
     public ResponseEntity<RolDTORespuesta> crearRol(@RequestBody @Valid RolDTOPeticion peticion) {
         Rol rol = rolMapperDominio.mapearDeRolDTOPeticionARol(peticion);
         Rol rolCreado = rolCUIntPort.guardarRol(rol);
@@ -36,8 +37,11 @@ public class RolRestController {
         );
     }
 
-    @PutMapping("/actualizarRol")
-    public ResponseEntity<RolDTORespuesta> actualizarRol(@RequestBody @Valid RolDTOPeticion peticion) {
+    /** El id de la ruta manda sobre el del cuerpo. */
+    @PutMapping("/{id:\\d+}")
+    public ResponseEntity<RolDTORespuesta> actualizarRol(@PathVariable Integer id,
+            @RequestBody @Valid RolDTOPeticion peticion) {
+        peticion.setId_rol(id);
         Rol rol = rolMapperDominio.mapearDeRolDTOPeticionARol(peticion);
         Rol rolActualizado = rolCUIntPort.actualizarRol(rol);
         return new ResponseEntity<>(
@@ -46,7 +50,7 @@ public class RolRestController {
         );
     }
 
-    @GetMapping("/buscarRolPorId/{id}")
+    @GetMapping("/{id:\\d+}")
     public ResponseEntity<RolDTORespuesta> buscarRolPorId(@Min(value = 1) @PathVariable Integer id) {
         Rol rol = rolCUIntPort.obtenerRolPorId(id);
         if (rol == null) {
@@ -58,14 +62,19 @@ public class RolRestController {
         );
     }
 
-    @DeleteMapping("/eliminarRol/{id}")
+    @DeleteMapping("/{id:\\d+}")
     public ResponseEntity<Boolean> eliminarRol(@Min(value = 1) @PathVariable Integer id) {
         boolean eliminado = rolCUIntPort.eliminarRol(id);
         return new ResponseEntity<>(eliminado ? HttpStatus.OK : HttpStatus.NOT_FOUND);
     }
 
-    @GetMapping("/buscarPorNombre")
-    public ResponseEntity<RolDTORespuesta> buscarPorNombre(@RequestParam(name = "nombre", required = true) String nombre) {
+    /** Con {@code nombre}, el rol con ese nombre (un objeto, como antes {@code /buscarPorNombre}); sin él, todos. */
+    @GetMapping
+    public ResponseEntity<?> listarOBuscar(@RequestParam(name = "nombre", required = false) String nombre) {
+        return nombre == null ? listarRoles() : buscarPorNombre(nombre);
+    }
+
+    private ResponseEntity<RolDTORespuesta> buscarPorNombre(String nombre) {
         Rol rol = rolCUIntPort.obtenerRolPorNombre(nombre);
         if (rol == null) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
@@ -76,8 +85,7 @@ public class RolRestController {
         );
     }
 
-    @GetMapping("/listarRoles")
-    public ResponseEntity<List<RolDTORespuesta>> listarRoles() {
+    private ResponseEntity<List<RolDTORespuesta>> listarRoles() {
         List<Rol> roles = rolCUIntPort.listarRoles();
         List<RolDTORespuesta> respuesta = roles.stream()
                 .map(rolMapperDominio::mapearDeRolARolDTORespuesta)

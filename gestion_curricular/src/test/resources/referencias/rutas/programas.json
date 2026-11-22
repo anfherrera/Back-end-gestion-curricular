@@ -1,0 +1,306 @@
+{
+  "POST /api/programas/crearPrograma {\"codigo\":\"NUE\",\"nombre_programa\":\"Programa nuevo\"}" : {
+    "status" : 201,
+    "tipo" : "application/json",
+    "cuerpo" : {
+      "id_programa" : 7,
+      "codigo" : "NUE",
+      "nombre_programa" : "Programa nuevo"
+    }
+  },
+  "POST /api/programas/crearPrograma {\"codigo\":\"AB\",\"nombre_programa\":\"Programa nuevo\"}" : {
+    "status" : 400,
+    "tipo" : "application/json",
+    "cuerpo" : {
+      "codigo" : "El código del programa debe tener entre 3 y 10 caracteres"
+    }
+  },
+  "POST /api/programas/crearPrograma {\"codigo\":\"NUE\"}" : {
+    "status" : 400,
+    "tipo" : "application/json",
+    "cuerpo" : {
+      "nombre_programa" : "El nombre del programa no puede estar vacío"
+    }
+  },
+  "PUT /api/programas/actualizarPrograma {\"id_programa\":3,\"codigo\":\"NUE\",\"nombre_programa\":\"Programa nuevo\"}" : {
+    "status" : 202,
+    "tipo" : "application/json",
+    "cuerpo" : {
+      "id_programa" : 3,
+      "codigo" : "NUE",
+      "nombre_programa" : "Programa nuevo"
+    }
+  },
+  "PUT /api/programas/actualizarPrograma {\"codigo\":\"NUE\",\"nombre_programa\":\"Programa nuevo\"}" : {
+    "status" : 202,
+    "tipo" : "application/json",
+    "cuerpo" : {
+      "id_programa" : null,
+      "codigo" : "NUE",
+      "nombre_programa" : "Programa nuevo"
+    }
+  },
+  "GET /api/programas/buscarProgramaPorId/1" : {
+    "status" : 200,
+    "tipo" : "application/json",
+    "cuerpo" : {
+      "id_programa" : 1,
+      "codigo" : "SIS",
+      "nombre_programa" : "Ingeniería de Sistemas"
+    }
+  },
+  "GET /api/programas/buscarProgramaPorId/9" : {
+    "status" : 404,
+    "tipo" : null,
+    "cuerpo" : null
+  },
+  "GET /api/programas/buscarProgramaPorId/abc" : {
+    "status" : 400,
+    "tipo" : "application/json",
+    "cuerpo" : {
+      "codigoError" : "GC-0400",
+      "mensaje" : "La petición no tiene el formato esperado: revise los parámetros y el cuerpo enviados",
+      "codigoHttp" : 400,
+      "url" : "http://localhost/api/programas/buscarProgramaPorId/abc",
+      "metodo" : "GET"
+    }
+  },
+  "DELETE /api/programas/eliminarPrograma/1" : {
+    "status" : 200,
+    "tipo" : null,
+    "cuerpo" : null
+  },
+  "DELETE /api/programas/eliminarPrograma/9" : {
+    "status" : 404,
+    "tipo" : null,
+    "cuerpo" : null
+  },
+  "GET /api/programas/buscarPorNombre?nombre=Sis" : {
+    "status" : 200,
+    "tipo" : "application/json",
+    "cuerpo" : [ {
+      "id_programa" : 1,
+      "codigo" : "SIS",
+      "nombre_programa" : "Ingeniería de Sistemas"
+    } ]
+  },
+  "GET /api/programas/buscarPorNombre?nombre=X" : {
+    "status" : 200,
+    "tipo" : "application/json",
+    "cuerpo" : [ ]
+  },
+  "GET /api/programas/buscarPorCodigo?codigo=SIS" : {
+    "status" : 200,
+    "tipo" : "application/json",
+    "cuerpo" : {
+      "id_programa" : 1,
+      "codigo" : "SIS",
+      "nombre_programa" : "Ingeniería de Sistemas"
+    }
+  },
+  "GET /api/programas/buscarPorCodigo?codigo=X" : {
+    "status" : 404,
+    "tipo" : null,
+    "cuerpo" : null
+  },
+  "GET /api/programas/listarProgramas" : {
+    "status" : 200,
+    "tipo" : "application/json",
+    "cuerpo" : [ {
+      "id_programa" : 1,
+      "codigo" : "SIS",
+      "nombre_programa" : "Ingeniería de Sistemas"
+    }, {
+      "id_programa" : 2,
+      "codigo" : "ELE",
+      "nombre_programa" : "Ingeniería Electrónica"
+    } ]
+  },
+  "POST /api/programas {\"codigo\":\"NUE\",\"nombre_programa\":\"Programa nuevo\"}" : {
+    "status" : 404,
+    "tipo" : "application/json",
+    "cuerpo" : {
+      "codigoError" : "GC-0404",
+      "mensaje" : "El recurso solicitado no existe",
+      "codigoHttp" : 404,
+      "url" : "http://localhost/api/programas",
+      "metodo" : "POST"
+    }
+  },
+  "POST /api/programas {\"codigo\":\"AB\",\"nombre_programa\":\"Programa nuevo\"}" : {
+    "status" : 404,
+    "tipo" : "application/json",
+    "cuerpo" : {
+      "codigoError" : "GC-0404",
+      "mensaje" : "El recurso solicitado no existe",
+      "codigoHttp" : 404,
+      "url" : "http://localhost/api/programas",
+      "metodo" : "POST"
+    }
+  },
+  "POST /api/programas {\"codigo\":\"NUE\"}" : {
+    "status" : 404,
+    "tipo" : "application/json",
+    "cuerpo" : {
+      "codigoError" : "GC-0404",
+      "mensaje" : "El recurso solicitado no existe",
+      "codigoHttp" : 404,
+      "url" : "http://localhost/api/programas",
+      "metodo" : "POST"
+    }
+  },
+  "PUT /api/programas/3 {\"id_programa\":3,\"codigo\":\"NUE\",\"nombre_programa\":\"Programa nuevo\"}" : {
+    "status" : 404,
+    "tipo" : "application/json",
+    "cuerpo" : {
+      "codigoError" : "GC-0404",
+      "mensaje" : "El recurso solicitado no existe",
+      "codigoHttp" : 404,
+      "url" : "http://localhost/api/programas/3",
+      "metodo" : "PUT"
+    }
+  },
+  "PUT /api/programas/3 {\"codigo\":\"NUE\",\"nombre_programa\":\"Programa nuevo\"}" : {
+    "status" : 404,
+    "tipo" : "application/json",
+    "cuerpo" : {
+      "codigoError" : "GC-0404",
+      "mensaje" : "El recurso solicitado no existe",
+      "codigoHttp" : 404,
+      "url" : "http://localhost/api/programas/3",
+      "metodo" : "PUT"
+    }
+  },
+  "PUT /api/programas/3 {\"id_programa\":5,\"codigo\":\"NUE\",\"nombre_programa\":\"Programa nuevo\"}" : {
+    "status" : 404,
+    "tipo" : "application/json",
+    "cuerpo" : {
+      "codigoError" : "GC-0404",
+      "mensaje" : "El recurso solicitado no existe",
+      "codigoHttp" : 404,
+      "url" : "http://localhost/api/programas/3",
+      "metodo" : "PUT"
+    }
+  },
+  "GET /api/programas/1" : {
+    "status" : 404,
+    "tipo" : "application/json",
+    "cuerpo" : {
+      "codigoError" : "GC-0404",
+      "mensaje" : "El recurso solicitado no existe",
+      "codigoHttp" : 404,
+      "url" : "http://localhost/api/programas/1",
+      "metodo" : "GET"
+    }
+  },
+  "GET /api/programas/9" : {
+    "status" : 404,
+    "tipo" : "application/json",
+    "cuerpo" : {
+      "codigoError" : "GC-0404",
+      "mensaje" : "El recurso solicitado no existe",
+      "codigoHttp" : 404,
+      "url" : "http://localhost/api/programas/9",
+      "metodo" : "GET"
+    }
+  },
+  "GET /api/programas/abc" : {
+    "status" : 404,
+    "tipo" : "application/json",
+    "cuerpo" : {
+      "codigoError" : "GC-0404",
+      "mensaje" : "El recurso solicitado no existe",
+      "codigoHttp" : 404,
+      "url" : "http://localhost/api/programas/abc",
+      "metodo" : "GET"
+    }
+  },
+  "DELETE /api/programas/1" : {
+    "status" : 404,
+    "tipo" : "application/json",
+    "cuerpo" : {
+      "codigoError" : "GC-0404",
+      "mensaje" : "El recurso solicitado no existe",
+      "codigoHttp" : 404,
+      "url" : "http://localhost/api/programas/1",
+      "metodo" : "DELETE"
+    }
+  },
+  "DELETE /api/programas/9" : {
+    "status" : 404,
+    "tipo" : "application/json",
+    "cuerpo" : {
+      "codigoError" : "GC-0404",
+      "mensaje" : "El recurso solicitado no existe",
+      "codigoHttp" : 404,
+      "url" : "http://localhost/api/programas/9",
+      "metodo" : "DELETE"
+    }
+  },
+  "GET /api/programas?nombre=Sis" : {
+    "status" : 404,
+    "tipo" : "application/json",
+    "cuerpo" : {
+      "codigoError" : "GC-0404",
+      "mensaje" : "El recurso solicitado no existe",
+      "codigoHttp" : 404,
+      "url" : "http://localhost/api/programas",
+      "metodo" : "GET"
+    }
+  },
+  "GET /api/programas?nombre=X" : {
+    "status" : 404,
+    "tipo" : "application/json",
+    "cuerpo" : {
+      "codigoError" : "GC-0404",
+      "mensaje" : "El recurso solicitado no existe",
+      "codigoHttp" : 404,
+      "url" : "http://localhost/api/programas",
+      "metodo" : "GET"
+    }
+  },
+  "GET /api/programas?codigo=SIS" : {
+    "status" : 404,
+    "tipo" : "application/json",
+    "cuerpo" : {
+      "codigoError" : "GC-0404",
+      "mensaje" : "El recurso solicitado no existe",
+      "codigoHttp" : 404,
+      "url" : "http://localhost/api/programas",
+      "metodo" : "GET"
+    }
+  },
+  "GET /api/programas?codigo=X" : {
+    "status" : 404,
+    "tipo" : "application/json",
+    "cuerpo" : {
+      "codigoError" : "GC-0404",
+      "mensaje" : "El recurso solicitado no existe",
+      "codigoHttp" : 404,
+      "url" : "http://localhost/api/programas",
+      "metodo" : "GET"
+    }
+  },
+  "GET /api/programas?nombre=Sis&codigo=SIS" : {
+    "status" : 404,
+    "tipo" : "application/json",
+    "cuerpo" : {
+      "codigoError" : "GC-0404",
+      "mensaje" : "El recurso solicitado no existe",
+      "codigoHttp" : 404,
+      "url" : "http://localhost/api/programas",
+      "metodo" : "GET"
+    }
+  },
+  "GET /api/programas" : {
+    "status" : 404,
+    "tipo" : "application/json",
+    "cuerpo" : {
+      "codigoError" : "GC-0404",
+      "mensaje" : "El recurso solicitado no existe",
+      "codigoHttp" : 404,
+      "url" : "http://localhost/api/programas",
+      "metodo" : "GET"
+    }
+  }
+}
