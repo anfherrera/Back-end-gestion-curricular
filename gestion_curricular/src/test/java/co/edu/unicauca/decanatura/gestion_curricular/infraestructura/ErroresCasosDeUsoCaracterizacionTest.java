@@ -245,9 +245,9 @@ class ErroresCasosDeUsoCaracterizacionTest {
         caso("salones por numero blanco", () -> salones(mock(GestionarSalonesIntPort.class)).obtenerSalonPorNumero(" "));
         caso("salones por numero inexistente", () -> salones(mock(GestionarSalonesIntPort.class)).obtenerSalonPorNumero("101"));
         caso("salones resolver inexistente sin respaldo",
-            () -> salones(mock(GestionarSalonesIntPort.class)).resolverSalonDeCurso("101", false));
+            () -> salones(mock(GestionarSalonesIntPort.class)).resolverSalonDeCurso("101"));
         caso("salones resolver inexistente con respaldo",
-            () -> salones(mock(GestionarSalonesIntPort.class)).resolverSalonDeCurso(" 101 ", true));
+            () -> salones(mock(GestionarSalonesIntPort.class)).resolverSalonDeCurso(" 101 "));
     }
 
     // ---------------------------------------------------------------- solicitud genérica y archivos

@@ -117,7 +117,8 @@ class CursosVeranoEndpointsCaracterizacionTest {
             consultar(respuestas, caso[0] + "/editar", put(BASE + "/cursos-verano/71")
                     .contentType(MediaType.APPLICATION_JSON).content("{\"cupo_estimado\":20}"));
         }
-        comparar("salones", respuestas);
+        // BUG-14: detalle y edición recortan el número y buscan entre activos, como el listado
+        comparar("salones", respuestas, "verano-endpoints/correcciones/salones-bug14.json");
     }
 
     @Test void periodosDelListado() throws Exception {

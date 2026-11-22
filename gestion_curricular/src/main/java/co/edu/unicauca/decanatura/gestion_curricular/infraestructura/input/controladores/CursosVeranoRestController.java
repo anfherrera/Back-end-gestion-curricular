@@ -131,7 +131,7 @@ public class CursosVeranoRestController {
         List<CursosOfertadosDTORespuesta> respuesta = cursos.stream()
                 .map(cursoMapper::mapearDeCursoOfertadoARespuesta)
                 .map(dto -> {
-                    Salon salon = salonCU.resolverSalonDeCurso(dto.getSalon(), true);
+                    Salon salon = salonCU.resolverSalonDeCurso(dto.getSalon());
                     dto.setSalonInfo(salonInfo(salon));
                     dto.setId_salon(salon == null ? null : salon.getId_salon());
                     return dto;
@@ -397,7 +397,7 @@ public class CursosVeranoRestController {
         }
 
         // Crear respuesta con los datos actualizados
-        Salon salon = salonCU.resolverSalonDeCurso(cursoActualizado.getSalon(), false);
+        Salon salon = salonCU.resolverSalonDeCurso(cursoActualizado.getSalon());
         return ResponseEntity.ok(new CursoActualizado(cursoActualizado.getId_curso(),
                 cursoActualizado.getObjMateria() != null ? cursoActualizado.getObjMateria().getNombre() : "Curso",
                 cursoActualizado.getObjMateria() != null ? cursoActualizado.getObjMateria().getCodigo() : "N/A",
@@ -462,7 +462,7 @@ public class CursosVeranoRestController {
         }
         
         // Mapear a estructura esperada por el frontend
-        Salon salon = salonCU.resolverSalonDeCurso(cursoReal.getSalon(), false);
+        Salon salon = salonCU.resolverSalonDeCurso(cursoReal.getSalon());
 
         // Obtener conteo real de preinscripciones para este curso
         int solicitudes;

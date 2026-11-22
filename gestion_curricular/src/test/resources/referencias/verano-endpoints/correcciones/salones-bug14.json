@@ -1,0 +1,34 @@
+{
+  "/espacios~1detalle/json/id_salon": 81,
+  "/espacios~1detalle/json/salon": {
+    "id_salon": 81,
+    "descripcion": "221 - FIET",
+    "numero_salon": "221",
+    "edificio": "FIET",
+    "activo": true
+  },
+  "/espacios~1editar/json/id_salon": 81,
+  "/espacios~1editar/json/salon": {
+    "id_salon": 81,
+    "descripcion": "221 - FIET",
+    "numero_salon": "221",
+    "edificio": "FIET",
+    "activo": true
+  },
+  "/respaldo~1detalle/json/id_salon": 81,
+  "/respaldo~1detalle/json/salon": {
+    "id_salon": 81,
+    "descripcion": "221 - FIET",
+    "numero_salon": "221",
+    "edificio": "FIET",
+    "activo": true
+  },
+  "/respaldo~1editar/json/id_salon": 81,
+  "/respaldo~1editar/json/salon": {
+    "id_salon": 81,
+    "descripcion": "221 - FIET",
+    "numero_salon": "221",
+    "edificio": "FIET",
+    "activo": true
+  }
+}

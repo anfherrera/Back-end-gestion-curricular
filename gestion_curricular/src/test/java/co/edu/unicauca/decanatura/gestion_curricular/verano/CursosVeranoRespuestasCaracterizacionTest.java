@@ -70,7 +70,7 @@ class CursosVeranoRespuestasCaracterizacionTest {
         var cursos = mock(GestionarCursoOfertadoVeranoCUIntPort.class);
         var solicitudes = mock(GestionarSolicitudCursoVeranoCUIntPort.class);
         var salones = mock(GestionarSalonesCUIntPort.class);
-        when(salones.resolverSalonDeCurso(nullable(String.class), anyBoolean())).thenAnswer(i -> salon(i.getArgument(0)));
+        when(salones.resolverSalonDeCurso(nullable(String.class))).thenAnswer(i -> salon(i.getArgument(0)));
         when(cursos.listarPorFiltros(isNull(), isNull(), anyBoolean()))
             .thenReturn(List.of(curso(1, "221"), curso(2, "305"), curso(3, null), curso(4, "999")));
         when(cursos.obtenerCursoPorId(anyInt())).thenAnswer(i -> {

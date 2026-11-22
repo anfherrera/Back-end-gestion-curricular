@@ -13,9 +13,9 @@ public interface GestionarSalonesCUIntPort {
     List<Salon> listarSalonesActivos();
 
     /** Salón informativo del curso o null si no se puede resolver.
-     * BUG-14: solo el listado recorta el número y permite respaldo entre activos.
+     * Recorta el número y, si no lo encuentra, lo busca entre los salones activos (BUG-14).
      */
-    Salon resolverSalonDeCurso(String numeroSalon, boolean conRespaldoEnActivos);
+    Salon resolverSalonDeCurso(String numeroSalon);
 
 }
 
