@@ -72,6 +72,13 @@ public class GestionarSolicitudPazYSalvoGatewayImplAdapter implements GestionarS
                 : solicitudRepository.findByUltimoEstadoAndProgramaAndPeriodoAcademico(estado, idPrograma, periodo));
     }
 
+    @Override
+    public List<SolicitudPazYSalvo> listarPorEstadoEnHistorial(String estado, Integer idPrograma, String periodo) {
+        return aDominio(idPrograma == null
+                ? solicitudRepository.findByEstadoEnHistorialAndPeriodoAcademico(estado, periodo)
+                : solicitudRepository.findByEstadoEnHistorialAndProgramaAndPeriodoAcademico(estado, idPrograma, periodo));
+    }
+
     private List<SolicitudPazYSalvo> aDominio(List<SolicitudPazYSalvoEntity> entidades) {
         return entidades.stream()
                 .map(entity -> SolicitudMapperPersistencia.aDominio(entity, SolicitudPazYSalvo.class))

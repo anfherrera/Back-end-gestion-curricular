@@ -253,6 +253,39 @@ class ListadosPorRolCaracterizacionTest {
         compararConReferencia("pazysalvo", r, "listados/correcciones/pazysalvo-bug4.json");
     }
 
+    /**
+     * Historial (procesadas) de Paz y Salvo por rol (BUG-45): las rutas que pedía el frontend, como las de
+     * homologación y reingreso, y la bandeja como parámetro de consulta, según la convención de EST-7.
+     */
+    @Test
+    @DisplayName("Paz y salvo procesadas")
+    void pazYSalvoProcesadas() throws Exception {
+        String base = "/api/solicitudes-pazysalvo/listarSolicitud-PazYSalvo";
+        Map<String, List<String>> r = new LinkedHashMap<>();
+        for (String rol : List.of("Funcionario", "Coordinador", "Secretaria")) {
+            consultar(r, "P", COORDINADOR_A, base + "/" + rol + "/Aprobadas");
+        }
+        String raiz = "/api/solicitudes-pazysalvo";
+        for (String rol : List.of("funcionario", "secretaria")) {
+            String ruta = raiz + "?rol=" + rol + "&bandeja=procesadas";
+            consultar(r, "P", STAFF_SIN_PROGRAMA, ruta);
+            consultar(r, "P", STAFF_SIN_PROGRAMA, ruta + "&periodoAcademico=todos");
+            consultar(r, "P", STAFF_SIN_PROGRAMA, ruta + "&periodoAcademico=" + OTRO_PERIODO);
+        }
+        String coordinador = raiz + "?rol=coordinador&bandeja=procesadas";
+        consultar(r, "P", COORDINADOR_A, coordinador);
+        consultar(r, "P", COORDINADOR_A, coordinador + "&periodoAcademico=" + OTRO_PERIODO);
+        consultar(r, "P", STAFF_SIN_PROGRAMA, coordinador + "&periodoAcademico=" + OTRO_PERIODO);
+        // Valores no admitidos o que faltan
+        consultar(r, "P", STAFF_SIN_PROGRAMA, raiz + "?rol=otro&bandeja=procesadas");
+        consultar(r, "P", STAFF_SIN_PROGRAMA, raiz + "?rol=funcionario&bandeja=otra");
+        consultar(r, "P", STAFF_SIN_PROGRAMA, raiz + "?rol=funcionario");
+        consultar(r, "P", STAFF_SIN_PROGRAMA, raiz + "?bandeja=procesadas");
+        consultar(r, "P", STAFF_SIN_PROGRAMA, raiz);
+        // BUG-45: la bandeja de procesadas responde como /Aprobadas de homologación; las rutas viejas siguen en 404
+        compararConReferencia("pazysalvo-procesadas", r, "listados/correcciones/pazysalvo-procesadas-bug45.json");
+    }
+
     // ==================== ECAES ====================
 
     @Test

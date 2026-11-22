@@ -62,6 +62,37 @@ public interface SolicitudPazYSalvoRepositoryInt extends JpaRepository<Solicitud
     );
 
     /**
+     * Solicitudes que tuvieron el estado en su historial, no solo como último estado (BUG-45, historial por rol),
+     * del período académico indicado o de todos si es null.
+     */
+    @Query("SELECT DISTINCT s FROM SolicitudPazYSalvoEntity s " +
+           "WHERE (:periodoAcademico IS NULL OR s.periodo_academico = :periodoAcademico) " +
+           "AND s.id_solicitud IN (" +
+           "    SELECT e.objSolicitud.id_solicitud " +
+           "    FROM EstadoSolicitudEntity e " +
+           "    WHERE e.estado_actual = :estado" +
+           ")")
+    List<SolicitudPazYSalvoEntity> findByEstadoEnHistorialAndPeriodoAcademico(
+        @Param("estado") String estado,
+        @Param("periodoAcademico") String periodoAcademico
+    );
+
+    /** Como {@link #findByEstadoEnHistorialAndPeriodoAcademico}, solo del programa del estudiante. */
+    @Query("SELECT DISTINCT s FROM SolicitudPazYSalvoEntity s " +
+           "WHERE s.objUsuario.objPrograma.id_programa = :idPrograma " +
+           "AND (:periodoAcademico IS NULL OR s.periodo_academico = :periodoAcademico) " +
+           "AND s.id_solicitud IN (" +
+           "    SELECT e.objSolicitud.id_solicitud " +
+           "    FROM EstadoSolicitudEntity e " +
+           "    WHERE e.estado_actual = :estado" +
+           ")")
+    List<SolicitudPazYSalvoEntity> findByEstadoEnHistorialAndProgramaAndPeriodoAcademico(
+        @Param("estado") String estado,
+        @Param("idPrograma") Integer idPrograma,
+        @Param("periodoAcademico") String periodoAcademico
+    );
+
+    /**
      * Busca una solicitud de paz y salvo por ID con el usuario y sus relaciones cargadas (JOIN FETCH)
      * Nota: Solo se hace JOIN FETCH del usuario y sus relaciones para evitar problemas con múltiples colecciones
      * @param idSolicitud ID de la solicitud

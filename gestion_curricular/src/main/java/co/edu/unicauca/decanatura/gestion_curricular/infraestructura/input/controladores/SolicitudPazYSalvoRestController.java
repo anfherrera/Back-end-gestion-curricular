@@ -224,6 +224,39 @@ public class SolicitudPazYSalvoRestController {
                 FlujoEstadosSolicitud.SECRETARIO, null, PeriodoDeConsulta.oActual(periodoAcademico))));
     }
 
+    /**
+     * Historial de un rol (BUG-45): las solicitudes que ya aprobó alguna vez, aunque después hayan avanzado o
+     * se hayan rechazado. Sigue la convención de EST-7: la bandeja y el rol van como parámetros de consulta.
+     * Por ahora solo admite {@code bandeja=procesadas}; las pendientes siguen en {@code /listarSolicitud-PazYSalvo/{Rol}}.
+     *
+     * @param rol              funcionario, coordinador o secretaria
+     * @param periodoAcademico opcional ("2025-2"); vacío o "todos" muestra todos los períodos
+     */
+    @GetMapping
+    public ResponseEntity<List<SolicitudPazYSalvoDTORespuesta>> listarProcesadas(
+            @RequestParam String rol,
+            @RequestParam String bandeja,
+            @RequestParam(required = false) String periodoAcademico) {
+        if (!"procesadas".equals(bandeja)) {
+            throw new IllegalArgumentException("Bandeja no válida: use procesadas");
+        }
+        String periodo = PeriodoDeConsulta.oTodos(periodoAcademico);
+        return switch (rol) {
+            case "funcionario" -> responder(solicitudPazYSalvoCU.listar(
+                    FiltroSolicitudes.procesadasPor(FlujoEstadosSolicitud.FUNCIONARIO, null, periodo)));
+            case "secretaria" -> responder(solicitudPazYSalvoCU.listar(
+                    FiltroSolicitudes.procesadasPor(FlujoEstadosSolicitud.SECRETARIO, null, periodo)));
+            case "coordinador" -> {
+                Integer idPrograma = autorizacion.idProgramaCoordinadorActual();
+                // Sin programa del coordinador, todas, de todos los períodos (como en homologación y reingreso)
+                yield responder(solicitudPazYSalvoCU.listar(idPrograma == null
+                        ? FiltroSolicitudes.procesadasPor(FlujoEstadosSolicitud.COORDINADOR, null, null)
+                        : FiltroSolicitudes.procesadasPor(FlujoEstadosSolicitud.COORDINADOR, idPrograma, periodo)));
+            }
+            default -> throw new IllegalArgumentException("Rol no válido: use funcionario, coordinador o secretaria");
+        };
+    }
+
     private ResponseEntity<List<SolicitudPazYSalvoDTORespuesta>> responder(List<SolicitudPazYSalvo> solicitudes) {
         return ResponseEntity.ok(solicitudMapperDominio.mapearListaDeSolicitudesARespuesta(solicitudes));
     }

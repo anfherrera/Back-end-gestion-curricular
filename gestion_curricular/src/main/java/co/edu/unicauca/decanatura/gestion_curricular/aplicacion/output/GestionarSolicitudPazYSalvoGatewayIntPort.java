@@ -8,9 +8,12 @@ import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.SolicitudPa
 
 /**
  * Los listados por estado, programa, período y usuario están en {@link ConsultarSolicitudesGatewayIntPort}.
- * Paz y salvo no tiene listado de procesadas.
  */
 public interface GestionarSolicitudPazYSalvoGatewayIntPort extends ConsultarSolicitudesGatewayIntPort<SolicitudPazYSalvo> {
+
+    /** Solicitudes que pasaron por {@code estado} alguna vez: el historial de procesadas de un rol (BUG-45). */
+    @Override
+    List<SolicitudPazYSalvo> listarPorEstadoEnHistorial(String estado, Integer idPrograma, String periodo);
 
     SolicitudPazYSalvo guardar(SolicitudPazYSalvo solicitud);
 
