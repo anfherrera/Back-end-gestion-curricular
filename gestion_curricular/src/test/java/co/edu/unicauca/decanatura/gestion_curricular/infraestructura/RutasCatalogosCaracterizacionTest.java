@@ -142,7 +142,7 @@ class RutasCatalogosCaracterizacionTest {
         caso(casos, mvc, HttpMethod.GET, b + "?codigo=X", null);
         caso(casos, mvc, HttpMethod.GET, b + "?nombre=Sis&codigo=SIS", null);
         caso(casos, mvc, HttpMethod.GET, b, null);
-        GrafoObjetos.compararConReferencia(casos, "rutas/programas.json");
+        GrafoObjetos.compararConReferencia(casos, "rutas/programas.json", "rutas/correcciones/programas-est7.json");
     }
 
     @Test

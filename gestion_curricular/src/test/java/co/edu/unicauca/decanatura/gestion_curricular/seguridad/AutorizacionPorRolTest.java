@@ -77,7 +77,7 @@ class AutorizacionPorRolTest {
     @Test
     @DisplayName("Estudiante no puede crear programas ni eliminar roles (solo Administrador)")
     void estudianteNoModificaCatalogos() throws Exception {
-        mockMvc.perform(post("/api/programas/crearPrograma").header("Authorization", tokenA)
+        mockMvc.perform(post("/api/programas").header("Authorization", tokenA)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("{\"codigo\":\"X1\",\"nombre_programa\":\"Programa falso\"}"))
                 .andExpect(status().isForbidden());

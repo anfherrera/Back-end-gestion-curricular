@@ -45,7 +45,7 @@ public class ProgramaRestController {
         @ApiResponse(responseCode = "409", description = "Ya existe un programa con ese código",
             content = @Content)
     })
-    @PostMapping("/crearPrograma")
+    @PostMapping
     public ResponseEntity<ProgramaDTORespuesta> crearPrograma(@RequestBody @Valid ProgramaDTOPeticion peticion) {
         Programa programa = programaMapperDominio.mapearDeProgramaDTOPeticionAPrograma(peticion);
         Programa programaCreado = programaCUIntPort.guardarPrograma(programa);
@@ -55,8 +55,11 @@ public class ProgramaRestController {
         );
     }
 
-    @PutMapping("/actualizarPrograma")
-    public ResponseEntity<ProgramaDTORespuesta> actualizarPrograma(@RequestBody @Valid ProgramaDTOPeticion peticion) {
+    /** El id de la ruta manda sobre el del cuerpo. */
+    @PutMapping("/{id:\\d+}")
+    public ResponseEntity<ProgramaDTORespuesta> actualizarPrograma(@PathVariable Integer id,
+            @RequestBody @Valid ProgramaDTOPeticion peticion) {
+        peticion.setId_programa(id);
         Programa programa = programaMapperDominio.mapearDeProgramaDTOPeticionAPrograma(peticion);
         Programa programaActualizado = programaCUIntPort.actualizarPrograma(programa);
         return new ResponseEntity<>(
@@ -65,7 +68,7 @@ public class ProgramaRestController {
         );
     }
 
-    @GetMapping("/buscarProgramaPorId/{id}")
+    @GetMapping("/{id:\\d+}")
     public ResponseEntity<ProgramaDTORespuesta> buscarProgramaPorId(@Min(value = 1) @PathVariable Integer id) {
         Programa programa = programaCUIntPort.obtenerProgramaPorId(id);
         if (programa == null) {
@@ -77,14 +80,37 @@ public class ProgramaRestController {
         );
     }
 
-    @DeleteMapping("/eliminarPrograma/{id}")
+    @DeleteMapping("/{id:\\d+}")
     public ResponseEntity<Boolean> eliminarPrograma(@Min(value = 1) @PathVariable Integer id) {
         boolean eliminado = programaCUIntPort.eliminarPrograma(id);
         return new ResponseEntity<>(eliminado ? HttpStatus.OK : HttpStatus.NOT_FOUND);
     }
 
-    @GetMapping("/buscarPorNombre")
-    public ResponseEntity<List<ProgramaDTORespuesta>> buscarPorNombre(@RequestParam(name = "nombre", required = true) String nombre) {
+    /**
+     * Sin parámetros, todos los programas; con {@code nombre}, los que lo contienen (una lista); con {@code codigo},
+     * el programa con ese código (un objeto). Las dos búsquedas a la vez responden 400.
+     */
+    @Operation(
+        summary = "Listar o buscar programas académicos",
+        description = "Sin parámetros lista todos los programas; ?nombre= busca por nombre parcial y ?codigo= por código"
+    )
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Lista o programa encontrado",
+            content = @Content(schema = @Schema(implementation = ProgramaDTORespuesta.class)))
+    })
+    @GetMapping
+    public ResponseEntity<?> listarOBuscar(@RequestParam(name = "nombre", required = false) String nombre,
+            @RequestParam(name = "codigo", required = false) String codigo) {
+        if (nombre != null && codigo != null) {
+            throw new IllegalArgumentException("Use nombre o codigo, no los dos");
+        }
+        if (nombre != null) {
+            return buscarPorNombre(nombre);
+        }
+        return codigo != null ? buscarPorCodigo(codigo) : listarProgramas();
+    }
+
+    private ResponseEntity<List<ProgramaDTORespuesta>> buscarPorNombre(String nombre) {
         List<Programa> programas = programaCUIntPort.buscarPorNombreParcial(nombre);
         List<ProgramaDTORespuesta> respuesta = programas.stream()
                 .map(programaMapperDominio::mapearDeProgramaAProgramaDTORespuesta)
@@ -92,8 +118,7 @@ public class ProgramaRestController {
         return ResponseEntity.ok(respuesta);
     }
 
-    @GetMapping("/buscarPorCodigo")
-    public ResponseEntity<ProgramaDTORespuesta> buscarPorCodigo(@RequestParam(name = "codigo", required = true) String codigo) {
+    private ResponseEntity<ProgramaDTORespuesta> buscarPorCodigo(String codigo) {
         Programa programa = programaCUIntPort.obtenerProgramaPorCodigo(codigo);
         if (programa == null) {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
@@ -104,16 +129,7 @@ public class ProgramaRestController {
         );
     }
 
-    @Operation(
-        summary = "Listar todos los programas académicos",
-        description = "Obtiene una lista de todos los programas académicos registrados en el sistema"
-    )
-    @ApiResponses(value = {
-        @ApiResponse(responseCode = "200", description = "Lista obtenida exitosamente",
-            content = @Content(schema = @Schema(implementation = ProgramaDTORespuesta.class)))
-    })
-    @GetMapping("/listarProgramas")
-    public ResponseEntity<List<ProgramaDTORespuesta>> listarProgramas() {
+    private ResponseEntity<List<ProgramaDTORespuesta>> listarProgramas() {
         List<Programa> programas = programaCUIntPort.listarProgramas();
         List<ProgramaDTORespuesta> respuesta = programas.stream()
                 .map(programaMapperDominio::mapearDeProgramaAProgramaDTORespuesta)
