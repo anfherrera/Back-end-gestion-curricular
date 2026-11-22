@@ -1,0 +1,1316 @@
+{
+  "GET /api/notificaciones [funcionario]": {
+    "status": 400,
+    "tipo": "application/json",
+    "cuerpo": {
+      "codigoError": "GC-0004",
+      "mensaje": "Indique un solo filtro: usuario (con leida=false o urgente=true), tipoSolicitud o solicitud",
+      "codigoHttp": 400,
+      "url": "http://localhost/api/notificaciones",
+      "metodo": "GET"
+    },
+    "llamadas": []
+  },
+  "GET /api/notificaciones/abc [est5]": {
+    "status": 404,
+    "tipo": "application/json",
+    "cuerpo": {
+      "codigoError": "GC-0404",
+      "mensaje": "El recurso solicitado no existe",
+      "codigoHttp": 404,
+      "url": "http://localhost/api/notificaciones/abc",
+      "metodo": "GET"
+    },
+    "llamadas": []
+  },
+  "GET /api/notificaciones/conteo [funcionario]": {
+    "status": 400,
+    "tipo": "application/json",
+    "cuerpo": {
+      "codigoError": "GC-0004",
+      "mensaje": "El conteo requiere usuario y leida=false",
+      "codigoHttp": 400,
+      "url": "http://localhost/api/notificaciones/conteo",
+      "metodo": "GET"
+    },
+    "llamadas": []
+  },
+  "GET /api/notificaciones/conteo?usuario=0&leida=false [funcionario]": {
+    "status": 400,
+    "tipo": "application/json",
+    "cuerpo": {
+      "codigoError": "GC-0004",
+      "mensaje": "contarNoLeidasPorUsuario.idUsuario: must be greater than or equal to 1",
+      "codigoHttp": 400,
+      "url": "http://localhost/api/notificaciones/conteo",
+      "metodo": "GET"
+    },
+    "llamadas": []
+  },
+  "GET /api/notificaciones/conteo?usuario=5 [funcionario]": {
+    "status": 400,
+    "tipo": "application/json",
+    "cuerpo": {
+      "codigoError": "GC-0004",
+      "mensaje": "El conteo requiere usuario y leida=false",
+      "codigoHttp": 400,
+      "url": "http://localhost/api/notificaciones/conteo",
+      "metodo": "GET"
+    },
+    "llamadas": []
+  },
+  "GET /api/notificaciones/conteo?usuario=5&leida=false [decano]": {
+    "status": 403,
+    "tipo": "application/json",
+    "cuerpo": {
+      "codigoError": "GC-0403",
+      "mensaje": "Acceso denegado: no tiene permisos para este recurso",
+      "codigoHttp": 403,
+      "url": "http://localhost/api/notificaciones/conteo",
+      "metodo": "GET"
+    },
+    "llamadas": []
+  },
+  "GET /api/notificaciones/conteo?usuario=5&leida=false [est5]": {
+    "status": 200,
+    "tipo": "application/json",
+    "cuerpo": 3,
+    "llamadas": []
+  },
+  "GET /api/notificaciones/conteo?usuario=5&leida=false [est6]": {
+    "status": 403,
+    "tipo": null,
+    "cuerpo": null,
+    "llamadas": []
+  },
+  "GET /api/notificaciones/conteo?usuario=5&leida=false [funcionario]": {
+    "status": 200,
+    "tipo": "application/json",
+    "cuerpo": 3,
+    "llamadas": []
+  },
+  "GET /api/notificaciones/conteo?usuario=5&leida=true [funcionario]": {
+    "status": 400,
+    "tipo": "application/json",
+    "cuerpo": {
+      "codigoError": "GC-0004",
+      "mensaje": "El conteo requiere usuario y leida=false",
+      "codigoHttp": 400,
+      "url": "http://localhost/api/notificaciones/conteo",
+      "metodo": "GET"
+    },
+    "llamadas": []
+  },
+  "GET /api/notificaciones/solicitud/0 [est5]": {
+    "status": 404,
+    "tipo": "application/json",
+    "cuerpo": {
+      "codigoError": "GC-0404",
+      "mensaje": "El recurso solicitado no existe",
+      "codigoHttp": 404,
+      "url": "http://localhost/api/notificaciones/solicitud/0",
+      "metodo": "GET"
+    },
+    "llamadas": []
+  },
+  "GET /api/notificaciones/solicitud/12 [decano]": {
+    "status": 404,
+    "tipo": "application/json",
+    "cuerpo": {
+      "codigoError": "GC-0404",
+      "mensaje": "El recurso solicitado no existe",
+      "codigoHttp": 404,
+      "url": "http://localhost/api/notificaciones/solicitud/12",
+      "metodo": "GET"
+    },
+    "llamadas": []
+  },
+  "GET /api/notificaciones/solicitud/12 [est5]": {
+    "status": 404,
+    "tipo": "application/json",
+    "cuerpo": {
+      "codigoError": "GC-0404",
+      "mensaje": "El recurso solicitado no existe",
+      "codigoHttp": 404,
+      "url": "http://localhost/api/notificaciones/solicitud/12",
+      "metodo": "GET"
+    },
+    "llamadas": []
+  },
+  "GET /api/notificaciones/solicitud/13 [est5]": {
+    "status": 404,
+    "tipo": "application/json",
+    "cuerpo": {
+      "codigoError": "GC-0404",
+      "mensaje": "El recurso solicitado no existe",
+      "codigoHttp": 404,
+      "url": "http://localhost/api/notificaciones/solicitud/13",
+      "metodo": "GET"
+    },
+    "llamadas": []
+  },
+  "GET /api/notificaciones/solicitud/14 [est5]": {
+    "status": 404,
+    "tipo": "application/json",
+    "cuerpo": {
+      "codigoError": "GC-0404",
+      "mensaje": "El recurso solicitado no existe",
+      "codigoHttp": 404,
+      "url": "http://localhost/api/notificaciones/solicitud/14",
+      "metodo": "GET"
+    },
+    "llamadas": []
+  },
+  "GET /api/notificaciones/tipo-solicitud/REINGRESO [decano]": {
+    "status": 404,
+    "tipo": "application/json",
+    "cuerpo": {
+      "codigoError": "GC-0404",
+      "mensaje": "El recurso solicitado no existe",
+      "codigoHttp": 404,
+      "url": "http://localhost/api/notificaciones/tipo-solicitud/REINGRESO",
+      "metodo": "GET"
+    },
+    "llamadas": []
+  },
+  "GET /api/notificaciones/tipo-solicitud/REINGRESO [est5]": {
+    "status": 404,
+    "tipo": "application/json",
+    "cuerpo": {
+      "codigoError": "GC-0404",
+      "mensaje": "El recurso solicitado no existe",
+      "codigoHttp": 404,
+      "url": "http://localhost/api/notificaciones/tipo-solicitud/REINGRESO",
+      "metodo": "GET"
+    },
+    "llamadas": []
+  },
+  "GET /api/notificaciones/tipo-solicitud/REINGRESO [est6]": {
+    "status": 404,
+    "tipo": "application/json",
+    "cuerpo": {
+      "codigoError": "GC-0404",
+      "mensaje": "El recurso solicitado no existe",
+      "codigoHttp": 404,
+      "url": "http://localhost/api/notificaciones/tipo-solicitud/REINGRESO",
+      "metodo": "GET"
+    },
+    "llamadas": []
+  },
+  "GET /api/notificaciones/tipo-solicitud/REINGRESO [funcionario]": {
+    "status": 404,
+    "tipo": "application/json",
+    "cuerpo": {
+      "codigoError": "GC-0404",
+      "mensaje": "El recurso solicitado no existe",
+      "codigoHttp": 404,
+      "url": "http://localhost/api/notificaciones/tipo-solicitud/REINGRESO",
+      "metodo": "GET"
+    },
+    "llamadas": []
+  },
+  "GET /api/notificaciones/usuario/0 [funcionario]": {
+    "status": 404,
+    "tipo": "application/json",
+    "cuerpo": {
+      "codigoError": "GC-0404",
+      "mensaje": "El recurso solicitado no existe",
+      "codigoHttp": 404,
+      "url": "http://localhost/api/notificaciones/usuario/0",
+      "metodo": "GET"
+    },
+    "llamadas": []
+  },
+  "GET /api/notificaciones/usuario/0/contar-no-leidas [funcionario]": {
+    "status": 404,
+    "tipo": "application/json",
+    "cuerpo": {
+      "codigoError": "GC-0404",
+      "mensaje": "El recurso solicitado no existe",
+      "codigoHttp": 404,
+      "url": "http://localhost/api/notificaciones/usuario/0/contar-no-leidas",
+      "metodo": "GET"
+    },
+    "llamadas": []
+  },
+  "GET /api/notificaciones/usuario/5 [decano]": {
+    "status": 404,
+    "tipo": "application/json",
+    "cuerpo": {
+      "codigoError": "GC-0404",
+      "mensaje": "El recurso solicitado no existe",
+      "codigoHttp": 404,
+      "url": "http://localhost/api/notificaciones/usuario/5",
+      "metodo": "GET"
+    },
+    "llamadas": []
+  },
+  "GET /api/notificaciones/usuario/5 [est5]": {
+    "status": 404,
+    "tipo": "application/json",
+    "cuerpo": {
+      "codigoError": "GC-0404",
+      "mensaje": "El recurso solicitado no existe",
+      "codigoHttp": 404,
+      "url": "http://localhost/api/notificaciones/usuario/5",
+      "metodo": "GET"
+    },
+    "llamadas": []
+  },
+  "GET /api/notificaciones/usuario/5 [est6]": {
+    "status": 404,
+    "tipo": "application/json",
+    "cuerpo": {
+      "codigoError": "GC-0404",
+      "mensaje": "El recurso solicitado no existe",
+      "codigoHttp": 404,
+      "url": "http://localhost/api/notificaciones/usuario/5",
+      "metodo": "GET"
+    },
+    "llamadas": []
+  },
+  "GET /api/notificaciones/usuario/5 [funcionario]": {
+    "status": 404,
+    "tipo": "application/json",
+    "cuerpo": {
+      "codigoError": "GC-0404",
+      "mensaje": "El recurso solicitado no existe",
+      "codigoHttp": 404,
+      "url": "http://localhost/api/notificaciones/usuario/5",
+      "metodo": "GET"
+    },
+    "llamadas": []
+  },
+  "GET /api/notificaciones/usuario/5/contar-no-leidas [decano]": {
+    "status": 404,
+    "tipo": "application/json",
+    "cuerpo": {
+      "codigoError": "GC-0404",
+      "mensaje": "El recurso solicitado no existe",
+      "codigoHttp": 404,
+      "url": "http://localhost/api/notificaciones/usuario/5/contar-no-leidas",
+      "metodo": "GET"
+    },
+    "llamadas": []
+  },
+  "GET /api/notificaciones/usuario/5/contar-no-leidas [est5]": {
+    "status": 404,
+    "tipo": "application/json",
+    "cuerpo": {
+      "codigoError": "GC-0404",
+      "mensaje": "El recurso solicitado no existe",
+      "codigoHttp": 404,
+      "url": "http://localhost/api/notificaciones/usuario/5/contar-no-leidas",
+      "metodo": "GET"
+    },
+    "llamadas": []
+  },
+  "GET /api/notificaciones/usuario/5/contar-no-leidas [est6]": {
+    "status": 404,
+    "tipo": "application/json",
+    "cuerpo": {
+      "codigoError": "GC-0404",
+      "mensaje": "El recurso solicitado no existe",
+      "codigoHttp": 404,
+      "url": "http://localhost/api/notificaciones/usuario/5/contar-no-leidas",
+      "metodo": "GET"
+    },
+    "llamadas": []
+  },
+  "GET /api/notificaciones/usuario/5/contar-no-leidas [funcionario]": {
+    "status": 404,
+    "tipo": "application/json",
+    "cuerpo": {
+      "codigoError": "GC-0404",
+      "mensaje": "El recurso solicitado no existe",
+      "codigoHttp": 404,
+      "url": "http://localhost/api/notificaciones/usuario/5/contar-no-leidas",
+      "metodo": "GET"
+    },
+    "llamadas": []
+  },
+  "GET /api/notificaciones/usuario/5/no-leidas [decano]": {
+    "status": 404,
+    "tipo": "application/json",
+    "cuerpo": {
+      "codigoError": "GC-0404",
+      "mensaje": "El recurso solicitado no existe",
+      "codigoHttp": 404,
+      "url": "http://localhost/api/notificaciones/usuario/5/no-leidas",
+      "metodo": "GET"
+    },
+    "llamadas": []
+  },
+  "GET /api/notificaciones/usuario/5/no-leidas [est5]": {
+    "status": 404,
+    "tipo": "application/json",
+    "cuerpo": {
+      "codigoError": "GC-0404",
+      "mensaje": "El recurso solicitado no existe",
+      "codigoHttp": 404,
+      "url": "http://localhost/api/notificaciones/usuario/5/no-leidas",
+      "metodo": "GET"
+    },
+    "llamadas": []
+  },
+  "GET /api/notificaciones/usuario/5/no-leidas [est6]": {
+    "status": 404,
+    "tipo": "application/json",
+    "cuerpo": {
+      "codigoError": "GC-0404",
+      "mensaje": "El recurso solicitado no existe",
+      "codigoHttp": 404,
+      "url": "http://localhost/api/notificaciones/usuario/5/no-leidas",
+      "metodo": "GET"
+    },
+    "llamadas": []
+  },
+  "GET /api/notificaciones/usuario/5/no-leidas [funcionario]": {
+    "status": 404,
+    "tipo": "application/json",
+    "cuerpo": {
+      "codigoError": "GC-0404",
+      "mensaje": "El recurso solicitado no existe",
+      "codigoHttp": 404,
+      "url": "http://localhost/api/notificaciones/usuario/5/no-leidas",
+      "metodo": "GET"
+    },
+    "llamadas": []
+  },
+  "GET /api/notificaciones/usuario/5/urgentes [decano]": {
+    "status": 404,
+    "tipo": "application/json",
+    "cuerpo": {
+      "codigoError": "GC-0404",
+      "mensaje": "El recurso solicitado no existe",
+      "codigoHttp": 404,
+      "url": "http://localhost/api/notificaciones/usuario/5/urgentes",
+      "metodo": "GET"
+    },
+    "llamadas": []
+  },
+  "GET /api/notificaciones/usuario/5/urgentes [est5]": {
+    "status": 404,
+    "tipo": "application/json",
+    "cuerpo": {
+      "codigoError": "GC-0404",
+      "mensaje": "El recurso solicitado no existe",
+      "codigoHttp": 404,
+      "url": "http://localhost/api/notificaciones/usuario/5/urgentes",
+      "metodo": "GET"
+    },
+    "llamadas": []
+  },
+  "GET /api/notificaciones/usuario/5/urgentes [est6]": {
+    "status": 404,
+    "tipo": "application/json",
+    "cuerpo": {
+      "codigoError": "GC-0404",
+      "mensaje": "El recurso solicitado no existe",
+      "codigoHttp": 404,
+      "url": "http://localhost/api/notificaciones/usuario/5/urgentes",
+      "metodo": "GET"
+    },
+    "llamadas": []
+  },
+  "GET /api/notificaciones/usuario/5/urgentes [funcionario]": {
+    "status": 404,
+    "tipo": "application/json",
+    "cuerpo": {
+      "codigoError": "GC-0404",
+      "mensaje": "El recurso solicitado no existe",
+      "codigoHttp": 404,
+      "url": "http://localhost/api/notificaciones/usuario/5/urgentes",
+      "metodo": "GET"
+    },
+    "llamadas": []
+  },
+  "GET /api/notificaciones/usuario/abc [funcionario]": {
+    "status": 404,
+    "tipo": "application/json",
+    "cuerpo": {
+      "codigoError": "GC-0404",
+      "mensaje": "El recurso solicitado no existe",
+      "codigoHttp": 404,
+      "url": "http://localhost/api/notificaciones/usuario/abc",
+      "metodo": "GET"
+    },
+    "llamadas": []
+  },
+  "GET /api/notificaciones?leida=false [funcionario]": {
+    "status": 400,
+    "tipo": "application/json",
+    "cuerpo": {
+      "codigoError": "GC-0004",
+      "mensaje": "Indique un solo filtro: usuario (con leida=false o urgente=true), tipoSolicitud o solicitud",
+      "codigoHttp": 400,
+      "url": "http://localhost/api/notificaciones",
+      "metodo": "GET"
+    },
+    "llamadas": []
+  },
+  "GET /api/notificaciones?solicitud=0 [est5]": {
+    "status": 400,
+    "tipo": "application/json",
+    "cuerpo": {
+      "codigoError": "GC-0004",
+      "mensaje": "obtenerPorSolicitud.idSolicitud: must be greater than or equal to 1",
+      "codigoHttp": 400,
+      "url": "http://localhost/api/notificaciones",
+      "metodo": "GET"
+    },
+    "llamadas": []
+  },
+  "GET /api/notificaciones?solicitud=12 [decano]": {
+    "status": 403,
+    "tipo": "application/json",
+    "cuerpo": {
+      "codigoError": "GC-0403",
+      "mensaje": "Acceso denegado: no tiene permisos para este recurso",
+      "codigoHttp": 403,
+      "url": "http://localhost/api/notificaciones",
+      "metodo": "GET"
+    },
+    "llamadas": []
+  },
+  "GET /api/notificaciones?solicitud=12 [est5]": {
+    "status": 200,
+    "tipo": "application/json",
+    "cuerpo": [
+      {
+        "id_notificacion": 7,
+        "tipoSolicitud": "REINGRESO",
+        "tipoNotificacion": "APROBADA",
+        "titulo": "Título 7",
+        "mensaje": "Mensaje 7",
+        "fechaCreacion": "2025-02-19T21:20:00.000+00:00",
+        "leida": false,
+        "esUrgente": true,
+        "accion": null,
+        "urlAccion": null,
+        "idUsuario": 5,
+        "nombreUsuario": "Usuario 5",
+        "emailUsuario": null,
+        "idSolicitud": null,
+        "nombreSolicitud": null,
+        "idCurso": null,
+        "nombreCurso": null,
+        "nombreMateria": null
+      }
+    ],
+    "llamadas": []
+  },
+  "GET /api/notificaciones?solicitud=13 [est5]": {
+    "status": 403,
+    "tipo": null,
+    "cuerpo": null,
+    "llamadas": []
+  },
+  "GET /api/notificaciones?solicitud=14 [est5]": {
+    "status": 200,
+    "tipo": "application/json",
+    "cuerpo": [],
+    "llamadas": []
+  },
+  "GET /api/notificaciones?tipoSolicitud=REINGRESO [decano]": {
+    "status": 403,
+    "tipo": "application/json",
+    "cuerpo": {
+      "codigoError": "GC-0403",
+      "mensaje": "Acceso denegado: no tiene permisos para este recurso",
+      "codigoHttp": 403,
+      "url": "http://localhost/api/notificaciones",
+      "metodo": "GET"
+    },
+    "llamadas": []
+  },
+  "GET /api/notificaciones?tipoSolicitud=REINGRESO [est5]": {
+    "status": 403,
+    "tipo": "application/json",
+    "cuerpo": {
+      "codigoError": "GC-0403",
+      "mensaje": "Acceso denegado: no tiene permisos para este recurso",
+      "codigoHttp": 403,
+      "url": "http://localhost/api/notificaciones",
+      "metodo": "GET"
+    },
+    "llamadas": []
+  },
+  "GET /api/notificaciones?tipoSolicitud=REINGRESO [est6]": {
+    "status": 403,
+    "tipo": "application/json",
+    "cuerpo": {
+      "codigoError": "GC-0403",
+      "mensaje": "Acceso denegado: no tiene permisos para este recurso",
+      "codigoHttp": 403,
+      "url": "http://localhost/api/notificaciones",
+      "metodo": "GET"
+    },
+    "llamadas": []
+  },
+  "GET /api/notificaciones?tipoSolicitud=REINGRESO [funcionario]": {
+    "status": 200,
+    "tipo": "application/json",
+    "cuerpo": [
+      {
+        "id_notificacion": 7,
+        "tipoSolicitud": "REINGRESO",
+        "tipoNotificacion": "APROBADA",
+        "titulo": "Título 7",
+        "mensaje": "Mensaje 7",
+        "fechaCreacion": "2025-02-19T21:20:00.000+00:00",
+        "leida": false,
+        "esUrgente": true,
+        "accion": null,
+        "urlAccion": null,
+        "idUsuario": 5,
+        "nombreUsuario": "Usuario 5",
+        "emailUsuario": null,
+        "idSolicitud": null,
+        "nombreSolicitud": null,
+        "idCurso": null,
+        "nombreCurso": null,
+        "nombreMateria": null
+      },
+      {
+        "id_notificacion": 8,
+        "tipoSolicitud": "REINGRESO",
+        "tipoNotificacion": "APROBADA",
+        "titulo": "Título 8",
+        "mensaje": "Mensaje 8",
+        "fechaCreacion": "2025-02-19T21:20:00.000+00:00",
+        "leida": true,
+        "esUrgente": false,
+        "accion": null,
+        "urlAccion": null,
+        "idUsuario": 6,
+        "nombreUsuario": "Usuario 6",
+        "emailUsuario": null,
+        "idSolicitud": null,
+        "nombreSolicitud": null,
+        "idCurso": null,
+        "nombreCurso": null,
+        "nombreMateria": null
+      }
+    ],
+    "llamadas": []
+  },
+  "GET /api/notificaciones?tipoSolicitud=REINGRESO&leida=false [funcionario]": {
+    "status": 400,
+    "tipo": "application/json",
+    "cuerpo": {
+      "codigoError": "GC-0004",
+      "mensaje": "Indique un solo filtro: usuario (con leida=false o urgente=true), tipoSolicitud o solicitud",
+      "codigoHttp": 400,
+      "url": "http://localhost/api/notificaciones",
+      "metodo": "GET"
+    },
+    "llamadas": []
+  },
+  "GET /api/notificaciones?usuario=0 [funcionario]": {
+    "status": 400,
+    "tipo": "application/json",
+    "cuerpo": {
+      "codigoError": "GC-0004",
+      "mensaje": "obtenerPorUsuario.idUsuario: must be greater than or equal to 1",
+      "codigoHttp": 400,
+      "url": "http://localhost/api/notificaciones",
+      "metodo": "GET"
+    },
+    "llamadas": []
+  },
+  "GET /api/notificaciones?usuario=5 [decano]": {
+    "status": 403,
+    "tipo": "application/json",
+    "cuerpo": {
+      "codigoError": "GC-0403",
+      "mensaje": "Acceso denegado: no tiene permisos para este recurso",
+      "codigoHttp": 403,
+      "url": "http://localhost/api/notificaciones",
+      "metodo": "GET"
+    },
+    "llamadas": []
+  },
+  "GET /api/notificaciones?usuario=5 [est5]": {
+    "status": 200,
+    "tipo": "application/json",
+    "cuerpo": [
+      {
+        "id_notificacion": 7,
+        "tipoSolicitud": "REINGRESO",
+        "tipoNotificacion": "APROBADA",
+        "titulo": "Título 7",
+        "mensaje": "Mensaje 7",
+        "fechaCreacion": "2025-02-19T21:20:00.000+00:00",
+        "leida": false,
+        "esUrgente": true,
+        "accion": null,
+        "urlAccion": null,
+        "idUsuario": 5,
+        "nombreUsuario": "Usuario 5",
+        "emailUsuario": null,
+        "idSolicitud": null,
+        "nombreSolicitud": null,
+        "idCurso": null,
+        "nombreCurso": null,
+        "nombreMateria": null
+      }
+    ],
+    "llamadas": []
+  },
+  "GET /api/notificaciones?usuario=5 [est6]": {
+    "status": 403,
+    "tipo": null,
+    "cuerpo": null,
+    "llamadas": []
+  },
+  "GET /api/notificaciones?usuario=5 [funcionario]": {
+    "status": 200,
+    "tipo": "application/json",
+    "cuerpo": [
+      {
+        "id_notificacion": 7,
+        "tipoSolicitud": "REINGRESO",
+        "tipoNotificacion": "APROBADA",
+        "titulo": "Título 7",
+        "mensaje": "Mensaje 7",
+        "fechaCreacion": "2025-02-19T21:20:00.000+00:00",
+        "leida": false,
+        "esUrgente": true,
+        "accion": null,
+        "urlAccion": null,
+        "idUsuario": 5,
+        "nombreUsuario": "Usuario 5",
+        "emailUsuario": null,
+        "idSolicitud": null,
+        "nombreSolicitud": null,
+        "idCurso": null,
+        "nombreCurso": null,
+        "nombreMateria": null
+      }
+    ],
+    "llamadas": []
+  },
+  "GET /api/notificaciones?usuario=5&leida=false [decano]": {
+    "status": 403,
+    "tipo": "application/json",
+    "cuerpo": {
+      "codigoError": "GC-0403",
+      "mensaje": "Acceso denegado: no tiene permisos para este recurso",
+      "codigoHttp": 403,
+      "url": "http://localhost/api/notificaciones",
+      "metodo": "GET"
+    },
+    "llamadas": []
+  },
+  "GET /api/notificaciones?usuario=5&leida=false [est5]": {
+    "status": 200,
+    "tipo": "application/json",
+    "cuerpo": [
+      {
+        "id_notificacion": 7,
+        "tipoSolicitud": "REINGRESO",
+        "tipoNotificacion": "APROBADA",
+        "titulo": "Título 7",
+        "mensaje": "Mensaje 7",
+        "fechaCreacion": "2025-02-19T21:20:00.000+00:00",
+        "leida": false,
+        "esUrgente": true,
+        "accion": null,
+        "urlAccion": null,
+        "idUsuario": 5,
+        "nombreUsuario": "Usuario 5",
+        "emailUsuario": null,
+        "idSolicitud": null,
+        "nombreSolicitud": null,
+        "idCurso": null,
+        "nombreCurso": null,
+        "nombreMateria": null
+      }
+    ],
+    "llamadas": []
+  },
+  "GET /api/notificaciones?usuario=5&leida=false [est6]": {
+    "status": 403,
+    "tipo": null,
+    "cuerpo": null,
+    "llamadas": []
+  },
+  "GET /api/notificaciones?usuario=5&leida=false [funcionario]": {
+    "status": 200,
+    "tipo": "application/json",
+    "cuerpo": [
+      {
+        "id_notificacion": 7,
+        "tipoSolicitud": "REINGRESO",
+        "tipoNotificacion": "APROBADA",
+        "titulo": "Título 7",
+        "mensaje": "Mensaje 7",
+        "fechaCreacion": "2025-02-19T21:20:00.000+00:00",
+        "leida": false,
+        "esUrgente": true,
+        "accion": null,
+        "urlAccion": null,
+        "idUsuario": 5,
+        "nombreUsuario": "Usuario 5",
+        "emailUsuario": null,
+        "idSolicitud": null,
+        "nombreSolicitud": null,
+        "idCurso": null,
+        "nombreCurso": null,
+        "nombreMateria": null
+      }
+    ],
+    "llamadas": []
+  },
+  "GET /api/notificaciones?usuario=5&leida=false&urgente=true [funcionario]": {
+    "status": 400,
+    "tipo": "application/json",
+    "cuerpo": {
+      "codigoError": "GC-0004",
+      "mensaje": "Indique un solo filtro: usuario (con leida=false o urgente=true), tipoSolicitud o solicitud",
+      "codigoHttp": 400,
+      "url": "http://localhost/api/notificaciones",
+      "metodo": "GET"
+    },
+    "llamadas": []
+  },
+  "GET /api/notificaciones?usuario=5&leida=true [funcionario]": {
+    "status": 400,
+    "tipo": "application/json",
+    "cuerpo": {
+      "codigoError": "GC-0004",
+      "mensaje": "Indique un solo filtro: usuario (con leida=false o urgente=true), tipoSolicitud o solicitud",
+      "codigoHttp": 400,
+      "url": "http://localhost/api/notificaciones",
+      "metodo": "GET"
+    },
+    "llamadas": []
+  },
+  "GET /api/notificaciones?usuario=5&solicitud=12 [funcionario]": {
+    "status": 400,
+    "tipo": "application/json",
+    "cuerpo": {
+      "codigoError": "GC-0004",
+      "mensaje": "Indique un solo filtro: usuario (con leida=false o urgente=true), tipoSolicitud o solicitud",
+      "codigoHttp": 400,
+      "url": "http://localhost/api/notificaciones",
+      "metodo": "GET"
+    },
+    "llamadas": []
+  },
+  "GET /api/notificaciones?usuario=5&urgente=false [funcionario]": {
+    "status": 400,
+    "tipo": "application/json",
+    "cuerpo": {
+      "codigoError": "GC-0004",
+      "mensaje": "Indique un solo filtro: usuario (con leida=false o urgente=true), tipoSolicitud o solicitud",
+      "codigoHttp": 400,
+      "url": "http://localhost/api/notificaciones",
+      "metodo": "GET"
+    },
+    "llamadas": []
+  },
+  "GET /api/notificaciones?usuario=5&urgente=true [decano]": {
+    "status": 403,
+    "tipo": "application/json",
+    "cuerpo": {
+      "codigoError": "GC-0403",
+      "mensaje": "Acceso denegado: no tiene permisos para este recurso",
+      "codigoHttp": 403,
+      "url": "http://localhost/api/notificaciones",
+      "metodo": "GET"
+    },
+    "llamadas": []
+  },
+  "GET /api/notificaciones?usuario=5&urgente=true [est5]": {
+    "status": 200,
+    "tipo": "application/json",
+    "cuerpo": [
+      {
+        "id_notificacion": 7,
+        "tipoSolicitud": "REINGRESO",
+        "tipoNotificacion": "APROBADA",
+        "titulo": "Título 7",
+        "mensaje": "Mensaje 7",
+        "fechaCreacion": "2025-02-19T21:20:00.000+00:00",
+        "leida": false,
+        "esUrgente": true,
+        "accion": null,
+        "urlAccion": null,
+        "idUsuario": 5,
+        "nombreUsuario": "Usuario 5",
+        "emailUsuario": null,
+        "idSolicitud": null,
+        "nombreSolicitud": null,
+        "idCurso": null,
+        "nombreCurso": null,
+        "nombreMateria": null
+      }
+    ],
+    "llamadas": []
+  },
+  "GET /api/notificaciones?usuario=5&urgente=true [est6]": {
+    "status": 403,
+    "tipo": null,
+    "cuerpo": null,
+    "llamadas": []
+  },
+  "GET /api/notificaciones?usuario=5&urgente=true [funcionario]": {
+    "status": 200,
+    "tipo": "application/json",
+    "cuerpo": [
+      {
+        "id_notificacion": 7,
+        "tipoSolicitud": "REINGRESO",
+        "tipoNotificacion": "APROBADA",
+        "titulo": "Título 7",
+        "mensaje": "Mensaje 7",
+        "fechaCreacion": "2025-02-19T21:20:00.000+00:00",
+        "leida": false,
+        "esUrgente": true,
+        "accion": null,
+        "urlAccion": null,
+        "idUsuario": 5,
+        "nombreUsuario": "Usuario 5",
+        "emailUsuario": null,
+        "idSolicitud": null,
+        "nombreSolicitud": null,
+        "idCurso": null,
+        "nombreCurso": null,
+        "nombreMateria": null
+      }
+    ],
+    "llamadas": []
+  },
+  "GET /api/notificaciones?usuario=abc [funcionario]": {
+    "status": 400,
+    "tipo": "application/json",
+    "cuerpo": {
+      "codigoError": "GC-0400",
+      "mensaje": "La petición no tiene el formato esperado: revise los parámetros y el cuerpo enviados",
+      "codigoHttp": 400,
+      "url": "http://localhost/api/notificaciones",
+      "metodo": "GET"
+    },
+    "llamadas": []
+  },
+  "POST /api/notificaciones {\"tipoSolicitud\":\"REINGRESO\",\"tipoNotificacion\":\"APROBADA\",\"mensaje\":\"Su solicitud fue aprobada\",\"idUsuario\":5,\"fechaCreacion\":\"2025-03-04T10:00:00.000+00:00\",\"esUrgente\":true} [funcionario]": {
+    "status": 400,
+    "tipo": "application/json",
+    "cuerpo": {
+      "titulo": "El título es obligatorio"
+    },
+    "llamadas": []
+  },
+  "POST /api/notificaciones {\"tipoSolicitud\":\"REINGRESO\",\"tipoNotificacion\":\"APROBADA\",\"titulo\":\"Aprobada\",\"mensaje\":\"Su solicitud fue aprobada\",\"idUsuario\":5,\"fechaCreacion\":\"2025-03-04T10:00:00.000+00:00\",\"esUrgente\":true} [decano]": {
+    "status": 201,
+    "tipo": "application/json",
+    "cuerpo": {
+      "id_notificacion": 50,
+      "tipoSolicitud": "REINGRESO",
+      "tipoNotificacion": "APROBADA",
+      "titulo": "Aprobada",
+      "mensaje": "Su solicitud fue aprobada",
+      "fechaCreacion": "2025-03-04T10:00:00.000+00:00",
+      "leida": false,
+      "esUrgente": true,
+      "accion": null,
+      "urlAccion": null,
+      "idUsuario": 5,
+      "nombreUsuario": "Usuario 5",
+      "emailUsuario": null,
+      "idSolicitud": null,
+      "nombreSolicitud": null,
+      "idCurso": null,
+      "nombreCurso": null,
+      "nombreMateria": null
+    },
+    "llamadas": [
+      {
+        "crearNotificacion": "Aprobada para 5, leida=false, urgente=true"
+      }
+    ]
+  },
+  "POST /api/notificaciones {\"tipoSolicitud\":\"REINGRESO\",\"tipoNotificacion\":\"APROBADA\",\"titulo\":\"Aprobada\",\"mensaje\":\"Su solicitud fue aprobada\",\"idUsuario\":5,\"fechaCreacion\":\"2025-03-04T10:00:00.000+00:00\",\"esUrgente\":true} [est5]": {
+    "status": 403,
+    "tipo": "application/json",
+    "cuerpo": {
+      "codigoError": "GC-0403",
+      "mensaje": "Acceso denegado: no tiene permisos para este recurso",
+      "codigoHttp": 403,
+      "url": "http://localhost/api/notificaciones",
+      "metodo": "POST"
+    },
+    "llamadas": []
+  },
+  "POST /api/notificaciones {\"tipoSolicitud\":\"REINGRESO\",\"tipoNotificacion\":\"APROBADA\",\"titulo\":\"Aprobada\",\"mensaje\":\"Su solicitud fue aprobada\",\"idUsuario\":5,\"fechaCreacion\":\"2025-03-04T10:00:00.000+00:00\",\"esUrgente\":true} [est6]": {
+    "status": 403,
+    "tipo": "application/json",
+    "cuerpo": {
+      "codigoError": "GC-0403",
+      "mensaje": "Acceso denegado: no tiene permisos para este recurso",
+      "codigoHttp": 403,
+      "url": "http://localhost/api/notificaciones",
+      "metodo": "POST"
+    },
+    "llamadas": []
+  },
+  "POST /api/notificaciones {\"tipoSolicitud\":\"REINGRESO\",\"tipoNotificacion\":\"APROBADA\",\"titulo\":\"Aprobada\",\"mensaje\":\"Su solicitud fue aprobada\",\"idUsuario\":5,\"fechaCreacion\":\"2025-03-04T10:00:00.000+00:00\",\"esUrgente\":true} [funcionario]": {
+    "status": 201,
+    "tipo": "application/json",
+    "cuerpo": {
+      "id_notificacion": 50,
+      "tipoSolicitud": "REINGRESO",
+      "tipoNotificacion": "APROBADA",
+      "titulo": "Aprobada",
+      "mensaje": "Su solicitud fue aprobada",
+      "fechaCreacion": "2025-03-04T10:00:00.000+00:00",
+      "leida": false,
+      "esUrgente": true,
+      "accion": null,
+      "urlAccion": null,
+      "idUsuario": 5,
+      "nombreUsuario": "Usuario 5",
+      "emailUsuario": null,
+      "idSolicitud": null,
+      "nombreSolicitud": null,
+      "idCurso": null,
+      "nombreCurso": null,
+      "nombreMateria": null
+    },
+    "llamadas": [
+      {
+        "crearNotificacion": "Aprobada para 5, leida=false, urgente=true"
+      }
+    ]
+  },
+  "POST /api/notificaciones {\"tipoSolicitud\":\"REINGRESO\",\"tipoNotificacion\":\"APROBADA\",\"titulo\":\"Aprobada\",\"mensaje\":\"Su solicitud fue aprobada\",\"idUsuario\":99,\"fechaCreacion\":\"2025-03-04T10:00:00.000+00:00\",\"esUrgente\":true} [funcionario]": {
+    "status": 400,
+    "tipo": null,
+    "cuerpo": null,
+    "llamadas": []
+  },
+  "POST /api/notificaciones/crear {\"tipoSolicitud\":\"REINGRESO\",\"tipoNotificacion\":\"APROBADA\",\"mensaje\":\"Su solicitud fue aprobada\",\"idUsuario\":5,\"fechaCreacion\":\"2025-03-04T10:00:00.000+00:00\",\"esUrgente\":true} [funcionario]": {
+    "status": 404,
+    "tipo": "application/json",
+    "cuerpo": {
+      "codigoError": "GC-0404",
+      "mensaje": "El recurso solicitado no existe",
+      "codigoHttp": 404,
+      "url": "http://localhost/api/notificaciones/crear",
+      "metodo": "POST"
+    },
+    "llamadas": []
+  },
+  "POST /api/notificaciones/crear {\"tipoSolicitud\":\"REINGRESO\",\"tipoNotificacion\":\"APROBADA\",\"titulo\":\"Aprobada\",\"mensaje\":\"Su solicitud fue aprobada\",\"idUsuario\":5,\"fechaCreacion\":\"2025-03-04T10:00:00.000+00:00\",\"esUrgente\":true} [decano]": {
+    "status": 404,
+    "tipo": "application/json",
+    "cuerpo": {
+      "codigoError": "GC-0404",
+      "mensaje": "El recurso solicitado no existe",
+      "codigoHttp": 404,
+      "url": "http://localhost/api/notificaciones/crear",
+      "metodo": "POST"
+    },
+    "llamadas": []
+  },
+  "POST /api/notificaciones/crear {\"tipoSolicitud\":\"REINGRESO\",\"tipoNotificacion\":\"APROBADA\",\"titulo\":\"Aprobada\",\"mensaje\":\"Su solicitud fue aprobada\",\"idUsuario\":5,\"fechaCreacion\":\"2025-03-04T10:00:00.000+00:00\",\"esUrgente\":true} [est5]": {
+    "status": 404,
+    "tipo": "application/json",
+    "cuerpo": {
+      "codigoError": "GC-0404",
+      "mensaje": "El recurso solicitado no existe",
+      "codigoHttp": 404,
+      "url": "http://localhost/api/notificaciones/crear",
+      "metodo": "POST"
+    },
+    "llamadas": []
+  },
+  "POST /api/notificaciones/crear {\"tipoSolicitud\":\"REINGRESO\",\"tipoNotificacion\":\"APROBADA\",\"titulo\":\"Aprobada\",\"mensaje\":\"Su solicitud fue aprobada\",\"idUsuario\":5,\"fechaCreacion\":\"2025-03-04T10:00:00.000+00:00\",\"esUrgente\":true} [est6]": {
+    "status": 404,
+    "tipo": "application/json",
+    "cuerpo": {
+      "codigoError": "GC-0404",
+      "mensaje": "El recurso solicitado no existe",
+      "codigoHttp": 404,
+      "url": "http://localhost/api/notificaciones/crear",
+      "metodo": "POST"
+    },
+    "llamadas": []
+  },
+  "POST /api/notificaciones/crear {\"tipoSolicitud\":\"REINGRESO\",\"tipoNotificacion\":\"APROBADA\",\"titulo\":\"Aprobada\",\"mensaje\":\"Su solicitud fue aprobada\",\"idUsuario\":5,\"fechaCreacion\":\"2025-03-04T10:00:00.000+00:00\",\"esUrgente\":true} [funcionario]": {
+    "status": 404,
+    "tipo": "application/json",
+    "cuerpo": {
+      "codigoError": "GC-0404",
+      "mensaje": "El recurso solicitado no existe",
+      "codigoHttp": 404,
+      "url": "http://localhost/api/notificaciones/crear",
+      "metodo": "POST"
+    },
+    "llamadas": []
+  },
+  "POST /api/notificaciones/crear {\"tipoSolicitud\":\"REINGRESO\",\"tipoNotificacion\":\"APROBADA\",\"titulo\":\"Aprobada\",\"mensaje\":\"Su solicitud fue aprobada\",\"idUsuario\":99,\"fechaCreacion\":\"2025-03-04T10:00:00.000+00:00\",\"esUrgente\":true} [funcionario]": {
+    "status": 404,
+    "tipo": "application/json",
+    "cuerpo": {
+      "codigoError": "GC-0404",
+      "mensaje": "El recurso solicitado no existe",
+      "codigoHttp": 404,
+      "url": "http://localhost/api/notificaciones/crear",
+      "metodo": "POST"
+    },
+    "llamadas": []
+  },
+  "PUT /api/notificaciones/0/leida [est5]": {
+    "status": 400,
+    "tipo": "application/json",
+    "cuerpo": {
+      "codigoError": "GC-0004",
+      "mensaje": "marcarComoLeida.idNotificacion: must be greater than or equal to 1",
+      "codigoHttp": 400,
+      "url": "http://localhost/api/notificaciones/0/leida",
+      "metodo": "PUT"
+    },
+    "llamadas": []
+  },
+  "PUT /api/notificaciones/0/marcar-leida [est5]": {
+    "status": 404,
+    "tipo": "application/json",
+    "cuerpo": {
+      "codigoError": "GC-0404",
+      "mensaje": "El recurso solicitado no existe",
+      "codigoHttp": 404,
+      "url": "http://localhost/api/notificaciones/0/marcar-leida",
+      "metodo": "PUT"
+    },
+    "llamadas": []
+  },
+  "PUT /api/notificaciones/7/leida [decano]": {
+    "status": 403,
+    "tipo": "application/json",
+    "cuerpo": {
+      "codigoError": "GC-0403",
+      "mensaje": "Acceso denegado: no tiene permisos para este recurso",
+      "codigoHttp": 403,
+      "url": "http://localhost/api/notificaciones/7/leida",
+      "metodo": "PUT"
+    },
+    "llamadas": []
+  },
+  "PUT /api/notificaciones/7/leida [est5]": {
+    "status": 204,
+    "tipo": null,
+    "cuerpo": null,
+    "llamadas": [
+      {
+        "marcarComoLeida": 7
+      }
+    ]
+  },
+  "PUT /api/notificaciones/7/marcar-leida [decano]": {
+    "status": 404,
+    "tipo": "application/json",
+    "cuerpo": {
+      "codigoError": "GC-0404",
+      "mensaje": "El recurso solicitado no existe",
+      "codigoHttp": 404,
+      "url": "http://localhost/api/notificaciones/7/marcar-leida",
+      "metodo": "PUT"
+    },
+    "llamadas": []
+  },
+  "PUT /api/notificaciones/7/marcar-leida [est5]": {
+    "status": 404,
+    "tipo": "application/json",
+    "cuerpo": {
+      "codigoError": "GC-0404",
+      "mensaje": "El recurso solicitado no existe",
+      "codigoHttp": 404,
+      "url": "http://localhost/api/notificaciones/7/marcar-leida",
+      "metodo": "PUT"
+    },
+    "llamadas": []
+  },
+  "PUT /api/notificaciones/8/leida [est5]": {
+    "status": 403,
+    "tipo": null,
+    "cuerpo": null,
+    "llamadas": []
+  },
+  "PUT /api/notificaciones/8/leida [funcionario]": {
+    "status": 204,
+    "tipo": null,
+    "cuerpo": null,
+    "llamadas": [
+      {
+        "marcarComoLeida": 8
+      }
+    ]
+  },
+  "PUT /api/notificaciones/8/marcar-leida [est5]": {
+    "status": 404,
+    "tipo": "application/json",
+    "cuerpo": {
+      "codigoError": "GC-0404",
+      "mensaje": "El recurso solicitado no existe",
+      "codigoHttp": 404,
+      "url": "http://localhost/api/notificaciones/8/marcar-leida",
+      "metodo": "PUT"
+    },
+    "llamadas": []
+  },
+  "PUT /api/notificaciones/8/marcar-leida [funcionario]": {
+    "status": 404,
+    "tipo": "application/json",
+    "cuerpo": {
+      "codigoError": "GC-0404",
+      "mensaje": "El recurso solicitado no existe",
+      "codigoHttp": 404,
+      "url": "http://localhost/api/notificaciones/8/marcar-leida",
+      "metodo": "PUT"
+    },
+    "llamadas": []
+  },
+  "PUT /api/notificaciones/9/leida [est5]": {
+    "status": 404,
+    "tipo": null,
+    "cuerpo": null,
+    "llamadas": []
+  },
+  "PUT /api/notificaciones/9/marcar-leida [est5]": {
+    "status": 404,
+    "tipo": "application/json",
+    "cuerpo": {
+      "codigoError": "GC-0404",
+      "mensaje": "El recurso solicitado no existe",
+      "codigoHttp": 404,
+      "url": "http://localhost/api/notificaciones/9/marcar-leida",
+      "metodo": "PUT"
+    },
+    "llamadas": []
+  },
+  "PUT /api/notificaciones/leidas [funcionario]": {
+    "status": 400,
+    "tipo": "application/json",
+    "cuerpo": {
+      "codigoError": "GC-0400",
+      "mensaje": "La petición no tiene el formato esperado: revise los parámetros y el cuerpo enviados",
+      "codigoHttp": 400,
+      "url": "http://localhost/api/notificaciones/leidas",
+      "metodo": "PUT"
+    },
+    "llamadas": []
+  },
+  "PUT /api/notificaciones/leidas?usuario=0 [funcionario]": {
+    "status": 400,
+    "tipo": "application/json",
+    "cuerpo": {
+      "codigoError": "GC-0004",
+      "mensaje": "marcarTodasComoLeidas.idUsuario: must be greater than or equal to 1",
+      "codigoHttp": 400,
+      "url": "http://localhost/api/notificaciones/leidas",
+      "metodo": "PUT"
+    },
+    "llamadas": []
+  },
+  "PUT /api/notificaciones/leidas?usuario=5 [decano]": {
+    "status": 403,
+    "tipo": "application/json",
+    "cuerpo": {
+      "codigoError": "GC-0403",
+      "mensaje": "Acceso denegado: no tiene permisos para este recurso",
+      "codigoHttp": 403,
+      "url": "http://localhost/api/notificaciones/leidas",
+      "metodo": "PUT"
+    },
+    "llamadas": []
+  },
+  "PUT /api/notificaciones/leidas?usuario=5 [est5]": {
+    "status": 204,
+    "tipo": null,
+    "cuerpo": null,
+    "llamadas": [
+      {
+        "marcarTodasComoLeidas": 5
+      }
+    ]
+  },
+  "PUT /api/notificaciones/leidas?usuario=5 [est6]": {
+    "status": 403,
+    "tipo": null,
+    "cuerpo": null,
+    "llamadas": []
+  },
+  "PUT /api/notificaciones/leidas?usuario=5 [funcionario]": {
+    "status": 204,
+    "tipo": null,
+    "cuerpo": null,
+    "llamadas": [
+      {
+        "marcarTodasComoLeidas": 5
+      }
+    ]
+  },
+  "PUT /api/notificaciones/usuario/0/marcar-todas-leidas [funcionario]": {
+    "status": 404,
+    "tipo": "application/json",
+    "cuerpo": {
+      "codigoError": "GC-0404",
+      "mensaje": "El recurso solicitado no existe",
+      "codigoHttp": 404,
+      "url": "http://localhost/api/notificaciones/usuario/0/marcar-todas-leidas",
+      "metodo": "PUT"
+    },
+    "llamadas": []
+  },
+  "PUT /api/notificaciones/usuario/5/marcar-todas-leidas [decano]": {
+    "status": 404,
+    "tipo": "application/json",
+    "cuerpo": {
+      "codigoError": "GC-0404",
+      "mensaje": "El recurso solicitado no existe",
+      "codigoHttp": 404,
+      "url": "http://localhost/api/notificaciones/usuario/5/marcar-todas-leidas",
+      "metodo": "PUT"
+    },
+    "llamadas": []
+  },
+  "PUT /api/notificaciones/usuario/5/marcar-todas-leidas [est5]": {
+    "status": 404,
+    "tipo": "application/json",
+    "cuerpo": {
+      "codigoError": "GC-0404",
+      "mensaje": "El recurso solicitado no existe",
+      "codigoHttp": 404,
+      "url": "http://localhost/api/notificaciones/usuario/5/marcar-todas-leidas",
+      "metodo": "PUT"
+    },
+    "llamadas": []
+  },
+  "PUT /api/notificaciones/usuario/5/marcar-todas-leidas [est6]": {
+    "status": 404,
+    "tipo": "application/json",
+    "cuerpo": {
+      "codigoError": "GC-0404",
+      "mensaje": "El recurso solicitado no existe",
+      "codigoHttp": 404,
+      "url": "http://localhost/api/notificaciones/usuario/5/marcar-todas-leidas",
+      "metodo": "PUT"
+    },
+    "llamadas": []
+  },
+  "PUT /api/notificaciones/usuario/5/marcar-todas-leidas [funcionario]": {
+    "status": 404,
+    "tipo": "application/json",
+    "cuerpo": {
+      "codigoError": "GC-0404",
+      "mensaje": "El recurso solicitado no existe",
+      "codigoHttp": 404,
+      "url": "http://localhost/api/notificaciones/usuario/5/marcar-todas-leidas",
+      "metodo": "PUT"
+    },
+    "llamadas": []
+  }
+}

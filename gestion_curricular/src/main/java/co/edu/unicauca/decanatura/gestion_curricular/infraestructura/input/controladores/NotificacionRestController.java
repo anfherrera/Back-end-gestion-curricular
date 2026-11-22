@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarNotificacionCUIntPort;
@@ -33,6 +34,12 @@ import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.dto.r
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.mappers.NotificacionMapperDominio;
 import co.edu.unicauca.decanatura.gestion_curricular.seguridad.Autorizacion;
 
+/**
+ * Notificaciones (EST-7, paso 4). {@code GET /} admite un solo filtro: {@code ?usuario=} (con {@code leida=false}
+ * o {@code urgente=true} opcionales), {@code ?tipoSolicitud=} o {@code ?solicitud=}. Cada combinación la atiende su
+ * propio método, con su {@code @PreAuthorize}; las demás responden 400. Marcar como leída es {@code PUT /{id}/leida}
+ * y {@code PUT /leidas?usuario=}, sin cuerpo, como antes.
+ */
 @RestController
 @RequestMapping("/api/notificaciones")
 @RequiredArgsConstructor
@@ -46,7 +53,7 @@ public class NotificacionRestController {
     private final GestionarSolicitudCUIntPort solicitudCU;
     private final Autorizacion autorizacion;
 
-    @PostMapping("/crear")
+    @PostMapping
     @Operation(summary = "Crear una notificación", description = "Crea una nueva notificación en el sistema")
     // Solo staff: un estudiante podría crear avisos falsos para otros usuarios
     @PreAuthorize("hasAnyRole(" + Autorizacion.ROLES_STAFF + ")")
@@ -98,12 +105,12 @@ public class NotificacionRestController {
                 HttpStatus.CREATED);
     }
 
-    @GetMapping("/usuario/{idUsuario}")
+    @GetMapping(params = {"usuario", "!leida", "!urgente", "!tipoSolicitud", "!solicitud"})
     @Operation(summary = "Obtener notificaciones por usuario", 
                description = "Obtiene todas las notificaciones de un usuario")
     @PreAuthorize("hasAnyRole('Administrador', 'Funcionario', 'Coordinador', 'Secretario', 'Estudiante')")
     public ResponseEntity<List<NotificacionDTORespuesta>> obtenerPorUsuario(
-            @Parameter(description = "ID del usuario") @Min(1) @PathVariable Integer idUsuario) {
+            @Parameter(description = "ID del usuario") @Min(1) @RequestParam(name = "usuario") Integer idUsuario) {
         // Validar permisos: estudiantes solo pueden ver sus propias notificaciones
         if (!tienePermisoParaVerNotificaciones(idUsuario)) {
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);
@@ -117,12 +124,12 @@ public class NotificacionRestController {
         return ResponseEntity.ok(respuesta);
     }
 
-    @GetMapping("/usuario/{idUsuario}/no-leidas")
+    @GetMapping(params = {"usuario", "leida=false", "!urgente", "!tipoSolicitud", "!solicitud"})
     @Operation(summary = "Obtener notificaciones no leídas por usuario",
                description = "Obtiene todas las notificaciones no leídas de un usuario")
     @PreAuthorize("hasAnyRole('Administrador', 'Funcionario', 'Coordinador', 'Secretario', 'Estudiante')")
     public ResponseEntity<List<NotificacionDTORespuesta>> obtenerNoLeidasPorUsuario(
-            @Parameter(description = "ID del usuario") @Min(1) @PathVariable Integer idUsuario) {
+            @Parameter(description = "ID del usuario") @Min(1) @RequestParam(name = "usuario") Integer idUsuario) {
         // Validar permisos: estudiantes solo pueden ver sus propias notificaciones
         if (!tienePermisoParaVerNotificaciones(idUsuario)) {
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);
@@ -136,12 +143,12 @@ public class NotificacionRestController {
         return ResponseEntity.ok(respuesta);
     }
 
-    @GetMapping("/usuario/{idUsuario}/urgentes")
+    @GetMapping(params = {"usuario", "urgente=true", "!leida", "!tipoSolicitud", "!solicitud"})
     @Operation(summary = "Obtener notificaciones urgentes por usuario",
                description = "Obtiene todas las notificaciones urgentes de un usuario")
     @PreAuthorize("hasAnyRole('Administrador', 'Funcionario', 'Coordinador', 'Secretario', 'Estudiante')")
     public ResponseEntity<List<NotificacionDTORespuesta>> obtenerUrgentesPorUsuario(
-            @Parameter(description = "ID del usuario") @Min(1) @PathVariable Integer idUsuario) {
+            @Parameter(description = "ID del usuario") @Min(1) @RequestParam(name = "usuario") Integer idUsuario) {
         // Validar permisos: estudiantes solo pueden ver sus propias notificaciones
         if (!tienePermisoParaVerNotificaciones(idUsuario)) {
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);
@@ -154,12 +161,12 @@ public class NotificacionRestController {
         return ResponseEntity.ok(respuesta);
     }
 
-    @GetMapping("/usuario/{idUsuario}/contar-no-leidas")
+    @GetMapping(value = "/conteo", params = {"usuario", "leida=false", "!urgente", "!tipoSolicitud", "!solicitud"})
     @Operation(summary = "Contar notificaciones no leídas por usuario",
                description = "Cuenta cuántas notificaciones no leídas tiene un usuario")
     @PreAuthorize("hasAnyRole('Administrador', 'Funcionario', 'Coordinador', 'Secretario', 'Estudiante')")
     public ResponseEntity<Long> contarNoLeidasPorUsuario(
-            @Parameter(description = "ID del usuario") @Min(1) @PathVariable Integer idUsuario) {
+            @Parameter(description = "ID del usuario") @Min(1) @RequestParam(name = "usuario") Integer idUsuario) {
         // Validar permisos: estudiantes solo pueden ver sus propias notificaciones
         if (!tienePermisoParaVerNotificaciones(idUsuario)) {
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);
@@ -169,12 +176,12 @@ public class NotificacionRestController {
         return ResponseEntity.ok(cantidad);
     }
 
-    @GetMapping("/tipo-solicitud/{tipoSolicitud}")
+    @GetMapping(params = {"tipoSolicitud", "!usuario", "!solicitud", "!leida", "!urgente"})
     @Operation(summary = "Obtener notificaciones por tipo de solicitud",
                description = "Obtiene todas las notificaciones de un tipo de solicitud específico")
     @PreAuthorize("hasAnyRole('Administrador', 'Funcionario', 'Coordinador', 'Secretario')")
     public ResponseEntity<List<NotificacionDTORespuesta>> obtenerPorTipoSolicitud(
-            @Parameter(description = "Tipo de solicitud") @PathVariable String tipoSolicitud) {
+            @Parameter(description = "Tipo de solicitud") @RequestParam(name = "tipoSolicitud") String tipoSolicitud) {
         List<Notificacion> notificaciones = notificacionCU.buscarPorTipoSolicitud(tipoSolicitud);
         List<NotificacionDTORespuesta> respuesta = notificaciones.stream()
                 .map(notificacionMapper::mapearDeNotificacionARespuesta)
@@ -182,12 +189,12 @@ public class NotificacionRestController {
         return ResponseEntity.ok(respuesta);
     }
 
-    @GetMapping("/solicitud/{idSolicitud}")
+    @GetMapping(params = {"solicitud", "!usuario", "!tipoSolicitud", "!leida", "!urgente"})
     @Operation(summary = "Obtener notificaciones por solicitud",
                description = "Obtiene todas las notificaciones relacionadas con una solicitud")
     @PreAuthorize("hasAnyRole('Administrador', 'Funcionario', 'Coordinador', 'Secretario', 'Estudiante')")
     public ResponseEntity<List<NotificacionDTORespuesta>> obtenerPorSolicitud(
-            @Parameter(description = "ID de la solicitud") @Min(1) @PathVariable Integer idSolicitud) {
+            @Parameter(description = "ID de la solicitud") @Min(1) @RequestParam(name = "solicitud") Integer idSolicitud) {
         List<Notificacion> notificaciones = notificacionCU.buscarPorSolicitud(idSolicitud);
         
         // Validar permisos: estudiantes solo pueden ver notificaciones de sus propias solicitudes
@@ -204,7 +211,7 @@ public class NotificacionRestController {
         return ResponseEntity.ok(respuesta);
     }
 
-    @GetMapping("/{idNotificacion}")
+    @GetMapping("/{idNotificacion:\\d+}")
     @Operation(summary = "Obtener notificación por ID",
                description = "Obtiene una notificación específica por su ID")
     @PreAuthorize("hasAnyRole('Administrador', 'Funcionario', 'Coordinador', 'Secretario', 'Estudiante')")
@@ -223,7 +230,7 @@ public class NotificacionRestController {
         return ResponseEntity.ok(notificacionMapper.mapearDeNotificacionARespuesta(notificacion));
     }
 
-    @PutMapping("/{idNotificacion}/marcar-leida")
+    @PutMapping("/{idNotificacion:\\d+}/leida")
     @Operation(summary = "Marcar notificación como leída",
                description = "Marca una notificación específica como leída")
     @PreAuthorize("hasAnyRole('Administrador', 'Funcionario', 'Coordinador', 'Secretario', 'Estudiante')")
@@ -243,12 +250,12 @@ public class NotificacionRestController {
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
-    @PutMapping("/usuario/{idUsuario}/marcar-todas-leidas")
+    @PutMapping("/leidas")
     @Operation(summary = "Marcar todas las notificaciones como leídas",
                description = "Marca todas las notificaciones de un usuario como leídas")
     @PreAuthorize("hasAnyRole('Administrador', 'Funcionario', 'Coordinador', 'Secretario', 'Estudiante')")
     public ResponseEntity<Void> marcarTodasComoLeidas(
-            @Parameter(description = "ID del usuario") @Min(1) @PathVariable Integer idUsuario) {
+            @Parameter(description = "ID del usuario") @Min(1) @RequestParam(name = "usuario") Integer idUsuario) {
         // Validar permisos: estudiantes solo pueden marcar sus propias notificaciones
         if (!tienePermisoParaVerNotificaciones(idUsuario)) {
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);
@@ -256,6 +263,19 @@ public class NotificacionRestController {
         
         notificacionCU.marcarTodasComoLeidas(idUsuario);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    }
+
+    /** {@code GET /} sin ningún filtro admitido o con una combinación que no se puede atender. */
+    @GetMapping
+    public ResponseEntity<Void> filtroNoAdmitido() {
+        throw new IllegalArgumentException("Indique un solo filtro: usuario (con leida=false o urgente=true), "
+                + "tipoSolicitud o solicitud");
+    }
+
+    /** {@code GET /conteo} sin {@code usuario} y {@code leida=false}, lo único que se puede contar. */
+    @GetMapping("/conteo")
+    public ResponseEntity<Void> conteoNoAdmitido() {
+        throw new IllegalArgumentException("El conteo requiere usuario y leida=false");
     }
 
     /**
