@@ -139,8 +139,8 @@ public Usuario crearUsuario(Usuario usuario) {
             String passwordCodificada = codificadorContrasena.codificar(usuario.getPassword());
             usuario.setPassword(passwordCodificada);
         } else {
-            // Mantener la password existente
-            usuario.setPassword(existente.getPassword());
+            // Sin contraseña nueva: el gateway conserva el hash guardado (el dominio no lo lleva, BUG-46)
+            usuario.setPassword(null);
         }
 
         objRol.getUsuarios().add(usuario);

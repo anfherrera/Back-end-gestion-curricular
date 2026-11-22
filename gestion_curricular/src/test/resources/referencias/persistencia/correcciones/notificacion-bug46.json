@@ -1,0 +1,11 @@
+{
+  "/buscarPorUsuario/0/objCurso/estudiantesInscritos/0/password": null,
+  "/buscarPorUsuario/0/objSolicitud/objCursoOfertadoVerano/estadosCursoOfertados/0/objCursoOfertadoVerano/estudiantesInscritos/0/password": null,
+  "/buscarPorUsuario/0/objUsuario/password": null,
+  "/buscarUrgentesPorUsuario/1/objCurso/estadosCursoOfertados/0/objCursoOfertadoVerano/estudiantesInscritos/0/password": null,
+  "/crearNotificacion completa/resultado/objCurso/estadosCursoOfertados/0/objCursoOfertadoVerano/estudiantesInscritos/0/password": null,
+  "/crearNotificacion completa/resultado/objSolicitud/documentos/0/objSolicitud/estadosSolicitud/0/objSolicitud/objCursoOfertadoVerano/estadosCursoOfertados/0/objCursoOfertadoVerano/estudiantesInscritos/0/password": null,
+  "/crearNotificacion completa/resultado/objUsuario/objRol/usuarios/0/password": null,
+  "/crearNotificacion completa/resultado/objUsuario/password": null,
+  "/obtenerNotificacionPorId 1/objCurso/estadosCursoOfertados/0/objCursoOfertadoVerano/estudiantesInscritos/0/password": null
+}

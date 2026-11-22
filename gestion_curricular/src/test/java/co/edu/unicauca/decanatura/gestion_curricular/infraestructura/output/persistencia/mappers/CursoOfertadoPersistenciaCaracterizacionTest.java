@@ -100,9 +100,9 @@ class CursoOfertadoPersistenciaCaracterizacionTest {
         casos.set("actualizarCurso estado sin valor", guardado(() -> gateway.actualizarCurso(
                 GrafosSolicitud.curso(null), new EstadoCursoOfertado(null, null, null, null))));
         ProyeccionValores.compararConReferencia(casos, "persistencia/curso-ofertado.json",
-                "persistencia/correcciones/curso-ofertado-bug37.json");
+                "persistencia/correcciones/curso-ofertado-bug37.json", "persistencia/correcciones/curso-ofertado-bug46.json");
         GrafoObjetos.compararConReferencia(casos, "persistencia/proyeccion/curso-ofertado.json",
-                "persistencia/correcciones/curso-ofertado-bug37.json");
+                "persistencia/correcciones/curso-ofertado-bug37.json", "persistencia/correcciones/curso-ofertado-bug46.json");
     }
 
     private static CursoOfertadoVeranoEntity cursoCompleto() {

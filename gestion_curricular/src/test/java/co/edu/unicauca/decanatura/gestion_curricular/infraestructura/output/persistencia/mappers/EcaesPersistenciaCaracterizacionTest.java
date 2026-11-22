@@ -95,8 +95,10 @@ class EcaesPersistenciaCaracterizacionTest {
         casos.set("actualizarFechasEcaes existente", guardado(() -> gateway.actualizarFechasEcaes(
                 new FechaEcaes(5, "2025-1", null, LocalDate.of(2025, 2, 5), null, null, null, null))));
         casos.set("actualizarFechasEcaes nueva", guardado(() -> gateway.actualizarFechasEcaes(nuevasFechas)));
-        ProyeccionValores.compararConReferencia(casos, "persistencia/ecaes.json");
-        GrafoObjetos.compararConReferencia(casos, "persistencia/proyeccion/ecaes.json");
+        ProyeccionValores.compararConReferencia(casos, "persistencia/ecaes.json",
+                "persistencia/correcciones/ecaes-bug46.json");
+        GrafoObjetos.compararConReferencia(casos, "persistencia/proyeccion/ecaes.json",
+                "persistencia/correcciones/proyeccion-ecaes-bug46.json");
     }
 
     private static SolicitudEcaesEntity ecaesEntity() {

@@ -108,7 +108,8 @@ class UsuarioRolPersistenciaCaracterizacionTest {
         sinRelacionesDominio.setCursosOfertadosInscritos(null);
         sinRelacionesDominio.setObjRol(new Rol(null, "SIN_ID", null));
         casos.set("actualizarUsuario sin relaciones", guardado(() -> gateway.actualizarUsuario(sinRelacionesDominio)));
-        GrafoObjetos.compararConReferencia(casos, "persistencia/usuario.json");
+        GrafoObjetos.compararConReferencia(casos, "persistencia/usuario.json",
+                "persistencia/correcciones/usuario-bug46.json");
     }
 
     @Test
@@ -144,7 +145,8 @@ class UsuarioRolPersistenciaCaracterizacionTest {
         casos.set("guardarRol nulos", guardado(() -> gateway.guardarRol(new Rol())));
         casos.set("actualizarRol", guardado(() -> gateway.actualizarRol(new Rol(1, "ADMIN", new ArrayList<>()))));
         casos.set("actualizarRol inexistente", guardado(() -> gateway.actualizarRol(new Rol(9, "X", null))));
-        GrafoObjetos.compararConReferencia(casos, "persistencia/rol.json");
+        GrafoObjetos.compararConReferencia(casos, "persistencia/rol.json",
+                "persistencia/correcciones/rol-bug46.json");
     }
 
     private static GestionarUsuarioGatewayImplAdapter usuarioGateway(UsuarioRepositoryInt repositorio) {

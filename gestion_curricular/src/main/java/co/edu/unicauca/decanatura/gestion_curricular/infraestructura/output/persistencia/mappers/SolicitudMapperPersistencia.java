@@ -353,7 +353,6 @@ public final class SolicitudMapperPersistencia {
             usuario.setCorreo(entidad.getCorreo());
             usuario.setCodigo(entidad.getCodigo());
             usuario.setEstadoUsuario(entidad.isEstado_usuario());
-            usuario.setPassword(entidad.getPassword());
             if (entidad.getObjRol() != null) {
                 usuario.setObjRol(new Rol(entidad.getObjRol().getId_rol(), entidad.getObjRol().getNombre(), null));
             }

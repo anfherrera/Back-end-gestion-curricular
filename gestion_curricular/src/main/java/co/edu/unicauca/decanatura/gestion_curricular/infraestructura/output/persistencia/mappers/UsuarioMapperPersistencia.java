@@ -19,6 +19,10 @@ import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.pers
  * sus cursos, y su rol y su programa son copias sin relaciones. La única excepción es un rol sin id
  * al pasar a entidad, que se copia completo, con sus usuarios. Un rol se mapea con sus usuarios:
  * una lista nula queda nula en el dominio y vacía en la entidad.
+ *
+ * BUG-46: el hash de la contraseña no pasa al dominio, porque algunas respuestas serializan el usuario tal
+ * cual. Solo el login lo lee, de la entidad. Al pasar a entidad se copia el que traiga el dominio: el
+ * codificado de una contraseña nueva o null, que {@code actualizarUsuario} del gateway sustituye por el guardado.
  */
 public final class UsuarioMapperPersistencia {
 
@@ -33,7 +37,6 @@ public final class UsuarioMapperPersistencia {
         usuario.setCodigo(entidad.getCodigo());
         usuario.setCedula(entidad.getCedula());
         usuario.setCorreo(entidad.getCorreo());
-        usuario.setPassword(entidad.getPassword());
         usuario.setEstadoUsuario(entidad.isEstado_usuario());
         RolEntity rol = entidad.getObjRol();
         if (rol != null) {

@@ -90,8 +90,10 @@ class SolicitudesPersistenciaCaracterizacionTest {
             gateway.cambiarEstadoSolicitudReingreso(9, estadoSimple());
             return null;
         }));
-        ProyeccionValores.compararConReferencia(casos, "persistencia/reingreso.json");
-        GrafoObjetos.compararConReferencia(casos, "persistencia/proyeccion/reingreso.json");
+        ProyeccionValores.compararConReferencia(casos, "persistencia/reingreso.json",
+                "persistencia/correcciones/reingreso-bug46.json");
+        GrafoObjetos.compararConReferencia(casos, "persistencia/proyeccion/reingreso.json",
+                "persistencia/correcciones/proyeccion-reingreso-bug46.json");
     }
 
     @Test
@@ -124,8 +126,10 @@ class SolicitudesPersistenciaCaracterizacionTest {
             gateway.cambiarEstadoSolicitud(7, estadoConSolicitud());
             return null;
         }));
-        ProyeccionValores.compararConReferencia(casos, "persistencia/homologacion.json");
-        GrafoObjetos.compararConReferencia(casos, "persistencia/proyeccion/homologacion.json");
+        ProyeccionValores.compararConReferencia(casos, "persistencia/homologacion.json",
+                "persistencia/correcciones/homologacion-bug46.json");
+        GrafoObjetos.compararConReferencia(casos, "persistencia/proyeccion/homologacion.json",
+                "persistencia/correcciones/proyeccion-homologacion-bug46.json");
     }
 
     @Test
@@ -149,8 +153,10 @@ class SolicitudesPersistenciaCaracterizacionTest {
         nueva.setTituloTrabajoGrado("Tesis nueva");
         casos.set("guardar completa", guardado(() -> gateway.guardar(nueva)));
         casos.set("guardar vacia", guardado(() -> gateway.guardar(vaciaDominio(new SolicitudPazYSalvo()))));
-        ProyeccionValores.compararConReferencia(casos, "persistencia/pazysalvo.json");
-        GrafoObjetos.compararConReferencia(casos, "persistencia/proyeccion/pazysalvo.json");
+        ProyeccionValores.compararConReferencia(casos, "persistencia/pazysalvo.json",
+                "persistencia/correcciones/pazysalvo-bug46.json");
+        GrafoObjetos.compararConReferencia(casos, "persistencia/proyeccion/pazysalvo.json",
+                "persistencia/correcciones/proyeccion-pazysalvo-bug46.json");
     }
 
     @Test
@@ -164,8 +170,10 @@ class SolicitudesPersistenciaCaracterizacionTest {
         casos.set("guardar con solicitud", guardado(() -> gateway.guarEstadoSolicitud(estadoConSolicitud())));
         casos.set("guardar sin estado", guardado(() -> gateway.guarEstadoSolicitud(new EstadoSolicitud(null, null, null, null, null))));
         casos.set("guardar nulo", guardado(() -> gateway.guarEstadoSolicitud(null)));
-        ProyeccionValores.compararConReferencia(casos, "persistencia/estado-solicitud.json");
-        GrafoObjetos.compararConReferencia(casos, "persistencia/proyeccion/estado-solicitud.json");
+        ProyeccionValores.compararConReferencia(casos, "persistencia/estado-solicitud.json",
+                "persistencia/correcciones/estado-solicitud-bug46.json");
+        GrafoObjetos.compararConReferencia(casos, "persistencia/proyeccion/estado-solicitud.json",
+                "persistencia/correcciones/proyeccion-estado-solicitud-bug46.json");
     }
 
     @Test
@@ -195,8 +203,10 @@ class SolicitudesPersistenciaCaracterizacionTest {
         casos.set("actualizarDocumento con solicitud", guardado(() -> gateway.actualizarDocumento(cambio)));
         Documento sinSolicitud = new Documento(4, "otro.pdf", null, null, true, null, 9, null);
         casos.set("actualizarDocumento sin solicitud", guardado(() -> gateway.actualizarDocumento(sinSolicitud)));
-        ProyeccionValores.compararConReferencia(casos, "persistencia/documento.json");
-        GrafoObjetos.compararConReferencia(casos, "persistencia/proyeccion/documento.json");
+        ProyeccionValores.compararConReferencia(casos, "persistencia/documento.json",
+                "persistencia/correcciones/documento-bug46.json");
+        GrafoObjetos.compararConReferencia(casos, "persistencia/proyeccion/documento.json",
+                "persistencia/correcciones/proyeccion-documento-bug46.json");
     }
 
     @Test
@@ -231,8 +241,10 @@ class SolicitudesPersistenciaCaracterizacionTest {
                 GrafosSolicitud.FECHA_1, null, true, "ver", "/r/7", usuarioConId(1),
                 GrafosSolicitud.completar(new SolicitudReingreso()), cursoConId(4));
         casos.set("crearNotificacion completa", guardado(() -> gateway.crearNotificacion(nueva)));
-        ProyeccionValores.compararConReferencia(casos, "persistencia/notificacion.json");
-        GrafoObjetos.compararConReferencia(casos, "persistencia/proyeccion/notificacion.json");
+        ProyeccionValores.compararConReferencia(casos, "persistencia/notificacion.json",
+                "persistencia/correcciones/notificacion-bug46.json");
+        GrafoObjetos.compararConReferencia(casos, "persistencia/proyeccion/notificacion.json",
+                "persistencia/correcciones/proyeccion-notificacion-bug46.json");
     }
 
     private static SolicitudHomologacionEntity homologacionEntity() {

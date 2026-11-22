@@ -51,12 +51,15 @@ public final class ProyeccionValores {
         assertThat(normalizarCasos(casos)).isEqualTo(normalizarCasos(referencia));
     }
 
-    /** Compara con la referencia después de aplicarle una corrección de {@link Correcciones}. */
-    public static void compararConReferencia(JsonNode casos, String rutaReferencia, String rutaCorreccion)
-            throws Exception {
+    /** Compara con la referencia después de aplicarle, en orden, una o más correcciones de {@link Correcciones}. */
+    public static void compararConReferencia(JsonNode casos, String rutaReferencia, String rutaCorreccion,
+            String... otrasCorrecciones) throws Exception {
         JsonNode referencia = JSON.readTree(Files.readString(Path.of("src/test/resources/referencias", rutaReferencia)));
-        assertThat(normalizarCasos(casos))
-                .isEqualTo(normalizarCasos(Correcciones.aplicar(referencia, rutaCorreccion)));
+        JsonNode esperado = Correcciones.aplicar(referencia, rutaCorreccion);
+        for (String otra : otrasCorrecciones) {
+            esperado = Correcciones.aplicar(esperado, otra);
+        }
+        assertThat(normalizarCasos(casos)).isEqualTo(normalizarCasos(esperado));
     }
 
     public static JsonNode normalizarCasos(JsonNode casos) {

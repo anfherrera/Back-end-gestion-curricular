@@ -105,10 +105,14 @@ public class GestionarUsuarioGatewayImplAdapter implements GestionarUsuarioGatew
     @Override
     @Transactional
     public Usuario actualizarUsuario(Usuario usuario) {
-        usuarioRepository.findById(usuario.getIdUsuario())
+        UsuarioEntity existente = usuarioRepository.findById(usuario.getIdUsuario())
                 .orElseThrow(() -> new RuntimeException("Usuario no encontrado con ID: " + usuario.getIdUsuario()));
 
         UsuarioEntity entity = UsuarioMapperPersistencia.aEntidad(usuario);
+        if (entity.getPassword() == null) {
+            // BUG-46: el dominio no lleva el hash; sin contraseña nueva se conserva la guardada.
+            entity.setPassword(existente.getPassword());
+        }
         UsuarioEntity updated = usuarioRepository.save(entity);
         return UsuarioMapperPersistencia.aDominio(updated);
     }
@@ -188,20 +192,16 @@ public class GestionarUsuarioGatewayImplAdapter implements GestionarUsuarioGatew
 
     @Override
     public UserDetails loadUserByUsername(String correo) throws UsernameNotFoundException {
-        Usuario usuario = usuarioRepository.buscarPorCorreo(correo)
-                .map(entity -> UsuarioMapperPersistencia.aDominio(entity))
+        // BUG-46: el login es lo único que necesita el hash, y lo lee de la entidad, no del dominio.
+        UsuarioEntity usuario = usuarioRepository.buscarPorCorreo(correo)
                 .orElseThrow(() -> new UsernameNotFoundException("Usuario no encontrado con correo: " + correo));
 
-        if (usuario == null) {
-            throw new UsernameNotFoundException("Usuario no encontrado con correo: " + correo);
-        }
-
         List<SimpleGrantedAuthority> authorities = new ArrayList<>();
-        
+
         if (usuario.getObjRol() == null || usuario.getObjRol().getNombre() == null) {
             throw new UsernameNotFoundException("El usuario no tiene un rol asignado: " + correo);
         }
-        
+
         String rolNombre = usuario.getObjRol().getNombre().trim();
         authorities.add(new SimpleGrantedAuthority("ROLE_" + rolNombre));
 

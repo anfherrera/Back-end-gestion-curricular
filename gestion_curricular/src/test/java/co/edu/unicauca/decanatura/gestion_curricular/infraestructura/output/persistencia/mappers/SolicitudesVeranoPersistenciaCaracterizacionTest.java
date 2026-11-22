@@ -93,9 +93,9 @@ class SolicitudesVeranoPersistenciaCaracterizacionTest {
                 GrafosSolicitud.completar(new Solicitud()), null)));
         // BUG-36: una solicitud de tipo no reconocido se rechaza antes de guardar ningún estado
         ProyeccionValores.compararConReferencia(casos, "persistencia/solicitud.json",
-                "persistencia/correcciones/solicitud-bug36.json");
+                "persistencia/correcciones/solicitud-bug36.json", "persistencia/correcciones/solicitud-bug46.json");
         GrafoObjetos.compararConReferencia(casos, "persistencia/proyeccion/solicitud.json",
-                "persistencia/correcciones/solicitud-bug36.json");
+                "persistencia/correcciones/solicitud-bug36.json", "persistencia/correcciones/proyeccion-solicitud-bug46.json");
     }
 
     @Test
@@ -173,8 +173,10 @@ class SolicitudesVeranoPersistenciaCaracterizacionTest {
                 () -> gateway.crearSolicitudCursoVeranoInscripcion(inscripcion(nuevoInscripcion))));
         casos.set("crearInscripcion sin curso", guardado(
                 () -> gateway.crearSolicitudCursoVeranoInscripcion(inscripcion(null))));
-        ProyeccionValores.compararConReferencia(casos, "persistencia/solicitud-curso-verano.json");
-        GrafoObjetos.compararConReferencia(casos, "persistencia/proyeccion/solicitud-curso-verano.json");
+        ProyeccionValores.compararConReferencia(casos, "persistencia/solicitud-curso-verano.json",
+                "persistencia/correcciones/solicitud-curso-verano-bug46.json");
+        GrafoObjetos.compararConReferencia(casos, "persistencia/proyeccion/solicitud-curso-verano.json",
+                "persistencia/correcciones/proyeccion-solicitud-curso-verano-bug46.json");
     }
 
     /** 1 preinscripción, 2 inscripción, 3 ECAES, 4 reingreso, 5 homologación, 6 paz y salvo, 7 base. */
