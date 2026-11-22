@@ -42,7 +42,7 @@ import co.edu.unicauca.decanatura.gestion_curricular.seguridad.Autorizacion;
 import co.edu.unicauca.decanatura.gestion_curricular.soporte.Correcciones;
 
 /**
- * Fija el formato de {@code fechaSubida} de {@code POST /api/archivos/subir/pdf} con el {@code ObjectMapper} por
+ * Fija el formato de {@code fechaSubida} de {@code POST /api/archivos} con el {@code ObjectMapper} por
  * defecto de MockMvc y con el que configura Spring Boot, el de la aplicación. La fecha es la del momento de la
  * petición: solo se sustituye por un marcador, que nombra su formato, si es de esta ejecución.
  */
@@ -84,7 +84,7 @@ class SubirPdfFechaCaracterizacionTest {
     }
 
     private void registrar(ObjectNode resultados, String nombre, MockMvc mvc) throws Exception {
-        var peticion = multipart("/api/archivos/subir/pdf")
+        var peticion = multipart("/api/archivos")
             .file(new MockMultipartFile("file", "comprobante.pdf", "application/pdf",
                 "%PDF-1.4 contenido".getBytes(UTF_8)));
         long antes = System.currentTimeMillis();

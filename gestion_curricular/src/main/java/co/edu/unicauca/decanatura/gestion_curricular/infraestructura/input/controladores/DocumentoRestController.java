@@ -33,7 +33,7 @@ public class DocumentoRestController {
     private final GestionarArchivosCUIntPort gestionarArchivos;
     private final Autorizacion autorizacion;
 
-    @GetMapping("/buscarPorId/{id}")
+    @GetMapping("/{id:\\d+}")
     @PreAuthorize("@autorizacion.puedeVerDocumento(#id)")
     public ResponseEntity<DocumentosDTORespuesta> buscarDocumentoPorId(@Min(1) @PathVariable Integer id) {
         Documento documento = documentoCU.buscarDocumentoId(id);
@@ -46,25 +46,28 @@ public class DocumentoRestController {
         );
     }
 
-    /** Solo funcionarios, coordinadores y demás staff comentan documentos de una solicitud. */
-    @PutMapping("/agregarComentario")
+    /**
+     * Solo funcionarios, coordinadores y demás staff comentan documentos de una solicitud.
+     * El documento es el de la ruta; si el cuerpo trae {@code idDocumento}, se ignora.
+     */
+    @PutMapping("/{id:\\d+}/comentarios")
     @PreAuthorize("hasAnyRole(" + Autorizacion.ROLES_STAFF + ")")
-    public ResponseEntity<Void> agregarComentario(@RequestBody ComentarioDocumentoDTOPeticion peticion) {
+    public ResponseEntity<Void> agregarComentario(@PathVariable Integer id,
+            @RequestBody ComentarioDocumentoDTOPeticion peticion) {
         Usuario usuario = autorizacion.usuarioActual();
         String nombreUsuario = usuario != null ? usuario.getNombreCompleto() : null;
         String rolUsuario = usuario != null && usuario.getObjRol() != null ? usuario.getObjRol().getNombre() : null;
-        Integer idDocumento = peticion.getIdDocumento();
         String comentarioNuevo = peticion.getComentario();
-        documentoCU.añadirComentario(idDocumento, comentarioNuevo, nombreUsuario, rolUsuario);
+        documentoCU.añadirComentario(id, comentarioNuevo, nombreUsuario, rolUsuario);
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
 
     /**
      * Descarga el archivo de un documento por su ID.
-     * GET /api/documentos/{id}/descargar
+     * GET /api/documentos/{id}/archivo
      * Usa ruta_documento si existe; si no, nombre. Devuelve 404 si no existe documento o archivo.
      */
-    @GetMapping("/{id}/descargar")
+    @GetMapping("/{id:\\d+}/archivo")
     @PreAuthorize("@autorizacion.puedeVerDocumento(#id)")
     public ResponseEntity<byte[]> descargarDocumentoPorId(@Min(1) @PathVariable Integer id) {
         Documento documento = documentoCU.buscarDocumentoId(id);

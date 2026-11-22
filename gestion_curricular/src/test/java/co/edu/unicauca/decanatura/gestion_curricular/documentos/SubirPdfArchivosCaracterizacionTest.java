@@ -38,7 +38,7 @@ import co.edu.unicauca.decanatura.gestion_curricular.seguridad.Autorizacion;
 import co.edu.unicauca.decanatura.gestion_curricular.soporte.Correcciones;
 
 /**
- * Caracterización de {@code POST /api/archivos/subir/pdf} antes de llevar su registro al caso de uso (DUP-5).
+ * Caracterización de {@code POST /api/archivos} antes de llevar su registro al caso de uso (DUP-5).
  * Fija estado, cuerpo, llamadas en orden (guardado, consultas, autorización, registro) y el documento registrado.
  */
 class SubirPdfArchivosCaracterizacionTest {
@@ -106,8 +106,9 @@ class SubirPdfArchivosCaracterizacionTest {
             Files.writeString(referencia, json.writerWithDefaultPrettyPrinter().writeValueAsString(actual));
         }
         // BUG-20: el id se recorta y debe ser de una solicitud existente; se asocia al destino real
-        assertThat(actual).isEqualTo(Correcciones.aplicar(json.readTree(Files.readString(referencia)),
-            "documentos/correcciones/subir-pdf-archivos-bug20.json"));
+        // EST-7, paso 3: la ruta pasa a POST /api/archivos y cambia la url del error
+        assertThat(actual).isEqualTo(Correcciones.aplicar(Correcciones.aplicar(json.readTree(Files.readString(referencia)),
+            "documentos/correcciones/subir-pdf-archivos-bug20.json"), "documentos/correcciones/subir-pdf-archivos-est7.json"));
     }
 
     private JsonNode ejecutar(Caso c, ObjectMapper json) throws Exception {
@@ -181,7 +182,7 @@ class SubirPdfArchivosCaracterizacionTest {
             case "noPdf" -> "no es pdf".getBytes(StandardCharsets.UTF_8);
             default -> "%PDF-1.4 contenido".getBytes(StandardCharsets.UTF_8);
         };
-        var request = multipart("/api/archivos/subir/pdf")
+        var request = multipart("/api/archivos")
             .file(new MockMultipartFile("file", "comprobante.pago.pdf", "application/pdf", contenido));
         c.params().forEach(request::param);
 

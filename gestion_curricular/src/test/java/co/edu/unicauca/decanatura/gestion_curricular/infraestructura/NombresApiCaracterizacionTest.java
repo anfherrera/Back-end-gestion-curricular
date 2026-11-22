@@ -60,13 +60,13 @@ class NombresApiCaracterizacionTest {
                 .setControllerAdvice(new RestApiExceptionHandler()).build();
 
         var resultados = json.createObjectNode();
-        resultados.set("documento", respuesta(mvc, post("/api/documentos/generar")
+        resultados.set("documento", respuesta(mvc, post("/api/documentos-generados")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content("""
                     {"idSolicitud":7,"tipoDocumento":"OFICIO","datosDocumento":{"numeroDocumento":"004"},
                      "datosSolicitud":{"nombreEstudiante":"Ana Pérez"}}
                     """)));
-        resultados.set("plantillas", respuesta(mvc, get("/api/documentos/templates/reingreso")));
+        resultados.set("plantillas", respuesta(mvc, get("/api/documentos-generados/plantillas/reingreso")));
         resultados.set("crear", respuesta(mvc, post("/api/cursos-intersemestrales/cursos-verano")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content("""

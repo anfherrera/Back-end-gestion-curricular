@@ -61,10 +61,19 @@ class DescargasCaracterizacionTest {
             var solicitudR = new SolicitudReingreso();
             solicitudR.setDocumentos(List.of(documento));
             when(reingreso.obtenerSolicitudReingresoPorId(7)).thenReturn(solicitudR);
-            for (String ruta : new String[]{"/api/archivos/descargar/pdf", "/api/archivos/descargar/pdf/inscripcion/7",
-                    "/api/cursos-intersemestrales/inscripciones/7/comprobante",
-                    "/api/solicitudes-homologacion/descargarOficio/7", "/api/solicitudes-reingreso/descargarOficio/7"}) {
-                var resultado = mvc.perform(get(ruta).param("filename", nombre)).andReturn();
+            // La clave conserva la ruta con la que se grabó la referencia; el paso 3 de EST-7 cambió las dos de archivos
+            Map<String, String> rutas = new LinkedHashMap<>();
+            rutas.put("/api/archivos/descargar/pdf", "/api/archivos?nombre=");
+            rutas.put("/api/archivos/descargar/pdf/inscripcion/7", "/api/archivos/inscripciones/7");
+            rutas.put("/api/cursos-intersemestrales/inscripciones/7/comprobante", "/api/cursos-intersemestrales/inscripciones/7/comprobante");
+            rutas.put("/api/solicitudes-homologacion/descargarOficio/7", "/api/solicitudes-homologacion/descargarOficio/7");
+            rutas.put("/api/solicitudes-reingreso/descargarOficio/7", "/api/solicitudes-reingreso/descargarOficio/7");
+            for (var entrada : rutas.entrySet()) {
+                String ruta = entrada.getKey();
+                var peticion = entrada.getValue().endsWith("?nombre=")
+                    ? get(entrada.getValue().replace("?nombre=", "")).param("nombre", nombre)
+                    : get(entrada.getValue()).param("filename", nombre);
+                var resultado = mvc.perform(peticion).andReturn();
                 if (resultado.getRequest().isAsyncStarted()) {
                     resultado.getAsyncResult(10000);
                     resultado = mvc.perform(asyncDispatch(resultado)).andReturn();

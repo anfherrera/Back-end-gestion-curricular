@@ -65,7 +65,7 @@ class GeneracionDocumentosCaracterizacionTest {
 
         ObjectNode respuestas = JSON.createObjectNode();
         for (String proceso : List.of("homologacion", "reingreso", "paz-salvo", "desconocido")) {
-            var r = mvc.perform(get("/api/documentos/templates/" + proceso)).andReturn().getResponse();
+            var r = mvc.perform(get("/api/documentos-generados/plantillas/" + proceso)).andReturn().getResponse();
             ObjectNode salida = cabeceras(r);
             salida.set("json", JSON.readTree(r.getContentAsByteArray()));
             respuestas.set("plantillas-" + proceso, salida);
@@ -77,7 +77,7 @@ class GeneracionDocumentosCaracterizacionTest {
                         "datosSolicitud", Map.of("nombreEstudiante", "Ana Pérez", "codigoEstudiante", "1046",
                                 "programa", "Ingeniería de Sistemas", "fechaSolicitud", "2025-02-03", "cedulaEstudiante", "CEDULA-MAPA",
                                 "programaOrigen", "Origen del mapa", "programaDestino", "Destino del mapa", "periodoAcademico", "2024-1"));
-                var r = mvc.perform(post("/api/documentos/generar").contentType(MediaType.APPLICATION_JSON)
+                var r = mvc.perform(post("/api/documentos-generados").contentType(MediaType.APPLICATION_JSON)
                         .content(JSON.writeValueAsBytes(cuerpo))).andReturn().getResponse();
                 respuestas.set(tipo + "-" + id, documento(r, false));
             }

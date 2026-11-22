@@ -35,7 +35,7 @@ import co.edu.unicauca.decanatura.gestion_curricular.seguridad.Autorizacion;
 import co.edu.unicauca.decanatura.gestion_curricular.soporte.Correcciones;
 
 /**
- * Fija el orden de las claves y el tipo JSON de cada valor de {@code POST /api/archivos/subir/pdf}
+ * Fija el orden de las claves y el tipo JSON de cada valor de {@code POST /api/archivos}
  * antes de tipar su respuesta (ARQ-10). Los valores ya los fija {@link SubirPdfArchivosCaracterizacionTest}.
  */
 class SubirPdfClavesCaracterizacionTest {
@@ -92,7 +92,7 @@ class SubirPdfClavesCaracterizacionTest {
         byte[] contenido = "noPdf".equals(archivo)
             ? "no es pdf".getBytes(StandardCharsets.UTF_8)
             : "%PDF-1.4 contenido".getBytes(StandardCharsets.UTF_8);
-        var peticion = multipart("/api/archivos/subir/pdf")
+        var peticion = multipart("/api/archivos")
             .file(new MockMultipartFile("file", "comprobante.pdf", "application/pdf", contenido));
         for (int i = 0; i < params.length; i += 2) {
             peticion.param(params[i], params[i + 1]);

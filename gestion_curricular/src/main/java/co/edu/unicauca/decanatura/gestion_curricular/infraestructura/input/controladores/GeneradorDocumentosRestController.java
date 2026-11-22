@@ -15,7 +15,7 @@ import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.Respu
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.dto.peticion.GenerarDocumentoDTOPeticion;
 
 @RestController("documentGeneratorController")
-@RequestMapping("/api/documentos")
+@RequestMapping("/api/documentos-generados")
 @RequiredArgsConstructor
 public class GeneradorDocumentosRestController {
 
@@ -25,7 +25,7 @@ public class GeneradorDocumentosRestController {
      * Generar documento usando plantilla
      */
     @Operation(tags = "document-generator-controller")
-    @PostMapping("/generar")
+    @PostMapping
     public ResponseEntity<byte[]> generarDocumento(@RequestBody GenerarDocumentoDTOPeticion request) throws IOException {
         byte[] documentBytes = documentGeneratorService.generarDocumento(request.getIdSolicitud(), request.getTipoDocumento(),
                 request.getDatosDocumento(), request.getDatosSolicitud());
@@ -41,7 +41,7 @@ public class GeneradorDocumentosRestController {
      * Obtener plantillas disponibles para un proceso
      */
     @Operation(tags = "document-generator-controller")
-    @GetMapping("/templates/{proceso}")
+    @GetMapping("/plantillas/{proceso}")
     public ResponseEntity<?> getTemplates(@PathVariable String proceso) {
         return ResponseEntity.ok(documentGeneratorService.getTemplates(proceso));
     }

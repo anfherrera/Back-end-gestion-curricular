@@ -31,7 +31,7 @@ class DescargaDocumentoPorIdCaracterizacionTest {
             documento.setNombre(nombre);
             documento.setRutaDocumento("carpeta/archivo");
             when(documentos.buscarDocumentoId(7)).thenReturn(documento);
-            var respuesta = mvc.perform(get("/api/documentos/7/descargar")).andReturn().getResponse();
+            var respuesta = mvc.perform(get("/api/documentos/7/archivo")).andReturn().getResponse();
             assertThat(respuesta.getStatus()).isEqualTo(200);
             assertThat(respuesta.getContentAsByteArray()).isEqualTo(contenido);
             Map<String, List<String>> headers = new TreeMap<>();

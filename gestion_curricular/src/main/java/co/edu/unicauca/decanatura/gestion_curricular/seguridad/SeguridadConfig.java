@@ -98,7 +98,7 @@ public class SeguridadConfig {
                 .requestMatchers("/api/cursos-verano/**")
                     .hasAnyRole("Administrador", "Funcionario", "Coordinador", "Secretario", "Decano")
                 // Generación de documentos desde plantillas: solo staff
-                .requestMatchers("/api/documentos/generar", "/api/documentos/templates/**")
+                .requestMatchers("/api/documentos-generados", "/api/documentos-generados/**")
                     .hasAnyRole("Administrador", "Funcionario", "Coordinador", "Secretario", "Decano")
                 // Todos los demás endpoints requieren autenticación
                 .anyRequest().authenticated()

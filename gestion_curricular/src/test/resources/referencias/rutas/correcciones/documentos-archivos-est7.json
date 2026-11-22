@@ -1,0 +1,707 @@
+{
+  "GET /api/archivos": {
+    "status": 400,
+    "tipo": "application/json",
+    "cuerpo": {
+      "codigoError": "GC-0400",
+      "mensaje": "La petición no tiene el formato esperado: revise los parámetros y el cuerpo enviados",
+      "codigoHttp": 400,
+      "url": "http://localhost/api/archivos",
+      "metodo": "GET"
+    },
+    "llamadas": []
+  },
+  "GET /api/archivos/descargar/pdf": {
+    "status": 404,
+    "tipo": "application/json",
+    "cuerpo": {
+      "codigoError": "GC-0404",
+      "mensaje": "El recurso solicitado no existe",
+      "codigoHttp": 404,
+      "url": "http://localhost/api/archivos/descargar/pdf",
+      "metodo": "GET"
+    },
+    "llamadas": []
+  },
+  "GET /api/archivos/descargar/pdf/inscripcion/0": {
+    "status": 404,
+    "tipo": "application/json",
+    "cuerpo": {
+      "codigoError": "GC-0404",
+      "mensaje": "El recurso solicitado no existe",
+      "codigoHttp": 404,
+      "url": "http://localhost/api/archivos/descargar/pdf/inscripcion/0",
+      "metodo": "GET"
+    },
+    "llamadas": []
+  },
+  "GET /api/archivos/descargar/pdf/inscripcion/7": {
+    "status": 404,
+    "tipo": "application/json",
+    "cuerpo": {
+      "codigoError": "GC-0404",
+      "mensaje": "El recurso solicitado no existe",
+      "codigoHttp": 404,
+      "url": "http://localhost/api/archivos/descargar/pdf/inscripcion/7",
+      "metodo": "GET"
+    },
+    "llamadas": []
+  },
+  "GET /api/archivos/descargar/pdf/inscripcion/8": {
+    "status": 404,
+    "tipo": "application/json",
+    "cuerpo": {
+      "codigoError": "GC-0404",
+      "mensaje": "El recurso solicitado no existe",
+      "codigoHttp": 404,
+      "url": "http://localhost/api/archivos/descargar/pdf/inscripcion/8",
+      "metodo": "GET"
+    },
+    "llamadas": []
+  },
+  "GET /api/archivos/descargar/pdf/inscripcion/9": {
+    "status": 404,
+    "tipo": "application/json",
+    "cuerpo": {
+      "codigoError": "GC-0404",
+      "mensaje": "El recurso solicitado no existe",
+      "codigoHttp": 404,
+      "url": "http://localhost/api/archivos/descargar/pdf/inscripcion/9",
+      "metodo": "GET"
+    },
+    "llamadas": []
+  },
+  "GET /api/archivos/descargar/pdf/inscripcion/abc": {
+    "status": 404,
+    "tipo": "application/json",
+    "cuerpo": {
+      "codigoError": "GC-0404",
+      "mensaje": "El recurso solicitado no existe",
+      "codigoHttp": 404,
+      "url": "http://localhost/api/archivos/descargar/pdf/inscripcion/abc",
+      "metodo": "GET"
+    },
+    "llamadas": []
+  },
+  "GET /api/archivos/descargar/pdf?filename=ajeno.pdf": {
+    "status": 404,
+    "tipo": "application/json",
+    "cuerpo": {
+      "codigoError": "GC-0404",
+      "mensaje": "El recurso solicitado no existe",
+      "codigoHttp": 404,
+      "url": "http://localhost/api/archivos/descargar/pdf",
+      "metodo": "GET"
+    },
+    "llamadas": []
+  },
+  "GET /api/archivos/descargar/pdf?filename=ajeno.pdf (estudiante)": {
+    "status": 404,
+    "tipo": "application/json",
+    "cuerpo": {
+      "codigoError": "GC-0404",
+      "mensaje": "El recurso solicitado no existe",
+      "codigoHttp": 404,
+      "url": "http://localhost/api/archivos/descargar/pdf",
+      "metodo": "GET"
+    },
+    "llamadas": []
+  },
+  "GET /api/archivos/descargar/pdf?filename=existe.pdf": {
+    "status": 404,
+    "tipo": "application/json",
+    "cuerpo": {
+      "codigoError": "GC-0404",
+      "mensaje": "El recurso solicitado no existe",
+      "codigoHttp": 404,
+      "url": "http://localhost/api/archivos/descargar/pdf",
+      "metodo": "GET"
+    },
+    "llamadas": []
+  },
+  "GET /api/archivos/descargar/pdf?filename=falta.pdf": {
+    "status": 404,
+    "tipo": "application/json",
+    "cuerpo": {
+      "codigoError": "GC-0404",
+      "mensaje": "El recurso solicitado no existe",
+      "codigoHttp": 404,
+      "url": "http://localhost/api/archivos/descargar/pdf",
+      "metodo": "GET"
+    },
+    "llamadas": []
+  },
+  "GET /api/archivos/descargar/pdf?filename=oficio reingreso&1 á.pdf": {
+    "status": 404,
+    "tipo": "application/json",
+    "cuerpo": {
+      "codigoError": "GC-0404",
+      "mensaje": "El recurso solicitado no existe",
+      "codigoHttp": 404,
+      "url": "http://localhost/api/archivos/descargar/pdf",
+      "metodo": "GET"
+    },
+    "llamadas": []
+  },
+  "GET /api/archivos/inscripciones/0": {
+    "status": 400,
+    "tipo": "application/json",
+    "Content-Length": "38",
+    "cuerpo": {
+      "error": "ID de inscripcion invalido"
+    },
+    "llamadas": []
+  },
+  "GET /api/archivos/inscripciones/7": {
+    "status": 200,
+    "tipo": "application/pdf",
+    "Content-Disposition": "attachment; filename=\"existe.pdf\"",
+    "Cache-Control": "private, max-age=3600",
+    "Content-Length": "23",
+    "cuerpo": "base64:JVBERi0xLjQgY29udGVuaWRvIGZpam8=",
+    "llamadas": []
+  },
+  "GET /api/archivos/inscripciones/8": {
+    "status": 404,
+    "tipo": "application/json",
+    "Content-Length": "55",
+    "cuerpo": {
+      "error": "Inscripcion no encontrada",
+      "idInscripcion": 8
+    },
+    "llamadas": []
+  },
+  "GET /api/archivos/inscripciones/9": {
+    "status": 404,
+    "tipo": "application/json",
+    "Content-Length": "76",
+    "cuerpo": {
+      "error": "No hay documentos asociados a esta inscripcion",
+      "idInscripcion": 9
+    },
+    "llamadas": []
+  },
+  "GET /api/archivos?nombre=ajeno.pdf": {
+    "status": 404,
+    "tipo": null,
+    "cuerpo": null,
+    "llamadas": []
+  },
+  "GET /api/archivos?nombre=ajeno.pdf (estudiante)": {
+    "status": 403,
+    "tipo": null,
+    "cuerpo": null,
+    "llamadas": []
+  },
+  "GET /api/archivos?nombre=existe.pdf": {
+    "status": 200,
+    "tipo": "application/pdf",
+    "Content-Disposition": "attachment; filename=\"existe.pdf\"; filename*=UTF-8''existe.pdf",
+    "Cache-Control": "private, max-age=3600",
+    "Content-Length": "23",
+    "cuerpo": "base64:JVBERi0xLjQgY29udGVuaWRvIGZpam8=",
+    "llamadas": []
+  },
+  "GET /api/archivos?nombre=falta.pdf": {
+    "status": 404,
+    "tipo": null,
+    "cuerpo": null,
+    "llamadas": []
+  },
+  "GET /api/archivos?nombre=oficio reingreso&1 á.pdf": {
+    "status": 200,
+    "tipo": "application/pdf",
+    "Content-Disposition": "attachment; filename=\"oficio reingreso&1 á.pdf\"; filename*=UTF-8''oficio%20reingreso%261%20%C3%A1.pdf",
+    "Cache-Control": "private, max-age=3600",
+    "Content-Length": "23",
+    "cuerpo": "base64:JVBERi0xLjQgY29udGVuaWRvIGZpam8=",
+    "llamadas": []
+  },
+  "GET /api/documentos-generados/plantillas/desconocido": {
+    "status": 200,
+    "tipo": "application/json",
+    "cuerpo": [],
+    "llamadas": []
+  },
+  "GET /api/documentos-generados/plantillas/reingreso": {
+    "status": 200,
+    "tipo": "application/json",
+    "cuerpo": [
+      {
+        "id": "RESOLUCION_REINGRESO",
+        "nombre": "Resolución de reingreso",
+        "descripcion": "Plantilla",
+        "camposRequeridos": [
+          "numeroDocumento"
+        ],
+        "camposOpcionales": [
+          "observaciones"
+        ]
+      }
+    ],
+    "llamadas": []
+  },
+  "GET /api/documentos/0": {
+    "status": 404,
+    "tipo": null,
+    "cuerpo": null,
+    "llamadas": []
+  },
+  "GET /api/documentos/0/archivo": {
+    "status": 404,
+    "tipo": null,
+    "cuerpo": null,
+    "llamadas": []
+  },
+  "GET /api/documentos/0/descargar": {
+    "status": 404,
+    "tipo": "application/json",
+    "cuerpo": {
+      "codigoError": "GC-0404",
+      "mensaje": "El recurso solicitado no existe",
+      "codigoHttp": 404,
+      "url": "http://localhost/api/documentos/0/descargar",
+      "metodo": "GET"
+    },
+    "llamadas": []
+  },
+  "GET /api/documentos/7": {
+    "status": 200,
+    "tipo": "application/json",
+    "cuerpo": {
+      "id_documento": 7,
+      "nombre": "oficio á +.pdf",
+      "ruta_documento": "carpeta/oficio.pdf",
+      "fecha_documento": null,
+      "esValido": true,
+      "comentario": "previo"
+    },
+    "llamadas": []
+  },
+  "GET /api/documentos/7/archivo": {
+    "status": 200,
+    "tipo": "application/pdf",
+    "Content-Disposition": "attachment; filename=\"oficio á +.pdf\"; filename*=UTF-8''oficio%20%C3%A1%20%2B.pdf",
+    "Content-Length": "23",
+    "cuerpo": "base64:JVBERi0xLjQgY29udGVuaWRvIGZpam8=",
+    "llamadas": []
+  },
+  "GET /api/documentos/7/descargar": {
+    "status": 404,
+    "tipo": "application/json",
+    "cuerpo": {
+      "codigoError": "GC-0404",
+      "mensaje": "El recurso solicitado no existe",
+      "codigoHttp": 404,
+      "url": "http://localhost/api/documentos/7/descargar",
+      "metodo": "GET"
+    },
+    "llamadas": []
+  },
+  "GET /api/documentos/8": {
+    "status": 404,
+    "tipo": null,
+    "cuerpo": null,
+    "llamadas": []
+  },
+  "GET /api/documentos/8/archivo": {
+    "status": 404,
+    "tipo": null,
+    "cuerpo": null,
+    "llamadas": []
+  },
+  "GET /api/documentos/8/descargar": {
+    "status": 404,
+    "tipo": "application/json",
+    "cuerpo": {
+      "codigoError": "GC-0404",
+      "mensaje": "El recurso solicitado no existe",
+      "codigoHttp": 404,
+      "url": "http://localhost/api/documentos/8/descargar",
+      "metodo": "GET"
+    },
+    "llamadas": []
+  },
+  "GET /api/documentos/abc/descargar": {
+    "status": 404,
+    "tipo": "application/json",
+    "cuerpo": {
+      "codigoError": "GC-0404",
+      "mensaje": "El recurso solicitado no existe",
+      "codigoHttp": 404,
+      "url": "http://localhost/api/documentos/abc/descargar",
+      "metodo": "GET"
+    },
+    "llamadas": []
+  },
+  "GET /api/documentos/buscarPorId/0": {
+    "status": 404,
+    "tipo": "application/json",
+    "cuerpo": {
+      "codigoError": "GC-0404",
+      "mensaje": "El recurso solicitado no existe",
+      "codigoHttp": 404,
+      "url": "http://localhost/api/documentos/buscarPorId/0",
+      "metodo": "GET"
+    },
+    "llamadas": []
+  },
+  "GET /api/documentos/buscarPorId/7": {
+    "status": 404,
+    "tipo": "application/json",
+    "cuerpo": {
+      "codigoError": "GC-0404",
+      "mensaje": "El recurso solicitado no existe",
+      "codigoHttp": 404,
+      "url": "http://localhost/api/documentos/buscarPorId/7",
+      "metodo": "GET"
+    },
+    "llamadas": []
+  },
+  "GET /api/documentos/buscarPorId/8": {
+    "status": 404,
+    "tipo": "application/json",
+    "cuerpo": {
+      "codigoError": "GC-0404",
+      "mensaje": "El recurso solicitado no existe",
+      "codigoHttp": 404,
+      "url": "http://localhost/api/documentos/buscarPorId/8",
+      "metodo": "GET"
+    },
+    "llamadas": []
+  },
+  "GET /api/documentos/buscarPorId/abc": {
+    "status": 404,
+    "tipo": "application/json",
+    "cuerpo": {
+      "codigoError": "GC-0404",
+      "mensaje": "El recurso solicitado no existe",
+      "codigoHttp": 404,
+      "url": "http://localhost/api/documentos/buscarPorId/abc",
+      "metodo": "GET"
+    },
+    "llamadas": []
+  },
+  "GET /api/documentos/templates/desconocido": {
+    "status": 404,
+    "tipo": "application/json",
+    "cuerpo": {
+      "codigoError": "GC-0404",
+      "mensaje": "El recurso solicitado no existe",
+      "codigoHttp": 404,
+      "url": "http://localhost/api/documentos/templates/desconocido",
+      "metodo": "GET"
+    },
+    "llamadas": []
+  },
+  "GET /api/documentos/templates/reingreso": {
+    "status": 404,
+    "tipo": "application/json",
+    "cuerpo": {
+      "codigoError": "GC-0404",
+      "mensaje": "El recurso solicitado no existe",
+      "codigoHttp": 404,
+      "url": "http://localhost/api/documentos/templates/reingreso",
+      "metodo": "GET"
+    },
+    "llamadas": []
+  },
+  "POST /api/archivos pdf": {
+    "status": 200,
+    "tipo": "application/json",
+    "cuerpo": {
+      "tipo": "application/pdf",
+      "guardadoEnBD": true,
+      "tamaño": 23,
+      "fechaSubida": "<fecha>",
+      "ruta": "/uploads/archivos/oficio.pdf",
+      "id": "<reloj>",
+      "nombre": "oficio.pdf"
+    },
+    "llamadas": [
+      {
+        "registrarArchivoGuardado": "oficio.pdf",
+        "solicitud": null,
+        "usuario": "5"
+      }
+    ]
+  },
+  "POST /api/archivos pdf idSolicitud=abc": {
+    "status": 400,
+    "tipo": "application/json",
+    "cuerpo": {
+      "error": "ID de solicitud inválido"
+    },
+    "llamadas": []
+  },
+  "POST /api/archivos pdf inscripcionId=7": {
+    "status": 200,
+    "tipo": "application/json",
+    "cuerpo": {
+      "tipo": "application/pdf",
+      "guardadoEnBD": true,
+      "solicitudId": "7",
+      "tamaño": 23,
+      "fechaSubida": "<fecha>",
+      "inscripcionId": "7",
+      "ruta": "/uploads/archivos/curso-verano/7/oficio_7.pdf",
+      "id": "<reloj>",
+      "nombre": "oficio.pdf"
+    },
+    "llamadas": [
+      {
+        "registrarArchivoGuardado": "curso-verano/7/oficio_7.pdf",
+        "solicitud": "id 7",
+        "usuario": "5"
+      }
+    ]
+  },
+  "POST /api/archivos sin archivo": {
+    "status": 500,
+    "tipo": "application/json",
+    "cuerpo": {
+      "codigoError": "GC-0001",
+      "mensaje": "Ha ocurrido un error inesperado. Por favor, inténtelo de nuevo.",
+      "codigoHttp": 500,
+      "url": "http://localhost/api/archivos",
+      "metodo": "POST"
+    },
+    "llamadas": []
+  },
+  "POST /api/archivos texto": {
+    "status": 415,
+    "tipo": "application/json",
+    "cuerpo": {
+      "error": "Solo se permiten archivos PDF. El archivo no es un PDF válido."
+    },
+    "llamadas": []
+  },
+  "POST /api/archivos/subir/pdf pdf": {
+    "status": 404,
+    "tipo": "application/json",
+    "cuerpo": {
+      "codigoError": "GC-0404",
+      "mensaje": "El recurso solicitado no existe",
+      "codigoHttp": 404,
+      "url": "http://localhost/api/archivos/subir/pdf",
+      "metodo": "POST"
+    },
+    "llamadas": []
+  },
+  "POST /api/archivos/subir/pdf pdf idSolicitud=abc": {
+    "status": 404,
+    "tipo": "application/json",
+    "cuerpo": {
+      "codigoError": "GC-0404",
+      "mensaje": "El recurso solicitado no existe",
+      "codigoHttp": 404,
+      "url": "http://localhost/api/archivos/subir/pdf",
+      "metodo": "POST"
+    },
+    "llamadas": []
+  },
+  "POST /api/archivos/subir/pdf pdf inscripcionId=7": {
+    "status": 404,
+    "tipo": "application/json",
+    "cuerpo": {
+      "codigoError": "GC-0404",
+      "mensaje": "El recurso solicitado no existe",
+      "codigoHttp": 404,
+      "url": "http://localhost/api/archivos/subir/pdf",
+      "metodo": "POST"
+    },
+    "llamadas": []
+  },
+  "POST /api/archivos/subir/pdf sin archivo": {
+    "status": 404,
+    "tipo": "application/json",
+    "cuerpo": {
+      "codigoError": "GC-0404",
+      "mensaje": "El recurso solicitado no existe",
+      "codigoHttp": 404,
+      "url": "http://localhost/api/archivos/subir/pdf",
+      "metodo": "POST"
+    },
+    "llamadas": []
+  },
+  "POST /api/archivos/subir/pdf texto": {
+    "status": 404,
+    "tipo": "application/json",
+    "cuerpo": {
+      "codigoError": "GC-0404",
+      "mensaje": "El recurso solicitado no existe",
+      "codigoHttp": 404,
+      "url": "http://localhost/api/archivos/subir/pdf",
+      "metodo": "POST"
+    },
+    "llamadas": []
+  },
+  "POST /api/documentos-generados {": {
+    "status": 400,
+    "tipo": "application/json",
+    "cuerpo": {
+      "codigoError": "GC-0400",
+      "mensaje": "La petición no tiene el formato esperado: revise los parámetros y el cuerpo enviados",
+      "codigoHttp": 400,
+      "url": "http://localhost/api/documentos-generados",
+      "metodo": "POST"
+    },
+    "llamadas": []
+  },
+  "POST /api/documentos-generados {\"idSolicitud\":7,\"tipoDocumento\":\"OFICIO_HOMOLOGACION\",\"datosDocumento\":{\"numeroDocumento\":\"004\"},\"datosSolicitud\":{\"nombreEstudiante\":\"Ana Pérez\"}}": {
+    "status": 200,
+    "tipo": "application/octet-stream",
+    "Content-Disposition": "attachment; filename=\"OFICIO_HOMOLOGACION_Ana_P_rez_004.docx\"",
+    "Content-Length": "9",
+    "cuerpo": "base64:ZG9jeCBmaWpv",
+    "llamadas": []
+  },
+  "POST /api/documentos/generar {": {
+    "status": 404,
+    "tipo": "application/json",
+    "cuerpo": {
+      "codigoError": "GC-0404",
+      "mensaje": "El recurso solicitado no existe",
+      "codigoHttp": 404,
+      "url": "http://localhost/api/documentos/generar",
+      "metodo": "POST"
+    },
+    "llamadas": []
+  },
+  "POST /api/documentos/generar {\"idSolicitud\":7,\"tipoDocumento\":\"OFICIO_HOMOLOGACION\",\"datosDocumento\":{\"numeroDocumento\":\"004\"},\"datosSolicitud\":{\"nombreEstudiante\":\"Ana Pérez\"}}": {
+    "status": 404,
+    "tipo": "application/json",
+    "cuerpo": {
+      "codigoError": "GC-0404",
+      "mensaje": "El recurso solicitado no existe",
+      "codigoHttp": 404,
+      "url": "http://localhost/api/documentos/generar",
+      "metodo": "POST"
+    },
+    "llamadas": []
+  },
+  "PUT /api/documentos/7/comentarios {": {
+    "status": 400,
+    "tipo": "application/json",
+    "cuerpo": {
+      "codigoError": "GC-0400",
+      "mensaje": "La petición no tiene el formato esperado: revise los parámetros y el cuerpo enviados",
+      "codigoHttp": 400,
+      "url": "http://localhost/api/documentos/7/comentarios",
+      "metodo": "PUT"
+    },
+    "llamadas": []
+  },
+  "PUT /api/documentos/7/comentarios {\"comentario\":\"hola\"}": {
+    "status": 201,
+    "tipo": null,
+    "cuerpo": null,
+    "llamadas": [
+      {
+        "añadirComentario": "7",
+        "comentario": "hola",
+        "usuario": "Funcionaria de prueba",
+        "rol": "Funcionario"
+      }
+    ]
+  },
+  "PUT /api/documentos/7/comentarios {\"idDocumento\":99,\"comentario\":\"hola\"}": {
+    "status": 201,
+    "tipo": null,
+    "cuerpo": null,
+    "llamadas": [
+      {
+        "añadirComentario": "7",
+        "comentario": "hola",
+        "usuario": "Funcionaria de prueba",
+        "rol": "Funcionario"
+      }
+    ]
+  },
+  "PUT /api/documentos/8/comentarios {": {
+    "status": 400,
+    "tipo": "application/json",
+    "cuerpo": {
+      "codigoError": "GC-0400",
+      "mensaje": "La petición no tiene el formato esperado: revise los parámetros y el cuerpo enviados",
+      "codigoHttp": 400,
+      "url": "http://localhost/api/documentos/8/comentarios",
+      "metodo": "PUT"
+    },
+    "llamadas": []
+  },
+  "PUT /api/documentos/8/comentarios {\"comentario\":\"hola\"}": {
+    "status": 201,
+    "tipo": null,
+    "cuerpo": null,
+    "llamadas": [
+      {
+        "añadirComentario": "8",
+        "comentario": "hola",
+        "usuario": "Funcionaria de prueba",
+        "rol": "Funcionario"
+      }
+    ]
+  },
+  "PUT /api/documentos/8/comentarios {\"idDocumento\":99,\"comentario\":\"hola\"}": {
+    "status": 201,
+    "tipo": null,
+    "cuerpo": null,
+    "llamadas": [
+      {
+        "añadirComentario": "8",
+        "comentario": "hola",
+        "usuario": "Funcionaria de prueba",
+        "rol": "Funcionario"
+      }
+    ]
+  },
+  "PUT /api/documentos/agregarComentario {": {
+    "status": 404,
+    "tipo": "application/json",
+    "cuerpo": {
+      "codigoError": "GC-0404",
+      "mensaje": "El recurso solicitado no existe",
+      "codigoHttp": 404,
+      "url": "http://localhost/api/documentos/agregarComentario",
+      "metodo": "PUT"
+    },
+    "llamadas": []
+  },
+  "PUT /api/documentos/agregarComentario {\"comentario\":\"hola\"}": {
+    "status": 404,
+    "tipo": "application/json",
+    "cuerpo": {
+      "codigoError": "GC-0404",
+      "mensaje": "El recurso solicitado no existe",
+      "codigoHttp": 404,
+      "url": "http://localhost/api/documentos/agregarComentario",
+      "metodo": "PUT"
+    },
+    "llamadas": []
+  },
+  "PUT /api/documentos/agregarComentario {\"idDocumento\":7,\"comentario\":\"hola\"}": {
+    "status": 404,
+    "tipo": "application/json",
+    "cuerpo": {
+      "codigoError": "GC-0404",
+      "mensaje": "El recurso solicitado no existe",
+      "codigoHttp": 404,
+      "url": "http://localhost/api/documentos/agregarComentario",
+      "metodo": "PUT"
+    },
+    "llamadas": []
+  },
+  "PUT /api/documentos/agregarComentario {\"idDocumento\":8,\"comentario\":\"hola\"}": {
+    "status": 404,
+    "tipo": "application/json",
+    "cuerpo": {
+      "codigoError": "GC-0404",
+      "mensaje": "El recurso solicitado no existe",
+      "codigoHttp": 404,
+      "url": "http://localhost/api/documentos/agregarComentario",
+      "metodo": "PUT"
+    },
+    "llamadas": []
+  }
+}

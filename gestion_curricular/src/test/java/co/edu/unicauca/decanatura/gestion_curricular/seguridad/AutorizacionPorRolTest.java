@@ -256,7 +256,20 @@ class AutorizacionPorRolTest {
     @Test
     @DisplayName("Estudiante no puede descargar archivos que no son suyos")
     void estudianteNoDescargaArchivosAjenos() throws Exception {
-        mockMvc.perform(get("/api/archivos/descargar/pdf").param("filename", "archivo-de-otro.pdf")
+        mockMvc.perform(get("/api/archivos").param("nombre", "archivo-de-otro.pdf")
+                        .header("Authorization", tokenA))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    @DisplayName("Estudiante no puede generar documentos ni consultar plantillas (EST-7, paso 3)")
+    void estudianteNoGeneraDocumentos() throws Exception {
+        mockMvc.perform(post("/api/documentos-generados")
+                        .header("Authorization", tokenA)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"idSolicitud\":1,\"tipoDocumento\":\"OFICIO_HOMOLOGACION\"}"))
+                .andExpect(status().isForbidden());
+        mockMvc.perform(get("/api/documentos-generados/plantillas/reingreso")
                         .header("Authorization", tokenA))
                 .andExpect(status().isForbidden());
     }
@@ -271,15 +284,15 @@ class AutorizacionPorRolTest {
         documento.setIdUsuarioSubio(idA);
         documento = documentoRepository.save(documento);
         try {
-            mockMvc.perform(get("/api/documentos/buscarPorId/" + documento.getId_documento())
+            mockMvc.perform(get("/api/documentos/" + documento.getId_documento())
                             .header("Authorization", tokenA)).andExpect(status().isOk());
-            mockMvc.perform(get("/api/documentos/buscarPorId/" + documento.getId_documento())
+            mockMvc.perform(get("/api/documentos/" + documento.getId_documento())
                             .header("Authorization", tokenB)).andExpect(status().isForbidden());
-            mockMvc.perform(get("/api/documentos/" + documento.getId_documento() + "/descargar")
+            mockMvc.perform(get("/api/documentos/" + documento.getId_documento() + "/archivo")
                             .header("Authorization", tokenA)).andExpect(status().isNotFound());
-            mockMvc.perform(get("/api/archivos/descargar/pdf").param("filename", documento.getNombre())
+            mockMvc.perform(get("/api/archivos").param("nombre", documento.getNombre())
                             .header("Authorization", tokenB)).andExpect(status().isForbidden());
-            mockMvc.perform(get("/api/documentos/buscarPorId/2147483647")
+            mockMvc.perform(get("/api/documentos/2147483647")
                             .header("Authorization", tokenA)).andExpect(status().isForbidden());
         } finally {
             documentoRepository.deleteById(documento.getId_documento());

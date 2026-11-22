@@ -53,7 +53,7 @@ public class ArchivosRestController {
      * 400 si no es un número y 404 si no existe. Una inscripción de verano se organiza en su carpeta; cualquier
      * otra solicitud (por ejemplo, un reingreso que sube la secretaría) se asocia tal cual.
      */
-    @PostMapping("/subir/pdf")
+    @PostMapping
     public ResponseEntity<?> subirPDF(
         @RequestParam(name = "file", required = true) MultipartFile file,
         @RequestParam(name = "inscripcionId", required = false) String inscripcionId,
@@ -160,8 +160,9 @@ public class ArchivosRestController {
         return valor != null && !valor.trim().isEmpty() ? valor.trim() : null;
     }
 
-    @GetMapping("/descargar/pdf")
-    public ResponseEntity<StreamingResponseBody> bajarPDF(@RequestParam(name = "filename", required = true) String filename) {
+    /** Descarga un PDF por su nombre: {@code GET /api/archivos?nombre=…}. */
+    @GetMapping
+    public ResponseEntity<StreamingResponseBody> bajarPDF(@RequestParam(name = "nombre", required = true) String filename) {
         try {
             // Solo se entrega un archivo registrado que el usuario pueda ver (el staff ve todos).
             // Si dos estudiantes subieron archivos con el mismo nombre, cada uno recibe el suyo.
@@ -215,11 +216,11 @@ public class ArchivosRestController {
     
     /**
      * Descargar comprobante de pago por ID de inscripción
-     * GET /api/archivos/descargar/pdf/inscripcion/{idInscripcion}
+     * GET /api/archivos/inscripciones/{idInscripcion}
      * Este endpoint es el que usa el frontend actualmente
      */
     @PreAuthorize("@autorizacion.esStaff() or @autorizacion.esDuenoSolicitud(#idInscripcion.intValue())")
-    @GetMapping("/descargar/pdf/inscripcion/{idInscripcion}")
+    @GetMapping("/inscripciones/{idInscripcion:\\d+}")
     public ResponseEntity<?> descargarComprobantePorInscripcion(@PathVariable Long idInscripcion) {
         
         // Validar ID

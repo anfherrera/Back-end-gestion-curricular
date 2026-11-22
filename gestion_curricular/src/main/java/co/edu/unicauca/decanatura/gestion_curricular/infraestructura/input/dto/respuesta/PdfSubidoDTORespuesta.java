@@ -7,7 +7,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 /**
- * Respuesta de {@code POST /api/archivos/subir/pdf}. Los identificadores recibidos solo aparecen
+ * Respuesta de {@code POST /api/archivos}. Los identificadores recibidos solo aparecen
  * si llegaron con texto. El orden de las claves es el que producía el {@code HashMap} anterior.
  * {@code fechaSubida} es un {@code Date}, que la aplicación escribe en ISO 8601 UTC.
  */

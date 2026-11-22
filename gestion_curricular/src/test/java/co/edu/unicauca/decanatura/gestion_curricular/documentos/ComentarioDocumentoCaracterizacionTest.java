@@ -32,14 +32,13 @@ import co.edu.unicauca.decanatura.gestion_curricular.soporte.Correcciones;
 
 /**
  * HTTP de la ruta que comenta un documento, antes de quitar la ñ de {@code /añadirComentario} (EST-7).
- * Caso de uso real, gateway simulado y seguridad de método activa. {@code RUTA} es la ruta vigente; el caso
+ * Caso de uso real, gateway simulado y seguridad de método activa. {@link #ruta} da la ruta vigente; el caso
  * {@code ruta-con-enie} usa siempre la ruta original, para fijar qué responde después del cambio.
  */
 @SpringBootTest
 @AutoConfigureMockMvc(addFilters = false)
 @ActiveProfiles("test")
 class ComentarioDocumentoCaracterizacionTest {
-    private static final String RUTA = "/api/documentos/agregarComentario";
     private static final String RUTA_CON_ENIE = "/api/documentos/añadirComentario";
     private static final Path REFERENCIA = Path.of("src/test/resources/referencias/documentos/comentario-documento.json");
     private static final ObjectMapper JSON = new ObjectMapper();
@@ -55,15 +54,22 @@ class ComentarioDocumentoCaracterizacionTest {
     @Test
     void comentarDocumento() throws Exception {
         ObjectNode r = JSON.createObjectNode();
-        caso(r, "comenta", RUTA, "{\"idDocumento\":9,\"comentario\":\"  hola  \"}", "Funcionario");
-        caso(r, "sin-comentario-previo", RUTA, "{\"idDocumento\":10,\"comentario\":\"hola\"}", "Coordinador");
-        caso(r, "sin-id", RUTA, "{\"comentario\":\"hola\"}", "Funcionario");
-        caso(r, "comentario-blanco", RUTA, "{\"idDocumento\":9,\"comentario\":\"   \"}", "Funcionario");
-        caso(r, "inexistente", RUTA, "{\"idDocumento\":8,\"comentario\":\"hola\"}", "Funcionario");
-        caso(r, "estudiante", RUTA, "{\"idDocumento\":9,\"comentario\":\"hola\"}", "Estudiante");
+        caso(r, "comenta", ruta(9), "{\"idDocumento\":9,\"comentario\":\"  hola  \"}", "Funcionario");
+        caso(r, "sin-comentario-previo", ruta(10), "{\"idDocumento\":10,\"comentario\":\"hola\"}", "Coordinador");
+        // Desde el paso 3 de EST-7 el id va en la ruta, y el cuerpo ya no necesita idDocumento
+        caso(r, "sin-id", ruta(9), "{\"comentario\":\"hola\"}", "Funcionario");
+        caso(r, "comentario-blanco", ruta(9), "{\"idDocumento\":9,\"comentario\":\"   \"}", "Funcionario");
+        caso(r, "inexistente", ruta(8), "{\"idDocumento\":8,\"comentario\":\"hola\"}", "Funcionario");
+        caso(r, "estudiante", ruta(9), "{\"idDocumento\":9,\"comentario\":\"hola\"}", "Estudiante");
         caso(r, "ruta-con-enie", RUTA_CON_ENIE, "{\"idDocumento\":9,\"comentario\":\"hola\"}", "Funcionario");
-        // EST-7: la ruta pierde la ñ; la original responde 404
-        comparar(r, "documentos/correcciones/comentario-documento-est7.json");
+        // EST-7: la ruta pierde la ñ y la original responde 404; en el paso 3 pasa a PUT /{id}/comentarios
+        comparar(r, "documentos/correcciones/comentario-documento-est7.json",
+                "documentos/correcciones/comentario-documento-est7-paso3.json");
+    }
+
+    /** Ruta vigente para comentar el documento {@code id}. */
+    private static String ruta(int id) {
+        return "/api/documentos/" + id + "/comentarios";
     }
 
     private void caso(ObjectNode r, String clave, String ruta, String cuerpo, String... roles) throws Exception {
