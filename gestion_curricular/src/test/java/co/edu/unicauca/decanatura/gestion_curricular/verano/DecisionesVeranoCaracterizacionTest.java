@@ -14,6 +14,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.http.MediaType;
 
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.*;
+import co.edu.unicauca.decanatura.gestion_curricular.soporte.Correcciones;
 import co.edu.unicauca.decanatura.gestion_curricular.soporte.SoporteMvc;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.SolicitudCursoVeranoPreinscripcion;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.controladores.*;
@@ -29,8 +30,8 @@ class DecisionesVeranoCaracterizacionTest {
         when(cu.aprobarPreinscripcion(anyInt(), nullable(String.class))).thenReturn(pre);
         when(cu.rechazarPreinscripcion(anyInt(), nullable(String.class))).thenReturn(pre);
         var curso = mock(GestionarCursoOfertadoVeranoCUIntPort.class);
+        // EST-7 (paso 8a): CursoOfertadoRestController se retira; sus rutas fijan el 404
         var mvc = SoporteMvc.standaloneSetup(
-                new CursoOfertadoRestController(curso, cu, mock(CursosOfertadosMapperDominio.class), mock(EstadoCursoOfertadoMapper.class)),
                 new PreinscripcionesVeranoRestController(cu, mock(CursosOfertadosMapperDominio.class), mock(SolicitudCursoDeVeranoPreinscripcionMapperDominio.class)),
                 new InscripcionesVeranoRestController(curso, cu, mock(GestionarArchivosCUIntPort.class), mock(GestionarSolicitudCUIntPort.class)))
                 .setControllerAdvice(new RestApiExceptionHandler()).build();
@@ -62,6 +63,8 @@ class DecisionesVeranoCaracterizacionTest {
             assertThat(Files.exists(referencia)).isFalse();
             Files.writeString(referencia, json.writerWithDefaultPrettyPrinter().writeValueAsString(actual));
         }
-        assertThat(actual).isEqualTo(json.readTree(Files.readString(referencia)));
+        // EST-7 (paso 8a): aprobar y rechazar de /api/cursos-verano se retiran y responden 404
+        assertThat(actual).isEqualTo(Correcciones.aplicar(json.readTree(Files.readString(referencia)),
+                "verano-endpoints/correcciones/decisiones-est7-paso8a.json"));
     }
 }

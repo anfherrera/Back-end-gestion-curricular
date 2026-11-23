@@ -61,7 +61,7 @@ import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.mappe
  */
 class CursosVeranoRespuestasCaracterizacionTest {
     private static final long MARZO = 1710522000000L;
-    private static final String BASE = "/api/cursos-intersemestrales/cursos-verano";
+    private static final String BASE = "/api/cursos-verano/cursos";
 
     private final ObjectMapper json = new ObjectMapper();
 
@@ -139,7 +139,7 @@ class CursosVeranoRespuestasCaracterizacionTest {
             .setControllerAdvice(new RestApiExceptionHandler()).build();
 
         ObjectNode resultados = json.createObjectNode();
-        registrar(resultados, "todos", mvc, get(BASE + "/todos"), false);
+        registrar(resultados, "todos", mvc, get(BASE), false);
         for (int id : new int[] {1, 2, 3}) {
             registrar(resultados, "detalle " + id, mvc, get(BASE + "/" + id), false);
         }

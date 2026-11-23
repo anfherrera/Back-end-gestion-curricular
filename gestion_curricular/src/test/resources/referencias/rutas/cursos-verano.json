@@ -1,0 +1,5324 @@
+{
+  "GET /api/cursos-intersemestrales/cursos-verano/disponibles [est5]" : {
+    "status" : 200,
+    "tipo" : "application/json",
+    "cuerpo" : [ {
+      "id_curso" : 71,
+      "idCurso" : null,
+      "codigo_curso" : "MAT-1",
+      "nombre_curso" : "Calculo",
+      "descripcion" : "Curso de Calculo",
+      "fecha_inicio" : "2025-07-01T12:00:00Z",
+      "fecha_fin" : "2025-08-01T12:00:00Z",
+      "cupo_maximo" : 20,
+      "cupo_disponible" : 20,
+      "espacio_asignado" : "221",
+      "estado" : "Preinscripcion",
+      "periodo" : "2025-2",
+      "objMateria" : {
+        "id_materia" : 1,
+        "codigo" : "MAT-1",
+        "nombre" : "Calculo",
+        "creditos" : 4
+      },
+      "objDocente" : {
+        "id_docente" : 4,
+        "codigo_docente" : "D-4",
+        "nombre_docente" : "Docente Cuatro"
+      },
+      "grupo" : "A",
+      "cupo_estimado" : 20,
+      "salon" : "221",
+      "id_salon" : null,
+      "salonInfo" : null,
+      "estadosCursoOfertados" : [ {
+        "id_estado" : 710,
+        "estado_actual" : "Preinscripcion",
+        "fecha_registro_estado" : "2025-07-01T12:00:00.000+00:00",
+        "objCursoOfertadoVerano" : null
+      } ],
+      "estudiantesInscritos" : [ ]
+    }, {
+      "id_curso" : 72,
+      "idCurso" : null,
+      "codigo_curso" : "MAT-1",
+      "nombre_curso" : "Calculo",
+      "descripcion" : "Curso de Calculo",
+      "fecha_inicio" : "2025-07-01T12:00:00Z",
+      "fecha_fin" : "2025-08-01T12:00:00Z",
+      "cupo_maximo" : 20,
+      "cupo_disponible" : 20,
+      "espacio_asignado" : null,
+      "estado" : "Inscripcion",
+      "periodo" : "2025-1",
+      "objMateria" : {
+        "id_materia" : 1,
+        "codigo" : "MAT-1",
+        "nombre" : "Calculo",
+        "creditos" : 4
+      },
+      "objDocente" : {
+        "id_docente" : 4,
+        "codigo_docente" : "D-4",
+        "nombre_docente" : "Docente Cuatro"
+      },
+      "grupo" : "A",
+      "cupo_estimado" : 20,
+      "salon" : null,
+      "id_salon" : null,
+      "salonInfo" : null,
+      "estadosCursoOfertados" : [ {
+        "id_estado" : 720,
+        "estado_actual" : "Inscripcion",
+        "fecha_registro_estado" : "2025-07-01T12:00:00.000+00:00",
+        "objCursoOfertadoVerano" : null
+      } ],
+      "estudiantesInscritos" : [ ]
+    }, {
+      "id_curso" : 74,
+      "idCurso" : null,
+      "codigo_curso" : "MAT-1",
+      "nombre_curso" : "Calculo",
+      "descripcion" : "Curso de Calculo",
+      "fecha_inicio" : "2025-07-01T12:00:00Z",
+      "fecha_fin" : "2025-08-01T12:00:00Z",
+      "cupo_maximo" : 20,
+      "cupo_disponible" : 20,
+      "espacio_asignado" : "221",
+      "estado" : "Publicado",
+      "periodo" : "2025-2",
+      "objMateria" : {
+        "id_materia" : 1,
+        "codigo" : "MAT-1",
+        "nombre" : "Calculo",
+        "creditos" : 4
+      },
+      "objDocente" : {
+        "id_docente" : 4,
+        "codigo_docente" : "D-4",
+        "nombre_docente" : "Docente Cuatro"
+      },
+      "grupo" : "A",
+      "cupo_estimado" : 20,
+      "salon" : "221",
+      "id_salon" : null,
+      "salonInfo" : null,
+      "estadosCursoOfertados" : [ {
+        "id_estado" : 740,
+        "estado_actual" : "Publicado",
+        "fecha_registro_estado" : "2025-07-01T12:00:00.000+00:00",
+        "objCursoOfertadoVerano" : null
+      } ],
+      "estudiantesInscritos" : [ ]
+    } ],
+    "disposicion" : null,
+    "llamadas" : [ {
+      "listarPorFiltros" : "<ACTUAL>, null, true"
+    } ]
+  },
+  "GET /api/cursos-verano/cursos?disponibles=true [est5]" : {
+    "status" : 404,
+    "tipo" : "application/json",
+    "cuerpo" : {
+      "codigoError" : "GC-0404",
+      "mensaje" : "El recurso solicitado no existe",
+      "codigoHttp" : 404,
+      "url" : "http://localhost/api/cursos-verano/cursos",
+      "metodo" : "GET"
+    },
+    "disposicion" : null,
+    "llamadas" : [ ]
+  },
+  "GET /api/cursos-intersemestrales/cursos-verano/disponibles [funcionario]" : {
+    "status" : 200,
+    "tipo" : "application/json",
+    "cuerpo" : [ {
+      "id_curso" : 71,
+      "idCurso" : null,
+      "codigo_curso" : "MAT-1",
+      "nombre_curso" : "Calculo",
+      "descripcion" : "Curso de Calculo",
+      "fecha_inicio" : "2025-07-01T12:00:00Z",
+      "fecha_fin" : "2025-08-01T12:00:00Z",
+      "cupo_maximo" : 20,
+      "cupo_disponible" : 20,
+      "espacio_asignado" : "221",
+      "estado" : "Preinscripcion",
+      "periodo" : "2025-2",
+      "objMateria" : {
+        "id_materia" : 1,
+        "codigo" : "MAT-1",
+        "nombre" : "Calculo",
+        "creditos" : 4
+      },
+      "objDocente" : {
+        "id_docente" : 4,
+        "codigo_docente" : "D-4",
+        "nombre_docente" : "Docente Cuatro"
+      },
+      "grupo" : "A",
+      "cupo_estimado" : 20,
+      "salon" : "221",
+      "id_salon" : null,
+      "salonInfo" : null,
+      "estadosCursoOfertados" : [ {
+        "id_estado" : 710,
+        "estado_actual" : "Preinscripcion",
+        "fecha_registro_estado" : "2025-07-01T12:00:00.000+00:00",
+        "objCursoOfertadoVerano" : null
+      } ],
+      "estudiantesInscritos" : [ ]
+    }, {
+      "id_curso" : 72,
+      "idCurso" : null,
+      "codigo_curso" : "MAT-1",
+      "nombre_curso" : "Calculo",
+      "descripcion" : "Curso de Calculo",
+      "fecha_inicio" : "2025-07-01T12:00:00Z",
+      "fecha_fin" : "2025-08-01T12:00:00Z",
+      "cupo_maximo" : 20,
+      "cupo_disponible" : 20,
+      "espacio_asignado" : null,
+      "estado" : "Inscripcion",
+      "periodo" : "2025-1",
+      "objMateria" : {
+        "id_materia" : 1,
+        "codigo" : "MAT-1",
+        "nombre" : "Calculo",
+        "creditos" : 4
+      },
+      "objDocente" : {
+        "id_docente" : 4,
+        "codigo_docente" : "D-4",
+        "nombre_docente" : "Docente Cuatro"
+      },
+      "grupo" : "A",
+      "cupo_estimado" : 20,
+      "salon" : null,
+      "id_salon" : null,
+      "salonInfo" : null,
+      "estadosCursoOfertados" : [ {
+        "id_estado" : 720,
+        "estado_actual" : "Inscripcion",
+        "fecha_registro_estado" : "2025-07-01T12:00:00.000+00:00",
+        "objCursoOfertadoVerano" : null
+      } ],
+      "estudiantesInscritos" : [ ]
+    }, {
+      "id_curso" : 74,
+      "idCurso" : null,
+      "codigo_curso" : "MAT-1",
+      "nombre_curso" : "Calculo",
+      "descripcion" : "Curso de Calculo",
+      "fecha_inicio" : "2025-07-01T12:00:00Z",
+      "fecha_fin" : "2025-08-01T12:00:00Z",
+      "cupo_maximo" : 20,
+      "cupo_disponible" : 20,
+      "espacio_asignado" : "221",
+      "estado" : "Publicado",
+      "periodo" : "2025-2",
+      "objMateria" : {
+        "id_materia" : 1,
+        "codigo" : "MAT-1",
+        "nombre" : "Calculo",
+        "creditos" : 4
+      },
+      "objDocente" : {
+        "id_docente" : 4,
+        "codigo_docente" : "D-4",
+        "nombre_docente" : "Docente Cuatro"
+      },
+      "grupo" : "A",
+      "cupo_estimado" : 20,
+      "salon" : "221",
+      "id_salon" : null,
+      "salonInfo" : null,
+      "estadosCursoOfertados" : [ {
+        "id_estado" : 740,
+        "estado_actual" : "Publicado",
+        "fecha_registro_estado" : "2025-07-01T12:00:00.000+00:00",
+        "objCursoOfertadoVerano" : null
+      } ],
+      "estudiantesInscritos" : [ ]
+    } ],
+    "disposicion" : null,
+    "llamadas" : [ {
+      "listarPorFiltros" : "<ACTUAL>, null, true"
+    } ]
+  },
+  "GET /api/cursos-verano/cursos?disponibles=true [funcionario]" : {
+    "status" : 404,
+    "tipo" : "application/json",
+    "cuerpo" : {
+      "codigoError" : "GC-0404",
+      "mensaje" : "El recurso solicitado no existe",
+      "codigoHttp" : 404,
+      "url" : "http://localhost/api/cursos-verano/cursos",
+      "metodo" : "GET"
+    },
+    "disposicion" : null,
+    "llamadas" : [ ]
+  },
+  "GET /api/cursos-intersemestrales/cursos-verano/disponibles?periodoAcademico=2025-1 [est5]" : {
+    "status" : 200,
+    "tipo" : "application/json",
+    "cuerpo" : [ {
+      "id_curso" : 71,
+      "idCurso" : null,
+      "codigo_curso" : "MAT-1",
+      "nombre_curso" : "Calculo",
+      "descripcion" : "Curso de Calculo",
+      "fecha_inicio" : "2025-07-01T12:00:00Z",
+      "fecha_fin" : "2025-08-01T12:00:00Z",
+      "cupo_maximo" : 20,
+      "cupo_disponible" : 20,
+      "espacio_asignado" : "221",
+      "estado" : "Preinscripcion",
+      "periodo" : "2025-2",
+      "objMateria" : {
+        "id_materia" : 1,
+        "codigo" : "MAT-1",
+        "nombre" : "Calculo",
+        "creditos" : 4
+      },
+      "objDocente" : {
+        "id_docente" : 4,
+        "codigo_docente" : "D-4",
+        "nombre_docente" : "Docente Cuatro"
+      },
+      "grupo" : "A",
+      "cupo_estimado" : 20,
+      "salon" : "221",
+      "id_salon" : null,
+      "salonInfo" : null,
+      "estadosCursoOfertados" : [ {
+        "id_estado" : 710,
+        "estado_actual" : "Preinscripcion",
+        "fecha_registro_estado" : "2025-07-01T12:00:00.000+00:00",
+        "objCursoOfertadoVerano" : null
+      } ],
+      "estudiantesInscritos" : [ ]
+    }, {
+      "id_curso" : 72,
+      "idCurso" : null,
+      "codigo_curso" : "MAT-1",
+      "nombre_curso" : "Calculo",
+      "descripcion" : "Curso de Calculo",
+      "fecha_inicio" : "2025-07-01T12:00:00Z",
+      "fecha_fin" : "2025-08-01T12:00:00Z",
+      "cupo_maximo" : 20,
+      "cupo_disponible" : 20,
+      "espacio_asignado" : null,
+      "estado" : "Inscripcion",
+      "periodo" : "2025-1",
+      "objMateria" : {
+        "id_materia" : 1,
+        "codigo" : "MAT-1",
+        "nombre" : "Calculo",
+        "creditos" : 4
+      },
+      "objDocente" : {
+        "id_docente" : 4,
+        "codigo_docente" : "D-4",
+        "nombre_docente" : "Docente Cuatro"
+      },
+      "grupo" : "A",
+      "cupo_estimado" : 20,
+      "salon" : null,
+      "id_salon" : null,
+      "salonInfo" : null,
+      "estadosCursoOfertados" : [ {
+        "id_estado" : 720,
+        "estado_actual" : "Inscripcion",
+        "fecha_registro_estado" : "2025-07-01T12:00:00.000+00:00",
+        "objCursoOfertadoVerano" : null
+      } ],
+      "estudiantesInscritos" : [ ]
+    }, {
+      "id_curso" : 74,
+      "idCurso" : null,
+      "codigo_curso" : "MAT-1",
+      "nombre_curso" : "Calculo",
+      "descripcion" : "Curso de Calculo",
+      "fecha_inicio" : "2025-07-01T12:00:00Z",
+      "fecha_fin" : "2025-08-01T12:00:00Z",
+      "cupo_maximo" : 20,
+      "cupo_disponible" : 20,
+      "espacio_asignado" : "221",
+      "estado" : "Publicado",
+      "periodo" : "2025-2",
+      "objMateria" : {
+        "id_materia" : 1,
+        "codigo" : "MAT-1",
+        "nombre" : "Calculo",
+        "creditos" : 4
+      },
+      "objDocente" : {
+        "id_docente" : 4,
+        "codigo_docente" : "D-4",
+        "nombre_docente" : "Docente Cuatro"
+      },
+      "grupo" : "A",
+      "cupo_estimado" : 20,
+      "salon" : "221",
+      "id_salon" : null,
+      "salonInfo" : null,
+      "estadosCursoOfertados" : [ {
+        "id_estado" : 740,
+        "estado_actual" : "Publicado",
+        "fecha_registro_estado" : "2025-07-01T12:00:00.000+00:00",
+        "objCursoOfertadoVerano" : null
+      } ],
+      "estudiantesInscritos" : [ ]
+    } ],
+    "disposicion" : null,
+    "llamadas" : [ {
+      "listarPorFiltros" : "2025-1, null, true"
+    } ]
+  },
+  "GET /api/cursos-verano/cursos?disponibles=true&periodoAcademico=2025-1 [est5]" : {
+    "status" : 404,
+    "tipo" : "application/json",
+    "cuerpo" : {
+      "codigoError" : "GC-0404",
+      "mensaje" : "El recurso solicitado no existe",
+      "codigoHttp" : 404,
+      "url" : "http://localhost/api/cursos-verano/cursos",
+      "metodo" : "GET"
+    },
+    "disposicion" : null,
+    "llamadas" : [ ]
+  },
+  "GET /api/cursos-intersemestrales/cursos-verano/disponibles?periodoAcademico=2025-1 [funcionario]" : {
+    "status" : 200,
+    "tipo" : "application/json",
+    "cuerpo" : [ {
+      "id_curso" : 71,
+      "idCurso" : null,
+      "codigo_curso" : "MAT-1",
+      "nombre_curso" : "Calculo",
+      "descripcion" : "Curso de Calculo",
+      "fecha_inicio" : "2025-07-01T12:00:00Z",
+      "fecha_fin" : "2025-08-01T12:00:00Z",
+      "cupo_maximo" : 20,
+      "cupo_disponible" : 20,
+      "espacio_asignado" : "221",
+      "estado" : "Preinscripcion",
+      "periodo" : "2025-2",
+      "objMateria" : {
+        "id_materia" : 1,
+        "codigo" : "MAT-1",
+        "nombre" : "Calculo",
+        "creditos" : 4
+      },
+      "objDocente" : {
+        "id_docente" : 4,
+        "codigo_docente" : "D-4",
+        "nombre_docente" : "Docente Cuatro"
+      },
+      "grupo" : "A",
+      "cupo_estimado" : 20,
+      "salon" : "221",
+      "id_salon" : null,
+      "salonInfo" : null,
+      "estadosCursoOfertados" : [ {
+        "id_estado" : 710,
+        "estado_actual" : "Preinscripcion",
+        "fecha_registro_estado" : "2025-07-01T12:00:00.000+00:00",
+        "objCursoOfertadoVerano" : null
+      } ],
+      "estudiantesInscritos" : [ ]
+    }, {
+      "id_curso" : 72,
+      "idCurso" : null,
+      "codigo_curso" : "MAT-1",
+      "nombre_curso" : "Calculo",
+      "descripcion" : "Curso de Calculo",
+      "fecha_inicio" : "2025-07-01T12:00:00Z",
+      "fecha_fin" : "2025-08-01T12:00:00Z",
+      "cupo_maximo" : 20,
+      "cupo_disponible" : 20,
+      "espacio_asignado" : null,
+      "estado" : "Inscripcion",
+      "periodo" : "2025-1",
+      "objMateria" : {
+        "id_materia" : 1,
+        "codigo" : "MAT-1",
+        "nombre" : "Calculo",
+        "creditos" : 4
+      },
+      "objDocente" : {
+        "id_docente" : 4,
+        "codigo_docente" : "D-4",
+        "nombre_docente" : "Docente Cuatro"
+      },
+      "grupo" : "A",
+      "cupo_estimado" : 20,
+      "salon" : null,
+      "id_salon" : null,
+      "salonInfo" : null,
+      "estadosCursoOfertados" : [ {
+        "id_estado" : 720,
+        "estado_actual" : "Inscripcion",
+        "fecha_registro_estado" : "2025-07-01T12:00:00.000+00:00",
+        "objCursoOfertadoVerano" : null
+      } ],
+      "estudiantesInscritos" : [ ]
+    }, {
+      "id_curso" : 74,
+      "idCurso" : null,
+      "codigo_curso" : "MAT-1",
+      "nombre_curso" : "Calculo",
+      "descripcion" : "Curso de Calculo",
+      "fecha_inicio" : "2025-07-01T12:00:00Z",
+      "fecha_fin" : "2025-08-01T12:00:00Z",
+      "cupo_maximo" : 20,
+      "cupo_disponible" : 20,
+      "espacio_asignado" : "221",
+      "estado" : "Publicado",
+      "periodo" : "2025-2",
+      "objMateria" : {
+        "id_materia" : 1,
+        "codigo" : "MAT-1",
+        "nombre" : "Calculo",
+        "creditos" : 4
+      },
+      "objDocente" : {
+        "id_docente" : 4,
+        "codigo_docente" : "D-4",
+        "nombre_docente" : "Docente Cuatro"
+      },
+      "grupo" : "A",
+      "cupo_estimado" : 20,
+      "salon" : "221",
+      "id_salon" : null,
+      "salonInfo" : null,
+      "estadosCursoOfertados" : [ {
+        "id_estado" : 740,
+        "estado_actual" : "Publicado",
+        "fecha_registro_estado" : "2025-07-01T12:00:00.000+00:00",
+        "objCursoOfertadoVerano" : null
+      } ],
+      "estudiantesInscritos" : [ ]
+    } ],
+    "disposicion" : null,
+    "llamadas" : [ {
+      "listarPorFiltros" : "2025-1, null, true"
+    } ]
+  },
+  "GET /api/cursos-verano/cursos?disponibles=true&periodoAcademico=2025-1 [funcionario]" : {
+    "status" : 404,
+    "tipo" : "application/json",
+    "cuerpo" : {
+      "codigoError" : "GC-0404",
+      "mensaje" : "El recurso solicitado no existe",
+      "codigoHttp" : 404,
+      "url" : "http://localhost/api/cursos-verano/cursos",
+      "metodo" : "GET"
+    },
+    "disposicion" : null,
+    "llamadas" : [ ]
+  },
+  "GET /api/cursos-intersemestrales/cursos-verano/disponibles?todosLosPeriodos=true [est5]" : {
+    "status" : 200,
+    "tipo" : "application/json",
+    "cuerpo" : [ {
+      "id_curso" : 71,
+      "idCurso" : null,
+      "codigo_curso" : "MAT-1",
+      "nombre_curso" : "Calculo",
+      "descripcion" : "Curso de Calculo",
+      "fecha_inicio" : "2025-07-01T12:00:00Z",
+      "fecha_fin" : "2025-08-01T12:00:00Z",
+      "cupo_maximo" : 20,
+      "cupo_disponible" : 20,
+      "espacio_asignado" : "221",
+      "estado" : "Preinscripcion",
+      "periodo" : "2025-2",
+      "objMateria" : {
+        "id_materia" : 1,
+        "codigo" : "MAT-1",
+        "nombre" : "Calculo",
+        "creditos" : 4
+      },
+      "objDocente" : {
+        "id_docente" : 4,
+        "codigo_docente" : "D-4",
+        "nombre_docente" : "Docente Cuatro"
+      },
+      "grupo" : "A",
+      "cupo_estimado" : 20,
+      "salon" : "221",
+      "id_salon" : null,
+      "salonInfo" : null,
+      "estadosCursoOfertados" : [ {
+        "id_estado" : 710,
+        "estado_actual" : "Preinscripcion",
+        "fecha_registro_estado" : "2025-07-01T12:00:00.000+00:00",
+        "objCursoOfertadoVerano" : null
+      } ],
+      "estudiantesInscritos" : [ ]
+    }, {
+      "id_curso" : 72,
+      "idCurso" : null,
+      "codigo_curso" : "MAT-1",
+      "nombre_curso" : "Calculo",
+      "descripcion" : "Curso de Calculo",
+      "fecha_inicio" : "2025-07-01T12:00:00Z",
+      "fecha_fin" : "2025-08-01T12:00:00Z",
+      "cupo_maximo" : 20,
+      "cupo_disponible" : 20,
+      "espacio_asignado" : null,
+      "estado" : "Inscripcion",
+      "periodo" : "2025-1",
+      "objMateria" : {
+        "id_materia" : 1,
+        "codigo" : "MAT-1",
+        "nombre" : "Calculo",
+        "creditos" : 4
+      },
+      "objDocente" : {
+        "id_docente" : 4,
+        "codigo_docente" : "D-4",
+        "nombre_docente" : "Docente Cuatro"
+      },
+      "grupo" : "A",
+      "cupo_estimado" : 20,
+      "salon" : null,
+      "id_salon" : null,
+      "salonInfo" : null,
+      "estadosCursoOfertados" : [ {
+        "id_estado" : 720,
+        "estado_actual" : "Inscripcion",
+        "fecha_registro_estado" : "2025-07-01T12:00:00.000+00:00",
+        "objCursoOfertadoVerano" : null
+      } ],
+      "estudiantesInscritos" : [ ]
+    }, {
+      "id_curso" : 74,
+      "idCurso" : null,
+      "codigo_curso" : "MAT-1",
+      "nombre_curso" : "Calculo",
+      "descripcion" : "Curso de Calculo",
+      "fecha_inicio" : "2025-07-01T12:00:00Z",
+      "fecha_fin" : "2025-08-01T12:00:00Z",
+      "cupo_maximo" : 20,
+      "cupo_disponible" : 20,
+      "espacio_asignado" : "221",
+      "estado" : "Publicado",
+      "periodo" : "2025-2",
+      "objMateria" : {
+        "id_materia" : 1,
+        "codigo" : "MAT-1",
+        "nombre" : "Calculo",
+        "creditos" : 4
+      },
+      "objDocente" : {
+        "id_docente" : 4,
+        "codigo_docente" : "D-4",
+        "nombre_docente" : "Docente Cuatro"
+      },
+      "grupo" : "A",
+      "cupo_estimado" : 20,
+      "salon" : "221",
+      "id_salon" : null,
+      "salonInfo" : null,
+      "estadosCursoOfertados" : [ {
+        "id_estado" : 740,
+        "estado_actual" : "Publicado",
+        "fecha_registro_estado" : "2025-07-01T12:00:00.000+00:00",
+        "objCursoOfertadoVerano" : null
+      } ],
+      "estudiantesInscritos" : [ ]
+    } ],
+    "disposicion" : null,
+    "llamadas" : [ {
+      "listarPorFiltros" : "null, null, true"
+    } ]
+  },
+  "GET /api/cursos-verano/cursos?disponibles=true&todosLosPeriodos=true [est5]" : {
+    "status" : 404,
+    "tipo" : "application/json",
+    "cuerpo" : {
+      "codigoError" : "GC-0404",
+      "mensaje" : "El recurso solicitado no existe",
+      "codigoHttp" : 404,
+      "url" : "http://localhost/api/cursos-verano/cursos",
+      "metodo" : "GET"
+    },
+    "disposicion" : null,
+    "llamadas" : [ ]
+  },
+  "GET /api/cursos-intersemestrales/cursos-verano/disponibles?todosLosPeriodos=true [funcionario]" : {
+    "status" : 200,
+    "tipo" : "application/json",
+    "cuerpo" : [ {
+      "id_curso" : 71,
+      "idCurso" : null,
+      "codigo_curso" : "MAT-1",
+      "nombre_curso" : "Calculo",
+      "descripcion" : "Curso de Calculo",
+      "fecha_inicio" : "2025-07-01T12:00:00Z",
+      "fecha_fin" : "2025-08-01T12:00:00Z",
+      "cupo_maximo" : 20,
+      "cupo_disponible" : 20,
+      "espacio_asignado" : "221",
+      "estado" : "Preinscripcion",
+      "periodo" : "2025-2",
+      "objMateria" : {
+        "id_materia" : 1,
+        "codigo" : "MAT-1",
+        "nombre" : "Calculo",
+        "creditos" : 4
+      },
+      "objDocente" : {
+        "id_docente" : 4,
+        "codigo_docente" : "D-4",
+        "nombre_docente" : "Docente Cuatro"
+      },
+      "grupo" : "A",
+      "cupo_estimado" : 20,
+      "salon" : "221",
+      "id_salon" : null,
+      "salonInfo" : null,
+      "estadosCursoOfertados" : [ {
+        "id_estado" : 710,
+        "estado_actual" : "Preinscripcion",
+        "fecha_registro_estado" : "2025-07-01T12:00:00.000+00:00",
+        "objCursoOfertadoVerano" : null
+      } ],
+      "estudiantesInscritos" : [ ]
+    }, {
+      "id_curso" : 72,
+      "idCurso" : null,
+      "codigo_curso" : "MAT-1",
+      "nombre_curso" : "Calculo",
+      "descripcion" : "Curso de Calculo",
+      "fecha_inicio" : "2025-07-01T12:00:00Z",
+      "fecha_fin" : "2025-08-01T12:00:00Z",
+      "cupo_maximo" : 20,
+      "cupo_disponible" : 20,
+      "espacio_asignado" : null,
+      "estado" : "Inscripcion",
+      "periodo" : "2025-1",
+      "objMateria" : {
+        "id_materia" : 1,
+        "codigo" : "MAT-1",
+        "nombre" : "Calculo",
+        "creditos" : 4
+      },
+      "objDocente" : {
+        "id_docente" : 4,
+        "codigo_docente" : "D-4",
+        "nombre_docente" : "Docente Cuatro"
+      },
+      "grupo" : "A",
+      "cupo_estimado" : 20,
+      "salon" : null,
+      "id_salon" : null,
+      "salonInfo" : null,
+      "estadosCursoOfertados" : [ {
+        "id_estado" : 720,
+        "estado_actual" : "Inscripcion",
+        "fecha_registro_estado" : "2025-07-01T12:00:00.000+00:00",
+        "objCursoOfertadoVerano" : null
+      } ],
+      "estudiantesInscritos" : [ ]
+    }, {
+      "id_curso" : 74,
+      "idCurso" : null,
+      "codigo_curso" : "MAT-1",
+      "nombre_curso" : "Calculo",
+      "descripcion" : "Curso de Calculo",
+      "fecha_inicio" : "2025-07-01T12:00:00Z",
+      "fecha_fin" : "2025-08-01T12:00:00Z",
+      "cupo_maximo" : 20,
+      "cupo_disponible" : 20,
+      "espacio_asignado" : "221",
+      "estado" : "Publicado",
+      "periodo" : "2025-2",
+      "objMateria" : {
+        "id_materia" : 1,
+        "codigo" : "MAT-1",
+        "nombre" : "Calculo",
+        "creditos" : 4
+      },
+      "objDocente" : {
+        "id_docente" : 4,
+        "codigo_docente" : "D-4",
+        "nombre_docente" : "Docente Cuatro"
+      },
+      "grupo" : "A",
+      "cupo_estimado" : 20,
+      "salon" : "221",
+      "id_salon" : null,
+      "salonInfo" : null,
+      "estadosCursoOfertados" : [ {
+        "id_estado" : 740,
+        "estado_actual" : "Publicado",
+        "fecha_registro_estado" : "2025-07-01T12:00:00.000+00:00",
+        "objCursoOfertadoVerano" : null
+      } ],
+      "estudiantesInscritos" : [ ]
+    } ],
+    "disposicion" : null,
+    "llamadas" : [ {
+      "listarPorFiltros" : "null, null, true"
+    } ]
+  },
+  "GET /api/cursos-verano/cursos?disponibles=true&todosLosPeriodos=true [funcionario]" : {
+    "status" : 404,
+    "tipo" : "application/json",
+    "cuerpo" : {
+      "codigoError" : "GC-0404",
+      "mensaje" : "El recurso solicitado no existe",
+      "codigoHttp" : 404,
+      "url" : "http://localhost/api/cursos-verano/cursos",
+      "metodo" : "GET"
+    },
+    "disposicion" : null,
+    "llamadas" : [ ]
+  },
+  "GET /api/cursos-intersemestrales/cursos-verano/disponibles?periodoAcademico=todos&idPrograma=3 [est5]" : {
+    "status" : 200,
+    "tipo" : "application/json",
+    "cuerpo" : [ {
+      "id_curso" : 71,
+      "idCurso" : null,
+      "codigo_curso" : "MAT-1",
+      "nombre_curso" : "Calculo",
+      "descripcion" : "Curso de Calculo",
+      "fecha_inicio" : "2025-07-01T12:00:00Z",
+      "fecha_fin" : "2025-08-01T12:00:00Z",
+      "cupo_maximo" : 20,
+      "cupo_disponible" : 20,
+      "espacio_asignado" : "221",
+      "estado" : "Preinscripcion",
+      "periodo" : "2025-2",
+      "objMateria" : {
+        "id_materia" : 1,
+        "codigo" : "MAT-1",
+        "nombre" : "Calculo",
+        "creditos" : 4
+      },
+      "objDocente" : {
+        "id_docente" : 4,
+        "codigo_docente" : "D-4",
+        "nombre_docente" : "Docente Cuatro"
+      },
+      "grupo" : "A",
+      "cupo_estimado" : 20,
+      "salon" : "221",
+      "id_salon" : null,
+      "salonInfo" : null,
+      "estadosCursoOfertados" : [ {
+        "id_estado" : 710,
+        "estado_actual" : "Preinscripcion",
+        "fecha_registro_estado" : "2025-07-01T12:00:00.000+00:00",
+        "objCursoOfertadoVerano" : null
+      } ],
+      "estudiantesInscritos" : [ ]
+    }, {
+      "id_curso" : 72,
+      "idCurso" : null,
+      "codigo_curso" : "MAT-1",
+      "nombre_curso" : "Calculo",
+      "descripcion" : "Curso de Calculo",
+      "fecha_inicio" : "2025-07-01T12:00:00Z",
+      "fecha_fin" : "2025-08-01T12:00:00Z",
+      "cupo_maximo" : 20,
+      "cupo_disponible" : 20,
+      "espacio_asignado" : null,
+      "estado" : "Inscripcion",
+      "periodo" : "2025-1",
+      "objMateria" : {
+        "id_materia" : 1,
+        "codigo" : "MAT-1",
+        "nombre" : "Calculo",
+        "creditos" : 4
+      },
+      "objDocente" : {
+        "id_docente" : 4,
+        "codigo_docente" : "D-4",
+        "nombre_docente" : "Docente Cuatro"
+      },
+      "grupo" : "A",
+      "cupo_estimado" : 20,
+      "salon" : null,
+      "id_salon" : null,
+      "salonInfo" : null,
+      "estadosCursoOfertados" : [ {
+        "id_estado" : 720,
+        "estado_actual" : "Inscripcion",
+        "fecha_registro_estado" : "2025-07-01T12:00:00.000+00:00",
+        "objCursoOfertadoVerano" : null
+      } ],
+      "estudiantesInscritos" : [ ]
+    }, {
+      "id_curso" : 74,
+      "idCurso" : null,
+      "codigo_curso" : "MAT-1",
+      "nombre_curso" : "Calculo",
+      "descripcion" : "Curso de Calculo",
+      "fecha_inicio" : "2025-07-01T12:00:00Z",
+      "fecha_fin" : "2025-08-01T12:00:00Z",
+      "cupo_maximo" : 20,
+      "cupo_disponible" : 20,
+      "espacio_asignado" : "221",
+      "estado" : "Publicado",
+      "periodo" : "2025-2",
+      "objMateria" : {
+        "id_materia" : 1,
+        "codigo" : "MAT-1",
+        "nombre" : "Calculo",
+        "creditos" : 4
+      },
+      "objDocente" : {
+        "id_docente" : 4,
+        "codigo_docente" : "D-4",
+        "nombre_docente" : "Docente Cuatro"
+      },
+      "grupo" : "A",
+      "cupo_estimado" : 20,
+      "salon" : "221",
+      "id_salon" : null,
+      "salonInfo" : null,
+      "estadosCursoOfertados" : [ {
+        "id_estado" : 740,
+        "estado_actual" : "Publicado",
+        "fecha_registro_estado" : "2025-07-01T12:00:00.000+00:00",
+        "objCursoOfertadoVerano" : null
+      } ],
+      "estudiantesInscritos" : [ ]
+    } ],
+    "disposicion" : null,
+    "llamadas" : [ {
+      "listarPorFiltros" : "null, 3, true"
+    } ]
+  },
+  "GET /api/cursos-verano/cursos?disponibles=true&periodoAcademico=todos&idPrograma=3 [est5]" : {
+    "status" : 404,
+    "tipo" : "application/json",
+    "cuerpo" : {
+      "codigoError" : "GC-0404",
+      "mensaje" : "El recurso solicitado no existe",
+      "codigoHttp" : 404,
+      "url" : "http://localhost/api/cursos-verano/cursos",
+      "metodo" : "GET"
+    },
+    "disposicion" : null,
+    "llamadas" : [ ]
+  },
+  "GET /api/cursos-intersemestrales/cursos-verano/disponibles?periodoAcademico=todos&idPrograma=3 [funcionario]" : {
+    "status" : 200,
+    "tipo" : "application/json",
+    "cuerpo" : [ {
+      "id_curso" : 71,
+      "idCurso" : null,
+      "codigo_curso" : "MAT-1",
+      "nombre_curso" : "Calculo",
+      "descripcion" : "Curso de Calculo",
+      "fecha_inicio" : "2025-07-01T12:00:00Z",
+      "fecha_fin" : "2025-08-01T12:00:00Z",
+      "cupo_maximo" : 20,
+      "cupo_disponible" : 20,
+      "espacio_asignado" : "221",
+      "estado" : "Preinscripcion",
+      "periodo" : "2025-2",
+      "objMateria" : {
+        "id_materia" : 1,
+        "codigo" : "MAT-1",
+        "nombre" : "Calculo",
+        "creditos" : 4
+      },
+      "objDocente" : {
+        "id_docente" : 4,
+        "codigo_docente" : "D-4",
+        "nombre_docente" : "Docente Cuatro"
+      },
+      "grupo" : "A",
+      "cupo_estimado" : 20,
+      "salon" : "221",
+      "id_salon" : null,
+      "salonInfo" : null,
+      "estadosCursoOfertados" : [ {
+        "id_estado" : 710,
+        "estado_actual" : "Preinscripcion",
+        "fecha_registro_estado" : "2025-07-01T12:00:00.000+00:00",
+        "objCursoOfertadoVerano" : null
+      } ],
+      "estudiantesInscritos" : [ ]
+    }, {
+      "id_curso" : 72,
+      "idCurso" : null,
+      "codigo_curso" : "MAT-1",
+      "nombre_curso" : "Calculo",
+      "descripcion" : "Curso de Calculo",
+      "fecha_inicio" : "2025-07-01T12:00:00Z",
+      "fecha_fin" : "2025-08-01T12:00:00Z",
+      "cupo_maximo" : 20,
+      "cupo_disponible" : 20,
+      "espacio_asignado" : null,
+      "estado" : "Inscripcion",
+      "periodo" : "2025-1",
+      "objMateria" : {
+        "id_materia" : 1,
+        "codigo" : "MAT-1",
+        "nombre" : "Calculo",
+        "creditos" : 4
+      },
+      "objDocente" : {
+        "id_docente" : 4,
+        "codigo_docente" : "D-4",
+        "nombre_docente" : "Docente Cuatro"
+      },
+      "grupo" : "A",
+      "cupo_estimado" : 20,
+      "salon" : null,
+      "id_salon" : null,
+      "salonInfo" : null,
+      "estadosCursoOfertados" : [ {
+        "id_estado" : 720,
+        "estado_actual" : "Inscripcion",
+        "fecha_registro_estado" : "2025-07-01T12:00:00.000+00:00",
+        "objCursoOfertadoVerano" : null
+      } ],
+      "estudiantesInscritos" : [ ]
+    }, {
+      "id_curso" : 74,
+      "idCurso" : null,
+      "codigo_curso" : "MAT-1",
+      "nombre_curso" : "Calculo",
+      "descripcion" : "Curso de Calculo",
+      "fecha_inicio" : "2025-07-01T12:00:00Z",
+      "fecha_fin" : "2025-08-01T12:00:00Z",
+      "cupo_maximo" : 20,
+      "cupo_disponible" : 20,
+      "espacio_asignado" : "221",
+      "estado" : "Publicado",
+      "periodo" : "2025-2",
+      "objMateria" : {
+        "id_materia" : 1,
+        "codigo" : "MAT-1",
+        "nombre" : "Calculo",
+        "creditos" : 4
+      },
+      "objDocente" : {
+        "id_docente" : 4,
+        "codigo_docente" : "D-4",
+        "nombre_docente" : "Docente Cuatro"
+      },
+      "grupo" : "A",
+      "cupo_estimado" : 20,
+      "salon" : "221",
+      "id_salon" : null,
+      "salonInfo" : null,
+      "estadosCursoOfertados" : [ {
+        "id_estado" : 740,
+        "estado_actual" : "Publicado",
+        "fecha_registro_estado" : "2025-07-01T12:00:00.000+00:00",
+        "objCursoOfertadoVerano" : null
+      } ],
+      "estudiantesInscritos" : [ ]
+    } ],
+    "disposicion" : null,
+    "llamadas" : [ {
+      "listarPorFiltros" : "null, 3, true"
+    } ]
+  },
+  "GET /api/cursos-verano/cursos?disponibles=true&periodoAcademico=todos&idPrograma=3 [funcionario]" : {
+    "status" : 404,
+    "tipo" : "application/json",
+    "cuerpo" : {
+      "codigoError" : "GC-0404",
+      "mensaje" : "El recurso solicitado no existe",
+      "codigoHttp" : 404,
+      "url" : "http://localhost/api/cursos-verano/cursos",
+      "metodo" : "GET"
+    },
+    "disposicion" : null,
+    "llamadas" : [ ]
+  },
+  "GET /api/cursos-intersemestrales/cursos-verano/todos [funcionario]" : {
+    "status" : 200,
+    "tipo" : "application/json",
+    "cuerpo" : [ {
+      "id_curso" : 71,
+      "idCurso" : null,
+      "codigo_curso" : "MAT-1",
+      "nombre_curso" : "Calculo",
+      "descripcion" : "Curso de Calculo",
+      "fecha_inicio" : "2025-07-01T12:00:00Z",
+      "fecha_fin" : "2025-08-01T12:00:00Z",
+      "cupo_maximo" : 20,
+      "cupo_disponible" : 20,
+      "espacio_asignado" : "221",
+      "estado" : "Preinscripcion",
+      "periodo" : "2025-2",
+      "objMateria" : {
+        "id_materia" : 1,
+        "codigo" : "MAT-1",
+        "nombre" : "Calculo",
+        "creditos" : 4
+      },
+      "objDocente" : {
+        "id_docente" : 4,
+        "codigo_docente" : "D-4",
+        "nombre_docente" : "Docente Cuatro"
+      },
+      "grupo" : "A",
+      "cupo_estimado" : 20,
+      "salon" : "221",
+      "id_salon" : 81,
+      "salonInfo" : {
+        "id_salon" : 81,
+        "descripcion" : "221 - FIET",
+        "numero_salon" : "221",
+        "edificio" : "FIET",
+        "activo" : true
+      },
+      "estadosCursoOfertados" : [ {
+        "id_estado" : 710,
+        "estado_actual" : "Preinscripcion",
+        "fecha_registro_estado" : "2025-07-01T12:00:00.000+00:00",
+        "objCursoOfertadoVerano" : null
+      } ],
+      "estudiantesInscritos" : [ ]
+    }, {
+      "id_curso" : 72,
+      "idCurso" : null,
+      "codigo_curso" : "MAT-1",
+      "nombre_curso" : "Calculo",
+      "descripcion" : "Curso de Calculo",
+      "fecha_inicio" : "2025-07-01T12:00:00Z",
+      "fecha_fin" : "2025-08-01T12:00:00Z",
+      "cupo_maximo" : 20,
+      "cupo_disponible" : 20,
+      "espacio_asignado" : null,
+      "estado" : "Inscripcion",
+      "periodo" : "2025-1",
+      "objMateria" : {
+        "id_materia" : 1,
+        "codigo" : "MAT-1",
+        "nombre" : "Calculo",
+        "creditos" : 4
+      },
+      "objDocente" : {
+        "id_docente" : 4,
+        "codigo_docente" : "D-4",
+        "nombre_docente" : "Docente Cuatro"
+      },
+      "grupo" : "A",
+      "cupo_estimado" : 20,
+      "salon" : null,
+      "id_salon" : null,
+      "salonInfo" : null,
+      "estadosCursoOfertados" : [ {
+        "id_estado" : 720,
+        "estado_actual" : "Inscripcion",
+        "fecha_registro_estado" : "2025-07-01T12:00:00.000+00:00",
+        "objCursoOfertadoVerano" : null
+      } ],
+      "estudiantesInscritos" : [ ]
+    }, {
+      "id_curso" : 73,
+      "idCurso" : null,
+      "codigo_curso" : "MAT-1",
+      "nombre_curso" : "Calculo",
+      "descripcion" : "Curso de Calculo",
+      "fecha_inicio" : "2025-07-01T12:00:00Z",
+      "fecha_fin" : "2025-08-01T12:00:00Z",
+      "cupo_maximo" : 20,
+      "cupo_disponible" : 19,
+      "espacio_asignado" : "222",
+      "estado" : "Borrador",
+      "periodo" : "2025-2",
+      "objMateria" : {
+        "id_materia" : 1,
+        "codigo" : "MAT-1",
+        "nombre" : "Calculo",
+        "creditos" : 4
+      },
+      "objDocente" : {
+        "id_docente" : 4,
+        "codigo_docente" : "D-4",
+        "nombre_docente" : "Docente Cuatro"
+      },
+      "grupo" : "A",
+      "cupo_estimado" : 20,
+      "salon" : "222",
+      "id_salon" : null,
+      "salonInfo" : null,
+      "estadosCursoOfertados" : [ {
+        "id_estado" : 730,
+        "estado_actual" : "Borrador",
+        "fecha_registro_estado" : "2025-07-01T12:00:00.000+00:00",
+        "objCursoOfertadoVerano" : null
+      } ],
+      "estudiantesInscritos" : [ {
+        "id_usuario" : 5,
+        "nombre_completo" : "Usuario 5",
+        "rol" : {
+          "id_rol" : null,
+          "nombre" : "Estudiante"
+        },
+        "codigo" : null,
+        "cedula" : null,
+        "correo" : null,
+        "estado_usuario" : false,
+        "objPrograma" : null
+      } ]
+    }, {
+      "id_curso" : 74,
+      "idCurso" : null,
+      "codigo_curso" : "MAT-1",
+      "nombre_curso" : "Calculo",
+      "descripcion" : "Curso de Calculo",
+      "fecha_inicio" : "2025-07-01T12:00:00Z",
+      "fecha_fin" : "2025-08-01T12:00:00Z",
+      "cupo_maximo" : 20,
+      "cupo_disponible" : 20,
+      "espacio_asignado" : "221",
+      "estado" : "Publicado",
+      "periodo" : "2025-2",
+      "objMateria" : {
+        "id_materia" : 1,
+        "codigo" : "MAT-1",
+        "nombre" : "Calculo",
+        "creditos" : 4
+      },
+      "objDocente" : {
+        "id_docente" : 4,
+        "codigo_docente" : "D-4",
+        "nombre_docente" : "Docente Cuatro"
+      },
+      "grupo" : "A",
+      "cupo_estimado" : 20,
+      "salon" : "221",
+      "id_salon" : 81,
+      "salonInfo" : {
+        "id_salon" : 81,
+        "descripcion" : "221 - FIET",
+        "numero_salon" : "221",
+        "edificio" : "FIET",
+        "activo" : true
+      },
+      "estadosCursoOfertados" : [ {
+        "id_estado" : 740,
+        "estado_actual" : "Publicado",
+        "fecha_registro_estado" : "2025-07-01T12:00:00.000+00:00",
+        "objCursoOfertadoVerano" : null
+      } ],
+      "estudiantesInscritos" : [ ]
+    } ],
+    "disposicion" : null,
+    "llamadas" : [ {
+      "listarPorFiltros" : "null, null, false"
+    } ]
+  },
+  "GET /api/cursos-verano/cursos [funcionario]" : {
+    "status" : 404,
+    "tipo" : "application/json",
+    "cuerpo" : {
+      "codigoError" : "GC-0404",
+      "mensaje" : "El recurso solicitado no existe",
+      "codigoHttp" : 404,
+      "url" : "http://localhost/api/cursos-verano/cursos",
+      "metodo" : "GET"
+    },
+    "disposicion" : null,
+    "llamadas" : [ ]
+  },
+  "GET /api/cursos-intersemestrales/cursos-verano/todos [coordinador]" : {
+    "status" : 200,
+    "tipo" : "application/json",
+    "cuerpo" : [ {
+      "id_curso" : 71,
+      "idCurso" : null,
+      "codigo_curso" : "MAT-1",
+      "nombre_curso" : "Calculo",
+      "descripcion" : "Curso de Calculo",
+      "fecha_inicio" : "2025-07-01T12:00:00Z",
+      "fecha_fin" : "2025-08-01T12:00:00Z",
+      "cupo_maximo" : 20,
+      "cupo_disponible" : 20,
+      "espacio_asignado" : "221",
+      "estado" : "Preinscripcion",
+      "periodo" : "2025-2",
+      "objMateria" : {
+        "id_materia" : 1,
+        "codigo" : "MAT-1",
+        "nombre" : "Calculo",
+        "creditos" : 4
+      },
+      "objDocente" : {
+        "id_docente" : 4,
+        "codigo_docente" : "D-4",
+        "nombre_docente" : "Docente Cuatro"
+      },
+      "grupo" : "A",
+      "cupo_estimado" : 20,
+      "salon" : "221",
+      "id_salon" : 81,
+      "salonInfo" : {
+        "id_salon" : 81,
+        "descripcion" : "221 - FIET",
+        "numero_salon" : "221",
+        "edificio" : "FIET",
+        "activo" : true
+      },
+      "estadosCursoOfertados" : [ {
+        "id_estado" : 710,
+        "estado_actual" : "Preinscripcion",
+        "fecha_registro_estado" : "2025-07-01T12:00:00.000+00:00",
+        "objCursoOfertadoVerano" : null
+      } ],
+      "estudiantesInscritos" : [ ]
+    }, {
+      "id_curso" : 72,
+      "idCurso" : null,
+      "codigo_curso" : "MAT-1",
+      "nombre_curso" : "Calculo",
+      "descripcion" : "Curso de Calculo",
+      "fecha_inicio" : "2025-07-01T12:00:00Z",
+      "fecha_fin" : "2025-08-01T12:00:00Z",
+      "cupo_maximo" : 20,
+      "cupo_disponible" : 20,
+      "espacio_asignado" : null,
+      "estado" : "Inscripcion",
+      "periodo" : "2025-1",
+      "objMateria" : {
+        "id_materia" : 1,
+        "codigo" : "MAT-1",
+        "nombre" : "Calculo",
+        "creditos" : 4
+      },
+      "objDocente" : {
+        "id_docente" : 4,
+        "codigo_docente" : "D-4",
+        "nombre_docente" : "Docente Cuatro"
+      },
+      "grupo" : "A",
+      "cupo_estimado" : 20,
+      "salon" : null,
+      "id_salon" : null,
+      "salonInfo" : null,
+      "estadosCursoOfertados" : [ {
+        "id_estado" : 720,
+        "estado_actual" : "Inscripcion",
+        "fecha_registro_estado" : "2025-07-01T12:00:00.000+00:00",
+        "objCursoOfertadoVerano" : null
+      } ],
+      "estudiantesInscritos" : [ ]
+    }, {
+      "id_curso" : 73,
+      "idCurso" : null,
+      "codigo_curso" : "MAT-1",
+      "nombre_curso" : "Calculo",
+      "descripcion" : "Curso de Calculo",
+      "fecha_inicio" : "2025-07-01T12:00:00Z",
+      "fecha_fin" : "2025-08-01T12:00:00Z",
+      "cupo_maximo" : 20,
+      "cupo_disponible" : 19,
+      "espacio_asignado" : "222",
+      "estado" : "Borrador",
+      "periodo" : "2025-2",
+      "objMateria" : {
+        "id_materia" : 1,
+        "codigo" : "MAT-1",
+        "nombre" : "Calculo",
+        "creditos" : 4
+      },
+      "objDocente" : {
+        "id_docente" : 4,
+        "codigo_docente" : "D-4",
+        "nombre_docente" : "Docente Cuatro"
+      },
+      "grupo" : "A",
+      "cupo_estimado" : 20,
+      "salon" : "222",
+      "id_salon" : null,
+      "salonInfo" : null,
+      "estadosCursoOfertados" : [ {
+        "id_estado" : 730,
+        "estado_actual" : "Borrador",
+        "fecha_registro_estado" : "2025-07-01T12:00:00.000+00:00",
+        "objCursoOfertadoVerano" : null
+      } ],
+      "estudiantesInscritos" : [ {
+        "id_usuario" : 5,
+        "nombre_completo" : "Usuario 5",
+        "rol" : {
+          "id_rol" : null,
+          "nombre" : "Estudiante"
+        },
+        "codigo" : null,
+        "cedula" : null,
+        "correo" : null,
+        "estado_usuario" : false,
+        "objPrograma" : null
+      } ]
+    }, {
+      "id_curso" : 74,
+      "idCurso" : null,
+      "codigo_curso" : "MAT-1",
+      "nombre_curso" : "Calculo",
+      "descripcion" : "Curso de Calculo",
+      "fecha_inicio" : "2025-07-01T12:00:00Z",
+      "fecha_fin" : "2025-08-01T12:00:00Z",
+      "cupo_maximo" : 20,
+      "cupo_disponible" : 20,
+      "espacio_asignado" : "221",
+      "estado" : "Publicado",
+      "periodo" : "2025-2",
+      "objMateria" : {
+        "id_materia" : 1,
+        "codigo" : "MAT-1",
+        "nombre" : "Calculo",
+        "creditos" : 4
+      },
+      "objDocente" : {
+        "id_docente" : 4,
+        "codigo_docente" : "D-4",
+        "nombre_docente" : "Docente Cuatro"
+      },
+      "grupo" : "A",
+      "cupo_estimado" : 20,
+      "salon" : "221",
+      "id_salon" : 81,
+      "salonInfo" : {
+        "id_salon" : 81,
+        "descripcion" : "221 - FIET",
+        "numero_salon" : "221",
+        "edificio" : "FIET",
+        "activo" : true
+      },
+      "estadosCursoOfertados" : [ {
+        "id_estado" : 740,
+        "estado_actual" : "Publicado",
+        "fecha_registro_estado" : "2025-07-01T12:00:00.000+00:00",
+        "objCursoOfertadoVerano" : null
+      } ],
+      "estudiantesInscritos" : [ ]
+    } ],
+    "disposicion" : null,
+    "llamadas" : [ {
+      "listarPorFiltros" : "null, null, false"
+    } ]
+  },
+  "GET /api/cursos-verano/cursos [coordinador]" : {
+    "status" : 404,
+    "tipo" : "application/json",
+    "cuerpo" : {
+      "codigoError" : "GC-0404",
+      "mensaje" : "El recurso solicitado no existe",
+      "codigoHttp" : 404,
+      "url" : "http://localhost/api/cursos-verano/cursos",
+      "metodo" : "GET"
+    },
+    "disposicion" : null,
+    "llamadas" : [ ]
+  },
+  "GET /api/cursos-intersemestrales/cursos-verano/todos [est5]" : {
+    "status" : 403,
+    "tipo" : "application/json",
+    "cuerpo" : {
+      "codigoError" : "GC-0403",
+      "mensaje" : "Acceso denegado: no tiene permisos para este recurso",
+      "codigoHttp" : 403,
+      "url" : "http://localhost/api/cursos-intersemestrales/cursos-verano/todos",
+      "metodo" : "GET"
+    },
+    "disposicion" : null,
+    "llamadas" : [ ]
+  },
+  "GET /api/cursos-verano/cursos [est5]" : {
+    "status" : 404,
+    "tipo" : "application/json",
+    "cuerpo" : {
+      "codigoError" : "GC-0404",
+      "mensaje" : "El recurso solicitado no existe",
+      "codigoHttp" : 404,
+      "url" : "http://localhost/api/cursos-verano/cursos",
+      "metodo" : "GET"
+    },
+    "disposicion" : null,
+    "llamadas" : [ ]
+  },
+  "GET /api/cursos-intersemestrales/cursos-verano/todos?periodoAcademico=2025-2 [funcionario]" : {
+    "status" : 200,
+    "tipo" : "application/json",
+    "cuerpo" : [ {
+      "id_curso" : 71,
+      "idCurso" : null,
+      "codigo_curso" : "MAT-1",
+      "nombre_curso" : "Calculo",
+      "descripcion" : "Curso de Calculo",
+      "fecha_inicio" : "2025-07-01T12:00:00Z",
+      "fecha_fin" : "2025-08-01T12:00:00Z",
+      "cupo_maximo" : 20,
+      "cupo_disponible" : 20,
+      "espacio_asignado" : "221",
+      "estado" : "Preinscripcion",
+      "periodo" : "2025-2",
+      "objMateria" : {
+        "id_materia" : 1,
+        "codigo" : "MAT-1",
+        "nombre" : "Calculo",
+        "creditos" : 4
+      },
+      "objDocente" : {
+        "id_docente" : 4,
+        "codigo_docente" : "D-4",
+        "nombre_docente" : "Docente Cuatro"
+      },
+      "grupo" : "A",
+      "cupo_estimado" : 20,
+      "salon" : "221",
+      "id_salon" : 81,
+      "salonInfo" : {
+        "id_salon" : 81,
+        "descripcion" : "221 - FIET",
+        "numero_salon" : "221",
+        "edificio" : "FIET",
+        "activo" : true
+      },
+      "estadosCursoOfertados" : [ {
+        "id_estado" : 710,
+        "estado_actual" : "Preinscripcion",
+        "fecha_registro_estado" : "2025-07-01T12:00:00.000+00:00",
+        "objCursoOfertadoVerano" : null
+      } ],
+      "estudiantesInscritos" : [ ]
+    }, {
+      "id_curso" : 72,
+      "idCurso" : null,
+      "codigo_curso" : "MAT-1",
+      "nombre_curso" : "Calculo",
+      "descripcion" : "Curso de Calculo",
+      "fecha_inicio" : "2025-07-01T12:00:00Z",
+      "fecha_fin" : "2025-08-01T12:00:00Z",
+      "cupo_maximo" : 20,
+      "cupo_disponible" : 20,
+      "espacio_asignado" : null,
+      "estado" : "Inscripcion",
+      "periodo" : "2025-1",
+      "objMateria" : {
+        "id_materia" : 1,
+        "codigo" : "MAT-1",
+        "nombre" : "Calculo",
+        "creditos" : 4
+      },
+      "objDocente" : {
+        "id_docente" : 4,
+        "codigo_docente" : "D-4",
+        "nombre_docente" : "Docente Cuatro"
+      },
+      "grupo" : "A",
+      "cupo_estimado" : 20,
+      "salon" : null,
+      "id_salon" : null,
+      "salonInfo" : null,
+      "estadosCursoOfertados" : [ {
+        "id_estado" : 720,
+        "estado_actual" : "Inscripcion",
+        "fecha_registro_estado" : "2025-07-01T12:00:00.000+00:00",
+        "objCursoOfertadoVerano" : null
+      } ],
+      "estudiantesInscritos" : [ ]
+    }, {
+      "id_curso" : 73,
+      "idCurso" : null,
+      "codigo_curso" : "MAT-1",
+      "nombre_curso" : "Calculo",
+      "descripcion" : "Curso de Calculo",
+      "fecha_inicio" : "2025-07-01T12:00:00Z",
+      "fecha_fin" : "2025-08-01T12:00:00Z",
+      "cupo_maximo" : 20,
+      "cupo_disponible" : 19,
+      "espacio_asignado" : "222",
+      "estado" : "Borrador",
+      "periodo" : "2025-2",
+      "objMateria" : {
+        "id_materia" : 1,
+        "codigo" : "MAT-1",
+        "nombre" : "Calculo",
+        "creditos" : 4
+      },
+      "objDocente" : {
+        "id_docente" : 4,
+        "codigo_docente" : "D-4",
+        "nombre_docente" : "Docente Cuatro"
+      },
+      "grupo" : "A",
+      "cupo_estimado" : 20,
+      "salon" : "222",
+      "id_salon" : null,
+      "salonInfo" : null,
+      "estadosCursoOfertados" : [ {
+        "id_estado" : 730,
+        "estado_actual" : "Borrador",
+        "fecha_registro_estado" : "2025-07-01T12:00:00.000+00:00",
+        "objCursoOfertadoVerano" : null
+      } ],
+      "estudiantesInscritos" : [ {
+        "id_usuario" : 5,
+        "nombre_completo" : "Usuario 5",
+        "rol" : {
+          "id_rol" : null,
+          "nombre" : "Estudiante"
+        },
+        "codigo" : null,
+        "cedula" : null,
+        "correo" : null,
+        "estado_usuario" : false,
+        "objPrograma" : null
+      } ]
+    }, {
+      "id_curso" : 74,
+      "idCurso" : null,
+      "codigo_curso" : "MAT-1",
+      "nombre_curso" : "Calculo",
+      "descripcion" : "Curso de Calculo",
+      "fecha_inicio" : "2025-07-01T12:00:00Z",
+      "fecha_fin" : "2025-08-01T12:00:00Z",
+      "cupo_maximo" : 20,
+      "cupo_disponible" : 20,
+      "espacio_asignado" : "221",
+      "estado" : "Publicado",
+      "periodo" : "2025-2",
+      "objMateria" : {
+        "id_materia" : 1,
+        "codigo" : "MAT-1",
+        "nombre" : "Calculo",
+        "creditos" : 4
+      },
+      "objDocente" : {
+        "id_docente" : 4,
+        "codigo_docente" : "D-4",
+        "nombre_docente" : "Docente Cuatro"
+      },
+      "grupo" : "A",
+      "cupo_estimado" : 20,
+      "salon" : "221",
+      "id_salon" : 81,
+      "salonInfo" : {
+        "id_salon" : 81,
+        "descripcion" : "221 - FIET",
+        "numero_salon" : "221",
+        "edificio" : "FIET",
+        "activo" : true
+      },
+      "estadosCursoOfertados" : [ {
+        "id_estado" : 740,
+        "estado_actual" : "Publicado",
+        "fecha_registro_estado" : "2025-07-01T12:00:00.000+00:00",
+        "objCursoOfertadoVerano" : null
+      } ],
+      "estudiantesInscritos" : [ ]
+    } ],
+    "disposicion" : null,
+    "llamadas" : [ {
+      "listarPorFiltros" : "2025-2, null, false"
+    } ]
+  },
+  "GET /api/cursos-verano/cursos?periodoAcademico=2025-2 [funcionario]" : {
+    "status" : 404,
+    "tipo" : "application/json",
+    "cuerpo" : {
+      "codigoError" : "GC-0404",
+      "mensaje" : "El recurso solicitado no existe",
+      "codigoHttp" : 404,
+      "url" : "http://localhost/api/cursos-verano/cursos",
+      "metodo" : "GET"
+    },
+    "disposicion" : null,
+    "llamadas" : [ ]
+  },
+  "GET /api/cursos-intersemestrales/cursos-verano/todos?periodoAcademico=2025-2 [coordinador]" : {
+    "status" : 200,
+    "tipo" : "application/json",
+    "cuerpo" : [ {
+      "id_curso" : 71,
+      "idCurso" : null,
+      "codigo_curso" : "MAT-1",
+      "nombre_curso" : "Calculo",
+      "descripcion" : "Curso de Calculo",
+      "fecha_inicio" : "2025-07-01T12:00:00Z",
+      "fecha_fin" : "2025-08-01T12:00:00Z",
+      "cupo_maximo" : 20,
+      "cupo_disponible" : 20,
+      "espacio_asignado" : "221",
+      "estado" : "Preinscripcion",
+      "periodo" : "2025-2",
+      "objMateria" : {
+        "id_materia" : 1,
+        "codigo" : "MAT-1",
+        "nombre" : "Calculo",
+        "creditos" : 4
+      },
+      "objDocente" : {
+        "id_docente" : 4,
+        "codigo_docente" : "D-4",
+        "nombre_docente" : "Docente Cuatro"
+      },
+      "grupo" : "A",
+      "cupo_estimado" : 20,
+      "salon" : "221",
+      "id_salon" : 81,
+      "salonInfo" : {
+        "id_salon" : 81,
+        "descripcion" : "221 - FIET",
+        "numero_salon" : "221",
+        "edificio" : "FIET",
+        "activo" : true
+      },
+      "estadosCursoOfertados" : [ {
+        "id_estado" : 710,
+        "estado_actual" : "Preinscripcion",
+        "fecha_registro_estado" : "2025-07-01T12:00:00.000+00:00",
+        "objCursoOfertadoVerano" : null
+      } ],
+      "estudiantesInscritos" : [ ]
+    }, {
+      "id_curso" : 72,
+      "idCurso" : null,
+      "codigo_curso" : "MAT-1",
+      "nombre_curso" : "Calculo",
+      "descripcion" : "Curso de Calculo",
+      "fecha_inicio" : "2025-07-01T12:00:00Z",
+      "fecha_fin" : "2025-08-01T12:00:00Z",
+      "cupo_maximo" : 20,
+      "cupo_disponible" : 20,
+      "espacio_asignado" : null,
+      "estado" : "Inscripcion",
+      "periodo" : "2025-1",
+      "objMateria" : {
+        "id_materia" : 1,
+        "codigo" : "MAT-1",
+        "nombre" : "Calculo",
+        "creditos" : 4
+      },
+      "objDocente" : {
+        "id_docente" : 4,
+        "codigo_docente" : "D-4",
+        "nombre_docente" : "Docente Cuatro"
+      },
+      "grupo" : "A",
+      "cupo_estimado" : 20,
+      "salon" : null,
+      "id_salon" : null,
+      "salonInfo" : null,
+      "estadosCursoOfertados" : [ {
+        "id_estado" : 720,
+        "estado_actual" : "Inscripcion",
+        "fecha_registro_estado" : "2025-07-01T12:00:00.000+00:00",
+        "objCursoOfertadoVerano" : null
+      } ],
+      "estudiantesInscritos" : [ ]
+    }, {
+      "id_curso" : 73,
+      "idCurso" : null,
+      "codigo_curso" : "MAT-1",
+      "nombre_curso" : "Calculo",
+      "descripcion" : "Curso de Calculo",
+      "fecha_inicio" : "2025-07-01T12:00:00Z",
+      "fecha_fin" : "2025-08-01T12:00:00Z",
+      "cupo_maximo" : 20,
+      "cupo_disponible" : 19,
+      "espacio_asignado" : "222",
+      "estado" : "Borrador",
+      "periodo" : "2025-2",
+      "objMateria" : {
+        "id_materia" : 1,
+        "codigo" : "MAT-1",
+        "nombre" : "Calculo",
+        "creditos" : 4
+      },
+      "objDocente" : {
+        "id_docente" : 4,
+        "codigo_docente" : "D-4",
+        "nombre_docente" : "Docente Cuatro"
+      },
+      "grupo" : "A",
+      "cupo_estimado" : 20,
+      "salon" : "222",
+      "id_salon" : null,
+      "salonInfo" : null,
+      "estadosCursoOfertados" : [ {
+        "id_estado" : 730,
+        "estado_actual" : "Borrador",
+        "fecha_registro_estado" : "2025-07-01T12:00:00.000+00:00",
+        "objCursoOfertadoVerano" : null
+      } ],
+      "estudiantesInscritos" : [ {
+        "id_usuario" : 5,
+        "nombre_completo" : "Usuario 5",
+        "rol" : {
+          "id_rol" : null,
+          "nombre" : "Estudiante"
+        },
+        "codigo" : null,
+        "cedula" : null,
+        "correo" : null,
+        "estado_usuario" : false,
+        "objPrograma" : null
+      } ]
+    }, {
+      "id_curso" : 74,
+      "idCurso" : null,
+      "codigo_curso" : "MAT-1",
+      "nombre_curso" : "Calculo",
+      "descripcion" : "Curso de Calculo",
+      "fecha_inicio" : "2025-07-01T12:00:00Z",
+      "fecha_fin" : "2025-08-01T12:00:00Z",
+      "cupo_maximo" : 20,
+      "cupo_disponible" : 20,
+      "espacio_asignado" : "221",
+      "estado" : "Publicado",
+      "periodo" : "2025-2",
+      "objMateria" : {
+        "id_materia" : 1,
+        "codigo" : "MAT-1",
+        "nombre" : "Calculo",
+        "creditos" : 4
+      },
+      "objDocente" : {
+        "id_docente" : 4,
+        "codigo_docente" : "D-4",
+        "nombre_docente" : "Docente Cuatro"
+      },
+      "grupo" : "A",
+      "cupo_estimado" : 20,
+      "salon" : "221",
+      "id_salon" : 81,
+      "salonInfo" : {
+        "id_salon" : 81,
+        "descripcion" : "221 - FIET",
+        "numero_salon" : "221",
+        "edificio" : "FIET",
+        "activo" : true
+      },
+      "estadosCursoOfertados" : [ {
+        "id_estado" : 740,
+        "estado_actual" : "Publicado",
+        "fecha_registro_estado" : "2025-07-01T12:00:00.000+00:00",
+        "objCursoOfertadoVerano" : null
+      } ],
+      "estudiantesInscritos" : [ ]
+    } ],
+    "disposicion" : null,
+    "llamadas" : [ {
+      "listarPorFiltros" : "2025-2, null, false"
+    } ]
+  },
+  "GET /api/cursos-verano/cursos?periodoAcademico=2025-2 [coordinador]" : {
+    "status" : 404,
+    "tipo" : "application/json",
+    "cuerpo" : {
+      "codigoError" : "GC-0404",
+      "mensaje" : "El recurso solicitado no existe",
+      "codigoHttp" : 404,
+      "url" : "http://localhost/api/cursos-verano/cursos",
+      "metodo" : "GET"
+    },
+    "disposicion" : null,
+    "llamadas" : [ ]
+  },
+  "GET /api/cursos-intersemestrales/cursos-verano/todos?periodoAcademico=2025-2 [est5]" : {
+    "status" : 403,
+    "tipo" : "application/json",
+    "cuerpo" : {
+      "codigoError" : "GC-0403",
+      "mensaje" : "Acceso denegado: no tiene permisos para este recurso",
+      "codigoHttp" : 403,
+      "url" : "http://localhost/api/cursos-intersemestrales/cursos-verano/todos",
+      "metodo" : "GET"
+    },
+    "disposicion" : null,
+    "llamadas" : [ ]
+  },
+  "GET /api/cursos-verano/cursos?periodoAcademico=2025-2 [est5]" : {
+    "status" : 404,
+    "tipo" : "application/json",
+    "cuerpo" : {
+      "codigoError" : "GC-0404",
+      "mensaje" : "El recurso solicitado no existe",
+      "codigoHttp" : 404,
+      "url" : "http://localhost/api/cursos-verano/cursos",
+      "metodo" : "GET"
+    },
+    "disposicion" : null,
+    "llamadas" : [ ]
+  },
+  "GET /api/cursos-intersemestrales/cursos-verano/todos?periodoAcademico=todos [funcionario]" : {
+    "status" : 200,
+    "tipo" : "application/json",
+    "cuerpo" : [ {
+      "id_curso" : 71,
+      "idCurso" : null,
+      "codigo_curso" : "MAT-1",
+      "nombre_curso" : "Calculo",
+      "descripcion" : "Curso de Calculo",
+      "fecha_inicio" : "2025-07-01T12:00:00Z",
+      "fecha_fin" : "2025-08-01T12:00:00Z",
+      "cupo_maximo" : 20,
+      "cupo_disponible" : 20,
+      "espacio_asignado" : "221",
+      "estado" : "Preinscripcion",
+      "periodo" : "2025-2",
+      "objMateria" : {
+        "id_materia" : 1,
+        "codigo" : "MAT-1",
+        "nombre" : "Calculo",
+        "creditos" : 4
+      },
+      "objDocente" : {
+        "id_docente" : 4,
+        "codigo_docente" : "D-4",
+        "nombre_docente" : "Docente Cuatro"
+      },
+      "grupo" : "A",
+      "cupo_estimado" : 20,
+      "salon" : "221",
+      "id_salon" : 81,
+      "salonInfo" : {
+        "id_salon" : 81,
+        "descripcion" : "221 - FIET",
+        "numero_salon" : "221",
+        "edificio" : "FIET",
+        "activo" : true
+      },
+      "estadosCursoOfertados" : [ {
+        "id_estado" : 710,
+        "estado_actual" : "Preinscripcion",
+        "fecha_registro_estado" : "2025-07-01T12:00:00.000+00:00",
+        "objCursoOfertadoVerano" : null
+      } ],
+      "estudiantesInscritos" : [ ]
+    }, {
+      "id_curso" : 72,
+      "idCurso" : null,
+      "codigo_curso" : "MAT-1",
+      "nombre_curso" : "Calculo",
+      "descripcion" : "Curso de Calculo",
+      "fecha_inicio" : "2025-07-01T12:00:00Z",
+      "fecha_fin" : "2025-08-01T12:00:00Z",
+      "cupo_maximo" : 20,
+      "cupo_disponible" : 20,
+      "espacio_asignado" : null,
+      "estado" : "Inscripcion",
+      "periodo" : "2025-1",
+      "objMateria" : {
+        "id_materia" : 1,
+        "codigo" : "MAT-1",
+        "nombre" : "Calculo",
+        "creditos" : 4
+      },
+      "objDocente" : {
+        "id_docente" : 4,
+        "codigo_docente" : "D-4",
+        "nombre_docente" : "Docente Cuatro"
+      },
+      "grupo" : "A",
+      "cupo_estimado" : 20,
+      "salon" : null,
+      "id_salon" : null,
+      "salonInfo" : null,
+      "estadosCursoOfertados" : [ {
+        "id_estado" : 720,
+        "estado_actual" : "Inscripcion",
+        "fecha_registro_estado" : "2025-07-01T12:00:00.000+00:00",
+        "objCursoOfertadoVerano" : null
+      } ],
+      "estudiantesInscritos" : [ ]
+    }, {
+      "id_curso" : 73,
+      "idCurso" : null,
+      "codigo_curso" : "MAT-1",
+      "nombre_curso" : "Calculo",
+      "descripcion" : "Curso de Calculo",
+      "fecha_inicio" : "2025-07-01T12:00:00Z",
+      "fecha_fin" : "2025-08-01T12:00:00Z",
+      "cupo_maximo" : 20,
+      "cupo_disponible" : 19,
+      "espacio_asignado" : "222",
+      "estado" : "Borrador",
+      "periodo" : "2025-2",
+      "objMateria" : {
+        "id_materia" : 1,
+        "codigo" : "MAT-1",
+        "nombre" : "Calculo",
+        "creditos" : 4
+      },
+      "objDocente" : {
+        "id_docente" : 4,
+        "codigo_docente" : "D-4",
+        "nombre_docente" : "Docente Cuatro"
+      },
+      "grupo" : "A",
+      "cupo_estimado" : 20,
+      "salon" : "222",
+      "id_salon" : null,
+      "salonInfo" : null,
+      "estadosCursoOfertados" : [ {
+        "id_estado" : 730,
+        "estado_actual" : "Borrador",
+        "fecha_registro_estado" : "2025-07-01T12:00:00.000+00:00",
+        "objCursoOfertadoVerano" : null
+      } ],
+      "estudiantesInscritos" : [ {
+        "id_usuario" : 5,
+        "nombre_completo" : "Usuario 5",
+        "rol" : {
+          "id_rol" : null,
+          "nombre" : "Estudiante"
+        },
+        "codigo" : null,
+        "cedula" : null,
+        "correo" : null,
+        "estado_usuario" : false,
+        "objPrograma" : null
+      } ]
+    }, {
+      "id_curso" : 74,
+      "idCurso" : null,
+      "codigo_curso" : "MAT-1",
+      "nombre_curso" : "Calculo",
+      "descripcion" : "Curso de Calculo",
+      "fecha_inicio" : "2025-07-01T12:00:00Z",
+      "fecha_fin" : "2025-08-01T12:00:00Z",
+      "cupo_maximo" : 20,
+      "cupo_disponible" : 20,
+      "espacio_asignado" : "221",
+      "estado" : "Publicado",
+      "periodo" : "2025-2",
+      "objMateria" : {
+        "id_materia" : 1,
+        "codigo" : "MAT-1",
+        "nombre" : "Calculo",
+        "creditos" : 4
+      },
+      "objDocente" : {
+        "id_docente" : 4,
+        "codigo_docente" : "D-4",
+        "nombre_docente" : "Docente Cuatro"
+      },
+      "grupo" : "A",
+      "cupo_estimado" : 20,
+      "salon" : "221",
+      "id_salon" : 81,
+      "salonInfo" : {
+        "id_salon" : 81,
+        "descripcion" : "221 - FIET",
+        "numero_salon" : "221",
+        "edificio" : "FIET",
+        "activo" : true
+      },
+      "estadosCursoOfertados" : [ {
+        "id_estado" : 740,
+        "estado_actual" : "Publicado",
+        "fecha_registro_estado" : "2025-07-01T12:00:00.000+00:00",
+        "objCursoOfertadoVerano" : null
+      } ],
+      "estudiantesInscritos" : [ ]
+    } ],
+    "disposicion" : null,
+    "llamadas" : [ {
+      "listarPorFiltros" : "null, null, false"
+    } ]
+  },
+  "GET /api/cursos-verano/cursos?periodoAcademico=todos [funcionario]" : {
+    "status" : 404,
+    "tipo" : "application/json",
+    "cuerpo" : {
+      "codigoError" : "GC-0404",
+      "mensaje" : "El recurso solicitado no existe",
+      "codigoHttp" : 404,
+      "url" : "http://localhost/api/cursos-verano/cursos",
+      "metodo" : "GET"
+    },
+    "disposicion" : null,
+    "llamadas" : [ ]
+  },
+  "GET /api/cursos-intersemestrales/cursos-verano/todos?periodoAcademico=todos [coordinador]" : {
+    "status" : 200,
+    "tipo" : "application/json",
+    "cuerpo" : [ {
+      "id_curso" : 71,
+      "idCurso" : null,
+      "codigo_curso" : "MAT-1",
+      "nombre_curso" : "Calculo",
+      "descripcion" : "Curso de Calculo",
+      "fecha_inicio" : "2025-07-01T12:00:00Z",
+      "fecha_fin" : "2025-08-01T12:00:00Z",
+      "cupo_maximo" : 20,
+      "cupo_disponible" : 20,
+      "espacio_asignado" : "221",
+      "estado" : "Preinscripcion",
+      "periodo" : "2025-2",
+      "objMateria" : {
+        "id_materia" : 1,
+        "codigo" : "MAT-1",
+        "nombre" : "Calculo",
+        "creditos" : 4
+      },
+      "objDocente" : {
+        "id_docente" : 4,
+        "codigo_docente" : "D-4",
+        "nombre_docente" : "Docente Cuatro"
+      },
+      "grupo" : "A",
+      "cupo_estimado" : 20,
+      "salon" : "221",
+      "id_salon" : 81,
+      "salonInfo" : {
+        "id_salon" : 81,
+        "descripcion" : "221 - FIET",
+        "numero_salon" : "221",
+        "edificio" : "FIET",
+        "activo" : true
+      },
+      "estadosCursoOfertados" : [ {
+        "id_estado" : 710,
+        "estado_actual" : "Preinscripcion",
+        "fecha_registro_estado" : "2025-07-01T12:00:00.000+00:00",
+        "objCursoOfertadoVerano" : null
+      } ],
+      "estudiantesInscritos" : [ ]
+    }, {
+      "id_curso" : 72,
+      "idCurso" : null,
+      "codigo_curso" : "MAT-1",
+      "nombre_curso" : "Calculo",
+      "descripcion" : "Curso de Calculo",
+      "fecha_inicio" : "2025-07-01T12:00:00Z",
+      "fecha_fin" : "2025-08-01T12:00:00Z",
+      "cupo_maximo" : 20,
+      "cupo_disponible" : 20,
+      "espacio_asignado" : null,
+      "estado" : "Inscripcion",
+      "periodo" : "2025-1",
+      "objMateria" : {
+        "id_materia" : 1,
+        "codigo" : "MAT-1",
+        "nombre" : "Calculo",
+        "creditos" : 4
+      },
+      "objDocente" : {
+        "id_docente" : 4,
+        "codigo_docente" : "D-4",
+        "nombre_docente" : "Docente Cuatro"
+      },
+      "grupo" : "A",
+      "cupo_estimado" : 20,
+      "salon" : null,
+      "id_salon" : null,
+      "salonInfo" : null,
+      "estadosCursoOfertados" : [ {
+        "id_estado" : 720,
+        "estado_actual" : "Inscripcion",
+        "fecha_registro_estado" : "2025-07-01T12:00:00.000+00:00",
+        "objCursoOfertadoVerano" : null
+      } ],
+      "estudiantesInscritos" : [ ]
+    }, {
+      "id_curso" : 73,
+      "idCurso" : null,
+      "codigo_curso" : "MAT-1",
+      "nombre_curso" : "Calculo",
+      "descripcion" : "Curso de Calculo",
+      "fecha_inicio" : "2025-07-01T12:00:00Z",
+      "fecha_fin" : "2025-08-01T12:00:00Z",
+      "cupo_maximo" : 20,
+      "cupo_disponible" : 19,
+      "espacio_asignado" : "222",
+      "estado" : "Borrador",
+      "periodo" : "2025-2",
+      "objMateria" : {
+        "id_materia" : 1,
+        "codigo" : "MAT-1",
+        "nombre" : "Calculo",
+        "creditos" : 4
+      },
+      "objDocente" : {
+        "id_docente" : 4,
+        "codigo_docente" : "D-4",
+        "nombre_docente" : "Docente Cuatro"
+      },
+      "grupo" : "A",
+      "cupo_estimado" : 20,
+      "salon" : "222",
+      "id_salon" : null,
+      "salonInfo" : null,
+      "estadosCursoOfertados" : [ {
+        "id_estado" : 730,
+        "estado_actual" : "Borrador",
+        "fecha_registro_estado" : "2025-07-01T12:00:00.000+00:00",
+        "objCursoOfertadoVerano" : null
+      } ],
+      "estudiantesInscritos" : [ {
+        "id_usuario" : 5,
+        "nombre_completo" : "Usuario 5",
+        "rol" : {
+          "id_rol" : null,
+          "nombre" : "Estudiante"
+        },
+        "codigo" : null,
+        "cedula" : null,
+        "correo" : null,
+        "estado_usuario" : false,
+        "objPrograma" : null
+      } ]
+    }, {
+      "id_curso" : 74,
+      "idCurso" : null,
+      "codigo_curso" : "MAT-1",
+      "nombre_curso" : "Calculo",
+      "descripcion" : "Curso de Calculo",
+      "fecha_inicio" : "2025-07-01T12:00:00Z",
+      "fecha_fin" : "2025-08-01T12:00:00Z",
+      "cupo_maximo" : 20,
+      "cupo_disponible" : 20,
+      "espacio_asignado" : "221",
+      "estado" : "Publicado",
+      "periodo" : "2025-2",
+      "objMateria" : {
+        "id_materia" : 1,
+        "codigo" : "MAT-1",
+        "nombre" : "Calculo",
+        "creditos" : 4
+      },
+      "objDocente" : {
+        "id_docente" : 4,
+        "codigo_docente" : "D-4",
+        "nombre_docente" : "Docente Cuatro"
+      },
+      "grupo" : "A",
+      "cupo_estimado" : 20,
+      "salon" : "221",
+      "id_salon" : 81,
+      "salonInfo" : {
+        "id_salon" : 81,
+        "descripcion" : "221 - FIET",
+        "numero_salon" : "221",
+        "edificio" : "FIET",
+        "activo" : true
+      },
+      "estadosCursoOfertados" : [ {
+        "id_estado" : 740,
+        "estado_actual" : "Publicado",
+        "fecha_registro_estado" : "2025-07-01T12:00:00.000+00:00",
+        "objCursoOfertadoVerano" : null
+      } ],
+      "estudiantesInscritos" : [ ]
+    } ],
+    "disposicion" : null,
+    "llamadas" : [ {
+      "listarPorFiltros" : "null, null, false"
+    } ]
+  },
+  "GET /api/cursos-verano/cursos?periodoAcademico=todos [coordinador]" : {
+    "status" : 404,
+    "tipo" : "application/json",
+    "cuerpo" : {
+      "codigoError" : "GC-0404",
+      "mensaje" : "El recurso solicitado no existe",
+      "codigoHttp" : 404,
+      "url" : "http://localhost/api/cursos-verano/cursos",
+      "metodo" : "GET"
+    },
+    "disposicion" : null,
+    "llamadas" : [ ]
+  },
+  "GET /api/cursos-intersemestrales/cursos-verano/todos?periodoAcademico=todos [est5]" : {
+    "status" : 403,
+    "tipo" : "application/json",
+    "cuerpo" : {
+      "codigoError" : "GC-0403",
+      "mensaje" : "Acceso denegado: no tiene permisos para este recurso",
+      "codigoHttp" : 403,
+      "url" : "http://localhost/api/cursos-intersemestrales/cursos-verano/todos",
+      "metodo" : "GET"
+    },
+    "disposicion" : null,
+    "llamadas" : [ ]
+  },
+  "GET /api/cursos-verano/cursos?periodoAcademico=todos [est5]" : {
+    "status" : 404,
+    "tipo" : "application/json",
+    "cuerpo" : {
+      "codigoError" : "GC-0404",
+      "mensaje" : "El recurso solicitado no existe",
+      "codigoHttp" : 404,
+      "url" : "http://localhost/api/cursos-verano/cursos",
+      "metodo" : "GET"
+    },
+    "disposicion" : null,
+    "llamadas" : [ ]
+  },
+  "GET /api/cursos-intersemestrales/cursos-verano/todos?idPrograma=3 [funcionario]" : {
+    "status" : 200,
+    "tipo" : "application/json",
+    "cuerpo" : [ {
+      "id_curso" : 71,
+      "idCurso" : null,
+      "codigo_curso" : "MAT-1",
+      "nombre_curso" : "Calculo",
+      "descripcion" : "Curso de Calculo",
+      "fecha_inicio" : "2025-07-01T12:00:00Z",
+      "fecha_fin" : "2025-08-01T12:00:00Z",
+      "cupo_maximo" : 20,
+      "cupo_disponible" : 20,
+      "espacio_asignado" : "221",
+      "estado" : "Preinscripcion",
+      "periodo" : "2025-2",
+      "objMateria" : {
+        "id_materia" : 1,
+        "codigo" : "MAT-1",
+        "nombre" : "Calculo",
+        "creditos" : 4
+      },
+      "objDocente" : {
+        "id_docente" : 4,
+        "codigo_docente" : "D-4",
+        "nombre_docente" : "Docente Cuatro"
+      },
+      "grupo" : "A",
+      "cupo_estimado" : 20,
+      "salon" : "221",
+      "id_salon" : 81,
+      "salonInfo" : {
+        "id_salon" : 81,
+        "descripcion" : "221 - FIET",
+        "numero_salon" : "221",
+        "edificio" : "FIET",
+        "activo" : true
+      },
+      "estadosCursoOfertados" : [ {
+        "id_estado" : 710,
+        "estado_actual" : "Preinscripcion",
+        "fecha_registro_estado" : "2025-07-01T12:00:00.000+00:00",
+        "objCursoOfertadoVerano" : null
+      } ],
+      "estudiantesInscritos" : [ ]
+    }, {
+      "id_curso" : 72,
+      "idCurso" : null,
+      "codigo_curso" : "MAT-1",
+      "nombre_curso" : "Calculo",
+      "descripcion" : "Curso de Calculo",
+      "fecha_inicio" : "2025-07-01T12:00:00Z",
+      "fecha_fin" : "2025-08-01T12:00:00Z",
+      "cupo_maximo" : 20,
+      "cupo_disponible" : 20,
+      "espacio_asignado" : null,
+      "estado" : "Inscripcion",
+      "periodo" : "2025-1",
+      "objMateria" : {
+        "id_materia" : 1,
+        "codigo" : "MAT-1",
+        "nombre" : "Calculo",
+        "creditos" : 4
+      },
+      "objDocente" : {
+        "id_docente" : 4,
+        "codigo_docente" : "D-4",
+        "nombre_docente" : "Docente Cuatro"
+      },
+      "grupo" : "A",
+      "cupo_estimado" : 20,
+      "salon" : null,
+      "id_salon" : null,
+      "salonInfo" : null,
+      "estadosCursoOfertados" : [ {
+        "id_estado" : 720,
+        "estado_actual" : "Inscripcion",
+        "fecha_registro_estado" : "2025-07-01T12:00:00.000+00:00",
+        "objCursoOfertadoVerano" : null
+      } ],
+      "estudiantesInscritos" : [ ]
+    }, {
+      "id_curso" : 73,
+      "idCurso" : null,
+      "codigo_curso" : "MAT-1",
+      "nombre_curso" : "Calculo",
+      "descripcion" : "Curso de Calculo",
+      "fecha_inicio" : "2025-07-01T12:00:00Z",
+      "fecha_fin" : "2025-08-01T12:00:00Z",
+      "cupo_maximo" : 20,
+      "cupo_disponible" : 19,
+      "espacio_asignado" : "222",
+      "estado" : "Borrador",
+      "periodo" : "2025-2",
+      "objMateria" : {
+        "id_materia" : 1,
+        "codigo" : "MAT-1",
+        "nombre" : "Calculo",
+        "creditos" : 4
+      },
+      "objDocente" : {
+        "id_docente" : 4,
+        "codigo_docente" : "D-4",
+        "nombre_docente" : "Docente Cuatro"
+      },
+      "grupo" : "A",
+      "cupo_estimado" : 20,
+      "salon" : "222",
+      "id_salon" : null,
+      "salonInfo" : null,
+      "estadosCursoOfertados" : [ {
+        "id_estado" : 730,
+        "estado_actual" : "Borrador",
+        "fecha_registro_estado" : "2025-07-01T12:00:00.000+00:00",
+        "objCursoOfertadoVerano" : null
+      } ],
+      "estudiantesInscritos" : [ {
+        "id_usuario" : 5,
+        "nombre_completo" : "Usuario 5",
+        "rol" : {
+          "id_rol" : null,
+          "nombre" : "Estudiante"
+        },
+        "codigo" : null,
+        "cedula" : null,
+        "correo" : null,
+        "estado_usuario" : false,
+        "objPrograma" : null
+      } ]
+    }, {
+      "id_curso" : 74,
+      "idCurso" : null,
+      "codigo_curso" : "MAT-1",
+      "nombre_curso" : "Calculo",
+      "descripcion" : "Curso de Calculo",
+      "fecha_inicio" : "2025-07-01T12:00:00Z",
+      "fecha_fin" : "2025-08-01T12:00:00Z",
+      "cupo_maximo" : 20,
+      "cupo_disponible" : 20,
+      "espacio_asignado" : "221",
+      "estado" : "Publicado",
+      "periodo" : "2025-2",
+      "objMateria" : {
+        "id_materia" : 1,
+        "codigo" : "MAT-1",
+        "nombre" : "Calculo",
+        "creditos" : 4
+      },
+      "objDocente" : {
+        "id_docente" : 4,
+        "codigo_docente" : "D-4",
+        "nombre_docente" : "Docente Cuatro"
+      },
+      "grupo" : "A",
+      "cupo_estimado" : 20,
+      "salon" : "221",
+      "id_salon" : 81,
+      "salonInfo" : {
+        "id_salon" : 81,
+        "descripcion" : "221 - FIET",
+        "numero_salon" : "221",
+        "edificio" : "FIET",
+        "activo" : true
+      },
+      "estadosCursoOfertados" : [ {
+        "id_estado" : 740,
+        "estado_actual" : "Publicado",
+        "fecha_registro_estado" : "2025-07-01T12:00:00.000+00:00",
+        "objCursoOfertadoVerano" : null
+      } ],
+      "estudiantesInscritos" : [ ]
+    } ],
+    "disposicion" : null,
+    "llamadas" : [ {
+      "listarPorFiltros" : "null, 3, false"
+    } ]
+  },
+  "GET /api/cursos-verano/cursos?idPrograma=3 [funcionario]" : {
+    "status" : 404,
+    "tipo" : "application/json",
+    "cuerpo" : {
+      "codigoError" : "GC-0404",
+      "mensaje" : "El recurso solicitado no existe",
+      "codigoHttp" : 404,
+      "url" : "http://localhost/api/cursos-verano/cursos",
+      "metodo" : "GET"
+    },
+    "disposicion" : null,
+    "llamadas" : [ ]
+  },
+  "GET /api/cursos-intersemestrales/cursos-verano/todos?idPrograma=3 [coordinador]" : {
+    "status" : 200,
+    "tipo" : "application/json",
+    "cuerpo" : [ {
+      "id_curso" : 71,
+      "idCurso" : null,
+      "codigo_curso" : "MAT-1",
+      "nombre_curso" : "Calculo",
+      "descripcion" : "Curso de Calculo",
+      "fecha_inicio" : "2025-07-01T12:00:00Z",
+      "fecha_fin" : "2025-08-01T12:00:00Z",
+      "cupo_maximo" : 20,
+      "cupo_disponible" : 20,
+      "espacio_asignado" : "221",
+      "estado" : "Preinscripcion",
+      "periodo" : "2025-2",
+      "objMateria" : {
+        "id_materia" : 1,
+        "codigo" : "MAT-1",
+        "nombre" : "Calculo",
+        "creditos" : 4
+      },
+      "objDocente" : {
+        "id_docente" : 4,
+        "codigo_docente" : "D-4",
+        "nombre_docente" : "Docente Cuatro"
+      },
+      "grupo" : "A",
+      "cupo_estimado" : 20,
+      "salon" : "221",
+      "id_salon" : 81,
+      "salonInfo" : {
+        "id_salon" : 81,
+        "descripcion" : "221 - FIET",
+        "numero_salon" : "221",
+        "edificio" : "FIET",
+        "activo" : true
+      },
+      "estadosCursoOfertados" : [ {
+        "id_estado" : 710,
+        "estado_actual" : "Preinscripcion",
+        "fecha_registro_estado" : "2025-07-01T12:00:00.000+00:00",
+        "objCursoOfertadoVerano" : null
+      } ],
+      "estudiantesInscritos" : [ ]
+    }, {
+      "id_curso" : 72,
+      "idCurso" : null,
+      "codigo_curso" : "MAT-1",
+      "nombre_curso" : "Calculo",
+      "descripcion" : "Curso de Calculo",
+      "fecha_inicio" : "2025-07-01T12:00:00Z",
+      "fecha_fin" : "2025-08-01T12:00:00Z",
+      "cupo_maximo" : 20,
+      "cupo_disponible" : 20,
+      "espacio_asignado" : null,
+      "estado" : "Inscripcion",
+      "periodo" : "2025-1",
+      "objMateria" : {
+        "id_materia" : 1,
+        "codigo" : "MAT-1",
+        "nombre" : "Calculo",
+        "creditos" : 4
+      },
+      "objDocente" : {
+        "id_docente" : 4,
+        "codigo_docente" : "D-4",
+        "nombre_docente" : "Docente Cuatro"
+      },
+      "grupo" : "A",
+      "cupo_estimado" : 20,
+      "salon" : null,
+      "id_salon" : null,
+      "salonInfo" : null,
+      "estadosCursoOfertados" : [ {
+        "id_estado" : 720,
+        "estado_actual" : "Inscripcion",
+        "fecha_registro_estado" : "2025-07-01T12:00:00.000+00:00",
+        "objCursoOfertadoVerano" : null
+      } ],
+      "estudiantesInscritos" : [ ]
+    }, {
+      "id_curso" : 73,
+      "idCurso" : null,
+      "codigo_curso" : "MAT-1",
+      "nombre_curso" : "Calculo",
+      "descripcion" : "Curso de Calculo",
+      "fecha_inicio" : "2025-07-01T12:00:00Z",
+      "fecha_fin" : "2025-08-01T12:00:00Z",
+      "cupo_maximo" : 20,
+      "cupo_disponible" : 19,
+      "espacio_asignado" : "222",
+      "estado" : "Borrador",
+      "periodo" : "2025-2",
+      "objMateria" : {
+        "id_materia" : 1,
+        "codigo" : "MAT-1",
+        "nombre" : "Calculo",
+        "creditos" : 4
+      },
+      "objDocente" : {
+        "id_docente" : 4,
+        "codigo_docente" : "D-4",
+        "nombre_docente" : "Docente Cuatro"
+      },
+      "grupo" : "A",
+      "cupo_estimado" : 20,
+      "salon" : "222",
+      "id_salon" : null,
+      "salonInfo" : null,
+      "estadosCursoOfertados" : [ {
+        "id_estado" : 730,
+        "estado_actual" : "Borrador",
+        "fecha_registro_estado" : "2025-07-01T12:00:00.000+00:00",
+        "objCursoOfertadoVerano" : null
+      } ],
+      "estudiantesInscritos" : [ {
+        "id_usuario" : 5,
+        "nombre_completo" : "Usuario 5",
+        "rol" : {
+          "id_rol" : null,
+          "nombre" : "Estudiante"
+        },
+        "codigo" : null,
+        "cedula" : null,
+        "correo" : null,
+        "estado_usuario" : false,
+        "objPrograma" : null
+      } ]
+    }, {
+      "id_curso" : 74,
+      "idCurso" : null,
+      "codigo_curso" : "MAT-1",
+      "nombre_curso" : "Calculo",
+      "descripcion" : "Curso de Calculo",
+      "fecha_inicio" : "2025-07-01T12:00:00Z",
+      "fecha_fin" : "2025-08-01T12:00:00Z",
+      "cupo_maximo" : 20,
+      "cupo_disponible" : 20,
+      "espacio_asignado" : "221",
+      "estado" : "Publicado",
+      "periodo" : "2025-2",
+      "objMateria" : {
+        "id_materia" : 1,
+        "codigo" : "MAT-1",
+        "nombre" : "Calculo",
+        "creditos" : 4
+      },
+      "objDocente" : {
+        "id_docente" : 4,
+        "codigo_docente" : "D-4",
+        "nombre_docente" : "Docente Cuatro"
+      },
+      "grupo" : "A",
+      "cupo_estimado" : 20,
+      "salon" : "221",
+      "id_salon" : 81,
+      "salonInfo" : {
+        "id_salon" : 81,
+        "descripcion" : "221 - FIET",
+        "numero_salon" : "221",
+        "edificio" : "FIET",
+        "activo" : true
+      },
+      "estadosCursoOfertados" : [ {
+        "id_estado" : 740,
+        "estado_actual" : "Publicado",
+        "fecha_registro_estado" : "2025-07-01T12:00:00.000+00:00",
+        "objCursoOfertadoVerano" : null
+      } ],
+      "estudiantesInscritos" : [ ]
+    } ],
+    "disposicion" : null,
+    "llamadas" : [ {
+      "listarPorFiltros" : "null, 3, false"
+    } ]
+  },
+  "GET /api/cursos-verano/cursos?idPrograma=3 [coordinador]" : {
+    "status" : 404,
+    "tipo" : "application/json",
+    "cuerpo" : {
+      "codigoError" : "GC-0404",
+      "mensaje" : "El recurso solicitado no existe",
+      "codigoHttp" : 404,
+      "url" : "http://localhost/api/cursos-verano/cursos",
+      "metodo" : "GET"
+    },
+    "disposicion" : null,
+    "llamadas" : [ ]
+  },
+  "GET /api/cursos-intersemestrales/cursos-verano/todos?idPrograma=3 [est5]" : {
+    "status" : 403,
+    "tipo" : "application/json",
+    "cuerpo" : {
+      "codigoError" : "GC-0403",
+      "mensaje" : "Acceso denegado: no tiene permisos para este recurso",
+      "codigoHttp" : 403,
+      "url" : "http://localhost/api/cursos-intersemestrales/cursos-verano/todos",
+      "metodo" : "GET"
+    },
+    "disposicion" : null,
+    "llamadas" : [ ]
+  },
+  "GET /api/cursos-verano/cursos?idPrograma=3 [est5]" : {
+    "status" : 404,
+    "tipo" : "application/json",
+    "cuerpo" : {
+      "codigoError" : "GC-0404",
+      "mensaje" : "El recurso solicitado no existe",
+      "codigoHttp" : 404,
+      "url" : "http://localhost/api/cursos-verano/cursos",
+      "metodo" : "GET"
+    },
+    "disposicion" : null,
+    "llamadas" : [ ]
+  },
+  "GET /api/cursos-intersemestrales/cursos/preinscripcion [est5]" : {
+    "status" : 200,
+    "tipo" : "application/json",
+    "cuerpo" : [ {
+      "id_curso" : 71,
+      "idCurso" : null,
+      "codigo_curso" : "MAT-1",
+      "nombre_curso" : "Calculo",
+      "descripcion" : "Curso de Calculo",
+      "fecha_inicio" : "2025-07-01T12:00:00Z",
+      "fecha_fin" : "2025-08-01T12:00:00Z",
+      "cupo_maximo" : 20,
+      "cupo_disponible" : 20,
+      "espacio_asignado" : "221",
+      "estado" : "Preinscripcion",
+      "periodo" : "2025-2",
+      "objMateria" : {
+        "id_materia" : 1,
+        "codigo" : "MAT-1",
+        "nombre" : "Calculo",
+        "creditos" : 4
+      },
+      "objDocente" : {
+        "id_docente" : 4,
+        "codigo_docente" : "D-4",
+        "nombre_docente" : "Docente Cuatro"
+      },
+      "grupo" : "A",
+      "cupo_estimado" : 20,
+      "salon" : "221",
+      "id_salon" : null,
+      "salonInfo" : null,
+      "estadosCursoOfertados" : [ {
+        "id_estado" : 710,
+        "estado_actual" : "Preinscripcion",
+        "fecha_registro_estado" : "2025-07-01T12:00:00.000+00:00",
+        "objCursoOfertadoVerano" : null
+      } ],
+      "estudiantesInscritos" : [ ]
+    } ],
+    "disposicion" : null,
+    "llamadas" : [ ]
+  },
+  "GET /api/cursos-verano/cursos?estado=preinscripcion [est5]" : {
+    "status" : 404,
+    "tipo" : "application/json",
+    "cuerpo" : {
+      "codigoError" : "GC-0404",
+      "mensaje" : "El recurso solicitado no existe",
+      "codigoHttp" : 404,
+      "url" : "http://localhost/api/cursos-verano/cursos",
+      "metodo" : "GET"
+    },
+    "disposicion" : null,
+    "llamadas" : [ ]
+  },
+  "GET /api/cursos-intersemestrales/cursos/preinscripcion [funcionario]" : {
+    "status" : 200,
+    "tipo" : "application/json",
+    "cuerpo" : [ {
+      "id_curso" : 71,
+      "idCurso" : null,
+      "codigo_curso" : "MAT-1",
+      "nombre_curso" : "Calculo",
+      "descripcion" : "Curso de Calculo",
+      "fecha_inicio" : "2025-07-01T12:00:00Z",
+      "fecha_fin" : "2025-08-01T12:00:00Z",
+      "cupo_maximo" : 20,
+      "cupo_disponible" : 20,
+      "espacio_asignado" : "221",
+      "estado" : "Preinscripcion",
+      "periodo" : "2025-2",
+      "objMateria" : {
+        "id_materia" : 1,
+        "codigo" : "MAT-1",
+        "nombre" : "Calculo",
+        "creditos" : 4
+      },
+      "objDocente" : {
+        "id_docente" : 4,
+        "codigo_docente" : "D-4",
+        "nombre_docente" : "Docente Cuatro"
+      },
+      "grupo" : "A",
+      "cupo_estimado" : 20,
+      "salon" : "221",
+      "id_salon" : null,
+      "salonInfo" : null,
+      "estadosCursoOfertados" : [ {
+        "id_estado" : 710,
+        "estado_actual" : "Preinscripcion",
+        "fecha_registro_estado" : "2025-07-01T12:00:00.000+00:00",
+        "objCursoOfertadoVerano" : null
+      } ],
+      "estudiantesInscritos" : [ ]
+    } ],
+    "disposicion" : null,
+    "llamadas" : [ ]
+  },
+  "GET /api/cursos-verano/cursos?estado=preinscripcion [funcionario]" : {
+    "status" : 404,
+    "tipo" : "application/json",
+    "cuerpo" : {
+      "codigoError" : "GC-0404",
+      "mensaje" : "El recurso solicitado no existe",
+      "codigoHttp" : 404,
+      "url" : "http://localhost/api/cursos-verano/cursos",
+      "metodo" : "GET"
+    },
+    "disposicion" : null,
+    "llamadas" : [ ]
+  },
+  "GET /api/cursos-intersemestrales/cursos/preinscripcion?periodoAcademico=2025-2 [est5]" : {
+    "status" : 200,
+    "tipo" : "application/json",
+    "cuerpo" : [ {
+      "id_curso" : 71,
+      "idCurso" : null,
+      "codigo_curso" : "MAT-1",
+      "nombre_curso" : "Calculo",
+      "descripcion" : "Curso de Calculo",
+      "fecha_inicio" : "2025-07-01T12:00:00Z",
+      "fecha_fin" : "2025-08-01T12:00:00Z",
+      "cupo_maximo" : 20,
+      "cupo_disponible" : 20,
+      "espacio_asignado" : "221",
+      "estado" : "Preinscripcion",
+      "periodo" : "2025-2",
+      "objMateria" : {
+        "id_materia" : 1,
+        "codigo" : "MAT-1",
+        "nombre" : "Calculo",
+        "creditos" : 4
+      },
+      "objDocente" : {
+        "id_docente" : 4,
+        "codigo_docente" : "D-4",
+        "nombre_docente" : "Docente Cuatro"
+      },
+      "grupo" : "A",
+      "cupo_estimado" : 20,
+      "salon" : "221",
+      "id_salon" : null,
+      "salonInfo" : null,
+      "estadosCursoOfertados" : [ {
+        "id_estado" : 710,
+        "estado_actual" : "Preinscripcion",
+        "fecha_registro_estado" : "2025-07-01T12:00:00.000+00:00",
+        "objCursoOfertadoVerano" : null
+      } ],
+      "estudiantesInscritos" : [ ]
+    } ],
+    "disposicion" : null,
+    "llamadas" : [ ]
+  },
+  "GET /api/cursos-verano/cursos?estado=preinscripcion&periodoAcademico=2025-2 [est5]" : {
+    "status" : 404,
+    "tipo" : "application/json",
+    "cuerpo" : {
+      "codigoError" : "GC-0404",
+      "mensaje" : "El recurso solicitado no existe",
+      "codigoHttp" : 404,
+      "url" : "http://localhost/api/cursos-verano/cursos",
+      "metodo" : "GET"
+    },
+    "disposicion" : null,
+    "llamadas" : [ ]
+  },
+  "GET /api/cursos-intersemestrales/cursos/preinscripcion?periodoAcademico=2025-2 [funcionario]" : {
+    "status" : 200,
+    "tipo" : "application/json",
+    "cuerpo" : [ {
+      "id_curso" : 71,
+      "idCurso" : null,
+      "codigo_curso" : "MAT-1",
+      "nombre_curso" : "Calculo",
+      "descripcion" : "Curso de Calculo",
+      "fecha_inicio" : "2025-07-01T12:00:00Z",
+      "fecha_fin" : "2025-08-01T12:00:00Z",
+      "cupo_maximo" : 20,
+      "cupo_disponible" : 20,
+      "espacio_asignado" : "221",
+      "estado" : "Preinscripcion",
+      "periodo" : "2025-2",
+      "objMateria" : {
+        "id_materia" : 1,
+        "codigo" : "MAT-1",
+        "nombre" : "Calculo",
+        "creditos" : 4
+      },
+      "objDocente" : {
+        "id_docente" : 4,
+        "codigo_docente" : "D-4",
+        "nombre_docente" : "Docente Cuatro"
+      },
+      "grupo" : "A",
+      "cupo_estimado" : 20,
+      "salon" : "221",
+      "id_salon" : null,
+      "salonInfo" : null,
+      "estadosCursoOfertados" : [ {
+        "id_estado" : 710,
+        "estado_actual" : "Preinscripcion",
+        "fecha_registro_estado" : "2025-07-01T12:00:00.000+00:00",
+        "objCursoOfertadoVerano" : null
+      } ],
+      "estudiantesInscritos" : [ ]
+    } ],
+    "disposicion" : null,
+    "llamadas" : [ ]
+  },
+  "GET /api/cursos-verano/cursos?estado=preinscripcion&periodoAcademico=2025-2 [funcionario]" : {
+    "status" : 404,
+    "tipo" : "application/json",
+    "cuerpo" : {
+      "codigoError" : "GC-0404",
+      "mensaje" : "El recurso solicitado no existe",
+      "codigoHttp" : 404,
+      "url" : "http://localhost/api/cursos-verano/cursos",
+      "metodo" : "GET"
+    },
+    "disposicion" : null,
+    "llamadas" : [ ]
+  },
+  "GET /api/cursos-intersemestrales/cursos/preinscripcion?periodoAcademico=todos [est5]" : {
+    "status" : 200,
+    "tipo" : "application/json",
+    "cuerpo" : [ {
+      "id_curso" : 71,
+      "idCurso" : null,
+      "codigo_curso" : "MAT-1",
+      "nombre_curso" : "Calculo",
+      "descripcion" : "Curso de Calculo",
+      "fecha_inicio" : "2025-07-01T12:00:00Z",
+      "fecha_fin" : "2025-08-01T12:00:00Z",
+      "cupo_maximo" : 20,
+      "cupo_disponible" : 20,
+      "espacio_asignado" : "221",
+      "estado" : "Preinscripcion",
+      "periodo" : "2025-2",
+      "objMateria" : {
+        "id_materia" : 1,
+        "codigo" : "MAT-1",
+        "nombre" : "Calculo",
+        "creditos" : 4
+      },
+      "objDocente" : {
+        "id_docente" : 4,
+        "codigo_docente" : "D-4",
+        "nombre_docente" : "Docente Cuatro"
+      },
+      "grupo" : "A",
+      "cupo_estimado" : 20,
+      "salon" : "221",
+      "id_salon" : null,
+      "salonInfo" : null,
+      "estadosCursoOfertados" : [ {
+        "id_estado" : 710,
+        "estado_actual" : "Preinscripcion",
+        "fecha_registro_estado" : "2025-07-01T12:00:00.000+00:00",
+        "objCursoOfertadoVerano" : null
+      } ],
+      "estudiantesInscritos" : [ ]
+    } ],
+    "disposicion" : null,
+    "llamadas" : [ ]
+  },
+  "GET /api/cursos-verano/cursos?estado=preinscripcion&periodoAcademico=todos [est5]" : {
+    "status" : 404,
+    "tipo" : "application/json",
+    "cuerpo" : {
+      "codigoError" : "GC-0404",
+      "mensaje" : "El recurso solicitado no existe",
+      "codigoHttp" : 404,
+      "url" : "http://localhost/api/cursos-verano/cursos",
+      "metodo" : "GET"
+    },
+    "disposicion" : null,
+    "llamadas" : [ ]
+  },
+  "GET /api/cursos-intersemestrales/cursos/preinscripcion?periodoAcademico=todos [funcionario]" : {
+    "status" : 200,
+    "tipo" : "application/json",
+    "cuerpo" : [ {
+      "id_curso" : 71,
+      "idCurso" : null,
+      "codigo_curso" : "MAT-1",
+      "nombre_curso" : "Calculo",
+      "descripcion" : "Curso de Calculo",
+      "fecha_inicio" : "2025-07-01T12:00:00Z",
+      "fecha_fin" : "2025-08-01T12:00:00Z",
+      "cupo_maximo" : 20,
+      "cupo_disponible" : 20,
+      "espacio_asignado" : "221",
+      "estado" : "Preinscripcion",
+      "periodo" : "2025-2",
+      "objMateria" : {
+        "id_materia" : 1,
+        "codigo" : "MAT-1",
+        "nombre" : "Calculo",
+        "creditos" : 4
+      },
+      "objDocente" : {
+        "id_docente" : 4,
+        "codigo_docente" : "D-4",
+        "nombre_docente" : "Docente Cuatro"
+      },
+      "grupo" : "A",
+      "cupo_estimado" : 20,
+      "salon" : "221",
+      "id_salon" : null,
+      "salonInfo" : null,
+      "estadosCursoOfertados" : [ {
+        "id_estado" : 710,
+        "estado_actual" : "Preinscripcion",
+        "fecha_registro_estado" : "2025-07-01T12:00:00.000+00:00",
+        "objCursoOfertadoVerano" : null
+      } ],
+      "estudiantesInscritos" : [ ]
+    } ],
+    "disposicion" : null,
+    "llamadas" : [ ]
+  },
+  "GET /api/cursos-verano/cursos?estado=preinscripcion&periodoAcademico=todos [funcionario]" : {
+    "status" : 404,
+    "tipo" : "application/json",
+    "cuerpo" : {
+      "codigoError" : "GC-0404",
+      "mensaje" : "El recurso solicitado no existe",
+      "codigoHttp" : 404,
+      "url" : "http://localhost/api/cursos-verano/cursos",
+      "metodo" : "GET"
+    },
+    "disposicion" : null,
+    "llamadas" : [ ]
+  },
+  "GET /api/cursos-intersemestrales/cursos/inscripcion [est5]" : {
+    "status" : 200,
+    "tipo" : "application/json",
+    "cuerpo" : [ {
+      "id_curso" : 72,
+      "idCurso" : null,
+      "codigo_curso" : "MAT-1",
+      "nombre_curso" : "Calculo",
+      "descripcion" : "Curso de Calculo",
+      "fecha_inicio" : "2025-07-01T12:00:00Z",
+      "fecha_fin" : "2025-08-01T12:00:00Z",
+      "cupo_maximo" : 20,
+      "cupo_disponible" : 20,
+      "espacio_asignado" : null,
+      "estado" : "Inscripcion",
+      "periodo" : "2025-1",
+      "objMateria" : {
+        "id_materia" : 1,
+        "codigo" : "MAT-1",
+        "nombre" : "Calculo",
+        "creditos" : 4
+      },
+      "objDocente" : {
+        "id_docente" : 4,
+        "codigo_docente" : "D-4",
+        "nombre_docente" : "Docente Cuatro"
+      },
+      "grupo" : "A",
+      "cupo_estimado" : 20,
+      "salon" : null,
+      "id_salon" : null,
+      "salonInfo" : null,
+      "estadosCursoOfertados" : [ {
+        "id_estado" : 720,
+        "estado_actual" : "Inscripcion",
+        "fecha_registro_estado" : "2025-07-01T12:00:00.000+00:00",
+        "objCursoOfertadoVerano" : null
+      } ],
+      "estudiantesInscritos" : [ ]
+    } ],
+    "disposicion" : null,
+    "llamadas" : [ ]
+  },
+  "GET /api/cursos-verano/cursos?estado=inscripcion [est5]" : {
+    "status" : 404,
+    "tipo" : "application/json",
+    "cuerpo" : {
+      "codigoError" : "GC-0404",
+      "mensaje" : "El recurso solicitado no existe",
+      "codigoHttp" : 404,
+      "url" : "http://localhost/api/cursos-verano/cursos",
+      "metodo" : "GET"
+    },
+    "disposicion" : null,
+    "llamadas" : [ ]
+  },
+  "GET /api/cursos-intersemestrales/cursos/inscripcion [funcionario]" : {
+    "status" : 200,
+    "tipo" : "application/json",
+    "cuerpo" : [ {
+      "id_curso" : 72,
+      "idCurso" : null,
+      "codigo_curso" : "MAT-1",
+      "nombre_curso" : "Calculo",
+      "descripcion" : "Curso de Calculo",
+      "fecha_inicio" : "2025-07-01T12:00:00Z",
+      "fecha_fin" : "2025-08-01T12:00:00Z",
+      "cupo_maximo" : 20,
+      "cupo_disponible" : 20,
+      "espacio_asignado" : null,
+      "estado" : "Inscripcion",
+      "periodo" : "2025-1",
+      "objMateria" : {
+        "id_materia" : 1,
+        "codigo" : "MAT-1",
+        "nombre" : "Calculo",
+        "creditos" : 4
+      },
+      "objDocente" : {
+        "id_docente" : 4,
+        "codigo_docente" : "D-4",
+        "nombre_docente" : "Docente Cuatro"
+      },
+      "grupo" : "A",
+      "cupo_estimado" : 20,
+      "salon" : null,
+      "id_salon" : null,
+      "salonInfo" : null,
+      "estadosCursoOfertados" : [ {
+        "id_estado" : 720,
+        "estado_actual" : "Inscripcion",
+        "fecha_registro_estado" : "2025-07-01T12:00:00.000+00:00",
+        "objCursoOfertadoVerano" : null
+      } ],
+      "estudiantesInscritos" : [ ]
+    } ],
+    "disposicion" : null,
+    "llamadas" : [ ]
+  },
+  "GET /api/cursos-verano/cursos?estado=inscripcion [funcionario]" : {
+    "status" : 404,
+    "tipo" : "application/json",
+    "cuerpo" : {
+      "codigoError" : "GC-0404",
+      "mensaje" : "El recurso solicitado no existe",
+      "codigoHttp" : 404,
+      "url" : "http://localhost/api/cursos-verano/cursos",
+      "metodo" : "GET"
+    },
+    "disposicion" : null,
+    "llamadas" : [ ]
+  },
+  "GET /api/cursos-intersemestrales/cursos/inscripcion?periodoAcademico=2025-2 [est5]" : {
+    "status" : 200,
+    "tipo" : "application/json",
+    "cuerpo" : [ ],
+    "disposicion" : null,
+    "llamadas" : [ ]
+  },
+  "GET /api/cursos-verano/cursos?estado=inscripcion&periodoAcademico=2025-2 [est5]" : {
+    "status" : 404,
+    "tipo" : "application/json",
+    "cuerpo" : {
+      "codigoError" : "GC-0404",
+      "mensaje" : "El recurso solicitado no existe",
+      "codigoHttp" : 404,
+      "url" : "http://localhost/api/cursos-verano/cursos",
+      "metodo" : "GET"
+    },
+    "disposicion" : null,
+    "llamadas" : [ ]
+  },
+  "GET /api/cursos-intersemestrales/cursos/inscripcion?periodoAcademico=2025-2 [funcionario]" : {
+    "status" : 200,
+    "tipo" : "application/json",
+    "cuerpo" : [ ],
+    "disposicion" : null,
+    "llamadas" : [ ]
+  },
+  "GET /api/cursos-verano/cursos?estado=inscripcion&periodoAcademico=2025-2 [funcionario]" : {
+    "status" : 404,
+    "tipo" : "application/json",
+    "cuerpo" : {
+      "codigoError" : "GC-0404",
+      "mensaje" : "El recurso solicitado no existe",
+      "codigoHttp" : 404,
+      "url" : "http://localhost/api/cursos-verano/cursos",
+      "metodo" : "GET"
+    },
+    "disposicion" : null,
+    "llamadas" : [ ]
+  },
+  "GET /api/cursos-intersemestrales/cursos/inscripcion?periodoAcademico=todos [est5]" : {
+    "status" : 200,
+    "tipo" : "application/json",
+    "cuerpo" : [ {
+      "id_curso" : 72,
+      "idCurso" : null,
+      "codigo_curso" : "MAT-1",
+      "nombre_curso" : "Calculo",
+      "descripcion" : "Curso de Calculo",
+      "fecha_inicio" : "2025-07-01T12:00:00Z",
+      "fecha_fin" : "2025-08-01T12:00:00Z",
+      "cupo_maximo" : 20,
+      "cupo_disponible" : 20,
+      "espacio_asignado" : null,
+      "estado" : "Inscripcion",
+      "periodo" : "2025-1",
+      "objMateria" : {
+        "id_materia" : 1,
+        "codigo" : "MAT-1",
+        "nombre" : "Calculo",
+        "creditos" : 4
+      },
+      "objDocente" : {
+        "id_docente" : 4,
+        "codigo_docente" : "D-4",
+        "nombre_docente" : "Docente Cuatro"
+      },
+      "grupo" : "A",
+      "cupo_estimado" : 20,
+      "salon" : null,
+      "id_salon" : null,
+      "salonInfo" : null,
+      "estadosCursoOfertados" : [ {
+        "id_estado" : 720,
+        "estado_actual" : "Inscripcion",
+        "fecha_registro_estado" : "2025-07-01T12:00:00.000+00:00",
+        "objCursoOfertadoVerano" : null
+      } ],
+      "estudiantesInscritos" : [ ]
+    } ],
+    "disposicion" : null,
+    "llamadas" : [ ]
+  },
+  "GET /api/cursos-verano/cursos?estado=inscripcion&periodoAcademico=todos [est5]" : {
+    "status" : 404,
+    "tipo" : "application/json",
+    "cuerpo" : {
+      "codigoError" : "GC-0404",
+      "mensaje" : "El recurso solicitado no existe",
+      "codigoHttp" : 404,
+      "url" : "http://localhost/api/cursos-verano/cursos",
+      "metodo" : "GET"
+    },
+    "disposicion" : null,
+    "llamadas" : [ ]
+  },
+  "GET /api/cursos-intersemestrales/cursos/inscripcion?periodoAcademico=todos [funcionario]" : {
+    "status" : 200,
+    "tipo" : "application/json",
+    "cuerpo" : [ {
+      "id_curso" : 72,
+      "idCurso" : null,
+      "codigo_curso" : "MAT-1",
+      "nombre_curso" : "Calculo",
+      "descripcion" : "Curso de Calculo",
+      "fecha_inicio" : "2025-07-01T12:00:00Z",
+      "fecha_fin" : "2025-08-01T12:00:00Z",
+      "cupo_maximo" : 20,
+      "cupo_disponible" : 20,
+      "espacio_asignado" : null,
+      "estado" : "Inscripcion",
+      "periodo" : "2025-1",
+      "objMateria" : {
+        "id_materia" : 1,
+        "codigo" : "MAT-1",
+        "nombre" : "Calculo",
+        "creditos" : 4
+      },
+      "objDocente" : {
+        "id_docente" : 4,
+        "codigo_docente" : "D-4",
+        "nombre_docente" : "Docente Cuatro"
+      },
+      "grupo" : "A",
+      "cupo_estimado" : 20,
+      "salon" : null,
+      "id_salon" : null,
+      "salonInfo" : null,
+      "estadosCursoOfertados" : [ {
+        "id_estado" : 720,
+        "estado_actual" : "Inscripcion",
+        "fecha_registro_estado" : "2025-07-01T12:00:00.000+00:00",
+        "objCursoOfertadoVerano" : null
+      } ],
+      "estudiantesInscritos" : [ ]
+    } ],
+    "disposicion" : null,
+    "llamadas" : [ ]
+  },
+  "GET /api/cursos-verano/cursos?estado=inscripcion&periodoAcademico=todos [funcionario]" : {
+    "status" : 404,
+    "tipo" : "application/json",
+    "cuerpo" : {
+      "codigoError" : "GC-0404",
+      "mensaje" : "El recurso solicitado no existe",
+      "codigoHttp" : 404,
+      "url" : "http://localhost/api/cursos-verano/cursos",
+      "metodo" : "GET"
+    },
+    "disposicion" : null,
+    "llamadas" : [ ]
+  },
+  "GET /api/cursos-intersemestrales/cursos-verano/todos/export/pdf [funcionario]" : {
+    "status" : 200,
+    "tipo" : "application/pdf",
+    "cuerpo" : "%PDF cursos",
+    "disposicion" : "attachment; filename=\"cursos_verano_<hoy>.pdf\"",
+    "llamadas" : [ {
+      "generarPdfCursos" : "null, null"
+    } ]
+  },
+  "GET /api/cursos-verano/cursos?formato=pdf [funcionario]" : {
+    "status" : 404,
+    "tipo" : "application/json",
+    "cuerpo" : {
+      "codigoError" : "GC-0404",
+      "mensaje" : "El recurso solicitado no existe",
+      "codigoHttp" : 404,
+      "url" : "http://localhost/api/cursos-verano/cursos",
+      "metodo" : "GET"
+    },
+    "disposicion" : null,
+    "llamadas" : [ ]
+  },
+  "GET /api/cursos-intersemestrales/cursos-verano/todos/export/pdf [est5]" : {
+    "status" : 403,
+    "tipo" : "application/json",
+    "cuerpo" : {
+      "codigoError" : "GC-0403",
+      "mensaje" : "Acceso denegado: no tiene permisos para este recurso",
+      "codigoHttp" : 403,
+      "url" : "http://localhost/api/cursos-intersemestrales/cursos-verano/todos/export/pdf",
+      "metodo" : "GET"
+    },
+    "disposicion" : null,
+    "llamadas" : [ ]
+  },
+  "GET /api/cursos-verano/cursos?formato=pdf [est5]" : {
+    "status" : 404,
+    "tipo" : "application/json",
+    "cuerpo" : {
+      "codigoError" : "GC-0404",
+      "mensaje" : "El recurso solicitado no existe",
+      "codigoHttp" : 404,
+      "url" : "http://localhost/api/cursos-verano/cursos",
+      "metodo" : "GET"
+    },
+    "disposicion" : null,
+    "llamadas" : [ ]
+  },
+  "GET /api/cursos-intersemestrales/cursos-verano/todos/export/pdf?periodoAcademico=2025-2&idPrograma=3 [funcionario]" : {
+    "status" : 200,
+    "tipo" : "application/pdf",
+    "cuerpo" : "%PDF cursos",
+    "disposicion" : "attachment; filename=\"cursos_verano_<hoy>.pdf\"",
+    "llamadas" : [ {
+      "generarPdfCursos" : "2025-2, 3"
+    } ]
+  },
+  "GET /api/cursos-verano/cursos?formato=pdf&periodoAcademico=2025-2&idPrograma=3 [funcionario]" : {
+    "status" : 404,
+    "tipo" : "application/json",
+    "cuerpo" : {
+      "codigoError" : "GC-0404",
+      "mensaje" : "El recurso solicitado no existe",
+      "codigoHttp" : 404,
+      "url" : "http://localhost/api/cursos-verano/cursos",
+      "metodo" : "GET"
+    },
+    "disposicion" : null,
+    "llamadas" : [ ]
+  },
+  "GET /api/cursos-intersemestrales/cursos-verano/todos/export/pdf?periodoAcademico=2025-2&idPrograma=3 [est5]" : {
+    "status" : 403,
+    "tipo" : "application/json",
+    "cuerpo" : {
+      "codigoError" : "GC-0403",
+      "mensaje" : "Acceso denegado: no tiene permisos para este recurso",
+      "codigoHttp" : 403,
+      "url" : "http://localhost/api/cursos-intersemestrales/cursos-verano/todos/export/pdf",
+      "metodo" : "GET"
+    },
+    "disposicion" : null,
+    "llamadas" : [ ]
+  },
+  "GET /api/cursos-verano/cursos?formato=pdf&periodoAcademico=2025-2&idPrograma=3 [est5]" : {
+    "status" : 404,
+    "tipo" : "application/json",
+    "cuerpo" : {
+      "codigoError" : "GC-0404",
+      "mensaje" : "El recurso solicitado no existe",
+      "codigoHttp" : 404,
+      "url" : "http://localhost/api/cursos-verano/cursos",
+      "metodo" : "GET"
+    },
+    "disposicion" : null,
+    "llamadas" : [ ]
+  },
+  "POST /api/cursos-intersemestrales/cursos-verano {\"id_materia\":1,\"id_docente\":4,\"cupo_estimado\":25,\"fecha_inicio\":\"2025-07-01\",\"fecha_fin\":\"2025-08-01\",\"periodoAcademico\":\"2025-2\",\"espacio_asignado\":\"221\"} [funcionario]" : {
+    "status" : 200,
+    "tipo" : "application/json",
+    "cuerpo" : {
+      "descripcion" : "Curso de Calculo",
+      "objDocente" : {
+        "id_docente" : 4,
+        "codigo_docente" : "D-4",
+        "nombre_docente" : "Docente Cuatro"
+      },
+      "cupo_maximo" : 20,
+      "estado" : "Publicado",
+      "fecha_inicio" : "2025-07-01",
+      "periodo" : "2025-2",
+      "codigo_curso" : "MAT-1",
+      "cupo_estimado" : 20,
+      "id_curso" : 74,
+      "message" : "Curso creado exitosamente en la base de datos",
+      "nombre_curso" : "Calculo",
+      "espacio_asignado" : "221",
+      "objMateria" : {
+        "id_materia" : 1,
+        "codigo" : "MAT-1",
+        "nombre" : "Calculo",
+        "creditos" : 4
+      },
+      "fecha_fin" : "2025-08-01",
+      "cupo_disponible" : 20
+    },
+    "disposicion" : null,
+    "llamadas" : [ {
+      "crearCurso" : "1, 4, 25, 2025-07-01T23:59:59.999Z, 2025-08-01T23:59:59.999Z, 2025-2, null, 221, null, null"
+    } ]
+  },
+  "POST /api/cursos-intersemestrales/cursos-verano {\"id_materia\":1,\"id_docente\":4,\"cupo_estimado\":25,\"fecha_inicio\":\"2025-07-01\",\"fecha_fin\":\"2025-08-01\",\"periodoAcademico\":\"2025-2\",\"espacio_asignado\":\"221\"} [admin]" : {
+    "status" : 200,
+    "tipo" : "application/json",
+    "cuerpo" : {
+      "descripcion" : "Curso de Calculo",
+      "objDocente" : {
+        "id_docente" : 4,
+        "codigo_docente" : "D-4",
+        "nombre_docente" : "Docente Cuatro"
+      },
+      "cupo_maximo" : 20,
+      "estado" : "Publicado",
+      "fecha_inicio" : "2025-07-01",
+      "periodo" : "2025-2",
+      "codigo_curso" : "MAT-1",
+      "cupo_estimado" : 20,
+      "id_curso" : 74,
+      "message" : "Curso creado exitosamente en la base de datos",
+      "nombre_curso" : "Calculo",
+      "espacio_asignado" : "221",
+      "objMateria" : {
+        "id_materia" : 1,
+        "codigo" : "MAT-1",
+        "nombre" : "Calculo",
+        "creditos" : 4
+      },
+      "fecha_fin" : "2025-08-01",
+      "cupo_disponible" : 20
+    },
+    "disposicion" : null,
+    "llamadas" : [ {
+      "crearCurso" : "1, 4, 25, 2025-07-01T23:59:59.999Z, 2025-08-01T23:59:59.999Z, 2025-2, null, 221, null, null"
+    } ]
+  },
+  "POST /api/cursos-intersemestrales/cursos-verano {\"id_docente\":4,\"cupo_estimado\":25} [funcionario]" : {
+    "status" : 400,
+    "tipo" : "application/json",
+    "cuerpo" : {
+      "message" : "Debe seleccionar una materia",
+      "error" : "Materia requerida"
+    },
+    "disposicion" : null,
+    "llamadas" : [ ]
+  },
+  "POST /api/cursos-intersemestrales/cursos-verano {\"id_materia\":1,\"id_docente\":4,\"cupo_estimado\":25,\"fecha_inicio\":\"2025-07-01\",\"fecha_fin\":\"2025-08-01\",\"periodoAcademico\":\"2025-2\",\"espacio_asignado\":\"221\"} [est5]" : {
+    "status" : 403,
+    "tipo" : "application/json",
+    "cuerpo" : {
+      "codigoError" : "GC-0403",
+      "mensaje" : "Acceso denegado: no tiene permisos para este recurso",
+      "codigoHttp" : 403,
+      "url" : "http://localhost/api/cursos-intersemestrales/cursos-verano",
+      "metodo" : "POST"
+    },
+    "disposicion" : null,
+    "llamadas" : [ ]
+  },
+  "POST /api/cursos-verano/cursos {\"id_materia\":1,\"id_docente\":4,\"cupo_estimado\":25,\"fecha_inicio\":\"2025-07-01\",\"fecha_fin\":\"2025-08-01\",\"periodoAcademico\":\"2025-2\",\"espacio_asignado\":\"221\"} [funcionario]" : {
+    "status" : 404,
+    "tipo" : "application/json",
+    "cuerpo" : {
+      "codigoError" : "GC-0404",
+      "mensaje" : "El recurso solicitado no existe",
+      "codigoHttp" : 404,
+      "url" : "http://localhost/api/cursos-verano/cursos",
+      "metodo" : "POST"
+    },
+    "disposicion" : null,
+    "llamadas" : [ ]
+  },
+  "POST /api/cursos-verano/cursos {\"id_materia\":1,\"id_docente\":4,\"cupo_estimado\":25,\"fecha_inicio\":\"2025-07-01\",\"fecha_fin\":\"2025-08-01\",\"periodoAcademico\":\"2025-2\",\"espacio_asignado\":\"221\"} [admin]" : {
+    "status" : 404,
+    "tipo" : "application/json",
+    "cuerpo" : {
+      "codigoError" : "GC-0404",
+      "mensaje" : "El recurso solicitado no existe",
+      "codigoHttp" : 404,
+      "url" : "http://localhost/api/cursos-verano/cursos",
+      "metodo" : "POST"
+    },
+    "disposicion" : null,
+    "llamadas" : [ ]
+  },
+  "POST /api/cursos-verano/cursos {\"id_docente\":4,\"cupo_estimado\":25} [funcionario]" : {
+    "status" : 404,
+    "tipo" : "application/json",
+    "cuerpo" : {
+      "codigoError" : "GC-0404",
+      "mensaje" : "El recurso solicitado no existe",
+      "codigoHttp" : 404,
+      "url" : "http://localhost/api/cursos-verano/cursos",
+      "metodo" : "POST"
+    },
+    "disposicion" : null,
+    "llamadas" : [ ]
+  },
+  "POST /api/cursos-verano/cursos {\"id_materia\":1,\"id_docente\":4,\"cupo_estimado\":25,\"fecha_inicio\":\"2025-07-01\",\"fecha_fin\":\"2025-08-01\",\"periodoAcademico\":\"2025-2\",\"espacio_asignado\":\"221\"} [est5]" : {
+    "status" : 404,
+    "tipo" : "application/json",
+    "cuerpo" : {
+      "codigoError" : "GC-0404",
+      "mensaje" : "El recurso solicitado no existe",
+      "codigoHttp" : 404,
+      "url" : "http://localhost/api/cursos-verano/cursos",
+      "metodo" : "POST"
+    },
+    "disposicion" : null,
+    "llamadas" : [ ]
+  },
+  "GET /api/cursos-intersemestrales/cursos-verano/71 [est5]" : {
+    "status" : 200,
+    "tipo" : "application/json",
+    "cuerpo" : {
+      "descripcion" : "Curso de Calculo",
+      "objDocente" : {
+        "id_docente" : 4,
+        "codigo_docente" : "D-4",
+        "nombre_docente" : "Docente Cuatro"
+      },
+      "cupo_maximo" : 20,
+      "estado" : "Preinscripcion",
+      "fecha_inicio" : "2025-07-01T12:00:00Z",
+      "codigo_curso" : "MAT-1",
+      "cupo_estimado" : 20,
+      "id_curso" : 71,
+      "solicitudes" : 1,
+      "id_salon" : 81,
+      "nombre_curso" : "Calculo",
+      "espacio_asignado" : "221",
+      "objMateria" : {
+        "id_materia" : 1,
+        "codigo" : "MAT-1",
+        "nombre" : "Calculo",
+        "creditos" : 4
+      },
+      "fecha_fin" : "2025-08-01T12:00:00Z",
+      "idCurso" : 71,
+      "cupo_disponible" : 20,
+      "salon" : {
+        "id_salon" : 81,
+        "descripcion" : "221 - FIET",
+        "numero_salon" : "221",
+        "edificio" : "FIET",
+        "activo" : true
+      }
+    },
+    "disposicion" : null,
+    "llamadas" : [ ]
+  },
+  "GET /api/cursos-intersemestrales/cursos-verano/72 [est5]" : {
+    "status" : 200,
+    "tipo" : "application/json",
+    "cuerpo" : {
+      "descripcion" : "Curso de Calculo",
+      "objDocente" : {
+        "id_docente" : 4,
+        "codigo_docente" : "D-4",
+        "nombre_docente" : "Docente Cuatro"
+      },
+      "cupo_maximo" : 20,
+      "estado" : "Inscripcion",
+      "fecha_inicio" : "2025-07-01T12:00:00Z",
+      "codigo_curso" : "MAT-1",
+      "cupo_estimado" : 20,
+      "id_curso" : 72,
+      "solicitudes" : 0,
+      "id_salon" : null,
+      "nombre_curso" : "Calculo",
+      "espacio_asignado" : null,
+      "objMateria" : {
+        "id_materia" : 1,
+        "codigo" : "MAT-1",
+        "nombre" : "Calculo",
+        "creditos" : 4
+      },
+      "fecha_fin" : "2025-08-01T12:00:00Z",
+      "idCurso" : 72,
+      "cupo_disponible" : 20,
+      "salon" : null
+    },
+    "disposicion" : null,
+    "llamadas" : [ ]
+  },
+  "GET /api/cursos-intersemestrales/cursos-verano/99 [est5]" : {
+    "status" : 404,
+    "tipo" : "application/json",
+    "cuerpo" : {
+      "codigoError" : "GC-0003",
+      "mensaje" : "Entidad no encontrada, No se encuentra el curso",
+      "codigoHttp" : 404,
+      "url" : "http://localhost/api/cursos-intersemestrales/cursos-verano/99",
+      "metodo" : "GET"
+    },
+    "disposicion" : null,
+    "llamadas" : [ ]
+  },
+  "GET /api/cursos-intersemestrales/cursos-verano/71 [funcionario]" : {
+    "status" : 200,
+    "tipo" : "application/json",
+    "cuerpo" : {
+      "descripcion" : "Curso de Calculo",
+      "objDocente" : {
+        "id_docente" : 4,
+        "codigo_docente" : "D-4",
+        "nombre_docente" : "Docente Cuatro"
+      },
+      "cupo_maximo" : 20,
+      "estado" : "Preinscripcion",
+      "fecha_inicio" : "2025-07-01T12:00:00Z",
+      "codigo_curso" : "MAT-1",
+      "cupo_estimado" : 20,
+      "id_curso" : 71,
+      "solicitudes" : 1,
+      "id_salon" : 81,
+      "nombre_curso" : "Calculo",
+      "espacio_asignado" : "221",
+      "objMateria" : {
+        "id_materia" : 1,
+        "codigo" : "MAT-1",
+        "nombre" : "Calculo",
+        "creditos" : 4
+      },
+      "fecha_fin" : "2025-08-01T12:00:00Z",
+      "idCurso" : 71,
+      "cupo_disponible" : 20,
+      "salon" : {
+        "id_salon" : 81,
+        "descripcion" : "221 - FIET",
+        "numero_salon" : "221",
+        "edificio" : "FIET",
+        "activo" : true
+      }
+    },
+    "disposicion" : null,
+    "llamadas" : [ ]
+  },
+  "PUT /api/cursos-intersemestrales/cursos-verano/71 {\"cupo_estimado\":25} [funcionario]" : {
+    "status" : 200,
+    "tipo" : "application/json",
+    "cuerpo" : {
+      "id_salon" : 81,
+      "nombre_curso" : "Calculo",
+      "espacio_asignado" : "221",
+      "debug_info" : "Cambios aplicados y guardados en BD",
+      "estado" : "Actualizado",
+      "codigo_curso" : "MAT-1",
+      "cupo_estimado" : 20,
+      "id_curso" : 71,
+      "message" : "Curso actualizado exitosamente",
+      "salon" : {
+        "id_salon" : 81,
+        "descripcion" : "221 - FIET",
+        "numero_salon" : "221",
+        "edificio" : "FIET",
+        "activo" : true
+      }
+    },
+    "disposicion" : null,
+    "llamadas" : [ {
+      "resolverSalon" : "null, null"
+    }, {
+      "modificarCurso" : "71, 25, null, null"
+    } ]
+  },
+  "PUT /api/cursos-intersemestrales/cursos-verano/71 {\"estado\":\"Cerrado\"} [funcionario]" : {
+    "status" : 400,
+    "tipo" : "application/json",
+    "cuerpo" : {
+      "valido" : false,
+      "error" : "Transicion invalida",
+      "message" : "No se puede cerrar"
+    },
+    "disposicion" : null,
+    "llamadas" : [ {
+      "resolverSalon" : "null, null"
+    }, {
+      "modificarCurso" : "71, null, null, Cerrado"
+    } ]
+  },
+  "PUT /api/cursos-intersemestrales/cursos-verano/71 {\"estado\":\"otro\"} [funcionario]" : {
+    "status" : 400,
+    "tipo" : "application/json",
+    "cuerpo" : {
+      "message" : "El estado debe ser uno de: Borrador, Abierto, Publicado, Preinscripcion, Inscripcion, Cerrado",
+      "error" : "Estado invalido"
+    },
+    "disposicion" : null,
+    "llamadas" : [ ]
+  },
+  "PUT /api/cursos-intersemestrales/cursos-verano/71 {} [funcionario]" : {
+    "status" : 400,
+    "tipo" : "application/json",
+    "cuerpo" : {
+      "error" : "Sin cambios",
+      "message" : "No se proporcionaron datos para actualizar"
+    },
+    "disposicion" : null,
+    "llamadas" : [ {
+      "resolverSalon" : "null, null"
+    } ]
+  },
+  "PUT /api/cursos-intersemestrales/cursos-verano/72 {\"cupo_estimado\":25} [funcionario]" : {
+    "status" : 404,
+    "tipo" : null,
+    "cuerpo" : null,
+    "disposicion" : null,
+    "llamadas" : [ {
+      "resolverSalon" : "null, null"
+    }, {
+      "modificarCurso" : "72, 25, null, null"
+    } ]
+  },
+  "PUT /api/cursos-intersemestrales/cursos-verano/71 {\"cupo_estimado\":25} [est5]" : {
+    "status" : 403,
+    "tipo" : "application/json",
+    "cuerpo" : {
+      "codigoError" : "GC-0403",
+      "mensaje" : "Acceso denegado: no tiene permisos para este recurso",
+      "codigoHttp" : 403,
+      "url" : "http://localhost/api/cursos-intersemestrales/cursos-verano/71",
+      "metodo" : "PUT"
+    },
+    "disposicion" : null,
+    "llamadas" : [ ]
+  },
+  "DELETE /api/cursos-intersemestrales/cursos-verano/71 [funcionario]" : {
+    "status" : 200,
+    "tipo" : "application/json",
+    "cuerpo" : {
+      "nombre_curso" : "Calculo",
+      "id_curso_eliminado" : 71,
+      "message" : "Curso eliminado exitosamente"
+    },
+    "disposicion" : null,
+    "llamadas" : [ {
+      "eliminarCurso" : "71"
+    } ]
+  },
+  "DELETE /api/cursos-intersemestrales/cursos-verano/73 [funcionario]" : {
+    "status" : 400,
+    "tipo" : "application/json",
+    "cuerpo" : {
+      "estudiantes_inscritos" : 1,
+      "error" : "No se puede eliminar el curso",
+      "message" : "El curso tiene estudiantes inscritos. No se puede eliminar."
+    },
+    "disposicion" : null,
+    "llamadas" : [ ]
+  },
+  "DELETE /api/cursos-intersemestrales/cursos-verano/99 [funcionario]" : {
+    "status" : 404,
+    "tipo" : "application/json",
+    "cuerpo" : {
+      "codigoError" : "GC-0003",
+      "mensaje" : "Entidad no encontrada, No se encuentra el curso",
+      "codigoHttp" : 404,
+      "url" : "http://localhost/api/cursos-intersemestrales/cursos-verano/99",
+      "metodo" : "DELETE"
+    },
+    "disposicion" : null,
+    "llamadas" : [ ]
+  },
+  "DELETE /api/cursos-intersemestrales/cursos-verano/71 [est5]" : {
+    "status" : 403,
+    "tipo" : "application/json",
+    "cuerpo" : {
+      "codigoError" : "GC-0403",
+      "mensaje" : "Acceso denegado: no tiene permisos para este recurso",
+      "codigoHttp" : 403,
+      "url" : "http://localhost/api/cursos-intersemestrales/cursos-verano/71",
+      "metodo" : "DELETE"
+    },
+    "disposicion" : null,
+    "llamadas" : [ ]
+  },
+  "GET /api/cursos-verano/cursos/71 [est5]" : {
+    "status" : 404,
+    "tipo" : "application/json",
+    "cuerpo" : {
+      "codigoError" : "GC-0404",
+      "mensaje" : "El recurso solicitado no existe",
+      "codigoHttp" : 404,
+      "url" : "http://localhost/api/cursos-verano/cursos/71",
+      "metodo" : "GET"
+    },
+    "disposicion" : null,
+    "llamadas" : [ ]
+  },
+  "GET /api/cursos-verano/cursos/72 [est5]" : {
+    "status" : 404,
+    "tipo" : "application/json",
+    "cuerpo" : {
+      "codigoError" : "GC-0404",
+      "mensaje" : "El recurso solicitado no existe",
+      "codigoHttp" : 404,
+      "url" : "http://localhost/api/cursos-verano/cursos/72",
+      "metodo" : "GET"
+    },
+    "disposicion" : null,
+    "llamadas" : [ ]
+  },
+  "GET /api/cursos-verano/cursos/99 [est5]" : {
+    "status" : 404,
+    "tipo" : "application/json",
+    "cuerpo" : {
+      "codigoError" : "GC-0404",
+      "mensaje" : "El recurso solicitado no existe",
+      "codigoHttp" : 404,
+      "url" : "http://localhost/api/cursos-verano/cursos/99",
+      "metodo" : "GET"
+    },
+    "disposicion" : null,
+    "llamadas" : [ ]
+  },
+  "GET /api/cursos-verano/cursos/71 [funcionario]" : {
+    "status" : 404,
+    "tipo" : "application/json",
+    "cuerpo" : {
+      "codigoError" : "GC-0404",
+      "mensaje" : "El recurso solicitado no existe",
+      "codigoHttp" : 404,
+      "url" : "http://localhost/api/cursos-verano/cursos/71",
+      "metodo" : "GET"
+    },
+    "disposicion" : null,
+    "llamadas" : [ ]
+  },
+  "PUT /api/cursos-verano/cursos/71 {\"cupo_estimado\":25} [funcionario]" : {
+    "status" : 404,
+    "tipo" : "application/json",
+    "cuerpo" : {
+      "codigoError" : "GC-0404",
+      "mensaje" : "El recurso solicitado no existe",
+      "codigoHttp" : 404,
+      "url" : "http://localhost/api/cursos-verano/cursos/71",
+      "metodo" : "PUT"
+    },
+    "disposicion" : null,
+    "llamadas" : [ ]
+  },
+  "PUT /api/cursos-verano/cursos/71 {\"estado\":\"Cerrado\"} [funcionario]" : {
+    "status" : 404,
+    "tipo" : "application/json",
+    "cuerpo" : {
+      "codigoError" : "GC-0404",
+      "mensaje" : "El recurso solicitado no existe",
+      "codigoHttp" : 404,
+      "url" : "http://localhost/api/cursos-verano/cursos/71",
+      "metodo" : "PUT"
+    },
+    "disposicion" : null,
+    "llamadas" : [ ]
+  },
+  "PUT /api/cursos-verano/cursos/71 {\"estado\":\"otro\"} [funcionario]" : {
+    "status" : 404,
+    "tipo" : "application/json",
+    "cuerpo" : {
+      "codigoError" : "GC-0404",
+      "mensaje" : "El recurso solicitado no existe",
+      "codigoHttp" : 404,
+      "url" : "http://localhost/api/cursos-verano/cursos/71",
+      "metodo" : "PUT"
+    },
+    "disposicion" : null,
+    "llamadas" : [ ]
+  },
+  "PUT /api/cursos-verano/cursos/71 {} [funcionario]" : {
+    "status" : 404,
+    "tipo" : "application/json",
+    "cuerpo" : {
+      "codigoError" : "GC-0404",
+      "mensaje" : "El recurso solicitado no existe",
+      "codigoHttp" : 404,
+      "url" : "http://localhost/api/cursos-verano/cursos/71",
+      "metodo" : "PUT"
+    },
+    "disposicion" : null,
+    "llamadas" : [ ]
+  },
+  "PUT /api/cursos-verano/cursos/72 {\"cupo_estimado\":25} [funcionario]" : {
+    "status" : 404,
+    "tipo" : "application/json",
+    "cuerpo" : {
+      "codigoError" : "GC-0404",
+      "mensaje" : "El recurso solicitado no existe",
+      "codigoHttp" : 404,
+      "url" : "http://localhost/api/cursos-verano/cursos/72",
+      "metodo" : "PUT"
+    },
+    "disposicion" : null,
+    "llamadas" : [ ]
+  },
+  "PUT /api/cursos-verano/cursos/71 {\"cupo_estimado\":25} [est5]" : {
+    "status" : 404,
+    "tipo" : "application/json",
+    "cuerpo" : {
+      "codigoError" : "GC-0404",
+      "mensaje" : "El recurso solicitado no existe",
+      "codigoHttp" : 404,
+      "url" : "http://localhost/api/cursos-verano/cursos/71",
+      "metodo" : "PUT"
+    },
+    "disposicion" : null,
+    "llamadas" : [ ]
+  },
+  "DELETE /api/cursos-verano/cursos/71 [funcionario]" : {
+    "status" : 404,
+    "tipo" : "application/json",
+    "cuerpo" : {
+      "codigoError" : "GC-0404",
+      "mensaje" : "El recurso solicitado no existe",
+      "codigoHttp" : 404,
+      "url" : "http://localhost/api/cursos-verano/cursos/71",
+      "metodo" : "DELETE"
+    },
+    "disposicion" : null,
+    "llamadas" : [ ]
+  },
+  "DELETE /api/cursos-verano/cursos/73 [funcionario]" : {
+    "status" : 404,
+    "tipo" : "application/json",
+    "cuerpo" : {
+      "codigoError" : "GC-0404",
+      "mensaje" : "El recurso solicitado no existe",
+      "codigoHttp" : 404,
+      "url" : "http://localhost/api/cursos-verano/cursos/73",
+      "metodo" : "DELETE"
+    },
+    "disposicion" : null,
+    "llamadas" : [ ]
+  },
+  "DELETE /api/cursos-verano/cursos/99 [funcionario]" : {
+    "status" : 404,
+    "tipo" : "application/json",
+    "cuerpo" : {
+      "codigoError" : "GC-0404",
+      "mensaje" : "El recurso solicitado no existe",
+      "codigoHttp" : 404,
+      "url" : "http://localhost/api/cursos-verano/cursos/99",
+      "metodo" : "DELETE"
+    },
+    "disposicion" : null,
+    "llamadas" : [ ]
+  },
+  "DELETE /api/cursos-verano/cursos/71 [est5]" : {
+    "status" : 404,
+    "tipo" : "application/json",
+    "cuerpo" : {
+      "codigoError" : "GC-0404",
+      "mensaje" : "El recurso solicitado no existe",
+      "codigoHttp" : 404,
+      "url" : "http://localhost/api/cursos-verano/cursos/71",
+      "metodo" : "DELETE"
+    },
+    "disposicion" : null,
+    "llamadas" : [ ]
+  },
+  "GET /api/cursos-intersemestrales/cursos-verano/71/estudiantes [funcionario]" : {
+    "status" : 200,
+    "tipo" : "application/json",
+    "cuerpo" : {
+      "id_curso" : 71,
+      "nombre_curso" : "Calculo",
+      "codigo_curso" : "MAT-1",
+      "cupo_estimado" : 20,
+      "total_estudiantes" : 0,
+      "total_preinscritos" : 0,
+      "total_inscritos" : 0,
+      "estudiantes" : [ ]
+    },
+    "disposicion" : null,
+    "llamadas" : [ {
+      "listarEstudiantesPorCurso" : "71"
+    } ]
+  },
+  "GET /api/cursos-verano/cursos/71/estudiantes [funcionario]" : {
+    "status" : 404,
+    "tipo" : "application/json",
+    "cuerpo" : {
+      "codigoError" : "GC-0404",
+      "mensaje" : "El recurso solicitado no existe",
+      "codigoHttp" : 404,
+      "url" : "http://localhost/api/cursos-verano/cursos/71/estudiantes",
+      "metodo" : "GET"
+    },
+    "disposicion" : null,
+    "llamadas" : [ ]
+  },
+  "GET /api/cursos-intersemestrales/cursos-verano/99/estudiantes [funcionario]" : {
+    "status" : 404,
+    "tipo" : "application/json",
+    "cuerpo" : {
+      "codigoError" : "GC-0003",
+      "mensaje" : "Entidad no encontrada, No se encuentra el curso",
+      "codigoHttp" : 404,
+      "url" : "http://localhost/api/cursos-intersemestrales/cursos-verano/99/estudiantes",
+      "metodo" : "GET"
+    },
+    "disposicion" : null,
+    "llamadas" : [ ]
+  },
+  "GET /api/cursos-verano/cursos/99/estudiantes [funcionario]" : {
+    "status" : 404,
+    "tipo" : "application/json",
+    "cuerpo" : {
+      "codigoError" : "GC-0404",
+      "mensaje" : "El recurso solicitado no existe",
+      "codigoHttp" : 404,
+      "url" : "http://localhost/api/cursos-verano/cursos/99/estudiantes",
+      "metodo" : "GET"
+    },
+    "disposicion" : null,
+    "llamadas" : [ ]
+  },
+  "GET /api/cursos-intersemestrales/cursos-verano/71/estudiantes [est5]" : {
+    "status" : 403,
+    "tipo" : "application/json",
+    "cuerpo" : {
+      "codigoError" : "GC-0403",
+      "mensaje" : "Acceso denegado: no tiene permisos para este recurso",
+      "codigoHttp" : 403,
+      "url" : "http://localhost/api/cursos-intersemestrales/cursos-verano/71/estudiantes",
+      "metodo" : "GET"
+    },
+    "disposicion" : null,
+    "llamadas" : [ ]
+  },
+  "GET /api/cursos-verano/cursos/71/estudiantes [est5]" : {
+    "status" : 404,
+    "tipo" : "application/json",
+    "cuerpo" : {
+      "codigoError" : "GC-0404",
+      "mensaje" : "El recurso solicitado no existe",
+      "codigoHttp" : 404,
+      "url" : "http://localhost/api/cursos-verano/cursos/71/estudiantes",
+      "metodo" : "GET"
+    },
+    "disposicion" : null,
+    "llamadas" : [ ]
+  },
+  "GET /api/cursos-intersemestrales/cursos-verano/71/estudiantes/export/pdf [funcionario]" : {
+    "status" : 200,
+    "tipo" : "application/pdf",
+    "cuerpo" : "%PDF estudiantes",
+    "disposicion" : "attachment; filename=\"estudiantes_MAT-1_<hoy>.pdf\"",
+    "llamadas" : [ {
+      "generarPdfEstudiantes" : "71"
+    } ]
+  },
+  "GET /api/cursos-verano/cursos/71/estudiantes?formato=pdf [funcionario]" : {
+    "status" : 404,
+    "tipo" : "application/json",
+    "cuerpo" : {
+      "codigoError" : "GC-0404",
+      "mensaje" : "El recurso solicitado no existe",
+      "codigoHttp" : 404,
+      "url" : "http://localhost/api/cursos-verano/cursos/71/estudiantes",
+      "metodo" : "GET"
+    },
+    "disposicion" : null,
+    "llamadas" : [ ]
+  },
+  "GET /api/cursos-intersemestrales/cursos-verano/99/estudiantes/export/pdf [funcionario]" : {
+    "status" : 500,
+    "tipo" : null,
+    "cuerpo" : null,
+    "disposicion" : null,
+    "llamadas" : [ {
+      "generarPdfEstudiantes" : "99"
+    } ]
+  },
+  "GET /api/cursos-verano/cursos/99/estudiantes?formato=pdf [funcionario]" : {
+    "status" : 404,
+    "tipo" : "application/json",
+    "cuerpo" : {
+      "codigoError" : "GC-0404",
+      "mensaje" : "El recurso solicitado no existe",
+      "codigoHttp" : 404,
+      "url" : "http://localhost/api/cursos-verano/cursos/99/estudiantes",
+      "metodo" : "GET"
+    },
+    "disposicion" : null,
+    "llamadas" : [ ]
+  },
+  "GET /api/cursos-intersemestrales/cursos-verano/71/estudiantes/export/pdf [est5]" : {
+    "status" : 403,
+    "tipo" : "application/json",
+    "cuerpo" : {
+      "codigoError" : "GC-0403",
+      "mensaje" : "Acceso denegado: no tiene permisos para este recurso",
+      "codigoHttp" : 403,
+      "url" : "http://localhost/api/cursos-intersemestrales/cursos-verano/71/estudiantes/export/pdf",
+      "metodo" : "GET"
+    },
+    "disposicion" : null,
+    "llamadas" : [ ]
+  },
+  "GET /api/cursos-verano/cursos/71/estudiantes?formato=pdf [est5]" : {
+    "status" : 404,
+    "tipo" : "application/json",
+    "cuerpo" : {
+      "codigoError" : "GC-0404",
+      "mensaje" : "El recurso solicitado no existe",
+      "codigoHttp" : 404,
+      "url" : "http://localhost/api/cursos-verano/cursos/71/estudiantes",
+      "metodo" : "GET"
+    },
+    "disposicion" : null,
+    "llamadas" : [ ]
+  },
+  "GET /api/cursos-intersemestrales/cursos-verano [funcionario]" : {
+    "status" : 200,
+    "tipo" : "application/json",
+    "cuerpo" : [ {
+      "id_curso" : 71,
+      "idCurso" : 71,
+      "codigo_curso" : "MAT-1",
+      "nombre_curso" : "Calculo",
+      "descripcion" : "Curso de Calculo",
+      "fecha_inicio" : "2025-07-01T12:00:00Z",
+      "fecha_fin" : "2025-08-01T12:00:00Z",
+      "cupo_maximo" : 20,
+      "cupo_disponible" : 20,
+      "espacio_asignado" : "221",
+      "estado" : "Preinscripcion",
+      "periodo" : "2025-2",
+      "objMateria" : {
+        "id_materia" : 1,
+        "codigo" : "MAT-1",
+        "nombre" : "Calculo",
+        "creditos" : 4
+      },
+      "objDocente" : {
+        "id_docente" : 4,
+        "codigo_docente" : "D-4",
+        "nombre_docente" : "Docente Cuatro"
+      },
+      "grupo" : "A",
+      "cupo_estimado" : 20,
+      "salon" : "221",
+      "id_salon" : null,
+      "salonInfo" : null,
+      "estadosCursoOfertados" : [ {
+        "id_estado" : 710,
+        "estado_actual" : "Preinscripcion",
+        "fecha_registro_estado" : "2025-07-01T12:00:00.000+00:00",
+        "objCursoOfertadoVerano" : null
+      } ],
+      "estudiantesInscritos" : [ ]
+    }, {
+      "id_curso" : 72,
+      "idCurso" : 72,
+      "codigo_curso" : "MAT-1",
+      "nombre_curso" : "Calculo",
+      "descripcion" : "Curso de Calculo",
+      "fecha_inicio" : "2025-07-01T12:00:00Z",
+      "fecha_fin" : "2025-08-01T12:00:00Z",
+      "cupo_maximo" : 20,
+      "cupo_disponible" : 20,
+      "espacio_asignado" : null,
+      "estado" : "Inscripcion",
+      "periodo" : "2025-1",
+      "objMateria" : {
+        "id_materia" : 1,
+        "codigo" : "MAT-1",
+        "nombre" : "Calculo",
+        "creditos" : 4
+      },
+      "objDocente" : {
+        "id_docente" : 4,
+        "codigo_docente" : "D-4",
+        "nombre_docente" : "Docente Cuatro"
+      },
+      "grupo" : "A",
+      "cupo_estimado" : 20,
+      "salon" : null,
+      "id_salon" : null,
+      "salonInfo" : null,
+      "estadosCursoOfertados" : [ {
+        "id_estado" : 720,
+        "estado_actual" : "Inscripcion",
+        "fecha_registro_estado" : "2025-07-01T12:00:00.000+00:00",
+        "objCursoOfertadoVerano" : null
+      } ],
+      "estudiantesInscritos" : [ ]
+    }, {
+      "id_curso" : 73,
+      "idCurso" : 73,
+      "codigo_curso" : "MAT-1",
+      "nombre_curso" : "Calculo",
+      "descripcion" : "Curso de Calculo",
+      "fecha_inicio" : "2025-07-01T12:00:00Z",
+      "fecha_fin" : "2025-08-01T12:00:00Z",
+      "cupo_maximo" : 20,
+      "cupo_disponible" : 19,
+      "espacio_asignado" : "222",
+      "estado" : "Borrador",
+      "periodo" : "2025-2",
+      "objMateria" : {
+        "id_materia" : 1,
+        "codigo" : "MAT-1",
+        "nombre" : "Calculo",
+        "creditos" : 4
+      },
+      "objDocente" : {
+        "id_docente" : 4,
+        "codigo_docente" : "D-4",
+        "nombre_docente" : "Docente Cuatro"
+      },
+      "grupo" : "A",
+      "cupo_estimado" : 20,
+      "salon" : "222",
+      "id_salon" : null,
+      "salonInfo" : null,
+      "estadosCursoOfertados" : [ {
+        "id_estado" : 730,
+        "estado_actual" : "Borrador",
+        "fecha_registro_estado" : "2025-07-01T12:00:00.000+00:00",
+        "objCursoOfertadoVerano" : null
+      } ],
+      "estudiantesInscritos" : [ {
+        "id_usuario" : 5,
+        "nombre_completo" : "Usuario 5",
+        "rol" : {
+          "id_rol" : null,
+          "nombre" : "Estudiante"
+        },
+        "codigo" : null,
+        "cedula" : null,
+        "correo" : null,
+        "estado_usuario" : false,
+        "objPrograma" : null
+      } ]
+    }, {
+      "id_curso" : 74,
+      "idCurso" : 74,
+      "codigo_curso" : "MAT-1",
+      "nombre_curso" : "Calculo",
+      "descripcion" : "Curso de Calculo",
+      "fecha_inicio" : "2025-07-01T12:00:00Z",
+      "fecha_fin" : "2025-08-01T12:00:00Z",
+      "cupo_maximo" : 20,
+      "cupo_disponible" : 20,
+      "espacio_asignado" : "221",
+      "estado" : "Publicado",
+      "periodo" : "2025-2",
+      "objMateria" : {
+        "id_materia" : 1,
+        "codigo" : "MAT-1",
+        "nombre" : "Calculo",
+        "creditos" : 4
+      },
+      "objDocente" : {
+        "id_docente" : 4,
+        "codigo_docente" : "D-4",
+        "nombre_docente" : "Docente Cuatro"
+      },
+      "grupo" : "A",
+      "cupo_estimado" : 20,
+      "salon" : "221",
+      "id_salon" : null,
+      "salonInfo" : null,
+      "estadosCursoOfertados" : [ {
+        "id_estado" : 740,
+        "estado_actual" : "Publicado",
+        "fecha_registro_estado" : "2025-07-01T12:00:00.000+00:00",
+        "objCursoOfertadoVerano" : null
+      } ],
+      "estudiantesInscritos" : [ ]
+    } ],
+    "disposicion" : null,
+    "llamadas" : [ {
+      "listarPorFiltros" : "<ACTUAL>, null, false"
+    } ]
+  },
+  "GET /api/cursos-intersemestrales/cursos-verano?periodoAcademico=2025-1&idPrograma=3 [funcionario]" : {
+    "status" : 200,
+    "tipo" : "application/json",
+    "cuerpo" : [ {
+      "id_curso" : 71,
+      "idCurso" : 71,
+      "codigo_curso" : "MAT-1",
+      "nombre_curso" : "Calculo",
+      "descripcion" : "Curso de Calculo",
+      "fecha_inicio" : "2025-07-01T12:00:00Z",
+      "fecha_fin" : "2025-08-01T12:00:00Z",
+      "cupo_maximo" : 20,
+      "cupo_disponible" : 20,
+      "espacio_asignado" : "221",
+      "estado" : "Preinscripcion",
+      "periodo" : "2025-2",
+      "objMateria" : {
+        "id_materia" : 1,
+        "codigo" : "MAT-1",
+        "nombre" : "Calculo",
+        "creditos" : 4
+      },
+      "objDocente" : {
+        "id_docente" : 4,
+        "codigo_docente" : "D-4",
+        "nombre_docente" : "Docente Cuatro"
+      },
+      "grupo" : "A",
+      "cupo_estimado" : 20,
+      "salon" : "221",
+      "id_salon" : null,
+      "salonInfo" : null,
+      "estadosCursoOfertados" : [ {
+        "id_estado" : 710,
+        "estado_actual" : "Preinscripcion",
+        "fecha_registro_estado" : "2025-07-01T12:00:00.000+00:00",
+        "objCursoOfertadoVerano" : null
+      } ],
+      "estudiantesInscritos" : [ ]
+    }, {
+      "id_curso" : 72,
+      "idCurso" : 72,
+      "codigo_curso" : "MAT-1",
+      "nombre_curso" : "Calculo",
+      "descripcion" : "Curso de Calculo",
+      "fecha_inicio" : "2025-07-01T12:00:00Z",
+      "fecha_fin" : "2025-08-01T12:00:00Z",
+      "cupo_maximo" : 20,
+      "cupo_disponible" : 20,
+      "espacio_asignado" : null,
+      "estado" : "Inscripcion",
+      "periodo" : "2025-1",
+      "objMateria" : {
+        "id_materia" : 1,
+        "codigo" : "MAT-1",
+        "nombre" : "Calculo",
+        "creditos" : 4
+      },
+      "objDocente" : {
+        "id_docente" : 4,
+        "codigo_docente" : "D-4",
+        "nombre_docente" : "Docente Cuatro"
+      },
+      "grupo" : "A",
+      "cupo_estimado" : 20,
+      "salon" : null,
+      "id_salon" : null,
+      "salonInfo" : null,
+      "estadosCursoOfertados" : [ {
+        "id_estado" : 720,
+        "estado_actual" : "Inscripcion",
+        "fecha_registro_estado" : "2025-07-01T12:00:00.000+00:00",
+        "objCursoOfertadoVerano" : null
+      } ],
+      "estudiantesInscritos" : [ ]
+    }, {
+      "id_curso" : 73,
+      "idCurso" : 73,
+      "codigo_curso" : "MAT-1",
+      "nombre_curso" : "Calculo",
+      "descripcion" : "Curso de Calculo",
+      "fecha_inicio" : "2025-07-01T12:00:00Z",
+      "fecha_fin" : "2025-08-01T12:00:00Z",
+      "cupo_maximo" : 20,
+      "cupo_disponible" : 19,
+      "espacio_asignado" : "222",
+      "estado" : "Borrador",
+      "periodo" : "2025-2",
+      "objMateria" : {
+        "id_materia" : 1,
+        "codigo" : "MAT-1",
+        "nombre" : "Calculo",
+        "creditos" : 4
+      },
+      "objDocente" : {
+        "id_docente" : 4,
+        "codigo_docente" : "D-4",
+        "nombre_docente" : "Docente Cuatro"
+      },
+      "grupo" : "A",
+      "cupo_estimado" : 20,
+      "salon" : "222",
+      "id_salon" : null,
+      "salonInfo" : null,
+      "estadosCursoOfertados" : [ {
+        "id_estado" : 730,
+        "estado_actual" : "Borrador",
+        "fecha_registro_estado" : "2025-07-01T12:00:00.000+00:00",
+        "objCursoOfertadoVerano" : null
+      } ],
+      "estudiantesInscritos" : [ {
+        "id_usuario" : 5,
+        "nombre_completo" : "Usuario 5",
+        "rol" : {
+          "id_rol" : null,
+          "nombre" : "Estudiante"
+        },
+        "codigo" : null,
+        "cedula" : null,
+        "correo" : null,
+        "estado_usuario" : false,
+        "objPrograma" : null
+      } ]
+    }, {
+      "id_curso" : 74,
+      "idCurso" : 74,
+      "codigo_curso" : "MAT-1",
+      "nombre_curso" : "Calculo",
+      "descripcion" : "Curso de Calculo",
+      "fecha_inicio" : "2025-07-01T12:00:00Z",
+      "fecha_fin" : "2025-08-01T12:00:00Z",
+      "cupo_maximo" : 20,
+      "cupo_disponible" : 20,
+      "espacio_asignado" : "221",
+      "estado" : "Publicado",
+      "periodo" : "2025-2",
+      "objMateria" : {
+        "id_materia" : 1,
+        "codigo" : "MAT-1",
+        "nombre" : "Calculo",
+        "creditos" : 4
+      },
+      "objDocente" : {
+        "id_docente" : 4,
+        "codigo_docente" : "D-4",
+        "nombre_docente" : "Docente Cuatro"
+      },
+      "grupo" : "A",
+      "cupo_estimado" : 20,
+      "salon" : "221",
+      "id_salon" : null,
+      "salonInfo" : null,
+      "estadosCursoOfertados" : [ {
+        "id_estado" : 740,
+        "estado_actual" : "Publicado",
+        "fecha_registro_estado" : "2025-07-01T12:00:00.000+00:00",
+        "objCursoOfertadoVerano" : null
+      } ],
+      "estudiantesInscritos" : [ ]
+    } ],
+    "disposicion" : null,
+    "llamadas" : [ {
+      "listarPorFiltros" : "2025-1, 3, false"
+    } ]
+  },
+  "GET /api/cursos-intersemestrales/cursos-verano/periodo/2025-1 [funcionario]" : {
+    "status" : 200,
+    "tipo" : "application/json",
+    "cuerpo" : [ {
+      "id_curso" : 71,
+      "idCurso" : 71,
+      "codigo_curso" : "MAT-1",
+      "nombre_curso" : "Calculo",
+      "descripcion" : "Curso de Calculo",
+      "fecha_inicio" : "2025-07-01T12:00:00Z",
+      "fecha_fin" : "2025-08-01T12:00:00Z",
+      "cupo_maximo" : 20,
+      "cupo_disponible" : 20,
+      "espacio_asignado" : "221",
+      "estado" : "Preinscripcion",
+      "periodo" : "2025-2",
+      "objMateria" : {
+        "id_materia" : 1,
+        "codigo" : "MAT-1",
+        "nombre" : "Calculo",
+        "creditos" : 4
+      },
+      "objDocente" : {
+        "id_docente" : 4,
+        "codigo_docente" : "D-4",
+        "nombre_docente" : "Docente Cuatro"
+      },
+      "grupo" : "A",
+      "cupo_estimado" : 20,
+      "salon" : "221",
+      "id_salon" : null,
+      "salonInfo" : null,
+      "estadosCursoOfertados" : [ {
+        "id_estado" : 710,
+        "estado_actual" : "Preinscripcion",
+        "fecha_registro_estado" : "2025-07-01T12:00:00.000+00:00",
+        "objCursoOfertadoVerano" : null
+      } ],
+      "estudiantesInscritos" : [ ]
+    }, {
+      "id_curso" : 72,
+      "idCurso" : 72,
+      "codigo_curso" : "MAT-1",
+      "nombre_curso" : "Calculo",
+      "descripcion" : "Curso de Calculo",
+      "fecha_inicio" : "2025-07-01T12:00:00Z",
+      "fecha_fin" : "2025-08-01T12:00:00Z",
+      "cupo_maximo" : 20,
+      "cupo_disponible" : 20,
+      "espacio_asignado" : null,
+      "estado" : "Inscripcion",
+      "periodo" : "2025-1",
+      "objMateria" : {
+        "id_materia" : 1,
+        "codigo" : "MAT-1",
+        "nombre" : "Calculo",
+        "creditos" : 4
+      },
+      "objDocente" : {
+        "id_docente" : 4,
+        "codigo_docente" : "D-4",
+        "nombre_docente" : "Docente Cuatro"
+      },
+      "grupo" : "A",
+      "cupo_estimado" : 20,
+      "salon" : null,
+      "id_salon" : null,
+      "salonInfo" : null,
+      "estadosCursoOfertados" : [ {
+        "id_estado" : 720,
+        "estado_actual" : "Inscripcion",
+        "fecha_registro_estado" : "2025-07-01T12:00:00.000+00:00",
+        "objCursoOfertadoVerano" : null
+      } ],
+      "estudiantesInscritos" : [ ]
+    }, {
+      "id_curso" : 73,
+      "idCurso" : 73,
+      "codigo_curso" : "MAT-1",
+      "nombre_curso" : "Calculo",
+      "descripcion" : "Curso de Calculo",
+      "fecha_inicio" : "2025-07-01T12:00:00Z",
+      "fecha_fin" : "2025-08-01T12:00:00Z",
+      "cupo_maximo" : 20,
+      "cupo_disponible" : 19,
+      "espacio_asignado" : "222",
+      "estado" : "Borrador",
+      "periodo" : "2025-2",
+      "objMateria" : {
+        "id_materia" : 1,
+        "codigo" : "MAT-1",
+        "nombre" : "Calculo",
+        "creditos" : 4
+      },
+      "objDocente" : {
+        "id_docente" : 4,
+        "codigo_docente" : "D-4",
+        "nombre_docente" : "Docente Cuatro"
+      },
+      "grupo" : "A",
+      "cupo_estimado" : 20,
+      "salon" : "222",
+      "id_salon" : null,
+      "salonInfo" : null,
+      "estadosCursoOfertados" : [ {
+        "id_estado" : 730,
+        "estado_actual" : "Borrador",
+        "fecha_registro_estado" : "2025-07-01T12:00:00.000+00:00",
+        "objCursoOfertadoVerano" : null
+      } ],
+      "estudiantesInscritos" : [ {
+        "id_usuario" : 5,
+        "nombre_completo" : "Usuario 5",
+        "rol" : {
+          "id_rol" : null,
+          "nombre" : "Estudiante"
+        },
+        "codigo" : null,
+        "cedula" : null,
+        "correo" : null,
+        "estado_usuario" : false,
+        "objPrograma" : null
+      } ]
+    }, {
+      "id_curso" : 74,
+      "idCurso" : 74,
+      "codigo_curso" : "MAT-1",
+      "nombre_curso" : "Calculo",
+      "descripcion" : "Curso de Calculo",
+      "fecha_inicio" : "2025-07-01T12:00:00Z",
+      "fecha_fin" : "2025-08-01T12:00:00Z",
+      "cupo_maximo" : 20,
+      "cupo_disponible" : 20,
+      "espacio_asignado" : "221",
+      "estado" : "Publicado",
+      "periodo" : "2025-2",
+      "objMateria" : {
+        "id_materia" : 1,
+        "codigo" : "MAT-1",
+        "nombre" : "Calculo",
+        "creditos" : 4
+      },
+      "objDocente" : {
+        "id_docente" : 4,
+        "codigo_docente" : "D-4",
+        "nombre_docente" : "Docente Cuatro"
+      },
+      "grupo" : "A",
+      "cupo_estimado" : 20,
+      "salon" : "221",
+      "id_salon" : null,
+      "salonInfo" : null,
+      "estadosCursoOfertados" : [ {
+        "id_estado" : 740,
+        "estado_actual" : "Publicado",
+        "fecha_registro_estado" : "2025-07-01T12:00:00.000+00:00",
+        "objCursoOfertadoVerano" : null
+      } ],
+      "estudiantesInscritos" : [ ]
+    } ],
+    "disposicion" : null,
+    "llamadas" : [ ]
+  },
+  "GET /api/cursos-intersemestrales/cursos-verano/materia/1 [funcionario]" : {
+    "status" : 200,
+    "tipo" : "application/json",
+    "cuerpo" : [ {
+      "id_curso" : 71,
+      "idCurso" : 71,
+      "codigo_curso" : "MAT-1",
+      "nombre_curso" : "Calculo",
+      "descripcion" : "Curso de Calculo",
+      "fecha_inicio" : "2025-07-01T12:00:00Z",
+      "fecha_fin" : "2025-08-01T12:00:00Z",
+      "cupo_maximo" : 20,
+      "cupo_disponible" : 20,
+      "espacio_asignado" : "221",
+      "estado" : "Preinscripcion",
+      "periodo" : "2025-2",
+      "objMateria" : {
+        "id_materia" : 1,
+        "codigo" : "MAT-1",
+        "nombre" : "Calculo",
+        "creditos" : 4
+      },
+      "objDocente" : {
+        "id_docente" : 4,
+        "codigo_docente" : "D-4",
+        "nombre_docente" : "Docente Cuatro"
+      },
+      "grupo" : "A",
+      "cupo_estimado" : 20,
+      "salon" : "221",
+      "id_salon" : null,
+      "salonInfo" : null,
+      "estadosCursoOfertados" : [ {
+        "id_estado" : 710,
+        "estado_actual" : "Preinscripcion",
+        "fecha_registro_estado" : "2025-07-01T12:00:00.000+00:00",
+        "objCursoOfertadoVerano" : null
+      } ],
+      "estudiantesInscritos" : [ ]
+    }, {
+      "id_curso" : 72,
+      "idCurso" : 72,
+      "codigo_curso" : "MAT-1",
+      "nombre_curso" : "Calculo",
+      "descripcion" : "Curso de Calculo",
+      "fecha_inicio" : "2025-07-01T12:00:00Z",
+      "fecha_fin" : "2025-08-01T12:00:00Z",
+      "cupo_maximo" : 20,
+      "cupo_disponible" : 20,
+      "espacio_asignado" : null,
+      "estado" : "Inscripcion",
+      "periodo" : "2025-1",
+      "objMateria" : {
+        "id_materia" : 1,
+        "codigo" : "MAT-1",
+        "nombre" : "Calculo",
+        "creditos" : 4
+      },
+      "objDocente" : {
+        "id_docente" : 4,
+        "codigo_docente" : "D-4",
+        "nombre_docente" : "Docente Cuatro"
+      },
+      "grupo" : "A",
+      "cupo_estimado" : 20,
+      "salon" : null,
+      "id_salon" : null,
+      "salonInfo" : null,
+      "estadosCursoOfertados" : [ {
+        "id_estado" : 720,
+        "estado_actual" : "Inscripcion",
+        "fecha_registro_estado" : "2025-07-01T12:00:00.000+00:00",
+        "objCursoOfertadoVerano" : null
+      } ],
+      "estudiantesInscritos" : [ ]
+    }, {
+      "id_curso" : 73,
+      "idCurso" : 73,
+      "codigo_curso" : "MAT-1",
+      "nombre_curso" : "Calculo",
+      "descripcion" : "Curso de Calculo",
+      "fecha_inicio" : "2025-07-01T12:00:00Z",
+      "fecha_fin" : "2025-08-01T12:00:00Z",
+      "cupo_maximo" : 20,
+      "cupo_disponible" : 19,
+      "espacio_asignado" : "222",
+      "estado" : "Borrador",
+      "periodo" : "2025-2",
+      "objMateria" : {
+        "id_materia" : 1,
+        "codigo" : "MAT-1",
+        "nombre" : "Calculo",
+        "creditos" : 4
+      },
+      "objDocente" : {
+        "id_docente" : 4,
+        "codigo_docente" : "D-4",
+        "nombre_docente" : "Docente Cuatro"
+      },
+      "grupo" : "A",
+      "cupo_estimado" : 20,
+      "salon" : "222",
+      "id_salon" : null,
+      "salonInfo" : null,
+      "estadosCursoOfertados" : [ {
+        "id_estado" : 730,
+        "estado_actual" : "Borrador",
+        "fecha_registro_estado" : "2025-07-01T12:00:00.000+00:00",
+        "objCursoOfertadoVerano" : null
+      } ],
+      "estudiantesInscritos" : [ {
+        "id_usuario" : 5,
+        "nombre_completo" : "Usuario 5",
+        "rol" : {
+          "id_rol" : null,
+          "nombre" : "Estudiante"
+        },
+        "codigo" : null,
+        "cedula" : null,
+        "correo" : null,
+        "estado_usuario" : false,
+        "objPrograma" : null
+      } ]
+    }, {
+      "id_curso" : 74,
+      "idCurso" : 74,
+      "codigo_curso" : "MAT-1",
+      "nombre_curso" : "Calculo",
+      "descripcion" : "Curso de Calculo",
+      "fecha_inicio" : "2025-07-01T12:00:00Z",
+      "fecha_fin" : "2025-08-01T12:00:00Z",
+      "cupo_maximo" : 20,
+      "cupo_disponible" : 20,
+      "espacio_asignado" : "221",
+      "estado" : "Publicado",
+      "periodo" : "2025-2",
+      "objMateria" : {
+        "id_materia" : 1,
+        "codigo" : "MAT-1",
+        "nombre" : "Calculo",
+        "creditos" : 4
+      },
+      "objDocente" : {
+        "id_docente" : 4,
+        "codigo_docente" : "D-4",
+        "nombre_docente" : "Docente Cuatro"
+      },
+      "grupo" : "A",
+      "cupo_estimado" : 20,
+      "salon" : "221",
+      "id_salon" : null,
+      "salonInfo" : null,
+      "estadosCursoOfertados" : [ {
+        "id_estado" : 740,
+        "estado_actual" : "Publicado",
+        "fecha_registro_estado" : "2025-07-01T12:00:00.000+00:00",
+        "objCursoOfertadoVerano" : null
+      } ],
+      "estudiantesInscritos" : [ ]
+    } ],
+    "disposicion" : null,
+    "llamadas" : [ ]
+  },
+  "POST /api/cursos-verano/crearCurso {\"idCurso\":71,\"cupoEstimado\":30,\"salon\":\"221\"} [funcionario]" : {
+    "status" : 400,
+    "tipo" : "application/json",
+    "cuerpo" : {
+      "objDocente" : "El docente asignado no puede estar vacío",
+      "objMateria" : "La materia del curso no puede estar vacía",
+      "cupo_estimado" : "El cupo estimado no puede estar vacío",
+      "grupo" : "El grupo no puede estar vacío"
+    },
+    "disposicion" : null,
+    "llamadas" : [ ]
+  },
+  "PUT /api/cursos-verano/actualizarCurso {\"idCurso\":71,\"cupoEstimado\":30,\"salon\":\"221\"} [funcionario]" : {
+    "status" : 400,
+    "tipo" : "application/json",
+    "cuerpo" : {
+      "objDocente" : "El docente asignado no puede estar vacío",
+      "objMateria" : "La materia del curso no puede estar vacía",
+      "cupo_estimado" : "El cupo estimado no puede estar vacío",
+      "grupo" : "El grupo no puede estar vacío"
+    },
+    "disposicion" : null,
+    "llamadas" : [ ]
+  },
+  "GET /api/cursos-verano/disponibles [funcionario]" : {
+    "status" : 200,
+    "tipo" : "application/json",
+    "cuerpo" : [ {
+      "id_curso" : 71,
+      "idCurso" : null,
+      "codigo_curso" : "MAT-1",
+      "nombre_curso" : "Calculo",
+      "descripcion" : "Curso de Calculo",
+      "fecha_inicio" : "2025-07-01T12:00:00Z",
+      "fecha_fin" : "2025-08-01T12:00:00Z",
+      "cupo_maximo" : 20,
+      "cupo_disponible" : 20,
+      "espacio_asignado" : "221",
+      "estado" : "Preinscripcion",
+      "periodo" : "2025-2",
+      "objMateria" : {
+        "id_materia" : 1,
+        "codigo" : "MAT-1",
+        "nombre" : "Calculo",
+        "creditos" : 4
+      },
+      "objDocente" : {
+        "id_docente" : 4,
+        "codigo_docente" : "D-4",
+        "nombre_docente" : "Docente Cuatro"
+      },
+      "grupo" : "A",
+      "cupo_estimado" : 20,
+      "salon" : "221",
+      "id_salon" : null,
+      "salonInfo" : null,
+      "estadosCursoOfertados" : [ {
+        "id_estado" : 710,
+        "estado_actual" : "Preinscripcion",
+        "fecha_registro_estado" : "2025-07-01T12:00:00.000+00:00",
+        "objCursoOfertadoVerano" : null
+      } ],
+      "estudiantesInscritos" : [ ]
+    }, {
+      "id_curso" : 72,
+      "idCurso" : null,
+      "codigo_curso" : "MAT-1",
+      "nombre_curso" : "Calculo",
+      "descripcion" : "Curso de Calculo",
+      "fecha_inicio" : "2025-07-01T12:00:00Z",
+      "fecha_fin" : "2025-08-01T12:00:00Z",
+      "cupo_maximo" : 20,
+      "cupo_disponible" : 20,
+      "espacio_asignado" : null,
+      "estado" : "Inscripcion",
+      "periodo" : "2025-1",
+      "objMateria" : {
+        "id_materia" : 1,
+        "codigo" : "MAT-1",
+        "nombre" : "Calculo",
+        "creditos" : 4
+      },
+      "objDocente" : {
+        "id_docente" : 4,
+        "codigo_docente" : "D-4",
+        "nombre_docente" : "Docente Cuatro"
+      },
+      "grupo" : "A",
+      "cupo_estimado" : 20,
+      "salon" : null,
+      "id_salon" : null,
+      "salonInfo" : null,
+      "estadosCursoOfertados" : [ {
+        "id_estado" : 720,
+        "estado_actual" : "Inscripcion",
+        "fecha_registro_estado" : "2025-07-01T12:00:00.000+00:00",
+        "objCursoOfertadoVerano" : null
+      } ],
+      "estudiantesInscritos" : [ ]
+    }, {
+      "id_curso" : 74,
+      "idCurso" : null,
+      "codigo_curso" : "MAT-1",
+      "nombre_curso" : "Calculo",
+      "descripcion" : "Curso de Calculo",
+      "fecha_inicio" : "2025-07-01T12:00:00Z",
+      "fecha_fin" : "2025-08-01T12:00:00Z",
+      "cupo_maximo" : 20,
+      "cupo_disponible" : 20,
+      "espacio_asignado" : "221",
+      "estado" : "Publicado",
+      "periodo" : "2025-2",
+      "objMateria" : {
+        "id_materia" : 1,
+        "codigo" : "MAT-1",
+        "nombre" : "Calculo",
+        "creditos" : 4
+      },
+      "objDocente" : {
+        "id_docente" : 4,
+        "codigo_docente" : "D-4",
+        "nombre_docente" : "Docente Cuatro"
+      },
+      "grupo" : "A",
+      "cupo_estimado" : 20,
+      "salon" : "221",
+      "id_salon" : null,
+      "salonInfo" : null,
+      "estadosCursoOfertados" : [ {
+        "id_estado" : 740,
+        "estado_actual" : "Publicado",
+        "fecha_registro_estado" : "2025-07-01T12:00:00.000+00:00",
+        "objCursoOfertadoVerano" : null
+      } ],
+      "estudiantesInscritos" : [ ]
+    } ],
+    "disposicion" : null,
+    "llamadas" : [ ]
+  },
+  "GET /api/cursos-verano/todos [funcionario]" : {
+    "status" : 200,
+    "tipo" : "application/json",
+    "cuerpo" : [ {
+      "id_curso" : 71,
+      "idCurso" : null,
+      "codigo_curso" : "MAT-1",
+      "nombre_curso" : "Calculo",
+      "descripcion" : "Curso de Calculo",
+      "fecha_inicio" : "2025-07-01T12:00:00Z",
+      "fecha_fin" : "2025-08-01T12:00:00Z",
+      "cupo_maximo" : 20,
+      "cupo_disponible" : 20,
+      "espacio_asignado" : "221",
+      "estado" : "Preinscripcion",
+      "periodo" : "2025-2",
+      "objMateria" : {
+        "id_materia" : 1,
+        "codigo" : "MAT-1",
+        "nombre" : "Calculo",
+        "creditos" : 4
+      },
+      "objDocente" : {
+        "id_docente" : 4,
+        "codigo_docente" : "D-4",
+        "nombre_docente" : "Docente Cuatro"
+      },
+      "grupo" : "A",
+      "cupo_estimado" : 20,
+      "salon" : "221",
+      "id_salon" : null,
+      "salonInfo" : null,
+      "estadosCursoOfertados" : [ {
+        "id_estado" : 710,
+        "estado_actual" : "Preinscripcion",
+        "fecha_registro_estado" : "2025-07-01T12:00:00.000+00:00",
+        "objCursoOfertadoVerano" : null
+      } ],
+      "estudiantesInscritos" : [ ]
+    }, {
+      "id_curso" : 72,
+      "idCurso" : null,
+      "codigo_curso" : "MAT-1",
+      "nombre_curso" : "Calculo",
+      "descripcion" : "Curso de Calculo",
+      "fecha_inicio" : "2025-07-01T12:00:00Z",
+      "fecha_fin" : "2025-08-01T12:00:00Z",
+      "cupo_maximo" : 20,
+      "cupo_disponible" : 20,
+      "espacio_asignado" : null,
+      "estado" : "Inscripcion",
+      "periodo" : "2025-1",
+      "objMateria" : {
+        "id_materia" : 1,
+        "codigo" : "MAT-1",
+        "nombre" : "Calculo",
+        "creditos" : 4
+      },
+      "objDocente" : {
+        "id_docente" : 4,
+        "codigo_docente" : "D-4",
+        "nombre_docente" : "Docente Cuatro"
+      },
+      "grupo" : "A",
+      "cupo_estimado" : 20,
+      "salon" : null,
+      "id_salon" : null,
+      "salonInfo" : null,
+      "estadosCursoOfertados" : [ {
+        "id_estado" : 720,
+        "estado_actual" : "Inscripcion",
+        "fecha_registro_estado" : "2025-07-01T12:00:00.000+00:00",
+        "objCursoOfertadoVerano" : null
+      } ],
+      "estudiantesInscritos" : [ ]
+    }, {
+      "id_curso" : 73,
+      "idCurso" : null,
+      "codigo_curso" : "MAT-1",
+      "nombre_curso" : "Calculo",
+      "descripcion" : "Curso de Calculo",
+      "fecha_inicio" : "2025-07-01T12:00:00Z",
+      "fecha_fin" : "2025-08-01T12:00:00Z",
+      "cupo_maximo" : 20,
+      "cupo_disponible" : 19,
+      "espacio_asignado" : "222",
+      "estado" : "Borrador",
+      "periodo" : "2025-2",
+      "objMateria" : {
+        "id_materia" : 1,
+        "codigo" : "MAT-1",
+        "nombre" : "Calculo",
+        "creditos" : 4
+      },
+      "objDocente" : {
+        "id_docente" : 4,
+        "codigo_docente" : "D-4",
+        "nombre_docente" : "Docente Cuatro"
+      },
+      "grupo" : "A",
+      "cupo_estimado" : 20,
+      "salon" : "222",
+      "id_salon" : null,
+      "salonInfo" : null,
+      "estadosCursoOfertados" : [ {
+        "id_estado" : 730,
+        "estado_actual" : "Borrador",
+        "fecha_registro_estado" : "2025-07-01T12:00:00.000+00:00",
+        "objCursoOfertadoVerano" : null
+      } ],
+      "estudiantesInscritos" : [ {
+        "id_usuario" : 5,
+        "nombre_completo" : "Usuario 5",
+        "rol" : {
+          "id_rol" : null,
+          "nombre" : "Estudiante"
+        },
+        "codigo" : null,
+        "cedula" : null,
+        "correo" : null,
+        "estado_usuario" : false,
+        "objPrograma" : null
+      } ]
+    }, {
+      "id_curso" : 74,
+      "idCurso" : null,
+      "codigo_curso" : "MAT-1",
+      "nombre_curso" : "Calculo",
+      "descripcion" : "Curso de Calculo",
+      "fecha_inicio" : "2025-07-01T12:00:00Z",
+      "fecha_fin" : "2025-08-01T12:00:00Z",
+      "cupo_maximo" : 20,
+      "cupo_disponible" : 20,
+      "espacio_asignado" : "221",
+      "estado" : "Publicado",
+      "periodo" : "2025-2",
+      "objMateria" : {
+        "id_materia" : 1,
+        "codigo" : "MAT-1",
+        "nombre" : "Calculo",
+        "creditos" : 4
+      },
+      "objDocente" : {
+        "id_docente" : 4,
+        "codigo_docente" : "D-4",
+        "nombre_docente" : "Docente Cuatro"
+      },
+      "grupo" : "A",
+      "cupo_estimado" : 20,
+      "salon" : "221",
+      "id_salon" : null,
+      "salonInfo" : null,
+      "estadosCursoOfertados" : [ {
+        "id_estado" : 740,
+        "estado_actual" : "Publicado",
+        "fecha_registro_estado" : "2025-07-01T12:00:00.000+00:00",
+        "objCursoOfertadoVerano" : null
+      } ],
+      "estudiantesInscritos" : [ ]
+    } ],
+    "disposicion" : null,
+    "llamadas" : [ ]
+  },
+  "GET /api/cursos-verano/preinscripciones/71 [funcionario]" : {
+    "status" : 200,
+    "tipo" : "application/json",
+    "cuerpo" : {
+      "preinscripciones" : [ {
+        "id_solicitud" : 91,
+        "nombre_solicitud" : "Preinscripcion 91",
+        "periodo_academico" : "2025-2",
+        "fecha_ceremonia" : null,
+        "fecha_registro_solicitud" : "2025-07-01T12:00:00.000+00:00",
+        "estadosSolicitud" : [ ],
+        "objUsuario" : null,
+        "documentos" : [ ],
+        "objCursoOfertadoVerano" : null,
+        "nombre_estudiante" : null,
+        "codigo_estudiante" : null,
+        "codicion_solicitud" : null,
+        "observacion" : null
+      } ],
+      "total" : 1,
+      "idCurso" : 71
+    },
+    "disposicion" : null,
+    "llamadas" : [ ]
+  },
+  "GET /api/cursos-verano/inscripciones/71 [funcionario]" : {
+    "status" : 200,
+    "tipo" : "application/json",
+    "cuerpo" : {
+      "total" : 1,
+      "inscripciones" : [ {
+        "id_solicitud" : 92,
+        "nombre_solicitud" : "Inscripcion 92",
+        "periodo_academico" : "2025-2",
+        "fecha_ceremonia" : null,
+        "fecha_registro_solicitud" : "2025-07-01T12:00:00.000+00:00",
+        "estadosSolicitud" : [ ],
+        "objUsuario" : null,
+        "documentos" : [ ],
+        "objCursoOfertadoVerano" : null,
+        "nombre_estudiante" : null,
+        "codicion_solicitud" : null,
+        "observacion" : null
+      } ],
+      "idCurso" : 71
+    },
+    "disposicion" : null,
+    "llamadas" : [ ]
+  },
+  "PUT /api/cursos-verano/preinscripciones/91/aprobar {\"comentarios\":\"ok\"} [funcionario]" : {
+    "status" : 200,
+    "tipo" : "application/json",
+    "cuerpo" : {
+      "success" : true,
+      "solicitud" : {
+        "id_solicitud" : 91,
+        "nombre_solicitud" : "Preinscripcion 91",
+        "periodo_academico" : "2025-2",
+        "fecha_ceremonia" : null,
+        "fecha_registro_solicitud" : "2025-07-01T12:00:00.000+00:00",
+        "estadosSolicitud" : [ ],
+        "objUsuario" : null,
+        "documentos" : [ ],
+        "objCursoOfertadoVerano" : null,
+        "nombre_estudiante" : null,
+        "codigo_estudiante" : null,
+        "codicion_solicitud" : null,
+        "observacion" : null
+      },
+      "message" : "Preinscripción aprobada exitosamente"
+    },
+    "disposicion" : null,
+    "llamadas" : [ {
+      "aprobarPreinscripcion" : "91, ok"
+    } ]
+  },
+  "PUT /api/cursos-verano/preinscripciones/91/rechazar {\"motivo\":\"no\"} [funcionario]" : {
+    "status" : 200,
+    "tipo" : "application/json",
+    "cuerpo" : {
+      "motivo" : "no",
+      "success" : true,
+      "solicitud" : {
+        "id_solicitud" : 91,
+        "nombre_solicitud" : "Preinscripcion 91",
+        "periodo_academico" : "2025-2",
+        "fecha_ceremonia" : null,
+        "fecha_registro_solicitud" : "2025-07-01T12:00:00.000+00:00",
+        "estadosSolicitud" : [ ],
+        "objUsuario" : null,
+        "documentos" : [ ],
+        "objCursoOfertadoVerano" : null,
+        "nombre_estudiante" : null,
+        "codigo_estudiante" : null,
+        "codicion_solicitud" : null,
+        "observacion" : null
+      },
+      "message" : "Preinscripción rechazada"
+    },
+    "disposicion" : null,
+    "llamadas" : [ {
+      "rechazarPreinscripcion" : "91, no"
+    } ]
+  },
+  "PUT /api/cursos-verano/inscripciones/92/validar-pago {\"esValido\":true} [funcionario]" : {
+    "status" : 200,
+    "tipo" : "application/json",
+    "cuerpo" : {
+      "success" : true,
+      "solicitud" : {
+        "id_solicitud" : 92,
+        "nombre_solicitud" : "Inscripcion 92",
+        "periodo_academico" : "2025-2",
+        "fecha_ceremonia" : null,
+        "fecha_registro_solicitud" : "2025-07-01T12:00:00.000+00:00",
+        "estadosSolicitud" : [ ],
+        "objUsuario" : null,
+        "documentos" : [ ],
+        "objCursoOfertadoVerano" : null,
+        "nombre_estudiante" : null,
+        "codicion_solicitud" : null,
+        "observacion" : null
+      },
+      "message" : "Pago validado exitosamente"
+    },
+    "disposicion" : null,
+    "llamadas" : [ {
+      "validarPago" : "92, true, null"
+    } ]
+  },
+  "PUT /api/cursos-verano/inscripciones/92/completar [funcionario]" : {
+    "status" : 200,
+    "tipo" : "application/json",
+    "cuerpo" : {
+      "success" : true,
+      "solicitud" : {
+        "id_solicitud" : 92,
+        "nombre_solicitud" : "Inscripcion 92",
+        "periodo_academico" : "2025-2",
+        "fecha_ceremonia" : null,
+        "fecha_registro_solicitud" : "2025-07-01T12:00:00.000+00:00",
+        "estadosSolicitud" : [ ],
+        "objUsuario" : null,
+        "documentos" : [ ],
+        "objCursoOfertadoVerano" : null,
+        "nombre_estudiante" : null,
+        "codicion_solicitud" : null,
+        "observacion" : null
+      },
+      "message" : "Inscripción completada exitosamente"
+    },
+    "disposicion" : null,
+    "llamadas" : [ {
+      "completarInscripcion" : "92"
+    } ]
+  },
+  "GET /api/cursos-verano/cursos?disponibles=true&estado=preinscripcion [funcionario]" : {
+    "status" : 404,
+    "tipo" : "application/json",
+    "cuerpo" : {
+      "codigoError" : "GC-0404",
+      "mensaje" : "El recurso solicitado no existe",
+      "codigoHttp" : 404,
+      "url" : "http://localhost/api/cursos-verano/cursos",
+      "metodo" : "GET"
+    },
+    "disposicion" : null,
+    "llamadas" : [ ]
+  },
+  "GET /api/cursos-verano/cursos?disponibles=false [funcionario]" : {
+    "status" : 404,
+    "tipo" : "application/json",
+    "cuerpo" : {
+      "codigoError" : "GC-0404",
+      "mensaje" : "El recurso solicitado no existe",
+      "codigoHttp" : 404,
+      "url" : "http://localhost/api/cursos-verano/cursos",
+      "metodo" : "GET"
+    },
+    "disposicion" : null,
+    "llamadas" : [ ]
+  },
+  "GET /api/cursos-verano/cursos?estado=otro [funcionario]" : {
+    "status" : 404,
+    "tipo" : "application/json",
+    "cuerpo" : {
+      "codigoError" : "GC-0404",
+      "mensaje" : "El recurso solicitado no existe",
+      "codigoHttp" : 404,
+      "url" : "http://localhost/api/cursos-verano/cursos",
+      "metodo" : "GET"
+    },
+    "disposicion" : null,
+    "llamadas" : [ ]
+  },
+  "GET /api/cursos-verano/cursos?estado=Preinscripcion [funcionario]" : {
+    "status" : 404,
+    "tipo" : "application/json",
+    "cuerpo" : {
+      "codigoError" : "GC-0404",
+      "mensaje" : "El recurso solicitado no existe",
+      "codigoHttp" : 404,
+      "url" : "http://localhost/api/cursos-verano/cursos",
+      "metodo" : "GET"
+    },
+    "disposicion" : null,
+    "llamadas" : [ ]
+  },
+  "GET /api/cursos-verano/cursos?formato=xml [funcionario]" : {
+    "status" : 404,
+    "tipo" : "application/json",
+    "cuerpo" : {
+      "codigoError" : "GC-0404",
+      "mensaje" : "El recurso solicitado no existe",
+      "codigoHttp" : 404,
+      "url" : "http://localhost/api/cursos-verano/cursos",
+      "metodo" : "GET"
+    },
+    "disposicion" : null,
+    "llamadas" : [ ]
+  },
+  "GET /api/cursos-verano/cursos/abc [funcionario]" : {
+    "status" : 404,
+    "tipo" : "application/json",
+    "cuerpo" : {
+      "codigoError" : "GC-0404",
+      "mensaje" : "El recurso solicitado no existe",
+      "codigoHttp" : 404,
+      "url" : "http://localhost/api/cursos-verano/cursos/abc",
+      "metodo" : "GET"
+    },
+    "disposicion" : null,
+    "llamadas" : [ ]
+  },
+  "GET /api/cursos-verano/cursos/abc/estudiantes [funcionario]" : {
+    "status" : 404,
+    "tipo" : "application/json",
+    "cuerpo" : {
+      "codigoError" : "GC-0404",
+      "mensaje" : "El recurso solicitado no existe",
+      "codigoHttp" : 404,
+      "url" : "http://localhost/api/cursos-verano/cursos/abc/estudiantes",
+      "metodo" : "GET"
+    },
+    "disposicion" : null,
+    "llamadas" : [ ]
+  },
+  "GET /api/cursos-verano/cursos/71/estudiantes?formato=xml [funcionario]" : {
+    "status" : 404,
+    "tipo" : "application/json",
+    "cuerpo" : {
+      "codigoError" : "GC-0404",
+      "mensaje" : "El recurso solicitado no existe",
+      "codigoHttp" : 404,
+      "url" : "http://localhost/api/cursos-verano/cursos/71/estudiantes",
+      "metodo" : "GET"
+    },
+    "disposicion" : null,
+    "llamadas" : [ ]
+  }
+}

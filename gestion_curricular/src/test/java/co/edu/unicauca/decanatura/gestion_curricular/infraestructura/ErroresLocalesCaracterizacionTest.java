@@ -48,14 +48,12 @@ import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Rol;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.SolicitudCursoVeranoInscripcion;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.SolicitudCursoVeranoPreinscripcion;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Usuario;
-import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.controladores.CursoOfertadoRestController;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.controladores.InscripcionesVeranoRestController;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.controladores.PreinscripcionesVeranoRestController;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.controladores.UsuarioRestController;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.dto.respuesta.UsuarioDTORespuesta;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.excepciones.RestApiExceptionHandler;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.mappers.CursosOfertadosMapperDominio;
-import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.mappers.EstadoCursoOfertadoMapper;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.mappers.SolicitudCursoDeVeranoPreinscripcionMapperDominio;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.mappers.UsuarioMapperDominio;
 import co.edu.unicauca.decanatura.gestion_curricular.seguridad.JwtUtil;
@@ -128,7 +126,7 @@ class ErroresLocalesCaracterizacionTest {
                 m -> when(m.solicitud().validarPago(anyInt(), anyBoolean(), any())).thenThrow(e.getValue().get()));
         }
 
-        // CursoOfertado: validar pago
+        // CursoOfertado: validar pago (EST-7, paso 8a: se retira y responde 404)
         Supplier<MockHttpServletRequestBuilder> validarPago = () -> put("/api/cursos-verano/inscripciones/7/validar-pago")
             .contentType(MediaType.APPLICATION_JSON).content("{\"esValido\":true,\"observaciones\":\"ok\"}");
         caso("validarPago ok", validarPago, m -> {});
@@ -187,6 +185,8 @@ class ErroresLocalesCaracterizacionTest {
         esperado = Correcciones.aplicar(esperado, "errores/correcciones/errores-locales-bug32.json");
         // EST-7: crear usuario es POST /api/usuarios; solo cambia la url de los errores
         esperado = Correcciones.aplicar(esperado, "errores/correcciones/errores-locales-est7.json");
+        // EST-7 (paso 8a): validar pago de CursoOfertadoRestController se retira y responde 404
+        esperado = Correcciones.aplicar(esperado, "errores/correcciones/errores-locales-est7-paso8a.json");
         assertThat(actual).isEqualTo(esperado);
     }
 
@@ -202,8 +202,8 @@ class ErroresLocalesCaracterizacionTest {
         configurarBase(m);
         configurar.accept(m);
 
+        // EST-7 (paso 8a): CursoOfertadoRestController se retira; sus casos fijan el 404
         MockMvc mvc = SoporteMvc.standaloneSetup(
-                new CursoOfertadoRestController(m.curso(), m.solicitud(), mock(CursosOfertadosMapperDominio.class), mock(EstadoCursoOfertadoMapper.class)),
                 new PreinscripcionesVeranoRestController(m.solicitud(), mock(CursosOfertadosMapperDominio.class),
                     mock(SolicitudCursoDeVeranoPreinscripcionMapperDominio.class)),
                 new InscripcionesVeranoRestController(m.curso(), m.solicitud(), mock(GestionarArchivosCUIntPort.class),

@@ -42,6 +42,8 @@ import co.edu.unicauca.decanatura.gestion_curricular.soporte.Correcciones;
 @org.springframework.security.test.context.support.WithMockUser(roles = "Funcionario")
 class CursosVeranoEndpointsCaracterizacionTest {
     private static final String BASE = "/api/cursos-intersemestrales";
+    /** EST-7, paso 8a: el subrecurso de cursos. Las claves conservan las rutas antiguas. */
+    private static final String CURSOS = "/api/cursos-verano/cursos";
     private static final Path REFERENCIAS = Path.of("src/test/resources/referencias/verano-endpoints");
     private static final ObjectMapper JSON = new ObjectMapper();
     @Autowired MockMvc mvc;
@@ -112,9 +114,9 @@ class CursosVeranoEndpointsCaracterizacionTest {
                 {"sin-salon", null, "encontrado"}};
         for (String[] caso : casos) {
             datos.preparar(caso[1], caso[2]);
-            consultar(respuestas, caso[0] + "/todos", get(BASE + "/cursos-verano/todos"));
-            consultar(respuestas, caso[0] + "/detalle", get(BASE + "/cursos-verano/71"));
-            consultar(respuestas, caso[0] + "/editar", put(BASE + "/cursos-verano/71")
+            consultar(respuestas, caso[0] + "/todos", get(CURSOS));
+            consultar(respuestas, caso[0] + "/detalle", get(CURSOS + "/71"));
+            consultar(respuestas, caso[0] + "/editar", put(CURSOS + "/71")
                     .contentType(MediaType.APPLICATION_JSON).content("{\"cupo_estimado\":20}"));
         }
         // BUG-14: detalle y edición recortan el número y buscan entre activos, como el listado
@@ -127,7 +129,7 @@ class CursosVeranoEndpointsCaracterizacionTest {
         String[] periodos = {null, "", "   ", "todos", "2025-1", " 2025-2 ",
                 "2025 - Primer Semestre", "Segundo Período 2025", "primer semestre 1999", "2025-3", "sin año"};
         for (int i = 0; i < periodos.length; i++) {
-            var peticion = get(BASE + "/cursos-verano/todos");
+            var peticion = get(CURSOS);
             if (periodos[i] != null) peticion.param("periodoAcademico", periodos[i]);
             consultar(respuestas, "caso-" + i, peticion);
         }
@@ -189,7 +191,7 @@ class CursosVeranoEndpointsCaracterizacionTest {
         when(datos.solicitudes.buscarPreinscripcionesPorCurso(71)).thenReturn(List.of(pre));
         when(datos.solicitudes.listarSolicitudesDeVerano(null)).thenReturn(List.of(pre));
         ObjectNode respuestas = JSON.createObjectNode();
-        consultar(respuestas, "estudiantes", get(BASE + "/cursos-verano/71/estudiantes"));
+        consultar(respuestas, "estudiantes", get(CURSOS + "/71/estudiantes"));
         for (boolean vacio : new boolean[]{false, true}) {
             if (vacio) {
                 when(datos.cursos.listarTodos()).thenReturn(List.of());
@@ -199,7 +201,13 @@ class CursosVeranoEndpointsCaracterizacionTest {
             }
             for (String periodo : List.of("todos", "2025-2", "2025 - Primer Semestre")) {
                 for (String ruta : List.of("/cursos-verano/todos/export/pdf", "/cursos-verano/71/estudiantes/export/pdf", "/solicitudes/export/excel")) {
-                    var respuesta = mvc.perform(get(BASE + ruta).param("periodoAcademico", periodo))
+                    // EST-7, paso 8a: la clave conserva la ruta antigua y se pide la nueva
+                    String pedida = switch (ruta) {
+                        case "/cursos-verano/todos/export/pdf" -> CURSOS + "?formato=pdf";
+                        case "/cursos-verano/71/estudiantes/export/pdf" -> CURSOS + "/71/estudiantes?formato=pdf";
+                        default -> BASE + ruta;
+                    };
+                    var respuesta = mvc.perform(get(pedida).param("periodoAcademico", periodo))
                             .andReturn().getResponse();
                     assertThat(respuesta.getStatus()).isEqualTo(200);
                     ObjectNode valor = respuestas.putObject(vacio + periodo + ruta);

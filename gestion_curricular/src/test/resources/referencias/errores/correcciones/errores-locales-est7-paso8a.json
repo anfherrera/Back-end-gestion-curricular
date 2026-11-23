@@ -1,0 +1,90 @@
+{
+  "validarPago ok": {
+    "status": 404,
+    "body": {
+      "codigoError": "GC-0404",
+      "mensaje": "El recurso solicitado no existe",
+      "codigoHttp": 404,
+      "url": "http://localhost/api/cursos-verano/inscripciones/7/validar-pago",
+      "metodo": "PUT"
+    },
+    "llamadas": []
+  },
+  "validarPago cupo": {
+    "status": 404,
+    "body": {
+      "codigoError": "GC-0404",
+      "mensaje": "El recurso solicitado no existe",
+      "codigoHttp": 404,
+      "url": "http://localhost/api/cursos-verano/inscripciones/7/validar-pago",
+      "metodo": "PUT"
+    },
+    "llamadas": []
+  },
+  "validarPago regla": {
+    "status": 404,
+    "body": {
+      "codigoError": "GC-0404",
+      "mensaje": "El recurso solicitado no existe",
+      "codigoHttp": 404,
+      "url": "http://localhost/api/cursos-verano/inscripciones/7/validar-pago",
+      "metodo": "PUT"
+    },
+    "llamadas": []
+  },
+  "validarPago noExiste": {
+    "status": 404,
+    "body": {
+      "codigoError": "GC-0404",
+      "mensaje": "El recurso solicitado no existe",
+      "codigoHttp": 404,
+      "url": "http://localhost/api/cursos-verano/inscripciones/7/validar-pago",
+      "metodo": "PUT"
+    },
+    "llamadas": []
+  },
+  "validarPago yaExiste": {
+    "status": 404,
+    "body": {
+      "codigoError": "GC-0404",
+      "mensaje": "El recurso solicitado no existe",
+      "codigoHttp": 404,
+      "url": "http://localhost/api/cursos-verano/inscripciones/7/validar-pago",
+      "metodo": "PUT"
+    },
+    "llamadas": []
+  },
+  "validarPago argumento": {
+    "status": 404,
+    "body": {
+      "codigoError": "GC-0404",
+      "mensaje": "El recurso solicitado no existe",
+      "codigoHttp": 404,
+      "url": "http://localhost/api/cursos-verano/inscripciones/7/validar-pago",
+      "metodo": "PUT"
+    },
+    "llamadas": []
+  },
+  "validarPago runtime": {
+    "status": 404,
+    "body": {
+      "codigoError": "GC-0404",
+      "mensaje": "El recurso solicitado no existe",
+      "codigoHttp": 404,
+      "url": "http://localhost/api/cursos-verano/inscripciones/7/validar-pago",
+      "metodo": "PUT"
+    },
+    "llamadas": []
+  },
+  "validarPago npe": {
+    "status": 404,
+    "body": {
+      "codigoError": "GC-0404",
+      "mensaje": "El recurso solicitado no existe",
+      "codigoHttp": 404,
+      "url": "http://localhost/api/cursos-verano/inscripciones/7/validar-pago",
+      "metodo": "PUT"
+    },
+    "llamadas": []
+  }
+}

@@ -67,13 +67,13 @@ class NombresApiCaracterizacionTest {
                      "datosSolicitud":{"nombreEstudiante":"Ana Pérez"}}
                     """)));
         resultados.set("plantillas", respuesta(mvc, get("/api/documentos-generados/plantillas/reingreso")));
-        resultados.set("crear", respuesta(mvc, post("/api/cursos-intersemestrales/cursos-verano")
+        resultados.set("crear", respuesta(mvc, post("/api/cursos-verano/cursos")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content("""
                     {"id_materia":4,"id_docente":5,"cupo_estimado":19,
                      "fecha_inicio":"2025-07-01","fecha_fin":"2025-07-15","periodoAcademico":"2025-2"}
                     """)));
-        resultados.set("actualizar", respuesta(mvc, put("/api/cursos-intersemestrales/cursos-verano/71")
+        resultados.set("actualizar", respuesta(mvc, put("/api/cursos-verano/cursos/71")
                 .contentType(MediaType.APPLICATION_JSON).content("{\"cupo_estimado\":19}")));
         assertThat(resultados.path("documento").path("status").asInt()).isEqualTo(200);
         assertThat(resultados.path("actualizar").path("status").asInt()).isEqualTo(200);

@@ -175,7 +175,7 @@ class CursosVeranoAceptacionTest {
          *       AND cada curso debe incluir información relevante (materia, horario, docente, cupos)
          */
         
-        mockMvc.perform(get("/api/cursos-intersemestrales/cursos-verano")
+        mockMvc.perform(get("/api/cursos-verano/cursos?disponibles=true")
                         .header("Authorization", tokenEstudiante))
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON));
@@ -195,7 +195,7 @@ class CursosVeranoAceptacionTest {
          *       AND debe mostrar cupos disponibles y totales
          */
         
-        mockMvc.perform(get("/api/cursos-intersemestrales/cursos-verano/1")
+        mockMvc.perform(get("/api/cursos-verano/cursos/1")
                         .header("Authorization", tokenEstudiante))
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
@@ -253,26 +253,7 @@ class CursosVeranoAceptacionTest {
          *       AND debe excluir cursos de otros periodos
          */
         
-        mockMvc.perform(get("/api/cursos-intersemestrales/cursos-verano/periodo/2025-1")
-                        .header("Authorization", tokenCoordinador))
-                .andExpect(status().isOk())
-                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON));
-    }
-
-    @Test
-    @DisplayName("CA-GCV5-03.1: Como coordinador quiero filtrar cursos por materia para analizar demanda")
-    void testCoordinadorPuedeFiltrarPorMateria() throws Exception {
-        /*
-         * GIVEN: Un coordinador evaluando demanda histórica
-         *        AND existen múltiples cursos de diferentes materias
-         * 
-         * WHEN: El coordinador filtra cursos por una materia específica
-         * 
-         * THEN: El sistema debe retornar todos los cursos de esa materia
-         *       AND debe incluir cursos de diferentes periodos si aplica
-         */
-        
-        mockMvc.perform(get("/api/cursos-intersemestrales/cursos-verano/materia/1")
+        mockMvc.perform(get("/api/cursos-verano/cursos?periodoAcademico=2025-1")
                         .header("Authorization", tokenCoordinador))
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON));
@@ -350,7 +331,7 @@ class CursosVeranoAceptacionTest {
          *       AND NO debe retornar error genérico del servidor
          */
         
-        mockMvc.perform(get("/api/cursos-intersemestrales/cursos-verano/999")
+        mockMvc.perform(get("/api/cursos-verano/cursos/999")
                         .header("Authorization", tokenEstudiante))
                 .andExpect(status().isNotFound());
     }
@@ -371,7 +352,7 @@ class CursosVeranoAceptacionTest {
          *       AND la respuesta debe ser legible y bien estructurada
          */
         
-        mockMvc.perform(get("/api/cursos-intersemestrales/cursos-verano")
+        mockMvc.perform(get("/api/cursos-verano/cursos?disponibles=true")
                         .header("Authorization", tokenEstudiante))
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON));
@@ -397,12 +378,12 @@ class CursosVeranoAceptacionTest {
          */
         
         // Paso 1: Consultar cursos disponibles
-        mockMvc.perform(get("/api/cursos-intersemestrales/cursos-verano")
+        mockMvc.perform(get("/api/cursos-verano/cursos?disponibles=true")
                         .header("Authorization", tokenEstudiante))
                 .andExpect(status().isOk());
 
         // Paso 2: Ver detalles de curso específico
-        mockMvc.perform(get("/api/cursos-intersemestrales/cursos-verano/1")
+        mockMvc.perform(get("/api/cursos-verano/cursos/1")
                         .header("Authorization", tokenEstudiante))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.idCurso").value(1));

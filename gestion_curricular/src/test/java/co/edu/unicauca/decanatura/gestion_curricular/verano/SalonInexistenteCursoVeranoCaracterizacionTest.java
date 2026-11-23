@@ -40,7 +40,7 @@ import co.edu.unicauca.decanatura.gestion_curricular.soporte.Correcciones;
  * cuerpos de error se arman con {@code Map.of}, así que {@code claves} se ordena.
  */
 class SalonInexistenteCursoVeranoCaracterizacionTest {
-    private static final String BASE = "/api/cursos-intersemestrales/cursos-verano";
+    private static final String BASE = "/api/cursos-verano/cursos";
 
     private final ObjectMapper json = new ObjectMapper();
 

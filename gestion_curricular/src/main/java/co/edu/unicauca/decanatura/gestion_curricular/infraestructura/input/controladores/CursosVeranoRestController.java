@@ -52,10 +52,12 @@ import co.edu.unicauca.decanatura.gestion_curricular.seguridad.Autorizacion;
 
 /**
  * Cursos de verano: listados, creación, edición, eliminación, estudiantes del curso y exportación a PDF.
- * Ruta base compartida con los demás controladores de cursos de verano.
+ * Subrecurso {@code /cursos} del prefijo de cursos de verano (EST-7, paso 8a). Los listados comparten la raíz y se
+ * distinguen por condiciones {@code params}: sin filtros (todos, staff), {@code ?disponibles=true} (la oferta para
+ * estudiantes), {@code ?estado=preinscripcion|inscripcion} y {@code ?formato=pdf} (la exportación).
  */
 @RestController
-@RequestMapping("/api/cursos-intersemestrales")
+@RequestMapping("/api/cursos-verano/cursos")
 @RequiredArgsConstructor
 @Slf4j
 public class CursosVeranoRestController {
@@ -67,39 +69,24 @@ public class CursosVeranoRestController {
     private final GenerarReportesCursosVeranoCUIntPort generadorPdf;
 
     /**
-     * Obtener cursos de verano (endpoint principal que llama el frontend)
-     * GET /api/cursos-intersemestrales/cursos-verano
-     * 
-     * @param periodoAcademico Período académico opcional (formato: "YYYY-P", ej: "2025-2")
-     * @param idPrograma ID del programa académico opcional para filtrar cursos
-     */
-    @GetMapping("/cursos-verano")
-    public ResponseEntity<List<CursosOfertadosDTORespuesta>> obtenerCursosVerano(
-            @RequestParam(required = false) String periodoAcademico,
-            @RequestParam(required = false) Integer idPrograma) {
-        List<CursosOfertadosDTORespuesta> respuesta = cursoCU
-                .listarPorFiltros(PeriodoAcademicoEnum.oActual(periodoAcademico), idPrograma, false).stream()
-                .map(cursoMapper::mapearDeCursoOfertadoARespuestaDisponible)
-                .map(cursoMapper::postMapCurso)
-                .toList();
-
-        return ResponseEntity.ok(respuesta);
-    }
-
-    /**
      * Obtener cursos de verano disponibles para estudiantes (solo estados visibles)
-     * GET /api/cursos-intersemestrales/cursos-verano/disponibles
-     * 
-     * @param periodoAcademico Período académico opcional (formato: "YYYY-P", ej: "2025-2"). 
+     * GET /api/cursos-verano/cursos?disponibles=true
+     *
+     * @param periodoAcademico Período académico opcional (formato: "YYYY-P", ej: "2025-2").
      *                         Si se envía "todos" o no se proporciona y todosLosPeriodos=true, se muestran todos los cursos sin filtrar.
      * @param idPrograma ID del programa académico opcional para filtrar cursos
      * @param todosLosPeriodos Si es true, muestra todos los cursos sin filtrar por período (ignora periodoAcademico)
      */
-    @GetMapping("/cursos-verano/disponibles")
+    @GetMapping(params = "disponibles")
     public ResponseEntity<List<CursosOfertadosDTORespuesta>> obtenerCursosVeranoDisponibles(
+            @RequestParam String disponibles,
+            @RequestParam(required = false) String estado,
             @RequestParam(required = false) String periodoAcademico,
             @RequestParam(required = false) Integer idPrograma,
             @RequestParam(required = false, defaultValue = "false") Boolean todosLosPeriodos) {
+        if (!"true".equals(disponibles) || estado != null) {
+            throw new IllegalArgumentException("Filtro no válido: use disponibles=true, sin estado");
+        }
         boolean sinFiltroDePeriodo = Boolean.TRUE.equals(todosLosPeriodos)
                 || "todos".equalsIgnoreCase(periodoAcademico == null ? null : periodoAcademico.trim());
         String periodo = sinFiltroDePeriodo ? null : PeriodoAcademicoEnum.oActual(periodoAcademico);
@@ -113,14 +100,14 @@ public class CursosVeranoRestController {
     
     /**
      * Obtener todos los cursos de verano para funcionarios y coordinadores (incluye estados no visibles)
-     * GET /api/cursos-intersemestrales/cursos-verano/todos
-     * 
-     * @param periodoAcademico Período académico opcional (formato: "YYYY-P", ej: "2025-2"). 
+     * GET /api/cursos-verano/cursos
+     *
+     * @param periodoAcademico Período académico opcional (formato: "YYYY-P", ej: "2025-2").
      *                         Si no se proporciona, muestra TODOS los cursos sin filtrar por período.
      * @param idPrograma ID del programa académico opcional para filtrar cursos
      */
     @PreAuthorize("hasAnyRole(" + Autorizacion.ROLES_STAFF + ")")
-    @GetMapping("/cursos-verano/todos")
+    @GetMapping(params = {"!disponibles", "!estado"})
     public ResponseEntity<List<CursosOfertadosDTORespuesta>> obtenerTodosLosCursosVerano(
             @RequestParam(required = false) String periodoAcademico,
             @RequestParam(required = false) Integer idPrograma) {
@@ -149,94 +136,52 @@ public class CursosVeranoRestController {
     }
 
     /**
-     * Obtener cursos disponibles para preinscripcion (solo cursos en estado Preinscripcion)
-     * GET /api/cursos-intersemestrales/cursos/preinscripcion
-     * 
+     * Cursos en preinscripción o en inscripción (según el último estado del curso)
+     * GET /api/cursos-verano/cursos?estado=preinscripcion|inscripcion
+     *
      * @param periodoAcademico Período académico opcional. Si no se proporciona, muestra cursos de todos los períodos.
      */
-    @GetMapping("/cursos/preinscripcion")
-    public ResponseEntity<List<CursosOfertadosDTORespuesta>> obtenerCursosPreinscripcion(
+    @GetMapping(params = {"estado", "!disponibles"})
+    public ResponseEntity<List<CursosOfertadosDTORespuesta>> obtenerCursosPorEstado(
+            @RequestParam String estado,
             @RequestParam(required = false) String periodoAcademico) {
-        List<CursoOfertadoVerano> cursos = cursoCU.listarTodos();
-        
-        // Filtrar solo cursos en estado de preinscripcion
-        List<CursoOfertadoVerano> cursosPreinscripcion = cursos.stream()
+        String estadoCurso = switch (estado) {
+            case "preinscripcion" -> "Preinscripcion";
+            case "inscripcion" -> "Inscripcion";
+            default -> throw new IllegalArgumentException("Estado no válido: use preinscripcion o inscripcion");
+        };
+        List<CursoOfertadoVerano> cursos = cursoCU.listarTodos().stream()
                 .filter(curso -> {
                     if (curso.getEstadosCursoOfertados() == null || curso.getEstadosCursoOfertados().isEmpty()) {
                         return false;
                     }
                     String estadoActual = curso.getEstadosCursoOfertados().get(curso.getEstadosCursoOfertados().size() - 1).getEstadoActual();
-                    return "Preinscripcion".equals(estadoActual);
+                    return estadoCurso.equals(estadoActual);
                 })
                 .collect(Collectors.toList());
-        
-        
+
         // Filtrar por período académico si se proporciona
         if (periodoAcademico != null && !periodoAcademico.trim().isEmpty() && !periodoAcademico.trim().equalsIgnoreCase("todos")) {
             String periodoFiltro = periodoAcademico.trim();
-            cursosPreinscripcion = cursosPreinscripcion.stream()
-                    .filter(curso -> curso.getPeriodoAcademico() != null 
+            cursos = cursos.stream()
+                    .filter(curso -> curso.getPeriodoAcademico() != null
                             && curso.getPeriodoAcademico().equals(periodoFiltro))
                     .collect(Collectors.toList());
-        } else {
         }
-        
-        List<CursosOfertadosDTORespuesta> respuesta = cursosPreinscripcion.stream()
+
+        List<CursosOfertadosDTORespuesta> respuesta = cursos.stream()
                 .map(cursoMapper::mapearDeCursoOfertadoARespuesta)
                 .collect(Collectors.toList());
-        
+
         return ResponseEntity.ok(respuesta);
     }
-
-    
-    /**
-     * Obtener cursos disponibles para inscripcion (solo cursos en estado Inscripcion)
-     * GET /api/cursos-intersemestrales/cursos/inscripcion
-     * 
-     * @param periodoAcademico Período académico opcional. Si no se proporciona, muestra cursos de todos los períodos.
-     */
-    @GetMapping("/cursos/inscripcion")
-    public ResponseEntity<List<CursosOfertadosDTORespuesta>> obtenerCursosInscripcion(
-            @RequestParam(required = false) String periodoAcademico) {
-        List<CursoOfertadoVerano> cursos = cursoCU.listarTodos();
-        
-        // Filtrar solo cursos en estado de inscripcion
-        List<CursoOfertadoVerano> cursosInscripcion = cursos.stream()
-                .filter(curso -> {
-                    if (curso.getEstadosCursoOfertados() == null || curso.getEstadosCursoOfertados().isEmpty()) {
-                        return false;
-                    }
-                    String estadoActual = curso.getEstadosCursoOfertados().get(curso.getEstadosCursoOfertados().size() - 1).getEstadoActual();
-                    return "Inscripcion".equals(estadoActual);
-                })
-                .collect(Collectors.toList());
-        
-        
-        // Filtrar por período académico si se proporciona
-        if (periodoAcademico != null && !periodoAcademico.trim().isEmpty() && !periodoAcademico.trim().equalsIgnoreCase("todos")) {
-            String periodoFiltro = periodoAcademico.trim();
-            cursosInscripcion = cursosInscripcion.stream()
-                    .filter(curso -> curso.getPeriodoAcademico() != null 
-                            && curso.getPeriodoAcademico().equals(periodoFiltro))
-                    .collect(Collectors.toList());
-        } else {
-        }
-        
-        List<CursosOfertadosDTORespuesta> respuesta = cursosInscripcion.stream()
-                .map(cursoMapper::mapearDeCursoOfertadoARespuesta)
-                .collect(Collectors.toList());
-        
-        return ResponseEntity.ok(respuesta);
-    }
-
-    // ==================== ENDPOINTS FALTANTES PARA EL FRONTEND ====================
 
     /**
      * Crear nuevo curso de verano
-     * POST /api/cursos-intersemestrales/cursos-verano
+     * POST /api/cursos-verano/cursos
      */
     @PreAuthorize("hasAnyRole('Funcionario', 'Coordinador', 'Administrador')")
-    @PostMapping("/cursos-verano")
+    @PostMapping
     public ResponseEntity<?> crearCurso(@RequestBody CrearCursoDTOPeticion dto) {
         if (dto.getId_docente() != null && dto.getId_docente() <= 0) {
             return errorCurso("ID de docente inválido",
@@ -350,10 +295,10 @@ public class CursosVeranoRestController {
 
     /**
      * Actualizar curso de verano
-     * PUT /api/cursos-intersemestrales/cursos-verano/{id}
+     * PUT /api/cursos-verano/cursos/{id}
      */
     @PreAuthorize("hasAnyRole('Funcionario', 'Coordinador', 'Administrador')")
-    @PutMapping("/cursos-verano/{id}")
+    @PutMapping("/{id:\\d+}")
     public ResponseEntity<?> actualizarCurso(
             @PathVariable Long id,
             @RequestBody ActualizarCursoDTOPeticion dto) {
@@ -409,10 +354,10 @@ public class CursosVeranoRestController {
 
     /**
      * Eliminar curso de verano
-     * DELETE /api/cursos-intersemestrales/cursos-verano/{id}
+     * DELETE /api/cursos-verano/cursos/{id}
      */
     @PreAuthorize("hasAnyRole('Funcionario', 'Coordinador', 'Administrador')")
-    @DeleteMapping("/cursos-verano/{id}")
+    @DeleteMapping("/{id:\\d+}")
     public ResponseEntity<?> eliminarCurso(@PathVariable Long id) {
 
         // Verificar que el curso existe
@@ -442,9 +387,9 @@ public class CursosVeranoRestController {
 
     /**
      * Obtener curso de verano por ID (datos reales de la base de datos)
-     * GET /api/cursos-intersemestrales/cursos-verano/{id}
+     * GET /api/cursos-verano/cursos/{id}
      */
-    @GetMapping("/cursos-verano/{id}")
+    @GetMapping("/{id:\\d+}")
     public ResponseEntity<Detalle> getCursoPorId(@PathVariable Long id) {
         
         // Obtener curso real de la base de datos - lanza EntidadNoExisteException si no existe
@@ -483,45 +428,14 @@ public class CursosVeranoRestController {
     }
 
     /**
-     * Filtrar cursos por periodo academico
-     * GET /api/cursos-intersemestrales/cursos-verano/periodo/{periodo}
-     */
-    @GetMapping("/cursos-verano/periodo/{periodo}")
-    public ResponseEntity<List<CursosOfertadosDTORespuesta>> filtrarCursosPorPeriodo(@PathVariable String periodo) {
-        List<CursoOfertadoVerano> cursos = cursoCU.listarTodos();
-        List<CursosOfertadosDTORespuesta> respuesta = cursos.stream()
-                .map(cursoMapper::mapearDeCursoOfertadoARespuestaDisponible)
-                .map(cursoMapper::postMapCurso) // Asignar idCurso
-                .collect(Collectors.toList());
-        return ResponseEntity.ok(respuesta);
-    }
-
-    /**
-     * Filtrar cursos por materia
-     * GET /api/cursos-intersemestrales/cursos-verano/materia/{idMateria}
-     */
-    @GetMapping("/cursos-verano/materia/{idMateria}")
-    public ResponseEntity<List<CursosOfertadosDTORespuesta>> filtrarCursosPorMateria(@PathVariable Integer idMateria) {
-        List<CursoOfertadoVerano> cursos = cursoCU.listarTodos();
-        // Filtrar cursos por materia
-        List<CursosOfertadosDTORespuesta> respuesta = cursos.stream()
-                .filter(curso -> curso.getObjMateria() != null && 
-                               curso.getObjMateria().getIdMateria().equals(idMateria))
-                .map(cursoMapper::mapearDeCursoOfertadoARespuestaDisponible)
-                .map(cursoMapper::postMapCurso) // Asignar idCurso
-                .collect(Collectors.toList());
-        return ResponseEntity.ok(respuesta);
-    }
-
-    /**
      * Obtener lista de estudiantes preinscritos e inscritos en un curso (para funcionarios)
-     * GET /api/cursos-intersemestrales/cursos-verano/{idCurso}/estudiantes
+     * GET /api/cursos-verano/cursos/{idCurso}/estudiantes
      * 
      * Este endpoint permite a los funcionarios ver todos los estudiantes que están
      * preinscritos o inscritos en un curso específico, incluyendo información sobre
      * su estado y tipo de solicitud.
      */
-    @GetMapping("/cursos-verano/{idCurso}/estudiantes")
+    @GetMapping("/{idCurso:\\d+}/estudiantes")
     @PreAuthorize("hasAnyRole('Funcionario', 'Coordinador', 'Administrador')")
     public ResponseEntity<EstudiantesCursoVeranoDTORespuesta> obtenerEstudiantesDelCurso(@PathVariable Integer idCurso) {
         return ResponseEntity.ofNullable(datosEstudiantesDelCurso(idCurso));
@@ -540,13 +454,13 @@ public class CursosVeranoRestController {
 
     /**
      * Exportar cursos filtrados a PDF
-     * GET /api/cursos-intersemestrales/cursos-verano/todos/export/pdf
-     * 
+     * GET /api/cursos-verano/cursos?formato=pdf (cualquier otro formato da el listado en JSON)
+     *
      * @param periodoAcademico Período académico opcional para filtrar
      * @param idPrograma ID del programa opcional para filtrar
      * @return Archivo PDF con los cursos filtrados
      */
-    @GetMapping("/cursos-verano/todos/export/pdf")
+    @GetMapping(params = {"formato=pdf", "!disponibles", "!estado"})
     @PreAuthorize("hasAnyRole('Funcionario', 'Coordinador', 'Administrador')")
     public ResponseEntity<byte[]> exportarCursosPDF(
             @RequestParam(required = false) String periodoAcademico,
@@ -568,12 +482,12 @@ public class CursosVeranoRestController {
 
     /**
      * Exportar estudiantes del curso a PDF
-     * GET /api/cursos-intersemestrales/cursos-verano/{idCurso}/estudiantes/export/pdf
-     * 
+     * GET /api/cursos-verano/cursos/{idCurso}/estudiantes?formato=pdf
+     *
      * @param idCurso ID del curso
      * @return Archivo PDF con la lista de estudiantes
      */
-    @GetMapping("/cursos-verano/{idCurso}/estudiantes/export/pdf")
+    @GetMapping(value = "/{idCurso:\\d+}/estudiantes", params = "formato=pdf")
     @PreAuthorize("hasAnyRole('Funcionario', 'Coordinador', 'Administrador')")
     public ResponseEntity<byte[]> exportarEstudiantesCursoPDF(
             @PathVariable Integer idCurso) {

@@ -116,13 +116,23 @@ class AutorizacionPorRolTest {
     }
 
     @Test
-    @DisplayName("Estudiante no puede validar pagos ni aprobar preinscripciones, pero sí ver cursos disponibles")
+    @DisplayName("Estudiante no puede validar pagos, aprobar preinscripciones ni gestionar cursos, pero sí ver la oferta")
     void estudianteNoGestionaCursosDeVerano() throws Exception {
-        mockMvc.perform(put("/api/cursos-verano/inscripciones/1/validar-pago").header("Authorization", tokenA))
+        // EST-7, paso 8a: /api/cursos-verano ya no tiene una regla de staff en SeguridadConfig; cada ruta lleva
+        // su @PreAuthorize. Si la regla vuelve, el estudiante deja de ver la oferta y la última comprobación falla.
+        mockMvc.perform(put("/api/cursos-intersemestrales/inscripciones/1/aceptar").header("Authorization", tokenA)
+                        .contentType(MediaType.APPLICATION_JSON).content("{}"))
                 .andExpect(status().isForbidden());
-        mockMvc.perform(put("/api/cursos-verano/preinscripciones/1/aprobar").header("Authorization", tokenA))
+        mockMvc.perform(put("/api/cursos-intersemestrales/preinscripciones/1/aprobar").header("Authorization", tokenA))
                 .andExpect(status().isForbidden());
-        mockMvc.perform(get("/api/cursos-verano/disponibles").header("Authorization", tokenA))
+        mockMvc.perform(get("/api/cursos-verano/cursos").header("Authorization", tokenA))
+                .andExpect(status().isForbidden());
+        mockMvc.perform(post("/api/cursos-verano/cursos").header("Authorization", tokenA)
+                        .contentType(MediaType.APPLICATION_JSON).content("{}"))
+                .andExpect(status().isForbidden());
+        mockMvc.perform(delete("/api/cursos-verano/cursos/1").header("Authorization", tokenA))
+                .andExpect(status().isForbidden());
+        mockMvc.perform(get("/api/cursos-verano/cursos?disponibles=true").header("Authorization", tokenA))
                 .andExpect(status().isOk());
     }
 

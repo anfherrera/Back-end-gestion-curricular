@@ -88,15 +88,8 @@ public class SeguridadConfig {
                 .requestMatchers(HttpMethod.POST, CATALOGOS).hasRole("Administrador")
                 .requestMatchers(HttpMethod.PUT, CATALOGOS).hasRole("Administrador")
                 .requestMatchers(HttpMethod.DELETE, CATALOGOS).hasRole("Administrador")
-                // Cursos ofertados (/api/cursos-verano): estudiantes solo consultan la oferta;
-                // gestionar cursos, preinscripciones, inscripciones y pagos es del staff
-                .requestMatchers(HttpMethod.GET,
-                    "/api/cursos-verano/listarCursos",
-                    "/api/cursos-verano/disponibles",
-                    "/api/cursos-verano/todos",
-                    "/api/cursos-verano/buscarCursoPorId/*").authenticated()
-                .requestMatchers("/api/cursos-verano/**")
-                    .hasAnyRole("Administrador", "Funcionario", "Coordinador", "Secretario", "Decano")
+                // Cursos de verano (/api/cursos-verano): cada ruta lleva su @PreAuthorize; los estudiantes
+                // consultan la oferta y gestionan sus preinscripciones e inscripciones (EST-7, paso 8)
                 // Generación de documentos desde plantillas: solo staff
                 .requestMatchers("/api/documentos-generados", "/api/documentos-generados/**")
                     .hasAnyRole("Administrador", "Funcionario", "Coordinador", "Secretario", "Decano")

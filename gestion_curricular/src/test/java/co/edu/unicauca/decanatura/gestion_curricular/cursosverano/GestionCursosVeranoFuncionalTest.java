@@ -189,7 +189,7 @@ class GestionCursosVeranoFuncionalTest {
          */
         
         // Paso 1: Consultar cursos ofertados
-        mockMvc.perform(get("/api/cursos-intersemestrales/cursos-verano")
+        mockMvc.perform(get("/api/cursos-verano/cursos")
                         .header("Authorization", tokenCoordinador))
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON));
@@ -208,7 +208,7 @@ class GestionCursosVeranoFuncionalTest {
          * RESULTADO ESPERADO: Información detallada del curso
          */
         
-        mockMvc.perform(get("/api/cursos-intersemestrales/cursos-verano/1")
+        mockMvc.perform(get("/api/cursos-verano/cursos/1")
                         .header("Authorization", tokenCoordinador))
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
@@ -232,7 +232,7 @@ class GestionCursosVeranoFuncionalTest {
          */
         
         // Paso 1: Consultar cursos disponibles
-        mockMvc.perform(get("/api/cursos-intersemestrales/cursos-verano")
+        mockMvc.perform(get("/api/cursos-verano/cursos?disponibles=true")
                         .header("Authorization", tokenEstudiante))
                 .andExpect(status().isOk());
 
@@ -317,30 +317,13 @@ class GestionCursosVeranoFuncionalTest {
          * RESULTADO ESPERADO: Lista filtrada de cursos
          */
         
-        mockMvc.perform(get("/api/cursos-intersemestrales/cursos-verano/periodo/2025-1")
+        mockMvc.perform(get("/api/cursos-verano/cursos?periodoAcademico=2025-1")
                         .header("Authorization", tokenCoordinador))
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON));
     }
 
-    @Test
-    @DisplayName("Funcional 7: Flujo de filtrado - Buscar cursos por materia")
-    void testFlujoFiltroCursosPorMateria() throws Exception {
-        /*
-         * FLUJO DE NEGOCIO:
-         * 1. Estudiante busca curso de una materia específica que debe aprobar
-         * 2. Sistema filtra cursos por código de materia
-         * 3. Estudiante ve todas las ofertas disponibles de esa materia
-         * 
-         * ACTORES: Estudiante
-         * RESULTADO ESPERADO: Cursos de la materia solicitada
-         */
-        
-        mockMvc.perform(get("/api/cursos-intersemestrales/cursos-verano/materia/1")
-                        .header("Authorization", tokenEstudiante))
-                .andExpect(status().isOk())
-                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON));
-    }
+    // Funcional 7 (filtrar cursos por materia) se quitó en EST-7, paso 8a: la ruta se retira sin equivalente.
 
     // ==================== FLUJO 5: MANEJO DE CASOS EXCEPCIONALES ====================
 
@@ -357,7 +340,7 @@ class GestionCursosVeranoFuncionalTest {
          * RESULTADO ESPERADO: Error 404 Not Found
          */
         
-        mockMvc.perform(get("/api/cursos-intersemestrales/cursos-verano/999")
+        mockMvc.perform(get("/api/cursos-verano/cursos/999")
                         .header("Authorization", tokenSecretaria))
                 .andExpect(status().isNotFound());
     }
@@ -380,12 +363,12 @@ class GestionCursosVeranoFuncionalTest {
          */
         
         // Paso 1: Consultar cursos ofertados (como coordinador)
-        mockMvc.perform(get("/api/cursos-intersemestrales/cursos-verano")
+        mockMvc.perform(get("/api/cursos-verano/cursos")
                         .header("Authorization", tokenCoordinador))
                 .andExpect(status().isOk());
 
         // Paso 2: Buscar curso específico (como estudiante)
-        mockMvc.perform(get("/api/cursos-intersemestrales/cursos-verano/1")
+        mockMvc.perform(get("/api/cursos-verano/cursos/1")
                         .header("Authorization", tokenEstudiante))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.idCurso").value(1));
@@ -427,23 +410,19 @@ class GestionCursosVeranoFuncionalTest {
          */
         
         // Paso 1: Ver todos los cursos
-        mockMvc.perform(get("/api/cursos-intersemestrales/cursos-verano")
+        mockMvc.perform(get("/api/cursos-verano/cursos?disponibles=true")
                         .header("Authorization", tokenEstudiante))
                 .andExpect(status().isOk());
 
         // Paso 2: Filtrar por periodo
-        mockMvc.perform(get("/api/cursos-intersemestrales/cursos-verano/periodo/2025-1")
+        mockMvc.perform(get("/api/cursos-verano/cursos?disponibles=true&periodoAcademico=2025-1")
                         .header("Authorization", tokenEstudiante))
                 .andExpect(status().isOk());
-
-        // Paso 3: Buscar materia específica
-        mockMvc.perform(get("/api/cursos-intersemestrales/cursos-verano/materia/1")
-                        .header("Authorization", tokenEstudiante))
-                .andExpect(status().isOk());
+        // El paso 3 (buscar por materia) se quitó en EST-7, paso 8a: la ruta se retira sin equivalente.
     }
     @Test
     void crearCursoRechazaFechasInvertidas() throws Exception {
-        mockMvc.perform(post("/api/cursos-intersemestrales/cursos-verano")
+        mockMvc.perform(post("/api/cursos-verano/cursos")
                         .header("Authorization", tokenCoordinador)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(peticionCrearCurso("2025-07-01")))
@@ -463,7 +442,7 @@ class GestionCursosVeranoFuncionalTest {
         peticion.put("id_docente", 901);
         peticion.put("id_salon", 901);
 
-        mockMvc.perform(post("/api/cursos-intersemestrales/cursos-verano")
+        mockMvc.perform(post("/api/cursos-verano/cursos")
                         .header("Authorization", tokenCoordinador)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(peticion)))
@@ -479,7 +458,7 @@ class GestionCursosVeranoFuncionalTest {
 
     @Test
     void crearCursoConservaCodigoDeCursoDuplicado() throws Exception {
-        mockMvc.perform(post("/api/cursos-intersemestrales/cursos-verano")
+        mockMvc.perform(post("/api/cursos-verano/cursos")
                         .header("Authorization", tokenCoordinador)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(peticionCrearCurso("2025-08-01")))
@@ -505,7 +484,7 @@ class GestionCursosVeranoFuncionalTest {
 
     @Test
     void listarEstudiantesDeCursoVacio() throws Exception {
-        mockMvc.perform(get("/api/cursos-intersemestrales/cursos-verano/2/estudiantes")
+        mockMvc.perform(get("/api/cursos-verano/cursos/2/estudiantes")
                         .header("Authorization", tokenCoordinador))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.total_estudiantes").value(0))
@@ -531,7 +510,7 @@ class GestionCursosVeranoFuncionalTest {
                 VALUES (902, '2025-07-03 08:00:00', 'Pago_Validado')
                 """);
 
-        mockMvc.perform(get("/api/cursos-intersemestrales/cursos-verano/901/estudiantes")
+        mockMvc.perform(get("/api/cursos-verano/cursos/901/estudiantes")
                         .header("Authorization", tokenCoordinador))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.total_estudiantes").value(3))
@@ -571,7 +550,7 @@ class GestionCursosVeranoFuncionalTest {
         assertThat(fila.path("archivoPago").path("nombre").asText()).isEqualTo("Sin comprobante");
         assertThat(fila.path("archivoPago").path("url").isNull()).isTrue();
 
-        byte[] pdf = mockMvc.perform(get("/api/cursos-intersemestrales/cursos-verano/901/estudiantes/export/pdf")
+        byte[] pdf = mockMvc.perform(get("/api/cursos-verano/cursos/901/estudiantes?formato=pdf")
                         .header("Authorization", tokenCoordinador))
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_PDF))
