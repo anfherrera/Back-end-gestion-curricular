@@ -15,22 +15,20 @@ import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarM
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarSalonesCUIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Docente;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Materia;
-import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.PermisosCursoVerano;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Salon;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.enums.CondicionSolicitudVerano;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.dto.respuesta.CatalogosVeranoDTORespuesta.DocenteCatalogo;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.dto.respuesta.CatalogosVeranoDTORespuesta.MateriaCatalogo;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.dto.respuesta.CatalogosVeranoDTORespuesta.MateriaDisponible;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.dto.respuesta.CatalogosVeranoDTORespuesta.MateriaFiltro;
-import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.dto.respuesta.CatalogosVeranoDTORespuesta.Permisos;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.dto.respuesta.CursosVeranoDTORespuesta.SalonInfo;
 
 /**
- * Catálogos para los formularios de cursos de verano: materias, docentes, salones, condiciones y permisos por estado.
- * Ruta base compartida con los demás controladores de cursos de verano.
+ * Catálogos para los formularios de cursos de verano: materias, docentes, salones y condiciones.
+ * Rutas /api/cursos-verano/catalogos/… (EST-7, paso 8c).
  */
 @RestController
-@RequestMapping("/api/cursos-intersemestrales")
+@RequestMapping("/api/cursos-verano/catalogos")
 @RequiredArgsConstructor
 @Slf4j
 public class CatalogosCursosVeranoRestController {
@@ -41,7 +39,7 @@ public class CatalogosCursosVeranoRestController {
 
     /**
      * Obtener todas las materias disponibles para solicitud de cursos intersemestrales
-     * GET /api/cursos-intersemestrales/materias-disponibles
+     * GET /api/cursos-verano/catalogos/materias-disponibles
      */
     @GetMapping("/materias-disponibles")
     public ResponseEntity<List<MateriaDisponible>> obtenerMateriasDisponibles() {
@@ -62,9 +60,9 @@ public class CatalogosCursosVeranoRestController {
 
     /**
      * Obtener condiciones de solicitud disponibles
-     * GET /api/cursos-intersemestrales/condiciones-solicitud
+     * GET /api/cursos-verano/catalogos/condiciones (antes /condiciones-solicitud)
      */
-    @GetMapping("/condiciones-solicitud")
+    @GetMapping("/condiciones")
     public ResponseEntity<String[]> obtenerCondicionesSolicitud() {
         CondicionSolicitudVerano[] condiciones = CondicionSolicitudVerano.values();
         String[] condicionesString = new String[condiciones.length];
@@ -74,26 +72,11 @@ public class CatalogosCursosVeranoRestController {
         return ResponseEntity.ok(condicionesString);
     }
 
-    
-    
-    /**
-     * Operaciones que un rol puede hacer sobre un curso en un estado.
-     * GET /api/cursos-intersemestrales/permisos-estado/{estado}/{rol}
-     */
-    @GetMapping("/permisos-estado/{estado}/{rol}")
-    public ResponseEntity<Permisos> obtenerPermisosPorEstado(
-            @PathVariable String estado,
-            @PathVariable String rol) {
-        PermisosCursoVerano.Consulta permisos = PermisosCursoVerano.consultar(estado, rol);
-        return ResponseEntity.ok(new Permisos(permisos.permitido(), permisos.error(), permisos.message(),
-                permisos.operaciones()));
-    }
-
     // ==================== ENDPOINTS PARA MATERIAS Y DOCENTES ====================
 
     /**
      * Obtener todas las materias (endpoint actualizado para usar datos reales)
-     * GET /api/cursos-intersemestrales/materias
+     * GET /api/cursos-verano/catalogos/materias
      */
     @GetMapping("/materias")
     public ResponseEntity<List<MateriaCatalogo>> getTodasLasMaterias() {
@@ -113,7 +96,7 @@ public class CatalogosCursosVeranoRestController {
 
     /**
      * Obtener materias para el filtro de solicitudes (formato simplificado)
-     * GET /api/cursos-intersemestrales/materias-filtro
+     * GET /api/cursos-verano/catalogos/materias-filtro
      */
     @GetMapping("/materias-filtro")
     public ResponseEntity<List<MateriaFiltro>> obtenerMateriasParaFiltro() {
@@ -149,7 +132,7 @@ public class CatalogosCursosVeranoRestController {
 
     /**
      * Obtener todos los salones disponibles
-     * GET /api/cursos-intersemestrales/salones
+     * GET /api/cursos-verano/catalogos/salones
      * 
      * @return Lista de salones activos disponibles para asignar a cursos
      */
@@ -186,7 +169,7 @@ public class CatalogosCursosVeranoRestController {
 
     /**
      * Obtener todos los docentes
-     * GET /api/cursos-intersemestrales/docentes
+     * GET /api/cursos-verano/catalogos/docentes
      */
     @GetMapping("/docentes")
     public ResponseEntity<List<DocenteCatalogo>> getTodosLosDocentes() {

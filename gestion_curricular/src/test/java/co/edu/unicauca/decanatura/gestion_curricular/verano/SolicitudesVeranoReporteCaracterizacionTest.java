@@ -46,7 +46,7 @@ import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.excep
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.formateador.GeneradorExcelSolicitudesVerano;
 
 /**
- * Fija el JSON de {@code /api/cursos-intersemestrales/solicitudes} y el contenido del Excel que comparte su
+ * Fija el JSON de {@code /api/cursos-verano/reportes/solicitudes} y el contenido del Excel que comparte su
  * formato ({@code ReporteSolicitudesVeranoMapper}) antes de tiparlos (ARQ-10). El Excel se genera en UTC para
  * que las fechas no dependan de la zona de la máquina; la fecha de generación y el período actual se comprueban
  * y se sustituyen por marcadores.
@@ -65,7 +65,7 @@ class SolicitudesVeranoReporteCaracterizacionTest {
             .setControllerAdvice(new RestApiExceptionHandler()).build();
         ObjectNode resultados = json.createObjectNode();
 
-        String ruta = "/api/cursos-intersemestrales/solicitudes";
+        String ruta = "/api/cursos-verano/reportes/solicitudes";
         registrar(resultados, "todas", mvc, get(ruta));
         registrar(resultados, "materia 101", mvc, get(ruta).param("idMateria", "101"));
         registrar(resultados, "materia 0", mvc, get(ruta).param("idMateria", "0"));

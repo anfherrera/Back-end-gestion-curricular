@@ -36,7 +36,7 @@ import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.excep
 import co.edu.unicauca.decanatura.gestion_curricular.soporte.Correcciones;
 
 /**
- * Fija {@code /api/cursos-intersemestrales/dashboard/estadisticas} y {@code /seguimiento/{idUsuario}} antes de
+ * Fija {@code /api/cursos-verano/reportes/dashboard} y {@code /seguimiento?usuario=} antes de
  * tiparlos (ARQ-10). {@code claves} lista cada clave con su ruta y tipo JSON en orden de escritura.
  */
 class SeguimientoDashboardVeranoCaracterizacionTest {
@@ -60,7 +60,7 @@ class SeguimientoDashboardVeranoCaracterizacionTest {
         ObjectNode resultados = json.createObjectNode();
         when(cursos.listarTodos()).thenReturn(new ArrayList<>());
         when(solicitudes.listarSolicitudesParaReporte(any(), any(), any(), any(), any())).thenReturn(new ArrayList<>());
-        registrar(resultados, "dashboard sin datos", mvc, "/api/cursos-intersemestrales/dashboard/estadisticas");
+        registrar(resultados, "dashboard sin datos", mvc, "/api/cursos-verano/reportes/dashboard");
 
         when(cursos.listarTodos()).thenReturn(List.of(curso(1, "Publicado"), curso(2, "Preinscripcion"),
             curso(3, "Inscripcion"), curso(4, "Cerrado"), curso(5, null), curso(6, "Borrador")));
@@ -70,10 +70,10 @@ class SeguimientoDashboardVeranoCaracterizacionTest {
         reporte.add(new SolicitudCursoVeranoInscripcion());
         reporte.add(new SolicitudEcaes());
         when(solicitudes.listarSolicitudesParaReporte(any(), any(), any(), any(), any())).thenReturn(reporte);
-        registrar(resultados, "dashboard con datos", mvc, "/api/cursos-intersemestrales/dashboard/estadisticas");
+        registrar(resultados, "dashboard con datos", mvc, "/api/cursos-verano/reportes/dashboard");
 
         for (int id : new int[] {COMPLETO, VACIO, CURSO_SIN_MATERIA, FALLA}) {
-            registrar(resultados, "seguimiento " + id, mvc, "/api/cursos-intersemestrales/seguimiento/" + id);
+            registrar(resultados, "seguimiento " + id, mvc, "/api/cursos-verano/reportes/seguimiento?usuario=" + id);
         }
 
         Path referencia = Path.of("src/test/resources/referencias/verano-endpoints/seguimiento-dashboard.json");

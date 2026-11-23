@@ -33,7 +33,9 @@ import co.edu.unicauca.decanatura.gestion_curricular.soporte.Correcciones;
  * docentes y permisos por estado. {@code claves} lista cada clave con su ruta y tipo JSON en orden de escritura.
  */
 class CatalogosVeranoRespuestasCaracterizacionTest {
-    private static final String BASE = "/api/cursos-intersemestrales";
+    /** EST-7 (paso 8c): los catálogos se piden en la ruta nueva; los permisos, retirados, en la antigua. */
+    private static final String BASE = "/api/cursos-verano/catalogos";
+    private static final String VIEJA = "/api/cursos-intersemestrales";
 
     private final ObjectMapper json = new ObjectMapper();
 
@@ -84,7 +86,7 @@ class CatalogosVeranoRespuestasCaracterizacionTest {
             {"Publicado", "ADMIN"}, {"Desconocido", "FUNCIONARIO"}, {"Inscripcion", "COORDINADOR"}};
         for (String[] permiso : permisos) {
             registrar(resultados, "permisos " + permiso[0] + " " + permiso[1], mvc,
-                BASE + "/permisos-estado/" + permiso[0] + "/" + permiso[1]);
+                VIEJA + "/permisos-estado/" + permiso[0] + "/" + permiso[1]);
         }
 
         Path referencia = Path.of("src/test/resources/referencias/verano-endpoints/catalogos-respuestas.json");
@@ -92,8 +94,11 @@ class CatalogosVeranoRespuestasCaracterizacionTest {
             Files.writeString(referencia, json.writerWithDefaultPrettyPrinter().writeValueAsString(resultados));
         }
         // BUG-15: la consulta de permisos devuelve las operaciones del rol
-        assertThat(resultados).isEqualTo(Correcciones.aplicar(json.readTree(Files.readString(referencia)),
-            "verano-endpoints/correcciones/catalogos-respuestas-bug15.json"));
+        var esperado = Correcciones.aplicar(json.readTree(Files.readString(referencia)),
+            "verano-endpoints/correcciones/catalogos-respuestas-bug15.json");
+        // EST-7 (paso 8c): la url de los errores cambia y los permisos por estado se retiran (404)
+        esperado = Correcciones.aplicar(esperado, "verano-endpoints/correcciones/catalogos-respuestas-est7.json");
+        assertThat(resultados).isEqualTo(esperado);
     }
 
     private void registrar(ObjectNode resultados, String nombre, MockMvc mvc, String ruta) throws Exception {

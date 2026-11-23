@@ -34,10 +34,10 @@ import co.edu.unicauca.decanatura.gestion_curricular.seguridad.Autorizacion;
 
 /**
  * Reportes de cursos de verano: listado y exportación de solicitudes, dashboard y seguimiento del estudiante.
- * Ruta base compartida con los demás controladores de cursos de verano.
+ * Rutas /api/cursos-verano/reportes/… (EST-7, paso 8c).
  */
 @RestController
-@RequestMapping("/api/cursos-intersemestrales")
+@RequestMapping("/api/cursos-verano/reportes")
 @RequiredArgsConstructor
 @Slf4j
 public class ReportesCursosVeranoRestController {
@@ -48,8 +48,8 @@ public class ReportesCursosVeranoRestController {
 
     /**
      * Obtener todas las solicitudes de cursos intersemestrales para funcionarios y coordinadores
-     * GET /api/cursos-intersemestrales/solicitudes
-     * 
+     * GET /api/cursos-verano/reportes/solicitudes (cualquier formato distinto de excel da este JSON)
+     *
      * @param idMateria Filtro por ID de materia (opcional)
      * @param periodoAcademico Filtro por período académico (opcional, formato: "YYYY-P", ej: "2025-2")
      * @param idCurso Filtro por ID de curso (opcional)
@@ -74,8 +74,8 @@ public class ReportesCursosVeranoRestController {
 
     /**
      * Exportar solicitudes de cursos intersemestrales a Excel con filtros opcionales
-     * GET /api/cursos-intersemestrales/solicitudes/export/excel
-     * 
+     * GET /api/cursos-verano/reportes/solicitudes?formato=excel (antes /solicitudes/export/excel)
+     *
      * @param idCurso Filtro por ID de curso (opcional)
      * @param estado Filtro por estado de solicitud (opcional)
      * @param periodoAcademico Filtro por período académico (opcional, formato: "YYYY-P", ej: "2025-2")
@@ -83,7 +83,7 @@ public class ReportesCursosVeranoRestController {
      * @param fechaFin Filtro por fecha de fin (opcional)
      * @return Archivo Excel con las solicitudes filtradas
      */
-    @GetMapping("/solicitudes/export/excel")
+    @GetMapping(value = "/solicitudes", params = "formato=excel")
     @PreAuthorize("hasAnyRole('Funcionario', 'Coordinador', 'Administrador')")
     public ResponseEntity<byte[]> exportarSolicitudesExcel(
             @RequestParam(value = "idCurso", required = false) Integer idCurso,
@@ -121,10 +121,10 @@ public class ReportesCursosVeranoRestController {
 
     /**
      * Obtener estadisticas del dashboard de cursos intersemestrales
-     * GET /api/cursos-intersemestrales/dashboard/estadisticas
+     * GET /api/cursos-verano/reportes/dashboard (antes /dashboard/estadisticas)
      */
     @PreAuthorize("hasAnyRole(" + Autorizacion.ROLES_STAFF + ")")
-    @GetMapping("/dashboard/estadisticas")
+    @GetMapping("/dashboard")
     public ResponseEntity<Dashboard> obtenerEstadisticasDashboard() {
 
         // 1. Contar cursos activos (estados: Publicado, Preinscripcion, Inscripcion)
@@ -182,11 +182,11 @@ public class ReportesCursosVeranoRestController {
 
     /**
      * Obtener seguimiento completo de actividades del usuario (preinscripciones + inscripciones)
-     * GET /api/cursos-intersemestrales/seguimiento/{idUsuario}
+     * GET /api/cursos-verano/reportes/seguimiento?usuario={idUsuario} (antes /seguimiento/{idUsuario})
      */
     @PreAuthorize("@autorizacion.esStaff() or @autorizacion.esUsuarioActual(#idUsuario)")
-    @GetMapping("/seguimiento/{idUsuario}")
-    public ResponseEntity<Seguimiento> obtenerSeguimientoActividades(@PathVariable Integer idUsuario) {
+    @GetMapping("/seguimiento")
+    public ResponseEntity<Seguimiento> obtenerSeguimientoActividades(@RequestParam("usuario") Integer idUsuario) {
 
         // Obtener preinscripciones reales de la base de datos
         List<ActividadPreinscripcion> preinscripciones = new ArrayList<>();

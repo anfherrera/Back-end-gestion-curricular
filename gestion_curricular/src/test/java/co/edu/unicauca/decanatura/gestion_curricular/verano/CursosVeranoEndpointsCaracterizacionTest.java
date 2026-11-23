@@ -41,9 +41,9 @@ import co.edu.unicauca.decanatura.gestion_curricular.soporte.Correcciones;
 @ActiveProfiles({"test", "caracterizacion-verano"})
 @org.springframework.security.test.context.support.WithMockUser(roles = "Funcionario")
 class CursosVeranoEndpointsCaracterizacionTest {
-    private static final String BASE = "/api/cursos-intersemestrales";
-    /** EST-7, paso 8a: el subrecurso de cursos. Las claves conservan las rutas antiguas. */
+    /** EST-7, pasos 8a y 8c: los subrecursos de cursos y de reportes. Las claves conservan las rutas antiguas. */
     private static final String CURSOS = "/api/cursos-verano/cursos";
+    private static final String REPORTES = "/api/cursos-verano/reportes";
     private static final Path REFERENCIAS = Path.of("src/test/resources/referencias/verano-endpoints");
     private static final ObjectMapper JSON = new ObjectMapper();
     @Autowired MockMvc mvc;
@@ -143,23 +143,12 @@ class CursosVeranoEndpointsCaracterizacionTest {
         String[] periodos = {null, "", "   ", "todos", "2025-1", " 2025-2 ",
                 "2025 - Primer Semestre", "Segundo Período 2025", "primer semestre 1999", "2025-3", "sin año"};
         for (int i = 0; i < periodos.length; i++) {
-            var peticion = get(BASE + "/solicitudes");
+            var peticion = get(REPORTES + "/solicitudes");
             if (periodos[i] != null) peticion.param("periodoAcademico", periodos[i]);
             consultar(respuestas, "caso-" + i, peticion);
         }
         // BUG-12: el año ya no cuenta como indicador del período
         comparar("periodos-reporte", respuestas, "verano-endpoints/correcciones/periodos-reporte-bug12.json");
-    }
-
-    @Test void permisosPorEstado() throws Exception {
-        ObjectNode respuestas = JSON.createObjectNode();
-        for (String estado : List.of("Borrador", "Abierto", "Publicado", "Preinscripcion", "Inscripcion", "Cerrado", "desconocido")) {
-            for (String rol : List.of("FUNCIONARIO", "COORDINADOR", "ESTUDIANTE", "ADMINISTRADOR", "funcionario")) {
-                consultar(respuestas, estado + "/" + rol, get(BASE + "/permisos-estado/{estado}/{rol}", estado, rol));
-            }
-        }
-        // BUG-15: la consulta devuelve las operaciones del rol y permitido true si tiene alguna
-        comparar("permisos", respuestas, "verano-endpoints/correcciones/permisos-bug15.json");
     }
 
     private void consultar(ObjectNode r, String clave, MockHttpServletRequestBuilder peticion) throws Exception {
@@ -201,11 +190,11 @@ class CursosVeranoEndpointsCaracterizacionTest {
             }
             for (String periodo : List.of("todos", "2025-2", "2025 - Primer Semestre")) {
                 for (String ruta : List.of("/cursos-verano/todos/export/pdf", "/cursos-verano/71/estudiantes/export/pdf", "/solicitudes/export/excel")) {
-                    // EST-7, paso 8a: la clave conserva la ruta antigua y se pide la nueva
+                    // EST-7, pasos 8a y 8c: la clave conserva la ruta antigua y se pide la nueva
                     String pedida = switch (ruta) {
                         case "/cursos-verano/todos/export/pdf" -> CURSOS + "?formato=pdf";
                         case "/cursos-verano/71/estudiantes/export/pdf" -> CURSOS + "/71/estudiantes?formato=pdf";
-                        default -> BASE + ruta;
+                        default -> REPORTES + "/solicitudes?formato=excel";
                     };
                     var respuesta = mvc.perform(get(pedida).param("periodoAcademico", periodo))
                             .andReturn().getResponse();

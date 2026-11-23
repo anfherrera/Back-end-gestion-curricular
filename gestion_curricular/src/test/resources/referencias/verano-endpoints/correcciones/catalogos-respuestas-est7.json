@@ -1,0 +1,172 @@
+{
+  "/~1materias-disponibles falla": {
+    "status": 500,
+    "body": {
+      "codigoError": "GC-0001",
+      "mensaje": "Ha ocurrido un error inesperado. Por favor, inténtelo de nuevo.",
+      "codigoHttp": 500,
+      "url": "http://localhost/api/cursos-verano/catalogos/materias-disponibles",
+      "metodo": "GET"
+    },
+    "claves": [
+      ".codigoError:STRING",
+      ".mensaje:STRING",
+      ".codigoHttp:NUMBER",
+      ".url:STRING",
+      ".metodo:STRING"
+    ]
+  },
+  "/~1materias falla": {
+    "status": 500,
+    "body": {
+      "codigoError": "GC-0001",
+      "mensaje": "Ha ocurrido un error inesperado. Por favor, inténtelo de nuevo.",
+      "codigoHttp": 500,
+      "url": "http://localhost/api/cursos-verano/catalogos/materias",
+      "metodo": "GET"
+    },
+    "claves": [
+      ".codigoError:STRING",
+      ".mensaje:STRING",
+      ".codigoHttp:NUMBER",
+      ".url:STRING",
+      ".metodo:STRING"
+    ]
+  },
+  "/~1salones falla": {
+    "status": 500,
+    "body": {
+      "codigoError": "GC-0001",
+      "mensaje": "Ha ocurrido un error inesperado. Por favor, inténtelo de nuevo.",
+      "codigoHttp": 500,
+      "url": "http://localhost/api/cursos-verano/catalogos/salones",
+      "metodo": "GET"
+    },
+    "claves": [
+      ".codigoError:STRING",
+      ".mensaje:STRING",
+      ".codigoHttp:NUMBER",
+      ".url:STRING",
+      ".metodo:STRING"
+    ]
+  },
+  "/~1docentes falla": {
+    "status": 500,
+    "body": {
+      "codigoError": "GC-0001",
+      "mensaje": "Ha ocurrido un error inesperado. Por favor, inténtelo de nuevo.",
+      "codigoHttp": 500,
+      "url": "http://localhost/api/cursos-verano/catalogos/docentes",
+      "metodo": "GET"
+    },
+    "claves": [
+      ".codigoError:STRING",
+      ".mensaje:STRING",
+      ".codigoHttp:NUMBER",
+      ".url:STRING",
+      ".metodo:STRING"
+    ]
+  },
+  "permisos Borrador FUNCIONARIO": {
+    "status": 404,
+    "body": {
+      "codigoError": "GC-0404",
+      "mensaje": "El recurso solicitado no existe",
+      "codigoHttp": 404,
+      "url": "http://localhost/api/cursos-intersemestrales/permisos-estado/Borrador/FUNCIONARIO",
+      "metodo": "GET"
+    },
+    "claves": [
+      ".codigoError:STRING",
+      ".mensaje:STRING",
+      ".codigoHttp:NUMBER",
+      ".url:STRING",
+      ".metodo:STRING"
+    ]
+  },
+  "permisos Borrador ESTUDIANTE": {
+    "status": 404,
+    "body": {
+      "codigoError": "GC-0404",
+      "mensaje": "El recurso solicitado no existe",
+      "codigoHttp": 404,
+      "url": "http://localhost/api/cursos-intersemestrales/permisos-estado/Borrador/ESTUDIANTE",
+      "metodo": "GET"
+    },
+    "claves": [
+      ".codigoError:STRING",
+      ".mensaje:STRING",
+      ".codigoHttp:NUMBER",
+      ".url:STRING",
+      ".metodo:STRING"
+    ]
+  },
+  "permisos Cerrado ESTUDIANTE": {
+    "status": 404,
+    "body": {
+      "codigoError": "GC-0404",
+      "mensaje": "El recurso solicitado no existe",
+      "codigoHttp": 404,
+      "url": "http://localhost/api/cursos-intersemestrales/permisos-estado/Cerrado/ESTUDIANTE",
+      "metodo": "GET"
+    },
+    "claves": [
+      ".codigoError:STRING",
+      ".mensaje:STRING",
+      ".codigoHttp:NUMBER",
+      ".url:STRING",
+      ".metodo:STRING"
+    ]
+  },
+  "permisos Publicado ADMIN": {
+    "status": 404,
+    "body": {
+      "codigoError": "GC-0404",
+      "mensaje": "El recurso solicitado no existe",
+      "codigoHttp": 404,
+      "url": "http://localhost/api/cursos-intersemestrales/permisos-estado/Publicado/ADMIN",
+      "metodo": "GET"
+    },
+    "claves": [
+      ".codigoError:STRING",
+      ".mensaje:STRING",
+      ".codigoHttp:NUMBER",
+      ".url:STRING",
+      ".metodo:STRING"
+    ]
+  },
+  "permisos Desconocido FUNCIONARIO": {
+    "status": 404,
+    "body": {
+      "codigoError": "GC-0404",
+      "mensaje": "El recurso solicitado no existe",
+      "codigoHttp": 404,
+      "url": "http://localhost/api/cursos-intersemestrales/permisos-estado/Desconocido/FUNCIONARIO",
+      "metodo": "GET"
+    },
+    "claves": [
+      ".codigoError:STRING",
+      ".mensaje:STRING",
+      ".codigoHttp:NUMBER",
+      ".url:STRING",
+      ".metodo:STRING"
+    ]
+  },
+  "permisos Inscripcion COORDINADOR": {
+    "status": 404,
+    "body": {
+      "codigoError": "GC-0404",
+      "mensaje": "El recurso solicitado no existe",
+      "codigoHttp": 404,
+      "url": "http://localhost/api/cursos-intersemestrales/permisos-estado/Inscripcion/COORDINADOR",
+      "metodo": "GET"
+    },
+    "claves": [
+      ".codigoError:STRING",
+      ".mensaje:STRING",
+      ".codigoHttp:NUMBER",
+      ".url:STRING",
+      ".metodo:STRING"
+    ]
+  }
+}

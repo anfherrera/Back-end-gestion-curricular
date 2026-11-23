@@ -1,0 +1,19 @@
+{
+  "GET /api/cursos-verano/reportes/solicitudes [funcionario]": "GET /api/cursos-intersemestrales/solicitudes [funcionario]",
+  "GET /api/cursos-verano/reportes/solicitudes?periodoAcademico=2025-2&idMateria=1 [funcionario]": "GET /api/cursos-intersemestrales/solicitudes?periodoAcademico=2025-2&idMateria=1 [funcionario]",
+  "GET /api/cursos-verano/reportes/solicitudes?periodoAcademico=todos&idMateria=0 [funcionario]": "GET /api/cursos-intersemestrales/solicitudes?periodoAcademico=todos&idMateria=0 [funcionario]",
+  "GET /api/cursos-verano/reportes/solicitudes?idCurso=71&estado=Aprobado&fechaInicio=2025-01-01&fechaFin=2025-12-31 [funcionario]": "GET /api/cursos-intersemestrales/solicitudes?idCurso=71&estado=Aprobado&fechaInicio=2025-01-01&fechaFin=2025-12-31 [funcionario]",
+  "GET /api/cursos-verano/reportes/solicitudes?fechaInicio=2025-13-01 [funcionario]": "GET /api/cursos-intersemestrales/solicitudes?fechaInicio=2025-13-01 [funcionario]",
+  "GET /api/cursos-verano/reportes/solicitudes [est5]": "GET /api/cursos-intersemestrales/solicitudes [est5]",
+  "GET /api/cursos-verano/reportes/solicitudes?formato=excel [funcionario]": "GET /api/cursos-intersemestrales/solicitudes/export/excel [funcionario]",
+  "GET /api/cursos-verano/reportes/solicitudes?formato=excel&idCurso=71&estado=Aprobado&periodoAcademico=2025-2&fechaInicio=2025-01-01 [funcionario]": "GET /api/cursos-intersemestrales/solicitudes/export/excel?idCurso=71&estado=Aprobado&periodoAcademico=2025-2&fechaInicio=2025-01-01 [funcionario]",
+  "GET /api/cursos-verano/reportes/solicitudes?formato=excel [est5]": "GET /api/cursos-intersemestrales/solicitudes/export/excel [est5]",
+  "GET /api/cursos-verano/reportes/dashboard [funcionario]": "GET /api/cursos-intersemestrales/dashboard/estadisticas [funcionario]",
+  "GET /api/cursos-verano/reportes/dashboard [admin]": "GET /api/cursos-intersemestrales/dashboard/estadisticas [admin]",
+  "GET /api/cursos-verano/reportes/dashboard [est5]": "GET /api/cursos-intersemestrales/dashboard/estadisticas [est5]",
+  "GET /api/cursos-verano/reportes/seguimiento?usuario=5 [est5]": "GET /api/cursos-intersemestrales/seguimiento/5 [est5]",
+  "GET /api/cursos-verano/reportes/seguimiento?usuario=6 [est5]": "GET /api/cursos-intersemestrales/seguimiento/6 [est5]",
+  "GET /api/cursos-verano/reportes/seguimiento?usuario=5 [funcionario]": "GET /api/cursos-intersemestrales/seguimiento/5 [funcionario]",
+  "GET /api/cursos-verano/reportes/seguimiento?usuario=6 [funcionario]": "GET /api/cursos-intersemestrales/seguimiento/6 [funcionario]",
+  "GET /api/cursos-verano/reportes/seguimiento?usuario=abc [funcionario]": "GET /api/cursos-intersemestrales/seguimiento/abc [funcionario]"
+}

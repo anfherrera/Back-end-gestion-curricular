@@ -12,13 +12,13 @@ import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 public final class ReportesVeranoDTORespuesta {
     private ReportesVeranoDTORespuesta() {}
 
-    /** {@code GET /api/cursos-intersemestrales/dashboard/estadisticas}. */
+    /** {@code GET /api/cursos-verano/reportes/dashboard}. */
     @JsonPropertyOrder({"cursosActivos", "totalCursos", "totalPreinscripciones", "cursosGestionados",
         "totalInscripciones", "porcentajeProgreso"})
     public record Dashboard(int cursosActivos, int totalPreinscripciones, int totalInscripciones,
             int cursosGestionados, int totalCursos, long porcentajeProgreso) {}
 
-    /** {@code GET /api/cursos-intersemestrales/seguimiento/{idUsuario}}. */
+    /** {@code GET /api/cursos-verano/reportes/seguimiento?usuario=}. */
     @JsonPropertyOrder({"preinscripciones", "totalPreinscripciones", "totalActividades", "inscripciones",
         "totalInscripciones"})
     public record Seguimiento(List<ActividadPreinscripcion> preinscripciones,
@@ -31,7 +31,7 @@ public final class ReportesVeranoDTORespuesta {
             Integer estudianteId, Integer cursoId, String estadoCurso, List<String> accionesDisponibles) {}
 
     /**
-     * Fila de {@code GET /api/cursos-intersemestrales/solicitudes} y del Excel que exporta el mismo listado
+     * Fila de {@code GET /api/cursos-verano/reportes/solicitudes} y del Excel que exporta el mismo listado
      * ({@code ReporteSolicitudesVeranoMapper}).
      */
     @JsonPropertyOrder({"tipo", "codigo", "estado", "codigoMateria", "grupoCurso", "nombreCompleto",
