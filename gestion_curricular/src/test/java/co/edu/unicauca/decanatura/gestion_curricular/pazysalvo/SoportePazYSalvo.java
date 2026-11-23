@@ -26,7 +26,7 @@ final class SoportePazYSalvo {
 
     /** Crea una solicitud como estudiante y devuelve su id. */
     static int crearSolicitud(MockMvc mockMvc, ObjectMapper objectMapper, String tokenEstudiante) throws Exception {
-        MvcResult resultado = mockMvc.perform(post(BASE + "/crearSolicitud-PazYSalvo")
+        MvcResult resultado = mockMvc.perform(post(BASE)
                         .header("Authorization", tokenEstudiante)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("{\"fecha_solicitud\": \"2025-01-15\"}"))
@@ -38,10 +38,10 @@ final class SoportePazYSalvo {
 
     /** Cambia el estado con el token indicado y devuelve el código HTTP. */
     static int cambiarEstado(MockMvc mockMvc, String token, int idSolicitud, String nuevoEstado) throws Exception {
-        return mockMvc.perform(put(BASE + "/actualizarEstadoSolicitud")
+        return mockMvc.perform(put(BASE + "/" + idSolicitud + "/estado")
                         .header("Authorization", token)
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content("{\"idSolicitud\": " + idSolicitud + ", \"nuevoEstado\": \"" + nuevoEstado + "\"}"))
+                        .content("{\"nuevoEstado\": \"" + nuevoEstado + "\"}"))
                 .andReturn().getResponse().getStatus();
     }
 
@@ -52,7 +52,7 @@ final class SoportePazYSalvo {
      */
     static void cerrarSolicitudesEnTramite(MockMvc mockMvc, ObjectMapper objectMapper, String tokenEstudiante,
                                            String... tokensStaff) throws Exception {
-        MvcResult resultado = mockMvc.perform(get(BASE + "/listarSolicitud-PazYSalvo/porRol")
+        MvcResult resultado = mockMvc.perform(get(BASE)
                         .param("rol", "ESTUDIANTE")
                         .header("Authorization", tokenEstudiante))
                 .andReturn();

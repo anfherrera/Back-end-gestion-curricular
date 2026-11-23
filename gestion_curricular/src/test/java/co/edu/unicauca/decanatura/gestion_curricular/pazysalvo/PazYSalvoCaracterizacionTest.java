@@ -213,43 +213,53 @@ class PazYSalvoCaracterizacionTest {
 
     // ==================== CONSULTAS DE DOCUMENTOS Y COMENTARIOS ====================
 
+    // EST-7 (paso 7a): las claves conservan la ruta con la que se grabaron y se pide la nueva.
+
     @Test
     @DisplayName("validarDocumentosRequeridos")
     void validarDocumentosRequeridos() throws Exception {
-        compararConReferencia("validar-documentos-requeridos", consultarConjunto("/validarDocumentosRequeridos/"));
+        // Se retiró sin reemplazo: responde 404
+        compararConReferencia("validar-documentos-requeridos",
+                consultarConjunto("/validarDocumentosRequeridos/", id -> "/validarDocumentosRequeridos/" + id),
+                "pazysalvo/correcciones/validar-documentos-requeridos-est7.json");
     }
 
     @Test
     @DisplayName("obtenerDocumentos y obtenerDocumentos/coordinador")
     void obtenerDocumentos() throws Exception {
-        Map<String, JsonNode> r = consultarConjunto("/obtenerDocumentos/");
-        r.putAll(consultarConjunto("/obtenerDocumentos/coordinador/"));
+        Map<String, JsonNode> r = consultarConjunto("/obtenerDocumentos/", id -> "/obtenerDocumentos/" + id);
+        r.putAll(consultarConjunto("/obtenerDocumentos/coordinador/", id -> "/" + id + "/documentos"));
         // El dueño también puede consultarla
         UsuarioEntity dueno = estudiantes.get("dueno");
         r.put("GET /obtenerDocumentos/{completa-con-guion} [dueno]",
                 pedir(get(BASE + "/obtenerDocumentos/" + conjunto.get("completa-con-guion")), dueno.getCorreo(), "Estudiante"));
-        // DUP-9: /obtenerDocumentos/{id} se retira; solo queda la del coordinador
-        compararConReferencia("obtener-documentos", r, "pazysalvo/correcciones/obtener-documentos-dup9.json");
+        // DUP-9: /obtenerDocumentos/{id} se retira; solo queda la del coordinador, que pasa a /{id}/documentos
+        compararConReferencia("obtener-documentos", r, "pazysalvo/correcciones/obtener-documentos-dup9.json",
+                "pazysalvo/correcciones/obtener-documentos-est7.json");
     }
 
     @Test
     @DisplayName("obtenerComentarios")
     void obtenerComentarios() throws Exception {
-        compararConReferencia("obtener-comentarios", consultarConjunto("/obtenerComentarios/"));
+        compararConReferencia("obtener-comentarios", consultarConjunto("/obtenerComentarios/", id -> "/" + id + "/comentarios"),
+                "pazysalvo/correcciones/obtener-comentarios-est7.json");
     }
 
     @Test
     @DisplayName("obtenerOficios")
     void obtenerOficios() throws Exception {
-        compararConReferencia("obtener-oficios", consultarConjunto("/obtenerOficios/"));
+        compararConReferencia("obtener-oficios", consultarConjunto("/obtenerOficios/", id -> "/" + id + "/oficios"),
+                "pazysalvo/correcciones/obtener-oficios-est7.json");
     }
 
-    private Map<String, JsonNode> consultarConjunto(String ruta) throws Exception {
+    /** La clave lleva la ruta histórica ({@code clave}); la petición va a {@code ruta(id)}. */
+    private Map<String, JsonNode> consultarConjunto(String clave, java.util.function.IntFunction<String> ruta)
+            throws Exception {
         Map<String, JsonNode> r = new LinkedHashMap<>();
         for (Map.Entry<String, Integer> s : conjunto.entrySet()) {
-            r.put("GET " + ruta + "{" + s.getKey() + "}", pedir(get(BASE + ruta + s.getValue()), STAFF, ROLES_STAFF));
+            r.put("GET " + clave + "{" + s.getKey() + "}", pedir(get(BASE + ruta.apply(s.getValue())), STAFF, ROLES_STAFF));
         }
-        r.put("GET " + ruta + "{inexistente}", pedir(get(BASE + ruta + SOLICITUD_INEXISTENTE), STAFF, ROLES_STAFF));
+        r.put("GET " + clave + "{inexistente}", pedir(get(BASE + ruta.apply(SOLICITUD_INEXISTENTE)), STAFF, ROLES_STAFF));
         return r;
     }
 
@@ -309,7 +319,7 @@ class PazYSalvoCaracterizacionTest {
     }
 
     private RequestBuilder crearPeticion(String cuerpo) {
-        return post(BASE + "/crearSolicitud-PazYSalvo").contentType(MediaType.APPLICATION_JSON).content(cuerpo);
+        return post(BASE).contentType(MediaType.APPLICATION_JSON).content(cuerpo);
     }
 
     private static String dto(int idUsuario, String resto) {

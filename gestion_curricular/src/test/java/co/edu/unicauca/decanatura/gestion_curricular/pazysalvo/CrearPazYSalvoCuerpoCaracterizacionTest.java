@@ -36,12 +36,12 @@ import co.edu.unicauca.decanatura.gestion_curricular.seguridad.Autorizacion;
 import co.edu.unicauca.decanatura.gestion_curricular.soporte.Correcciones;
 
 /**
- * Fija cómo {@code crearSolicitud-PazYSalvo} interpreta el cuerpo (ARQ-9): forma del cuerpo,
+ * Fija cómo {@code POST /api/solicitudes-pazysalvo} (antes {@code crearSolicitud-PazYSalvo}) interpreta el cuerpo (ARQ-9): forma del cuerpo,
  * coerción de cada valor escalar o anidado y los datos que llegan al caso de uso o al mapeo del DTO.
  * Complementa {@code crear-solicitud.json} (flujo real) y {@code errores-operaciones.json} (errores).
  */
 class CrearPazYSalvoCuerpoCaracterizacionTest {
-    private static final String RUTA = "/api/solicitudes-pazysalvo/crearSolicitud-PazYSalvo";
+    private static final String RUTA = "/api/solicitudes-pazysalvo";
     private static final Path REFERENCIA = Path.of("src/test/resources/referencias/pazysalvo/crear-cuerpo.json");
 
     private final ObjectMapper json = Jackson2ObjectMapperBuilder.json()

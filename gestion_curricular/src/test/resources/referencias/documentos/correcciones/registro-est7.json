@@ -1,0 +1,26 @@
+{
+  "/~1api~1solicitudes-pazysalvo~1guardarOficio existe=true": {
+    "body": {
+      "codigoError": "GC-0404",
+      "mensaje": "El recurso solicitado no existe",
+      "codigoHttp": 404,
+      "url": "http://localhost/api/solicitudes-pazysalvo/guardarOficio",
+      "metodo": "POST"
+    },
+    "eventos": [],
+    "documentos": [],
+    "status": 404
+  },
+  "/~1api~1solicitudes-pazysalvo~1guardarOficio existe=false": {
+    "body": {
+      "codigoError": "GC-0404",
+      "mensaje": "El recurso solicitado no existe",
+      "codigoHttp": 404,
+      "url": "http://localhost/api/solicitudes-pazysalvo/guardarOficio",
+      "metodo": "POST"
+    },
+    "eventos": [],
+    "documentos": [],
+    "status": 404
+  }
+}

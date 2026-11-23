@@ -192,12 +192,14 @@ class RutasPazYSalvoCaracterizacionTest {
         String b = "/api/solicitudes-pazysalvo";
         ObjectNode casos = json.createObjectNode();
 
-        // Crear
+        // Crear. El cuerpo se lee en snake_case (como lo envía el frontend); las claves en camelCase se ignoran.
         for (String ruta : List.of(b + "/crearSolicitud-PazYSalvo", b)) {
             caso(casos, "est5", HttpMethod.POST, ruta, "{\"idUsuario\":\"6\",\"tituloTrabajoGrado\":\"Tesis\"}");
             caso(casos, "funcionario", HttpMethod.POST, ruta, "{\"idUsuario\":\"5\"}");
             caso(casos, "est5", HttpMethod.POST, ruta, "{}");
             caso(casos, "est5", HttpMethod.POST, ruta, "{\"idUsuario\":\"5\",\"periodoAcademico\":\"2024-9\"}");
+            caso(casos, "est5", HttpMethod.POST, ruta, "{\"idUsuario\":\"6\",\"titulo_trabajo_grado\":\"Tesis\"}");
+            caso(casos, "est5", HttpMethod.POST, ruta, "{\"idUsuario\":\"5\",\"periodo_academico\":\"2024-9\"}");
         }
 
         // Todas (se retira) y lo que queda en la raíz sin filtros
@@ -319,7 +321,7 @@ class RutasPazYSalvoCaracterizacionTest {
         caso(casos, "funcionario", HttpMethod.GET, b + "?bandeja=pendientes", null);
 
         // EST-7: las rutas nuevas responden como las antiguas, que pasan a 404
-        GrafoObjetos.compararConReferencia(casos, "rutas/pazysalvo.json");
+        GrafoObjetos.compararConReferencia(casos, "rutas/pazysalvo.json", "rutas/correcciones/pazysalvo-est7.json");
     }
 
     private void caso(ObjectNode casos, String quien, HttpMethod metodo, String ruta, String cuerpo) throws Exception {

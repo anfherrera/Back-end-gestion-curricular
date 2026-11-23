@@ -30,6 +30,7 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.*;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.*;
+import co.edu.unicauca.decanatura.gestion_curricular.soporte.Correcciones;
 
 /** Referencias anteriores a ARQ-3/4. Solo normaliza las fechas calculadas al generar. */
 @SpringBootTest
@@ -82,12 +83,13 @@ class GeneracionDocumentosCaracterizacionTest {
                 respuestas.set(tipo + "-" + id, documento(r, false));
             }
         }
+        // EST-7, paso 7a: el documento por defecto se retiró (404, corrección generacion-est7.json)
         for (String formato : List.of("docx", "pdf")) {
             var r = mvc.perform(get("/api/solicitudes-pazysalvo/generarDocumentoPazYSalvo/71/" + formato))
                     .andReturn().getResponse();
-            respuestas.set("paz-" + formato, documento(r, formato.equals("pdf")));
+            respuestas.set("paz-" + formato, r.getStatus() == 200 ? documento(r, formato.equals("pdf")) : error(r));
         }
-        var r = mvc.perform(post("/api/solicitudes-pazysalvo/generar-documento/71")
+        var r = mvc.perform(post("/api/solicitudes-pazysalvo/71/documento-generado")
                 .param("numeroDocumento", "REF-2025").param("fechaDocumento", "2025-06-12T12:00:00"))
                 .andReturn().getResponse();
         respuestas.set("paz-personalizado", documento(r, false));
@@ -96,7 +98,8 @@ class GeneracionDocumentosCaracterizacionTest {
             Files.writeString(REFERENCIA, JSON.writerWithDefaultPrettyPrinter().writeValueAsString(respuestas));
         }
         assertThat(normalizarFechasPartidas(respuestas, LocalDate.now()))
-                .isEqualTo(normalizarFechasPartidas((ObjectNode) JSON.readTree(Files.readString(REFERENCIA)),
+                .isEqualTo(normalizarFechasPartidas(Correcciones.aplicar(JSON.readTree(Files.readString(REFERENCIA)),
+                        "documentos/correcciones/generacion-est7.json"),
                         LocalDate.of(2026, 11, 13))); // Fecha en que se obtuvo la referencia previa al refactor.
     }
 
@@ -127,6 +130,15 @@ class GeneracionDocumentosCaracterizacionTest {
         salida.put("http", r.getStatus());
         salida.put("tipo", r.getContentType());
         salida.put("disposicion", r.getHeader("Content-Disposition"));
+        return salida;
+    }
+
+    /** Una ruta que ya no existe: el código HTTP y el código de error. */
+    private static ObjectNode error(MockHttpServletResponse r) throws Exception {
+        ObjectNode salida = JSON.createObjectNode();
+        salida.put("http", r.getStatus());
+        salida.put("tipo", r.getContentType());
+        salida.set("codigoError", JSON.readTree(r.getContentAsByteArray()).get("codigoError"));
         return salida;
     }
 

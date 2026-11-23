@@ -160,18 +160,17 @@ class PazYSalvoIntegracionTest {
     // ==================== PRUEBAS DE CONSULTA ====================
 
     @Test
-    @DisplayName("Test 1: Listar todas las solicitudes de Paz y Salvo")
+    @DisplayName("Test 1: El listado completo sin filtros se retiró (EST-7)")
     void testListarSolicitudesPazYSalvo() throws Exception {
         mockMvc.perform(get("/api/solicitudes-pazysalvo/listarSolicitud-PazYSalvo")
                         .header("Authorization", tokenFuncionario))
-                .andExpect(status().isOk())
-                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON));
+                .andExpect(status().isNotFound());
     }
 
     @Test
     @DisplayName("Test 2: Listar solicitudes por rol - Funcionario")
     void testListarSolicitudesFuncionario() throws Exception {
-        mockMvc.perform(get("/api/solicitudes-pazysalvo/listarSolicitud-PazYSalvo/Funcionario")
+        mockMvc.perform(get("/api/solicitudes-pazysalvo?rol=funcionario&bandeja=pendientes")
                         .header("Authorization", tokenFuncionario))
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON));
@@ -180,7 +179,7 @@ class PazYSalvoIntegracionTest {
     @Test
     @DisplayName("Test 3: Listar solicitudes por rol - Coordinador")
     void testListarSolicitudesCoordinador() throws Exception {
-        mockMvc.perform(get("/api/solicitudes-pazysalvo/listarSolicitud-PazYSalvo/Coordinador")
+        mockMvc.perform(get("/api/solicitudes-pazysalvo?rol=coordinador&bandeja=pendientes")
                         .header("Authorization", tokenCoordinador))
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON));
@@ -189,7 +188,7 @@ class PazYSalvoIntegracionTest {
     @Test
     @DisplayName("Test 4: Listar solicitudes por rol - Secretaria")
     void testListarSolicitudesSecretaria() throws Exception {
-        mockMvc.perform(get("/api/solicitudes-pazysalvo/listarSolicitud-PazYSalvo/Secretaria")
+        mockMvc.perform(get("/api/solicitudes-pazysalvo?rol=secretaria&bandeja=pendientes")
                         .header("Authorization", tokenSecretaria))
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON));
@@ -198,7 +197,7 @@ class PazYSalvoIntegracionTest {
     @Test
     @DisplayName("Test 5: Listar solicitudes con parámetro de rol")
     void testListarSolicitudesPorRolParametro() throws Exception {
-        mockMvc.perform(get("/api/solicitudes-pazysalvo/listarSolicitud-PazYSalvo/porRol")
+        mockMvc.perform(get("/api/solicitudes-pazysalvo")
                         .header("Authorization", tokenFuncionario)
                         .param("rol", "ESTUDIANTE"))
                 .andExpect(status().isOk())
@@ -219,7 +218,7 @@ class PazYSalvoIntegracionTest {
             """;
 
         // Solo validamos que el endpoint existe y responde (puede ser 201, 200 o 400 por validaciones)
-        mockMvc.perform(post("/api/solicitudes-pazysalvo/crearSolicitud-PazYSalvo")
+        mockMvc.perform(post("/api/solicitudes-pazysalvo")
                         .header("Authorization", tokenEstudiante)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(jsonRequest));
@@ -232,7 +231,7 @@ class PazYSalvoIntegracionTest {
         String jsonRequest = "{}";
 
         // Debe dar error de validación (400 o 422)
-        mockMvc.perform(post("/api/solicitudes-pazysalvo/crearSolicitud-PazYSalvo")
+        mockMvc.perform(post("/api/solicitudes-pazysalvo")
                         .header("Authorization", tokenEstudiante)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(jsonRequest))
@@ -264,17 +263,17 @@ class PazYSalvoIntegracionTest {
     // ==================== PRUEBAS DE VALIDACIÓN ====================
 
     @Test
-    @DisplayName("Test 10: Endpoint raíz de solicitudes funciona")
+    @DisplayName("Test 10: El endpoint raíz sin rol responde 400")
     void testEndpointRaizSolicitudes() throws Exception {
-        mockMvc.perform(get("/api/solicitudes-pazysalvo/listarSolicitud-PazYSalvo")
+        mockMvc.perform(get("/api/solicitudes-pazysalvo")
                         .header("Authorization", tokenFuncionario))
-                .andExpect(status().isOk());
+                .andExpect(status().isBadRequest());
     }
 
     @Test
     @DisplayName("Test 11: Validar que la respuesta sea JSON")
     void testRespuestaEsJSON() throws Exception {
-        mockMvc.perform(get("/api/solicitudes-pazysalvo/listarSolicitud-PazYSalvo")
+        mockMvc.perform(get("/api/solicitudes-pazysalvo?rol=funcionario&bandeja=procesadas")
                         .header("Authorization", tokenFuncionario))
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON));
@@ -283,7 +282,7 @@ class PazYSalvoIntegracionTest {
     @Test
     @DisplayName("Test 12: Listar solicitudes por rol con usuario específico")
     void testListarPorRolConUsuario() throws Exception {
-        mockMvc.perform(get("/api/solicitudes-pazysalvo/listarSolicitud-PazYSalvo/porRol")
+        mockMvc.perform(get("/api/solicitudes-pazysalvo")
                         .header("Authorization", tokenEstudiante)
                         .param("rol", "ESTUDIANTE")
                         .param("idUsuario", "1"))

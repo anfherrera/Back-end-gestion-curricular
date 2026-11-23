@@ -19,6 +19,7 @@ import org.springframework.mock.web.MockMultipartFile;
 
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.configuracion.NombresJsonDominio;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.*;
+import co.edu.unicauca.decanatura.gestion_curricular.soporte.Correcciones;
 import co.edu.unicauca.decanatura.gestion_curricular.soporte.SoporteMvc;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.*;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.casosDeUso.GestionarDocumentosCUAdapter;
@@ -46,12 +47,15 @@ class RegistroDocumentosCaracterizacionTest {
         var homo = new SolicitudHomologacionRestController(homoCU, mock(SolicitudHomologacionMapperDominio.class),
             mock(SolicitudMapperDominio.class), archivos, documentos, auth, null);
         var mvc = SoporteMvc.standaloneSetup(paz, homo).setControllerAdvice(new RestApiExceptionHandler()).build();
-        String[] rutas = {"/api/solicitudes-pazysalvo/subir-documento",
-            "/api/solicitudes-pazysalvo/subir-oficio-pdf/7",
-            "/api/solicitudes-pazysalvo/guardarOficio",
-            "/api/solicitudes-homologacion/7/subir-resolucion"};
+        // EST-7, paso 7a: la clave conserva la ruta con la que se grabó y se pide la nueva; guardarOficio se retiró
+        Map<String, String> rutas = new LinkedHashMap<>();
+        rutas.put("/api/solicitudes-pazysalvo/subir-documento", "/api/solicitudes-pazysalvo/documentos");
+        rutas.put("/api/solicitudes-pazysalvo/subir-oficio-pdf/7", "/api/solicitudes-pazysalvo/7/oficios");
+        rutas.put("/api/solicitudes-pazysalvo/guardarOficio", "/api/solicitudes-pazysalvo/guardarOficio");
+        rutas.put("/api/solicitudes-homologacion/7/subir-resolucion", "/api/solicitudes-homologacion/7/subir-resolucion");
         Map<String, Object> resultados = new LinkedHashMap<>();
-        for (String ruta : rutas) {
+        for (Map.Entry<String, String> clave : rutas.entrySet()) {
+            String ruta = clave.getValue();
             for (boolean existe : new boolean[]{true, false}) {
                 reset(archivos, gateway, pazCU, homoCU);
                 var eventos = new java.util.ArrayList<String>();
@@ -69,7 +73,7 @@ class RegistroDocumentosCaracterizacionTest {
                 var snapshot = json.valueToTree(Map.of("status", respuesta.getStatus(), "body", body,
                     "documentos", guardados, "eventos", eventos));
                 normalizar(snapshot);
-                resultados.put(ruta + " existe=" + existe, snapshot);
+                resultados.put(clave.getKey() + " existe=" + existe, snapshot);
             }
         }
         var actual = json.valueToTree(resultados);
@@ -91,7 +95,7 @@ class RegistroDocumentosCaracterizacionTest {
             assertThat(e.getValue()).as(e.getKey()).isEqualTo(anterior);
             esperado.set(e.getKey(), e.getValue());
         });
-        assertThat(actual).isEqualTo(esperado);
+        assertThat(actual).isEqualTo(Correcciones.aplicar(esperado, "documentos/correcciones/registro-est7.json"));
     }
 
     private static void normalizar(JsonNode nodo) {

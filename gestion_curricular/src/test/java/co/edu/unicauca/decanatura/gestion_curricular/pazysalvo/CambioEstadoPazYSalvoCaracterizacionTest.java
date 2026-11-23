@@ -24,6 +24,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GenerarDocumentosCUIntPort;
+import co.edu.unicauca.decanatura.gestion_curricular.soporte.Correcciones;
 import co.edu.unicauca.decanatura.gestion_curricular.soporte.SoporteMvc;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarArchivosCUIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarDocumentosCUIntPort;
@@ -39,7 +40,9 @@ import co.edu.unicauca.decanatura.gestion_curricular.seguridad.Autorizacion;
 /**
  * Fija las respuestas de {@code PUT /api/solicitudes-pazysalvo/actualizarEstadoSolicitud} antes de tipar
  * el cuerpo de rechazo (ARQ-10): estado, cuerpo y orden de claves de las validaciones, de los dos
- * motivos de rechazo (con y sin estado actual) y del cambio permitido.
+ * motivos de rechazo (con y sin estado actual) y del cambio permitido. Desde EST-7 (paso 7a) se pide
+ * {@code PUT /api/solicitudes-pazysalvo/7/estado}: la solicitud es la de la ruta, así que el caso "sin id"
+ * cambia el estado (corrección {@code cambio-estado-rechazos-est7.json}).
  */
 class CambioEstadoPazYSalvoCaracterizacionTest {
 
@@ -77,7 +80,7 @@ class CambioEstadoPazYSalvoCaracterizacionTest {
             reset(cu);
             when(cu.cambiarEstadoSolicitud(anyInt(), anyString(), nullable(String.class), any()))
                 .thenReturn(Optional.ofNullable((RechazoCambioEstado) caso[2]));
-            var respuesta = mvc.perform(put("/api/solicitudes-pazysalvo/actualizarEstadoSolicitud")
+            var respuesta = mvc.perform(put("/api/solicitudes-pazysalvo/7/estado")
                 .contentType(MediaType.APPLICATION_JSON).content((String) caso[1])).andReturn().getResponse();
             byte[] cuerpo = respuesta.getContentAsByteArray();
             JsonNode body = cuerpo.length == 0 ? json.nullNode() : json.readTree(cuerpo);
@@ -92,9 +95,10 @@ class CambioEstadoPazYSalvoCaracterizacionTest {
         if (Boolean.getBoolean("grabarReferencia") && Files.notExists(referencia)) {
             Files.writeString(referencia, json.writerWithDefaultPrettyPrinter().writeValueAsString(resultados));
         }
-        assertThat(resultados).isEqualTo(json.readTree(Files.readString(referencia)));
+        JsonNode grabada = Correcciones.aplicar(json.readTree(Files.readString(referencia)),
+                "pazysalvo/correcciones/cambio-estado-rechazos-est7.json");
+        assertThat(resultados).isEqualTo(grabada);
         // ObjectNode no compara el orden de las claves: se comprueba aparte
-        JsonNode grabada = json.readTree(Files.readString(referencia));
         resultados.fields().forEachRemaining(caso -> assertThat(nombres(caso.getValue().get("claves")))
             .as(caso.getKey()).isEqualTo(nombres(grabada.get(caso.getKey()).get("claves"))));
     }

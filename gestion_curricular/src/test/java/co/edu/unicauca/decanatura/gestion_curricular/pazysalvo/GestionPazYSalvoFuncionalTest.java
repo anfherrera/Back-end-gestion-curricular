@@ -191,14 +191,14 @@ class GestionPazYSalvoFuncionalTest {
             """;
 
         // Paso 1: Crear solicitud
-        mockMvc.perform(post("/api/solicitudes-pazysalvo/crearSolicitud-PazYSalvo")
+        mockMvc.perform(post("/api/solicitudes-pazysalvo")
                         .header("Authorization", tokenEstudiante)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(jsonSolicitud))
                 .andExpect(status().isCreated());
 
-        // Paso 2: Verificar que la solicitud aparece en el listado
-        mockMvc.perform(get("/api/solicitudes-pazysalvo/listarSolicitud-PazYSalvo")
+        // Paso 2: Verificar que la solicitud aparece en la bandeja de pendientes del funcionario
+        mockMvc.perform(get("/api/solicitudes-pazysalvo?rol=funcionario&bandeja=pendientes")
                         .header("Authorization", tokenCoordinador))
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON));
@@ -220,7 +220,7 @@ class GestionPazYSalvoFuncionalTest {
          */
         
         // Paso 1: Coordinador consulta solicitudes pendientes
-        mockMvc.perform(get("/api/solicitudes-pazysalvo/listarSolicitud-PazYSalvo/Coordinador")
+        mockMvc.perform(get("/api/solicitudes-pazysalvo?rol=coordinador&bandeja=pendientes")
                         .header("Authorization", tokenCoordinador))
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON));
@@ -238,19 +238,19 @@ class GestionPazYSalvoFuncionalTest {
     @DisplayName("Funcional 2b: El coordinador no puede aprobar antes que el funcionario")
     void testCoordinadorNoPuedeSaltarseAlFuncionario() throws Exception {
         int id = SoportePazYSalvo.crearSolicitud(mockMvc, objectMapper, tokenEstudiante);
-        mockMvc.perform(put("/api/solicitudes-pazysalvo/actualizarEstadoSolicitud")
+        mockMvc.perform(put("/api/solicitudes-pazysalvo/" + id + "/estado")
                         .header("Authorization", tokenCoordinador)
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content("{\"idSolicitud\":%d,\"nuevoEstado\":\"APROBADA_FUNCIONARIO\"}".formatted(id)))
+                        .content("{\"nuevoEstado\":\"APROBADA_FUNCIONARIO\"}"))
                 .andExpect(status().isForbidden())
                 .andExpect(jsonPath("$.codigo").value("ROL_NO_AUTORIZADO"))
                 .andExpect(jsonPath("$.estadoActual").value("ENVIADA"))
                 .andExpect(jsonPath("$.error").value("Este paso le corresponde al rol Funcionario"));
 
-        mockMvc.perform(put("/api/solicitudes-pazysalvo/actualizarEstadoSolicitud")
+        mockMvc.perform(put("/api/solicitudes-pazysalvo/" + id + "/estado")
                         .header("Authorization", tokenFuncionario)
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content("{\"idSolicitud\":%d,\"nuevoEstado\":\"APROBADA\"}".formatted(id)))
+                        .content("{\"nuevoEstado\":\"APROBADA\"}"))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.codigo").value("TRANSICION_NO_PERMITIDA"))
                 .andExpect(jsonPath("$.estadoActual").value("ENVIADA"))
@@ -264,7 +264,7 @@ class GestionPazYSalvoFuncionalTest {
     @DisplayName("Funcional 2c: Un estudiante no puede tener dos solicitudes en trámite")
     void testNoPermiteDosSolicitudesEnTramite() throws Exception {
         SoportePazYSalvo.crearSolicitud(mockMvc, objectMapper, tokenEstudiante);
-        mockMvc.perform(post("/api/solicitudes-pazysalvo/crearSolicitud-PazYSalvo")
+        mockMvc.perform(post("/api/solicitudes-pazysalvo")
                         .header("Authorization", tokenEstudiante)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("{\"fecha_solicitud\": \"2025-01-15\"}"))
@@ -285,7 +285,7 @@ class GestionPazYSalvoFuncionalTest {
          */
         
         // Paso 1: Funcionario consulta sus solicitudes
-        mockMvc.perform(get("/api/solicitudes-pazysalvo/listarSolicitud-PazYSalvo/Funcionario")
+        mockMvc.perform(get("/api/solicitudes-pazysalvo?rol=funcionario&bandeja=pendientes")
                         .header("Authorization", tokenFuncionario))
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON));
@@ -308,42 +308,16 @@ class GestionPazYSalvoFuncionalTest {
          */
         
         // Paso 1: Secretaria consulta solicitudes aprobadas
-        mockMvc.perform(get("/api/solicitudes-pazysalvo/listarSolicitud-PazYSalvo/Secretaria")
+        mockMvc.perform(get("/api/solicitudes-pazysalvo?rol=secretaria&bandeja=pendientes")
                         .header("Authorization", tokenSecretaria))
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON));
 
-        // Paso 2: Secretaria genera documento oficial (usando ID 37 que existe en BD)
-        mockMvc.perform(get("/api/solicitudes-pazysalvo/generarDocumentoPazYSalvo/37/pdf")
-                        .header("Authorization", tokenSecretaria))
-                .andExpect(status().isOk())
-                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_PDF))
-                .andExpect(header().string("Content-Disposition", "attachment; filename=\"PazYSalvo_37.pdf\""));
-    }
-
-    // ==================== FLUJO 3: GENERACIÓN DE DOCUMENTOS ====================
-
-    @Test
-    @DisplayName("Funcional 5: Flujo de generación de documentos en múltiples formatos")
-    void testFlujoGeneracionDocumentosMultiplesFormatos() throws Exception {
-        /*
-         * FLUJO DE NEGOCIO:
-         * 1. Usuario solicita documento en formato PDF
-         * 2. Usuario solicita documento en formato DOCX para edición
-         * 3. Sistema genera ambos formatos correctamente
-         * 
-         * ACTORES: Secretaria, Estudiante
-         * RESULTADO ESPERADO: Documentos generados en ambos formatos
-         */
-        
-        // Paso 1: Generar PDF (usando ID 37 que existe en BD)
-        mockMvc.perform(get("/api/solicitudes-pazysalvo/generarDocumentoPazYSalvo/37/pdf")
-                        .header("Authorization", tokenSecretaria))
-                .andExpect(status().isOk())
-                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_PDF));
-
-        // Paso 2: Generar DOCX (usando ID 37 que existe en BD)
-        mockMvc.perform(get("/api/solicitudes-pazysalvo/generarDocumentoPazYSalvo/37/docx")
+        // Paso 2: Secretaria genera documento oficial (usando ID 37 que existe en BD). El documento por defecto
+        // en PDF y DOCX (/generarDocumentoPazYSalvo) se retiró en EST-7: el frontend genera este.
+        mockMvc.perform(post("/api/solicitudes-pazysalvo/37/documento-generado")
+                        .param("numeroDocumento", "PYS-37")
+                        .param("fechaDocumento", "2025-03-01")
                         .header("Authorization", tokenSecretaria))
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_OCTET_STREAM));
@@ -407,17 +381,17 @@ class GestionPazYSalvoFuncionalTest {
          */
         
         // Coordinador ve solicitudes de su programa
-        mockMvc.perform(get("/api/solicitudes-pazysalvo/listarSolicitud-PazYSalvo/Coordinador")
+        mockMvc.perform(get("/api/solicitudes-pazysalvo?rol=coordinador&bandeja=pendientes")
                         .header("Authorization", tokenCoordinador))
                 .andExpect(status().isOk());
 
         // Funcionario ve solicitudes en proceso administrativo
-        mockMvc.perform(get("/api/solicitudes-pazysalvo/listarSolicitud-PazYSalvo/Funcionario")
+        mockMvc.perform(get("/api/solicitudes-pazysalvo?rol=funcionario&bandeja=pendientes")
                         .header("Authorization", tokenFuncionario))
                 .andExpect(status().isOk());
 
         // Secretaria ve solicitudes para emisión final
-        mockMvc.perform(get("/api/solicitudes-pazysalvo/listarSolicitud-PazYSalvo/Secretaria")
+        mockMvc.perform(get("/api/solicitudes-pazysalvo?rol=secretaria&bandeja=pendientes")
                         .header("Authorization", tokenSecretaria))
                 .andExpect(status().isOk());
     }
@@ -446,7 +420,7 @@ class GestionPazYSalvoFuncionalTest {
             }
             """;
 
-        mockMvc.perform(post("/api/solicitudes-pazysalvo/crearSolicitud-PazYSalvo")
+        mockMvc.perform(post("/api/solicitudes-pazysalvo")
                         .header("Authorization", tokenEstudiante)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(jsonInvalido))
@@ -468,12 +442,11 @@ class GestionPazYSalvoFuncionalTest {
         
         String jsonCambioEstado = """
             {
-                "idSolicitud": 999,
                 "nuevoEstado": "APROBADO"
             }
             """;
 
-        mockMvc.perform(put("/api/solicitudes-pazysalvo/actualizarEstadoSolicitud")
+        mockMvc.perform(put("/api/solicitudes-pazysalvo/999/estado")
                         .header("Authorization", tokenCoordinador)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(jsonCambioEstado))
@@ -498,8 +471,8 @@ class GestionPazYSalvoFuncionalTest {
         // Paso 1: Crear solicitud
         int id = SoportePazYSalvo.crearSolicitud(mockMvc, objectMapper, tokenEstudiante);
 
-        // Paso 2: Consultar solicitudes (simulando diferentes roles)
-        mockMvc.perform(get("/api/solicitudes-pazysalvo/listarSolicitud-PazYSalvo")
+        // Paso 2: Consultar la bandeja del funcionario, donde está la solicitud nueva
+        mockMvc.perform(get("/api/solicitudes-pazysalvo?rol=funcionario&bandeja=pendientes")
                         .header("Authorization", tokenCoordinador))
                 .andExpect(status().isOk());
 
@@ -512,10 +485,12 @@ class GestionPazYSalvoFuncionalTest {
                 SoportePazYSalvo.cambiarEstado(mockMvc, tokenSecretaria, id, "APROBADA"));
 
         // Paso 4: Generar documento final de esa solicitud
-        mockMvc.perform(get("/api/solicitudes-pazysalvo/generarDocumentoPazYSalvo/" + id + "/pdf")
+        mockMvc.perform(post("/api/solicitudes-pazysalvo/" + id + "/documento-generado")
+                        .param("numeroDocumento", "PYS-" + id)
+                        .param("fechaDocumento", "2025-03-01")
                         .header("Authorization", tokenSecretaria))
                 .andExpect(status().isOk())
-                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_PDF));
+                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_OCTET_STREAM));
     }
 }
 

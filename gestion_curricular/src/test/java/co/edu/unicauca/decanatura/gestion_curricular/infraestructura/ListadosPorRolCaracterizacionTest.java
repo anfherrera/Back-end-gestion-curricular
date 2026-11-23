@@ -232,25 +232,32 @@ class ListadosPorRolCaracterizacionTest {
     @DisplayName("Paz y salvo")
     void pazYSalvo() throws Exception {
         String base = "/api/solicitudes-pazysalvo/listarSolicitud-PazYSalvo";
+        String raiz = "/api/solicitudes-pazysalvo";
+        String pendientes = raiz + "?bandeja=pendientes&rol=";
+        // EST-7, paso 7a: las claves conservan la ruta vieja y se pide la nueva; el listado completo se retiró
         Map<String, List<String>> r = new LinkedHashMap<>();
         consultar(r, "P", STAFF_SIN_PROGRAMA, base);
-        consultar(r, "P", STAFF_SIN_PROGRAMA, base + "/Funcionario");
-        consultar(r, "P", COORDINADOR_A, base + "/Coordinador");
-        consultar(r, "P", COORDINADOR_A, base + "/Coordinador?periodoAcademico=" + OTRO_PERIODO);
-        consultar(r, "P", STAFF_SIN_PROGRAMA, base + "/Coordinador");
-        consultar(r, "P", STAFF_SIN_PROGRAMA, base + "/Secretaria");
-        consultar(r, "P", STAFF_SIN_PROGRAMA, base + "/Secretaria?periodoAcademico=" + OTRO_PERIODO);
+        consultarComo(r, "P", STAFF_SIN_PROGRAMA, base + "/Funcionario", pendientes + "funcionario");
+        consultarComo(r, "P", COORDINADOR_A, base + "/Coordinador", pendientes + "coordinador");
+        consultarComo(r, "P", COORDINADOR_A, base + "/Coordinador?periodoAcademico=" + OTRO_PERIODO,
+                pendientes + "coordinador&periodoAcademico=" + OTRO_PERIODO);
+        consultarComo(r, "P", STAFF_SIN_PROGRAMA, base + "/Coordinador", pendientes + "coordinador");
+        consultarComo(r, "P", STAFF_SIN_PROGRAMA, base + "/Secretaria", pendientes + "secretaria");
+        consultarComo(r, "P", STAFF_SIN_PROGRAMA, base + "/Secretaria?periodoAcademico=" + OTRO_PERIODO,
+                pendientes + "secretaria&periodoAcademico=" + OTRO_PERIODO);
         for (String rol : List.of("FUNCIONARIO", "COORDINADOR", "SECRETARIA", "otro")) {
-            consultar(r, "P", STAFF_SIN_PROGRAMA, base + "/porRol?rol=" + rol);
+            consultarComo(r, "P", STAFF_SIN_PROGRAMA, base + "/porRol?rol=" + rol, raiz + "?rol=" + rol);
         }
-        consultar(r, "P", STAFF_SIN_PROGRAMA, base + "/porRol?rol=ESTUDIANTE&idUsuario=" + estudianteA.getId_usuario());
-        consultar(r, "P", ESTUDIANTE_B, base + "/porRol?rol=FUNCIONARIO", "Estudiante");
+        consultarComo(r, "P", STAFF_SIN_PROGRAMA, base + "/porRol?rol=ESTUDIANTE&idUsuario=" + estudianteA.getId_usuario(),
+                raiz + "?rol=ESTUDIANTE&idUsuario=" + estudianteA.getId_usuario());
+        consultarComo(r, "P", ESTUDIANTE_B, base + "/porRol?rol=FUNCIONARIO", raiz + "?rol=FUNCIONARIO", "Estudiante");
         // /{id} con un nombre de rol (BUG-4)
         for (String rol : List.of("coordinador", "Funcionario", "SECRETARIA", "ESTUDIANTE", "otro")) {
             consultar(r, "P", COORDINADOR_A, base + "/" + rol);
         }
-        // BUG-4: /{id} ya no existe; /Funcionario sigue siendo su propia ruta
-        compararConReferencia("pazysalvo", r, "listados/correcciones/pazysalvo-bug4.json");
+        // BUG-4: /{id} ya no existe. EST-7: el listado completo y /Funcionario (de COORDINADOR_A) dan 404
+        compararConReferencia("pazysalvo", r, "listados/correcciones/pazysalvo-bug4.json",
+                "listados/correcciones/pazysalvo-est7.json");
     }
 
     /**
@@ -282,8 +289,10 @@ class ListadosPorRolCaracterizacionTest {
         consultar(r, "P", STAFF_SIN_PROGRAMA, raiz + "?rol=funcionario");
         consultar(r, "P", STAFF_SIN_PROGRAMA, raiz + "?bandeja=procesadas");
         consultar(r, "P", STAFF_SIN_PROGRAMA, raiz);
-        // BUG-45: la bandeja de procesadas responde como /Aprobadas de homologación; las rutas viejas siguen en 404
-        compararConReferencia("pazysalvo-procesadas", r, "listados/correcciones/pazysalvo-procesadas-bug45.json");
+        // BUG-45: la bandeja de procesadas responde como /Aprobadas de homologación; las rutas viejas siguen en 404.
+        // EST-7, paso 7a: ?rol= sin bandeja es ahora el listado por rol
+        compararConReferencia("pazysalvo-procesadas", r, "listados/correcciones/pazysalvo-procesadas-bug45.json",
+                "listados/correcciones/pazysalvo-procesadas-est7.json");
     }
 
     // ==================== ECAES ====================
@@ -320,10 +329,21 @@ class ListadosPorRolCaracterizacionTest {
     /** Hace la petición como {@code usuario} y guarda las etiquetas del conjunto que devuelve, en orden. */
     private void consultar(Map<String, List<String>> resultados, String tipo, String usuario, String ruta,
             String... roles) throws Exception {
+        consultarComo(resultados, tipo, usuario, ruta, ruta, roles);
+    }
+
+    private void consultarComo(Map<String, List<String>> resultados, String tipo, String usuario, String rutaClave,
+            String ruta) throws Exception {
+        consultarComo(resultados, tipo, usuario, rutaClave, ruta, "Funcionario", "Coordinador", "Secretario");
+    }
+
+    /** Como {@link #consultar}, pero la clave lleva {@code rutaClave} (la ruta con la que se grabó la referencia). */
+    private void consultarComo(Map<String, List<String>> resultados, String tipo, String usuario, String rutaClave,
+            String ruta, String... roles) throws Exception {
         SecurityContextHolder.getContext().setAuthentication(new UsernamePasswordAuthenticationToken(usuario, "x",
                 Arrays.stream(roles).map(rol -> new SimpleGrantedAuthority("ROLE_" + rol)).toList()));
         MvcResult resultado = mockMvc.perform(get(ruta)).andReturn();
-        String clave = "GET " + ruta.replace(String.valueOf(estudianteA.getId_usuario()), "{estudianteA}")
+        String clave = "GET " + rutaClave.replace(String.valueOf(estudianteA.getId_usuario()), "{estudianteA}")
                 + " [" + usuario.split("@")[0] + "]";
         int estado = resultado.getResponse().getStatus();
         if (estado != 200) {

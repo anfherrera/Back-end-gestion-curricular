@@ -2,7 +2,6 @@ package co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.cont
 
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -14,6 +13,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -67,7 +67,7 @@ public class SolicitudPazYSalvoRestController {
     private final Autorizacion autorizacion;
 
     @PreAuthorize("hasAnyRole('Estudiante', 'Administrador')")
-    @PostMapping("/crearSolicitud-PazYSalvo")
+    @PostMapping
     public ResponseEntity<?> crearSolicitudPazYSalvo(
             @Valid @RequestBody CrearSolicitudPazYSalvoDTOPeticion peticion) {
         return ErroresPazYSalvo.alCrear(() -> {
@@ -190,56 +190,52 @@ public class SolicitudPazYSalvoRestController {
         return ResponseEntity.badRequest().body(Map.of("error", mensaje));
     }
 
-    @GetMapping("/listarSolicitud-PazYSalvo")
-    public ResponseEntity<List<SolicitudPazYSalvoDTORespuesta>> listarSolicitudPazYSalvo() {
-        List<SolicitudPazYSalvo> solicitudes = solicitudPazYSalvoCU.listarSolicitudes();
-        List<SolicitudPazYSalvoDTORespuesta> respuesta = solicitudMapperDominio.mapearListaDeSolicitudesARespuesta(solicitudes);
-        return ResponseEntity.ok(respuesta);
-    }
-
-    /** Sin período: el funcionario de paz y salvo ve las enviadas de todos los períodos. */
-    @GetMapping("/listarSolicitud-PazYSalvo/Funcionario")
-    public ResponseEntity<List<SolicitudPazYSalvoDTORespuesta>> listarSolicitudPazYSalvoFuncionario() {
-        return responder(solicitudPazYSalvoCU.listar(
-                FiltroSolicitudes.pendientesDe(FlujoEstadosSolicitud.FUNCIONARIO, null, null)));
-    }
-
-    @GetMapping("/listarSolicitud-PazYSalvo/Coordinador")
-    public ResponseEntity<List<SolicitudPazYSalvoDTORespuesta>> listarSolicitudPazYSalvoToCoordinador(
+    /**
+     * Bandeja de un rol (EST-7): {@code bandeja=pendientes} son las que esperan su revisión y
+     * {@code bandeja=procesadas} (BUG-45), las que ya aprobó alguna vez.
+     *
+     * @param rol              funcionario, coordinador o secretaria
+     * @param bandeja          pendientes o procesadas
+     * @param periodoAcademico opcional ("2025-2"). En pendientes, el funcionario lo ignora y ve todos los períodos,
+     *                         y el coordinador y la secretaría usan el actual si falta. En procesadas, vacío o
+     *                         "todos" muestra todos los períodos.
+     */
+    @GetMapping(params = {"rol", "bandeja"})
+    public ResponseEntity<List<SolicitudPazYSalvoDTORespuesta>> listarBandeja(
+            @RequestParam String rol,
+            @RequestParam String bandeja,
             @RequestParam(required = false) String periodoAcademico) {
-        Integer idPrograma = autorizacion.idProgramaCoordinadorActual();
-        if (idPrograma == null) {
-            // Si no se puede obtener el programa, se devuelven todas, de todos los períodos (fallback)
-            return responder(solicitudPazYSalvoCU.listar(
-                    FiltroSolicitudes.pendientesDe(FlujoEstadosSolicitud.COORDINADOR, null, null)));
-        }
-        return responder(solicitudPazYSalvoCU.listar(FiltroSolicitudes.pendientesDe(
-                FlujoEstadosSolicitud.COORDINADOR, idPrograma, PeriodoDeConsulta.oActual(periodoAcademico))));
+        return switch (bandeja) {
+            case "pendientes" -> listarPendientes(rol, periodoAcademico);
+            case "procesadas" -> listarProcesadas(rol, periodoAcademico);
+            default -> throw new IllegalArgumentException("Bandeja no válida: use pendientes o procesadas");
+        };
     }
 
-    @GetMapping("/listarSolicitud-PazYSalvo/Secretaria")
-    public ResponseEntity<List<SolicitudPazYSalvoDTORespuesta>> listarSolicitudPazYSalvoToSecretaria(
-            @RequestParam(required = false) String periodoAcademico) {
-        return responder(solicitudPazYSalvoCU.listar(FiltroSolicitudes.pendientesDe(
-                FlujoEstadosSolicitud.SECRETARIO, null, PeriodoDeConsulta.oActual(periodoAcademico))));
+    private ResponseEntity<List<SolicitudPazYSalvoDTORespuesta>> listarPendientes(String rol, String periodoAcademico) {
+        return switch (rol) {
+            // Sin período: el funcionario de paz y salvo ve las enviadas de todos los períodos
+            case "funcionario" -> responder(solicitudPazYSalvoCU.listar(
+                    FiltroSolicitudes.pendientesDe(FlujoEstadosSolicitud.FUNCIONARIO, null, null)));
+            case "secretaria" -> responder(solicitudPazYSalvoCU.listar(FiltroSolicitudes.pendientesDe(
+                    FlujoEstadosSolicitud.SECRETARIO, null, PeriodoDeConsulta.oActual(periodoAcademico))));
+            case "coordinador" -> {
+                Integer idPrograma = autorizacion.idProgramaCoordinadorActual();
+                // Si no se puede obtener el programa, se devuelven todas, de todos los períodos (fallback)
+                yield responder(solicitudPazYSalvoCU.listar(idPrograma == null
+                        ? FiltroSolicitudes.pendientesDe(FlujoEstadosSolicitud.COORDINADOR, null, null)
+                        : FiltroSolicitudes.pendientesDe(FlujoEstadosSolicitud.COORDINADOR, idPrograma,
+                                PeriodoDeConsulta.oActual(periodoAcademico))));
+            }
+            default -> throw new IllegalArgumentException("Rol no válido: use funcionario, coordinador o secretaria");
+        };
     }
 
     /**
      * Historial de un rol (BUG-45): las solicitudes que ya aprobó alguna vez, aunque después hayan avanzado o
-     * se hayan rechazado. Sigue la convención de EST-7: la bandeja y el rol van como parámetros de consulta.
-     * Por ahora solo admite {@code bandeja=procesadas}; las pendientes siguen en {@code /listarSolicitud-PazYSalvo/{Rol}}.
-     *
-     * @param rol              funcionario, coordinador o secretaria
-     * @param periodoAcademico opcional ("2025-2"); vacío o "todos" muestra todos los períodos
+     * se hayan rechazado.
      */
-    @GetMapping
-    public ResponseEntity<List<SolicitudPazYSalvoDTORespuesta>> listarProcesadas(
-            @RequestParam String rol,
-            @RequestParam String bandeja,
-            @RequestParam(required = false) String periodoAcademico) {
-        if (!"procesadas".equals(bandeja)) {
-            throw new IllegalArgumentException("Bandeja no válida: use procesadas");
-        }
+    private ResponseEntity<List<SolicitudPazYSalvoDTORespuesta>> listarProcesadas(String rol, String periodoAcademico) {
         String periodo = PeriodoDeConsulta.oTodos(periodoAcademico);
         return switch (rol) {
             case "funcionario" -> responder(solicitudPazYSalvoCU.listar(
@@ -261,8 +257,18 @@ public class SolicitudPazYSalvoRestController {
         return ResponseEntity.ok(solicitudMapperDominio.mapearListaDeSolicitudesARespuesta(solicitudes));
     }
 
+    /**
+     * Sin {@code rol} no hay listado: responde el mismo 400 que daba la ruta cuando el parámetro era obligatorio.
+     * El listado completo sin filtros se retiró en EST-7 (no tenía uso).
+     */
     @PreAuthorize("isAuthenticated()")
-    @GetMapping("/listarSolicitud-PazYSalvo/porRol")
+    @GetMapping
+    public ResponseEntity<Void> listarSinRol() throws MissingServletRequestParameterException {
+        throw new MissingServletRequestParameterException("rol", "String");
+    }
+
+    @PreAuthorize("isAuthenticated()")
+    @GetMapping(params = {"rol", "!bandeja"})
     public ResponseEntity<List<SolicitudPazYSalvoDTORespuesta>> listarSolicitudPorRol(
             @RequestParam String rol,
             @RequestParam(required = false) Integer idUsuario) {
@@ -284,9 +290,7 @@ public class SolicitudPazYSalvoRestController {
         return ResponseEntity.ok(respuesta);
     }
 
-    // BUG-4: /listarSolicitud-PazYSalvo/{id} se separa en estas dos rutas (convención EST-7).
-    // Los nombres de rol ya no se aceptan ahí: las bandejas son /Funcionario, /Coordinador,
-    // /Secretaria y /porRol.
+    // BUG-4: /listarSolicitud-PazYSalvo/{id} se separó en estas dos rutas (convención EST-7).
 
     /** Una solicitud: el staff ve cualquiera y el estudiante solo las suyas. */
     @PreAuthorize("isAuthenticated()")
@@ -313,24 +317,22 @@ public class SolicitudPazYSalvoRestController {
     }
 
     @PreAuthorize("hasAnyRole('Funcionario', 'Coordinador', 'Secretario', 'Administrador')")
-    @PutMapping("/actualizarEstadoSolicitud")
+    /** La solicitud es la de la ruta: un {@code idSolicitud} en el cuerpo se ignora. */
+    @PutMapping("/{idSolicitud:\\d+}/estado")
     public ResponseEntity<?> actualizarEstadoSolicitudPazYSalvo(
+            @PathVariable Integer idSolicitud,
             @RequestBody CambioEstadoSolicitudDTOPeticion peticion) {
         return ErroresPazYSalvo.alCambiarEstado(() -> {
             if (peticion == null) {
                 return ResponseEntity.badRequest().body(Map.of("error", "La petición no puede ser nula"));
             }
-            
-            if (peticion.getIdSolicitud() == null) {
-                return ResponseEntity.badRequest().body(Map.of("error", "El ID de la solicitud es requerido"));
-            }
-            
+
             if (peticion.getNuevoEstado() == null || peticion.getNuevoEstado().trim().isEmpty()) {
                 return ResponseEntity.badRequest().body(Map.of("error", "El nuevo estado es requerido"));
             }
 
             var rechazo = solicitudPazYSalvoCU.cambiarEstadoSolicitud(
-                    peticion.getIdSolicitud(), peticion.getNuevoEstado(), peticion.getComentario(),
+                    idSolicitud, peticion.getNuevoEstado(), peticion.getComentario(),
                     rol -> autorizacion.tieneRol(rol) || autorizacion.tieneRol("Administrador"));
             if (rechazo.isPresent()) {
                 var detalle = rechazo.get();
@@ -346,43 +348,8 @@ public class SolicitudPazYSalvoRestController {
 
     // ===== Documento de Paz y Salvo (plantilla PAZ_SALVO de ServicioGeneracionDocumentos) =====
 
-    /** GET /generarDocumentoPazYSalvo/{id}/pdf */
-    @PreAuthorize("@autorizacion.esStaff() or @autorizacion.esDuenoSolicitud(#id)")
-    @GetMapping("/generarDocumentoPazYSalvo/{id}/pdf")
-    public ResponseEntity<byte[]> generarDocumentoPazYSalvoPDF(
-            @PathVariable Integer id,
-            @RequestParam(value = "tituloTrabajoGrado", required = false) String tituloTrabajoGrado,
-            @RequestParam(value = "directorTrabajoGrado", required = false) String directorTrabajoGrado)
-            throws java.io.IOException {
-        return documentoPazYSalvoPorDefecto(id, tituloTrabajoGrado, directorTrabajoGrado,
-                "PazYSalvo_" + id + ".pdf", MediaType.APPLICATION_PDF);
-    }
-
-    /** GET /generarDocumentoPazYSalvo/{id}/docx */
-    @PreAuthorize("@autorizacion.esStaff() or @autorizacion.esDuenoSolicitud(#id)")
-    @GetMapping("/generarDocumentoPazYSalvo/{id}/docx")
-    public ResponseEntity<byte[]> generarDocumentoPazYSalvoDOCX(
-            @PathVariable Integer id,
-            @RequestParam(value = "tituloTrabajoGrado", required = false) String tituloTrabajoGrado,
-            @RequestParam(value = "directorTrabajoGrado", required = false) String directorTrabajoGrado)
-            throws java.io.IOException {
-        return documentoPazYSalvoPorDefecto(id, tituloTrabajoGrado, directorTrabajoGrado,
-                "PazYSalvo_" + id + ".docx", MediaType.APPLICATION_OCTET_STREAM);
-    }
-
-    /** Documento con número PYS-{id} y fecha de hoy. */
-    private ResponseEntity<byte[]> documentoPazYSalvoPorDefecto(Integer id, String titulo, String director,
-            String nombreArchivo, MediaType tipo) throws java.io.IOException {
-        var datos = documentGeneratorService.generarPazYSalvo(id, null, titulo, director, true,
-                MediaType.APPLICATION_PDF.equals(tipo), null, null, null);
-        if (datos.isEmpty()) {
-            return ResponseEntity.internalServerError().build();
-        }
-        return descarga(datos.get().contenido(), nombreArchivo, tipo);
-    }
-
-    /** POST /generar-documento/{idSolicitud}: documento con número, fecha y observaciones del funcionario. */
-    @PostMapping("/generar-documento/{idSolicitud}")
+    /** Documento con número, fecha y observaciones del funcionario. */
+    @PostMapping("/{idSolicitud:\\d+}/documento-generado")
     public ResponseEntity<byte[]> generarDocumentoPazSalvo(
             @PathVariable Integer idSolicitud,
             @RequestParam("numeroDocumento") String numeroDocumento,
@@ -414,7 +381,7 @@ public class SolicitudPazYSalvoRestController {
      * Los documentos se asocian automáticamente cuando se crea la solicitud
      */
     @PreAuthorize("isAuthenticated()")
-    @PostMapping("/subir-documento")
+    @PostMapping("/documentos")
     public ResponseEntity<?> subirDocumentoPazSalvo(
             @RequestParam("file") MultipartFile file) {
         ValidadorArchivoPdf.Rechazo rechazo = ValidadorArchivoPdf.validar(file, ValidadorArchivoPdf.MAXIMO_10MB);
@@ -437,8 +404,8 @@ public class SolicitudPazYSalvoRestController {
      * Busca el documento en la BD para obtener su ruta completa (incluye subcarpetas)
      */
     @PreAuthorize("isAuthenticated()")
-    @GetMapping("/descargar-documento")
-    public ResponseEntity<byte[]> descargarDocumento(@RequestParam("filename") String filename) {
+    @GetMapping("/documentos")
+    public ResponseEntity<byte[]> descargarDocumento(@RequestParam("nombre") String filename) {
         
         // Buscar el documento en la BD por nombre para obtener su ruta completa
         String rutaArchivo = filename; // Por defecto usar el nombre recibido
@@ -508,7 +475,7 @@ public class SolicitudPazYSalvoRestController {
      * Descargar oficio por ID de solicitud de paz y salvo
      */
     @PreAuthorize("@autorizacion.esStaff() or @autorizacion.esDuenoSolicitud(#idSolicitud)")
-    @GetMapping("/descargarOficio/{idSolicitud}")
+    @GetMapping("/{idSolicitud:\\d+}/oficios/archivo")
     public ResponseEntity<byte[]> descargarOficioPazSalvo(@PathVariable Integer idSolicitud) {
         // El primer oficio en PDF (subido por la secretaría) cuyo archivo se pueda leer
         for (Documento documento : solicitudPazYSalvoCU.oficios(idSolicitud)) {
@@ -532,7 +499,7 @@ public class SolicitudPazYSalvoRestController {
      * Todos los documentos de la solicitud (los del estudiante y los oficios), con su tipo. Solo para el personal
      * (es la que usa la bandeja del coordinador).
      */
-    @GetMapping("/obtenerDocumentos/coordinador/{idSolicitud}")
+    @GetMapping("/{idSolicitud:\\d+}/documentos")
     public ResponseEntity<List<DocumentoConTipo>> obtenerDocumentosPazSalvoCoordinador(@PathVariable Integer idSolicitud) {
         List<DocumentoConTipo> documentos = new ArrayList<>();
         for (var conTipo : solicitudPazYSalvoCU.documentosConTipo(idSolicitud)) {
@@ -549,10 +516,9 @@ public class SolicitudPazYSalvoRestController {
      * Devuelve:
      * - Comentario de rechazo (si existe)
      * - Documentos que tienen comentarios (solo los que tienen comentario)
-     * GET /api/solicitudes-pazysalvo/obtenerComentarios/{idSolicitud}
      */
     @PreAuthorize("@autorizacion.esStaff() or @autorizacion.esDuenoSolicitud(#idSolicitud)")
-    @GetMapping("/obtenerComentarios/{idSolicitud}")
+    @GetMapping("/{idSolicitud:\\d+}/comentarios")
     public ResponseEntity<Comentarios> obtenerComentariosSolicitud(@PathVariable Integer idSolicitud) {
         var comentarios = solicitudPazYSalvoCU.comentarios(idSolicitud);
 
@@ -568,7 +534,7 @@ public class SolicitudPazYSalvoRestController {
      * Obtener oficios disponibles para una solicitud de paz y salvo (solo oficios/resoluciones)
      */
     @PreAuthorize("@autorizacion.esStaff() or @autorizacion.esDuenoSolicitud(#idSolicitud)")
-    @GetMapping("/obtenerOficios/{idSolicitud}")
+    @GetMapping("/{idSolicitud:\\d+}/oficios")
     public ResponseEntity<List<Oficio>> obtenerOficiosPazSalvo(@PathVariable Integer idSolicitud) {
         List<Oficio> oficios = new ArrayList<>();
         for (Documento documento : solicitudPazYSalvoCU.oficios(idSolicitud)) {
@@ -576,60 +542,11 @@ public class SolicitudPazYSalvoRestController {
         }
         return ResponseEntity.ok(oficios);
     }
-    
-    /**
-     * Validar documentos requeridos para paz y salvo
-     */
-    @PreAuthorize("@autorizacion.esStaff() or @autorizacion.esDuenoSolicitud(#idSolicitud)")
-    @GetMapping("/validarDocumentosRequeridos/{idSolicitud}")
-    public ResponseEntity<Revision> validarDocumentosRequeridosPazSalvo(@PathVariable Integer idSolicitud) {
-        var revision = solicitudPazYSalvoCU.revisarDocumentosRequeridos(idSolicitud);
-
-        Map<String, Boolean> documentosRequeridos = new HashMap<>();
-        revision.entregados().forEach((requerido, entregado) -> documentosRequeridos.put(requerido.clave(), entregado));
-
-        return ResponseEntity.ok(new Revision(documentosRequeridos, revision.todosCompletos(), revision.totalDocumentos()));
-    }
-    /**
- * Guardar oficio generado para una solicitud de paz y salvo
- */
-@PostMapping("/guardarOficio")
-public ResponseEntity<DocumentosDTORespuesta> guardarOficioPazSalvo(
-        @RequestParam("file") MultipartFile file,
-        @RequestParam("idSolicitud") Integer idSolicitud,
-        @RequestParam("tipoDocumento") String tipoDocumento,
-        @RequestParam("numeroDocumento") String numeroDocumento,
-        @RequestParam("fechaDocumento") String fechaDocumento,
-        @RequestParam(value = "observaciones", required = false) String observaciones) {
-    
-    
-    String nombreOriginal = file.getOriginalFilename();
-    
-    // Validaciones
-    if (file.isEmpty()) {
-        return ResponseEntity.badRequest().body(null);
-    }
-    
-    if (!nombreOriginal.toLowerCase().endsWith(".docx")) {
-        return ResponseEntity.status(HttpStatus.UNSUPPORTED_MEDIA_TYPE).body(null);
-    }
-    
-    // Comprueba la solicitud antes de guardar en subcarpetas: con 404 no queda ningún archivo en disco
-    var adjunto = documentosCU.guardarYAdjuntarSiExiste(ArchivoMultipart.de(file), "docx",
-            "pazysalvo", idSolicitud, () -> solicitudPazYSalvoCU.buscarPorId(idSolicitud) != null);
-    if (!adjunto.solicitudExiste()) {
-        return ResponseEntity.notFound().build();
-    }
-    return new ResponseEntity<>(
-        documentosMapperDominio.mapearDeDocumentoADTORespuesta(adjunto.documento()),
-        HttpStatus.CREATED
-    );
-}
 
     /**
      * Subir oficio PDF de Secretaría y asociarlo a una solicitud de paz y salvo
      */
-    @PostMapping("/subir-oficio-pdf/{idSolicitud}")
+    @PostMapping("/{idSolicitud:\\d+}/oficios")
     public ResponseEntity<DocumentosDTORespuesta> subirOficioPdfPazYSalvo(
             @PathVariable Integer idSolicitud,
             @RequestParam("file") MultipartFile file) {
