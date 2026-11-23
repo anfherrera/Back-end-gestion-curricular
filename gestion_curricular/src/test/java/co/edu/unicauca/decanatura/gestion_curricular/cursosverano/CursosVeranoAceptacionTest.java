@@ -230,7 +230,7 @@ class CursosVeranoAceptacionTest {
             }
             """.formatted(estudiante.id());
 
-        mockMvc.perform(post("/api/cursos-intersemestrales/solicitudes/preinscripcion")
+        mockMvc.perform(post("/api/cursos-verano/preinscripciones")
                         .header("Authorization", estudiante.token())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(jsonPreinscripcion))
@@ -284,7 +284,7 @@ class CursosVeranoAceptacionTest {
             }
             """;
 
-        mockMvc.perform(post("/api/cursos-intersemestrales/solicitudes/preinscripcion")
+        mockMvc.perform(post("/api/cursos-verano/preinscripciones")
                         .header("Authorization", tokenEstudiante)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(jsonInvalido))
@@ -309,7 +309,7 @@ class CursosVeranoAceptacionTest {
          *       AND debe mostrar estado actual de cada preinscripción
          */
         
-        mockMvc.perform(get("/api/cursos-intersemestrales/solicitudes/preinscripcion/estudiante/" + usuarioRepository.buscarPorCorreo(ESTUDIANTE_EMAIL).orElseThrow().getId_usuario())
+        mockMvc.perform(get("/api/cursos-verano/preinscripciones?usuario=" + usuarioRepository.buscarPorCorreo(ESTUDIANTE_EMAIL).orElseThrow().getId_usuario())
                         .header("Authorization", tokenEstudiante))
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON));
@@ -398,14 +398,14 @@ class CursosVeranoAceptacionTest {
             }
             """.formatted(estudiante.id());
 
-        mockMvc.perform(post("/api/cursos-intersemestrales/solicitudes/preinscripcion")
+        mockMvc.perform(post("/api/cursos-verano/preinscripciones")
                         .header("Authorization", estudiante.token())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(jsonPreinscripcion))
                 .andExpect(status().isCreated());
 
         // Paso 4: Consultar confirmación
-        mockMvc.perform(get("/api/cursos-intersemestrales/solicitudes/preinscripcion/estudiante/" + usuarioRepository.buscarPorCorreo(ESTUDIANTE_EMAIL).orElseThrow().getId_usuario())
+        mockMvc.perform(get("/api/cursos-verano/preinscripciones?usuario=" + usuarioRepository.buscarPorCorreo(ESTUDIANTE_EMAIL).orElseThrow().getId_usuario())
                         .header("Authorization", tokenEstudiante))
                 .andExpect(status().isOk());
     }

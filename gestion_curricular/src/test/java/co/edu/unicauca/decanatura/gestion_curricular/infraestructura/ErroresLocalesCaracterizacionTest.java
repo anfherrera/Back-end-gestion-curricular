@@ -87,7 +87,7 @@ class ErroresLocalesCaracterizacionTest {
     @Test
     void conservaRespuestasDeErrorYPoliticasQueIgnoranErrores() throws Exception {
         // Inscripciones: crear inscripción
-        Supplier<MockHttpServletRequestBuilder> crearInscripcion = () -> post("/api/cursos-intersemestrales/cursos-verano/inscripciones")
+        Supplier<MockHttpServletRequestBuilder> crearInscripcion = () -> post("/api/cursos-verano/inscripciones")
             .contentType(MediaType.APPLICATION_JSON).content("{\"idUsuario\":5,\"idCurso\":3,\"nombreSolicitud\":\"Ins\"}");
         caso("crearInscripcion ok", crearInscripcion, m -> {});
         caso("crearInscripcion asociar false", crearInscripcion, m -> when(m.curso().asociarEstudiante(3, 5)).thenReturn(false));
@@ -100,8 +100,8 @@ class ErroresLocalesCaracterizacionTest {
         }
 
         // Inscripciones: aceptar
-        Supplier<MockHttpServletRequestBuilder> aceptar = () -> put("/api/cursos-intersemestrales/inscripciones/7/aceptar")
-            .contentType(MediaType.APPLICATION_JSON).content("{}");
+        Supplier<MockHttpServletRequestBuilder> aceptar = () -> put("/api/cursos-verano/inscripciones/7/estado")
+            .contentType(MediaType.APPLICATION_JSON).content("{\"nuevoEstado\":\"aceptada\"}");
         caso("aceptar ok", aceptar, m -> {});
         caso("aceptar inexistente", aceptar, m -> when(m.solicitud().buscarPorIdInscripcion(7)).thenReturn(null));
         caso("aceptar validarPago null", aceptar, m -> when(m.solicitud().validarPago(anyInt(), anyBoolean(), any())).thenReturn(null));
@@ -117,8 +117,8 @@ class ErroresLocalesCaracterizacionTest {
         }
 
         // Inscripciones: rechazar
-        Supplier<MockHttpServletRequestBuilder> rechazar = () -> put("/api/cursos-intersemestrales/inscripciones/7/rechazar")
-            .contentType(MediaType.APPLICATION_JSON).content("{}");
+        Supplier<MockHttpServletRequestBuilder> rechazar = () -> put("/api/cursos-verano/inscripciones/7/estado")
+            .contentType(MediaType.APPLICATION_JSON).content("{\"nuevoEstado\":\"rechazada\"}");
         caso("rechazar ok", rechazar, m -> {});
         caso("rechazar validarPago null", rechazar, m -> when(m.solicitud().validarPago(anyInt(), anyBoolean(), any())).thenReturn(null));
         for (var e : EXCEPCIONES.entrySet()) {
@@ -187,11 +187,13 @@ class ErroresLocalesCaracterizacionTest {
         esperado = Correcciones.aplicar(esperado, "errores/correcciones/errores-locales-est7.json");
         // EST-7 (paso 8a): validar pago de CursoOfertadoRestController se retira y responde 404
         esperado = Correcciones.aplicar(esperado, "errores/correcciones/errores-locales-est7-paso8a.json");
+        // EST-7 (paso 8b): inscripciones y curso nuevo cambian de ruta; solo cambia la url de los errores
+        esperado = Correcciones.aplicar(esperado, "errores/correcciones/errores-locales-est7-paso8b.json");
         assertThat(actual).isEqualTo(esperado);
     }
 
     private static Supplier<MockHttpServletRequestBuilder> cursoNuevo(String condicion) {
-        return () -> post("/api/cursos-intersemestrales/solicitudes-curso-nuevo").contentType(MediaType.APPLICATION_JSON)
+        return () -> post("/api/cursos-verano/solicitudes-curso-nuevo").contentType(MediaType.APPLICATION_JSON)
             .content("{\"nombreCompleto\":\"Ana Ruiz\",\"codigo\":\"104512\",\"curso\":\"Calculo\",\"condicion\":" + condicion
                 + ",\"idUsuario\":5}");
     }
@@ -204,10 +206,8 @@ class ErroresLocalesCaracterizacionTest {
 
         // EST-7 (paso 8a): CursoOfertadoRestController se retira; sus casos fijan el 404
         MockMvc mvc = SoporteMvc.standaloneSetup(
-                new PreinscripcionesVeranoRestController(m.solicitud(), mock(CursosOfertadosMapperDominio.class),
-                    mock(SolicitudCursoDeVeranoPreinscripcionMapperDominio.class)),
-                new InscripcionesVeranoRestController(m.curso(), m.solicitud(), mock(GestionarArchivosCUIntPort.class),
-                    mock(GestionarSolicitudCUIntPort.class)),
+                new PreinscripcionesVeranoRestController(m.solicitud(), mock(CursosOfertadosMapperDominio.class)),
+                new InscripcionesVeranoRestController(m.curso(), m.solicitud()),
                 // El login no se ejecuta en estos casos: sus dependencias quedan sin crear
                 new UsuarioRestController(m.usuario(), m.usuarioMapper(), (AuthenticationManager) null, (JwtUtil) null,
                     (UserDetailsService) null, (SecurityAuditService) null, (LoginRateLimiter) null))

@@ -1,0 +1,202 @@
+{
+  "/~1api~1cursos-intersemestrales~1preinscripciones~17~1aprobar #0": {
+    "status": 400,
+    "body": {
+      "codigoError": "GC-0400",
+      "mensaje": "La petición no tiene el formato esperado: revise los parámetros y el cuerpo enviados",
+      "codigoHttp": 400,
+      "url": "http://localhost/api/cursos-verano/preinscripciones/7/estado",
+      "metodo": "PUT"
+    }
+  },
+  "/~1api~1cursos-intersemestrales~1preinscripciones~17~1aprobar #1": {
+    "status": 400,
+    "body": {
+      "codigoError": "GC-0400",
+      "mensaje": "La petición no tiene el formato esperado: revise los parámetros y el cuerpo enviados",
+      "codigoHttp": 400,
+      "url": "http://localhost/api/cursos-verano/preinscripciones/7/estado",
+      "metodo": "PUT"
+    }
+  },
+  "/~1api~1cursos-intersemestrales~1preinscripciones~17~1aprobar #6": {
+    "status": 400,
+    "body": {
+      "codigoError": "GC-0400",
+      "mensaje": "La petición no tiene el formato esperado: revise los parámetros y el cuerpo enviados",
+      "codigoHttp": 400,
+      "url": "http://localhost/api/cursos-verano/preinscripciones/7/estado",
+      "metodo": "PUT"
+    }
+  },
+  "/~1api~1cursos-intersemestrales~1preinscripciones~17~1aprobar #7": {
+    "status": 400,
+    "body": {
+      "codigoError": "GC-0400",
+      "mensaje": "La petición no tiene el formato esperado: revise los parámetros y el cuerpo enviados",
+      "codigoHttp": 400,
+      "url": "http://localhost/api/cursos-verano/preinscripciones/7/estado",
+      "metodo": "PUT"
+    }
+  },
+  "/~1api~1cursos-intersemestrales~1preinscripciones~17~1rechazar #0": {
+    "status": 400,
+    "body": {
+      "codigoError": "GC-0400",
+      "mensaje": "La petición no tiene el formato esperado: revise los parámetros y el cuerpo enviados",
+      "codigoHttp": 400,
+      "url": "http://localhost/api/cursos-verano/preinscripciones/7/estado",
+      "metodo": "PUT"
+    }
+  },
+  "/~1api~1cursos-intersemestrales~1preinscripciones~17~1rechazar #1": {
+    "status": 400,
+    "body": {
+      "codigoError": "GC-0400",
+      "mensaje": "La petición no tiene el formato esperado: revise los parámetros y el cuerpo enviados",
+      "codigoHttp": 400,
+      "url": "http://localhost/api/cursos-verano/preinscripciones/7/estado",
+      "metodo": "PUT"
+    }
+  },
+  "/~1api~1cursos-intersemestrales~1preinscripciones~17~1rechazar #6": {
+    "status": 400,
+    "body": {
+      "codigoError": "GC-0400",
+      "mensaje": "La petición no tiene el formato esperado: revise los parámetros y el cuerpo enviados",
+      "codigoHttp": 400,
+      "url": "http://localhost/api/cursos-verano/preinscripciones/7/estado",
+      "metodo": "PUT"
+    }
+  },
+  "/~1api~1cursos-intersemestrales~1preinscripciones~17~1rechazar #7": {
+    "status": 400,
+    "body": {
+      "codigoError": "GC-0400",
+      "mensaje": "La petición no tiene el formato esperado: revise los parámetros y el cuerpo enviados",
+      "codigoHttp": 400,
+      "url": "http://localhost/api/cursos-verano/preinscripciones/7/estado",
+      "metodo": "PUT"
+    }
+  },
+  "/~1api~1cursos-intersemestrales~1preinscripciones~17~1observaciones #0": {
+    "status": 400,
+    "body": {
+      "codigoError": "GC-0400",
+      "mensaje": "La petición no tiene el formato esperado: revise los parámetros y el cuerpo enviados",
+      "codigoHttp": 400,
+      "url": "http://localhost/api/cursos-verano/preinscripciones/7/observaciones",
+      "metodo": "PUT"
+    }
+  },
+  "/~1api~1cursos-intersemestrales~1preinscripciones~17~1observaciones #1": {
+    "status": 400,
+    "body": {
+      "codigoError": "GC-0400",
+      "mensaje": "La petición no tiene el formato esperado: revise los parámetros y el cuerpo enviados",
+      "codigoHttp": 400,
+      "url": "http://localhost/api/cursos-verano/preinscripciones/7/observaciones",
+      "metodo": "PUT"
+    }
+  },
+  "/~1api~1cursos-intersemestrales~1preinscripciones~17~1observaciones #6": {
+    "status": 400,
+    "body": {
+      "codigoError": "GC-0400",
+      "mensaje": "La petición no tiene el formato esperado: revise los parámetros y el cuerpo enviados",
+      "codigoHttp": 400,
+      "url": "http://localhost/api/cursos-verano/preinscripciones/7/observaciones",
+      "metodo": "PUT"
+    }
+  },
+  "/~1api~1cursos-intersemestrales~1preinscripciones~17~1observaciones #7": {
+    "status": 400,
+    "body": {
+      "codigoError": "GC-0400",
+      "mensaje": "La petición no tiene el formato esperado: revise los parámetros y el cuerpo enviados",
+      "codigoHttp": 400,
+      "url": "http://localhost/api/cursos-verano/preinscripciones/7/observaciones",
+      "metodo": "PUT"
+    }
+  },
+  "/~1api~1cursos-intersemestrales~1inscripciones~17~1aceptar #0": {
+    "status": 400,
+    "body": {
+      "codigoError": "GC-0400",
+      "mensaje": "La petición no tiene el formato esperado: revise los parámetros y el cuerpo enviados",
+      "codigoHttp": 400,
+      "url": "http://localhost/api/cursos-verano/inscripciones/7/estado",
+      "metodo": "PUT"
+    }
+  },
+  "/~1api~1cursos-intersemestrales~1inscripciones~17~1aceptar #1": {
+    "status": 400,
+    "body": {
+      "codigoError": "GC-0400",
+      "mensaje": "La petición no tiene el formato esperado: revise los parámetros y el cuerpo enviados",
+      "codigoHttp": 400,
+      "url": "http://localhost/api/cursos-verano/inscripciones/7/estado",
+      "metodo": "PUT"
+    }
+  },
+  "/~1api~1cursos-intersemestrales~1inscripciones~17~1aceptar #6": {
+    "status": 400,
+    "body": {
+      "codigoError": "GC-0400",
+      "mensaje": "La petición no tiene el formato esperado: revise los parámetros y el cuerpo enviados",
+      "codigoHttp": 400,
+      "url": "http://localhost/api/cursos-verano/inscripciones/7/estado",
+      "metodo": "PUT"
+    }
+  },
+  "/~1api~1cursos-intersemestrales~1inscripciones~17~1aceptar #7": {
+    "status": 400,
+    "body": {
+      "codigoError": "GC-0400",
+      "mensaje": "La petición no tiene el formato esperado: revise los parámetros y el cuerpo enviados",
+      "codigoHttp": 400,
+      "url": "http://localhost/api/cursos-verano/inscripciones/7/estado",
+      "metodo": "PUT"
+    }
+  },
+  "/~1api~1cursos-intersemestrales~1inscripciones~17~1rechazar #0": {
+    "status": 400,
+    "body": {
+      "codigoError": "GC-0400",
+      "mensaje": "La petición no tiene el formato esperado: revise los parámetros y el cuerpo enviados",
+      "codigoHttp": 400,
+      "url": "http://localhost/api/cursos-verano/inscripciones/7/estado",
+      "metodo": "PUT"
+    }
+  },
+  "/~1api~1cursos-intersemestrales~1inscripciones~17~1rechazar #1": {
+    "status": 400,
+    "body": {
+      "codigoError": "GC-0400",
+      "mensaje": "La petición no tiene el formato esperado: revise los parámetros y el cuerpo enviados",
+      "codigoHttp": 400,
+      "url": "http://localhost/api/cursos-verano/inscripciones/7/estado",
+      "metodo": "PUT"
+    }
+  },
+  "/~1api~1cursos-intersemestrales~1inscripciones~17~1rechazar #6": {
+    "status": 400,
+    "body": {
+      "codigoError": "GC-0400",
+      "mensaje": "La petición no tiene el formato esperado: revise los parámetros y el cuerpo enviados",
+      "codigoHttp": 400,
+      "url": "http://localhost/api/cursos-verano/inscripciones/7/estado",
+      "metodo": "PUT"
+    }
+  },
+  "/~1api~1cursos-intersemestrales~1inscripciones~17~1rechazar #7": {
+    "status": 400,
+    "body": {
+      "codigoError": "GC-0400",
+      "mensaje": "La petición no tiene el formato esperado: revise los parámetros y el cuerpo enviados",
+      "codigoHttp": 400,
+      "url": "http://localhost/api/cursos-verano/inscripciones/7/estado",
+      "metodo": "PUT"
+    }
+  }
+}

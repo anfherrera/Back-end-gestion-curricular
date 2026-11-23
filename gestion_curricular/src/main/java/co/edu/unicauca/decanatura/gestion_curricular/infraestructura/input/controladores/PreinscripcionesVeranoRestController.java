@@ -5,7 +5,6 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
@@ -43,48 +42,30 @@ import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.dto.r
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.dto.respuesta.PreinscripcionesVeranoDTORespuesta.Rechazo;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.dto.respuesta.PreinscripcionesVeranoDTORespuesta.RolEstudiante;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.dto.respuesta.PreinscripcionesVeranoDTORespuesta.UsuarioSolicitante;
-import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.dto.respuesta.SolicitudCursoVeranoPreinscripcionDTORespuesta;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.excepciones.ErroresCursosVerano;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.mappers.CursosOfertadosMapperDominio;
-import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.mappers.SolicitudCursoDeVeranoPreinscripcionMapperDominio;
 import co.edu.unicauca.decanatura.gestion_curricular.seguridad.Autorizacion;
 
 /**
  * Preinscripciones a cursos de verano y solicitudes de curso nuevo.
- * Ruta base compartida con los demás controladores de cursos de verano.
+ * Rutas /preinscripciones y /solicitudes-curso-nuevo del prefijo de cursos de verano (EST-7, paso 8b).
  */
 @RestController
-@RequestMapping("/api/cursos-intersemestrales")
+@RequestMapping("/api/cursos-verano")
 @RequiredArgsConstructor
 public class PreinscripcionesVeranoRestController {
 
     private final GestionarSolicitudCursoVeranoCUIntPort solicitudCU;
     private final CursosOfertadosMapperDominio cursoMapper;
-    private final SolicitudCursoDeVeranoPreinscripcionMapperDominio solicitudMapper;
-
-    /**
-     * Obtener solicitudes de un estudiante especifico
-     * GET /api/cursos-intersemestrales/estudiante/{id}
-     */
-    @PreAuthorize("@autorizacion.esStaff() or @autorizacion.esUsuarioActual(#id)")
-    @GetMapping("/estudiante/{id}")
-    public ResponseEntity<List<SolicitudCursoVeranoPreinscripcionDTORespuesta>> obtenerSolicitudesEstudiante(
-            @Min(value = 1) @PathVariable Integer id) {
-        List<SolicitudCursoVeranoPreinscripcion> solicitudes = solicitudCU.buscarSolicitudesPorUsuario(id);
-        List<SolicitudCursoVeranoPreinscripcionDTORespuesta> respuesta = solicitudes.stream()
-                .map(solicitudMapper::mapearDeSolicitudCursoVeranoPreinscripcionARespuesta)
-                .collect(Collectors.toList());
-        return ResponseEntity.ok(respuesta);
-    }
 
     /**
      * Obtener preinscripciones de un usuario especifico (endpoint que espera el frontend)
-     * GET /api/cursos-intersemestrales/preinscripciones/usuario/{id}
+     * GET /api/cursos-verano/preinscripciones?usuario={id}
      */
     @PreAuthorize("@autorizacion.esStaff() or @autorizacion.esUsuarioActual(#id)")
-    @GetMapping("/preinscripciones/usuario/{id}")
+    @GetMapping(value = "/preinscripciones", params = {"usuario", "!curso"})
     public ResponseEntity<List<PreinscripcionUsuario>> obtenerPreinscripcionesPorUsuario(
-            @Min(value = 1) @PathVariable Integer id) {
+            @Min(value = 1) @RequestParam("usuario") Integer id) {
 
         List<PreinscripcionUsuario> preinscripciones = new ArrayList<>();
 
@@ -131,19 +112,15 @@ public class PreinscripcionesVeranoRestController {
         return ResponseEntity.ok(preinscripciones);
     }
 
-    /**
-     * Obtener preinscripciones por estudiante (alias para compatibilidad con pruebas)
-     * GET /api/cursos-intersemestrales/solicitudes/preinscripcion/estudiante/{id}
-     */
-    @PreAuthorize("@autorizacion.esStaff() or @autorizacion.esUsuarioActual(#id)")
-    @GetMapping("/solicitudes/preinscripcion/estudiante/{id}")
-    public ResponseEntity<List<PreinscripcionUsuario>> obtenerPreinscripcionesPorEstudianteAlias(@PathVariable Integer id) {
-        return obtenerPreinscripcionesPorUsuario(id);
+    /** Sin filtro, o con los dos a la vez: 400 con lo que se admite. */
+    @GetMapping("/preinscripciones")
+    public ResponseEntity<Void> preinscripcionesSinFiltro() {
+        throw new IllegalArgumentException("Filtro no válido: use usuario o curso, uno solo");
     }
 
     /**
      * Crear solicitud de curso nuevo
-     * POST /api/cursos-intersemestrales/solicitudes-curso-nuevo
+     * POST /api/cursos-verano/solicitudes-curso-nuevo
      */
     @PreAuthorize("@autorizacion.esStaff() or #peticion.idUsuario == null or @autorizacion.esUsuarioActual(#peticion.idUsuario)")
     @PostMapping("/solicitudes-curso-nuevo")
@@ -197,10 +174,10 @@ public class PreinscripcionesVeranoRestController {
 
     /**
      * Crear preinscripcion a curso de verano
-     * POST /api/cursos-intersemestrales/cursos-verano/preinscripciones
+     * POST /api/cursos-verano/preinscripciones
      */
     @PreAuthorize("@autorizacion.esStaff() or #peticion.idUsuario == null or @autorizacion.esUsuarioActual(#peticion.idUsuario)")
-    @PostMapping("/cursos-verano/preinscripciones")
+    @PostMapping("/preinscripciones")
     public ResponseEntity<?> crearPreinscripcion(@RequestBody PreinscripcionCursoVeranoDTOPeticion peticion) {
         
         // Validar datos obligatorios
@@ -262,26 +239,16 @@ public class PreinscripcionesVeranoRestController {
                                 Date fecha, String estado, String mensaje) {
     }
 
-    /**
-     * Crear preinscripcion a curso de verano (alias para compatibilidad con pruebas)
-     * POST /api/cursos-intersemestrales/solicitudes/preinscripcion
-     */
-    @PreAuthorize("@autorizacion.esStaff() or #peticion.idUsuario == null or @autorizacion.esUsuarioActual(#peticion.idUsuario)")
-    @PostMapping("/solicitudes/preinscripcion")
-    public ResponseEntity<?> crearPreinscripcionAlias(@RequestBody PreinscripcionCursoVeranoDTOPeticion peticion) {
-        return crearPreinscripcion(peticion);
-    }
-
     // ==================== ENDPOINTS PARA GESTION DE PREINSCRIPCIONES ====================
 
     /**
      * Obtener preinscripciones por curso (datos reales de la base de datos)
-     * GET /api/cursos-intersemestrales/preinscripciones/curso/{idCurso}
+     * GET /api/cursos-verano/preinscripciones?curso={idCurso}
      */
     @PreAuthorize("hasAnyRole(" + Autorizacion.ROLES_STAFF + ")")
-    @GetMapping("/preinscripciones/curso/{idCurso}")
+    @GetMapping(value = "/preinscripciones", params = {"curso", "!usuario"})
     public ResponseEntity<List<PreinscripcionCurso>> getPreinscripcionesPorCurso(
-            @PathVariable Long idCurso) {
+            @RequestParam("curso") Long idCurso) {
 
         List<PreinscripcionCurso> preinscripciones = new ArrayList<>();
 
@@ -330,10 +297,10 @@ public class PreinscripcionesVeranoRestController {
 
     /**
      * Actualizar observaciones de preinscripcion
-     * PUT /api/cursos-intersemestrales/preinscripciones/{idPreinscripcion}/observaciones
+     * PUT /api/cursos-verano/preinscripciones/{idPreinscripcion}/observaciones
      */
     @PreAuthorize("hasAnyRole('Funcionario', 'Coordinador', 'Administrador')")
-    @PutMapping("/preinscripciones/{idPreinscripcion}/observaciones")
+    @PutMapping("/preinscripciones/{idPreinscripcion:\\d+}/observaciones")
     public ResponseEntity<?> actualizarObservacionesPreinscripcion(
             @PathVariable Long idPreinscripcion,
             @RequestBody @Valid DecisionSolicitudDTOPeticion request) {
@@ -363,30 +330,35 @@ public class PreinscripcionesVeranoRestController {
     // ==================== ENDPOINTS PARA APROBAR Y RECHAZAR PREINSCRIPCIONES ====================
 
     /**
-     * Aprobar preinscripcion (para funcionarios y coordinadores)
-     * PUT /api/cursos-intersemestrales/preinscripciones/{idSolicitud}/aprobar
+     * Aprobar o rechazar una preinscripcion (para funcionarios y coordinadores)
+     * PUT /api/cursos-verano/preinscripciones/{idSolicitud}/estado, con {@code nuevoEstado} aprobada (y
+     * {@code comentarios}) o rechazada (y {@code motivo}).
      */
     @PreAuthorize("hasAnyRole('Funcionario', 'Coordinador', 'Administrador')")
-    @PutMapping("/preinscripciones/{idSolicitud}/aprobar")
-    public ResponseEntity<Aprobacion> aprobarPreinscripcion(
+    @PutMapping("/preinscripciones/{idSolicitud:\\d+}/estado")
+    public ResponseEntity<?> cambiarEstadoPreinscripcion(
             @PathVariable Integer idSolicitud,
-            @RequestBody(required = false) @Valid DecisionSolicitudDTOPeticion requestBody) {
-        String comentarios = requestBody != null ? requestBody.getComentarios() : null;
+            @RequestBody @Valid DecisionSolicitudDTOPeticion requestBody) {
+        String nuevoEstado = requestBody.getNuevoEstado();
+        if ("aprobada".equals(nuevoEstado)) {
+            return aprobarPreinscripcion(idSolicitud, requestBody);
+        }
+        if ("rechazada".equals(nuevoEstado)) {
+            return rechazarPreinscripcion(idSolicitud, requestBody);
+        }
+        throw new IllegalArgumentException("Estado no válido: use aprobada o rechazada");
+    }
+
+    private ResponseEntity<Aprobacion> aprobarPreinscripcion(Integer idSolicitud,
+            DecisionSolicitudDTOPeticion requestBody) {
+        String comentarios = requestBody.getComentarios();
         SolicitudCursoVeranoPreinscripcion solicitudAprobada = solicitudCU.aprobarPreinscripcion(idSolicitud, comentarios);
 
         return ResponseEntity.ok(new Aprobacion(true, "Preinscripcion aprobada exitosamente",
             solicitudAprobada.getIdSolicitud()));
     }
 
-    /**
-     * Rechazar preinscripcion (para funcionarios y coordinadores)
-     * PUT /api/cursos-intersemestrales/preinscripciones/{idSolicitud}/rechazar
-     */
-    @PreAuthorize("hasAnyRole('Funcionario', 'Coordinador', 'Administrador')")
-    @PutMapping("/preinscripciones/{idSolicitud}/rechazar")
-    public ResponseEntity<?> rechazarPreinscripcion(
-            @PathVariable Integer idSolicitud,
-            @RequestBody @Valid DecisionSolicitudDTOPeticion requestBody) {
+    private ResponseEntity<?> rechazarPreinscripcion(Integer idSolicitud, DecisionSolicitudDTOPeticion requestBody) {
         String motivo = requestBody.getMotivo();
         if (motivo == null || motivo.trim().isEmpty()) {
             return ResponseEntity.badRequest().body(Map.of("error", "Debe proporcionar un motivo para el rechazo"));

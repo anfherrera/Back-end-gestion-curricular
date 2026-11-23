@@ -34,7 +34,6 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.RequestBuilder;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
 
-import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarArchivosCUIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.soporte.SoporteMvc;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarCursoOfertadoVeranoCUIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarSolicitudCUIntPort;
@@ -48,6 +47,7 @@ import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.SolicitudCu
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.SolicitudCursoVeranoPreinscripcion;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Usuario;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.enums.CondicionSolicitudVerano;
+import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.controladores.CursosVeranoRestController;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.controladores.InscripcionesVeranoRestController;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.excepciones.RestApiExceptionHandler;
 import co.edu.unicauca.decanatura.gestion_curricular.soporte.Correcciones;
@@ -61,6 +61,8 @@ import co.edu.unicauca.decanatura.gestion_curricular.soporte.Correcciones;
 class InscripcionesVeranoRespuestasCaracterizacionTest {
     private static final long MARZO = 1710522000000L;
     private static final String BASE = "/api/cursos-intersemestrales";
+    /** EST-7, paso 8b: las claves conservan las operaciones; lo retirado sigue pidiendo BASE y responde 404. */
+    private static final String NUEVA = "/api/cursos-verano";
 
     private final ObjectMapper json = new ObjectMapper();
     private long inicio;
@@ -131,15 +133,16 @@ class InscripcionesVeranoRespuestasCaracterizacionTest {
                 default -> 1;
             };
         });
-        MockMvc mvc = SoporteMvc.standaloneSetup(new InscripcionesVeranoRestController(cursos, cu,
-                mock(GestionarArchivosCUIntPort.class), general))
+        // EST-7 (paso 8b): los elegibles pasan a CursosVeranoRestController; lo retirado responde 404
+        MockMvc mvc = SoporteMvc.standaloneSetup(new InscripcionesVeranoRestController(cursos, cu),
+                new CursosVeranoRestController(cursos, cu, null, null, null))
             .setControllerAdvice(new RestApiExceptionHandler()).build();
         ObjectNode resultados = json.createObjectNode();
         inicio = System.currentTimeMillis();
 
         for (int idCurso = 1; idCurso <= 5; idCurso++) {
             ObjectNode creada = registrar(resultados, "crear curso " + idCurso, mvc,
-                json(post(BASE + "/cursos-verano/inscripciones"),
+                json(post(NUEVA + "/inscripciones"),
                     "{\"idUsuario\":7,\"idCurso\":" + idCurso + ",\"nombreSolicitud\":\"Inscripción\"}"),
                 idCurso == 2);
             assertThat(creada.get("status").asInt()).isPositive();
@@ -153,25 +156,25 @@ class InscripcionesVeranoRespuestasCaracterizacionTest {
 
         for (int idCurso : new int[] {1, 2}) {
             registrar(resultados, "elegibles " + idCurso, mvc,
-                get(BASE + "/inscripciones/estudiantes-elegibles/" + idCurso), false);
+                get(NUEVA + "/cursos/" + idCurso + "/estudiantes-elegibles"), false);
         }
 
         for (int id : new int[] {1, 2, 3, 4, 5}) {
             ObjectNode aceptada = registrar(resultados, "aceptar " + id, mvc,
-                json(put(BASE + "/inscripciones/" + id + "/aceptar"), "{\"observaciones\":\"  \"}"), false);
+                json(put(NUEVA + "/inscripciones/" + id + "/estado"), "{\"nuevoEstado\":\"aceptada\",\"observaciones\":\"  \"}"), false);
             marcarFecha(aceptada, "fecha_aceptacion");
         }
         ObjectNode conObservacion = registrar(resultados, "aceptar con observaciones", mvc,
-            json(put(BASE + "/inscripciones/3/aceptar"), "{\"observaciones\":\" pago ok \"}"), false);
+            json(put(NUEVA + "/inscripciones/3/estado"), "{\"nuevoEstado\":\"aceptada\",\"observaciones\":\" pago ok \"}"), false);
         marcarFecha(conObservacion, "fecha_aceptacion");
 
         for (int id : new int[] {1, 2, 3, 6, 7}) {
             ObjectNode rechazada = registrar(resultados, "rechazar " + id, mvc,
-                json(put(BASE + "/inscripciones/" + id + "/rechazar"), "{\"motivo\":\"  sin pago  \"}"), false);
+                json(put(NUEVA + "/inscripciones/" + id + "/estado"), "{\"nuevoEstado\":\"rechazada\",\"motivo\":\"  sin pago  \"}"), false);
             marcarFecha(rechazada, "fecha_rechazo");
         }
         ObjectNode sinMotivo = registrar(resultados, "rechazar sin motivo", mvc,
-            json(put(BASE + "/inscripciones/3/rechazar"), "{}"), false);
+            json(put(NUEVA + "/inscripciones/3/estado"), "{\"nuevoEstado\":\"rechazada\"}"), false);
         marcarFecha(sinMotivo, "fecha_rechazo");
 
         registrar(resultados, "confirmar", mvc, put(BASE + "/inscripciones/9/confirmar"), false);
@@ -199,6 +202,8 @@ class InscripcionesVeranoRespuestasCaracterizacionTest {
         esperado = Correcciones.aplicar(esperado, "verano-endpoints/correcciones/inscripciones-respuestas-bug35.json");
         // BUG-33: confirmar no está implementado y responde 501 sin cuerpo
         esperado = Correcciones.aplicar(esperado, "verano-endpoints/correcciones/inscripciones-respuestas-bug33.json");
+        // EST-7 (paso 8b): cancelar, confirmar, la información y las estadísticas se retiran (404)
+        esperado = Correcciones.aplicar(esperado, "verano-endpoints/correcciones/inscripciones-respuestas-est7-paso8b.json");
         assertThat(resultados).isEqualTo(esperado);
     }
 

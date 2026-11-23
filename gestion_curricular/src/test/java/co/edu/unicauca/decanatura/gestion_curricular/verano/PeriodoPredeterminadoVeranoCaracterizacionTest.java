@@ -35,12 +35,12 @@ class PeriodoPredeterminadoVeranoCaracterizacionTest {
             return solicitud;
         });
         var mvc = SoporteMvc.standaloneSetup(new PreinscripcionesVeranoRestController(cu,
-            mock(CursosOfertadosMapperDominio.class), mock(SolicitudCursoDeVeranoPreinscripcionMapperDominio.class)))
+            mock(CursosOfertadosMapperDominio.class)))
             .setControllerAdvice(new RestApiExceptionHandler()).build();
         var json = new ObjectMapper();
         Map<String, Object> resultados = new LinkedHashMap<>();
         for (String condicion : new String[]{"Primera_Vez", "INVALIDA"}) {
-            var respuesta = mvc.perform(post("/api/cursos-intersemestrales/solicitudes-curso-nuevo")
+            var respuesta = mvc.perform(post("/api/cursos-verano/solicitudes-curso-nuevo")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content("{\"idUsuario\":31,\"nombreCompleto\":\"Estudiante\",\"codigo\":\"123\",\"curso\":\"Materia\",\"condicion\":\"" + condicion + "\"}"))
                 .andReturn().getResponse();

@@ -246,7 +246,7 @@ class GestionCursosVeranoFuncionalTest {
             }
             """.formatted(estudiante.id());
 
-        mockMvc.perform(post("/api/cursos-intersemestrales/solicitudes/preinscripcion")
+        mockMvc.perform(post("/api/cursos-verano/preinscripciones")
                         .header("Authorization", estudiante.token())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(jsonPreinscripcion))
@@ -274,7 +274,7 @@ class GestionCursosVeranoFuncionalTest {
             }
             """;
 
-        mockMvc.perform(post("/api/cursos-intersemestrales/solicitudes/preinscripcion")
+        mockMvc.perform(post("/api/cursos-verano/preinscripciones")
                         .header("Authorization", tokenEstudiante)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(jsonInvalido))
@@ -296,7 +296,7 @@ class GestionCursosVeranoFuncionalTest {
          * RESULTADO ESPERADO: Lista de preinscripciones del estudiante
          */
         
-        mockMvc.perform(get("/api/cursos-intersemestrales/solicitudes/preinscripcion/estudiante/" + usuarioRepository.buscarPorCorreo(ESTUDIANTE_EMAIL).orElseThrow().getId_usuario())
+        mockMvc.perform(get("/api/cursos-verano/preinscripciones?usuario=" + usuarioRepository.buscarPorCorreo(ESTUDIANTE_EMAIL).orElseThrow().getId_usuario())
                         .header("Authorization", tokenEstudiante))
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON));
@@ -383,14 +383,14 @@ class GestionCursosVeranoFuncionalTest {
             }
             """.formatted(estudiante.id());
 
-        mockMvc.perform(post("/api/cursos-intersemestrales/solicitudes/preinscripcion")
+        mockMvc.perform(post("/api/cursos-verano/preinscripciones")
                         .header("Authorization", estudiante.token())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(jsonPreinscripcion))
                 .andExpect(status().isCreated());
 
         // Paso 4: Consultar preinscripciones del estudiante
-        mockMvc.perform(get("/api/cursos-intersemestrales/solicitudes/preinscripcion/estudiante/" + usuarioRepository.buscarPorCorreo(ESTUDIANTE_EMAIL).orElseThrow().getId_usuario())
+        mockMvc.perform(get("/api/cursos-verano/preinscripciones?usuario=" + usuarioRepository.buscarPorCorreo(ESTUDIANTE_EMAIL).orElseThrow().getId_usuario())
                         .header("Authorization", tokenEstudiante))
                 .andExpect(status().isOk());
     }
@@ -537,18 +537,8 @@ class GestionCursosVeranoFuncionalTest {
                 .andExpect(jsonPath("$.estudiantes[2].id_solicitud_inscripcion").hasJsonPath())
                 .andExpect(jsonPath("$.estudiantes[2].id_solicitud_inscripcion").doesNotExist());
 
-        byte[] respuesta = mockMvc.perform(get("/api/cursos-intersemestrales/inscripciones")
-                        .header("Authorization", tokenCoordinador))
-                .andExpect(status().isOk())
-                .andReturn().getResponse().getContentAsByteArray();
-        var fila = java.util.stream.StreamSupport.stream(new com.fasterxml.jackson.databind.ObjectMapper()
-                        .readTree(respuesta).spliterator(), false)
-                .filter(inscripcion -> inscripcion.path("id").asInt() == 902)
-                .findFirst().orElseThrow();
-        assertThat(fila.path("cursoId").asInt()).isEqualTo(901);
-        assertThat(fila.path("estudiante").path("id_usuario").asInt()).isEqualTo(1);
-        assertThat(fila.path("archivoPago").path("nombre").asText()).isEqualTo("Sin comprobante");
-        assertThat(fila.path("archivoPago").path("url").isNull()).isTrue();
+        // El paso del listado de inscripciones (GET /inscripciones) se quitó en EST-7, paso 8b: la ruta se retira
+        // sin equivalente (la 902 tiene el pago validado y no sale entre los elegibles).
 
         byte[] pdf = mockMvc.perform(get("/api/cursos-verano/cursos/901/estudiantes?formato=pdf")
                         .header("Authorization", tokenCoordinador))

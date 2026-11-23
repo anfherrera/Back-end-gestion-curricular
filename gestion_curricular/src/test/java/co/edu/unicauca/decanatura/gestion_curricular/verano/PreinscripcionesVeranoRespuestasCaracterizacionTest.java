@@ -56,6 +56,8 @@ import co.edu.unicauca.decanatura.gestion_curricular.soporte.Correcciones;
 class PreinscripcionesVeranoRespuestasCaracterizacionTest {
     private static final long MARZO = 1710522000000L;
     private static final String BASE = "/api/cursos-intersemestrales";
+    /** EST-7, paso 8b: las claves conservan las operaciones; lo retirado sigue pidiendo BASE y responde 404. */
+    private static final String NUEVA = "/api/cursos-verano";
 
     private final ObjectMapper json = new ObjectMapper();
 
@@ -89,64 +91,66 @@ class PreinscripcionesVeranoRespuestasCaracterizacionTest {
             .thenAnswer(i -> preinscripcion(i.getArgument(0), "Aprobado", null, null, null));
         when(cu.rechazarPreinscripcion(anyInt(), nullable(String.class)))
             .thenAnswer(i -> preinscripcion(i.getArgument(0), "Rechazado", null, null, null));
-        MockMvc mvc = SoporteMvc.standaloneSetup(new PreinscripcionesVeranoRestController(cu, mapper(),
-                mock(SolicitudCursoDeVeranoPreinscripcionMapperDominio.class)))
+        MockMvc mvc = SoporteMvc.standaloneSetup(new PreinscripcionesVeranoRestController(cu, mapper()))
             .setControllerAdvice(new RestApiExceptionHandler()).build();
         ObjectNode resultados = json.createObjectNode();
 
         for (int id : new int[] {1, 2, 3, 4}) {
-            registrar(resultados, "usuario " + id, mvc, get(BASE + "/preinscripciones/usuario/" + id));
+            registrar(resultados, "usuario " + id, mvc, get(NUEVA + "/preinscripciones?usuario=" + id));
         }
         registrar(resultados, "usuario alias", mvc, get(BASE + "/solicitudes/preinscripcion/estudiante/1"));
 
         String nuevo = "{\"nombreCompleto\":\"Ana Ruiz\",\"codigo\":\"1046\",\"condicion\":\"Primera_Vez\","
             + "\"idUsuario\":7,\"curso\":\"";
         ObjectNode creado = registrar(resultados, "curso nuevo", mvc,
-            json(post(BASE + "/solicitudes-curso-nuevo"), nuevo + "Cálculo\"}"));
+            json(post(NUEVA + "/solicitudes-curso-nuevo"), nuevo + "Cálculo\"}"));
         JsonNode fecha = creado.get("body").get("fecha");
         if (fecha.isTextual() && fecha.asText().equals(new Date(MARZO).toString())) {
             ((ObjectNode) creado.get("body")).put("fecha", "<fecha de registro>");
         }
-        registrar(resultados, "curso nuevo sin usuario", mvc, json(post(BASE + "/solicitudes-curso-nuevo"),
+        registrar(resultados, "curso nuevo sin usuario", mvc, json(post(NUEVA + "/solicitudes-curso-nuevo"),
             "{\"nombreCompleto\":null,\"condicion\":\"Repitencia\",\"curso\":\"X\"}"));
-        registrar(resultados, "curso nuevo condicion invalida", mvc, json(post(BASE + "/solicitudes-curso-nuevo"),
+        registrar(resultados, "curso nuevo condicion invalida", mvc, json(post(NUEVA + "/solicitudes-curso-nuevo"),
             nuevo.replace("Primera_Vez", "Otra") + "Cálculo\"}"));
         registrar(resultados, "curso nuevo invalido", mvc,
-            json(post(BASE + "/solicitudes-curso-nuevo"), nuevo + "invalido\"}"));
+            json(post(NUEVA + "/solicitudes-curso-nuevo"), nuevo + "invalido\"}"));
         registrar(resultados, "curso nuevo falla", mvc,
-            json(post(BASE + "/solicitudes-curso-nuevo"), nuevo + "falla\"}"));
+            json(post(NUEVA + "/solicitudes-curso-nuevo"), nuevo + "falla\"}"));
 
         registrar(resultados, "preinscribir sin curso", mvc,
-            json(post(BASE + "/cursos-verano/preinscripciones"), "{\"idUsuario\":7}"));
+            json(post(NUEVA + "/preinscripciones"), "{\"idUsuario\":7}"));
         registrar(resultados, "preinscribir duplicada", mvc,
-            json(post(BASE + "/cursos-verano/preinscripciones"), "{\"idUsuario\":7,\"idCurso\":2}"));
+            json(post(NUEVA + "/preinscripciones"), "{\"idUsuario\":7,\"idCurso\":2}"));
         registrar(resultados, "preinscribir alias sin usuario", mvc,
             json(post(BASE + "/solicitudes/preinscripcion"), "{\"idCurso\":3}"));
 
         for (int id : new int[] {1, 2, 4}) {
-            registrar(resultados, "curso " + id, mvc, get(BASE + "/preinscripciones/curso/" + id));
+            registrar(resultados, "curso " + id, mvc, get(NUEVA + "/preinscripciones?curso=" + id));
         }
 
         registrar(resultados, "observaciones", mvc,
-            json(put(BASE + "/preinscripciones/1/observaciones"), "{\"observaciones\":\"  revisar  \"}"));
+            json(put(NUEVA + "/preinscripciones/1/observaciones"), "{\"observaciones\":\"  revisar  \"}"));
         registrar(resultados, "observaciones vacias", mvc,
-            json(put(BASE + "/preinscripciones/1/observaciones"), "{\"observaciones\":\"  \"}"));
+            json(put(NUEVA + "/preinscripciones/1/observaciones"), "{\"observaciones\":\"  \"}"));
         registrar(resultados, "observaciones inexistente", mvc,
-            json(put(BASE + "/preinscripciones/9/observaciones"), "{\"observaciones\":\"x\"}"));
-        registrar(resultados, "aprobar", mvc, json(put(BASE + "/preinscripciones/5/aprobar"), "{}"));
+            json(put(NUEVA + "/preinscripciones/9/observaciones"), "{\"observaciones\":\"x\"}"));
+        registrar(resultados, "aprobar", mvc, json(put(NUEVA + "/preinscripciones/5/estado"), "{\"nuevoEstado\":\"aprobada\"}"));
         registrar(resultados, "aprobar sin cuerpo", mvc, put(BASE + "/preinscripciones/5/aprobar"));
         registrar(resultados, "rechazar", mvc,
-            json(put(BASE + "/preinscripciones/5/rechazar"), "{\"motivo\":\"  cupo  \"}"));
+            json(put(NUEVA + "/preinscripciones/5/estado"), "{\"nuevoEstado\":\"rechazada\",\"motivo\":\"  cupo  \"}"));
         registrar(resultados, "rechazar sin motivo", mvc,
-            json(put(BASE + "/preinscripciones/5/rechazar"), "{\"motivo\":\" \"}"));
+            json(put(NUEVA + "/preinscripciones/5/estado"), "{\"nuevoEstado\":\"rechazada\",\"motivo\":\" \"}"));
 
         Path referencia = Path.of("src/test/resources/referencias/verano-endpoints/preinscripciones-respuestas.json");
         if (Boolean.getBoolean("grabarReferencia") && Files.notExists(referencia)) {
             Files.writeString(referencia, json.writerWithDefaultPrettyPrinter().writeValueAsString(resultados));
         }
         // BUG-32: la referencia fija el Date.toString() de "curso nuevo"; la corrección, la fecha como Date
-        assertThat(resultados).isEqualTo(Correcciones.aplicar(json.readTree(Files.readString(referencia)),
-            "verano-endpoints/correcciones/preinscripciones-respuestas-bug32.json"));
+        JsonNode esperado = Correcciones.aplicar(json.readTree(Files.readString(referencia)),
+            "verano-endpoints/correcciones/preinscripciones-respuestas-bug32.json");
+        // EST-7 (paso 8b): las solicitudes de un estudiante por alias y aprobar sin cuerpo se retiran (404)
+        esperado = Correcciones.aplicar(esperado, "verano-endpoints/correcciones/preinscripciones-respuestas-est7-paso8b.json");
+        assertThat(resultados).isEqualTo(esperado);
     }
 
     private static RequestBuilder json(MockHttpServletRequestBuilder peticion, String contenido) {

@@ -1,0 +1,633 @@
+{
+  "crearInscripcion crear cupo": {
+    "status": 409,
+    "body": {
+      "codigoError": "CUPO_AGOTADO",
+      "mensaje": "El curso no tiene cupos disponibles (10 de 10 ocupados)",
+      "codigoHttp": 409,
+      "url": "http://localhost/api/cursos-verano/inscripciones",
+      "metodo": "POST"
+    },
+    "llamadas": [
+      "buscarPreinscripcionAprobada",
+      "tieneInscripcionActiva",
+      "verificarCupoDisponible",
+      "crearSolicitudCursoVeranoInscripcion"
+    ]
+  },
+  "crearInscripcion verificarCupo regla": {
+    "status": 400,
+    "body": {
+      "codigoError": "GC-0004",
+      "mensaje": "GC-0004 - Violación a regla de negocio: regla rota",
+      "codigoHttp": 400,
+      "url": "http://localhost/api/cursos-verano/inscripciones",
+      "metodo": "POST"
+    },
+    "llamadas": [
+      "buscarPreinscripcionAprobada",
+      "tieneInscripcionActiva",
+      "verificarCupoDisponible"
+    ]
+  },
+  "crearInscripcion crear regla": {
+    "status": 400,
+    "body": {
+      "codigoError": "GC-0004",
+      "mensaje": "GC-0004 - Violación a regla de negocio: regla rota",
+      "codigoHttp": 400,
+      "url": "http://localhost/api/cursos-verano/inscripciones",
+      "metodo": "POST"
+    },
+    "llamadas": [
+      "buscarPreinscripcionAprobada",
+      "tieneInscripcionActiva",
+      "verificarCupoDisponible",
+      "crearSolicitudCursoVeranoInscripcion"
+    ]
+  },
+  "crearInscripcion verificarCupo noExiste": {
+    "status": 404,
+    "body": {
+      "codigoError": "GC-0003",
+      "mensaje": "Entidad no encontrada, no existe",
+      "codigoHttp": 404,
+      "url": "http://localhost/api/cursos-verano/inscripciones",
+      "metodo": "POST"
+    },
+    "llamadas": [
+      "buscarPreinscripcionAprobada",
+      "tieneInscripcionActiva",
+      "verificarCupoDisponible"
+    ]
+  },
+  "crearInscripcion crear noExiste": {
+    "status": 404,
+    "body": {
+      "codigoError": "GC-0003",
+      "mensaje": "Entidad no encontrada, no existe",
+      "codigoHttp": 404,
+      "url": "http://localhost/api/cursos-verano/inscripciones",
+      "metodo": "POST"
+    },
+    "llamadas": [
+      "buscarPreinscripcionAprobada",
+      "tieneInscripcionActiva",
+      "verificarCupoDisponible",
+      "crearSolicitudCursoVeranoInscripcion"
+    ]
+  },
+  "crearInscripcion verificarCupo yaExiste": {
+    "status": 409,
+    "body": {
+      "codigoError": "GC-0002",
+      "mensaje": "ERROR ENTIDAD YA EXISTE, ya existe",
+      "codigoHttp": 409,
+      "url": "http://localhost/api/cursos-verano/inscripciones",
+      "metodo": "POST"
+    },
+    "llamadas": [
+      "buscarPreinscripcionAprobada",
+      "tieneInscripcionActiva",
+      "verificarCupoDisponible"
+    ]
+  },
+  "crearInscripcion crear yaExiste": {
+    "status": 409,
+    "body": {
+      "codigoError": "GC-0002",
+      "mensaje": "ERROR ENTIDAD YA EXISTE, ya existe",
+      "codigoHttp": 409,
+      "url": "http://localhost/api/cursos-verano/inscripciones",
+      "metodo": "POST"
+    },
+    "llamadas": [
+      "buscarPreinscripcionAprobada",
+      "tieneInscripcionActiva",
+      "verificarCupoDisponible",
+      "crearSolicitudCursoVeranoInscripcion"
+    ]
+  },
+  "crearInscripcion verificarCupo argumento": {
+    "status": 400,
+    "body": {
+      "codigoError": "GC-0004",
+      "mensaje": "argumento malo",
+      "codigoHttp": 400,
+      "url": "http://localhost/api/cursos-verano/inscripciones",
+      "metodo": "POST"
+    },
+    "llamadas": [
+      "buscarPreinscripcionAprobada",
+      "tieneInscripcionActiva",
+      "verificarCupoDisponible"
+    ]
+  },
+  "crearInscripcion crear argumento": {
+    "status": 400,
+    "body": {
+      "codigoError": "GC-0004",
+      "mensaje": "argumento malo",
+      "codigoHttp": 400,
+      "url": "http://localhost/api/cursos-verano/inscripciones",
+      "metodo": "POST"
+    },
+    "llamadas": [
+      "buscarPreinscripcionAprobada",
+      "tieneInscripcionActiva",
+      "verificarCupoDisponible",
+      "crearSolicitudCursoVeranoInscripcion"
+    ]
+  },
+  "crearInscripcion verificarCupo runtime": {
+    "status": 500,
+    "body": {
+      "codigoError": "GC-0001",
+      "mensaje": "Ha ocurrido un error inesperado. Por favor, inténtelo de nuevo.",
+      "codigoHttp": 500,
+      "url": "http://localhost/api/cursos-verano/inscripciones",
+      "metodo": "POST"
+    },
+    "llamadas": [
+      "buscarPreinscripcionAprobada",
+      "tieneInscripcionActiva",
+      "verificarCupoDisponible"
+    ]
+  },
+  "crearInscripcion crear runtime": {
+    "status": 500,
+    "body": {
+      "codigoError": "GC-0001",
+      "mensaje": "Ha ocurrido un error inesperado. Por favor, inténtelo de nuevo.",
+      "codigoHttp": 500,
+      "url": "http://localhost/api/cursos-verano/inscripciones",
+      "metodo": "POST"
+    },
+    "llamadas": [
+      "buscarPreinscripcionAprobada",
+      "tieneInscripcionActiva",
+      "verificarCupoDisponible",
+      "crearSolicitudCursoVeranoInscripcion"
+    ]
+  },
+  "crearInscripcion verificarCupo npe": {
+    "status": 500,
+    "body": {
+      "codigoError": "GC-0001",
+      "mensaje": "Ha ocurrido un error inesperado. Por favor, inténtelo de nuevo.",
+      "codigoHttp": 500,
+      "url": "http://localhost/api/cursos-verano/inscripciones",
+      "metodo": "POST"
+    },
+    "llamadas": [
+      "buscarPreinscripcionAprobada",
+      "tieneInscripcionActiva",
+      "verificarCupoDisponible"
+    ]
+  },
+  "crearInscripcion crear npe": {
+    "status": 500,
+    "body": {
+      "codigoError": "GC-0001",
+      "mensaje": "Ha ocurrido un error inesperado. Por favor, inténtelo de nuevo.",
+      "codigoHttp": 500,
+      "url": "http://localhost/api/cursos-verano/inscripciones",
+      "metodo": "POST"
+    },
+    "llamadas": [
+      "buscarPreinscripcionAprobada",
+      "tieneInscripcionActiva",
+      "verificarCupoDisponible",
+      "crearSolicitudCursoVeranoInscripcion"
+    ]
+  },
+  "aceptar sin curso": {
+    "status": 500,
+    "body": {
+      "codigoError": "GC-0001",
+      "mensaje": "Ha ocurrido un error inesperado. Por favor, inténtelo de nuevo.",
+      "codigoHttp": 500,
+      "url": "http://localhost/api/cursos-verano/inscripciones/7/estado",
+      "metodo": "PUT"
+    },
+    "llamadas": [
+      "buscarPorIdInscripcion",
+      "verificarCupoParaAceptar",
+      "validarPago"
+    ]
+  },
+  "aceptar verificarCupo regla": {
+    "status": 400,
+    "body": {
+      "codigoError": "GC-0004",
+      "mensaje": "GC-0004 - Violación a regla de negocio: regla rota",
+      "codigoHttp": 400,
+      "url": "http://localhost/api/cursos-verano/inscripciones/7/estado",
+      "metodo": "PUT"
+    },
+    "llamadas": [
+      "buscarPorIdInscripcion",
+      "verificarCupoParaAceptar"
+    ]
+  },
+  "aceptar validarPago regla": {
+    "status": 400,
+    "body": {
+      "codigoError": "GC-0004",
+      "mensaje": "GC-0004 - Violación a regla de negocio: regla rota",
+      "codigoHttp": 400,
+      "url": "http://localhost/api/cursos-verano/inscripciones/7/estado",
+      "metodo": "PUT"
+    },
+    "llamadas": [
+      "buscarPorIdInscripcion",
+      "verificarCupoParaAceptar",
+      "validarPago"
+    ]
+  },
+  "aceptar buscar regla": {
+    "status": 400,
+    "body": {
+      "codigoError": "GC-0004",
+      "mensaje": "GC-0004 - Violación a regla de negocio: regla rota",
+      "codigoHttp": 400,
+      "url": "http://localhost/api/cursos-verano/inscripciones/7/estado",
+      "metodo": "PUT"
+    },
+    "llamadas": [
+      "buscarPorIdInscripcion"
+    ]
+  },
+  "aceptar verificarCupo noExiste": {
+    "status": 404,
+    "body": {
+      "codigoError": "GC-0003",
+      "mensaje": "Entidad no encontrada, no existe",
+      "codigoHttp": 404,
+      "url": "http://localhost/api/cursos-verano/inscripciones/7/estado",
+      "metodo": "PUT"
+    },
+    "llamadas": [
+      "buscarPorIdInscripcion",
+      "verificarCupoParaAceptar"
+    ]
+  },
+  "aceptar validarPago noExiste": {
+    "status": 404,
+    "body": {
+      "codigoError": "GC-0003",
+      "mensaje": "Entidad no encontrada, no existe",
+      "codigoHttp": 404,
+      "url": "http://localhost/api/cursos-verano/inscripciones/7/estado",
+      "metodo": "PUT"
+    },
+    "llamadas": [
+      "buscarPorIdInscripcion",
+      "verificarCupoParaAceptar",
+      "validarPago"
+    ]
+  },
+  "aceptar buscar noExiste": {
+    "status": 404,
+    "body": {
+      "codigoError": "GC-0003",
+      "mensaje": "Entidad no encontrada, no existe",
+      "codigoHttp": 404,
+      "url": "http://localhost/api/cursos-verano/inscripciones/7/estado",
+      "metodo": "PUT"
+    },
+    "llamadas": [
+      "buscarPorIdInscripcion"
+    ]
+  },
+  "aceptar verificarCupo yaExiste": {
+    "status": 409,
+    "body": {
+      "codigoError": "GC-0002",
+      "mensaje": "ERROR ENTIDAD YA EXISTE, ya existe",
+      "codigoHttp": 409,
+      "url": "http://localhost/api/cursos-verano/inscripciones/7/estado",
+      "metodo": "PUT"
+    },
+    "llamadas": [
+      "buscarPorIdInscripcion",
+      "verificarCupoParaAceptar"
+    ]
+  },
+  "aceptar validarPago yaExiste": {
+    "status": 409,
+    "body": {
+      "codigoError": "GC-0002",
+      "mensaje": "ERROR ENTIDAD YA EXISTE, ya existe",
+      "codigoHttp": 409,
+      "url": "http://localhost/api/cursos-verano/inscripciones/7/estado",
+      "metodo": "PUT"
+    },
+    "llamadas": [
+      "buscarPorIdInscripcion",
+      "verificarCupoParaAceptar",
+      "validarPago"
+    ]
+  },
+  "aceptar buscar yaExiste": {
+    "status": 409,
+    "body": {
+      "codigoError": "GC-0002",
+      "mensaje": "ERROR ENTIDAD YA EXISTE, ya existe",
+      "codigoHttp": 409,
+      "url": "http://localhost/api/cursos-verano/inscripciones/7/estado",
+      "metodo": "PUT"
+    },
+    "llamadas": [
+      "buscarPorIdInscripcion"
+    ]
+  },
+  "aceptar verificarCupo argumento": {
+    "status": 400,
+    "body": {
+      "codigoError": "GC-0004",
+      "mensaje": "argumento malo",
+      "codigoHttp": 400,
+      "url": "http://localhost/api/cursos-verano/inscripciones/7/estado",
+      "metodo": "PUT"
+    },
+    "llamadas": [
+      "buscarPorIdInscripcion",
+      "verificarCupoParaAceptar"
+    ]
+  },
+  "aceptar validarPago argumento": {
+    "status": 400,
+    "body": {
+      "codigoError": "GC-0004",
+      "mensaje": "argumento malo",
+      "codigoHttp": 400,
+      "url": "http://localhost/api/cursos-verano/inscripciones/7/estado",
+      "metodo": "PUT"
+    },
+    "llamadas": [
+      "buscarPorIdInscripcion",
+      "verificarCupoParaAceptar",
+      "validarPago"
+    ]
+  },
+  "aceptar buscar argumento": {
+    "status": 400,
+    "body": {
+      "codigoError": "GC-0004",
+      "mensaje": "argumento malo",
+      "codigoHttp": 400,
+      "url": "http://localhost/api/cursos-verano/inscripciones/7/estado",
+      "metodo": "PUT"
+    },
+    "llamadas": [
+      "buscarPorIdInscripcion"
+    ]
+  },
+  "aceptar verificarCupo runtime": {
+    "status": 500,
+    "body": {
+      "codigoError": "GC-0001",
+      "mensaje": "Ha ocurrido un error inesperado. Por favor, inténtelo de nuevo.",
+      "codigoHttp": 500,
+      "url": "http://localhost/api/cursos-verano/inscripciones/7/estado",
+      "metodo": "PUT"
+    },
+    "llamadas": [
+      "buscarPorIdInscripcion",
+      "verificarCupoParaAceptar"
+    ]
+  },
+  "aceptar validarPago runtime": {
+    "status": 500,
+    "body": {
+      "codigoError": "GC-0001",
+      "mensaje": "Ha ocurrido un error inesperado. Por favor, inténtelo de nuevo.",
+      "codigoHttp": 500,
+      "url": "http://localhost/api/cursos-verano/inscripciones/7/estado",
+      "metodo": "PUT"
+    },
+    "llamadas": [
+      "buscarPorIdInscripcion",
+      "verificarCupoParaAceptar",
+      "validarPago"
+    ]
+  },
+  "aceptar buscar runtime": {
+    "status": 500,
+    "body": {
+      "codigoError": "GC-0001",
+      "mensaje": "Ha ocurrido un error inesperado. Por favor, inténtelo de nuevo.",
+      "codigoHttp": 500,
+      "url": "http://localhost/api/cursos-verano/inscripciones/7/estado",
+      "metodo": "PUT"
+    },
+    "llamadas": [
+      "buscarPorIdInscripcion"
+    ]
+  },
+  "aceptar verificarCupo npe": {
+    "status": 500,
+    "body": {
+      "codigoError": "GC-0001",
+      "mensaje": "Ha ocurrido un error inesperado. Por favor, inténtelo de nuevo.",
+      "codigoHttp": 500,
+      "url": "http://localhost/api/cursos-verano/inscripciones/7/estado",
+      "metodo": "PUT"
+    },
+    "llamadas": [
+      "buscarPorIdInscripcion",
+      "verificarCupoParaAceptar"
+    ]
+  },
+  "aceptar validarPago npe": {
+    "status": 500,
+    "body": {
+      "codigoError": "GC-0001",
+      "mensaje": "Ha ocurrido un error inesperado. Por favor, inténtelo de nuevo.",
+      "codigoHttp": 500,
+      "url": "http://localhost/api/cursos-verano/inscripciones/7/estado",
+      "metodo": "PUT"
+    },
+    "llamadas": [
+      "buscarPorIdInscripcion",
+      "verificarCupoParaAceptar",
+      "validarPago"
+    ]
+  },
+  "aceptar buscar npe": {
+    "status": 500,
+    "body": {
+      "codigoError": "GC-0001",
+      "mensaje": "Ha ocurrido un error inesperado. Por favor, inténtelo de nuevo.",
+      "codigoHttp": 500,
+      "url": "http://localhost/api/cursos-verano/inscripciones/7/estado",
+      "metodo": "PUT"
+    },
+    "llamadas": [
+      "buscarPorIdInscripcion"
+    ]
+  },
+  "rechazar validarPago cupo": {
+    "status": 409,
+    "body": {
+      "codigoError": "CUPO_AGOTADO",
+      "mensaje": "El curso no tiene cupos disponibles (10 de 10 ocupados)",
+      "codigoHttp": 409,
+      "url": "http://localhost/api/cursos-verano/inscripciones/7/estado",
+      "metodo": "PUT"
+    },
+    "llamadas": [
+      "buscarPorIdInscripcion",
+      "validarPago"
+    ]
+  },
+  "rechazar validarPago regla": {
+    "status": 400,
+    "body": {
+      "codigoError": "GC-0004",
+      "mensaje": "GC-0004 - Violación a regla de negocio: regla rota",
+      "codigoHttp": 400,
+      "url": "http://localhost/api/cursos-verano/inscripciones/7/estado",
+      "metodo": "PUT"
+    },
+    "llamadas": [
+      "buscarPorIdInscripcion",
+      "validarPago"
+    ]
+  },
+  "rechazar validarPago noExiste": {
+    "status": 404,
+    "body": {
+      "codigoError": "GC-0003",
+      "mensaje": "Entidad no encontrada, no existe",
+      "codigoHttp": 404,
+      "url": "http://localhost/api/cursos-verano/inscripciones/7/estado",
+      "metodo": "PUT"
+    },
+    "llamadas": [
+      "buscarPorIdInscripcion",
+      "validarPago"
+    ]
+  },
+  "rechazar validarPago yaExiste": {
+    "status": 409,
+    "body": {
+      "codigoError": "GC-0002",
+      "mensaje": "ERROR ENTIDAD YA EXISTE, ya existe",
+      "codigoHttp": 409,
+      "url": "http://localhost/api/cursos-verano/inscripciones/7/estado",
+      "metodo": "PUT"
+    },
+    "llamadas": [
+      "buscarPorIdInscripcion",
+      "validarPago"
+    ]
+  },
+  "rechazar validarPago runtime": {
+    "status": 500,
+    "body": {
+      "codigoError": "GC-0001",
+      "mensaje": "Ha ocurrido un error inesperado. Por favor, inténtelo de nuevo.",
+      "codigoHttp": 500,
+      "url": "http://localhost/api/cursos-verano/inscripciones/7/estado",
+      "metodo": "PUT"
+    },
+    "llamadas": [
+      "buscarPorIdInscripcion",
+      "validarPago"
+    ]
+  },
+  "rechazar validarPago npe": {
+    "status": 500,
+    "body": {
+      "codigoError": "GC-0001",
+      "mensaje": "Ha ocurrido un error inesperado. Por favor, inténtelo de nuevo.",
+      "codigoHttp": 500,
+      "url": "http://localhost/api/cursos-verano/inscripciones/7/estado",
+      "metodo": "PUT"
+    },
+    "llamadas": [
+      "buscarPorIdInscripcion",
+      "validarPago"
+    ]
+  },
+  "cursoNuevo crear cupo": {
+    "status": 409,
+    "body": {
+      "codigoError": "CUPO_AGOTADO",
+      "mensaje": "El curso no tiene cupos disponibles (10 de 10 ocupados)",
+      "codigoHttp": 409,
+      "url": "http://localhost/api/cursos-verano/solicitudes-curso-nuevo",
+      "metodo": "POST"
+    },
+    "llamadas": [
+      "crearSolicitudCursoVeranoPreinscripcion"
+    ]
+  },
+  "cursoNuevo crear regla": {
+    "status": 400,
+    "body": {
+      "codigoError": "GC-0004",
+      "mensaje": "GC-0004 - Violación a regla de negocio: regla rota",
+      "codigoHttp": 400,
+      "url": "http://localhost/api/cursos-verano/solicitudes-curso-nuevo",
+      "metodo": "POST"
+    },
+    "llamadas": [
+      "crearSolicitudCursoVeranoPreinscripcion"
+    ]
+  },
+  "cursoNuevo crear noExiste": {
+    "status": 404,
+    "body": {
+      "codigoError": "GC-0003",
+      "mensaje": "Entidad no encontrada, no existe",
+      "codigoHttp": 404,
+      "url": "http://localhost/api/cursos-verano/solicitudes-curso-nuevo",
+      "metodo": "POST"
+    },
+    "llamadas": [
+      "crearSolicitudCursoVeranoPreinscripcion"
+    ]
+  },
+  "cursoNuevo crear yaExiste": {
+    "status": 409,
+    "body": {
+      "codigoError": "GC-0002",
+      "mensaje": "ERROR ENTIDAD YA EXISTE, ya existe",
+      "codigoHttp": 409,
+      "url": "http://localhost/api/cursos-verano/solicitudes-curso-nuevo",
+      "metodo": "POST"
+    },
+    "llamadas": [
+      "crearSolicitudCursoVeranoPreinscripcion"
+    ]
+  },
+  "cursoNuevo crear runtime": {
+    "status": 500,
+    "body": {
+      "codigoError": "GC-0001",
+      "mensaje": "Ha ocurrido un error inesperado. Por favor, inténtelo de nuevo.",
+      "codigoHttp": 500,
+      "url": "http://localhost/api/cursos-verano/solicitudes-curso-nuevo",
+      "metodo": "POST"
+    },
+    "llamadas": [
+      "crearSolicitudCursoVeranoPreinscripcion"
+    ]
+  },
+  "cursoNuevo crear npe": {
+    "status": 500,
+    "body": {
+      "codigoError": "GC-0001",
+      "mensaje": "Ha ocurrido un error inesperado. Por favor, inténtelo de nuevo.",
+      "codigoHttp": 500,
+      "url": "http://localhost/api/cursos-verano/solicitudes-curso-nuevo",
+      "metodo": "POST"
+    },
+    "llamadas": [
+      "crearSolicitudCursoVeranoPreinscripcion"
+    ]
+  }
+}

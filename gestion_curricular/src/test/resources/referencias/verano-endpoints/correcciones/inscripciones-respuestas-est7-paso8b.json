@@ -1,0 +1,223 @@
+{
+  "cancelar 1": {
+    "status": 404,
+    "body": {
+      "codigoError": "GC-0404",
+      "mensaje": "El recurso solicitado no existe",
+      "codigoHttp": 404,
+      "url": "http://localhost/api/cursos-intersemestrales/inscripciones/1",
+      "metodo": "DELETE"
+    },
+    "claves": [
+      ".codigoError:STRING",
+      ".mensaje:STRING",
+      ".codigoHttp:NUMBER",
+      ".url:STRING",
+      ".metodo:STRING"
+    ]
+  },
+  "cancelar 2": {
+    "status": 404,
+    "body": {
+      "codigoError": "GC-0404",
+      "mensaje": "El recurso solicitado no existe",
+      "codigoHttp": 404,
+      "url": "http://localhost/api/cursos-intersemestrales/inscripciones/2",
+      "metodo": "DELETE"
+    },
+    "claves": [
+      ".codigoError:STRING",
+      ".mensaje:STRING",
+      ".codigoHttp:NUMBER",
+      ".url:STRING",
+      ".metodo:STRING"
+    ]
+  },
+  "cancelar 3": {
+    "status": 404,
+    "body": {
+      "codigoError": "GC-0404",
+      "mensaje": "El recurso solicitado no existe",
+      "codigoHttp": 404,
+      "url": "http://localhost/api/cursos-intersemestrales/inscripciones/3",
+      "metodo": "DELETE"
+    },
+    "claves": [
+      ".codigoError:STRING",
+      ".mensaje:STRING",
+      ".codigoHttp:NUMBER",
+      ".url:STRING",
+      ".metodo:STRING"
+    ]
+  },
+  "aceptar 5": {
+    "status": 500,
+    "body": {
+      "codigoError": "GC-0001",
+      "mensaje": "Ha ocurrido un error inesperado. Por favor, inténtelo de nuevo.",
+      "codigoHttp": 500,
+      "url": "http://localhost/api/cursos-verano/inscripciones/5/estado",
+      "metodo": "PUT"
+    },
+    "claves": [
+      ".codigoError:STRING",
+      ".mensaje:STRING",
+      ".codigoHttp:NUMBER",
+      ".url:STRING",
+      ".metodo:STRING"
+    ]
+  },
+  "rechazar 7": {
+    "status": 500,
+    "body": {
+      "codigoError": "GC-0001",
+      "mensaje": "Ha ocurrido un error inesperado. Por favor, inténtelo de nuevo.",
+      "codigoHttp": 500,
+      "url": "http://localhost/api/cursos-verano/inscripciones/7/estado",
+      "metodo": "PUT"
+    },
+    "claves": [
+      ".codigoError:STRING",
+      ".mensaje:STRING",
+      ".codigoHttp:NUMBER",
+      ".url:STRING",
+      ".metodo:STRING"
+    ]
+  },
+  "confirmar": {
+    "status": 404,
+    "body": {
+      "codigoError": "GC-0404",
+      "mensaje": "El recurso solicitado no existe",
+      "codigoHttp": 404,
+      "url": "http://localhost/api/cursos-intersemestrales/inscripciones/9/confirmar",
+      "metodo": "PUT"
+    },
+    "claves": [
+      ".codigoError:STRING",
+      ".mensaje:STRING",
+      ".codigoHttp:NUMBER",
+      ".url:STRING",
+      ".metodo:STRING"
+    ]
+  },
+  "info 1": {
+    "status": 404,
+    "body": {
+      "codigoError": "GC-0404",
+      "mensaje": "El recurso solicitado no existe",
+      "codigoHttp": 404,
+      "url": "http://localhost/api/cursos-intersemestrales/inscripciones/1/info",
+      "metodo": "GET"
+    },
+    "claves": [
+      ".codigoError:STRING",
+      ".mensaje:STRING",
+      ".codigoHttp:NUMBER",
+      ".url:STRING",
+      ".metodo:STRING"
+    ]
+  },
+  "info 3": {
+    "status": 404,
+    "body": {
+      "codigoError": "GC-0404",
+      "mensaje": "El recurso solicitado no existe",
+      "codigoHttp": 404,
+      "url": "http://localhost/api/cursos-intersemestrales/inscripciones/3/info",
+      "metodo": "GET"
+    },
+    "claves": [
+      ".codigoError:STRING",
+      ".mensaje:STRING",
+      ".codigoHttp:NUMBER",
+      ".url:STRING",
+      ".metodo:STRING"
+    ]
+  },
+  "info 8": {
+    "status": 404,
+    "body": {
+      "codigoError": "GC-0404",
+      "mensaje": "El recurso solicitado no existe",
+      "codigoHttp": 404,
+      "url": "http://localhost/api/cursos-intersemestrales/inscripciones/8/info",
+      "metodo": "GET"
+    },
+    "claves": [
+      ".codigoError:STRING",
+      ".mensaje:STRING",
+      ".codigoHttp:NUMBER",
+      ".url:STRING",
+      ".metodo:STRING"
+    ]
+  },
+  "info 10": {
+    "status": 404,
+    "body": {
+      "codigoError": "GC-0404",
+      "mensaje": "El recurso solicitado no existe",
+      "codigoHttp": 404,
+      "url": "http://localhost/api/cursos-intersemestrales/inscripciones/10/info",
+      "metodo": "GET"
+    },
+    "claves": [
+      ".codigoError:STRING",
+      ".mensaje:STRING",
+      ".codigoHttp:NUMBER",
+      ".url:STRING",
+      ".metodo:STRING"
+    ]
+  },
+  "info 11": {
+    "status": 404,
+    "body": {
+      "codigoError": "GC-0404",
+      "mensaje": "El recurso solicitado no existe",
+      "codigoHttp": 404,
+      "url": "http://localhost/api/cursos-intersemestrales/inscripciones/11/info",
+      "metodo": "GET"
+    },
+    "claves": [
+      ".codigoError:STRING",
+      ".mensaje:STRING",
+      ".codigoHttp:NUMBER",
+      ".url:STRING",
+      ".metodo:STRING"
+    ]
+  },
+  "estadisticas 1": {
+    "status": 404,
+    "body": {
+      "codigoError": "GC-0404",
+      "mensaje": "El recurso solicitado no existe",
+      "codigoHttp": 404,
+      "url": "http://localhost/api/cursos-intersemestrales/inscripciones/curso/1/estadisticas",
+      "metodo": "GET"
+    },
+    "claves": [
+      ".codigoError:STRING",
+      ".mensaje:STRING",
+      ".codigoHttp:NUMBER",
+      ".url:STRING",
+      ".metodo:STRING"
+    ]
+  },
+  "estadisticas 2": {
+    "status": 404,
+    "body": {
+      "codigoError": "GC-0404",
+      "mensaje": "El recurso solicitado no existe",
+      "codigoHttp": 404,
+      "url": "http://localhost/api/cursos-intersemestrales/inscripciones/curso/2/estadisticas",
+      "metodo": "GET"
+    },
+    "claves": [
+      ".codigoError:STRING",
+      ".mensaje:STRING",
+      ".codigoHttp:NUMBER",
+      ".url:STRING",
+      ".metodo:STRING"
+    ]
+  }
+}

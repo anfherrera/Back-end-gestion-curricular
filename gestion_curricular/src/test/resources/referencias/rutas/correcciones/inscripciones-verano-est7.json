@@ -1,0 +1,575 @@
+{
+  "DELETE /api/cursos-intersemestrales/inscripciones/92 [est5]": {
+    "status": 404,
+    "tipo": "application/json",
+    "cuerpo": {
+      "codigoError": "GC-0404",
+      "mensaje": "El recurso solicitado no existe",
+      "codigoHttp": 404,
+      "url": "http://localhost/api/cursos-intersemestrales/inscripciones/92",
+      "metodo": "DELETE"
+    },
+    "disposicion": null,
+    "llamadas": []
+  },
+  "GET /api/cursos-intersemestrales/inscripciones [funcionario]": {
+    "status": 404,
+    "tipo": "application/json",
+    "cuerpo": {
+      "codigoError": "GC-0404",
+      "mensaje": "El recurso solicitado no existe",
+      "codigoHttp": 404,
+      "url": "http://localhost/api/cursos-intersemestrales/inscripciones",
+      "metodo": "GET"
+    },
+    "disposicion": null,
+    "llamadas": []
+  },
+  "GET /api/cursos-intersemestrales/inscripciones/92/comprobante [est5]": {
+    "status": 404,
+    "tipo": "application/json",
+    "cuerpo": {
+      "codigoError": "GC-0404",
+      "mensaje": "El recurso solicitado no existe",
+      "codigoHttp": 404,
+      "url": "http://localhost/api/cursos-intersemestrales/inscripciones/92/comprobante",
+      "metodo": "GET"
+    },
+    "disposicion": null,
+    "llamadas": []
+  },
+  "GET /api/cursos-intersemestrales/inscripciones/92/info [est5]": {
+    "status": 404,
+    "tipo": "application/json",
+    "cuerpo": {
+      "codigoError": "GC-0404",
+      "mensaje": "El recurso solicitado no existe",
+      "codigoHttp": 404,
+      "url": "http://localhost/api/cursos-intersemestrales/inscripciones/92/info",
+      "metodo": "GET"
+    },
+    "disposicion": null,
+    "llamadas": []
+  },
+  "GET /api/cursos-intersemestrales/inscripciones/curso/71/estadisticas [funcionario]": {
+    "status": 404,
+    "tipo": "application/json",
+    "cuerpo": {
+      "codigoError": "GC-0404",
+      "mensaje": "El recurso solicitado no existe",
+      "codigoHttp": 404,
+      "url": "http://localhost/api/cursos-intersemestrales/inscripciones/curso/71/estadisticas",
+      "metodo": "GET"
+    },
+    "disposicion": null,
+    "llamadas": []
+  },
+  "GET /api/cursos-intersemestrales/inscripciones/estudiantes-elegibles/71 [est5]": {
+    "status": 404,
+    "tipo": "application/json",
+    "cuerpo": {
+      "codigoError": "GC-0404",
+      "mensaje": "El recurso solicitado no existe",
+      "codigoHttp": 404,
+      "url": "http://localhost/api/cursos-intersemestrales/inscripciones/estudiantes-elegibles/71",
+      "metodo": "GET"
+    },
+    "disposicion": null,
+    "llamadas": []
+  },
+  "GET /api/cursos-intersemestrales/inscripciones/estudiantes-elegibles/71 [funcionario]": {
+    "status": 404,
+    "tipo": "application/json",
+    "cuerpo": {
+      "codigoError": "GC-0404",
+      "mensaje": "El recurso solicitado no existe",
+      "codigoHttp": 404,
+      "url": "http://localhost/api/cursos-intersemestrales/inscripciones/estudiantes-elegibles/71",
+      "metodo": "GET"
+    },
+    "disposicion": null,
+    "llamadas": []
+  },
+  "GET /api/cursos-verano/cursos/71/estudiantes-elegibles [est5]": {
+    "status": 403,
+    "tipo": "application/json",
+    "cuerpo": {
+      "codigoError": "GC-0403",
+      "mensaje": "Acceso denegado: no tiene permisos para este recurso",
+      "codigoHttp": 403,
+      "url": "http://localhost/api/cursos-verano/cursos/71/estudiantes-elegibles",
+      "metodo": "GET"
+    },
+    "disposicion": null,
+    "llamadas": []
+  },
+  "GET /api/cursos-verano/cursos/71/estudiantes-elegibles [funcionario]": {
+    "status": 200,
+    "tipo": "application/json",
+    "cuerpo": [
+      {
+        "nombre_completo": "Usuario 5",
+        "codigo": "105",
+        "tiene_inscripcion_formal": true,
+        "id_solicitud": 92,
+        "id_curso": 71,
+        "tipo_solicitud": "Inscripcion",
+        "condicion_solicitud": "Primera_Vez",
+        "nombre_curso": "Calculo",
+        "id_usuario": 5,
+        "estado_actual": "Enviada",
+        "correo": "est5@unicauca.edu.co",
+        "motivo_inclusion": "Estudiante inscrito en el curso",
+        "archivoPago": {
+          "id_documento": 80,
+          "fecha": "2025-07-01T12:00:00.000+00:00",
+          "nombre": "comprobante.pdf",
+          "url": "verano/92/comprobante.pdf"
+        },
+        "fecha_solicitud": "2025-07-01T12:00:00.000+00:00",
+        "nombre_solicitud": "Solicitud 92"
+      }
+    ],
+    "disposicion": null,
+    "llamadas": []
+  },
+  "POST /api/cursos-intersemestrales/cursos-verano/inscripciones {\"idUsuario\":5,\"idCurso\":71,\"nombreSolicitud\":\"Ins\"} [est5]": {
+    "status": 404,
+    "tipo": "application/json",
+    "cuerpo": {
+      "codigoError": "GC-0404",
+      "mensaje": "El recurso solicitado no existe",
+      "codigoHttp": 404,
+      "url": "http://localhost/api/cursos-intersemestrales/cursos-verano/inscripciones",
+      "metodo": "POST"
+    },
+    "disposicion": null,
+    "llamadas": []
+  },
+  "POST /api/cursos-intersemestrales/cursos-verano/inscripciones {\"idUsuario\":5,\"idCurso\":71,\"nombreSolicitud\":\"Ins\"} [funcionario]": {
+    "status": 404,
+    "tipo": "application/json",
+    "cuerpo": {
+      "codigoError": "GC-0404",
+      "mensaje": "El recurso solicitado no existe",
+      "codigoHttp": 404,
+      "url": "http://localhost/api/cursos-intersemestrales/cursos-verano/inscripciones",
+      "metodo": "POST"
+    },
+    "disposicion": null,
+    "llamadas": []
+  },
+  "POST /api/cursos-intersemestrales/cursos-verano/inscripciones {\"idUsuario\":5,\"idCurso\":72,\"nombreSolicitud\":\"Ins\"} [est5]": {
+    "status": 404,
+    "tipo": "application/json",
+    "cuerpo": {
+      "codigoError": "GC-0404",
+      "mensaje": "El recurso solicitado no existe",
+      "codigoHttp": 404,
+      "url": "http://localhost/api/cursos-intersemestrales/cursos-verano/inscripciones",
+      "metodo": "POST"
+    },
+    "disposicion": null,
+    "llamadas": []
+  },
+  "POST /api/cursos-intersemestrales/cursos-verano/inscripciones {\"idUsuario\":6,\"idCurso\":71} [est5]": {
+    "status": 404,
+    "tipo": "application/json",
+    "cuerpo": {
+      "codigoError": "GC-0404",
+      "mensaje": "El recurso solicitado no existe",
+      "codigoHttp": 404,
+      "url": "http://localhost/api/cursos-intersemestrales/cursos-verano/inscripciones",
+      "metodo": "POST"
+    },
+    "disposicion": null,
+    "llamadas": []
+  },
+  "POST /api/cursos-verano/inscripciones {\"idUsuario\":5,\"idCurso\":71,\"nombreSolicitud\":\"Ins\"} [est5]": {
+    "status": 200,
+    "tipo": "application/json",
+    "cuerpo": {
+      "success": true,
+      "message": "Inscripcion creada exitosamente",
+      "id_solicitud": 97,
+      "id_usuario": 5,
+      "id_curso": 71,
+      "nombre_solicitud": "Ins",
+      "fecha_inscripcion": "2025-07-01T12:00:00.000+00:00",
+      "estado": "Inscrito"
+    },
+    "disposicion": null,
+    "llamadas": [
+      {
+        "crearSolicitudCursoVeranoInscripcion": "usuario 5, curso 71, nombre Ins"
+      },
+      {
+        "asociarEstudiante": "71, 5"
+      }
+    ]
+  },
+  "POST /api/cursos-verano/inscripciones {\"idUsuario\":5,\"idCurso\":71,\"nombreSolicitud\":\"Ins\"} [funcionario]": {
+    "status": 200,
+    "tipo": "application/json",
+    "cuerpo": {
+      "success": true,
+      "message": "Inscripcion creada exitosamente",
+      "id_solicitud": 97,
+      "id_usuario": 5,
+      "id_curso": 71,
+      "nombre_solicitud": "Ins",
+      "fecha_inscripcion": "2025-07-01T12:00:00.000+00:00",
+      "estado": "Inscrito"
+    },
+    "disposicion": null,
+    "llamadas": [
+      {
+        "crearSolicitudCursoVeranoInscripcion": "usuario 5, curso 71, nombre Ins"
+      },
+      {
+        "asociarEstudiante": "71, 5"
+      }
+    ]
+  },
+  "POST /api/cursos-verano/inscripciones {\"idUsuario\":5,\"idCurso\":72,\"nombreSolicitud\":\"Ins\"} [est5]": {
+    "status": 400,
+    "tipo": "application/json",
+    "cuerpo": {
+      "codigo": "PREINSCRIPCION_NO_APROBADA",
+      "error": "No se encontro una preinscripcion aprobada para este usuario y curso"
+    },
+    "disposicion": null,
+    "llamadas": []
+  },
+  "POST /api/cursos-verano/inscripciones {\"idUsuario\":6,\"idCurso\":71} [est5]": {
+    "status": 403,
+    "tipo": "application/json",
+    "cuerpo": {
+      "codigoError": "GC-0403",
+      "mensaje": "Acceso denegado: no tiene permisos para este recurso",
+      "codigoHttp": 403,
+      "url": "http://localhost/api/cursos-verano/inscripciones",
+      "metodo": "POST"
+    },
+    "disposicion": null,
+    "llamadas": []
+  },
+  "PUT /api/cursos-intersemestrales/inscripciones/92/aceptar {\"observaciones\":\"pago ok\"} [funcionario]": {
+    "status": 404,
+    "tipo": "application/json",
+    "cuerpo": {
+      "codigoError": "GC-0404",
+      "mensaje": "El recurso solicitado no existe",
+      "codigoHttp": 404,
+      "url": "http://localhost/api/cursos-intersemestrales/inscripciones/92/aceptar",
+      "metodo": "PUT"
+    },
+    "disposicion": null,
+    "llamadas": []
+  },
+  "PUT /api/cursos-intersemestrales/inscripciones/92/aceptar {} [admin]": {
+    "status": 404,
+    "tipo": "application/json",
+    "cuerpo": {
+      "codigoError": "GC-0404",
+      "mensaje": "El recurso solicitado no existe",
+      "codigoHttp": 404,
+      "url": "http://localhost/api/cursos-intersemestrales/inscripciones/92/aceptar",
+      "metodo": "PUT"
+    },
+    "disposicion": null,
+    "llamadas": []
+  },
+  "PUT /api/cursos-intersemestrales/inscripciones/92/aceptar {} [est5]": {
+    "status": 404,
+    "tipo": "application/json",
+    "cuerpo": {
+      "codigoError": "GC-0404",
+      "mensaje": "El recurso solicitado no existe",
+      "codigoHttp": 404,
+      "url": "http://localhost/api/cursos-intersemestrales/inscripciones/92/aceptar",
+      "metodo": "PUT"
+    },
+    "disposicion": null,
+    "llamadas": []
+  },
+  "PUT /api/cursos-intersemestrales/inscripciones/92/confirmar [est5]": {
+    "status": 404,
+    "tipo": "application/json",
+    "cuerpo": {
+      "codigoError": "GC-0404",
+      "mensaje": "El recurso solicitado no existe",
+      "codigoHttp": 404,
+      "url": "http://localhost/api/cursos-intersemestrales/inscripciones/92/confirmar",
+      "metodo": "PUT"
+    },
+    "disposicion": null,
+    "llamadas": []
+  },
+  "PUT /api/cursos-intersemestrales/inscripciones/92/rechazar {\"motivo\":\"  sin pago  \"} [funcionario]": {
+    "status": 404,
+    "tipo": "application/json",
+    "cuerpo": {
+      "codigoError": "GC-0404",
+      "mensaje": "El recurso solicitado no existe",
+      "codigoHttp": 404,
+      "url": "http://localhost/api/cursos-intersemestrales/inscripciones/92/rechazar",
+      "metodo": "PUT"
+    },
+    "disposicion": null,
+    "llamadas": []
+  },
+  "PUT /api/cursos-intersemestrales/inscripciones/92/rechazar {} [est5]": {
+    "status": 404,
+    "tipo": "application/json",
+    "cuerpo": {
+      "codigoError": "GC-0404",
+      "mensaje": "El recurso solicitado no existe",
+      "codigoHttp": 404,
+      "url": "http://localhost/api/cursos-intersemestrales/inscripciones/92/rechazar",
+      "metodo": "PUT"
+    },
+    "disposicion": null,
+    "llamadas": []
+  },
+  "PUT /api/cursos-intersemestrales/inscripciones/93/aceptar {} [funcionario]": {
+    "status": 404,
+    "tipo": "application/json",
+    "cuerpo": {
+      "codigoError": "GC-0404",
+      "mensaje": "El recurso solicitado no existe",
+      "codigoHttp": 404,
+      "url": "http://localhost/api/cursos-intersemestrales/inscripciones/93/aceptar",
+      "metodo": "PUT"
+    },
+    "disposicion": null,
+    "llamadas": []
+  },
+  "PUT /api/cursos-intersemestrales/inscripciones/94/rechazar {} [funcionario]": {
+    "status": 404,
+    "tipo": "application/json",
+    "cuerpo": {
+      "codigoError": "GC-0404",
+      "mensaje": "El recurso solicitado no existe",
+      "codigoHttp": 404,
+      "url": "http://localhost/api/cursos-intersemestrales/inscripciones/94/rechazar",
+      "metodo": "PUT"
+    },
+    "disposicion": null,
+    "llamadas": []
+  },
+  "PUT /api/cursos-intersemestrales/inscripciones/95/rechazar {} [funcionario]": {
+    "status": 404,
+    "tipo": "application/json",
+    "cuerpo": {
+      "codigoError": "GC-0404",
+      "mensaje": "El recurso solicitado no existe",
+      "codigoHttp": 404,
+      "url": "http://localhost/api/cursos-intersemestrales/inscripciones/95/rechazar",
+      "metodo": "PUT"
+    },
+    "disposicion": null,
+    "llamadas": []
+  },
+  "PUT /api/cursos-intersemestrales/inscripciones/99/aceptar {} [funcionario]": {
+    "status": 404,
+    "tipo": "application/json",
+    "cuerpo": {
+      "codigoError": "GC-0404",
+      "mensaje": "El recurso solicitado no existe",
+      "codigoHttp": 404,
+      "url": "http://localhost/api/cursos-intersemestrales/inscripciones/99/aceptar",
+      "metodo": "PUT"
+    },
+    "disposicion": null,
+    "llamadas": []
+  },
+  "PUT /api/cursos-intersemestrales/inscripciones/99/rechazar {} [funcionario]": {
+    "status": 404,
+    "tipo": "application/json",
+    "cuerpo": {
+      "codigoError": "GC-0404",
+      "mensaje": "El recurso solicitado no existe",
+      "codigoHttp": 404,
+      "url": "http://localhost/api/cursos-intersemestrales/inscripciones/99/rechazar",
+      "metodo": "PUT"
+    },
+    "disposicion": null,
+    "llamadas": []
+  },
+  "PUT /api/cursos-verano/inscripciones/92/estado {\"nuevoEstado\":\"aceptada\",\"observaciones\":\"pago ok\"} [funcionario]": {
+    "status": 200,
+    "tipo": "application/json",
+    "cuerpo": {
+      "fecha_aceptacion": "<ahora>",
+      "estudiante_nombre": "Usuario 5",
+      "success": true,
+      "observaciones": "pago ok",
+      "id_inscripcion": 92,
+      "message": "Inscripcion aceptada exitosamente",
+      "curso_nombre": "Calculo"
+    },
+    "disposicion": null,
+    "llamadas": [
+      {
+        "validarPago": "92, true, pago ok"
+      },
+      {
+        "asociarEstudiante": "71, 5"
+      }
+    ]
+  },
+  "PUT /api/cursos-verano/inscripciones/92/estado {\"nuevoEstado\":\"aceptada\"} [admin]": {
+    "status": 200,
+    "tipo": "application/json",
+    "cuerpo": {
+      "fecha_aceptacion": "<ahora>",
+      "estudiante_nombre": "Usuario 5",
+      "success": true,
+      "observaciones": "Inscripcion aceptada por funcionario/coordinador",
+      "id_inscripcion": 92,
+      "message": "Inscripcion aceptada exitosamente",
+      "curso_nombre": "Calculo"
+    },
+    "disposicion": null,
+    "llamadas": [
+      {
+        "validarPago": "92, true, Inscripcion aceptada por funcionario/coordinador"
+      },
+      {
+        "asociarEstudiante": "71, 5"
+      }
+    ]
+  },
+  "PUT /api/cursos-verano/inscripciones/92/estado {\"nuevoEstado\":\"aceptada\"} [est5]": {
+    "status": 403,
+    "tipo": "application/json",
+    "cuerpo": {
+      "codigoError": "GC-0403",
+      "mensaje": "Acceso denegado: no tiene permisos para este recurso",
+      "codigoHttp": 403,
+      "url": "http://localhost/api/cursos-verano/inscripciones/92/estado",
+      "metodo": "PUT"
+    },
+    "disposicion": null,
+    "llamadas": []
+  },
+  "PUT /api/cursos-verano/inscripciones/92/estado {\"nuevoEstado\":\"otro\"} [funcionario]": {
+    "status": 400,
+    "tipo": "application/json",
+    "cuerpo": {
+      "codigoError": "GC-0004",
+      "mensaje": "Estado no válido: use aceptada o rechazada",
+      "codigoHttp": 400,
+      "url": "http://localhost/api/cursos-verano/inscripciones/92/estado",
+      "metodo": "PUT"
+    },
+    "disposicion": null,
+    "llamadas": []
+  },
+  "PUT /api/cursos-verano/inscripciones/92/estado {\"nuevoEstado\":\"rechazada\",\"motivo\":\"  sin pago  \"} [funcionario]": {
+    "status": 200,
+    "tipo": "application/json",
+    "cuerpo": {
+      "motivo": "sin pago",
+      "estudiante_nombre": "Usuario 5",
+      "success": true,
+      "nuevo_estado": "Pago_Rechazado",
+      "id_inscripcion": 92,
+      "message": "Inscripcion rechazada exitosamente",
+      "curso_nombre": "Calculo",
+      "fecha_rechazo": "<ahora>"
+    },
+    "disposicion": null,
+    "llamadas": [
+      {
+        "validarPago": "92, false, Inscripcion rechazada: sin pago"
+      }
+    ]
+  },
+  "PUT /api/cursos-verano/inscripciones/92/estado {\"nuevoEstado\":\"rechazada\"} [est5]": {
+    "status": 403,
+    "tipo": "application/json",
+    "cuerpo": {
+      "codigoError": "GC-0403",
+      "mensaje": "Acceso denegado: no tiene permisos para este recurso",
+      "codigoHttp": 403,
+      "url": "http://localhost/api/cursos-verano/inscripciones/92/estado",
+      "metodo": "PUT"
+    },
+    "disposicion": null,
+    "llamadas": []
+  },
+  "PUT /api/cursos-verano/inscripciones/92/estado {\"observaciones\":\"pago ok\"} [funcionario]": {
+    "status": 400,
+    "tipo": "application/json",
+    "cuerpo": {
+      "codigoError": "GC-0004",
+      "mensaje": "Estado no válido: use aceptada o rechazada",
+      "codigoHttp": 400,
+      "url": "http://localhost/api/cursos-verano/inscripciones/92/estado",
+      "metodo": "PUT"
+    },
+    "disposicion": null,
+    "llamadas": []
+  },
+  "PUT /api/cursos-verano/inscripciones/93/estado {\"nuevoEstado\":\"aceptada\"} [funcionario]": {
+    "status": 409,
+    "tipo": "application/json",
+    "cuerpo": {
+      "codigo": "CUPO_AGOTADO",
+      "error": "El curso no tiene cupos disponibles (10 de 10 ocupados)",
+      "ocupados": 10,
+      "cupo": 10
+    },
+    "disposicion": null,
+    "llamadas": []
+  },
+  "PUT /api/cursos-verano/inscripciones/94/estado {\"nuevoEstado\":\"rechazada\"} [funcionario]": {
+    "status": 200,
+    "tipo": "application/json",
+    "cuerpo": {
+      "motivo": "Inscripcion rechazada por funcionario/coordinador",
+      "estudiante_nombre": "Usuario 5",
+      "success": true,
+      "nuevo_estado": "Pago_Rechazado",
+      "id_inscripcion": 94,
+      "message": "Inscripcion rechazada exitosamente",
+      "curso_nombre": "Calculo",
+      "fecha_rechazo": "<ahora>"
+    },
+    "disposicion": null,
+    "llamadas": [
+      {
+        "validarPago": "94, false, Inscripcion rechazada: Inscripcion rechazada por funcionario/coordinador"
+      }
+    ]
+  },
+  "PUT /api/cursos-verano/inscripciones/95/estado {\"nuevoEstado\":\"rechazada\"} [funcionario]": {
+    "status": 400,
+    "tipo": "application/json",
+    "cuerpo": {
+      "error": "La inscripcion no puede ser rechazada en su estado actual: Pago_Rechazado"
+    },
+    "disposicion": null,
+    "llamadas": []
+  },
+  "PUT /api/cursos-verano/inscripciones/99/estado {\"nuevoEstado\":\"aceptada\"} [funcionario]": {
+    "status": 400,
+    "tipo": "application/json",
+    "cuerpo": {
+      "error": "No se encontro la inscripcion con ID: 99"
+    },
+    "disposicion": null,
+    "llamadas": []
+  },
+  "PUT /api/cursos-verano/inscripciones/99/estado {\"nuevoEstado\":\"rechazada\"} [funcionario]": {
+    "status": 400,
+    "tipo": "application/json",
+    "cuerpo": {
+      "error": "No se encontro la inscripcion con ID: 99"
+    },
+    "disposicion": null,
+    "llamadas": []
+  }
+}

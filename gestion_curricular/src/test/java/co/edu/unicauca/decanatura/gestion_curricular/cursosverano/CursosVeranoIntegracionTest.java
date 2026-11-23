@@ -212,7 +212,7 @@ class CursosVeranoIntegracionTest {
             """;
 
         // Solo validamos que el endpoint existe y responde
-        mockMvc.perform(post("/api/cursos-intersemestrales/solicitudes/preinscripcion")
+        mockMvc.perform(post("/api/cursos-verano/preinscripciones")
                         .header("Authorization", tokenEstudiante)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(jsonRequest));

@@ -1,0 +1,38 @@
+{
+  "/~1api~1cursos-intersemestrales~1inscripciones~17~1comprobante oficio.pdf": {
+    "headers": {
+      "Cache-Control": [
+        "private, max-age=3600"
+      ],
+      "Content-Disposition": [
+        "attachment; filename=\"oficio.pdf\""
+      ],
+      "Content-Length": [
+        "19"
+      ],
+      "Content-Type": [
+        "application/pdf"
+      ]
+    },
+    "body": "JVBERi1jb250ZW5pZG8gZmlqbw==",
+    "status": 200
+  },
+  "/~1api~1cursos-intersemestrales~1inscripciones~17~1comprobante oficio á +\".pdf": {
+    "headers": {
+      "Cache-Control": [
+        "private, max-age=3600"
+      ],
+      "Content-Disposition": [
+        "attachment; filename=\"oficio á +\".pdf\""
+      ],
+      "Content-Length": [
+        "19"
+      ],
+      "Content-Type": [
+        "application/pdf"
+      ]
+    },
+    "body": "JVBERi1jb250ZW5pZG8gZmlqbw==",
+    "status": 200
+  }
+}

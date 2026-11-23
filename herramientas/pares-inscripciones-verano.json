@@ -1,0 +1,18 @@
+{
+  "POST /api/cursos-verano/inscripciones {\"idUsuario\":5,\"idCurso\":71,\"nombreSolicitud\":\"Ins\"} [est5]": "POST /api/cursos-intersemestrales/cursos-verano/inscripciones {\"idUsuario\":5,\"idCurso\":71,\"nombreSolicitud\":\"Ins\"} [est5]",
+  "POST /api/cursos-verano/inscripciones {\"idUsuario\":5,\"idCurso\":72,\"nombreSolicitud\":\"Ins\"} [est5]": "POST /api/cursos-intersemestrales/cursos-verano/inscripciones {\"idUsuario\":5,\"idCurso\":72,\"nombreSolicitud\":\"Ins\"} [est5]",
+  "POST /api/cursos-verano/inscripciones {\"idUsuario\":6,\"idCurso\":71} [est5]": "POST /api/cursos-intersemestrales/cursos-verano/inscripciones {\"idUsuario\":6,\"idCurso\":71} [est5]",
+  "POST /api/cursos-verano/inscripciones {\"idUsuario\":5,\"idCurso\":71,\"nombreSolicitud\":\"Ins\"} [funcionario]": "POST /api/cursos-intersemestrales/cursos-verano/inscripciones {\"idUsuario\":5,\"idCurso\":71,\"nombreSolicitud\":\"Ins\"} [funcionario]",
+  "GET /api/cursos-verano/cursos/71/estudiantes-elegibles [funcionario]": "GET /api/cursos-intersemestrales/inscripciones/estudiantes-elegibles/71 [funcionario]",
+  "GET /api/cursos-verano/cursos/71/estudiantes-elegibles [est5]": "GET /api/cursos-intersemestrales/inscripciones/estudiantes-elegibles/71 [est5]",
+  "PUT /api/cursos-verano/inscripciones/92/estado {\"nuevoEstado\":\"aceptada\",\"observaciones\":\"pago ok\"} [funcionario]": "PUT /api/cursos-intersemestrales/inscripciones/92/aceptar {\"observaciones\":\"pago ok\"} [funcionario]",
+  "PUT /api/cursos-verano/inscripciones/92/estado {\"nuevoEstado\":\"aceptada\"} [admin]": "PUT /api/cursos-intersemestrales/inscripciones/92/aceptar {} [admin]",
+  "PUT /api/cursos-verano/inscripciones/93/estado {\"nuevoEstado\":\"aceptada\"} [funcionario]": "PUT /api/cursos-intersemestrales/inscripciones/93/aceptar {} [funcionario]",
+  "PUT /api/cursos-verano/inscripciones/99/estado {\"nuevoEstado\":\"aceptada\"} [funcionario]": "PUT /api/cursos-intersemestrales/inscripciones/99/aceptar {} [funcionario]",
+  "PUT /api/cursos-verano/inscripciones/92/estado {\"nuevoEstado\":\"aceptada\"} [est5]": "PUT /api/cursos-intersemestrales/inscripciones/92/aceptar {} [est5]",
+  "PUT /api/cursos-verano/inscripciones/92/estado {\"nuevoEstado\":\"rechazada\",\"motivo\":\"  sin pago  \"} [funcionario]": "PUT /api/cursos-intersemestrales/inscripciones/92/rechazar {\"motivo\":\"  sin pago  \"} [funcionario]",
+  "PUT /api/cursos-verano/inscripciones/94/estado {\"nuevoEstado\":\"rechazada\"} [funcionario]": "PUT /api/cursos-intersemestrales/inscripciones/94/rechazar {} [funcionario]",
+  "PUT /api/cursos-verano/inscripciones/95/estado {\"nuevoEstado\":\"rechazada\"} [funcionario]": "PUT /api/cursos-intersemestrales/inscripciones/95/rechazar {} [funcionario]",
+  "PUT /api/cursos-verano/inscripciones/99/estado {\"nuevoEstado\":\"rechazada\"} [funcionario]": "PUT /api/cursos-intersemestrales/inscripciones/99/rechazar {} [funcionario]",
+  "PUT /api/cursos-verano/inscripciones/92/estado {\"nuevoEstado\":\"rechazada\"} [est5]": "PUT /api/cursos-intersemestrales/inscripciones/92/rechazar {} [est5]"
+}

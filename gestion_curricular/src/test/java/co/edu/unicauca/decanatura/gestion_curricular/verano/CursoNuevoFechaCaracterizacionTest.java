@@ -41,7 +41,7 @@ import co.edu.unicauca.decanatura.gestion_curricular.soporte.Correcciones;
  */
 class CursoNuevoFechaCaracterizacionTest {
     private static final long MARZO = 1710522000000L;
-    private static final String RUTA = "/api/cursos-intersemestrales/solicitudes-curso-nuevo";
+    private static final String RUTA = "/api/cursos-verano/solicitudes-curso-nuevo";
 
     private final ObjectMapper json = new ObjectMapper();
 
@@ -57,8 +57,7 @@ class CursoNuevoFechaCaracterizacionTest {
             }
             return guardada;
         });
-        var controlador = new PreinscripcionesVeranoRestController(cu, mock(CursosOfertadosMapperDominio.class),
-            mock(SolicitudCursoDeVeranoPreinscripcionMapperDominio.class));
+        var controlador = new PreinscripcionesVeranoRestController(cu, mock(CursosOfertadosMapperDominio.class));
         MockMvc porDefecto = SoporteMvc.standaloneSetup(controlador)
             .setControllerAdvice(new RestApiExceptionHandler()).build();
         MockMvc deSpringBoot = SoporteMvc.standaloneSetup(controlador)
