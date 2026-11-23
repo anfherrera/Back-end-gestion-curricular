@@ -66,8 +66,8 @@ class DescargasCaracterizacionTest {
             rutas.put("/api/archivos/descargar/pdf", "/api/archivos?nombre=");
             rutas.put("/api/archivos/descargar/pdf/inscripcion/7", "/api/archivos/inscripciones/7");
             rutas.put("/api/cursos-intersemestrales/inscripciones/7/comprobante", "/api/cursos-intersemestrales/inscripciones/7/comprobante");
-            rutas.put("/api/solicitudes-homologacion/descargarOficio/7", "/api/solicitudes-homologacion/descargarOficio/7");
-            rutas.put("/api/solicitudes-reingreso/descargarOficio/7", "/api/solicitudes-reingreso/descargarOficio/7");
+            rutas.put("/api/solicitudes-homologacion/descargarOficio/7", "/api/solicitudes-homologacion/7/oficios/archivo");
+            rutas.put("/api/solicitudes-reingreso/descargarOficio/7", "/api/solicitudes-reingreso/7/oficios/archivo");
             for (var entrada : rutas.entrySet()) {
                 String ruta = entrada.getKey();
                 var peticion = entrada.getValue().endsWith("?nombre=")

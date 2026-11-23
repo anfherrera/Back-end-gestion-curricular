@@ -162,7 +162,7 @@ class SeguridadFuncionalTest {
     void testListadoFuncionarioHomologacionSoloEnviada() throws Exception {
         String token = obtenerTokenAdmin();
 
-        String response = mockMvc.perform(get("/api/solicitudes-homologacion/listarSolicitud-Homologacion/Funcionario")
+        String response = mockMvc.perform(get("/api/solicitudes-homologacion?rol=funcionario&bandeja=pendientes")
                         .header("Authorization", "Bearer " + token)
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())

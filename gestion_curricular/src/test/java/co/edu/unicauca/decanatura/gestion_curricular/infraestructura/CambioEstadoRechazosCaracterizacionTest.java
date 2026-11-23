@@ -92,11 +92,11 @@ class CambioEstadoRechazosCaracterizacionTest {
             {null, "RECHAZADA", "Funcionario"},
             {"Desconocido", "RECHAZADA", "Funcionario"},
         };
-        // {clave de la referencia, ruta que se pide}: ECAES pasó a PUT /{id}/estado (EST-7, paso 6)
+        // {clave de la referencia, ruta que se pide}: ECAES (EST-7, paso 6), Homologación y Reingreso (paso 7b) pasaron a PUT /{id}/estado
         String[][] rutas = {
             {"/api/solicitudes-ecaes/actualizarEstadoSolicitud", "/api/solicitudes-ecaes/3/estado"},
-            {"/api/solicitudes-homologacion/actualizarEstadoSolicitud", "/api/solicitudes-homologacion/actualizarEstadoSolicitud"},
-            {"/api/solicitudes-reingreso/actualizarEstadoSolicitud-Reingreso", "/api/solicitudes-reingreso/actualizarEstadoSolicitud-Reingreso"},
+            {"/api/solicitudes-homologacion/actualizarEstadoSolicitud", "/api/solicitudes-homologacion/3/estado"},
+            {"/api/solicitudes-reingreso/actualizarEstadoSolicitud-Reingreso", "/api/solicitudes-reingreso/3/estado"},
         };
 
         ObjectNode resultados = json.createObjectNode();

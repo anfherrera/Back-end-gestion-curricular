@@ -32,7 +32,7 @@ class ManejadorErroresTest {
     @WithMockUser(roles = "Funcionario")
     @DisplayName("Solicitud inexistente: 404 con mensaje (antes 500)")
     void solicitudInexistente() throws Exception {
-        mockMvc.perform(get("/api/solicitudes-homologacion/listarSolicitud-Homologacion/987654"))
+        mockMvc.perform(get("/api/solicitudes-homologacion/987654/oficios"))
                 .andExpect(status().isNotFound())
                 .andExpect(jsonPath("$.codigoHttp").value(404))
                 .andExpect(jsonPath("$.mensaje").isNotEmpty());
@@ -42,7 +42,7 @@ class ManejadorErroresTest {
     @WithMockUser(roles = "Funcionario")
     @DisplayName("JSON mal formado: 400 con mensaje")
     void jsonMalFormado() throws Exception {
-        mockMvc.perform(put("/api/solicitudes-homologacion/actualizarEstadoSolicitud")
+        mockMvc.perform(put("/api/solicitudes-homologacion/1/estado")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("{ esto no es json"))
                 .andExpect(status().isBadRequest())

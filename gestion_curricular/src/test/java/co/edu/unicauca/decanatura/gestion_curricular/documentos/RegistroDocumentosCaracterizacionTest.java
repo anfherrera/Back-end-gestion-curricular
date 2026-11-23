@@ -52,7 +52,7 @@ class RegistroDocumentosCaracterizacionTest {
         rutas.put("/api/solicitudes-pazysalvo/subir-documento", "/api/solicitudes-pazysalvo/documentos");
         rutas.put("/api/solicitudes-pazysalvo/subir-oficio-pdf/7", "/api/solicitudes-pazysalvo/7/oficios");
         rutas.put("/api/solicitudes-pazysalvo/guardarOficio", "/api/solicitudes-pazysalvo/guardarOficio");
-        rutas.put("/api/solicitudes-homologacion/7/subir-resolucion", "/api/solicitudes-homologacion/7/subir-resolucion");
+        rutas.put("/api/solicitudes-homologacion/7/subir-resolucion", "/api/solicitudes-homologacion/7/resoluciones");
         Map<String, Object> resultados = new LinkedHashMap<>();
         for (Map.Entry<String, String> clave : rutas.entrySet()) {
             String ruta = clave.getValue();

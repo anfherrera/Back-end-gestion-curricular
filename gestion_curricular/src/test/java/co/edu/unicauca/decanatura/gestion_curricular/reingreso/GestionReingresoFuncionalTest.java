@@ -94,7 +94,7 @@ class GestionReingresoFuncionalTest {
             """;
 
         // Paso 1: Crear solicitud
-        mockMvc.perform(post("/api/solicitudes-reingreso/crearSolicitud-Reingreso")
+        mockMvc.perform(post("/api/solicitudes-reingreso")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(jsonSolicitud))
                 .andExpect(result -> {
@@ -103,7 +103,7 @@ class GestionReingresoFuncionalTest {
                 });
 
         // Paso 2: Verificar que la solicitud aparece en el listado
-        mockMvc.perform(get("/api/solicitudes-reingreso/listarSolicitudes-Reingreso"))
+        mockMvc.perform(get("/api/solicitudes-reingreso?rol=funcionario&bandeja=pendientes"))
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON));
     }
@@ -125,23 +125,20 @@ class GestionReingresoFuncionalTest {
          */
         
         // Paso 1: Funcionario consulta sus solicitudes
-        mockMvc.perform(get("/api/solicitudes-reingreso/listarSolicitud-Reingreso/Funcionario"))
+        mockMvc.perform(get("/api/solicitudes-reingreso?rol=funcionario&bandeja=pendientes"))
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON));
 
         // Paso 2: Funcionario consulta solicitud específica (usando ID 3 que existe en BD de test)
-        mockMvc.perform(get("/api/solicitudes-reingreso/listarSolicitud-Reingreo/3"))
+        mockMvc.perform(get("/api/solicitudes/3"))
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON));
 
-        // Paso 3: Funcionario valida documentos requeridos
-        mockMvc.perform(get("/api/solicitudes-reingreso/validarDocumentosRequeridos/3"))
-                .andExpect(status().isOk())
-                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON));
+        // (La validación de documentos requeridos, /validarDocumentosRequeridos, se retiró en EST-7, paso 7b)
 
         // Paso 4: Funcionario aprueba una solicitud recién enviada
         int id = solicitudes().reingreso("Enviada");
-        mockMvc.perform(put("/api/solicitudes-reingreso/actualizarEstadoSolicitud-Reingreso")
+        mockMvc.perform(put(rutaEstado(cambioEstado(id, "APROBADA_FUNCIONARIO")))
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(cambioEstado(id, "APROBADA_FUNCIONARIO")))
                 .andExpect(status().isNoContent());
@@ -164,18 +161,18 @@ class GestionReingresoFuncionalTest {
          */
         
         // Paso 1: Coordinador consulta solicitudes asignadas
-        mockMvc.perform(get("/api/solicitudes-reingreso/listarSolicitud-Reingreso/Coordinador"))
+        mockMvc.perform(get("/api/solicitudes-reingreso?rol=coordinador&bandeja=pendientes"))
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON));
 
         // Paso 2: Coordinador consulta solicitud específica (usando ID 3 que existe en BD de test)
-        mockMvc.perform(get("/api/solicitudes-reingreso/listarSolicitud-Reingreo/3"))
+        mockMvc.perform(get("/api/solicitudes/3"))
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON));
 
         // Paso 3: Coordinador aprueba una solicitud ya aprobada por el funcionario
         int id = solicitudes().reingreso("APROBADA_FUNCIONARIO");
-        mockMvc.perform(put("/api/solicitudes-reingreso/actualizarEstadoSolicitud-Reingreso")
+        mockMvc.perform(put(rutaEstado(cambioEstado(id, "APROBADA_COORDINADOR")))
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(cambioEstado(id, "APROBADA_COORDINADOR")))
                 .andExpect(status().isNoContent());
@@ -198,22 +195,22 @@ class GestionReingresoFuncionalTest {
          */
         
         // Paso 1: Secretaria consulta solicitudes listas para resolución
-        mockMvc.perform(get("/api/solicitudes-reingreso/listarSolicitud-Reingreso/Secretaria"))
+        mockMvc.perform(get("/api/solicitudes-reingreso?rol=secretaria&bandeja=pendientes"))
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON));
 
         // Paso 2: Secretaria consulta solicitud específica (usando ID 3 que existe en BD de test)
-        mockMvc.perform(get("/api/solicitudes-reingreso/listarSolicitud-Reingreo/3"))
+        mockMvc.perform(get("/api/solicitudes/3"))
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON));
 
         // Paso 3: Secretaria obtiene lista de oficios disponibles
-        mockMvc.perform(get("/api/solicitudes-reingreso/obtenerOficios/3"))
+        mockMvc.perform(get("/api/solicitudes-reingreso/3/oficios"))
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON));
 
         // Paso 4: Secretaria descarga oficio (si existe)
-        mockMvc.perform(get("/api/solicitudes-reingreso/descargarOficio/3"));
+        mockMvc.perform(get("/api/solicitudes-reingreso/3/oficios/archivo"));
                 // Puede ser 200 o 404 dependiendo de si existe el oficio
     }
 
@@ -233,7 +230,7 @@ class GestionReingresoFuncionalTest {
          */
         
         // Estudiante con ID 1 consulta sus solicitudes
-        mockMvc.perform(get("/api/solicitudes-reingreso/listarSolicitud-Reingreso/porUser")
+        mockMvc.perform(get("/api/solicitudes-reingreso")
                         .param("rol", "ESTUDIANTE")
                         .param("idUsuario", "1"))
                 .andExpect(status().isOk())
@@ -254,15 +251,15 @@ class GestionReingresoFuncionalTest {
          */
         
         // Funcionario ve solicitudes en estado "Enviada"
-        mockMvc.perform(get("/api/solicitudes-reingreso/listarSolicitud-Reingreso/Funcionario"))
+        mockMvc.perform(get("/api/solicitudes-reingreso?rol=funcionario&bandeja=pendientes"))
                 .andExpect(status().isOk());
 
         // Coordinador ve solicitudes aprobadas por funcionario
-        mockMvc.perform(get("/api/solicitudes-reingreso/listarSolicitud-Reingreso/Coordinador"))
+        mockMvc.perform(get("/api/solicitudes-reingreso?rol=coordinador&bandeja=pendientes"))
                 .andExpect(status().isOk());
 
         // Secretaria ve solicitudes aprobadas por coordinador
-        mockMvc.perform(get("/api/solicitudes-reingreso/listarSolicitud-Reingreso/Secretaria"))
+        mockMvc.perform(get("/api/solicitudes-reingreso?rol=secretaria&bandeja=pendientes"))
                 .andExpect(status().isOk());
     }
 
@@ -299,7 +296,7 @@ class GestionReingresoFuncionalTest {
             }
             """;
         
-        mockMvc.perform(post("/api/solicitudes-reingreso/crearSolicitud-Reingreso")
+        mockMvc.perform(post("/api/solicitudes-reingreso")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(jsonSolicitud))
                 .andExpect(result -> {
@@ -308,24 +305,24 @@ class GestionReingresoFuncionalTest {
                 });
 
         // Paso 2: Consultar solicitudes (simulando diferentes roles)
-        mockMvc.perform(get("/api/solicitudes-reingreso/listarSolicitudes-Reingreso"))
+        mockMvc.perform(get("/api/solicitudes-reingreso?rol=funcionario&bandeja=pendientes"))
                 .andExpect(status().isOk());
 
         // Paso 3: Funcionario aprueba una solicitud recién enviada
         int id = solicitudes().reingreso("Enviada");
-        mockMvc.perform(put("/api/solicitudes-reingreso/actualizarEstadoSolicitud-Reingreso")
+        mockMvc.perform(put(rutaEstado(cambioEstado(id, "APROBADA_FUNCIONARIO")))
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(cambioEstado(id, "APROBADA_FUNCIONARIO")))
                 .andExpect(status().isNoContent());
 
         // Paso 4: Coordinador aprueba la misma solicitud
-        mockMvc.perform(put("/api/solicitudes-reingreso/actualizarEstadoSolicitud-Reingreso")
+        mockMvc.perform(put(rutaEstado(cambioEstado(id, "APROBADA_COORDINADOR")))
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(cambioEstado(id, "APROBADA_COORDINADOR")))
                 .andExpect(status().isNoContent());
 
         // Paso 5: Secretaria consulta oficios disponibles
-        mockMvc.perform(get("/api/solicitudes-reingreso/obtenerOficios/" + id))
+        mockMvc.perform(get("/api/solicitudes-reingreso/" + id + "/oficios"))
                 .andExpect(status().isOk());
     }
 
@@ -352,7 +349,7 @@ class GestionReingresoFuncionalTest {
             }
             """;
 
-        mockMvc.perform(post("/api/solicitudes-reingreso/crearSolicitud-Reingreso")
+        mockMvc.perform(post("/api/solicitudes-reingreso")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(jsonInvalido))
                 .andExpect(status().is4xxClientError()); // Acepta cualquier error 4xx (400, 409, etc.)
@@ -378,7 +375,7 @@ class GestionReingresoFuncionalTest {
             }
             """;
 
-        mockMvc.perform(put("/api/solicitudes-reingreso/actualizarEstadoSolicitud-Reingreso")
+        mockMvc.perform(put(rutaEstado(jsonCambioEstado))
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(jsonCambioEstado))
                 .andExpect(result -> {
@@ -387,24 +384,10 @@ class GestionReingresoFuncionalTest {
                 });
     }
 
-    // ==================== FLUJO 8: VALIDACIÓN DE DOCUMENTOS ====================
+    // El flujo 8 (validación de documentos requeridos) se retiró con /validarDocumentosRequeridos en EST-7, paso 7b.
 
-    @Test
-    @DisplayName("Funcional 10: Flujo de validación de documentos requeridos")
-    void testFlujoValidacionDocumentosRequeridos() throws Exception {
-        /*
-         * FLUJO DE NEGOCIO:
-         * 1. Funcionario necesita verificar documentos de una solicitud
-         * 2. Sistema valida qué documentos están presentes
-         * 3. Sistema indica qué documentos faltan
-         * 
-         * ACTORES: Funcionario
-         * RESULTADO ESPERADO: Información clara sobre documentos requeridos
-         */
-        
-        mockMvc.perform(get("/api/solicitudes-reingreso/validarDocumentosRequeridos/3"))
-                .andExpect(status().isOk())
-                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON));
+    /** EST-7, paso 7b: el cambio de estado es PUT /{id}/estado; el id sale del cuerpo, que lo sigue llevando. */
+    private static String rutaEstado(String cuerpo) {
+        return "/api/solicitudes-reingreso/" + cuerpo.replaceAll("(?s).*\"idSolicitud\"\\s*:\\s*(\\d+).*", "$1") + "/estado";
     }
 }
-

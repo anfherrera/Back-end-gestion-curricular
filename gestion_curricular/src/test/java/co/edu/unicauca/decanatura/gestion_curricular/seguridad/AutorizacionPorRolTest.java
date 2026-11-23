@@ -130,7 +130,7 @@ class AutorizacionPorRolTest {
     @DisplayName("Estudiante no puede cambiar el estado de una solicitud (p. ej. aprobar la suya)")
     void estudianteNoCambiaEstados() throws Exception {
         String cambio = "{\"idSolicitud\":1,\"nuevoEstado\":\"APROBADA\"}";
-        mockMvc.perform(put("/api/solicitudes-homologacion/actualizarEstadoSolicitud").header("Authorization", tokenA)
+        mockMvc.perform(put("/api/solicitudes-homologacion/1/estado").header("Authorization", tokenA)
                         .contentType(MediaType.APPLICATION_JSON).content(cambio))
                 .andExpect(status().isForbidden());
         mockMvc.perform(put("/api/solicitudes-ecaes/1/estado").header("Authorization", tokenA)
@@ -185,7 +185,7 @@ class AutorizacionPorRolTest {
         String tokenFuncionario = "Bearer " + login(usuarioConRol(CORREO_FUNCIONARIO, "SEG-F", "Funcionario"));
         String tokenCoordinador = "Bearer " + login(usuarioConRol(CORREO_COORDINADOR, "SEG-C", "Coordinador"));
 
-        String respuesta = mockMvc.perform(post("/api/solicitudes-homologacion/crearSolicitud-Homologacion")
+        String respuesta = mockMvc.perform(post("/api/solicitudes-homologacion")
                         .header("Authorization", tokenA)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(peticionHomologacion(idA)))
@@ -209,7 +209,7 @@ class AutorizacionPorRolTest {
     @Test
     @DisplayName("La solicitud queda a nombre de quien inicia sesión aunque el cliente envíe otro id")
     void solicitudQuedaANombreDelAutenticado() throws Exception {
-        String respuesta = mockMvc.perform(post("/api/solicitudes-homologacion/crearSolicitud-Homologacion")
+        String respuesta = mockMvc.perform(post("/api/solicitudes-homologacion")
                         .header("Authorization", tokenA)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(peticionHomologacion(idB)))
@@ -219,12 +219,12 @@ class AutorizacionPorRolTest {
         JsonNode solicitud = objectMapper.readTree(respuesta);
         assertThat(solicitud.at("/objUsuario/id_usuario").asInt()).isEqualTo(idA);
 
-        // Y el otro estudiante no puede verla
+        // Y el otro estudiante no puede verla (sus oficios tienen la misma regla de dueño que tenía el detalle)
         int idSolicitud = solicitud.get("id_solicitud").asInt();
-        mockMvc.perform(get("/api/solicitudes-homologacion/listarSolicitud-Homologacion/" + idSolicitud)
+        mockMvc.perform(get("/api/solicitudes-homologacion/" + idSolicitud + "/oficios")
                         .header("Authorization", tokenB))
                 .andExpect(status().isForbidden());
-        mockMvc.perform(get("/api/solicitudes-homologacion/listarSolicitud-Homologacion/" + idSolicitud)
+        mockMvc.perform(get("/api/solicitudes-homologacion/" + idSolicitud + "/oficios")
                         .header("Authorization", tokenA))
                 .andExpect(status().isOk());
     }
@@ -232,7 +232,7 @@ class AutorizacionPorRolTest {
     @Test
     @DisplayName("Al listar por rol, un estudiante solo recibe sus propias solicitudes")
     void listarPorRolSoloDevuelveLasPropias() throws Exception {
-        String respuesta = mockMvc.perform(get("/api/solicitudes-homologacion/listarSolicitud-Homologacion/porRol")
+        String respuesta = mockMvc.perform(get("/api/solicitudes-homologacion")
                         .param("rol", "FUNCIONARIO")
                         .header("Authorization", tokenB))
                 .andExpect(status().isOk())
@@ -301,10 +301,10 @@ class AutorizacionPorRolTest {
 
     private org.springframework.test.web.servlet.ResultActions cambiarEstadoHomologacion(String token, int id,
             String nuevoEstado) throws Exception {
-        return mockMvc.perform(put("/api/solicitudes-homologacion/actualizarEstadoSolicitud")
+        return mockMvc.perform(put("/api/solicitudes-homologacion/" + id + "/estado")
                 .header("Authorization", token)
                 .contentType(MediaType.APPLICATION_JSON)
-                .content("{\"idSolicitud\":%d,\"nuevoEstado\":\"%s\"}".formatted(id, nuevoEstado)));
+                .content("{\"nuevoEstado\":\"%s\"}".formatted(nuevoEstado)));
     }
 
     private String usuarioConRol(String correo, String codigo, String nombreRol) {

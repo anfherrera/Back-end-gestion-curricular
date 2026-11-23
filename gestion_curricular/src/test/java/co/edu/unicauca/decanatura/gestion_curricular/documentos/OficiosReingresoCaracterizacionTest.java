@@ -66,15 +66,16 @@ class OficiosReingresoCaracterizacionTest {
 
         ObjectNode resultados = json.createObjectNode();
         for (int id : casos.keySet()) {
+            // EST-7, paso 7b: la clave conserva la ruta con la que se grabó y se pide la nueva
             String ruta = "/api/solicitudes-reingreso/obtenerOficios/" + id;
-            MockHttpServletResponse respuesta = mvc.perform(get(ruta)).andReturn().getResponse();
+            MockHttpServletResponse respuesta = mvc.perform(get("/api/solicitudes-reingreso/" + id + "/oficios")).andReturn().getResponse();
             ObjectNode resultado = resultados.putObject(ruta);
             resultado.put("status", respuesta.getStatus());
             resultado.set("body", json.readTree(respuesta.getContentAsString(UTF_8)));
         }
         for (int id : casos.keySet()) {
             String ruta = "/api/solicitudes-reingreso/descargarOficio/" + id;
-            MockHttpServletResponse respuesta = mvc.perform(get(ruta)).andReturn().getResponse();
+            MockHttpServletResponse respuesta = mvc.perform(get("/api/solicitudes-reingreso/" + id + "/oficios/archivo")).andReturn().getResponse();
             ObjectNode resultado = resultados.putObject(ruta);
             resultado.put("status", respuesta.getStatus());
             resultado.put("contentDisposition", respuesta.getHeader(HttpHeaders.CONTENT_DISPOSITION));

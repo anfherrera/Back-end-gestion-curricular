@@ -1,9 +1,7 @@
 package co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.controladores;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -12,6 +10,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -33,7 +32,6 @@ import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.dto.p
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.dto.peticion.SolicitudReingresoDTOPeticion;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.dto.peticion.UsuarioDTOPeticion;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.dto.respuesta.DocumentosSolicitudDTORespuesta.Oficio;
-import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.dto.respuesta.DocumentosSolicitudDTORespuesta.Revision;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.dto.respuesta.RechazoCambioEstadoDTORespuesta;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.dto.respuesta.SolicitudReingresoDTORespuesta;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.mappers.SolicitudMapperDominio;
@@ -57,7 +55,7 @@ public class SolicitudReingresoRestController {
     private final ValidadorCambioEstado validadorCambioEstado;
 
     @PreAuthorize("hasAnyRole('Estudiante', 'Administrador')")
-    @PostMapping("/crearSolicitud-Reingreso")
+    @PostMapping
     public ResponseEntity<SolicitudReingresoDTORespuesta> crearSolicitudReingreso(@RequestBody SolicitudReingresoDTOPeticion solicitudDTO) {
         // El solicitante sale del token, no de lo que envía el cliente
         if (solicitudDTO.getObjUsuario() == null) {
@@ -71,15 +69,19 @@ public class SolicitudReingresoRestController {
         return respuesta;
     }
 
-    @GetMapping("/listarSolicitudes-Reingreso")
-    public ResponseEntity<List<SolicitudReingresoDTORespuesta>> listarSolicitudesReingreso() {
-        List<SolicitudReingreso> solicitudes = solicitudService.listarSolicitudesReingreso();
-        List<SolicitudReingresoDTORespuesta> solicitudesDTO = solicitudReingresoMapper.mapearDeListaSolicitudReingresoASolicitudReingresoDTORespuesta(solicitudes);
-        return ResponseEntity.ok(solicitudesDTO);
-    }
-    
+    /**
+     * Sin {@code rol} no hay listado: responde el mismo 400 que da un parámetro obligatorio que falta. El listado
+     * completo sin filtros se retiró en EST-7 (no tenía uso).
+     */
     @PreAuthorize("isAuthenticated()")
-    @GetMapping("/listarSolicitud-Reingreso/porUser")
+    @GetMapping
+    public ResponseEntity<Void> listarSinRol() throws MissingServletRequestParameterException {
+        throw new MissingServletRequestParameterException("rol", "String");
+    }
+
+    /** Antes {@code /listarSolicitud-Reingreso/porUser}. */
+    @PreAuthorize("isAuthenticated()")
+    @GetMapping(params = {"rol", "!bandeja"})
     public ResponseEntity<List<SolicitudReingresoDTORespuesta>> listarSolicitudPorUser(
             @RequestParam String rol,
             @RequestParam(required = false) Integer idUsuario,
@@ -101,73 +103,47 @@ public class SolicitudReingresoRestController {
         return responder(solicitudService.listarSolicitudesReingresoPorRol(rol, idUsuario));
     }
 
-    @GetMapping("/listarSolicitud-Reingreso/Funcionario")
-    public ResponseEntity<List<SolicitudReingresoDTORespuesta>> listarSolicitudReingresoToFuncionario(
+    /**
+     * Bandeja de un rol (EST-7): {@code bandeja=pendientes} son las que esperan su revisión (antes
+     * {@code /listarSolicitud-Reingreso/{Rol}}) y {@code bandeja=procesadas}, las que ya aprobó alguna vez (antes
+     * {@code /{Rol}/Aprobadas}).
+     *
+     * @param rol              funcionario, coordinador o secretaria
+     * @param bandeja          pendientes o procesadas
+     * @param periodoAcademico opcional ("2025-2"). En pendientes, si falta, el actual; en procesadas, vacío o
+     *                         "todos" muestra todos los períodos. El coordinador sin programa ve todas, de todos los
+     *                         períodos.
+     */
+    @GetMapping(params = {"rol", "bandeja"})
+    public ResponseEntity<List<SolicitudReingresoDTORespuesta>> listarBandeja(
+            @RequestParam String rol,
+            @RequestParam String bandeja,
             @RequestParam(required = false) String periodoAcademico) {
-        return responder(solicitudService.listar(FiltroSolicitudes.pendientesDe(
-                FlujoEstadosSolicitud.FUNCIONARIO, null, PeriodoDeConsulta.oActual(periodoAcademico))));
-    }
-
-    @GetMapping("/listarSolicitud-Reingreso/Coordinador")
-    public ResponseEntity<List<SolicitudReingresoDTORespuesta>> listarSolicitudReingresoToCoordinador(
-            @RequestParam(required = false) String periodoAcademico) {
-        Integer idPrograma = autorizacion.idProgramaCoordinadorActual();
-        if (idPrograma == null) {
-            // Si no se puede obtener el programa, se devuelven todas, de todos los períodos (fallback)
-            log.warn("No se pudo obtener el programa del coordinador, retornando todas las solicitudes");
-            return responder(solicitudService.listar(
-                    FiltroSolicitudes.pendientesDe(FlujoEstadosSolicitud.COORDINADOR, null, null)));
+        boolean procesadas = switch (bandeja) {
+            case "pendientes" -> false;
+            case "procesadas" -> true;
+            default -> throw new IllegalArgumentException("Bandeja no válida: use pendientes o procesadas");
+        };
+        String paso = switch (rol) {
+            case "funcionario" -> FlujoEstadosSolicitud.FUNCIONARIO;
+            case "coordinador" -> FlujoEstadosSolicitud.COORDINADOR;
+            case "secretaria" -> FlujoEstadosSolicitud.SECRETARIO;
+            default -> throw new IllegalArgumentException("Rol no válido: use funcionario, coordinador o secretaria");
+        };
+        String periodo = procesadas ? PeriodoDeConsulta.oTodos(periodoAcademico)
+                : PeriodoDeConsulta.oActual(periodoAcademico);
+        Integer idPrograma = null;
+        if (FlujoEstadosSolicitud.COORDINADOR.equals(paso)) {
+            idPrograma = autorizacion.idProgramaCoordinadorActual();
+            if (idPrograma == null) {
+                // Si no se puede obtener el programa, se devuelven todas, de todos los períodos (fallback)
+                log.warn("No se pudo obtener el programa del coordinador, retornando todas las solicitudes");
+                periodo = null;
+            }
         }
-        return responder(solicitudService.listar(FiltroSolicitudes.pendientesDe(
-                FlujoEstadosSolicitud.COORDINADOR, idPrograma, PeriodoDeConsulta.oActual(periodoAcademico))));
-    }
-
-    @GetMapping("/listarSolicitud-Reingreso/Secretaria")
-    public ResponseEntity<List<SolicitudReingresoDTORespuesta>> listarSolicitudReingresoToSecretaria(
-            @RequestParam(required = false) String periodoAcademico) {
-        return responder(solicitudService.listar(FiltroSolicitudes.pendientesDe(
-                FlujoEstadosSolicitud.SECRETARIO, null, PeriodoDeConsulta.oActual(periodoAcademico))));
-    }
-
-    /**
-     * Solicitudes que la secretaría ya aprobó (pasaron por APROBADA).
-     * @param periodoAcademico opcional; vacío o "todos" muestra todos los períodos
-     */
-    @GetMapping("/listarSolicitud-Reingreso/Secretaria/Aprobadas")
-    public ResponseEntity<List<SolicitudReingresoDTORespuesta>> listarSolicitudReingresoAprobadasToSecretaria(
-            @RequestParam(required = false) String periodoAcademico) {
-        return responder(solicitudService.listar(FiltroSolicitudes.procesadasPor(
-                FlujoEstadosSolicitud.SECRETARIO, null, PeriodoDeConsulta.oTodos(periodoAcademico))));
-    }
-
-    /**
-     * Solicitudes que el funcionario ya procesó y envió al coordinador (pasaron por APROBADA_FUNCIONARIO).
-     * @param periodoAcademico opcional ("2025-2"); vacío o "todos" muestra todos los períodos
-     */
-    @GetMapping("/listarSolicitud-Reingreso/Funcionario/Aprobadas")
-    public ResponseEntity<List<SolicitudReingresoDTORespuesta>> listarSolicitudReingresoAprobadasToFuncionario(
-            @RequestParam(required = false) String periodoAcademico) {
-        return responder(solicitudService.listar(FiltroSolicitudes.procesadasPor(
-                FlujoEstadosSolicitud.FUNCIONARIO, null, PeriodoDeConsulta.oTodos(periodoAcademico))));
-    }
-
-    /**
-     * Solicitudes del programa del coordinador que él ya procesó y envió a la secretaría
-     * (pasaron por APROBADA_COORDINADOR).
-     * @param periodoAcademico opcional ("2025-2"); vacío o "todos" muestra todos los períodos
-     */
-    @GetMapping("/listarSolicitud-Reingreso/Coordinador/Aprobadas")
-    public ResponseEntity<List<SolicitudReingresoDTORespuesta>> listarSolicitudReingresoAprobadasToCoordinador(
-            @RequestParam(required = false) String periodoAcademico) {
-        Integer idPrograma = autorizacion.idProgramaCoordinadorActual();
-        if (idPrograma == null) {
-            // Si no se puede obtener el programa, se devuelven todas, de todos los períodos (fallback)
-            log.warn("No se pudo obtener el programa del coordinador, retornando todas las solicitudes");
-            return responder(solicitudService.listar(
-                    FiltroSolicitudes.procesadasPor(FlujoEstadosSolicitud.COORDINADOR, null, null)));
-        }
-        return responder(solicitudService.listar(FiltroSolicitudes.procesadasPor(
-                FlujoEstadosSolicitud.COORDINADOR, idPrograma, PeriodoDeConsulta.oTodos(periodoAcademico))));
+        return responder(solicitudService.listar(procesadas
+                ? FiltroSolicitudes.procesadasPor(paso, idPrograma, periodo)
+                : FiltroSolicitudes.pendientesDe(paso, idPrograma, periodo)));
     }
 
     private ResponseEntity<List<SolicitudReingresoDTORespuesta>> responder(List<SolicitudReingreso> solicitudes) {
@@ -175,16 +151,11 @@ public class SolicitudReingresoRestController {
                 solicitudReingresoMapper.mapearDeListaSolicitudReingresoASolicitudReingresoDTORespuesta(solicitudes));
     }
 
-    @PreAuthorize("@autorizacion.esStaff() or @autorizacion.esDuenoSolicitud(#id)")
-    @GetMapping("/listarSolicitud-Reingreo/{id}")
-    public ResponseEntity<SolicitudReingresoDTORespuesta> listarReingresoById(@PathVariable Integer id) {
-        SolicitudReingreso solicitud = solicitudService.obtenerSolicitudReingresoPorId(id);
-        SolicitudReingresoDTORespuesta respuesta = solicitudReingresoMapper.mapearDeSolicitudReingresoASolicitudReingresoDTORespuesta(solicitud);
-        return ResponseEntity.ok(respuesta);
-    }
-
-    @PutMapping("/actualizarEstadoSolicitud-Reingreso")
-    public ResponseEntity<RechazoCambioEstadoDTORespuesta> actualizarEstadoSolicitudReingreso(@RequestBody CambioEstadoSolicitudDTOPeticion peticion) {
+    /** La solicitud es la de la ruta: un {@code idSolicitud} en el cuerpo se ignora. */
+    @PutMapping("/{idSolicitud:\\d+}/estado")
+    public ResponseEntity<RechazoCambioEstadoDTORespuesta> actualizarEstadoSolicitudReingreso(
+            @PathVariable Integer idSolicitud, @RequestBody CambioEstadoSolicitudDTOPeticion peticion) {
+        peticion.setIdSolicitud(idSolicitud);
         CambioEstadoSolicitud solicitud = solicitudMapper.mapearDeCambioEstadoSolicitudDTOPeticionACambioEstadoSolicitud(peticion);
         // Solo el rol responsable del paso puede hacerlo (Funcionario → Coordinador → Secretario)
         String estadoActual = FlujoEstadosSolicitud.ultimoEstado(
@@ -206,7 +177,7 @@ public class SolicitudReingresoRestController {
      * Descargar oficio por ID de solicitud de reingreso
      */
     @PreAuthorize("@autorizacion.esStaff() or @autorizacion.esDuenoSolicitud(#idSolicitud)")
-    @GetMapping("/descargarOficio/{idSolicitud}")
+    @GetMapping("/{idSolicitud:\\d+}/oficios/archivo")
     public ResponseEntity<byte[]> descargarOficio(@PathVariable Integer idSolicitud) {
         log.debug("Descargando oficio de reingreso para solicitud: {}", idSolicitud);
         
@@ -275,7 +246,7 @@ public class SolicitudReingresoRestController {
      * Obtener oficios disponibles para una solicitud de reingreso
      */
     @PreAuthorize("@autorizacion.esStaff() or @autorizacion.esDuenoSolicitud(#idSolicitud)")
-    @GetMapping("/obtenerOficios/{idSolicitud}")
+    @GetMapping("/{idSolicitud:\\d+}/oficios")
     public ResponseEntity<List<Oficio>> obtenerOficios(@PathVariable Integer idSolicitud) {
         log.debug("Obteniendo oficios de reingreso para solicitud: {}", idSolicitud);
         
@@ -316,7 +287,7 @@ public class SolicitudReingresoRestController {
     /**
      * Indica si un PDF, con el nombre ya en minúsculas, parece un oficio o resolución de reingreso. La carta de
      * solicitud del estudiante también lleva "reingreso" en el nombre, pero es un documento requerido y no un
-     * oficio; se reconoce con el mismo criterio que {@link #validarDocumentosRequeridos}.
+     * oficio: lleva a la vez "carta", "solicitud" y "reingreso".
      */
     private static boolean esOficioReingreso(String nombreArchivo) {
         boolean esCartaEstudiante = nombreArchivo.contains("carta") && nombreArchivo.contains("solicitud")
@@ -325,60 +296,4 @@ public class SolicitudReingresoRestController {
                 || nombreArchivo.contains("reingreso") || nombreArchivo.contains("aprobacion"));
     }
     
-    /**
-     * Validar documentos requeridos para reingreso
-     */
-    @PreAuthorize("@autorizacion.esStaff() or @autorizacion.esDuenoSolicitud(#idSolicitud)")
-    @GetMapping("/validarDocumentosRequeridos/{idSolicitud}")
-    public ResponseEntity<Revision> validarDocumentosRequeridos(@PathVariable Integer idSolicitud) {
-        log.debug("Validando documentos requeridos para solicitud de reingreso: {}", idSolicitud);
-        
-        // Obtener la solicitud con sus documentos
-        SolicitudReingreso solicitud = solicitudService.obtenerSolicitudReingresoPorId(idSolicitud);
-        if (solicitud == null) {
-            return ResponseEntity.notFound().build();
-        }
-        
-        List<Documento> documentos = solicitud.getDocumentos();
-        if (documentos == null) {
-            documentos = new ArrayList<>();
-        }
-        
-        // Documentos requeridos para reingreso
-        Map<String, Boolean> documentosRequeridos = new HashMap<>();
-        documentosRequeridos.put("carta_solicitud_reingreso", false);
-        documentosRequeridos.put("certificado_notas", false);
-        documentosRequeridos.put("documento_identidad", false);
-        documentosRequeridos.put("justificacion_ausencia", false);
-        documentosRequeridos.put("carnet_estudiantil", false); // Opcional
-        
-        // Verificar qué documentos están presentes
-        for (Documento documento : documentos) {
-            if (documento.getNombre() != null) {
-                String nombre = documento.getNombre().toLowerCase();
-                
-                if (nombre.contains("carta") && nombre.contains("solicitud") && nombre.contains("reingreso")) {
-                    documentosRequeridos.put("carta_solicitud_reingreso", true);
-                } else if (nombre.contains("certificado") && nombre.contains("notas")) {
-                    documentosRequeridos.put("certificado_notas", true);
-                } else if (nombre.contains("documento") && nombre.contains("identidad")) {
-                    documentosRequeridos.put("documento_identidad", true);
-                } else if (nombre.contains("justificacion") && nombre.contains("ausencia")) {
-                    documentosRequeridos.put("justificacion_ausencia", true);
-                } else if (nombre.contains("carnet") && nombre.contains("estudiantil")) {
-                    documentosRequeridos.put("carnet_estudiantil", true);
-                }
-            }
-        }
-        
-        // Calcular si todos los documentos obligatorios están presentes
-        boolean todosCompletos = documentosRequeridos.get("carta_solicitud_reingreso") &&
-                               documentosRequeridos.get("certificado_notas") &&
-                               documentosRequeridos.get("documento_identidad") &&
-                               documentosRequeridos.get("justificacion_ausencia");
-        
-        log.debug("Validación de reingreso completada. Todos completos: {}", todosCompletos);
-        return ResponseEntity.ok(new Revision(documentosRequeridos, todosCompletos, documentos.size()));
-    }
-
 }

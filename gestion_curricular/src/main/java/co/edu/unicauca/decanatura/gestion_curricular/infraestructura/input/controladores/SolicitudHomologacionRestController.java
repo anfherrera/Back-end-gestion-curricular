@@ -2,7 +2,6 @@ package co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.cont
 
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -15,6 +14,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -38,7 +38,6 @@ import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.dto.p
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.dto.peticion.SolicitudHomologacionDTOPeticion;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.dto.respuesta.DocumentosSolicitudDTORespuesta.Oficio;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.dto.respuesta.DocumentosSolicitudDTORespuesta.ResolucionSubida;
-import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.dto.respuesta.DocumentosSolicitudDTORespuesta.Revision;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.dto.respuesta.RechazoCambioEstadoDTORespuesta;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.dto.respuesta.SolicitudHomologacionDTORespuesta;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.mappers.SolicitudHomologacionMapperDominio;
@@ -67,7 +66,7 @@ public class SolicitudHomologacionRestController {
     private static final String MARCADOR_OFICIO_HOMOLOGACION = "[OFICIO_HOMOLOGACION]";
 
     @PreAuthorize("hasAnyRole('Estudiante', 'Administrador')")
-    @PostMapping("/crearSolicitud-Homologacion")
+    @PostMapping
     public ResponseEntity<SolicitudHomologacionDTORespuesta> crearSolicitudHomologacion(@Valid @RequestBody SolicitudHomologacionDTOPeticion peticion) {
         // El solicitante sale del token, no de lo que envía el cliente
         peticion.getObjUsuario().setId_usuario(autorizacion.idSolicitante(peticion.getObjUsuario().getId_usuario()));
@@ -78,44 +77,62 @@ public class SolicitudHomologacionRestController {
         return respuesta;
     }
 
-    @GetMapping("/listarSolicitud-Homologacion")
-    public ResponseEntity<List<SolicitudHomologacionDTORespuesta>> listarSolicitudHomologacion() {
-        List<SolicitudHomologacion> solicitudes = solicitudHomologacionCU.listarSolicitudes();
-        List<SolicitudHomologacionDTORespuesta> respuesta = solicitudMapperDominio.mapearListaDeSolicitudHomologacionARespuesta(solicitudes);
-        return ResponseEntity.ok(respuesta);
-    }
-
-
-    @GetMapping("/listarSolicitud-Homologacion/Funcionario")
-    public ResponseEntity<List<SolicitudHomologacionDTORespuesta>> listarSolicitudHomologacionToFuncionario(
-            @RequestParam(required = false) String periodoAcademico) {
-        return responder(solicitudHomologacionCU.listar(FiltroSolicitudes.pendientesDe(
-                FlujoEstadosSolicitud.FUNCIONARIO, null, PeriodoDeConsulta.oActual(periodoAcademico))));
-    }
-
-    @GetMapping("/listarSolicitud-Homologacion/Coordinador")
-    public ResponseEntity<List<SolicitudHomologacionDTORespuesta>> listarSolicitudHomologacionToCoordinador(
-            @RequestParam(required = false) String periodoAcademico) {
-        Integer idPrograma = autorizacion.idProgramaCoordinadorActual();
-        if (idPrograma == null) {
-            // Si no se puede obtener el programa, se devuelven todas, de todos los períodos (fallback)
-            log.warn("No se pudo obtener el programa del coordinador, retornando todas las solicitudes");
-            return responder(solicitudHomologacionCU.listar(
-                    FiltroSolicitudes.pendientesDe(FlujoEstadosSolicitud.COORDINADOR, null, null)));
-        }
-        return responder(solicitudHomologacionCU.listar(FiltroSolicitudes.pendientesDe(
-                FlujoEstadosSolicitud.COORDINADOR, idPrograma, PeriodoDeConsulta.oActual(periodoAcademico))));
-    }
-
-    @GetMapping("/listarSolicitud-Homologacion/Secretaria")
-    public ResponseEntity<List<SolicitudHomologacionDTORespuesta>> listarSolicitudHomologacionToSecretaria(
-            @RequestParam(required = false) String periodoAcademico) {
-        return responder(solicitudHomologacionCU.listar(FiltroSolicitudes.pendientesDe(
-                FlujoEstadosSolicitud.SECRETARIO, null, PeriodoDeConsulta.oActual(periodoAcademico))));
-    }
-
+    /**
+     * Sin {@code rol} no hay listado: responde el mismo 400 que da un parámetro obligatorio que falta. El listado
+     * completo sin filtros se retiró en EST-7 (no tenía uso).
+     */
     @PreAuthorize("isAuthenticated()")
-    @GetMapping("/listarSolicitud-Homologacion/porRol")
+    @GetMapping
+    public ResponseEntity<Void> listarSinRol() throws MissingServletRequestParameterException {
+        throw new MissingServletRequestParameterException("rol", "String");
+    }
+
+    /**
+     * Bandeja de un rol (EST-7): {@code bandeja=pendientes} son las que esperan su revisión (antes
+     * {@code /listarSolicitud-Homologacion/{Rol}}) y {@code bandeja=procesadas}, las que ya aprobó alguna vez (antes
+     * {@code /{Rol}/Aprobadas}).
+     *
+     * @param rol              funcionario, coordinador o secretaria
+     * @param bandeja          pendientes o procesadas
+     * @param periodoAcademico opcional ("2025-2"). En pendientes, si falta, el actual; en procesadas, vacío o
+     *                         "todos" muestra todos los períodos. El coordinador sin programa ve todas, de todos los
+     *                         períodos.
+     */
+    @GetMapping(params = {"rol", "bandeja"})
+    public ResponseEntity<List<SolicitudHomologacionDTORespuesta>> listarBandeja(
+            @RequestParam String rol,
+            @RequestParam String bandeja,
+            @RequestParam(required = false) String periodoAcademico) {
+        boolean procesadas = switch (bandeja) {
+            case "pendientes" -> false;
+            case "procesadas" -> true;
+            default -> throw new IllegalArgumentException("Bandeja no válida: use pendientes o procesadas");
+        };
+        String paso = switch (rol) {
+            case "funcionario" -> FlujoEstadosSolicitud.FUNCIONARIO;
+            case "coordinador" -> FlujoEstadosSolicitud.COORDINADOR;
+            case "secretaria" -> FlujoEstadosSolicitud.SECRETARIO;
+            default -> throw new IllegalArgumentException("Rol no válido: use funcionario, coordinador o secretaria");
+        };
+        String periodo = procesadas ? PeriodoDeConsulta.oTodos(periodoAcademico)
+                : PeriodoDeConsulta.oActual(periodoAcademico);
+        Integer idPrograma = null;
+        if (FlujoEstadosSolicitud.COORDINADOR.equals(paso)) {
+            idPrograma = autorizacion.idProgramaCoordinadorActual();
+            if (idPrograma == null) {
+                // Si no se puede obtener el programa, se devuelven todas, de todos los períodos (fallback)
+                log.warn("No se pudo obtener el programa del coordinador, retornando todas las solicitudes");
+                periodo = null;
+            }
+        }
+        return responder(solicitudHomologacionCU.listar(procesadas
+                ? FiltroSolicitudes.procesadasPor(paso, idPrograma, periodo)
+                : FiltroSolicitudes.pendientesDe(paso, idPrograma, periodo)));
+    }
+
+    /** Antes {@code /listarSolicitud-Homologacion/porRol}. */
+    @PreAuthorize("isAuthenticated()")
+    @GetMapping(params = {"rol", "!bandeja"})
     public ResponseEntity<List<SolicitudHomologacionDTORespuesta>> listarSolicitudPorRol(
             @RequestParam String rol,
             @RequestParam(required = false) Integer idUsuario,
@@ -137,62 +154,15 @@ public class SolicitudHomologacionRestController {
         return responder(solicitudHomologacionCU.listarSolicitudesPorRol(rol, idUsuario));
     }
 
-    /**
-     * Solicitudes que la secretaría ya aprobó (pasaron por APROBADA).
-     * @param periodoAcademico opcional; vacío o "todos" muestra todos los períodos
-     */
-    @GetMapping("/listarSolicitud-Homologacion/Secretaria/Aprobadas")
-    public ResponseEntity<List<SolicitudHomologacionDTORespuesta>> listarSolicitudHomologacionAprobadasToSecretaria(
-            @RequestParam(required = false) String periodoAcademico) {
-        return responder(solicitudHomologacionCU.listar(FiltroSolicitudes.procesadasPor(
-                FlujoEstadosSolicitud.SECRETARIO, null, PeriodoDeConsulta.oTodos(periodoAcademico))));
-    }
-
-    /**
-     * Solicitudes que el funcionario ya procesó y envió al coordinador (pasaron por APROBADA_FUNCIONARIO).
-     * @param periodoAcademico opcional ("2025-2"); vacío o "todos" muestra todos los períodos
-     */
-    @GetMapping("/listarSolicitud-Homologacion/Funcionario/Aprobadas")
-    public ResponseEntity<List<SolicitudHomologacionDTORespuesta>> listarSolicitudHomologacionAprobadasToFuncionario(
-            @RequestParam(required = false) String periodoAcademico) {
-        return responder(solicitudHomologacionCU.listar(FiltroSolicitudes.procesadasPor(
-                FlujoEstadosSolicitud.FUNCIONARIO, null, PeriodoDeConsulta.oTodos(periodoAcademico))));
-    }
-
-    /**
-     * Solicitudes del programa del coordinador que él ya procesó y envió a la secretaría
-     * (pasaron por APROBADA_COORDINADOR).
-     * @param periodoAcademico opcional ("2025-2"); vacío o "todos" muestra todos los períodos
-     */
-    @GetMapping("/listarSolicitud-Homologacion/Coordinador/Aprobadas")
-    public ResponseEntity<List<SolicitudHomologacionDTORespuesta>> listarSolicitudHomologacionAprobadasToCoordinador(
-            @RequestParam(required = false) String periodoAcademico) {
-        Integer idPrograma = autorizacion.idProgramaCoordinadorActual();
-        if (idPrograma == null) {
-            // Si no se puede obtener el programa, se devuelven todas, de todos los períodos (fallback)
-            log.warn("No se pudo obtener el programa del coordinador, retornando todas las solicitudes");
-            return responder(solicitudHomologacionCU.listar(
-                    FiltroSolicitudes.procesadasPor(FlujoEstadosSolicitud.COORDINADOR, null, null)));
-        }
-        return responder(solicitudHomologacionCU.listar(FiltroSolicitudes.procesadasPor(
-                FlujoEstadosSolicitud.COORDINADOR, idPrograma, PeriodoDeConsulta.oTodos(periodoAcademico))));
-    }
-
     private ResponseEntity<List<SolicitudHomologacionDTORespuesta>> responder(List<SolicitudHomologacion> solicitudes) {
         return ResponseEntity.ok(solicitudMapperDominio.mapearListaDeSolicitudHomologacionARespuesta(solicitudes));
     }
 
-
-    @PreAuthorize("@autorizacion.esStaff() or @autorizacion.esDuenoSolicitud(#id)")
-    @GetMapping("/listarSolicitud-Homologacion/{id}")
-    public ResponseEntity<SolicitudHomologacionDTORespuesta> listarHomologacionById(@PathVariable Integer id) {
-        SolicitudHomologacion solicitud = solicitudHomologacionCU.buscarPorId(id);
-        SolicitudHomologacionDTORespuesta respuesta = solicitudMapperDominio.mapearDeSolicitudHomologacionASolicitudHomologacionDTORespuesta(solicitud);
-        return ResponseEntity.ok(respuesta);
-    }
-
-    @PutMapping("/actualizarEstadoSolicitud")
-    public ResponseEntity<RechazoCambioEstadoDTORespuesta> actualizarEstadoSolicitudHomologacion(@RequestBody CambioEstadoSolicitudDTOPeticion peticion) {
+    /** La solicitud es la de la ruta: un {@code idSolicitud} en el cuerpo se ignora. */
+    @PutMapping("/{idSolicitud:\\d+}/estado")
+    public ResponseEntity<RechazoCambioEstadoDTORespuesta> actualizarEstadoSolicitudHomologacion(
+            @PathVariable Integer idSolicitud, @RequestBody CambioEstadoSolicitudDTOPeticion peticion) {
+        peticion.setIdSolicitud(idSolicitud);
         CambioEstadoSolicitud solicitud = solicitudMapper.mapearDeCambioEstadoSolicitudDTOPeticionACambioEstadoSolicitud(peticion);
         // Solo el rol responsable del paso puede hacerlo (Funcionario → Coordinador → Secretario)
         String estadoActual = FlujoEstadosSolicitud.ultimoEstado(
@@ -210,7 +180,7 @@ public class SolicitudHomologacionRestController {
      * Descargar oficio por ID de solicitud
      */
     @PreAuthorize("@autorizacion.esStaff() or @autorizacion.esDuenoSolicitud(#idSolicitud)")
-    @GetMapping("/descargarOficio/{idSolicitud}")
+    @GetMapping("/{idSolicitud:\\d+}/oficios/archivo")
     public ResponseEntity<byte[]> descargarOficio(@PathVariable Integer idSolicitud) {
         // Obtener la solicitud con sus documentos
         SolicitudHomologacion solicitud = solicitudHomologacionCU.buscarPorId(idSolicitud);
@@ -284,7 +254,7 @@ public class SolicitudHomologacionRestController {
      * Obtener oficios disponibles para una solicitud
      */
     @PreAuthorize("@autorizacion.esStaff() or @autorizacion.esDuenoSolicitud(#idSolicitud)")
-    @GetMapping("/obtenerOficios/{idSolicitud}")
+    @GetMapping("/{idSolicitud:\\d+}/oficios")
     public ResponseEntity<List<Oficio>> obtenerOficios(@PathVariable Integer idSolicitud) {
         // Obtener la solicitud con sus documentos
         SolicitudHomologacion solicitud = solicitudHomologacionCU.buscarPorId(idSolicitud);
@@ -313,50 +283,6 @@ public class SolicitudHomologacionRestController {
         
         return ResponseEntity.ok(oficios);
     }
-    
-    /**
-     * Validar documentos requeridos para homologación
-     */
-    @PreAuthorize("@autorizacion.esStaff() or @autorizacion.esDuenoSolicitud(#idSolicitud)")
-    @GetMapping("/validarDocumentosRequeridos/{idSolicitud}")
-    public ResponseEntity<Revision> validarDocumentosRequeridos(@PathVariable Integer idSolicitud) {
-        // Obtener la solicitud con sus documentos
-        SolicitudHomologacion solicitud = solicitudHomologacionCU.buscarPorId(idSolicitud);
-        if (solicitud == null) {
-            return ResponseEntity.notFound().build();
-        }
-        
-        List<Documento> documentos = solicitud.getDocumentos();
-        if (documentos == null) {
-            documentos = new ArrayList<>();
-        }
-        
-        // Documentos requeridos para homologación
-        Map<String, Boolean> documentosRequeridos = new HashMap<>();
-        documentosRequeridos.put("formulario_homologacion", false);
-        documentosRequeridos.put("certificado_notas", false);
-        documentosRequeridos.put("programa_academico", false);
-        
-        // Verificar qué documentos están presentes
-        for (Documento documento : documentos) {
-            if (documento.getNombre() != null) {
-                String nombre = documento.getNombre().toLowerCase();
-                
-                if (nombre.contains("formulario") && nombre.contains("homologacion")) {
-                    documentosRequeridos.put("formulario_homologacion", true);
-                } else if (nombre.contains("certificado") && nombre.contains("notas")) {
-                    documentosRequeridos.put("certificado_notas", true);
-                } else if (nombre.contains("programa") && nombre.contains("academico")) {
-                    documentosRequeridos.put("programa_academico", true);
-                }
-            }
-        }
-        
-        // Calcular si todos los documentos están presentes
-        boolean todosCompletos = documentosRequeridos.values().stream().allMatch(Boolean::booleanValue);
-        
-        return ResponseEntity.ok(new Revision(documentosRequeridos, todosCompletos, documentos.size()));
-    }
 
     /**
      * Indica si el documento es un oficio/resolución (subido por secretaría).
@@ -380,7 +306,7 @@ public class SolicitudHomologacionRestController {
      * "Archivo subido por secretaría" para que se liste y permita descargar al estudiante,
      * independiente del nombre del archivo.
      */
-    @PostMapping("/{idSolicitud}/subir-resolucion")
+    @PostMapping("/{idSolicitud:\\d+}/resoluciones")
     public ResponseEntity<?> subirResolucion(
             @PathVariable Integer idSolicitud,
             @RequestParam("file") MultipartFile file) {

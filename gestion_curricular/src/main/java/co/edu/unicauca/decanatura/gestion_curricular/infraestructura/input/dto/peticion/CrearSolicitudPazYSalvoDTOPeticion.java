@@ -7,7 +7,7 @@ import java.util.Map;
 import com.fasterxml.jackson.annotation.JsonCreator;
 
 /**
- * Cuerpo de {@code crearSolicitud-PazYSalvo}. Admite las dos formas que envían los clientes:
+ * Cuerpo de {@code POST /api/solicitudes-pazysalvo} (antes {@code crearSolicitud-PazYSalvo}). Admite las dos formas que envían los clientes:
  * <ul>
  *   <li>con {@code idUsuario} (y opcionalmente {@code periodo_academico}, {@code titulo_trabajo_grado} y
  *       {@code director_trabajo_grado});</li>

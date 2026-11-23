@@ -40,17 +40,16 @@ class HomologacionIntegracionTest {
     // ==================== PRUEBAS DE CONSULTA ====================
 
     @Test
-    @DisplayName("Test 1: Listar todas las solicitudes de Homologación")
+    @DisplayName("Test 1: El listado completo sin filtros se retiró (EST-7)")
     void testListarSolicitudesHomologacion() throws Exception {
         mockMvc.perform(get("/api/solicitudes-homologacion/listarSolicitud-Homologacion"))
-                .andExpect(status().isOk())
-                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON));
+                .andExpect(status().isNotFound());
     }
 
     @Test
     @DisplayName("Test 2: Listar solicitudes por rol - Funcionario")
     void testListarSolicitudesFuncionario() throws Exception {
-        mockMvc.perform(get("/api/solicitudes-homologacion/listarSolicitud-Homologacion/Funcionario"))
+        mockMvc.perform(get("/api/solicitudes-homologacion?rol=funcionario&bandeja=pendientes"))
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON));
     }
@@ -58,7 +57,7 @@ class HomologacionIntegracionTest {
     @Test
     @DisplayName("Test 3: Listar solicitudes por rol - Coordinador")
     void testListarSolicitudesCoordinador() throws Exception {
-        mockMvc.perform(get("/api/solicitudes-homologacion/listarSolicitud-Homologacion/Coordinador"))
+        mockMvc.perform(get("/api/solicitudes-homologacion?rol=coordinador&bandeja=pendientes"))
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON));
     }
@@ -66,7 +65,7 @@ class HomologacionIntegracionTest {
     @Test
     @DisplayName("Test 4: Listar solicitudes por rol - Secretaria")
     void testListarSolicitudesSecretaria() throws Exception {
-        mockMvc.perform(get("/api/solicitudes-homologacion/listarSolicitud-Homologacion/Secretaria"))
+        mockMvc.perform(get("/api/solicitudes-homologacion?rol=secretaria&bandeja=pendientes"))
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON));
     }
@@ -74,7 +73,7 @@ class HomologacionIntegracionTest {
     @Test
     @DisplayName("Test 5: Listar solicitudes con parámetro de rol")
     void testListarSolicitudesPorRolParametro() throws Exception {
-        mockMvc.perform(get("/api/solicitudes-homologacion/listarSolicitud-Homologacion/porRol")
+        mockMvc.perform(get("/api/solicitudes-homologacion")
                         .param("rol", "ESTUDIANTE"))
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON));
@@ -96,7 +95,7 @@ class HomologacionIntegracionTest {
             """;
 
         // Solo validamos que el endpoint existe y responde (puede ser 201, 200 o 400 por validaciones)
-        mockMvc.perform(post("/api/solicitudes-homologacion/crearSolicitud-Homologacion")
+        mockMvc.perform(post("/api/solicitudes-homologacion")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(jsonRequest));
                 // No validamos status específico porque depende de datos en BD
@@ -108,7 +107,7 @@ class HomologacionIntegracionTest {
         String jsonRequest = "{}";
 
         // Debe dar error de validación (400 o 422)
-        mockMvc.perform(post("/api/solicitudes-homologacion/crearSolicitud-Homologacion")
+        mockMvc.perform(post("/api/solicitudes-homologacion")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(jsonRequest))
                 .andExpect(status().is4xxClientError());
@@ -120,7 +119,7 @@ class HomologacionIntegracionTest {
     @DisplayName("Test 8: Buscar solicitud por ID - Valida endpoint")
     void testBuscarSolicitudPorId() throws Exception {
         // Simplemente validamos que el endpoint existe
-        mockMvc.perform(get("/api/solicitudes-homologacion/listarSolicitud-Homologacion/1"))
+        mockMvc.perform(get("/api/solicitudes/1"))
                 .andExpect(result -> {
                     int s = result.getResponse().getStatus();
                     if (s != 200 && s != 404 && s != 500)
@@ -132,7 +131,7 @@ class HomologacionIntegracionTest {
     @DisplayName("Test 9: Buscar solicitud por ID muy grande")
     void testBuscarSolicitudPorIdGrande() throws Exception {
         // Validamos comportamiento con ID inexistente
-        mockMvc.perform(get("/api/solicitudes-homologacion/listarSolicitud-Homologacion/999999"))
+        mockMvc.perform(get("/api/solicitudes/999999"))
                 .andExpect(result -> {
                     int s = result.getResponse().getStatus();
                     if (s != 404 && s != 500)
@@ -143,16 +142,16 @@ class HomologacionIntegracionTest {
     // ==================== PRUEBAS DE VALIDACIÓN ====================
 
     @Test
-    @DisplayName("Test 10: Endpoint raíz de solicitudes funciona")
+    @DisplayName("Test 10: El endpoint raíz sin rol responde 400")
     void testEndpointRaizSolicitudes() throws Exception {
-        mockMvc.perform(get("/api/solicitudes-homologacion/listarSolicitud-Homologacion"))
-                .andExpect(status().isOk());
+        mockMvc.perform(get("/api/solicitudes-homologacion"))
+                .andExpect(status().isBadRequest());
     }
 
     @Test
     @DisplayName("Test 11: Validar que la respuesta sea JSON")
     void testRespuestaEsJSON() throws Exception {
-        mockMvc.perform(get("/api/solicitudes-homologacion/listarSolicitud-Homologacion"))
+        mockMvc.perform(get("/api/solicitudes-homologacion?rol=funcionario&bandeja=pendientes"))
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON));
     }
@@ -160,7 +159,7 @@ class HomologacionIntegracionTest {
     @Test
     @DisplayName("Test 12: Listar solicitudes por rol con usuario específico")
     void testListarPorRolConUsuario() throws Exception {
-        mockMvc.perform(get("/api/solicitudes-homologacion/listarSolicitud-Homologacion/porRol")
+        mockMvc.perform(get("/api/solicitudes-homologacion")
                         .param("rol", "ESTUDIANTE")
                         .param("idUsuario", "1"))
                 .andExpect(status().isOk())
@@ -179,7 +178,7 @@ class HomologacionIntegracionTest {
             }
             """;
 
-        mockMvc.perform(put("/api/solicitudes-homologacion/actualizarEstadoSolicitud")
+        mockMvc.perform(put(rutaEstado(jsonRequest))
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(jsonRequest))
                 .andExpect(result -> {
@@ -192,11 +191,10 @@ class HomologacionIntegracionTest {
     // ==================== PRUEBAS DE VALIDACIÓN DE DOCUMENTOS ====================
 
     @Test
-    @DisplayName("Test 14: Validar documentos requeridos - Valida endpoint")
+    @DisplayName("Test 14: La validación de documentos requeridos se retiró (EST-7)")
     void testValidarDocumentosRequeridos() throws Exception {
         mockMvc.perform(get("/api/solicitudes-homologacion/validarDocumentosRequeridos/1"))
-                .andExpect(status().isOk())
-                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON));
+                .andExpect(status().isNotFound());
     }
 
     // ==================== PRUEBAS DE DESCARGA DE OFICIOS ====================
@@ -204,7 +202,7 @@ class HomologacionIntegracionTest {
     @Test
     @DisplayName("Test 15: Obtener lista de oficios - Valida endpoint")
     void testObtenerOficios() throws Exception {
-        mockMvc.perform(get("/api/solicitudes-homologacion/obtenerOficios/1"))
+        mockMvc.perform(get("/api/solicitudes-homologacion/1/oficios"))
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON));
     }
@@ -212,12 +210,16 @@ class HomologacionIntegracionTest {
     @Test
     @DisplayName("Test 16: Descargar oficio por ID - Valida endpoint")
     void testDescargarOficio() throws Exception {
-        mockMvc.perform(get("/api/solicitudes-homologacion/descargarOficio/1"))
+        mockMvc.perform(get("/api/solicitudes-homologacion/1/oficios/archivo"))
                 .andExpect(result -> {
                     int s = result.getResponse().getStatus();
                     if (s != 200 && s != 404 && s != 500)
                         throw new AssertionError("Expected 200, 404 or 500, got " + s);
                 });
     }
-}
 
+    /** EST-7, paso 7b: el cambio de estado es PUT /{id}/estado; el id sale del cuerpo, que lo sigue llevando. */
+    private static String rutaEstado(String cuerpo) {
+        return "/api/solicitudes-homologacion/" + cuerpo.replaceAll("(?s).*\"idSolicitud\"\\s*:\\s*(\\d+).*", "$1") + "/estado";
+    }
+}

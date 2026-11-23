@@ -172,10 +172,12 @@ class ListadosPorRolCaracterizacionTest {
     void homologacion() throws Exception {
         String base = "/api/solicitudes-homologacion/listarSolicitud-Homologacion";
         Map<String, List<String>> r = new LinkedHashMap<>();
+        // EST-7, paso 7b: las claves conservan la ruta vieja y se pide la nueva; el listado completo se retiró
         consultar(r, "H", STAFF_SIN_PROGRAMA, base);
-        listadosTresAprobaciones(r, "H", base, base + "/porRol");
+        listadosTresAprobaciones(r, "H", base, "/api/solicitudes-homologacion", "/porRol");
         // BUG-9: porRol?rol=SECRETARIA devuelve las pendientes de la secretaría
-        compararConReferencia("homologacion", r, "listados/correcciones/homologacion-bug9.json");
+        compararConReferencia("homologacion", r, "listados/correcciones/homologacion-bug9.json",
+                "listados/correcciones/homologacion-est7.json");
     }
 
     // ==================== REINGRESO ====================
@@ -185,45 +187,68 @@ class ListadosPorRolCaracterizacionTest {
     void reingreso() throws Exception {
         String base = "/api/solicitudes-reingreso/listarSolicitud-Reingreso";
         Map<String, List<String>> r = new LinkedHashMap<>();
+        // EST-7, paso 7b: las claves conservan la ruta vieja y se pide la nueva; el listado completo se retiró
         consultar(r, "R", STAFF_SIN_PROGRAMA, "/api/solicitudes-reingreso/listarSolicitudes-Reingreso");
-        listadosTresAprobaciones(r, "R", base, base + "/porUser");
+        listadosTresAprobaciones(r, "R", base, "/api/solicitudes-reingreso", "/porUser");
         // BUG-9: porUser?rol=SECRETARIA devuelve las pendientes de la secretaría
-        compararConReferencia("reingreso", r, "listados/correcciones/reingreso-bug9.json");
+        compararConReferencia("reingreso", r, "listados/correcciones/reingreso-bug9.json",
+                "listados/correcciones/reingreso-est7.json");
     }
 
-    /** Endpoints comunes a homologación y reingreso. */
-    private void listadosTresAprobaciones(Map<String, List<String>> r, String tipo, String base, String porRol)
-            throws Exception {
-        consultar(r, tipo, STAFF_SIN_PROGRAMA, base + "/Funcionario");
-        consultar(r, tipo, STAFF_SIN_PROGRAMA, base + "/Funcionario?periodoAcademico=" + OTRO_PERIODO);
-        consultar(r, tipo, COORDINADOR_A, base + "/Coordinador");
-        consultar(r, tipo, COORDINADOR_A, base + "/Coordinador?periodoAcademico=" + OTRO_PERIODO);
-        consultar(r, tipo, STAFF_SIN_PROGRAMA, base + "/Coordinador");
-        consultar(r, tipo, STAFF_SIN_PROGRAMA, base + "/Secretaria");
-        consultar(r, tipo, STAFF_SIN_PROGRAMA, base + "/Secretaria?periodoAcademico=" + OTRO_PERIODO);
-        porRol(r, tipo, porRol);
+    /**
+     * Endpoints comunes a homologación y reingreso. Las claves llevan las rutas viejas ({@code base}, las bandejas
+     * literales, y {@code base + porRol}); se piden las de EST-7 sobre {@code raiz}.
+     */
+    private void listadosTresAprobaciones(Map<String, List<String>> r, String tipo, String base, String raiz,
+            String porRol) throws Exception {
+        String periodo = "periodoAcademico=" + OTRO_PERIODO;
+        bandeja(r, tipo, STAFF_SIN_PROGRAMA, base, raiz, "Funcionario", false, null);
+        bandeja(r, tipo, STAFF_SIN_PROGRAMA, base, raiz, "Funcionario", false, periodo);
+        bandeja(r, tipo, COORDINADOR_A, base, raiz, "Coordinador", false, null);
+        bandeja(r, tipo, COORDINADOR_A, base, raiz, "Coordinador", false, periodo);
+        bandeja(r, tipo, STAFF_SIN_PROGRAMA, base, raiz, "Coordinador", false, null);
+        bandeja(r, tipo, STAFF_SIN_PROGRAMA, base, raiz, "Secretaria", false, null);
+        bandeja(r, tipo, STAFF_SIN_PROGRAMA, base, raiz, "Secretaria", false, periodo);
+        porRolComo(r, tipo, base + porRol, raiz);
         for (String rol : List.of("Funcionario", "Secretaria")) {
-            consultar(r, tipo, STAFF_SIN_PROGRAMA, base + "/" + rol + "/Aprobadas");
-            consultar(r, tipo, STAFF_SIN_PROGRAMA, base + "/" + rol + "/Aprobadas?periodoAcademico=todos");
-            consultar(r, tipo, STAFF_SIN_PROGRAMA, base + "/" + rol + "/Aprobadas?periodoAcademico=" + OTRO_PERIODO);
+            bandeja(r, tipo, STAFF_SIN_PROGRAMA, base, raiz, rol, true, null);
+            bandeja(r, tipo, STAFF_SIN_PROGRAMA, base, raiz, rol, true, "periodoAcademico=todos");
+            bandeja(r, tipo, STAFF_SIN_PROGRAMA, base, raiz, rol, true, periodo);
         }
-        consultar(r, tipo, COORDINADOR_A, base + "/Coordinador/Aprobadas");
-        consultar(r, tipo, COORDINADOR_A, base + "/Coordinador/Aprobadas?periodoAcademico=" + OTRO_PERIODO);
-        consultar(r, tipo, STAFF_SIN_PROGRAMA, base + "/Coordinador/Aprobadas?periodoAcademico=" + OTRO_PERIODO);
+        bandeja(r, tipo, COORDINADOR_A, base, raiz, "Coordinador", true, null);
+        bandeja(r, tipo, COORDINADOR_A, base, raiz, "Coordinador", true, periodo);
+        bandeja(r, tipo, STAFF_SIN_PROGRAMA, base, raiz, "Coordinador", true, periodo);
+    }
+
+    /** Clave {@code base/{Rol}[/Aprobadas][?consulta]}; se pide {@code raiz?rol=…&bandeja=…[&consulta]}. */
+    private void bandeja(Map<String, List<String>> r, String tipo, String usuario, String base, String raiz,
+            String rol, boolean procesadas, String consulta) throws Exception {
+        String clave = base + "/" + rol + (procesadas ? "/Aprobadas" : "") + (consulta == null ? "" : "?" + consulta);
+        String ruta = raiz + "?rol=" + rol.toLowerCase() + "&bandeja=" + (procesadas ? "procesadas" : "pendientes")
+                + (consulta == null ? "" : "&" + consulta);
+        consultarComo(r, tipo, usuario, clave, ruta);
     }
 
     /** Variantes del listado por rol (homologación, reingreso y ECAES aceptan período). */
     private void porRol(Map<String, List<String>> r, String tipo, String ruta) throws Exception {
+        porRolComo(r, tipo, ruta, ruta);
+    }
+
+    /** Como {@link #porRol}, pero la clave lleva {@code rutaClave}. */
+    private void porRolComo(Map<String, List<String>> r, String tipo, String rutaClave, String ruta) throws Exception {
         for (String rol : List.of("FUNCIONARIO", "COORDINADOR", "SECRETARIA", "otro")) {
-            consultar(r, tipo, STAFF_SIN_PROGRAMA, ruta + "?rol=" + rol);
+            consultarComo(r, tipo, STAFF_SIN_PROGRAMA, rutaClave + "?rol=" + rol, ruta + "?rol=" + rol);
         }
-        consultar(r, tipo, COORDINADOR_A, ruta + "?rol=COORDINADOR");
-        consultar(r, tipo, STAFF_SIN_PROGRAMA, ruta + "?rol=ESTUDIANTE&idUsuario=" + estudianteA.getId_usuario());
-        consultar(r, tipo, STAFF_SIN_PROGRAMA, ruta + "?rol=ESTUDIANTE&idUsuario=" + estudianteA.getId_usuario()
-                + "&periodoAcademico=" + OTRO_PERIODO);
+        consultarComo(r, tipo, COORDINADOR_A, rutaClave + "?rol=COORDINADOR", ruta + "?rol=COORDINADOR");
+        String estudiante = "?rol=ESTUDIANTE&idUsuario=" + estudianteA.getId_usuario();
+        consultarComo(r, tipo, STAFF_SIN_PROGRAMA, rutaClave + estudiante, ruta + estudiante);
+        String conPeriodo = estudiante + "&periodoAcademico=" + OTRO_PERIODO;
+        consultarComo(r, tipo, STAFF_SIN_PROGRAMA, rutaClave + conPeriodo, ruta + conPeriodo);
         // Quien no es staff solo ve lo suyo, pida el rol que pida
-        consultar(r, tipo, ESTUDIANTE_B, ruta + "?rol=FUNCIONARIO", "Estudiante");
-        consultar(r, tipo, ESTUDIANTE_B, ruta + "?rol=FUNCIONARIO&periodoAcademico=" + OTRO_PERIODO, "Estudiante");
+        consultarComo(r, tipo, ESTUDIANTE_B, rutaClave + "?rol=FUNCIONARIO", ruta + "?rol=FUNCIONARIO", "Estudiante");
+        String funcionarioConPeriodo = "?rol=FUNCIONARIO&periodoAcademico=" + OTRO_PERIODO;
+        consultarComo(r, tipo, ESTUDIANTE_B, rutaClave + funcionarioConPeriodo, ruta + funcionarioConPeriodo,
+                "Estudiante");
     }
 
     // ==================== PAZ Y SALVO ====================

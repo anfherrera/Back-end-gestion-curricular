@@ -79,10 +79,13 @@ class DocumentosSolicitudClavesCaracterizacionTest {
         int[] ids = {INEXISTENTE, SIN_DOCUMENTOS, VACIA, MEZCLA, COMPLETA};
         String[] bases = {"/api/solicitudes-homologacion", "/api/solicitudes-reingreso"};
         for (String base : bases) {
+            // EST-7, paso 7b: la clave conserva la ruta con la que se grabó y se pide la nueva;
+            // validarDocumentosRequeridos se retiró (404)
             for (String operacion : new String[] {"obtenerOficios", "validarDocumentosRequeridos"}) {
                 for (int id : ids) {
                     String ruta = base + "/" + operacion + "/" + id;
-                    registrar(resultados, ruta, mvc.perform(get(ruta)).andReturn().getResponse());
+                    String pedida = operacion.equals("obtenerOficios") ? base + "/" + id + "/oficios" : ruta;
+                    registrar(resultados, ruta, mvc.perform(get(pedida)).andReturn().getResponse());
                 }
             }
         }
@@ -99,7 +102,7 @@ class DocumentosSolicitudClavesCaracterizacionTest {
         for (Object[] subida : subidas) {
             MockMultipartFile archivo = (MockMultipartFile) subida[1];
             String ruta = "/api/solicitudes-homologacion/" + subida[0] + "/subir-resolucion";
-            RequestBuilder peticion = multipart(ruta).file(archivo);
+            RequestBuilder peticion = multipart("/api/solicitudes-homologacion/" + subida[0] + "/resoluciones").file(archivo);
             registrar(resultados, ruta + " " + archivo.getOriginalFilename() + " (" + archivo.getSize() + ")",
                 mvc.perform(peticion).andReturn().getResponse());
         }
@@ -109,8 +112,10 @@ class DocumentosSolicitudClavesCaracterizacionTest {
             Files.writeString(referencia, json.writerWithDefaultPrettyPrinter().writeValueAsString(resultados));
         }
         // BUG-30: la carta de solicitud del estudiante ya no sale entre los oficios de Reingreso
-        assertThat(resultados).isEqualTo(Correcciones.aplicar(json.readTree(Files.readString(referencia)),
-            "documentos/correcciones/documentos-solicitud-claves-bug30.json"));
+        assertThat(resultados).isEqualTo(Correcciones.aplicar(Correcciones.aplicar(
+            json.readTree(Files.readString(referencia)),
+            "documentos/correcciones/documentos-solicitud-claves-bug30.json"),
+            "documentos/correcciones/documentos-solicitud-claves-est7.json"));
     }
 
     private void registrar(ObjectNode resultados, String nombre, MockHttpServletResponse respuesta) throws Exception {
