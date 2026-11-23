@@ -282,7 +282,8 @@ class RutasPreinscripcionesInscripcionesCaracterizacionTest {
         caso(casos, "funcionario", HttpMethod.PUT, n + "abc/observaciones", "{\"observaciones\":\"nota\"}");
 
         // EST-7: las rutas nuevas responden como las antiguas, que pasan a 404
-        GrafoObjetos.compararConReferencia(casos, "rutas/preinscripciones-verano.json");
+        GrafoObjetos.compararConReferencia(casos, "rutas/preinscripciones-verano.json",
+                "rutas/correcciones/preinscripciones-verano-est7.json");
     }
 
     @Test
@@ -341,7 +342,8 @@ class RutasPreinscripcionesInscripcionesCaracterizacionTest {
         caso(casos, "funcionario", HttpMethod.GET, NUEVA + "/cursos/abc/estudiantes-elegibles", null);
 
         // EST-7: las rutas nuevas responden como las antiguas, que pasan a 404
-        GrafoObjetos.compararConReferencia(casos, "rutas/inscripciones-verano.json");
+        GrafoObjetos.compararConReferencia(casos, "rutas/inscripciones-verano.json",
+                "rutas/correcciones/inscripciones-verano-est7.json");
     }
 
     private void caso(ObjectNode casos, String quien, HttpMethod metodo, String ruta, String cuerpo) throws Exception {

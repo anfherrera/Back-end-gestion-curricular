@@ -14,6 +14,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.*;
+import co.edu.unicauca.decanatura.gestion_curricular.soporte.Correcciones;
 import co.edu.unicauca.decanatura.gestion_curricular.soporte.SoporteMvc;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.*;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.controladores.*;
@@ -93,6 +94,9 @@ class DescargasCaracterizacionTest {
             assertThat(Files.exists(referencia)).isFalse();
             Files.writeString(referencia, json.writerWithDefaultPrettyPrinter().writeValueAsString(actual));
         }
-        assertThat(actual).isEqualTo(json.readTree(Files.readString(referencia)));
+        // EST-7 (paso 8b): el comprobante de verano se pide en /api/archivos, que añade Cache-Control
+        var esperado = Correcciones.aplicar(json.readTree(Files.readString(referencia)),
+            "documentos/correcciones/descargas-est7-paso8b.json");
+        assertThat(actual).isEqualTo(esperado);
     }
 }
