@@ -36,22 +36,17 @@ class EstadisticasIntegracionTest {
     void testEstadisticasSinAutenticacionRechazadas() throws Exception {
         mockMvc.perform(get("/api/estadisticas/globales"))
                 .andExpect(status().is4xxClientError());
-        mockMvc.perform(get("/api/estadisticas/export/excel"))
+        mockMvc.perform(get("/api/estadisticas/reportes").param("formato", "excel"))
                 .andExpect(status().is4xxClientError());
     }
 
     @Test
     @WithMockUser(roles = "Estudiante")
-    @DisplayName("Seguridad: un estudiante no puede consultar estadísticas")
+    @DisplayName("Seguridad: un estudiante no puede consultar estadísticas ni pedir reportes")
     void testEstadisticasEstudianteRechazado() throws Exception {
         mockMvc.perform(get("/api/estadisticas/globales"))
                 .andExpect(status().isForbidden());
-    }
-
-    @Test
-    @DisplayName("Seguridad: solo el Administrador puede eliminar estadísticas")
-    void testEliminarEstadisticaRequiereAdministrador() throws Exception {
-        mockMvc.perform(delete("/api/estadisticas/eliminar/1"))
+        mockMvc.perform(get("/api/estadisticas/reportes").param("formato", "pdf"))
                 .andExpect(status().isForbidden());
     }
 
@@ -127,7 +122,7 @@ class EstadisticasIntegracionTest {
     @Test
     @DisplayName("Test 9: Exportar estadísticas a PDF retorna archivo")
     void testExportarEstadisticasPDFRetornaArchivo() throws Exception {
-        mockMvc.perform(get("/api/estadisticas/export/pdf"))
+        mockMvc.perform(get("/api/estadisticas/reportes").param("formato", "pdf"))
                 .andExpect(status().isOk())
                 .andExpect(header().exists("Content-Disposition"))
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_PDF));
@@ -136,20 +131,11 @@ class EstadisticasIntegracionTest {
     @Test
     @DisplayName("Test 10: Exportar estadísticas a Excel retorna archivo")
     void testExportarEstadisticasExcelRetornaArchivo() throws Exception {
-        mockMvc.perform(get("/api/estadisticas/export/excel"))
+        mockMvc.perform(get("/api/estadisticas/reportes").param("formato", "excel"))
                 .andExpect(status().isOk())
                 .andExpect(header().exists("Content-Disposition"))
                 .andExpect(content().contentTypeCompatibleWith(
                         "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"));
-    }
-
-    @Test
-    @DisplayName("Test 11: Obtener estadísticas filtradas retorna 200 OK")
-    void testObtenerEstadisticasFiltradasRetorna200() throws Exception {
-        mockMvc.perform(get("/api/estadisticas/filtradas")
-                        .param("nombreProceso", "PAZ_SALVO"))
-                .andExpect(status().isOk())
-                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON));
     }
 
     @Test

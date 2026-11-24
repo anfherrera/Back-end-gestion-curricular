@@ -255,8 +255,10 @@ class EstadisticasEndpointsCaracterizacionTest {
         consultar(r, "/historial", "anioInicio", "2025", "anioFin", "2025");
         // BUG-43: consultas.json fija el 200 con {error} de /periodo?periodoAcademico=2025-3; la corrección, el 400.
         // DUP-8: /periodo, /proceso/{tipo}, /estado/{estado} y /programa/{id} se retiran y responden 404.
+        // EST-7 (paso 9): /filtradas, /programa/{id}/periodo, /proceso/{t}/estado/{e} y /tendencias también.
         compararConReferencia("consultas", r, "estadisticas-endpoints/correcciones/consultas-bug43.json",
-                "estadisticas-endpoints/correcciones/consultas-dup8.json");
+                "estadisticas-endpoints/correcciones/consultas-dup8.json",
+                "estadisticas-endpoints/correcciones/consultas-est7.json");
     }
 
     // ==================== Exportaciones ====================
@@ -272,9 +274,10 @@ class EstadisticasEndpointsCaracterizacionTest {
                 { "periodoAcademico", "  " },
                 { "periodoAcademico", "2025-2", "idPrograma", "1", "proceso", "CURSO_VERANO" },
                 { "proceso", "Homologacion", "idPrograma", "1" } };
-        for (String ruta : new String[] { "/export/pdf", "/export/excel" }) {
+        // EST-7: la clave conserva la ruta con la que se grabó; se pide /reportes?formato=pdf|excel
+        for (String formato : new String[] { "pdf", "excel" }) {
             for (String[] f : filtros) {
-                consultar(r, ruta, f);
+                consultarEn(r, "/export/" + formato, "/reportes?formato=" + formato, f);
             }
         }
         // BUG-12: el año ya no cuenta como indicador del período
@@ -286,8 +289,14 @@ class EstadisticasEndpointsCaracterizacionTest {
 
     /** Pide {@code ruta} con los pares parámetro/valor dados (un valor null omite el parámetro). */
     private void consultar(Map<String, JsonNode> r, String ruta, String... parametros) throws Exception {
-        MockHttpServletRequestBuilder peticion = get(BASE + ruta);
-        StringBuilder clave = new StringBuilder("GET " + ruta);
+        consultarEn(r, ruta, ruta, parametros);
+    }
+
+    /** Como {@link #consultar}, pero la clave lleva {@code rutaClave} y se pide {@code rutaPedida}. */
+    private void consultarEn(Map<String, JsonNode> r, String rutaClave, String rutaPedida, String... parametros)
+            throws Exception {
+        MockHttpServletRequestBuilder peticion = get(BASE + rutaPedida);
+        StringBuilder clave = new StringBuilder("GET " + rutaClave);
         char separador = '?';
         for (int i = 0; i < parametros.length; i += 2) {
             if (parametros[i + 1] == null) {

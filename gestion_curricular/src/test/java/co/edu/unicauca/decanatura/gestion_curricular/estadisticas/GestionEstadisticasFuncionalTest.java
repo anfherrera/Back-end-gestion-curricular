@@ -142,7 +142,7 @@ class GestionEstadisticasFuncionalTest {
          * RESULTADO ESPERADO: Análisis de tendencias con comparativas
          */
         
-        mockMvc.perform(get("/api/estadisticas/tendencias"))
+        mockMvc.perform(get("/api/estadisticas/tendencias-comparativas"))
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON));
     }
@@ -226,7 +226,7 @@ class GestionEstadisticasFuncionalTest {
          * RESULTADO ESPERADO: Documento PDF con estadísticas
          */
         
-        mockMvc.perform(get("/api/estadisticas/export/pdf"))
+        mockMvc.perform(get("/api/estadisticas/reportes").param("formato", "pdf"))
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_PDF));
     }
@@ -245,7 +245,7 @@ class GestionEstadisticasFuncionalTest {
          * RESULTADO ESPERADO: Archivo Excel con datos estructurados
          */
         
-        mockMvc.perform(get("/api/estadisticas/export/excel"))
+        mockMvc.perform(get("/api/estadisticas/reportes").param("formato", "excel"))
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(
                     MediaType.parseMediaType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")));
@@ -285,11 +285,11 @@ class GestionEstadisticasFuncionalTest {
                 .andExpect(status().isOk());
 
         // Paso 4: Ver tendencias
-        mockMvc.perform(get("/api/estadisticas/tendencias"))
+        mockMvc.perform(get("/api/estadisticas/tendencias-comparativas"))
                 .andExpect(status().isOk());
 
         // Paso 5: Exportar reporte
-        mockMvc.perform(get("/api/estadisticas/export/pdf"))
+        mockMvc.perform(get("/api/estadisticas/reportes").param("formato", "pdf"))
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_PDF));
     }

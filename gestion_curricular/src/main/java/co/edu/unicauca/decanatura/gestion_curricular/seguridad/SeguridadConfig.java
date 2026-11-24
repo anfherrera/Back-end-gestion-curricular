@@ -78,10 +78,7 @@ public class SeguridadConfig {
                 ).permitAll()
                 // Permitir acceso a login sin autenticación
                 .requestMatchers("/api/usuarios/login").permitAll()
-                // Estadísticas: modificar solo Administrador; consultar/exportar solo roles administrativos
-                .requestMatchers(HttpMethod.POST, "/api/estadisticas/crear").hasRole("Administrador")
-                .requestMatchers(HttpMethod.PUT, "/api/estadisticas/**").hasRole("Administrador")
-                .requestMatchers(HttpMethod.DELETE, "/api/estadisticas/**").hasRole("Administrador")
+                // Estadísticas: solo consultas y reportes (EST-7, paso 9), para los roles administrativos
                 .requestMatchers("/api/estadisticas/**")
                     .hasAnyRole("Administrador", "Funcionario", "Coordinador", "Secretario", "Decano")
                 // Catálogos: cualquiera autenticado consulta; solo el Administrador crea, modifica o elimina

@@ -1,21 +1,19 @@
-Sigue la revisión 26 de `REVISION_CODIGO.md` en el backend (`D:\Cursos\Trabajo de grado\Back-end-gestion-curricular`, rama `seguridad-y-arquitectura`). El frontend está en `D:\Cursos\Trabajo de grado\Front-end-gestion-curricular`, rama `revision-25-backend` (no `main`), y puedes cambiarlo cuando haga falta. Lee primero la cabecera de `REVISION_CODIGO.md`, la fila 26 del registro y la entrada EST-7: la convención, el plan y "Migración hecha" (el paso 8c es el modelo más reciente). Respóndeme siempre en español.
+Sigue la revisión 26 de `REVISION_CODIGO.md` en el backend (`D:\Cursos\Trabajo de grado\Back-end-gestion-curricular`, rama `seguridad-y-arquitectura`). El frontend está en `D:\Cursos\Trabajo de grado\Front-end-gestion-curricular`, rama `revision-25-backend` (no `main`), y puedes cambiarlo cuando haga falta. Lee primero la cabecera de `REVISION_CODIGO.md`, la fila 26 del registro y la entrada EST-7 (cerrada): la convención y "Migración hecha" (el paso 9 es el modelo más reciente). Respóndeme siempre en español.
 
 ## De dónde partimos
 
-- EST-7: pasos 1 a 8 hechos (8a, 8b y 8c), con 176 de unas 206 rutas. Ya no queda ninguna ruta en `/api/cursos-intersemestrales`. EST-7 está sin marcar (`[ ]`) hasta terminar el paso 9.
-- Último `clean verify` (8c), en JDK 25 y 17: 604 pruebas, 1 omitida y 0 fallos (123 XML de surefire). Frontend: 785 pruebas sin fallos.
-- El frontend tiene ahora la estructura `src/app/features/<proceso>/{estudiante,revision}` y Husky con lint-staged: cada commit pasa ESLint sobre los `.ts` y `.html` de `src/` preparados.
+- EST-7 está cerrado (`[x]`): los pasos 1 a 9 están hechos y cada una de las unas 206 rutas sigue la convención o se retiró. El paso 9 (estadísticas) es el modelo más reciente en "Migración hecha".
+- Último `clean verify` (paso 9), en JDK 25 y 17: 603 pruebas, 1 omitida y 0 fallos (122 XML de surefire). Frontend: 785 pruebas sin fallos.
+- El frontend tiene la estructura `src/app/features/<proceso>/{estudiante,revision}` y Husky con lint-staged: cada commit pasa ESLint sobre los `.ts` y `.html` de `src/` preparados.
 - Quedan abiertos, y no los toques sin preguntar: BUG-47, BUG-50, BUG-51 y OPC-1.
+- Nada está subido: el frontend va 9 commits por delante de su remoto y el backend 3. Pregunta antes de subir.
+- Visto en el paso 9 y sin anotar como punto: `GestionCurricularApplication` declara `@ComponentScan(basePackages = "co.edu.unicauca.decanatura")` sin el `TypeExcludeFilter`, así que las `@TestConfiguration` anidadas de las pruebas (por ejemplo, la de datos fijos de `EstadisticasEndpointsCaracterizacionTest`) entran en el contexto de todas las `@SpringBootTest`. Pregunta al usuario si lo quiere como punto nuevo.
 
-## Paso 9 (lo siguiente): `EstadisticasRestController`
+## Lo siguiente
 
-- Son unas 30 rutas en `/api/estadisticas`, con muchos consumidores en el frontend (`estadisticas.service.ts`, los dashboards del módulo estadístico y el de cursos de verano).
-- Lee la fila 9 del plan. CRUD con verbos (`/crear`, `/actualizar`, `/eliminar/{id}`, `/buscarPorId/{id}`), consultas en camelCase (`/porPeriodoEstadoPrograma`) junto a otras en kebab-case, y exportaciones `/export/pdf…` y `/export/excel…` (el plan propone `GET /reportes?formato=&alcance=`).
-- `SeguridadConfig` tiene reglas de URL para `/api/estadisticas/**` (POST `/crear`, PUT y DELETE solo Administrador; el resto, roles administrativos): revísalas en el mismo paso, porque cambiar las rutas puede abrirlas o cerrarlas.
-- Antes de migrar, haz el inventario (rutas, quién las usa en el frontend, cuáles no usa nadie) y pregunta al usuario las decisiones, como en los pasos 6 a 8: la forma de las consultas, las exportaciones, qué se retira y si se reparte en varios commits.
-- Al terminar el paso 9, EST-7 vuelve a `[x]`.
+- Pregunta al usuario qué abordar: los puntos abiertos de arriba, o subir las ramas.
 
-## Método (el de los pasos 7 y 8; en el 8c se usó tal cual)
+## Método (el de los pasos 7 a 9)
 
 1. Caracterización previa `@SpringBootTest` con varios roles, grabada en una copia contra el código actual con `-DgrabarReferencia=true` y pasada tres veces más sin grabar.
 2. Antes del cambio, pasa contra el código actual las pruebas que usan esas rutas. La lista del grupo de verano: `AutorizacionPorRolTest`, `Catalogos…`, `CursoNuevoFecha…`, `CursosVerano{Aceptacion,Integracion,Endpoints…,Respuestas…}`, `Decisiones…`, `Descargas…`, `ErroresLocales…`, `GestionCursosVeranoFuncionalTest`, `Inscripciones…`, `NombresApi…`, `PeriodoPredeterminado…`, `Preinscripciones…`, `Rutas*Verano*`, `RutasPreinscripcionesInscripciones…`, `SalonInexistente…`, `SeguimientoDashboard…`, `SolicitudesVeranoReporte…` y `EstadisticasCursosVerano…`.

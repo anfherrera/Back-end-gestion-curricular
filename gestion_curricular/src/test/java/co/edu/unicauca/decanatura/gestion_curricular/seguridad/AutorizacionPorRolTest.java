@@ -159,6 +159,20 @@ class AutorizacionPorRolTest {
     }
 
     @Test
+    @DisplayName("Estudiante no puede consultar estadísticas ni pedir sus reportes; un funcionario sí")
+    void estadisticasSoloParaRolesAdministrativos() throws Exception {
+        // EST-7, paso 9: lo cubre la regla "/api/estadisticas/**" de SeguridadConfig; si se quita, esto falla
+        for (String ruta : new String[] { "/api/estadisticas/resumen-completo", "/api/estadisticas/reportes?formato=pdf",
+                "/api/estadisticas/cursos-verano/reportes?formato=excel" }) {
+            mockMvc.perform(get(ruta).header("Authorization", tokenA))
+                    .andExpect(status().isForbidden());
+        }
+        String tokenFuncionario = "Bearer " + login(usuarioConRol(CORREO_FUNCIONARIO, "SEG-F", "Funcionario"));
+        mockMvc.perform(get("/api/estadisticas/total-estudiantes").header("Authorization", tokenFuncionario))
+                .andExpect(status().isOk());
+    }
+
+    @Test
     @DisplayName("Coordinador crea estudiantes pero no administradores; tampoco puede modificar a un administrador")
     void coordinadorNoCreaAdministradores() throws Exception {
         RolEntity rolCoordinador = rolRepository.buscarPorNombre("Coordinador").orElseThrow();

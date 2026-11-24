@@ -2,29 +2,22 @@ package co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.cont
 
 import java.util.Date;
 import java.util.List;
-import java.util.stream.Collectors;
 
-import jakarta.validation.Valid;
-import jakarta.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GenerarReportesEstadisticasCUIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarEstadisticasCUIntPort;
-import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Estadistica;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.estadisticas.AnalisisCursosVerano;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.estadisticas.DashboardEjecutivo;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.estadisticas.EntradaHistorial;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.estadisticas.EstudiantesPorPrograma;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.estadisticas.Globales;
-import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.estadisticas.ProcesosPorProgramaYPeriodo;
-import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.estadisticas.ProgramasPorProcesoYEstado;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.estadisticas.ResumenCompleto;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.estadisticas.Rendimiento;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.estadisticas.TendenciasCursosVerano;
@@ -35,92 +28,19 @@ import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.estadistica
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.estadisticas.VistaPorPrograma;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.estadisticas.VistaTendencias;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.RespuestasArchivo;
-import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.dto.peticion.EstadisticaDTOPeticion;
-import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.dto.respuesta.EstadisticaDTORespuesta;
-import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.dto.respuesta.EstadisticasFiltradasDTORespuesta.Filtradas;
-import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.mappers.EstadisticaMapperDominio;
 
+/**
+ * Consultas y reportes del módulo estadístico (EST-7, paso 9). Todas son {@code GET}: {@code SeguridadConfig} las
+ * reserva a los roles administrativos. Los reportes se piden con {@code ?formato=pdf|excel} en
+ * {@code GET /reportes} (el completo) y {@code GET /cursos-verano/reportes}.
+ */
 @RestController
 @RequestMapping("/api/estadisticas")
 @RequiredArgsConstructor
-@Validated
 public class EstadisticasRestController {
 
     private final GestionarEstadisticasCUIntPort estadisticaCU;
-    private final EstadisticaMapperDominio mapper;
     private final GenerarReportesEstadisticasCUIntPort generadorReportes;
-
-    @PostMapping("/crear")
-    public ResponseEntity<EstadisticaDTORespuesta> crearEstadistica(@RequestBody @Valid EstadisticaDTOPeticion estadistica) {
-        Estadistica creada = estadisticaCU.crearEstadistica(mapper.mapearDeEstadisticaDTOPeticionAEstadistica(estadistica));
-        return new ResponseEntity<>(
-                mapper.mapearDeEstadisticaAEstadisticaDTORespuesta(creada),
-                HttpStatus.CREATED
-        );
-    }
-
-    @PutMapping("/actualizar")
-    public ResponseEntity<EstadisticaDTORespuesta> actualizarEstadistica(@RequestBody @Valid EstadisticaDTOPeticion estadistica) {
-        Estadistica actualizada = estadisticaCU.actualizarEstadistica(mapper.mapearDeEstadisticaDTOPeticionAEstadistica(estadistica));
-        return new ResponseEntity<>(
-                mapper.mapearDeEstadisticaAEstadisticaDTORespuesta(actualizada),
-                HttpStatus.ACCEPTED
-        );
-    }
-
-    @DeleteMapping("/eliminar/{id}")
-    public ResponseEntity<Boolean> eliminarEstadistica(@Min(value =  1) @PathVariable Integer id) {
-        boolean eliminada = estadisticaCU.eliminarEstadistica(id);
-        return new ResponseEntity<>(eliminada ? HttpStatus.OK : HttpStatus.NOT_FOUND);
-    }
-
-    @GetMapping("/buscarPorId/{id}")
-    public ResponseEntity<EstadisticaDTORespuesta> obtenerPorId(@Min(value = 1) @PathVariable Integer id) {
-        Estadistica estadistica = estadisticaCU.obtenerEstadisticaPorId(id);
-        if (estadistica == null) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
-        return new ResponseEntity<>(
-                mapper.mapearDeEstadisticaAEstadisticaDTORespuesta(estadistica),
-                HttpStatus.OK
-        );
-    }
-
-    @GetMapping("/porSolicitudPeriodoEstadoPrograma")
-    public ResponseEntity<EstadisticaDTORespuesta> obtenerPorSolicitudPeriodoEstadoYPrograma(
-            @RequestParam(name = "idEstadistica", required = true) @Min(value =  1) Integer idEstadistica,
-            @RequestParam(name = "proceso", required = true) String proceso,
-            @RequestParam(name = "fechaInicio", required = true) @DateTimeFormat(pattern = "yyyy-MM-dd") Date fechaInicio,
-            @RequestParam(name = "fechaFin", required = true) @DateTimeFormat(pattern = "yyyy-MM-dd") Date fechaFin,
-            @RequestParam(name = "estado", required = true) String estado,
-            @RequestParam(name = "idPrograma", required = true) @Min(value =  1) Integer idPrograma) {
-
-        Estadistica resultado = estadisticaCU.obtenerEstadisticasSolicitudPeriodoEstadoYPrograma(
-                idEstadistica, proceso, fechaInicio, fechaFin, estado, idPrograma
-        );
-
-        return new ResponseEntity<>(
-                mapper.mapearDeEstadisticaAEstadisticaDTORespuesta(resultado),
-                HttpStatus.OK
-        );
-    }
-
-    @GetMapping("/porPeriodoEstadoPrograma")
-    public ResponseEntity<List<EstadisticaDTORespuesta>> obtenerPorPeriodoEstadoYPrograma(
-            @RequestParam(name = "fechaInicio", required = true) @DateTimeFormat(pattern = "yyyy-MM-dd") Date fechaInicio,
-            @RequestParam(name = "fechaFin", required = true) @DateTimeFormat(pattern = "yyyy-MM-dd") Date fechaFin,
-            @RequestParam(name = "idPrograma", required = true) @Min(value =  1) Integer idPrograma) {
-
-        List<Estadistica> lista = estadisticaCU.obtenerEstadisticasPeriodoEstadoYPrograma(
-                fechaInicio, fechaFin, idPrograma
-        );
-
-        List<EstadisticaDTORespuesta> respuesta = lista.stream()
-                .map(mapper::mapearDeEstadisticaAEstadisticaDTORespuesta)
-                .collect(Collectors.toList());
-
-        return ResponseEntity.ok(respuesta);
-    }
 
     /**
      * Obtiene estadísticas globales del sistema combinando todos los procesos.
@@ -151,71 +71,6 @@ public class EstadisticasRestController {
     }
 
     /**
-     * Obtiene estadísticas con filtros dinámicos.
-     * 
-     * @param nombreProceso Tipo de proceso (opcional)
-     * @param idPrograma ID del programa (opcional)
-     * @param estado Estado de la solicitud (opcional)
-     * @param fechaInicio Fecha de inicio (opcional)
-     * @param fechaFin Fecha de fin (opcional)
-     * @return ResponseEntity con estadísticas filtradas
-     */
-    @GetMapping("/filtradas")
-    public ResponseEntity<Filtradas> obtenerEstadisticasFiltradas(
-            @RequestParam(name = "nombreProceso", required = false) String nombreProceso,
-            @RequestParam(name = "idPrograma", required = false) Integer idPrograma,
-            @RequestParam(name = "estado", required = false) String estado,
-            @RequestParam(name = "fechaInicio", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") Date fechaInicio,
-            @RequestParam(name = "fechaFin", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") Date fechaFin) {
-        
-        
-        // Un solo filtro, en este orden de prioridad: proceso, programa, estado, periodo; sin ninguno, las globales
-        Filtradas filtradas;
-        if (nombreProceso != null && !nombreProceso.trim().isEmpty()) {
-            filtradas = Filtradas.de(estadisticaCU.obtenerEstadisticasPorProceso(nombreProceso));
-        } else if (idPrograma != null && idPrograma > 0) {
-            filtradas = Filtradas.de(estadisticaCU.obtenerEstadisticasPorPrograma(idPrograma));
-        } else if (estado != null && !estado.trim().isEmpty()) {
-            filtradas = Filtradas.de(estadisticaCU.obtenerEstadisticasPorEstado(estado));
-        } else if (fechaInicio != null && fechaFin != null) {
-            filtradas = Filtradas.de(estadisticaCU.obtenerEstadisticasPorPeriodo(fechaInicio, fechaFin));
-        } else {
-            filtradas = Filtradas.de(estadisticaCU.obtenerEstadisticasGlobales());
-        }
-        return ResponseEntity.ok(filtradas);
-    }
-
-    /**
-     * Obtiene estadísticas combinadas por programa y período académico.
-     * 
-     * @param idPrograma ID del programa académico
-     * @param fechaInicio Fecha de inicio del período
-     * @param fechaFin Fecha de fin del período
-     * @return ResponseEntity con estadísticas combinadas
-     */
-    @GetMapping("/programa/{idPrograma}/periodo")
-    public ResponseEntity<ProcesosPorProgramaYPeriodo> obtenerEstadisticasPorProgramaYPeriodo(
-            @Min(value = 1) @PathVariable Integer idPrograma,
-            @RequestParam(name = "fechaInicio", required = true) @DateTimeFormat(pattern = "yyyy-MM-dd") Date fechaInicio,
-            @RequestParam(name = "fechaFin", required = true) @DateTimeFormat(pattern = "yyyy-MM-dd") Date fechaFin) {
-        return ResponseEntity.ok(estadisticaCU.obtenerEstadisticasPorProgramaYPeriodo(idPrograma, fechaInicio, fechaFin));
-    }
-
-    /**
-     * Obtiene estadísticas detalladas por proceso y estado.
-     * 
-     * @param tipoProceso Tipo de proceso
-     * @param estado Estado de la solicitud
-     * @return ResponseEntity con estadísticas detalladas
-     */
-    @GetMapping("/proceso/{tipoProceso}/estado/{estado}")
-    public ResponseEntity<ProgramasPorProcesoYEstado> obtenerEstadisticasPorProcesoYEstado(
-            @PathVariable String tipoProceso,
-            @PathVariable String estado) {
-        return ResponseEntity.ok(estadisticaCU.obtenerEstadisticasPorProcesoYEstado(tipoProceso, estado));
-    }
-
-    /**
      * Obtiene un resumen completo de todas las estadísticas del sistema.
      * Utiliza múltiples repositorios para generar un dashboard completo.
      * 
@@ -229,29 +84,6 @@ public class EstadisticasRestController {
             @RequestParam(required = false) Integer idPrograma,
             @RequestParam(required = false) String proceso) {
         return ResponseEntity.ok(estadisticaCU.obtenerResumenCompleto(periodoAcademico, idPrograma, proceso));
-    }
-
-    /**
-     * Obtiene estadísticas de tendencias por período (comparación entre períodos).
-     * 
-     * @param fechaInicio1 Fecha de inicio del primer período
-     * @param fechaFin1 Fecha de fin del primer período
-     * @param fechaInicio2 Fecha de inicio del segundo período
-     * @param fechaFin2 Fecha de fin del segundo período
-     * @return ResponseEntity con comparación de tendencias
-     */
-    @GetMapping("/tendencias")
-    public ResponseEntity<?> obtenerTendenciasPorPeriodo(
-            @RequestParam(name = "fechaInicio1", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") Date fechaInicio1,
-            @RequestParam(name = "fechaFin1", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") Date fechaFin1,
-            @RequestParam(name = "fechaInicio2", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") Date fechaInicio2,
-            @RequestParam(name = "fechaFin2", required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") Date fechaFin2) {
-        // Si no se proporcionan parámetros, devolver estadísticas globales como tendencias
-        if (fechaInicio1 == null || fechaFin1 == null || fechaInicio2 == null || fechaFin2 == null) {
-            return ResponseEntity.ok(estadisticaCU.obtenerEstadisticasGlobales());
-        }
-        return ResponseEntity.ok(
-                estadisticaCU.obtenerTendenciasPorPeriodo(fechaInicio1, fechaFin1, fechaInicio2, fechaFin2));
     }
 
     /**
@@ -279,65 +111,56 @@ public class EstadisticasRestController {
         return ResponseEntity.ok(estadisticaCU.obtenerEstadisticasRendimiento());
     }
 
-    // ===== Exportación a PDF y Excel (los documentos los arma GeneradorReportesEstadisticas) =====
+    // ===== Reportes en PDF y Excel (los documentos los arma GeneradorReportesEstadisticas) =====
 
     private static final MediaType EXCEL =
             MediaType.parseMediaType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
 
-    /** PDF del dashboard general. */
-    @GetMapping("/export/pdf/general")
-    public ResponseEntity<byte[]> exportarEstadisticasGeneralesPDF() {
-        byte[] pdf = generadorReportes.pdfGeneral();
-        return archivo(pdf, MediaType.APPLICATION_PDF, "estadisticas_generales_dashboard.pdf");
-    }
-
-    /** PDF del dashboard de cursos de verano (periodo "YYYY-P" y programa opcionales). */
-    @GetMapping("/export/pdf/cursos-verano")
-    public ResponseEntity<byte[]> exportarEstadisticasCursosVeranoPDF(
-            @RequestParam(required = false) String periodoAcademico,
-            @RequestParam(required = false) Integer idPrograma) {
-        byte[] pdf = generadorReportes.pdfCursosVerano(periodoAcademico, idPrograma);
-        return archivo(pdf, MediaType.APPLICATION_PDF, nombreArchivoCursosVerano(periodoAcademico, idPrograma) + ".pdf");
-    }
-
-    /** PDF completo con filtros opcionales. */
-    @GetMapping("/export/pdf")
-    public ResponseEntity<byte[]> exportarEstadisticasPDF(
+    /**
+     * GET /api/estadisticas/reportes?formato=pdf|excel (antes /export/pdf y /export/excel): el reporte completo, con
+     * filtros opcionales. Sin {@code formato} responde 400 (GC-0400); con otro valor, también 400.
+     */
+    @GetMapping("/reportes")
+    public ResponseEntity<byte[]> obtenerReporte(
+            @RequestParam String formato,
             @RequestParam(required = false) String proceso,
             @RequestParam(required = false) Integer idPrograma,
             @RequestParam(required = false) String periodoAcademico,
             @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") Date fechaInicio,
             @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") Date fechaFin) {
-        byte[] pdf = generadorReportes.pdfCompleto(proceso, idPrograma, periodoAcademico, fechaInicio, fechaFin);
-        return archivo(pdf, MediaType.APPLICATION_PDF, "estadisticas_generales.pdf");
-    }
-
-    /** Excel del dashboard general. */
-    @GetMapping("/export/excel/general")
-    public ResponseEntity<byte[]> exportarEstadisticasGeneralesExcel() {
-        byte[] excel = generadorReportes.excelGeneral();
-        return archivo(excel, EXCEL, "estadisticas_generales_dashboard.xlsx");
-    }
-
-    /** Excel del dashboard de cursos de verano (periodo "YYYY-P" y programa opcionales). */
-    @GetMapping("/export/excel/cursos-verano")
-    public ResponseEntity<byte[]> exportarEstadisticasCursosVeranoExcel(
-            @RequestParam(required = false) String periodoAcademico,
-            @RequestParam(required = false) Integer idPrograma) {
-        byte[] excel = generadorReportes.excelCursosVerano(periodoAcademico, idPrograma);
-        return archivo(excel, EXCEL, nombreArchivoCursosVerano(periodoAcademico, idPrograma) + ".xlsx");
-    }
-
-    /** Excel completo con filtros opcionales. */
-    @GetMapping("/export/excel")
-    public ResponseEntity<byte[]> exportarEstadisticasExcel(
-            @RequestParam(required = false) String proceso,
-            @RequestParam(required = false) Integer idPrograma,
-            @RequestParam(required = false) String periodoAcademico,
-            @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") Date fechaInicio,
-            @RequestParam(required = false) @DateTimeFormat(pattern = "yyyy-MM-dd") Date fechaFin) {
+        if (esPdf(formato)) {
+            byte[] pdf = generadorReportes.pdfCompleto(proceso, idPrograma, periodoAcademico, fechaInicio, fechaFin);
+            return archivo(pdf, MediaType.APPLICATION_PDF, "estadisticas_generales.pdf");
+        }
         byte[] excel = generadorReportes.excelCompleto(proceso, idPrograma, periodoAcademico, fechaInicio, fechaFin);
         return archivo(excel, EXCEL, "estadisticas_generales.xlsx");
+    }
+
+    /**
+     * GET /api/estadisticas/cursos-verano/reportes?formato=pdf|excel (antes /export/pdf/cursos-verano y
+     * /export/excel/cursos-verano): el dashboard de cursos de verano, con periodo "YYYY-P" y programa opcionales.
+     */
+    @GetMapping("/cursos-verano/reportes")
+    public ResponseEntity<byte[]> obtenerReporteCursosVerano(
+            @RequestParam String formato,
+            @RequestParam(required = false) String periodoAcademico,
+            @RequestParam(required = false) Integer idPrograma) {
+        String nombre = nombreArchivoCursosVerano(periodoAcademico, idPrograma);
+        if (esPdf(formato)) {
+            byte[] pdf = generadorReportes.pdfCursosVerano(periodoAcademico, idPrograma);
+            return archivo(pdf, MediaType.APPLICATION_PDF, nombre + ".pdf");
+        }
+        byte[] excel = generadorReportes.excelCursosVerano(periodoAcademico, idPrograma);
+        return archivo(excel, EXCEL, nombre + ".xlsx");
+    }
+
+    /** true para {@code pdf}, false para {@code excel}; cualquier otro valor es un 400. */
+    private static boolean esPdf(String formato) {
+        return switch (formato) {
+            case "pdf" -> true;
+            case "excel" -> false;
+            default -> throw new IllegalArgumentException("Formato no válido: use pdf o excel");
+        };
     }
 
     private static String nombreArchivoCursosVerano(String periodoAcademico, Integer idPrograma) {

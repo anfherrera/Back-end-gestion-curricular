@@ -1,0 +1,282 @@
+{
+  "GET /api/estadisticas/estudiantes-por-programa [funcionario]" : {
+    "status" : 200,
+    "tipo" : null,
+    "cuerpo" : null,
+    "disposicion" : null,
+    "llamadas" : [ "obtenerEstudiantesPorPrograma(null, null)" ]
+  },
+  "GET /api/estadisticas/estudiantes-por-programa?periodoAcademico=2025-2&idPrograma=1 [funcionario]" : {
+    "status" : 200,
+    "tipo" : null,
+    "cuerpo" : null,
+    "disposicion" : null,
+    "llamadas" : [ "obtenerEstudiantesPorPrograma(2025-2, 1)" ]
+  },
+  "GET /api/estadisticas/estudiantes-por-programa [estudiante]" : {
+    "status" : 403,
+    "tipo" : null,
+    "cuerpo" : null,
+    "disposicion" : null,
+    "llamadas" : [ ]
+  },
+  "GET /api/estadisticas/estadisticas-por-proceso [funcionario]" : {
+    "status" : 200,
+    "tipo" : null,
+    "cuerpo" : null,
+    "disposicion" : null,
+    "llamadas" : [ "obtenerEstadisticasDetalladasPorProceso(null, null)" ]
+  },
+  "GET /api/estadisticas/estadisticas-por-proceso?periodoAcademico=2025-2&idPrograma=1 [funcionario]" : {
+    "status" : 200,
+    "tipo" : null,
+    "cuerpo" : null,
+    "disposicion" : null,
+    "llamadas" : [ "obtenerEstadisticasDetalladasPorProceso(2025-2, 1)" ]
+  },
+  "GET /api/estadisticas/estadisticas-por-proceso [estudiante]" : {
+    "status" : 403,
+    "tipo" : null,
+    "cuerpo" : null,
+    "disposicion" : null,
+    "llamadas" : [ ]
+  },
+  "GET /api/estadisticas/estado-solicitudes [funcionario]" : {
+    "status" : 200,
+    "tipo" : null,
+    "cuerpo" : null,
+    "disposicion" : null,
+    "llamadas" : [ "obtenerEstadisticasPorEstado(null, null)" ]
+  },
+  "GET /api/estadisticas/estado-solicitudes?periodoAcademico=2025-2&idPrograma=1 [funcionario]" : {
+    "status" : 200,
+    "tipo" : null,
+    "cuerpo" : null,
+    "disposicion" : null,
+    "llamadas" : [ "obtenerEstadisticasPorEstado(2025-2, 1)" ]
+  },
+  "GET /api/estadisticas/estado-solicitudes [estudiante]" : {
+    "status" : 403,
+    "tipo" : null,
+    "cuerpo" : null,
+    "disposicion" : null,
+    "llamadas" : [ ]
+  },
+  "GET /api/estadisticas/por-periodo [funcionario]" : {
+    "status" : 200,
+    "tipo" : null,
+    "cuerpo" : null,
+    "disposicion" : null,
+    "llamadas" : [ "obtenerEstadisticasPorPeriodo(null, null)" ]
+  },
+  "GET /api/estadisticas/por-periodo?periodoAcademico=2025-2&idPrograma=1 [funcionario]" : {
+    "status" : 200,
+    "tipo" : null,
+    "cuerpo" : null,
+    "disposicion" : null,
+    "llamadas" : [ "obtenerEstadisticasPorPeriodo(2025-2, 1)" ]
+  },
+  "GET /api/estadisticas/por-periodo [estudiante]" : {
+    "status" : 403,
+    "tipo" : null,
+    "cuerpo" : null,
+    "disposicion" : null,
+    "llamadas" : [ ]
+  },
+  "GET /api/estadisticas/por-programa [funcionario]" : {
+    "status" : 200,
+    "tipo" : null,
+    "cuerpo" : null,
+    "disposicion" : null,
+    "llamadas" : [ "obtenerEstadisticasPorPrograma(null, null)" ]
+  },
+  "GET /api/estadisticas/por-programa?periodoAcademico=2025-2&idPrograma=1 [funcionario]" : {
+    "status" : 200,
+    "tipo" : null,
+    "cuerpo" : null,
+    "disposicion" : null,
+    "llamadas" : [ "obtenerEstadisticasPorPrograma(2025-2, 1)" ]
+  },
+  "GET /api/estadisticas/por-programa [estudiante]" : {
+    "status" : 403,
+    "tipo" : null,
+    "cuerpo" : null,
+    "disposicion" : null,
+    "llamadas" : [ ]
+  },
+  "GET /api/estadisticas/tendencias-comparativas [funcionario]" : {
+    "status" : 200,
+    "tipo" : null,
+    "cuerpo" : null,
+    "disposicion" : null,
+    "llamadas" : [ "obtenerTendenciasYComparativas(null, null)" ]
+  },
+  "GET /api/estadisticas/tendencias-comparativas?periodoAcademico=2025-2&idPrograma=1 [funcionario]" : {
+    "status" : 200,
+    "tipo" : null,
+    "cuerpo" : null,
+    "disposicion" : null,
+    "llamadas" : [ "obtenerTendenciasYComparativas(2025-2, 1)" ]
+  },
+  "GET /api/estadisticas/tendencias-comparativas [estudiante]" : {
+    "status" : 403,
+    "tipo" : null,
+    "cuerpo" : null,
+    "disposicion" : null,
+    "llamadas" : [ ]
+  },
+  "GET /api/estadisticas/cursos-verano [funcionario]" : {
+    "status" : 200,
+    "tipo" : null,
+    "cuerpo" : null,
+    "disposicion" : null,
+    "llamadas" : [ "obtenerEstadisticasCursosVerano(null, null)" ]
+  },
+  "GET /api/estadisticas/cursos-verano?periodoAcademico=2025-2&idPrograma=1 [funcionario]" : {
+    "status" : 200,
+    "tipo" : null,
+    "cuerpo" : null,
+    "disposicion" : null,
+    "llamadas" : [ "obtenerEstadisticasCursosVerano(2025-2, 1)" ]
+  },
+  "GET /api/estadisticas/cursos-verano [estudiante]" : {
+    "status" : 403,
+    "tipo" : null,
+    "cuerpo" : null,
+    "disposicion" : null,
+    "llamadas" : [ ]
+  },
+  "GET /api/estadisticas/cursos-verano/tendencias-temporales [funcionario]" : {
+    "status" : 200,
+    "tipo" : null,
+    "cuerpo" : null,
+    "disposicion" : null,
+    "llamadas" : [ "obtenerTendenciasTemporalesCursosVerano(null, null)" ]
+  },
+  "GET /api/estadisticas/cursos-verano/tendencias-temporales?periodoAcademico=2025-2&idPrograma=1 [funcionario]" : {
+    "status" : 200,
+    "tipo" : null,
+    "cuerpo" : null,
+    "disposicion" : null,
+    "llamadas" : [ "obtenerTendenciasTemporalesCursosVerano(2025-2, 1)" ]
+  },
+  "GET /api/estadisticas/cursos-verano/tendencias-temporales [estudiante]" : {
+    "status" : 403,
+    "tipo" : null,
+    "cuerpo" : null,
+    "disposicion" : null,
+    "llamadas" : [ ]
+  },
+  "GET /api/estadisticas/total-estudiantes [funcionario]" : {
+    "status" : 200,
+    "tipo" : null,
+    "cuerpo" : null,
+    "disposicion" : null,
+    "llamadas" : [ "obtenerNumeroTotalEstudiantes()" ]
+  },
+  "GET /api/estadisticas/total-estudiantes [estudiante]" : {
+    "status" : 403,
+    "tipo" : null,
+    "cuerpo" : null,
+    "disposicion" : null,
+    "llamadas" : [ ]
+  },
+  "GET /api/estadisticas/resumen-completo [admin]" : {
+    "status" : 200,
+    "tipo" : null,
+    "cuerpo" : null,
+    "disposicion" : null,
+    "llamadas" : [ "obtenerResumenCompleto(null, null, null)" ]
+  },
+  "GET /api/estadisticas/resumen-completo [funcionario]" : {
+    "status" : 200,
+    "tipo" : null,
+    "cuerpo" : null,
+    "disposicion" : null,
+    "llamadas" : [ "obtenerResumenCompleto(null, null, null)" ]
+  },
+  "GET /api/estadisticas/resumen-completo [coordinador]" : {
+    "status" : 200,
+    "tipo" : null,
+    "cuerpo" : null,
+    "disposicion" : null,
+    "llamadas" : [ "obtenerResumenCompleto(null, null, null)" ]
+  },
+  "GET /api/estadisticas/resumen-completo [secretario]" : {
+    "status" : 200,
+    "tipo" : null,
+    "cuerpo" : null,
+    "disposicion" : null,
+    "llamadas" : [ "obtenerResumenCompleto(null, null, null)" ]
+  },
+  "GET /api/estadisticas/resumen-completo [decano]" : {
+    "status" : 200,
+    "tipo" : null,
+    "cuerpo" : null,
+    "disposicion" : null,
+    "llamadas" : [ "obtenerResumenCompleto(null, null, null)" ]
+  },
+  "GET /api/estadisticas/resumen-completo [estudiante]" : {
+    "status" : 403,
+    "tipo" : null,
+    "cuerpo" : null,
+    "disposicion" : null,
+    "llamadas" : [ ]
+  },
+  "GET /api/estadisticas/resumen-completo [anonimo]" : {
+    "status" : 403,
+    "tipo" : null,
+    "cuerpo" : null,
+    "disposicion" : null,
+    "llamadas" : [ ]
+  },
+  "GET /api/estadisticas/resumen-completo?periodoAcademico=2025-2&idPrograma=1&proceso=Reingreso [funcionario]" : {
+    "status" : 200,
+    "tipo" : null,
+    "cuerpo" : null,
+    "disposicion" : null,
+    "llamadas" : [ "obtenerResumenCompleto(2025-2, 1, Reingreso)" ]
+  },
+  "GET /api/estadisticas/globales [funcionario]" : {
+    "status" : 200,
+    "tipo" : null,
+    "cuerpo" : null,
+    "disposicion" : null,
+    "llamadas" : [ "obtenerEstadisticasGlobales(null, null, null, null, null)" ]
+  },
+  "GET /api/estadisticas/globales?proceso=Reingreso&idPrograma=1&periodoAcademico=2025-2&fechaInicio=2025-01-01&fechaFin=2025-06-30 [funcionario]" : {
+    "status" : 200,
+    "tipo" : null,
+    "cuerpo" : null,
+    "disposicion" : null,
+    "llamadas" : [ "obtenerEstadisticasGlobales(Reingreso, 1, 2025-2, 2025-01-01 00:00, 2025-06-30 00:00)" ]
+  },
+  "GET /api/estadisticas/dashboard?periodoAcademico=2025-2&idPrograma=1&proceso=ECAES [funcionario]" : {
+    "status" : 200,
+    "tipo" : null,
+    "cuerpo" : null,
+    "disposicion" : null,
+    "llamadas" : [ "obtenerDashboardEjecutivo(2025-2, 1, ECAES)" ]
+  },
+  "GET /api/estadisticas/rendimiento [funcionario]" : {
+    "status" : 200,
+    "tipo" : null,
+    "cuerpo" : null,
+    "disposicion" : null,
+    "llamadas" : [ "obtenerEstadisticasRendimiento()" ]
+  },
+  "GET /api/estadisticas/historial?anioInicio=2024&anioFin=2025 [funcionario]" : {
+    "status" : 200,
+    "tipo" : "application/json;charset=UTF-8",
+    "cuerpo" : [ ],
+    "disposicion" : null,
+    "llamadas" : [ "obtenerHistorialEstadisticas(2024, 2025)" ]
+  },
+  "GET /api/estadisticas/globales [estudiante]" : {
+    "status" : 403,
+    "tipo" : null,
+    "cuerpo" : null,
+    "disposicion" : null,
+    "llamadas" : [ ]
+  }
+}

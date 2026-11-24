@@ -129,7 +129,7 @@ class EstadisticasAceptacionTest {
          *       AND debe sugerir nombre de archivo descriptivo
          */
         
-        mockMvc.perform(get("/api/estadisticas/export/pdf"))
+        mockMvc.perform(get("/api/estadisticas/reportes").param("formato", "pdf"))
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_PDF));
     }
@@ -153,7 +153,7 @@ class EstadisticasAceptacionTest {
          *       AND debe permitir análisis posterior con fórmulas/pivotes
          */
         
-        mockMvc.perform(get("/api/estadisticas/export/excel"))
+        mockMvc.perform(get("/api/estadisticas/reportes").param("formato", "excel"))
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(
                     MediaType.parseMediaType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")));
@@ -218,7 +218,7 @@ class EstadisticasAceptacionTest {
          *       AND debe proporcionar insights para planificación
          */
         
-        mockMvc.perform(get("/api/estadisticas/tendencias"))
+        mockMvc.perform(get("/api/estadisticas/tendencias-comparativas"))
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON));
     }
@@ -320,11 +320,11 @@ class EstadisticasAceptacionTest {
                 .andExpect(status().isOk());
 
         // Paso 4: Tendencias
-        mockMvc.perform(get("/api/estadisticas/tendencias"))
+        mockMvc.perform(get("/api/estadisticas/tendencias-comparativas"))
                 .andExpect(status().isOk());
 
         // Paso 5: Exportar reporte
-        mockMvc.perform(get("/api/estadisticas/export/pdf"))
+        mockMvc.perform(get("/api/estadisticas/reportes").param("formato", "pdf"))
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_PDF));
     }
