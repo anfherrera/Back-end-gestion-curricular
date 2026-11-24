@@ -1,18 +1,19 @@
-Sigue la revisión de código del backend (`D:\Cursos\Trabajo de grado\Back-end-gestion-curricular`, rama `seguridad-y-arquitectura`). El frontend está en `D:\Cursos\Trabajo de grado\Front-end-gestion-curricular`, rama `revision-25-backend` (no `main`), y puedes cambiarlo cuando haga falta. Lee primero la cabecera de `REVISION_CODIGO.md` y la fila 26 del registro. Respóndeme siempre en español.
+Sigue la revisión de código del backend (`D:\Cursos\Trabajo de grado\Back-end-gestion-curricular`, rama `seguridad-y-arquitectura`). El frontend está en `D:\Cursos\Trabajo de grado\Front-end-gestion-curricular`, rama `revision-25-backend` (no `main`), y puedes cambiarlo cuando haga falta. Lee primero la cabecera de `REVISION_CODIGO.md` y la fila 27 del registro. Respóndeme siempre en español.
 
 ## De dónde partimos (2026-11-24)
 
-- La revisión 26 está terminada y subida: las dos ramas están al día con su remoto.
+- La revisión 27 está terminada en local, en tres commits más este documento, y sin subir. El frontend no cambió.
 - EST-7 está cerrado: los pasos 1 a 9 de la migración de rutas están hechos, y cada una de las unas 206 rutas sigue la convención o se retiró. La convención y "Migración hecha" están en la entrada EST-7.
 - BUG-47, BUG-50 y BUG-51 están cerrados, con un commit cada uno; BUG-51 también en el frontend. Sus cierres están en `REVISION_CODIGO.md`.
-- Último `clean verify`, en JDK 25 y 17: 609 pruebas, 1 omitida y 0 fallos (125 XML de surefire). Frontend: 785 pruebas sin fallos.
-- Solo queda abierto OPC-1 ("Los modelos de dominio no tienen comportamiento"). No lo toques sin preguntar.
+- OPC-1 está cerrado (tramos 1 a 3; ver su entrada). Frontend: 785 pruebas sin fallos.
+- Último `clean verify`, en JDK 25 y 17: 611 pruebas, 1 omitida y 0 fallos (127 XML de surefire).
+- Solo quedan abiertos BUG-52 y BUG-53, los dos sin decidir y con su descripción en `REVISION_CODIGO.md`.
 
 ## Lo siguiente
 
 Pregunta al usuario qué quiere abordar. Hay dos opciones:
 
-1. **OPC-1.** Lee su entrada en `REVISION_CODIGO.md` y propón un alcance antes de tocar nada.
+1. **BUG-52 o BUG-53.** Propón políticas (BUG-52: corregir o borrar como código muerto; BUG-53: cómo tratar un estado sin texto) y deja que el usuario elija.
 2. **Un punto nuevo, si el usuario lo quiere.** `GestionCurricularApplication` declara `@ComponentScan(basePackages = "co.edu.unicauca.decanatura")` sin el `TypeExcludeFilter`. Por eso las `@TestConfiguration` anidadas de las pruebas entran en el contexto de todas las `@SpringBootTest`. Por ejemplo, el caso de uso de estadísticas con datos fijos de `EstadisticasEndpointsCaracterizacionTest` es `@Primary` en todas ellas. Mientras no se decida, las pruebas nuevas usan `@MockBean`, y si necesitan un controlador propio le ponen un `@Profile` que nunca se activa (ver `ValidacionSinValidatedTest`). Corregirlo puede cambiar lo que ven otras pruebas: hay que caracterizar antes.
 
 ## Método
