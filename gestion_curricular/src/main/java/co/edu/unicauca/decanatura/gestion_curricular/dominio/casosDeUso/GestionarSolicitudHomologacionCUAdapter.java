@@ -1,6 +1,5 @@
 package co.edu.unicauca.decanatura.gestion_curricular.dominio.casosDeUso;
 
-import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -14,7 +13,6 @@ import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.Gestionar
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.excepciones.EntidadNoExisteException;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.excepciones.EntidadYaExisteException;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.excepciones.ReglaNegocioExcepcion;
-import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.EstadoSolicitud;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.FiltroSolicitudes;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.FlujoEstadosSolicitud;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.SolicitudHomologacion;
@@ -113,24 +111,21 @@ public class GestionarSolicitudHomologacionCUAdapter implements GestionarSolicit
     public void cambiarEstadoSolicitud(Integer idSolicitud, String nuevoEstado) {
         // Obtener el estado anterior
         SolicitudHomologacion solicitud = buscarPorId(idSolicitud);
-        String estadoAnterior = FlujoEstadosSolicitud.ultimoEstado(solicitud.getEstadosSolicitud());
 
         // Solo se permiten los pasos del flujo (ver FlujoEstadosSolicitud)
+        FlujoEstadosSolicitud.Paso paso;
         try {
-            FLUJO.validarYObtenerRolResponsable(estadoAnterior, nuevoEstado);
+            paso = solicitud.pasoA(FLUJO, nuevoEstado, null);
         } catch (IllegalArgumentException e) {
             throw new ReglaNegocioExcepcion(e.getMessage());
         }
 
-        EstadoSolicitud estado = new EstadoSolicitud();
-        estado.setEstadoActual(FLUJO.normalizar(nuevoEstado));
-        estado.setFechaRegistroEstado(new Date());
-        gestionarSolicitudHomologacionGateway.cambiarEstadoSolicitud(idSolicitud, estado);
-        
+        gestionarSolicitudHomologacionGateway.cambiarEstadoSolicitud(idSolicitud, paso.registro());
+
         // Crear notificación automática del cambio de estado
         try {
             solicitud = buscarPorId(idSolicitud); // Recargar con el nuevo estado
-            this.gestionarNotificacionCU.notificarCambioEstadoSolicitud(solicitud, estadoAnterior, nuevoEstado, "HOMOLOGACION");
+            this.gestionarNotificacionCU.notificarCambioEstadoSolicitud(solicitud, paso.estadoAnterior(), nuevoEstado, "HOMOLOGACION");
         } catch (Exception e) {
         }
     }

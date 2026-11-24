@@ -62,6 +62,16 @@ public final class FlujoEstadosSolicitud {
                     RECHAZADA, Set.of()),
             Map.of(ENVIADA, FUNCIONARIO));
 
+    /**
+     * Paso de estado ya validado.
+     *
+     * @param estadoAnterior último estado con texto del historial, tal como está guardado (null si no hay)
+     * @param rolResponsable rol que decide ese paso
+     * @param registro       registro del nuevo estado, todavía sin guardar
+     */
+    public record Paso(String estadoAnterior, String rolResponsable, EstadoSolicitud registro) {
+    }
+
     /** Estado actual → estados siguientes permitidos. */
     private final Map<String, Set<String>> siguientes;
     /** Estado actual → rol que decide en ese paso. */

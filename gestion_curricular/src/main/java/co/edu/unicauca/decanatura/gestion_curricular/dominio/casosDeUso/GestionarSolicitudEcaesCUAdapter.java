@@ -1,6 +1,5 @@
 package co.edu.unicauca.decanatura.gestion_curricular.dominio.casosDeUso;
 
-import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -14,7 +13,6 @@ import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.Gestionar
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.excepciones.EntidadNoExisteException;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.excepciones.EntidadYaExisteException;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.excepciones.ReglaNegocioExcepcion;
-import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.EstadoSolicitud;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.FechaEcaes;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.FiltroSolicitudes;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.FlujoEstadosSolicitud;
@@ -110,25 +108,21 @@ public class GestionarSolicitudEcaesCUAdapter implements GestionarSolicitudEcaes
     public void cambiarEstadoSolicitud(Integer idSolicitud, String nuevoEstado) {
         // Obtener el estado anterior
         SolicitudEcaes solicitud = buscarPorId(idSolicitud);
-        String estadoAnterior = FlujoEstadosSolicitud.ultimoEstado(solicitud.getEstadosSolicitud());
 
         // Solo se permiten los pasos del flujo (ver FlujoEstadosSolicitud.ECAES)
+        FlujoEstadosSolicitud.Paso paso;
         try {
-            FlujoEstadosSolicitud.ECAES.validarYObtenerRolResponsable(estadoAnterior, nuevoEstado);
+            paso = solicitud.pasoA(FlujoEstadosSolicitud.ECAES, nuevoEstado, null);
         } catch (IllegalArgumentException e) {
             throw new ReglaNegocioExcepcion(e.getMessage());
         }
 
-        EstadoSolicitud nuevo = new EstadoSolicitud();
-        nuevo.setEstadoActual(FlujoEstadosSolicitud.ECAES.normalizar(nuevoEstado));
-        nuevo.setFechaRegistroEstado(new Date());
+        gestionarSolicitudEcaesGateway.cambiarEstadoSolicitudEcaes(idSolicitud, paso.registro());
 
-        gestionarSolicitudEcaesGateway.cambiarEstadoSolicitudEcaes(idSolicitud, nuevo);
-        
         // Crear notificación automática del cambio de estado
         try {
             solicitud = buscarPorId(idSolicitud); // Recargar con el nuevo estado
-            this.gestionarNotificacionCU.notificarCambioEstadoSolicitud(solicitud, estadoAnterior, nuevoEstado, "ECAES");
+            this.gestionarNotificacionCU.notificarCambioEstadoSolicitud(solicitud, paso.estadoAnterior(), nuevoEstado, "ECAES");
         } catch (Exception e) {
         }
     }

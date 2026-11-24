@@ -22,7 +22,6 @@ import co.edu.unicauca.decanatura.gestion_curricular.dominio.excepciones.ReglaNe
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.DatosDocumento;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Documento;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.DocumentosPazYSalvo;
-import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.EstadoSolicitud;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.FiltroSolicitudes;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.FlujoEstadosSolicitud;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.SolicitudPazYSalvo;
@@ -158,28 +157,21 @@ public class GestionarSolicitudPazYSalvoCUAdapter implements GestionarSolicitudP
             String comentario, Predicate<String> puedeActuarComo) {
         SolicitudPazYSalvo solicitud = buscarPorId(idSolicitud);
         String estadoAnterior = ultimoEstado(solicitud);
-        String rolResponsable;
+        FlujoEstadosSolicitud.Paso paso;
         try {
-            rolResponsable = TransicionEstadoPazYSalvo.validarYObtenerRolResponsable(estadoAnterior, nuevoEstado);
+            paso = solicitud.pasoA(FlujoEstadosSolicitud.TRES_APROBACIONES, nuevoEstado, comentario);
         } catch (IllegalArgumentException e) {
             return Optional.of(new RechazoCambioEstado(Motivo.TRANSICION_NO_PERMITIDA, e.getMessage(),
                     TransicionEstadoPazYSalvo.normalizar(estadoAnterior)));
         }
 
-        if (!puedeActuarComo.test(rolResponsable)) {
+        if (!puedeActuarComo.test(paso.rolResponsable())) {
             return Optional.of(new RechazoCambioEstado(Motivo.ROL_NO_AUTORIZADO,
-                    "Este paso le corresponde al rol " + rolResponsable,
+                    "Este paso le corresponde al rol " + paso.rolResponsable(),
                     TransicionEstadoPazYSalvo.normalizar(estadoAnterior)));
         }
 
-        EstadoSolicitud estado = new EstadoSolicitud();
-        estado.setEstadoActual(TransicionEstadoPazYSalvo.normalizar(nuevoEstado));
-        estado.setFechaRegistroEstado(new Date());
-        // Establecer el comentario si se proporciona
-        if (comentario != null && !comentario.trim().isEmpty()) {
-            estado.setComentario(comentario.trim());
-        }
-        solicitudGateway.cambiarEstadoSolicitud(idSolicitud, estado);
+        solicitudGateway.cambiarEstadoSolicitud(idSolicitud, paso.registro());
         
         // Crear notificación automática del cambio de estado
         try {

@@ -78,4 +78,24 @@ public class Solicitud {
         return inicial;
     }
 
+    /**
+     * Prepara el paso de esta solicitud a {@code nuevoEstado} en {@code flujo}. Lo valida desde el último estado con
+     * texto del historial y crea el registro del nuevo estado: su forma canónica, la fecha actual y el comentario
+     * recortado, si trae texto. No lo agrega al historial; lo guarda el gateway.
+     *
+     * @throws IllegalArgumentException si el flujo no permite el paso
+     *                                  (ver {@link FlujoEstadosSolicitud#validarYObtenerRolResponsable})
+     */
+    public FlujoEstadosSolicitud.Paso pasoA(FlujoEstadosSolicitud flujo, String nuevoEstado, String comentario) {
+        String anterior = FlujoEstadosSolicitud.ultimoEstado(estadosSolicitud);
+        String rolResponsable = flujo.validarYObtenerRolResponsable(anterior, nuevoEstado);
+        EstadoSolicitud registro = new EstadoSolicitud();
+        registro.setEstadoActual(flujo.normalizar(nuevoEstado));
+        registro.setFechaRegistroEstado(new Date());
+        if (comentario != null && !comentario.trim().isEmpty()) {
+            registro.setComentario(comentario.trim());
+        }
+        return new FlujoEstadosSolicitud.Paso(anterior, rolResponsable, registro);
+    }
+
 }
