@@ -1,6 +1,5 @@
 package co.edu.unicauca.decanatura.gestion_curricular.dominio.casosDeUso;
 
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -20,7 +19,6 @@ import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.FiltroSolic
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.FlujoEstadosSolicitud;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.SolicitudReingreso;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Usuario;
-import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.enums.EstadosSolicitud;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.servicios.AsociadorDocumentosPendientes;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.servicios.ListadorSolicitudes;
 
@@ -78,16 +76,7 @@ public class GestionarSolicitudReingresoCUAdapter  implements GestionarSolicitud
         // Mover a la carpeta de la solicitud y asociar los documentos que este estudiante subió antes de enviarla
         asociadorDocumentos.asociar(solicitudGuardada, idUsuario, "reingreso");
 
-        EstadoSolicitud estadoInicial = new EstadoSolicitud();
-        estadoInicial.setEstadoActual(EstadosSolicitud.ENVIADA.textoGuardado());//Se pone por defecto el estado de Enviada
-        estadoInicial.setFechaRegistroEstado(new Date());
-        estadoInicial.setObjSolicitud(solicitudGuardada); // establecer vínculo
-            
-        if(solicitudGuardada.getEstadosSolicitud() == null) {
-            solicitudGuardada.setEstadosSolicitud(new ArrayList<>());
-        }
-        solicitudGuardada.getEstadosSolicitud().add(estadoInicial);
-        this.gestionarEstadoSolicitudGateway.guarEstadoSolicitud(estadoInicial);
+        this.gestionarEstadoSolicitudGateway.guarEstadoSolicitud(solicitudGuardada.registrarEstadoInicial());
         // No se guarda el usuario: la relación usuario-solicitudes es mappedBy (la solicitud ya
         // lleva su usuario) y, por orphanRemoval, guardar una lista incompleta podría borrar solicitudes.
 

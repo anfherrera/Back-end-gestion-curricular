@@ -7,6 +7,8 @@ import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.enums.EstadosSolicitud;
+
 @Data
 @AllArgsConstructor
 public class Solicitud {
@@ -51,6 +53,29 @@ public class Solicitud {
     public String estadoActual(String siNoHayEstados) {
         EstadoSolicitud ultimo = ultimoRegistroEstado();
         return ultimo == null ? siNoHayEstados : ultimo.getEstadoActual();
+    }
+
+    /** true si algún registro del historial tiene un estado con texto. */
+    public boolean tieneEstadoRegistrado() {
+        return FlujoEstadosSolicitud.ultimoEstado(estadosSolicitud) != null;
+    }
+
+    /**
+     * Agrega al historial el estado inicial (ENVIADA, con el texto que se guarda), con la fecha actual y el
+     * vínculo a esta solicitud. Crea el historial si no hay lista.
+     *
+     * @return el registro agregado, para que se guarde
+     */
+    public EstadoSolicitud registrarEstadoInicial() {
+        EstadoSolicitud inicial = new EstadoSolicitud();
+        inicial.setEstadoActual(EstadosSolicitud.ENVIADA.textoGuardado());
+        inicial.setFechaRegistroEstado(new Date());
+        inicial.setObjSolicitud(this);
+        if (estadosSolicitud == null) {
+            estadosSolicitud = new ArrayList<>();
+        }
+        estadosSolicitud.add(inicial);
+        return inicial;
     }
 
 }

@@ -2,7 +2,6 @@ package co.edu.unicauca.decanatura.gestion_curricular.dominio.casosDeUso;
 
 import java.time.LocalDate;
 import java.time.ZoneId;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -29,7 +28,6 @@ import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.FlujoEstado
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.SolicitudPazYSalvo;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.TransicionEstadoPazYSalvo;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Usuario;
-import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.enums.EstadosSolicitud;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.enums.PeriodoAcademicoEnum;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.servicios.AsociadorDocumentosPendientes;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.servicios.ListadorSolicitudes;
@@ -107,20 +105,8 @@ public class GestionarSolicitudPazYSalvoCUAdapter implements GestionarSolicitudP
 
         // Estado inicial "Enviada": el gateway ya lo crea al guardar; solo se agrega si falta,
         // para no dejar dos estados iniciales.
-        boolean yaTieneEstadoInicial = solicitudGuardada.getEstadosSolicitud() != null
-                && solicitudGuardada.getEstadosSolicitud().stream()
-                        .anyMatch(e -> e.getEstadoActual() != null && !e.getEstadoActual().isBlank());
-        if (!yaTieneEstadoInicial) {
-            EstadoSolicitud estadoInicial = new EstadoSolicitud();
-            estadoInicial.setEstadoActual(EstadosSolicitud.ENVIADA.textoGuardado());
-            estadoInicial.setFechaRegistroEstado(new Date());
-            estadoInicial.setObjSolicitud(solicitudGuardada);
-
-            if (solicitudGuardada.getEstadosSolicitud() == null) {
-                solicitudGuardada.setEstadosSolicitud(new ArrayList<>());
-            }
-            solicitudGuardada.getEstadosSolicitud().add(estadoInicial);
-            estadoSolicitudGateway.guarEstadoSolicitud(estadoInicial);
+        if (!solicitudGuardada.tieneEstadoRegistrado()) {
+            estadoSolicitudGateway.guarEstadoSolicitud(solicitudGuardada.registrarEstadoInicial());
         }
 
         // No se guarda el usuario: la relación usuario-solicitudes es mappedBy (la solicitud ya
