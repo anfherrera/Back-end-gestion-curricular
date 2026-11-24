@@ -160,13 +160,7 @@ public class CursosVeranoRestController {
             default -> throw new IllegalArgumentException("Estado no válido: use preinscripcion o inscripcion");
         };
         List<CursoOfertadoVerano> cursos = cursoCU.listarTodos().stream()
-                .filter(curso -> {
-                    if (curso.getEstadosCursoOfertados() == null || curso.getEstadosCursoOfertados().isEmpty()) {
-                        return false;
-                    }
-                    String estadoActual = curso.getEstadosCursoOfertados().get(curso.getEstadosCursoOfertados().size() - 1).getEstadoActual();
-                    return estadoCurso.equals(estadoActual);
-                })
+                .filter(curso -> estadoCurso.equals(curso.estadoActual()))
                 .collect(Collectors.toList());
 
         // Filtrar por período académico si se proporciona

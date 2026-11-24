@@ -1,7 +1,5 @@
 package co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos;
 
-import java.util.List;
-
 /**
  * Flujo de estados de un curso de verano:
  * <pre>
@@ -42,11 +40,8 @@ public final class TransicionEstadoCurso {
 
     /** Estado más reciente del curso, o {@link #SIN_ESTADO} si no tiene. */
     public static String estadoActual(CursoOfertadoVerano curso) {
-        List<EstadoCursoOfertado> estados = curso.getEstadosCursoOfertados();
-        if (estados == null || estados.isEmpty()) {
-            return SIN_ESTADO;
-        }
-        return estados.get(estados.size() - 1).getEstadoActual();
+        EstadoCursoOfertado ultimo = curso.ultimoRegistroEstado();
+        return ultimo == null ? SIN_ESTADO : ultimo.getEstadoActual();
     }
 
     /**
@@ -64,7 +59,7 @@ public final class TransicionEstadoCurso {
                     "Desde 'Sin Estado' solo se puede cambiar a 'Borrador'");
             case "Borrador" -> {
                 exigir("Abierto".equals(nuevoEstado), "Desde 'Borrador' solo se puede cambiar a 'Abierto'");
-                if (!estaCompleto(curso)) {
+                if (!curso.estaCompleto()) {
                     throw new TransicionInvalidaException("Curso incompleto",
                             "El curso debe tener materia, docente y cupo estimado para pasar a 'Abierto'");
                 }
@@ -85,16 +80,6 @@ public final class TransicionEstadoCurso {
             default -> throw new TransicionInvalidaException("Estado desconocido",
                     "Estado actual '" + actual + "' no reconocido");
         }
-    }
-
-    /** Un curso está completo si tiene materia, docente, cupo positivo y salón. */
-    public static boolean estaCompleto(CursoOfertadoVerano curso) {
-        return curso.getObjMateria() != null
-                && curso.getObjDocente() != null
-                && curso.getCupoEstimado() != null
-                && curso.getCupoEstimado() > 0
-                && curso.getSalon() != null
-                && !curso.getSalon().trim().isEmpty();
     }
 
     private static void exigir(boolean permitido, String mensaje) {

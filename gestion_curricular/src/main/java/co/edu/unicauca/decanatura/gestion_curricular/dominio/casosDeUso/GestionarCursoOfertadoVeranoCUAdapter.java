@@ -367,7 +367,7 @@ public class GestionarCursoOfertadoVeranoCUAdapter implements GestionarCursoOfer
                 : gestionarCursoOfertadoVeranoGateway.listarPorPeriodo(periodo);
         return cursos.stream()
                 .filter(curso -> periodo == null || periodo.equals(curso.getPeriodoAcademico()))
-                .filter(curso -> !soloVisibles || esVisibleParaEstudiantes(curso))
+                .filter(curso -> !soloVisibles || curso.esVisibleParaEstudiantes())
                 .filter(curso -> idPrograma == null || disponibleParaPrograma(curso, idPrograma))
                 .toList();
     }
@@ -415,15 +415,6 @@ public class GestionarCursoOfertadoVeranoCUAdapter implements GestionarCursoOfer
     private boolean perteneceAlPrograma(Usuario usuario, Integer idPrograma) {
         return usuario != null && usuario.getObjPrograma() != null
                 && idPrograma.equals(usuario.getObjPrograma().getIdPrograma());
-    }
-
-    private boolean esVisibleParaEstudiantes(CursoOfertadoVerano curso) {
-        List<EstadoCursoOfertado> estados = curso.getEstadosCursoOfertados();
-        if (estados == null || estados.isEmpty()) {
-            return false;
-        }
-        String estado = estados.get(estados.size() - 1).getEstadoActual();
-        return "Publicado".equals(estado) || "Preinscripcion".equals(estado) || "Inscripcion".equals(estado);
     }
 
     

@@ -133,15 +133,9 @@ public class ReportesCursosVeranoRestController {
         int cursosGestionados = 0;
         
         for (CursoOfertadoVerano curso : todosLosCursos) {
-            if (curso.getEstadosCursoOfertados() != null && !curso.getEstadosCursoOfertados().isEmpty()) {
-                String estadoActual = curso.getEstadosCursoOfertados()
-                    .get(curso.getEstadosCursoOfertados().size() - 1)
-                    .getEstadoActual();
-                
-                // Cursos activos: Publicado, Preinscripcion, Inscripcion
-                if ("Publicado".equals(estadoActual) || 
-                    "Preinscripcion".equals(estadoActual) || 
-                    "Inscripcion".equals(estadoActual)) {
+            if (curso.ultimoRegistroEstado() != null) {
+                // Cursos activos: los visibles para los estudiantes (Publicado, Preinscripcion, Inscripcion)
+                if (curso.esVisibleParaEstudiantes()) {
                     cursosActivos++;
                 }
                 
@@ -250,8 +244,8 @@ public class ReportesCursosVeranoRestController {
                 if (preinscripcion.getObjCursoOfertadoVerano() != null) {
                     // Para cursos existentes, obtener el estado del curso
                     CursoOfertadoVerano curso = preinscripcion.getObjCursoOfertadoVerano();
-                    if (curso.getEstadosCursoOfertados() != null && !curso.getEstadosCursoOfertados().isEmpty()) {
-                        estadoCurso = curso.getEstadosCursoOfertados().get(curso.getEstadosCursoOfertados().size() - 1).getEstadoActual();
+                    if (curso.ultimoRegistroEstado() != null) {
+                        estadoCurso = curso.estadoActual();
                     }
                     
                     // Determinar acciones disponibles basado en el estado de la preinscripcion y del curso

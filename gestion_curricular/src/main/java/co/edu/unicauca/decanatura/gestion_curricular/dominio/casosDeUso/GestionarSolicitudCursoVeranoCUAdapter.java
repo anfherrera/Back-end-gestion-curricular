@@ -469,9 +469,7 @@ public class GestionarSolicitudCursoVeranoCUAdapter implements GestionarSolicitu
 
     /** Exige que el curso esté en la fase indicada (último estado). */
     private void exigirEstadoCurso(CursoOfertadoVerano curso, String estadoRequerido, String queSolicitud) {
-        String actual = curso.getEstadosCursoOfertados() == null || curso.getEstadosCursoOfertados().isEmpty()
-                ? null
-                : curso.getEstadosCursoOfertados().get(curso.getEstadosCursoOfertados().size() - 1).getEstadoActual();
+        String actual = curso.estadoActual();
         if (!estadoRequerido.equals(actual)) {
             throw new ReglaNegocioExcepcion(
                     "El curso no está recibiendo " + queSolicitud + " (estado actual: "
