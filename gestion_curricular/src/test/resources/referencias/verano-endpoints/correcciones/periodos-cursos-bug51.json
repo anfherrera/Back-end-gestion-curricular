@@ -1,0 +1,18 @@
+{
+  "GET /api/cursos-verano/cursos/periodos [estudiante]": {
+    "status": 200,
+    "cuerpo": [
+      "2025-2",
+      "2024-2",
+      "2024-1"
+    ]
+  },
+  "GET /api/cursos-verano/cursos/periodos [funcionario]": {
+    "status": 200,
+    "cuerpo": [
+      "2025-2",
+      "2024-2",
+      "2024-1"
+    ]
+  }
+}

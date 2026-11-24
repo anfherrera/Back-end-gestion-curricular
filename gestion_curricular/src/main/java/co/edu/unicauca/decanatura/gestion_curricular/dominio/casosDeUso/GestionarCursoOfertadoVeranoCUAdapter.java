@@ -1,8 +1,12 @@
 package co.edu.unicauca.decanatura.gestion_curricular.dominio.casosDeUso;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarCursoOfertadoVeranoCUIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarNotificacionCUIntPort;
@@ -28,6 +32,7 @@ import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.TransicionE
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Usuario;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.enums.EstadoSolicitudCursoVerano;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.enums.GrupoCursoVerano;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.enums.PeriodoAcademicoEnum;
 
 public class GestionarCursoOfertadoVeranoCUAdapter implements GestionarCursoOfertadoVeranoCUIntPort {
 
@@ -366,6 +371,34 @@ public class GestionarCursoOfertadoVeranoCUAdapter implements GestionarCursoOfer
                 .filter(curso -> idPrograma == null || disponibleParaPrograma(curso, idPrograma))
                 .toList();
     }
+
+    @Override
+    public List<String> listarPeriodosConCursosVisibles() {
+        return listarPorFiltros(null, null, true).stream()
+                .map(curso -> PeriodoAcademicoEnum.recortado(curso.getPeriodoAcademico()))
+                .filter(Objects::nonNull)
+                .distinct()
+                .sorted(MAS_RECIENTE_PRIMERO)
+                .toList();
+    }
+
+    private static final Pattern ANIO_Y_NUMERO = Pattern.compile("(\\d{4})-(\\d+)");
+
+    /** AAAA-N del más reciente al más antiguo; los demás, al final y por orden alfabético. */
+    private static final Comparator<String> MAS_RECIENTE_PRIMERO = (a, b) -> {
+        Matcher ma = ANIO_Y_NUMERO.matcher(a);
+        Matcher mb = ANIO_Y_NUMERO.matcher(b);
+        boolean va = ma.matches();
+        boolean vb = mb.matches();
+        if (va && vb) {
+            int porAnio = Integer.compare(Integer.parseInt(mb.group(1)), Integer.parseInt(ma.group(1)));
+            return porAnio != 0 ? porAnio : Integer.compare(Integer.parseInt(mb.group(2)), Integer.parseInt(ma.group(2)));
+        }
+        if (va != vb) {
+            return va ? -1 : 1;
+        }
+        return a.compareTo(b);
+    };
 
     private boolean disponibleParaPrograma(CursoOfertadoVerano curso, Integer idPrograma) {
         List<Usuario> inscritos = curso.getEstudiantesInscritos();

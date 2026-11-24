@@ -3,19 +3,16 @@ Sigue la revisión 26 de `REVISION_CODIGO.md` en el backend (`D:\Cursos\Trabajo 
 ## De dónde partimos
 
 - EST-7 está cerrado (`[x]`): los pasos 1 a 9 están hechos y cada una de las unas 206 rutas sigue la convención o se retiró. El paso 9 (estadísticas) es el modelo más reciente en "Migración hecha".
-- Último `clean verify` (paso 9), en JDK 25 y 17: 603 pruebas, 1 omitida y 0 fallos (122 XML de surefire). Frontend: 785 pruebas sin fallos.
+- BUG-50, BUG-47 y BUG-51 están cerrados (2026-11-24), con un commit cada uno; BUG-51 también en el frontend. Ver sus cierres en `REVISION_CODIGO.md`.
+- Último `clean verify` (BUG-51), en JDK 25 y 17: 609 pruebas, 1 omitida y 0 fallos (125 XML de surefire). Frontend: 785 pruebas sin fallos.
 - El frontend tiene la estructura `src/app/features/<proceso>/{estudiante,revision}` y Husky con lint-staged: cada commit pasa ESLint sobre los `.ts` y `.html` de `src/` preparados.
-- Quedan abiertos, y no los toques sin preguntar: BUG-47, BUG-50, BUG-51 y OPC-1.
-- Nada está subido: el frontend va 9 commits por delante de su remoto y el backend 3. Pregunta antes de subir.
-- Visto en el paso 9 y sin anotar como punto: `GestionCurricularApplication` declara `@ComponentScan(basePackages = "co.edu.unicauca.decanatura")` sin el `TypeExcludeFilter`, así que las `@TestConfiguration` anidadas de las pruebas (por ejemplo, la de datos fijos de `EstadisticasEndpointsCaracterizacionTest`) entran en el contexto de todas las `@SpringBootTest`. Pregunta al usuario si lo quiere como punto nuevo.
+- Solo queda abierto OPC-1; no lo toques sin preguntar.
+- Nada está subido: el frontend va 10 commits por delante de su remoto y el backend 6. Pregunta antes de subir.
+- Visto en el paso 9 y sin anotar como punto: `GestionCurricularApplication` declara `@ComponentScan(basePackages = "co.edu.unicauca.decanatura")` sin el `TypeExcludeFilter`, así que las `@TestConfiguration` anidadas de las pruebas (por ejemplo, la de datos fijos de `EstadisticasEndpointsCaracterizacionTest`) entran en el contexto de todas las `@SpringBootTest`. Por eso las pruebas nuevas usan `@MockBean`, y un controlador de prueba lleva un `@Profile` que nunca se activa. Pregunta al usuario si lo quiere como punto nuevo.
 
 ## Lo siguiente
 
-- El usuario pidió seguir con los errores (2026-11-24) y eligió, con un commit por error (caracterización previa, `clean verify` en JDK 25 y 17):
-  - BUG-50: `@Validated` en `PreinscripcionesVeranoRestController` (400 GC-0004 como los demás) y, además, el manejador global atiende `HandlerMethodValidationException` con un 400.
-  - BUG-47: prioridad fija en `handleValidacion`: se mantiene `{campo: mensaje}`, y gana la violación de presencia (`@NotNull`, `@NotBlank`, `@NotEmpty`) y luego las demás en un orden fijo. El JSON no cambia de forma.
-  - BUG-51: crear `GET /api/cursos-verano/cursos/periodos` (los períodos distintos de los cursos ofertados, del más reciente al más antiguo) y que `getPeriodosRegistrados` del frontend la use.
-- OPC-1 sigue abierto; no lo toques sin preguntar.
+- Pregunta al usuario: OPC-1, el punto del `@ComponentScan` o subir las ramas.
 
 ## Método (el de los pasos 7 a 9)
 

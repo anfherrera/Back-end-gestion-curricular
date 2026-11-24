@@ -395,6 +395,16 @@ public class CursosVeranoRestController {
     }
 
     /**
+     * Períodos con cursos visibles para los estudiantes, del más reciente al más antiguo (BUG-51).
+     * GET /api/cursos-verano/cursos/periodos. Lo usa el selector de períodos de "Cursos ofertados"; como
+     * {@code ?disponibles=true}, lo puede pedir cualquier usuario autenticado.
+     */
+    @GetMapping("/periodos")
+    public ResponseEntity<List<String>> obtenerPeriodosConCursos() {
+        return ResponseEntity.ok(cursoCU.listarPeriodosConCursosVisibles());
+    }
+
+    /**
      * Obtener curso de verano por ID (datos reales de la base de datos)
      * GET /api/cursos-verano/cursos/{id}
      */

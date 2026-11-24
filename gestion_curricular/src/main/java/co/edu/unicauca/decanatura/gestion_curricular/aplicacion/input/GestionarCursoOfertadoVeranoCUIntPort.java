@@ -29,6 +29,12 @@ public interface GestionarCursoOfertadoVeranoCUIntPort {
 
     List<CursoOfertadoVerano> listarPorFiltros(String periodo, Integer idPrograma, boolean soloVisibles);
 
+    /**
+     * Los períodos que tienen al menos un curso visible para los estudiantes, sin repetir, recortados y del más
+     * reciente al más antiguo (BUG-51). Los que no tienen la forma {@code AAAA-N} van al final, por orden alfabético.
+     */
+    List<String> listarPeriodosConCursosVisibles();
+
     /** Registra al estudiante en la lista del curso. @return true si quedó asociado */
     boolean asociarEstudiante(Integer idCurso, Integer idUsuario);
 
