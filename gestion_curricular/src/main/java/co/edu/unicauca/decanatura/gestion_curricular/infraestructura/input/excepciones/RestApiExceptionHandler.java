@@ -1,6 +1,8 @@
 package co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.excepciones;
 
+import java.util.Comparator;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
@@ -15,6 +17,7 @@ import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.validation.FieldError;
+import org.springframework.validation.ObjectError;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.MissingServletRequestParameterException;
@@ -109,12 +112,28 @@ public class RestApiExceptionHandler {
         /** Errores de validación de {@code @Valid}: un mapa campo → mensaje (lo usan los formularios). */
         @ExceptionHandler(MethodArgumentNotValidException.class)
         public ResponseEntity<Map<String, String>> handleValidacion(MethodArgumentNotValidException ex) {
-                Map<String, String> errores = new HashMap<>();
-                ex.getBindingResult().getAllErrors().forEach(error -> errores.put(
+                // BUG-47: un mensaje por campo; si hay varias violaciones, gana la de menor prioridad,
+                // así que no depende del orden (variable) en que Hibernate Validator las devuelve
+                Map<String, ObjectError> elegidos = new HashMap<>();
+                ex.getBindingResult().getAllErrors().forEach(error -> elegidos.merge(
                                 error instanceof FieldError campo ? campo.getField() : error.getObjectName(),
-                                error.getDefaultMessage()));
+                                error, (actual, nuevo) -> ORDEN_VALIDACION.compare(nuevo, actual) < 0 ? nuevo : actual));
+                Map<String, String> errores = new HashMap<>();
+                elegidos.forEach((campo, error) -> errores.put(campo, error.getDefaultMessage()));
                 return ResponseEntity.badRequest().body(errores);
         }
+
+        /** Primero las de presencia; después, un orden fijo; las demás, por nombre; y a igualdad, por mensaje. */
+        private static final List<String> PRIORIDAD_VALIDACION = List.of(
+                        "NotNull", "NotBlank", "NotEmpty", "Size", "Min", "Max", "Pattern", "PastOrPresent");
+
+        private static final Comparator<ObjectError> ORDEN_VALIDACION = Comparator
+                        .comparingInt((ObjectError error) -> {
+                                int posicion = PRIORIDAD_VALIDACION.indexOf(error.getCode());
+                                return posicion < 0 ? PRIORIDAD_VALIDACION.size() : posicion;
+                        })
+                        .thenComparing(error -> String.valueOf(error.getCode()))
+                        .thenComparing(error -> String.valueOf(error.getDefaultMessage()));
 
         @ExceptionHandler(ConstraintViolationException.class)
         public ResponseEntity<Error> handleConstraintViolation(HttpServletRequest req, ConstraintViolationException ex) {
