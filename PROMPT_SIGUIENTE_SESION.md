@@ -1,34 +1,34 @@
-Sigue la revisión 26 de `REVISION_CODIGO.md` en el backend (`D:\Cursos\Trabajo de grado\Back-end-gestion-curricular`, rama `seguridad-y-arquitectura`). El frontend está en `D:\Cursos\Trabajo de grado\Front-end-gestion-curricular`, rama `revision-25-backend` (no `main`), y puedes cambiarlo cuando haga falta. Lee primero la cabecera de `REVISION_CODIGO.md`, la fila 26 del registro y la entrada EST-7 (cerrada): la convención y "Migración hecha" (el paso 9 es el modelo más reciente). Respóndeme siempre en español.
+Sigue la revisión de código del backend (`D:\Cursos\Trabajo de grado\Back-end-gestion-curricular`, rama `seguridad-y-arquitectura`). El frontend está en `D:\Cursos\Trabajo de grado\Front-end-gestion-curricular`, rama `revision-25-backend` (no `main`), y puedes cambiarlo cuando haga falta. Lee primero la cabecera de `REVISION_CODIGO.md` y la fila 26 del registro. Respóndeme siempre en español.
 
-## De dónde partimos
+## De dónde partimos (2026-11-24)
 
-- EST-7 está cerrado (`[x]`): los pasos 1 a 9 están hechos y cada una de las unas 206 rutas sigue la convención o se retiró. El paso 9 (estadísticas) es el modelo más reciente en "Migración hecha".
-- BUG-50, BUG-47 y BUG-51 están cerrados (2026-11-24), con un commit cada uno; BUG-51 también en el frontend. Ver sus cierres en `REVISION_CODIGO.md`.
-- Último `clean verify` (BUG-51), en JDK 25 y 17: 609 pruebas, 1 omitida y 0 fallos (125 XML de surefire). Frontend: 785 pruebas sin fallos.
-- El frontend tiene la estructura `src/app/features/<proceso>/{estudiante,revision}` y Husky con lint-staged: cada commit pasa ESLint sobre los `.ts` y `.html` de `src/` preparados.
-- Solo queda abierto OPC-1; no lo toques sin preguntar.
-- Nada está subido: el frontend va 10 commits por delante de su remoto y el backend 6. Pregunta antes de subir.
-- Visto en el paso 9 y sin anotar como punto: `GestionCurricularApplication` declara `@ComponentScan(basePackages = "co.edu.unicauca.decanatura")` sin el `TypeExcludeFilter`, así que las `@TestConfiguration` anidadas de las pruebas (por ejemplo, la de datos fijos de `EstadisticasEndpointsCaracterizacionTest`) entran en el contexto de todas las `@SpringBootTest`. Por eso las pruebas nuevas usan `@MockBean`, y un controlador de prueba lleva un `@Profile` que nunca se activa. Pregunta al usuario si lo quiere como punto nuevo.
+- La revisión 26 está terminada y subida: las dos ramas están al día con su remoto.
+- EST-7 está cerrado: los pasos 1 a 9 de la migración de rutas están hechos, y cada una de las unas 206 rutas sigue la convención o se retiró. La convención y "Migración hecha" están en la entrada EST-7.
+- BUG-47, BUG-50 y BUG-51 están cerrados, con un commit cada uno; BUG-51 también en el frontend. Sus cierres están en `REVISION_CODIGO.md`.
+- Último `clean verify`, en JDK 25 y 17: 609 pruebas, 1 omitida y 0 fallos (125 XML de surefire). Frontend: 785 pruebas sin fallos.
+- Solo queda abierto OPC-1 ("Los modelos de dominio no tienen comportamiento"). No lo toques sin preguntar.
 
 ## Lo siguiente
 
-- Pregunta al usuario: OPC-1, el punto del `@ComponentScan` o subir las ramas.
+Pregunta al usuario qué quiere abordar. Hay dos opciones:
 
-## Método (el de los pasos 7 a 9)
+1. **OPC-1.** Lee su entrada en `REVISION_CODIGO.md` y propón un alcance antes de tocar nada.
+2. **Un punto nuevo, si el usuario lo quiere.** `GestionCurricularApplication` declara `@ComponentScan(basePackages = "co.edu.unicauca.decanatura")` sin el `TypeExcludeFilter`. Por eso las `@TestConfiguration` anidadas de las pruebas entran en el contexto de todas las `@SpringBootTest`. Por ejemplo, el caso de uso de estadísticas con datos fijos de `EstadisticasEndpointsCaracterizacionTest` es `@Primary` en todas ellas. Mientras no se decida, las pruebas nuevas usan `@MockBean`, y si necesitan un controlador propio le ponen un `@Profile` que nunca se activa (ver `ValidacionSinValidatedTest`). Corregirlo puede cambiar lo que ven otras pruebas: hay que caracterizar antes.
 
-1. Caracterización previa `@SpringBootTest` con varios roles, grabada en una copia contra el código actual con `-DgrabarReferencia=true` y pasada tres veces más sin grabar.
-2. Antes del cambio, pasa contra el código actual las pruebas que usan esas rutas. La lista del grupo de verano: `AutorizacionPorRolTest`, `Catalogos…`, `CursoNuevoFecha…`, `CursosVerano{Aceptacion,Integracion,Endpoints…,Respuestas…}`, `Decisiones…`, `Descargas…`, `ErroresLocales…`, `GestionCursosVeranoFuncionalTest`, `Inscripciones…`, `NombresApi…`, `PeriodoPredeterminado…`, `Preinscripciones…`, `Rutas*Verano*`, `RutasPreinscripcionesInscripciones…`, `SalonInexistente…`, `SeguimientoDashboard…`, `SolicitudesVeranoReporte…` y `EstadisticasCursosVerano…`.
-3. Migra; `/{id:\\d+}` con Edit y compruébalo con `grep` (un `\d` sin escapar no compila).
-4. Pares y `node herramientas/derivar-est7.js`; revisa "FUERA DE LOS PARES". Si la comparación falla, la salida nueva queda en `target/referencias-obtenidas/`. Las claves que empiezan por `/` se escriben en la corrección como JSON Pointer (`/~1api~1…`).
-5. Para derivar correcciones, en la copia haz que `Correcciones.aplicar` devuelva la referencia si falta el archivo y que las pruebas vuelquen lo que obtienen a `target/obtenido-*.json`; `herramientas/derivar-cadena-est7.js` aplica la cadena. Revisa cada corrección nueva entrada por entrada contra su referencia más la cadena anterior, sin `body.url`, antes de encadenarla. Ojo: varias caracterizaciones sobrescriben su referencia con `-DgrabarReferencia=true`; graba solo con `-Dtest=` de la nueva. Las claves de las correcciones que empiezan por `/` (por ejemplo `/materias falla`) se escriben como JSON Pointer (`/~1materias falla`): `derivar-cadena-est7.js` no lo hace solo. Si la caracterización guarda fechas que vienen de parámetros, guárdalas como texto en la zona de la JVM y comprueba que pasa con `-DargLine=-Duser.timezone=UTC`.
-6. Frontend: servicios, specs con URL y método exactos, y `cy.intercept` con expresiones regulares (escríbelas con Edit o Node: perl pierde las barras invertidas).
-7. Documenta en "Migración hecha" y en la fila 26. Pasa `clean verify` en JDK 25 y 17 en dos copias a la vez; en el frontend, `npx ng test --watch=false`, prettier, lint y `tsc` de lo tocado (prettier de `api-endpoints.ts` y de `cypress/e2e/03-cursos-intersemestrales.cy.ts`, y el lint de `cypress/e2e/*.cy.ts`, ya fallaban antes). Un commit por repositorio, en ASCII y con el ID. En PowerShell, pasa el mensaje del commit con `-F archivo` (un here-string como argumento se toma como ruta).
+## Método
 
-## Reglas que siguen vigentes
+1. Antes de cambiar comportamiento, una caracterización grabada contra el código actual. Se graba en una copia con `-DgrabarReferencia=true` y `-Dtest=` solo de la nueva, porque otras sobrescriben su referencia. Después se pasa tres veces más sin grabar. Si el resultado no es determinista (como en BUG-47), escribe una prueba que falle con el código anterior.
+2. Antes del cambio, pasa contra el código actual las pruebas existentes que tocan lo mismo.
+3. Las diferencias se fijan con correcciones encadenadas (`Correcciones`, `GrafoObjetos.compararConReferencia(..., correccion...)`). Para derivarlas usa `herramientas/derivar-est7.js` (pares de rutas) o `herramientas/derivar-cadena-est7.js` (referencia más su cadena). Revisa cada entrada nueva contra la referencia y su cadena. Las claves que empiezan por `/` se escriben como JSON Pointer (`/~1api~1…`).
+4. Si la salida guarda fechas que vienen de parámetros, guárdalas como texto en la zona de la JVM y comprueba que pasa con `-DargLine=-Duser.timezone=UTC`.
+5. Frontend: specs con URL y método exactos (`expectOne({ method, url })`). Pasa `npx ng test --watch=false`, prettier, lint y `tsc` de lo tocado. El prettier de `api-endpoints.ts` (línea `DESCARGAR_PDF`) y de `cypress/e2e/03-cursos-intersemestrales.cy.ts`, y el lint de `cypress/e2e/*.cy.ts`, ya fallaban antes. Husky con lint-staged pasa ESLint en cada commit.
+6. Documenta el cierre en la entrada del punto y en la fila del registro. Pasa `clean verify` en JDK 25 y 17, en dos copias a la vez. Haz un commit por punto y por repositorio, con el mensaje en ASCII, con el ID del punto y pasado con `-F archivo`.
 
-- Nunca regrabes una referencia que ya está en el repositorio: usa correcciones `-est7` encadenadas.
-- Compila siempre en una copia del scratchpad (`tar -c --exclude=gestion_curricular/target gestion_curricular | tar -x -C <dir>` y `./mvnw -o -q …`), nunca en `gestion_curricular/target`. JDK 17 está en `C:\Program Files\Java\jdk-17`.
-- No hay Python: usa Edit, perl o Node; revisa el `git diff` después de cada sustitución.
-- Pregunta antes de cambiar un contrato más allá de lo decidido.
+## Reglas
+
+- Nunca regrabes una referencia que ya está en el repositorio: usa correcciones encadenadas.
+- Compila siempre en una copia del scratchpad (`tar -c --exclude=gestion_curricular/target gestion_curricular | tar -x -C <dir>` y `./mvnw -o -q …`), nunca en `gestion_curricular/target`. Al resincronizar la copia, borra antes su `src`, para que no queden archivos borrados. JDK 17 está en `C:\Program Files\Java\jdk-17`.
+- No hay Python: usa Edit, perl o Node, y revisa el `git diff` después de cada sustitución.
+- Pregunta antes de cambiar un contrato más allá de lo decidido, y deja que el usuario elija la política de cada punto.
 - No subas nada hasta que el usuario lo pida.
 - Mockito no puede simular clases concretas en JDK 25: usa interfaces o instancias reales.
