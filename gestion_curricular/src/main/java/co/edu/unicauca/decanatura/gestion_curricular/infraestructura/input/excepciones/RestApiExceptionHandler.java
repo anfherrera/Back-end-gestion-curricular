@@ -2,6 +2,7 @@ package co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.exce
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.ConstraintViolationException;
@@ -19,6 +20,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.MissingServletRequestParameterException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.method.annotation.HandlerMethodValidationException;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import org.springframework.web.servlet.NoHandlerFoundException;
 import org.springframework.web.servlet.resource.NoResourceFoundException;
@@ -118,6 +120,26 @@ public class RestApiExceptionHandler {
         public ResponseEntity<Error> handleConstraintViolation(HttpServletRequest req, ConstraintViolationException ex) {
                 return responder(req, HttpStatus.BAD_REQUEST, CodigoError.VIOLACION_REGLA_DE_NEGOCIO.getCodigo(),
                                 ex.getMessage());
+        }
+
+        /**
+         * BUG-50: restricciones en los parámetros de un controlador sin {@code @Validated}. Spring valida por su cuenta
+         * y lanza esta excepción; responde como {@link #handleConstraintViolation}, con los mensajes en la forma
+         * {@code metodo.parametro: mensaje}, ordenados para que no dependan del orden de las violaciones.
+         */
+        @ExceptionHandler(HandlerMethodValidationException.class)
+        public ResponseEntity<Error> handleValidacionDeMetodo(HttpServletRequest req,
+                        HandlerMethodValidationException ex) {
+                String metodo = ex.getMethod().getName();
+                String mensaje = ex.getAllValidationResults().stream()
+                                .flatMap(resultado -> resultado.getResolvableErrors().stream()
+                                                .map(error -> metodo + "."
+                                                                + resultado.getMethodParameter().getParameterName()
+                                                                + ": " + error.getDefaultMessage()))
+                                .sorted()
+                                .collect(Collectors.joining(", "));
+                return responder(req, HttpStatus.BAD_REQUEST, CodigoError.VIOLACION_REGLA_DE_NEGOCIO.getCodigo(),
+                                mensaje);
         }
 
         @ExceptionHandler(BadCredentialsException.class)

@@ -1,0 +1,15 @@
+{
+  "GET /api/cursos-verano/preinscripciones?usuario=0 [funcionario]": {
+    "status": 400,
+    "tipo": "application/json",
+    "cuerpo": {
+      "codigoError": "GC-0004",
+      "mensaje": "obtenerPreinscripcionesPorUsuario.id: must be greater than or equal to 1",
+      "codigoHttp": 400,
+      "url": "http://localhost/api/cursos-verano/preinscripciones",
+      "metodo": "GET"
+    },
+    "disposicion": null,
+    "llamadas": []
+  }
+}

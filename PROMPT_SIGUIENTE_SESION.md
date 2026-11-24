@@ -11,7 +11,11 @@ Sigue la revisión 26 de `REVISION_CODIGO.md` en el backend (`D:\Cursos\Trabajo 
 
 ## Lo siguiente
 
-- Pregunta al usuario qué abordar: los puntos abiertos de arriba, o subir las ramas.
+- El usuario pidió seguir con los errores (2026-11-24) y eligió, con un commit por error (caracterización previa, `clean verify` en JDK 25 y 17):
+  - BUG-50: `@Validated` en `PreinscripcionesVeranoRestController` (400 GC-0004 como los demás) y, además, el manejador global atiende `HandlerMethodValidationException` con un 400.
+  - BUG-47: prioridad fija en `handleValidacion`: se mantiene `{campo: mensaje}`, y gana la violación de presencia (`@NotNull`, `@NotBlank`, `@NotEmpty`) y luego las demás en un orden fijo. El JSON no cambia de forma.
+  - BUG-51: crear `GET /api/cursos-verano/cursos/periodos` (los períodos distintos de los cursos ofertados, del más reciente al más antiguo) y que `getPeriodosRegistrados` del frontend la use.
+- OPC-1 sigue abierto; no lo toques sin preguntar.
 
 ## Método (el de los pasos 7 a 9)
 

@@ -11,6 +11,7 @@ import jakarta.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarSolicitudCursoVeranoCUIntPort;
@@ -53,6 +54,7 @@ import co.edu.unicauca.decanatura.gestion_curricular.seguridad.Autorizacion;
 @RestController
 @RequestMapping("/api/cursos-verano")
 @RequiredArgsConstructor
+@Validated
 public class PreinscripcionesVeranoRestController {
 
     private final GestionarSolicitudCursoVeranoCUIntPort solicitudCU;

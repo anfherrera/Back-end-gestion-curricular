@@ -282,8 +282,10 @@ class RutasPreinscripcionesInscripcionesCaracterizacionTest {
         caso(casos, "funcionario", HttpMethod.PUT, n + "abc/observaciones", "{\"observaciones\":\"nota\"}");
 
         // EST-7: las rutas nuevas responden como las antiguas, que pasan a 404
+        // BUG-50: ?usuario=0 responde 400 GC-0004 y no 500
         GrafoObjetos.compararConReferencia(casos, "rutas/preinscripciones-verano.json",
-                "rutas/correcciones/preinscripciones-verano-est7.json");
+                "rutas/correcciones/preinscripciones-verano-est7.json",
+                "rutas/correcciones/preinscripciones-verano-bug50.json");
     }
 
     @Test
