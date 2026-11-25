@@ -24,7 +24,7 @@ import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.SolicitudRe
 public class ServicioGeneracionDocumentos implements GenerarDocumentosIntPort {
 
     public byte[] generarPazYSalvo(String numero, String fecha, String observaciones,
-                                                  DatosDocumento datos, boolean pdf) throws IOException {
+                                                  DatosDocumento datos) throws IOException {
         Map<String, Object> solicitud = new HashMap<>();
         solicitud.put("nombreEstudiante", datos.nombreEstudiante());
         solicitud.put("codigoEstudiante", datos.codigoEstudiante());
@@ -33,10 +33,9 @@ public class ServicioGeneracionDocumentos implements GenerarDocumentosIntPort {
         solicitud.put("cedulaEstudiante", datos.cedula());
         solicitud.put("tituloTrabajoGrado", datos.titulo());
         solicitud.put("directorTrabajoGrado", datos.director());
-        byte[] docx = generarDocumento(new DatosGeneracionDocumento(0, "PAZ_SALVO",
+        return generarDocumento(new DatosGeneracionDocumento(0, "PAZ_SALVO",
                 Map.of("numeroDocumento", numero, "fechaDocumento", fecha, "observaciones", observaciones),
                 solicitud, null, null));
-        return pdf ? GeneradorPdfPazYSalvo.desdePlantillaRellena(docx) : docx;
     }
 
     /**

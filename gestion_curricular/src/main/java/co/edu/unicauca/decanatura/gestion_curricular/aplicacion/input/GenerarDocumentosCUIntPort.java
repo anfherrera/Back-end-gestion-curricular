@@ -10,5 +10,5 @@ public interface GenerarDocumentosCUIntPort {
     List<PlantillaDocumento> getTemplates(String proceso);
     record DocumentoGenerado(String nombreArchivo, byte[] contenido) {}
     Optional<DocumentoGenerado> generarPazYSalvo(Integer id, String cedula, String titulo, String director,
-            boolean porDefecto, boolean pdf, String numero, String fecha, String observaciones) throws IOException;
+            String numero, String fecha, String observaciones) throws IOException;
 }

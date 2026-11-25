@@ -44,23 +44,13 @@ public class GenerarDocumentosCUAdapter implements GenerarDocumentosCUIntPort {
     }
 
     @Override public Optional<DocumentoGenerado> generarPazYSalvo(Integer id, String cedula, String titulo, String director,
-            boolean porDefecto, boolean pdf, String numero, String fecha, String observaciones) throws IOException {
-        var datos = paz.prepararDocumento(id, cedula, titulo, director, porDefecto);
+            String numero, String fecha, String observaciones) throws IOException {
+        var datos = paz.prepararDocumento(id, cedula, titulo, director);
         if (datos.isEmpty()) return Optional.empty();
-        String nombreArchivo;
-        if (porDefecto) {
-            numero = "PYS-" + id;
-            fecha = LocalDate.now().toString();
-            observaciones = "Paz y Salvo generado";
-            nombreArchivo = "PazYSalvo_" + id + (pdf ? ".pdf" : ".docx");
-        } else {
-            String nombre = datos.get().nombreArchivo().replaceAll("[^a-zA-Z0-9]", "_");
-            nombreArchivo = String.format("PAZ_SALVO_%s_%s.docx", nombre, numero);
-            fecha = fechaDocumentoNormalizada(fecha);
-            observaciones = observaciones == null ? "" : observaciones;
-        }
-        return Optional.of(new DocumentoGenerado(nombreArchivo,
-                generador.generarPazYSalvo(numero, fecha, observaciones, datos.get(), pdf)));
+        String nombre = datos.get().nombreArchivo().replaceAll("[^a-zA-Z0-9]", "_");
+        String nombreArchivo = String.format("PAZ_SALVO_%s_%s.docx", nombre, numero);
+        return Optional.of(new DocumentoGenerado(nombreArchivo, generador.generarPazYSalvo(numero,
+                fechaDocumentoNormalizada(fecha), observaciones == null ? "" : observaciones, datos.get())));
     }
 
     private static String fechaDocumentoNormalizada(String fechaDocumento) {

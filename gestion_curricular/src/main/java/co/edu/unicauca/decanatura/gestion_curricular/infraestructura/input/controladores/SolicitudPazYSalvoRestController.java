@@ -360,7 +360,7 @@ public class SolicitudPazYSalvoRestController {
             @RequestParam(value = "directorTrabajoGrado", required = false) String directorTrabajoGrado)
             throws java.io.IOException {
         var datos = documentGeneratorService.generarPazYSalvo(idSolicitud, cedulaEstudiante, tituloTrabajoGrado,
-                directorTrabajoGrado, false, false, numeroDocumento, fechaDocumento, observaciones);
+                directorTrabajoGrado, numeroDocumento, fechaDocumento, observaciones);
         if (datos.isEmpty()) {
             return ResponseEntity.internalServerError().build();
         }

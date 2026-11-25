@@ -1,7 +1,5 @@
 package co.edu.unicauca.decanatura.gestion_curricular.dominio.casosDeUso;
 
-import java.time.LocalDate;
-import java.time.ZoneId;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -201,11 +199,6 @@ public class GestionarSolicitudPazYSalvoCUAdapter implements GestionarSolicitudP
     }
 
     @Override
-    public DocumentosPazYSalvo.RevisionDocumentos revisarDocumentosRequeridos(Integer idSolicitud) {
-        return DocumentosPazYSalvo.revisar(buscarPorId(idSolicitud).getDocumentos());
-    }
-
-    @Override
     public ComentariosSolicitud comentarios(Integer idSolicitud) {
         SolicitudPazYSalvo solicitud = buscarPorId(idSolicitud);
         List<ComentarioDocumento> documentos = solicitud.getDocumentos() == null ? List.of()
@@ -217,8 +210,7 @@ public class GestionarSolicitudPazYSalvoCUAdapter implements GestionarSolicitudP
     }
 
     @Override
-    public Optional<DatosDocumento> prepararDocumento(Integer id, String cedula, String titulo, String director,
-                                                      boolean fechaLocal) {
+    public Optional<DatosDocumento> prepararDocumento(Integer id, String cedula, String titulo, String director) {
         SolicitudPazYSalvo solicitud = buscarPorId(id);
         if (solicitud.getObjUsuario() == null || solicitud.getObjUsuario().getIdUsuario() == null) {
             return Optional.empty();
@@ -227,10 +219,7 @@ public class GestionarSolicitudPazYSalvoCUAdapter implements GestionarSolicitudP
         if (usuario == null) {
             return Optional.empty();
         }
-        Date registro = solicitud.getFechaRegistroSolicitud();
-        Object fecha = fechaLocal
-                ? (registro == null ? LocalDate.now() : registro.toInstant().atZone(ZoneId.systemDefault()).toLocalDate())
-                : registro;
+        Date fecha = solicitud.getFechaRegistroSolicitud();
         return Optional.of(new DatosDocumento(solicitud.getObjUsuario().getNombreCompleto(),
                 usuario.getNombreCompleto(), usuario.getCodigo(),
                 usuario.getObjPrograma() == null ? "Ingeniería Electrónica y Telecomunicaciones"

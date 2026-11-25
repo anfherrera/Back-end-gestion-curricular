@@ -3,7 +3,6 @@ package co.edu.unicauca.decanatura.gestion_curricular.dominio.casosDeUso;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Date;
-import java.util.function.BooleanSupplier;
 
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarArchivosCUIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarDocumentosCUIntPort;
@@ -46,19 +45,6 @@ public class GestionarDocumentosCUAdapter implements GestionarDocumentosCUIntPor
             nombre = nombreDeRuta(ruta);
         }
         return registrarGuardado(nombre, ruta, solicitud, null, comentario);
-    }
-
-    @Override
-    public AdjuntoCondicional guardarYAdjuntarSiExiste(ArchivoSubido archivo, String tipoArchivo, String carpeta,
-            Integer idSolicitud, BooleanSupplier solicitudExiste) {
-        if (!solicitudExiste.getAsBoolean()) {
-            return new AdjuntoCondicional(false, null);
-        }
-        String nombre = archivo.nombreOriginal();
-        String ruta = archivos.saveFile(archivo, nombre, tipoArchivo, carpeta, idSolicitud);
-        Solicitud solicitud = new Solicitud();
-        solicitud.setIdSolicitud(idSolicitud);
-        return new AdjuntoCondicional(true, registrarGuardado(nombre, ruta, solicitud, null, null));
     }
 
     @Override

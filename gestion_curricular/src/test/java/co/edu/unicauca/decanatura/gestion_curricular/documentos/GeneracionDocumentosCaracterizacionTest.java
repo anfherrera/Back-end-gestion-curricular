@@ -62,7 +62,7 @@ class GeneracionDocumentosCaracterizacionTest {
         when(reingreso.obtenerSolicitudReingresoPorId(73)).thenThrow(new IllegalStateException("consulta fallida"));
         var datos = new DatosDocumento("Ana Pérez", "Ana Pérez", "1046",
                 "Ingeniería de Sistemas", "2025-02-03", "123456789", "Título de prueba", "Director de prueba");
-        when(paz.prepararDocumento(any(), any(), any(), any(), anyBoolean())).thenReturn(Optional.of(datos));
+        when(paz.prepararDocumento(any(), any(), any(), any())).thenReturn(Optional.of(datos));
 
         ObjectNode respuestas = JSON.createObjectNode();
         for (String proceso : List.of("homologacion", "reingreso", "paz-salvo", "desconocido")) {

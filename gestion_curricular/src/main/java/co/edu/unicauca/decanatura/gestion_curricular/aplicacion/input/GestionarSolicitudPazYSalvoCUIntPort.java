@@ -6,7 +6,6 @@ import java.util.function.Predicate;
 
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.DatosDocumento;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Documento;
-import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.DocumentosPazYSalvo.RevisionDocumentos;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.FiltroSolicitudes;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.SolicitudPazYSalvo;
 
@@ -59,9 +58,6 @@ public interface GestionarSolicitudPazYSalvoCUIntPort {
     /** Oficios y resoluciones en PDF de la solicitud, en su orden. */
     List<Documento> oficios(Integer idSolicitud);
 
-    /** Qué documentos requeridos ha entregado el estudiante y si están todos los obligatorios. */
-    RevisionDocumentos revisarDocumentosRequeridos(Integer idSolicitud);
-
     /** Comentario del último rechazo y documentos con comentario de la solicitud. */
     ComentariosSolicitud comentarios(Integer idSolicitud);
 
@@ -76,6 +72,5 @@ public interface GestionarSolicitudPazYSalvoCUIntPort {
     }
 
 
-    Optional<DatosDocumento> prepararDocumento(Integer id, String cedula, String titulo, String director,
-                                               boolean fechaLocal);
+    Optional<DatosDocumento> prepararDocumento(Integer id, String cedula, String titulo, String director);
 }

@@ -2,7 +2,6 @@ package co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.dto.
 
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 
@@ -20,7 +19,4 @@ public final class DocumentosPazYSalvoDTORespuesta {
     @JsonInclude(JsonInclude.Include.NON_NULL)
     public record Comentarios(String comentarioRechazo, List<Comentario> documentosConComentarios,
             String mensaje) {}
-
-    public record Revision(Map<String, Boolean> documentosRequeridos, boolean todosCompletos,
-            int totalDocumentos) {}
 }

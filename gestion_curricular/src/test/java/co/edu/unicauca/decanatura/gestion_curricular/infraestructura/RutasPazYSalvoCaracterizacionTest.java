@@ -12,9 +12,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
-import java.util.function.BooleanSupplier;
 import java.util.function.Predicate;
 
 import com.fasterxml.jackson.databind.JsonNode;
@@ -48,7 +46,6 @@ import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.Gestionar
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.GestionarUsuarioGatewayIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.ArchivoSubido;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Documento;
-import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.DocumentosPazYSalvo;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.EstadoSolicitud;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Programa;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Rol;
@@ -146,22 +143,19 @@ class RutasPazYSalvoCaracterizacionTest {
                         70, "carta.pdf", "Ilegible"))));
         when(pazYSalvo.comentarios(41)).thenReturn(
                 new GestionarSolicitudPazYSalvoCUIntPort.ComentariosSolicitud(null, List.of()));
-        when(pazYSalvo.revisarDocumentosRequeridos(40)).thenReturn(new DocumentosPazYSalvo.RevisionDocumentos(
-                Map.of(DocumentosPazYSalvo.Requerido.FORMATO_PM_FO_4_FOR_27, true), false, 2));
 
         when(archivos.getFile(anyString())).thenReturn(new byte[0]);
         when(archivos.getFile("pazysalvo/40/carta.pdf")).thenReturn("PDF carta".getBytes(StandardCharsets.UTF_8));
         when(archivos.getFile("pazysalvo/40/oficio.pdf")).thenReturn("PDF oficio".getBytes(StandardCharsets.UTF_8));
 
+        // MUE-11: sin porDefecto ni pdf (corrección pazysalvo-mue11.json)
         doAnswer(i -> {
             llamadas.addObject().put("generarPazYSalvo", i.getArgument(0) + ", cedula " + i.getArgument(1)
-                    + ", titulo " + i.getArgument(2) + ", director " + i.getArgument(3) + ", porDefecto "
-                    + i.getArgument(4) + ", pdf " + i.getArgument(5) + ", numero " + i.getArgument(6) + ", fecha "
-                    + i.getArgument(7) + ", observaciones " + i.getArgument(8));
+                    + ", titulo " + i.getArgument(2) + ", director " + i.getArgument(3) + ", numero "
+                    + i.getArgument(4) + ", fecha " + i.getArgument(5) + ", observaciones " + i.getArgument(6));
             return Optional.of(new GenerarDocumentosCUIntPort.DocumentoGenerado("PazYSalvo_" + i.getArgument(0)
                     + ".docx", "DOCUMENTO".getBytes(StandardCharsets.UTF_8)));
-        }).when(generador).generarPazYSalvo(any(), any(), any(), any(), anyBoolean(), anyBoolean(), any(), any(),
-                any());
+        }).when(generador).generarPazYSalvo(any(), any(), any(), any(), any(), any(), any());
 
         doAnswer(i -> {
             llamadas.addObject().put("subirDocumento", nombre(i.getArgument(0)) + " de " + i.getArgument(1));
@@ -173,13 +167,6 @@ class RutasPazYSalvoCaracterizacionTest {
                     + ", nombreGuardado " + i.getArgument(4));
             return documento(81, nombre(i.getArgument(0)), "pazysalvo/40/" + nombre(i.getArgument(0)), null);
         }).when(documentos).adjuntarASolicitud(any(), any(), any(), any(), anyBoolean());
-        doAnswer(i -> {
-            boolean existe = i.<BooleanSupplier>getArgument(4).getAsBoolean();
-            llamadas.addObject().put("guardarYAdjuntarSiExiste", nombre(i.getArgument(0)) + ", " + i.getArgument(1)
-                    + " en " + i.getArgument(2) + " a " + i.getArgument(3) + ", existe " + existe);
-            return new GestionarDocumentosCUIntPort.AdjuntoCondicional(existe,
-                    existe ? documento(82, nombre(i.getArgument(0)), "pazysalvo/40/oficio.docx", null) : null);
-        }).when(documentos).guardarYAdjuntarSiExiste(any(), any(), any(), any(), any());
     }
 
     @AfterEach
@@ -321,7 +308,8 @@ class RutasPazYSalvoCaracterizacionTest {
         caso(casos, "funcionario", HttpMethod.GET, b + "?bandeja=pendientes", null);
 
         // EST-7: las rutas nuevas responden como las antiguas, que pasan a 404
-        GrafoObjetos.compararConReferencia(casos, "rutas/pazysalvo.json", "rutas/correcciones/pazysalvo-est7.json");
+        GrafoObjetos.compararConReferencia(casos, "rutas/pazysalvo.json", "rutas/correcciones/pazysalvo-est7.json",
+                "rutas/correcciones/pazysalvo-mue11.json");
     }
 
     private void caso(ObjectNode casos, String quien, HttpMethod metodo, String ruta, String cuerpo) throws Exception {
