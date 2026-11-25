@@ -4,7 +4,6 @@ import java.util.Date;
 import java.util.List;
 
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.CursoOfertadoVerano;
-import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.EstadoCursoOfertado;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.enums.GrupoCursoVerano;
 
 public interface GestionarCursoOfertadoVeranoCUIntPort {
@@ -13,13 +12,9 @@ public interface GestionarCursoOfertadoVeranoCUIntPort {
                          String periodo, Integer idSalon, String espacioAsignado, String grupo, String estado) {
     }
 
-    CursoOfertadoVerano crearCurso(CursoOfertadoVerano curso);
-
     CursoOfertadoVerano crearCurso(DatosCreacion datos);
 
     String resolverSalon(Integer idSalon, String espacioAsignado);
-
-    CursoOfertadoVerano actualizarCurso(CursoOfertadoVerano curso, EstadoCursoOfertado estadoCurso);
 
     boolean eliminarCurso(Integer idCurso);
     

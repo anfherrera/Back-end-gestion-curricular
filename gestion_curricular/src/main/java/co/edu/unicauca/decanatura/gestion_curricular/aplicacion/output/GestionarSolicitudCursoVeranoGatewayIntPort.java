@@ -26,7 +26,6 @@ public interface GestionarSolicitudCursoVeranoGatewayIntPort {
     SolicitudCursoVeranoPreinscripcion aprobarPreinscripcion(Integer idSolicitud, String comentarios);
     SolicitudCursoVeranoPreinscripcion rechazarPreinscripcion(Integer idSolicitud, String motivo);
     SolicitudCursoVeranoInscripcion validarPago(Integer idSolicitud, boolean esValido, String observaciones);
-    SolicitudCursoVeranoInscripcion completarInscripcion(Integer idSolicitud);
     
     // Método para actualizar solicitud de curso verano
     SolicitudCursoVeranoPreinscripcion actualizarSolicitudCursoVerano(SolicitudCursoVeranoPreinscripcion solicitud);
@@ -35,5 +34,4 @@ public interface GestionarSolicitudCursoVeranoGatewayIntPort {
     List<SolicitudCursoVeranoInscripcion> buscarInscripcionesPorUsuarioYCurso(Integer idUsuario, Integer idCurso);
     List<SolicitudCursoVeranoInscripcion> buscarInscripcionesPorUsuario(Integer idUsuario);
     Integer contarInscripcionesAceptadasPorCurso(Integer idCurso);
-    Integer contarInscripcionesPorEstado(Integer idCurso, String estado);
 }

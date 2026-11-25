@@ -181,16 +181,6 @@ public class GestionarUsuarioGatewayImplAdapter implements GestionarUsuarioGatew
     }
 
     @Override
-    public Usuario buscarUsuarioPorSolicitud(Integer idSolicitud) {
-        UsuarioEntity usuarioEntity = usuarioRepository.buscarUsuariosPorSolicitud(idSolicitud);
-        Usuario usuario = null;
-        if (usuarioEntity != null) {
-            usuario = UsuarioMapperPersistencia.aDominio(usuarioEntity);
-        }
-        return usuario;
-    }
-
-    @Override
     public UserDetails loadUserByUsername(String correo) throws UsernameNotFoundException {
         // BUG-46: el login es lo único que necesita el hash, y lo lee de la entidad, no del dominio.
         UsuarioEntity usuario = usuarioRepository.buscarPorCorreo(correo)

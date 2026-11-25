@@ -186,7 +186,6 @@ class RutasPreinscripcionesInscripcionesCaracterizacionTest {
                     i.<Boolean>getArgument(1) ? "Pago_Validado" : "Pago_Rechazado");
             return s;
         }).when(solicitudCU).validarPago(anyInt(), anyBoolean(), any());
-        when(solicitudCU.contarInscripcionesPorEstado(anyInt(), anyString())).thenReturn(1);
         doAnswer(i -> {
             llamadas.addObject().put("asociarEstudiante", i.getArgument(0) + ", " + i.getArgument(1));
             return true;

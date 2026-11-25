@@ -1,7 +1,6 @@
 package co.edu.unicauca.decanatura.gestion_curricular.infraestructura;
 
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -82,7 +81,6 @@ import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.SolicitudPa
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.SolicitudReingreso;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Usuario;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.enums.CondicionSolicitudVerano;
-import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.enums.GrupoCursoVerano;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.excepciones.RestApiExceptionHandler;
 import co.edu.unicauca.decanatura.gestion_curricular.soporte.GrafoObjetos;
 
@@ -147,7 +145,8 @@ class ErroresCasosDeUsoCaracterizacionTest {
             "errores/correcciones/casos-de-uso-bug38-usuarios.json",
             "errores/correcciones/casos-de-uso-bug38-estadisticas.json",
             "errores/correcciones/casos-de-uso-bug38-solicitudes.json",
-            "errores/correcciones/casos-de-uso-bug38-verano.json");
+            "errores/correcciones/casos-de-uso-bug38-verano.json",
+            "errores/correcciones/casos-de-uso-mue11.json");
     }
 
     private void caso(String nombre, Callable<?> llamada) {
@@ -601,76 +600,6 @@ class ErroresCasosDeUsoCaracterizacionTest {
     // ---------------------------------------------------------------- cursos ofertados de verano
 
     private void cursosOfertados() {
-        caso("curso actualizar nulo", () -> new Curso().cu().actualizarCurso(null, estadoCurso(1, "Abierto")));
-        caso("curso actualizar sin id", () -> new Curso().cu().actualizarCurso(new CursoOfertadoVerano(), estadoCurso(1, "Abierto")));
-        caso("curso actualizar inexistente", () -> new Curso().cu().actualizarCurso(cursoConId(3), estadoCurso(1, "Abierto")));
-        caso("curso actualizar sin estados", () -> {
-            var c = new Curso();
-            when(c.cursos.obtenerCursoPorId(3)).thenReturn(cursoConId(3));
-            return c.cu().actualizarCurso(cursoConId(3), estadoCurso(1, "Abierto"));
-        });
-        caso("curso actualizar estado nulo", () -> new Curso().conCurso("Abierto").cu().actualizarCurso(cursoConId(3), null));
-        caso("curso actualizar estado sin id",
-            () -> new Curso().conCurso("Abierto").cu().actualizarCurso(cursoConId(3), estadoCurso(null, "Abierto")));
-        caso("curso actualizar estado sin texto",
-            () -> new Curso().conCurso("Abierto").cu().actualizarCurso(cursoConId(3), estadoCurso(1, null)));
-        caso("curso preinscripcion sin publicar",
-            () -> new Curso().conCurso("Publicado").cu().actualizarCurso(cursoConId(3), estadoCurso(1, "Preinscripcion")));
-        caso("curso preinscripcion sin solicitudes",
-            () -> new Curso().conCurso("Abierto").cu().actualizarCurso(cursoConId(3), estadoCurso(1, "Preinscripcion")));
-        caso("curso preinscripcion bajo el minimo", () -> {
-            var c = new Curso().conCurso("Abierto");
-            when(c.solicitudes.buscarSolicitudPorNombreCursoPre(3)).thenReturn(List.of(new Solicitud()));
-            return c.cu().actualizarCurso(cursoConId(3), estadoCurso(1, "Preinscripcion"));
-        });
-        caso("curso preinscripcion sin asociar", () -> {
-            var c = new Curso().conCurso("Abierto");
-            when(c.solicitudes.buscarSolicitudPorNombreCursoPre(3))
-                .thenReturn(List.of(conUsuario(new Solicitud(), 21, 5), conUsuario(new Solicitud(), 22, 6)));
-            when(c.solicitudes.actualizarSolicitud(any(), any())).thenAnswer(i -> i.getArgument(0));
-            when(c.usuarios.buscarUsuarioPorSolicitud(anyInt())).thenReturn(usuario(5, 2, 3));
-            return c.cu().actualizarCurso(cursoConId(3), estadoCurso(1, "Preinscripcion"));
-        });
-        caso("curso inscripcion sin publicar",
-            () -> new Curso().conCurso("Preinscripcion").cu().actualizarCurso(cursoConId(3), estadoCurso(1, "Inscripcion")));
-        caso("curso inscripcion sin solicitudes",
-            () -> new Curso().conCurso("Abierto").cu().actualizarCurso(cursoConId(3), estadoCurso(1, "Inscripcion")));
-        caso("curso inscripcion bajo el punto de equilibrio", () -> {
-            var c = new Curso().conCurso("Abierto");
-            when(c.solicitudes.buscarSolicitudPorNombreCursoIns(3)).thenReturn(List.of(new Solicitud()));
-            return c.cu().actualizarCurso(cursoConId(3), estadoCurso(1, "Inscripcion"));
-        });
-        caso("curso actualizar sin resultado",
-            () -> new Curso().conCurso("Abierto").cu().actualizarCurso(cursoConId(3), estadoCurso(1, "Abierto")));
-
-        caso("curso crear nulo", () -> new Curso().cu().crearCurso((CursoOfertadoVerano) null));
-        caso("curso crear sin materia", () -> new Curso().cu().crearCurso(new CursoOfertadoVerano()));
-        caso("curso crear materia sin id", () -> new Curso().cu().crearCurso(cursoNuevo(null, 4)));
-        caso("curso crear materia inexistente", () -> new Curso().cu().crearCurso(cursoNuevo(8, 4)));
-        caso("curso crear sin docente", () -> {
-            var c = new Curso();
-            when(c.materias.obtenerMateriaPorId(8)).thenReturn(new Materia());
-            var curso = cursoNuevo(8, 4);
-            curso.setObjDocente(null);
-            return c.cu().crearCurso(curso);
-        });
-        caso("curso crear docente sin id", () -> {
-            var c = new Curso();
-            when(c.materias.obtenerMateriaPorId(8)).thenReturn(new Materia());
-            return c.cu().crearCurso(cursoNuevo(8, null));
-        });
-        caso("curso crear docente inexistente", () -> {
-            var c = new Curso();
-            when(c.materias.obtenerMateriaPorId(8)).thenReturn(new Materia());
-            return c.cu().crearCurso(cursoNuevo(8, 4));
-        });
-        caso("curso crear grupo en uso", () -> {
-            var c = new Curso();
-            when(c.materias.obtenerMateriaPorId(8)).thenReturn(new Materia());
-            when(c.docentes.buscarDocentePorId(4)).thenReturn(new Docente());
-            when(c.cursos.listarTodos()).thenReturn(List.of(cursoNuevo(8, 4)));
-            return c.cu().crearCurso(cursoNuevo(8, 4));
-        });
         caso("curso crear datos materia inexistente", () -> new Curso().cu().crearCurso(datosCurso(null)));
         caso("curso crear datos docente inexistente", () -> {
             var c = new Curso();
@@ -709,18 +638,6 @@ class ErroresCasosDeUsoCaracterizacionTest {
     private static CursoOfertadoVerano cursoConId(Integer id) {
         var curso = new CursoOfertadoVerano();
         curso.setIdCurso(id);
-        return curso;
-    }
-
-    private static CursoOfertadoVerano cursoNuevo(Integer idMateria, Integer idDocente) {
-        var materia = new Materia();
-        materia.setIdMateria(idMateria);
-        var docente = new Docente();
-        docente.setIdDocente(idDocente);
-        var curso = new CursoOfertadoVerano();
-        curso.setObjMateria(materia);
-        curso.setObjDocente(docente);
-        curso.setGrupo(GrupoCursoVerano.B);
         return curso;
     }
 
@@ -847,13 +764,6 @@ class ErroresCasosDeUsoCaracterizacionTest {
             var v = new Verano();
             when(v.solicitudes.buscarSolicitudInscripcionPorId(31)).thenReturn(new SolicitudCursoVeranoInscripcion());
             return v.cu().validarPago(31, false, "no");
-        });
-        caso("completar sin id", () -> new Verano().cu().completarInscripcion(null));
-        caso("completar inexistente", () -> new Verano().cu().completarInscripcion(31));
-        caso("completar sin pago validado", () -> {
-            var v = new Verano();
-            when(v.solicitudes.buscarSolicitudInscripcionPorId(31)).thenReturn(conEstado(new SolicitudCursoVeranoInscripcion(), "Enviada"));
-            return v.cu().completarInscripcion(31);
         });
         caso("observaciones preinscripcion nula", () -> new Verano().cu().actualizarObservacionesPreinscripcion(null));
         caso("observaciones preinscripcion sin id",

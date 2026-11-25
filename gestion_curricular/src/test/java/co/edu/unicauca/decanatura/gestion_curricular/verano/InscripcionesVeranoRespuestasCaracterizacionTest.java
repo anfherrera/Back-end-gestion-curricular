@@ -4,7 +4,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.nullable;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
@@ -122,16 +121,6 @@ class InscripcionesVeranoRespuestasCaracterizacionTest {
                 throw new IllegalStateException("no se pudo rechazar");
             }
             return inscripcion(id, valido ? "Pago_Validado" : "Pago_Rechazado");
-        });
-        when(cu.contarInscripcionesPorEstado(anyInt(), anyString())).thenAnswer(i -> {
-            if ((int) i.getArgument(0) == 2) {
-                return null;
-            }
-            return switch ((String) i.getArgument(1)) {
-                case "Enviada" -> 2;
-                case "Pago_Validado" -> 3;
-                default -> 1;
-            };
         });
         // EST-7 (paso 8b): los elegibles pasan a CursosVeranoRestController; lo retirado responde 404
         MockMvc mvc = SoporteMvc.standaloneSetup(new InscripcionesVeranoRestController(cursos, cu),

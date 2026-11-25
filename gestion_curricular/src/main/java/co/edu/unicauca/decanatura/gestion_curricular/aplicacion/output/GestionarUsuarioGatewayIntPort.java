@@ -25,7 +25,5 @@ public interface GestionarUsuarioGatewayIntPort {
 
     List<Usuario> listarUsuarios();
 
-    Usuario buscarUsuarioPorSolicitud(Integer idSolicitud);
-
     Usuario buscarUsuarioPorCodigo(String codigo);
 }

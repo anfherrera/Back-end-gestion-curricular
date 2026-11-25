@@ -1,8 +1,6 @@
 package co.edu.unicauca.decanatura.gestion_curricular.dominio.casosDeUso;
 
-import java.util.ArrayList;
 import java.util.Comparator;
-import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 import java.util.regex.Matcher;
@@ -20,17 +18,14 @@ import co.edu.unicauca.decanatura.gestion_curricular.dominio.excepciones.DatosCu
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.excepciones.DatosCursoInvalidosException;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.excepciones.EntidadNoExisteException;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.excepciones.EntidadYaExisteException;
-import co.edu.unicauca.decanatura.gestion_curricular.dominio.excepciones.ReglaNegocioExcepcion;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.CursoOfertadoVerano;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Docente;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.EstadoCursoOfertado;
-import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.EstadoSolicitud;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Materia;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Salon;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Solicitud;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.TransicionEstadoCurso;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Usuario;
-import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.enums.EstadoSolicitudCursoVerano;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.enums.GrupoCursoVerano;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.enums.PeriodoAcademicoEnum;
 
@@ -60,171 +55,6 @@ public class GestionarCursoOfertadoVeranoCUAdapter implements GestionarCursoOfer
         this.gestionarNotificacionCU = gestionarNotificacionCU;
     }
 
-    @Override
-    public CursoOfertadoVerano actualizarCurso(CursoOfertadoVerano curso, EstadoCursoOfertado estadoCurso) {
-        Integer puntoEquilibrioMinimo = 2;
-        CursoOfertadoVerano cursoABuscar = curso;
-        Integer idCurso = null;
-        Usuario usuario = null;
-        EstadoSolicitud estadoSolicitud = null;
-        EstadoCursoOfertado nuevoEstado = null;
-        CursoOfertadoVerano cursoActualizado = null;
-        List<Usuario> estudiantesInscritos = new ArrayList<Usuario>();
-        List<Usuario> usuariosRemovidos = new ArrayList<Usuario>();
-        Boolean bandera = false;
-        if(curso == null){
-            throw new ReglaNegocioExcepcion("No hay datos en el curso");
-        }
-        if(curso.getIdCurso() == null){
-            throw new ReglaNegocioExcepcion("No hay id en el curso");
-        }
-        idCurso = curso.getIdCurso();
-        cursoABuscar = gestionarCursoOfertadoVeranoGateway.obtenerCursoPorId(idCurso);
-        if(cursoABuscar == null){
-            throw new EntidadNoExisteException("No se encuentra el curso");
-        }
-        if(cursoABuscar.getEstadosCursoOfertados().isEmpty()){
-                throw new ReglaNegocioExcepcion("No se puede actualizar el curso, porque no tiene estados");
-        }
-        if(estadoCurso == null){
-            throw new ReglaNegocioExcepcion("No hay datos en el estado");
-        }
-        if(estadoCurso.getIdEstado() == null){
-            throw new ReglaNegocioExcepcion("No hay id en el estado");
-        }
-        if(estadoCurso.getEstadoActual() == null){
-            throw new ReglaNegocioExcepcion("No hay datos en el estado actual");
-        }
-
-        if(estadoCurso.getEstadoActual().equals("Preinscripcion")){
-            if(cursoABuscar.getEstadosCursoOfertados().get(0).getEstadoActual().equals("Publicado")){
-                throw new ReglaNegocioExcepcion("No se puede actualizar el curso, porque no esta publicado");
-            }
-
-            List<Solicitud> solicitudes = this.gestionarSolicitudGateway.buscarSolicitudPorNombreCursoPre(idCurso);
-            if(solicitudes.isEmpty()){
-                throw new ReglaNegocioExcepcion("No se puede publicar el curso, porque no hay solicitudes");
-            }
-                if(solicitudes.size()< puntoEquilibrioMinimo){
-                    throw new ReglaNegocioExcepcion("No se puede publicar el curso, porque no se alcanzo el cupo estimado");
-                }
-                    for (Solicitud solicitud : solicitudes) {
-                        String estadoAnterior = solicitud.estadoActual("Pendiente");
-                        
-                        estadoSolicitud = new EstadoSolicitud();
-                        estadoSolicitud.setFechaRegistroEstado(new Date());
-                        // Nota: La lógica de aprobación/rechazo basada en esSeleccionado fue eliminada
-                        // Todas las solicitudes se aprueban por defecto
-                        estadoSolicitud.setEstadoActual(EstadoSolicitudCursoVerano.APROBADO.texto());
-                        solicitud = this.gestionarSolicitudGateway.actualizarSolicitud(solicitud, estadoSolicitud);
-                        usuario = this.gestionarUsuarioGateway.buscarUsuarioPorSolicitud(solicitud.getIdSolicitud());
-                        bandera = this.gestionarCursoOfertadoVeranoGateway.asociarUsuarioCurso(usuario.getIdUsuario(), idCurso);
-                        if(bandera == false){
-                            throw new EntidadYaExisteException("No se pudo asociar el usuario al curso");
-                        }
-                        
-                        // Notificar cambio de estado - Preinscripción Aprobada
-                        try {
-                            this.gestionarNotificacionCU.notificarCambioEstadoSolicitud(
-                                solicitud, estadoAnterior, EstadoSolicitudCursoVerano.APROBADO.texto(), "CURSO_VERANO_PREINSCRIPCION"
-                            );
-                        } catch (Exception e) {
-                        }
-                    }
-                    
-
-        }
-
-        if(estadoCurso.getEstadoActual().equals("Inscripcion")){
-            if(cursoABuscar.getEstadosCursoOfertados().get(0).getEstadoActual().equals("Preinscripcion")){
-                throw new ReglaNegocioExcepcion("No se puede actualizar el curso, porque no esta publicado");
-            }
-
-            List<Solicitud> solicitudes = this.gestionarSolicitudGateway.buscarSolicitudPorNombreCursoIns(idCurso);
-            if(solicitudes.isEmpty()){
-                throw new ReglaNegocioExcepcion("No se puede publicar el curso, porque no hay solicitudes");
-            }
-                if(solicitudes.size()< cursoABuscar.getCupoEstimado()){
-                    throw new ReglaNegocioExcepcion("No se puede abrir el curso, porque no se alcanzo el punto de equilibrio");
-                }
-                estudiantesInscritos = new ArrayList<Usuario>(cursoABuscar.getEstudiantesInscritos());
-                for (Solicitud solicitud : solicitudes) {
-                    String estadoAnterior = solicitud.estadoActual("Pendiente");
-                    
-                    estadoSolicitud = new EstadoSolicitud();
-                    estadoSolicitud.setFechaRegistroEstado(new Date());
-                    // Nota: La lógica de aprobación/rechazo basada en esSeleccionado fue eliminada
-                    // Todas las solicitudes se aprueban por defecto
-                    estadoSolicitud.setEstadoActual(EstadoSolicitudCursoVerano.APROBADO.texto());
-                    solicitud = this.gestionarSolicitudGateway.actualizarSolicitud(solicitud, estadoSolicitud);
-                    usuario = this.gestionarUsuarioGateway.buscarUsuarioPorSolicitud(solicitud.getIdSolicitud());
-                    if(solicitudes.size() < cursoABuscar.getEstudiantesInscritos().size()){
-                        for (Usuario usuarioViejo : estudiantesInscritos) {
-                            if (usuarioViejo.getIdUsuario().equals(usuario.getIdUsuario())) {
-                                usuariosRemovidos.add(usuarioViejo);
-                            }
-                        }
-                    }
-                    
-                    // Notificar cambio de estado - Inscripción Aprobada
-                    try {
-                        this.gestionarNotificacionCU.notificarCambioEstadoSolicitud(
-                            solicitud, estadoAnterior, EstadoSolicitudCursoVerano.APROBADO.texto(), "CURSO_VERANO_INSCRIPCION"
-                        );
-                    } catch (Exception e) {
-                    }
-                }
-                if(estudiantesInscritos != null){
-                    estudiantesInscritos.removeAll(usuariosRemovidos);
-                    for (Usuario usuarioRemover : estudiantesInscritos) {
-                        cursoABuscar.getEstudiantesInscritos().remove(usuarioRemover);
-                    }                
-                }
-        }
-
-        nuevoEstado = new EstadoCursoOfertado();
-        nuevoEstado.setFechaRegistroEstado(new Date());
-        nuevoEstado.setEstadoActual(estadoCurso.getEstadoActual());
-
-        cursoActualizado = this.gestionarCursoOfertadoVeranoGateway.actualizarCurso(cursoABuscar, nuevoEstado);
-
-        if(cursoActualizado == null){
-            throw new EntidadYaExisteException("No se pudo actualizar el curso");
-        }
-
-        return cursoActualizado;
-    }
-
-
-    @Override
-    public CursoOfertadoVerano crearCurso(CursoOfertadoVerano curso) {
-        Materia materia = null;
-        Docente docente = null;
-        if(curso == null){
-            throw new ReglaNegocioExcepcion("No hay datos en el curso");
-        }
-        if(curso.getObjMateria() == null){
-            throw new ReglaNegocioExcepcion("No hay datos en la materia");
-        }
-        if(curso.getObjMateria().getIdMateria() == null){
-            throw new ReglaNegocioExcepcion("No hay datos en la   materia");
-        }
-        materia = this.gestionarMateriasGateway.obtenerMateriaPorId(curso.getObjMateria().getIdMateria());
-        if(materia == null){
-            throw new EntidadNoExisteException("No existe la materia con el ID: " + curso.getObjMateria().getIdMateria());
-        }
-        if(curso.getObjDocente() == null){
-            throw new ReglaNegocioExcepcion("No hay datos en el docente");
-        }
-        if(curso.getObjDocente().getIdDocente() == null){
-            throw new ReglaNegocioExcepcion("No hay datos en el docente");
-        }
-        docente = this.gestionarDocenteGateway.buscarDocentePorId(curso.getObjDocente().getIdDocente());
-        if(docente == null){
-            throw new EntidadNoExisteException("No existe el docente con el ID: " + curso.getObjDocente().getIdDocente());
-        }            
-        return guardarCurso(curso);
-    }
 
     private CursoOfertadoVerano guardarCurso(CursoOfertadoVerano curso) {
         for (CursoOfertadoVerano existente : listarTodos()) {

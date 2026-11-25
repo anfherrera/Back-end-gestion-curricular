@@ -11,8 +11,6 @@ import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.CursoOferta
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Materia;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.EstadoCursoOfertado;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.enums.GrupoCursoVerano;
-import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.dto.peticion.CursosOfertadosDTOPeticion;
-import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.dto.peticion.MateriaDTOPeticion;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.dto.respuesta.CursosOfertadosDTORespuesta;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.dto.respuesta.EstadoCursoOfertadoDTORespuesta;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.dto.respuesta.MateriaDTORespuesta;
@@ -20,26 +18,9 @@ import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.dto.r
 @Mapper(componentModel = "spring", uses = {
     MateriaMapperDominio.class,
     DocenteMapperDominio.class,
-    UsuarioMapperDominio.class,
-    EstadoCursoOfertadoMapper.class
+    UsuarioMapperDominio.class
 })
 public interface CursosOfertadosMapperDominio {
-
-    // DTO Petición → Dominio
-    @Mapping(source = "objMateria", target = "objMateria")
-    @Mapping(source = "objDocente", target = "objDocente")
-    @Mapping(source = "grupo", target = "grupo")
-    @Mapping(source = "cupo_estimado", target = "cupoEstimado")
-    @Mapping(source = "salon", target = "salon")
-    @Mapping(target = "estadosCursoOfertados", ignore = true)
-    @Mapping(target = "estudiantesInscritos", ignore = true)
-    @Mapping(target = "solicitudes" , ignore = true)
-    @Mapping(target = "fecha_inicio", ignore = true) // Se asigna manualmente en el controlador
-    @Mapping(target = "fecha_fin", ignore = true) // Se asigna manualmente en el controlador
-    @Mapping(target = "periodoAcademico", ignore = true) // Se asigna manualmente en el controlador
-    // OPC-2: el DTO conserva el nombre snake_case
-    @Mapping(target = "idCurso", source = "id_curso")
-    CursoOfertadoVerano mapearDeDTOPeticionACursoOfertado(CursosOfertadosDTOPeticion peticion);
 
     // Dominio → DTO Respuesta
     @Mapping(source = "idCurso", target = "id_curso")
@@ -64,14 +45,6 @@ public interface CursosOfertadosMapperDominio {
     @Mapping(target = "id_salon", ignore = true) // Se asignará manualmente después del mapeo
     @Mapping(target = "salonInfo", ignore = true) // Se asignará manualmente después del mapeo
     CursosOfertadosDTORespuesta mapearDeCursoOfertadoARespuesta(CursoOfertadoVerano curso);
-    
-    // Método post-mapping para asignar idCurso desde id_curso
-    default CursosOfertadosDTORespuesta postMapCurso(CursosOfertadosDTORespuesta dto) {
-        if (dto != null && dto.getId_curso() != null) {
-            dto.setIdCurso(dto.getId_curso());
-        }
-        return dto;
-    }
     
     // Mapper específico para cursos disponibles (estado "Disponible")
     @Mapping(source = "idCurso", target = "id_curso")
@@ -233,10 +206,6 @@ public interface CursosOfertadosMapperDominio {
         }
         return grupo.toString();
     }
-
-    // OPC-2: el JSON conserva id_materia; el dominio usa idMateria
-    @Mapping(target = "idMateria", source = "id_materia")
-    Materia materiaDTOPeticionToMateria(MateriaDTOPeticion materiaDTOPeticion);
 
     @Mapping(target = "id_materia", source = "idMateria")
     MateriaDTORespuesta materiaToMateriaDTORespuesta(Materia materia);

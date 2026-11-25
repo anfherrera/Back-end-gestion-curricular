@@ -18,7 +18,8 @@ import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarN
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.*;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.casosDeUso.GestionarCursoOfertadoVeranoCUAdapter;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.excepciones.EntidadNoExisteException;
-import co.edu.unicauca.decanatura.gestion_curricular.dominio.excepciones.ReglaNegocioExcepcion;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.excepciones.EntidadYaExisteException;
+import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.enums.GrupoCursoVerano;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.CursoOfertadoVerano;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Docente;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.EstadoCursoOfertado;
@@ -177,20 +178,21 @@ class CursosVeranoUnidadTest {
     // ==================== PRUEBAS DE CREACIÓN ====================
 
     @Test
-    @DisplayName("Test 5: Crear curso - Delega correctamente al gateway")
-    void testCrearCursoDelegaCorrectamente() {
-        // Arrange
+    @DisplayName("Test 5: Crear curso - Rechaza el grupo que ya usa otro curso de la materia")
+    void testCrearCursoRechazaGrupoEnUso() {
+        // MUE-11: sustituye al caso "curso crear grupo en uso" de ErroresCasosDeUsoCaracterizacionTest, que
+        // llegaba a esta regla por crearCurso(CursoOfertadoVerano), ya borrado.
         when(materiasGateway.obtenerMateriaPorId(1)).thenReturn(cursoEjemplo.getObjMateria());
-        when(docenteGateway.buscarDocentePorId(1)).thenReturn(cursoEjemplo.getObjDocente());
-        when(cursoVeranoGateway.crearCurso(any(CursoOfertadoVerano.class)))
-                .thenReturn(cursoEjemplo);
+        when(docenteGateway.obtenerDocentePorId(1)).thenReturn(cursoEjemplo.getObjDocente());
+        cursoEjemplo.setGrupo(GrupoCursoVerano.A);
+        when(cursoVeranoGateway.listarTodos()).thenReturn(List.of(cursoEjemplo));
+        var datos = new GestionarCursoOfertadoVeranoCUIntPort.DatosCreacion(1, 1, 30, new Date(1000), new Date(2000),
+                "2025-2", null, "A-101", "a", null);
 
-        // Act
-        CursoOfertadoVerano resultado = cursosVeranoCU.crearCurso(cursoEjemplo);
-
-        // Assert
-        assertThat(resultado).isNotNull();
-        verify(cursoVeranoGateway, times(1)).crearCurso(cursoEjemplo);
+        assertThatThrownBy(() -> cursosVeranoCU.crearCurso(datos))
+                .isInstanceOf(EntidadYaExisteException.class)
+                .hasMessage("El grupo asignado ya está en uso: A");
+        verify(cursoVeranoGateway, never()).crearCurso(any());
     }
 
     // ==================== PRUEBAS DE ELIMINACIÓN ====================
@@ -223,26 +225,6 @@ class CursosVeranoUnidadTest {
                 .isInstanceOf(EntidadNoExisteException.class)
                 .hasMessageContaining("No se encuentra el curso");
         verify(cursoVeranoGateway, never()).eliminarCurso(idInexistente);
-    }
-
-    // ==================== PRUEBAS DE ACTUALIZACIÓN ====================
-
-    @Test
-    @DisplayName("Test 8: Actualizar curso - Requiere curso válido con ID")
-    void testActualizarCursoRequiereCursoValidoConId() {
-        // Arrange - Curso sin ID
-        CursoOfertadoVerano cursoSinId = new CursoOfertadoVerano();
-        EstadoCursoOfertado estado = new EstadoCursoOfertado();
-        estado.setIdEstado(1);
-        estado.setEstadoActual("Abierto");
-        
-        // Act & Assert
-        assertThatThrownBy(() -> cursosVeranoCU.actualizarCurso(cursoSinId, estado))
-                .isInstanceOf(ReglaNegocioExcepcion.class)
-                .hasMessageContaining("No hay id en el curso");
-        
-        // Verificar que NO se llamó al gateway porque el curso no tiene ID
-        verify(cursoVeranoGateway, never()).obtenerCursoPorId(anyInt());
     }
 
     // ==================== PRUEBAS DE MANEJO DE EXCEPCIONES ====================
@@ -298,26 +280,6 @@ class CursosVeranoUnidadTest {
 
         // Assert - Verificar que es la misma instancia (no se hace copia)
         assertThat(resultado).isSameAs(listaOriginal);
-    }
-
-    @Test
-    @DisplayName("Test 13: Verificar interacción con múltiples gateways en operación compleja")
-    void testVerificarInteraccionMultiplesGateways() {
-        // Arrange
-        when(materiasGateway.obtenerMateriaPorId(1)).thenReturn(cursoEjemplo.getObjMateria());
-        when(docenteGateway.buscarDocentePorId(1)).thenReturn(cursoEjemplo.getObjDocente());
-        when(cursoVeranoGateway.crearCurso(any(CursoOfertadoVerano.class)))
-                .thenReturn(cursoEjemplo);
-
-        // Act
-        CursoOfertadoVerano resultado = cursosVeranoCU.crearCurso(cursoEjemplo);
-
-        // Assert
-        assertThat(resultado).isNotNull();
-        verify(cursoVeranoGateway, times(1)).crearCurso(any(CursoOfertadoVerano.class));
-        // Verificar que NO se llamaron otros gateways innecesariamente
-        verify(solicitudGateway, never()).listarSolicitudes();
-        verify(usuarioGateway, never()).listarUsuarios();
     }
     @Test
     void listarPorFiltrosConservaCursosSinSolicitudesYRespetaElUltimoEstado() {

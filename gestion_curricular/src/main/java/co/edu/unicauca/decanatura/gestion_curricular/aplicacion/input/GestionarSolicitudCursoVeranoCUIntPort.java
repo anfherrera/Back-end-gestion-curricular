@@ -32,7 +32,6 @@ public interface GestionarSolicitudCursoVeranoCUIntPort {
     SolicitudCursoVeranoPreinscripcion aprobarPreinscripcion(Integer idSolicitud, String comentarios);
     SolicitudCursoVeranoPreinscripcion rechazarPreinscripcion(Integer idSolicitud, String motivo);
     SolicitudCursoVeranoInscripcion validarPago(Integer idSolicitud, boolean esValido, String observaciones);
-    SolicitudCursoVeranoInscripcion completarInscripcion(Integer idSolicitud);
 
     // Consultas que usan los controladores de cursos de verano
     /** Preinscripción del usuario al curso, o null si no tiene. */
@@ -41,8 +40,6 @@ public interface GestionarSolicitudCursoVeranoCUIntPort {
     boolean tieneInscripcionActiva(Integer idUsuario, Integer idCurso);
     List<SolicitudCursoVeranoInscripcion> buscarInscripcionesPorUsuarioYCurso(Integer idUsuario, Integer idCurso);
     List<SolicitudCursoVeranoInscripcion> buscarInscripcionesPorUsuario(Integer idUsuario);
-    /** Inscripciones del curso cuyo último estado es {@code estado}. */
-    Integer contarInscripcionesPorEstado(Integer idCurso, String estado);
     /** Inscripciones que ocupan cupo (pago validado o completadas). */
     Integer contarInscripcionesAceptadasPorCurso(Integer idCurso);
 

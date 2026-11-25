@@ -15,8 +15,6 @@ import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.CursoOfertadoVerano;
-import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.EstadoCursoOfertado;
-import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.SolicitudCursoVeranoInscripcion;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.entidades.CursoOfertadoVeranoEntity;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.entidades.DocenteEntity;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.entidades.MateriaEntity;
@@ -87,22 +85,12 @@ class CursoOfertadoPersistenciaCaracterizacionTest {
         CursoOfertadoVerano sinGrupo = GrafosSolicitud.curso(null);
         sinGrupo.setGrupo(null);
         casos.set("crearCurso sin grupo", guardado(() -> gateway.crearCurso(sinGrupo)));
-        CursoOfertadoVerano conSolicitudes = GrafosSolicitud.completar(new SolicitudCursoVeranoInscripcion())
-                .getObjCursoOfertadoVerano();
-        casos.set("actualizarCurso completo", guardado(() -> gateway.actualizarCurso(conSolicitudes,
-                new EstadoCursoOfertado(null, "Preinscripcion", GrafosSolicitud.FECHA_3, conSolicitudes))));
-        CursoOfertadoVerano conNulos = new CursoOfertadoVerano();
-        conNulos.setIdCurso(5);
-        conNulos.setEstadosCursoOfertados(null);
-        conNulos.setEstudiantesInscritos(null);
-        conNulos.setSolicitudes(null);
-        casos.set("actualizarCurso nulos", guardado(() -> gateway.actualizarCurso(conNulos, null)));
-        casos.set("actualizarCurso estado sin valor", guardado(() -> gateway.actualizarCurso(
-                GrafosSolicitud.curso(null), new EstadoCursoOfertado(null, null, null, null))));
         ProyeccionValores.compararConReferencia(casos, "persistencia/curso-ofertado.json",
-                "persistencia/correcciones/curso-ofertado-bug37.json", "persistencia/correcciones/curso-ofertado-bug46.json");
+                "persistencia/correcciones/curso-ofertado-bug37.json", "persistencia/correcciones/curso-ofertado-bug46.json",
+                "persistencia/correcciones/curso-ofertado-mue11.json");
         GrafoObjetos.compararConReferencia(casos, "persistencia/proyeccion/curso-ofertado.json",
-                "persistencia/correcciones/curso-ofertado-bug37.json", "persistencia/correcciones/curso-ofertado-bug46.json");
+                "persistencia/correcciones/curso-ofertado-bug37.json", "persistencia/correcciones/curso-ofertado-bug46.json",
+                "persistencia/correcciones/curso-ofertado-mue11.json");
     }
 
     private static CursoOfertadoVeranoEntity cursoCompleto() {

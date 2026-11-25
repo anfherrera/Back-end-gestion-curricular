@@ -120,14 +120,6 @@ class RutasCursosVeranoCaracterizacionTest {
             return c74;
         }).when(cursoCU).crearCurso(any(GestionarCursoOfertadoVeranoCUIntPort.DatosCreacion.class));
         doAnswer(i -> {
-            llamadas.addObject().put("crearCurso(curso)", String.valueOf(i.<CursoOfertadoVerano>getArgument(0).getCupoEstimado()));
-            return c74;
-        }).when(cursoCU).crearCurso(any(CursoOfertadoVerano.class));
-        doAnswer(i -> {
-            llamadas.addObject().put("actualizarCurso", String.valueOf(i.<CursoOfertadoVerano>getArgument(0).getIdCurso()));
-            return c71;
-        }).when(cursoCU).actualizarCurso(any(), any());
-        doAnswer(i -> {
             llamadas.addObject().put("resolverSalon", i.getArgument(0) + ", " + i.getArgument(1));
             return i.getArgument(1);
         }).when(cursoCU).resolverSalon(any(), any());
@@ -173,10 +165,6 @@ class RutasCursosVeranoCaracterizacionTest {
             llamadas.addObject().put("validarPago", i.getArgument(0) + ", " + i.getArgument(1) + ", " + i.getArgument(2));
             return ins;
         }).when(solicitudCU).validarPago(any(), anyBoolean(), any());
-        doAnswer(i -> {
-            llamadas.addObject().put("completarInscripcion", String.valueOf(i.<Integer>getArgument(0)));
-            return ins;
-        }).when(solicitudCU).completarInscripcion(any());
 
         Salon salon = new Salon(81, "221", "FIET", true);
         when(salonCU.resolverSalonDeCurso("221")).thenReturn(salon);

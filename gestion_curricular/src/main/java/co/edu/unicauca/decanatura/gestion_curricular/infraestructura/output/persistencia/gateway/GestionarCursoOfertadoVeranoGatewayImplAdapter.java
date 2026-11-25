@@ -126,39 +126,6 @@ public class GestionarCursoOfertadoVeranoGatewayImplAdapter implements Gestionar
 
     @Override
     @Transactional
-    public CursoOfertadoVerano actualizarCurso(CursoOfertadoVerano curso, EstadoCursoOfertado estadoCurso) {
-        cursoRepository.findById(curso.getIdCurso())
-            .orElseThrow(() -> new RuntimeException("Curso no encontrado con ID: " + curso.getIdCurso()));
-            
-
-        CursoOfertadoVeranoEntity cursoEntity = SolicitudMapperPersistencia.aEntidadCurso(curso);
-        EstadoCursoOfertadoEntity estadoCursoEntity = null;
-        EstadoCursoOfertadoEntity estadoCursoGuardado = null;
-
-        if(estadoCurso != null) {
-            estadoCursoEntity = SolicitudMapperPersistencia.aEntidadCurso(estadoCurso);
-
-        } else {
-            estadoCursoEntity = new EstadoCursoOfertadoEntity();
-            estadoCursoEntity.setEstado_actual("Publicado");
-            estadoCursoEntity.setFecha_registro_estado(new Date());
-
-        }
-            
-            estadoCursoEntity.setObjCursoOfertadoVerano(cursoEntity);
-
-            estadoCursoGuardado = this.estadoCursoOfertadoRepository.save(estadoCursoEntity);
-
-            cursoEntity.getEstadosCursoOfertados().add(estadoCursoGuardado);
-
-        CursoOfertadoVeranoEntity cursoGuardado = cursoRepository.save(cursoEntity);
-
-        return SolicitudMapperPersistencia.aDominioCurso(cursoGuardado);
-
-    }
-
-    @Override
-    @Transactional
     public boolean eliminarCurso(Integer idCurso) {
         Optional<CursoOfertadoVeranoEntity> entityOpt = cursoRepository.findById(idCurso);
         if (entityOpt.isPresent()) {

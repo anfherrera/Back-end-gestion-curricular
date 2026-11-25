@@ -15,14 +15,9 @@ import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.CursoOfertadoVerano;
-import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.EstadoSolicitud;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Solicitud;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.SolicitudCursoVeranoInscripcion;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.SolicitudCursoVeranoPreinscripcion;
-import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.SolicitudEcaes;
-import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.SolicitudHomologacion;
-import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.SolicitudPazYSalvo;
-import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.SolicitudReingreso;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.enums.CondicionSolicitudVerano;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.enums.TipoDocumento;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.entidades.SolicitudCursoVeranoInscripcionEntity;
@@ -68,8 +63,6 @@ class SolicitudesVeranoPersistenciaCaracterizacionTest {
         when(repositorio.findAllWithJoins()).thenAnswer(inv -> todas());
         when(repositorio.buscarHistorialConFiltros("2025-1", 1, null)).thenAnswer(inv -> todas());
         when(repositorio.buscarPorNombre("Solicitud de prueba")).thenAnswer(inv -> todas());
-        when(repositorio.buscarPorNombreYCursoIns(4)).thenAnswer(inv -> List.of(entidad(2), entidad(4)));
-        when(repositorio.buscarPorNombreYCursoPre(4)).thenAnswer(inv -> List.of(entidad(1), entidad(7)));
         GestionarSolicitudGatewayImplAdapter gateway = new GestionarSolicitudGatewayImplAdapter(repositorio,
                 mock(UsuarioRepositoryInt.class), estados);
 
@@ -81,21 +74,12 @@ class SolicitudesVeranoPersistenciaCaracterizacionTest {
         casos.set("buscarHistorial", GrafoObjetos.resultado(() -> gateway.buscarHistorial("2025-1", 1, null)));
         casos.set("obtenerSolicitudesPorNombre", GrafoObjetos.resultado(
                 () -> gateway.obtenerSolicitudesPorNombre("Solicitud de prueba")));
-        casos.set("buscarSolicitudPorNombreCursoIns", GrafoObjetos.resultado(() -> gateway.buscarSolicitudPorNombreCursoIns(4)));
-        casos.set("buscarSolicitudPorNombreCursoPre", GrafoObjetos.resultado(() -> gateway.buscarSolicitudPorNombreCursoPre(4)));
-        for (int id = 1; id <= 6; id++) {
-            int n = id;
-            casos.set("actualizarSolicitud " + id, guardado(() -> gateway.actualizarSolicitud(dominio(n),
-                    new EstadoSolicitud(null, "APROBADA", GrafosSolicitud.FECHA_3, "ok", null))));
-        }
-        casos.set("actualizarSolicitud sin estado", guardado(() -> gateway.actualizarSolicitud(dominio(4), null)));
-        casos.set("actualizarSolicitud base", guardado(() -> gateway.actualizarSolicitud(
-                GrafosSolicitud.completar(new Solicitud()), null)));
-        // BUG-36: una solicitud de tipo no reconocido se rechaza antes de guardar ningún estado
         ProyeccionValores.compararConReferencia(casos, "persistencia/solicitud.json",
-                "persistencia/correcciones/solicitud-bug36.json", "persistencia/correcciones/solicitud-bug46.json");
+                "persistencia/correcciones/solicitud-bug36.json", "persistencia/correcciones/solicitud-bug46.json",
+                "persistencia/correcciones/solicitud-mue11.json");
         GrafoObjetos.compararConReferencia(casos, "persistencia/proyeccion/solicitud.json",
-                "persistencia/correcciones/solicitud-bug36.json", "persistencia/correcciones/proyeccion-solicitud-bug46.json");
+                "persistencia/correcciones/solicitud-bug36.json", "persistencia/correcciones/proyeccion-solicitud-bug46.json",
+                "persistencia/correcciones/solicitud-mue11.json");
     }
 
     @Test
@@ -142,7 +126,6 @@ class SolicitudesVeranoPersistenciaCaracterizacionTest {
         casos.set("aprobarPreinscripcion", guardado(() -> gateway.aprobarPreinscripcion(1, " visto ")));
         casos.set("rechazarPreinscripcion", guardado(() -> gateway.rechazarPreinscripcion(1, " cupo ")));
         casos.set("validarPago rechazado", guardado(() -> gateway.validarPago(2, false, " ilegible ")));
-        casos.set("completarInscripcion", guardado(() -> gateway.completarInscripcion(2)));
         SolicitudCursoVeranoPreinscripcion cambio = new SolicitudCursoVeranoPreinscripcion();
         cambio.setIdSolicitud(1);
         cambio.setObservacion("nueva observación");
@@ -174,9 +157,11 @@ class SolicitudesVeranoPersistenciaCaracterizacionTest {
         casos.set("crearInscripcion sin curso", guardado(
                 () -> gateway.crearSolicitudCursoVeranoInscripcion(inscripcion(null))));
         ProyeccionValores.compararConReferencia(casos, "persistencia/solicitud-curso-verano.json",
-                "persistencia/correcciones/solicitud-curso-verano-bug46.json");
+                "persistencia/correcciones/solicitud-curso-verano-bug46.json",
+                "persistencia/correcciones/solicitud-curso-verano-mue11.json");
         GrafoObjetos.compararConReferencia(casos, "persistencia/proyeccion/solicitud-curso-verano.json",
-                "persistencia/correcciones/proyeccion-solicitud-curso-verano-bug46.json");
+                "persistencia/correcciones/proyeccion-solicitud-curso-verano-bug46.json",
+                "persistencia/correcciones/solicitud-curso-verano-mue11.json");
     }
 
     /** 1 preinscripción, 2 inscripción, 3 ECAES, 4 reingreso, 5 homologación, 6 paz y salvo, 7 base. */
@@ -227,43 +212,6 @@ class SolicitudesVeranoPersistenciaCaracterizacionTest {
             todas.add(entidad(tipo));
         }
         return todas;
-    }
-
-    private static Solicitud dominio(int tipo) {
-        Solicitud solicitud = switch (tipo) {
-            case 1 -> {
-                SolicitudCursoVeranoPreinscripcion s = new SolicitudCursoVeranoPreinscripcion();
-                s.setNombreEstudiante("Ana");
-                s.setCodigoEstudiante("104");
-                s.setCondicionSolicitud(CondicionSolicitudVerano.Repeteción);
-                yield s;
-            }
-            case 2 -> {
-                SolicitudCursoVeranoInscripcion s = new SolicitudCursoVeranoInscripcion();
-                s.setObservacion("ins");
-                yield s;
-            }
-            case 3 -> {
-                SolicitudEcaes s = new SolicitudEcaes();
-                s.setTipoDocumento(TipoDocumento.CE);
-                s.setFechaNacimiento(GrafosSolicitud.FECHA_2);
-                yield s;
-            }
-            case 4 -> new SolicitudReingreso();
-            case 5 -> {
-                SolicitudHomologacion s = new SolicitudHomologacion();
-                s.setProgramaDestino("Sistemas");
-                yield s;
-            }
-            default -> {
-                SolicitudPazYSalvo s = new SolicitudPazYSalvo();
-                s.setDirectorTrabajoGrado("Director");
-                yield s;
-            }
-        };
-        GrafosSolicitud.completar(solicitud);
-        solicitud.setIdSolicitud(tipo);
-        return solicitud;
     }
 
     private static SolicitudCursoVeranoPreinscripcion preinscripcion(CursoOfertadoVerano curso) {

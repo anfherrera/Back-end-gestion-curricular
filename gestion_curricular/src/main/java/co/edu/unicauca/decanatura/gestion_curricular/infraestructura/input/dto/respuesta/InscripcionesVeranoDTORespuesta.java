@@ -1,9 +1,7 @@
 package co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.dto.respuesta;
 
 import java.util.Date;
-import java.util.List;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import com.fasterxml.jackson.annotation.JsonUnwrapped;
@@ -23,18 +21,6 @@ public final class InscripcionesVeranoDTORespuesta {
 
     /** Error con solo {@code error}: 400 o 500 de la creación, la aceptación y el rechazo. */
     public record ErrorInscripcion(String error) {}
-
-    /** Rechazo 404 o 400 de la cancelación; {@code timestamp} es {@code LocalDateTime.now().toString()}. */
-    @JsonPropertyOrder({"error", "message", "status", "timestamp"})
-    public record CancelacionRechazada(String error, String message, int status, String timestamp) {}
-
-    /** Respuesta 200 de la cancelación. */
-    @JsonPropertyOrder({"id_inscripcion", "mensaje", "status", "timestamp"})
-    public record InscripcionCancelada(
-            String mensaje,
-            @JsonProperty("id_inscripcion") Integer idInscripcion,
-            int status,
-            String timestamp) {}
 
     /**
      * Elemento de {@code /inscripciones/estudiantes-elegibles/{idCurso}}. {@code id_curso} y {@code nombre_curso}
@@ -103,47 +89,4 @@ public final class InscripcionesVeranoDTORespuesta {
             @JsonProperty("fecha_rechazo") Date fechaRechazo,
             String motivo,
             @JsonProperty("nuevo_estado") String nuevoEstado) {}
-
-    /** Respuesta de {@code /inscripciones/{id}/info} cuando la inscripción no existe. */
-    @JsonPropertyOrder({"encontrada", "mensaje"})
-    public record InfoNoEncontrada(boolean encontrada, String mensaje) {}
-
-    /**
-     * Respuesta de {@code /inscripciones/{id}/info}. {@code documentos_count} es el número de documentos (0 si la
-     * lista es null; {@code documentos_null} lo distingue). {@code documentos} y {@code archivo_pago} se omiten si
-     * no hay documentos.
-     */
-    @JsonPropertyOrder({"encontrada", "documentos_null", "documentos", "archivo_pago", "fecha_registro",
-        "id_solicitud", "documentos_count", "documentos_empty", "nombre_solicitud"})
-    public record InfoInscripcion(
-            boolean encontrada,
-            @JsonProperty("id_solicitud") Integer idSolicitud,
-            @JsonProperty("nombre_solicitud") String nombreSolicitud,
-            @JsonProperty("fecha_registro") Date fechaRegistro,
-            @JsonProperty("documentos_count") int documentosCount,
-            @JsonProperty("documentos_null") boolean documentosNull,
-            @JsonProperty("documentos_empty") boolean documentosEmpty,
-            @JsonInclude(JsonInclude.Include.NON_NULL) List<DocumentoInfo> documentos,
-            @JsonInclude(JsonInclude.Include.NON_NULL) @JsonProperty("archivo_pago") ArchivoPagoInfo archivoPago) {}
-
-    /** El primer documento de una inscripción, para descargarlo. Sus valores pueden ser null. */
-    @JsonPropertyOrder({"nombre_archivo", "ruta_archivo", "id_documento"})
-    public record ArchivoPagoInfo(
-            @JsonProperty("nombre_archivo") String nombreArchivo,
-            @JsonProperty("ruta_archivo") String rutaArchivo,
-            @JsonProperty("id_documento") Integer idDocumento) {}
-
-    @JsonPropertyOrder({"ruta", "es_valido", "id", "nombre"})
-    public record DocumentoInfo(Integer id, String nombre, String ruta, @JsonProperty("es_valido") boolean esValido) {}
-
-    /** Respuesta de {@code /inscripciones/curso/{idCurso}/estadisticas}. */
-    @JsonPropertyOrder({"curso_id", "pendientes_revision", "aceptadas", "fecha_consulta", "total_inscripciones",
-        "rechazadas"})
-    public record EstadisticasInscripciones(
-            @JsonProperty("total_inscripciones") Integer totalInscripciones,
-            @JsonProperty("pendientes_revision") Integer pendientesRevision,
-            Integer aceptadas,
-            Integer rechazadas,
-            @JsonProperty("curso_id") Long cursoId,
-            @JsonProperty("fecha_consulta") Date fechaConsulta) {}
 }

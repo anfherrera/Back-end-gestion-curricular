@@ -398,33 +398,6 @@ public class GestionarSolicitudCursoVeranoGatewayImplAdapter implements Gestiona
 
     @Override
     @Transactional
-    public SolicitudCursoVeranoInscripcion completarInscripcion(Integer idSolicitud) {
-        SolicitudEntity solicitudEntity = solicitudRepository.findById(idSolicitud)
-            .filter(entity -> entity instanceof SolicitudCursoVeranoInscripcionEntity)
-            .orElse(null);
-        
-        if (solicitudEntity == null) {
-            return null;
-        }
-        
-        // Crear nuevo estado "Inscripcion_Completada"
-        EstadoSolicitudEntity estadoEntity = new EstadoSolicitudEntity();
-        estadoEntity.setFecha_registro_estado(new Date());
-        estadoEntity.setEstado_actual(EstadoSolicitudCursoVerano.INSCRIPCION_COMPLETADA.texto());
-        estadoEntity.setObjSolicitud(solicitudEntity);
-        
-        // Guardar el estado
-        estadoSolicitudRepository.save(estadoEntity);
-        
-        // Actualizar la solicitud
-        solicitudEntity.getEstadosSolicitud().add(estadoEntity);
-        SolicitudEntity solicitudActualizada = solicitudRepository.save(solicitudEntity);
-        
-        return SolicitudMapperPersistencia.aDominio(solicitudActualizada, SolicitudCursoVeranoInscripcion.class);
-    }
-
-    @Override
-    @Transactional
     public SolicitudCursoVeranoPreinscripcion actualizarSolicitudCursoVerano(SolicitudCursoVeranoPreinscripcion solicitud) {
         if (solicitud == null || solicitud.getIdSolicitud() == null) {
             return null;
@@ -517,12 +490,6 @@ public class GestionarSolicitudCursoVeranoGatewayImplAdapter implements Gestiona
             total += n != null ? n : 0;
         }
         return total;
-    }
-
-    @Override
-    @Transactional(readOnly = true)
-    public Integer contarInscripcionesPorEstado(Integer idCurso, String estado) {
-        return solicitudRepository.contarInscripcionesPorEstado(idCurso, estado);
     }
 
 }

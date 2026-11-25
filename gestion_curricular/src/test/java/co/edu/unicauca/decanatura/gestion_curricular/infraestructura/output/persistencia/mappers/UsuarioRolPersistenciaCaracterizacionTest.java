@@ -74,7 +74,6 @@ class UsuarioRolPersistenciaCaracterizacionTest {
         when(repositorio.buscarPorCedula("123")).thenReturn(Optional.of(completo));
         when(repositorio.buscarPorRol(1)).thenReturn(List.of(completo, sinRelaciones));
         when(repositorio.findAll()).thenReturn(List.of(sinRelaciones, rolSinNombre, completo));
-        when(repositorio.buscarUsuariosPorSolicitud(7)).thenReturn(completo);
         when(repositorio.buscarIdUsuarioPorCodigo("104")).thenReturn(rolSinNombre);
         when(repositorio.buscarPorCorreo("ana@unicauca.edu.co")).thenReturn(Optional.of(completo));
         when(repositorio.buscarPorCorreo("sin@unicauca.edu.co")).thenReturn(Optional.of(sinRelaciones));
@@ -89,7 +88,6 @@ class UsuarioRolPersistenciaCaracterizacionTest {
         casos.set("buscarUsuarioPorCedula", GrafoObjetos.resultado(() -> gateway.buscarUsuarioPorCedula(" 123 ")));
         casos.set("buscarUsuariosPorRol", GrafoObjetos.resultado(() -> gateway.buscarUsuariosPorRol(1)));
         casos.set("listarUsuarios", GrafoObjetos.resultado(gateway::listarUsuarios));
-        casos.set("buscarUsuarioPorSolicitud", GrafoObjetos.resultado(() -> gateway.buscarUsuarioPorSolicitud(7)));
         casos.set("buscarUsuarioPorCodigo", GrafoObjetos.resultado(() -> gateway.buscarUsuarioPorCodigo("104")));
         casos.set("loadUserByUsername ana", GrafoObjetos.resultado(
                 () -> gateway.loadUserByUsername("ana@unicauca.edu.co").toString()));
@@ -109,7 +107,8 @@ class UsuarioRolPersistenciaCaracterizacionTest {
         sinRelacionesDominio.setObjRol(new Rol(null, "SIN_ID", null));
         casos.set("actualizarUsuario sin relaciones", guardado(() -> gateway.actualizarUsuario(sinRelacionesDominio)));
         GrafoObjetos.compararConReferencia(casos, "persistencia/usuario.json",
-                "persistencia/correcciones/usuario-bug46.json");
+                "persistencia/correcciones/usuario-bug46.json",
+                "persistencia/correcciones/usuario-mue11.json");
     }
 
     @Test

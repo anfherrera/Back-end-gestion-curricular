@@ -1,0 +1,14 @@
+{
+  "$quitar": [
+    "curso actualizar nulo", "curso actualizar sin id", "curso actualizar inexistente",
+    "curso actualizar sin estados", "curso actualizar estado nulo", "curso actualizar estado sin id",
+    "curso actualizar estado sin texto", "curso preinscripcion sin publicar",
+    "curso preinscripcion sin solicitudes", "curso preinscripcion bajo el minimo",
+    "curso preinscripcion sin asociar", "curso inscripcion sin publicar", "curso inscripcion sin solicitudes",
+    "curso inscripcion bajo el punto de equilibrio", "curso actualizar sin resultado",
+    "curso crear nulo", "curso crear sin materia", "curso crear materia sin id",
+    "curso crear materia inexistente", "curso crear sin docente", "curso crear docente sin id",
+    "curso crear docente inexistente", "curso crear grupo en uso",
+    "completar sin id", "completar inexistente", "completar sin pago validado"
+  ]
+}

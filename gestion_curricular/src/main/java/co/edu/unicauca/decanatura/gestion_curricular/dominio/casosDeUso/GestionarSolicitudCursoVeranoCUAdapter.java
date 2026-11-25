@@ -20,7 +20,6 @@ import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.Gestionar
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.excepciones.EntidadNoExisteException;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.excepciones.ReglaNegocioExcepcion;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.CursoOfertadoVerano;
-import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.EstadoSolicitud;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.EstudianteCurso;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.ListadoEstudiantes;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.ReglasCupo;
@@ -380,29 +379,6 @@ public class GestionarSolicitudCursoVeranoCUAdapter implements GestionarSolicitu
         return solicitudActualizada;
     }
 
-    @Override
-    public SolicitudCursoVeranoInscripcion completarInscripcion(Integer idSolicitud) {
-        if (idSolicitud == null) {
-            throw new ReglaNegocioExcepcion("El ID de la solicitud no puede ser nulo");
-        }
-        
-        // Buscar la solicitud
-        SolicitudCursoVeranoInscripcion solicitud = this.gestionarSolicitudGateway.buscarSolicitudInscripcionPorId(idSolicitud);
-        if (solicitud == null) {
-            throw new EntidadNoExisteException("No se encontró la solicitud de inscripción con ID: " + idSolicitud);
-        }
-        
-        // Verificar que el pago esté validado
-        if (!EstadoSolicitudCursoVerano.PAGO_VALIDADO.texto().equals(solicitud.estadoActual())) {
-            throw new ReglaNegocioExcepcion("El pago debe estar validado para completar la inscripción");
-        }
-        
-        // Completar la inscripción
-        SolicitudCursoVeranoInscripcion solicitudCompletada = this.gestionarSolicitudGateway.completarInscripcion(idSolicitud);
-
-        return solicitudCompletada;
-    }
-
     // ==================== Consultas ====================
 
     @Override
@@ -427,11 +403,6 @@ public class GestionarSolicitudCursoVeranoCUAdapter implements GestionarSolicitu
             return List.of();
         }
         return this.gestionarSolicitudGateway.buscarInscripcionesPorUsuario(idUsuario);
-    }
-
-    @Override
-    public Integer contarInscripcionesPorEstado(Integer idCurso, String estado) {
-        return this.gestionarSolicitudGateway.contarInscripcionesPorEstado(idCurso, estado);
     }
 
     @Override

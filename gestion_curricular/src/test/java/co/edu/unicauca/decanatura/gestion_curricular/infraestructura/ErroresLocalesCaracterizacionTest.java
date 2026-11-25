@@ -54,7 +54,6 @@ import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.contr
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.dto.respuesta.UsuarioDTORespuesta;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.excepciones.RestApiExceptionHandler;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.mappers.CursosOfertadosMapperDominio;
-import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.mappers.SolicitudCursoDeVeranoPreinscripcionMapperDominio;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.mappers.UsuarioMapperDominio;
 import co.edu.unicauca.decanatura.gestion_curricular.seguridad.JwtUtil;
 import co.edu.unicauca.decanatura.gestion_curricular.seguridad.LoginRateLimiter;
