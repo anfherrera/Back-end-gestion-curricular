@@ -71,7 +71,6 @@ class SolicitudesPersistenciaCaracterizacionTest {
         GestionarSolicitudReingresoGatewayImplAdapter gateway = new GestionarSolicitudReingresoGatewayImplAdapter(repositorio);
 
         ObjectNode casos = JsonNodeFactory.instance.objectNode();
-        casos.set("listarSolicitudesReingreso", GrafoObjetos.resultado(gateway::listarSolicitudesReingreso));
         casos.set("listarPorUsuario", GrafoObjetos.resultado(() -> gateway.listarPorUsuario(1, "2025-1")));
         casos.set("buscarPorId 7", GrafoObjetos.resultado(() -> gateway.buscarPorId(7)));
         casos.set("buscarPorId 9", GrafoObjetos.resultado(() -> gateway.buscarPorId(9)));
@@ -91,9 +90,11 @@ class SolicitudesPersistenciaCaracterizacionTest {
             return null;
         }));
         ProyeccionValores.compararConReferencia(casos, "persistencia/reingreso.json",
-                "persistencia/correcciones/reingreso-bug46.json");
+                "persistencia/correcciones/reingreso-bug46.json",
+                "persistencia/correcciones/reingreso-mue11.json");
         GrafoObjetos.compararConReferencia(casos, "persistencia/proyeccion/reingreso.json",
-                "persistencia/correcciones/proyeccion-reingreso-bug46.json");
+                "persistencia/correcciones/proyeccion-reingreso-bug46.json",
+                "persistencia/correcciones/proyeccion-reingreso-mue11.json");
     }
 
     @Test
@@ -109,7 +110,6 @@ class SolicitudesPersistenciaCaracterizacionTest {
         GestionarSolicitudHomologacionGatewayImplAdapter gateway = new GestionarSolicitudHomologacionGatewayImplAdapter(repositorio);
 
         ObjectNode casos = JsonNodeFactory.instance.objectNode();
-        casos.set("listarSolicitudes", GrafoObjetos.resultado(gateway::listarSolicitudes));
         casos.set("buscarPorId 7", GrafoObjetos.resultado(() -> gateway.buscarPorId(7)));
         SolicitudHomologacion nueva = GrafosSolicitud.completar(new SolicitudHomologacion());
         nueva.setProgramaOrigen("Electrónica");
@@ -127,9 +127,11 @@ class SolicitudesPersistenciaCaracterizacionTest {
             return null;
         }));
         ProyeccionValores.compararConReferencia(casos, "persistencia/homologacion.json",
-                "persistencia/correcciones/homologacion-bug46.json");
+                "persistencia/correcciones/homologacion-bug46.json",
+                "persistencia/correcciones/homologacion-mue11.json");
         GrafoObjetos.compararConReferencia(casos, "persistencia/proyeccion/homologacion.json",
-                "persistencia/correcciones/proyeccion-homologacion-bug46.json");
+                "persistencia/correcciones/proyeccion-homologacion-bug46.json",
+                "persistencia/correcciones/proyeccion-homologacion-mue11.json");
     }
 
     @Test

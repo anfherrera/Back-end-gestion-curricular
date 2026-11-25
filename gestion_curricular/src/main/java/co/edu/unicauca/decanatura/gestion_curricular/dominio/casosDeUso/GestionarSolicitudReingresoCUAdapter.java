@@ -87,11 +87,6 @@ public class GestionarSolicitudReingresoCUAdapter  implements GestionarSolicitud
         return solicitudGuardada;
     }
     @Override
-    public List<SolicitudReingreso> listarSolicitudesReingreso() {
-        return gestionarSolicitudReingresoGateway.listarSolicitudesReingreso();
-    }
-
-    @Override
     public List<SolicitudReingreso> listar(FiltroSolicitudes filtro) {
         return listador.listar(filtro);
     }

@@ -1,7 +1,5 @@
 package co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.dto.respuesta;
 
-import java.util.Map;
-
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
 /**
@@ -14,11 +12,6 @@ public final class DocumentosSolicitudDTORespuesta {
     /** Oficio o resolución de {@code /obtenerOficios/{idSolicitud}}; {@code id} es el de la solicitud. */
     @JsonPropertyOrder({"nombreArchivo", "ruta", "id", "nombre"})
     public record Oficio(Integer id, String nombre, String nombreArchivo, String ruta) {}
-
-    /** Resultado de {@code /validarDocumentosRequeridos/{idSolicitud}}. */
-    @JsonPropertyOrder({"documentosRequeridos", "totalDocumentos", "todosCompletos"})
-    public record Revision(Map<String, Boolean> documentosRequeridos, boolean todosCompletos,
-            int totalDocumentos) {}
 
     /** Respuesta 200 de la subida de una resolución de Homologación. */
     @JsonPropertyOrder({"idDocumento", "success", "idSolicitud", "message", "nombre"})

@@ -11,8 +11,6 @@ public interface GestionarSolicitudHomologacionGatewayIntPort extends ConsultarS
 
     SolicitudHomologacion guardar(SolicitudHomologacion solicitud);
 
-    List<SolicitudHomologacion> listarSolicitudes();
-
     /** Solicitudes que pasaron alguna vez por {@code estado} (homologación sí tiene listado de procesadas). */
     @Override
     List<SolicitudHomologacion> listarPorEstadoEnHistorial(String estado, Integer idPrograma, String periodo);

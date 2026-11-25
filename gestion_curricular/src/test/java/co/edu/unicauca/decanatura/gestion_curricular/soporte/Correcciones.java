@@ -20,11 +20,14 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
  * él, {@code /} dentro de un nombre se escribe {@code ~1}. {@link #aplicar} las superpone y comprueba que cada
  * entrada exista en la original y que su valor sea distinto, para que la corrección no pueda añadir casos ni
  * quedar obsoleta sin que la prueba falle. La clave vacía (el JSON Pointer de la raíz) sustituye la referencia
- * entera; entonces debe ser la única entrada, y su valor, un objeto distinto de la referencia.
+ * entera; entonces debe ser la única entrada, y su valor, un objeto distinto de la referencia. La clave
+ * {@code $quitar} lleva una lista de claves (con la misma forma) de entradas que deben existir y se quitan: los
+ * casos que solo probaban código borrado.
  */
 public final class Correcciones {
 
     private static final ObjectMapper JSON = new ObjectMapper();
+    private static final String QUITAR = "$quitar";
 
     private Correcciones() {
     }
@@ -43,6 +46,10 @@ public final class Correcciones {
         Iterator<Map.Entry<String, JsonNode>> entradas = correccion.fields();
         while (entradas.hasNext()) {
             Map.Entry<String, JsonNode> entrada = entradas.next();
+            if (QUITAR.equals(entrada.getKey())) {
+                quitar(resultado, entrada.getValue(), rutaCorreccion);
+                continue;
+            }
             JsonPointer puntero = JsonPointer.compile(
                     entrada.getKey().startsWith("/") ? entrada.getKey() : "/" + escapar(entrada.getKey()));
             JsonNode padre = resultado.at(puntero.head());
@@ -53,6 +60,24 @@ public final class Correcciones {
             ((ObjectNode) padre).set(nombre, entrada.getValue());
         }
         return resultado;
+    }
+
+    /** Quita cada entrada de la lista, que debe existir, para los casos de código borrado (MUE-11). */
+    private static void quitar(ObjectNode resultado, JsonNode claves, String rutaCorreccion) {
+        assertThat(claves.isArray() && !claves.isEmpty()).as("%s: %s debe ser una lista no vacía",
+                rutaCorreccion, QUITAR).isTrue();
+        for (JsonNode clave : claves) {
+            JsonPointer puntero = puntero(clave.asText());
+            JsonNode padre = resultado.at(puntero.head());
+            String nombre = puntero.last().getMatchingProperty();
+            assertThat(padre.isObject() && padre.has(nombre)).as("%s: quitar %s", rutaCorreccion, clave.asText())
+                    .isTrue();
+            ((ObjectNode) padre).remove(nombre);
+        }
+    }
+
+    private static JsonPointer puntero(String clave) {
+        return JsonPointer.compile(clave.startsWith("/") ? clave : "/" + escapar(clave));
     }
 
     private static String escapar(String nombre) {

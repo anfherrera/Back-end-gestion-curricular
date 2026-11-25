@@ -113,7 +113,6 @@ class RutasReingresoHomologacionCaracterizacionTest {
         SolicitudReingreso r41 = solicitud(SolicitudReingreso::new, 41, estudiante6, List.of());
         when(reingreso.obtenerSolicitudReingresoPorId(40)).thenReturn(r40);
         when(reingreso.obtenerSolicitudReingresoPorId(41)).thenReturn(r41);
-        when(reingreso.listarSolicitudesReingreso()).thenReturn(List.of(r40, r41));
         doAnswer(i -> {
             llamadas.addObject().put("listar", conMarcador(i.getArgument(0).toString()));
             return List.of(r40);
@@ -141,7 +140,6 @@ class RutasReingresoHomologacionCaracterizacionTest {
         SolicitudHomologacion h61 = solicitud(SolicitudHomologacion::new, 61, estudiante6, List.of());
         when(homologacion.buscarPorId(60)).thenReturn(h60);
         when(homologacion.buscarPorId(61)).thenReturn(h61);
-        when(homologacion.listarSolicitudes()).thenReturn(List.of(h60, h61));
         doAnswer(i -> {
             llamadas.addObject().put("listar", conMarcador(i.getArgument(0).toString()));
             return List.of(h60);

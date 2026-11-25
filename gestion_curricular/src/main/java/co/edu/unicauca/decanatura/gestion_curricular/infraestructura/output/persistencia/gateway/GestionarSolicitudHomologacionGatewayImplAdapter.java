@@ -34,11 +34,6 @@ public class GestionarSolicitudHomologacionGatewayImplAdapter implements Gestion
     }
 
     @Override
-    public List<SolicitudHomologacion> listarSolicitudes() {
-       return aDominio(solicitudHomologacionRepository.findAll());
-    }
-
-    @Override
     public List<SolicitudHomologacion> listarPorUsuario(Integer idUsuario, String periodo) {
         return aDominio(solicitudHomologacionRepository.findByUsuarioYPeriodo(idUsuario, periodo));
     }

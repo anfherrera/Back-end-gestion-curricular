@@ -11,8 +11,6 @@ public interface GestionarSolicitudReingresoGatewayIntPort extends ConsultarSoli
 
     SolicitudReingreso crearSolicitudReingreso(SolicitudReingreso solicitud);
 
-    List<SolicitudReingreso> listarSolicitudesReingreso();
-
     /** Solicitudes que pasaron alguna vez por {@code estado} (reingreso sí tiene listado de procesadas). */
     @Override
     List<SolicitudReingreso> listarPorEstadoEnHistorial(String estado, Integer idPrograma, String periodo);

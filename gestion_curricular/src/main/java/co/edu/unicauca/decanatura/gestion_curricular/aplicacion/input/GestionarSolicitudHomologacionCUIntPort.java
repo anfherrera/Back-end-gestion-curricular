@@ -8,8 +8,6 @@ import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.SolicitudHo
 public interface GestionarSolicitudHomologacionCUIntPort {
     SolicitudHomologacion guardar(SolicitudHomologacion solicitud);
 
-    List<SolicitudHomologacion> listarSolicitudes();
-
     /** Solicitudes de un estudiante, o pendientes o procesadas por un rol (ver {@link FiltroSolicitudes}). */
     List<SolicitudHomologacion> listar(FiltroSolicitudes filtro);
 

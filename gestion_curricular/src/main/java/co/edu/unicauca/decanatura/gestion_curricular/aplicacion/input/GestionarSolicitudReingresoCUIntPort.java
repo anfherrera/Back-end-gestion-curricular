@@ -9,8 +9,6 @@ public interface GestionarSolicitudReingresoCUIntPort {
 
     SolicitudReingreso crearSolicitudReingreso(SolicitudReingreso solicitud);
 
-    List<SolicitudReingreso> listarSolicitudesReingreso();
-
     /** Solicitudes de un estudiante, o pendientes o procesadas por un rol (ver {@link FiltroSolicitudes}). */
     List<SolicitudReingreso> listar(FiltroSolicitudes filtro);
 

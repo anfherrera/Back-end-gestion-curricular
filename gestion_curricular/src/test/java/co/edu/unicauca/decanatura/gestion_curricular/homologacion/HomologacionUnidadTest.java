@@ -101,39 +101,6 @@ class HomologacionUnidadTest {
     // ==================== PRUEBAS DE CONSULTA ====================
 
     @Test
-    @DisplayName("Test 2: Listar solicitudes - Retorna lista del gateway")
-    void testListarSolicitudesRetornaListaGateway() {
-        // Arrange
-        List<SolicitudHomologacion> listaEsperada = Arrays.asList(
-                new SolicitudHomologacion(),
-                new SolicitudHomologacion()
-        );
-        when(solicitudGateway.listarSolicitudes()).thenReturn(listaEsperada);
-
-        // Act
-        List<SolicitudHomologacion> resultado = solicitudHomologacionCU.listarSolicitudes();
-
-        // Assert
-        assertThat(resultado).isNotNull();
-        assertThat(resultado).hasSize(2);
-        verify(solicitudGateway, times(1)).listarSolicitudes();
-    }
-
-    @Test
-    @DisplayName("Test 3: Listar solicitudes vacías - Retorna lista vacía")
-    void testListarSolicitudesVaciasRetornaListaVacia() {
-        // Arrange
-        when(solicitudGateway.listarSolicitudes()).thenReturn(Collections.emptyList());
-
-        // Act
-        List<SolicitudHomologacion> resultado = solicitudHomologacionCU.listarSolicitudes();
-
-        // Assert
-        assertThat(resultado).isNotNull();
-        assertThat(resultado).isEmpty();
-    }
-
-    @Test
     @DisplayName("Test 4: Buscar por ID - Delega correctamente")
     void testBuscarPorIdDelegaCorrectamente() {
         // Arrange
@@ -241,56 +208,13 @@ class HomologacionUnidadTest {
 
     // ==================== PRUEBAS DE MANEJO DE EXCEPCIONES ====================
 
-    @Test
-    @DisplayName("Test 10: Gateway lanza excepción - La propaga correctamente")
-    void testGatewayLanzaExcepcionLaPropagaCorrectamente() {
-        // Arrange
-        when(solicitudGateway.listarSolicitudes())
-                .thenThrow(new RuntimeException("Error de base de datos"));
-
-        // Act & Assert
-        assertThatThrownBy(() -> solicitudHomologacionCU.listarSolicitudes())
-                .isInstanceOf(RuntimeException.class)
-                .hasMessageContaining("Error de base de datos");
-    }
-
     // ==================== PRUEBAS DE VERIFICACIÓN DE COMPORTAMIENTO ====================
-
-    @Test
-    @DisplayName("Test 11: Llamadas múltiples al mismo método")
-    void testLlamadasMultiplesAlMismoMetodo() {
-        // Arrange
-        when(solicitudGateway.listarSolicitudes())
-                .thenReturn(Arrays.asList(solicitudEjemplo));
-
-        // Act
-        for (int i = 0; i < 3; i++) {
-            solicitudHomologacionCU.listarSolicitudes();
-        }
-
-        // Assert
-        verify(solicitudGateway, times(3)).listarSolicitudes();
-    }
 
     @Test
     @DisplayName("Test 12: Verificar que el adaptador implementa la interfaz correcta")
     void testAdaptadorImplementaInterfazCorrecta() {
         // Assert
         assertThat(solicitudHomologacionCU).isInstanceOf(GestionarSolicitudHomologacionCUIntPort.class);
-    }
-
-    @Test
-    @DisplayName("Test 13: Lista solicitudes retorna la misma referencia del gateway")
-    void testListaSolicitudesRetornaLaMismaReferencia() {
-        // Arrange
-        List<SolicitudHomologacion> listaOriginal = Arrays.asList(solicitudEjemplo);
-        when(solicitudGateway.listarSolicitudes()).thenReturn(listaOriginal);
-
-        // Act
-        List<SolicitudHomologacion> resultado = solicitudHomologacionCU.listarSolicitudes();
-
-        // Assert - Verificar que es la misma instancia (no se hace copia)
-        assertThat(resultado).isSameAs(listaOriginal);
     }
 
     // ==================== PRUEBAS DE CAMBIO DE ESTADO ====================

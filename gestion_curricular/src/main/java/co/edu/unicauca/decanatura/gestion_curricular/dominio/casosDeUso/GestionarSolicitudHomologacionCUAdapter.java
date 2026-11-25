@@ -86,11 +86,6 @@ public class GestionarSolicitudHomologacionCUAdapter implements GestionarSolicit
     }
 
     @Override
-    public List<SolicitudHomologacion> listarSolicitudes() {
-        return gestionarSolicitudHomologacionGateway.listarSolicitudes();
-    }
-
-    @Override
     public List<SolicitudHomologacion> listar(FiltroSolicitudes filtro) {
         return listador.listar(filtro);
     }

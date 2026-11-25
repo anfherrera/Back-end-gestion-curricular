@@ -32,11 +32,6 @@ public class GestionarSolicitudReingresoGatewayImplAdapter implements GestionarS
     }
 
     @Override
-    public List<SolicitudReingreso> listarSolicitudesReingreso() {
-        return aDominio(solicitudReingresoRepository.findAll());
-    }
-
-    @Override
     public List<SolicitudReingreso> listarPorUsuario(Integer idUsuario, String periodo) {
         return aDominio(solicitudReingresoRepository.findByUsuarioYPeriodo(idUsuario, periodo));
     }
