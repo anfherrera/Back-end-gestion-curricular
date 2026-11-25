@@ -22,7 +22,6 @@ import org.springframework.context.annotation.Configuration;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.CursoOfertadoVerano;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Docente;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Documento;
-import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Estadistica;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.EstadoCursoOfertado;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.EstadoSolicitud;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.FechaEcaes;
@@ -107,13 +106,6 @@ public class NombresJsonDominio {
         historico(SolicitudCursoVeranoPreinscripcion.class, "nombreEstudiante", "nombre_estudiante");
         historico(SolicitudCursoVeranoPreinscripcion.class, "codigoEstudiante", "codigo_estudiante");
         historico(SolicitudCursoVeranoPreinscripcion.class, "condicionSolicitud", "codicion_solicitud");
-        historico(Estadistica.class, "idEstadistica", "id_estadistica");
-        historico(Estadistica.class, "totalSolicitudes", "total_solicitudes");
-        historico(Estadistica.class, "totalAprobadas", "total_aprobadas");
-        historico(Estadistica.class, "totalRechazadas", "total_rechazadas");
-        historico(Estadistica.class, "periodosAcademico", "periodos_academico");
-        historico(Estadistica.class, "nombresProcesos", "nombres_procesos");
-        historico(Estadistica.class, "nombresProgramas", "nombres_programas");
     }
 
     private static void historico(Class<?> clase, String campo, String nombre) {

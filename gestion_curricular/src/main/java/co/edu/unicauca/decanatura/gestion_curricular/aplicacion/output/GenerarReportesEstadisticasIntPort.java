@@ -4,7 +4,6 @@ import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.estadistica
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.estadisticas.Globales;
 
 public interface GenerarReportesEstadisticasIntPort {
-    byte[] pdfGeneral(Globales estadisticas);
     byte[] pdfCursosVerano(AnalisisCursosVerano datos, String periodo, Integer programa);
     byte[] pdfCompleto(Globales estadisticas, AnalisisCursosVerano cursos, String periodo, Integer programa);
     byte[] excel(Globales estadisticas, AnalisisCursosVerano cursos, String periodo, Integer programa);

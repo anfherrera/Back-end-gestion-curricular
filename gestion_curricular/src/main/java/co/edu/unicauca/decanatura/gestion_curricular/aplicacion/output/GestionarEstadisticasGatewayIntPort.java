@@ -3,7 +3,6 @@ package co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output;
 import java.util.Date;
 import java.util.List;
 
-import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Estadistica;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Programa;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Solicitud;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Usuario;
@@ -13,12 +12,6 @@ import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Usuario;
  * ({@code dominio.servicios.estadisticas}); aquí solo se lee la base de datos.
  */
 public interface GestionarEstadisticasGatewayIntPort {
-    Estadistica crearEstadistica(Estadistica estadistica);
-    Estadistica actualizarEstadistica(Estadistica estadistica);
-    Boolean eliminarEstadistica(Integer idEstadistica);
-    Estadistica obtenerEstadisticaPorId(Integer idEstadistica);
-    Estadistica obtenerEstadisticasSolicitudPeriodoEstadoYPrograma(Integer idEstadistica, String proceso, Date fechaInicio, Date fechaFin, String estado, Integer idPrograma);
-    List<Estadistica> obtenerEstadisticasPeriodoEstadoYPrograma( Date fechaInicio, Date fechaFin, Integer idPrograma);
 
     /**
      * Todas las solicitudes, cada una con el subtipo de su proceso (homologación, ECAES...), sus estados,

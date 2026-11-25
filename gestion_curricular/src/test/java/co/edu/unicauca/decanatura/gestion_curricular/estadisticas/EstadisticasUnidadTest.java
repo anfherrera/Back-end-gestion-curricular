@@ -16,7 +16,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarEstadisticasCUIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.GestionarEstadisticasGatewayIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.casosDeUso.GestionarEstadisticasCUAdapter;
-import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Estadistica;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.EstadoSolicitud;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Programa;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Solicitud;
@@ -61,83 +60,10 @@ class EstadisticasUnidadTest {
 
     private GestionarEstadisticasCUIntPort estadisticasCU;
 
-    private Estadistica estadisticaEjemplo;
-
     @BeforeEach
     void setUp() {
         // Crear el CU Adapter con las dependencias mockeadas
         estadisticasCU = new GestionarEstadisticasCUAdapter(estadisticasGateway);
-
-        // Crear estadística de ejemplo
-        estadisticaEjemplo = new Estadistica();
-    }
-
-    // ==================== PRUEBAS DE CREACIÓN ====================
-
-    @Test
-    @DisplayName("Test 1: Crear estadística - Delega correctamente al gateway")
-    void testCrearEstadisticaDelegaCorrectamente() {
-        // Arrange
-        when(estadisticasGateway.crearEstadistica(any(Estadistica.class)))
-                .thenReturn(estadisticaEjemplo);
-
-        // Act
-        Estadistica resultado = estadisticasCU.crearEstadistica(estadisticaEjemplo);
-
-        // Assert
-        assertThat(resultado).isNotNull();
-        verify(estadisticasGateway, times(1)).crearEstadistica(estadisticaEjemplo);
-    }
-
-    // ==================== PRUEBAS DE CONSULTA ====================
-
-    @Test
-    @DisplayName("Test 2: Obtener estadística por ID - Delega correctamente")
-    void testObtenerEstadisticaPorIdDelegaCorrectamente() {
-        // Arrange
-        int idBuscado = 1;
-        when(estadisticasGateway.obtenerEstadisticaPorId(idBuscado))
-                .thenReturn(estadisticaEjemplo);
-
-        // Act
-        Estadistica resultado = estadisticasCU.obtenerEstadisticaPorId(idBuscado);
-
-        // Assert
-        assertThat(resultado).isNotNull();
-        verify(estadisticasGateway, times(1)).obtenerEstadisticaPorId(idBuscado);
-    }
-
-    @Test
-    @DisplayName("Test 3: Actualizar estadística - Delega correctamente")
-    void testActualizarEstadisticaDelegaCorrectamente() {
-        // Arrange
-        estadisticaEjemplo.setIdEstadistica(1);
-        when(estadisticasGateway.obtenerEstadisticaPorId(1)).thenReturn(estadisticaEjemplo);
-        when(estadisticasGateway.actualizarEstadistica(any(Estadistica.class)))
-                .thenReturn(estadisticaEjemplo);
-
-        // Act
-        Estadistica resultado = estadisticasCU.actualizarEstadistica(estadisticaEjemplo);
-
-        // Assert
-        assertThat(resultado).isNotNull();
-        verify(estadisticasGateway, times(1)).actualizarEstadistica(estadisticaEjemplo);
-    }
-
-    @Test
-    @DisplayName("Test 4: Eliminar estadística - Delega correctamente")
-    void testEliminarEstadisticaDelegaCorrectamente() {
-        // Arrange
-        int id = 1;
-        when(estadisticasGateway.obtenerEstadisticaPorId(id)).thenReturn(estadisticaEjemplo);
-        when(estadisticasGateway.eliminarEstadistica(id)).thenReturn(true);
-
-        // Act
-        Boolean resultado = estadisticasCU.eliminarEstadistica(id);
-
-        // Assert
-        assertThat(resultado).isTrue();
-        verify(estadisticasGateway, times(1)).eliminarEstadistica(id);
     }
 
     // ==================== REGLAS DE LAS ESTADÍSTICAS (dominio) ====================
@@ -152,7 +78,7 @@ class EstadisticasUnidadTest {
         when(estadisticasGateway.contarSolicitudesPorEstado("ENVIADA")).thenReturn(4);
         when(estadisticasGateway.contarSolicitudesPorEstado("PRE_REGISTRADO")).thenReturn(2);
 
-        GlobalesContadas resultado = estadisticasCU.obtenerEstadisticasGlobales();
+        GlobalesContadas resultado = estadisticasCU.obtenerEstadisticasGlobales(null, null, null, null);
 
         assertThat(resultado.totalSolicitudes()).isEqualTo(10);
         assertThat(resultado.totalEnviadas()).isEqualTo(6);
@@ -165,7 +91,7 @@ class EstadisticasUnidadTest {
     void testGlobalesSinEstadosUsanElTotal() {
         when(estadisticasGateway.contarTotalSolicitudes()).thenReturn(7);
 
-        GlobalesContadas resultado = estadisticasCU.obtenerEstadisticasGlobales();
+        GlobalesContadas resultado = estadisticasCU.obtenerEstadisticasGlobales(null, null, null, null);
 
         assertThat(resultado.totalSolicitudes()).isEqualTo(7);
         assertThat(resultado.porcentajeAprobacion()).isEqualTo(0.0);

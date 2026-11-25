@@ -17,18 +17,12 @@ public class GenerarReportesEstadisticasCUAdapter implements GenerarReportesEsta
         this.generador = generador;
     }
 
-    @Override public byte[] pdfGeneral() {
-        return generador.pdfGeneral(estadisticas.obtenerEstadisticasGlobales());
-    }
     @Override public byte[] pdfCursosVerano(String periodo, Integer programa) {
         return generador.pdfCursosVerano(estadisticas.obtenerEstadisticasCursosVerano(periodo, programa), periodo, programa);
     }
     @Override public byte[] pdfCompleto(String proceso, Integer programa, String periodo, Date inicio, Date fin) {
         var datos = estadisticas.prepararReporte(proceso, programa, periodo, inicio, fin);
         return generador.pdfCompleto(datos.estadisticas(), datos.cursosVerano(), periodo, programa);
-    }
-    @Override public byte[] excelGeneral() {
-        return generador.excel(estadisticas.obtenerEstadisticasGlobales(), null, null, null);
     }
     @Override public byte[] excelCursosVerano(String periodo, Integer programa) {
         return generador.excel(null, estadisticas.obtenerEstadisticasCursosVerano(periodo, programa), periodo, programa);

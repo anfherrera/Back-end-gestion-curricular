@@ -5,7 +5,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.function.Supplier;
 
 import org.springframework.stereotype.Service;
@@ -13,7 +12,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.GestionarEstadisticasGatewayIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.CursoOfertadoVerano;
-import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Estadistica;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.EstadoSolicitud;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Materia;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Programa;
@@ -25,8 +23,6 @@ import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.SolicitudHo
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.SolicitudPazYSalvo;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.SolicitudReingreso;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Usuario;
-import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.enums.EstadosSolicitud;
-import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.entidades.EstadisticaEntity;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.entidades.ProgramaEntity;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.entidades.SolicitudCursoVeranoInscripcionEntity;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.entidades.SolicitudCursoVeranoPreinscripcionEntity;
@@ -35,10 +31,8 @@ import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.pers
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.entidades.SolicitudPazYSalvoEntity;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.entidades.SolicitudReingresoEntity;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.entidades.UsuarioEntity;
-import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.mappers.EstadisticaMapperPersistencia;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.proyecciones.FilaEstadoEstadistica;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.proyecciones.FilaSolicitudEstadistica;
-import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.repositorios.EstadisticaRepositoryInt;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.repositorios.ProgramaRepositoryInt;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.repositorios.SolicitudRepositoryInt;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.repositorios.UsuarioRepositoryInt;
@@ -53,109 +47,14 @@ public class GestionarEstadisticasGatewayImplAdapter implements GestionarEstadis
 
     private static final int ROL_ESTUDIANTE = 2;
 
-    private final EstadisticaRepositoryInt estadisticaRepository;
     private final SolicitudRepositoryInt solicitudRepository;
     private final ProgramaRepositoryInt programaRepository;
     private final UsuarioRepositoryInt usuarioRepository;
 
-    public GestionarEstadisticasGatewayImplAdapter(EstadisticaRepositoryInt estadisticaRepository, ProgramaRepositoryInt programaRepository, SolicitudRepositoryInt solicitudRepository, UsuarioRepositoryInt usuarioRepository) {
-        this.estadisticaRepository = estadisticaRepository;
+    public GestionarEstadisticasGatewayImplAdapter(ProgramaRepositoryInt programaRepository, SolicitudRepositoryInt solicitudRepository, UsuarioRepositoryInt usuarioRepository) {
         this.programaRepository = programaRepository;
         this.solicitudRepository = solicitudRepository;
         this.usuarioRepository = usuarioRepository;
-    }
-
-    @Override
-    @Transactional
-    public Estadistica crearEstadistica(Estadistica estadistica) {
-        if(solicitudRepository.count() <= 0) {
-            throw new RuntimeException("No hay solicitudes disponibles para crear estadisticas.");
-        }
-        if(programaRepository.count() <= 0) {
-            throw new RuntimeException("No hay programas disponibles para crear estadisticas.");
-        }
-        EstadisticaEntity estadisticaEntity = EstadisticaMapperPersistencia.aEntidad(estadistica);
-        estadisticaEntity.setTotal_solicitudes(solicitudRepository.totalSolicitudes());
-        estadisticaEntity.setTotal_aprobadas(solicitudRepository.contarEstado(EstadosSolicitud.APROBADA.textoGuardado()));
-        estadisticaEntity.setTotal_rechazadas(solicitudRepository.contarEstado(EstadosSolicitud.RECHAZADA.textoGuardado()));
-        estadisticaEntity.setNombres_procesos(new ArrayList<String>(solicitudRepository.buscarNombresSolicitudes()));
-        estadisticaEntity.setPeriodos_academico(new ArrayList<Date>());
-        estadisticaEntity.setNombres_programas(new ArrayList<String>(programaRepository.buscarNombresProgramas()));
-        EstadisticaEntity savedEntity = estadisticaRepository.save(estadisticaEntity);
-        return EstadisticaMapperPersistencia.aDominio(savedEntity);
-    }
-
-    @Override
-    @Transactional
-    public Estadistica actualizarEstadistica(Estadistica estadistica) {
-        estadisticaRepository.findById(estadistica.getIdEstadistica())
-            .orElseThrow(() -> new RuntimeException("Estadistica no encontrada con ID: " + estadistica.getIdEstadistica()));
-        EstadisticaEntity estadisticaEntity = EstadisticaMapperPersistencia.aEntidad(estadistica);
-        estadisticaEntity.setTotal_solicitudes(solicitudRepository.totalSolicitudes());
-        estadisticaEntity.setTotal_aprobadas(solicitudRepository.contarEstado(EstadosSolicitud.APROBADA.textoGuardado()));
-        estadisticaEntity.setTotal_rechazadas(solicitudRepository.contarEstado(EstadosSolicitud.RECHAZADA.textoGuardado()));
-        estadisticaEntity.setNombres_procesos(new ArrayList<String>(solicitudRepository.buscarNombresSolicitudes()));
-        estadisticaEntity.setPeriodos_academico(new ArrayList<Date>());
-        estadisticaEntity.setNombres_programas(new ArrayList<String>(programaRepository.buscarNombresProgramas()));
-        EstadisticaEntity updatedEntity = estadisticaRepository.save(estadisticaEntity);
-        return EstadisticaMapperPersistencia.aDominio(updatedEntity);
-    }
-
-    @Override
-    @Transactional
-    public Boolean eliminarEstadistica(Integer idEstadistica) {
-        boolean eliminado = false;
-        Optional<EstadisticaEntity> estadisticaEntity = estadisticaRepository.findById(idEstadistica);
-        if (estadisticaEntity != null) {
-            estadisticaRepository.deleteById(idEstadistica);
-            eliminado = true;
-        }
-        return eliminado;
-    }
-
-    @Override
-    @Transactional(readOnly = true)
-    public Estadistica obtenerEstadisticaPorId(Integer idEstadistica) {
-       EstadisticaEntity entity = estadisticaRepository.findById(idEstadistica)
-        .orElseThrow(() -> new IllegalArgumentException("Estadistica no encontrada"));
-        return EstadisticaMapperPersistencia.aDominio(entity);
-    }
-
-    @Override
-    @Transactional(readOnly = true)
-    public Estadistica obtenerEstadisticasSolicitudPeriodoEstadoYPrograma(Integer idEstadistica, String proceso,
-            Date fechaInicio, Date fechaFin, String estado, Integer idPrograma) {
-        EstadisticaEntity estadisticaEntity = estadisticaRepository.findById(idEstadistica)
-            .orElseThrow(() -> new IllegalArgumentException("Estadistica no encontrada con ID: " + idEstadistica));
-
-        if(solicitudRepository.count() == 0) {
-            throw new RuntimeException("No hay solicitudes disponibles para crear estadisticas.");
-        }
-
-        int totalSolicitudes = solicitudRepository.contarNombreFechaEstadoYPrograma(
-            proceso, fechaInicio, fechaFin, estado, idPrograma);
-        estadisticaEntity.setTotal_solicitudes(totalSolicitudes);
-        return EstadisticaMapperPersistencia.aDominio(estadisticaEntity);
-    }
-
-    @Override
-    @Transactional(readOnly = true)
-    public List<Estadistica> obtenerEstadisticasPeriodoEstadoYPrograma(Date fechaInicio, Date fechaFin,
-            Integer idPrograma) {
-        List<EstadisticaEntity> estadisticaEntityOp = estadisticaRepository.findAll();
-        List<Estadistica> estadisticas = new ArrayList<>();
-        if(estadisticaEntityOp!=null){
-            List<String> nombres_procesos = new ArrayList<String>(solicitudRepository.buscarNombresSolicitudes());
-            for (String proceso : nombres_procesos) {
-                Estadistica estadistica = new Estadistica();
-                estadistica.setNombre(proceso);
-                estadistica.setTotalSolicitudes(solicitudRepository.contarNombreFechaYPrograma(proceso, fechaInicio, fechaFin, idPrograma));
-                estadistica.setTotalAprobadas(solicitudRepository.contarNombreFechaEstadoYPrograma(proceso, fechaInicio, fechaFin, EstadosSolicitud.APROBADA.textoGuardado(), idPrograma));
-                estadistica.setTotalRechazadas(solicitudRepository.contarNombreFechaEstadoYPrograma(proceso, fechaInicio, fechaFin, EstadosSolicitud.RECHAZADA.textoGuardado(), idPrograma));
-                estadisticas.add(estadistica);
-            }
-        }
-        return estadisticas;
     }
 
     // ------------------------------------------------------------------------------------------

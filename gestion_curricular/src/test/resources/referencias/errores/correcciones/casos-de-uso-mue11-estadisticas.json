@@ -1,0 +1,21 @@
+{
+  "$quitar": [
+    "estadisticas crear nula",
+    "estadisticas actualizar sin id",
+    "estadisticas actualizar inexistente",
+    "estadisticas eliminar sin id",
+    "estadisticas eliminar inexistente",
+    "estadisticas obtener sin id",
+    "estadisticas obtener inexistente",
+    "estadisticas solicitud sin proceso",
+    "estadisticas solicitud incompleta",
+    "estadisticas periodo estado programa incompleta",
+    "estadisticas programa y periodo programa invalido",
+    "estadisticas programa y periodo sin fechas",
+    "estadisticas programa y periodo invertido",
+    "estadisticas proceso y estado sin proceso",
+    "estadisticas proceso y estado sin estado",
+    "estadisticas tendencias sin fechas",
+    "estadisticas tendencias invertidas"
+  ]
+}

@@ -24,9 +24,6 @@ import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.estadistica
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.estadisticas.EstadisticasPorPeriodo;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.estadisticas.EstadisticasPorProceso;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.estadisticas.EstadisticasPorPrograma;
-import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.estadisticas.ProcesosPorProgramaYPeriodo;
-import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.estadisticas.ProgramasPorProcesoYEstado;
-import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.estadisticas.TendenciasPorPeriodo;
 
 /**
  * Conteos de solicitudes por proceso, estado, programa y periodo de fechas, y la comparación entre dos periodos.
@@ -106,39 +103,5 @@ public class ConsultasEstadisticas {
                 .collect(Collectors.toList());
 
         return new EstadisticasPorPeriodo(agregar(enPeriodo), new Date(), fechaInicio, fechaFin);
-    }
-
-    public ProcesosPorProgramaYPeriodo porProgramaYPeriodo(Integer idPrograma, Date fechaInicio, Date fechaFin) {
-        List<Solicitud> filtradas = solicitudes(datos).stream()
-                .filter(s -> idPrograma == null || idPrograma.equals(idPrograma(s)))
-                .filter(s -> enRango(s, fechaInicio, fechaFin))
-                .collect(Collectors.toList());
-
-        return new ProcesosPorProgramaYPeriodo(idPrograma, fechaInicio, fechaFin, agregar(filtradas).porTipoProceso(),
-                new Date());
-    }
-
-    public ProgramasPorProcesoYEstado porProcesoYEstado(String tipoProceso, String estado) {
-        String proceso = TipoProcesoSolicitud.porNombre(tipoProceso);
-        String estadoNormalizado = estado != null ? normalizarEstado(estado) : null;
-        List<Solicitud> filtradas = solicitudes(datos).stream()
-                .filter(s -> proceso == null || proceso.equals(tipoProceso(s)))
-                .filter(s -> estadoNormalizado == null || estadoNormalizado.equals(estadoActual(s)))
-                .collect(Collectors.toList());
-
-        return new ProgramasPorProcesoYEstado(tipoProceso, estado, agregar(filtradas).porPrograma(), new Date());
-    }
-
-    public TendenciasPorPeriodo tendenciasPorPeriodo(Date fechaInicio1, Date fechaFin1, Date fechaInicio2,
-            Date fechaFin2) {
-        EstadisticasPorPeriodo periodo1 = porPeriodo(fechaInicio1, fechaFin1);
-        EstadisticasPorPeriodo periodo2 = porPeriodo(fechaInicio2, fechaFin2);
-
-        int total1 = periodo1.totalSolicitudes();
-        int total2 = periodo2.totalSolicitudes();
-        double variacion = total1 > 0 ? ((double) (total2 - total1) / total1) * 100 : 0.0;
-
-        return new TendenciasPorPeriodo(periodo1, periodo2, variacion,
-                variacion > 0 ? "CRECIENTE" : variacion < 0 ? "DECRECIENTE" : "ESTABLE", new Date());
     }
 }

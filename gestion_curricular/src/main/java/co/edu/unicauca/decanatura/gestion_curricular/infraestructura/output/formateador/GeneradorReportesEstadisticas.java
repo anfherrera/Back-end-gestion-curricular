@@ -37,14 +37,6 @@ public class GeneradorReportesEstadisticas implements GenerarReportesEstadistica
         void agregar(Document document) throws Exception;
     }
 
-    /** PDF del dashboard general. */
-    public byte[] pdfGeneral(Globales estadisticas) {
-        return generarPdf("DASHBOARD GENERAL - ESTADÍSTICAS DEL SISTEMA", document -> {
-            agregarFecha(document, 15);
-            agregarSeccionEstadisticasGenerales(document, estadisticas);
-        });
-    }
-
     /** PDF del dashboard de cursos de verano, con los filtros aplicados si los hay. */
     public byte[] pdfCursosVerano(AnalisisCursosVerano datosCursosVerano, String periodoAcademico, Integer idPrograma) {
         return generarPdf("DASHBOARD CURSOS DE VERANO - ANÁLISIS DE DEMANDA", document -> {

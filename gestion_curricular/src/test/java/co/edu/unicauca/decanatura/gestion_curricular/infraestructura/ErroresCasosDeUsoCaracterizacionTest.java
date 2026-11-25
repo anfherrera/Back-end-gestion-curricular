@@ -66,7 +66,6 @@ import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.ArchivoSubi
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.CursoOfertadoVerano;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Docente;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Documento;
-import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Estadistica;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.EstadoCursoOfertado;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.EstadoSolicitud;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Materia;
@@ -146,7 +145,8 @@ class ErroresCasosDeUsoCaracterizacionTest {
             "errores/correcciones/casos-de-uso-bug38-estadisticas.json",
             "errores/correcciones/casos-de-uso-bug38-solicitudes.json",
             "errores/correcciones/casos-de-uso-bug38-verano.json",
-            "errores/correcciones/casos-de-uso-mue11.json");
+            "errores/correcciones/casos-de-uso-mue11.json",
+            "errores/correcciones/casos-de-uso-mue11-estadisticas.json");
     }
 
     private void caso(String nombre, Callable<?> llamada) {
@@ -461,24 +461,6 @@ class ErroresCasosDeUsoCaracterizacionTest {
     private void estadisticas() {
         Date antes = new Date(0);
         Date despues = new Date(86_400_000L);
-        caso("estadisticas crear nula", () -> estadisticas(mock(GestionarEstadisticasGatewayIntPort.class)).crearEstadistica(null));
-        caso("estadisticas actualizar sin id",
-            () -> estadisticas(mock(GestionarEstadisticasGatewayIntPort.class)).actualizarEstadistica(new Estadistica()));
-        caso("estadisticas actualizar inexistente", () -> {
-            var e = new Estadistica();
-            e.setIdEstadistica(7);
-            return estadisticas(mock(GestionarEstadisticasGatewayIntPort.class)).actualizarEstadistica(e);
-        });
-        caso("estadisticas eliminar sin id", () -> estadisticas(mock(GestionarEstadisticasGatewayIntPort.class)).eliminarEstadistica(null));
-        caso("estadisticas eliminar inexistente", () -> estadisticas(mock(GestionarEstadisticasGatewayIntPort.class)).eliminarEstadistica(7));
-        caso("estadisticas obtener sin id", () -> estadisticas(mock(GestionarEstadisticasGatewayIntPort.class)).obtenerEstadisticaPorId(null));
-        caso("estadisticas obtener inexistente", () -> estadisticas(mock(GestionarEstadisticasGatewayIntPort.class)).obtenerEstadisticaPorId(7));
-        caso("estadisticas solicitud sin proceso", () -> estadisticas(mock(GestionarEstadisticasGatewayIntPort.class))
-            .obtenerEstadisticasSolicitudPeriodoEstadoYPrograma(7, " ", antes, despues, "Aprobada", 1));
-        caso("estadisticas solicitud incompleta", () -> estadisticas(mock(GestionarEstadisticasGatewayIntPort.class))
-            .obtenerEstadisticasSolicitudPeriodoEstadoYPrograma(7, "Reingreso", antes, null, "Aprobada", 1));
-        caso("estadisticas periodo estado programa incompleta", () -> estadisticas(mock(GestionarEstadisticasGatewayIntPort.class))
-            .obtenerEstadisticasPeriodoEstadoYPrograma(antes, despues, null));
         caso("estadisticas por proceso vacio", () -> estadisticas(mock(GestionarEstadisticasGatewayIntPort.class)).obtenerEstadisticasPorProceso(""));
         caso("estadisticas por estado vacio", () -> estadisticas(mock(GestionarEstadisticasGatewayIntPort.class)).obtenerEstadisticasPorEstado(" "));
         caso("estadisticas por programa invalido", () -> estadisticas(mock(GestionarEstadisticasGatewayIntPort.class)).obtenerEstadisticasPorPrograma(0));
@@ -486,20 +468,6 @@ class ErroresCasosDeUsoCaracterizacionTest {
             .obtenerEstadisticasPorPeriodo((Date) null, despues));
         caso("estadisticas por periodo invertido", () -> estadisticas(mock(GestionarEstadisticasGatewayIntPort.class))
             .obtenerEstadisticasPorPeriodo(despues, antes));
-        caso("estadisticas programa y periodo programa invalido", () -> estadisticas(mock(GestionarEstadisticasGatewayIntPort.class))
-            .obtenerEstadisticasPorProgramaYPeriodo(null, antes, despues));
-        caso("estadisticas programa y periodo sin fechas", () -> estadisticas(mock(GestionarEstadisticasGatewayIntPort.class))
-            .obtenerEstadisticasPorProgramaYPeriodo(1, antes, null));
-        caso("estadisticas programa y periodo invertido", () -> estadisticas(mock(GestionarEstadisticasGatewayIntPort.class))
-            .obtenerEstadisticasPorProgramaYPeriodo(1, despues, antes));
-        caso("estadisticas proceso y estado sin proceso", () -> estadisticas(mock(GestionarEstadisticasGatewayIntPort.class))
-            .obtenerEstadisticasPorProcesoYEstado(null, "Aprobada"));
-        caso("estadisticas proceso y estado sin estado", () -> estadisticas(mock(GestionarEstadisticasGatewayIntPort.class))
-            .obtenerEstadisticasPorProcesoYEstado("Reingreso", ""));
-        caso("estadisticas tendencias sin fechas", () -> estadisticas(mock(GestionarEstadisticasGatewayIntPort.class))
-            .obtenerTendenciasPorPeriodo(antes, despues, null, despues));
-        caso("estadisticas tendencias invertidas", () -> estadisticas(mock(GestionarEstadisticasGatewayIntPort.class))
-            .obtenerTendenciasPorPeriodo(antes, despues, despues, antes));
         caso("estadisticas historial inicio invalido", () -> estadisticas(mock(GestionarEstadisticasGatewayIntPort.class))
             .obtenerHistorialEstadisticas(2019, null));
         caso("estadisticas historial fin invalido", () -> estadisticas(mock(GestionarEstadisticasGatewayIntPort.class))

@@ -50,7 +50,6 @@ import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.pers
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.entidades.SolicitudReingresoEntity;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.entidades.UsuarioEntity;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.gateway.GestionarEstadisticasGatewayImplAdapter;
-import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.repositorios.EstadisticaRepositoryInt;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.repositorios.ProgramaRepositoryInt;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.repositorios.SolicitudRepositoryInt;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.repositorios.UsuarioRepositoryInt;
@@ -99,7 +98,6 @@ class EstadisticasCaracterizacionTest {
 
     static Stream<Arguments> consultas() {
         return Stream.of(
-                caso("globales-sin-filtros", g -> g.obtenerEstadisticasGlobales()),
                 caso("globales-con-filtros", g -> g.obtenerEstadisticasGlobales("Homologacion", 1, fecha(2025, 1, 1), fecha(2025, 12, 31))),
                 caso("por-proceso-homologacion", g -> g.obtenerEstadisticasPorProceso("Homologacion")),
                 caso("por-proceso-paz-y-salvo", g -> g.obtenerEstadisticasPorProceso("Paz y Salvo")),
@@ -107,12 +105,8 @@ class EstadisticasCaracterizacionTest {
                 caso("por-estado-rechazada", g -> g.obtenerEstadisticasPorEstado("Rechazada")),
                 caso("por-programa-id", g -> g.obtenerEstadisticasPorPrograma(1)),
                 caso("por-periodo-fechas", g -> g.obtenerEstadisticasPorPeriodo(fecha(2025, 1, 1), fecha(2025, 6, 30))),
-                caso("por-programa-y-periodo", g -> g.obtenerEstadisticasPorProgramaYPeriodo(2, fecha(2024, 7, 1), fecha(2025, 12, 31))),
-                caso("por-proceso-y-estado", g -> g.obtenerEstadisticasPorProcesoYEstado("Cursos de Verano", "ENVIADA")),
                 caso("resumen-completo", g -> g.obtenerResumenCompleto(null, null)),
                 caso("resumen-completo-filtrado", g -> g.obtenerResumenCompleto("2025-1", 1)),
-                caso("tendencias-por-periodo", g -> g.obtenerTendenciasPorPeriodo(
-                        fecha(2024, 7, 1), fecha(2024, 12, 31), fecha(2025, 1, 1), fecha(2025, 6, 30))),
                 caso("total-estudiantes", g -> g.obtenerNumeroTotalEstudiantes()),
                 caso("estudiantes-por-programa", g -> g.obtenerEstudiantesPorPrograma(null, null)),
                 caso("estudiantes-por-programa-filtrado", g -> g.obtenerEstudiantesPorPrograma(null, 2)),
@@ -271,7 +265,7 @@ class EstadisticasCaracterizacionTest {
         UsuarioRepositoryInt usuarioRepository = mock(UsuarioRepositoryInt.class);
         when(usuarioRepository.buscarPorRol(2)).thenReturn(List.of(ana, beto, carla, dario, eva, sinPrograma));
 
-        GestionarEstadisticasGatewayImplAdapter gateway = new GestionarEstadisticasGatewayImplAdapter(mock(EstadisticaRepositoryInt.class), programaRepository,
+        GestionarEstadisticasGatewayImplAdapter gateway = new GestionarEstadisticasGatewayImplAdapter(programaRepository,
                 solicitudRepository, usuarioRepository);
         return new GestionarEstadisticasCUAdapter(gateway);
     }

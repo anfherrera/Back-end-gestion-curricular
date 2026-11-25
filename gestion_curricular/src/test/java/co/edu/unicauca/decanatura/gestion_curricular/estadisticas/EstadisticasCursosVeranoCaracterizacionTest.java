@@ -33,7 +33,6 @@ import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.pers
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.entidades.SolicitudEntity;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.entidades.UsuarioEntity;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.gateway.GestionarEstadisticasGatewayImplAdapter;
-import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.repositorios.EstadisticaRepositoryInt;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.repositorios.ProgramaRepositoryInt;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.repositorios.SolicitudRepositoryInt;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.repositorios.UsuarioRepositoryInt;
@@ -105,7 +104,7 @@ class EstadisticasCursosVeranoCaracterizacionTest {
         SolicitudRepositoryInt solicitudRepository = mock(SolicitudRepositoryInt.class);
         FilasEstadisticas.simular(solicitudRepository, solicitudes);
         GestionarEstadisticasGatewayImplAdapter gateway = new GestionarEstadisticasGatewayImplAdapter(
-                mock(EstadisticaRepositoryInt.class), mock(ProgramaRepositoryInt.class), solicitudRepository,
+                mock(ProgramaRepositoryInt.class), solicitudRepository,
                 mock(UsuarioRepositoryInt.class));
         return new GestionarEstadisticasCUAdapter(gateway);
     }

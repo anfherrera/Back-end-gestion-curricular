@@ -5,9 +5,7 @@ import java.util.List;
 
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarEstadisticasCUIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.output.GestionarEstadisticasGatewayIntPort;
-import co.edu.unicauca.decanatura.gestion_curricular.dominio.excepciones.EntidadNoExisteException;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.excepciones.ReglaNegocioExcepcion;
-import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Estadistica;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.enums.PeriodoAcademicoEnum;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.estadisticas.AnalisisCursosVerano;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.estadisticas.DashboardEjecutivo;
@@ -20,11 +18,8 @@ import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.estadistica
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.estadisticas.EstudiantesPorPrograma;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.estadisticas.Globales;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.estadisticas.GlobalesContadas;
-import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.estadisticas.ProcesosPorProgramaYPeriodo;
-import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.estadisticas.ProgramasPorProcesoYEstado;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.estadisticas.ResumenCompleto;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.estadisticas.Rendimiento;
-import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.estadisticas.TendenciasPorPeriodo;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.estadisticas.TendenciasCursosVerano;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.estadisticas.TotalEstudiantes;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.estadisticas.VistaPorEstado;
@@ -77,87 +72,6 @@ public class GestionarEstadisticasCUAdapter implements GestionarEstadisticasCUIn
     }
 
     @Override
-    public Estadistica crearEstadistica(Estadistica estadistica) {
-        if (estadistica == null) {
-            throw new ReglaNegocioExcepcion("La estadística no puede ser nula.");
-        }
-
-        return estadisticasGateway.crearEstadistica(estadistica);
-    }
-
-    @Override
-    public Estadistica actualizarEstadistica(Estadistica estadistica) {
-        if (estadistica == null || estadistica.getIdEstadistica() == null) {
-            throw new ReglaNegocioExcepcion("Estadística inválida para actualización.");
-        }
-
-        Estadistica existente = estadisticasGateway.obtenerEstadisticaPorId(estadistica.getIdEstadistica());
-
-        if (existente == null) {
-            throw new EntidadNoExisteException("No se encontró la estadística a actualizar.");
-        }
-
-        return estadisticasGateway.actualizarEstadistica(estadistica);
-    }
-
-    @Override
-    public Boolean eliminarEstadistica(Integer idEstadistica) {
-        if (idEstadistica == null) {
-            throw new ReglaNegocioExcepcion("Debe proporcionar un ID válido.");
-        }
-
-        Estadistica estadistica = estadisticasGateway.obtenerEstadisticaPorId(idEstadistica);
-
-        if (estadistica == null) {
-            throw new EntidadNoExisteException("Estadística no encontrada para eliminar.");
-        }
-
-        return estadisticasGateway.eliminarEstadistica(idEstadistica);
-    }
-
-    @Override
-    public Estadistica obtenerEstadisticaPorId(Integer idEstadistica) {
-        if (idEstadistica == null) {
-            throw new ReglaNegocioExcepcion("Debe proporcionar un ID válido.");
-        }
-
-        Estadistica estadistica = estadisticasGateway.obtenerEstadisticaPorId(idEstadistica);
-
-        if (estadistica == null) {
-            throw new EntidadNoExisteException("Estadística no encontrada.");
-        }
-
-        return estadistica;
-    }
-
-    @Override
-    public Estadistica obtenerEstadisticasSolicitudPeriodoEstadoYPrograma(Integer idEstadistica, String proceso, Date fechaInicio, Date fechaFin, String estado, Integer idPrograma) {
-        if (proceso == null || proceso.isBlank()) {
-            throw new ReglaNegocioExcepcion("El proceso no puede estar vacío.");
-        }
-
-        if (fechaInicio == null || fechaFin == null || idPrograma == null || estado == null) {
-            throw new ReglaNegocioExcepcion("Parámetros incompletos para la consulta.");
-        }
-
-        return estadisticasGateway.obtenerEstadisticasSolicitudPeriodoEstadoYPrograma(idEstadistica, proceso, fechaInicio, fechaFin, estado, idPrograma);
-    }
-
-    @Override
-    public List<Estadistica> obtenerEstadisticasPeriodoEstadoYPrograma(Date fechaInicio, Date fechaFin, Integer idPrograma) {
-        if (fechaInicio == null || fechaFin == null || idPrograma == null) {
-            throw new ReglaNegocioExcepcion("Parámetros incompletos para la consulta.");
-        }
-
-        return estadisticasGateway.obtenerEstadisticasPeriodoEstadoYPrograma(fechaInicio, fechaFin, idPrograma);
-    }
-
-    @Override
-    public GlobalesContadas obtenerEstadisticasGlobales() {
-        return globales.globales(null, null, null, null);
-    }
-
-    @Override
     public GlobalesContadas obtenerEstadisticasGlobales(String proceso, Integer idPrograma, Date fechaInicio, Date fechaFin) {
         return globales.globales(proceso, idPrograma, fechaInicio, fechaFin);
     }
@@ -203,51 +117,8 @@ public class GestionarEstadisticasCUAdapter implements GestionarEstadisticasCUIn
     }
 
     @Override
-    public ProcesosPorProgramaYPeriodo obtenerEstadisticasPorProgramaYPeriodo(Integer idPrograma, Date fechaInicio, Date fechaFin) {
-        if (idPrograma == null || idPrograma <= 0) {
-            throw new ReglaNegocioExcepcion("El ID del programa debe ser válido.");
-        }
-
-        if (fechaInicio == null || fechaFin == null) {
-            throw new ReglaNegocioExcepcion("Las fechas de inicio y fin son requeridas.");
-        }
-
-        if (fechaInicio.after(fechaFin)) {
-            throw new ReglaNegocioExcepcion("La fecha de inicio no puede ser posterior a la fecha de fin.");
-        }
-
-        return consultas.porProgramaYPeriodo(idPrograma, fechaInicio, fechaFin);
-    }
-
-    @Override
-    public ProgramasPorProcesoYEstado obtenerEstadisticasPorProcesoYEstado(String tipoProceso, String estado) {
-        if (tipoProceso == null || tipoProceso.isBlank()) {
-            throw new ReglaNegocioExcepcion("El tipo de proceso no puede estar vacío.");
-        }
-
-        if (estado == null || estado.isBlank()) {
-            throw new ReglaNegocioExcepcion("El estado no puede estar vacío.");
-        }
-
-        return consultas.porProcesoYEstado(tipoProceso, estado);
-    }
-
-    @Override
     public ResumenCompleto obtenerResumenCompleto(String periodoAcademico, Integer idPrograma) {
         return resumen.resumenCompleto(PeriodoAcademicoEnum.normalizar(periodoAcademico), idPrograma);
-    }
-
-    @Override
-    public TendenciasPorPeriodo obtenerTendenciasPorPeriodo(Date fechaInicio1, Date fechaFin1, Date fechaInicio2, Date fechaFin2) {
-        if (fechaInicio1 == null || fechaFin1 == null || fechaInicio2 == null || fechaFin2 == null) {
-            throw new ReglaNegocioExcepcion("Todas las fechas son requeridas para la comparación.");
-        }
-
-        if (fechaInicio1.after(fechaFin1) || fechaInicio2.after(fechaFin2)) {
-            throw new ReglaNegocioExcepcion("Las fechas de inicio no pueden ser posteriores a las fechas de fin.");
-        }
-
-        return consultas.tendenciasPorPeriodo(fechaInicio1, fechaFin1, fechaInicio2, fechaFin2);
     }
 
     @Override

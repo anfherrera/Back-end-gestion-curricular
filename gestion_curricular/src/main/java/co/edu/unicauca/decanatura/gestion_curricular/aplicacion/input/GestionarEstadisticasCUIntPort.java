@@ -3,7 +3,6 @@ package co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input;
 import java.util.Date;
 import java.util.List;
 
-import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Estadistica;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.estadisticas.AnalisisCursosVerano;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.estadisticas.DashboardEjecutivo;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.estadisticas.EntradaHistorial;
@@ -15,11 +14,8 @@ import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.estadistica
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.estadisticas.EstudiantesPorPrograma;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.estadisticas.Globales;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.estadisticas.GlobalesContadas;
-import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.estadisticas.ProcesosPorProgramaYPeriodo;
-import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.estadisticas.ProgramasPorProcesoYEstado;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.estadisticas.ResumenCompleto;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.estadisticas.Rendimiento;
-import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.estadisticas.TendenciasPorPeriodo;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.estadisticas.TendenciasCursosVerano;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.estadisticas.TotalEstudiantes;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.estadisticas.VistaPorEstado;
@@ -29,20 +25,6 @@ import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.estadistica
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.estadisticas.VistaTendencias;
 
 public interface GestionarEstadisticasCUIntPort {
-    Estadistica crearEstadistica(Estadistica estadistica);
-    Estadistica actualizarEstadistica(Estadistica estadistica);
-    Boolean eliminarEstadistica(Integer idEstadistica);
-    Estadistica obtenerEstadisticaPorId(Integer idEstadistica);
-    Estadistica obtenerEstadisticasSolicitudPeriodoEstadoYPrograma(Integer idEstadistica, String proceso, Date fechaInicio, Date fechaFin, String estado, Integer idPrograma);
-    List<Estadistica> obtenerEstadisticasPeriodoEstadoYPrograma( Date fechaInicio, Date fechaFin, Integer idPrograma);
-
-    /**
-     * Obtiene estadísticas globales del sistema combinando todos los procesos.
-     * Utiliza SolicitudRepositoryInt para obtener conteos totales.
-     * 
-     * @return las estadísticas globales que cuenta la base de datos
-     */
-    GlobalesContadas obtenerEstadisticasGlobales();
 
     /**
      * Obtiene estadísticas globales del sistema combinando todos los procesos con filtros.
@@ -94,27 +76,6 @@ public interface GestionarEstadisticasCUIntPort {
     EstadisticasPorPeriodo obtenerEstadisticasPorPeriodo(Date fechaInicio, Date fechaFin);
 
     /**
-     * Obtiene estadísticas combinadas por programa y período académico.
-     * Utiliza SolicitudRepositoryInt para filtrar por programa y fechas.
-     * 
-     * @param idPrograma ID del programa académico
-     * @param fechaInicio Fecha de inicio del período
-     * @param fechaFin Fecha de fin del período
-     * @return estadísticas combinadas
-     */
-    ProcesosPorProgramaYPeriodo obtenerEstadisticasPorProgramaYPeriodo(Integer idPrograma, Date fechaInicio, Date fechaFin);
-
-    /**
-     * Obtiene estadísticas detalladas por proceso y estado.
-     * Utiliza SolicitudRepositoryInt para filtrar por tipo de solicitud y estado.
-     * 
-     * @param tipoProceso Tipo de proceso
-     * @param estado Estado de la solicitud
-     * @return estadísticas detalladas
-     */
-    ProgramasPorProcesoYEstado obtenerEstadisticasPorProcesoYEstado(String tipoProceso, String estado);
-
-    /**
      * Obtiene un resumen completo de todas las estadísticas del sistema.
      * Utiliza múltiples repositorios para generar un dashboard completo.
      * 
@@ -123,18 +84,6 @@ public interface GestionarEstadisticasCUIntPort {
      * @return el resumen completo
      */
     ResumenCompleto obtenerResumenCompleto(String periodoAcademico, Integer idPrograma);
-
-    /**
-     * Obtiene estadísticas de tendencias por período (comparación entre períodos).
-     * Utiliza SolicitudRepositoryInt para analizar tendencias temporales.
-     * 
-     * @param fechaInicio1 Fecha de inicio del primer período
-     * @param fechaFin1 Fecha de fin del primer período
-     * @param fechaInicio2 Fecha de inicio del segundo período
-     * @param fechaFin2 Fecha de fin del segundo período
-     * @return comparación de tendencias
-     */
-    TendenciasPorPeriodo obtenerTendenciasPorPeriodo(Date fechaInicio1, Date fechaFin1, Date fechaInicio2, Date fechaFin2);
 
     /**
      * Obtiene el número total de estudiantes en el sistema.

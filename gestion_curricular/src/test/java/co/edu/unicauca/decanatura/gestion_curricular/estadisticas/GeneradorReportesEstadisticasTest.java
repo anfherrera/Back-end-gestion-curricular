@@ -34,7 +34,6 @@ class GeneradorReportesEstadisticasTest {
 
     @Test
     void pdfs() {
-        assertThat(cabecera(generador.pdfGeneral(estadisticas))).isEqualTo("%PDF");
         assertThat(cabecera(generador.pdfCursosVerano(cursosVerano, "2025-2", 1))).isEqualTo("%PDF");
         assertThat(cabecera(generador.pdfCompleto(estadisticas, cursosVerano, "2025-2", 1))).isEqualTo("%PDF");
         assertThat(cabecera(generador.pdfCompleto(estadisticas, null, null, null))).isEqualTo("%PDF");

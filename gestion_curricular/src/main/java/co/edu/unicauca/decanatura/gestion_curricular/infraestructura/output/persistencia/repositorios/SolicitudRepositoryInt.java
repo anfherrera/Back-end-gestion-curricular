@@ -2,7 +2,6 @@ package co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.per
 
 import java.util.Date;
 import java.util.List;
-import java.util.Set;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -39,9 +38,6 @@ public interface SolicitudRepositoryInt extends JpaRepository<SolicitudEntity, I
            "ORDER BY e.id_estado")
     List<FilaEstadoEstadistica> buscarEstadosParaEstadisticas();
 
-    @Query("SELECT s.nombre_solicitud FROM SolicitudEntity s")
-    Set<String> buscarNombresSolicitudes();
-    
    
 
     
@@ -51,16 +47,6 @@ public interface SolicitudRepositoryInt extends JpaRepository<SolicitudEntity, I
     // Consulta JPQL: contar todas las solicitudes
     @Query("SELECT COUNT(s) FROM SolicitudEntity s")
     Integer totalSolicitudes();
-
-    @Query(
-    "SELECT COUNT(s) FROM SolicitudEntity s " +
-    "WHERE LOWER(s.nombre_solicitud) LIKE LOWER(CONCAT('%', :nombreSolicitud, '%')) " +
-    "AND s.fecha_registro_solicitud BETWEEN :fechaInicio AND :fechaFin " +
-    "AND s.objUsuario.objPrograma.id_programa = :idPrograma")
-    Integer contarNombreFechaYPrograma(
-    @Param("nombreSolicitud") String nombreSolicitud,
-    @Param("fechaInicio") Date fechaInicio, @Param("fechaFin") Date fechaFin,
-    @Param("idPrograma") Integer idPrograma);
 
     // Consulta JPQL: contar solicitudes con filtros combinados
     @Query("SELECT COUNT(s) FROM SolicitudEntity s WHERE " +
@@ -99,19 +85,6 @@ public interface SolicitudRepositoryInt extends JpaRepository<SolicitudEntity, I
                                                   @Param("fechaFin") Date fechaFin);
 
     @Query(value =
-        "SELECT COUNT(s) FROM SolicitudEntity s " +
-        "JOIN s.estadosSolicitud est " +
-        "WHERE LOWER(s.nombre_solicitud) LIKE LOWER(CONCAT('%', :nombreSolicitud, '%')) " +
-        "AND s.fecha_registro_solicitud BETWEEN :fechaInicio AND :fechaFin " +
-        "AND LOWER(est.estado_actual) LIKE LOWER(CONCAT('%', :estado, '%')) " +
-        "AND s.objUsuario.objPrograma.id_programa = :idPrograma")
-    Integer contarNombreFechaEstadoYPrograma(
-        @Param("nombreSolicitud") String nombreSolicitud,
-        @Param("fechaInicio") Date fechaInicio, @Param("fechaFin") Date fechaFin,
-        @Param("estado") String estado,
-        @Param("idPrograma") Integer idPrograma);
-
-    @Query(
     "SELECT COUNT(DISTINCT s) FROM SolicitudEntity s " +
     "JOIN s.estadosSolicitud est " +
     "WHERE UPPER(est.estado_actual) = UPPER(:estado) " +

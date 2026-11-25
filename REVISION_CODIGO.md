@@ -376,7 +376,7 @@ Rutas abreviadas: `…/` = `gestion_curricular/src/main/java/co/edu/unicauca/dec
 
   *Cierre revisión 21:* punto nuevo, abierto con permiso del usuario. Se quitan las dos anotaciones y sus imports; `@Getter` y el constructor protegido se conservan. Una subclase que no pase un mensaje ya no compila. Según `javap -c -p`, el bytecode de `GestionCurricularException` solo pierde esos dos constructores, y el de `ReglaNegocioExcepcion` es idéntico. `ReglaNegocioMensajeCaracterizacionTest`, `ErroresCasosDeUsoCaracterizacionTest`, `ErroresLocalesCaracterizacionTest`, `ErroresPazYSalvoCaracterizacionTest`, `ManejadorErroresTest` y `ArquitecturaHexagonalTest` (11 pruebas) pasaron una vez antes y tres después del cambio. Ninguna referencia cambió. Clean verify en JDK 25 y 17: 587 pruebas, 1 omitida y cero fallos.
 
-- [ ] **MUE-11. EST-7 dejó código sin uso.** Cada paso de la migración anotó en su entrada lo que quedaba sin uso ("Código muerto tras el paso, sin borrar"). Se borra por áreas, con un commit cada una. Antes de borrar cada cosa se comprobó con `grep` que nada de `main` la usa. Ninguna respuesta HTTP cambia. Si una prueba solo probaba código borrado, se borra con él.
+- [x] **MUE-11. EST-7 dejó código sin uso.** Cada paso de la migración anotó en su entrada lo que quedaba sin uso ("Código muerto tras el paso, sin borrar"). Se borra por áreas, con un commit cada una. Antes de borrar cada cosa se comprobó con `grep` que nada de `main` la usa. Ninguna respuesta HTTP cambia. Si una prueba solo probaba código borrado, se borra con él.
 
   *Paz y Salvo (revisión 28):* se borran `revisarDocumentosRequeridos` (puerto y caso de uso), el record `DocumentosPazYSalvoDTORespuesta.Revision`, `guardarYAdjuntarSiExiste` y `AdjuntoCondicional` de `GestionarDocumentosCUIntPort`, y las ramas `porDefecto` y `pdf` de `generarPazYSalvo`. Con ellas desaparece lo que solo esas ramas usaban: el parámetro `fechaLocal` de `prepararDocumento`, el parámetro `pdf` del puerto de salida y `GeneradorPdfPazYSalvo`. Sin `revisarDocumentosRequeridos` también quedaban sin uso, en el dominio, `DocumentosPazYSalvo.revisar`, `RevisionDocumentos`, `requeridoDe` y el enum `Requerido`, y se borran. `DocumentosPazYSalvoTest` pierde los tres casos de `revisar` y las comprobaciones de `requeridoDe` en los casos de BUG-1; los de `esFormatoPmFo4For27` y `tipoDeDocumento` se quedan. `RutasPazYSalvoCaracterizacionTest` guarda los argumentos con que el controlador llama a `generarPazYSalvo`; sin `porDefecto` ni `pdf`, la corrección encadenada `pazysalvo-mue11.json` fija el nuevo texto de esa llamada. La dependencia de iText se conserva, porque la usan los reportes. `clean verify` en JDK 25 y 17: 608 pruebas, 1 omitida y cero fallos (127 XML de surefire).
 
@@ -403,6 +403,29 @@ Rutas abreviadas: `…/` = `gestion_curricular/src/main/java/co/edu/unicauca/dec
   - Las caracterizaciones de rutas pierden simulaciones que ya nada llamaba; sus referencias no cambian.
 
   Se conservan, sin uso, tres dependencias del caso de uso de cursos (`gestionarSolicitudGateway`, `gestionarUsuarioGateway`, `gestionarNotificacionCU`) y dos del gateway de solicitudes (`usuarioRepository`, `estadoSolicitudRepository`). Quitarlas cambia sus constructores, `BeanConfiguration` y varias pruebas. `clean verify` en JDK 25 y 17: 596 pruebas, 1 omitida y cero fallos (127 XML de surefire).
+
+  *Estadísticas (revisión 28):* se borra lo anotado en el paso 9:
+  - `EstadisticaMapperDominio`, `EstadisticaDTOPeticion`, `EstadisticaDTORespuesta` y `EstadisticasFiltradasDTORespuesta`.
+  - `pdfGeneral` y `excelGeneral` de los puertos de reportes, con `GeneradorReportesEstadisticas.pdfGeneral`.
+  - De `GestionarEstadisticasCUIntPort`, el CRUD, las dos consultas en camelCase, `obtenerEstadisticasPorProgramaYPeriodo`, `obtenerEstadisticasPorProcesoYEstado` y `obtenerTendenciasPorPeriodo`. También `obtenerEstadisticasGlobales()` sin argumentos, que solo usaban las dos exportaciones "general"; la misma regla sigue viva en la variante con filtros.
+  - Con ellos se van los tres métodos de `ConsultasEstadisticas` y sus records (`ProcesosPorProgramaYPeriodo`, `ProgramasPorProcesoYEstado` y `TendenciasPorPeriodo`).
+
+  Por decisión del usuario se borra también la persistencia de `Estadistica`, que sin el CRUD nadie usaba:
+  - El modelo `Estadistica`, con sus nombres en `NombresJsonDominio`.
+  - `EstadisticaEntity`, `EstadisticaRepositoryInt` y `EstadisticaMapperPersistencia`.
+  - El CRUD y las dos consultas del gateway, que ya no recibe ese repositorio.
+  - Las tres consultas de `SolicitudRepositoryInt` que solo ellos usaban.
+
+  La tabla `Estadisticas` de `V1__esquema_inicial.sql` se conserva sin uso: `ddl-auto=validate` no comprueba las tablas que sobran, y no se añade ninguna migración.
+
+  Pruebas:
+  - Se borra `EstadisticaPersistenciaCaracterizacionTest`, que solo caracterizaba ese CRUD, con su referencia.
+  - `EstadisticasCaracterizacionTest` pierde cuatro casos, cada uno con su referencia propia.
+  - `EstadisticasUnidadTest` pierde los cuatro casos del CRUD. Sus dos casos de globales pasan a la variante con filtros a null, que aplica la misma regla.
+  - `ErroresCasosDeUsoCaracterizacionTest` pierde 17 casos con la corrección `casos-de-uso-mue11-estadisticas.json`.
+  - `GeneradorReportesEstadisticasTest` deja de comprobar `pdfGeneral`.
+
+  `clean verify` en JDK 25 y 17: 587 pruebas, 1 omitida y cero fallos (126 XML de surefire, uno menos por la prueba borrada). Con esto MUE-11 queda cerrado.
 
 ---
 
