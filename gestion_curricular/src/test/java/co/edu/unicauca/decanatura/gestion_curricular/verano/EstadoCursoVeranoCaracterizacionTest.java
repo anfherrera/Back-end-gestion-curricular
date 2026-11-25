@@ -54,6 +54,7 @@ import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.mappe
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.mappers.ProgramaMapperDominioImpl;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.mappers.RolMapperDominioImpl;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.mappers.UsuarioMapperDominioImpl;
+import co.edu.unicauca.decanatura.gestion_curricular.soporte.Correcciones;
 import co.edu.unicauca.decanatura.gestion_curricular.soporte.SoporteMvc;
 
 /**
@@ -105,7 +106,9 @@ class EstadoCursoVeranoCaracterizacionTest {
             Files.createDirectories(REFERENCIA.getParent());
             Files.writeString(REFERENCIA, json.writerWithDefaultPrettyPrinter().writeValueAsString(resultados));
         }
-        assertThat(resultados).isEqualTo(json.readTree(Files.readString(REFERENCIA)));
+        // BUG-53: un último estado sin texto es un estado desconocido (antes, NullPointerException)
+        assertThat(resultados).isEqualTo(Correcciones.aplicar(json.readTree(Files.readString(REFERENCIA)),
+                "estados/correcciones/curso-verano-bug53.json"));
     }
 
     private ObjectNode dominio(String[] historial) {

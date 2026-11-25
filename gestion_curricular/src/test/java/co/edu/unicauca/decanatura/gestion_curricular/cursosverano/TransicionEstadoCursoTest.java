@@ -81,4 +81,17 @@ class TransicionEstadoCursoTest {
                 .isInstanceOfSatisfying(TransicionInvalidaException.class,
                         e -> assertThat(e.getError()).isEqualTo("Estado final"));
     }
+
+    @Test
+    @DisplayName("BUG-53: un último estado sin texto es un estado desconocido, no un NullPointerException")
+    void ultimoEstadoSinTextoEsDesconocido() {
+        CursoOfertadoVerano curso = curso("Publicado", null);
+        for (String nuevo : new String[] {"Borrador", "Preinscripcion", null}) {
+            assertThatThrownBy(() -> TransicionEstadoCurso.validar(curso, nuevo))
+                    .isInstanceOfSatisfying(TransicionInvalidaException.class, e -> {
+                        assertThat(e.getError()).isEqualTo("Estado desconocido");
+                        assertThat(e.getMessage()).isEqualTo("Estado actual 'null' no reconocido");
+                    });
+        }
+    }
 }

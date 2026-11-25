@@ -51,6 +51,10 @@ public final class TransicionEstadoCurso {
      */
     public static void validar(CursoOfertadoVerano curso, String nuevoEstado) {
         String actual = estadoActual(curso);
+        if (actual == null) {
+            // BUG-53: un último estado sin texto se trata como un estado desconocido
+            throw estadoDesconocido(actual);
+        }
         if (actual.equals(nuevoEstado)) {
             return; // Sin cambio
         }
@@ -77,9 +81,12 @@ public final class TransicionEstadoCurso {
                     "Desde 'Inscripcion' solo se puede cambiar a 'Cerrado' o retroceder a 'Preinscripcion'");
             case "Cerrado" -> throw new TransicionInvalidaException("Estado final",
                     "El curso esta cerrado y no se puede cambiar su estado");
-            default -> throw new TransicionInvalidaException("Estado desconocido",
-                    "Estado actual '" + actual + "' no reconocido");
+            default -> throw estadoDesconocido(actual);
         }
+    }
+
+    private static TransicionInvalidaException estadoDesconocido(String actual) {
+        return new TransicionInvalidaException("Estado desconocido", "Estado actual '" + actual + "' no reconocido");
     }
 
     private static void exigir(boolean permitido, String mensaje) {
