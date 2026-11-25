@@ -10,6 +10,7 @@ import java.nio.file.Path;
 import java.time.Instant;
 import java.util.Date;
 import java.util.List;
+import java.util.TimeZone;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -160,6 +161,17 @@ class CursosVeranoEndpointsCaracterizacionTest {
     }
 
     @Test void exportacionesPdfExcelYEstudiantes() throws Exception {
+        // La referencia se grabó en la zona de Colombia y el Excel escribe las fechas en la zona de la JVM
+        TimeZone anterior = TimeZone.getDefault();
+        TimeZone.setDefault(TimeZone.getTimeZone("America/Bogota"));
+        try {
+            exportaciones();
+        } finally {
+            TimeZone.setDefault(anterior);
+        }
+    }
+
+    private void exportaciones() throws Exception {
         datos.preparar(" 221 ", "encontrado");
         CursoOfertadoVerano curso = datos.cursos.obtenerCursoPorId(71);
         Materia materia = new Materia();
