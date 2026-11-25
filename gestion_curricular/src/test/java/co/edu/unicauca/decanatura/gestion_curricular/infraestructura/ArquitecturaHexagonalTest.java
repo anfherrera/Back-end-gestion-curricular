@@ -21,9 +21,9 @@ import org.junit.jupiter.api.Test;
  * código fuente.
  *
  * <p>El núcleo ({@code dominio/} y {@code aplicacion/}) no tiene excepciones. Las reglas entre adaptadores
- * tienen una línea base de archivos que todavía las incumplen (ver REVISION_CODIGO.md, ARQ-2 a ARQ-5): la
- * prueba falla si aparece un archivo nuevo que las incumple y también si un archivo de la línea base ya
- * cumple, para que se quite de la lista y no pueda volver a incumplirla.
+ * admiten una línea base de archivos que todavía las incumplen, hoy vacía: la prueba falla si aparece un
+ * archivo nuevo que las incumple y también si un archivo de la línea base ya cumple, para que se quite de la
+ * lista y no pueda volver a incumplirla.
  */
 @DisplayName("Arquitectura hexagonal - dependencias entre capas")
 class ArquitecturaHexagonalTest {
