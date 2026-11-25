@@ -26,15 +26,6 @@ public class GestionarDocenteGatewayImplAdapter implements GestionarDocenteGatew
         this.cursoOfertadoRepository = cursoOfertadoRepository;
     }
 
-    // Método original (compatibilidad)
-    @Override
-    @Transactional(readOnly = true)
-    public Docente buscarDocentePorId(Integer idDocente) {
-        return docenteRepository.findById(idDocente)
-                .map(entity -> CatalogosMapperPersistencia.aDominio(entity))
-                .orElse(null);
-    }
-    
     // Nuevos métodos CRUD
     @Override
     @Transactional

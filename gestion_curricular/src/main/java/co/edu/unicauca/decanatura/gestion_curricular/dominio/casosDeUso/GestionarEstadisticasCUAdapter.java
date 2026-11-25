@@ -12,7 +12,6 @@ import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.estadistica
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.estadisticas.EntradaHistorial;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.estadisticas.EstadisticasPorEstado;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.estadisticas.EstadisticasPorPeriodo;
-import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.estadisticas.EstadisticasPorProceso;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.estadisticas.EstadisticasPorPrograma;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.estadisticas.EstadisticasPorSemestre;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.estadisticas.EstudiantesPorPrograma;
@@ -74,15 +73,6 @@ public class GestionarEstadisticasCUAdapter implements GestionarEstadisticasCUIn
     @Override
     public GlobalesContadas obtenerEstadisticasGlobales(String proceso, Integer idPrograma, Date fechaInicio, Date fechaFin) {
         return globales.globales(proceso, idPrograma, fechaInicio, fechaFin);
-    }
-
-    @Override
-    public EstadisticasPorProceso obtenerEstadisticasPorProceso(String tipoProceso) {
-        if (tipoProceso == null || tipoProceso.isBlank()) {
-            throw new ReglaNegocioExcepcion("El tipo de proceso no puede estar vacío.");
-        }
-
-        return consultas.porProceso(tipoProceso);
     }
 
     @Override

@@ -99,8 +99,6 @@ class EstadisticasCaracterizacionTest {
     static Stream<Arguments> consultas() {
         return Stream.of(
                 caso("globales-con-filtros", g -> g.obtenerEstadisticasGlobales("Homologacion", 1, fecha(2025, 1, 1), fecha(2025, 12, 31))),
-                caso("por-proceso-homologacion", g -> g.obtenerEstadisticasPorProceso("Homologacion")),
-                caso("por-proceso-paz-y-salvo", g -> g.obtenerEstadisticasPorProceso("Paz y Salvo")),
                 caso("por-estado-aprobada", g -> g.obtenerEstadisticasPorEstado("APROBADA")),
                 caso("por-estado-rechazada", g -> g.obtenerEstadisticasPorEstado("Rechazada")),
                 caso("por-programa-id", g -> g.obtenerEstadisticasPorPrograma(1)),

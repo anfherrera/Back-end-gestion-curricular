@@ -26,7 +26,6 @@ import co.edu.unicauca.decanatura.gestion_curricular.soporte.SoporteMvc;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarDocumentosCUIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarSolicitudCUIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarSolicitudCursoVeranoCUIntPort;
-import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarSolicitudPazYSalvoCUIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Documento;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Solicitud;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.controladores.ArchivosRestController;
@@ -86,7 +85,7 @@ class SubirPdfClavesCaracterizacionTest {
             @Override public Integer idUsuarioActual() { return 31; }
         };
         var mvc = SoporteMvc.standaloneSetup(new ArchivosRestController(archivos, documentos,
-            mock(GestionarSolicitudPazYSalvoCUIntPort.class), verano, solicitudes, auth))
+            verano, solicitudes, auth))
             .setControllerAdvice(new RestApiExceptionHandler()).build();
 
         byte[] contenido = "noPdf".equals(archivo)

@@ -98,7 +98,7 @@ class RutasPeriodosTiposCaracterizacionTest {
         if (cuerpo.has("data")) {
             JsonNode data = cuerpo.get("data");
             String marcador = null;
-            if (data.equals(json.valueToTree(PeriodoAcademicoEnum.getPeriodosFuturos()))) {
+            if (data.equals(json.valueToTree(PeriodoAcademicoEnum.desde(Year.now().getValue())))) {
                 marcador = "<periodos futuros>";
             } else if (data.equals(json.valueToTree(PeriodoAcademicoEnum.getPeriodosRecientes()))) {
                 marcador = "<periodos recientes>";

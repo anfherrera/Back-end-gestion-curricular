@@ -38,7 +38,6 @@ import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarA
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarDocumentosCUIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarSolicitudCUIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarSolicitudCursoVeranoCUIntPort;
-import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarSolicitudPazYSalvoCUIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Documento;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.PlantillaDocumento;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Rol;
@@ -151,7 +150,7 @@ class RutasDocumentosArchivosCaracterizacionTest {
                 new DocumentoRestController(documentos, Mappers.getMapper(DocumentosMapperDominio.class), archivos,
                         autorizacion),
                 new GeneradorDocumentosRestController(generador),
-                new ArchivosRestController(archivos, documentos, mock(GestionarSolicitudPazYSalvoCUIntPort.class),
+                new ArchivosRestController(archivos, documentos,
                         verano, mock(GestionarSolicitudCUIntPort.class), autorizacion))
                 .setControllerAdvice(new RestApiExceptionHandler()).build();
 

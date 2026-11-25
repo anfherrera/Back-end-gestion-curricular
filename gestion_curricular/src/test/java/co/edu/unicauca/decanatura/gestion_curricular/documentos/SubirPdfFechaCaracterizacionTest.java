@@ -34,7 +34,6 @@ import co.edu.unicauca.decanatura.gestion_curricular.soporte.SoporteMvc;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarDocumentosCUIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarSolicitudCUIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarSolicitudCursoVeranoCUIntPort;
-import co.edu.unicauca.decanatura.gestion_curricular.aplicacion.input.GestionarSolicitudPazYSalvoCUIntPort;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Documento;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.controladores.ArchivosRestController;
 import co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.excepciones.RestApiExceptionHandler;
@@ -62,7 +61,7 @@ class SubirPdfFechaCaracterizacionTest {
             @Override public Integer idUsuarioActual() { return 31; }
         };
         var controlador = new ArchivosRestController(archivos, documentos,
-            mock(GestionarSolicitudPazYSalvoCUIntPort.class), mock(GestionarSolicitudCursoVeranoCUIntPort.class),
+            mock(GestionarSolicitudCursoVeranoCUIntPort.class),
             mock(GestionarSolicitudCUIntPort.class), auth);
         MockMvc porDefecto = SoporteMvc.standaloneSetup(controlador)
             .setControllerAdvice(new RestApiExceptionHandler()).build();

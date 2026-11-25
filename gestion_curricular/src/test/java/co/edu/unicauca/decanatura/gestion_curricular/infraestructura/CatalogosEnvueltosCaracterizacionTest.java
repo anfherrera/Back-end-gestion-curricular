@@ -5,6 +5,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.time.Year;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -43,7 +44,7 @@ class CatalogosEnvueltosCaracterizacionTest {
         var resultados = json.createObjectNode();
         resultados.set("todos", respuesta("/api/periodos-academicos"));
         resultados.set("futuros", conDatoNormalizado(respuesta("/api/periodos-academicos?desde={a}", año),
-            json.valueToTree(PeriodoAcademicoEnum.getPeriodosFuturos()), "<periodos-futuros>"));
+            json.valueToTree(PeriodoAcademicoEnum.desde(Year.now().getValue())), "<periodos-futuros>"));
         resultados.set("recientes", conDatoNormalizado(
             respuesta("/api/periodos-academicos?desde={a}", Math.max(2020, año - 4)),
             json.valueToTree(PeriodoAcademicoEnum.getPeriodosRecientes()), "<periodos-recientes>"));

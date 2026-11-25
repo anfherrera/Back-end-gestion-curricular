@@ -27,12 +27,6 @@ public record ConteoSolicitudes(int totalSolicitudes, int totalAprobadas, int to
                 porcentajeAprobacion, new HashMap<>(), porTipoProceso, porPrograma);
     }
 
-    /** El mismo conteo sin los desgloses por tipo de proceso y por programa (consultas de un proceso concreto). */
-    public ConteoSolicitudes sinPorTipoProcesoNiPorPrograma() {
-        return new ConteoSolicitudes(totalSolicitudes, totalAprobadas, totalRechazadas, totalEnProceso, totalEnviadas,
-                porcentajeAprobacion, porEstado, new HashMap<>(), new HashMap<>());
-    }
-
     /** El mismo conteo sin el desglose por programa (consultas de un programa concreto). */
     public ConteoSolicitudes sinPorPrograma() {
         return new ConteoSolicitudes(totalSolicitudes, totalAprobadas, totalRechazadas, totalEnProceso, totalEnviadas,

@@ -146,7 +146,8 @@ class ErroresCasosDeUsoCaracterizacionTest {
             "errores/correcciones/casos-de-uso-bug38-solicitudes.json",
             "errores/correcciones/casos-de-uso-bug38-verano.json",
             "errores/correcciones/casos-de-uso-mue11.json",
-            "errores/correcciones/casos-de-uso-mue11-estadisticas.json");
+            "errores/correcciones/casos-de-uso-mue11-estadisticas.json",
+            "errores/correcciones/casos-de-uso-mue12.json");
     }
 
     private void caso(String nombre, Callable<?> llamada) {
@@ -461,7 +462,6 @@ class ErroresCasosDeUsoCaracterizacionTest {
     private void estadisticas() {
         Date antes = new Date(0);
         Date despues = new Date(86_400_000L);
-        caso("estadisticas por proceso vacio", () -> estadisticas(mock(GestionarEstadisticasGatewayIntPort.class)).obtenerEstadisticasPorProceso(""));
         caso("estadisticas por estado vacio", () -> estadisticas(mock(GestionarEstadisticasGatewayIntPort.class)).obtenerEstadisticasPorEstado(" "));
         caso("estadisticas por programa invalido", () -> estadisticas(mock(GestionarEstadisticasGatewayIntPort.class)).obtenerEstadisticasPorPrograma(0));
         caso("estadisticas por periodo sin fechas", () -> estadisticas(mock(GestionarEstadisticasGatewayIntPort.class))

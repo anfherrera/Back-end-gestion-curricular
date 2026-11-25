@@ -75,19 +75,6 @@ public enum TipoDocumento {
     }
 
     /**
-     * Obtiene todos los códigos de tipos de documento como array de strings
-     * @return Array con todos los códigos
-     */
-    public static String[] getTodosLosCodigos() {
-        TipoDocumento[] valores = values();
-        String[] resultado = new String[valores.length];
-        for (int i = 0; i < valores.length; i++) {
-            resultado[i] = valores[i].getCodigo();
-        }
-        return resultado;
-    }
-
-    /**
      * Obtiene todos los tipos de documento con su información completa
      * @return Array con objetos que contienen código y descripción
      */

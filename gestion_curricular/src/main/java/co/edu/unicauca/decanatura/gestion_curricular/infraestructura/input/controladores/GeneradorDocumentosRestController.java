@@ -1,6 +1,5 @@
 package co.edu.unicauca.decanatura.gestion_curricular.infraestructura.input.controladores;
 
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
 import io.swagger.v3.oas.annotations.Operation;

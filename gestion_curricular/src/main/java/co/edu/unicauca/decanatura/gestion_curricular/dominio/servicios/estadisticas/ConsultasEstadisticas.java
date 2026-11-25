@@ -22,7 +22,6 @@ import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.enums.Estad
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.estadisticas.ConteoSolicitudes;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.estadisticas.EstadisticasPorEstado;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.estadisticas.EstadisticasPorPeriodo;
-import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.estadisticas.EstadisticasPorProceso;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.estadisticas.EstadisticasPorPrograma;
 
 /**
@@ -65,16 +64,6 @@ public class ConsultasEstadisticas {
                 porEstado.getOrDefault(EstadosSolicitud.ENVIADA.name(), 0),
                 total > 0 ? Math.round(aprobadas * 1000.0 / total) / 10.0 : 0.0,
                 porEstado, porTipoProceso, porPrograma);
-    }
-
-    public EstadisticasPorProceso porProceso(String tipoProceso) {
-        String proceso = TipoProcesoSolicitud.porNombre(tipoProceso);
-        List<Solicitud> delProceso = solicitudes(datos).stream()
-                .filter(s -> proceso != null && proceso.equals(tipoProceso(s)))
-                .collect(Collectors.toList());
-
-        return new EstadisticasPorProceso(agregar(delProceso).sinPorTipoProcesoNiPorPrograma(), new Date(),
-                tipoProceso, PresentacionEstadisticas.descripcionProceso(tipoProceso));
     }
 
     public EstadisticasPorEstado porEstado(String estado) {

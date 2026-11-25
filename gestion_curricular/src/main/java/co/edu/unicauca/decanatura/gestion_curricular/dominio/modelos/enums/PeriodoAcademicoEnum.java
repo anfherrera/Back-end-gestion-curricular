@@ -145,14 +145,6 @@ public enum PeriodoAcademicoEnum {
     }
     
     /**
-     * Obtiene los períodos académicos futuros (año actual en adelante)
-     * @return Array con los períodos futuros
-     */
-    public static String[] getPeriodosFuturos() {
-        return desde(java.time.Year.now().getValue());
-    }
-
-    /**
      * Obtiene los períodos académicos recientes (últimos 5 años)
      * @return Array con los períodos recientes
      */

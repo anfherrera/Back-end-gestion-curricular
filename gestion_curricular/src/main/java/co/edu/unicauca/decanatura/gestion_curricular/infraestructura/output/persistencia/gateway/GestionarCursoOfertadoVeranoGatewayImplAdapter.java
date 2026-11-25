@@ -185,28 +185,6 @@ public class GestionarCursoOfertadoVeranoGatewayImplAdapter implements Gestionar
     }
 
     @Override
-    @Transactional
-    public Boolean desasociarUsuarioCurso(Integer idUsuario, Integer idCurso) {
-        Optional<UsuarioEntity> usuarioEntityOptional = usuarioRepository.findById(idUsuario);
-        Optional<CursoOfertadoVeranoEntity> cursoEntityOptional = cursoRepository.findById(idCurso);
-        Boolean usuarioYaEliminado = false;
-        Integer result = 0;
-            if(usuarioEntityOptional.isPresent() && cursoEntityOptional.isPresent()) {
-            UsuarioEntity usuarioEntity = usuarioEntityOptional.get();
-            CursoOfertadoVeranoEntity cursoEntity = cursoEntityOptional.get();
-            result = cursoRepository.eliminarEstudianteDeCurso(cursoEntity.getId_curso(), usuarioEntity.getId_usuario());
-                if (result == 1){
-                    usuarioYaEliminado = true;
-                }
-
-        }
-        
-
-
-        return usuarioYaEliminado;
-    }
-
-    @Override
     public CursoOfertadoVerano guardarCambiosCurso(Integer idCurso, Integer cupoEstimado, String salon, String nuevoEstado) {
         CursoOfertadoVeranoEntity curso = cursoRepository.findByIdConEstados(idCurso);
         if (curso == null) {

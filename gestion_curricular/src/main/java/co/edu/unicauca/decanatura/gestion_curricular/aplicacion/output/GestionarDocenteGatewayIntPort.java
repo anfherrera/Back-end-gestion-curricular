@@ -6,9 +6,6 @@ import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Docente;
 
 public interface GestionarDocenteGatewayIntPort {
     
-    // Método original (mantener compatibilidad)
-    Docente buscarDocentePorId(Integer idDocente);
-    
     // Nuevos métodos CRUD
     Docente guardarDocente(Docente docente);
 

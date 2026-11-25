@@ -22,11 +22,6 @@ public interface CursoOfertadoVeranoRepositoryInt extends JpaRepository<CursoOfe
     @Query(value = "INSERT INTO cursosestudiantes (idCurso, idUsuario) VALUES (:idCurso, :idUsuario)", nativeQuery = true)
     int insertarCursoEstudiante(@Param("idCurso") Integer idCurso, @Param("idUsuario") Integer idUsuario);
 
-    @Modifying
-    @Transactional
-    @Query(value = "DELETE FROM cursosestudiantes WHERE idCurso = :idCurso AND idUsuario = :idUsuario", nativeQuery = true)
-    int eliminarEstudianteDeCurso(@Param("idCurso") Integer idCurso, @Param("idUsuario") Integer idUsuario);
-
     // Consulta JPQL: verificar si existe un curso con la misma materia, docente, período académico y grupo
     @Query("SELECT CASE WHEN COUNT(c) > 0 THEN true ELSE false END FROM CursoOfertadoVeranoEntity c WHERE c.objMateria.id_materia = :idMateria AND c.objDocente.id_docente = :idDocente AND c.periodo_academico = :periodoAcademico AND c.grupo = :grupo")
     boolean existePorMateriaDocentePeriodoGrupo(@Param("idMateria") Integer idMateria, @Param("idDocente") Integer idDocente, @Param("periodoAcademico") String periodoAcademico, @Param("grupo") co.edu.unicauca.decanatura.gestion_curricular.infraestructura.output.persistencia.entidades.enums.GrupoCursoVeranoEntity grupo);

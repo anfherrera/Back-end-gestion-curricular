@@ -27,7 +27,6 @@ import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.SolicitudRe
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.Usuario;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.estadisticas.AnalisisCursosVerano;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.estadisticas.EstadisticasPorEstado;
-import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.estadisticas.EstadisticasPorProceso;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.estadisticas.EstadisticasPorPrograma;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.estadisticas.GlobalesContadas;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.estadisticas.ResumenCompleto;
@@ -97,21 +96,6 @@ class EstadisticasUnidadTest {
         assertThat(resultado.porcentajeAprobacion()).isEqualTo(0.0);
     }
 
-    @Test
-    @DisplayName("Test 7: Por proceso - solo ese proceso y con el estado más reciente")
-    void testPorProcesoUsaElEstadoMasReciente() {
-        when(estadisticasGateway.listarSolicitudesConEstadosYUsuario()).thenReturn(List.of(
-                solicitud(new SolicitudHomologacion(), 1, estado("Enviada", 1), estado("APROBADA", 2)),
-                solicitud(new SolicitudHomologacion(), 1, estado("RECHAZADA", 3)),
-                solicitud(new SolicitudReingreso(), 1, estado("APROBADA", 3))));
-
-        EstadisticasPorProceso resultado = estadisticasCU.obtenerEstadisticasPorProceso("Homologacion");
-
-        assertThat(resultado.totalSolicitudes()).isEqualTo(2);
-        assertThat(resultado.totalAprobadas()).isEqualTo(1);
-        assertThat(resultado.totalRechazadas()).isEqualTo(1);
-        assertThat(resultado.porcentajeAprobacion()).isEqualTo(50.0);
-    }
 
     @Test
     @DisplayName("Test 8: Por estado - unifica las formas de escribir el estado")
@@ -147,7 +131,7 @@ class EstadisticasUnidadTest {
         when(estadisticasGateway.listarSolicitudesConEstadosYUsuario())
                 .thenThrow(new RuntimeException("Error de base de datos"));
 
-        assertThatThrownBy(() -> estadisticasCU.obtenerEstadisticasPorProceso("Homologacion"))
+        assertThatThrownBy(() -> estadisticasCU.obtenerEstadisticasPorEstado("aprobada"))
                 .isInstanceOf(RuntimeException.class)
                 .hasMessage("Error de base de datos");
     }

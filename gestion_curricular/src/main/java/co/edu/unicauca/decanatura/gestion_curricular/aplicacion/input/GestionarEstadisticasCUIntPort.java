@@ -8,7 +8,6 @@ import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.estadistica
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.estadisticas.EntradaHistorial;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.estadisticas.EstadisticasPorEstado;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.estadisticas.EstadisticasPorPeriodo;
-import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.estadisticas.EstadisticasPorProceso;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.estadisticas.EstadisticasPorPrograma;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.estadisticas.EstadisticasPorSemestre;
 import co.edu.unicauca.decanatura.gestion_curricular.dominio.modelos.estadisticas.EstudiantesPorPrograma;
@@ -37,15 +36,6 @@ public interface GestionarEstadisticasCUIntPort {
      * @return las estadísticas globales que cuenta la base de datos
      */
     GlobalesContadas obtenerEstadisticasGlobales(String proceso, Integer idPrograma, Date fechaInicio, Date fechaFin);
-
-    /**
-     * Obtiene estadísticas específicas por tipo de proceso.
-     * Utiliza SolicitudRepositoryInt para filtrar por tipo de solicitud.
-     * 
-     * @param tipoProceso Tipo de proceso (REINGRESO, HOMOLOGACION, ECAES, CURSO_VERANO, PAZ_SALVO)
-     * @return estadísticas del proceso específico
-     */
-    EstadisticasPorProceso obtenerEstadisticasPorProceso(String tipoProceso);
 
     /**
      * Obtiene estadísticas por estado de solicitud en todos los procesos.
