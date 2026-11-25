@@ -1,0 +1,5 @@
+{
+  "beansDePrueba": [],
+  "estadisticasCU": [ { "bean": "crearGestionarEstadisticasCUInt", "primario": false } ],
+  "estadisticasCUInyectado": "crearGestionarEstadisticasCUInt"
+}

@@ -58,9 +58,8 @@ class RutasEstadisticasCaracterizacionTest {
 
     @Autowired MockMvc mvc;
     /**
-     * {@code @MockBean} y no una {@code @TestConfiguration}: la aplicación escanea {@code co.edu.unicauca.decanatura}
-     * sin el filtro de tipos de prueba, así que una configuración anidada entraría en el contexto de las demás pruebas.
-     * Sustituye al bean primario del puerto.
+     * {@code @MockBean} sustituye al bean del puerto. Se eligió frente a una {@code @TestConfiguration} cuando la
+     * aplicación escaneaba sin el filtro de tipos de prueba (hasta OPC-4).
      */
     @MockBean GestionarEstadisticasCUIntPort estadisticaCU;
     @MockBean GenerarReportesEstadisticasCUIntPort reportesCU;

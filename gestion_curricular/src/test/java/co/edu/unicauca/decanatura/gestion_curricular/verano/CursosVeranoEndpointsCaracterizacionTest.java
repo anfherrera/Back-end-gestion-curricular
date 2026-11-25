@@ -86,8 +86,8 @@ class CursosVeranoEndpointsCaracterizacionTest {
     }
 
     @TestConfiguration
-    // El @ComponentScan explícito de la aplicación también descubre @TestConfiguration.
-    // Este perfil evita que los datos fijos sustituyan casos de uso en las demás pruebas.
+    // Hasta OPC-4, el @ComponentScan explícito de la aplicación también descubría @TestConfiguration, y este perfil
+    // evitaba que los datos fijos sustituyeran casos de uso en las demás pruebas. Se conserva.
     @org.springframework.context.annotation.Profile("caracterizacion-verano")
     static class Configuracion {
         @Bean Datos datosVerano() { return new Datos(); }

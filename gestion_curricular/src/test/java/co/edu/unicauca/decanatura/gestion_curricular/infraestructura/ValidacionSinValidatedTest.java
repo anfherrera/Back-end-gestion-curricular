@@ -27,8 +27,9 @@ import co.edu.unicauca.decanatura.gestion_curricular.soporte.SoporteMvc;
 class ValidacionSinValidatedTest {
 
     /**
-     * El escaneo de la aplicación incluye las clases de prueba; el perfil, que nunca se activa, lo deja fuera de los
-     * contextos de Spring. {@code standaloneSetup} lo registra igual, porque recibe la instancia.
+     * Solo para {@code standaloneSetup}, que lo registra porque recibe la instancia. El perfil, que nunca se activa,
+     * lo dejaba fuera de los contextos de Spring cuando el escaneo de la aplicación incluía las clases de prueba;
+     * desde OPC-4 ya no las incluye, y el perfil se conserva.
      */
     @RestController
     @Profile("solo-standalone")
